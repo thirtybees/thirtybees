@@ -105,7 +105,7 @@ class AdminReturnControllerCore extends AdminController
         $this->fields_form = [
             'legend' => [
                 'title' => $this->l('Return Merchandise Authorization (RMA)'),
-                'image' => '../img/admin/return.gif',
+                'icon' => 'icon-clipboard',
             ],
             'input'  => [
                 [
