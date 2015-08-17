@@ -138,7 +138,6 @@ class InstallControllerHttpSystem extends InstallControllerHttp
                     'success' => $this->tests['optional']['success'],
                     'checks'  => [
                         'NewPhpVersion'   => sprintf($this->l('You are using PHP %s version. The next minor version of thirty bees (1.1.0) will require PHP 5.6. To make sure you’re ready for the future, we recommend you to upgrade to PHP 5.6 now!'), phpversion()),
-                        'RegisterGlobals' => $this->l('PHP register_globals option is enabled'),
                         'Gz'              => $this->l('GZIP compression is not activated'),
                         'Mbstring'        => $this->l('Mbstring extension is not enabled'),
                         'Tlsv12'          => $this->l('Could not make a secure connection with PayPal. Your store might not be able to process payments.'),
