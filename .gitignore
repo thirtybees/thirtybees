@@ -68,6 +68,7 @@ composer.lock
 
 /*sitemap.xml
 /robots.txt
+composer.lock
 
 /tests/_output/*
 /c3.php
