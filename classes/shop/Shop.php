@@ -250,8 +250,16 @@ class ShopCore extends ObjectModel
         $this->theme_directory = $row['directory'];
         $this->physical_uri = $row['physical_uri'];
         $this->virtual_uri = $row['virtual_uri'];
-        $this->domain = $row['domain'];
-        $this->domain_ssl = $row['domain_ssl'];
+        if ($row['domain'] === '*automatic*') {
+            $this->domain = $_SERVER['HTTP_HOST'];
+        } else {
+            $this->domain = $row['domain'];
+        }
+        if ($row['domain_ssl'] === '*automatic*') {
+            $this->domain_ssl = $_SERVER['HTTP_HOST'];
+        } else {
+            $this->domain_ssl = $row['domain'];
+        }
 
         return true;
     }
@@ -475,6 +483,31 @@ class ShopCore extends ObjectModel
                 }
             }
         } else {
+            // Handle automatic shop URLs.
+            if (!$idShop) {
+                // The whole purpose of this block is to find out wether
+                // we should load the default shop with or without redirection.
+                // Keeping $idShop at false means with redirection.
+                $idDefaultShop = Configuration::get('PS_SHOP_DEFAULT');
+
+                // Get this directly from the database to see '*automatic*'.
+                $sql = 'SELECT domain, domain_ssl
+                        FROM '._DB_PREFIX_.'shop_url
+                        WHERE id_shop = \''.pSQL($idDefaultShop).'\'';
+
+                $result = Db::getInstance()->executeS($sql);
+
+                if (Configuration::get('PS_SSL_ENABLED')) {
+                    if ($result[0]['domain_ssl'] === '*automatic*') {
+                        $idShop = $idDefaultShop;
+                    }
+                } else {
+                    if ($result[0]['domain'] === '*automatic*') {
+                        $idShop = $idDefaultShop;
+                    }
+                }
+            }
+
             $shop = new Shop($idShop);
             if (!Validate::isLoadedObject($shop) || !$shop->active) {
                 // No shop found ... too bad, let's redirect to default shop
@@ -525,7 +558,7 @@ class ShopCore extends ObjectModel
 
     /**
      * @return Address the current shop address
-     *                 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -551,7 +584,7 @@ class ShopCore extends ObjectModel
      * Get shop theme name
      *
      * @return string
-     * 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -564,7 +597,7 @@ class ShopCore extends ObjectModel
      * Get shop URI
      *
      * @return string
-     * 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -580,7 +613,7 @@ class ShopCore extends ObjectModel
      * @param string $addBaseUri     if set to true, shop base uri will be added
      *
      * @return string complete base url of current shop
-     *                
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -605,7 +638,7 @@ class ShopCore extends ObjectModel
      * Get group of current shop
      *
      * @return ShopGroup
-     * 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -622,7 +655,7 @@ class ShopCore extends ObjectModel
      * Get root category of current shop
      *
      * @return int
-     * 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -635,7 +668,7 @@ class ShopCore extends ObjectModel
      * Get list of shop's urls
      *
      * @return array
-     * 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -653,7 +686,7 @@ class ShopCore extends ObjectModel
      * Check if current shop ID is the same as default shop in configuration
      *
      * @return bool
-     * 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -666,7 +699,7 @@ class ShopCore extends ObjectModel
      * Get the associated table if available
      *
      * @return array
-     * 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -683,7 +716,7 @@ class ShopCore extends ObjectModel
      * check if the table has an id_shop_default
      *
      * @return bool
-     * 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -700,7 +733,7 @@ class ShopCore extends ObjectModel
      * Get list of associated tables to shop
      *
      * @return array
-     * 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -720,7 +753,7 @@ class ShopCore extends ObjectModel
      * @param array  $table_details
      *
      * @return bool
-     * 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -741,7 +774,7 @@ class ShopCore extends ObjectModel
      * @param string $table
      *
      * @return bool
-     * 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -758,7 +791,7 @@ class ShopCore extends ObjectModel
      * Load list of groups and shops, and cache it
      *
      * @param bool $refresh
-     * 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -823,7 +856,7 @@ class ShopCore extends ObjectModel
 
     /**
      * @return array|null
-     * 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -853,7 +886,7 @@ class ShopCore extends ObjectModel
      * @param bool $getAsListId
      *
      * @return array
-     * 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
