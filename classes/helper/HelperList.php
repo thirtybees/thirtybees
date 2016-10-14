@@ -317,7 +317,6 @@ class HelperListCore extends Helper
                 'pagination'          => $this->_pagination,
                 'list_total'          => $this->listTotal,
                 'sql'                 => isset($this->sql) && $this->sql ? str_replace('\n', ' ', str_replace('\r', '', $this->sql)) : false,
-                'token'               => $this->token,
                 'table'               => $this->table,
                 'bulk_actions'        => $this->bulk_actions,
                 'show_toolbar'        => $this->show_toolbar,
@@ -351,6 +350,7 @@ class HelperListCore extends Helper
                     'name_id'           => isset($nameId) ? $nameId : null,
                     'row_hover'         => $this->row_hover,
                     'list_id'           => isset($this->list_id) ? $this->list_id : $this->table,
+                    'token'             => $this->token,
                 ],
                 $this->tpl_vars
             )
@@ -644,6 +644,7 @@ class HelperListCore extends Helper
                 [
                     'current' => $this->currentIndex,
                     'list_id' => $this->list_id,
+                    'token'   => $this->token,
                 ]
             )
         );
