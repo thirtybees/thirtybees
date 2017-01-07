@@ -1355,6 +1355,8 @@ abstract class ModuleCore
                     if (substr($file, -2) == '?>') {
                         $file = substr($file, 0, -2);
                     }
+			
+                    $file = preg_replace('/\n[\s\t]*?use\s.*?;/', '', $file);
 
                     // If (false) is a trick to not load the class with "eval".
                     // This way require_once will works correctly
