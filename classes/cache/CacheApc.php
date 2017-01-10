@@ -2,6 +2,9 @@
 /**
  * 2007-2016 PrestaShop
  *
+ * Thirty Bees is an extension to the PrestaShop e-commerce software developed by PrestaShop SA
+ * Copyright (C) 2017 Thirty Bees
+ *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
@@ -10,18 +13,20 @@
  * http://opensource.org/licenses/osl-3.0.php
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
+ * to license@thirtybees.com so we can send you a copy immediately.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
+ * needs please refer to https://www.thirtybees.com for more information.
  *
+ * @author    Thirty Bees <contact@thirtybees.com>
  * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
  * @copyright 2007-2016 PrestaShop SA
- * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
- * International Registered Trademark & Property of PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
@@ -47,10 +52,14 @@ class CacheApcCore extends Cache
 
     /**
      * Delete one or several data from cache (* joker can be used, but avoid it !)
-     * 	E.g.: delete('*'); delete('my_prefix_*'); delete('my_key_name');
+     *    E.g.: delete('*'); delete('my_prefix_*'); delete('my_key_name');
      *
      * @param string $key Cache key
+     *
      * @return bool Whether the key was deleted
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function delete($key)
     {
@@ -61,8 +70,8 @@ class CacheApcCore extends Cache
         } else {
             $pattern = str_replace('\\*', '.*', preg_quote($key));
 
-            $cache_info = (($this->apcu) ? apcu_cache_info('') : apc_cache_info(''));
-            foreach ($cache_info['cache_list'] as $entry) {
+            $cacheInfo = (($this->apcu) ? apcu_cache_info('') : apc_cache_info(''));
+            foreach ($cacheInfo['cache_list'] as $entry) {
                 if (isset($entry['key'])) {
                     $key = $entry['key'];
                 } else {
@@ -73,11 +82,15 @@ class CacheApcCore extends Cache
                 }
             }
         }
+
         return true;
     }
 
     /**
      * @see Cache::_set()
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     protected function _set($key, $value, $ttl = 0)
     {
@@ -86,6 +99,9 @@ class CacheApcCore extends Cache
 
     /**
      * @see Cache::_get()
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     protected function _get($key)
     {
@@ -94,12 +110,15 @@ class CacheApcCore extends Cache
 
     /**
      * @see Cache::_exists()
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     protected function _exists($key)
     {
         if (!function_exists('apc_exists') && !function_exists('apcu_exists')) {
             // We're dealing with APC < 3.1.4; use this boolean wrapper as a fallback:
-            return (bool)apc_fetch($key);
+            return (bool) apc_fetch($key);
         } else {
             return (($this->apcu) ? apcu_exists($key) : apc_exists($key));
         }
@@ -107,6 +126,9 @@ class CacheApcCore extends Cache
 
     /**
      * @see Cache::_delete()
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     protected function _delete($key)
     {
@@ -115,6 +137,9 @@ class CacheApcCore extends Cache
 
     /**
      * @see Cache::_writeKeys()
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     protected function _writeKeys()
     {
@@ -122,6 +147,9 @@ class CacheApcCore extends Cache
 
     /**
      * @see Cache::flush()
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function flush()
     {
@@ -131,11 +159,15 @@ class CacheApcCore extends Cache
     /**
      * Store data in the cache
      *
-     * @param string $key Cache Key
-     * @param mixed $value Value
-     * @param int $ttl Time to live in the cache
-     *                 0 = unlimited
-     * @return bool Whether the data was successfully stored
+     * @param string $key   Cache Key
+     * @param mixed  $value Value
+     * @param int    $ttl   Time to live in the cache
+     *                      0 = unlimited
+     *
+     * @return bool Whether the data was successfully stored.
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function set($key, $value, $ttl = 0)
     {
@@ -146,7 +178,11 @@ class CacheApcCore extends Cache
      * Retrieve data from the cache
      *
      * @param string $key Cache key
+     *
      * @return mixed Data
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function get($key)
     {
@@ -157,7 +193,11 @@ class CacheApcCore extends Cache
      * Check if data has been cached
      *
      * @param string $key Cache key
+     *
      * @return bool Whether the data has been cached
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function exists($key)
     {

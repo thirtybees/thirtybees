@@ -1,28 +1,33 @@
 <?php
-/*
-* 2007-2016 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Open Software License (OSL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/osl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2016 PrestaShop SA
-*  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*/
+/**
+ * 2007-2016 PrestaShop
+ *
+ * Thirty Bees is an extension to the PrestaShop e-commerce software developed by PrestaShop SA
+ * Copyright (C) 2017 Thirty Bees
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@thirtybees.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://www.thirtybees.com for more information.
+ *
+ *  @author    Thirty Bees <contact@thirtybees.com>
+ *  @author    PrestaShop SA <contact@prestashop.com>
+ *  @copyright 2017 Thirty Bees
+ *  @copyright 2007-2016 PrestaShop SA
+ *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
+ */
 
 class ShopUrlCore extends ObjectModel
 {
@@ -41,16 +46,16 @@ class ShopUrlCore extends ObjectModel
      * @see ObjectModel::$definition
      */
     public static $definition = [
-        'table' => 'shop_url',
+        'table'   => 'shop_url',
         'primary' => 'id_shop_url',
-        'fields' => [
-            'active' =>        ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'main' =>            ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'domain' =>        ['type' => self::TYPE_STRING, 'required' => true, 'size' => 255, 'validate' => 'isCleanHtml'],
-            'domain_ssl' =>    ['type' => self::TYPE_STRING, 'size' => 255, 'validate' => 'isCleanHtml'],
-            'id_shop' =>        ['type' => self::TYPE_INT, 'required' => true],
-            'physical_uri' =>    ['type' => self::TYPE_STRING, 'size' => 64],
-            'virtual_uri' =>    ['type' => self::TYPE_STRING, 'size' => 64],
+        'fields'  => [
+            'active'       => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                          ],
+            'main'         => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                          ],
+            'domain'       => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml',   'required' => true, 'size' => 255],
+            'domain_ssl'   => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml',                       'size' => 255],
+            'id_shop'      => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt', 'required' => true               ],
+            'physical_uri' => ['type' => self::TYPE_STRING, 'validate' => 'isString',                          'size' => 64 ],
+            'virtual_uri'  => ['type' => self::TYPE_STRING, 'validate' => 'isString',                          'size' => 64 ],
         ],
     ];
 
