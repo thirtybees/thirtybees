@@ -40,20 +40,20 @@ class Core_Business_Payment_PaymentOptionTest extends UnitTestCase
             ->setAction('http://example.com/submit')
             ->setMethod('POST')
             ->setForm(null)
-            ->setInputs(array('key' => 42))
+            ->setInputs(['key' => 42])
         ;
 
-        $legacyOption = array(
+        $legacyOption = [
             'cta_text'  => 'Pay by bankwire',
             'logo'      => 'http://example.com/logo.png',
             'action'    => 'http://example.com/submit',
             'method'    => 'POST',
             'form'      => null,
-            'inputs'    => array('key' => 42)
-        );
+            'inputs'    => ['key' => 42]
+        ];
 
         $this->assertEquals(
-            array($newOption),
+            [$newOption],
             PaymentOption::convertLegacyOption($legacyOption)
         );
     }
@@ -67,22 +67,22 @@ class Core_Business_Payment_PaymentOptionTest extends UnitTestCase
             ->setAction('http://example.com/submit')
             ->setMethod('POST')
             ->setForm(null)
-            ->setInputs(array('key' => 42))
+            ->setInputs(['key' => 42])
         ;
 
-        $singleLegacyOption = array(
+        $singleLegacyOption = [
             'cta_text'  => 'Pay by bankwire',
             'logo'      => 'http://example.com/logo.png',
             'action'    => 'http://example.com/submit',
             'method'    => 'POST',
             'form'      => null,
-            'inputs'    => array('key' => 42)
-        );
+            'inputs'    => ['key' => 42]
+        ];
 
-        $legacyOption = array($singleLegacyOption, $singleLegacyOption);
+        $legacyOption = [$singleLegacyOption, $singleLegacyOption];
 
         $this->assertEquals(
-            array($newOption, $newOption),
+            [$newOption, $newOption],
             PaymentOption::convertLegacyOption($legacyOption)
         );
     }

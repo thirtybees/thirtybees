@@ -56,32 +56,32 @@ class AdminCategoriesControllerCore extends AdminController
 
         $this->context = Context::getContext();
 
-        $this->fieldImageSettings = array(
+        $this->fieldImageSettings = [
             'name' => 'image',
             'dir' => 'c'
-        );
+        ];
 
-        $this->fields_list = array(
-            'id_category' => array(
+        $this->fields_list = [
+            'id_category' => [
                 'title' => $this->l('ID'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs'
-            ),
-            'name' => array(
+            ],
+            'name' => [
                 'title' => $this->l('Name')
-            ),
-            'description' => array(
+            ],
+            'description' => [
                 'title' => $this->l('Description'),
                 'callback' => 'getDescriptionClean',
                 'orderby' => false
-            ),
-            'position' => array(
+            ],
+            'position' => [
                 'title' => $this->l('Position'),
                 'filter_key' => 'sa!position',
                 'position' => 'position',
                 'align' => 'center'
-            ),
-            'active' => array(
+            ],
+            'active' => [
                 'title' => $this->l('Displayed'),
                 'active' => 'status',
                 'type' => 'bool',
@@ -89,16 +89,16 @@ class AdminCategoriesControllerCore extends AdminController
                 'align' => 'center',
                 'ajax' => true,
                 'orderby' => false
-            )
-        );
+            ]
+        ];
 
-        $this->bulk_actions = array(
-            'delete' => array(
+        $this->bulk_actions = [
+            'delete' => [
                 'text' => $this->l('Delete selected'),
                 'icon' => 'icon-trash',
                 'confirm' => $this->l('Delete selected items?')
-            )
-        );
+            ]
+        ];
         $this->specificConfirmDelete = false;
 
         parent::__construct();
@@ -171,29 +171,31 @@ class AdminCategoriesControllerCore extends AdminController
 
         if ($this->display != 'edit' && $this->display != 'add') {
             if (Configuration::get('PS_MULTISHOP_FEATURE_ACTIVE')) {
-                $this->page_header_toolbar_btn['new-url'] = array(
+                $this->page_header_toolbar_btn['new-url'] = [
                     'href' => self::$currentIndex.'&add'.$this->table.'root&token='.$this->token,
                     'desc' => $this->l('Add new root category', null, null, false)
-                );
+                ];
             }
 
             $id_category = (Tools::isSubmit('id_category')) ? '&id_parent='.(int)Tools::getValue('id_category') : '';
-            $this->page_header_toolbar_btn['new_category'] = array(
+            $this->page_header_toolbar_btn['new_category'] = [
                 'href' => self::$currentIndex.'&addcategory&token='.$this->token.$id_category,
                 'desc' => $this->l('Add new category', null, null, false),
                 'icon' => 'process-icon-new'
-            );
+            ];
         }
     }
 
     public function initContent()
     {
         if ($this->action == 'select_delete') {
-            $this->context->smarty->assign(array(
+            $this->context->smarty->assign(
+                [
                 'delete_form' => true,
                 'url_delete' => htmlentities($_SERVER['REQUEST_URI']),
                 'boxes' => $this->boxes,
-            ));
+                ]
+            );
         }
 
         parent::initContent();
@@ -224,7 +226,7 @@ class AdminCategoriesControllerCore extends AdminController
         if (empty($categories_tree)
             && ($this->_category->id != (int)Configuration::get('PS_ROOT_CATEGORY') || Tools::isSubmit('id_category'))
             && (Shop::getContext() == Shop::CONTEXT_SHOP && !Shop::isFeatureActive() && $count_categories_without_parent > 1)) {
-            $categories_tree = array(array('name' => $this->_category->name[$this->context->language->id]));
+            $categories_tree = [['name' => $this->_category->name[$this->context->language->id]]];
         }
 
 
@@ -258,7 +260,7 @@ class AdminCategoriesControllerCore extends AdminController
             $item = &$this->_list[$i];
             $category_tree = Category::getChildren((int)$item['id_category'], $this->context->language->id, false);
             if (!count($category_tree)) {
-                $this->addRowActionSkipList('view', array($item['id_category']));
+                $this->addRowActionSkipList('view', [$item['id_category']]);
             }
         }
     }
@@ -272,38 +274,38 @@ class AdminCategoriesControllerCore extends AdminController
     public function initToolbar()
     {
         if (empty($this->display)) {
-            $this->toolbar_btn['new'] = array(
+            $this->toolbar_btn['new'] = [
                 'href' => self::$currentIndex.'&add'.$this->table.'&token='.$this->token,
                 'desc' => $this->l('Add New')
-            );
+            ];
 
             if ($this->can_import) {
-                $this->toolbar_btn['import'] = array(
+                $this->toolbar_btn['import'] = [
                     'href' => $this->context->link->getAdminLink('AdminImport', true).'&import_type=categories',
                     'desc' => $this->l('Import')
-                );
+                ];
             }
         }
         // be able to edit the Home category
         if (count(Category::getCategoriesWithoutParent()) == 1 && !Tools::isSubmit('id_category')
             && ($this->display == 'view' || empty($this->display))) {
-            $this->toolbar_btn['edit'] = array(
+            $this->toolbar_btn['edit'] = [
                 'href' => self::$currentIndex.'&update'.$this->table.'&id_category='.(int)$this->_category->id.'&token='.$this->token,
                 'desc' => $this->l('Edit')
-            );
+            ];
         }
         if (Tools::getValue('id_category') && !Tools::isSubmit('updatecategory')) {
-            $this->toolbar_btn['edit'] = array(
+            $this->toolbar_btn['edit'] = [
                 'href' => self::$currentIndex.'&update'.$this->table.'&id_category='.(int)Tools::getValue('id_category').'&token='.$this->token,
                 'desc' => $this->l('Edit')
-            );
+            ];
         }
 
         if ($this->display == 'view') {
-            $this->toolbar_btn['new'] = array(
+            $this->toolbar_btn['new'] = [
                 'href' => self::$currentIndex.'&add'.$this->table.'&id_parent='.(int)Tools::getValue('id_category').'&token='.$this->token,
                 'desc' => $this->l('Add New')
-            );
+            ];
         }
         parent::initToolbar();
         if ($this->_category->id == (int)Configuration::get('PS_ROOT_CATEGORY') && isset($this->toolbar_btn['new'])) {
@@ -312,20 +314,20 @@ class AdminCategoriesControllerCore extends AdminController
         // after adding a category
         if (empty($this->display)) {
             $id_category = (Tools::isSubmit('id_category')) ? '&id_parent='.(int)Tools::getValue('id_category') : '';
-            $this->toolbar_btn['new'] = array(
+            $this->toolbar_btn['new'] = [
                 'href' => self::$currentIndex.'&add'.$this->table.'&token='.$this->token.$id_category,
                 'desc' => $this->l('Add New')
-            );
+            ];
 
             if (Tools::isSubmit('id_category')) {
                 $back = Tools::safeOutput(Tools::getValue('back', ''));
                 if (empty($back)) {
                     $back = self::$currentIndex.'&token='.$this->token;
                 }
-                $this->toolbar_btn['back'] = array(
+                $this->toolbar_btn['back'] = [
                     'href' => $back,
                     'desc' => $this->l('Back to list')
-                );
+                ];
             }
         }
         if (!$this->lite_display && isset($this->toolbar_btn['back']['href']) && $this->_category->level_depth > 1
@@ -366,7 +368,7 @@ class AdminCategoriesControllerCore extends AdminController
     public function renderKpis()
     {
         $time = time();
-        $kpis = array();
+        $kpis = [];
 
         /* The data generation is located in AdminStatsControllerCore */
 
@@ -433,7 +435,7 @@ class AdminCategoriesControllerCore extends AdminController
         $obj = $this->loadObject(true);
         $context = Context::getContext();
         $id_shop = $context->shop->id;
-        $selected_categories = array((isset($obj->id_parent) && $obj->isParentCategoryAvailable($id_shop))? (int)$obj->id_parent : (int)Tools::getValue('id_parent', Category::getRootCategory()->id));
+        $selected_categories = [(isset($obj->id_parent) && $obj->isParentCategoryAvailable($id_shop))? (int)$obj->id_parent : (int)Tools::getValue('id_parent', Category::getRootCategory()->id)];
         $unidentified = new Group(Configuration::get('PS_UNIDENTIFIED_GROUP'));
         $guest = new Group(Configuration::get('PS_GUEST_GROUP'));
         $default = new Group(Configuration::get('PS_CUSTOMER_GROUP'));
@@ -451,7 +453,7 @@ class AdminCategoriesControllerCore extends AdminController
 
         $image_size = file_exists($image) ? filesize($image) / 1000 : false;
         $images_types = ImageType::getImagesTypes('categories');
-        $format = array();
+        $format = [];
         $thumb = $thumb_url = '';
         $formated_category= ImageType::getFormatedName('category');
         $formated_medium = ImageType::getFormatedName('medium');
@@ -475,14 +477,14 @@ class AdminCategoriesControllerCore extends AdminController
 
         $thumb_size = file_exists($thumb) ? filesize($thumb) / 1000 : false;
 
-        $this->fields_form = array(
+        $this->fields_form = [
             'tinymce' => true,
-            'legend' => array(
+            'legend' => [
                 'title' => $this->l('Category'),
                 'icon' => 'icon-tags'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'text',
                     'label' => $this->l('Name'),
                     'name' => 'name',
@@ -490,46 +492,46 @@ class AdminCategoriesControllerCore extends AdminController
                     'required' => true,
                     'class' => 'copy2friendlyUrl',
                     'hint' => $this->l('Invalid characters:').' <>;=#{}',
-                ),
-                array(
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Displayed'),
                     'name' => 'active',
                     'required' => false,
                     'is_bool' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'active_on',
                             'value' => 1,
                             'label' => $this->l('Enabled')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'active_off',
                             'value' => 0,
                             'label' => $this->l('Disabled')
-                        )
-                    )
-                ),
-                array(
+                        ]
+                    ]
+                ],
+                [
                     'type'  => 'categories',
                     'label' => $this->l('Parent category'),
                     'name'  => 'id_parent',
-                    'tree'  => array(
+                    'tree'  => [
                         'id'                  => 'categories-tree',
                         'selected_categories' => $selected_categories,
-                        'disabled_categories' => (!Tools::isSubmit('add'.$this->table) && !Tools::isSubmit('submitAdd'.$this->table)) ? array($this->_category->id) : null,
+                        'disabled_categories' => (!Tools::isSubmit('add'.$this->table) && !Tools::isSubmit('submitAdd'.$this->table)) ? [$this->_category->id] : null,
                         'root_category'       => $context->shop->getCategory()
-                    )
-                ),
-                array(
+                    ]
+                ],
+                [
                     'type' => 'textarea',
                     'label' => $this->l('Description'),
                     'name' => 'description',
                     'autoload_rte' => true,
                     'lang' => true,
                     'hint' => $this->l('Invalid characters:').' <>;=#{}'
-                ),
-                array(
+                ],
+                [
                     'type' => 'file',
                     'label' => $this->l('Category Cover Image'),
                     'name' => 'image',
@@ -539,8 +541,8 @@ class AdminCategoriesControllerCore extends AdminController
                     'delete_url' => self::$currentIndex.'&'.$this->identifier.'='.$this->_category->id.'&token='.$this->token.'&deleteImage=1',
                    'hint' => $this->l('This is the main image for your category, displayed in the category page. The category description will overlap this image and appear in its top-left corner.'),
                    'format' => $format['category']
-                ),
-                array(
+                ],
+                [
                    'type' => 'file',
                    'label' => $this->l('Category thumbnail'),
                    'name' => 'thumb',
@@ -548,8 +550,8 @@ class AdminCategoriesControllerCore extends AdminController
                    'image' => $thumb_url ? $thumb_url : false,
                    'size' => $thumb_size,
                    'format' => $format['medium']
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Meta title'),
                     'name' => 'meta_title',
@@ -558,8 +560,8 @@ class AdminCategoriesControllerCore extends AdminController
                     'rows' => 5,
                     'cols' => 100,
                     'hint' => $this->l('Forbidden characters:').' <>;=#{}'
-                ),
-                array(
+                ],
+                [
                     'type' => 'textarea',
                     'label' => $this->l('Meta description'),
                     'name' => 'meta_description',
@@ -568,23 +570,23 @@ class AdminCategoriesControllerCore extends AdminController
                     'rows' => 5,
                     'cols' => 100,
                     'hint' => $this->l('Forbidden characters:').' <>;=#{}'
-                ),
-                array(
+                ],
+                [
                     'type' => 'tags',
                     'label' => $this->l('Meta keywords'),
                     'name' => 'meta_keywords',
                     'lang' => true,
                     'hint' => $this->l('To add "tags," click in the field, write something, and then press "Enter."').'&nbsp;'.$this->l('Forbidden characters:').' <>;=#{}'
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Friendly URL'),
                     'name' => 'link_rewrite',
                     'lang' => true,
                     'required' => true,
                     'hint' => $this->l('Only letters, numbers, underscore (_) and the minus (-) character are allowed.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'group',
                     'label' => $this->l('Group access'),
                     'name' => 'groupBox',
@@ -594,13 +596,13 @@ class AdminCategoriesControllerCore extends AdminController
                     'guest' => $guest_group_information,
                     'customer' => $default_group_information,
                     'hint' => $this->l('Mark all of the customer groups which you would like to have access to this category.')
-                )
-            ),
-            'submit' => array(
+                ]
+            ],
+            'submit' => [
                 'title' => $this->l('Save'),
                 'name' => 'submitAdd'.$this->table.($this->_category->is_root_category && !Tools::isSubmit('add'.$this->table) && !Tools::isSubmit('add'.$this->table.'root') ? '': 'AndBackToParent')
-            )
-        );
+            ]
+        ];
 
         $this->tpl_form_vars['shared_category'] = Validate::isLoadedObject($obj) && $obj->hasMultishopEntries();
         $this->tpl_form_vars['PS_ALLOW_ACCENTED_CHARS_URL'] = (int)Configuration::get('PS_ALLOW_ACCENTED_CHARS_URL');
@@ -608,40 +610,40 @@ class AdminCategoriesControllerCore extends AdminController
 
         // Display this field only if multistore option is enabled
         if (Configuration::get('PS_MULTISHOP_FEATURE_ACTIVE') && Tools::isSubmit('add'.$this->table.'root')) {
-            $this->fields_form['input'][] = array(
+            $this->fields_form['input'][] = [
                 'type' => 'switch',
                 'label' => $this->l('Root Category'),
                 'name' => 'is_root_category',
                 'required' => false,
                 'is_bool' => true,
-                'values' => array(
-                    array(
+                'values' => [
+                    [
                         'id' => 'is_root_on',
                         'value' => 1,
                         'label' => $this->l('Yes')
-                    ),
-                    array(
+                    ],
+                    [
                         'id' => 'is_root_off',
                         'value' => 0,
                         'label' => $this->l('No')
-                    )
-                )
-            );
+                    ]
+                ]
+            ];
             unset($this->fields_form['input'][2], $this->fields_form['input'][3]);
         }
         // Display this field only if multistore option is enabled AND there are several stores configured
         if (Shop::isFeatureActive()) {
-            $this->fields_form['input'][] = array(
+            $this->fields_form['input'][] = [
                 'type' => 'shop',
                 'label' => $this->l('Shop association'),
                 'name' => 'checkBoxShopAsso',
-            );
+            ];
         }
 
         // remove category tree and radio button "is_root_category" if this category has the root category as parent category to avoid any conflict
         if ($this->_category->id_parent == (int)Configuration::get('PS_ROOT_CATEGORY') && Tools::isSubmit('updatecategory')) {
             foreach ($this->fields_form['input'] as $k => $input) {
-                if (in_array($input['name'], array('id_parent', 'is_root_category'))) {
+                if (in_array($input['name'], ['id_parent', 'is_root_category'])) {
                     unset($this->fields_form['input'][$k]);
                 }
             }
@@ -653,10 +655,10 @@ class AdminCategoriesControllerCore extends AdminController
 
         $image = ImageManager::thumbnail(_PS_CAT_IMG_DIR_.'/'.$obj->id.'.'.$this->imageType, $this->table.'_'.(int)$obj->id.'.'.$this->imageType, 350, $this->imageType, true);
 
-        $this->fields_value = array(
+        $this->fields_value = [
             'image' => $image ? $image : false,
             'size' => $image ? filesize(_PS_CAT_IMG_DIR_.'/'.$obj->id.'.'.$this->imageType) / 1000 : false
-        );
+        ];
 
         // Added values of object Group
         $category_groups_ids = $obj->getGroups();
@@ -664,7 +666,7 @@ class AdminCategoriesControllerCore extends AdminController
         $groups = Group::getGroups($this->context->language->id);
         // if empty $carrier_groups_ids : object creation : we set the default groups
         if (empty($category_groups_ids)) {
-            $preselected = array(Configuration::get('PS_UNIDENTIFIED_GROUP'), Configuration::get('PS_GUEST_GROUP'), Configuration::get('PS_CUSTOMER_GROUP'));
+            $preselected = [Configuration::get('PS_UNIDENTIFIED_GROUP'), Configuration::get('PS_GUEST_GROUP'), Configuration::get('PS_CUSTOMER_GROUP')];
             $category_groups_ids = array_merge($category_groups_ids, $preselected);
         }
         foreach ($groups as $group) {
@@ -678,7 +680,7 @@ class AdminCategoriesControllerCore extends AdminController
 
     public function postProcess()
     {
-        if (!in_array($this->display, array('edit', 'add'))) {
+        if (!in_array($this->display, ['edit', 'add'])) {
             $this->multishop_context_group = false;
         }
         if (Tools::isSubmit('forcedeleteImage') || (isset($_FILES['image']) && $_FILES['image']['size'] > 0) || Tools::getValue('deleteImage')) {
@@ -771,7 +773,7 @@ class AdminCategoriesControllerCore extends AdminController
     protected function processBulkDelete()
     {
         if ($this->tabAccess['delete'] === '1') {
-            $cats_ids = array();
+            $cats_ids = [];
             foreach (Tools::getValue($this->table.'Box') as $id_category) {
                 $category = new Category((int)$id_category);
                 if (!$category->isRootCategoryForAShop()) {
@@ -954,14 +956,14 @@ class AdminCategoriesControllerCore extends AdminController
     public function ajaxProcessStatusCategory()
     {
         if (!$id_category = (int)Tools::getValue('id_category')) {
-            die(Tools::jsonEncode(array('success' => false, 'error' => true, 'text' => $this->l('Failed to update the status'))));
+            die(Tools::jsonEncode(['success' => false, 'error' => true, 'text' => $this->l('Failed to update the status')]));
         } else {
             $category = new Category((int)$id_category);
             if (Validate::isLoadedObject($category)) {
                 $category->active = $category->active == 1 ? 0 : 1;
                 $category->save() ?
-                die(Tools::jsonEncode(array('success' => true, 'text' => $this->l('The status has been updated successfully')))) :
-                die(Tools::jsonEncode(array('success' => false, 'error' => true, 'text' => $this->l('Failed to update the status'))));
+                die(Tools::jsonEncode(['success' => true, 'text' => $this->l('The status has been updated successfully')])) :
+                die(Tools::jsonEncode(['success' => false, 'error' => true, 'text' => $this->l('Failed to update the status')]));
             }
         }
     }

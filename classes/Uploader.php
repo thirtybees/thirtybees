@@ -39,13 +39,13 @@ class UploaderCore
     {
         $this->setName($name);
         $this->setCheckFileSize(true);
-        $this->files = array();
+        $this->files = [];
     }
 
     public function setAcceptTypes($value)
     {
         if (is_array($value) && count($value)) {
-            $value = array_map(array('Tools', 'strtolower'), $value);
+            $value = array_map(['Tools', 'strtolower'], $value);
         }
         $this->_accept_types = $value;
         return $this;
@@ -74,7 +74,7 @@ class UploaderCore
     public function getFiles()
     {
         if (!isset($this->_files)) {
-            $this->_files = array();
+            $this->_files = [];
         }
 
         return $this->_files;
@@ -154,15 +154,15 @@ class UploaderCore
         $upload = isset($_FILES[$this->getName()]) ? $_FILES[$this->getName()] : null;
 
         if ($upload && is_array($upload['tmp_name'])) {
-            $tmp = array();
+            $tmp = [];
             foreach ($upload['tmp_name'] as $index => $value) {
-                $tmp[$index] = array(
+                $tmp[$index] = [
                     'tmp_name' => $upload['tmp_name'][$index],
                     'name'     => $upload['name'][$index],
                     'size'     => $upload['size'][$index],
                     'type'     => $upload['type'][$index],
                     'error'    => $upload['error'][$index]
-                );
+                ];
 
                 $this->files[] = $this->upload($tmp[$index], $dest);
             }
@@ -288,7 +288,7 @@ class UploaderCore
     {
         $last = $directory[strlen($directory) - 1];
 
-        if (in_array($last, array('/', '\\'))) {
+        if (in_array($last, ['/', '\\'])) {
             $directory[strlen($directory) - 1] = DIRECTORY_SEPARATOR;
             return $directory;
         }

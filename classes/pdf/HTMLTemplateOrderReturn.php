@@ -59,30 +59,32 @@ class HTMLTemplateOrderReturnCore extends HTMLTemplate
     public function getContent()
     {
         $delivery_address = new Address((int)$this->order->id_address_delivery);
-        $formatted_delivery_address = AddressFormat::generateAddress($delivery_address, array(), '<br />', ' ');
+        $formatted_delivery_address = AddressFormat::generateAddress($delivery_address, [], '<br />', ' ');
         $formatted_invoice_address = '';
 
         if ($this->order->id_address_delivery != $this->order->id_address_invoice) {
             $invoice_address = new Address((int)$this->order->id_address_invoice);
-            $formatted_invoice_address = AddressFormat::generateAddress($invoice_address, array(), '<br />', ' ');
+            $formatted_invoice_address = AddressFormat::generateAddress($invoice_address, [], '<br />', ' ');
         }
 
-        $this->smarty->assign(array(
+        $this->smarty->assign(
+            [
             'order_return' => $this->order_return,
             'return_nb_days' => (int)Configuration::get('PS_ORDER_RETURN_NB_DAYS'),
             'products' => OrderReturn::getOrdersReturnProducts((int)$this->order_return->id, $this->order),
             'delivery_address' => $formatted_delivery_address,
             'invoice_address' => $formatted_invoice_address,
-            'shop_address' => AddressFormat::generateAddress($this->shop->getAddress(), array(), '<br />', ' ')
-        ));
+            'shop_address' => AddressFormat::generateAddress($this->shop->getAddress(), [], '<br />', ' ')
+            ]
+        );
         
-        $tpls = array(
+        $tpls = [
             'style_tab' => $this->smarty->fetch($this->getTemplate('invoice.style-tab')),
             'addresses_tab' => $this->smarty->fetch($this->getTemplate('order-return.addresses-tab')),
             'summary_tab' => $this->smarty->fetch($this->getTemplate('order-return.summary-tab')),
             'product_tab' => $this->smarty->fetch($this->getTemplate('order-return.product-tab')),
             'conditions_tab' => $this->smarty->fetch($this->getTemplate('order-return.conditions-tab')),
-        );
+        ];
         $this->smarty->assign($tpls);
         
         return $this->smarty->fetch($this->getTemplate('order-return'));
@@ -116,9 +118,11 @@ class HTMLTemplateOrderReturnCore extends HTMLTemplate
     public function getHeader()
     {
         $this->assignCommonHeaderData();
-        $this->smarty->assign(array(
+        $this->smarty->assign(
+            [
             'header' => HTMLTemplateOrderReturn::l('Order return'),
-        ));
+            ]
+        );
 
         return $this->smarty->fetch($this->getTemplate('header'));
     }

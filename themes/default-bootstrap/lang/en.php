@@ -1,7 +1,7 @@
 <?php
 
 global $_LANG;
-$_LANG = array();
+$_LANG = [];
 
 $_LANG['404_d0fbda9855d118740f1105334305c126'] = 'Page not found';
 $_LANG['404_44b1d05764b093cb00c25b8228cb87d3'] = 'This page is not available';

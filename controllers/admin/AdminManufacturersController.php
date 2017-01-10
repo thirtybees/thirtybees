@@ -31,7 +31,7 @@ class AdminManufacturersControllerCore extends AdminController
 {
     public $bootstrap = true ;
     /** @var array countries list */
-    protected $countries_array = array();
+    protected $countries_array = [];
 
     public function __construct()
     {
@@ -45,57 +45,57 @@ class AdminManufacturersControllerCore extends AdminController
         $this->_defaultOrderBy = 'name';
         $this->_defaultOrderWay = 'ASC';
 
-        $this->bulk_actions = array(
-            'delete' => array(
+        $this->bulk_actions = [
+            'delete' => [
                 'text' => $this->l('Delete selected'),
                 'icon' => 'icon-trash',
                 'confirm' => $this->l('Delete selected items?')
-            )
-        );
+            ]
+        ];
 
         $this->context = Context::getContext();
 
-        $this->fieldImageSettings = array(
+        $this->fieldImageSettings = [
             'name' => 'logo',
             'dir' => 'm'
-        );
+        ];
 
-        $this->fields_list = array(
-            'id_manufacturer' => array(
+        $this->fields_list = [
+            'id_manufacturer' => [
                 'title' => $this->l('ID'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs'
-            ),
-            'logo' => array(
+            ],
+            'logo' => [
                 'title' => $this->l('Logo'),
                 'image' => 'm',
                 'orderby' => false,
                 'search' => false,
                 'align' => 'center',
-            ),
-            'name' => array(
+            ],
+            'name' => [
                 'title' => $this->l('Name'),
                 'width' => 'auto'
-            ),
-            'addresses' => array(
+            ],
+            'addresses' => [
                 'title' => $this->l('Addresses'),
                 'search' => false,
                 'align' => 'center'
-            ),
-            'products' => array(
+            ],
+            'products' => [
                 'title' => $this->l('Products'),
                 'search' => false,
                 'align' => 'center',
-            ),
-            'active' => array(
+            ],
+            'active' => [
                 'title' => $this->l('Enabled'),
                 'active' => 'status',
                 'type' => 'bool',
                 'align' => 'center',
                 'class' => 'fixed-width-xs',
                 'orderby' => false
-            )
-        );
+            ]
+        ];
 
         parent::__construct();
     }
@@ -110,16 +110,16 @@ class AdminManufacturersControllerCore extends AdminController
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
-            $this->page_header_toolbar_btn['new_manufacturer'] = array(
+            $this->page_header_toolbar_btn['new_manufacturer'] = [
                 'href' => self::$currentIndex.'&addmanufacturer&token='.$this->token,
                 'desc' => $this->l('Add new manufacturer', null, null, false),
                 'icon' => 'process-icon-new'
-            );
-            $this->page_header_toolbar_btn['new_manufacturer_address'] = array(
+            ];
+            $this->page_header_toolbar_btn['new_manufacturer_address'] = [
                 'href' => self::$currentIndex.'&addaddress&token='.$this->token,
                 'desc' => $this->l('Add new manufacturer address', null, null, false),
                 'icon' => 'process-icon-new'
-            );
+            ];
         } elseif ($this->display == 'editaddresses' || $this->display == 'addaddress') {
             // Default cancel button - like old back link
             if (!isset($this->no_back) || $this->no_back == false) {
@@ -128,10 +128,10 @@ class AdminManufacturersControllerCore extends AdminController
                     $back = self::$currentIndex.'&token='.$this->token;
                 }
 
-                $this->page_header_toolbar_btn['cancel'] = array(
+                $this->page_header_toolbar_btn['cancel'] = [
                     'href' => $back,
                     'desc' => $this->l('Cancel', null, null, false)
-                );
+                ];
             }
         }
 
@@ -167,38 +167,38 @@ class AdminManufacturersControllerCore extends AdminController
             $this->countries_array[$country['id_country']] = $country['name'];
         }
 
-        return array(
-            'id_address' => array(
+        return [
+            'id_address' => [
                 'title' => $this->l('ID'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs'
-            ),
-            'manufacturer_name' => array(
+            ],
+            'manufacturer_name' => [
                 'title' => $this->l('Manufacturer'),
                 'width' => 'auto',
                 'filter_key' => 'manufacturer_name'
-            ),
-            'firstname' => array(
+            ],
+            'firstname' => [
                 'title' => $this->l('First name')
-            ),
-            'lastname' => array(
+            ],
+            'lastname' => [
                 'title' => $this->l('Last name'),
                 'filter_key' => 'a!lastname'
-            ),
-            'postcode' => array(
+            ],
+            'postcode' => [
                 'title' => $this->l('Zip/Postal code'),
                 'align' => 'right'
-            ),
-            'city' => array(
+            ],
+            'city' => [
                 'title' => $this->l('City')
-            ),
-            'country' => array(
+            ],
+            'country' => [
                 'title' => $this->l('Country'),
                 'type' => 'select',
                 'list' => $this->countries_array,
                 'filter_key' => 'cl!id_country'
-            )
-        );
+            ]
+        ];
     }
 
     public function processExport($text_delimiter = '"')
@@ -215,7 +215,7 @@ class AdminManufacturersControllerCore extends AdminController
     {
         $this->toolbar_title = $this->l('Addresses');
         // reset actions and query vars
-        $this->actions = array();
+        $this->actions = [];
         unset($this->fields_list, $this->_select, $this->_join, $this->_group, $this->_filterHaving, $this->_filter);
 
         $this->table = 'address';
@@ -240,13 +240,13 @@ class AdminManufacturersControllerCore extends AdminController
         $this->action = (isset($_POST['submitReset'.$this->table]) ? 'reset_filters' : '');
 
         $this->fields_list = $this->getAddressFieldsList();
-        $this->bulk_actions = array(
-            'delete' => array(
+        $this->bulk_actions = [
+            'delete' => [
                 'text' => $this->l('Delete selected'),
                 'icon' => 'icon-trash',
                 'confirm' => $this->l('Delete selected items?')
-            )
-        );
+            ]
+        ];
 
         $this->_select = 'cl.`name` as country, m.`name` AS manufacturer_name';
         $this->_join = '
@@ -285,12 +285,14 @@ class AdminManufacturersControllerCore extends AdminController
             self::$cache_lang['editaddresses'] = $this->l('Edit');
         }
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'href' => self::$currentIndex.
                 '&'.$this->identifier.'='.$id.
                 '&editaddresses&token='.($token != null ? $token : $this->token),
             'action' => self::$cache_lang['editaddresses'],
-        ));
+            ]
+        );
 
         return $this->context->smarty->fetch('helpers/list/list_action_edit.tpl');
     }
@@ -306,22 +308,22 @@ class AdminManufacturersControllerCore extends AdminController
             $this->imageType, true, true);
         $image_size = file_exists($image) ? filesize($image) / 1000 : false;
 
-        $this->fields_form = array(
+        $this->fields_form = [
             'tinymce' => true,
-            'legend' => array(
+            'legend' => [
                 'title' => $this->l('Manufacturers'),
                 'icon' => 'icon-certificate'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'text',
                     'label' => $this->l('Name'),
                     'name' => 'name',
                     'col' => 4,
                     'required' => true,
                     'hint' => $this->l('Invalid characters:').' &lt;&gt;;=#{}'
-                ),
-                array(
+                ],
+                [
                     'type' => 'textarea',
                     'label' => $this->l('Short description'),
                     'name' => 'short_description',
@@ -331,8 +333,8 @@ class AdminManufacturersControllerCore extends AdminController
                     'autoload_rte' => 'rte', //Enable TinyMCE editor for short description
                     'col' => 6,
                     'hint' => $this->l('Invalid characters:').' &lt;&gt;;=#{}'
-                ),
-                array(
+                ],
+                [
                     'type' => 'textarea',
                     'label' => $this->l('Description'),
                     'name' => 'description',
@@ -342,8 +344,8 @@ class AdminManufacturersControllerCore extends AdminController
                     'col' => 6,
                     'autoload_rte' => 'rte', //Enable TinyMCE editor for description
                     'hint' => $this->l('Invalid characters:').' &lt;&gt;;=#{}'
-                ),
-                array(
+                ],
+                [
                     'type' => 'file',
                     'label' => $this->l('Logo'),
                     'name' => 'logo',
@@ -352,72 +354,72 @@ class AdminManufacturersControllerCore extends AdminController
                     'display_image' => true,
                     'col' => 6,
                     'hint' => $this->l('Upload a manufacturer logo from your computer.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Meta title'),
                     'name' => 'meta_title',
                     'lang' => true,
                     'col' => 4,
                     'hint' => $this->l('Forbidden characters:').' &lt;&gt;;=#{}'
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Meta description'),
                     'name' => 'meta_description',
                     'lang' => true,
                     'col' => 6,
                     'hint' => $this->l('Forbidden characters:').' &lt;&gt;;=#{}'
-                ),
-                array(
+                ],
+                [
                     'type' => 'tags',
                     'label' => $this->l('Meta keywords'),
                     'name' => 'meta_keywords',
                     'lang' => true,
                     'col' => 6,
-                    'hint' => array(
+                    'hint' => [
                         $this->l('Forbidden characters:').' &lt;&gt;;=#{}',
                         $this->l('To add "tags," click inside the field, write something, and then press "Enter."')
-                    )
-                ),
-                array(
+                    ]
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Enable'),
                     'name' => 'active',
                     'required' => false,
                     'class' => 't',
                     'is_bool' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'active_on',
                             'value' => 1,
                             'label' => $this->l('Enabled')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'active_off',
                             'value' => 0,
                             'label' => $this->l('Disabled')
-                        )
-                    )
-                )
-            )
-        );
+                        ]
+                    ]
+                ]
+            ]
+        ];
 
         if (!($manufacturer = $this->loadObject(true))) {
             return;
         }
 
         if (Shop::isFeatureActive()) {
-            $this->fields_form['input'][] = array(
+            $this->fields_form['input'][] = [
                 'type' => 'shop',
                 'label' => $this->l('Shop association'),
                 'name' => 'checkBoxShopAsso',
-            );
+            ];
         }
 
-        $this->fields_form['submit'] = array(
+        $this->fields_form['submit'] = [
             'title' => $this->l('Save')
-        );
+        ];
 
         foreach ($this->_languages as $language) {
             $this->fields_value['short_description_'.$language['id_lang']] = htmlentities(stripslashes($this->getFieldValue(
@@ -447,56 +449,56 @@ class AdminManufacturersControllerCore extends AdminController
         $address = new Address($id_address);
 
         $res = $address->getFieldsRequiredDatabase();
-        $required_fields = array();
+        $required_fields = [];
         foreach ($res as $row) {
             $required_fields[(int)$row['id_required_field']] = $row['field_name'];
         }
 
-        $form = array(
-            'legend' => array(
+        $form = [
+            'legend' => [
                 'title' => $this->l('Addresses'),
                 'icon' => 'icon-building'
-            )
-        );
+            ]
+        ];
 
         if (!$address->id_manufacturer || !Manufacturer::manufacturerExists($address->id_manufacturer)) {
-            $form['input'][] = array(
+            $form['input'][] = [
                 'type' => 'select',
                 'label' => $this->l('Choose the manufacturer'),
                 'name' => 'id_manufacturer',
-                'options' => array(
+                'options' => [
                     'query' => Manufacturer::getManufacturers(),
                     'id' => 'id_manufacturer',
                     'name' => 'name'
-                )
-            );
+                ]
+            ];
         } else {
-            $form['input'][] = array(
+            $form['input'][] = [
                 'type' => 'text',
                 'label' => $this->l('Manufacturer'),
                 'name' => 'name',
                 'col' => 4,
                 'disabled' => true,
-            );
+            ];
 
-            $form['input'][] = array(
+            $form['input'][] = [
                 'type' => 'hidden',
                 'name' => 'id_manufacturer'
-            );
+            ];
         }
 
-        $form['input'][] = array(
+        $form['input'][] = [
             'type' => 'hidden',
             'name' => 'alias',
-        );
+        ];
 
-        $form['input'][] = array(
+        $form['input'][] = [
             'type' => 'hidden',
             'name' => 'id_address',
-        );
+        ];
 
         if (in_array('company', $required_fields)) {
-            $form['input'][] = array(
+            $form['input'][] = [
                 'type' => 'text',
                 'label' => $this->l('Company'),
                 'name' => 'company',
@@ -505,93 +507,93 @@ class AdminManufacturersControllerCore extends AdminController
                 'maxlength' => 16,
                 'col' => 4,
                 'hint' => $this->l('Company name for this supplier')
-            );
+            ];
         }
 
-        $form['input'][] = array(
+        $form['input'][] = [
             'type' => 'text',
             'label' => $this->l('Last name'),
             'name' => 'lastname',
             'required' => true,
             'col' => 4,
             'hint' => $this->l('Invalid characters:').' 0-9!&lt;&gt;,;?=+()@#"�{}_$%:'
-        );
-        $form['input'][] = array(
+        ];
+        $form['input'][] = [
             'type' => 'text',
             'label' => $this->l('First name'),
             'name' => 'firstname',
             'required' => true,
             'col' => 4,
             'hint' => $this->l('Invalid characters:').' 0-9!&lt;&gt;,;?=+()@#"�{}_$%:'
-        );
-        $form['input'][] = array(
+        ];
+        $form['input'][] = [
             'type' => 'text',
             'label' => $this->l('Address'),
             'name' => 'address1',
             'col' => 6,
             'required' => true,
-        );
-        $form['input'][] = array(
+        ];
+        $form['input'][] = [
             'type' => 'text',
             'label' => $this->l('Address (2)'),
             'name' => 'address2',
             'col' => 6,
             'required' => in_array('address2', $required_fields)
-        );
-        $form['input'][] = array(
+        ];
+        $form['input'][] = [
             'type' => 'text',
             'label' => $this->l('Zip/postal code'),
             'name' => 'postcode',
             'col' => 2,
             'required' => in_array('postcode', $required_fields)
-        );
-        $form['input'][] = array(
+        ];
+        $form['input'][] = [
             'type' => 'text',
             'label' => $this->l('City'),
             'name' => 'city',
             'col' => 4,
             'required' => true,
-        );
-        $form['input'][] = array(
+        ];
+        $form['input'][] = [
             'type' => 'select',
             'label' => $this->l('Country'),
             'name' => 'id_country',
             'required' => false,
             'default_value' => (int)$this->context->country->id,
             'col' => 4,
-            'options' => array(
+            'options' => [
                 'query' => Country::getCountries($this->context->language->id),
                 'id' => 'id_country',
                 'name' => 'name',
-            )
-        );
-        $form['input'][] = array(
+            ]
+        ];
+        $form['input'][] = [
             'type' => 'select',
             'label' => $this->l('State'),
             'name' => 'id_state',
             'required' => false,
             'col' => 4,
-            'options' => array(
-                'query' => array(),
+            'options' => [
+                'query' => [],
                 'id' => 'id_state',
                 'name' => 'name'
-            )
-        );
-        $form['input'][] = array(
+            ]
+        ];
+        $form['input'][] = [
             'type' => 'text',
             'label' => $this->l('Home phone'),
             'name' => 'phone',
             'col' => 4,
             'required' => in_array('phone', $required_fields)
-        );
-        $form['input'][] = array(
+        ];
+        $form['input'][] = [
             'type' => 'text',
             'label' => $this->l('Mobile phone'),
             'name' => 'phone_mobile',
             'col' => 4,
             'required' => in_array('phone_mobile', $required_fields)
-        );
-        $form['input'][] = array(
+        ];
+        $form['input'][] = [
             'type' => 'textarea',
             'label' => $this->l('Other'),
             'name' => 'other',
@@ -600,16 +602,16 @@ class AdminManufacturersControllerCore extends AdminController
             'rows' => 2,
             'cols' => 10,
             'col' => 6,
-        );
-        $form['submit'] = array(
+        ];
+        $form['submit'] = [
             'title' => $this->l('Save'),
-        );
+        ];
 
-        $this->fields_value = array(
+        $this->fields_value = [
             'name' => Manufacturer::getNameById($address->id_manufacturer),
             'alias' => 'manufacturer',
             'id_country' => $address->id_country
-        );
+        ];
 
         $this->initToolbar();
         $this->fields_form[0]['form'] = $form;
@@ -651,10 +653,10 @@ class AdminManufacturersControllerCore extends AdminController
         switch ($this->display) {
             case 'editaddresses':
             case 'addaddress':
-                $this->toolbar_btn['save'] = array(
+                $this->toolbar_btn['save'] = [
                     'href' => '#',
                     'desc' => $this->l('Save')
-                );
+                ];
 
                 // Default cancel button - like old back link
                 if (!isset($this->no_back) || $this->no_back == false) {
@@ -663,10 +665,10 @@ class AdminManufacturersControllerCore extends AdminController
                         $back = self::$currentIndex.'&token='.$this->token;
                     }
 
-                    $this->toolbar_btn['cancel'] = array(
+                    $this->toolbar_btn['cancel'] = [
                         'href' => $back,
                         'desc' => $this->l('Cancel')
-                    );
+                    ];
                 }
             break;
 
@@ -674,10 +676,10 @@ class AdminManufacturersControllerCore extends AdminController
                 parent::initToolbar();
 
                 if ($this->can_import) {
-                    $this->toolbar_btn['import'] = array(
+                    $this->toolbar_btn['import'] = [
                         'href' => $this->context->link->getAdminLink('AdminImport', true).'&import_type=manufacturers',
                         'desc' => $this->l('Import')
-                    );
+                    ];
                 }
         }
     }
@@ -690,12 +692,12 @@ class AdminManufacturersControllerCore extends AdminController
 
         /** @var Manufacturer $manufacturer */
 
-        $this->toolbar_btn['new'] = array(
+        $this->toolbar_btn['new'] = [
                     'href' => $this->context->link->getAdminLink('AdminManufacturers').'&addaddress=1&id_manufacturer='.(int)$manufacturer->id,
                     'desc' => $this->l('Add address')
-                );
+        ];
 
-        $this->toolbar_title = is_array($this->breadcrumbs) ? array_unique($this->breadcrumbs) : array($this->breadcrumbs);
+        $this->toolbar_title = is_array($this->breadcrumbs) ? array_unique($this->breadcrumbs) : [$this->breadcrumbs];
         $this->toolbar_title[] = $manufacturer->name;
 
         $addresses = $manufacturer->getAddresses($this->context->language->id);
@@ -712,11 +714,11 @@ class AdminManufacturersControllerCore extends AdminController
                 $comb_array[$combination['id_product_attribute']]['ean13'] = $combination['ean13'];
                 $comb_array[$combination['id_product_attribute']]['upc'] = $combination['upc'];
                 $comb_array[$combination['id_product_attribute']]['quantity'] = $combination['quantity'];
-                $comb_array[$combination['id_product_attribute']]['attributes'][] = array(
+                $comb_array[$combination['id_product_attribute']]['attributes'][] = [
                     $combination['group_name'],
                     $combination['attribute_name'],
                     $combination['id_attribute']
-                );
+                ];
             }
 
             if (isset($comb_array)) {
@@ -732,13 +734,13 @@ class AdminManufacturersControllerCore extends AdminController
             }
         }
 
-        $this->tpl_view_vars = array(
+        $this->tpl_view_vars = [
             'manufacturer' => $manufacturer,
             'addresses' => $addresses,
             'products' => $products,
             'stock_management' => Configuration::get('PS_STOCK_MANAGEMENT'),
             'shopContext' => Shop::getContext(),
-        );
+        ];
 
         return parent::renderView();
     }
@@ -767,13 +769,15 @@ class AdminManufacturersControllerCore extends AdminController
             $this->content .= $this->renderOptions();
         }
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'content' => $this->content,
             'url_post' => self::$currentIndex.'&token='.$this->token,
             'show_page_header_toolbar' => $this->show_page_header_toolbar,
             'page_header_toolbar_title' => $this->page_header_toolbar_title,
             'page_header_toolbar_btn' => $this->page_header_toolbar_btn
-        ));
+            ]
+        );
     }
 
     /**

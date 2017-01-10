@@ -87,7 +87,7 @@ class AdminSearchControllerCore extends AdminController
                         $row['customer'] = $customer->firstname.' '.$customer->lastname;
                         $order_state = $order->getCurrentOrderState();
                         $row['osname'] = $order_state->name[$this->context->language->id];
-                        $this->_list['orders'] = array($row);
+                        $this->_list['orders'] = [$row];
                     }
                 } else {
                     $orders = Order::getByReference($this->query);
@@ -95,7 +95,7 @@ class AdminSearchControllerCore extends AdminController
                     if ($nb_orders == 1 && $searchType == 3) {
                         Tools::redirectAdmin('index.php?tab=AdminOrders&id_order='.(int)$orders[0]->id.'&vieworder'.'&token='.Tools::getAdminTokenLite('AdminOrders'));
                     } elseif ($nb_orders) {
-                        $this->_list['orders'] = array();
+                        $this->_list['orders'] = [];
                         foreach ($orders as $order) {
                             /** @var Order $order */
                             $row = get_object_vars($order);
@@ -178,7 +178,7 @@ class AdminSearchControllerCore extends AdminController
 
     public function searchModule()
     {
-        $this->_list['modules'] = array();
+        $this->_list['modules'] = [];
         $all_modules = Module::getModulesOnDisk(true, true, Context::getContext()->employee->id);
         foreach ($all_modules as $module) {
             if (stripos($module->name, $this->query) !== false || stripos($module->displayName, $this->query) !== false || stripos($module->description, $this->query) !== false) {
@@ -193,7 +193,7 @@ class AdminSearchControllerCore extends AdminController
             if (($json_content = Tools::file_get_contents('https://api-addons.prestashop.com/'._PS_VERSION_.'/search/'.urlencode($this->query).'/'.$iso_country.'/'.$iso_lang.'/')) != false) {
                 $results = Tools::jsonDecode($json_content, true);
                 if (isset($results['id'])) {
-                    $this->_list['addons']  = array($results);
+                    $this->_list['addons']  = [$results];
                 } else {
                     $this->_list['addons']  =  $results;
                 }
@@ -208,15 +208,15 @@ class AdminSearchControllerCore extends AdminController
     */
     public function searchFeatures()
     {
-        $this->_list['features'] = array();
+        $this->_list['features'] = [];
 
         global $_LANGADM;
         if ($_LANGADM === null) {
             return;
         }
 
-        $tabs = array();
-        $key_match = array();
+        $tabs = [];
+        $key_match = [];
         $result = Db::getInstance()->executeS('
 		SELECT class_name, name
 		FROM '._DB_PREFIX_.'tab t
@@ -239,12 +239,12 @@ class AdminSearchControllerCore extends AdminController
             $key_match[strtolower($key)] = $key;
         }
 
-        $this->_list['features'] = array();
+        $this->_list['features'] = [];
         foreach ($_LANGADM as $key => $value) {
             if (stripos($value, $this->query) !== false) {
                 $value = stripslashes($value);
                 $key = strtolower(substr($key, 0, -32));
-                if (in_array($key, array('AdminTab', 'index'))) {
+                if (in_array($key, ['AdminTab', 'index'])) {
                     continue;
                 }
                 // if class name doesn't exists, just ignore it
@@ -252,60 +252,60 @@ class AdminSearchControllerCore extends AdminController
                     continue;
                 }
                 if (!isset($this->_list['features'][$tabs[$key]])) {
-                    $this->_list['features'][$tabs[$key]] = array();
+                    $this->_list['features'][$tabs[$key]] = [];
                 }
-                $this->_list['features'][$tabs[$key]][] = array('link' => Context::getContext()->link->getAdminLink($key_match[$key]), 'value' => Tools::safeOutput($value));
+                $this->_list['features'][$tabs[$key]][] = ['link' => Context::getContext()->link->getAdminLink($key_match[$key]), 'value' => Tools::safeOutput($value)];
             }
         }
     }
 
     protected function initOrderList()
     {
-        $this->fields_list['orders'] = array(
-            'reference' => array('title' => $this->l('Reference'), 'align' => 'center', 'width' => 65),
-            'id_order' => array('title' => $this->l('ID'), 'align' => 'center', 'width' => 25),
-            'customer' => array('title' => $this->l('Customer')),
-            'total_paid_tax_incl' => array('title' => $this->l('Total'), 'width' => 70, 'align' => 'right', 'type' => 'price', 'currency' => true),
-            'payment' => array( 'title' => $this->l('Payment'), 'width' => 100),
-            'osname' => array('title' => $this->l('Status'), 'width' => 280),
-            'date_add' => array('title' => $this->l('Date'), 'width' => 130, 'align' => 'right', 'type' => 'datetime'),
-        );
+        $this->fields_list['orders'] = [
+            'reference' => ['title' => $this->l('Reference'), 'align' => 'center', 'width' => 65],
+            'id_order' => ['title' => $this->l('ID'), 'align' => 'center', 'width' => 25],
+            'customer' => ['title' => $this->l('Customer')],
+            'total_paid_tax_incl' => ['title' => $this->l('Total'), 'width' => 70, 'align' => 'right', 'type' => 'price', 'currency' => true],
+            'payment' => ['title' => $this->l('Payment'), 'width' => 100],
+            'osname' => ['title' => $this->l('Status'), 'width' => 280],
+            'date_add' => ['title' => $this->l('Date'), 'width' => 130, 'align' => 'right', 'type' => 'datetime'],
+        ];
     }
 
     protected function initCustomerList()
     {
-        $genders_icon = array('default' => 'unknown.gif');
-        $genders = array(0 => $this->l('?'));
+        $genders_icon = ['default' => 'unknown.gif'];
+        $genders = [0 => $this->l('?')];
         foreach (Gender::getGenders() as $gender) {
             /** @var Gender $gender */
             $genders_icon[$gender->id] = '../genders/'.(int)$gender->id.'.jpg';
             $genders[$gender->id] = $gender->name;
         }
-        $this->fields_list['customers'] = (array(
-            'id_customer' => array('title' => $this->l('ID'), 'align' => 'center', 'width' => 25),
-            'id_gender' => array('title' => $this->l('Social title'), 'align' => 'center', 'icon' => $genders_icon, 'list' => $genders, 'width' => 25),
-            'firstname' => array('title' => $this->l('First Name'), 'align' => 'left', 'width' => 150),
-            'lastname' => array('title' => $this->l('Name'), 'align' => 'left', 'width' => 'auto'),
-            'email' => array('title' => $this->l('Email address'), 'align' => 'left', 'width' => 250),
-            'birthday' => array('title' => $this->l('Birth date'), 'align' => 'center', 'type' => 'date', 'width' => 75),
-            'date_add' => array('title' => $this->l('Registration date'), 'align' => 'center', 'type' => 'date', 'width' => 75),
-            'orders' => array('title' => $this->l('Orders'), 'align' => 'center', 'width' => 50),
-            'active' => array('title' => $this->l('Enabled'), 'align' => 'center', 'active' => 'status', 'type' => 'bool', 'width' => 25),
-        ));
+        $this->fields_list['customers'] = ([
+            'id_customer' => ['title' => $this->l('ID'), 'align' => 'center', 'width' => 25],
+            'id_gender' => ['title' => $this->l('Social title'), 'align' => 'center', 'icon' => $genders_icon, 'list' => $genders, 'width' => 25],
+            'firstname' => ['title' => $this->l('First Name'), 'align' => 'left', 'width' => 150],
+            'lastname' => ['title' => $this->l('Name'), 'align' => 'left', 'width' => 'auto'],
+            'email' => ['title' => $this->l('Email address'), 'align' => 'left', 'width' => 250],
+            'birthday' => ['title' => $this->l('Birth date'), 'align' => 'center', 'type' => 'date', 'width' => 75],
+            'date_add' => ['title' => $this->l('Registration date'), 'align' => 'center', 'type' => 'date', 'width' => 75],
+            'orders' => ['title' => $this->l('Orders'), 'align' => 'center', 'width' => 50],
+            'active' => ['title' => $this->l('Enabled'), 'align' => 'center', 'active' => 'status', 'type' => 'bool', 'width' => 25],
+        ]);
     }
 
     protected function initProductList()
     {
         $this->show_toolbar = false;
-        $this->fields_list['products'] = array(
-            'id_product' => array('title' => $this->l('ID'), 'width' => 25),
-            'manufacturer_name' => array('title' => $this->l('Manufacturer'), 'align' => 'center', 'width' => 200),
-            'reference' => array('title' => $this->l('Reference'), 'align' => 'center', 'width' => 150),
-            'name' => array('title' => $this->l('Name'), 'width' => 'auto'),
-            'price_tax_excl' => array('title' => $this->l('Price (tax excl.)'), 'align' => 'right', 'type' => 'price', 'width' => 60),
-            'price_tax_incl' => array('title' => $this->l('Price (tax incl.)'), 'align' => 'right', 'type' => 'price', 'width' => 60),
-            'active' => array('title' => $this->l('Active'), 'width' => 70, 'active' => 'status', 'align' => 'center', 'type' => 'bool')
-        );
+        $this->fields_list['products'] = [
+            'id_product' => ['title' => $this->l('ID'), 'width' => 25],
+            'manufacturer_name' => ['title' => $this->l('Manufacturer'), 'align' => 'center', 'width' => 200],
+            'reference' => ['title' => $this->l('Reference'), 'align' => 'center', 'width' => 150],
+            'name' => ['title' => $this->l('Name'), 'width' => 'auto'],
+            'price_tax_excl' => ['title' => $this->l('Price (tax excl.)'), 'align' => 'right', 'type' => 'price', 'width' => 60],
+            'price_tax_incl' => ['title' => $this->l('Price (tax incl.)'), 'align' => 'right', 'type' => 'price', 'width' => 60],
+            'active' => ['title' => $this->l('Active'), 'width' => 70, 'active' => 'status', 'align' => 'center', 'type' => 'bool']
+        ];
     }
 
     public function setMedia()
@@ -344,7 +344,7 @@ class AdminSearchControllerCore extends AdminController
                 $this->tpl_view_vars['features'] = $this->_list['features'];
             }
             if (isset($this->_list['categories']) && count($this->_list['categories'])) {
-                $categories = array();
+                $categories = [];
                 foreach ($this->_list['categories'] as $category) {
                     $categories[] = getPath($this->context->link->getAdminLink('AdminCategories', false), $category['id_category']);
                 }
@@ -358,7 +358,7 @@ class AdminSearchControllerCore extends AdminController
                 $helper->shopLinkType = '';
                 $helper->simple_header = true;
                 $helper->identifier = 'id_product';
-                $helper->actions = array('edit');
+                $helper->actions = ['edit'];
                 $helper->show_toolbar = false;
                 $helper->table = 'product';
                 $helper->currentIndex = $this->context->link->getAdminLink('AdminProducts', false);
@@ -386,7 +386,7 @@ class AdminSearchControllerCore extends AdminController
                 $helper->shopLinkType = '';
                 $helper->simple_header = true;
                 $helper->identifier = 'id_customer';
-                $helper->actions = array('edit', 'view');
+                $helper->actions = ['edit', 'view'];
                 $helper->show_toolbar = false;
                 $helper->table = 'customer';
                 $helper->currentIndex = $this->context->link->getAdminLink('AdminCustomers', false);
@@ -408,7 +408,7 @@ class AdminSearchControllerCore extends AdminController
                 $helper->shopLinkType = '';
                 $helper->simple_header = true;
                 $helper->identifier = 'id_order';
-                $helper->actions = array('view');
+                $helper->actions = ['view'];
                 $helper->show_toolbar = false;
                 $helper->table = 'order';
                 $helper->currentIndex = $this->context->link->getAdminLink('AdminOrders', false);

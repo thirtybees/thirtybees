@@ -41,83 +41,86 @@ class AdminShippingControllerCore extends AdminController
             }
         }
 
-        $carrier_default_sort = array(
-            array('value' => Carrier::SORT_BY_PRICE, 'name' => $this->l('Price')),
-            array('value' => Carrier::SORT_BY_POSITION, 'name' => $this->l('Position'))
-        );
+        $carrier_default_sort = [
+            ['value' => Carrier::SORT_BY_PRICE, 'name' => $this->l('Price')],
+            ['value' => Carrier::SORT_BY_POSITION, 'name' => $this->l('Position')]
+        ];
 
-        $carrier_default_order = array(
-            array('value' => Carrier::SORT_BY_ASC, 'name' => $this->l('Ascending')),
-            array('value' => Carrier::SORT_BY_DESC, 'name' => $this->l('Descending'))
-        );
+        $carrier_default_order = [
+            ['value' => Carrier::SORT_BY_ASC, 'name' => $this->l('Ascending')],
+            ['value' => Carrier::SORT_BY_DESC, 'name' => $this->l('Descending')]
+        ];
 
-        $this->fields_options = array(
-            'handling' => array(
+        $this->fields_options = [
+            'handling' => [
                 'title' =>    $this->l('Handling'),
                 'icon' => 'delivery',
-                'fields' =>    array(
-                    'PS_SHIPPING_HANDLING' => array(
+                'fields' =>    [
+                    'PS_SHIPPING_HANDLING' => [
                         'title' => $this->l('Handling charges'),
                         'suffix' => $this->context->currency->getSign().' '.$this->l('(tax excl.)'),
                         'cast' => 'floatval',
                         'type' => 'text',
-                        'validation' => 'isPrice'),
-                    'PS_SHIPPING_FREE_PRICE' => array(
+                        'validation' => 'isPrice'
+                    ],
+                    'PS_SHIPPING_FREE_PRICE' => [
                         'title' => $this->l('Free shipping starts at'),
                         'suffix' => $this->context->currency->getSign(),
                         'cast' => 'floatval',
                         'type' => 'text',
-                        'validation' => 'isPrice'),
-                    'PS_SHIPPING_FREE_WEIGHT' => array(
+                        'validation' => 'isPrice'
+                    ],
+                    'PS_SHIPPING_FREE_WEIGHT' => [
                         'title' => $this->l('Free shipping starts at'),
                         'suffix' => Configuration::get('PS_WEIGHT_UNIT'),
                         'cast' => 'floatval',
                         'type' => 'text',
-                        'validation' => 'isUnsignedFloat'),
-                ),
+                        'validation' => 'isUnsignedFloat'
+                    ],
+                ],
                 'description' =>
                     '<ul>
 						<li>'.$this->l('If you set these parameters to 0, they will be disabled.').'</li>
 						<li>'.$this->l('Coupons are not taken into account when calculating free shipping.').'</li>
 					</ul>',
-                'submit' => array('title' => $this->l('Save'))
-            ),
-            'general' => array(
+                'submit' => ['title' => $this->l('Save')]
+            ],
+            'general' => [
                 'title' => $this->l('Carrier options'),
-                'fields' => array(
-                    'PS_CARRIER_DEFAULT' => array(
+                'fields' => [
+                    'PS_CARRIER_DEFAULT' => [
                         'title' => $this->l('Default carrier'),
                         'desc' => $this->l('Your shop\'s default carrier'),
                         'cast' => 'intval',
                         'type' => 'select',
                         'identifier' => 'id_carrier',
                         'list' => array_merge(
-                            array(
-                                -1 => array('id_carrier' => -1, 'name' => $this->l('Best price')),
-                                -2 => array('id_carrier' => -2, 'name' => $this->l('Best grade'))
-                            ),
+                            [
+                                -1 => ['id_carrier' => -1, 'name' => $this->l('Best price')],
+                                -2 => ['id_carrier' => -2, 'name' => $this->l('Best grade')]
+                            ],
                             Carrier::getCarriers((int)Configuration::get('PS_LANG_DEFAULT'), true, false, false, null, Carrier::ALL_CARRIERS))
-                    ),
-                    'PS_CARRIER_DEFAULT_SORT' => array(
+                    ],
+                    'PS_CARRIER_DEFAULT_SORT' => [
                         'title' => $this->l('Sort by'),
                         'desc' => $this->l('This will only be visible in the front office.'),
                         'cast' => 'intval',
                         'type' => 'select',
                         'identifier' => 'value',
                         'list' => $carrier_default_sort
-                    ),
-                    'PS_CARRIER_DEFAULT_ORDER' => array(
+                    ],
+                    'PS_CARRIER_DEFAULT_ORDER' => [
                         'title' => $this->l('Order by'),
                         'desc' => $this->l('This will only be visible in the front office.'),
                         'cast' => 'intval',
                         'type' => 'select',
                         'identifier' => 'value',
                         'list' => $carrier_default_order
-                    ),
-                ),
-                'submit' => array('title' => $this->l('Save'))
-            )
-        );
+                    ],
+                ],
+                'submit' => ['title' => $this->l('Save')]
+            ]
+        ];
     }
 
     public function postProcess()
@@ -136,7 +139,7 @@ class AdminShippingControllerCore extends AdminController
                         $currentList = Carrier::getDeliveryPriceByRanges($rangeTable, $id_carrier);
 
                         /* Build prices list */
-                        $priceList = array();
+                        $priceList = [];
                         foreach ($_POST as $key => $value) {
                             if (strstr($key, 'fees_')) {
                                 $tmpArray = explode('_', $key);
@@ -152,13 +155,13 @@ class AdminShippingControllerCore extends AdminController
                                     continue;
                                 }
 
-                                $priceList[] = array(
+                                $priceList[] = [
                                     'id_range_price' => ($shipping_method == Carrier::SHIPPING_METHOD_PRICE) ? (int)$tmpArray[2] : null,
                                     'id_range_weight' => ($shipping_method == Carrier::SHIPPING_METHOD_WEIGHT) ? (int)$tmpArray[2] : null,
                                     'id_carrier' => (int)$carrier->id,
                                     'id_zone' => (int)$tmpArray[1],
                                     'price' => $price,
-                                );
+                                ];
                             }
                         }
                         /* Update delivery prices */

@@ -31,7 +31,7 @@ class AdminAttachmentsControllerCore extends AdminController
 {
     public $bootstrap = true ;
 
-    protected $product_attachements = array();
+    protected $product_attachements = [];
 
     public function __construct()
     {
@@ -47,36 +47,36 @@ class AdminAttachmentsControllerCore extends AdminController
         $this->_join = 'LEFT JOIN (SELECT id_attachment, COUNT(*) as products FROM '._DB_PREFIX_.'product_attachment GROUP BY id_attachment) AS virtual_product_attachment ON a.id_attachment = virtual_product_attachment.id_attachment';
         $this->_use_found_rows = false;
 
-        $this->fields_list = array(
-            'id_attachment' => array(
+        $this->fields_list = [
+            'id_attachment' => [
                 'title' => $this->l('ID'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs'
-            ),
-            'name' => array(
+            ],
+            'name' => [
                 'title' => $this->l('Name')
-            ),
-            'file' => array(
+            ],
+            'file' => [
                 'title' => $this->l('File')
-            ),
-            'file_size' => array(
+            ],
+            'file_size' => [
                 'title' => $this->l('Size'),
                 'callback' => 'displayHumanReadableSize'
-            ),
-            'products' => array(
+            ],
+            'products' => [
                 'title' => $this->l('Associated with'),
                 'suffix' => $this->l('product(s)'),
                 'filter_key' => 'virtual_product_attachment!products',
-            ),
-        );
+            ],
+        ];
 
-        $this->bulk_actions = array(
-            'delete' => array(
+        $this->bulk_actions = [
+            'delete' => [
                 'text' => $this->l('Delete selected'),
                 'icon' => 'icon-trash',
                 'confirm' => $this->l('Delete selected items?')
-            )
-        );
+            ]
+        ];
 
         parent::__construct();
     }
@@ -97,11 +97,11 @@ class AdminAttachmentsControllerCore extends AdminController
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
-            $this->page_header_toolbar_btn['new_attachment'] = array(
+            $this->page_header_toolbar_btn['new_attachment'] = [
                 'href' => self::$currentIndex.'&addattachment&token='.$this->token,
                 'desc' => $this->l('Add new attachment', null, null, false),
                 'icon' => 'process-icon-new'
-            );
+            ];
         }
 
         parent::initPageHeaderToolbar();
@@ -127,28 +127,28 @@ class AdminAttachmentsControllerCore extends AdminController
             }
         }
 
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('Attachment'),
                 'icon' => 'icon-paper-clip'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'text',
                     'label' => $this->l('Filename'),
                     'name' => 'name',
                     'required' => true,
                     'lang' => true,
                     'col' => 4
-                ),
-                array(
+                ],
+                [
                     'type' => 'textarea',
                     'label' => $this->l('Description'),
                     'name' => 'description',
                     'lang' => true,
                     'col' => 6
-                ),
-                array(
+                ],
+                [
                     'type' => 'file',
                     'file' => isset($link) ? $link : null,
                     'size' => isset($size) ? $size : null,
@@ -156,12 +156,12 @@ class AdminAttachmentsControllerCore extends AdminController
                     'name' => 'file',
                     'required' => true,
                     'col' => 6
-                ),
-            ),
-            'submit' => array(
+                ],
+            ],
+            'submit' => [
                 'title' => $this->l('Save'),
-            )
-        );
+            ]
+        ];
 
         return parent::renderForm();
     }
@@ -173,7 +173,7 @@ class AdminAttachmentsControllerCore extends AdminController
         if (count($this->_list)) {
             $this->product_attachements = Attachment::getProductAttached((int)$id_lang, $this->_list);
 
-            $list_product_list = array();
+            $list_product_list = [];
             foreach ($this->_list as $list) {
                 $product_list = '';
 
@@ -189,10 +189,10 @@ class AdminAttachmentsControllerCore extends AdminController
             }
 
             // Assign array in list_action_delete.tpl
-            $this->tpl_delete_link_vars = array(
+            $this->tpl_delete_link_vars = [
                 'product_list' => $list_product_list,
                 'product_attachements' => $this->product_attachements
-            );
+            ];
         }
     }
 

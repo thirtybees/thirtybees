@@ -1,6 +1,6 @@
 <?php
-return array(
-    'informations' => array(
+return [
+    'informations' => [
         'documentation' => 'http://doc.prestashop.com/display/PS16/Installing+PrestaShop',
         'documentation_upgrade' => 'http://docs.prestashop.com/display/PS16/Updating+PrestaShop',
         'forum' => 'http://www.prestashop.com/forums/',
@@ -8,8 +8,8 @@ return array(
         'support' => 'http://addons.prestashop.com/it/388-supporto',
         'tutorial' => 'https://www.youtube.com/watch?v=psz4aIPZZuk',
         'tailored_help' => 'http://addons.prestashop.com/it/388-supporto',
-    ),
-    'translations' => array(
+    ],
+    'translations' => [
         'An SQL error occurred for entity <i>%1$s</i>: <i>%2$s</i>' => 'Errore SQL per l\'entity <i>%1$s</i>: <i>%2$s</i>',
         'Cannot create image "%1$s" for entity "%2$s"' => 'Impossibile creare l\'immagine "%1$s" per l\'entità "%2$s"',
         'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => 'Impossibile creare l\'immagine "%1$s" (errore permessi nella cartella "%2$s")',
@@ -205,5 +205,5 @@ return array(
         'Continue the installation in:' => 'Continua l\'installazione in:',
         'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => 'La selezione della lingua qui sopra è valida solamente nell\'Assistente di Installazione. Una volta che il negozio è installato, potrai scegliere la lingua del negozio tra le oltre %d  traduzioni disponibili gratuitamente!',
         'Installing PrestaShop is quick and easy. In just a few moments, you will become part of a community consisting of more than 250,000 merchants. You are on the way to creating your own unique online store that you can manage easily every day.' => 'Installare PrestaShop è veloce e facile. In pochi istanti farai parte di una comunità composta da più di 250.000 venditori. Stai per creare il tuo personale negozio online che potrai gestire con facilità ogni giorno.',
-    ),
-);
+    ],
+];

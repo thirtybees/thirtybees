@@ -44,67 +44,67 @@ class AdminCountriesControllerCore extends AdminController
 
         $this->context = Context::getContext();
 
-        $this->bulk_actions = array(
-            'delete' => array('text' => $this->l('Delete selected'), 'confirm' => $this->l('Delete selected items?')),
-            'affectzone' => array('text' => $this->l('Assign to a new zone'))
-        );
+        $this->bulk_actions = [
+            'delete' => ['text' => $this->l('Delete selected'), 'confirm' => $this->l('Delete selected items?')],
+            'affectzone' => ['text' => $this->l('Assign to a new zone')]
+        ];
 
-        $this->fieldImageSettings = array(
+        $this->fieldImageSettings = [
             'name' => 'logo',
             'dir' => 'st'
-        );
+        ];
 
-        $this->fields_options = array(
-            'general' => array(
+        $this->fields_options = [
+            'general' => [
                 'title' =>    $this->l('Country options'),
-                'fields' =>    array(
-                    'PS_RESTRICT_DELIVERED_COUNTRIES' => array(
+                'fields' =>    [
+                    'PS_RESTRICT_DELIVERED_COUNTRIES' => [
                         'title' => $this->l('Restrict country selections in front office to those covered by active carriers'),
                         'cast' => 'intval',
                         'type' => 'bool',
                         'default' => '0'
-                    )
-                ),
-                'submit' => array('title' => $this->l('Save'))
-            )
-        );
+                    ]
+                ],
+                'submit' => ['title' => $this->l('Save')]
+            ]
+        ];
 
-        $zones_array = array();
+        $zones_array = [];
         $this->zones = Zone::getZones();
         foreach ($this->zones as $zone) {
             $zones_array[$zone['id_zone']] = $zone['name'];
         }
 
-        $this->fields_list = array(
-            'id_country' => array(
+        $this->fields_list = [
+            'id_country' => [
                 'title' => $this->l('ID'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs'
-            ),
-            'name' => array(
+            ],
+            'name' => [
                 'title' => $this->l('Country'),
                 'filter_key' => 'b!name'
-            ),
-            'iso_code' => array(
+            ],
+            'iso_code' => [
                 'title' => $this->l('ISO code'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs'
-            ),
-            'call_prefix' => array(
+            ],
+            'call_prefix' => [
                 'title' => $this->l('Call prefix'),
                 'align' => 'center',
                 'callback' => 'displayCallPrefix',
                 'class' => 'fixed-width-sm'
-            ),
-            'zone' => array(
+            ],
+            'zone' => [
                 'title' => $this->l('Zone'),
                 'type' => 'select',
                 'list' => $zones_array,
                 'filter_key' => 'z!id_zone',
                 'filter_type' => 'int',
                 'order_key' => 'z!name'
-            ),
-            'active' => array(
+            ],
+            'active' => [
                 'title' => $this->l('Enabled'),
                 'align' => 'center',
                 'active' => 'status',
@@ -112,8 +112,8 @@ class AdminCountriesControllerCore extends AdminController
                 'orderby' => false,
                 'filter_key' => 'a!active',
                 'class' => 'fixed-width-sm'
-            )
-        );
+            ]
+        ];
 
         parent::__construct();
     }
@@ -121,11 +121,11 @@ class AdminCountriesControllerCore extends AdminController
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
-            $this->page_header_toolbar_btn['new_country'] = array(
+            $this->page_header_toolbar_btn['new_country'] = [
                 'href' => self::$currentIndex.'&addcountry&token='.$this->token,
                 'desc' => $this->l('Add new country', null, null, false),
                 'icon' => 'process-icon-new'
-            );
+            ];
         }
 
         parent::initPageHeaderToolbar();
@@ -165,36 +165,37 @@ class AdminCountriesControllerCore extends AdminController
 
         $default_layout = '';
 
-        $default_layout_tab = array(
-            array('firstname', 'lastname'),
-            array('company'),
-            array('vat_number'),
-            array('address1'),
-            array('address2'),
-            array('postcode', 'city'),
-            array('Country:name'),
-            array('phone'),
-            array('phone_mobile'));
+        $default_layout_tab = [
+            ['firstname', 'lastname'],
+            ['company'],
+            ['vat_number'],
+            ['address1'],
+            ['address2'],
+            ['postcode', 'city'],
+            ['Country:name'],
+            ['phone'],
+            ['phone_mobile']
+        ];
 
         foreach ($default_layout_tab as $line) {
             $default_layout .= implode(' ', $line)."\r\n";
         }
 
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('Countries'),
                 'icon' => 'icon-globe'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'text',
                     'label' => $this->l('Country'),
                     'name' => 'name',
                     'lang' => true,
                     'required' => true,
                     'hint' => $this->l('Country name').' - '.$this->l('Invalid characters:').' &lt;&gt;;=#{} '
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('ISO code'),
                     'name' => 'iso_code',
@@ -207,8 +208,8 @@ class AdminCountriesControllerCore extends AdminController
                             <a href="http://www.iso.org/iso/country_codes/iso_3166_code_lists/country_names_and_code_elements.htm" target="_blank">'.
                                 $this->l('Official list here').'
                             </a>.'*/
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Call prefix'),
                     'name' => 'call_prefix',
@@ -216,59 +217,59 @@ class AdminCountriesControllerCore extends AdminController
                     'class' => 'uppercase',
                     'required' => true,
                     'hint' => $this->l('International call prefix, (e.g. 1 for United States).')
-                ),
-                array(
+                ],
+                [
                     'type' => 'select',
                     'label' => $this->l('Default currency'),
                     'name' => 'id_currency',
-                    'options' => array(
+                    'options' => [
                         'query' => Currency::getCurrencies(false, true, true),
                         'id' => 'id_currency',
                         'name' => 'name',
-                        'default' => array(
+                        'default' => [
                             'label' => $this->l('Default store currency'),
                             'value' => 0
-                        )
-                    )
-                ),
-                array(
+                        ]
+                    ]
+                ],
+                [
                     'type' => 'select',
                     'label' => $this->l('Zone'),
                     'name' => 'id_zone',
-                    'options' => array(
+                    'options' => [
                         'query' => Zone::getZones(),
                         'id' => 'id_zone',
                         'name' => 'name'
-                    ),
+                    ],
                     'hint' => $this->l('Geographical region.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Does it need Zip/postal code?'),
                     'name' => 'need_zip_code',
                     'required' => false,
                     'is_bool' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'need_zip_code_on',
                             'value' => 1,
                             'label' => $this->l('Yes')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'need_zip_code_off',
                             'value' => 0,
                             'label' => $this->l('No')
-                        )
-                    )
-                ),
-                array(
+                        ]
+                    ]
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Zip/postal code format'),
                     'name' => 'zip_code_format',
                     'required' => true,
                     'desc' => $this->l('Indicate the format of the postal code: use L for a letter, N for a number, and C for the country\'s ISO 3166-1 alpha-2 code. For example, NNNNN for the United States, France, Poland and many other; LNNNNLLL for Argentina, etc. If you do not want PrestaShop to verify the postal code for this country, leave it blank.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'address_layout',
                     'label' => $this->l('Address format'),
                     'name' => 'address_layout',
@@ -276,96 +277,96 @@ class AdminCountriesControllerCore extends AdminController
                     'encoding_address_layout' => urlencode($address_layout),
                     'encoding_default_layout' => urlencode($default_layout),
                     'display_valid_fields' => $this->displayValidFields()
-                ),
-                array(
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Active'),
                     'name' => 'active',
                     'required' => false,
                     'is_bool' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'active_on',
                             'value' => 1,
                             'label' => $this->l('Enabled')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'active_off',
                             'value' => 0,
                             'label' => $this->l('Disabled')
-                        )
-                    ),
+                        ]
+                    ],
                     'hint' => $this->l('Display this country to your customers (the selected country will always be displayed in the Back Office).')
-                ),
-                array(
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Contains states'),
                     'name' => 'contains_states',
                     'required' => false,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'contains_states_on',
                             'value' => 1,
                             'label' => '<img src="../img/admin/enabled.gif" alt="'.$this->l('Yes').'" title="'.$this->l('Yes').'" />'.$this->l('Yes')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'contains_states_off',
                             'value' => 0,
                             'label' => '<img src="../img/admin/disabled.gif" alt="'.$this->l('No').'" title="'.$this->l('No').'" />'.$this->l('No')
-                        )
-                    )
-                ),
-                array(
+                        ]
+                    ]
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Do you need a tax identification number?'),
                     'name' => 'need_identification_number',
                     'required' => false,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'need_identification_number_on',
                             'value' => 1,
                             'label' => '<img src="../img/admin/enabled.gif" alt="'.$this->l('Yes').'" title="'.$this->l('Yes').'" />'.$this->l('Yes')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'need_identification_number_off',
                             'value' => 0,
                             'label' => '<img src="../img/admin/disabled.gif" alt="'.$this->l('No').'" title="'.$this->l('No').'" />'.$this->l('No')
-                        )
-                    )
-                ),
-                array(
+                        ]
+                    ]
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Display tax label (e.g. "Tax incl.")'),
                     'name' => 'display_tax_label',
                     'required' => false,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'display_tax_label_on',
                             'value' => 1,
                             'label' => '<img src="../img/admin/enabled.gif" alt="'.$this->l('Yes').'" title="'.$this->l('Yes').'" />'.$this->l('Yes')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'display_tax_label_off',
                             'value' => 0,
                             'label' => '<img src="../img/admin/disabled.gif" alt="'.$this->l('No').'" title="'.$this->l('No').'" />'.$this->l('No')
-                        )
-                    )
-                )
-            )
+                        ]
+                    ]
+                ]
+            ]
 
-        );
+        ];
 
         if (Shop::isFeatureActive()) {
-            $this->fields_form['input'][] = array(
+            $this->fields_form['input'][] = [
                 'type' => 'shop',
                 'label' => $this->l('Shop association'),
                 'name' => 'checkBoxShopAsso',
-            );
+            ];
         }
 
-        $this->fields_form['submit'] = array(
+        $this->fields_form['submit'] = [
             'title' => $this->l('Save')
-        );
+        ];
 
         return parent::renderForm();
     }
@@ -379,7 +380,7 @@ class AdminCountriesControllerCore extends AdminController
             $results = Db::getInstance()->executeS('SELECT `id_state` FROM `'._DB_PREFIX_.'state` WHERE `id_country` = '.(int)$country->id.' AND `id_zone` = '.(int)$old_id_zone);
 
             if ($results && count($results)) {
-                $ids = array();
+                $ids = [];
                 foreach ($results as $res) {
                     $ids[] = (int)$res['id_state'];
                 }
@@ -452,7 +453,7 @@ class AdminCountriesControllerCore extends AdminController
 
         /** @var Country $object */
         if (Validate::isLoadedObject($object = $this->loadObject()) && $object->active == 1) {
-            return Country::addModuleRestrictions(array(), array(array('id_country' => $object->id)), array());
+            return Country::addModuleRestrictions([], [['id_country' => $object->id]], []);
         }
 
         return false;
@@ -461,13 +462,13 @@ class AdminCountriesControllerCore extends AdminController
     public function processBulkStatusSelection($way)
     {
         if (is_array($this->boxes) && !empty($this->boxes)) {
-            $countries_ids = array();
+            $countries_ids = [];
             foreach ($this->boxes as $id) {
-                $countries_ids[] = array('id_country' => $id);
+                $countries_ids[] = ['id_country' => $id];
             }
 
             if (count($countries_ids)) {
-                Country::addModuleRestrictions(array(), $countries_ids, array());
+                Country::addModuleRestrictions([], $countries_ids, []);
             }
         }
         parent::processBulkStatusSelection($way);
@@ -497,7 +498,7 @@ class AdminCountriesControllerCore extends AdminController
             if ($i != 0) {
                 $class_tab_active = '';
             }
-            $fields = array();
+            $fields = [];
             $html_tabnav .= '<li'.($class_tab_active ? ' class="'.$class_tab_active.'"' : '').'>
 				<a href="#availableListFieldsFor_'.$class_name.'"><i class="icon-caret-down"></i>&nbsp;'.Translate::getAdminTranslation($class_name, 'AdminCountries').'</a></li>';
 

@@ -2,72 +2,95 @@
 /**
  * 2007-2016 PrestaShop
  *
+ * Thirty Bees is an extension to the PrestaShop e-commerce software developed by PrestaShop SA
+ * Copyright (C) 2017 Thirty Bees
+ *
  * NOTICE OF LICENSE
  *
- * This source file is subject to the Open Software License (OSL 3.0)
+ * This source file is subject to the Academic Free License (AFL 3.0)
  * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
+ * http://opensource.org/licenses/afl-3.0.php
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
+ * to license@thirtybees.com so we can send you a copy immediately.
  *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
- *
- *  @author 	PrestaShop SA <contact@prestashop.com>
- *  @copyright  2007-2016 PrestaShop SA
- *  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
- *  International Registered Trademark & Property of PrestaShop SA
+ *  @author    Thirty Bees <modules@thirtybees.com>
+ *  @author    PrestaShop SA <contact@prestashop.com>
+ *  @copyright 2017 Thirty Bees
+ *  @copyright 2007-2016 PrestaShop SA
+ *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class Core_Foundation_FileSystem_FileSystem
+ *
+ * @since 1.0.0
+ */
+// @codingStandardsIgnoreStart
 class Core_Foundation_FileSystem_FileSystem
 {
+    // @codingStandardsIgnoreStartingStandardsIgnoreEnd
+
     /**
      * Replaces directory separators with the system's native one
      * and trims the trailing separator.
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function normalizePath($path)
     {
         return rtrim(
-            str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $path),
+            str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path),
             DIRECTORY_SEPARATOR
         );
     }
 
-    private function joinTwoPaths($a, $b)
+    /**
+     * @param string $a
+     * @param string $b
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
+    protected function joinTwoPaths($a, $b)
     {
         return $this->normalizePath($a) . DIRECTORY_SEPARATOR . $this->normalizePath($b);
     }
 
     /**
      * Joins an arbitrary number of paths, normalizing them along the way.
+     *
+     * @return string|null
+     * @throws Core_Foundation_FileSystem_Exception
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function joinPaths()
     {
         if (func_num_args() < 2) {
             throw new Core_Foundation_FileSystem_Exception('joinPaths requires at least 2 arguments.');
-        } else if (func_num_args() === 2) {
-            $arg_O = func_get_arg(0);
-            $arg_1 = func_get_arg(1);
+        } elseif (func_num_args() === 2) {
+            $arg0 = func_get_arg(0);
+            $arg1 = func_get_arg(1);
 
-            return $this->joinTwoPaths($arg_O, $arg_1);
-        } else if (func_num_args() > 2) {
-            $func_args = func_get_args();
-            $arg_0 = func_get_arg(0);
+            return $this->joinTwoPaths($arg0, $arg1);
+        } elseif (func_num_args() > 2) {
+            $funcArgs = func_get_args();
+            $arg0 = func_get_arg(0);
 
             return $this->joinPaths(
-                $arg_0,
-                call_user_func_array(
-                    array($this,
-                          'joinPaths'),
-                    array_slice($func_args, 1)
-                )
+                $arg0,
+                call_user_func_array([$this, 'joinPaths'], array_slice($funcArgs, 1))
             );
         }
+
+        return null;
     }
 
     /**
@@ -75,7 +98,14 @@ class Core_Foundation_FileSystem_FileSystem
      * Throws exception if $path is not a file.
      * If $path is a file and not a directory, just gets the file info for it
      * and return it in an array.
-     * @return an array of SplFileInfo object indexed by file path
+     *
+     * @param string $path
+     *
+     * @return array of SplFileInfo object indexed by file path
+     * @throws Core_Foundation_FileSystem_Exception
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function listEntriesRecursively($path)
     {
@@ -97,7 +127,7 @@ class Core_Foundation_FileSystem_FileSystem
             );
         }
 
-        $entries = array();
+        $entries = [];
 
         foreach (scandir($path) as $entry) {
             if ($entry === '.' || $entry === '..') {
@@ -122,20 +152,28 @@ class Core_Foundation_FileSystem_FileSystem
 
     /**
      * Filter used by listFilesRecursively.
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
-    private function matchOnlyFiles(SplFileInfo $info)
+    protected function matchOnlyFiles(SplFileInfo $info)
     {
         return $info->isFile();
     }
 
     /**
      * Same as listEntriesRecursively but returns only files.
+     *
+     * @return array
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function listFilesRecursively($path)
     {
         return array_filter(
             $this->listEntriesRecursively($path),
-            array($this, 'matchOnlyFiles')
+            [$this, 'matchOnlyFiles']
         );
     }
 }

@@ -51,32 +51,32 @@ class AdminOutstandingControllerCore  extends AdminController
         $this->_where = 'AND number > 0';
         $this->_use_found_rows = false;
 
-        $risks = array();
+        $risks = [];
         foreach (Risk::getRisks() as $risk) {
             /** @var Risk $risk */
             $risks[$risk->id] = $risk->name;
         }
 
-        $this->fields_list = array(
-            'number' => array(
+        $this->fields_list = [
+            'number' => [
                 'title' => $this->l('Invoice')
-            ),
-            'date_add' => array(
+            ],
+            'date_add' => [
                 'title' => $this->l('Date'),
                 'type' => 'date',
                 'align' => 'right',
                 'filter_key' => 'a!date_add'
-            ),
-            'customer' => array(
+            ],
+            'customer' => [
                 'title' => $this->l('Customer'),
                 'filter_key' => 'customer',
                 'tmpTableFilter' => true
-            ),
-            'company' => array(
+            ],
+            'company' => [
                 'title' => $this->l('Company'),
                 'align' => 'center'
-            ),
-            'risk' => array(
+            ],
+            'risk' => [
                 'title' => $this->l('Risk'),
                 'align' => 'center',
                 'orderby' => false,
@@ -85,29 +85,29 @@ class AdminOutstandingControllerCore  extends AdminController
                 'list' => $risks,
                 'filter_key' => 'r!id_risk',
                 'filter_type' => 'int'
-            ),
-            'outstanding_allow_amount' => array(
+            ],
+            'outstanding_allow_amount' => [
                 'title' => $this->l('Outstanding Allowance'),
                 'align' => 'center',
                 'prefix' => '<b>',
                 'suffix' => '</b>',
                 'type' => 'price'
-            ),
-            'outstanding' => array(
+            ],
+            'outstanding' => [
                 'title' => $this->l('Current Outstanding'),
                 'align' => 'center',
                 'callback' => 'printOutstandingCalculation',
                 'orderby' => false,
                 'search' => false
-            ),
-            'id_invoice' => array(
+            ],
+            'id_invoice' => [
                 'title' => $this->l('Invoice'),
                 'align' => 'center',
                 'callback' => 'printPDFIcons',
                 'orderby' => false,
                 'search' => false
-            )
-        );
+            ]
+        ];
 
         parent::__construct();
     }
@@ -129,9 +129,11 @@ class AdminOutstandingControllerCore  extends AdminController
      */
     public function printPDFIcons($id_invoice, $tr)
     {
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'id_invoice' => $id_invoice
-        ));
+            ]
+        );
 
         return $this->createTemplate('_print_pdf_icon.tpl')->fetch();
     }

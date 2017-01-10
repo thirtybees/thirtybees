@@ -46,11 +46,13 @@ class MyAccountControllerCore extends FrontController
         parent::initContent();
 
         $has_address = $this->context->customer->getAddresses($this->context->language->id);
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'has_customer_an_address' => empty($has_address),
             'voucherAllowed' => (int)CartRule::isFeatureActive(),
             'returnAllowed' => (int)Configuration::get('PS_ORDER_RETURN')
-        ));
+            ]
+        );
         $this->context->smarty->assign('HOOK_CUSTOMER_ACCOUNT', Hook::exec('displayCustomerAccount'));
 
         $this->setTemplate(_PS_THEME_DIR_.'my-account.tpl');

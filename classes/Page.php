@@ -34,14 +34,14 @@ class PageCore extends ObjectModel
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = array(
+    public static $definition = [
         'table' => 'page',
         'primary' => 'id_page',
-        'fields' => array(
-            'id_page_type' =>    array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true),
-            'id_object' =>        array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId'),
-        ),
-    );
+        'fields' => [
+            'id_page_type' =>    ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'id_object' =>        ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
+        ],
+    ];
 
     /**
      * @return int Current page ID
@@ -53,17 +53,17 @@ class PageCore extends ObjectModel
 
         // Some pages must be distinguished in order to record exactly what is being seen
         // @todo dispatcher module
-        $special_array = array(
+        $special_array = [
             'product' => 'id_product',
             'category' => 'id_category',
             'order' => 'step',
             'manufacturer' => 'id_manufacturer',
-        );
+        ];
 
         $where = '';
-        $insert_data = array(
+        $insert_data = [
             'id_page_type' => $page_type_id,
-        );
+        ];
 
         if (array_key_exists($controller, $special_array)) {
             $object_id = Tools::getValue($special_array[$controller], null);
@@ -99,7 +99,7 @@ class PageCore extends ObjectModel
             return $value;
         }
 
-        Db::getInstance()->insert('page_type', array('name' => pSQL($name)));
+        Db::getInstance()->insert('page_type', ['name' => pSQL($name)]);
 
         return Db::getInstance()->Insert_ID();
     }
@@ -119,13 +119,14 @@ class PageCore extends ObjectModel
 
         // If no one has seen the page in this date range, it is added
         if (Db::getInstance()->Affected_Rows() == 0) {
-            Db::getInstance()->insert('page_viewed', array(
+            Db::getInstance()->insert('page_viewed', [
                 'id_date_range' =>    (int)$id_date_range,
                 'id_page' =>        (int)$id_page,
                 'counter' =>        1,
                 'id_shop' =>        (int)$context->shop->id,
                 'id_shop_group' =>    (int)$context->shop->id_shop_group,
-            ));
+            ]
+            );
         }
     }
 }

@@ -104,7 +104,7 @@ class AdminPdfControllerCore extends AdminController
 
     public function processGenerateInvoicesPDF2()
     {
-        $order_invoice_collection = array();
+        $order_invoice_collection = [];
         foreach (explode('-', Tools::getValue('id_order_state')) as $id_order_state) {
             if (is_array($order_invoices = OrderInvoice::getByStatus((int)$id_order_state))) {
                 $order_invoice_collection = array_merge($order_invoices, $order_invoice_collection);
@@ -125,7 +125,7 @@ class AdminPdfControllerCore extends AdminController
             die(Tools::displayError('No order slips were found.'));
         }
 
-        $order_slips = array();
+        $order_slips = [];
         foreach ($id_order_slips_list as $id_order_slips) {
             $order_slips[] = new OrderSlip((int)$id_order_slips);
         }
@@ -189,7 +189,7 @@ class AdminPdfControllerCore extends AdminController
         }
 
         $order_invoice_list = $order->getInvoicesCollection();
-        Hook::exec('actionPDFInvoiceRender', array('order_invoice_list' => $order_invoice_list));
+        Hook::exec('actionPDFInvoiceRender', ['order_invoice_list' => $order_invoice_list]);
         $this->generatePDF($order_invoice_list, PDF::TEMPLATE_INVOICE);
     }
 
@@ -200,7 +200,7 @@ class AdminPdfControllerCore extends AdminController
             die(Tools::displayError('The order invoice cannot be found within your database.'));
         }
 
-        Hook::exec('actionPDFInvoiceRender', array('order_invoice_list' => array($order_invoice)));
+        Hook::exec('actionPDFInvoiceRender', ['order_invoice_list' => [$order_invoice]]);
         $this->generatePDF($order_invoice, PDF::TEMPLATE_INVOICE);
     }
 

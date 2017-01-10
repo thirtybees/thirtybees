@@ -129,11 +129,12 @@ class IdentityControllerCore extends FrontController
         if ($this->customer->birthday) {
             $birthday = explode('-', $this->customer->birthday);
         } else {
-            $birthday = array('-', '-', '-');
+            $birthday = ['-', '-', '-'];
         }
 
         /* Generate years, months and days */
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
                 'years' => Tools::dateYears(),
                 'sl_year' => $birthday[0],
                 'months' => Tools::dateMonths(),
@@ -142,12 +143,15 @@ class IdentityControllerCore extends FrontController
                 'sl_day' => $birthday[2],
                 'errors' => $this->errors,
                 'genders' => Gender::getGenders(),
-            ));
+            ]
+        );
 
         // Call a hook to display more information
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'HOOK_CUSTOMER_IDENTITY_FORM' => Hook::exec('displayCustomerIdentityForm'),
-        ));
+            ]
+        );
 
         $newsletter = Configuration::get('PS_CUSTOMER_NWSL') || (Module::isInstalled('blocknewsletter') && Module::getInstanceByName('blocknewsletter')->active);
         $this->context->smarty->assign('newsletter', $newsletter);

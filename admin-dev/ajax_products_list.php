@@ -80,7 +80,7 @@ if ($items && ($excludeIds || strpos($_SERVER['HTTP_REFERER'], 'AdminScenes') !=
     }
 } elseif ($items) {
     // packs
-    $results = array();
+    $results = [];
     foreach ($items as $item) {
         // check if product have combination
         if (Combination::isFeatureActive() && $item['cache_default_attribute']) {
@@ -115,21 +115,21 @@ if ($items && ($excludeIds || strpos($_SERVER['HTTP_REFERER'], 'AdminScenes') !=
                     }
                 }
             } else {
-                $product = array(
+                $product = [
                     'id' => (int)($item['id_product']),
                     'name' => $item['name'],
                     'ref' => (!empty($item['reference']) ? $item['reference'] : ''),
                     'image' => str_replace('http://', Tools::getShopProtocol(), $context->link->getImageLink($item['link_rewrite'], $item['id_image'], 'home_default')),
-                );
+                ];
                 array_push($results, $product);
             }
         } else {
-            $product = array(
+            $product = [
                 'id' => (int)($item['id_product']),
                 'name' => $item['name'],
                 'ref' => (!empty($item['reference']) ? $item['reference'] : ''),
                 'image' => str_replace('http://', Tools::getShopProtocol(), $context->link->getImageLink($item['link_rewrite'], $item['id_image'], 'home_default')),
-            );
+            ];
             array_push($results, $product);
         }
     }

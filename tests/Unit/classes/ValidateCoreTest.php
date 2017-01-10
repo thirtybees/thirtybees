@@ -103,61 +103,61 @@ class ValidateCoreTest extends PHPUnit_Framework_TestCase
 
         public function isIp2LongDataProvider()
         {
-            return array(
-            array(false, 'toto'),
-            array(true, '123')
-        );
+            return [
+            [false, 'toto'],
+            [true, '123']
+            ];
         }
 
     public function isMd5DataProvider()
     {
-        return array(
-            array(1, md5('SomeRandomString')),
-            array(0, ''),
-            array(0, sha1('AnotherRandomString')),
-            array(0, substr(md5('AnotherRandomString'), 0, 31)),
-            array(0, 123),
-            array(0, false),
-        );
+        return [
+            [1, md5('SomeRandomString')],
+            [0, ''],
+            [0, sha1('AnotherRandomString')],
+            [0, substr(md5('AnotherRandomString'), 0, 31)],
+            [0, 123],
+            [0, false],
+        ];
     }
 
     public function isSha1DataProvider()
     {
-        return array(
-            array(1, sha1('SomeRandomString')),
-            array(0, ''),
-            array(0, md5('AnotherRandomString')),
-            array(0, substr(sha1('AnotherRandomString'), 0, 39)),
-            array(0, 123),
-            array(0, false),
-        );
+        return [
+            [1, sha1('SomeRandomString')],
+            [0, ''],
+            [0, md5('AnotherRandomString')],
+            [0, substr(sha1('AnotherRandomString'), 0, 39)],
+            [0, 123],
+            [0, false],
+        ];
     }
 
     public function isEmailDataProvider()
     {
-        return array(
-            array(true, 'john.doe@prestashop.com'),
-            array(true, 'john.doe+alias@prestshop.com'),
-            array(true, 'john.doe+alias@pr.e.sta.shop.com'),
-            array(true, 'j@p.com'),
-            array(true, 'john#doe@prestashop.com'),
-            array(false, ''),
-            array(false, 'john.doe@prestashop,com'),
-            array(false, 'john.doe@prestashop'),
-            array(false, 123456789),
-            array(false, false),
-        );
+        return [
+            [true, 'john.doe@prestashop.com'],
+            [true, 'john.doe+alias@prestshop.com'],
+            [true, 'john.doe+alias@pr.e.sta.shop.com'],
+            [true, 'j@p.com'],
+            [true, 'john#doe@prestashop.com'],
+            [false, ''],
+            [false, 'john.doe@prestashop,com'],
+            [false, 'john.doe@prestashop'],
+            [false, 123456789],
+            [false, false],
+        ];
     }
 
     public function isOptFloatDataProvider()
     {
         return array_merge(
             $this->trueFloatDataProvider(),
-            array(
-                array(true, -12.2151),
-                array(true, null),
-                array(true, ''),
-            )
+            [
+                [true, -12.2151],
+                [true, null],
+                [true, ''],
+            ]
         );
     }
 
@@ -165,39 +165,39 @@ class ValidateCoreTest extends PHPUnit_Framework_TestCase
     {
         return array_merge(
             $this->trueFloatDataProvider(),
-            array(
-                array(false, -12.2151),
-                array(false, -12,2151),
-                array(false, '-12.2151'),
-                array(false, ''),
-                array(false, 'A'),
-                array(false, null),
-            )
+            [
+                [false, -12.2151],
+                [false, -12,2151],
+                [false, '-12.2151'],
+                [false, ''],
+                [false, 'A'],
+                [false, null],
+            ]
         );
     }
 
     public function trueFloatDataProvider()
     {
-        return array(
-            array(true, 12),
-            array(true, 12.2151),
-            array(true, 12,2151),
-            array(true, '12.2151'),
-        );
+        return [
+            [true, 12],
+            [true, 12.2151],
+            [true, 12,2151],
+            [true, '12.2151'],
+        ];
     }
 
     public function isFloatDataProvider()
     {
         return array_merge(
             $this->trueFloatDataProvider(),
-            array(
-                array(true, -12.2151),
-                array(true, -12,2151),
-                array(true, '-12.2151'),
-                array(false, ''),
-                array(false, 'A'),
-                array(false, null),
-            )
+            [
+                [true, -12.2151],
+                [true, -12,2151],
+                [true, '-12.2151'],
+                [false, ''],
+                [false, 'A'],
+                [false, null],
+            ]
         );
     }
 }

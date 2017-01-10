@@ -61,11 +61,13 @@ class DiscountControllerCore extends FrontController
             }
         }
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
                                             'nb_cart_rules' => (int)$nb_cart_rules,
                                             'cart_rules' => $cart_rules,
                                             'discount' => $cart_rules,
-                                            'nbDiscounts' => (int)$nb_cart_rules)
+                                            'nbDiscounts' => (int)$nb_cart_rules
+            ]
                                         );
         $this->setTemplate(_PS_THEME_DIR_.'discount.tpl');
     }

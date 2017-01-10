@@ -48,14 +48,14 @@ class PasswordControllerCore extends FrontController
                 } elseif ((strtotime($customer->last_passwd_gen.'+'.($min_time = (int)Configuration::get('PS_PASSWD_TIME_FRONT')).' minutes') - time()) > 0) {
                     $this->errors[] = sprintf(Tools::displayError('You can regenerate your password only every %d minute(s)'), (int)$min_time);
                 } else {
-                    $mail_params = array(
+                    $mail_params = [
                         '{email}' => $customer->email,
                         '{lastname}' => $customer->lastname,
                         '{firstname}' => $customer->firstname,
                         '{url}' => $this->context->link->getPageLink('password', true, null, 'token='.$customer->secure_key.'&id_customer='.(int)$customer->id)
-                    );
+                    ];
                     if (Mail::Send($this->context->language->id, 'password_query', Mail::l('Password query confirmation'), $mail_params, $customer->email, $customer->firstname.' '.$customer->lastname)) {
-                        $this->context->smarty->assign(array('confirmation' => 2, 'customer_email' => $customer->email));
+                        $this->context->smarty->assign(['confirmation' => 2, 'customer_email' => $customer->email]);
                     } else {
                         $this->errors[] = Tools::displayError('An error occurred while sending the email.');
                     }
@@ -76,15 +76,15 @@ class PasswordControllerCore extends FrontController
                     $customer->passwd = Tools::encrypt($password = Tools::passwdGen(MIN_PASSWD_LENGTH, 'RANDOM'));
                     $customer->last_passwd_gen = date('Y-m-d H:i:s', time());
                     if ($customer->update()) {
-                        Hook::exec('actionPasswordRenew', array('customer' => $customer, 'password' => $password));
-                        $mail_params = array(
+                        Hook::exec('actionPasswordRenew', ['customer' => $customer, 'password' => $password]);
+                        $mail_params = [
                             '{email}' => $customer->email,
                             '{lastname}' => $customer->lastname,
                             '{firstname}' => $customer->firstname,
                             '{passwd}' => $password
-                        );
+                        ];
                         if (Mail::Send($this->context->language->id, 'password', Mail::l('Your new password'), $mail_params, $customer->email, $customer->firstname.' '.$customer->lastname)) {
-                            $this->context->smarty->assign(array('confirmation' => 1, 'customer_email' => $customer->email));
+                            $this->context->smarty->assign(['confirmation' => 1, 'customer_email' => $customer->email]);
                         } else {
                             $this->errors[] = Tools::displayError('An error occurred while sending the email.');
                         }

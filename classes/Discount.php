@@ -138,10 +138,10 @@ class DiscountCore extends CartRule
     {
         Tools::displayAsDeprecated();
         $obj = $this->parent;
-        if (in_array($method, array('add', 'update', 'getIdByName', 'getCustomerDiscounts', 'getValue', 'discountExists', 'createOrderDiscount', 'getVouchersToCartDisplay', 'display'))) {
+        if (in_array($method, ['add', 'update', 'getIdByName', 'getCustomerDiscounts', 'getValue', 'discountExists', 'createOrderDiscount', 'getVouchersToCartDisplay', 'display'])) {
             $obj = $this;
         }
-        return call_user_func_array(array($obj, $method), $args);
+        return call_user_func_array([$obj, $method], $args);
     }
 
     /**

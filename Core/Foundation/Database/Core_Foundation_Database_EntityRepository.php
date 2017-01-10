@@ -2,36 +2,53 @@
 /**
  * 2007-2016 PrestaShop
  *
+ * Thirty Bees is an extension to the PrestaShop e-commerce software developed by PrestaShop SA
+ * Copyright (C) 2017 Thirty Bees
+ *
  * NOTICE OF LICENSE
  *
- * This source file is subject to the Open Software License (OSL 3.0)
+ * This source file is subject to the Academic Free License (AFL 3.0)
  * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
+ * http://opensource.org/licenses/afl-3.0.php
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
+ * to license@thirtybees.com so we can send you a copy immediately.
  *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
- *
- *  @author 	PrestaShop SA <contact@prestashop.com>
- *  @copyright  2007-2016 PrestaShop SA
- *  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
- *  International Registered Trademark & Property of PrestaShop SA
+ *  @author    Thirty Bees <modules@thirtybees.com>
+ *  @author    PrestaShop SA <contact@prestashop.com>
+ *  @copyright 2017 Thirty Bees
+ *  @copyright 2007-2016 PrestaShop SA
+ *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class Core_Foundation_Database_EntityRepository
+ *
+ * @since 1.0.0
+ */
+// @codingStandardsIgnoreStart
 class Core_Foundation_Database_EntityRepository
 {
+    // @codingStandardsIgnoreStartingStandardsIgnoreEnd
+
     protected $entityManager;
     protected $db;
     protected $tablesPrefix;
     protected $entityMetaData;
     protected $queryBuilder;
 
+    /**
+     * Core_Foundation_Database_EntityRepository constructor.
+     *
+     * @param Core_Foundation_Database_EntityManager  $entityManager
+     * @param                                         $tablesPrefix
+     * @param Core_Foundation_Database_EntityMetaData $entityMetaData
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function __construct(
         Core_Foundation_Database_EntityManager $entityManager,
         $tablesPrefix,
@@ -44,6 +61,16 @@ class Core_Foundation_Database_EntityRepository
         $this->queryBuilder = new Core_Foundation_Database_EntityManager_QueryBuilder($this->db);
     }
 
+    /**
+     * @param string $method
+     * @param array  $arguments
+     *
+     * @return array|mixed|null
+     * @throws Core_Foundation_Database_Exception
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function __call($method, $arguments)
     {
         if (0 === strpos($method, 'findOneBy')) {
@@ -63,7 +90,7 @@ class Core_Foundation_Database_EntityRepository
         if (!$by) {
             $where = $arguments[0];
         } else {
-            $where = array();
+            $where = [];
             $by = $this->convertToDbFieldName($by);
             $where[$by] = $arguments[0];
         }
@@ -74,18 +101,27 @@ class Core_Foundation_Database_EntityRepository
     /**
      * Convert a camelCase field name to a snakeCase one
      * e.g.: findAllByIdCMS => id_cms
-     * @param $camel_case_field_name
+     *
+     * @param string $camelCaseFieldName
+     *
      * @return string
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
-    private function convertToDbFieldName($camel_case_field_name)
+    protected function convertToDbFieldName($camelCaseFieldName)
     {
-        return strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $camel_case_field_name));
+        return strtolower(preg_replace('/([a-z])([A-Z])/', '$1_$2', $camelCaseFieldName));
     }
 
     /**
      * Return ID field name
+     *
      * @return mixed
      * @throws Core_Foundation_Database_Exception
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     protected function getIdFieldName()
     {
@@ -112,7 +148,11 @@ class Core_Foundation_Database_EntityRepository
 
     /**
      * Returns escaped+prefixed current table name
+     *
      * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     protected function getTableNameWithPrefix()
     {
@@ -121,7 +161,11 @@ class Core_Foundation_Database_EntityRepository
 
     /**
      * Returns escaped DB table prefix
+     *
      * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     protected function getPrefix()
     {
@@ -130,11 +174,16 @@ class Core_Foundation_Database_EntityRepository
 
     /**
      * Return a new empty Entity depending on current Repository selected
+     *
      * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getNewEntity()
     {
         $entityClassName = $this->entityMetaData->getEntityClassName();
+
         return new $entityClassName;
     }
 
@@ -146,6 +195,12 @@ class Core_Foundation_Database_EntityRepository
      * if there are too many rows.
      *
      * @param array $rows Database rows
+     *
+     * @return mixed|null
+     * @throws Core_Foundation_Database_Exception
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     protected function hydrateOne(array $rows)
     {
@@ -157,33 +212,48 @@ class Core_Foundation_Database_EntityRepository
             $data = $rows[0];
             $entity = $this-> getNewEntity();
             $entity->hydrate($data);
+
             return $entity;
         }
     }
 
+    /**
+     * @param array $rows
+     *
+     * @return array
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     protected function hydrateMany(array $rows)
     {
-        $entities = array();
+        $entities = [];
         foreach ($rows as $row) {
             $entity = $this->getNewEntity();
             $entity->hydrate($row);
             $entities[] = $entity;
         }
+
         return $entities;
     }
 
     /**
      * Constructs and performs 'SELECT' in DB
+     *
      * @param $one
      * @param array $cumulativeConditions
+     *
      * @return array|mixed|null
      * @throws Core_Foundation_Database_Exception
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
-    private function doFind($one, array $cumulativeConditions)
+    protected function doFind($one, array $cumulativeConditions)
     {
         $whereClause = $this->queryBuilder->buildWhereConditions('AND', $cumulativeConditions);
 
-        $sql = 'SELECT * FROM ' . $this->getTableNameWithPrefix() . ' WHERE ' . $whereClause;
+        $sql = 'SELECT * FROM '.$this->getTableNameWithPrefix().' WHERE '.$whereClause;
 
         $rows = $this->db->select($sql);
 
@@ -196,13 +266,18 @@ class Core_Foundation_Database_EntityRepository
 
     /**
      * Find one entity in DB
-     * @param $id
+     *
+     * @param int $id
+     *
      * @return array|mixed|null
      * @throws Core_Foundation_Database_Exception
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function findOne($id)
     {
-        $conditions = array();
+        $conditions = [];
         $conditions[$this->getIdFieldName()] = $id;
 
         return $this->doFind(true, $conditions);
@@ -210,11 +285,16 @@ class Core_Foundation_Database_EntityRepository
 
     /**
      * Find all entities in DB
+     *
      * @return array
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function findAll()
     {
-        $sql = 'SELECT * FROM ' . $this->getTableNameWithPrefix();
+        $sql = 'SELECT * FROM '.$this->getTableNameWithPrefix();
+
         return $this->hydrateMany($this->db->select($sql));
     }
 }

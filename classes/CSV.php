@@ -78,7 +78,7 @@ class CSVCore
      */
     public function output($data)
     {
-        $wraped_data = array_map(array('CSVCore', 'wrap'), $data);
+        $wraped_data = array_map(['CSVCore', 'wrap'], $data);
         echo sprintf("%s\n", implode($this->delimiter, $wraped_data));
     }
 
@@ -89,7 +89,7 @@ class CSVCore
      */
     public static function wrap($data)
     {
-        $data = str_replace(array('"', ';'), '', $data);
+        $data = str_replace(['"', ';'], '', $data);
         return sprintf('"%s"', $data);
     }
 

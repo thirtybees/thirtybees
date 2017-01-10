@@ -51,21 +51,21 @@ class TabCore extends ObjectModel
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = array(
+    public static $definition = [
         'table' => 'tab',
         'primary' => 'id_tab',
         'multilang' => true,
-        'fields' => array(
-            'id_parent' =>    array('type' => self::TYPE_INT, 'validate' => 'isInt'),
-            'position' =>    array('type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'),
-            'module' =>    array('type' => self::TYPE_STRING, 'validate' => 'isTabName', 'size' => 64),
-            'class_name' => array('type' => self::TYPE_STRING, 'required' => true, 'size' => 64),
-            'active' =>    array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
-            'hide_host_mode' =>    array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
+        'fields' => [
+            'id_parent' =>    ['type' => self::TYPE_INT, 'validate' => 'isInt'],
+            'position' =>    ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
+            'module' =>    ['type' => self::TYPE_STRING, 'validate' => 'isTabName', 'size' => 64],
+            'class_name' => ['type' => self::TYPE_STRING, 'required' => true, 'size' => 64],
+            'active' =>    ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'hide_host_mode' =>    ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
             /* Lang fields */
-            'name' =>        array('type' => self::TYPE_STRING, 'lang' => true, 'required' => true, 'validate' => 'isTabName', 'size' => 64),
-        ),
-    );
+            'name' =>        ['type' => self::TYPE_STRING, 'lang' => true, 'required' => true, 'validate' => 'isTabName', 'size' => 64],
+        ],
+    ];
 
     protected static $_getIdFromClassName = null;
 
@@ -81,7 +81,7 @@ class TabCore extends ObjectModel
     public function add($autodate = true, $null_values = false)
     {
         // @retrocompatibility with old menu (before 1.5.0.9)
-        $retro = array(
+        $retro = [
             'AdminPayment' => 'AdminParentModules',
             'AdminOrders' => 'AdminParentOrders',
             'AdminCustomers' => 'AdminParentCustomer',
@@ -89,13 +89,13 @@ class TabCore extends ObjectModel
             'AdminPreferences' => 'AdminParentPreferences',
             'AdminStats' => 'AdminParentStats',
             'AdminEmployees' => 'AdminAdmin',
-        );
+        ];
 
         $class_name = Tab::getClassNameById($this->id_parent);
         if (isset($retro[$class_name])) {
             $this->id_parent = Tab::getIdFromClassName($retro[$class_name]);
         }
-        self::$_cache_tabs = array();
+        self::$_cache_tabs = [];
 
         // Set good position for new tab
         $this->position = Tab::getNewLastPosition($this->id_parent);
@@ -228,7 +228,7 @@ class TabCore extends ObjectModel
      */
     public static function getModuleTabList()
     {
-        $list = array();
+        $list = [];
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
 			SELECT t.`class_name`, t.`module`
@@ -248,11 +248,11 @@ class TabCore extends ObjectModel
      *
      * @return array tabs
      */
-    protected static $_cache_tabs = array();
+    protected static $_cache_tabs = [];
     public static function getTabs($id_lang, $id_parent = null)
     {
         if (!isset(self::$_cache_tabs[$id_lang])) {
-            self::$_cache_tabs[$id_lang] = array();
+            self::$_cache_tabs[$id_lang] = [];
             // Keep t.*, tl.name instead of only * because if translations are missing, the join on tab_lang will overwrite the id_tab in the results
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
 				SELECT t.*, tl.name
@@ -265,21 +265,21 @@ class TabCore extends ObjectModel
             if (is_array($result)) {
                 foreach ($result as $row) {
                     if (!isset(self::$_cache_tabs[$id_lang][$row['id_parent']])) {
-                        self::$_cache_tabs[$id_lang][$row['id_parent']] = array();
+                        self::$_cache_tabs[$id_lang][$row['id_parent']] = [];
                     }
                     self::$_cache_tabs[$id_lang][$row['id_parent']][] = $row;
                 }
             }
         }
         if ($id_parent === null) {
-            $array_all = array();
+            $array_all = [];
             foreach (self::$_cache_tabs[$id_lang] as $array_parent) {
                 $array_all = array_merge($array_all, $array_parent);
             }
             return $array_all;
         }
 
-        return (isset(self::$_cache_tabs[$id_lang][$id_parent]) ? self::$_cache_tabs[$id_lang][$id_parent] : array());
+        return (isset(self::$_cache_tabs[$id_lang][$id_parent]) ? self::$_cache_tabs[$id_lang][$id_parent] : []);
     }
 
     /**
@@ -292,7 +292,7 @@ class TabCore extends ObjectModel
     {
         $class_name = strtolower($class_name);
         if (self::$_getIdFromClassName === null) {
-            self::$_getIdFromClassName = array();
+            self::$_getIdFromClassName = [];
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('SELECT id_tab, class_name FROM `'._DB_PREFIX_.'tab`', true, false);
 
             if (is_array($result)) {
@@ -318,7 +318,7 @@ class TabCore extends ObjectModel
         }
 
         if (!Validate::isModuleName($module)) {
-            return array();
+            return [];
         }
 
         $tabs = new PrestaShopCollection('Tab', (int)$id_lang);
@@ -527,7 +527,7 @@ class TabCore extends ObjectModel
             $this->position = Tab::getNewLastPosition($this->id_parent);
         }
 
-        self::$_cache_tabs = array();
+        self::$_cache_tabs = [];
         return parent::update($null_values);
     }
 
@@ -562,7 +562,7 @@ class TabCore extends ObjectModel
 
     public static function getTabModulesList($id_tab)
     {
-        $modules_list = array('default_list' => array(), 'slider_list' => array());
+        $modules_list = ['default_list' => [], 'slider_list' => []];
         $xml_tab_modules_list = false;
 
         if (file_exists(_PS_ROOT_DIR_.Module::CACHE_FILE_TAB_MODULES_LIST)) {

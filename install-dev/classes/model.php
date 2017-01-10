@@ -34,7 +34,7 @@ abstract class InstallAbstractModel
     /**
      * @var array List of errors
      */
-    protected $errors = array();
+    protected $errors = [];
 
     public function __construct()
     {
@@ -44,7 +44,7 @@ abstract class InstallAbstractModel
     public function setError($errors)
     {
         if (!is_array($errors)) {
-            $errors = array($errors);
+            $errors = [$errors];
         }
 
         $this->errors[] = $errors;

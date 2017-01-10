@@ -34,15 +34,19 @@ class HistoryControllerCore extends FrontController
     public function setMedia()
     {
         parent::setMedia();
-        $this->addCSS(array(
+        $this->addCSS(
+            [
             _THEME_CSS_DIR_.'history.css',
             _THEME_CSS_DIR_.'addresses.css'
-        ));
-        $this->addJS(array(
+            ]
+        );
+        $this->addJS(
+            [
             _THEME_JS_DIR_.'history.js',
             _THEME_JS_DIR_.'tools.js' // retro compat themes 1.5
-        ));
-        $this->addJqueryPlugin(array('scrollTo', 'footable', 'footable-sort'));
+            ]
+        );
+        $this->addJqueryPlugin(['scrollTo', 'footable', 'footable-sort']);
     }
 
     /**
@@ -61,12 +65,14 @@ class HistoryControllerCore extends FrontController
                 }
             }
         }
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'orders' => $orders,
             'invoiceAllowed' => (int)Configuration::get('PS_INVOICE'),
             'reorderingAllowed' => !(bool)Configuration::get('PS_DISALLOW_HISTORY_REORDERING'),
             'slowValidation' => Tools::isSubmit('slowvalidation')
-        ));
+            ]
+        );
 
         $this->setTemplate(_PS_THEME_DIR_.'history.tpl');
     }

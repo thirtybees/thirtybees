@@ -1,6 +1,6 @@
 <?php
-return array(
-    'informations' => array(
+return [
+    'informations' => [
         'documentation' => 'http://doc.prestashop.com/display/PS16/Installing+PrestaShop',
         'documentation_upgrade' => 'http://docs.prestashop.com/display/PS16/Updating+PrestaShop',
         'forum' => 'http://www.prestashop.com/forums/',
@@ -8,8 +8,8 @@ return array(
         'support' => 'https://www.prestashop.com/en/support',
         'tutorial' => 'https://www.youtube.com/watch?v=psz4aIPZZuk',
         'tailored_help' => 'http://addons.prestashop.com/en/388-support',
-    ),
-    'translations' => array(
+    ],
+    'translations' => [
         'An SQL error occurred for entity <i>%1$s</i>: <i>%2$s</i>' => 'Įvyko SQL klaida subjekte <i>%1$s</i>: <i>%2$s</i>',
         'Cannot create image "%1$s" for entity "%2$s"' => 'Nepavyko sukurti paveiksliuko "%1$s" subjektui "%2$s"',
         'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => 'Nepavyko sukurti paveiksliuko "%1$s" (blogi leidimai katalogui "%2$s")',
@@ -205,5 +205,5 @@ return array(
         'Continue the installation in:' => 'Tęsti įdiegimą:',
         'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => 'Kalbos pasirinkimas taikomas tik diegimo asistentui. Kai jūsų parduotuvė bus įdiegta, galėsite savo parduotuvei parinkti kalbą iš daugiau nei %d vertimų, ir visa tai nemokamai!',
         'Installing PrestaShop is quick and easy. In just a few moments, you will become part of a community consisting of more than 250,000 merchants. You are on the way to creating your own unique online store that you can manage easily every day.' => 'PrestaShop įdiegimas yra greitas ir paprastas. Vos po kelių akimirkų jūs tapsite bendruomenės, kurią sudaro daugiau nei 250 000 pardavėjų, dalimi. Esate savo unikalios el. parduotuvės, kurią galėsite lengvai valdyti kiekvieną dieną, kūrimo kelyje.',
-    ),
-);
+    ],
+];

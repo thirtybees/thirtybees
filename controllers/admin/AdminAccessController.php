@@ -30,7 +30,7 @@
 class AdminAccessControllerCore extends AdminController
 {
     /* @var array : Black list of id_tab that do not have access */
-    public $accesses_black_list = array();
+    public $accesses_black_list = [];
 
     public function __construct()
     {
@@ -57,7 +57,7 @@ class AdminAccessControllerCore extends AdminController
         $current_profile = (int)$this->getCurrentProfileId();
         $profiles = Profile::getProfiles($this->context->language->id);
         $tabs = Tab::getTabs($this->context->language->id);
-        $accesses = array();
+        $accesses = [];
         foreach ($profiles as $profile) {
             $accesses[$profile['id_profile']] = Profile::getProfileAccesses($profile['id_profile']);
         }
@@ -76,7 +76,7 @@ class AdminAccessControllerCore extends AdminController
             }
         }
 
-        $modules = array();
+        $modules = [];
         foreach ($profiles as $profile) {
             $modules[$profile['id_profile']] = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
 				SELECT ma.`id_module`, m.`name`, ma.`view`, ma.`configure`, ma.`uninstall`
@@ -96,11 +96,11 @@ class AdminAccessControllerCore extends AdminController
                 }
             }
 
-            uasort($modules[$profile['id_profile']], array($this, 'sortModuleByName'));
+            uasort($modules[$profile['id_profile']], [$this, 'sortModuleByName']);
         }
 
-        $this->fields_form = array('');
-        $this->tpl_form_vars = array(
+        $this->fields_form = [''];
+        $this->tpl_form_vars = [
             'profiles' => $profiles,
             'accesses' => $accesses,
             'id_tab_parentmodule' => (int)Tab::getIdFromClassName('AdminParentModules'),
@@ -109,10 +109,10 @@ class AdminAccessControllerCore extends AdminController
             'current_profile' => (int)$current_profile,
             'admin_profile' => (int)_PS_ADMIN_PROFILE_,
             'access_edit' => $this->tabAccess['edit'],
-            'perms' => array('view', 'add', 'edit', 'delete'),
+            'perms' => ['view', 'add', 'edit', 'delete'],
             'modules' => $modules,
             'link' => $this->context->link
-        );
+        ];
 
         return parent::renderForm();
     }
@@ -132,13 +132,15 @@ class AdminAccessControllerCore extends AdminController
         $this->initPageHeaderToolbar();
 
         $this->content .= $this->renderForm();
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'content' => $this->content,
             'url_post' => self::$currentIndex.'&token='.$this->token,
             'show_page_header_toolbar' => $this->show_page_header_toolbar,
             'page_header_toolbar_title' => $this->page_header_toolbar_title,
             'page_header_toolbar_btn' => $this->page_header_toolbar_btn
-        ));
+            ]
+        );
     }
 
     public function initToolbarTitle()
@@ -163,7 +165,7 @@ class AdminAccessControllerCore extends AdminController
 
         if (Tools::isSubmit('submitAddAccess')) {
             $perm = Tools::getValue('perm');
-            if (!in_array($perm, array('view', 'add', 'edit', 'delete', 'all'))) {
+            if (!in_array($perm, ['view', 'add', 'edit', 'delete', 'all'])) {
                 throw new PrestaShopException('permission does not exist');
             }
 
@@ -224,7 +226,7 @@ class AdminAccessControllerCore extends AdminController
             $id_module = (int)Tools::getValue('id_module');
             $id_profile = (int)Tools::getValue('id_profile');
 
-            if (!in_array($perm, array('view', 'configure', 'uninstall'))) {
+            if (!in_array($perm, ['view', 'configure', 'uninstall'])) {
                 throw new PrestaShopException('permission does not exist');
             }
 

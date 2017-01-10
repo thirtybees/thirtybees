@@ -47,24 +47,25 @@ class AdminCmsCategoriesControllerCore extends AdminController
         $this->addRowAction('delete');
         $this->_orderBy = 'position';
 
-        $this->bulk_actions = array(
-            'delete' => array(
+        $this->bulk_actions = [
+            'delete' => [
                 'text' => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
                 'icon' => 'icon-trash'
-            )
-        );
+            ]
+        ];
         $this->tpl_list_vars['icon'] = 'icon-folder-close';
         $this->tpl_list_vars['title'] = $this->l('Categories');
-        $this->fields_list = array(
-        'id_cms_category' => array('title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'),
-        'name' => array('title' => $this->l('Name'), 'width' => 'auto', 'callback' => 'hideCMSCategoryPosition', 'callback_object' => 'CMSCategory'),
-        'description' => array('title' => $this->l('Description'), 'maxlength' => 90, 'orderby' => false),
-        'position' => array('title' => $this->l('Position'),'filter_key' => 'position', 'align' => 'center', 'class' => 'fixed-width-sm', 'position' => 'position'),
-        'active' => array(
+        $this->fields_list = [
+        'id_cms_category' => ['title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'],
+        'name' => ['title' => $this->l('Name'), 'width' => 'auto', 'callback' => 'hideCMSCategoryPosition', 'callback_object' => 'CMSCategory'],
+        'description' => ['title' => $this->l('Description'), 'maxlength' => 90, 'orderby' => false],
+        'position' => ['title' => $this->l('Position'),'filter_key' => 'position', 'align' => 'center', 'class' => 'fixed-width-sm', 'position' => 'position'],
+        'active' => [
             'title' => $this->l('Displayed'), 'class' => 'fixed-width-sm', 'active' => 'status',
             'align' => 'center','type' => 'bool', 'orderby' => false
-        ));
+        ]
+        ];
 
         // The controller can't be call directly
         // In this case, AdminCmsContentController::getCurrentCMSCategory() is null
@@ -132,7 +133,7 @@ class AdminCmsCategoriesControllerCore extends AdminController
             if ($this->tabAccess['delete'] === '1') {
                 if (Validate::isLoadedObject($object = $this->loadObject()) && isset($this->fieldImageSettings)) {
                     // check if request at least one object with noZeroObject
-                    if (isset($object->noZeroObject) && count($taxes = call_user_func(array($this->className, $object->noZeroObject))) <= 1) {
+                    if (isset($object->noZeroObject) && count($taxes = call_user_func([$this->className, $object->noZeroObject])) <= 1) {
                         $this->errors[] = Tools::displayError('You need at least one object.')
                             .' <b>'.$this->table.'</b><br />'.Tools::displayError('You cannot delete all of the items.');
                     } else {
@@ -205,13 +206,13 @@ class AdminCmsCategoriesControllerCore extends AdminController
         $categories = CMSCategory::getCategories($this->context->language->id, false);
         $html_categories = CMSCategory::recurseCMSCategory($categories, $categories[0][1], 1, $this->getFieldValue($this->object, 'id_parent'), 1);
 
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('CMS Category'),
                 'icon' => 'icon-folder-close'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'text',
                     'label' => $this->l('Name'),
                     'name' => 'name',
@@ -219,36 +220,36 @@ class AdminCmsCategoriesControllerCore extends AdminController
                     'required' => true,
                     'lang' => true,
                     'hint' => $this->l('Invalid characters:').' &lt;&gt;;=#{}'
-                ),
-                array(
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Displayed'),
                     'name' => 'active',
                     'required' => false,
                     'is_bool' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'active_on',
                             'value' => 1,
                             'label' => $this->l('Enabled')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'active_off',
                             'value' => 0,
                             'label' => $this->l('Disabled')
-                        )
-                    ),
-                ),
+                        ]
+                    ],
+                ],
                 // custom template
-                array(
+                [
                     'type' => 'select_category',
                     'label' => $this->l('Parent CMS Category'),
                     'name' => 'id_parent',
-                    'options' => array(
+                    'options' => [
                         'html' => $html_categories,
-                    ),
-                ),
-                array(
+                    ],
+                ],
+                [
                     'type' => 'textarea',
                     'label' => $this->l('Description'),
                     'name' => 'description',
@@ -256,48 +257,48 @@ class AdminCmsCategoriesControllerCore extends AdminController
                     'rows' => 5,
                     'cols' => 40,
                     'hint' => $this->l('Invalid characters:').' &lt;&gt;;=#{}'
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Meta title'),
                     'name' => 'meta_title',
                     'lang' => true,
                     'hint' => $this->l('Invalid characters:').' &lt;&gt;;=#{}'
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Meta description'),
                     'name' => 'meta_description',
                     'lang' => true,
                     'hint' => $this->l('Invalid characters:').' &lt;&gt;;=#{}'
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Meta keywords'),
                     'name' => 'meta_keywords',
                     'lang' => true,
                     'hint' => $this->l('Invalid characters:').' &lt;&gt;;=#{}'
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Friendly URL'),
                     'name' => 'link_rewrite',
                     'required' => true,
                     'lang' => true,
                     'hint' => $this->l('Only letters and the minus (-) character are allowed.')
-                ),
-            ),
-            'submit' => array(
+                ],
+            ],
+            'submit' => [
                 'title' => $this->l('Save'),
-            )
-        );
+            ]
+        ];
 
         if (Shop::isFeatureActive()) {
-            $this->fields_form['input'][] = array(
+            $this->fields_form['input'][] = [
                 'type' => 'shop',
                 'label' => $this->l('Shop association'),
                 'name' => 'checkBoxShopAsso',
-            );
+            ];
         }
 
         $this->tpl_form_vars['PS_ALLOW_ACCENTED_CHARS_URL'] = (int)Configuration::get('PS_ALLOW_ACCENTED_CHARS_URL');

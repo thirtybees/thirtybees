@@ -36,7 +36,7 @@ class ContactControllerCore extends FrontController
     public function postProcess()
     {
         if (Tools::isSubmit('submitMessage')) {
-            $extension = array('.txt', '.rtf', '.doc', '.docx', '.pdf', '.zip', '.png', '.jpeg', '.gif', '.jpg');
+            $extension = ['.txt', '.rtf', '.doc', '.docx', '.pdf', '.zip', '.png', '.jpeg', '.gif', '.jpg'];
             $file_attachment = Tools::fileAttachment('fileUpload');
             $message = Tools::getValue('message'); // Html entities is not usefull, iscleanHtml check there is no bad html tags.
             if (!($from = trim(Tools::getValue('from'))) || !Validate::isEmail($from)) {
@@ -156,13 +156,13 @@ class ContactControllerCore extends FrontController
                 }
 
                 if (!count($this->errors)) {
-                    $var_list = array(
+                    $var_list = [
                                     '{order_name}' => '-',
                                     '{attached_file}' => '-',
                                     '{message}' => Tools::nl2br(stripslashes($message)),
                                     '{email}' =>  $from,
                                     '{product_name}' => '',
-                                );
+                    ];
 
                     if (isset($file_attachment['name'])) {
                         $var_list['{attached_file}'] = $file_attachment['name'];
@@ -224,12 +224,14 @@ class ContactControllerCore extends FrontController
 
         $email = Tools::safeOutput(Tools::getValue('from',
         ((isset($this->context->cookie) && isset($this->context->cookie->email) && Validate::isEmail($this->context->cookie->email)) ? $this->context->cookie->email : '')));
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'errors' => $this->errors,
             'email' => $email,
             'fileupload' => Configuration::get('PS_CUSTOMER_SERVICE_FILE_UPLOAD'),
             'max_upload_size' => (int)Tools::getMaxUploadSize()
-        ));
+            ]
+        );
 
         if (($id_customer_thread = (int)Tools::getValue('id_customer_thread')) && $token = Tools::getValue('token')) {
             $customer_thread = Db::getInstance()->getRow('
@@ -247,10 +249,12 @@ class ContactControllerCore extends FrontController
             $this->context->smarty->assign('customerThread', $customer_thread);
         }
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'contacts' => Contact::getContacts($this->context->language->id),
             'message' => html_entity_decode(Tools::getValue('message'))
-        ));
+            ]
+        );
 
         $this->setTemplate(_PS_THEME_DIR_.'contact-form.tpl');
     }
@@ -263,23 +267,23 @@ class ContactControllerCore extends FrontController
         if ($this->context->customer->isLogged()) {
             $this->context->smarty->assign('isLogged', 1);
 
-            $products = array();
+            $products = [];
             $result = Db::getInstance()->executeS('
 			SELECT id_order
 			FROM '._DB_PREFIX_.'orders
 			WHERE id_customer = '.(int)$this->context->customer->id.Shop::addSqlRestriction(Shop::SHARE_ORDER).' ORDER BY date_add');
 
-            $orders = array();
+            $orders = [];
 
             foreach ($result as $row) {
                 $order = new Order($row['id_order']);
                 $date = explode(' ', $order->date_add);
                 $tmp = $order->getProducts();
                 foreach ($tmp as $key => $val) {
-                    $products[$row['id_order']][$val['product_id']] = array('value' => $val['product_id'], 'label' => $val['product_name']);
+                    $products[$row['id_order']][$val['product_id']] = ['value' => $val['product_id'], 'label' => $val['product_name']];
                 }
 
-                $orders[] = array('value' => $order->id, 'label' => $order->getUniqReference().' - '.Tools::displayDate($date[0], null) , 'selected' => (int)$this->getOrder() == $order->id);
+                $orders[] = ['value' => $order->id, 'label' => $order->getUniqReference().' - '.Tools::displayDate($date[0], null) , 'selected' => (int)$this->getOrder() == $order->id];
             }
 
             $this->context->smarty->assign('orderList', $orders);

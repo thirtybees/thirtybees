@@ -104,7 +104,7 @@
 
 	<?php if ($this->type == 'synchro'): ?>
 		<?php
-		$entities = $dependencies = array();
+		$entities = $dependencies = [];
 		$entities['common'] = $this->loader->getEntitiesList();
 		$dependencies['common'] = $this->loader->getDependencies();
 		$this->loader->setFixturesPath();

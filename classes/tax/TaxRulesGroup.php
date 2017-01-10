@@ -43,26 +43,26 @@ class TaxRulesGroupCore extends ObjectModel
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = array(
+    public static $definition = [
         'table' => 'tax_rules_group',
         'primary' => 'id_tax_rules_group',
-        'fields' => array(
-            'name' =>        array('type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 64),
-            'active' =>        array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
-            'deleted' =>    array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
-            'date_add' =>    array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
-            'date_upd' =>    array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
-        ),
-    );
+        'fields' => [
+            'name' =>        ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 64],
+            'active' =>        ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'deleted' =>    ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'date_add' =>    ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+            'date_upd' =>    ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+        ],
+    ];
 
-    protected $webserviceParameters = array(
+    protected $webserviceParameters = [
     'objectsNodeName' => 'tax_rule_groups',
     'objectNodeName' => 'tax_rule_group',
-        'fields' => array(
-        ),
-    );
+        'fields' => [
+        ],
+    ];
 
-    protected static $_taxes = array();
+    protected static $_taxes = [];
 
 
     public function update($null_values = false)
@@ -148,7 +148,7 @@ class TaxRulesGroupCore extends ObjectModel
     */
     public static function getTaxRulesGroupsForOptions()
     {
-        $tax_rules[] = array('id_tax_rules_group' => 0, 'name' => Tools::displayError('No tax'));
+        $tax_rules[] = ['id_tax_rules_group' => 0, 'name' => Tools::displayError('No tax')];
         return array_merge($tax_rules, TaxRulesGroup::getTaxRulesGroups());
     }
 
@@ -172,7 +172,7 @@ class TaxRulesGroupCore extends ObjectModel
 			AND 0 between `zipcode_from` AND `zipcode_to`'
         );
 
-        $res = array();
+        $res = [];
         foreach ($rows as $row) {
             $res[$row['id_tax_rules_group']] = $row['rate'];
         }
@@ -237,6 +237,6 @@ class TaxRulesGroupCore extends ObjectModel
     public static function getTaxes($id_tax_rules_group, $id_country, $id_state, $id_county)
     {
         Tools::displayAsDeprecated();
-        return array();
+        return [];
     }
 }

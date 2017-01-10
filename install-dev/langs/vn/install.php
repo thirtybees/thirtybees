@@ -1,8 +1,8 @@
 <?php
 
-return array (
+return [
   'informations' =>
-  array (
+  [
     'documentation' => 'http://doc.prestashop.com/display/PS16/Installing+PrestaShop',
     'documentation_upgrade' => 'http://docs.prestashop.com/display/PS16/Updating+PrestaShop',
     'forum' => 'http://www.prestashop.com/forums/',
@@ -10,9 +10,9 @@ return array (
     'support' => 'https://www.prestashop.com/en/support',
     'tutorial' => 'https://www.youtube.com/watch?v=psz4aIPZZuk',
     'tailored_help' => 'http://addons.prestashop.com/en/388-support',
-  ),
+  ],
   'translations' =>
-  array (
+  [
     'An SQL error occurred for entity <i>%1$s</i>: <i>%2$s</i>' => 'Lỗi SQL đã xảy ra cho  <i>%1$s</i>: <i>%2$s</i>',
     'Cannot create image "%1$s" for entity "%2$s"' => 'Không thể tạo ảnh "%1$s" cho "%2$s"',
     'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => 'Không thể tạo ảnh "%1$s" (không có quyền thực thi trên thư mục "%2$s")',
@@ -208,5 +208,5 @@ Rất tiếc! Xin vui lòng sửa mục (s) bên dưới, và sau đó click và
     'If you need help, do not hesitate to <a href="%1$s" target="_blank">watch this short tutorial</a>, or check <a href="%2$s" target="_blank">our documentation</a>.' => 'Nếu bạn cần sự giúp đỡ, đừng ngần ngại <a href="%1$s" target="_blank"> xem hướng dẫn ngắn này</a>, hoặc kiểm tra <a href="%2$s" target="_blank">tài liệu của chúng tôi </a>.',
     'Continue the installation in:' => 'Tiếp tục cài đặt tại:',
     'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => 'Việc lựa chọn ngôn ngữ ở trên chỉ áp dụng cho các trợ cài đặt. Một khi cửa hàng của bạn đã được cài đặt, bạn có thể chọn ngôn ngữ của cửa hàng của bạn từ trên %d dịch, tất cả miễn phí!',
-  ),
-);
+  ],
+];

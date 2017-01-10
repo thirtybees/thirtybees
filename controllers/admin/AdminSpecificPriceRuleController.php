@@ -45,10 +45,10 @@ class AdminSpecificPriceRuleControllerCore extends AdminController
             $_POST['id_shop'] = $this->id_shop;
         }
 
-        $this->list_reduction_type = array(
+        $this->list_reduction_type = [
             'percentage' => $this->l('Percentage'),
             'amount' => $this->l('Amount')
-        );
+        ];
 
         $this->addRowAction('edit');
         $this->addRowAction('delete');
@@ -62,73 +62,73 @@ class AdminSpecificPriceRuleControllerCore extends AdminController
 		LEFT JOIN '._DB_PREFIX_.'group_lang gl ON (gl.id_group = a.id_group AND gl.id_lang='.(int)$this->context->language->id.')';
         $this->_use_found_rows = false;
 
-        $this->bulk_actions = array(
-            'delete' => array(
+        $this->bulk_actions = [
+            'delete' => [
                 'text' => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
                 'icon' => 'icon-trash'
-            )
-        );
+            ]
+        ];
 
-        $this->fields_list = array(
-            'id_specific_price_rule' => array(
+        $this->fields_list = [
+            'id_specific_price_rule' => [
                 'title' => $this->l('ID'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs'
-            ),
-            'name' => array(
+            ],
+            'name' => [
                 'title' => $this->l('Name'),
                 'filter_key' => 'a!name',
                 'width' => 'auto'
-            ),
-            'shop_name' => array(
+            ],
+            'shop_name' => [
                 'title' => $this->l('Shop'),
                 'filter_key' => 's!name'
-            ),
-            'currency_name' => array(
+            ],
+            'currency_name' => [
                 'title' => $this->l('Currency'),
                 'align' => 'center',
                 'filter_key' => 'cu!name'
-            ),
-            'country_name' => array(
+            ],
+            'country_name' => [
                 'title' => $this->l('Country'),
                 'align' => 'center',
                 'filter_key' => 'cl!name'
-            ),
-            'group_name' => array(
+            ],
+            'group_name' => [
                 'title' => $this->l('Group'),
                 'align' => 'center',
                 'filter_key' => 'gl!name'
-            ),
-            'from_quantity' => array(
+            ],
+            'from_quantity' => [
                 'title' => $this->l('From quantity'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs'
-            ),
-            'reduction_type' => array(
+            ],
+            'reduction_type' => [
                 'title' => $this->l('Reduction type'),
                 'align' => 'center',
                 'type' => 'select',
                 'filter_key' => 'a!reduction_type',
                 'list' => $this->list_reduction_type,
-            ),
-            'reduction' => array(
+            ],
+            'reduction' => [
                 'title' => $this->l('Reduction'),
                 'align' => 'center',
                 'type' => 'decimal',
                 'class' => 'fixed-width-xs'
-            ),
-            'from' => array(
+            ],
+            'from' => [
                 'title' => $this->l('Beginning'),
                 'align' => 'right',
                 'type' => 'datetime',
-            ),
-            'to' => array(
+            ],
+            'to' => [
                 'title' => $this->l('End'),
                 'align' => 'right',
                 'type' => 'datetime'
-            ),
-        );
+            ],
+        ];
 
         parent::__construct();
     }
@@ -136,11 +136,11 @@ class AdminSpecificPriceRuleControllerCore extends AdminController
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
-            $this->page_header_toolbar_btn['new_specific_price_rule'] = array(
+            $this->page_header_toolbar_btn['new_specific_price_rule'] = [
                 'href' => self::$currentIndex.'&addspecific_price_rule&token='.$this->token,
                 'desc' => $this->l('Add new catalog price rule', null, null, false),
                 'icon' => 'process-icon-new'
-            );
+            ];
         }
 
         parent::initPageHeaderToolbar();
@@ -165,70 +165,70 @@ class AdminSpecificPriceRuleControllerCore extends AdminController
             $this->object->price = -1;
         }
 
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('Catalog price rules'),
                 'icon' => 'icon-dollar'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'text',
                     'label' => $this->l('Name'),
                     'name' => 'name',
                     'maxlength' => 32,
                     'required' => true,
                     'hint' => $this->l('Forbidden characters').' <>;=#{}'
-                ),
-                array(
+                ],
+                [
                     'type' => 'select',
                     'label' => $this->l('Shop'),
                     'name' => 'shop_id',
-                    'options' => array(
+                    'options' => [
                         'query' => Shop::getShops(),
                         'id' => 'id_shop',
                         'name' => 'name'
-                    ),
+                    ],
                     'condition' => Shop::isFeatureActive(),
                     'default_value' => Shop::getContextShopID()
-                ),
-                array(
+                ],
+                [
                     'type' => 'select',
                     'label' => $this->l('Currency'),
                     'name' => 'id_currency',
-                    'options' => array(
-                        'query' => array_merge(array(0 => array('id_currency' => 0, 'name' => $this->l('All currencies'))), Currency::getCurrencies(false, true, true)),
+                    'options' => [
+                        'query' => array_merge([0 => ['id_currency' => 0, 'name' => $this->l('All currencies')]], Currency::getCurrencies(false, true, true)),
                         'id' => 'id_currency',
                         'name' => 'name'
-                    ),
-                ),
-                array(
+                    ],
+                ],
+                [
                     'type' => 'select',
                     'label' => $this->l('Country'),
                     'name' => 'id_country',
-                    'options' => array(
-                        'query' => array_merge(array(0 => array('id_country' => 0, 'name' => $this->l('All countries'))), Country::getCountries((int)$this->context->language->id)),
+                    'options' => [
+                        'query' => array_merge([0 => ['id_country' => 0, 'name' => $this->l('All countries')]], Country::getCountries((int)$this->context->language->id)),
                         'id' => 'id_country',
                         'name' => 'name'
-                    ),
-                ),
-                array(
+                    ],
+                ],
+                [
                     'type' => 'select',
                     'label' => $this->l('Group'),
                     'name' => 'id_group',
-                    'options' => array(
-                        'query' => array_merge(array(0 => array('id_group' => 0, 'name' => $this->l('All groups'))), Group::getGroups((int)$this->context->language->id)),
+                    'options' => [
+                        'query' => array_merge([0 => ['id_group' => 0, 'name' => $this->l('All groups')]], Group::getGroups((int)$this->context->language->id)),
                         'id' => 'id_group',
                         'name' => 'name'
-                    ),
-                ),
-                array(
+                    ],
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('From quantity'),
                     'name' => 'from_quantity',
                     'maxlength' => 10,
                     'required' => true,
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Price (tax excl.)'),
                     'name' => 'price',
@@ -236,102 +236,102 @@ class AdminSpecificPriceRuleControllerCore extends AdminController
                     'maxlength' => 10,
                     'suffix' => $this->context->currency->getSign('right'),
 
-                ),
-                array(
+                ],
+                [
                     'type' => 'checkbox',
                     'name' => 'leave_bprice',
-                    'values' => array(
-                        'query' => array(
-                            array(
+                    'values' => [
+                        'query' => [
+                            [
                                 'id' => 'on',
                                 'name' => $this->l('Leave base price'),
                                 'val' => '1',
                                 'checked' => '1'
-                            ),
-                        ),
+                            ],
+                        ],
                         'id' => 'id',
                         'name' => 'name'
-                    )
-                ),
-                array(
+                    ]
+                ],
+                [
                     'type' => 'datetime',
                     'label' => $this->l('From'),
                     'name' => 'from'
-                ),
-                array(
+                ],
+                [
                     'type' => 'datetime',
                     'label' => $this->l('To'),
                     'name' => 'to'
-                ),
-                array(
+                ],
+                [
                     'type' => 'select',
                     'label' => $this->l('Reduction type'),
                     'name' => 'reduction_type',
-                    'options' => array(
-                        'query' => array(array('reduction_type' => 'amount', 'name' => $this->l('Amount')), array('reduction_type' => 'percentage', 'name' => $this->l('Percentage'))),
+                    'options' => [
+                        'query' => [['reduction_type' => 'amount', 'name' => $this->l('Amount')], ['reduction_type' => 'percentage', 'name' => $this->l('Percentage')]],
                         'id' => 'reduction_type',
                         'name' => 'name'
-                    ),
-                ),
-                array(
+                    ],
+                ],
+                [
                     'type' => 'select',
                     'label' => $this->l('Reduction with or without taxes'),
                     'name' => 'reduction_tax',
                     'align' => 'center',
-                    'options' => array(
-                        'query' => array(
-                                        array('lab' => $this->l('Tax included'), 'val' => 1),
-                                        array('lab' => $this->l('Tax excluded'), 'val' => 0),
-                                    ),
+                    'options' => [
+                        'query' => [
+                                        ['lab' => $this->l('Tax included'), 'val' => 1],
+                                        ['lab' => $this->l('Tax excluded'), 'val' => 0],
+                        ],
                         'id' => 'val',
                         'name' => 'lab',
-                    )
-                ),
-                array(
+                    ]
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Reduction'),
                     'name' => 'reduction',
                     'required' => true,
-                ),
-            ),
-            'submit' => array(
+                ],
+            ],
+            'submit' => [
                 'title' => $this->l('Save')
-            ),
-        );
+            ],
+        ];
         if (($value = $this->getFieldValue($this->object, 'price')) != -1) {
             $price = number_format($value, 6);
         } else {
             $price = '';
         }
 
-        $this->fields_value = array(
+        $this->fields_value = [
             'price' => $price,
             'from_quantity' => (($value = $this->getFieldValue($this->object, 'from_quantity')) ? $value : 1),
             'reduction' => number_format((($value = $this->getFieldValue($this->object, 'reduction')) ? $value : 0), 6),
             'leave_bprice_on' => $price ? 0 : 1,
             'shop_id' => (($value = $this->getFieldValue($this->object, 'id_shop')) ? $value : 1)
-        );
+        ];
 
-        $attribute_groups = array();
+        $attribute_groups = [];
         $attributes = Attribute::getAttributes((int)$this->context->language->id);
         foreach ($attributes as $attribute) {
             if (!isset($attribute_groups[$attribute['id_attribute_group']])) {
-                $attribute_groups[$attribute['id_attribute_group']]  = array(
+                $attribute_groups[$attribute['id_attribute_group']]  = [
                     'id_attribute_group' => $attribute['id_attribute_group'],
                     'name' => $attribute['attribute_group']
-                );
+                ];
             }
-            $attribute_groups[$attribute['id_attribute_group']]['attributes'][] = array(
+            $attribute_groups[$attribute['id_attribute_group']]['attributes'][] = [
                 'id_attribute' => $attribute['id_attribute'],
                 'name' => $attribute['name']
-            );
+            ];
         }
         $features = Feature::getFeatures((int)$this->context->language->id);
         foreach ($features as &$feature) {
             $feature['values'] = FeatureValue::getFeatureValuesWithLang((int)$this->context->language->id, $feature['id_feature'], true);
         }
 
-        $this->tpl_form_vars = array(
+        $this->tpl_form_vars = [
             'manufacturers' => Manufacturer::getManufacturers(),
             'suppliers' => Supplier::getSuppliers(),
             'attributes_group' => $attribute_groups,
@@ -339,7 +339,7 @@ class AdminSpecificPriceRuleControllerCore extends AdminController
             'categories' => Category::getSimpleCategories((int)$this->context->language->id),
             'conditions' => $this->object->getConditions(),
             'is_multishop' => Shop::isFeatureActive()
-            );
+        ];
         return parent::renderForm();
     }
 
@@ -351,10 +351,10 @@ class AdminSpecificPriceRuleControllerCore extends AdminController
             $object->deleteConditions();
             foreach ($_POST as $key => $values) {
                 if (preg_match('/^condition_group_([0-9]+)$/Ui', $key, $condition_group)) {
-                    $conditions = array();
+                    $conditions = [];
                     foreach ($values as $value) {
                         $condition = explode('_', $value);
-                        $conditions[] = array('type' => $condition[0], 'value' => $condition[1]);
+                        $conditions[] = ['type' => $condition[0], 'value' => $condition[1]];
                     }
                     $object->addConditions($conditions);
                 }

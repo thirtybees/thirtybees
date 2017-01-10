@@ -51,7 +51,7 @@ abstract class StockManagerModuleCore extends Module
         }
 
         $class = $this->stock_manager_class;
-        if (call_user_func(array($class, 'isAvailable'))) {
+        if (call_user_func([$class, 'isAvailable'])) {
             return new $class();
         }
 

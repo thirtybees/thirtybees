@@ -37,14 +37,14 @@ class AdminStatusesControllerCore extends AdminController
         $this->lang = true;
         $this->deleted = false;
         $this->colorOnBackground = false;
-        $this->bulk_actions = array('delete' => array('text' => $this->l('Delete selected'), 'confirm' => $this->l('Delete selected items?')));
+        $this->bulk_actions = ['delete' => ['text' => $this->l('Delete selected'), 'confirm' => $this->l('Delete selected items?')]];
         $this->context = Context::getContext();
         $this->multishop_context = Shop::CONTEXT_ALL;
         $this->imageType = 'gif';
-        $this->fieldImageSettings = array(
+        $this->fieldImageSettings = [
             'name' => 'icon',
             'dir' => 'os'
-        );
+        ];
         parent::__construct();
     }
 
@@ -65,26 +65,26 @@ class AdminStatusesControllerCore extends AdminController
      */
     protected function initOrderStatutsList()
     {
-        $this->fields_list = array(
-            'id_order_state' => array(
+        $this->fields_list = [
+            'id_order_state' => [
                 'title' => $this->l('ID'),
                 'align' => 'text-center',
                 'class' => 'fixed-width-xs'
-            ),
-            'name' => array(
+            ],
+            'name' => [
                 'title' => $this->l('Name'),
                 'width' => 'auto',
                 'color' => 'color'
-            ),
-            'logo' => array(
+            ],
+            'logo' => [
                 'title' => $this->l('Icon'),
                 'align' => 'text-center',
                 'image' => 'os',
                 'orderby' => false,
                 'search' => false,
                 'class' => 'fixed-width-xs'
-            ),
-            'send_email' => array(
+            ],
+            'send_email' => [
                 'title' => $this->l('Send email to customer'),
                 'align' => 'text-center',
                 'active' => 'sendEmail',
@@ -92,8 +92,8 @@ class AdminStatusesControllerCore extends AdminController
                 'ajax' => true,
                 'orderby' => false,
                 'class' => 'fixed-width-sm'
-            ),
-            'delivery' => array(
+            ],
+            'delivery' => [
                 'title' => $this->l('Delivery'),
                 'align' => 'text-center',
                 'active' => 'delivery',
@@ -101,9 +101,9 @@ class AdminStatusesControllerCore extends AdminController
                 'ajax' => true,
                 'orderby' => false,
                 'class' => 'fixed-width-sm'
-            )
+            ]
             ,
-            'invoice' => array(
+            'invoice' => [
                 'title' => $this->l('Invoice'),
                 'align' => 'text-center',
                 'active' => 'invoice',
@@ -111,11 +111,11 @@ class AdminStatusesControllerCore extends AdminController
                 'ajax' => true,
                 'orderby' => false,
                 'class' => 'fixed-width-sm'
-            ),
-            'template' => array(
+            ],
+            'template' => [
                 'title' => $this->l('Email template')
-            )
-        );
+            ]
+        ];
     }
 
     /**
@@ -130,19 +130,19 @@ class AdminStatusesControllerCore extends AdminController
         $this->deleted = false;
         $this->_orderBy = null;
 
-        $this->fields_list = array(
-            'id_order_return_state' => array(
+        $this->fields_list = [
+            'id_order_return_state' => [
                 'title' => $this->l('ID'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs'
-            ),
-            'name' => array(
+            ],
+            'name' => [
                 'title' => $this->l('Name'),
                 'align' => 'left',
                 'width' => 'auto',
                 'color' => 'color'
-            )
-        );
+            ]
+        ];
     }
 
     protected function initOrderReturnsForm()
@@ -153,7 +153,7 @@ class AdminStatusesControllerCore extends AdminController
         $order_return_state = new OrderReturnState($id_order_return_state);
 
         //init field form variable for order return form
-        $this->fields_form = array();
+        $this->fields_form = [];
 
         //$this->initToolbar();
         $this->getlanguages();
@@ -169,15 +169,15 @@ class AdminStatusesControllerCore extends AdminController
         $helper->allow_employee_form_lang = $this->allow_employee_form_lang;
 
         if ($order_return_state->id) {
-            $helper->fields_value = array(
+            $helper->fields_value = [
                 'name' => $this->getFieldValue($order_return_state, 'name'),
                 'color' => $this->getFieldValue($order_return_state, 'color'),
-            );
+            ];
         } else {
-            $helper->fields_value = array(
+            $helper->fields_value = [
                 'name' => $this->getFieldValue($order_return_state, 'name'),
                 'color' => "#ffffff",
-            );
+            ];
         }
 
         $helper->toolbar_btn = $this->toolbar_btn;
@@ -188,16 +188,16 @@ class AdminStatusesControllerCore extends AdminController
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
-            $this->page_header_toolbar_btn['new_order_state'] = array(
+            $this->page_header_toolbar_btn['new_order_state'] = [
                 'href' => self::$currentIndex.'&addorder_state&token='.$this->token,
                 'desc' => $this->l('Add new order status', null, null, false),
                 'icon' => 'process-icon-new'
-            );
-            $this->page_header_toolbar_btn['new_order_return_state'] = array(
+            ];
+            $this->page_header_toolbar_btn['new_order_return_state'] = [
                 'href' => self::$currentIndex.'&addorder_return_state&token='.$this->token,
                 'desc' => $this->l('Add new order return status', null, null, false),
                 'icon' => 'process-icon-new'
-            );
+            ];
         }
 
         parent::initPageHeaderToolbar();
@@ -212,25 +212,25 @@ class AdminStatusesControllerCore extends AdminController
         $this->addRowAction('edit');
         $this->addRowAction('delete');
 
-        $unremovable_os = array();
+        $unremovable_os = [];
         $buf = Db::getInstance()->executeS('SELECT id_order_state FROM '._DB_PREFIX_.'order_state WHERE unremovable = 1');
         foreach ($buf as $row) $unremovable_os[] = $row['id_order_state'];
         $this->addRowActionSkipList('delete', $unremovable_os);
 
-        $this->bulk_actions = array(
-            'delete' => array(
+        $this->bulk_actions = [
+            'delete' => [
                 'text' => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
                 'icon' => 'icon-trash',
-            )
-        );
+            ]
+        ];
         $this->initOrderStatutsList();
         $lists = parent::renderList();
 
         //init and render the second list
-        $this->list_skip_actions = array();
+        $this->list_skip_actions = [];
         $this->_filter = false;
-        $this->addRowActionSkipList('delete', array(1, 2, 3, 4, 5));
+        $this->addRowActionSkipList('delete', [1, 2, 3, 4, 5]);
         $this->initOrdersReturnsList();
         $this->checkFilterForOrdersReturnsList();
 
@@ -261,156 +261,156 @@ class AdminStatusesControllerCore extends AdminController
 
     public function renderForm()
     {
-        $this->fields_form = array(
+        $this->fields_form = [
             'tinymce' => true,
-            'legend' => array(
+            'legend' => [
                 'title' => $this->l('Order status'),
                 'icon' => 'icon-time'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'text',
                     'label' => $this->l('Status name'),
                     'name' => 'name',
                     'lang' => true,
                     'required' => true,
-                    'hint' => array(
+                    'hint' => [
                         $this->l('Order status (e.g. \'Pending\').'),
                         $this->l('Invalid characters: numbers and').' !<>,;?=+()@#"{}_$%:'
-                    )
-                ),
-                array(
+                    ]
+                ],
+                [
                     'type' => 'file',
                     'label' => $this->l('Icon'),
                     'name' => 'icon',
                     'hint' => $this->l('Upload an icon from your computer (File type: .gif, suggested size: 16x16).')
-                ),
-                array(
+                ],
+                [
                     'type' => 'color',
                     'label' => $this->l('Color'),
                     'name' => 'color',
                     'hint' => $this->l('Status will be highlighted in this color. HTML colors only.').' "lightblue", "#CC6600")'
-                ),
-                array(
+                ],
+                [
                     'type' => 'checkbox',
                     'name' => 'logable',
-                    'values' => array(
-                        'query' => array(
-                            array('id' => 'on', 'name' => $this->l('Consider the associated order as validated.'), 'val' => '1'),
-                            ),
+                    'values' => [
+                        'query' => [
+                            ['id' => 'on', 'name' => $this->l('Consider the associated order as validated.'), 'val' => '1'],
+                        ],
                         'id' => 'id',
                         'name' => 'name'
-                    )
-                ),
-                array(
+                    ]
+                ],
+                [
                     'type' => 'checkbox',
                     'name' => 'invoice',
-                    'values' => array(
-                        'query' => array(
-                            array('id' => 'on', 'name' => $this->l('Allow a customer to download and view PDF versions of his/her invoices.'), 'val' => '1'),
-                            ),
+                    'values' => [
+                        'query' => [
+                            ['id' => 'on', 'name' => $this->l('Allow a customer to download and view PDF versions of his/her invoices.'), 'val' => '1'],
+                        ],
                         'id' => 'id',
                         'name' => 'name'
-                    )
-                ),
-                array(
+                    ]
+                ],
+                [
                     'type' => 'checkbox',
                     'name' => 'hidden',
-                    'values' => array(
-                        'query' => array(
-                            array('id' => 'on', 'name' => $this->l('Hide this status in all customer orders.'), 'val' => '1'),
-                            ),
+                    'values' => [
+                        'query' => [
+                            ['id' => 'on', 'name' => $this->l('Hide this status in all customer orders.'), 'val' => '1'],
+                        ],
                         'id' => 'id',
                         'name' => 'name'
-                    )
-                ),
-                array(
+                    ]
+                ],
+                [
                     'type' => 'checkbox',
                     'name' => 'send_email',
-                    'values' => array(
-                        'query' => array(
-                            array('id' => 'on', 'name' => $this->l('Send an email to the customer when his/her order status has changed.'), 'val' => '1'),
-                            ),
+                    'values' => [
+                        'query' => [
+                            ['id' => 'on', 'name' => $this->l('Send an email to the customer when his/her order status has changed.'), 'val' => '1'],
+                        ],
                         'id' => 'id',
                         'name' => 'name'
-                    )
-                ),
-                array(
+                    ]
+                ],
+                [
                     'type' => 'checkbox',
                     'name' => 'pdf_invoice',
-                    'values' => array(
-                        'query' => array(
-                            array('id' => 'on',  'name' => $this->l('Attach invoice PDF to email.'), 'val' => '1'),
-                            ),
+                    'values' => [
+                        'query' => [
+                            ['id' => 'on',  'name' => $this->l('Attach invoice PDF to email.'), 'val' => '1'],
+                        ],
                         'id' => 'id',
                         'name' => 'name'
-                    ),
-                ),
-                array(
+                    ],
+                ],
+                [
                     'type' => 'checkbox',
                     'name' => 'pdf_delivery',
-                    'values' => array(
-                        'query' => array(
-                            array('id' => 'on',  'name' => $this->l('Attach delivery slip PDF to email.'), 'val' => '1'),
-                            ),
+                    'values' => [
+                        'query' => [
+                            ['id' => 'on',  'name' => $this->l('Attach delivery slip PDF to email.'), 'val' => '1'],
+                        ],
                         'id' => 'id',
                         'name' => 'name'
-                    ),
-                ),
-                array(
+                    ],
+                ],
+                [
                     'type' => 'checkbox',
                     'name' => 'shipped',
-                    'values' => array(
-                        'query' => array(
-                            array('id' => 'on',  'name' => $this->l('Set the order as shipped.'), 'val' => '1'),
-                            ),
+                    'values' => [
+                        'query' => [
+                            ['id' => 'on',  'name' => $this->l('Set the order as shipped.'), 'val' => '1'],
+                        ],
                         'id' => 'id',
                         'name' => 'name'
-                    )
-                ),
-                array(
+                    ]
+                ],
+                [
                     'type' => 'checkbox',
                     'name' => 'paid',
-                    'values' => array(
-                        'query' => array(
-                            array('id' => 'on', 'name' => $this->l('Set the order as paid.'), 'val' => '1'),
-                            ),
+                    'values' => [
+                        'query' => [
+                            ['id' => 'on', 'name' => $this->l('Set the order as paid.'), 'val' => '1'],
+                        ],
                         'id' => 'id',
                         'name' => 'name'
-                    )
-                ),
-                array(
+                    ]
+                ],
+                [
                     'type' => 'checkbox',
                     'name' => 'delivery',
-                    'values' => array(
-                        'query' => array(
-                            array('id' => 'on', 'name' => $this->l('Show delivery PDF.'), 'val' => '1'),
-                            ),
+                    'values' => [
+                        'query' => [
+                            ['id' => 'on', 'name' => $this->l('Show delivery PDF.'), 'val' => '1'],
+                        ],
                         'id' => 'id',
                         'name' => 'name'
-                    )
-                ),
-                array(
+                    ]
+                ],
+                [
                     'type' => 'select_template',
                     'label' => $this->l('Template'),
                     'name' => 'template',
                     'lang' => true,
-                    'options' => array(
+                    'options' => [
                         'query' => $this->getTemplates(),
                         'id' => 'id',
                         'name' => 'name',
                         'folder' => 'folder'
-                    ),
-                    'hint' => array(
+                    ],
+                    'hint' => [
                         $this->l('Only letters, numbers and underscores ("_") are allowed.'),
                         $this->l('Email template for both .html and .txt.')
-                    )
-                )
-            ),
-            'submit' => array(
+                    ]
+                ]
+            ],
+            'submit' => [
                 'title' => $this->l('Save'),
-            )
-        );
+            ]
+        ];
 
         if (Tools::isSubmit('updateorder_state') || Tools::isSubmit('addorder_state')) {
             return $this->renderOrderStatusForm();
@@ -427,7 +427,7 @@ class AdminStatusesControllerCore extends AdminController
             return;
         }
 
-        $this->fields_value = array(
+        $this->fields_value = [
             'logable_on' => $this->getFieldValue($obj, 'logable'),
             'invoice_on' => $this->getFieldValue($obj, 'invoice'),
             'hidden_on' => $this->getFieldValue($obj, 'hidden'),
@@ -437,7 +437,7 @@ class AdminStatusesControllerCore extends AdminController
             'delivery_on' => $this->getFieldValue($obj, 'delivery'),
             'pdf_delivery_on' => $this->getFieldValue($obj, 'pdf_delivery'),
             'pdf_invoice_on' => $this->getFieldValue($obj, 'pdf_invoice'),
-        );
+        ];
 
         if ($this->getFieldValue($obj, 'color') !== false) {
             $this->fields_value['color'] = $this->getFieldValue($obj, 'color');
@@ -463,35 +463,35 @@ class AdminStatusesControllerCore extends AdminController
 
         $helper->back_url = $back;
 
-        $this->fields_form[0]['form'] = array(
+        $this->fields_form[0]['form'] = [
             'tinymce' => true,
-            'legend' => array(
+            'legend' => [
                 'title' => $this->l('Return status'),
                 'icon' => 'icon-time'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'text',
                     'label' => $this->l('Status name'),
                     'name' => 'name',
                     'lang' => true,
                     'required' => true,
-                    'hint' => array(
+                    'hint' => [
                         $this->l('Order\'s return status name.'),
                         $this->l('Invalid characters: numbers and').' !<>,;?=+()@#"�{}_$%:'
-                    )
-                ),
-                array(
+                    ]
+                ],
+                [
                     'type' => 'color',
                     'label' => $this->l('Color'),
                     'name' => 'color',
                     'hint' => $this->l('Status will be highlighted in this color. HTML colors only.').' "lightblue", "#CC6600")'
-                )
-            ),
-            'submit' => array(
+                ]
+            ],
+            'submit' => [
                 'title' => $this->l('Save'),
-            )
-        );
+            ]
+        ];
         return $helper->generateForm($this->fields_form);
     }
 
@@ -501,7 +501,7 @@ class AdminStatusesControllerCore extends AdminController
         $default_path = '../mails/';
         $theme_path = '../themes/'.$theme->directory.'/mails/'; // Mail templates can also be found in the theme folder
 
-        $array = array();
+        $array = [];
         foreach (Language::getLanguages(false) as $language) {
             $iso_code = $language['iso_code'];
 
@@ -511,17 +511,17 @@ class AdminStatusesControllerCore extends AdminController
             }
 
             $theme_templates_dir = _PS_ADMIN_DIR_.'/'.$theme_path.$iso_code;
-            $theme_templates = is_dir($theme_templates_dir) ? scandir($theme_templates_dir) : array();
+            $theme_templates = is_dir($theme_templates_dir) ? scandir($theme_templates_dir) : [];
             // We merge all available emails in one array
             $templates = array_unique(array_merge(scandir(_PS_ADMIN_DIR_.'/'.$default_path.$iso_code), $theme_templates));
             foreach ($templates as $key => $template) {
                 if (!strncmp(strrev($template), 'lmth.', 5)) {
                     $search_result = array_search($template, $theme_templates);
-                    $array[$iso_code][] = array(
+                    $array[$iso_code][] = [
                                 'id' => substr($template, 0, -5),
                                 'name' => substr($template, 0, -5),
                                 'folder' => ((!empty($search_result)?$theme_path:$default_path))
-                    );
+                    ];
                 }
             }
         }
@@ -542,7 +542,7 @@ class AdminStatusesControllerCore extends AdminController
             $order_return_state = new OrderReturnState((int)$id_order_return_state);
 
             $order_return_state->color = Tools::getValue('color');
-            $order_return_state->name = array();
+            $order_return_state->name = [];
             foreach (Language::getIDs(false) as $id_lang) {
                 $order_return_state->name[$id_lang] = Tools::getValue('name_'.$id_lang);
             }
@@ -652,9 +652,9 @@ class AdminStatusesControllerCore extends AdminController
         $result = Db::getInstance()->execute($sql);
 
         if ($result) {
-            echo json_encode(array('success' => 1, 'text' => $this->l('The status has been updated successfully.')));
+            echo json_encode(['success' => 1, 'text' => $this->l('The status has been updated successfully.')]);
         } else {
-            echo json_encode(array('success' => 0, 'text' => $this->l('An error occurred while updating this meta.')));
+            echo json_encode(['success' => 0, 'text' => $this->l('An error occurred while updating this meta.')]);
         }
     }
 
@@ -666,9 +666,9 @@ class AdminStatusesControllerCore extends AdminController
         $result = Db::getInstance()->execute($sql);
 
         if ($result) {
-            echo json_encode(array('success' => 1, 'text' => $this->l('The status has been updated successfully.')));
+            echo json_encode(['success' => 1, 'text' => $this->l('The status has been updated successfully.')]);
         } else {
-            echo json_encode(array('success' => 0, 'text' => $this->l('An error occurred while updating this meta.')));
+            echo json_encode(['success' => 0, 'text' => $this->l('An error occurred while updating this meta.')]);
         }
     }
 
@@ -680,9 +680,9 @@ class AdminStatusesControllerCore extends AdminController
         $result = Db::getInstance()->execute($sql);
 
         if ($result) {
-            echo json_encode(array('success' => 1, 'text' => $this->l('The status has been updated successfully.')));
+            echo json_encode(['success' => 1, 'text' => $this->l('The status has been updated successfully.')]);
         } else {
-            echo json_encode(array('success' => 0, 'text' => $this->l('An error occurred while updating this meta.')));
+            echo json_encode(['success' => 0, 'text' => $this->l('An error occurred while updating this meta.')]);
         }
     }
 }

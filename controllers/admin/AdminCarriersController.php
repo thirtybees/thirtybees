@@ -50,64 +50,64 @@ class AdminCarriersControllerCore extends AdminController
 
         $this->context = Context::getContext();
 
-        $this->bulk_actions = array(
-            'delete' => array(
+        $this->bulk_actions = [
+            'delete' => [
                 'text' => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
                 'icon' => 'icon-trash'
-            )
-        );
+            ]
+        ];
 
-        $this->fieldImageSettings = array(
+        $this->fieldImageSettings = [
             'name' => 'logo',
             'dir' => 's'
-        );
+        ];
 
-        $this->fields_list = array(
-            'id_carrier' => array(
+        $this->fields_list = [
+            'id_carrier' => [
                 'title' => $this->l('ID'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs'
-            ),
-            'name' => array(
+            ],
+            'name' => [
                 'title' => $this->l('Name')
-            ),
-            'image' => array(
+            ],
+            'image' => [
                 'title' => $this->l('Logo'),
                 'align' => 'center',
                 'image' => 's',
                 'class' => 'fixed-width-xs',
                 'orderby' => false,
                 'search' => false
-            ),
-            'delay' => array(
+            ],
+            'delay' => [
                 'title' => $this->l('Delay'),
                 'orderby' => false
-            ),
-            'active' => array(
+            ],
+            'active' => [
                 'title' => $this->l('Status'),
                 'align' => 'center',
                 'active' => 'status',
                 'type' => 'bool',
                 'class' => 'fixed-width-sm',
                 'orderby' => false,
-            ),
-            'is_free' => array(
+            ],
+            'is_free' => [
                 'title' => $this->l('Free Shipping'),
                 'align' => 'center',
                 'active' => 'isFree',
                 'type' => 'bool',
                 'class' => 'fixed-width-sm',
                 'orderby' => false,
-            ),
-            'position' => array(
+            ],
+            'position' => [
                 'title' => $this->l('Position'),
                 'filter_key' => 'a!position',
                 'align' => 'center',
                 'class' => 'fixed-width-sm',
                 'position' => 'position'
-            )
-        );
+            ]
+        ];
         parent::__construct();
 
         if (Tools::isSubmit('onboarding_carrier')) {
@@ -128,11 +128,11 @@ class AdminCarriersControllerCore extends AdminController
     {
         $this->page_header_toolbar_title = $this->l('Carriers');
         if ($this->display != 'view') {
-            $this->page_header_toolbar_btn['new_carrier'] = array(
+            $this->page_header_toolbar_btn['new_carrier'] = [
                 'href' => $this->context->link->getAdminLink('AdminCarriers').'&onboarding_carrier',
                 'desc' => $this->l('Add new carrier', null, null, false),
                 'icon' => 'process-icon-new'
-            );
+            ];
         }
 
         parent::initPageHeaderToolbar();
@@ -143,7 +143,7 @@ class AdminCarriersControllerCore extends AdminController
         $this->initTabModuleList();
         $this->filterTabModuleList();
         $this->context->smarty->assign('panel_title', $this->l('Use one of our recommended carrier modules'));
-        $this->tpl_view_vars = array('modules_list' => $this->renderModulesList());
+        $this->tpl_view_vars = ['modules_list' => $this->renderModulesList()];
         unset($this->page_header_toolbar_btn['modules-list']);
         return parent::renderView();
     }
@@ -158,30 +158,30 @@ class AdminCarriersControllerCore extends AdminController
 
     public function renderForm()
     {
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('Carriers'),
                 'icon' => 'icon-truck'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'text',
                     'label' => $this->l('Company'),
                     'name' => 'name',
                     'required' => true,
-                    'hint' => array(
+                    'hint' => [
                         sprintf($this->l('Allowed characters: letters, spaces and %s'), '().-'),
                         $this->l('Carrier name displayed during checkout'),
                         $this->l('For in-store pickup, enter 0 to replace the carrier name with your shop name.')
-                    )
-                ),
-                array(
+                    ]
+                ],
+                [
                     'type' => 'file',
                     'label' => $this->l('Logo'),
                     'name' => 'logo',
                     'hint' => $this->l('Upload a logo from your computer.').' (.gif, .jpg, .jpeg '.$this->l('or').' .png)'
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Transit time'),
                     'name' => 'delay',
@@ -189,217 +189,217 @@ class AdminCarriersControllerCore extends AdminController
                     'required' => true,
                     'maxlength' => 128,
                     'hint' => $this->l('Estimated delivery time will be displayed during checkout.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Speed grade'),
                     'name' => 'grade',
                     'required' => false,
                     'hint' => $this->l('Enter "0" for a longest shipping delay, or "9" for the shortest shipping delay.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('URL'),
                     'name' => 'url',
                     'hint' => $this->l('Delivery tracking URL: Type \'@\' where the tracking number should appear. It will then be automatically replaced by the tracking number.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'checkbox',
                     'label' => $this->l('Zone'),
                     'name' => 'zone',
-                    'values' => array(
+                    'values' => [
                         'query' => Zone::getZones(false),
                         'id' => 'id_zone',
                         'name' => 'name'
-                    ),
+                    ],
                     'hint' => $this->l('The zones in which this carrier will be used.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'group',
                     'label' => $this->l('Group access'),
                     'name' => 'groupBox',
                     'values' => Group::getGroups(Context::getContext()->language->id),
                     'hint' => $this->l('Mark the groups that are allowed access to this carrier.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Status'),
                     'name' => 'active',
                     'required' => false,
                     'class' => 't',
                     'is_bool' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'active_on',
                             'value' => 1,
                             'label' => $this->l('Enabled')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'active_off',
                             'value' => 0,
                             'label' => $this->l('Disabled')
-                        )
-                    ),
+                        ]
+                    ],
                     'hint' => $this->l('Enable the carrier in the front office.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Apply shipping cost'),
                     'name' => 'is_free',
                     'required' => false,
                     'class' => 't',
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'is_free_on',
                             'value' => 0,
                             'label' => '<img src="../img/admin/enabled.gif" alt="'.$this->l('Yes').'" title="'.$this->l('Yes').'" />'
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'is_free_off',
                             'value' => 1,
                             'label' => '<img src="../img/admin/disabled.gif" alt="'.$this->l('No').'" title="'.$this->l('No').'" />'
-                        )
-                    ),
+                        ]
+                    ],
                     'hint' => $this->l('Apply both regular shipping cost and product-specific shipping costs.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'select',
                     'label' => $this->l('Tax'),
                     'name' => 'id_tax_rules_group',
-                    'options' => array(
+                    'options' => [
                         'query' => TaxRulesGroup::getTaxRulesGroups(true),
                         'id' => 'id_tax_rules_group',
                         'name' => 'name',
-                        'default' => array(
+                        'default' => [
                             'label' => $this->l('No Tax'),
                             'value' => 0
-                        )
-                    )
-                ),
-                array(
+                        ]
+                    ]
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Shipping and handling'),
                     'name' => 'shipping_handling',
                     'required' => false,
                     'class' => 't',
                     'is_bool' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'shipping_handling_on',
                             'value' => 1,
                             'label' => $this->l('Enabled')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'shipping_handling_off',
                             'value' => 0,
                             'label' => $this->l('Disabled')
-                        )
-                    ),
+                        ]
+                    ],
                     'hint' => $this->l('Include the shipping and handling costs in the carrier price.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'radio',
                     'label' => $this->l('Billing'),
                     'name' => 'shipping_method',
                     'required' => false,
                     'class' => 't',
                     'br' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'billing_default',
                             'value' => Carrier::SHIPPING_METHOD_DEFAULT,
                             'label' => $this->l('Default behavior')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'billing_price',
                             'value' => Carrier::SHIPPING_METHOD_PRICE,
                             'label' => $this->l('According to total price')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'billing_weight',
                             'value' => Carrier::SHIPPING_METHOD_WEIGHT,
                             'label' => $this->l('According to total weight')
-                        )
-                    )
-                ),
-                array(
+                        ]
+                    ]
+                ],
+                [
                     'type' => 'select',
                     'label' => $this->l('Out-of-range behavior'),
                     'name' => 'range_behavior',
-                    'options' => array(
-                        'query' => array(
-                            array(
+                    'options' => [
+                        'query' => [
+                            [
                                 'id' => 0,
                                 'name' => $this->l('Apply the cost of the highest defined range')
-                            ),
-                            array(
+                            ],
+                            [
                                 'id' => 1,
                                 'name' => $this->l('Disable carrier')
-                            )
-                        ),
+                            ]
+                        ],
                         'id' => 'id',
                         'name' => 'name'
-                    ),
+                    ],
                     'hint' => $this->l('Out-of-range behavior occurs when none is defined (e.g. when a customer\'s cart weight is greater than the highest range limit).')
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Maximum package height'),
                     'name' => 'max_height',
                     'required' => false,
                     'hint' => $this->l('Maximum height managed by this carrier. Set the value to "0," or leave this field blank to ignore.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Maximum package width'),
                     'name' => 'max_width',
                     'required' => false,
                     'hint' => $this->l('Maximum width managed by this carrier. Set the value to "0," or leave this field blank to ignore.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Maximum package depth'),
                     'name' => 'max_depth',
                     'required' => false,
                     'hint' => $this->l('Maximum depth managed by this carrier. Set the value to "0," or leave this field blank to ignore.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Maximum package weight'),
                     'name' => 'max_weight',
                     'required' => false,
                     'hint' => $this->l('Maximum weight managed by this carrier. Set the value to "0," or leave this field blank to ignore.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'hidden',
                     'name' => 'is_module'
-                ),
-                array(
+                ],
+                [
                     'type' => 'hidden',
                     'name' => 'external_module_name',
-                ),
-                array(
+                ],
+                [
                     'type' => 'hidden',
                     'name' => 'shipping_external'
-                ),
-                array(
+                ],
+                [
                     'type' => 'hidden',
                     'name' => 'need_range'
-                ),
-            )
-        );
+                ],
+            ]
+        ];
 
         if (Shop::isFeatureActive()) {
-            $this->fields_form['input'][] = array(
+            $this->fields_form['input'][] = [
                 'type' => 'shop',
                 'label' => $this->l('Shop association'),
                 'name' => 'checkBoxShopAsso',
-            );
+            ];
         }
 
-        $this->fields_form['submit'] = array(
+        $this->fields_form['submit'] = [
             'title' => $this->l('Save'),
-        );
+        ];
 
         if (!($obj = $this->loadObject(true))) {
             return;
@@ -447,10 +447,11 @@ class AdminCarriersControllerCore extends AdminController
                                 $new_carrier->copyCarrierData((int)$current_carrier->id);
                                 $this->changeGroups($new_carrier->id);
                                 // Call of hooks
-                                Hook::exec('actionCarrierUpdate', array(
+                                Hook::exec('actionCarrierUpdate', [
                                     'id_carrier' => (int)$current_carrier->id,
                                     'carrier' => $new_carrier
-                                ));
+                                ]
+                                );
                                 $this->postImage($new_carrier->id);
                                 $this->changeZones($new_carrier->id);
                                 $new_carrier->setTaxRulesGroup((int)Tools::getValue('id_tax_rules_group'));
@@ -569,7 +570,7 @@ elseif ((isset($_GET['status'.$this->table]) || isset($_GET['status'])) && Tools
         }
         // Added values of object Zone
         $carrier_zones = $obj->getZones();
-        $carrier_zones_ids = array();
+        $carrier_zones_ids = [];
         if (is_array($carrier_zones)) {
             foreach ($carrier_zones as $carrier_zone) {
                 $carrier_zones_ids[] = $carrier_zone['id_zone'];
@@ -583,7 +584,7 @@ elseif ((isset($_GET['status'.$this->table]) || isset($_GET['status'])) && Tools
 
         // Added values of object Group
         $carrier_groups = $obj->getGroups();
-        $carrier_groups_ids = array();
+        $carrier_groups_ids = [];
         if (is_array($carrier_groups)) {
             foreach ($carrier_groups as $carrier_group) {
                 $carrier_groups_ids[] = $carrier_group['id_group'];
@@ -699,11 +700,13 @@ elseif ((isset($_GET['status'.$this->table]) || isset($_GET['status'])) && Tools
                 self::$cache_lang['Edit'] = $this->l('Edit', 'Helper');
             }
 
-            $tpl->assign(array(
+            $tpl->assign(
+                [
                 'href' => $this->context->link->getAdminLink('AdminCarrierWizard').'&id_carrier='.(int)$id,
                 'action' => self::$cache_lang['Edit'],
                 'id' => $id
-            ));
+                ]
+            );
 
             return $tpl->fetch();
         } else {
@@ -732,11 +735,11 @@ elseif ((isset($_GET['status'.$this->table]) || isset($_GET['status'])) && Tools
                 $name = '\n\n'.self::$cache_lang['Name'].' '.$name;
             }
 
-            $data = array(
+            $data = [
                 $this->identifier => $id,
                 'href' => $this->context->link->getAdminLink('AdminCarriers').'&id_carrier='.(int)$id.'&deletecarrier=1',
                 'action' => self::$cache_lang['Delete'],
-            );
+            ];
 
             if ($this->specificConfirmDelete !== false) {
                 $data['confirm'] = !is_null($this->specificConfirmDelete) ? '\r'.$this->specificConfirmDelete : addcslashes(Tools::htmlentitiesDecodeUTF8(self::$cache_lang['DeleteItem'].$name), '\'');

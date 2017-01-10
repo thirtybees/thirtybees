@@ -88,7 +88,7 @@ abstract class PaymentModuleCore extends Module
      *
      * @return bool
      */
-    public function addCheckboxCurrencyRestrictionsForModule(array $shops = array())
+    public function addCheckboxCurrencyRestrictionsForModule(array $shops = [])
     {
         if (!$shops) {
             $shops = Shop::getShops(true, null, true);
@@ -110,7 +110,7 @@ abstract class PaymentModuleCore extends Module
      *
      * @return bool
      */
-    public function addRadioCurrencyRestrictionsForModule(array $shops = array())
+    public function addRadioCurrencyRestrictionsForModule(array $shops = [])
     {
         if (!$shops) {
             $shops = Shop::getShops(true, null, true);
@@ -131,14 +131,14 @@ abstract class PaymentModuleCore extends Module
      *
      * @return bool
      */
-    public function addCheckboxCountryRestrictionsForModule(array $shops = array())
+    public function addCheckboxCountryRestrictionsForModule(array $shops = [])
     {
         $countries = Country::getCountries((int)Context::getContext()->language->id, true); //get only active country
-        $country_ids = array();
+        $country_ids = [];
         foreach ($countries as $country) {
             $country_ids[] = $country['id_country'];
         }
-        return Country::addModuleRestrictions($shops, $countries, array(array('id_module' => (int)$this->id)));
+        return Country::addModuleRestrictions($shops, $countries, [['id_module' => (int)$this->id]]);
     }
 
     /**
@@ -160,7 +160,7 @@ abstract class PaymentModuleCore extends Module
      * @throws PrestaShopException
      */
     public function validateOrder($id_cart, $id_order_state, $amount_paid, $payment_method = 'Unknown',
-        $message = null, $extra_vars = array(), $currency_special = null, $dont_touch_amount = false,
+        $message = null, $extra_vars = [], $currency_special = null, $dont_touch_amount = false,
         $secure_key = false, Shop $shop = null)
     {
         if (self::DEBUG_MODE) {
@@ -217,8 +217,8 @@ abstract class PaymentModuleCore extends Module
                 }
             }
 
-            $order_list = array();
-            $order_detail_list = array();
+            $order_list = [];
+            $order_detail_list = [];
 
             do {
                 $reference = Order::generateReference();
@@ -414,7 +414,7 @@ abstract class PaymentModuleCore extends Module
 
             // Next !
             $only_one_gift = false;
-            $cart_rule_used = array();
+            $cart_rule_used = [];
             $products = $this->context->cart->getProducts();
 
             // Make sure CartRule caches are empty
@@ -452,25 +452,25 @@ abstract class PaymentModuleCore extends Module
                     $products_list = '';
                     $virtual_product = true;
 
-                    $product_var_tpl_list = array();
+                    $product_var_tpl_list = [];
                     foreach ($order->product_list as $product) {
                         $price = Product::getPriceStatic((int)$product['id_product'], false, ($product['id_product_attribute'] ? (int)$product['id_product_attribute'] : null), 6, null, false, true, $product['cart_quantity'], false, (int)$order->id_customer, (int)$order->id_cart, (int)$order->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
                         $price_wt = Product::getPriceStatic((int)$product['id_product'], true, ($product['id_product_attribute'] ? (int)$product['id_product_attribute'] : null), 2, null, false, true, $product['cart_quantity'], false, (int)$order->id_customer, (int)$order->id_cart, (int)$order->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
 
                         $product_price = Product::getTaxCalculationMethod() == PS_TAX_EXC ? Tools::ps_round($price, 2) : $price_wt;
 
-                        $product_var_tpl = array(
+                        $product_var_tpl = [
                             'reference' => $product['reference'],
                             'name' => $product['name'].(isset($product['attributes']) ? ' - '.$product['attributes'] : ''),
                             'unit_price' => Tools::displayPrice($product_price, $this->context->currency, false),
                             'price' => Tools::displayPrice($product_price * $product['quantity'], $this->context->currency, false),
                             'quantity' => $product['quantity'],
-                            'customization' => array()
-                        );
+                            'customization' => []
+                        ];
 
                         $customized_datas = Product::getAllCustomizedDatas((int)$order->id_cart);
                         if (isset($customized_datas[$product['id_product']][$product['id_product_attribute']])) {
-                            $product_var_tpl['customization'] = array();
+                            $product_var_tpl['customization'] = [];
                             foreach ($customized_datas[$product['id_product']][$product['id_product_attribute']][$order->id_address_delivery] as $customization) {
                                 $customization_text = '';
                                 if (isset($customization['datas'][Product::CUSTOMIZE_TEXTFIELD])) {
@@ -485,11 +485,11 @@ abstract class PaymentModuleCore extends Module
 
                                 $customization_quantity = (int)$product['customization_quantity'];
 
-                                $product_var_tpl['customization'][] = array(
+                                $product_var_tpl['customization'][] = [
                                     'customization_text' => $customization_text,
                                     'customization_quantity' => $customization_quantity,
                                     'quantity' => Tools::displayPrice($customization_quantity * $product_price, $this->context->currency, false)
-                                );
+                                ];
                             }
                         }
 
@@ -507,15 +507,15 @@ abstract class PaymentModuleCore extends Module
                         $product_list_html = $this->getEmailTemplateContent('order_conf_product_list.tpl', Mail::TYPE_HTML, $product_var_tpl_list);
                     }
 
-                    $cart_rules_list = array();
+                    $cart_rules_list = [];
                     $total_reduction_value_ti = 0;
                     $total_reduction_value_tex = 0;
                     foreach ($cart_rules as $cart_rule) {
-                        $package = array('id_carrier' => $order->id_carrier, 'id_address' => $order->id_address_delivery, 'products' => $order->product_list);
-                        $values = array(
+                        $package = ['id_carrier' => $order->id_carrier, 'id_address' => $order->id_address_delivery, 'products' => $order->product_list];
+                        $values = [
                             'tax_incl' => $cart_rule['obj']->getContextualValue(true, $this->context, CartRule::FILTER_ACTION_ALL_NOCAP, $package),
                             'tax_excl' => $cart_rule['obj']->getContextualValue(false, $this->context, CartRule::FILTER_ACTION_ALL_NOCAP, $package)
-                        );
+                        ];
 
                         // If the reduction is not applicable to this order, then continue with the next one
                         if (!$values['tax_excl']) {
@@ -574,14 +574,14 @@ abstract class PaymentModuleCore extends Module
                                 // If the voucher has conditions, they are now copied to the new voucher
                                 CartRule::copyConditions($cart_rule['obj']->id, $voucher->id);
 
-                                $params = array(
+                                $params = [
                                     '{voucher_amount}' => Tools::displayPrice($voucher->reduction_amount, $this->context->currency, false),
                                     '{voucher_num}' => $voucher->code,
                                     '{firstname}' => $this->context->customer->firstname,
                                     '{lastname}' => $this->context->customer->lastname,
                                     '{id_order}' => $order->reference,
                                     '{order_name}' => $order->getUniqReference()
-                                );
+                                ];
                                 Mail::Send(
                                     (int)$order->id_lang,
                                     'voucher',
@@ -610,10 +610,10 @@ abstract class PaymentModuleCore extends Module
                             $cart_rule_to_update->update();
                         }
 
-                        $cart_rules_list[] = array(
+                        $cart_rules_list[] = [
                             'voucher_name' => $cart_rule['obj']->name,
                             'voucher_reduction' => ($values['tax_incl'] != 0.00 ? '-' : '').Tools::displayPrice($values['tax_incl'], $this->context->currency, false)
-                        );
+                        ];
                     }
 
                     $cart_rules_list_txt = '';
@@ -658,13 +658,14 @@ abstract class PaymentModuleCore extends Module
                     }
 
                     // Hook validate order
-                    Hook::exec('actionValidateOrder', array(
+                    Hook::exec('actionValidateOrder', [
                         'cart' => $this->context->cart,
                         'order' => $order,
                         'customer' => $this->context->customer,
                         'currency' => $this->context->currency,
                         'orderStatus' => $order_status
-                    ));
+                    ]
+                    );
 
                     foreach ($this->context->cart->getProducts() as $product) {
                         if ($order_status->logable) {
@@ -702,20 +703,22 @@ abstract class PaymentModuleCore extends Module
                         $delivery_state = $delivery->id_state ? new State((int)$delivery->id_state) : false;
                         $invoice_state = $invoice->id_state ? new State((int)$invoice->id_state) : false;
 
-                        $data = array(
+                        $data = [
                         '{firstname}' => $this->context->customer->firstname,
                         '{lastname}' => $this->context->customer->lastname,
                         '{email}' => $this->context->customer->email,
                         '{delivery_block_txt}' => $this->_getFormatedAddress($delivery, "\n"),
                         '{invoice_block_txt}' => $this->_getFormatedAddress($invoice, "\n"),
-                        '{delivery_block_html}' => $this->_getFormatedAddress($delivery, '<br />', array(
+                        '{delivery_block_html}' => $this->_getFormatedAddress($delivery, '<br />', [
                             'firstname'    => '<span style="font-weight:bold;">%s</span>',
                             'lastname'    => '<span style="font-weight:bold;">%s</span>'
-                        )),
-                        '{invoice_block_html}' => $this->_getFormatedAddress($invoice, '<br />', array(
+                        ]
+                        ),
+                        '{invoice_block_html}' => $this->_getFormatedAddress($invoice, '<br />', [
                                 'firstname'    => '<span style="font-weight:bold;">%s</span>',
                                 'lastname'    => '<span style="font-weight:bold;">%s</span>'
-                        )),
+                        ]
+                        ),
                         '{delivery_company}' => $delivery->company,
                         '{delivery_firstname}' => $delivery->firstname,
                         '{delivery_lastname}' => $delivery->lastname,
@@ -752,7 +755,8 @@ abstract class PaymentModuleCore extends Module
                         '{total_discounts}' => Tools::displayPrice($order->total_discounts, $this->context->currency, false),
                         '{total_shipping}' => Tools::displayPrice($order->total_shipping, $this->context->currency, false),
                         '{total_wrapping}' => Tools::displayPrice($order->total_wrapping, $this->context->currency, false),
-                        '{total_tax_paid}' => Tools::displayPrice(($order->total_products_wt - $order->total_products) + ($order->total_shipping_tax_incl - $order->total_shipping_tax_excl), $this->context->currency, false));
+                        '{total_tax_paid}' => Tools::displayPrice(($order->total_products_wt - $order->total_products) + ($order->total_shipping_tax_incl - $order->total_shipping_tax_excl), $this->context->currency, false)
+                        ];
 
                         if (is_array($extra_vars)) {
                             $data = array_merge($data, $extra_vars);
@@ -761,7 +765,7 @@ abstract class PaymentModuleCore extends Module
                         // Join PDF invoice
                         if ((int)Configuration::get('PS_INVOICE') && $order_status->invoice && $order->invoice_number) {
                             $order_invoice_list = $order->getInvoicesCollection();
-                            Hook::exec('actionPDFInvoiceRender', array('order_invoice_list' => $order_invoice_list));
+                            Hook::exec('actionPDFInvoiceRender', ['order_invoice_list' => $order_invoice_list]);
                             $pdf = new PDF($order_invoice_list, PDF::TEMPLATE_INVOICE, $this->context->smarty);
                             $file_attachement['content'] = $pdf->render(false);
                             $file_attachement['name'] = Configuration::get('PS_INVOICE_PREFIX', (int)$order->id_lang, null, $order->id_shop).sprintf('%06d', $order->invoice_number).'.pdf';
@@ -845,9 +849,9 @@ abstract class PaymentModuleCore extends Module
     protected function _getTxtFormatedAddress($the_address)
     {
         $adr_fields = AddressFormat::getOrderedAddressFields($the_address->id_country, false, true);
-        $r_values = array();
+        $r_values = [];
         foreach ($adr_fields as $fields_line) {
-            $tmp_values = array();
+            $tmp_values = [];
             foreach (explode(' ', $fields_line) as $field_item) {
                 $field_item = trim($field_item);
                 $tmp_values[] = $the_address->{$field_item};
@@ -864,9 +868,9 @@ abstract class PaymentModuleCore extends Module
      * @return String the txt formated address block
      */
 
-    protected function _getFormatedAddress(Address $the_address, $line_sep, $fields_style = array())
+    protected function _getFormatedAddress(Address $the_address, $line_sep, $fields_style = [])
     {
-        return AddressFormat::generateAddress($the_address, array('avoid' => array()), $line_sep, ' ', $fields_style);
+        return AddressFormat::generateAddress($the_address, ['avoid' => []], $line_sep, ' ', $fields_style);
     }
 
     /**
@@ -911,7 +915,7 @@ abstract class PaymentModuleCore extends Module
      * @param array $id_module_list
      * @return bool
      */
-    public static function addCurrencyPermissions($id_currency, array $id_module_list = array())
+    public static function addCurrencyPermissions($id_currency, array $id_module_list = [])
     {
         $values = '';
         if (count($id_module_list) == 0) {

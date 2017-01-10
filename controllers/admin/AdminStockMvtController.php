@@ -43,76 +43,76 @@ class AdminStockMvtControllerCore extends AdminController
         $this->list_no_link = true;
         $this->displayInformation($this->l('This interface allows you to display the stock movement for a selected warehouse.').'<br />');
 
-        $this->fields_list = array(
-            'product_reference' => array(
+        $this->fields_list = [
+            'product_reference' => [
                 'title' => $this->l('Reference'),
                 'havingFilter' => true
-            ),
-            'product_ean13' => array(
+            ],
+            'product_ean13' => [
                 'title' => $this->l('EAN 13'),
                 'havingFilter' => true
-            ),
-            'product_upc' => array(
+            ],
+            'product_upc' => [
                 'title' => $this->l('UPC'),
                 'havingFilter' => true
-            ),
-            'product_name' => array(
+            ],
+            'product_name' => [
                 'title' => $this->l('Name'),
                 'havingFilter' => true
-            ),
-            'warehouse_name' => array(
+            ],
+            'warehouse_name' => [
                 'title' => $this->l('Warehouse'),
                 'havingFilter' => false,
                 'orderby' => true,
                 'search' => false,
-            ),
-            'sign' => array(
+            ],
+            'sign' => [
                 'title' => $this->l('Sign'),
                 'align' => 'center',
                 'type' => 'select',
                 'filter_key' => 'a!sign',
-                'list' => array(
+                'list' => [
                     '1' => $this->l('Increase'),
                     '-1' => $this->l('Decrease'),
-                ),
-                'icon' => array(
-                    -1 => array(
+                ],
+                'icon' => [
+                    -1 => [
                         'src' => 'remove_stock.png',
                         'alt' => $this->l('Increase'),
-                    ),
-                    1 => array(
+                    ],
+                    1 => [
                         'src' => 'add_stock.png',
                         'alt' => $this->l('Decrease'),
-                    )
-                ),
+                    ]
+                ],
                 'class' => 'fixed-width-xs'
-            ),
-            'physical_quantity' => array(
+            ],
+            'physical_quantity' => [
                 'title' => $this->l('Quantity'),
                 'align' => 'center',
                 'filter_key' => 'a!physical_quantity',
                 'class' => 'fixed-width-sm'
-            ),
-            'price_te' => array(
+            ],
+            'price_te' => [
                 'title' => $this->l('Price (tax excl.)'),
                 'type' => 'price',
                 'currency' => true,
                 'filter_key' => 'a!price_te'
-            ),
-            'reason' => array(
+            ],
+            'reason' => [
                 'title' => $this->l('Label'),
                 'havingFilter' => true
-            ),
-            'employee' => array(
+            ],
+            'employee' => [
                 'title' => $this->l('Employee'),
                 'havingFilter' => true
-            ),
-            'date_add' => array(
+            ],
+            'date_add' => [
                 'title' => $this->l('Date'),
                 'type' => 'datetime',
                 'filter_key' => 'a!date_add'
-            ),
-        );
+            ],
+        ];
 
         parent::__construct();
     }
@@ -122,12 +122,12 @@ class AdminStockMvtControllerCore extends AdminController
         $this->page_header_toolbar_title = $this->l('Stock movement');
 
         if (Tools::isSubmit('id_warehouse') && (int)Tools::getValue('id_warehouse') != -1) {
-            $this->page_header_toolbar_btn['export-stock-mvt-csv'] = array(
+            $this->page_header_toolbar_btn['export-stock-mvt-csv'] = [
                 'short' => $this->l('Export this list as CSV', null, null, false),
                 'href' => $this->context->link->getAdminLink('AdminStockMvt').'&csv&id_warehouse='.(int)$this->getCurrentWarehouseId(),
                 'desc' => $this->l('Export (CSV)', null, null, false),
                 'imgclass' => 'export'
-            );
+            ];
         }
 
         parent::initPageHeaderToolbar();
@@ -140,7 +140,7 @@ class AdminStockMvtControllerCore extends AdminController
     public function renderList()
     {
         // removes toolbar btn
-        $this->toolbar_btn = array();
+        $this->toolbar_btn = [];
 
         // overrides select
         $this->_select = '
@@ -188,7 +188,7 @@ class AdminStockMvtControllerCore extends AdminController
 
         // sets the list of warehouses
         $warehouses = Warehouse::getWarehouses(true);
-        array_unshift($warehouses, array('id_warehouse' => -1, 'name' => $this->l('All Warehouses')));
+        array_unshift($warehouses, ['id_warehouse' => -1, 'name' => $this->l('All Warehouses')]);
         $this->tpl_list_vars['list_warehouses'] = $warehouses;
 
         // sets toolbar
@@ -272,12 +272,12 @@ class AdminStockMvtControllerCore extends AdminController
     public function initToolbar()
     {
         if (Tools::isSubmit('id_warehouse') && (int)Tools::getValue('id_warehouse') != -1) {
-            $this->toolbar_btn['export-stock-mvt-csv'] = array(
+            $this->toolbar_btn['export-stock-mvt-csv'] = [
                 'short' => 'Export this list as CSV',
                 'href' => $this->context->link->getAdminLink('AdminStockMvt').'&amp;csv&amp;id_warehouse='.(int)$this->getCurrentWarehouseId(),
                 'desc' => $this->l('Export (CSV)'),
                 'imgclass' => 'export'
-            );
+            ];
         }
 
         parent::initToolbar();
@@ -304,21 +304,24 @@ class AdminStockMvtControllerCore extends AdminController
         header('Content-disposition: attachment; filename="'.$filename);
 
         // puts keys
-        $keys = array('id_order', 'id_supply_order', 'emloyee_firstname', 'employee_lastname', 'physical_quantity',
-                      'date_add', 'sign', 'price_te', 'product_name', 'label', 'product_reference', 'product_ean13', 'product_upc');
+        $keys = [
+            'id_order', 'id_supply_order', 'emloyee_firstname', 'employee_lastname', 'physical_quantity',
+                      'date_add', 'sign', 'price_te', 'product_name', 'label', 'product_reference', 'product_ean13', 'product_upc'
+        ];
         echo sprintf("%s\n", implode(';', $keys));
 
 
         // puts rows
         foreach ($this->_list as $row) {
-            $row_csv = array($row['id_order'], $row['id_supply_order'], $row['employee_firstname'],
+            $row_csv = [
+                $row['id_order'], $row['id_supply_order'], $row['employee_firstname'],
                              $row['employee_lastname'], $row['physical_quantity'], $row['date_add'],
                              $row['sign'], $row['price_te'], $row['product_name'],
                              $row['reason'], $row['product_reference'], $row['product_ean13'], $row['product_upc']
-            );
+            ];
 
             // puts one row
-            echo sprintf("%s\n", implode(';', array_map(array('CSVCore', 'wrap'), $row_csv)));
+            echo sprintf("%s\n", implode(';', array_map(['CSVCore', 'wrap'], $row_csv)));
         }
     }
     

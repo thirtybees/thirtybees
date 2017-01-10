@@ -1,7 +1,7 @@
 <?php
 
 global $_LANGMAIL;
-$_LANGMAIL = array();
+$_LANGMAIL = [];
 
 $_LANGMAIL['Your guest account has been transformed into a customer account'] = 'Your guest account was converted to a customer account';
 $_LANGMAIL['The virtual product that you bought is available for download'] = 'The virtual product that you bought is available for download';

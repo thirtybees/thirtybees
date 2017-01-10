@@ -31,7 +31,7 @@ class LocalizationPackCore
 
     protected $iso_code_lang;
     protected $iso_currency;
-    protected $_errors = array();
+    protected $_errors = [];
 
     public function loadLocalisationPack($file, $selection, $install_mode = false, $iso_localization_pack = null)
     {
@@ -175,7 +175,7 @@ class LocalizationPackCore
     protected function _installTaxes($xml)
     {
         if (isset($xml->taxes->tax)) {
-            $assoc_taxes = array();
+            $assoc_taxes = [];
             foreach ($xml->taxes->tax as $taxData) {
                 /** @var SimpleXMLElement $taxData */
                 $attributes = $taxData->attributes();
@@ -329,7 +329,7 @@ class LocalizationPackCore
      */
     protected function _installLanguages($xml, $install_mode = false)
     {
-        $attributes = array();
+        $attributes = [];
         if (isset($xml->languages->language)) {
             foreach ($xml->languages->language as $data) {
                 /** @var SimpleXMLElement $data */
@@ -360,7 +360,7 @@ class LocalizationPackCore
      */
     protected function _installUnits($xml)
     {
-        $varNames = array('weight' => 'PS_WEIGHT_UNIT', 'volume' => 'PS_VOLUME_UNIT', 'short_distance' => 'PS_DIMENSION_UNIT', 'base_distance' => 'PS_BASE_DISTANCE_UNIT', 'long_distance' => 'PS_DISTANCE_UNIT');
+        $varNames = ['weight' => 'PS_WEIGHT_UNIT', 'volume' => 'PS_VOLUME_UNIT', 'short_distance' => 'PS_DIMENSION_UNIT', 'base_distance' => 'PS_BASE_DISTANCE_UNIT', 'long_distance' => 'PS_DISTANCE_UNIT'];
         if (isset($xml->units->unit)) {
             foreach ($xml->units->unit as $data) {
                 /** @var SimpleXMLElement $data */
@@ -462,10 +462,10 @@ class LocalizationPackCore
     {
         if (isset($xml->group_default)) {
             $attributes = $xml->group_default->attributes();
-            if (isset($attributes['price_display_method']) && in_array((int)$attributes['price_display_method'], array(0, 1))) {
+            if (isset($attributes['price_display_method']) && in_array((int)$attributes['price_display_method'], [0, 1])) {
                 Configuration::updateValue('PRICE_DISPLAY_METHOD', (int)$attributes['price_display_method']);
 
-                foreach (array((int)Configuration::get('PS_CUSTOMER_GROUP'), (int)Configuration::get('PS_GUEST_GROUP'), (int)Configuration::get('PS_UNIDENTIFIED_GROUP')) as $id_group) {
+                foreach ([(int)Configuration::get('PS_CUSTOMER_GROUP'), (int)Configuration::get('PS_GUEST_GROUP'), (int)Configuration::get('PS_UNIDENTIFIED_GROUP')] as $id_group) {
                     $group = new Group((int)$id_group);
                     $group->price_display_method = (int)$attributes['price_display_method'];
                     if (!$group->save()) {

@@ -1,8 +1,8 @@
 <?php
 
-return array(
+return [
   'informations' =>
-  array(
+  [
   'documentation' => 'http://doc.prestashop.com/display/PS16/Installing+PrestaShop',
   'documentation_upgrade' => 'http://docs.prestashop.com/display/PS16/Updating+PrestaShop',
   'forum' => 'http://www.prestashop.com/forums/',
@@ -10,9 +10,9 @@ return array(
   'support' => 'https://www.prestashop.com/en/support',
   'tutorial' => 'https://www.youtube.com/watch?v=psz4aIPZZuk',
   'tailored_help' => 'http://addons.prestashop.com/en/388-support',
-  ),
+  ],
   'translations' =>
-  array(
+  [
     'An SQL error occurred for entity <i>%1$s</i>: <i>%2$s</i>' => 'Bir SQL varlık hatası oluştu  <i>%1$s</i>: <i>%2$s</i>',
     'Cannot create image "%1$s" for entity "%2$s"' => 'Varlık  "%1$s" için "%2$s" imaj oluşturulamıyor.',
     'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => 'Görüntü oluşturulamıyor  "%1$s" (klasör izinleri düzgün ayarlanmanış "%2$s")',
@@ -206,5 +206,5 @@ return array(
     'If you need help, do not hesitate to <a href="%1$s" target="_blank">watch this short tutorial</a>, or check <a href="%2$s" target="_blank">our documentation</a>.' => 'If you need help, do not hesitate to <a href="%1$s" target="_blank">watch this short tutorial</a>, or check <a href="%2$s" target="_blank">our documentation</a>.',
     'Continue the installation in:' => 'Kurulum Devam Ediyor:',
     'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => 'Yukarıda dil seçimi yalnızca kurulum asistanı için geçerlidir. Mağaza yüklendikten sonra, tüm ücretsiz, %d çeviriler bölümünden mağaza dilinizi seçebilirsiniz!',
-  ),
-);
+  ],
+];

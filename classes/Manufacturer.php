@@ -67,36 +67,38 @@ class ManufacturerCore extends ObjectModel
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = array(
+    public static $definition = [
         'table' => 'manufacturer',
         'primary' => 'id_manufacturer',
         'multilang' => true,
-        'fields' => array(
-            'name' =>                array('type' => self::TYPE_STRING, 'validate' => 'isCatalogName', 'required' => true, 'size' => 64),
-            'active' =>            array('type' => self::TYPE_BOOL),
-            'date_add' =>            array('type' => self::TYPE_DATE),
-            'date_upd' =>            array('type' => self::TYPE_DATE),
+        'fields' => [
+            'name' =>                ['type' => self::TYPE_STRING, 'validate' => 'isCatalogName', 'required' => true, 'size' => 64],
+            'active' =>            ['type' => self::TYPE_BOOL],
+            'date_add' =>            ['type' => self::TYPE_DATE],
+            'date_upd' =>            ['type' => self::TYPE_DATE],
 
             /* Lang fields */
-            'description' =>        array('type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml'),
-            'short_description' =>    array('type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml'),
-            'meta_title' =>        array('type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 128),
-            'meta_description' =>    array('type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255),
-            'meta_keywords' =>        array('type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName'),
-        ),
-    );
+            'description' =>        ['type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml'],
+            'short_description' =>    ['type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml'],
+            'meta_title' =>        ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 128],
+            'meta_description' =>    ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255],
+            'meta_keywords' =>        ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName'],
+        ],
+    ];
 
-    protected $webserviceParameters = array(
-        'fields' => array(
-            'active' => array(),
-            'link_rewrite' => array('getter' => 'getLink', 'setter' => false),
-        ),
-        'associations' => array(
-            'addresses' => array('resource' => 'address', 'setter' => false, 'fields' => array(
-                'id' => array('xlink_resource' => 'addresses'),
-            )),
-        ),
-    );
+    protected $webserviceParameters = [
+        'fields' => [
+            'active' => [],
+            'link_rewrite' => ['getter' => 'getLink', 'setter' => false],
+        ],
+        'associations' => [
+            'addresses' => [
+                'resource' => 'address', 'setter' => false, 'fields' => [
+                'id' => ['xlink_resource' => 'addresses'],
+                ]
+            ],
+        ],
+    ];
 
     public function __construct($id = null, $id_lang = null)
     {
@@ -206,7 +208,7 @@ class ManufacturerCore extends ObjectModel
 					GROUP BY p.`id_manufacturer`'
                 );
 
-            $counts = array();
+            $counts = [];
             foreach ($results as $result) {
                 $counts[(int)$result['id_manufacturer']] = (int)$result['nb_products'];
             }
@@ -236,7 +238,7 @@ class ManufacturerCore extends ObjectModel
      * @param int $id_manufacturer Manufacturer ID
      * @return string name
      */
-    protected static $cacheName = array();
+    protected static $cacheName = [];
     public static function getNameById($id_manufacturer)
     {
         if (!isset(self::$cacheName[$id_manufacturer])) {
@@ -279,7 +281,7 @@ class ManufacturerCore extends ObjectModel
         }
 
         $front = true;
-        if (!in_array($context->controller->controller_type, array('front', 'modulefront'))) {
+        if (!in_array($context->controller->controller_type, ['front', 'modulefront'])) {
             $front = false;
         }
 
@@ -400,7 +402,7 @@ class ManufacturerCore extends ObjectModel
     {
         $context = Context::getContext();
         $front = true;
-        if (!in_array($context->controller->controller_type, array('front', 'modulefront'))) {
+        if (!in_array($context->controller->controller_type, ['front', 'modulefront'])) {
             $front = false;
         }
 
@@ -461,7 +463,7 @@ class ManufacturerCore extends ObjectModel
 
     public function setWsAddresses($id_addresses)
     {
-        $ids = array();
+        $ids = [];
 
         foreach ($id_addresses as $id) {
             $ids[] = (int)$id['id'];

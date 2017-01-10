@@ -2,32 +2,42 @@
 /**
  * 2007-2016 PrestaShop
  *
+ * Thirty Bees is an extension to the PrestaShop e-commerce software developed by PrestaShop SA
+ * Copyright (C) 2017 Thirty Bees
+ *
  * NOTICE OF LICENSE
  *
- * This source file is subject to the Open Software License (OSL 3.0)
+ * This source file is subject to the Academic Free License (AFL 3.0)
  * that is bundled with this package in the file LICENSE.txt.
  * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
+ * http://opensource.org/licenses/afl-3.0.php
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
+ * to license@thirtybees.com so we can send you a copy immediately.
  *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
- *
- *  @author 	PrestaShop SA <contact@prestashop.com>
- *  @copyright  2007-2016 PrestaShop SA
- *  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
- *  International Registered Trademark & Property of PrestaShop SA
+ *  @author    Thirty Bees <modules@thirtybees.com>
+ *  @author    PrestaShop SA <contact@prestashop.com>
+ *  @copyright 2017 Thirty Bees
+ *  @copyright 2007-2016 PrestaShop SA
+ *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class Core_Business_Email_EmailLister
+ */
+// @codingStandardsIgnoreStart
 class Core_Business_Email_EmailLister
 {
-    private $filesystem;
+    // @codingStandardsIgnoreEnd
 
+    protected $filesystem;
+
+    /**
+     * Core_Business_Email_EmailLister constructor.
+     *
+     * @param Core_Foundation_FileSystem_FileSystem $fs
+     */
     public function __construct(Core_Foundation_FileSystem_FileSystem $fs)
     {
         // Register dependencies
@@ -36,9 +46,13 @@ class Core_Business_Email_EmailLister
 
     /**
      * Return the list of available mails
-     * @param null $lang
-     * @param null $dir
+     *
+     * @param string $dir
+     *
      * @return array|null
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getAvailableMails($dir)
     {
@@ -46,11 +60,11 @@ class Core_Business_Email_EmailLister
             return null;
         }
 
-        $mail_directory = $this->filesystem->listEntriesRecursively($dir);
-        $mail_list = array();
+        $mailDirectory = $this->filesystem->listEntriesRecursively($dir);
+        $mailList = [];
 
         // Remove unwanted .html / .txt / .tpl / .php / . / ..
-        foreach ($mail_directory as $mail) {
+        foreach ($mailDirectory as $mail) {
             if (strpos($mail->getFilename(), '.') !== false) {
                 $tmp = explode('.', $mail->getFilename());
 
@@ -59,33 +73,38 @@ class Core_Business_Email_EmailLister
                     continue;
                 }
 
-                $mail_name_no_ext = $tmp[0];
-                if (!in_array($mail_name_no_ext, $mail_list)) {
-                    $mail_list[] = $mail_name_no_ext;
+                $mailNameNoExt = $tmp[0];
+                if (!in_array($mailNameNoExt, $mailList)) {
+                    $mailList[] = $mailNameNoExt;
                 }
             }
         }
 
-        return $mail_list;
+        return $mailList;
     }
-
 
     /**
      * Give in input getAvailableMails(), will output a human readable and proper string name
+     *
+     * @param string $mailName
+     *
      * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0
      */
-    public function getCleanedMailName($mail_name)
+    public function getCleanedMailName($mailName)
     {
-        if (strpos($mail_name, '.') !== false) {
-            $tmp = explode('.', $mail_name);
+        if (strpos($mailName, '.') !== false) {
+            $tmp = explode('.', $mailName);
 
             if ($tmp === false || !isset($tmp[0])) {
-                return $mail_name;
+                return $mailName;
             }
 
-            $mail_name = $tmp[0];
+            $mailName = $tmp[0];
         }
 
-        return ucfirst(str_replace(array('_', '-'), ' ', $mail_name));
+        return ucfirst(str_replace(['_', '-'], ' ', $mailName));
     }
 }

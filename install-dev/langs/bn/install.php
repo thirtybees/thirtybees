@@ -1,6 +1,6 @@
 <?php
-return array(
-    'informations' => array(
+return [
+    'informations' => [
         'documentation' => 'http://doc.prestashop.com/display/PS16/Installing+PrestaShop',
         'documentation_upgrade' => 'http://docs.prestashop.com/display/PS16/Updating+PrestaShop',
         'forum' => 'http://www.prestashop.com/forums/',
@@ -8,8 +8,8 @@ return array(
         'support' => 'https://www.prestashop.com/en/support',
         'tutorial' => 'https://www.youtube.com/watch?v=psz4aIPZZuk',
         'tailored_help' => 'http://addons.prestashop.com/en/388-support',
-    ),
-    'translations' => array(
+    ],
+    'translations' => [
         'An SQL error occurred for entity <i>%1$s</i>: <i>%2$s</i>' => '<i>%1$s</i>: <i>%2$s</i> এনটিটির জন্য একটি ত্রুটি ঘটেছে ',
         'Cannot create image "%1$s" for entity "%2$s"' => 'এনটিটি "%2$s"এর জন্য চিত্র "%1$s" তৈরি করা যায় নি',
         'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => 'চিত্র "%1$s" তৈরি করা যায় নি (ফোল্ডার  "%2$s"এ অনুমতি জনিত সমস্যা)',
@@ -205,5 +205,5 @@ return array(
         'Continue the installation in:' => 'এ ইনস্টলেশন চালিয়ে যান: ',
         'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => 'উপরোক্ত ভাষা নির্বাচন শুধুমাত্র ইনস্টলেশনের সহকারীর জন্য প্রযোজ্য।আপনার দোকান ইনস্টল করা হলে,আপনি উপর থেকে আপনার দোকানের ভাষা নির্বাচন করতে পারবেন একদম বিনামূল্যে!',
         'Installing PrestaShop is quick and easy. In just a few moments, you will become part of a community consisting of more than 250,000 merchants. You are on the way to creating your own unique online store that you can manage easily every day.' => 'PrestaShop ইনস্টলেশন দ্রুত এবং সহজ। মাত্র কয়েক মুহূর্তের মধ্যে, আপনি  250.000 এর বেশি বণিকদের একটি কমিউনিটির অংশ হয়ে যাবেন। আপনি আপনার নিজের অসাধারন দোকান তৈরির পথে আছেন যেটি খুব সহজে প্রতিদিন ম্যানেজ করতে পারবেন।',
-    ),
-);
+    ],
+];

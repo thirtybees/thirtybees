@@ -38,75 +38,78 @@ class AdminTaxesControllerCore extends AdminController
         $this->addRowAction('edit');
         $this->addRowAction('delete');
 
-        $this->bulk_actions = array(
-            'delete' => array(
+        $this->bulk_actions = [
+            'delete' => [
                 'text' => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
                 'icon' => 'icon-trash'
-            )
-        );
+            ]
+        ];
 
-        $this->fields_list = array(
-            'id_tax' => array('title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'),
-            'name' => array('title' => $this->l('Name'), 'width' => 'auto'),
-            'rate' => array('title' => $this->l('Rate'), 'align' => 'center', 'suffix' => '%' , 'class' => 'fixed-width-md'),
-            'active' => array('title' => $this->l('Enabled'), 'width' => 25, 'align' => 'center', 'active' => 'status', 'type' => 'bool', 'orderby' => false, 'class' => 'fixed-width-sm', 'remove_onclick' => true)
-            );
+        $this->fields_list = [
+            'id_tax' => ['title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'],
+            'name' => ['title' => $this->l('Name'), 'width' => 'auto'],
+            'rate' => ['title' => $this->l('Rate'), 'align' => 'center', 'suffix' => '%' , 'class' => 'fixed-width-md'],
+            'active' => ['title' => $this->l('Enabled'), 'width' => 25, 'align' => 'center', 'active' => 'status', 'type' => 'bool', 'orderby' => false, 'class' => 'fixed-width-sm', 'remove_onclick' => true]
+        ];
 
         $ecotax_desc = '';
         if (Configuration::get('PS_USE_ECOTAX')) {
             $ecotax_desc = $this->l('If you disable the ecotax, the ecotax for all your products will be set to 0.');
         }
 
-        $this->fields_options = array(
-            'general' => array(
+        $this->fields_options = [
+            'general' => [
                 'title' =>    $this->l('Tax options'),
-                'fields' =>    array(
-                    'PS_TAX' => array(
+                'fields' =>    [
+                    'PS_TAX' => [
                         'title' => $this->l('Enable tax'),
                         'desc' => $this->l('Select whether or not to include tax on purchases.'),
-                        'cast' => 'intval', 'type' => 'bool'),
-                    'PS_TAX_DISPLAY' => array(
+                        'cast' => 'intval', 'type' => 'bool'
+                    ],
+                    'PS_TAX_DISPLAY' => [
                         'title' => $this->l('Display tax in the shopping cart'),
                         'desc' => $this->l('Select whether or not to display tax on a distinct line in the cart.'),
                         'cast' => 'intval',
-                        'type' => 'bool'),
-                    'PS_TAX_ADDRESS_TYPE' => array(
+                        'type' => 'bool'
+                    ],
+                    'PS_TAX_ADDRESS_TYPE' => [
                         'title' => $this->l('Based on'),
                         'cast' => 'pSQL',
                         'type' => 'select',
-                        'list' => array(
-                            array(
+                        'list' => [
+                            [
                                 'name' => $this->l('Invoice address'),
                                 'id' => 'id_address_invoice'
-                                ),
-                            array(
+                            ],
+                            [
                                 'name' => $this->l('Delivery address'),
-                                'id' => 'id_address_delivery')
-                                ),
+                                'id' => 'id_address_delivery'
+                            ]
+                        ],
                         'identifier' => 'id'
-                        ),
-                    'PS_USE_ECOTAX' => array(
+                    ],
+                    'PS_USE_ECOTAX' => [
                         'title' => $this->l('Use ecotax'),
                         'desc' => $ecotax_desc,
                         'validation' => 'isBool',
                         'cast' => 'intval',
                         'type' => 'bool'
-                        ),
-                ),
-                'submit' => array('title' => $this->l('Save'))
-            ),
-        );
+                    ],
+                ],
+                'submit' => ['title' => $this->l('Save')]
+            ],
+        ];
 
         if (Configuration::get('PS_USE_ECOTAX') || Tools::getValue('PS_USE_ECOTAX')) {
-            $this->fields_options['general']['fields']['PS_ECOTAX_TAX_RULES_GROUP_ID'] = array(
+            $this->fields_options['general']['fields']['PS_ECOTAX_TAX_RULES_GROUP_ID'] = [
                 'title' => $this->l('Ecotax'),
                 'hint' => $this->l('Define the ecotax (e.g. French ecotax: 19.6%).'),
                 'cast' => 'intval',
                 'type' => 'select',
                 'identifier' => 'id_tax_rules_group',
                 'list' => TaxRulesGroup::getTaxRulesGroupsForOptions()
-                );
+            ];
         }
 
         parent::__construct();
@@ -117,11 +120,11 @@ class AdminTaxesControllerCore extends AdminController
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
-            $this->page_header_toolbar_btn['new_tax'] = array(
+            $this->page_header_toolbar_btn['new_tax'] = [
                 'href' => self::$currentIndex.'&addtax&token='.$this->token,
                 'desc' => $this->l('Add new tax', null, null, false),
                 'icon' => 'process-icon-new'
-            );
+            ];
         }
 
         parent::initPageHeaderToolbar();
@@ -151,11 +154,13 @@ class AdminTaxesControllerCore extends AdminController
             $confirm = $this->l('This tax is currently in use as a tax rule. Are you sure you\'d like to continue?', null, true, false);
         }
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'href' => self::$currentIndex.'&'.$this->identifier.'='.$id.'&delete'.$this->table.'&token='.($token != null ? $token : $this->token),
             'confirm' => (isset($confirm) ? '\r'.$confirm : self::$cache_lang['DeleteItem'].$id.' ? '),
             'action' => self::$cache_lang['Delete'],
-        ));
+            ]
+        );
 
         return $this->context->smarty->fetch('helpers/list/list_action_delete.tpl');
     }
@@ -176,64 +181,66 @@ class AdminTaxesControllerCore extends AdminController
             $confirm = $this->l('This tax is currently in use as a tax rule. If you continue, this tax will be removed from the tax rule. Are you sure you\'d like to continue?', null, true, false);
         }
         $tpl_enable = $this->context->smarty->createTemplate('helpers/list/list_action_enable.tpl');
-        $tpl_enable->assign(array(
+        $tpl_enable->assign(
+            [
             'enabled' => (bool)$value,
             'url_enable' => self::$currentIndex.'&'.$this->identifier.'='.(int)$id.'&'.$active.$this->table.
                 ((int)$id_category && (int)$id_product ? '&id_category='.(int)$id_category : '').'&token='.($token != null ? $token : $this->token),
             'confirm' => isset($confirm) ? $confirm : null,
-        ));
+            ]
+        );
 
         return $tpl_enable->fetch();
     }
 
     public function renderForm()
     {
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('Taxes'),
                 'icon' => 'icon-money'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'text',
                     'label' => $this->l('Name'),
                     'name' => 'name',
                     'required' => true,
                     'lang' => true,
                     'hint' => $this->l('Tax name to display in carts and on invoices (e.g. "VAT").').' - '.$this->l('Invalid characters').' <>;=#{}'
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Rate'),
                     'name' => 'rate',
                     'maxlength' => 6,
                     'required' => true,
                     'hint' => $this->l('Format: XX.XX or XX.XXX (e.g. 19.60 or 13.925)').' - '.$this->l('Invalid characters').' <>;=#{}'
-                ),
-                array(
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Enable'),
                     'name' => 'active',
                     'required' => false,
                     'is_bool' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'active_on',
                             'value' => 1,
                             'label' => $this->l('Enabled')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'active_off',
                             'value' => 0,
                             'label' => $this->l('Disabled')
-                        )
-                    )
-                )
-            ),
-            'submit' => array(
+                        ]
+                    ]
+                ]
+            ],
+            'submit' => [
                 'title' => $this->l('Save')
-            )
-        );
+            ]
+        ];
 
         return parent::renderForm();
     }

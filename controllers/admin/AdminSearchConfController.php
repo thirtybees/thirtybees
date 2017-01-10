@@ -48,19 +48,19 @@ class AdminSearchConfControllerCore extends AdminController
             $this->deleted = false;
         }
 
-        $this->bulk_actions = array(
-            'delete' => array(
+        $this->bulk_actions = [
+            'delete' => [
                 'text' => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
                 'icon' => 'icon-trash'
-            )
-        );
+            ]
+        ];
 
-        $this->fields_list = array(
-            'alias' => array('title' => $this->l('Aliases')),
-            'search' => array('title' => $this->l('Search')),
-            'active' => array('title' => $this->l('Status'), 'class' => 'fixed-width-sm', 'align' => 'center', 'active' => 'status', 'type' => 'bool', 'orderby' => false)
-        );
+        $this->fields_list = [
+            'alias' => ['title' => $this->l('Aliases')],
+            'search' => ['title' => $this->l('Search')],
+            'active' => ['title' => $this->l('Status'), 'class' => 'fixed-width-sm', 'align' => 'center', 'active' => 'status', 'type' => 'bool', 'orderby' => false]
+        ];
 
         // Search options
         $current_file_name = array_reverse(explode('/', $_SERVER['SCRIPT_NAME']));
@@ -69,8 +69,8 @@ class AdminSearchConfControllerCore extends AdminController
 
         list($total, $indexed) = Db::getInstance()->getRow('SELECT COUNT(*) as "0", SUM(product_shop.indexed) as "1" FROM '._DB_PREFIX_.'product p '.Shop::addSqlAssociation('product', 'p').' WHERE product_shop.`visibility` IN ("both", "search") AND product_shop.`active` = 1');
 
-        $this->fields_options = array(
-            'indexation' => array(
+        $this->fields_options = [
+            'indexation' => [
                 'title' => $this->l('Indexing'),
                 'icon' => 'icon-cogs',
                 'info' => '<p>
@@ -96,82 +96,82 @@ class AdminSearchConfControllerCore extends AdminController
 							'.Tools::safeOutput($cron_url).'
 						</a>
 					</p><br />',
-                'fields' =>    array(
-                    'PS_SEARCH_INDEXATION' => array(
+                'fields' =>    [
+                    'PS_SEARCH_INDEXATION' => [
                         'title' => $this->l('Indexing'),
                         'validation' => 'isBool',
                         'type' => 'bool',
                         'cast' => 'intval',
                         'desc' => $this->l('Enable the automatic indexing of products. If you enable this feature, the products will be indexed in the search automatically when they are saved. If the feature is disabled, you will have to index products manually by using the links provided in the field set.')
-                    )
-                ),
-                'submit' => array('title' => $this->l('Save'))
-            ),
-            'search' => array(
+                    ]
+                ],
+                'submit' => ['title' => $this->l('Save')]
+            ],
+            'search' => [
                 'title' =>    $this->l('Search'),
                 'icon' =>    'icon-search',
-                'fields' =>    array(
-                    'PS_SEARCH_AJAX' => array(
+                'fields' =>    [
+                    'PS_SEARCH_AJAX' => [
                         'title' => $this->l('Ajax search'),
                         'validation' => 'isBool',
                         'type' => 'bool',
                         'cast' => 'intval',
-                        'hint' => array(
+                        'hint' => [
                             $this->l('Enable ajax search for your visitors.'),
                             $this->l('With ajax search, the first 10 products matching the user query will appear in real time below the input field.')
-                        )
-                    ),
-                    'PS_INSTANT_SEARCH' => array(
+                        ]
+                    ],
+                    'PS_INSTANT_SEARCH' => [
                         'title' => $this->l('Instant search'),
                         'validation' => 'isBool',
                         'cast' => 'intval',
                         'type' => 'bool',
-                        'hint' => array(
+                        'hint' => [
                             $this->l('Enable instant search for your visitors?'),
                             $this->l('With instant search, the results will appear immediately as the user writes a query.')
-                        )
-                    ),
-                    'PS_SEARCH_START' => array(
+                        ]
+                    ],
+                    'PS_SEARCH_START' => [
                         'title' => $this->l('Search within word'),
                         'validation' => 'isBool',
                         'cast' => 'intval',
                         'type' => 'bool',
                         'desc' => $this->l('By default, to search for “blouse”, you have to enter “blous”, “blo”, etc (beginning of the word) – but not “lous” (within the word).').'<br/>'.
                                   $this->l('With this option enabled, it also gives the good result if you search for “lous”, “ouse”, or anything contained in the word.'),
-                        'hint' => array(
+                        'hint' => [
                             $this->l('Enable search within a whole word, rather than from its beginning only.'),
                             $this->l('It checks if the searched term is contained in the indexed word. This may be resource-consuming.')
-                        )
-                    ),
-                    'PS_SEARCH_END' => array(
+                        ]
+                    ],
+                    'PS_SEARCH_END' => [
                         'title' => $this->l('Search exact end match'),
                         'validation' => 'isBool',
                         'cast' => 'intval',
                         'type' => 'bool',
                         'desc' => $this->l('By default, if you search "book", you will have "book", "bookcase" and "bookend".').'<br/>'.
                                   $this->l('With this option enabled, it only gives one result “book”, as exact end of the indexed word is matching.'),
-                        'hint' => array(
+                        'hint' => [
                             $this->l('Enable more precise search with the end of the word.'),
                             $this->l('It checks if the searched term is the exact end of the indexed word.')
-                        )
-                    ),
-                    'PS_SEARCH_MINWORDLEN' => array(
+                        ]
+                    ],
+                    'PS_SEARCH_MINWORDLEN' => [
                         'title' => $this->l('Minimum word length (in characters)'),
                         'hint' => $this->l('Only words this size or larger will be indexed.'),
                         'validation' => 'isUnsignedInt',
                         'type' => 'text',
                         'cast' => 'intval'
-                    ),
-                    'PS_SEARCH_BLACKLIST' => array(
+                    ],
+                    'PS_SEARCH_BLACKLIST' => [
                         'title' => $this->l('Blacklisted words'),
                         'validation' => 'isGenericName',
                         'hint' => $this->l('Please enter the index words separated by a "|".'),
                         'type' => 'textareaLang'
-                    )
-                ),
-                'submit' => array('title' => $this->l('Save'))
-            ),
-            'relevance' => array(
+                    ]
+                ],
+                'submit' => ['title' => $this->l('Save')]
+            ],
+            'relevance' => [
                 'title' =>    $this->l('Weight'),
                 'icon' =>    'icon-cogs',
                 'info' =>
@@ -179,83 +179,83 @@ class AdminSearchConfControllerCore extends AdminController
 						'.$this->l('A word with a weight of eight will have four times more value than a word with a weight of two.').'<br /><br />
 						'.$this->l('We advise you to set a greater weight for words which appear in the name or reference of a product. This will allow the search results to be as precise and relevant as possible.').'<br /><br />
 						'.$this->l('Setting a weight to 0 will exclude that field from search index. Re-build of the entire index is required when changing to or from 0'),
-                'fields' =>    array(
-                    'PS_SEARCH_WEIGHT_PNAME' => array(
+                'fields' =>    [
+                    'PS_SEARCH_WEIGHT_PNAME' => [
                         'title' => $this->l('Product name weight'),
                         'validation' => 'isUnsignedInt',
                         'type' => 'text',
                         'cast' => 'intval'
-                    ),
-                    'PS_SEARCH_WEIGHT_REF' => array(
+                    ],
+                    'PS_SEARCH_WEIGHT_REF' => [
                         'title' => $this->l('Reference weight'),
                         'validation' => 'isUnsignedInt',
                         'type' => 'text',
                         'cast' => 'intval'
-                    ),
-                    'PS_SEARCH_WEIGHT_SHORTDESC' => array(
+                    ],
+                    'PS_SEARCH_WEIGHT_SHORTDESC' => [
                         'title' => $this->l('Short description weight'),
                         'validation' => 'isUnsignedInt',
                         'type' => 'text',
                         'cast' => 'intval'
-                    ),
-                    'PS_SEARCH_WEIGHT_DESC' => array(
+                    ],
+                    'PS_SEARCH_WEIGHT_DESC' => [
                         'title' => $this->l('Description weight'),
                         'validation' => 'isUnsignedInt',
                         'type' => 'text',
                         'cast' => 'intval'
-                    ),
-                    'PS_SEARCH_WEIGHT_CNAME' => array(
+                    ],
+                    'PS_SEARCH_WEIGHT_CNAME' => [
                         'title' => $this->l('Category weight'),
                         'validation' => 'isUnsignedInt',
                         'type' => 'text',
                         'cast' => 'intval'
-                    ),
-                    'PS_SEARCH_WEIGHT_MNAME' => array(
+                    ],
+                    'PS_SEARCH_WEIGHT_MNAME' => [
                         'title' => $this->l('Manufacturer weight'),
                         'validation' => 'isUnsignedInt',
                         'type' => 'text',
                         'cast' => 'intval'
-                    ),
-                    'PS_SEARCH_WEIGHT_TAG' => array(
+                    ],
+                    'PS_SEARCH_WEIGHT_TAG' => [
                         'title' => $this->l('Tags weight'),
                         'validation' => 'isUnsignedInt',
                         'type' => 'text',
                         'cast' => 'intval'
-                    ),
-                    'PS_SEARCH_WEIGHT_ATTRIBUTE' => array(
+                    ],
+                    'PS_SEARCH_WEIGHT_ATTRIBUTE' => [
                         'title' => $this->l('Attributes weight'),
                         'validation' => 'isUnsignedInt',
                         'type' => 'text',
                         'cast' => 'intval'
-                    ),
-                    'PS_SEARCH_WEIGHT_FEATURE' => array(
+                    ],
+                    'PS_SEARCH_WEIGHT_FEATURE' => [
                         'title' => $this->l('Features weight'),
                         'validation' => 'isUnsignedInt',
                         'type' => 'text',
                         'cast' => 'intval'
-                    )
-                ),
-                'submit' => array('title' => $this->l('Save'))
-            ),
-        );
+                    ]
+                ],
+                'submit' => ['title' => $this->l('Save')]
+            ],
+        ];
     }
 
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
-            $this->page_header_toolbar_btn['new_alias'] = array(
+            $this->page_header_toolbar_btn['new_alias'] = [
                 'href' => self::$currentIndex.'&addalias&token='.$this->token,
                 'desc' => $this->l('Add new alias', null, null, false),
                 'icon' => 'process-icon-new'
-            );
+            ];
         }
         $this->identifier_name = 'alias';
         parent::initPageHeaderToolbar();
         if ($this->can_import) {
-            $this->toolbar_btn['import'] = array(
+            $this->toolbar_btn['import'] = [
                 'href' => $this->context->link->getAdminLink('AdminImport', true).'&import_type=alias',
                 'desc' => $this->l('Import', null, null, false)
-            );
+            ];
         }
     }
 
@@ -277,10 +277,12 @@ class AdminSearchConfControllerCore extends AdminController
             $helper = new HelperOptions($this);
             $this->setHelperDisplay($helper);
             $helper->toolbar_scroll = true;
-            $helper->toolbar_btn = array('save' => array(
+            $helper->toolbar_btn = [
+                'save' => [
                 'href' => '#',
                 'desc' => $this->l('Save')
-            ));
+                ]
+            ];
             $helper->id = $this->id;
             $helper->tpl_vars = $this->tpl_option_vars;
             $options = $helper->generateOptions($this->fields_options);
@@ -291,36 +293,36 @@ class AdminSearchConfControllerCore extends AdminController
 
     public function renderForm()
     {
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('Aliases'),
                 'icon' => 'icon-search'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'text',
                     'label' => $this->l('Alias'),
                     'name' => 'alias',
                     'required' => true,
-                    'hint' => array(
+                    'hint' => [
                         $this->l('Enter each alias separated by a comma (e.g. \'prestshop,preztashop,prestasohp\').'),
                         $this->l('Forbidden characters: &lt;&gt;;=#{}')
-                    )
-                ),
-                array(
+                    ]
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Result'),
                     'name' => 'search',
                     'required' => true,
                     'hint' => $this->l('Search this word instead.')
-                )
-            ),
-            'submit' => array(
+                ]
+            ],
+            'submit' => [
                 'title' => $this->l('Save'),
-            )
-        );
+            ]
+        ];
 
-        $this->fields_value = array('alias' => $this->object->getAliases());
+        $this->fields_value = ['alias' => $this->object->getAliases()];
 
         return parent::renderForm();
     }

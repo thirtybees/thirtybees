@@ -50,13 +50,13 @@ class AdminCmsContentControllerCore extends AdminController
 
         $this->table = 'cms';
         $this->className = 'CMS';
-        $this->bulk_actions = array(
-            'delete' => array(
+        $this->bulk_actions = [
+            'delete' => [
                 'text' => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
                 'icon' => 'icon-trash'
-            )
-        );
+            ]
+        ];
         $this->admin_cms_categories = new AdminCmsCategoriesController();
         $this->admin_cms_categories->init();
         $this->admin_cms = new AdminCmsController();
@@ -105,7 +105,7 @@ class AdminCmsContentControllerCore extends AdminController
             }
 
             // CMS categories breadcrumb
-            $cms_tabs = array('cms_category', 'cms');
+            $cms_tabs = ['cms_category', 'cms'];
             // Cleaning links
             $cat_bar_index = self::$currentIndex;
             foreach ($cms_tabs as $tab) {
@@ -113,20 +113,24 @@ class AdminCmsContentControllerCore extends AdminController
                     $cat_bar_index = preg_replace('/&'.$tab.'Orderby=([a-z _]*)&'.$tab.'Orderway=([a-z]*)/i', '', self::$currentIndex);
                 }
             }
-            $this->context->smarty->assign(array(
+            $this->context->smarty->assign(
+                [
                 'cms_breadcrumb' => getPath($cat_bar_index, $id_cms_category, '', '', 'cms'),
                 'page_header_toolbar_btn' => $this->page_header_toolbar_btn,
                 'page_header_toolbar_title' => $this->toolbar_title,
-            ));
+                ]
+            );
 
             $this->content .= $this->admin_cms_categories->renderList();
             $this->admin_cms->id_cms_category = $id_cms_category;
             $this->content .= $this->admin_cms->renderList();
         }
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'content' => $this->content
-        ));
+            ]
+        );
     }
 
     public function renderPageHeaderToolbar()
@@ -160,16 +164,16 @@ class AdminCmsContentControllerCore extends AdminController
         }
 
         if ($this->display == 'list') {
-            $this->page_header_toolbar_btn['new_cms_category'] = array(
+            $this->page_header_toolbar_btn['new_cms_category'] = [
                 'href' => self::$currentIndex.'&addcms_category&token='.$this->token,
                 'desc' => $this->l('Add new CMS category', null, null, false),
                 'icon' => 'process-icon-new'
-            );
-            $this->page_header_toolbar_btn['new_cms_page'] = array(
+            ];
+            $this->page_header_toolbar_btn['new_cms_page'] = [
                 'href' => self::$currentIndex.'&addcms&id_cms_category='.(int)$id_cms_category.'&token='.$this->token,
                 'desc' => $this->l('Add new CMS page', null, null, false),
                 'icon' => 'process-icon-new'
-            );
+            ];
         }
 
         $this->page_header_toolbar_title = implode(' '.Configuration::get('PS_NAVIGATION_PIPE').' ', $this->toolbar_title);
@@ -184,13 +188,15 @@ class AdminCmsContentControllerCore extends AdminController
             $this->context->smarty->getTemplateDir(0).DIRECTORY_SEPARATOR
             .'page_header_toolbar.tpl', $this->context->smarty);
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'show_page_header_toolbar' => $this->show_page_header_toolbar,
             'title' => $this->page_header_toolbar_title,
             'toolbar_btn' => $this->page_header_toolbar_btn,
             'page_header_toolbar_btn' => $this->page_header_toolbar_btn,
             'page_header_toolbar_title' => $this->toolbar_title,
-        ));
+            ]
+        );
     }
 
     public function postProcess()

@@ -51,20 +51,20 @@ class AdminMetaControllerCore extends AdminController
         $this->explicitSelect = true;
         $this->addRowAction('edit');
         $this->addRowAction('delete');
-        $this->bulk_actions = array(
-            'delete' => array(
+        $this->bulk_actions = [
+            'delete' => [
                 'text' => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
                 'icon' => 'icon-trash'
-            )
-        );
+            ]
+        ];
 
-        $this->fields_list = array(
-            'id_meta' => array('title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'),
-            'page' => array('title' => $this->l('Page')),
-            'title' => array('title' => $this->l('Page title')),
-            'url_rewrite' => array('title' => $this->l('Friendly URL'))
-        );
+        $this->fields_list = [
+            'id_meta' => ['title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'],
+            'page' => ['title' => $this->l('Page')],
+            'title' => ['title' => $this->l('Page title')],
+            'url_rewrite' => ['title' => $this->l('Friendly URL')]
+        ];
         $this->_where = ' AND a.configurable = 1';
         $this->_group = 'GROUP BY a.id_meta';
 
@@ -73,54 +73,54 @@ class AdminMetaControllerCore extends AdminController
         $this->sm_file = _PS_ROOT_DIR_.DIRECTORY_SEPARATOR.$this->context->shop->id.'_index_sitemap.xml';
         // Options to generate friendly urls
         $mod_rewrite = Tools::modRewriteActive();
-        $general_fields = array(
-            'PS_REWRITING_SETTINGS' => array(
+        $general_fields = [
+            'PS_REWRITING_SETTINGS' => [
                 'title' => $this->l('Friendly URL'),
                 'hint' => ($mod_rewrite ? $this->l('Enable this option only if your server allows URL rewriting (recommended).') : ''),
                 'validation' => 'isBool',
                 'cast' => 'intval',
                 'type' => 'bool',
                 'desc' => (!$mod_rewrite ? $this->l('URL rewriting (mod_rewrite) is not active on your server, or it is not possible to check your server configuration. If you want to use Friendly URLs, you must activate this mod.') : '')
-            ),
-            'PS_ALLOW_ACCENTED_CHARS_URL' => array(
+            ],
+            'PS_ALLOW_ACCENTED_CHARS_URL' => [
                 'title' => $this->l('Accented URL'),
                 'hint' => $this->l('Enable this option if you want to allow accented characters in your friendly URLs.').' '.$this->l('You should only activate this option if you are using non-latin characters ; for all the latin charsets, your SEO will be better without this option.'),
                 'validation' => 'isBool',
                 'cast' => 'intval',
                 'type' => 'bool'
-            ),
-            'PS_CANONICAL_REDIRECT' => array(
+            ],
+            'PS_CANONICAL_REDIRECT' => [
                 'title' => $this->l('Redirect to the canonical URL'),
                 'validation' => 'isUnsignedInt',
                 'cast' => 'intval',
                 'type' => 'select',
-                'list' => array(
-                    array('value' => 0, 'name' => $this->l('No redirection (you may have duplicate content issues)')),
-                    array('value' => 1, 'name' => $this->l('302 Moved Temporarily (recommended while setting up your store)')),
-                    array('value' => 2, 'name' => $this->l('301 Moved Permanently (recommended once you have gone live)'))
-                ),
+                'list' => [
+                    ['value' => 0, 'name' => $this->l('No redirection (you may have duplicate content issues)')],
+                    ['value' => 1, 'name' => $this->l('302 Moved Temporarily (recommended while setting up your store)')],
+                    ['value' => 2, 'name' => $this->l('301 Moved Permanently (recommended once you have gone live)')]
+                ],
                 'identifier' => 'value',
-            ),
-        );
+            ],
+        ];
 
         $url_description = '';
         if (!defined('_PS_HOST_MODE_')) {
             if ($this->checkConfiguration($this->ht_file)) {
-                $general_fields['PS_HTACCESS_DISABLE_MULTIVIEWS'] = array(
+                $general_fields['PS_HTACCESS_DISABLE_MULTIVIEWS'] = [
                     'title' => $this->l('Disable Apache\'s MultiViews option'),
                     'hint' => $this->l('Enable this option only if you have problems with URL rewriting.'),
                     'validation' => 'isBool',
                     'cast' => 'intval',
                     'type' => 'bool',
-                );
+                ];
 
-                $general_fields['PS_HTACCESS_DISABLE_MODSEC'] = array(
+                $general_fields['PS_HTACCESS_DISABLE_MODSEC'] = [
                     'title' => $this->l('Disable Apache\'s mod_security module'),
                     'hint' => $this->l('Some of PrestaShop\'s features might not work correctly with a specific configuration of Apache\'s mod_security module. We recommend to turn it off.'),
                     'validation' => 'isBool',
                     'cast' => 'intval',
                     'type' => 'bool',
-                );
+                ];
             } else {
                 $url_description = $this->l('Before you can use this tool, you need to:');
                 $url_description .= $this->l('1) Create a blank .htaccess file in your root directory.');
@@ -132,17 +132,17 @@ class AdminMetaControllerCore extends AdminController
         $robots_description = $this->l('Your robots.txt file MUST be in your website\'s root directory and nowhere else (e.g. http://www.example.com/robots.txt).');
         if ($this->checkConfiguration($this->rb_file)) {
             $robots_description .= $this->l('Generate your "robots.txt" file by clicking on the following button (this will erase the old robots.txt file)');
-            $robots_submit = array('name' => 'submitRobots', 'title' => $this->l('Generate robots.txt file'));
+            $robots_submit = ['name' => 'submitRobots', 'title' => $this->l('Generate robots.txt file')];
         } else {
             $robots_description .= $this->l('Before you can use this tool, you need to:');
             $robots_description .= $this->l('1) Create a blank robots.txt file in your root directory.');
             $robots_description .= $this->l('2) Give it write permissions (CHMOD 666 on Unix system).');
         }
 
-        $robots_options = array(
+        $robots_options = [
             'title' => $this->l('Robots file generation'),
             'description' => $robots_description,
-        );
+        ];
 
         if (isset($robots_submit)) {
             $robots_options['submit'] = $robots_submit;
@@ -150,36 +150,36 @@ class AdminMetaControllerCore extends AdminController
 
         if (!defined('_PS_HOST_MODE_')) {
             // Options for shop URL if multishop is disabled
-            $shop_url_options = array(
+            $shop_url_options = [
                 'title' => $this->l('Set shop URL'),
-                'fields' => array(),
-            );
+                'fields' => [],
+            ];
 
             if (!Shop::isFeatureActive()) {
                 $this->url = ShopUrl::getShopUrls($this->context->shop->id)->where('main', '=', 1)->getFirst();
                 if ($this->url) {
                     $shop_url_options['description'] = $this->l('Here you can set the URL for your shop. If you migrate your shop to a new URL, remember to change the values below.');
-                    $shop_url_options['fields'] = array(
-                        'domain' => array(
+                    $shop_url_options['fields'] = [
+                        'domain' => [
                             'title' =>    $this->l('Shop domain'),
                             'validation' => 'isString',
                             'type' => 'text',
                             'defaultValue' => $this->url->domain,
-                        ),
-                        'domain_ssl' => array(
+                        ],
+                        'domain_ssl' => [
                             'title' =>    $this->l('SSL domain'),
                             'validation' => 'isString',
                             'type' => 'text',
                             'defaultValue' => $this->url->domain_ssl,
-                        ),
-                        'uri' => array(
+                        ],
+                        'uri' => [
                             'title' =>    $this->l('Base URI'),
                             'validation' => 'isString',
                             'type' => 'text',
                             'defaultValue' => $this->url->physical_uri,
-                        )
-                    );
-                    $shop_url_options['submit'] = array('title' => $this->l('Save'));
+                        ]
+                    ];
+                    $shop_url_options['submit'] = ['title' => $this->l('Save')];
                 }
             } else {
                 $shop_url_options['description'] = $this->l('The multistore option is enabled. If you want to change the URL of your shop, you must go to the "Multistore" page under the "Advanced Parameters" menu.');
@@ -187,30 +187,30 @@ class AdminMetaControllerCore extends AdminController
         }
 
         // List of options
-        $this->fields_options = array(
-            'general' => array(
+        $this->fields_options = [
+            'general' => [
                 'title' =>    $this->l('Set up URLs'),
                 'description' => $url_description,
                 'fields' =>    $general_fields,
-                'submit' => array('title' => $this->l('Save'))
-            )
-        );
+                'submit' => ['title' => $this->l('Save')]
+            ]
+        ];
 
         if (!defined('_PS_HOST_MODE_')) {
             $this->fields_options['shop_url'] = $shop_url_options;
         } else {
-            $this->fields_options['manage_domain_name'] = array(
+            $this->fields_options['manage_domain_name'] = [
                 'title' => $this->l('Manage domain name'),
                 'description' => $this->l('You can search for a new domain name or add a domain name that you already own. You will be redirected to your PrestaShop account.'),
-                'buttons' => array(
-                    array(
+                'buttons' => [
+                    [
                         'title' => $this->l('Add a domain name'),
                         'href' => 'https://www.prestashop.com/cloud/',
                         'class' => 'pull-right', 'icon' => 'process-icon-new',
                         'js' => 'return !window.open(this.href);'
-                    )
-                )
-            );
+                    ]
+                ]
+            ];
         }
 
         // Add display route options to options form
@@ -220,7 +220,7 @@ class AdminMetaControllerCore extends AdminController
             }
             $this->fields_options['routes']['title'] = $this->l('Schema of URLs');
             $this->fields_options['routes']['description'] = $this->l('This section enables you to change the default pattern of your links. In order to use this functionality, PrestaShop\'s "Friendly URL" option must be enabled, and Apache\'s URL rewriting module (mod_rewrite) must be activated on your web server.').'<br />'.$this->l('There are several available keywords for each route listed below; note that keywords with * are required!').'<br />'.$this->l('To add a keyword in your URL, use the {keyword} syntax. If the keyword is not empty, you can add text before or after the keyword with syntax {prepend:keyword:append}. For example {-hey-:meta_title} will add "-hey-my-title" in the URL if the meta title is set.');
-            $this->fields_options['routes']['submit'] = array('title' => $this->l('Save'));
+            $this->fields_options['routes']['submit'] = ['title' => $this->l('Save')];
         }
 
         $this->fields_options['robots'] = $robots_options;
@@ -229,11 +229,11 @@ class AdminMetaControllerCore extends AdminController
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
-            $this->page_header_toolbar_btn['new_meta'] = array(
+            $this->page_header_toolbar_btn['new_meta'] = [
                 'href' => self::$currentIndex.'&addmeta&token='.$this->token,
                 'desc' => $this->l('Add a new page', null, null, false),
                 'icon' => 'process-icon-new'
-            );
+            ];
         }
 
         parent::initPageHeaderToolbar();
@@ -257,19 +257,19 @@ class AdminMetaControllerCore extends AdminController
 
     public function addFieldRoute($route_id, $title)
     {
-        $keywords = array();
+        $keywords = [];
         foreach (Dispatcher::getInstance()->default_routes[$route_id]['keywords'] as $keyword => $data) {
             $keywords[] = ((isset($data['param'])) ? '<span class="red">'.$keyword.'*</span>' : $keyword);
         }
 
-        $this->fields_options['routes']['fields']['PS_ROUTE_'.$route_id] = array(
+        $this->fields_options['routes']['fields']['PS_ROUTE_'.$route_id] = [
             'title' =>    $title,
             'desc' => sprintf($this->l('Keywords: %s'), implode(', ', $keywords)),
             'validation' => 'isString',
             'type' => 'text',
             'size' => 70,
             'defaultValue' => Dispatcher::getInstance()->default_routes[$route_id]['rule'],
-        );
+        ];
     }
 
     public function renderForm()
@@ -285,103 +285,103 @@ class AdminMetaControllerCore extends AdminController
             }
         }
 
-        $pages = array(
-            'common' => array(
+        $pages = [
+            'common' => [
                 'name' => $this->l('Default pages'),
-                'query' => array(),
-            ),
-            'module' => array(
+                'query' => [],
+            ],
+            'module' => [
                 'name' => $this->l('Modules pages'),
-                'query' => array(),
-            ),
-        );
+                'query' => [],
+            ],
+        ];
 
         foreach ($files as $name => $file) {
             $k = (preg_match('#^module-#', $file)) ? 'module' : 'common';
-            $pages[$k]['query'][] = array(
+            $pages[$k]['query'][] = [
                 'id' => $file,
                 'page' => $name,
-            );
+            ];
         }
 
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('Meta tags'),
                 'icon' => 'icon-tags'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'hidden',
                     'name' => 'id_meta',
-                ),
-                array(
+                ],
+                [
                     'type' => 'select',
                     'label' => $this->l('Page'),
                     'name' => 'page',
 
-                    'options' => array(
-                        'optiongroup' => array(
+                    'options' => [
+                        'optiongroup' => [
                             'label' => 'name',
                             'query' => $pages,
-                        ),
-                        'options' => array(
+                        ],
+                        'options' => [
                             'id' => 'id',
                             'name' => 'page',
                             'query' => 'query',
-                        ),
-                    ),
+                        ],
+                    ],
                     'hint' => $this->l('Name of the related page.'),
                     'required' => true,
                     'empty_message' => '<p>'.$this->l('There is no page available!').'</p>',
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Page title'),
                     'name' => 'title',
                     'lang' => true,
-                    'hint' => array(
+                    'hint' => [
                         $this->l('Title of this page.'),
                         $this->l('Invalid characters:').' &lt;&gt;;=#{}'
-                    )
-                ),
-                array(
+                    ]
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Meta description'),
                     'name' => 'description',
                     'lang' => true,
-                    'hint' => array(
+                    'hint' => [
                         $this->l('A short description of your shop.'),
                         $this->l('Invalid characters:').' &lt;&gt;;=#{}'
-                    )
-                ),
-                array(
+                    ]
+                ],
+                [
                     'type' => 'tags',
                     'label' => $this->l('Meta keywords'),
                     'name' => 'keywords',
                     'lang' => true,
-                    'hint' =>  array(
+                    'hint' =>  [
                         $this->l('List of keywords for search engines.'),
                         $this->l('To add tags, click in the field, write something, and then press the "Enter" key.'),
                         $this->l('Invalid characters:').' &lt;&gt;;=#{}'
-                    )
-                ),
-                array(
+                    ]
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Rewritten URL'),
                     'name' => 'url_rewrite',
                     'lang' => true,
                     'required' => true,
                     'disabled' => (bool)$is_index,
-                    'hint' => array(
+                    'hint' => [
                         $this->l('For instance, "contacts" for http://example.com/shop/contacts to redirect to http://example.com/shop/contact-form.php'),
                         $this->l('Only letters and hyphens are allowed.'),
-                    )
-                ),
-            ),
-            'submit' => array(
+                    ]
+                ],
+            ],
+            'submit' => [
                 'title' => $this->l('Save')
-            )
-        );
+            ]
+        ];
         return parent::renderForm();
     }
 
@@ -439,15 +439,15 @@ class AdminMetaControllerCore extends AdminController
         if (Tools::isSubmit('submitAddmeta') && Validate::isLoadedObject($ret)) {
             /** @var Theme $ret */
             $themes = Theme::getThemes();
-            $theme_meta_value = array();
+            $theme_meta_value = [];
             foreach ($themes as $theme) {
                 /** @var Theme $theme */
-                $theme_meta_value[] = array(
+                $theme_meta_value[] = [
                     'id_theme' => (int)$theme->id,
                     'id_meta' => (int)$ret->id,
                     'left_column' => (int)$theme->default_left_column,
                     'right_column' => (int)$theme->default_right_column
-                );
+                ];
             }
             if (count($theme_meta_value) > 0) {
                 Db::getInstance()->insert('theme_meta', $theme_meta_value, false, true, DB::INSERT_IGNORE);
@@ -462,9 +462,10 @@ class AdminMetaControllerCore extends AdminController
         if (!$write_fd = @fopen($this->rb_file, 'w')) {
             $this->errors[] = sprintf(Tools::displayError('Cannot write into file: %s. Please check write permissions.'), $this->rb_file);
         } else {
-            Hook::exec('actionAdminMetaBeforeWriteRobotsFile', array(
+            Hook::exec('actionAdminMetaBeforeWriteRobotsFile', [
                 'rb_data' => &$this->rb_data
-            ));
+            ]
+            );
 
             // PS Comments
             fwrite($write_fd, "# robots.txt automaticaly generated by PrestaShop e-commerce open-source solution\n");
@@ -530,10 +531,11 @@ class AdminMetaControllerCore extends AdminController
                     .__PS_BASE_URI__.$sitemap_filename."\n");
             }
 
-            Hook::exec('actionAdminMetaAfterWriteRobotsFile', array(
+            Hook::exec('actionAdminMetaAfterWriteRobotsFile', [
                 'rb_data' => $this->rb_data,
                 'write_fd' => &$write_fd
-            ));
+            ]
+            );
 
             fclose($write_fd);
 
@@ -576,7 +578,7 @@ class AdminMetaControllerCore extends AdminController
                 return;
             }
 
-            $errors = array();
+            $errors = [];
             if (!Dispatcher::getInstance()->validateRoute($route_id, $rule, $errors)) {
                 foreach ($errors as $error) {
                     $this->errors[] = sprintf('Keyword "{%1$s}" required for route "%2$s" (rule: "%3$s")', $error, $route_id, htmlspecialchars($rule));
@@ -719,12 +721,12 @@ class AdminMetaControllerCore extends AdminController
             $helper = new HelperOptions($this);
             $this->setHelperDisplay($helper);
             $helper->toolbar_scroll = true;
-            $helper->toolbar_btn = array(
-                'save' => array(
+            $helper->toolbar_btn = [
+                'save' => [
                     'href' => '#',
                     'desc' => $this->l('Save')
-                )
-            );
+                ]
+            ];
             $helper->id = $this->id;
             $helper->tpl_vars = $this->tpl_option_vars;
             $options = $helper->generateOptions($this->fields_options);
@@ -764,24 +766,24 @@ class AdminMetaControllerCore extends AdminController
 
     public function getRobotsContent()
     {
-        $tab = array();
+        $tab = [];
 
         // Special allow directives
-        $tab['Allow'] = array('*/modules/*.css', '*/modules/*.js');
+        $tab['Allow'] = ['*/modules/*.css', '*/modules/*.js'];
 
         // Directories
-        $tab['Directories'] = array('classes/', 'config/', 'download/', 'mails/', 'modules/', 'translations/', 'tools/');
+        $tab['Directories'] = ['classes/', 'config/', 'download/', 'mails/', 'modules/', 'translations/', 'tools/'];
 
         // Files
-        $disallow_controllers = array(
+        $disallow_controllers = [
             'addresses', 'address', 'authentication', 'cart', 'discount', 'footer',
             'get-file', 'header', 'history', 'identity', 'images.inc', 'init', 'my-account', 'order', 'order-opc',
             'order-slip', 'order-detail', 'order-follow', 'order-return', 'order-confirmation', 'pagination', 'password',
             'pdf-invoice', 'pdf-order-return', 'pdf-order-slip', 'product-sort', 'search', 'statistics','attachment', 'guest-tracking'
-        );
+        ];
 
         // Rewrite files
-        $tab['Files'] = array();
+        $tab['Files'] = [];
         if (Configuration::get('PS_REWRITING_SETTINGS')) {
             $sql = 'SELECT ml.url_rewrite, l.iso_code
 					FROM '._DB_PREFIX_.'meta m
@@ -795,10 +797,10 @@ class AdminMetaControllerCore extends AdminController
             }
         }
 
-        $tab['GB'] = array(
+        $tab['GB'] = [
             '?orderby=','?orderway=','?tag=','?id_currency=','?search_query=','?back=','?n=',
             '&orderby=','&orderway=','&tag=','&id_currency=','&search_query=','&back=','&n='
-        );
+        ];
 
         foreach ($disallow_controllers as $controller) {
             $tab['GB'][] = 'controller='.$controller;

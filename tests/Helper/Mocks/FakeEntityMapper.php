@@ -9,7 +9,7 @@ use ObjectModel;
 
 class FakeEntityMapper extends Adapter_EntityMapper
 {
-    private $fake_db = array();
+    private $fake_db = [];
 
     private $entity_being_built = null;
 
@@ -50,19 +50,20 @@ class FakeEntityMapper extends Adapter_EntityMapper
 
     /**
      * Fills the given entity with fields from the entity stored in the fake database if it exists.
-     * @param $id
-     * @param $id_lang
+     *
+*@param $id
+     * @param $idLang
      * @param $entity
-     * @param $entity_defs
-     * @param $id_shop
+     * @param $entityDefs
+     * @param $idShop
      */
-    public function load($id, $id_lang, $entity, $entity_defs, $id_shop, $should_cache_objects)
+    public function load($id, $idLang, $entity, $entityDefs, $idShop, $shouldCacheObjects)
     {
         if ($this->entity_being_built !== null) {
             throw new Exception('Unifinished entity build : an entity build was started with FakeEntityMapper::willReturn, please call FakeEntityMapper::forId to finish building your entity.');
         }
 
-        $cache_id = $this->buildCacheId($id, $entity_defs['classname'], $id_lang, $id_shop);
+        $cache_id = $this->buildCacheId($id, $entityDefs['classname'], $idLang, $idShop);
 
         if (isset($this->fake_db[$cache_id])) {
             foreach ($this->fake_db[$cache_id] as $key => $value) {

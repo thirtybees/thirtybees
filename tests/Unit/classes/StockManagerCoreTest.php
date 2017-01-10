@@ -48,11 +48,11 @@ class StockManagerCoreTest extends \PHPUnit_Framework_TestCase
 
     public function getWarehouseIds()
     {
-        return array(
-            array(array(''), array(0)),
-            array(null, array()),
-            array(array("1"), array(1)),
-            array("1", array(1)),
-        );
+        return [
+            [[''], [0]],
+            [null, []],
+            [["1"], [1]],
+            ["1", [1]],
+        ];
     }
 }

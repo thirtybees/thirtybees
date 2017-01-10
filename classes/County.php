@@ -38,28 +38,28 @@ class CountyCore extends ObjectModel
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = array(
+    public static $definition = [
         'table' => 'county',
         'primary' => 'id_county',
-        'fields' => array(
-            'name' =>        array('type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 64),
-            'id_state' =>    array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId'),
-            'active' =>    array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
-        ),
-    );
+        'fields' => [
+            'name' =>        ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 64],
+            'id_state' =>    ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
+            'active' =>    ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+        ],
+    ];
 
-    protected static $_cache_get_counties = array();
-    protected static $_cache_county_zipcode = array();
+    protected static $_cache_get_counties = [];
+    protected static $_cache_county_zipcode = [];
 
     const USE_BOTH_TAX = 0;
     const USE_COUNTY_TAX = 1;
     const USE_STATE_TAX = 2;
 
-    protected $webserviceParameters = array(
-        'fields' => array(
-            'id_state' => array('xlink_resource'=> 'states'),
-        ),
-    );
+    protected $webserviceParameters = [
+        'fields' => [
+            'id_state' => ['xlink_resource'=> 'states'],
+        ],
+    ];
 
     public function delete()
     {
@@ -108,7 +108,7 @@ class CountyCore extends ObjectModel
     public function breakDownZipCode($zip_codes)
     {
         Tools::displayAsDeprecated();
-        return array(0,0);
+        return [0,0];
     }
 
     /**

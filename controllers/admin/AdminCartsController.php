@@ -56,61 +56,61 @@ class AdminCartsControllerCore extends AdminController
             $this->_use_found_rows = false;
         }
 
-        $this->fields_list = array(
-            'id_cart' => array(
+        $this->fields_list = [
+            'id_cart' => [
                 'title' => $this->l('ID'),
                 'align' => 'text-center',
                 'class' => 'fixed-width-xs'
-            ),
-            'status' => array(
+            ],
+            'status' => [
                 'title' => $this->l('Order ID'),
                 'align' => 'text-center',
                 'badge_danger' => true,
                 'havingFilter' => true
-            ),
-            'customer' => array(
+            ],
+            'customer' => [
                 'title' => $this->l('Customer'),
                 'filter_key' => 'c!lastname'
-            ),
-            'total' => array(
+            ],
+            'total' => [
                 'title' => $this->l('Total'),
                 'callback' => 'getOrderTotalUsingTaxCalculationMethod',
                 'orderby' => false,
                 'search' => false,
                 'align' => 'text-right',
                 'badge_success' => true
-            ),
-            'carrier' => array(
+            ],
+            'carrier' => [
                 'title' => $this->l('Carrier'),
                 'align' => 'text-left',
                 'callback' => 'replaceZeroByShopName',
                 'filter_key' => 'ca!name'
-            ),
-            'date_add' => array(
+            ],
+            'date_add' => [
                 'title' => $this->l('Date'),
                 'align' => 'text-left',
                 'type' => 'datetime',
                 'class' => 'fixed-width-lg',
                 'filter_key' => 'a!date_add'
-            ),
-            'id_guest' => array(
+            ],
+            'id_guest' => [
                 'title' => $this->l('Online'),
                 'align' => 'text-center',
                 'type' => 'bool',
                 'havingFilter' => true,
                 'class' => 'fixed-width-xs',
-                'icon' => array(0 => 'icon-', 1 => 'icon-user')
-            )
-        );
+                'icon' => [0 => 'icon-', 1 => 'icon-user']
+            ]
+        ];
         $this->shopLinkType = 'shop';
 
-        $this->bulk_actions = array(
-            'delete' => array(
+        $this->bulk_actions = [
+            'delete' => [
                 'text' => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
                 'icon' => 'icon-trash'
-            )
-        );
+            ]
+        ];
 
         parent::__construct();
     }
@@ -118,11 +118,11 @@ class AdminCartsControllerCore extends AdminController
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
-            $this->page_header_toolbar_btn['export_cart'] = array(
+            $this->page_header_toolbar_btn['export_cart'] = [
                 'href' => self::$currentIndex.'&exportcart&token='.$this->token,
                 'desc' => $this->l('Export carts', null, null, false),
                 'icon' => 'process-icon-export'
-            );
+            ];
         }
 
         parent::initPageHeaderToolbar();
@@ -131,7 +131,7 @@ class AdminCartsControllerCore extends AdminController
     public function renderKpis()
     {
         $time = time();
-        $kpis = array();
+        $kpis = [];
 
         /* The data generation is located in AdminStatsControllerCore */
         $helper = new HelperKpi();
@@ -249,7 +249,7 @@ class AdminCartsControllerCore extends AdminController
                 $product['product_price'] = $product['price_wt'];
                 $product['product_total'] = $product['total_wt'];
             }
-            $image = array();
+            $image = [];
             if (isset($product['id_product_attribute']) && (int)$product['id_product_attribute']) {
                 $image = Db::getInstance()->getRow('SELECT id_image FROM '._DB_PREFIX_.'product_attribute_image WHERE id_product_attribute = '.(int)$product['id_product_attribute']);
             }
@@ -272,7 +272,7 @@ class AdminCartsControllerCore extends AdminController
         $helper->value = Tools::displayPrice($total_price, $currency);
         $kpi = $helper->generate();
 
-        $this->tpl_view_vars = array(
+        $this->tpl_view_vars = [
             'kpi' => $kpi,
             'products' => $products,
             'discounts' => $cart->getCartRules(),
@@ -288,7 +288,7 @@ class AdminCartsControllerCore extends AdminController
             'total_shipping' => $total_shipping,
             'customized_datas' => $customized_datas,
             'tax_calculation_method' => $tax_calculation_method
-        );
+        ];
 
         return parent::renderView();
     }
@@ -353,7 +353,7 @@ class AdminCartsControllerCore extends AdminController
     public function ajaxProcessDeleteProduct()
     {
         if ($this->tabAccess['edit'] === '1') {
-            $errors = array();
+            $errors = [];
             if ((!$id_product = (int)Tools::getValue('id_product')) || !Validate::isInt($id_product)) {
                 $errors[] = Tools::displayError('Invalid product');
             }
@@ -371,9 +371,9 @@ class AdminCartsControllerCore extends AdminController
 
     public function ajaxProcessUpdateCustomizationFields()
     {
-        $errors = array();
+        $errors = [];
         if ($this->tabAccess['edit'] === '1') {
-            $errors = array();
+            $errors = [];
             if (Tools::getValue('only_display') != 1) {
                 if (!$this->context->cart->id || (!$id_product = (int)Tools::getValue('id_product'))) {
                     return;
@@ -424,8 +424,12 @@ class AdminCartsControllerCore extends AdminController
             }
             $this->setMedia();
             $this->initFooter();
-            $this->context->smarty->assign(array('customization_errors' => implode('<br />', $errors),
-                                                            'css_files' => $this->css_files));
+            $this->context->smarty->assign(
+                [
+                    'customization_errors' => implode('<br />', $errors),
+                                                            'css_files' => $this->css_files
+                ]
+            );
             return $this->smartyOutputContent('controllers/orders/form_customization_feedback.tpl');
         }
     }
@@ -433,7 +437,7 @@ class AdminCartsControllerCore extends AdminController
     public function ajaxProcessUpdateQty()
     {
         if ($this->tabAccess['edit'] === '1') {
-            $errors = array();
+            $errors = [];
             if (!$this->context->cart->id) {
                 return;
             }
@@ -478,7 +482,7 @@ class AdminCartsControllerCore extends AdminController
                 }
             }
 
-            echo Tools::jsonEncode(array_merge($this->ajaxReturnVars(), array('errors' => $errors)));
+            echo Tools::jsonEncode(array_merge($this->ajaxReturnVars(), ['errors' => $errors]));
         }
     }
 
@@ -487,7 +491,7 @@ class AdminCartsControllerCore extends AdminController
         if ($this->tabAccess['edit'] === '1') {
             $delivery_option = Tools::getValue('delivery_option');
             if ($delivery_option !== false) {
-                $this->context->cart->setDeliveryOption(array($this->context->cart->id_address_delivery => $delivery_option));
+                $this->context->cart->setDeliveryOption([$this->context->cart->id_address_delivery => $delivery_option]);
             }
             if (Validate::isBool(($recyclable = (int)Tools::getValue('recyclable')))) {
                 $this->context->cart->recyclable = $recyclable;
@@ -552,7 +556,7 @@ class AdminCartsControllerCore extends AdminController
     public function ajaxProcessDuplicateOrder()
     {
         if ($this->tabAccess['edit'] === '1') {
-            $errors = array();
+            $errors = [];
             if (!$id_order = Tools::getValue('id_order')) {
                 $errors[] = Tools::displayError('Invalid order');
             }
@@ -584,7 +588,7 @@ class AdminCartsControllerCore extends AdminController
             if (!$id_cart_rule = CartRule::getIdByCode(CartRule::BO_ORDER_CODE_PREFIX.(int)$this->context->cart->id)) {
                 $cart_rule = new CartRule();
                 $cart_rule->code = CartRule::BO_ORDER_CODE_PREFIX.(int)$this->context->cart->id;
-                $cart_rule->name = array(Configuration::get('PS_LANG_DEFAULT') => $this->l('Free Shipping', 'AdminTab', false, false));
+                $cart_rule->name = [Configuration::get('PS_LANG_DEFAULT') => $this->l('Free Shipping', 'AdminTab', false, false)];
                 $cart_rule->id_customer = (int)$this->context->cart->id_customer;
                 $cart_rule->free_shipping = true;
                 $cart_rule->quantity = 1;
@@ -611,7 +615,7 @@ class AdminCartsControllerCore extends AdminController
     public function ajaxProcessAddVoucher()
     {
         if ($this->tabAccess['edit'] === '1') {
-            $errors = array();
+            $errors = [];
             if (!($id_cart_rule = Tools::getValue('id_cart_rule')) || !$cart_rule = new CartRule((int)$id_cart_rule)) {
                 $errors[] = Tools::displayError('Invalid voucher.');
             } elseif ($err = $cart_rule->checkValidity($this->context)) {
@@ -622,14 +626,14 @@ class AdminCartsControllerCore extends AdminController
                     $errors[] = Tools::displayError('Can\'t add the voucher.');
                 }
             }
-            echo Tools::jsonEncode(array_merge($this->ajaxReturnVars(), array('errors' => $errors)));
+            echo Tools::jsonEncode(array_merge($this->ajaxReturnVars(), ['errors' => $errors]));
         }
     }
 
     public function ajaxProcessUpdateAddress()
     {
         if ($this->tabAccess['edit'] === '1') {
-            echo Tools::jsonEncode(array('addresses' => $this->context->customer->getAddresses((int)$this->context->cart->id_lang)));
+            echo Tools::jsonEncode(['addresses' => $this->context->customer->getAddresses((int)$this->context->cart->id_lang)]);
         }
     }
 
@@ -691,11 +695,11 @@ class AdminCartsControllerCore extends AdminController
 
     protected function getDeliveryOptionList()
     {
-        $delivery_option_list_formated = array();
+        $delivery_option_list_formated = [];
         $delivery_option_list = $this->context->cart->getDeliveryOptionList();
 
         if (!count($delivery_option_list)) {
-            return array();
+            return [];
         }
 
         $id_default_carrier = (int)Configuration::get('PS_CARRIER_DEFAULT');
@@ -723,11 +727,11 @@ class AdminCartsControllerCore extends AdminController
                     $id_default_carrier_delivery = $id_default_carrier;
                 }
                 if (!$this->context->cart->id_carrier) {
-                    $this->context->cart->setDeliveryOption(array($this->context->cart->id_address_delivery => (int)$carrier['instance']->id.','));
+                    $this->context->cart->setDeliveryOption([$this->context->cart->id_address_delivery => (int)$carrier['instance']->id.',']);
                     $this->context->cart->save();
                 }
             }
-            $delivery_option_list_formated[] = array('name' => $name, 'key' => $key);
+            $delivery_option_list_formated[] = ['name' => $name, 'key' => $key];
         }
         return $delivery_option_list_formated;
     }
@@ -756,11 +760,14 @@ class AdminCartsControllerCore extends AdminController
         }
         if ($orders || $carts) {
             $to_return = array_merge($this->ajaxReturnVars(),
-                                            array('carts' => $carts,
+                                            [
+                                                'carts' => $carts,
                                                      'orders' => $orders,
-                                                     'found' => true));
+                                                     'found' => true
+                                            ]
+            );
         } else {
-            $to_return = array_merge($this->ajaxReturnVars(), array('found' => false));
+            $to_return = array_merge($this->ajaxReturnVars(), ['found' => false]);
         }
 
         echo Tools::jsonEncode($to_return);
@@ -789,10 +796,10 @@ class AdminCartsControllerCore extends AdminController
 
         foreach ($addresses as &$data) {
             $address = new Address((int)$data['id_address']);
-            $data['formated_address'] = AddressFormat::generateAddress($address, array(), "<br />");
+            $data['formated_address'] = AddressFormat::generateAddress($address, [], "<br />");
         }
 
-        return array(
+        return [
             'summary' => $this->getCartSummary(),
             'delivery_option_list' => $this->getDeliveryOptionList(),
             'cart' => $this->context->cart,
@@ -806,7 +813,7 @@ class AdminCartsControllerCore extends AdminController
                 'step=3&recover_cart='.$id_cart.'&token_cart='.md5(_COOKIE_KEY_.'recover_cart_'.$id_cart)
             ),
             'free_shipping' => (int)$free_shipping
-        );
+        ];
     }
 
     public function initToolbar()
@@ -897,7 +904,7 @@ class AdminCartsControllerCore extends AdminController
             }
         }
         $helper->is_cms = $this->is_cms;
-        $skip_list = array();
+        $skip_list = [];
 
         foreach ($this->_list as $row) {
             if (isset($row['id_order']) && is_numeric($row['id_order'])) {

@@ -46,31 +46,31 @@ class ConfigurationCore extends ObjectModel
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = array(
+    public static $definition = [
         'table' => 'configuration',
         'primary' => 'id_configuration',
         'multilang' => true,
-        'fields' => array(
-            'name' =>            array('type' => self::TYPE_STRING, 'validate' => 'isConfigName', 'required' => true, 'size' => 254),
-            'id_shop_group' =>    array('type' => self::TYPE_NOTHING, 'validate' => 'isUnsignedId'),
-            'id_shop' =>        array('type' => self::TYPE_NOTHING, 'validate' => 'isUnsignedId'),
-            'value' =>            array('type' => self::TYPE_STRING),
-            'date_add' =>        array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
-            'date_upd' =>        array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
-        ),
-    );
+        'fields' => [
+            'name' =>            ['type' => self::TYPE_STRING, 'validate' => 'isConfigName', 'required' => true, 'size' => 254],
+            'id_shop_group' =>    ['type' => self::TYPE_NOTHING, 'validate' => 'isUnsignedId'],
+            'id_shop' =>        ['type' => self::TYPE_NOTHING, 'validate' => 'isUnsignedId'],
+            'value' =>            ['type' => self::TYPE_STRING],
+            'date_add' =>        ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+            'date_upd' =>        ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+        ],
+    ];
 
     /** @var array Configuration cache */
-    protected static $_cache = array();
+    protected static $_cache = [];
 
     /** @var array Vars types */
-    protected static $types = array();
+    protected static $types = [];
 
-    protected $webserviceParameters = array(
-        'fields' => array(
-            'value' => array(),
-        )
-    );
+    protected $webserviceParameters = [
+        'fields' => [
+            'value' => [],
+        ]
+    ];
 
     /**
      * @see ObjectModel::getFieldsLang()
@@ -131,7 +131,7 @@ class ConfigurationCore extends ObjectModel
      */
     public static function clearConfigurationCacheForTesting()
     {
-        self::$_cache = array();
+        self::$_cache = [];
     }
 
     /**
@@ -139,7 +139,7 @@ class ConfigurationCore extends ObjectModel
      */
     public static function loadConfiguration()
     {
-        self::$_cache[self::$definition['table']] = array();
+        self::$_cache[self::$definition['table']] = [];
 
         $sql = 'SELECT c.`name`, cl.`id_lang`, IF(cl.`id_lang` IS NULL, c.`value`, cl.`value`) AS value, c.id_shop_group, c.id_shop
                 FROM `'._DB_PREFIX_.bqSQL(self::$definition['table']).'` c
@@ -150,11 +150,11 @@ class ConfigurationCore extends ObjectModel
             $lang = ($row['id_lang']) ? $row['id_lang'] : 0;
             self::$types[$row['name']] = ($lang) ? 'lang' : 'normal';
             if (!isset(self::$_cache[self::$definition['table']][$lang])) {
-                self::$_cache[self::$definition['table']][$lang] = array(
-                    'global' => array(),
-                    'group' => array(),
-                    'shop' => array(),
-                );
+                self::$_cache[self::$definition['table']][$lang] = [
+                    'global' => [],
+                    'group' => [],
+                    'shop' => [],
+                ];
             }
 
             if ($row['id_shop']) {
@@ -224,7 +224,7 @@ class ConfigurationCore extends ObjectModel
      */
     public static function getInt($key, $id_shop_group = null, $id_shop = null)
     {
-        $results_array = array();
+        $results_array = [];
         foreach (Language::getIDs() as $id_lang) {
             $results_array[$id_lang] = Configuration::get($key, $id_lang, $id_shop_group, $id_shop);
         }
@@ -242,7 +242,7 @@ class ConfigurationCore extends ObjectModel
     public static function getMultiShopValues($key, $id_lang = null)
     {
         $shops = Shop::getShops(false, null, true);
-        $resultsArray = array();
+        $resultsArray = [];
         foreach ($shops as $id_shop) {
             $resultsArray[$id_shop] = Configuration::get($key, $id_lang, null, $id_shop);
         }
@@ -274,7 +274,7 @@ class ConfigurationCore extends ObjectModel
             $id_shop_group = Shop::getContextShopGroupID(true);
         }
 
-        $results = array();
+        $results = [];
         foreach ($keys as $key) {
             $results[$key] = Configuration::get($key, $id_lang, $id_shop_group, $id_shop);
         }
@@ -335,7 +335,7 @@ class ConfigurationCore extends ObjectModel
         }
 
         if (!is_array($values)) {
-            $values = array($values);
+            $values = [$values];
         }
 
         foreach ($values as $lang => $value) {
@@ -390,7 +390,7 @@ class ConfigurationCore extends ObjectModel
         }
 
         if (!is_array($values)) {
-            $values = array($values);
+            $values = [$values];
         }
 
         if ($html) {
@@ -412,10 +412,10 @@ class ConfigurationCore extends ObjectModel
             if (Configuration::hasKey($key, $lang, $id_shop_group, $id_shop)) {
                 if (!$lang) {
                     // Update config not linked to lang
-                    $result &= Db::getInstance()->update(self::$definition['table'], array(
+                    $result &= Db::getInstance()->update(self::$definition['table'], [
                         'value' => pSQL($value, $html),
                         'date_upd' => date('Y-m-d H:i:s'),
-                    ), '`name` = \''.pSQL($key).'\''.Configuration::sqlRestriction($id_shop_group, $id_shop), 1, true);
+                    ], '`name` = \''.pSQL($key).'\''.Configuration::sqlRestriction($id_shop_group, $id_shop), 1, true);
                 } else {
                     // Update multi lang
                     $sql = 'UPDATE `'._DB_PREFIX_.bqSQL(self::$definition['table']).'_lang` cl
@@ -435,25 +435,26 @@ class ConfigurationCore extends ObjectModel
             else {
                 if (!$configID = Configuration::getIdByName($key, $id_shop_group, $id_shop)) {
                     $now = date('Y-m-d H:i:s');
-                    $data = array(
+                    $data = [
                         'id_shop_group' => $id_shop_group ? (int)$id_shop_group : null,
                         'id_shop'       => $id_shop ? (int)$id_shop : null,
                         'name'          => pSQL($key),
                         'value'         => $lang ? null : pSQL($value, $html),
                         'date_add'      => $now,
                         'date_upd'      => $now,
-                    );
+                    ];
                     $result &= Db::getInstance()->insert(self::$definition['table'], $data, true);
                     $configID = Db::getInstance()->Insert_ID();
                 }
 
                 if ($lang) {
-                    $result &= Db::getInstance()->insert(self::$definition['table'].'_lang', array(
+                    $result &= Db::getInstance()->insert(self::$definition['table'].'_lang', [
                         self::$definition['primary'] => $configID,
                         'id_lang' => (int)$lang,
                         'value' => pSQL($value, $html),
                         'date_upd' => date('Y-m-d H:i:s'),
-                    ));
+                    ]
+                    );
                 }
             }
         }

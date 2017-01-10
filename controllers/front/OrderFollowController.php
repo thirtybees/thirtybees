@@ -65,11 +65,13 @@ class OrderFollowControllerCore extends FrontController
             $orderReturn->question = htmlspecialchars(Tools::getValue('returnText'));
             if (empty($orderReturn->question)) {
                 Tools::redirect('index.php?controller=order-follow&errorMsg&'.
-                    http_build_query(array(
+                    http_build_query(
+                        [
                         'ids_order_detail' => $ids_order_detail,
                         'order_qte_input' => $order_qte_input,
                         'id_order' => Tools::getValue('id_order'),
-                    )));
+                        ]
+                    ));
             }
 
             if (!$orderReturn->checkEnoughProduct($ids_order_detail, $order_qte_input, $customizationIds, $customizationQtyInput)) {
@@ -79,7 +81,7 @@ class OrderFollowControllerCore extends FrontController
             $orderReturn->state = 1;
             $orderReturn->add();
             $orderReturn->addReturnDetail($ids_order_detail, $order_qte_input, $customizationIds, $customizationQtyInput);
-            Hook::exec('actionOrderReturn', array('orderReturn' => $orderReturn));
+            Hook::exec('actionOrderReturn', ['orderReturn' => $orderReturn]);
             Tools::redirect('index.php?controller=order-follow');
         }
     }
@@ -97,12 +99,12 @@ class OrderFollowControllerCore extends FrontController
             $this->context->smarty->assign('errorQuantity', true);
         } elseif (Tools::isSubmit('errorMsg')) {
             $this->context->smarty->assign(
-                array(
+                [
                     'errorMsg' => true,
-                    'ids_order_detail' => Tools::getValue('ids_order_detail', array()),
-                    'order_qte_input' => Tools::getValue('order_qte_input', array()),
+                    'ids_order_detail' => Tools::getValue('ids_order_detail', []),
+                    'order_qte_input' => Tools::getValue('order_qte_input', []),
                     'id_order' => (int)Tools::getValue('id_order'),
-                )
+                ]
             );
         } elseif (Tools::isSubmit('errorDetail1')) {
             $this->context->smarty->assign('errorDetail1', true);
@@ -120,11 +122,13 @@ class OrderFollowControllerCore extends FrontController
     public function setMedia()
     {
         parent::setMedia();
-        $this->addCSS(array(_THEME_CSS_DIR_.'history.css', _THEME_CSS_DIR_.'addresses.css'));
+        $this->addCSS([_THEME_CSS_DIR_.'history.css', _THEME_CSS_DIR_.'addresses.css']);
         $this->addJqueryPlugin('scrollTo');
-        $this->addJS(array(
+        $this->addJS(
+            [
             _THEME_JS_DIR_.'history.js',
-            _THEME_JS_DIR_.'tools.js') // retro compat themes 1.5
+            _THEME_JS_DIR_.'tools.js'
+            ] // retro compat themes 1.5
         );
         $this->addjqueryPlugin('footable');
         $this->addJqueryPlugin('footable-sort');

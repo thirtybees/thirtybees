@@ -188,10 +188,12 @@ class PrestaShopBackupCore
     public function add()
     {
         if (!$this->psBackupAll) {
-            $ignore_insert_table = array(_DB_PREFIX_.'connections', _DB_PREFIX_.'connections_page', _DB_PREFIX_
-                .'connections_source', _DB_PREFIX_.'guest', _DB_PREFIX_.'statssearch');
+            $ignore_insert_table = [
+                _DB_PREFIX_.'connections', _DB_PREFIX_.'connections_page', _DB_PREFIX_
+                .'connections_source', _DB_PREFIX_.'guest', _DB_PREFIX_.'statssearch'
+            ];
         } else {
-            $ignore_insert_table = array();
+            $ignore_insert_table = [];
         }
 
         // Generate some random number, to make it extra hard to guess backup file names

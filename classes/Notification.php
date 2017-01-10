@@ -30,7 +30,7 @@ class NotificationCore
 
     public function __construct()
     {
-        $this->types = array('order', 'customer_message', 'customer');
+        $this->types = ['order', 'customer_message', 'customer'];
     }
 
     /**
@@ -43,7 +43,7 @@ class NotificationCore
     {
         global $cookie;
 
-        $notifications = array();
+        $notifications = [];
         $employee_infos = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow('
 		SELECT id_last_order, id_last_customer_message, id_last_customer
 		FROM `'._DB_PREFIX_.'employee`
@@ -102,7 +102,7 @@ class NotificationCore
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql, true, false);
         $total = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT FOUND_ROWS()', false);
-        $json = array('total' => $total, 'results' => array());
+        $json = ['total' => $total, 'results' => []];
         foreach ($result as $value) {
             $customer_name = '';
             if (isset($value['firstname']) && isset($value['lastname'])) {
@@ -111,7 +111,7 @@ class NotificationCore
                 $customer_name = Tools::safeOutput($value['email']);
             }
 
-            $json['results'][] = array(
+            $json['results'][] = [
                 'id_order' => ((!empty($value['id_order'])) ? (int)$value['id_order'] : 0),
                 'id_customer' => ((!empty($value['id_customer'])) ? (int)$value['id_customer'] : 0),
                 'id_customer_message' => ((!empty($value['id_customer_message'])) ? (int)$value['id_customer_message'] : 0),
@@ -120,7 +120,7 @@ class NotificationCore
                 'customer_name' => $customer_name,
                 // x1000 because of moment.js (see: http://momentjs.com/docs/#/parsing/unix-timestamp/)
                 'update_date' => isset($value['date_upd']) ? (int)strtotime($value['date_upd']) * 1000 : 0,
-            );
+            ];
         }
 
         return $json;

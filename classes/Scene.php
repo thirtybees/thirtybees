@@ -33,10 +33,10 @@ class SceneCore extends ObjectModel
     public $active = true;
 
     /** @var array Zone for image map */
-    public $zones = array();
+    public $zones = [];
 
     /** @var array list of category where this scene is available */
-    public $categories = array();
+    public $categories = [];
 
     /** @var array Products */
     public $products;
@@ -44,17 +44,17 @@ class SceneCore extends ObjectModel
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = array(
+    public static $definition = [
         'table' => 'scene',
         'primary' => 'id_scene',
         'multilang' => true,
-        'fields' => array(
-            'active' =>    array('type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true),
+        'fields' => [
+            'active' =>    ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true],
 
             /* Lang fields */
-            'name' =>        array('type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 100),
-        ),
-    );
+            'name' =>        ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 100],
+        ],
+    ];
 
     protected static $feature_active = null;
 
@@ -132,12 +132,12 @@ class SceneCore extends ObjectModel
 
     public function addCategories($categories)
     {
-        $data = array();
+        $data = [];
         foreach ($categories as $category) {
-            $data[] = array(
+            $data[] = [
                 'id_scene' => (int)$this->id,
                 'id_category' => (int)$category,
-            );
+            ];
         }
         return Db::getInstance()->insert('scene_category', $data);
     }
@@ -162,16 +162,16 @@ class SceneCore extends ObjectModel
 
     public function addZoneProducts($zones)
     {
-        $data = array();
+        $data = [];
         foreach ($zones as $zone) {
-            $data[] = array(
+            $data[] = [
                 'id_scene' => (int)$this->id,
                 'id_product' => (int)$zone['id_product'],
                 'x_axis' => (int)$zone['x1'],
                 'y_axis' => (int)$zone['y1'],
                 'zone_width' => (int)$zone['width'],
                 'zone_height' => (int)$zone['height'],
-            );
+            ];
         }
 
         return Db::getInstance()->insert('scene_products', $data);
@@ -204,7 +204,7 @@ class SceneCore extends ObjectModel
         Context $context = null)
     {
         if (!Scene::isFeatureActive()) {
-            return array();
+            return [];
         }
 
         $cache_key = 'Scene::getScenes'.$id_category.(int)$lite_result;
@@ -245,7 +245,7 @@ class SceneCore extends ObjectModel
     public function getProducts($only_active = true, $id_lang = null, $lite_result = true, Context $context = null)
     {
         if (!Scene::isFeatureActive()) {
-            return array();
+            return [];
         }
 
         if (!$context) {

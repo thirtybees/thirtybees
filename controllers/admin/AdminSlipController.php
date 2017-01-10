@@ -39,48 +39,49 @@ class AdminSlipControllerCore extends AdminController
         $this->_join .= ' LEFT JOIN '._DB_PREFIX_.'orders o ON (o.`id_order` = a.`id_order`)';
         $this->_group = ' GROUP BY a.`id_order_slip`';
 
-        $this->fields_list = array(
-            'id_order_slip' => array(
+        $this->fields_list = [
+            'id_order_slip' => [
                 'title' => $this->l('ID'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs'
-            ),
-            'id_order' => array(
+            ],
+            'id_order' => [
                 'title' => $this->l('Order ID'),
                 'align' => 'left',
                 'class' => 'fixed-width-md'
-            ),
-            'date_add' => array(
+            ],
+            'date_add' => [
                 'title' => $this->l('Date issued'),
                 'type' => 'date',
                 'align' => 'right'
-            ),
-            'id_pdf' => array(
+            ],
+            'id_pdf' => [
                 'title' => $this->l('PDF'),
                 'align' => 'center',
                 'callback' => 'printPDFIcons',
                 'orderby' => false,
                 'search' => false,
-                'remove_onclick' => true)
-        );
+                'remove_onclick' => true
+            ]
+        ];
 
         $this->_select = 'a.id_order_slip AS id_pdf';
         $this->optionTitle = $this->l('Slip');
 
-        $this->fields_options = array(
-            'general' => array(
+        $this->fields_options = [
+            'general' => [
                 'title' =>    $this->l('Credit slip options'),
-                'fields' =>    array(
-                    'PS_CREDIT_SLIP_PREFIX' => array(
+                'fields' =>    [
+                    'PS_CREDIT_SLIP_PREFIX' => [
                         'title' => $this->l('Credit slip prefix'),
                         'desc' => $this->l('Prefix used for credit slips.'),
                         'size' => 6,
                         'type' => 'textLang'
-                    )
-                ),
-                'submit' => array('title' => $this->l('Save'))
-            )
-        );
+                    ]
+                ],
+                'submit' => ['title' => $this->l('Save')]
+            ]
+        ];
 
         parent::__construct();
 
@@ -89,51 +90,51 @@ class AdminSlipControllerCore extends AdminController
 
     public function initPageHeaderToolbar()
     {
-        $this->page_header_toolbar_btn['generate_pdf'] = array(
+        $this->page_header_toolbar_btn['generate_pdf'] = [
             'href' => self::$currentIndex.'&token='.$this->token,
             'desc' => $this->l('Generate PDF', null, null, false),
             'icon' => 'process-icon-save-date'
-        );
+        ];
 
         parent::initPageHeaderToolbar();
     }
 
     public function renderForm()
     {
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('Print a PDF'),
                 'icon' => 'icon-print'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'date',
                     'label' => $this->l('From'),
                     'name' => 'date_from',
                     'maxlength' => 10,
                     'required' => true,
                     'hint' => $this->l('Format: 2011-12-31 (inclusive).')
-                ),
-                array(
+                ],
+                [
                     'type' => 'date',
                     'label' => $this->l('To'),
                     'name' => 'date_to',
                     'maxlength' => 10,
                     'required' => true,
                     'hint' => $this->l('Format: 2012-12-31 (inclusive).')
-                )
-            ),
-            'submit' => array(
+                ]
+            ],
+            'submit' => [
                 'title' => $this->l('Generate PDF file'),
                 'id' => 'submitPrint',
                 'icon' => 'process-icon-download-alt'
-            )
-        );
+            ]
+        ];
 
-        $this->fields_value = array(
+        $this->fields_value = [
             'date_from' => date('Y-m-d'),
             'date_to' => date('Y-m-d')
-        );
+        ];
 
         $this->show_toolbar = false;
         return parent::renderForm();
@@ -169,21 +170,23 @@ class AdminSlipControllerCore extends AdminController
         $this->content .= $this->renderForm();
         $this->content .= $this->renderOptions();
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'content' => $this->content,
             'url_post' => self::$currentIndex.'&token='.$this->token,
             'show_page_header_toolbar' => $this->show_page_header_toolbar,
             'page_header_toolbar_title' => $this->page_header_toolbar_title,
             'page_header_toolbar_btn' => $this->page_header_toolbar_btn
-        ));
+            ]
+        );
     }
 
     public function initToolbar()
     {
-        $this->toolbar_btn['save-date'] = array(
+        $this->toolbar_btn['save-date'] = [
             'href' => '#',
             'desc' => $this->l('Generate PDF file')
-        );
+        ];
     }
     
     public function printPDFIcons($id_order_slip, $tr)
@@ -193,10 +196,12 @@ class AdminSlipControllerCore extends AdminController
             return '';
         }
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'order_slip' => $order_slip,
             'tr' => $tr
-        ));
+            ]
+        );
 
         return $this->createTemplate('_print_pdf_icon.tpl')->fetch();
     }

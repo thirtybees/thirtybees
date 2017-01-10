@@ -32,14 +32,14 @@ class SearchEngineCore extends ObjectModel
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = array(
+    public static $definition = [
         'table' => 'search_engine',
         'primary' => 'id_search_engine',
-        'fields' => array(
-            'server' => array('type' => self::TYPE_STRING, 'validate' => 'isUrl', 'required' => true),
-            'getvar' => array('type' => self::TYPE_STRING, 'validate' => 'isModuleName', 'required' => true),
-        ),
-    );
+        'fields' => [
+            'server' => ['type' => self::TYPE_STRING, 'validate' => 'isUrl', 'required' => true],
+            'getvar' => ['type' => self::TYPE_STRING, 'validate' => 'isModuleName', 'required' => true],
+        ],
+    ];
 
     public static function getKeywords($url)
     {
@@ -52,7 +52,7 @@ class SearchEngineCore extends ObjectModel
             $host =& $row['server'];
             $varname =& $row['getvar'];
             if (strstr($parsed_url['host'], $host)) {
-                $array = array();
+                $array = [];
                 preg_match('/[^a-z]'.$varname.'=.+\&/U', $parsed_url['query'], $array);
                 if (empty($array[0])) {
                     preg_match('/[^a-z]'.$varname.'=.+$/', $parsed_url['query'], $array);

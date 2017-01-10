@@ -48,7 +48,7 @@ abstract class TaxManagerModuleCore extends Module
         }
 
         $class = $this->tax_manager_class;
-        if (call_user_func(array($class, 'isAvailableForThisAddress'), $args['address'])) {
+        if (call_user_func([$class, 'isAvailableForThisAddress'], $args['address'])) {
             return new $class();
         }
 

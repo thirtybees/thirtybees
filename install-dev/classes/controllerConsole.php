@@ -29,9 +29,9 @@ abstract class InstallControllerConsole
     /**
      * @var array List of installer steps
      */
-    protected static $steps = array('process');
+    protected static $steps = ['process'];
 
-    protected static $instances = array();
+    protected static $instances = [];
 
     /**
      * @var string Current step
@@ -41,7 +41,7 @@ abstract class InstallControllerConsole
     /**
      * @var array List of errors
      */
-    public $errors = array();
+    public $errors = [];
 
     public $controller;
 
@@ -137,7 +137,7 @@ abstract class InstallControllerConsole
         $errors = $this->model_install->getErrors();
         if (count($errors)) {
             if (!is_array($errors)) {
-                $errors = array($errors);
+                $errors = [$errors];
             }
             echo 'Errors :'."\n";
             foreach ($errors as $error_process) {
@@ -159,7 +159,7 @@ abstract class InstallControllerConsole
     public function l($str)
     {
         $args = func_get_args();
-        return call_user_func_array(array($this->language, 'l'), $args);
+        return call_user_func_array([$this->language, 'l'], $args);
     }
 
     public function process()

@@ -30,13 +30,13 @@
 class AdminEmployeesControllerCore extends AdminController
 {
     /** @var array profiles list */
-    protected $profiles_array = array();
+    protected $profiles_array = [];
 
     /** @var array themes list*/
-    protected $themes = array();
+    protected $themes = [];
 
     /** @var array tabs list*/
-    protected $tabs_list = array();
+    protected $tabs_list = [];
 
     protected $restrict_edition = false;
 
@@ -50,15 +50,15 @@ class AdminEmployeesControllerCore extends AdminController
 
         $this->addRowAction('edit');
         $this->addRowAction('delete');
-        $this->addRowActionSkipList('delete', array((int)$this->context->employee->id));
+        $this->addRowActionSkipList('delete', [(int)$this->context->employee->id]);
 
-        $this->bulk_actions = array(
-            'delete' => array(
+        $this->bulk_actions = [
+            'delete' => [
                 'text' => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
                 'icon' => 'icon-trash'
-            )
-        );
+            ]
+        ];
         /*
         check if there are more than one superAdmin
         if it's the case then we can delete a superAdmin
@@ -66,7 +66,7 @@ class AdminEmployeesControllerCore extends AdminController
         $super_admin = Employee::countProfile(_PS_ADMIN_PROFILE_, true);
         if ($super_admin == 1) {
             $super_admin_array = Employee::getEmployeesByProfile(_PS_ADMIN_PROFILE_, true);
-            $super_admin_id = array();
+            $super_admin_id = [];
             foreach ($super_admin_array as $key => $val) {
                 $super_admin_id[] = $val['id_employee'];
             }
@@ -82,54 +82,60 @@ class AdminEmployeesControllerCore extends AdminController
             }
         }
 
-        $this->fields_list = array(
-            'id_employee' => array('title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'),
-            'firstname' => array('title' => $this->l('First Name')),
-            'lastname' => array('title' => $this->l('Last Name')),
-            'email' => array('title' => $this->l('Email address')),
-            'profile' => array('title' => $this->l('Profile'), 'type' => 'select', 'list' => $this->profiles_array,
-                'filter_key' => 'pl!name', 'class' => 'fixed-width-lg'),
-            'active' => array('title' => $this->l('Active'), 'align' => 'center', 'active' => 'status',
-                'type' => 'bool', 'class' => 'fixed-width-sm'),
-        );
+        $this->fields_list = [
+            'id_employee' => ['title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'],
+            'firstname' => ['title' => $this->l('First Name')],
+            'lastname' => ['title' => $this->l('Last Name')],
+            'email' => ['title' => $this->l('Email address')],
+            'profile' => [
+                'title' => $this->l('Profile'), 'type' => 'select', 'list' => $this->profiles_array,
+                'filter_key' => 'pl!name', 'class' => 'fixed-width-lg'
+            ],
+            'active' => [
+                'title' => $this->l('Active'), 'align' => 'center', 'active' => 'status',
+                'type' => 'bool', 'class' => 'fixed-width-sm'
+            ],
+        ];
 
-        $this->fields_options = array(
-            'general' => array(
+        $this->fields_options = [
+            'general' => [
                 'title' =>    $this->l('Employee options'),
-                'fields' =>    array(
-                    'PS_PASSWD_TIME_BACK' => array(
+                'fields' =>    [
+                    'PS_PASSWD_TIME_BACK' => [
                         'title' => $this->l('Password regeneration'),
                         'hint' => $this->l('Security: Minimum time to wait between two password changes.'),
                         'cast' => 'intval',
                         'type' => 'text',
                         'suffix' => ' '.$this->l('minutes'),
                         'visibility' => Shop::CONTEXT_ALL
-                    ),
-                    'PS_BO_ALLOW_EMPLOYEE_FORM_LANG' => array(
+                    ],
+                    'PS_BO_ALLOW_EMPLOYEE_FORM_LANG' => [
                         'title' => $this->l('Memorize the language used in Admin panel forms'),
                         'hint' => $this->l('Allow employees to select a specific language for the Admin panel form.'),
                         'cast' => 'intval',
                         'type' => 'select',
                         'identifier' => 'value',
-                        'list' => array(
-                            '0' => array('value' => 0, 'name' => $this->l('No')),
-                            '1' => array('value' => 1, 'name' => $this->l('Yes')
-                        )
-                    ), 'visibility' => Shop::CONTEXT_ALL)
-                ),
-                'submit' => array('title' => $this->l('Save'))
-            )
-        );
+                        'list' => [
+                            '0' => ['value' => 0, 'name' => $this->l('No')],
+                            '1' => [
+                                'value' => 1, 'name' => $this->l('Yes')
+                            ]
+                        ], 'visibility' => Shop::CONTEXT_ALL
+                    ]
+                ],
+                'submit' => ['title' => $this->l('Save')]
+            ]
+        ];
         $rtl = $this->context->language->is_rtl ? '_rtl' : '';
         $path = _PS_ADMIN_DIR_.DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR;
         foreach (scandir($path) as $theme) {
             if ($theme[0] != '.' && is_dir($path.$theme) && (@filemtime($path.$theme.DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR.'admin-theme.css'))) {
-                $this->themes[] = array('id' => $theme.'|admin-theme'.$rtl.'.css', 'name' => $theme == 'default' ? $this->l('Default') : ucfirst($theme));
+                $this->themes[] = ['id' => $theme.'|admin-theme'.$rtl.'.css', 'name' => $theme == 'default' ? $this->l('Default') : ucfirst($theme)];
                 if (file_exists($path.$theme.DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR.'schemes'.$rtl)) {
                     foreach (scandir($path.$theme.DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR.'schemes'.$rtl) as $css) {
                         if ($css[0] != '.' && preg_match('/\.css$/', $css)) {
                             $name = strpos($css, 'admin-theme-') !== false ? Tools::ucfirst(preg_replace('/^admin-theme-(.*)\.css$/', '$1', $css)) : $css;
-                            $this->themes[] = array('id' => $theme.'|schemes'.$rtl.'/'.$css, 'name' => $name);
+                            $this->themes[] = ['id' => $theme.'|schemes'.$rtl.'/'.$css, 'name' => $name];
                         }
                     }
                 }
@@ -137,14 +143,16 @@ class AdminEmployeesControllerCore extends AdminController
         }
 
         $home_tab = Tab::getInstanceFromClassName('AdminDashboard', $this->context->language->id);
-        $this->tabs_list[$home_tab->id] = array(
+        $this->tabs_list[$home_tab->id] = [
             'name' => $home_tab->name,
             'id_tab' => $home_tab->id,
-            'children' => array(array(
+            'children' => [
+                [
                 'id_tab' => $home_tab->id,
                 'name' => $home_tab->name
-            ))
-        );
+                ]
+            ]
+        ];
         foreach (Tab::getTabs($this->context->language->id, 0) as $tab) {
             if (Tab::checkTabRights($tab['id_tab'])) {
                 $this->tabs_list[$tab['id_tab']] = $tab;
@@ -178,11 +186,11 @@ class AdminEmployeesControllerCore extends AdminController
         parent::initPageHeaderToolbar();
 
         if (empty($this->display)) {
-            $this->page_header_toolbar_btn['new_employee'] = array(
+            $this->page_header_toolbar_btn['new_employee'] = [
                 'href' => self::$currentIndex.'&addemployee&token='.$this->token,
                 'desc' => $this->l('Add new employee', null, null, false),
                 'icon' => 'process-icon-new'
-            );
+            ];
         }
 
         if ($this->display == 'edit') {
@@ -222,33 +230,33 @@ class AdminEmployeesControllerCore extends AdminController
             return parent::renderForm();
         }
 
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('Employees'),
                 'icon' => 'icon-user'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'text',
                     'class' => 'fixed-width-xl',
                     'label' => $this->l('First Name'),
                     'name' => 'firstname',
                     'required' => true
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'class' => 'fixed-width-xl',
                     'label' => $this->l('Last Name'),
                     'name' => 'lastname',
                     'required' => true
-                ),
-                array(
+                ],
+                [
                     'type' => 'html',
                     'name' => 'employee_avatar',
                     'html_content' => '<div id="employee-thumbnail"><a href="http://www.prestashop.com/forums/index.php?app=core&amp;module=usercp" target="_blank" style="background-image:url('.$obj->getImage().')"></a></div>
 					<div class="alert alert-info">'.sprintf($this->l('Your avatar in PrestaShop 1.6.x is your profile picture on %1$s. To change your avatar, log in to PrestaShop.com with your email %2$s and follow the on-screen instructions.'), '<a href="http://www.prestashop.com/forums/index.php?app=core&amp;module=usercp" class="alert-link" target="_blank">PrestaShop.com</a>', $obj->email).'</div>',
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'class'=> 'fixed-width-xxl',
                     'prefix' => '<i class="icon-envelope-o"></i>',
@@ -256,126 +264,127 @@ class AdminEmployeesControllerCore extends AdminController
                     'name' => 'email',
                     'required' => true,
                     'autocomplete' => false
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
 
         if ($this->restrict_edition) {
-            $this->fields_form['input'][] = array(
+            $this->fields_form['input'][] = [
                 'type' => 'change-password',
                 'label' => $this->l('Password'),
                 'name' => 'passwd'
-                );
+            ];
 
             if (Tab::checkTabRights(Tab::getIdFromClassName('AdminModulesController'))) {
-                $this->fields_form['input'][] = array(
+                $this->fields_form['input'][] = [
                     'type' => 'prestashop_addons',
                     'label' => 'PrestaShop Addons',
                     'name' => 'prestashop_addons',
-                );
+                ];
             }
         } else {
-            $this->fields_form['input'][] = array(
+            $this->fields_form['input'][] = [
                 'type' => 'password',
                 'label' => $this->l('Password'),
                 'hint' => sprintf($this->l('Password should be at least %s characters long.'), Validate::ADMIN_PASSWORD_LENGTH),
                 'name' => 'passwd'
-                );
+            ];
         }
 
-        $this->fields_form['input'] = array_merge($this->fields_form['input'], array(
-            array(
+        $this->fields_form['input'] = array_merge($this->fields_form['input'], [
+            [
                 'type' => 'switch',
                 'label' => $this->l('Subscribe to PrestaShop newsletter'),
                 'name' => 'optin',
                 'required' => false,
                 'is_bool' => true,
-                'values' => array(
-                    array(
+                'values' => [
+                    [
                         'id' => 'optin_on',
                         'value' => 1,
                         'label' => $this->l('Yes')
-                    ),
-                    array(
+                    ],
+                    [
                         'id' => 'optin_off',
                         'value' => 0,
                         'label' => $this->l('No')
-                    )
-                ),
+                    ]
+                ],
                 'hint' => $this->l('PrestaShop can provide you with guidance on a regular basis by sending you tips on how to optimize the management of your store which will help you grow your business. If you do not wish to receive these tips, you can disable this option.')
-            ),
-            array(
+            ],
+            [
                 'type' => 'default_tab',
                 'label' => $this->l('Default page'),
                 'name' => 'default_tab',
                 'hint' => $this->l('This page will be displayed just after login.'),
                 'options' => $this->tabs_list
-            ),
-            array(
+            ],
+            [
                 'type' => 'select',
                 'label' => $this->l('Language'),
                 'name' => 'id_lang',
                 //'required' => true,
-                'options' => array(
+                'options' => [
                     'query' => Language::getLanguages(false),
                     'id' => 'id_lang',
                     'name' => 'name'
-                )
-            ),
-            array(
+                ]
+            ],
+            [
                 'type' => 'select',
                 'label' => $this->l('Theme'),
                 'name' => 'bo_theme_css',
-                'options' => array(
+                'options' => [
                     'query' => $this->themes,
                     'id' => 'id',
                     'name' => 'name'
-                ),
+                ],
                 'onchange' => 'var value_array = $(this).val().split("|"); $("link").first().attr("href", "themes/" + value_array[0] + "/css/" + value_array[1]);',
                 'hint' => $this->l('Back office theme.')
-            ),
-            array(
+            ],
+            [
                 'type' => 'radio',
                 'label' => $this->l('Admin menu orientation'),
                 'name' => 'bo_menu',
                 'required' => false,
                 'is_bool' => true,
-                'values' => array(
-                    array(
+                'values' => [
+                    [
                         'id' => 'bo_menu_on',
                         'value' => 0,
                         'label' => $this->l('Top')
-                    ),
-                    array(
+                    ],
+                    [
                         'id' => 'bo_menu_off',
                         'value' => 1,
                         'label' => $this->l('Left')
-                    )
-                )
-            )
-        ));
+                    ]
+                ]
+            ]
+        ]
+        );
 
         if ((int)$this->tabAccess['edit'] && !$this->restrict_edition) {
-            $this->fields_form['input'][] = array(
+            $this->fields_form['input'][] = [
                 'type' => 'switch',
                 'label' => $this->l('Active'),
                 'name' => 'active',
                 'required' => false,
                 'is_bool' => true,
-                'values' => array(
-                    array(
+                'values' => [
+                    [
                         'id' => 'active_on',
                         'value' => 1,
                         'label' => $this->l('Enabled')
-                    ),
-                    array(
+                    ],
+                    [
                         'id' => 'active_off',
                         'value' => 0,
                         'label' => $this->l('Disabled')
-                    )
-                ),
+                    ]
+                ],
                 'hint' => $this->l('Allow or disallow this employee to log into the Admin panel.')
-            );
+            ];
 
             // if employee is not SuperAdmin (id_profile = 1), don't make it possible to select the admin profile
             if ($this->context->employee->id_profile != _PS_ADMIN_PROFILE_) {
@@ -386,36 +395,36 @@ class AdminEmployeesControllerCore extends AdminController
                     }
                 }
             }
-            $this->fields_form['input'][] = array(
+            $this->fields_form['input'][] = [
                 'type' => 'select',
                 'label' => $this->l('Permission profile'),
                 'name' => 'id_profile',
                 'required' => true,
-                'options' => array(
+                'options' => [
                     'query' => $available_profiles,
                     'id' => 'id_profile',
                     'name' => 'name',
-                    'default' => array(
+                    'default' => [
                         'value' => '',
                         'label' => $this->l('-- Choose --')
-                    )
-                )
-            );
+                    ]
+                ]
+            ];
 
             if (Shop::isFeatureActive()) {
                 $this->context->smarty->assign('_PS_ADMIN_PROFILE_', (int)_PS_ADMIN_PROFILE_);
-                $this->fields_form['input'][] = array(
+                $this->fields_form['input'][] = [
                     'type' => 'shop',
                     'label' => $this->l('Shop association'),
                     'hint' => $this->l('Select the shops the employee is allowed to access.'),
                     'name' => 'checkBoxShopAsso',
-                );
+                ];
             }
         }
 
-        $this->fields_form['submit'] = array(
+        $this->fields_form['submit'] = [
             'title' => $this->l('Save'),
-        );
+        ];
 
         $this->fields_value['passwd'] = false;
         $this->fields_value['bo_theme_css'] = $obj->bo_theme.'|'.$obj->bo_css;
@@ -532,10 +541,10 @@ class AdminEmployeesControllerCore extends AdminController
             foreach ($result as $row) {
                 $key = 'checkBoxShopAsso_'.$this->table;
                 if (!isset($_POST[$key])) {
-                    $_POST[$key] = array();
+                    $_POST[$key] = [];
                 }
                 if (!isset($_GET[$key])) {
-                    $_GET[$key] = array();
+                    $_GET[$key] = [];
                 }
                 $_POST[$key][$row['id_shop']] = 1;
                 $_GET[$key][$row['id_shop']] = 1;
@@ -552,10 +561,10 @@ class AdminEmployeesControllerCore extends AdminController
             foreach ($result as $row) {
                 $key = 'checkBoxShopAsso_'.$this->table;
                 if (!isset($_POST[$key])) {
-                    $_POST[$key] = array();
+                    $_POST[$key] = [];
                 }
                 if (!isset($_GET[$key])) {
-                    $_GET[$key] = array();
+                    $_GET[$key] = [];
                 }
                 $_POST[$key][$row['id_shop']] = 1;
                 $_GET[$key][$row['id_shop']] = 1;
@@ -645,12 +654,12 @@ class AdminEmployeesControllerCore extends AdminController
             && $object->passwd != $this->context->employee->passwd) {
             $this->context->cookie->passwd = $this->context->employee->passwd = $object->passwd;
             if (Tools::getValue('passwd_send_email')) {
-                $params = array(
+                $params = [
                     '{email}' => $object->email,
                     '{lastname}' => $object->lastname,
                     '{firstname}' => $object->firstname,
                     '{passwd}' => $passwd
-                );
+                ];
                 Mail::Send($object->id_lang, 'password', Mail::l('Your new password', $object->id_lang), $params, $object->email, $object->firstname.' '.$object->lastname);
             }
         }
@@ -676,7 +685,7 @@ class AdminEmployeesControllerCore extends AdminController
     {
         $id_profile = Tools::getValue('id_profile');
         $tabs = Tab::getTabByIdProfile(0, $id_profile);
-        $this->tabs_list = array();
+        $this->tabs_list = [];
         foreach ($tabs as $tab) {
             if (Tab::checkTabRights($tab['id_tab'])) {
                 $this->tabs_list[$tab['id_tab']] = $tab;

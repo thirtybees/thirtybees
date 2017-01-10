@@ -45,44 +45,44 @@ class AdminSearchEnginesControllerCore extends AdminController
             $this->deleted = false;
         }
 
-        $this->bulk_actions = array(
-            'delete' => array(
+        $this->bulk_actions = [
+            'delete' => [
                 'text' => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
                 'icon' => 'icon-trash'
-            )
-        );
+            ]
+        ];
 
-        $this->fields_list = array(
-            'id_search_engine' => array('title' => $this->l('ID'), 'width' => 25),
-            'server' => array('title' => $this->l('Server')),
-            'getvar' => array('title' => $this->l('GET variable'), 'width' => 100)
-        );
+        $this->fields_list = [
+            'id_search_engine' => ['title' => $this->l('ID'), 'width' => 25],
+            'server' => ['title' => $this->l('Server')],
+            'getvar' => ['title' => $this->l('GET variable'), 'width' => 100]
+        ];
 
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('Referrer')
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'text',
                     'label' => $this->l('Server'),
                     'name' => 'server',
                     'size' => 20,
                     'required' => true
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('$_GET variable'),
                     'name' => 'getvar',
                     'size' => 40,
                     'required' => true
-                )
-            ),
-            'submit' => array(
+                ]
+            ],
+            'submit' => [
                 'title' => $this->l('Save'),
-            )
-        );
+            ]
+        ];
 
         parent::__construct();
     }
@@ -90,11 +90,11 @@ class AdminSearchEnginesControllerCore extends AdminController
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
-            $this->page_header_toolbar_btn['new_search_engine'] = array(
+            $this->page_header_toolbar_btn['new_search_engine'] = [
                 'href' => self::$currentIndex.'&addsearch_engine&token='.$this->token,
                 'desc' => $this->l('Add new search engine', null, null, false),
                 'icon' => 'process-icon-new'
-            );
+            ];
         }
 
         $this->identifier_name = 'server';

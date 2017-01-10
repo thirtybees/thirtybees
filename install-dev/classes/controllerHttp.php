@@ -29,9 +29,9 @@ abstract class InstallControllerHttp
     /**
      * @var array List of installer steps
      */
-    protected static $steps = array('welcome', 'license', 'system', 'configure', 'database', 'process');
+    protected static $steps = ['welcome', 'license', 'system', 'configure', 'database', 'process'];
     protected $phone;
-    protected static $instances = array();
+    protected static $instances = [];
 
     /**
      * @var string Current step
@@ -41,7 +41,7 @@ abstract class InstallControllerHttp
     /**
      * @var array List of errors
      */
-    public $errors = array();
+    public $errors = [];
 
     public $controller;
 
@@ -73,7 +73,7 @@ abstract class InstallControllerHttp
     /**
      * @var array Magic vars
      */
-    protected $__vars = array();
+    protected $__vars = [];
 
     /**
      * Process form to go to next step
@@ -256,7 +256,7 @@ abstract class InstallControllerHttp
     public function l($str)
     {
         $args = func_get_args();
-        return call_user_func_array(array($this->language, 'l'), $args);
+        return call_user_func_array([$this->language, 'l'], $args);
     }
 
     /**
@@ -412,11 +412,13 @@ abstract class InstallControllerHttp
         if (!$success && empty($message)) {
             $message = print_r(@error_get_last(), true);
         }
-        die(Tools::jsonEncode(array(
+        die(Tools::jsonEncode(
+            [
             'success' => (bool)$success,
             'message' => $message,
             // 'memory' => round(memory_get_peak_usage()/1024/1024, 2).' Mo',
-        )));
+            ]
+        ));
     }
 
     /**

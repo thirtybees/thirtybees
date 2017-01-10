@@ -45,60 +45,60 @@ class AdminStockCoverControllerCore extends AdminController
         $this->multishop_context = Shop::CONTEXT_ALL;
         $this->tpl_list_vars['show_filter'] = true;
 
-        $this->fields_list = array(
-            'reference' => array(
+        $this->fields_list = [
+            'reference' => [
                 'title' => $this->l('Reference'),
                 'align' => 'center',
                 'filter_key' => 'a!reference'
-            ),
-            'ean13' => array(
+            ],
+            'ean13' => [
                 'title' => $this->l('EAN13'),
                 'align' => 'center',
                 'filter_key' => 'a!ean13'
-            ),
-            'upc' => array(
+            ],
+            'upc' => [
                 'title' => $this->l('UPC'),
                 'align' => 'center',
                 'filter_key' => 'a!upc'
-            ),
-            'name' => array(
+            ],
+            'name' => [
                 'title' => $this->l('Name'),
                 'filter_key' => 'b!name'
-            ),
-            'qty_sold' => array(
+            ],
+            'qty_sold' => [
                 'title' => $this->l('Quantity sold'),
                 'orderby' => false,
                 'search' => false,
                 'hint' => $this->l('Quantity sold during the defined period.'),
-            ),
-            'coverage' => array(
+            ],
+            'coverage' => [
                 'title' => $this->l('Coverage'),
                 'orderby' => false,
                 'search' => false,
                 'hint' => $this->l('Days left before your stock runs out.'),
-            ),
-            'stock' => array(
+            ],
+            'stock' => [
                 'title' => $this->l('Quantity'),
                 'orderby' => false,
                 'search' => false,
                 'hint' => $this->l('Physical (usable) quantity.')
-            ),
-        );
+            ],
+        ];
 
         // pre-defines coverage periods
-        $this->stock_cover_periods = array(
+        $this->stock_cover_periods = [
             $this->l('One week') => 7,
             $this->l('Two weeks') => 14,
             $this->l('Three weeks') => 21,
             $this->l('One month') => 31,
             $this->l('Six months') => 186,
             $this->l('One year') => 365
-        );
+        ];
 
         // gets the list of warehouses available
         $this->stock_cover_warehouses = Warehouse::getWarehouses(true);
         // gets the final list of warehouses
-        array_unshift($this->stock_cover_warehouses, array('id_warehouse' => -1, 'name' => $this->l('All Warehouses')));
+        array_unshift($this->stock_cover_warehouses, ['id_warehouse' => -1, 'name' => $this->l('All Warehouses')]);
 
         parent::__construct();
     }
@@ -108,14 +108,14 @@ class AdminStockCoverControllerCore extends AdminController
         $this->page_header_toolbar_title = $this->l('Stock coverage');
 
         if ($this->display == 'details') {
-            $this->page_header_toolbar_btn['back_to_list'] = array(
+            $this->page_header_toolbar_btn['back_to_list'] = [
                 'href' => Context::getContext()->link->getAdminLink('AdminStockCover')
                     .(Tools::getValue('coverage_period') ? '&coverage_period='.Tools::getValue('coverage_period') : '')
                     .(Tools::getValue('warn_days') ? '&warn_days='.Tools::getValue('warn_days') : '')
                     .(Tools::getValue('id_warehouse') ? '&id_warehouse='.Tools::getValue('id_warehouse') : ''),
                 'desc' => $this->l('Back to list', null, null, false),
                 'icon' => 'process-icon-back'
-            );
+            ];
         }
 
         parent::initPageHeaderToolbar();
@@ -130,7 +130,7 @@ class AdminStockCoverControllerCore extends AdminController
             $this->lang = false;
             $this->list_id = 'details';
             $this->tpl_list_vars['show_filter'] = false;
-            $this->actions = array();
+            $this->actions = [];
             $this->list_simple_header = true;
             $this->table = 'product_attribute';
             $lang_id = (int)$this->context->language->id;
@@ -168,7 +168,7 @@ class AdminStockCoverControllerCore extends AdminController
     {
         $this->addRowAction('details');
 
-        $this->toolbar_btn = array();
+        $this->toolbar_btn = [];
 
         // disables link
         $this->list_no_link = true;
@@ -195,11 +195,11 @@ class AdminStockCoverControllerCore extends AdminController
         $this->tpl_list_vars['stock_cover_warehouses'] = $this->stock_cover_warehouses;
         $this->tpl_list_vars['stock_cover_cur_warehouse'] = $this->getCurrentCoverageWarehouse();
         $this->tpl_list_vars['stock_cover_warn_days'] = $this->getCurrentWarning();
-        $this->ajax_params = array(
+        $this->ajax_params = [
             'period' => $this->getCurrentCoveragePeriod(),
             'id_warehouse' => $this->getCurrentCoverageWarehouse(),
             'warn_days' => $this->getCurrentWarning()
-        );
+        ];
 
         $this->displayInformation($this->l('Considering the coverage period chosen and the quantity of products/combinations that you sold.'));
         $this->displayInformation($this->l('This interface gives you an idea of when a product will run out of stock.'));
@@ -290,7 +290,7 @@ class AdminStockCoverControllerCore extends AdminController
                     }
 
                     // removes 'details' action on products without attributes
-                    $this->addRowActionSkipList('details', array($item['id']));
+                    $this->addRowActionSkipList('details', [$item['id']]);
                 } else {
                     $item['stock'] = $this->l('See details');
                     $item['reference'] = '--';

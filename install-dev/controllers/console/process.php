@@ -29,7 +29,7 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
     const SETTINGS_FILE = 'config/settings.inc.php';
 
     protected $model_install;
-    public $process_steps = array();
+    public $process_steps = [];
     public $previous_button = false;
 
     public function init()
@@ -95,7 +95,7 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
     {
         $steps = explode(',', $this->datas->step);
         if (in_array('all', $steps)) {
-            $steps = array('database','fixtures','theme','modules','addons_modules');
+            $steps = ['database','fixtures','theme','modules','addons_modules'];
         }
 
         if (in_array('database', $steps)) {
@@ -149,13 +149,15 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
         }
 
         if ($this->datas->newsletter) {
-            $params = http_build_query(array(
+            $params = http_build_query(
+                [
                     'email' => $this->datas->admin_email,
                     'method' => 'addMemberToNewsletter',
                     'language' => $this->datas->lang,
                     'visitorType' => 1,
                     'source' => 'installer'
-                ));
+                ]
+            );
             Tools::file_get_contents('http://www.prestashop.com/ajax/controller.php?'.$params);
         }
 
@@ -234,7 +236,8 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
     {
         $this->initializeContext();
 
-        return $this->model_install->configureShop(array(
+        return $this->model_install->configureShop(
+            [
             'shop_name' =>                $this->datas->shop_name,
             'shop_activity' =>            $this->datas->shop_activity,
             'shop_country' =>            $this->datas->shop_country,
@@ -246,7 +249,8 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
             'admin_email' =>            $this->datas->admin_email,
             'configuration_agrement' =>    true,
             'send_informations' => true,
-        ));
+            ]
+        );
     }
 
     /**
@@ -273,7 +277,7 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
         }
 
         $this->model_install->xml_loader_ids = $this->datas->xml_loader_ids;
-        $result = $this->model_install->installFixtures(null, array('shop_activity' => $this->datas->shop_activity, 'shop_country' => $this->datas->shop_country));
+        $result = $this->model_install->installFixtures(null, ['shop_activity' => $this->datas->shop_activity, 'shop_country' => $this->datas->shop_country]);
         $this->datas->xml_loader_ids = $this->model_install->xml_loader_ids;
         return $result;
     }
@@ -321,14 +325,14 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
           $content = file_get_contents(_PS_INSTALL_LANGS_PATH_.InstallLanguages::DEFAULT_ISO.'/mail_identifiers.txt');
       }
 
-      $vars = array(
+      $vars = [
       '{firstname}' => $this->datas->admin_firstname,
       '{lastname}' => $this->datas->admin_lastname,
       '{shop_name}' => $this->datas->shop_name,
       '{passwd}' => $this->datas->admin_password,
       '{email}' => $this->datas->admin_email,
       '{shop_url}' => Tools::getHttpHost(true).__PS_BASE_URI__,
-    );
+      ];
       $content = str_replace(array_keys($vars), array_values($vars), $content);
 
       $mail->send(

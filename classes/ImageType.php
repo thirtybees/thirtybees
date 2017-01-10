@@ -58,30 +58,30 @@ class ImageTypeCore extends ObjectModel
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = array(
+    public static $definition = [
         'table' => 'image_type',
         'primary' => 'id_image_type',
-        'fields' => array(
-            'name' =>        array('type' => self::TYPE_STRING, 'validate' => 'isImageTypeName', 'required' => true, 'size' => 64),
-            'width' =>        array('type' => self::TYPE_INT, 'validate' => 'isImageSize', 'required' => true),
-            'height' =>        array('type' => self::TYPE_INT, 'validate' => 'isImageSize', 'required' => true),
-            'categories' =>    array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
-            'products' =>        array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
-            'manufacturers' =>    array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
-            'suppliers' =>        array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
-            'scenes' =>        array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
-            'stores' =>        array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
-        ),
-    );
+        'fields' => [
+            'name' =>        ['type' => self::TYPE_STRING, 'validate' => 'isImageTypeName', 'required' => true, 'size' => 64],
+            'width' =>        ['type' => self::TYPE_INT, 'validate' => 'isImageSize', 'required' => true],
+            'height' =>        ['type' => self::TYPE_INT, 'validate' => 'isImageSize', 'required' => true],
+            'categories' =>    ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'products' =>        ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'manufacturers' =>    ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'suppliers' =>        ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'scenes' =>        ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'stores' =>        ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+        ],
+    ];
 
     /**
      * @var array Image types cache
      */
-    protected static $images_types_cache = array();
+    protected static $images_types_cache = [];
 
-    protected static $images_types_name_cache = array();
+    protected static $images_types_name_cache = [];
 
-    protected $webserviceParameters = array();
+    protected $webserviceParameters = [];
 
     /**
      * Returns image type definitions
@@ -142,7 +142,7 @@ class ImageTypeCore extends ObjectModel
         if (!isset(self::$images_types_name_cache[$name.'_'.$type.'_'.$order]) && !$is_passed) {
             $results = Db::getInstance()->ExecuteS('SELECT * FROM `'._DB_PREFIX_.'image_type`');
 
-            $types = array('products', 'categories', 'manufacturers', 'suppliers', 'scenes', 'stores');
+            $types = ['products', 'categories', 'manufacturers', 'suppliers', 'scenes', 'stores'];
             $total = count($types);
 
             foreach ($results as $result) {
@@ -166,7 +166,7 @@ class ImageTypeCore extends ObjectModel
     public static function getFormatedName($name)
     {
         $theme_name = Context::getContext()->shop->theme_name;
-        $name_without_theme_name = str_replace(array('_'.$theme_name, $theme_name.'_'), '', $name);
+        $name_without_theme_name = str_replace(['_'.$theme_name, $theme_name.'_'], '', $name);
 
         //check if the theme name is already in $name if yes only return $name
         if (strstr($name, $theme_name) && self::getByNameNType($name)) {

@@ -42,14 +42,16 @@ class AdminAddonsCatalogControllerCore extends AdminController
         $addons_url = 'http://addons.prestashop.com/iframe/search-1.6.php?psVersion='._PS_VERSION_.'&isoLang='.$iso_lang.'&isoCurrency='.$iso_currency.'&isoCountry='.$iso_country.'&activity='.(int)$activity.'&parentUrl='.$parent_domain;
         $addons_content = Tools::file_get_contents($addons_url);
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'iso_lang' => $iso_lang,
             'iso_currency' => $iso_currency,
             'iso_country' => $iso_country,
             'display_addons_content' => $addons_content !== false,
             'addons_content' => $addons_content,
             'parent_domain' => $parent_domain,
-        ));
+            ]
+        );
 
         parent::initContent();
     }

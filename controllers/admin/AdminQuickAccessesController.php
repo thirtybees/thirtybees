@@ -45,42 +45,42 @@ class AdminQuickAccessesControllerCore extends AdminController
             $this->deleted = false;
         }
 
-        $this->bulk_actions = array(
-            'delete' => array(
+        $this->bulk_actions = [
+            'delete' => [
                 'text' => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
                 'icon' => 'icon-trash'
-            )
-        );
+            ]
+        ];
 
-        $this->fields_list = array(
-            'id_quick_access' => array(
+        $this->fields_list = [
+            'id_quick_access' => [
                 'title' => $this->l('ID'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs'
-            ),
-            'name' => array(
+            ],
+            'name' => [
                 'title' => $this->l('Name')
-            ),
-            'link' => array(
+            ],
+            'link' => [
                 'title' => $this->l('Link')
-            ),
-            'new_window' => array(
+            ],
+            'new_window' => [
                 'title' => $this->l('New window'),
                 'align' => 'center',
                 'type' => 'bool',
                 'active' => 'new_window',
                 'class' => 'fixed-width-sm'
-            )
-        );
+            ]
+        ];
 
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('Quick Access menu'),
                 'icon' => 'icon-align-justify'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'text',
                     'label' => $this->l('Name'),
                     'name' => 'name',
@@ -88,38 +88,38 @@ class AdminQuickAccessesControllerCore extends AdminController
                     'maxlength' => 32,
                     'required' => true,
                     'hint' => $this->l('Forbidden characters:').' &lt;&gt;;=#{}'
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('URL'),
                     'name' => 'link',
                     'maxlength' => 128,
                     'required' => true,
                     'hint' => $this->l('If it\'s a URL that comes from your Back Office, you MUST remove the security token.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Open in new window'),
                     'name' => 'new_window',
                     'required' => false,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'new_window_on',
                             'value' => 1,
                             'label' => '<img src="../img/admin/enabled.gif" alt="'.$this->l('Enabled').'" title="'.$this->l('Enabled').'" />'
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'new_window_off',
                             'value' => 0,
                             'label' => '<img src="../img/admin/disabled.gif" alt="'.$this->l('Disabled').'" title="'.$this->l('Disabled').'" />'
-                        )
-                    )
-                )
-            ),
-            'submit' => array(
+                        ]
+                    ]
+                ]
+            ],
+            'submit' => [
                 'title' => $this->l('Save'),
-            )
-        );
+            ]
+        ];
 
         parent::__construct();
     }
@@ -127,11 +127,11 @@ class AdminQuickAccessesControllerCore extends AdminController
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
-            $this->page_header_toolbar_btn['new_quick_access'] = array(
+            $this->page_header_toolbar_btn['new_quick_access'] = [
                 'href' => self::$currentIndex.'&addquick_access&token='.$this->token,
                 'desc' => $this->l('Add new quick access', null, null, false),
                 'icon' => 'process-icon-new'
-            );
+            ];
         }
 
         parent::initPageHeaderToolbar();
@@ -153,7 +153,7 @@ class AdminQuickAccessesControllerCore extends AdminController
     public function getQuickAccessesList()
     {
         $links = QuickAccess::getQuickAccesses($this->context->language->id);
-        return Tools::jsonEncode(array_map(array($this, 'getLinkToken'), $links));
+        return Tools::jsonEncode(array_map([$this, 'getLinkToken'], $links));
     }
 
     public function getLinkToken($item)

@@ -305,7 +305,7 @@ class ImageManagerCore
         // Detect mime content type
         $mime_type = false;
         if (!$mime_type_list) {
-            $mime_type_list = array('image/gif', 'image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/x-png');
+            $mime_type_list = ['image/gif', 'image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/x-png'];
         }
 
         // Try 4 different methods to determine the mime type
@@ -359,7 +359,7 @@ class ImageManagerCore
     {
         // Filter on file extension
         if ($authorized_extensions === null) {
-            $authorized_extensions = array('gif', 'jpg', 'jpeg', 'jpe', 'png');
+            $authorized_extensions = ['gif', 'jpg', 'jpeg', 'jpe', 'png'];
         }
         $name_explode = explode('.', $filename);
         if (count($name_explode) >= 2) {
@@ -441,14 +441,14 @@ class ImageManagerCore
 
         // Source information
         $src_info = getimagesize($src_file);
-        $src = array(
+        $src = [
             'width' => $src_info[0],
             'height' => $src_info[1],
             'ressource' => ImageManager::create($src_info[2], $src_file),
-        );
+        ];
 
         // Destination information
-        $dest = array();
+        $dest = [];
         $dest['x'] = $dst_x;
         $dest['y'] = $dst_y;
         $dest['width'] = !is_null($dst_width) ? $dst_width : $src['width'];
@@ -555,11 +555,11 @@ class ImageManagerCore
      */
     public static function getMimeTypeByExtension($file_name)
     {
-        $types = array(
-                        'image/gif' => array('gif'),
-                        'image/jpeg' => array('jpg', 'jpeg'),
-                        'image/png' => array('png')
-                    );
+        $types = [
+                        'image/gif' => ['gif'],
+                        'image/jpeg' => ['jpg', 'jpeg'],
+                        'image/png' => ['png']
+        ];
         $extension = substr($file_name, strrpos($file_name, '.') + 1);
 
         $mime_type = null;

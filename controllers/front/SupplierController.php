@@ -100,17 +100,17 @@ class SupplierControllerCore extends FrontController
             $this->addColorsToProductList($products);
 
             $this->context->smarty->assign(
-                array(
+                [
                     'nb_products' => $nbProducts,
                     'products' => $products,
                     'path' => ($this->supplier->active ? Tools::safeOutput($this->supplier->name) : ''),
                     'supplier' => $this->supplier,
                     'comparator_max_item' => Configuration::get('PS_COMPARATOR_MAX_ITEM'),
-                    'body_classes' => array(
+                    'body_classes' => [
                         $this->php_self.'-'.$this->supplier->id,
                         $this->php_self.'-'.$this->supplier->link_rewrite
-                    )
-                )
+                    ]
+                ]
             );
         } else {
             Tools::redirect('index.php?controller=404');
@@ -132,13 +132,15 @@ class SupplierControllerCore extends FrontController
                 $row['image'] = (!file_exists(_PS_SUPP_IMG_DIR_.'/'.$row['id_supplier'].'-'.ImageType::getFormatedName('medium').'.jpg')) ? $this->context->language->iso_code.'-default' : $row['id_supplier'];
             }
 
-            $this->context->smarty->assign(array(
+            $this->context->smarty->assign(
+                [
                 'pages_nb' => ceil($nbProducts / (int)$this->n),
                 'nbSuppliers' => $nbProducts,
                 'mediumSize' => Image::getSize(ImageType::getFormatedName('medium')),
                 'suppliers_list' => $suppliers,
                 'add_prod_display' => Configuration::get('PS_ATTRIBUTE_CATEGORY_DISPLAY'),
-            ));
+                ]
+            );
         } else {
             Tools::redirect('index.php?controller=404');
         }

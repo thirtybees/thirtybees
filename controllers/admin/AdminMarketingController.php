@@ -46,7 +46,7 @@ class AdminMarketingControllerCore extends AdminController
     public function initPageHeaderToolbar()
     {
         parent::initPageHeaderToolbar();
-        $this->page_header_toolbar_btn = array();
+        $this->page_header_toolbar_btn = [];
     }
     
     public function initToolbar()
@@ -56,9 +56,9 @@ class AdminMarketingControllerCore extends AdminController
     
     public function renderView()
     {
-        $this->tpl_view_vars = array(
+        $this->tpl_view_vars = [
             'modules_list' => $this->renderModulesList(),
-        );
+        ];
         return parent::renderView();
     }
 }

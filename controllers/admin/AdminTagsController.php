@@ -36,35 +36,35 @@ class AdminTagsControllerCore extends AdminController
         $this->table = 'tag';
         $this->className = 'Tag';
 
-        $this->fields_list = array(
-            'id_tag' => array(
+        $this->fields_list = [
+            'id_tag' => [
                 'title' => $this->l('ID'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs'
-            ),
-            'lang' => array(
+            ],
+            'lang' => [
                 'title' => $this->l('Language'),
                 'filter_key' => 'l!name'
-            ),
-            'name' => array(
+            ],
+            'name' => [
                 'title' => $this->l('Name'),
                 'filter_key' => 'a!name'
-            ),
-            'products' => array(
+            ],
+            'products' => [
                 'title' => $this->l('Products'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs',
                 'havingFilter' => true
-            )
-        );
+            ]
+        ];
 
-        $this->bulk_actions = array(
-            'delete' => array(
+        $this->bulk_actions = [
+            'delete' => [
                 'text' => $this->l('Delete selected'),
                 'icon' => 'icon-trash',
                 'confirm' => $this->l('Delete selected items?')
-            )
-        );
+            ]
+        ];
 
         parent::__construct();
     }
@@ -72,11 +72,11 @@ class AdminTagsControllerCore extends AdminController
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
-            $this->page_header_toolbar_btn['new_tag'] = array(
+            $this->page_header_toolbar_btn['new_tag'] = [
                 'href' => self::$currentIndex.'&addtag&token='.$this->token,
                 'desc' => $this->l('Add new tag', null, null, false),
                 'icon' => 'process-icon-new'
-            );
+            ];
         }
 
         parent::initPageHeaderToolbar();
@@ -104,7 +104,7 @@ class AdminTagsControllerCore extends AdminController
             if (($id = (int)Tools::getValue($this->identifier)) && ($obj = new $this->className($id)) && Validate::isLoadedObject($obj)) {
                 /** @var Tag $obj */
                 $previous_products = $obj->getProducts();
-                $removed_products = array();
+                $removed_products = [];
 
                 foreach ($previous_products as $product) {
                     if (!in_array($product['id_product'], $_POST['products'])) {
@@ -130,38 +130,38 @@ class AdminTagsControllerCore extends AdminController
             return;
         }
 
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('Tag'),
                 'icon' => 'icon-tag'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'text',
                     'label' => $this->l('Name'),
                     'name' => 'name',
                     'required' => true
-                ),
-                array(
+                ],
+                [
                     'type' => 'select',
                     'label' => $this->l('Language'),
                     'name' => 'id_lang',
                     'required' => true,
-                    'options' => array(
+                    'options' => [
                         'query' => Language::getLanguages(false),
                         'id' => 'id_lang',
                         'name' => 'name'
-                    )
-                ),
-            ),
-            'selects' => array(
+                    ]
+                ],
+            ],
+            'selects' => [
                 'products' => $obj->getProducts(true),
                 'products_unselected' => $obj->getProducts(false)
-            ),
-            'submit' => array(
+            ],
+            'submit' => [
                 'title' => $this->l('Save'),
-            )
-        );
+            ]
+        ];
 
         return parent::renderForm();
     }

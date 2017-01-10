@@ -32,10 +32,10 @@ class AdminRequestSqlControllerCore extends AdminController
     /**
      * @var array : List of encoding type for a file
      */
-    public static $encoding_file = array(
-        array('value' => 1, 'name' => 'utf-8'),
-        array('value' => 2, 'name' => 'iso-8859-1')
-    );
+    public static $encoding_file = [
+        ['value' => 1, 'name' => 'utf-8'],
+        ['value' => 2, 'name' => 'iso-8859-1']
+    ];
 
     public function __construct()
     {
@@ -47,36 +47,36 @@ class AdminRequestSqlControllerCore extends AdminController
 
         $this->context = Context::getContext();
 
-        $this->fields_list = array(
-            'id_request_sql' => array('title' => $this->l('ID'), 'class' => 'fixed-width-xs'),
-            'name' => array('title' => $this->l('SQL query Name')),
-            'sql' => array('title' => $this->l('SQL query'))
-        );
+        $this->fields_list = [
+            'id_request_sql' => ['title' => $this->l('ID'), 'class' => 'fixed-width-xs'],
+            'name' => ['title' => $this->l('SQL query Name')],
+            'sql' => ['title' => $this->l('SQL query')]
+        ];
 
-        $this->fields_options = array(
-            'general' => array(
+        $this->fields_options = [
+            'general' => [
                 'title' =>    $this->l('Settings'),
-                'fields' =>    array(
-                    'PS_ENCODING_FILE_MANAGER_SQL' => array(
+                'fields' =>    [
+                    'PS_ENCODING_FILE_MANAGER_SQL' => [
                         'title' => $this->l('Select your default file encoding'),
                         'cast' => 'intval',
                         'type' => 'select',
                         'identifier' => 'value',
                         'list' => self::$encoding_file,
                         'visibility' => Shop::CONTEXT_ALL
-                    )
-                ),
-                'submit' => array('title' => $this->l('Save'))
-            )
-        );
+                    ]
+                ],
+                'submit' => ['title' => $this->l('Save')]
+            ]
+        ];
 
-        $this->bulk_actions = array(
-            'delete' => array(
+        $this->bulk_actions = [
+            'delete' => [
                 'text' => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
                 'icon' => 'icon-trash'
-            )
-        );
+            ]
+        ];
 
         parent::__construct();
     }
@@ -95,10 +95,10 @@ class AdminRequestSqlControllerCore extends AdminController
     public function initToolbar()
     {
         if ($this->display == 'view' && $id_request = Tools::getValue('id_request_sql')) {
-            $this->toolbar_btn['edit'] = array(
+            $this->toolbar_btn['edit'] = [
                 'href' => self::$currentIndex.'&amp;updaterequest_sql&amp;token='.$this->token.'&amp;id_request_sql='.(int)$id_request,
                 'desc' => $this->l('Edit this SQL query')
-            );
+            ];
         }
 
         parent::initToolbar();
@@ -134,35 +134,35 @@ class AdminRequestSqlControllerCore extends AdminController
 
     public function renderForm()
     {
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('SQL query'),
                 'icon' => 'icon-cog'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'text',
                     'label' => $this->l('SQL query name'),
                     'name' => 'name',
                     'size' => 103,
                     'required' => true
-                ),
-                array(
+                ],
+                [
                     'type' => 'textarea',
                     'label' => $this->l('SQL query'),
                     'name' => 'sql',
                     'cols' => 100,
                     'rows' => 10,
                     'required' => true
-                )
-            ),
-            'submit' => array(
+                ]
+            ],
+            'submit' => [
                 'title' => $this->l('Save')
-            )
-        );
+            ]
+        ];
 
         $request = new RequestSql();
-        $this->tpl_form_vars = array('tables' => $request->getTables());
+        $this->tpl_form_vars = ['tables' => $request->getTables()];
 
         return parent::renderForm();
     }
@@ -208,7 +208,7 @@ class AdminRequestSqlControllerCore extends AdminController
             return;
         }
 
-        $view = array();
+        $view = [];
         if ($results = Db::getInstance()->executeS($obj->sql)) {
             foreach (array_keys($results[0]) as $key) {
                 $tab_key[] = $key;
@@ -226,9 +226,9 @@ class AdminRequestSqlControllerCore extends AdminController
             $view['error'] = true;
         }
 
-        $this->tpl_view_vars = array(
+        $this->tpl_view_vars = [
             'view' => $view
-        );
+        ];
         return parent::renderView();
     }
 
@@ -259,10 +259,12 @@ class AdminRequestSqlControllerCore extends AdminController
     {
         $tpl = $this->createTemplate('list_action_export.tpl');
 
-        $tpl->assign(array(
+        $tpl->assign(
+            [
             'href' => self::$currentIndex.'&token='.$this->token.'&'.$this->identifier.'='.$id.'&export'.$this->table.'=1',
             'action' => $this->l('Export')
-        ));
+            ]
+        );
 
         return $tpl->fetch();
     }
@@ -301,23 +303,25 @@ class AdminRequestSqlControllerCore extends AdminController
             $this->content .= $this->renderOptions();
         }
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'content' => $this->content,
             'url_post' => self::$currentIndex.'&token='.$this->token,
             'show_page_header_toolbar' => $this->show_page_header_toolbar,
             'page_header_toolbar_title' => $this->page_header_toolbar_title,
             'page_header_toolbar_btn' => $this->page_header_toolbar_btn
-        ));
+            ]
+        );
     }
 
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
-            $this->page_header_toolbar_btn['new_request'] = array(
+            $this->page_header_toolbar_btn['new_request'] = [
                 'href' => self::$currentIndex.'&addrequest_sql&token='.$this->token,
                 'desc' => $this->l('Add new SQL query', null, null, false),
                 'icon' => 'process-icon-new'
-            );
+            ];
         }
 
         parent::initPageHeaderToolbar();

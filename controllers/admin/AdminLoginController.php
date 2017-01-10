@@ -29,12 +29,12 @@ class AdminLoginControllerCore extends AdminController
     public function __construct()
     {
         $this->bootstrap = true;
-        $this->errors = array();
+        $this->errors = [];
         $this->context = Context::getContext();
         $this->display_header = false;
         $this->display_footer = false;
         $this->meta_title = $this->l('Administration panel');
-        $this->css_files = array();
+        $this->css_files = [];
         parent::__construct();
         $this->layout = _PS_ADMIN_DIR_.DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.$this->bo_theme
             .DIRECTORY_SEPARATOR.'template'.DIRECTORY_SEPARATOR.'controllers'.DIRECTORY_SEPARATOR.'login'
@@ -54,7 +54,7 @@ class AdminLoginControllerCore extends AdminController
         $this->addCSS(__PS_BASE_URI__.$this->admin_webpath.'/themes/'.$this->bo_theme.'/css/overrides.css', 'all', PHP_INT_MAX);
         $this->addJS(_PS_JS_DIR_.'vendor/spin.js');
         $this->addJS(_PS_JS_DIR_.'vendor/ladda.js');
-        Media::addJsDef(array('img_dir' => _PS_IMG_));
+        Media::addJsDef(['img_dir' => _PS_IMG_]);
         Media::addJsDefL('one_error', $this->l('There is one error.', null, true, false));
         Media::addJsDefL('more_errors', $this->l('There are several errors.', null, true, false));
 
@@ -68,7 +68,7 @@ class AdminLoginControllerCore extends AdminController
             // header('HTTP/1.1 301 Moved Permanently');
             // header('Location: '.Tools::getShopDomainSsl(true).$_SERVER['REQUEST_URI']);
             // exit();
-            $clientIsMaintenanceOrLocal = in_array(Tools::getRemoteAddr(), array_merge(array('127.0.0.1'), explode(',', Configuration::get('PS_MAINTENANCE_IP'))));
+            $clientIsMaintenanceOrLocal = in_array(Tools::getRemoteAddr(), array_merge(['127.0.0.1'], explode(',', Configuration::get('PS_MAINTENANCE_IP'))));
             // If ssl is enabled, https protocol is required. Exception for maintenance and local (127.0.0.1) IP
             if ($clientIsMaintenanceOrLocal) {
                 $warningSslMessage = Tools::displayError('SSL is activated. However, your IP is allowed to enter unsecure mode for maintenance or local IP issues.');
@@ -77,7 +77,7 @@ class AdminLoginControllerCore extends AdminController
                 $warningSslMessage = sprintf(
                     Translate::ppTags(
                         Tools::displayError('SSL is activated. Please connect using the following link to [1]log into secure mode (https://)[/1]', false),
-                        array('<a href="%s">')
+                        ['<a href="%s">']
                     ),
                     $url
                 );
@@ -94,18 +94,22 @@ class AdminLoginControllerCore extends AdminController
             if (@rename(_PS_ADMIN_DIR_.'/../admin/', _PS_ADMIN_DIR_.'/../'.$rand)) {
                 Tools::redirectAdmin('../'.$rand);
             } else {
-                $this->context->smarty->assign(array(
+                $this->context->smarty->assign(
+                    [
                     'wrong_folder_name' => true
-                ));
+                    ]
+                );
             }
         } else {
             $rand = basename(_PS_ADMIN_DIR_).'/';
         }
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'randomNb' => $rand,
             'adminUrl' => Tools::getCurrentUrlProtocolPrefix().Tools::getShopDomain().__PS_BASE_URI__.$rand
-        ));
+            ]
+        );
 
         // Redirect to admin panel
         if (Tools::isSubmit('redirect') && Validate::isControllerName(Tools::getValue('redirect'))) {
@@ -116,12 +120,14 @@ class AdminLoginControllerCore extends AdminController
         }
 
         if ($nb_errors = count($this->errors)) {
-            $this->context->smarty->assign(array(
+            $this->context->smarty->assign(
+                [
                 'errors' => $this->errors,
                 'nbErrors' => $nb_errors,
                 'shop_name' => Tools::safeOutput(Configuration::get('PS_SHOP_NAME')),
                 'disableDefaultErrorOutPut' => true,
-            ));
+                ]
+            );
         }
 
         if ($email = Tools::getValue('email')) {
@@ -219,14 +225,14 @@ class AdminLoginControllerCore extends AdminController
                 }
 
                 if (Tools::isSubmit('ajax')) {
-                    die(Tools::jsonEncode(array('hasErrors' => false, 'redirect' => $url)));
+                    die(Tools::jsonEncode(['hasErrors' => false, 'redirect' => $url]));
                 } else {
                     $this->redirect_after = $url;
                 }
             }
         }
         if (Tools::isSubmit('ajax')) {
-            die(Tools::jsonEncode(array('hasErrors' => true, 'errors' => $this->errors)));
+            die(Tools::jsonEncode(['hasErrors' => true, 'errors' => $this->errors]));
         }
     }
 
@@ -255,12 +261,12 @@ class AdminLoginControllerCore extends AdminController
             $employee->passwd = Tools::encrypt($pwd);
             $employee->last_passwd_gen = date('Y-m-d H:i:s', time());
 
-            $params = array(
+            $params = [
                 '{email}' => $employee->email,
                 '{lastname}' => $employee->lastname,
                 '{firstname}' => $employee->firstname,
                 '{passwd}' => $pwd
-            );
+            ];
 
             if (Mail::Send($employee->id_lang, 'employee_password', Mail::l('Your new password', $employee->id_lang), $params, $employee->email, $employee->firstname.' '.$employee->lastname)) {
                 // Update employee only if the mail can be sent
@@ -270,19 +276,23 @@ class AdminLoginControllerCore extends AdminController
                 if (!$result) {
                     $this->errors[] = Tools::displayError('An error occurred while attempting to change your password.');
                 } else {
-                    die(Tools::jsonEncode(array(
+                    die(Tools::jsonEncode(
+                        [
                         'hasErrors' => false,
                         'confirm' => $this->l('Your password has been emailed to you.', 'AdminTab', false, false)
-                    )));
+                        ]
+                    ));
                 }
             } else {
-                die(Tools::jsonEncode(array(
+                die(Tools::jsonEncode(
+                    [
                     'hasErrors' => true,
-                    'errors' => array(Tools::displayError('An error occurred while attempting to change your password.'))
-                )));
+                    'errors' => [Tools::displayError('An error occurred while attempting to change your password.')]
+                    ]
+                ));
             }
         } elseif (Tools::isSubmit('ajax')) {
-            die(Tools::jsonEncode(array('hasErrors' => true, 'errors' => $this->errors)));
+            die(Tools::jsonEncode(['hasErrors' => true, 'errors' => $this->errors]));
         }
     }
 }

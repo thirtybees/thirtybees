@@ -30,7 +30,7 @@
 class AdminWebserviceControllerCore extends AdminController
 {
     /** this will be filled later */
-    public $fields_form = array('webservice form');
+    public $fields_form = ['webservice form'];
     protected $toolbar_scroll = false;
 
     public function __construct()
@@ -43,58 +43,60 @@ class AdminWebserviceControllerCore extends AdminController
         $this->delete = true;
         $this->id_lang_default = Configuration::get('PS_LANG_DEFAULT');
 
-        $this->bulk_actions = array(
-            'delete' => array(
+        $this->bulk_actions = [
+            'delete' => [
                 'text' => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
                 'icon' => 'icon-trash'
-            )
-        );
+            ]
+        ];
 
-        $this->fields_list = array(
-            'key' => array(
+        $this->fields_list = [
+            'key' => [
                 'title' => $this->l('Key'),
                 'class' => 'fixed-width-md'
-            ),
-            'description' => array(
+            ],
+            'description' => [
                 'title' => $this->l('Key description'),
                 'align' => 'left',
                 'orderby' => false
-            ),
-            'active' => array(
+            ],
+            'active' => [
                 'title' => $this->l('Enabled'),
                 'align' => 'center',
                 'active' => 'status',
                 'type' => 'bool',
                 'orderby' => false,
                 'class' => 'fixed-width-xs'
-            )
-        );
+            ]
+        ];
 
-        $this->fields_options = array(
-                'general' => array(
+        $this->fields_options = [
+                'general' => [
                     'title' =>    $this->l('Configuration'),
-                    'fields' =>    array(
-                        'PS_WEBSERVICE' => array('title' => $this->l('Enable PrestaShop\'s webservice'),
+                    'fields' =>    [
+                        'PS_WEBSERVICE' => [
+                            'title' => $this->l('Enable PrestaShop\'s webservice'),
                             'desc' => $this->l('Before activating the webservice, you must be sure to: ').
                                                 '<ol>
 													<li>'.$this->l('Check that URL rewriting is available on this server.').'</li>
 													<li>'.$this->l('Check that the five methods GET, POST, PUT, DELETE and HEAD are supported by this server.').'</li>
 												</ol>',
                             'cast' => 'intval',
-                            'type' => 'bool'),
-                    ),
-                    'submit' => array('title' => $this->l('Save'))
-                ),
-            );
+                            'type' => 'bool'
+                        ],
+                    ],
+                    'submit' => ['title' => $this->l('Save')]
+                ],
+        ];
 
         if (!defined('_PS_HOST_MODE_')) {
-            $this->fields_options['general']['fields']['PS_WEBSERVICE_CGI_HOST'] = array(
+            $this->fields_options['general']['fields']['PS_WEBSERVICE_CGI_HOST'] = [
                 'title' => $this->l('Enable CGI mode for PHP'),
                 'desc' => $this->l('Before choosing "Yes", check that PHP is not configured as an Apache module on your server.'),
                 'cast' => 'intval',
                 'type' => 'bool'
-            );
+            ];
         }
 
         parent::__construct();
@@ -103,11 +105,11 @@ class AdminWebserviceControllerCore extends AdminController
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
-            $this->page_header_toolbar_btn['new_webservice'] = array(
+            $this->page_header_toolbar_btn['new_webservice'] = [
                 'href' => self::$currentIndex.'&addwebservice_account&token='.$this->token,
                 'desc' => $this->l('Add new webservice key', null, null, false),
                 'icon' => 'process-icon-new'
-            );
+            ];
         }
 
         parent::initPageHeaderToolbar();
@@ -122,72 +124,72 @@ class AdminWebserviceControllerCore extends AdminController
 
     public function renderForm()
     {
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('Webservice Accounts'),
                 'icon' => 'icon-lock'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'textbutton',
                     'label' => $this->l('Key'),
                     'name' => 'key',
                     'id' => 'code',
                     'required' => true,
                     'hint' => $this->l('Webservice account key.'),
-                    'button' => array(
+                    'button' => [
                         'label' => $this->l('Generate!'),
-                        'attributes' => array(
+                        'attributes' => [
                             'onclick' => 'gencode(32)'
-                        )
-                    )
-                ),
-                array(
+                        ]
+                    ]
+                ],
+                [
                     'type' => 'textarea',
                     'label' => $this->l('Key description'),
                     'name' => 'description',
                     'rows' => 3,
                     'cols' => 110,
                     'hint' => $this->l('Quick description of the key: who it is for, what permissions it has, etc.'),
-                ),
-                array(
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Status'),
                     'name' => 'active',
                     'required' => false,
                     'is_bool' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'active_on',
                             'value' => 1,
                             'label' => $this->l('Enabled')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'active_off',
                             'value' => 0,
                             'label' => $this->l('Disabled')
-                        )
-                    )
-                ),
-                array(
+                        ]
+                    ]
+                ],
+                [
                     'type' => 'resources',
                     'label' => $this->l('Permissions'),
                     'name' => 'resources',
-                )
-            )
-        );
+                ]
+            ]
+        ];
 
         if (Shop::isFeatureActive()) {
-            $this->fields_form['input'][] = array(
+            $this->fields_form['input'][] = [
                 'type' => 'shop',
                 'label' => $this->l('Shop association'),
                 'name' => 'checkBoxShopAsso',
-            );
+            ];
         }
 
-        $this->fields_form['submit'] = array(
+        $this->fields_form['submit'] = [
             'title' => $this->l('Save'),
-        );
+        ];
 
         if (!($obj = $this->loadObject(true))) {
             return;
@@ -196,10 +198,10 @@ class AdminWebserviceControllerCore extends AdminController
         $ressources = WebserviceRequest::getResources();
         $permissions = WebserviceKey::getPermissionForAccount($obj->key);
 
-        $this->tpl_form_vars = array(
+        $this->tpl_form_vars = [
             'ressources' => $ressources,
             'permissions' => $permissions
-        );
+        ];
 
         return parent::renderForm();
     }
@@ -222,10 +224,12 @@ class AdminWebserviceControllerCore extends AdminController
             $helper = new HelperOptions($this);
             $this->setHelperDisplay($helper);
             $helper->toolbar_scroll = true;
-            $helper->toolbar_btn = array('save' => array(
+            $helper->toolbar_btn = [
+                'save' => [
                                 'href' => '#',
                                 'desc' => $this->l('Save')
-                            ));
+                ]
+            ];
             $helper->id = $this->id;
             $helper->tpl_vars = $this->tpl_option_vars;
             $options = $helper->generateOptions($this->fields_options);
@@ -257,13 +261,13 @@ class AdminWebserviceControllerCore extends AdminController
     protected function afterAdd($object)
     {
         Tools::generateHtaccess();
-        WebserviceKey::setPermissionForAccount($object->id, Tools::getValue('resources', array()));
+        WebserviceKey::setPermissionForAccount($object->id, Tools::getValue('resources', []));
     }
 
     protected function afterUpdate($object)
     {
         Tools::generateHtaccess();
-        WebserviceKey::setPermissionForAccount($object->id, Tools::getValue('resources', array()));
+        WebserviceKey::setPermissionForAccount($object->id, Tools::getValue('resources', []));
     }
 
     public function checkForWarning()

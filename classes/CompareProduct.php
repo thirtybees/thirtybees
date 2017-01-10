@@ -37,14 +37,14 @@ class CompareProductCore extends ObjectModel
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = array(
+    public static $definition = [
         'table' => 'compare',
         'primary' => 'id_compare',
-        'fields' => array(
-            'id_compare' =>    array('type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true),
-            'id_customer' =>    array('type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true),
-        ),
-    );
+        'fields' => [
+            'id_compare' =>    ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true],
+            'id_customer' =>    ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true],
+        ],
+    ];
 
     /**
      * Get all compare products of the customer

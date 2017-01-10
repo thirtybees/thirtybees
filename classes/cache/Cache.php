@@ -44,7 +44,7 @@ abstract class CacheCore
 	/**
 	 * @var array List all keys of cached data and their associated ttl
 	 */
-	protected $keys = array();
+	protected $keys = [];
 
 	/**
 	 * @var array Store list of tables and their associated keys for SQL cache (warning: this var must not be initialized here !)
@@ -54,7 +54,7 @@ abstract class CacheCore
 	/**
 	 * @var array List of blacklisted tables for SQL cache, these tables won't be indexed
 	 */
-	protected $blacklist = array(
+	protected $blacklist = [
 		'cart',
 		'cart_cart_rule',
 		'cart_product',
@@ -67,12 +67,12 @@ abstract class CacheCore
 		'guest',
 		'pagenotfound',
 		'page_viewed',
-	);
+    ];
 
 	/**
 	 * @var array Store local cache
 	 */
-	protected static $local = array();
+	protected static $local = [];
 
 	/**
 	 * Cache a data
@@ -211,11 +211,11 @@ abstract class CacheCore
 	public function delete($key)
 	{
 		// Get list of keys to delete
-		$keys = array();
+		$keys = [];
 		if ($key == '*')
 			$keys = $this->keys;
 		elseif (strpos($key, '*') === false)
-			$keys = array($key);
+			$keys = [$key];
 		else
 		{
 			$pattern = str_replace('\\*', '.*', preg_quote($key));
@@ -250,13 +250,13 @@ abstract class CacheCore
 			return true;
 
 		if (empty($result) || $result === false)
-			$result = array();
+			$result = [];
 
 		if (is_null($this->sql_tables_cached))
 		{
 			$this->sql_tables_cached = $this->get(Tools::encryptIV(self::SQL_TABLES_NAME));
 			if (!is_array($this->sql_tables_cached))
-				$this->sql_tables_cached = array();
+				$this->sql_tables_cached = [];
 		}
 
 		// Store query results in cache
@@ -323,7 +323,7 @@ abstract class CacheCore
 		{
 			$this->sql_tables_cached = $this->get(Tools::encryptIV(self::SQL_TABLES_NAME));
 			if (!is_array($this->sql_tables_cached))
-				$this->sql_tables_cached = array();
+				$this->sql_tables_cached = [];
 		}
 
 		if ($tables = $this->getTables($query))
@@ -360,7 +360,7 @@ abstract class CacheCore
 		// Better delete the whole cache if there are
 		// more than 1000 elements in the array
 		if (count(Cache::$local) > 1000) {
-			Cache::$local = array();
+			Cache::$local = [];
 		}
 		Cache::$local[$key] = $value;
 	}

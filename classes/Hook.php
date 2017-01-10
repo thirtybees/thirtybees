@@ -54,24 +54,24 @@ class HookCore extends ObjectModel
     /**
      * @var array List of executed hooks on this page
      */
-    public static $executed_hooks = array();
+    public static $executed_hooks = [];
 
     public static $native_module;
 
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = array(
+    public static $definition = [
         'table' => 'hook',
         'primary' => 'id_hook',
-        'fields' => array(
-            'name' =>            array('type' => self::TYPE_STRING, 'validate' => 'isHookName', 'required' => true, 'size' => 64),
-            'title' =>            array('type' => self::TYPE_STRING, 'validate' => 'isGenericName'),
-            'description' =>    array('type' => self::TYPE_HTML, 'validate' => 'isCleanHtml'),
-            'position' =>        array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
-            'live_edit' =>    array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
-        ),
-    );
+        'fields' => [
+            'name' =>            ['type' => self::TYPE_STRING, 'validate' => 'isHookName', 'required' => true, 'size' => 64],
+            'title' =>            ['type' => self::TYPE_STRING, 'validate' => 'isGenericName'],
+            'description' =>    ['type' => self::TYPE_HTML, 'validate' => 'isCleanHtml'],
+            'position' =>        ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'live_edit' =>    ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+        ],
+    ];
 
     /**
      * @deprecated 1.5.0
@@ -120,7 +120,7 @@ class HookCore extends ObjectModel
         $cache_id = 'hook_idsbyname';
         if (!Cache::isStored($cache_id)) {
             // Get all hook ID by name and alias
-            $hook_ids = array();
+            $hook_ids = [];
             $db = Db::getInstance();
             $result = $db->ExecuteS('
 			SELECT `id_hook`, `name`
@@ -185,7 +185,7 @@ class HookCore extends ObjectModel
         $cache_id = 'hook_alias';
         if (!Cache::isStored($cache_id)) {
             $hook_alias_list = Db::getInstance()->executeS('SELECT * FROM `'._DB_PREFIX_.'hook_alias`');
-            $hook_alias = array();
+            $hook_alias = [];
             if ($hook_alias_list) {
                 foreach ($hook_alias_list as $ha) {
                     $hook_alias[strtolower($ha['alias'])] = $ha['name'];
@@ -234,13 +234,13 @@ class HookCore extends ObjectModel
 			STRAIGHT_JOIN `'._DB_PREFIX_.'hook` h ON (h.id_hook = hm.id_hook AND hm.id_shop = '.(int)Context::getContext()->shop->id.')
 			STRAIGHT_JOIN `'._DB_PREFIX_.'module` as m ON (m.id_module = hm.id_module)
 			ORDER BY hm.position');
-            $list = array();
+            $list = [];
             foreach ($results as $result) {
                 if (!isset($list[$result['id_hook']])) {
-                    $list[$result['id_hook']] = array();
+                    $list[$result['id_hook']] = [];
                 }
 
-                $list[$result['id_hook']][$result['id_module']] = array(
+                $list[$result['id_hook']][$result['id_module']] = [
                     'id_hook' => $result['id_hook'],
                     'title' => $result['title'],
                     'description' => $result['description'],
@@ -250,7 +250,7 @@ class HookCore extends ObjectModel
                     'id_module' => $result['id_module'],
                     'name' => $result['name'],
                     'active' => $result['active'],
-                );
+                ];
             }
             Cache::store($cache_id, $list);
 
@@ -273,10 +273,10 @@ class HookCore extends ObjectModel
     public static function getModulesFromHook($id_hook, $id_module = null)
     {
         $hm_list = Hook::getHookModuleList();
-        $module_list = (isset($hm_list[$id_hook])) ? $hm_list[$id_hook] : array();
+        $module_list = (isset($hm_list[$id_hook])) ? $hm_list[$id_hook] : [];
 
         if ($id_module) {
-            return (isset($module_list[$id_module])) ? array($module_list[$id_module]) : array();
+            return (isset($module_list[$id_module])) ? [$module_list[$id_module]] : [];
         }
         return $module_list;
     }
@@ -294,7 +294,7 @@ class HookCore extends ObjectModel
         $cache_id = 'hook_module_exec_list_'.(isset($context->shop->id) ? '_'.$context->shop->id : '').((isset($context->customer)) ? '_'.$context->customer->id : '');
         if (!Cache::isStored($cache_id) || $hook_name == 'displayPayment' || $hook_name == 'displayPaymentEU' || $hook_name == 'displayBackOfficeHeader') {
             $frontend = true;
-            $groups = array();
+            $groups = [];
             $use_groups = Group::isFeatureActive();
             if (isset($context->employee)) {
                 $frontend = false;
@@ -304,9 +304,9 @@ class HookCore extends ObjectModel
                     if (isset($context->customer) && $context->customer->isLogged()) {
                         $groups = $context->customer->getGroups();
                     } elseif (isset($context->customer) && $context->customer->isLogged(true)) {
-                        $groups = array((int)Configuration::get('PS_GUEST_GROUP'));
+                        $groups = [(int)Configuration::get('PS_GUEST_GROUP')];
                     } else {
-                        $groups = array((int)Configuration::get('PS_UNIDENTIFIED_GROUP'));
+                        $groups = [(int)Configuration::get('PS_UNIDENTIFIED_GROUP')];
                     }
                 }
             }
@@ -351,20 +351,20 @@ class HookCore extends ObjectModel
             $sql->groupBy('hm.id_hook, hm.id_module');
             $sql->orderBy('hm.`position`');
 
-            $list = array();
+            $list = [];
             if ($result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql)) {
                 foreach ($result as $row) {
                     $row['hook'] = strtolower($row['hook']);
                     if (!isset($list[$row['hook']])) {
-                        $list[$row['hook']] = array();
+                        $list[$row['hook']] = [];
                     }
 
-                    $list[$row['hook']][] = array(
+                    $list[$row['hook']][] = [
                         'id_hook' => $row['id_hook'],
                         'module' => $row['module'],
                         'id_module' => $row['id_module'],
                         'live_edit' => $row['live_edit'],
-                    );
+                    ];
                 }
             }
             if ($hook_name != 'displayPayment' && $hook_name != 'displayPaymentEU' && $hook_name != 'displayBackOfficeHeader') {
@@ -381,8 +381,8 @@ class HookCore extends ObjectModel
             $retro_hook_name = strtolower(Hook::getRetroHookName($hook_name));
             $hook_name = strtolower($hook_name);
 
-            $return = array();
-            $inserted_modules = array();
+            $return = [];
+            $inserted_modules = [];
             if (isset($list[$hook_name])) {
                 $return = $list[$hook_name];
             }
@@ -418,7 +418,7 @@ class HookCore extends ObjectModel
      *
      * @return string/array modules output
      */
-    public static function exec($hook_name, $hook_args = array(), $id_module = null, $array_return = false, $check_exceptions = true,
+    public static function exec($hook_name, $hook_args = [], $id_module = null, $array_return = false, $check_exceptions = true,
                                 $use_push = false, $id_shop = null)
     {
         if (defined('PS_INSTALLATION_IN_PROGRESS')) {
@@ -507,10 +507,10 @@ class HookCore extends ObjectModel
                 }
 
                 //Backward compatibility of controller names
-                $matching_name = array(
+                $matching_name = [
                     'authentication' => 'auth',
                     'productscomparison' => 'compare'
-                );
+                ];
                 if (isset($matching_name[$controller]) && in_array($matching_name[$controller], $exceptions)) {
                     continue;
                 }
@@ -527,8 +527,8 @@ class HookCore extends ObjectModel
                 continue;
             }
             // Check which / if method is callable
-            $hook_callable = is_callable(array($moduleInstance, 'hook'.$hook_name));
-            $hook_retro_callable = is_callable(array($moduleInstance, 'hook'.$retro_hook_name));
+            $hook_callable = is_callable([$moduleInstance, 'hook'.$hook_name]);
+            $hook_retro_callable = is_callable([$moduleInstance, 'hook'.$retro_hook_name]);
 
             if (($hook_callable || $hook_retro_callable) && Module::preCall($moduleInstance->name)) {
                 $hook_args['altern'] = ++$altern;
@@ -628,8 +628,8 @@ class HookCore extends ObjectModel
         $order = new Order((int)$id_order);
         $new_os = new OrderState((int)$new_order_status_id, $order->id_lang);
 
-        $return = ((int)$new_os->id == Configuration::get('PS_OS_PAYMENT')) ? Hook::exec('paymentConfirm', array('id_order' => (int)($order->id))) : true;
-        $return = Hook::exec('updateOrderStatus', array('newOrderStatus' => $new_os, 'id_order' => (int)($order->id))) && $return;
+        $return = ((int)$new_os->id == Configuration::get('PS_OS_PAYMENT')) ? Hook::exec('paymentConfirm', ['id_order' => (int)($order->id)]) : true;
+        $return = Hook::exec('updateOrderStatus', ['newOrderStatus' => $new_os, 'id_order' => (int)($order->id)]) && $return;
         return $return;
     }
 
@@ -641,7 +641,7 @@ class HookCore extends ObjectModel
         Tools::displayAsDeprecated();
         $order = new Order((int)$id_order);
         $new_os = new OrderState((int)$new_order_status_id, $order->id_lang);
-        $return = Hook::exec('postUpdateOrderStatus', array('newOrderStatus' => $new_os, 'id_order' => (int)($order->id)));
+        $return = Hook::exec('postUpdateOrderStatus', ['newOrderStatus' => $new_os, 'id_order' => (int)($order->id)]);
         return $return;
     }
 
@@ -652,7 +652,7 @@ class HookCore extends ObjectModel
     {
         Tools::displayAsDeprecated();
         if (Validate::isUnsignedId($id_order)) {
-            $params = array();
+            $params = [];
             $order = new Order((int)$id_order);
             $currency = new Currency((int)$order->id_currency);
 
@@ -676,7 +676,7 @@ class HookCore extends ObjectModel
     {
         Tools::displayAsDeprecated();
         if (Validate::isUnsignedId($id_order) && Validate::isUnsignedId($id_module)) {
-            $params = array();
+            $params = [];
             $order = new Order((int)($id_order));
             $currency = new Currency((int)($order->id_currency));
 
@@ -702,7 +702,7 @@ class HookCore extends ObjectModel
         if (!is_object($pdf) || !Validate::isUnsignedId($id_order)) {
             return false;
         }
-        return Hook::exec('PDFInvoice', array('pdf' => $pdf, 'id_order' => $id_order));
+        return Hook::exec('PDFInvoice', ['pdf' => $pdf, 'id_order' => $id_order]);
     }
 
     /**
@@ -712,7 +712,7 @@ class HookCore extends ObjectModel
     {
         Tools::displayAsDeprecated();
         if ($module) {
-            return Hook::exec('backBeforePayment', array('module' => strval($module)));
+            return Hook::exec('backBeforePayment', ['module' => strval($module)]);
         }
     }
 
@@ -725,7 +725,7 @@ class HookCore extends ObjectModel
         if (!Validate::isUnsignedId($id_carrier) || !is_object($carrier)) {
             return false;
         }
-        return Hook::exec('updateCarrier', array('id_carrier' => $id_carrier, 'carrier' => $carrier));
+        return Hook::exec('updateCarrier', ['id_carrier' => $id_carrier, 'carrier' => $carrier]);
     }
 
     /**
@@ -788,12 +788,14 @@ class HookCore extends ObjectModel
     public static function newOrder($cart, $order, $customer, $currency, $order_status)
     {
         Tools::displayAsDeprecated();
-        return Hook::exec('newOrder', array(
+        return Hook::exec('newOrder', [
             'cart' => $cart,
             'order' => $order,
             'customer' => $customer,
             'currency' => $currency,
-            'orderStatus' => $order_status));
+            'orderStatus' => $order_status
+        ]
+        );
     }
 
     /**
@@ -802,7 +804,7 @@ class HookCore extends ObjectModel
     public static function updateQuantity($product, $order = null)
     {
         Tools::displayAsDeprecated();
-        return Hook::exec('updateQuantity', array('product' => $product, 'order' => $order));
+        return Hook::exec('updateQuantity', ['product' => $product, 'order' => $order]);
     }
 
     /**
@@ -811,7 +813,7 @@ class HookCore extends ObjectModel
     public static function productFooter($product, $category)
     {
         Tools::displayAsDeprecated();
-        return Hook::exec('productFooter', array('product' => $product, 'category' => $category));
+        return Hook::exec('productFooter', ['product' => $product, 'category' => $category]);
     }
 
     /**
@@ -820,7 +822,7 @@ class HookCore extends ObjectModel
     public static function productOutOfStock($product)
     {
         Tools::displayAsDeprecated();
-        return Hook::exec('productOutOfStock', array('product' => $product));
+        return Hook::exec('productOutOfStock', ['product' => $product]);
     }
 
     /**
@@ -829,7 +831,7 @@ class HookCore extends ObjectModel
     public static function addProduct($product)
     {
         Tools::displayAsDeprecated();
-        return Hook::exec('addProduct', array('product' => $product));
+        return Hook::exec('addProduct', ['product' => $product]);
     }
 
     /**
@@ -838,7 +840,7 @@ class HookCore extends ObjectModel
     public static function updateProduct($product)
     {
         Tools::displayAsDeprecated();
-        return Hook::exec('updateProduct', array('product' => $product));
+        return Hook::exec('updateProduct', ['product' => $product]);
     }
 
     /**
@@ -847,7 +849,7 @@ class HookCore extends ObjectModel
     public static function deleteProduct($product)
     {
         Tools::displayAsDeprecated();
-        return Hook::exec('deleteProduct', array('product' => $product));
+        return Hook::exec('deleteProduct', ['product' => $product]);
     }
 
     /**
@@ -856,6 +858,6 @@ class HookCore extends ObjectModel
     public static function updateProductAttribute($id_product_attribute)
     {
         Tools::displayAsDeprecated();
-        return Hook::exec('updateProductAttribute', array('id_product_attribute' => $id_product_attribute));
+        return Hook::exec('updateProductAttribute', ['id_product_attribute' => $id_product_attribute]);
     }
 }

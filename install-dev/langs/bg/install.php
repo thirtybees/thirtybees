@@ -1,6 +1,6 @@
 <?php
-return array(
-    'informations' => array(
+return [
+    'informations' => [
         'documentation' => 'http://doc.prestashop.com/display/PS16/Installing+PrestaShop',
         'documentation_upgrade' => 'http://docs.prestashop.com/display/PS16/Updating+PrestaShop',
         'forum' => 'http://www.prestashop.com/forums/',
@@ -8,8 +8,8 @@ return array(
         'support' => 'https://www.prestashop.com/en/support',
         'tutorial' => 'https://www.youtube.com/watch?v=psz4aIPZZuk',
         'tailored_help' => 'http://addons.prestashop.com/en/388-support',
-    ),
-    'translations' => array(
+    ],
+    'translations' => [
         'An SQL error occurred for entity <i>%1$s</i>: <i>%2$s</i>' => 'Възникна SQL грешка за обект <i>%1$s</i>: <i>%2$s</i>',
         'Cannot create image "%1$s" for entity "%2$s"' => 'Не може да бъде създадено изображение "%1$s" за обекта "%2$s"',
         'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => 'Не може да бъде създадено изображение "%1$s" (грешни права за папка "%2$s")',
@@ -205,5 +205,5 @@ return array(
         'Continue the installation in:' => 'Продължаване на инсталацията на:',
         'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => 'Избраният по-горе език важи само за инсталационният помощник. След като магазинът Ви е инсталиран, можете да изберете езика на Вашият магазин от над %d превода, напълно безплатни!',
         'Installing PrestaShop is quick and easy. In just a few moments, you will become part of a community consisting of more than 250,000 merchants. You are on the way to creating your own unique online store that you can manage easily every day.' => 'Инсталацията на PrestaShop е бърза и лесна. Съвсем скоро, ще станете част от общността, състояща се от повече от 250000 търговци. На път сте да създадете свой собствен уникален онлайн магазин, който можете да управлявате лесно всеки ден.',
-    ),
-);
+    ],
+];

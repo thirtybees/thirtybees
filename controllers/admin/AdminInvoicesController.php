@@ -33,132 +33,132 @@ class AdminInvoicesControllerCore extends AdminController
 
         parent::__construct();
 
-        $this->fields_options = array(
-            'general' => array(
+        $this->fields_options = [
+            'general' => [
                 'title' =>    $this->l('Invoice options'),
-                'fields' =>    array(
-                    'PS_INVOICE' => array(
+                'fields' =>    [
+                    'PS_INVOICE' => [
                         'title' => $this->l('Enable invoices'),
                         'desc' => $this->l('If enabled, your customers will receive an invoice for their purchase(s).'),
                         'cast' => 'intval',
                         'type' => 'bool'
-                    ),
-                    'PS_INVOICE_TAXES_BREAKDOWN' => array(
+                    ],
+                    'PS_INVOICE_TAXES_BREAKDOWN' => [
                         'title' => $this->l('Enable tax breakdown'),
                         'desc' => $this->l('Show a summary of tax rates when there are several taxes.'),
                         'cast' => 'intval',
                         'type' => 'bool'
-                    ),
-                    'PS_PDF_IMG_INVOICE' => array(
+                    ],
+                    'PS_PDF_IMG_INVOICE' => [
                         'title' => $this->l('Enable product image'),
                         'hint' => $this->l('Adds an image before product name on the invoice'),
                         'validation' => 'isBool',
                         'cast' => 'intval',
                         'type' => 'bool'
-                    ),
-                    'PS_INVOICE_PREFIX' => array(
+                    ],
+                    'PS_INVOICE_PREFIX' => [
                         'title' => $this->l('Invoice prefix'),
                         'desc' => $this->l('Prefix used for invoice name (e.g. #IN00001).'),
                         'size' => 6,
                         'type' => 'textLang'
-                    ),
-                    'PS_INVOICE_USE_YEAR' => array(
+                    ],
+                    'PS_INVOICE_USE_YEAR' => [
                         'title' => $this->l('Add current year to invoice number'),
                         'cast' => 'intval',
                         'type' => 'bool'
-                    ),
-                    'PS_INVOICE_RESET' => array(
+                    ],
+                    'PS_INVOICE_RESET' => [
                         'title' => $this->l('Reset Invoice progressive number at beginning of the year'),
                         'cast' => 'intval',
                         'type' => 'bool'
-                    ),
-                    'PS_INVOICE_YEAR_POS' => array(
+                    ],
+                    'PS_INVOICE_YEAR_POS' => [
                         'title' => $this->l('Position of the year number'),
                         'cast' => 'intval',
                         'show' => true,
                         'required' => false,
                         'type' => 'radio',
                         'validation' => 'isBool',
-                        'choices' => array(
+                        'choices' => [
                             0 => $this->l('After the progressive number'),
                             1 => $this->l('Before the progressive number')
-                        )
-                    ),
-                    'PS_INVOICE_START_NUMBER' => array(
+                        ]
+                    ],
+                    'PS_INVOICE_START_NUMBER' => [
                         'title' => $this->l('Invoice number'),
                         'desc' => sprintf($this->l('The next invoice will begin with this number, and then increase with each additional invoice. Set to 0 if you want to keep the current number (which is #%s).'), Order::getLastInvoiceNumber() + 1),
                         'size' => 6,
                         'type' => 'text',
                         'cast' => 'intval'
-                    ),
-                    'PS_INVOICE_LEGAL_FREE_TEXT' => array(
+                    ],
+                    'PS_INVOICE_LEGAL_FREE_TEXT' => [
                         'title' => $this->l('Legal free text'),
                         'desc' => $this->l('Use this field to display additional text on your invoice, like specific legal information. It will appear below the payment methods summary.'),
                         'size' => 50,
                         'type' => 'textareaLang',
-                    ),
-                    'PS_INVOICE_FREE_TEXT' => array(
+                    ],
+                    'PS_INVOICE_FREE_TEXT' => [
                         'title' => $this->l('Footer text'),
                         'desc' => $this->l('This text will appear at the bottom of the invoice, below your company details.'),
                         'size' => 50,
                         'type' => 'textLang',
-                    ),
-                    'PS_INVOICE_MODEL' => array(
+                    ],
+                    'PS_INVOICE_MODEL' => [
                         'title' => $this->l('Invoice model'),
                         'desc' => $this->l('Choose an invoice model.'),
                         'type' => 'select',
                         'identifier' => 'value',
                         'list' => $this->getInvoicesModels()
-                    ),
-                    'PS_PDF_USE_CACHE' => array(
+                    ],
+                    'PS_PDF_USE_CACHE' => [
                         'title' => $this->l('Use the disk as cache for PDF invoices'),
                         'desc' => $this->l('Saves memory but slows down the PDF generation.'),
                         'validation' => 'isBool',
                         'cast' => 'intval',
                         'type' => 'bool'
-                    )
-                ),
-                'submit' => array('title' => $this->l('Save'))
-            )
-        );
+                    ]
+                ],
+                'submit' => ['title' => $this->l('Save')]
+            ]
+        ];
     }
 
     public function initFormByDate()
     {
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('By date'),
                 'icon' => 'icon-calendar'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'date',
                     'label' => $this->l('From'),
                     'name' => 'date_from',
                     'maxlength' => 10,
                     'required' => true,
                     'hint' => $this->l('Format: 2011-12-31 (inclusive).')
-                ),
-                array(
+                ],
+                [
                     'type' => 'date',
                     'label' => $this->l('To'),
                     'name' => 'date_to',
                     'maxlength' => 10,
                     'required' => true,
                     'hint' => $this->l('Format: 2012-12-31 (inclusive).')
-                )
-            ),
-            'submit' => array(
+                ]
+            ],
+            'submit' => [
                 'title' => $this->l('Generate PDF file by date'),
                 'id' => 'submitPrint',
                 'icon' => 'process-icon-download-alt'
-            )
-        );
+            ]
+        ];
 
-        $this->fields_value = array(
+        $this->fields_value = [
             'date_from' => date('Y-m-d'),
             'date_to' => date('Y-m-d')
-        );
+        ];
 
         $this->table = 'invoice_date';
         $this->show_toolbar = false;
@@ -169,30 +169,30 @@ class AdminInvoicesControllerCore extends AdminController
 
     public function initFormByStatus()
     {
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('By order status'),
                 'icon' => 'icon-time'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'checkboxStatuses',
                     'label' => $this->l('Order statuses'),
                     'name' => 'id_order_state',
-                    'values' => array(
+                    'values' => [
                         'query' => OrderState::getOrderStates($this->context->language->id),
                         'id' => 'id_order_state',
                         'name' => 'name'
-                    ),
+                    ],
                     'hint' => $this->l('You can also export orders which have not been charged yet.')
-                )
-            ),
-            'submit' => array(
+                ]
+            ],
+            'submit' => [
                 'title' => $this->l('Generate PDF file by status'),
                 'id' => 'submitPrint2',
                 'icon' => 'process-icon-download-alt'
-            )
-        );
+            ]
+        ];
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
 			SELECT COUNT( o.id_order ) AS nbOrders, o.current_state as id_order_state
@@ -203,15 +203,15 @@ class AdminInvoicesControllerCore extends AdminController
 			GROUP BY o.current_state
 		 ');
 
-        $status_stats = array();
+        $status_stats = [];
         foreach ($result as $row) {
             $status_stats[$row['id_order_state']] = $row['nbOrders'];
         }
 
-        $this->tpl_form_vars = array(
+        $this->tpl_form_vars = [
             'statusStats' => $status_stats,
             'style' => ''
-        );
+        ];
 
         $this->table = 'invoice_status';
         $this->show_toolbar = false;
@@ -229,13 +229,15 @@ class AdminInvoicesControllerCore extends AdminController
         $this->table = 'invoice';
         $this->content .= $this->renderOptions();
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'content' => $this->content,
             'url_post' => self::$currentIndex.'&token='.$this->token,
             'show_page_header_toolbar' => $this->show_page_header_toolbar,
             'page_header_toolbar_title' => $this->page_header_toolbar_title,
             'page_header_toolbar_btn' => $this->page_header_toolbar_btn
-        ));
+            ]
+        );
     }
 
     public function initToolbarTitle()
@@ -293,19 +295,19 @@ class AdminInvoicesControllerCore extends AdminController
 
     protected function getInvoicesModels()
     {
-        $models = array(
-            array(
+        $models = [
+            [
                 'value' => 'invoice',
                 'name' => 'invoice'
-            )
-        );
+            ]
+        ];
 
         $templates_override = $this->getInvoicesModelsFromDir(_PS_THEME_DIR_.'pdf/');
         $templates_default = $this->getInvoicesModelsFromDir(_PS_PDF_DIR_);
 
         foreach (array_merge($templates_default, $templates_override) as $template) {
             $template_name = basename($template, '.tpl');
-            $models[] = array('value' => $template_name, 'name' => $template_name);
+            $models[] = ['value' => $template_name, 'name' => $template_name];
         }
         return $models;
     }
@@ -319,7 +321,7 @@ class AdminInvoicesControllerCore extends AdminController
         }
 
         if (!$templates) {
-            $templates = array();
+            $templates = [];
         }
 
         return $templates;

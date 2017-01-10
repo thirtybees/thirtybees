@@ -29,7 +29,7 @@
  */
 class InstallControllerHttpConfigure extends InstallControllerHttp
 {
-    public $list_countries = array();
+    public $list_countries = [];
 
     /**
      * @see InstallAbstractModel::processNextStep()
@@ -50,13 +50,15 @@ class InstallControllerHttpConfigure extends InstallControllerHttp
             $this->session->admin_email = trim(Tools::getValue('admin_email'));
             $this->session->send_informations = Tools::getValue('send_informations');
             if ($this->session->send_informations) {
-                $params = http_build_query(array(
+                $params = http_build_query(
+                    [
                     'email' => $this->session->admin_email,
                     'method' => 'addMemberToNewsletter',
                     'language' => $this->language->getLanguageIso(),
                     'visitorType' => 1,
                     'source' => 'installer'
-                ));
+                    ]
+                );
                 Tools::file_get_contents('http://www.prestashop.com/ajax/controller.php?'.$params);
             }
 
@@ -77,7 +79,7 @@ class InstallControllerHttpConfigure extends InstallControllerHttp
     public function validate()
     {
         // List of required fields
-        $required_fields = array('shop_name', 'shop_country', 'shop_timezone', 'admin_firstname', 'admin_lastname', 'admin_email', 'admin_password');
+        $required_fields = ['shop_name', 'shop_country', 'shop_timezone', 'admin_firstname', 'admin_lastname', 'admin_email', 'admin_password'];
         foreach ($required_fields as $field) {
             if (!$this->session->$field) {
                 $this->errors[$field] = $this->l('Field required');
@@ -198,11 +200,11 @@ class InstallControllerHttpConfigure extends InstallControllerHttp
         }
 
         if (!file_exists(_PS_INSTALL_DATA_PATH_.'xml/timezone.xml')) {
-            return array();
+            return [];
         }
 
         $xml = @simplexml_load_file(_PS_INSTALL_DATA_PATH_.'xml/timezone.xml');
-        $timezones = array();
+        $timezones = [];
         if ($xml) {
             foreach ($xml->entities->timezone as $timezone) {
                 $timezones[] = (string)$timezone['name'];
@@ -224,7 +226,7 @@ class InstallControllerHttpConfigure extends InstallControllerHttp
         }
 
         $xml = @simplexml_load_file(_PS_INSTALL_DATA_PATH_.'iso_to_timezone.xml');
-        $timezones = array();
+        $timezones = [];
         if ($xml) {
             foreach ($xml->relation as $relation) {
                 $timezones[(string)$relation['iso']] = (string)$relation['zone'];
@@ -239,7 +241,7 @@ class InstallControllerHttpConfigure extends InstallControllerHttp
     public function display()
     {
         // List of activities
-        $list_activities = array(
+        $list_activities = [
             1 => $this->l('Lingerie and Adult'),
             2 => $this->l('Animals and Pets'),
             3 => $this->l('Art and Culture'),
@@ -260,30 +262,30 @@ class InstallControllerHttpConfigure extends InstallControllerHttp
             18 => $this->l('Shoes and accessories'),
             19 => $this->l('Sports and Entertainment'),
             20 => $this->l('Travel'),
-        );
+        ];
 
         asort($list_activities);
         $this->list_activities = $list_activities;
 
         // Countries list
-        $this->list_countries = array();
+        $this->list_countries = [];
         $countries = $this->language->getCountries();
-        $top_countries = array(
+        $top_countries = [
             'fr', 'es', 'us',
             'gb', 'it', 'de',
             'nl', 'pl', 'id',
             'be', 'br', 'se',
             'ca', 'ru', 'cn',
-        );
+        ];
 
         foreach ($top_countries as $iso) {
-            $this->list_countries[] = array('iso' => $iso, 'name' => $countries[$iso]);
+            $this->list_countries[] = ['iso' => $iso, 'name' => $countries[$iso]];
         }
-        $this->list_countries[] = array('iso' => 0, 'name' => '-----------------');
+        $this->list_countries[] = ['iso' => 0, 'name' => '-----------------'];
 
         foreach ($countries as $iso => $lang) {
             if (!in_array($iso, $top_countries)) {
-                $this->list_countries[] = array('iso' => $iso, 'name' => $lang);
+                $this->list_countries[] = ['iso' => $iso, 'name' => $lang];
             }
         }
 

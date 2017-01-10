@@ -51,7 +51,7 @@ class FrontControllerCore extends Controller
     protected static $cart;
 
     /** @var array Controller errors */
-    public $errors = array();
+    public $errors = [];
 
     /** @var string Language ISO code */
     public $iso;
@@ -313,7 +313,7 @@ class FrontControllerCore extends Controller
                     !in_array(strtoupper($this->context->cookie->iso_code_country), explode(';', Configuration::get('PS_ALLOWED_COUNTRIES'))) &&
                     $cart->nbProducts() && intval(Configuration::get('PS_GEOLOCATION_NA_BEHAVIOR')) != -1 &&
                     !FrontController::isInWhitelistForGeolocation() &&
-                    !in_array($_SERVER['SERVER_NAME'], array('localhost', '127.0.0.1'))) {
+                    !in_array($_SERVER['SERVER_NAME'], ['localhost', '127.0.0.1'])) {
                 PrestaShopLogger::addLog('Frontcontroller::init - GEOLOCATION is deleting a cart', 1, null, 'Cart', (int)$this->context->cookie->id_cart, true);
                 unset($this->context->cookie->id_cart, $cart);
             }
@@ -384,7 +384,7 @@ class FrontControllerCore extends Controller
         }
         // @retrocompatibility Are we in a module ?
         elseif (preg_match('#^'.preg_quote($this->context->shop->physical_uri, '#').'modules/([a-zA-Z0-9_-]+?)/(.*)$#', $_SERVER['REQUEST_URI'], $m)) {
-            $page_name = 'module-'.$m[1].'-'.str_replace(array('.php', '/'), array('', '-'), $m[2]);
+            $page_name = 'module-'.$m[1].'-'.str_replace(['.php', '/'], ['', '-'], $m[2]);
         } else {
             $page_name = Dispatcher::getInstance()->getController();
             $page_name = (preg_match('/^[0-9]/', $page_name) ? 'page_'.$page_name : $page_name);
@@ -415,17 +415,18 @@ class FrontControllerCore extends Controller
         }
 
         $languages = Language::getLanguages(true, $this->context->shop->id);
-        $meta_language = array();
+        $meta_language = [];
         foreach ($languages as $lang) {
             $meta_language[] = $lang['iso_code'];
         }
 
-        $compared_products = array();
+        $compared_products = [];
         if (Configuration::get('PS_COMPARATOR_MAX_ITEM') && isset($this->context->cookie->id_compare)) {
             $compared_products = CompareProduct::getCompareProducts($this->context->cookie->id_compare);
         }
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             // Useful for layout.tpl
             'mobile_device'       => $this->context->getMobileDevice(),
             'link'                => $link,
@@ -448,7 +449,7 @@ class FrontControllerCore extends Controller
             'lang_iso'            => $this->context->language->iso_code,
             'lang_id'             => (int)$this->context->language->id,
             'language_code'       => $this->context->language->language_code ? $this->context->language->language_code : $this->context->language->iso_code,
-            'come_from'           => Tools::getHttpHost(true, true).Tools::htmlentitiesUTF8(str_replace(array('\'', '\\'), '', urldecode($_SERVER['REQUEST_URI']))),
+            'come_from'           => Tools::getHttpHost(true, true).Tools::htmlentitiesUTF8(str_replace(['\'', '\\'], '', urldecode($_SERVER['REQUEST_URI']))),
             'cart_qties'          => (int)$cart->nbProducts(),
             'currencies'          => Currency::getCurrencies(),
             'languages'           => $languages,
@@ -470,28 +471,33 @@ class FrontControllerCore extends Controller
             'PS_STOCK_MANAGEMENT' => Configuration::get('PS_STOCK_MANAGEMENT'),
             'quick_view'          => (bool)Configuration::get('PS_QUICK_VIEW'),
             'shop_phone'          => Configuration::get('PS_SHOP_PHONE'),
-            'compared_products'   => is_array($compared_products) ? $compared_products : array(),
+            'compared_products'   => is_array($compared_products) ? $compared_products : [],
             'comparator_max_item' => (int)Configuration::get('PS_COMPARATOR_MAX_ITEM'),
             'currencySign'        => $currency->sign, // backward compat, see global.tpl
             'currencyFormat'      => $currency->format, // backward compat
             'currencyBlank'       => $currency->blank, // backward compat
-        ));
+            ]
+        );
 
         // Add the tpl files directory for mobile
         if ($this->useMobileTheme()) {
-            $this->context->smarty->assign(array(
+            $this->context->smarty->assign(
+                [
                 'tpl_mobile_uri' => _PS_THEME_MOBILE_DIR_,
-            ));
+                ]
+            );
         }
 
         // Deprecated
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'id_currency_cookie' => (int)$currency->id,
             'logged'             => $this->context->customer->isLogged(),
             'customerName'       => ($this->context->customer->logged ? $this->context->cookie->customer_firstname.' '.$this->context->cookie->customer_lastname : false)
-        ));
+            ]
+        );
 
-        $assign_array = array(
+        $assign_array = [
             'img_ps_dir'    => _PS_IMG_,
             'img_cat_dir'   => _THEME_CAT_DIR_,
             'img_lang_dir'  => _THEME_LANG_DIR_,
@@ -505,7 +511,7 @@ class FrontControllerCore extends Controller
             'css_dir'       => _THEME_CSS_DIR_,
             'js_dir'        => _THEME_JS_DIR_,
             'pic_dir'       => _THEME_PROD_PIC_DIR_
-        );
+        ];
 
         // Add the images directory for mobile
         if ($this->useMobileTheme()) {
@@ -575,12 +581,14 @@ class FrontControllerCore extends Controller
         if (!$this->useMobileTheme()) {
             // These hooks aren't used for the mobile theme.
             // Needed hooks are called in the tpl files.
-            $this->context->smarty->assign(array(
+            $this->context->smarty->assign(
+                [
                 'HOOK_HEADER'       => Hook::exec('displayHeader'),
                 'HOOK_TOP'          => Hook::exec('displayTop'),
                 'HOOK_LEFT_COLUMN'  => ($this->display_column_left  ? Hook::exec('displayLeftColumn') : ''),
-                'HOOK_RIGHT_COLUMN' => ($this->display_column_right ? Hook::exec('displayRightColumn', array('cart' => $this->context->cart)) : ''),
-            ));
+                'HOOK_RIGHT_COLUMN' => ($this->display_column_right ? Hook::exec('displayRightColumn', ['cart' => $this->context->cart]) : ''),
+                ]
+            );
         } else {
             $this->context->smarty->assign('HOOK_MOBILE_HEADER', Hook::exec('displayMobileHeader'));
         }
@@ -611,18 +619,22 @@ class FrontControllerCore extends Controller
         }
 
         // Call hook before assign of css_files and js_files in order to include correctly all css and javascript files
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'HOOK_HEADER'       => $hook_header,
             'HOOK_TOP'          => Hook::exec('displayTop'),
             'HOOK_LEFT_COLUMN'  => ($this->display_column_left  ? Hook::exec('displayLeftColumn') : ''),
-            'HOOK_RIGHT_COLUMN' => ($this->display_column_right ? Hook::exec('displayRightColumn', array('cart' => $this->context->cart)) : ''),
+            'HOOK_RIGHT_COLUMN' => ($this->display_column_right ? Hook::exec('displayRightColumn', ['cart' => $this->context->cart]) : ''),
             'HOOK_FOOTER'       => Hook::exec('displayFooter')
-        ));
+            ]
+        );
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'css_files' => $this->css_files,
-            'js_files'  => ($this->getLayout() && (bool)Configuration::get('PS_JS_DEFER')) ? array() : $this->js_files
-        ));
+            'js_files'  => ($this->getLayout() && (bool)Configuration::get('PS_JS_DEFER')) ? [] : $this->js_files
+            ]
+        );
 
         $this->display_header = $display;
         $this->smartyOutputContent(_PS_THEME_DIR_.'header.tpl');
@@ -698,14 +710,16 @@ class FrontControllerCore extends Controller
             }
         }
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'css_files'      => $this->css_files,
-            'js_files'       => ($this->getLayout() && (bool)Configuration::get('PS_JS_DEFER')) ? array() : $this->js_files,
+            'js_files'       => ($this->getLayout() && (bool)Configuration::get('PS_JS_DEFER')) ? [] : $this->js_files,
             'js_defer'       => (bool)Configuration::get('PS_JS_DEFER'),
             'errors'         => $this->errors,
             'display_header' => $this->display_header,
             'display_footer' => $this->display_footer,
-        ));
+            ]
+        );
 
         $layout = $this->getLayout();
         if ($layout) {
@@ -752,9 +766,11 @@ class FrontControllerCore extends Controller
                 header('HTTP/1.1 503 temporarily overloaded');
 
                 $this->context->smarty->assign($this->initLogoAndFavicon());
-                $this->context->smarty->assign(array(
-                    'HOOK_MAINTENANCE' => Hook::exec('displayMaintenance', array()),
-                ));
+                $this->context->smarty->assign(
+                    [
+                    'HOOK_MAINTENANCE' => Hook::exec('displayMaintenance', []),
+                    ]
+                );
 
                 // If the controller is a module, then getTemplatePath will try to find the template in the modules, so we need to instanciate a real frontcontroller
                 $front_controller = preg_match('/ModuleFrontController$/', get_class($this)) ? new FrontController() : $this;
@@ -770,11 +786,13 @@ class FrontControllerCore extends Controller
     protected function displayRestrictedCountryPage()
     {
         header('HTTP/1.1 503 temporarily overloaded');
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'shop_name'   => $this->context->shop->name,
             'favicon_url' => _PS_IMG_.Configuration::get('PS_FAVICON'),
             'logo_url'    => $this->context->link->getMediaLink(_PS_IMG_.Configuration::get('PS_LOGO'))
-        ));
+            ]
+        );
         $this->smartyOutputContent($this->getTemplatePath($this->getThemeDir().'restricted-country.tpl'));
         exit;
     }
@@ -811,7 +829,7 @@ class FrontControllerCore extends Controller
 
         $match_url = rawurldecode(Tools::getCurrentUrlProtocolPrefix().$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
         if (!preg_match('/^'.Tools::pRegexp(rawurldecode($canonical_url), '/').'([&?].*)?$/', $match_url)) {
-            $params = array();
+            $params = [];
             $url_details = parse_url($canonical_url);
 
             if (!empty($url_details['query'])) {
@@ -820,7 +838,7 @@ class FrontControllerCore extends Controller
                     $params[Tools::safeOutput($key)] = Tools::safeOutput($value);
                 }
             }
-            $excluded_key = array('isolang', 'id_lang', 'controller', 'fc', 'id_product', 'id_category', 'id_manufacturer', 'id_supplier', 'id_cms');
+            $excluded_key = ['isolang', 'id_lang', 'controller', 'fc', 'id_product', 'id_category', 'id_manufacturer', 'id_supplier', 'id_cms'];
             foreach ($_GET as $key => $value) {
                 if (!in_array($key, $excluded_key) && Validate::isUrl($key) && Validate::isUrl($value)) {
                     $params[Tools::safeOutput($key)] = Tools::safeOutput($value);
@@ -856,7 +874,7 @@ class FrontControllerCore extends Controller
      */
     protected function geolocationManagement($default_country)
     {
-        if (!in_array($_SERVER['SERVER_NAME'], array('localhost', '127.0.0.1'))) {
+        if (!in_array($_SERVER['SERVER_NAME'], ['localhost', '127.0.0.1'])) {
             /* Check if Maxmind Database exists */
             if (@filemtime(_PS_GEOIP_DIR_._PS_GEOIP_CITY_FILE_)) {
                 if (!isset($this->context->cookie->iso_code_country) || (isset($this->context->cookie->iso_code_country) && !in_array(strtoupper($this->context->cookie->iso_code_country), explode(';', Configuration::get('PS_ALLOWED_COUNTRIES'))))) {
@@ -870,10 +888,12 @@ class FrontControllerCore extends Controller
                             if (Configuration::get('PS_GEOLOCATION_BEHAVIOR') == _PS_GEOLOCATION_NO_CATALOG_) {
                                 $this->restrictedCountry = true;
                             } elseif (Configuration::get('PS_GEOLOCATION_BEHAVIOR') == _PS_GEOLOCATION_NO_ORDER_) {
-                                $this->context->smarty->assign(array(
+                                $this->context->smarty->assign(
+                                    [
                                     'restricted_country_mode' => true,
                                     'geolocation_country'     => $record->country_name
-                                ));
+                                    ]
+                                );
                             }
                         } else {
                             $has_been_set = !isset($this->context->cookie->iso_code_country);
@@ -898,10 +918,12 @@ class FrontControllerCore extends Controller
                 } elseif (Configuration::get('PS_GEOLOCATION_NA_BEHAVIOR') == _PS_GEOLOCATION_NO_CATALOG_ && !FrontController::isInWhitelistForGeolocation()) {
                     $this->restrictedCountry = true;
                 } elseif (Configuration::get('PS_GEOLOCATION_NA_BEHAVIOR') == _PS_GEOLOCATION_NO_ORDER_ && !FrontController::isInWhitelistForGeolocation()) {
-                    $this->context->smarty->assign(array(
+                    $this->context->smarty->assign(
+                        [
                         'restricted_country_mode' => true,
                         'geolocation_country'     => isset($record->country_name) && $record->country_name ? $record->country_name : 'Undefined'
-                    ));
+                        ]
+                    );
                 }
             }
         }
@@ -986,7 +1008,7 @@ class FrontControllerCore extends Controller
         }
 
         // Execute Hook FrontController SetMedia
-        Hook::exec('actionFrontControllerSetMedia', array());
+        Hook::exec('actionFrontControllerSetMedia', []);
 
         return true;
     }
@@ -1001,14 +1023,16 @@ class FrontControllerCore extends Controller
         header('Powered-By: PrestaShop');
 
         // Hooks are voluntary out the initialize array (need those variables already assigned)
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'time'                  => time(),
             'img_update_time'       => Configuration::get('PS_IMG_UPDATE_TIME'),
             'static_token'          => Tools::getToken(false),
             'token'                 => Tools::getToken(),
             'priceDisplayPrecision' => _PS_PRICE_DISPLAY_PRECISION_,
             'content_only'          => (int)Tools::getValue('content_only'),
-        ));
+            ]
+        );
 
         $this->context->smarty->assign($this->initLogoAndFavicon());
     }
@@ -1018,13 +1042,15 @@ class FrontControllerCore extends Controller
      */
     public function initFooter()
     {
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'HOOK_FOOTER'            => Hook::exec('displayFooter'),
             'conditions'             => Configuration::get('PS_CONDITIONS'),
             'id_cgv'                 => Configuration::get('PS_CONDITIONS_CMS_ID'),
             'PS_SHOP_NAME'           => Configuration::get('PS_SHOP_NAME'),
             'PS_ALLOW_MOBILE_DEVICE' => isset($_SERVER['HTTP_USER_AGENT']) && (bool)Configuration::get('PS_ALLOW_MOBILE_DEVICE') && @filemtime(_PS_THEME_MOBILE_DIR_)
-        ));
+            ]
+        );
 
         /**
          * RTL support
@@ -1064,12 +1090,14 @@ class FrontControllerCore extends Controller
     {
         if ($this->checkLiveEditAccess()) {
             $data = $this->context->smarty->createData();
-            $data->assign(array(
+            $data->assign(
+                [
                 'ad'        => Tools::getValue('ad'),
                 'live_edit' => true,
                 'hook_list' => Hook::$executed_hooks,
                 'id_shop'   => $this->context->shop->id
-            ));
+                ]
+            );
             return $this->context->smarty->createTemplate(_PS_ALL_THEMES_DIR_.'live_edit.tpl', $data)->fetch();
         } else {
             return '';
@@ -1088,8 +1116,8 @@ class FrontControllerCore extends Controller
         // 'orderwaydefault' => Tools::getProductsOrder('way'),
 
         $stock_management = Configuration::get('PS_STOCK_MANAGEMENT') ? true : false; // no display quantity order if stock management disabled
-        $order_by_values  = array(0 => 'name', 1 => 'price', 2 => 'date_add', 3 => 'date_upd', 4 => 'position', 5 => 'manufacturer_name', 6 => 'quantity', 7 => 'reference');
-        $order_way_values = array(0 => 'asc', 1 => 'desc');
+        $order_by_values  = [0 => 'name', 1 => 'price', 2 => 'date_add', 3 => 'date_upd', 4 => 'position', 5 => 'manufacturer_name', 6 => 'quantity', 7 => 'reference'];
+        $order_way_values = [0 => 'asc', 1 => 'desc'];
 
         $this->orderBy  = Tools::strtolower(Tools::getValue('orderby', $order_by_values[(int)Configuration::get('PS_PRODUCTS_ORDER_BY')]));
         $this->orderWay = Tools::strtolower(Tools::getValue('orderway', $order_way_values[(int)Configuration::get('PS_PRODUCTS_ORDER_WAY')]));
@@ -1102,14 +1130,16 @@ class FrontControllerCore extends Controller
             $this->orderWay = $order_way_values[0];
         }
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'orderby'          => $this->orderBy,
             'orderway'         => $this->orderWay,
             'orderbydefault'   => $order_by_values[(int)Configuration::get('PS_PRODUCTS_ORDER_BY')],
             'orderwayposition' => $order_way_values[(int)Configuration::get('PS_PRODUCTS_ORDER_WAY')], // Deprecated: orderwayposition
             'orderwaydefault'  => $order_way_values[(int)Configuration::get('PS_PRODUCTS_ORDER_WAY')],
             'stock_management' => (int)$stock_management
-        ));
+            ]
+        );
     }
 
     /**
@@ -1128,7 +1158,7 @@ class FrontControllerCore extends Controller
 
         // Retrieve the default number of products per page and the other available selections
         $default_products_per_page = max(1, (int)Configuration::get('PS_PRODUCTS_PER_PAGE'));
-        $n_array = array($default_products_per_page, $default_products_per_page * 2, $default_products_per_page * 5);
+        $n_array = [$default_products_per_page, $default_products_per_page * 2, $default_products_per_page * 5];
 
         if ((int)Tools::getValue('n') && (int)$total_products > 0) {
             $n_array[] = $total_products;
@@ -1173,7 +1203,8 @@ class FrontControllerCore extends Controller
             $stop = (int)$pages_nb;
         }
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'nb_products'       => $total_products,
             'products_per_page' => $this->n,
             'pages_nb'          => $pages_nb,
@@ -1184,7 +1215,8 @@ class FrontControllerCore extends Controller
             'start'             => $start,
             'stop'              => $stop,
             'current_url'       => $current_url,
-        ));
+            ]
+        );
     }
 
     /**
@@ -1196,16 +1228,16 @@ class FrontControllerCore extends Controller
     public static function getCurrentCustomerGroups()
     {
         if (!Group::isFeatureActive()) {
-            return array();
+            return [];
         }
 
         $context = Context::getContext();
         if (!isset($context->customer) || !$context->customer->id) {
-            return array();
+            return [];
         }
 
         if (!is_array(self::$currentCustomerGroups)) {
-            self::$currentCustomerGroups = array();
+            self::$currentCustomerGroups = [];
             $result = Db::getInstance()->executeS('SELECT id_group FROM '._DB_PREFIX_.'customer_group WHERE id_customer = '.(int)$context->customer->id);
             foreach ($result as $row) {
                 self::$currentCustomerGroups[] = $row['id_group'];
@@ -1231,7 +1263,7 @@ class FrontControllerCore extends Controller
 
         $allowed = false;
         $user_ip = Tools::getRemoteAddr();
-        $ips = array();
+        $ips = [];
 
         // retrocompatibility
         $ips_old = explode(';', Configuration::get('PS_GEOLOCATION_WHITELIST'));
@@ -1282,13 +1314,13 @@ class FrontControllerCore extends Controller
     {
         if (!is_array($media_uri)) {
             if ($css_media_type) {
-                $media_uri = array($media_uri => $css_media_type);
+                $media_uri = [$media_uri => $css_media_type];
             } else {
-                $media_uri = array($media_uri);
+                $media_uri = [$media_uri];
             }
         }
 
-        $list_uri = array();
+        $list_uri = [];
         foreach ($media_uri as $file => $media) {
             if (!Validate::isAbsoluteUrl($media)) {
                 $different = 0;
@@ -1458,7 +1490,7 @@ class FrontControllerCore extends Controller
     */
     public function getOverrideTemplate()
     {
-        return Hook::exec('DisplayOverrideTemplate', array('controller' => $this));
+        return Hook::exec('DisplayOverrideTemplate', ['controller' => $this]);
     }
 
     /**
@@ -1576,7 +1608,8 @@ class FrontControllerCore extends Controller
         $blockmanufacturer = Module::getInstanceByName('blockmanufacturer');
         $blocksupplier     = Module::getInstanceByName('blocksupplier');
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'categoriesTree'            => Category::getRootCategory()->recurseLiteCategTree(0),
             'categoriescmsTree'         => CMSCategory::getRecurseCategory($this->context->language->id, 1, 1, 1),
             'voucherAllowed'            => (int)CartRule::isFeatureActive(),
@@ -1588,11 +1621,12 @@ class FrontControllerCore extends Controller
             'conditions'                => Configuration::get('PS_CONDITIONS'),
             'id_cgv'                    => Configuration::get('PS_CONDITIONS_CMS_ID'),
             'PS_SHOP_NAME'              => Configuration::get('PS_SHOP_NAME'),
-        ));
+            ]
+        );
 
         $template = $this->getTemplatePath($template);
 
-        $assign = array();
+        $assign = [];
         $assign['tpl_file'] = basename($template, '.tpl');
         if (isset($this->php_self)) {
             $assign['controller_name'] = $this->php_self;
@@ -1619,12 +1653,12 @@ class FrontControllerCore extends Controller
             $logo = $this->context->link->getMediaLink(_PS_IMG_.Configuration::get('PS_LOGO'));
         }
 
-        return array(
+        return [
             'favicon_url'       => _PS_IMG_.Configuration::get('PS_FAVICON'),
             'logo_image_width'  => ($mobile_device == false ? Configuration::get('SHOP_LOGO_WIDTH')  : Configuration::get('SHOP_LOGO_MOBILE_WIDTH')),
             'logo_image_height' => ($mobile_device == false ? Configuration::get('SHOP_LOGO_HEIGHT') : Configuration::get('SHOP_LOGO_MOBILE_HEIGHT')),
             'logo_url'          => $logo
-        );
+        ];
     }
 
     /**
@@ -1638,7 +1672,7 @@ class FrontControllerCore extends Controller
             return;
         }
 
-        $products_need_cache = array();
+        $products_need_cache = [];
         foreach ($products as &$product) {
             if (!$this->isCached(_PS_THEME_DIR_.'product-list-colors.tpl', $this->getColorsListCacheId($product['id_product']))) {
                 $products_need_cache[] = (int)$product['id_product'];
@@ -1656,13 +1690,15 @@ class FrontControllerCore extends Controller
         foreach ($products as &$product) {
             $tpl = $this->context->smarty->createTemplate(_PS_THEME_DIR_.'product-list-colors.tpl', $this->getColorsListCacheId($product['id_product']));
             if (isset($colors[$product['id_product']])) {
-                $tpl->assign(array(
+                $tpl->assign(
+                    [
                     'id_product'  => $product['id_product'],
                     'colors_list' => $colors[$product['id_product']],
                     'link'        => Context::getContext()->link,
                     'img_col_dir' => _THEME_COL_DIR_,
                     'col_img_dir' => _PS_COL_IMG_DIR_
-                ));
+                    ]
+                );
             }
 
             if (!in_array($product['id_product'], $products_need_cache) || isset($colors[$product['id_product']])) {

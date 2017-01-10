@@ -56,25 +56,25 @@ class OrderCarrierCore extends ObjectModel
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = array(
+    public static $definition = [
         'table' => 'order_carrier',
         'primary' => 'id_order_carrier',
-        'fields' => array(
-            'id_order' =>                array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true),
-            'id_carrier' =>            array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true),
-            'id_order_invoice' =>        array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId'),
-            'weight' =>                array('type' => self::TYPE_FLOAT, 'validate' => 'isFloat'),
-            'shipping_cost_tax_excl' => array('type' => self::TYPE_FLOAT, 'validate' => 'isFloat'),
-            'shipping_cost_tax_incl' => array('type' => self::TYPE_FLOAT, 'validate' => 'isFloat'),
-            'tracking_number' =>        array('type' => self::TYPE_STRING, 'validate' => 'isTrackingNumber'),
-            'date_add' =>                array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
-        ),
-    );
+        'fields' => [
+            'id_order' =>                ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'id_carrier' =>            ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'id_order_invoice' =>        ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
+            'weight' =>                ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat'],
+            'shipping_cost_tax_excl' => ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat'],
+            'shipping_cost_tax_incl' => ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat'],
+            'tracking_number' =>        ['type' => self::TYPE_STRING, 'validate' => 'isTrackingNumber'],
+            'date_add' =>                ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+        ],
+    ];
 
-    protected $webserviceParameters = array(
-        'fields' => array(
-            'id_order' => array('xlink_resource' => 'orders'),
-            'id_carrier' => array('xlink_resource' => 'carriers'),
-        ),
-    );
+    protected $webserviceParameters = [
+        'fields' => [
+            'id_order' => ['xlink_resource' => 'orders'],
+            'id_carrier' => ['xlink_resource' => 'carriers'],
+        ],
+    ];
 }

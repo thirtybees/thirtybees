@@ -67,11 +67,11 @@ class ModuleCoreTest extends PHPUnit_Framework_TestCase
     public function testDisplayError_shouldReturnMultipleErrors()
     {
         // given
-        $errors = array(
+        $errors = [
             'Error 1',
             'Error 2',
             'Error 3'
-        );
+        ];
 
         $module = new FakeModule();
 

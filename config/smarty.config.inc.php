@@ -57,7 +57,7 @@ if (defined('_PS_ADMIN_DIR_')) {
 }
 
 smartyRegisterFunction($smarty, 'modifier', 'truncate', 'smarty_modifier_truncate');
-smartyRegisterFunction($smarty, 'modifier', 'secureReferrer', array('Tools', 'secureReferrer'));
+smartyRegisterFunction($smarty, 'modifier', 'secureReferrer', ['Tools', 'secureReferrer']);
 
 smartyRegisterFunction($smarty, 'function', 't', 'smartyTruncate'); // unused
 smartyRegisterFunction($smarty, 'function', 'm', 'smartyMaxWords'); // unused
@@ -66,22 +66,22 @@ smartyRegisterFunction($smarty, 'function', 'd', 'smartyDieObject'); // Debug on
 smartyRegisterFunction($smarty, 'function', 'l', 'smartyTranslate', false);
 smartyRegisterFunction($smarty, 'function', 'hook', 'smartyHook');
 smartyRegisterFunction($smarty, 'function', 'toolsConvertPrice', 'toolsConvertPrice');
-smartyRegisterFunction($smarty, 'modifier', 'json_encode', array('Tools', 'jsonEncode'));
-smartyRegisterFunction($smarty, 'modifier', 'json_decode', array('Tools', 'jsonDecode'));
-smartyRegisterFunction($smarty, 'function', 'dateFormat', array('Tools', 'dateFormat'));
-smartyRegisterFunction($smarty, 'function', 'convertPrice', array('Product', 'convertPrice'));
-smartyRegisterFunction($smarty, 'function', 'convertPriceWithCurrency', array('Product', 'convertPriceWithCurrency'));
-smartyRegisterFunction($smarty, 'function', 'displayWtPrice', array('Product', 'displayWtPrice'));
-smartyRegisterFunction($smarty, 'function', 'displayWtPriceWithCurrency', array('Product', 'displayWtPriceWithCurrency'));
-smartyRegisterFunction($smarty, 'function', 'displayPrice', array('Tools', 'displayPriceSmarty'));
-smartyRegisterFunction($smarty, 'modifier', 'convertAndFormatPrice', array('Product', 'convertAndFormatPrice')); // used twice
-smartyRegisterFunction($smarty, 'function', 'getAdminToken', array('Tools', 'getAdminTokenLiteSmarty'));
-smartyRegisterFunction($smarty, 'function', 'displayAddressDetail', array('AddressFormat', 'generateAddressSmarty'));
-smartyRegisterFunction($smarty, 'function', 'getWidthSize', array('Image', 'getWidth'));
-smartyRegisterFunction($smarty, 'function', 'getHeightSize', array('Image', 'getHeight'));
-smartyRegisterFunction($smarty, 'function', 'addJsDef', array('Media', 'addJsDef'));
-smartyRegisterFunction($smarty, 'block', 'addJsDefL', array('Media', 'addJsDefL'));
-smartyRegisterFunction($smarty, 'modifier', 'boolval', array('Tools', 'boolval'));
+smartyRegisterFunction($smarty, 'modifier', 'json_encode', ['Tools', 'jsonEncode']);
+smartyRegisterFunction($smarty, 'modifier', 'json_decode', ['Tools', 'jsonDecode']);
+smartyRegisterFunction($smarty, 'function', 'dateFormat', ['Tools', 'dateFormat']);
+smartyRegisterFunction($smarty, 'function', 'convertPrice', ['Product', 'convertPrice']);
+smartyRegisterFunction($smarty, 'function', 'convertPriceWithCurrency', ['Product', 'convertPriceWithCurrency']);
+smartyRegisterFunction($smarty, 'function', 'displayWtPrice', ['Product', 'displayWtPrice']);
+smartyRegisterFunction($smarty, 'function', 'displayWtPriceWithCurrency', ['Product', 'displayWtPriceWithCurrency']);
+smartyRegisterFunction($smarty, 'function', 'displayPrice', ['Tools', 'displayPriceSmarty']);
+smartyRegisterFunction($smarty, 'modifier', 'convertAndFormatPrice', ['Product', 'convertAndFormatPrice']); // used twice
+smartyRegisterFunction($smarty, 'function', 'getAdminToken', ['Tools', 'getAdminTokenLiteSmarty']);
+smartyRegisterFunction($smarty, 'function', 'displayAddressDetail', ['AddressFormat', 'generateAddressSmarty']);
+smartyRegisterFunction($smarty, 'function', 'getWidthSize', ['Image', 'getWidth']);
+smartyRegisterFunction($smarty, 'function', 'getHeightSize', ['Image', 'getHeight']);
+smartyRegisterFunction($smarty, 'function', 'addJsDef', ['Media', 'addJsDef']);
+smartyRegisterFunction($smarty, 'block', 'addJsDefL', ['Media', 'addJsDefL']);
+smartyRegisterFunction($smarty, 'modifier', 'boolval', ['Tools', 'boolval']);
 smartyRegisterFunction($smarty, 'modifier', 'cleanHtml', 'smartyCleanHtml');
 
 function smartyDieObject($params, &$smarty)
@@ -149,7 +149,7 @@ function smarty_modifier_htmlentitiesUTF8($string)
 function smartyMinifyHTML($tpl_output, &$smarty)
 {
     $context = Context::getContext();
-    if (isset($context->controller) && in_array($context->controller->php_self, array('pdf-invoice', 'pdf-order-return', 'pdf-order-slip'))) {
+    if (isset($context->controller) && in_array($context->controller->php_self, ['pdf-invoice', 'pdf-order-return', 'pdf-order-slip'])) {
         return $tpl_output;
     }
     $tpl_output = Media::minifyHTML($tpl_output);
@@ -159,7 +159,7 @@ function smartyMinifyHTML($tpl_output, &$smarty)
 function smartyPackJSinHTML($tpl_output, &$smarty)
 {
     $context = Context::getContext();
-    if (isset($context->controller) && in_array($context->controller->php_self, array('pdf-invoice', 'pdf-order-return', 'pdf-order-slip'))) {
+    if (isset($context->controller) && in_array($context->controller->php_self, ['pdf-invoice', 'pdf-order-return', 'pdf-order-slip'])) {
         return $tpl_output;
     }
     $tpl_output = Media::packJSinHTML($tpl_output);
@@ -168,7 +168,7 @@ function smartyPackJSinHTML($tpl_output, &$smarty)
 
 function smartyRegisterFunction($smarty, $type, $function, $params, $lazy = true)
 {
-    if (!in_array($type, array('function', 'modifier', 'block'))) {
+    if (!in_array($type, ['function', 'modifier', 'block'])) {
         return false;
     }
 
@@ -182,7 +182,7 @@ function smartyRegisterFunction($smarty, $type, $function, $params, $lazy = true
         }
 
         // SmartyLazyRegister allows to only load external class when they are needed
-        $smarty->registerPlugin($type, $function, array($lazy_register, $params));
+        $smarty->registerPlugin($type, $function, [$lazy_register, $params]);
     } else {
         $smarty->registerPlugin($type, $function, $params);
     }
@@ -226,7 +226,7 @@ function toolsConvertPrice($params, &$smarty)
  */
 class SmartyLazyRegister
 {
-    protected $registry = array();
+    protected $registry = [];
     protected static $instance;
 
     /**
@@ -255,9 +255,9 @@ class SmartyLazyRegister
 
         // case 1: call to static method - case 2 : call to static function
         if (is_array($item[1])) {
-            return call_user_func_array($item[1].'::'.$item[0], array($arguments[0], &$arguments[1]));
+            return call_user_func_array($item[1].'::'.$item[0], [$arguments[0], &$arguments[1]]);
         } else {
-            $args = array();
+            $args = [];
 
             foreach ($arguments as $a => $argument) {
                 if ($a == 0) {

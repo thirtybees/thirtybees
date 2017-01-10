@@ -31,54 +31,58 @@ class AdminGeolocationControllerCore extends AdminController
         parent::__construct();
 
         $this->bootstrap = true;
-        $this->fields_options = array(
-            'geolocationConfiguration' => array(
+        $this->fields_options = [
+            'geolocationConfiguration' => [
                 'title' =>    $this->l('Geolocation by IP address'),
                 'icon' =>    'icon-map-marker',
-                'fields' =>    array(
-                    'PS_GEOLOCATION_ENABLED' => array(
+                'fields' =>    [
+                    'PS_GEOLOCATION_ENABLED' => [
                         'title' => $this->l('Geolocation by IP address'),
                         'hint' => $this->l('This option allows you, among other things, to restrict access to your shop for certain countries. See below.'),
                         'validation' => 'isUnsignedId',
                         'cast' => 'intval',
                         'type' => 'bool'
-                    ),
-                ),
-                'submit' => array('title' => $this->l('Save'))
-            ),
-            'geolocationCountries' => array(
+                    ],
+                ],
+                'submit' => ['title' => $this->l('Save')]
+            ],
+            'geolocationCountries' => [
                 'title' =>    $this->l('Options'),
                 'icon' =>    'icon-map-marker',
                 'description' => $this->l('The following features are only available if you enable the Geolocation by IP address feature.'),
-                'fields' =>    array(
-                    'PS_GEOLOCATION_BEHAVIOR' => array(
+                'fields' =>    [
+                    'PS_GEOLOCATION_BEHAVIOR' => [
                         'title' => $this->l('Geolocation behavior for restricted countries'),
                         'type' => 'select',
                         'identifier' => 'key',
-                        'list' => array(array('key' => _PS_GEOLOCATION_NO_CATALOG_, 'name' => $this->l('Visitors cannot see your catalog.')),
-                                        array('key' => _PS_GEOLOCATION_NO_ORDER_, 'name' => $this->l('Visitors can see your catalog but cannot place an order.'))),
-                    ),
-                    'PS_GEOLOCATION_NA_BEHAVIOR' => array(
+                        'list' => [
+                            ['key' => _PS_GEOLOCATION_NO_CATALOG_, 'name' => $this->l('Visitors cannot see your catalog.')],
+                                        ['key' => _PS_GEOLOCATION_NO_ORDER_, 'name' => $this->l('Visitors can see your catalog but cannot place an order.')]
+                        ],
+                    ],
+                    'PS_GEOLOCATION_NA_BEHAVIOR' => [
                         'title' => $this->l('Geolocation behavior for other countries'),
                         'type' => 'select',
                         'identifier' => 'key',
-                        'list' => array(array('key' => '-1', 'name' => $this->l('All features are available')),
-                                        array('key' => _PS_GEOLOCATION_NO_CATALOG_, 'name' => $this->l('Visitors cannot see your catalog.')),
-                                        array('key' => _PS_GEOLOCATION_NO_ORDER_, 'name' => $this->l('Visitors can see your catalog but cannot place an order.')))
-                    ),
-                ),
-                'submit' => array('title' => $this->l('Save'))
-            ),
-            'geolocationWhitelist' => array(
+                        'list' => [
+                            ['key' => '-1', 'name' => $this->l('All features are available')],
+                                        ['key' => _PS_GEOLOCATION_NO_CATALOG_, 'name' => $this->l('Visitors cannot see your catalog.')],
+                                        ['key' => _PS_GEOLOCATION_NO_ORDER_, 'name' => $this->l('Visitors can see your catalog but cannot place an order.')]
+                        ]
+                    ],
+                ],
+                'submit' => ['title' => $this->l('Save')]
+            ],
+            'geolocationWhitelist' => [
                 'title' =>    $this->l('IP address whitelist'),
                 'icon' =>    'icon-sitemap',
                 'description' => $this->l('You can add IP addresses that will always be allowed to access your shop (e.g. Google bots\' IP).'),
-                'fields' =>    array(
-                    'PS_GEOLOCATION_WHITELIST' => array('title' => $this->l('Whitelisted IP addresses'), 'type' => 'textarea_newlines', 'cols' => 15, 'rows' => 30),
-                ),
-                'submit' => array('title' => $this->l('Save'))
-            ),
-        );
+                'fields' =>    [
+                    'PS_GEOLOCATION_WHITELIST' => ['title' => $this->l('Whitelisted IP addresses'), 'type' => 'textarea_newlines', 'cols' => 15, 'rows' => 30],
+                ],
+                'submit' => ['title' => $this->l('Save')]
+            ],
+        ];
     }
 
     /**
@@ -122,15 +126,15 @@ class AdminGeolocationControllerCore extends AdminController
     public function renderOptions()
     {
         // This field is not declared in class constructor because we want it to be manually post processed
-        $this->fields_options['geolocationCountries']['fields']['countries'] = array(
+        $this->fields_options['geolocationCountries']['fields']['countries'] = [
                                 'title' => $this->l('Select the countries from which your store is accessible'),
                                 'type' => 'checkbox_table',
                                 'identifier' => 'iso_code',
                                 'list' => Country::getCountries($this->context->language->id),
                                 'auto_value' => false
-                            );
+        ];
 
-        $this->tpl_option_vars = array('allowed_countries' => explode(';', Configuration::get('PS_ALLOWED_COUNTRIES')));
+        $this->tpl_option_vars = ['allowed_countries' => explode(';', Configuration::get('PS_ALLOWED_COUNTRIES'))];
 
         return parent::renderOptions();
     }

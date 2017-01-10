@@ -59,7 +59,7 @@ class CmsControllerCore extends FrontController
         }
 
         if (Configuration::get('PS_SSL_ENABLED') && Tools::getValue('content_only') && $id_cms && Validate::isLoadedObject($this->cms)
-            && in_array($id_cms, array((int)Configuration::get('PS_CONDITIONS_CMS_ID'), (int)Configuration::get('LEGAL_CMS_ID_REVOCATION')))) {
+            && in_array($id_cms, [(int)Configuration::get('PS_CONDITIONS_CMS_ID'), (int)Configuration::get('LEGAL_CMS_ID_REVOCATION')])) {
             $this->ssl = true;
         }
 
@@ -115,25 +115,29 @@ class CmsControllerCore extends FrontController
                 $path = Tools::getFullPath(1, $this->cms_category->meta_title, 'CMS');
             }
 
-            $this->context->smarty->assign(array(
+            $this->context->smarty->assign(
+                [
                 'cms' => $this->cms,
                 'content_only' => (int)Tools::getValue('content_only'),
                 'path' => $path,
-                'body_classes' => array($this->php_self.'-'.$this->cms->id, $this->php_self.'-'.$this->cms->link_rewrite)
-            ));
+                'body_classes' => [$this->php_self.'-'.$this->cms->id, $this->php_self.'-'.$this->cms->link_rewrite]
+                ]
+            );
 
             if ($this->cms->indexation == 0) {
                 $this->context->smarty->assign('nobots', true);
             }
         } elseif ($this->assignCase == 2) {
-            $this->context->smarty->assign(array(
+            $this->context->smarty->assign(
+                [
                 'category' => $this->cms_category, //for backward compatibility
                 'cms_category' => $this->cms_category,
                 'sub_category' => $this->cms_category->getSubCategories($this->context->language->id),
                 'cms_pages' => CMS::getCMSPages($this->context->language->id, (int)$this->cms_category->id, true, (int)$this->context->shop->id),
                 'path' => ($this->cms_category->id !== 1) ? Tools::getPath($this->cms_category->id, $this->cms_category->name, false, 'CMS') : '',
-                'body_classes' => array($this->php_self.'-'.$this->cms_category->id, $this->php_self.'-'.$this->cms_category->link_rewrite)
-            ));
+                'body_classes' => [$this->php_self.'-'.$this->cms_category->id, $this->php_self.'-'.$this->cms_category->link_rewrite]
+                ]
+            );
         }
 
         $this->setTemplate(_PS_THEME_DIR_.'cms.tpl');

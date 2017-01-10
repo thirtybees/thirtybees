@@ -51,19 +51,19 @@ class StoresControllerCore extends FrontController
      */
     protected function processStoreAddress($store)
     {
-        $ignore_field = array(
+        $ignore_field = [
             'firstname',
             'lastname'
-        );
+        ];
 
-        $out_datas = array();
+        $out_datas = [];
 
         $address_datas = AddressFormat::getOrderedAddressFields($store['id_country'], false, true);
         $state = (isset($store['id_state'])) ? new State($store['id_state']) : null;
 
         foreach ($address_datas as $data_line) {
             $data_fields = explode(' ', $data_line);
-            $addr_out = array();
+            $addr_out = [];
 
             $data_fields_mod = false;
             foreach ($data_fields as $field_item) {
@@ -96,7 +96,7 @@ class StoresControllerCore extends FrontController
 		LEFT JOIN '._DB_PREFIX_.'state st ON (st.id_state = s.id_state)
 		WHERE s.active = 1 AND cl.id_lang = '.(int)$this->context->language->id);
 
-        $addresses_formated = array();
+        $addresses_formated = [];
 
         foreach ($stores as &$store) {
             $address = new Address();
@@ -114,11 +114,13 @@ class StoresControllerCore extends FrontController
             }
         }
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'simplifiedStoresDiplay' => true,
             'stores' => $stores,
             'addresses_formated' => $addresses_formated,
-        ));
+            ]
+        );
     }
 
     public function renderStoreWorkingHours($store)
@@ -133,8 +135,8 @@ class StoresControllerCore extends FrontController
         $days[6] = 'Saturday';
         $days[7] = 'Sunday';
 
-        $days_datas = array();
-        $hours = array();
+        $days_datas = [];
+        $hours = [];
 
         if ($store['hours']) {
             $hours = Tools::unSerialize($store['hours']);
@@ -146,7 +148,7 @@ class StoresControllerCore extends FrontController
         if (!empty($hours)) {
             for ($i = 1; $i < 8; $i++) {
                 if (isset($hours[(int)$i - 1])) {
-                    $hours_datas = array();
+                    $hours_datas = [];
                     $hours_datas['hours'] = $hours[(int)$i - 1];
                     $hours_datas['day'] = $days[$i];
                     $days_datas[] = $hours_datas;
@@ -162,7 +164,7 @@ class StoresControllerCore extends FrontController
     public function getStores()
     {
         $distance_unit = Configuration::get('PS_DISTANCE_UNIT');
-        if (!in_array($distance_unit, array('km', 'mi'))) {
+        if (!in_array($distance_unit, ['km', 'mi'])) {
             $distance_unit = 'km';
         }
 
@@ -211,15 +213,17 @@ class StoresControllerCore extends FrontController
         $this->context->smarty->assign('hasStoreIcon', file_exists(_PS_IMG_DIR_.Configuration::get('PS_STORES_ICON')));
 
         $distance_unit = Configuration::get('PS_DISTANCE_UNIT');
-        if (!in_array($distance_unit, array('km', 'mi'))) {
+        if (!in_array($distance_unit, ['km', 'mi'])) {
             $distance_unit = 'km';
         }
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'distance_unit' => $distance_unit,
             'simplifiedStoresDiplay' => false,
             'stores' => $this->getStores(),
-        ));
+            ]
+        );
     }
 
     /**
@@ -268,13 +272,15 @@ class StoresControllerCore extends FrontController
             $this->assignStores();
         }
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'mediumSize' => Image::getSize(ImageType::getFormatedName('medium')),
             'defaultLat' => (float)Configuration::get('PS_STORES_CENTER_LAT'),
             'defaultLong' => (float)Configuration::get('PS_STORES_CENTER_LONG'),
             'searchUrl' => $this->context->link->getPageLink('stores'),
             'logo_store' => Configuration::get('PS_STORES_ICON')
-        ));
+            ]
+        );
 
         $this->setTemplate(_PS_THEME_DIR_.'stores.tpl');
     }

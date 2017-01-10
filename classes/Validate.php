@@ -774,7 +774,7 @@ class ValidateCore
 
     public static function isMySQLEngine($engine)
     {
-        return (in_array($engine, array('InnoDB', 'MyISAM')));
+        return (in_array($engine, ['InnoDB', 'MyISAM']));
     }
 
     public static function isUnixName($data)
@@ -944,7 +944,7 @@ class ValidateCore
      */
     public static function isLocalizationPackSelection($data)
     {
-        return in_array((string)$data, array('states', 'taxes', 'currencies', 'languages', 'units', 'groups'));
+        return in_array((string)$data, ['states', 'taxes', 'currencies', 'languages', 'units', 'groups']);
     }
 
     /**
@@ -1042,7 +1042,7 @@ class ValidateCore
      */
     public static function isStockManagement($stock_management)
     {
-        if (!in_array($stock_management, array('WA', 'FIFO', 'LIFO'))) {
+        if (!in_array($stock_management, ['WA', 'FIFO', 'LIFO'])) {
             return false;
         }
         return true;

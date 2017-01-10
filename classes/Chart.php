@@ -38,7 +38,7 @@ class ChartCore
     protected $format;
     protected $granularity;
 
-    protected $curves = array();
+    protected $curves = [];
 
     /** @prototype void public static function init(void) */
     public static function init()
@@ -122,7 +122,7 @@ class ChartCore
             }
         }
 
-        $jsCurves = array();
+        $jsCurves = [];
         foreach ($this->curves as $curve) {
             $jsCurves[] = $curve->getValues($this->timeMode);
         }
@@ -143,7 +143,7 @@ class ChartCore
 
 class Curve
 {
-    protected $values = array();
+    protected $values = [];
     protected $label;
     protected $type;
 

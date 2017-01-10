@@ -82,19 +82,23 @@ class OrderConfirmationControllerCore extends FrontController
     {
         parent::initContent();
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'is_guest' => $this->context->customer->is_guest,
             'HOOK_ORDER_CONFIRMATION' => $this->displayOrderConfirmation(),
             'HOOK_PAYMENT_RETURN' => $this->displayPaymentReturn()
-        ));
+            ]
+        );
 
         if ($this->context->customer->is_guest) {
-            $this->context->smarty->assign(array(
+            $this->context->smarty->assign(
+                [
                 'id_order' => $this->id_order,
                 'reference_order' => $this->reference,
                 'id_order_formatted' => sprintf('#%06d', $this->id_order),
                 'email' => $this->context->customer->email
-            ));
+                ]
+            );
             /* If guest we clear the cookie for security reason */
             $this->context->customer->mylogout();
         }
@@ -108,7 +112,7 @@ class OrderConfirmationControllerCore extends FrontController
     public function displayPaymentReturn()
     {
         if (Validate::isUnsignedId($this->id_order) && Validate::isUnsignedId($this->id_module)) {
-            $params = array();
+            $params = [];
             $order = new Order($this->id_order);
             $currency = new Currency($order->id_currency);
 
@@ -130,7 +134,7 @@ class OrderConfirmationControllerCore extends FrontController
     public function displayOrderConfirmation()
     {
         if (Validate::isUnsignedId($this->id_order)) {
-            $params = array();
+            $params = [];
             $order = new Order($this->id_order);
             $currency = new Currency($order->id_currency);
 

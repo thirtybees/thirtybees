@@ -76,7 +76,7 @@ abstract class ImportModuleCore extends Module
     {
         $this->initDatabaseConnection();
         $result = mysql_query($query, $this->_link);
-        $result_array = array();
+        $result_array = [];
         if ($result !== true) {
             while ($row = mysql_fetch_assoc($result)) {
                 $result_array[] = $row;

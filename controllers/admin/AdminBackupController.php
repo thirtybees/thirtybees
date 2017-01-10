@@ -41,43 +41,45 @@ class AdminBackupControllerCore extends AdminController
         $this->identifier = 'filename';
         parent::__construct();
 
-        $this->fields_list = array(
-            'date' => array('title' => $this->l('Date'), 'type' => 'datetime', 'class' => 'fixed-width-lg', 'orderby' => false, 'search' => false),
-            'age' => array('title' => $this->l('Age'), 'orderby' => false, 'search' => false),
-            'filename' => array('title' => $this->l('File name'), 'orderby' => false, 'search' => false),
-            'filesize' => array('title' => $this->l('File size'), 'class' => 'fixed-width-sm', 'orderby' => false, 'search' => false)
-        );
+        $this->fields_list = [
+            'date' => ['title' => $this->l('Date'), 'type' => 'datetime', 'class' => 'fixed-width-lg', 'orderby' => false, 'search' => false],
+            'age' => ['title' => $this->l('Age'), 'orderby' => false, 'search' => false],
+            'filename' => ['title' => $this->l('File name'), 'orderby' => false, 'search' => false],
+            'filesize' => ['title' => $this->l('File size'), 'class' => 'fixed-width-sm', 'orderby' => false, 'search' => false]
+        ];
 
-        $this->bulk_actions = array('delete' => array(
+        $this->bulk_actions = [
+            'delete' => [
             'text' => $this->l('Delete selected'),
-            'confirm' => $this->l('Delete selected items?'), 'icon' => 'icon-trash')
-        );
+            'confirm' => $this->l('Delete selected items?'), 'icon' => 'icon-trash'
+            ]
+        ];
 
-        $this->fields_options = array(
-            'general' => array(
+        $this->fields_options = [
+            'general' => [
                 'title' =>    $this->l('Backup options'),
-                'fields' =>    array(
-                    'PS_BACKUP_ALL' => array(
+                'fields' =>    [
+                    'PS_BACKUP_ALL' => [
                         'title' => $this->l('Ignore statistics tables'),
                         'desc' => $this->l('Drop existing tables during import.').'
 							<br />'._DB_PREFIX_.'connections, '._DB_PREFIX_.'connections_page, '._DB_PREFIX_
                             .'connections_source, '._DB_PREFIX_.'guest, '._DB_PREFIX_.'statssearch',
                         'cast' => 'intval',
                         'type' => 'bool'
-                    ),
-                    'PS_BACKUP_DROP_TABLE' => array(
+                    ],
+                    'PS_BACKUP_DROP_TABLE' => [
                         'title' => $this->l('Drop existing tables during import'),
-                        'hint' => array(
+                        'hint' => [
                             $this->l('If enabled, the backup script will drop your tables prior to restoring data.'),
                             $this->l('(ie. "DROP TABLE IF EXISTS")'),
-                        ),
+                        ],
                         'cast' => 'intval',
                         'type' => 'bool'
-                    )
-                ),
-                'submit' => array('title' => $this->l('Save'))
-            ),
-        );
+                    ]
+                ],
+                'submit' => ['title' => $this->l('Save')]
+            ],
+        ];
     }
 
     public function renderList()
@@ -95,10 +97,10 @@ class AdminBackupControllerCore extends AdminController
         }
 
         if ($object->id) {
-            $this->tpl_view_vars = array('url_backup' => $object->getBackupURL());
+            $this->tpl_view_vars = ['url_backup' => $object->getBackupURL()];
         } elseif ($object->error) {
             $this->errors[] = $object->error;
-            $this->tpl_view_vars = array('errors' => $this->errors);
+            $this->tpl_view_vars = ['errors' => $this->errors];
         }
 
         return parent::renderView();
@@ -117,16 +119,16 @@ class AdminBackupControllerCore extends AdminController
             case 'add':
             case 'edit':
             case 'view':
-                $this->toolbar_btn['cancel'] = array(
+                $this->toolbar_btn['cancel'] = [
                     'href' => self::$currentIndex.'&token='.$this->token,
                     'desc' => $this->l('Cancel')
-                );
+                ];
                 break;
             case 'options':
-                $this->toolbar_btn['save'] = array(
+                $this->toolbar_btn['save'] = [
                     'href' => '#',
                     'desc' => $this->l('Save')
-                );
+                ];
                 break;
         }
     }
@@ -177,11 +179,13 @@ class AdminBackupControllerCore extends AdminController
                 if (!$object->add()) {
                     $this->errors[] = $object->error;
                 } else {
-                    $this->context->smarty->assign(array(
+                    $this->context->smarty->assign(
+                        [
                             'conf' => $this->l('It appears the backup was successful, however you must download and carefully verify the backup file before proceeding.'),
                             'backup_url' => $object->getBackupURL(),
                             'backup_weight' => number_format((filesize($object->id) * 0.000001), 2, '.', '')
-                        ));
+                        ]
+                    );
                 }
             }
         }
@@ -240,7 +244,7 @@ class AdminBackupControllerCore extends AdminController
         $this->_lang = (int)$id_lang;
         $this->_orderBy = $order_by;
         $this->_orderWay = strtoupper($order_way);
-        $this->_list = array();
+        $this->_list = [];
 
         // Find all the backups
         $dh = @opendir(PrestaShopBackup::getBackupPath());
@@ -267,14 +271,14 @@ class AdminBackupControllerCore extends AdminController
                 $age = $age.' '.(($age == 1) ? $this->l('Day') : $this->l('Days', 'AdminTab', false, false));
             }
             $size = filesize(PrestaShopBackup::getBackupPath($file));
-            $this->_list[] = array(
+            $this->_list[] = [
                 'filename' => $file,
                 'age' => $age,
                 'date' => $date,
                 'filesize' => number_format($size / 1000, 2).' Kb',
                 'timestamp' => $timestamp,
                 'filesize_sort' => $size,
-            );
+            ];
         }
         closedir($dh);
         $this->_listTotal = count($this->_list);
@@ -295,7 +299,7 @@ class AdminBackupControllerCore extends AdminController
                 $sorter = 'intSort';
                 break;
         }
-        usort($this->_list, array($this, $sorter));
+        usort($this->_list, [$this, $sorter]);
         $this->_list = array_slice($this->_list, $start, $limit);
     }
 

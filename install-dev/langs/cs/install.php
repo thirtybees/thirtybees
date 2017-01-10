@@ -1,6 +1,6 @@
 <?php
-return array(
-    'informations' => array(
+return [
+    'informations' => [
         'documentation' => 'http://doc.prestashop.com/display/PS16/Installing+PrestaShop',
         'documentation_upgrade' => 'http://docs.prestashop.com/display/PS16/Updating+PrestaShop',
         'forum' => 'http://www.prestashop.com/forums/forum/83-ceske-forum/',
@@ -8,8 +8,8 @@ return array(
         'support' => 'https://www.prestashop.com/en/support',
         'tutorial' => 'https://www.youtube.com/watch?v=psz4aIPZZuk',
         'tailored_help' => 'http://addons.prestashop.com/en/388-support',
-    ),
-    'translations' => array(
+    ],
+    'translations' => [
         'An SQL error occurred for entity <i>%1$s</i>: <i>%2$s</i>' => 'Došlo k chybě SQL entity <i>%1$s</i>: <i>%2$s</i>',
         'Cannot create image "%1$s" for entity "%2$s"' => 'Není možné vytvořit obrázek "%1$s" pro "%2$s"',
         'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => 'Není možné vytvořit obrázek "%1$s" (složka "%2$s" nemá nastavena potřebná práva)',
@@ -205,5 +205,5 @@ return array(
         'Continue the installation in:' => 'Pokračovat v instalaci v:',
         'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => 'Výběr jazyka výše slouží pouze pro Instalačního Asistenta. Jakmile bude váš obchod nainstalován, můžete si vybrat váš jazyk z více než %d překladů, zdarma!',
         'Installing PrestaShop is quick and easy. In just a few moments, you will become part of a community consisting of more than 250,000 merchants. You are on the way to creating your own unique online store that you can manage easily every day.' => 'Instalace PrestaShopu je rychlá a jednoduchá. Během chvilky se stanete součástí komunity čítající více než 250 000 prodejců. Jste na cestě k vytvoření vlastního eshopu, který můžete jednoduše spravovat každý den.',
-    ),
-);
+    ],
+];

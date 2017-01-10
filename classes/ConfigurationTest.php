@@ -26,7 +26,7 @@
 
 class ConfigurationTestCore
 {
-    public static $test_files = array(
+    public static $test_files = [
         '/cache/smarty/compile/index.php',
         '/classes/log/index.php',
         '/classes/cache/index.php',
@@ -48,7 +48,7 @@ class ConfigurationTestCore
         '/translations/export/index.php',
         '/webservice/dispatcher.php',
         '/index.php'
-    );
+    ];
 
     /**
      * getDefaultTests return an array of tests to executes.
@@ -59,7 +59,7 @@ class ConfigurationTestCore
      */
     public static function getDefaultTests()
     {
-        $tests = array(
+        $tests = [
             'upload' => false,
             'cache_dir' => 'cache',
             'log_dir' => 'log',
@@ -71,22 +71,23 @@ class ConfigurationTestCore
             'translations_dir' => 'translations',
             'customizable_products_dir' => 'upload',
             'virtual_products_dir' => 'download'
-        );
+        ];
 
         if (!defined('_PS_HOST_MODE_')) {
-            $tests = array_merge($tests, array(
-                'system' => array(
+            $tests = array_merge($tests, [
+                'system' => [
                     'fopen', 'fclose', 'fread', 'fwrite',
                     'rename', 'file_exists', 'unlink', 'rmdir', 'mkdir',
                     'getcwd', 'chdir', 'chmod'
-                ),
+                ],
                 'phpversion' => false,
                 'gd' => false,
                 'mysql_support' => false,
                 'config_dir' => 'config',
                 'files' => false,
                 'mails_dir' => 'mails',
-            ));
+            ]
+            );
         }
 
         return $tests;
@@ -100,7 +101,7 @@ class ConfigurationTestCore
      */
     public static function getDefaultTestsOp()
     {
-        return array(
+        return [
             'new_phpversion' => false,
             'fopen' => false,
             'register_globals' => false,
@@ -110,7 +111,7 @@ class ConfigurationTestCore
             'magicquotes' => false,
             'dom' => false,
             'pdo_mysql' => false,
-        );
+        ];
     }
 
     /**
@@ -121,7 +122,7 @@ class ConfigurationTestCore
      */
     public static function check($tests)
     {
-        $res = array();
+        $res = [];
         foreach ($tests as $key => $test) {
             $res[$key] = ConfigurationTest::run($key, $test);
         }
@@ -130,7 +131,7 @@ class ConfigurationTestCore
 
     public static function run($ptr, $arg = 0)
     {
-        if (call_user_func(array('ConfigurationTest', 'test_'.$ptr), $arg)) {
+        if (call_user_func(['ConfigurationTest', 'test_'.$ptr], $arg)) {
             return 'ok';
         }
         return 'fail';
@@ -365,7 +366,7 @@ class ConfigurationTestCore
 
     public static function test_files($full = false)
     {
-        $return = array();
+        $return = [];
         foreach (ConfigurationTest::$test_files as $file) {
             if (!file_exists(rtrim(_PS_ROOT_DIR_, DIRECTORY_SEPARATOR).str_replace('/', DIRECTORY_SEPARATOR, $file))) {
                 if ($full) {

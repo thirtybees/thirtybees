@@ -69,20 +69,22 @@ class AdminTrackingControllerCore extends AdminController
         }
 
         $methods = get_class_methods($this);
-        $tpl_vars['arrayList'] = array();
+        $tpl_vars['arrayList'] = [];
         foreach ($methods as $method_name) {
             if (preg_match('#getCustomList(.+)#', $method_name, $matches)) {
                 $this->clearListOptions();
-                $this->content .= call_user_func(array($this, $matches[0]));
+                $this->content .= call_user_func([$this, $matches[0]]);
             }
         }
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'content' => $this->content,
             'url_post' => self::$currentIndex.'&token='.$this->token,
             'show_page_header_toolbar' => $this->show_page_header_toolbar,
             'page_header_toolbar_title' => $this->page_header_toolbar_title,
             'page_header_toolbar_btn' => $this->page_header_toolbar_btn
-        ));
+            ]
+        );
     }
 
     public function getCustomListCategoriesEmpty()
@@ -100,15 +102,15 @@ class AdminTrackingControllerCore extends AdminController
         $this->addRowAction('edit');
         $this->addRowAction('view');
         $this->addRowAction('delete');
-        $this->addRowActionSkipList('delete', array((int)Configuration::get('PS_ROOT_CATEGORY')));
-        $this->addRowActionSkipList('edit', array((int)Configuration::get('PS_ROOT_CATEGORY')));
+        $this->addRowActionSkipList('delete', [(int)Configuration::get('PS_ROOT_CATEGORY')]);
+        $this->addRowActionSkipList('edit', [(int)Configuration::get('PS_ROOT_CATEGORY')]);
 
-        $this->fields_list = (array(
-            'id_category' => array('title' => $this->l('ID'), 'class' => 'fixed-width-xs', 'align' => 'center'),
-            'name' => array('title' => $this->l('Name'), 'filter_key' => 'b!name'),
-            'description' => array('title' => $this->l('Description'), 'callback' => 'getDescriptionClean'),
-            'active' => array('title' => $this->l('Status'), 'type' => 'bool', 'active' => 'status', 'align' => 'center', 'class' => 'fixed-width-xs')
-        ));
+        $this->fields_list = ([
+            'id_category' => ['title' => $this->l('ID'), 'class' => 'fixed-width-xs', 'align' => 'center'],
+            'name' => ['title' => $this->l('Name'), 'filter_key' => 'b!name'],
+            'description' => ['title' => $this->l('Description'), 'callback' => 'getDescriptionClean'],
+            'active' => ['title' => $this->l('Status'), 'type' => 'bool', 'active' => 'status', 'align' => 'center', 'class' => 'fixed-width-xs']
+        ]);
         $this->clearFilters();
 
         $this->_join = Shop::addSqlAssociation('category', 'a');
@@ -142,12 +144,12 @@ class AdminTrackingControllerCore extends AdminController
         $this->addRowAction('edit');
         $this->addRowAction('delete');
 
-        $this->fields_list = array(
-            'id_product' => array('title' => $this->l('ID'), 'class' => 'fixed-width-xs', 'align' => 'center'),
-            'reference' => array('title' => $this->l('Reference')),
-            'name' => array('title' => $this->l('Name'), 'filter_key' => 'b!name'),
-            'active' => array('title' => $this->l('Status'), 'type' => 'bool', 'active' => 'status', 'align' => 'center', 'class' => 'fixed-width-xs', 'filter_key' => 'a!active')
-        );
+        $this->fields_list = [
+            'id_product' => ['title' => $this->l('ID'), 'class' => 'fixed-width-xs', 'align' => 'center'],
+            'reference' => ['title' => $this->l('Reference')],
+            'name' => ['title' => $this->l('Name'), 'filter_key' => 'b!name'],
+            'active' => ['title' => $this->l('Status'), 'type' => 'bool', 'active' => 'status', 'align' => 'center', 'class' => 'fixed-width-xs', 'filter_key' => 'a!active']
+        ];
 
         $this->clearFilters();
 
@@ -186,12 +188,12 @@ class AdminTrackingControllerCore extends AdminController
         $this->addRowAction('edit');
         $this->addRowAction('delete');
 
-        $this->fields_list = array(
-            'id_product' => array('title' => $this->l('ID'), 'class' => 'fixed-width-xs', 'align' => 'center'),
-            'reference' => array('title' => $this->l('Reference')),
-            'name' => array('title' => $this->l('Name')),
-            'active' => array('title' => $this->l('Status'), 'type' => 'bool', 'active' => 'status', 'align' => 'center', 'class' => 'fixed-width-xs', 'filter_key' => 'a!active')
-        );
+        $this->fields_list = [
+            'id_product' => ['title' => $this->l('ID'), 'class' => 'fixed-width-xs', 'align' => 'center'],
+            'reference' => ['title' => $this->l('Reference')],
+            'name' => ['title' => $this->l('Name')],
+            'active' => ['title' => $this->l('Status'), 'type' => 'bool', 'active' => 'status', 'align' => 'center', 'class' => 'fixed-width-xs', 'filter_key' => 'a!active']
+        ];
         $this->clearFilters();
 
         $this->_join = Shop::addSqlAssociation('product', 'a');
@@ -227,11 +229,11 @@ class AdminTrackingControllerCore extends AdminController
         $this->addRowAction('edit');
         $this->addRowAction('delete');
 
-        $this->fields_list = array(
-            'id_product' => array('title' => $this->l('ID'), 'class' => 'fixed-width-xs', 'align' => 'center'),
-            'reference' => array('title' => $this->l('Reference')),
-            'name' => array('title' => $this->l('Name'), 'filter_key' => 'b!name')
-        );
+        $this->fields_list = [
+            'id_product' => ['title' => $this->l('ID'), 'class' => 'fixed-width-xs', 'align' => 'center'],
+            'reference' => ['title' => $this->l('Reference')],
+            'name' => ['title' => $this->l('Name'), 'filter_key' => 'b!name']
+        ];
 
         $this->clearFilters();
 
@@ -323,8 +325,8 @@ class AdminTrackingControllerCore extends AdminController
     public function clearListOptions()
     {
         $this->table = '';
-        $this->actions = array();
-        $this->list_skip_actions = array();
+        $this->actions = [];
+        $this->list_skip_actions = [];
         $this->lang = false;
         $this->identifier = '';
         $this->_orderBy = '';

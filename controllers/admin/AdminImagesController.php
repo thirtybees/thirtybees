@@ -43,29 +43,29 @@ class AdminImagesControllerCore extends AdminController
         $this->addRowAction('edit');
         $this->addRowAction('delete');
 
-        $this->bulk_actions = array(
-            'delete' => array(
+        $this->bulk_actions = [
+            'delete' => [
                 'text' => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
                 'icon' => 'icon-trash'
-            )
-        );
+            ]
+        ];
 
-        $this->fields_list = array(
-            'id_image_type' => array('title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'),
-            'name' => array('title' => $this->l('Name')),
-            'width' => array('title' => $this->l('Width'),  'suffix' => ' px'),
-            'height' => array('title' => $this->l('Height'),  'suffix' => ' px'),
-            'products' => array('title' => $this->l('Products'), 'align' => 'center', 'type' => 'bool', 'callback' => 'printEntityActiveIcon', 'orderby' => false),
-            'categories' => array('title' => $this->l('Categories'), 'align' => 'center', 'type' => 'bool', 'callback' => 'printEntityActiveIcon', 'orderby' => false),
-            'manufacturers' => array('title' => $this->l('Manufacturers'), 'align' => 'center', 'type' => 'bool', 'callback' => 'printEntityActiveIcon', 'orderby' => false),
-            'suppliers' => array('title' => $this->l('Suppliers'), 'align' => 'center', 'type' => 'bool', 'callback' => 'printEntityActiveIcon', 'orderby' => false),
-            'stores' => array('title' => $this->l('Stores'), 'align' => 'center', 'type' => 'bool', 'callback' => 'printEntityActiveIcon', 'orderby' => false)
-        );
+        $this->fields_list = [
+            'id_image_type' => ['title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'],
+            'name' => ['title' => $this->l('Name')],
+            'width' => ['title' => $this->l('Width'),  'suffix' => ' px'],
+            'height' => ['title' => $this->l('Height'),  'suffix' => ' px'],
+            'products' => ['title' => $this->l('Products'), 'align' => 'center', 'type' => 'bool', 'callback' => 'printEntityActiveIcon', 'orderby' => false],
+            'categories' => ['title' => $this->l('Categories'), 'align' => 'center', 'type' => 'bool', 'callback' => 'printEntityActiveIcon', 'orderby' => false],
+            'manufacturers' => ['title' => $this->l('Manufacturers'), 'align' => 'center', 'type' => 'bool', 'callback' => 'printEntityActiveIcon', 'orderby' => false],
+            'suppliers' => ['title' => $this->l('Suppliers'), 'align' => 'center', 'type' => 'bool', 'callback' => 'printEntityActiveIcon', 'orderby' => false],
+            'stores' => ['title' => $this->l('Stores'), 'align' => 'center', 'type' => 'bool', 'callback' => 'printEntityActiveIcon', 'orderby' => false]
+        ];
 
         // Scenes tab has been removed by default from the installation, but may still exists in updates
         if (Tab::getIdFromClassName('AdminScenes')) {
-            $this->fields_list['scenes'] = array('title' => $this->l('Scenes'), 'align' => 'center', 'type' => 'bool', 'callback' => 'printEntityActiveIcon', 'orderby' => false);
+            $this->fields_list['scenes'] = ['title' => $this->l('Scenes'), 'align' => 'center', 'type' => 'bool', 'callback' => 'printEntityActiveIcon', 'orderby' => false];
         }
 
         // No need to display the old image system migration tool except if product images are in _PS_PROD_IMG_DIR_
@@ -82,62 +82,62 @@ class AdminImagesControllerCore extends AdminController
             }
         }
 
-        $this->fields_options = array(
-            'images' => array(
+        $this->fields_options = [
+            'images' => [
                 'title' =>    $this->l('Images generation options'),
                 'icon' =>    'icon-picture',
                 'top' => '',
                 'bottom' => '',
                 'description' => $this->l('JPEG images have a small file size and standard quality. PNG images have a larger file size, a higher quality and support transparency. Note that in all cases the image files will have the .jpg extension.').'
 					<br /><br />'.$this->l('WARNING: This feature may not be compatible with your theme, or with some of your modules. In particular, PNG mode is not compatible with the Watermark module. If you encounter any issues, turn it off by selecting "Use JPEG".'),
-                'fields' =>    array(
-                    'PS_IMAGE_QUALITY' => array(
+                'fields' =>    [
+                    'PS_IMAGE_QUALITY' => [
                         'title' => $this->l('Image format'),
                         'show' => true,
                         'required' => true,
                         'type' => 'radio',
-                        'choices' => array('jpg' => $this->l('Use JPEG.'), 'png' => $this->l('Use PNG only if the base image is in PNG format.'), 'png_all' => $this->l('Use PNG for all images.'))
-                    ),
-                    'PS_JPEG_QUALITY' => array(
+                        'choices' => ['jpg' => $this->l('Use JPEG.'), 'png' => $this->l('Use PNG only if the base image is in PNG format.'), 'png_all' => $this->l('Use PNG for all images.')]
+                    ],
+                    'PS_JPEG_QUALITY' => [
                         'title' => $this->l('JPEG compression'),
                         'hint' => $this->l('Ranges from 0 (worst quality, smallest file) to 100 (best quality, biggest file).').' '.$this->l('Recommended: 90.'),
                         'validation' => 'isUnsignedId',
                         'required' => true,
                         'cast' => 'intval',
                         'type' => 'text'
-                    ),
-                    'PS_PNG_QUALITY' => array(
+                    ],
+                    'PS_PNG_QUALITY' => [
                          'title' => $this->l('PNG compression'),
                          'hint' => $this->l('PNG compression is lossless: unlike JPG, you do not lose image quality with a high compression ratio. However, photographs will compress very badly.').' '.$this->l('Ranges from 0 (biggest file) to 9 (smallest file, slowest decompression).').' '.$this->l('Recommended: 7.'),
                          'validation' => 'isUnsignedId',
                          'required' => true,
                          'cast' => 'intval',
                          'type' => 'text'
-                     ),
-                    'PS_IMAGE_GENERATION_METHOD' => array(
+                    ],
+                    'PS_IMAGE_GENERATION_METHOD' => [
                         'title' => $this->l('Generate images based on one side of the source image'),
                         'validation' => 'isUnsignedId',
                         'required' => false,
                         'cast' => 'intval',
                         'type' => 'select',
-                        'list' => array(
-                            array(
+                        'list' => [
+                            [
                                 'id' => '0',
                                 'name' => $this->l('Automatic (longest side)')
-                            ),
-                            array(
+                            ],
+                            [
                                 'id' => '1',
                                 'name' => $this->l('Width')
-                            ),
-                            array(
+                            ],
+                            [
                                 'id' => '2',
                                 'name' => $this->l('Height')
-                            )
-                        ),
+                            ]
+                        ],
                         'identifier' => 'id',
                         'visibility' => Shop::CONTEXT_ALL
-                    ),
-                    'PS_PRODUCT_PICTURE_MAX_SIZE' => array(
+                    ],
+                    'PS_PRODUCT_PICTURE_MAX_SIZE' => [
                         'title' => $this->l('Maximum file size of product customization pictures'),
                         'hint' => $this->l('The maximum file size of pictures that customers can upload to customize a product (in bytes).'),
                         'validation' => 'isUnsignedInt',
@@ -146,8 +146,8 @@ class AdminImagesControllerCore extends AdminController
                         'type' => 'text',
                         'suffix' => $this->l('bytes'),
                         'visibility' => Shop::CONTEXT_ALL
-                    ),
-                    'PS_PRODUCT_PICTURE_WIDTH' => array(
+                    ],
+                    'PS_PRODUCT_PICTURE_WIDTH' => [
                         'title' => $this->l('Product picture width'),
                         'hint' => $this->l('Width of product customization pictures that customers can upload (in pixels).'),
                         'validation' => 'isUnsignedInt',
@@ -157,8 +157,8 @@ class AdminImagesControllerCore extends AdminController
                         'width' => 'px',
                         'suffix' => $this->l('pixels'),
                         'visibility' => Shop::CONTEXT_ALL
-                    ),
-                    'PS_PRODUCT_PICTURE_HEIGHT' => array(
+                    ],
+                    'PS_PRODUCT_PICTURE_HEIGHT' => [
                         'title' => $this->l('Product picture height'),
                         'hint' => $this->l('Height of product customization pictures that customers can upload (in pixels).'),
                         'validation' => 'isUnsignedInt',
@@ -168,8 +168,8 @@ class AdminImagesControllerCore extends AdminController
                         'height' => 'px',
                         'suffix' => $this->l('pixels'),
                         'visibility' => Shop::CONTEXT_ALL
-                    ),
-                    'PS_HIGHT_DPI' => array(
+                    ],
+                    'PS_HIGHT_DPI' => [
                         'type' => 'bool',
                         'title' => $this->l('Generate high resolution images'),
                         'required' => false,
@@ -177,14 +177,14 @@ class AdminImagesControllerCore extends AdminController
                         'hint' => $this->l('This will generate an additional file for each image (thus doubling your total amount of images). Resolution of these images will be twice higher.'),
                         'desc' => $this->l('Enable to optimize the display of your images on high pixel density screens.'),
                         'visibility' => Shop::CONTEXT_ALL,
-                    ),
-                ),
-                'submit' => array('title' => $this->l('Save')),
-            ),
-        );
+                    ],
+                ],
+                'submit' => ['title' => $this->l('Save')],
+            ],
+        ];
 
         if ($this->display_move) {
-            $this->fields_options['product_images']['fields']['PS_LEGACY_IMAGES'] = array(
+            $this->fields_options['product_images']['fields']['PS_LEGACY_IMAGES'] = [
                 'title' => $this->l('Use the legacy image filesystem'),
                 'hint' => $this->l('This should be set to yes unless you successfully moved images in "Images" page under the "Preferences" menu.'),
                 'validation' => 'isBool',
@@ -192,23 +192,23 @@ class AdminImagesControllerCore extends AdminController
                 'required' => false,
                 'type' => 'bool',
                 'visibility' => Shop::CONTEXT_ALL
-            );
+            ];
         }
 
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('Image type'),
                 'icon' => 'icon-picture'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'text',
                     'label' => $this->l('Name for the image type'),
                     'name' => 'name',
                     'required' => true,
                     'hint' => $this->l('Letters, underscores and hyphens only (e.g. "small_custom", "cart_medium", "large", "thickbox_extra-large").')
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Width'),
                     'name' => 'width',
@@ -216,8 +216,8 @@ class AdminImagesControllerCore extends AdminController
                     'maxlength' => 5,
                     'suffix' => $this->l('pixels'),
                     'hint' => $this->l('Maximum image width in pixels.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Height'),
                     'name' => 'height',
@@ -225,28 +225,28 @@ class AdminImagesControllerCore extends AdminController
                     'maxlength' => 5,
                     'suffix' => $this->l('pixels'),
                     'hint' => $this->l('Maximum image height in pixels.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Products'),
                     'name' => 'products',
                     'required' => false,
                     'is_bool' => true,
                     'hint' => $this->l('This type will be used for Product images.'),
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'products_on',
                             'value' => 1,
                             'label' => $this->l('Enabled')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'products_off',
                             'value' => 0,
                             'label' => $this->l('Disabled')
-                        ),
-                    )
-                ),
-                array(
+                        ],
+                    ]
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Categories'),
                     'name' => 'categories',
@@ -254,60 +254,60 @@ class AdminImagesControllerCore extends AdminController
                     'class' => 't',
                     'is_bool' => true,
                     'hint' => $this->l('This type will be used for Category images.'),
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'categories_on',
                             'value' => 1,
                             'label' => $this->l('Enabled')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'categories_off',
                             'value' => 0,
                             'label' => $this->l('Disabled')
-                        ),
-                    )
-                ),
-                array(
+                        ],
+                    ]
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Manufacturers'),
                     'name' => 'manufacturers',
                     'required' => false,
                     'is_bool' => true,
                     'hint' => $this->l('This type will be used for Manufacturer images.'),
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'manufacturers_on',
                             'value' => 1,
                             'label' => $this->l('Enabled')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'manufacturers_off',
                             'value' => 0,
                             'label' => $this->l('Disabled')
-                        ),
-                    )
-                ),
-                array(
+                        ],
+                    ]
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Suppliers'),
                     'name' => 'suppliers',
                     'required' => false,
                     'is_bool' => true,
                     'hint' => $this->l('This type will be used for Supplier images.'),
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'suppliers_on',
                             'value' => 1,
                             'label' => $this->l('Enabled')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'suppliers_off',
                             'value' => 0,
                             'label' => $this->l('Disabled')
-                        ),
-                    )
-                ),
-                array(
+                        ],
+                    ]
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Scenes'),
                     'name' => 'scenes',
@@ -315,44 +315,44 @@ class AdminImagesControllerCore extends AdminController
                     'class' => 't',
                     'is_bool' => true,
                     'hint' => $this->l('This type will be used for Scene images.'),
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'scenes_on',
                             'value' => 1,
                             'label' => $this->l('Enabled')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'scenes_off',
                             'value' => 0,
                             'label' => $this->l('Disabled')
-                        ),
-                    )
-                ),
-                array(
+                        ],
+                    ]
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Stores'),
                     'name' => 'stores',
                     'required' => false,
                     'is_bool' => true,
                     'hint' => $this->l('This type will be used for Store images.'),
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'stores_on',
                             'value' => 1,
                             'label' => $this->l('Enabled')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'stores_off',
                             'value' => 0,
                             'label' => $this->l('Disabled')
-                        ),
-                    )
-                ),
-            ),
-            'submit' => array(
+                        ],
+                    ]
+                ],
+            ],
+            'submit' => [
                 'title' => $this->l('Save')
-            )
-        );
+            ]
+        ];
 
         parent::__construct();
     }
@@ -421,24 +421,26 @@ class AdminImagesControllerCore extends AdminController
       */
     public function initRegenerate()
     {
-        $types = array(
+        $types = [
             'categories' => $this->l('Categories'),
             'manufacturers' => $this->l('Manufacturers'),
             'suppliers' => $this->l('Suppliers'),
             'scenes' => $this->l('Scenes'),
             'products' => $this->l('Products'),
             'stores' => $this->l('Stores')
-        );
+        ];
 
-        $formats = array();
+        $formats = [];
         foreach ($types as $i => $type) {
             $formats[$i] = ImageType::getImagesTypes($i);
         }
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'types' => $types,
             'formats' => $formats,
-        ));
+            ]
+        );
     }
 
     /**
@@ -627,8 +629,8 @@ class AdminImagesControllerCore extends AdminController
                 if (file_exists($dir.$imageObj->getExistingImgPath().'.jpg')) {
                     foreach ($result as $module) {
                         $moduleInstance = Module::getInstanceByName($module['name']);
-                        if ($moduleInstance && is_callable(array($moduleInstance, 'hookActionWatermark'))) {
-                            call_user_func(array($moduleInstance, 'hookActionWatermark'), array('id_image' => $imageObj->id, 'id_product' => $imageObj->id_product, 'image_type' => $type));
+                        if ($moduleInstance && is_callable([$moduleInstance, 'hookActionWatermark'])) {
+                            call_user_func([$moduleInstance, 'hookActionWatermark'], ['id_image' => $imageObj->id, 'id_product' => $imageObj->id_product, 'image_type' => $type]);
                         }
 
                         if (time() - $this->start_time > $this->max_execution_time - 4) { // stop 4 seconds before the tiemout, just enough time to process the end of the page on a slow server
@@ -647,14 +649,14 @@ class AdminImagesControllerCore extends AdminController
         $this->max_execution_time = (int)ini_get('max_execution_time');
         $languages = Language::getLanguages(false);
 
-        $process = array(
-            array('type' => 'categories', 'dir' => _PS_CAT_IMG_DIR_),
-            array('type' => 'manufacturers', 'dir' => _PS_MANU_IMG_DIR_),
-            array('type' => 'suppliers', 'dir' => _PS_SUPP_IMG_DIR_),
-            array('type' => 'scenes', 'dir' => _PS_SCENE_IMG_DIR_),
-            array('type' => 'products', 'dir' => _PS_PROD_IMG_DIR_),
-            array('type' => 'stores', 'dir' => _PS_STORE_IMG_DIR_)
-        );
+        $process = [
+            ['type' => 'categories', 'dir' => _PS_CAT_IMG_DIR_],
+            ['type' => 'manufacturers', 'dir' => _PS_MANU_IMG_DIR_],
+            ['type' => 'suppliers', 'dir' => _PS_SUPP_IMG_DIR_],
+            ['type' => 'scenes', 'dir' => _PS_SCENE_IMG_DIR_],
+            ['type' => 'products', 'dir' => _PS_PROD_IMG_DIR_],
+            ['type' => 'stores', 'dir' => _PS_STORE_IMG_DIR_]
+        ];
 
         // Launching generation process
         foreach ($process as $proc) {
@@ -705,20 +707,22 @@ class AdminImagesControllerCore extends AdminController
      */
     public function initMoveImages()
     {
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'safe_mode' => Tools::getSafeModeStatus(),
             'link_ppreferences' => 'index.php?tab=AdminPPreferences&token='.Tools::getAdminTokenLite('AdminPPreferences').'#PS_LEGACY_IMAGES_on',
-        ));
+            ]
+        );
     }
 
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
-            $this->page_header_toolbar_btn['new_image_type'] = array(
+            $this->page_header_toolbar_btn['new_image_type'] = [
                 'href' => self::$currentIndex.'&addimage_type&token='.$this->token,
                 'desc' => $this->l('Add new image type', null, null, false),
                 'icon' => 'process-icon-new'
-            );
+            ];
         }
 
         parent::initPageHeaderToolbar();
@@ -750,10 +754,12 @@ class AdminImagesControllerCore extends AdminController
             $this->initRegenerate();
             $this->initMoveImages();
 
-            $this->context->smarty->assign(array(
+            $this->context->smarty->assign(
+                [
                 'display_regenerate' => true,
                 'display_move' => $this->display_move
-            ));
+                ]
+            );
         }
 
         if ($this->display == 'edit') {

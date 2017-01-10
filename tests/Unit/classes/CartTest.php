@@ -51,19 +51,19 @@ class FakeProduct
 
 class FakeProductPriceCalculator
 {
-    private $products = array();
+    private $products = [];
 
     public function addFakeProduct(FakeProduct $product)
     {
         $id = count($this->products) + 1;
 
-        $this->products[$id] = array(
+        $this->products[$id] = [
             'id_shop' => null,
             'id_product' => $id,
             'id_product_attribute' => $id,
             'cart_quantity' => $product->quantity,
             'price' => $product->price
-        );
+        ];
     }
 
     public function getProducts()
@@ -105,14 +105,16 @@ class CartTest extends UnitTestCase
 
     private function setRoundType($type)
     {
-        $this->setConfiguration(array(
+        $this->setConfiguration(
+            [
             '_PS_PRICE_COMPUTE_PRECISION_' => 2,
             'PS_TAX_ADDRESS_TYPE' => 0,
             'PS_USE_ECOTAX' => 0,
             'PS_ROUND_TYPE' => $type,
             'PS_ECOTAX_TAX_RULES_GROUP_ID' => 0,
             'PS_ATCP_SHIPWRAP' => false
-        ));
+            ]
+        );
     }
 
     public function test_getOrderTotal_Round_Line_When_No_Tax()

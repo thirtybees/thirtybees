@@ -37,27 +37,27 @@ class AdminMaintenanceControllerCore extends AdminController
 
         parent::__construct();
 
-        $this->fields_options = array(
-            'general' => array(
+        $this->fields_options = [
+            'general' => [
                 'title' =>    $this->l('General'),
-                'fields' =>    array(
-                    'PS_SHOP_ENABLE' => array(
+                'fields' =>    [
+                    'PS_SHOP_ENABLE' => [
                         'title' => $this->l('Enable Shop'),
                         'desc' => $this->l('Activate or deactivate your shop (It is a good idea to deactivate your shop while you perform maintenance. Please note that the webservice will not be disabled).'),
                         'validation' => 'isBool',
                         'cast' => 'intval',
                         'type' => 'bool'
-                    ),
-                    'PS_MAINTENANCE_IP' => array(
+                    ],
+                    'PS_MAINTENANCE_IP' => [
                         'title' => $this->l('Maintenance IP'),
                         'hint' => $this->l('IP addresses allowed to access the front office even if the shop is disabled. Please use a comma to separate them (e.g. 42.24.4.2,127.0.0.1,99.98.97.96)'),
                         'validation' => 'isGenericName',
                         'type' => 'maintenance_ip',
                         'default' => ''
-                    ),
-                ),
-                'submit' => array('title' => $this->l('Save'))
-            ),
-        );
+                    ],
+                ],
+                'submit' => ['title' => $this->l('Save')]
+            ],
+        ];
     }
 }

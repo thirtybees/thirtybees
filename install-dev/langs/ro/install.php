@@ -1,6 +1,6 @@
 <?php
-return array(
-    'informations' => array(
+return [
+    'informations' => [
         'documentation' => 'http://doc.prestashop.com/display/PS16/Installing+PrestaShop',
         'documentation_upgrade' => 'http://docs.prestashop.com/display/PS15/Updating+PrestaShop',
         'forum' => 'http://www.prestashop.com/forums/',
@@ -8,8 +8,8 @@ return array(
         'support' => 'https://www.prestashop.com/en/support',
         'tutorial' => 'https://www.youtube.com/watch?v=psz4aIPZZuk',
         'tailored_help' => 'http://addons.prestashop.com/en/388-support',
-    ),
-    'translations' => array(
+    ],
+    'translations' => [
         'An SQL error occurred for entity <i>%1$s</i>: <i>%2$s</i>' => 'A avut loc e eroare SQL pentru obiectul <i>%1$s</i>: <i>%2$s</i>',
         'Cannot create image "%1$s" for entity "%2$s"' => 'Nu pot crea copie "%1$s" pentru obiectul "%2$s"',
         'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => 'Nu se poate crea imaginea ”%1$s” (nu este permis pe folder "%2$s")',
@@ -205,5 +205,5 @@ return array(
         'Continue the installation in:' => 'Continuați instalarea în:',
         'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => 'Selecția limbii de mai sus se aplică numai Asistentului de instalare. Odată ce magazinul dvs. a fost instalat, puteți alege pentru magazinul dvs. dintre peste %d traduceri, toate gratuite!',
         'Installing PrestaShop is quick and easy. In just a few moments, you will become part of a community consisting of more than 250,000 merchants. You are on the way to creating your own unique online store that you can manage easily every day.' => 'Instalarea PrestaShop este ușoară și rapidă. În doar câteva momente, veți deveni parte a unei comunități de mai mult de 250000 de comercianți. Sunteți pe cale de a vă crea propriul și unicul dumneavoastră magazin online pe care îl veți putea administra cu ușurință în fiecare zi',
-    ),
-);
+    ],
+];

@@ -87,13 +87,13 @@ abstract class AdminTabCore
     protected $_having;
 
     /** @var array Name and directory where class image are located */
-    public $fieldImageSettings = array();
+    public $fieldImageSettings = [];
 
     /** @var string Image type */
     public $imageType = 'jpg';
 
     /** @var array Fields to display in list */
-    public $fieldsDisplay = array();
+    public $fieldsDisplay = [];
 
     public $optionTitle = null;
 
@@ -104,7 +104,7 @@ abstract class AdminTabCore
     public $shopShareDatas = false;
 
     /** @var array Cache for query results */
-    protected $_list = array();
+    protected $_list = [];
 
     /** @var int Number of results in list */
     protected $_listTotal = 0;
@@ -116,7 +116,7 @@ abstract class AdminTabCore
     protected $_tmpTableFilter = '';
 
     /** @var array Number of results in list per page (used in select field) */
-    protected $_pagination = array(20, 50, 100, 300, 1000);
+    protected $_pagination = [20, 50, 100, 300, 1000];
 
     /** @var string ORDER BY clause determined by field/arrows in list header */
     protected $_orderBy;
@@ -133,7 +133,7 @@ abstract class AdminTabCore
     protected $maxImageSize;
 
     /** @var array Errors displayed after post processing */
-    public $_errors = array();
+    public $_errors = [];
 
     /** @var array Confirmations displayed after post processing */
     protected $_conf;
@@ -151,7 +151,7 @@ abstract class AdminTabCore
 
     public $smarty;
 
-    protected $identifiersDnd = array('id_product' => 'id_product', 'id_category' => 'id_category_to_move','id_cms_category' => 'id_cms_category_to_move', 'id_cms' => 'id_cms', 'id_attribute' => 'id_attribute', 'id_attribute_group' => 'id_attribute_group', 'id_feature' => 'id_feature', 'id_carrier' => 'id_carrier');
+    protected $identifiersDnd = ['id_product' => 'id_product', 'id_category' => 'id_category_to_move','id_cms_category' => 'id_cms_category_to_move', 'id_cms' => 'id_cms', 'id_attribute' => 'id_attribute', 'id_attribute_group' => 'id_attribute_group', 'id_feature' => 'id_feature', 'id_carrier' => 'id_carrier'];
 
     /** @var bool Redirect or not ater a creation */
     protected $_redirect = true;
@@ -159,13 +159,13 @@ abstract class AdminTabCore
     /** @var bool If false, don't add form tags in options forms */
     protected $formOptions = true;
 
-    public $_fieldsOptions = array();
+    public $_fieldsOptions = [];
 
     /**
      * @since 1.5.0
      * @var array
      */
-    public $optionsList = array();
+    public $optionsList = [];
 
     /**
      * @since 1.5.0
@@ -176,7 +176,7 @@ abstract class AdminTabCore
     protected $_languages = null;
     protected $_defaultFormLanguage = null;
 
-    protected $_includeObj = array();
+    protected $_includeObj = [];
     protected $_includeVars = false;
     protected $_includeContainer = true;
 
@@ -188,7 +188,7 @@ abstract class AdminTabCore
      */
     public $ignore_sleep = false;
 
-    public static $tabParenting = array(
+    public static $tabParenting = [
         'AdminCms' => 'AdminCmsContent',
         'AdminCmsCategories' => 'AdminCmsContent',
         'AdminOrdersStates' => 'AdminStatuses',
@@ -197,14 +197,14 @@ abstract class AdminTabCore
         'AdminFeaturesValues' => 'AdminFeatures',
         'AdminReturnStates' => 'AdminStatuses',
         'AdminStatsTab' => 'AdminStats'
-    );
+    ];
 
     public function __construct()
     {
         $this->context = Context::getContext();
 
         $this->id = Tab::getIdFromClassName(get_class($this));
-        $this->_conf = array(
+        $this->_conf = [
             1 => $this->l('Deletion successful'), 2 => $this->l('Selection successfully deleted'),
             3 => $this->l('Creation successful'), 4 => $this->l('Update successful'),
             5 => $this->l('Status update successful'), 6 => $this->l('Settings update successful'),
@@ -218,7 +218,7 @@ abstract class AdminTabCore
             21 => $this->l('Module reset successfully'), 22 => $this->l('Module deleted successfully'),
             23 => $this->l('Localization pack imported successfully'), 24 => $this->l('Refund Successful'),
             25 => $this->l('Images successfully moved'),
-        );
+        ];
         if (!$this->identifier) {
             $this->identifier = 'id_'.$this->table;
         }
@@ -278,7 +278,7 @@ abstract class AdminTabCore
     public function display()
     {
         // Include other tab in current tab
-        if ($this->includeSubTab('display', array('submitAdd2', 'add', 'update', 'view'))) {
+        if ($this->includeSubTab('display', ['submitAdd2', 'add', 'update', 'view'])) {
         }
 
         // Include current tab
@@ -317,8 +317,8 @@ abstract class AdminTabCore
         if (!$this->tabAccess['add'] || !$this->tabAccess['delete'] === '1' || !$this->requiredDatabase) {
             return;
         }
-        $rules = call_user_func_array(array($this->className, 'getValidationRules'), array($this->className));
-        $required_class_fields = array($this->identifier);
+        $rules = call_user_func_array([$this->className, 'getValidationRules'], [$this->className]);
+        $required_class_fields = [$this->identifier];
         foreach ($rules['required'] as $required) {
             $required_class_fields[] = $required;
         }
@@ -339,7 +339,7 @@ abstract class AdminTabCore
         $object = new $this->className();
         $res = $object->getFieldsRequiredDatabase();
 
-        $required_fields = array();
+        $required_fields = [];
         foreach ($res as $row) {
             $required_fields[(int)$row['id_required_field']] = $row['field_name'];
         }
@@ -361,7 +361,7 @@ abstract class AdminTabCore
 		</fieldset>';
     }
 
-    public function includeSubTab($methodname, $actions = array())
+    public function includeSubTab($methodname, $actions = [])
     {
         if (!isset($this->_includeTab) || !is_array($this->_includeTab)) {
             return false;
@@ -460,7 +460,7 @@ abstract class AdminTabCore
         }
 
         /* Class specific validation rules */
-        $rules = call_user_func(array($className, 'getValidationRules'), $className);
+        $rules = call_user_func([$className, 'getValidationRules'], $className);
 
         if ((count($rules['requiredLang']) || count($rules['sizeLang']) || count($rules['validateLang']))) {
             /* Language() instance determined by default language */
@@ -474,7 +474,7 @@ abstract class AdminTabCore
         foreach ($rules['required'] as $field) {
             if (($value = Tools::getValue($field)) == false && (string)$value != '0') {
                 if (!Tools::getValue($this->identifier) || ($field != 'passwd' && $field != 'no-picture')) {
-                    $this->_errors[] = sprintf(Tools::displayError('The field %s is required.'), call_user_func(array($className, 'displayFieldName'), $field, $className));
+                    $this->_errors[] = sprintf(Tools::displayError('The field %s is required.'), call_user_func([$className, 'displayFieldName'], $field, $className));
                 }
             }
         }
@@ -482,14 +482,14 @@ abstract class AdminTabCore
         /* Checking for multilingual required fields */
         foreach ($rules['requiredLang'] as $fieldLang) {
             if (($empty = Tools::getValue($fieldLang.'_'.$defaultLanguage->id)) === false || $empty !== '0' && empty($empty)) {
-                $this->_errors[] = sprintf(Tools::displayError('The field %1$s is required at least in %2$s.'), call_user_func(array($className, 'displayFieldName'), $fieldLang, $className), $defaultLanguage->name);
+                $this->_errors[] = sprintf(Tools::displayError('The field %1$s is required at least in %2$s.'), call_user_func([$className, 'displayFieldName'], $fieldLang, $className), $defaultLanguage->name);
             }
         }
 
         /* Checking for maximum fields sizes */
         foreach ($rules['size'] as $field => $maxLength) {
             if (Tools::getValue($field) !== false && Tools::strlen(Tools::getValue($field)) > $maxLength) {
-                $this->_errors[] = sprintf(Tools::displayError('field %1$s is too long. (%2$d chars max)'), call_user_func(array($className, 'displayFieldName'), $field, $className), $maxLength);
+                $this->_errors[] = sprintf(Tools::displayError('field %1$s is too long. (%2$d chars max)'), call_user_func([$className, 'displayFieldName'], $field, $className), $maxLength);
             }
         }
 
@@ -497,7 +497,7 @@ abstract class AdminTabCore
         foreach ($rules['sizeLang'] as $fieldLang => $maxLength) {
             foreach ($languages as $language) {
                 if (Tools::getValue($fieldLang.'_'.$language['id_lang']) !== false && Tools::strlen(Tools::getValue($fieldLang.'_'.$language['id_lang'])) > $maxLength) {
-                    $this->_errors[] = sprintf(Tools::displayError('field %1$s is too long. (%2$d chars max, html chars including)'), call_user_func(array($className, 'displayFieldName'), $fieldLang, $className), $maxLength);
+                    $this->_errors[] = sprintf(Tools::displayError('field %1$s is too long. (%2$d chars max, html chars including)'), call_user_func([$className, 'displayFieldName'], $fieldLang, $className), $maxLength);
                 }
             }
         }
@@ -509,7 +509,7 @@ abstract class AdminTabCore
         foreach ($rules['validate'] as $field => $function) {
             if (($value = Tools::getValue($field)) !== false && !empty($value) && ($field != 'passwd')) {
                 if (!Validate::$function($value)) {
-                    $this->_errors[] = sprintf(Tools::displayError('The field %1$s (%2$s) is invalid.'), call_user_func(array($className, 'displayFieldName'), $field, $className));
+                    $this->_errors[] = sprintf(Tools::displayError('The field %1$s (%2$s) is invalid.'), call_user_func([$className, 'displayFieldName'], $field, $className));
                 }
             }
         }
@@ -517,9 +517,9 @@ abstract class AdminTabCore
         /* Checking for passwd_old validity */
         if (($value = Tools::getValue('passwd')) != false) {
             if ($className == 'Employee' && !Validate::isPasswdAdmin($value)) {
-                $this->_errors[] = sprintf(Tools::displayError('The field %1$s (%2$s) is invalid.'), call_user_func(array($className, 'displayFieldName'), 'passwd', $className));
+                $this->_errors[] = sprintf(Tools::displayError('The field %1$s (%2$s) is invalid.'), call_user_func([$className, 'displayFieldName'], 'passwd', $className));
             } elseif ($className == 'Customer' && !Validate::isPasswd($value)) {
-                $this->_errors[] = sprintf(Tools::displayError('The field %1$s (%2$s) is invalid.'), call_user_func(array($className, 'displayFieldName'), 'passwd', $className));
+                $this->_errors[] = sprintf(Tools::displayError('The field %1$s (%2$s) is invalid.'), call_user_func([$className, 'displayFieldName'], 'passwd', $className));
             }
         }
 
@@ -528,7 +528,7 @@ abstract class AdminTabCore
             foreach ($languages as $language) {
                 if (($value = Tools::getValue($fieldLang.'_'.$language['id_lang'])) !== false && !empty($value)) {
                     if (!Validate::$function($value)) {
-                        $this->_errors[] = sprintf(Tools::displayError('The field %1$s (%2$s) is invalid.'), call_user_func(array($className, 'displayFieldName'), $fieldLang, $className), $language['name']);
+                        $this->_errors[] = sprintf(Tools::displayError('The field %1$s (%2$s) is invalid.'), call_user_func([$className, 'displayFieldName'], $fieldLang, $className), $language['name']);
                     }
                 }
             }
@@ -605,7 +605,7 @@ abstract class AdminTabCore
         $token = Tools::getValue('token') ? Tools::getValue('token') : $this->token;
 
         // Sub included tab postProcessing
-        $this->includeSubTab('postProcess', array('status', 'submitAdd1', 'submitDel', 'delete', 'submitFilter', 'submitReset'));
+        $this->includeSubTab('postProcess', ['status', 'submitAdd1', 'submitDel', 'delete', 'submitFilter', 'submitReset']);
 
         /* Delete object image */
         if (isset($_GET['deleteImage'])) {
@@ -624,7 +624,7 @@ abstract class AdminTabCore
                 if (Validate::isLoadedObject($object = $this->loadObject()) && isset($this->fieldImageSettings)) {
                     /** @var ObjectModel $object */
                     // check if request at least one object with noZeroObject
-                    if (isset($object->noZeroObject) && count(call_user_func(array($this->className, $object->noZeroObject))) <= 1) {
+                    if (isset($object->noZeroObject) && count(call_user_func([$this->className, $object->noZeroObject])) <= 1) {
                         $this->_errors[] = Tools::displayError('You need at least one object.').' <b>'.$this->table.'</b><br />'.Tools::displayError('You cannot delete all of the items.');
                     } else {
                         if ($this->deleted) {
@@ -690,7 +690,7 @@ abstract class AdminTabCore
                     $object = new $this->className();
                     if (isset($object->noZeroObject) &&
                         // Check if all object will be deleted
-                        (count(call_user_func(array($this->className, $object->noZeroObject))) <= 1 || count($_POST[$this->table.'Box']) == count(call_user_func(array($this->className, $object->noZeroObject))))) {
+                        (count(call_user_func([$this->className, $object->noZeroObject])) <= 1 || count($_POST[$this->table.'Box']) == count(call_user_func([$this->className, $object->noZeroObject])))) {
                         $this->_errors[] = Tools::displayError('You need at least one object.').' <b>'.$this->table.'</b><br />'.Tools::displayError('You cannot delete all of the items.');
                     } else {
                         $result = true;
@@ -812,12 +812,12 @@ abstract class AdminTabCore
                                 $this->updateRestrictions($object->id);
                                 // assign group access to every categories
                                 $categories = Category::getCategories($this->context->language->id, true);
-                                $rowList = array();
+                                $rowList = [];
                                 $a = 0;
                                 foreach ($categories as $category) {
                                     foreach ($category as $categ_id => $categ) {
                                         if ($categ_id != 1) {
-                                            $rowList[] = array('id_category' => $categ_id, 'id_group' => $object->id);
+                                            $rowList[] = ['id_category' => $categ_id, 'id_group' => $object->id];
                                         }
                                     }
                                 }
@@ -875,7 +875,7 @@ abstract class AdminTabCore
 
         /* Manage list filtering */
         elseif (Tools::isSubmit('submitFilter'.$this->table) || $this->context->cookie->{'submitFilter'.$this->table} !== false) {
-            $_POST = array_merge($this->context->cookie->getFamily($this->table.'Filter_'), (isset($_POST) ? $_POST : array()));
+            $_POST = array_merge($this->context->cookie->getFamily($this->table.'Filter_'), (isset($_POST) ? $_POST : []));
             foreach ($_POST as $key => $value) {
                 /* Extracting filters from $_POST on key filter_ */
                 if ($value != null && !strncmp($key, $this->table.'Filter_', 7 + Tools::strlen($this->table))) {
@@ -931,7 +931,7 @@ abstract class AdminTabCore
             }
         } elseif (Tools::isSubmit('submitFields') && $this->requiredDatabase && $this->tabAccess['add'] === '1' && $this->tabAccess['delete'] === '1') {
             if (!is_array($fields = Tools::getValue('fieldsBox'))) {
-                $fields = array();
+                $fields = [];
             }
 
             /** @var ObjectModel $object */
@@ -969,15 +969,15 @@ abstract class AdminTabCore
             return;
         }
 
-        $assos = array();
+        $assos = [];
         foreach ($_POST as $k => $row) {
             if (!preg_match('/^checkBox'.Tools::toCamelCase($type, true).'Asso_'.$table.'_([0-9]+)?_([0-9]+)$/Ui', $k, $res)) {
                 continue;
             }
             $id_asso_object = (!empty($res[1]) ? $res[1] : $id_object);
-            $assos[] = array('id_object' => (int)$id_asso_object, 'id_'.$type => (int)$res[2]);
+            $assos[] = ['id_object' => (int)$id_asso_object, 'id_'.$type => (int)$res[2]];
         }
-        return array($assos, $type);
+        return [$assos, $type];
     }
 
     /**
@@ -1050,8 +1050,8 @@ abstract class AdminTabCore
                         $method_name = 'updateOption'.Tools::toCamelCase($key, true);
                         if (method_exists($this, $method_name)) {
                             $this->$method_name(Tools::getValue($key));
-                        } elseif (isset($options['type']) && in_array($options['type'], array('textLang', 'textareaLang'))) {
-                            $list = array();
+                        } elseif (isset($options['type']) && in_array($options['type'], ['textLang', 'textareaLang'])) {
+                            $list = [];
                             foreach ($language_ids as $id_lang) {
                                 $val = (isset($options['cast']) ? $options['cast'](Tools::getValue($key.'_'.$id_lang)) : Tools::getValue($key.'_'.$id_lang));
                                 if ($this->validateField($val, $options)) {
@@ -1188,7 +1188,7 @@ abstract class AdminTabCore
         }
 
         /* Multilingual fields */
-        $rules = call_user_func(array(get_class($object), 'getValidationRules'), get_class($object));
+        $rules = call_user_func([get_class($object), 'getValidationRules'], get_class($object));
         if (count($rules['validateLang'])) {
             $language_ids = Language::getIDs(false);
             foreach ($language_ids as $id_lang) {
@@ -1582,7 +1582,7 @@ abstract class AdminTabCore
                     }
                     $name = $this->table.'Filter_'.(isset($params['filter_key']) ? $params['filter_key'] : $key);
                     $nameId = str_replace('!', '__', $name);
-                    includeDatepicker(array($nameId.'_0', $nameId.'_1'));
+                    includeDatepicker([$nameId.'_0', $nameId.'_1']);
                     echo $this->l('From').' <input type="text" id="'.$nameId.'_0" name="'.$name.'[0]" value="'.(isset($value[0]) ? $value[0] : '').'"'.$width.' '.$keyPress.' /><br />
 					'.$this->l('To').' <input type="text" id="'.$nameId.'_1" name="'.$name.'[1]" value="'.(isset($value[1]) ? $value[1] : '').'"'.$width.' '.$keyPress.' />';
                     break;
@@ -1680,7 +1680,7 @@ abstract class AdminTabCore
             if (preg_match('/cms/Ui', $this->identifier)) {
                 $isCms = true;
             }
-            $keyToGet = 'id_'.($isCms ? 'cms_' : '').'category'.(in_array($this->identifier, array('id_category', 'id_cms_category')) ? '_parent' : '');
+            $keyToGet = 'id_'.($isCms ? 'cms_' : '').'category'.(in_array($this->identifier, ['id_category', 'id_cms_category']) ? '_parent' : '');
             foreach ($this->_list as $tr) {
                 $id = $tr[$this->identifier];
                 echo '<tr'.(array_key_exists($this->identifier, $this->identifiersDnd) ? ' id="tr_'.(($id_category = (int)(Tools::getValue('id_'.($isCms ? 'cms_' : '').'category', '1'))) ? $id_category : '').'_'.$id.'_'.$tr['position'].'"' : '').($irow++ % 2 ? ' class="alt_row"' : '').' '.((isset($tr['color']) && $this->colorOnBackground) ? 'style="background-color: '.$tr['color'].'"' : '').'>
@@ -1751,7 +1751,7 @@ abstract class AdminTabCore
                             $echo = $tr[$key];
                         }
 
-                        echo isset($params['callback']) ? call_user_func_array(array((isset($params['callback_object'])) ? $params['callback_object'] : $this->className, $params['callback']), array($echo, $tr)) : $echo;
+                        echo isset($params['callback']) ? call_user_func_array([(isset($params['callback_object'])) ? $params['callback_object'] : $this->className, $params['callback']], [$echo, $tr]) : $echo;
                     } else {
                         echo '--';
                     }
@@ -1869,12 +1869,12 @@ abstract class AdminTabCore
 
         // Retrocompatibility < 1.5.0
         if (!$this->optionsList && $this->_fieldsOptions) {
-            $this->optionsList = array(
-                'options' => array(
+            $this->optionsList = [
+                'options' => [
                     'title' =>    ($this->optionTitle) ? $this->optionTitle : $this->l('Options'),
                     'fields' =>    $this->_fieldsOptions,
-                ),
-            );
+                ],
+            ];
         }
 
         if (!$this->optionsList) {
@@ -2429,7 +2429,7 @@ abstract class AdminTabCore
             return;
         }
 
-        $assos = array();
+        $assos = [];
         $sql = 'SELECT id_shop, `'.bqSQL($this->identifier).'`
 				FROM `'._DB_PREFIX_.bqSQL($this->table).'_shop`';
         foreach (Db::getInstance()->executeS($sql) as $row) {
@@ -2525,7 +2525,7 @@ EOF;
      * @param array $remove List of keys to remove from URL
      * @return string
      */
-    protected function getCurrentUrl($remove = array())
+    protected function getCurrentUrl($remove = [])
     {
         $url = $_SERVER['REQUEST_URI'];
         if (!$remove) {
@@ -2533,7 +2533,7 @@ EOF;
         }
 
         if (!is_array($remove)) {
-            $remove = array($remove);
+            $remove = [$remove];
         }
 
         $url = preg_replace('#(?<=&|\?)('.implode('|', $remove).')=.*?(&|$)#i', '', $url);

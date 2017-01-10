@@ -41,37 +41,39 @@ class AdminReturnControllerCore extends AdminController
         $this->_join .= 'LEFT JOIN '._DB_PREFIX_.'order_return_state_lang orsl ON (orsl.`id_order_return_state` = a.`state` AND orsl.`id_lang` = '.(int)$this->context->language->id.')';
         $this->_join .= ' LEFT JOIN '._DB_PREFIX_.'orders o ON (o.`id_order` = a.`id_order`)';
 
-        $this->fields_list = array(
-            'id_order_return' => array('title' => $this->l('ID'), 'align' => 'center', 'width' => 25),
-            'id_order' => array('title' => $this->l('Order ID'), 'width' => 100, 'align' => 'center', 'filter_key'=>'a!id_order'),
-            'name' => array('title' => $this->l('Status'),'color' => 'color', 'width' => 'auto', 'align' => 'left'),
-            'date_add' => array('title' => $this->l('Date issued'), 'width' => 150, 'type' => 'date', 'align' => 'right', 'filter_key'=>'a!date_add'),
-        );
+        $this->fields_list = [
+            'id_order_return' => ['title' => $this->l('ID'), 'align' => 'center', 'width' => 25],
+            'id_order' => ['title' => $this->l('Order ID'), 'width' => 100, 'align' => 'center', 'filter_key'=>'a!id_order'],
+            'name' => ['title' => $this->l('Status'),'color' => 'color', 'width' => 'auto', 'align' => 'left'],
+            'date_add' => ['title' => $this->l('Date issued'), 'width' => 150, 'type' => 'date', 'align' => 'right', 'filter_key'=>'a!date_add'],
+        ];
 
-        $this->fields_options = array(
-            'general' => array(
+        $this->fields_options = [
+            'general' => [
                 'title' =>    $this->l('Merchandise return (RMA) options'),
-                'fields' =>    array(
-                    'PS_ORDER_RETURN' => array(
+                'fields' =>    [
+                    'PS_ORDER_RETURN' => [
                         'title' => $this->l('Enable returns'),
                         'desc' => $this->l('Would you like to allow merchandise returns in your shop?'),
-                        'cast' => 'intval', 'type' => 'bool'),
-                    'PS_ORDER_RETURN_NB_DAYS' => array(
+                        'cast' => 'intval', 'type' => 'bool'
+                    ],
+                    'PS_ORDER_RETURN_NB_DAYS' => [
                         'title' => $this->l('Time limit of validity'),
                         'desc' => $this->l('How many days after the delivery date does the customer have to return a product?'),
                         'cast' => 'intval',
                         'type' => 'text',
-                        'size' => '2'),
-                    'PS_RETURN_PREFIX' => array(
+                        'size' => '2'
+                    ],
+                    'PS_RETURN_PREFIX' => [
                         'title' => $this->l('Returns prefix'),
                         'desc' => $this->l('Prefix used for return name (e.g. RE00001).'),
                         'size' => 6,
                         'type' => 'textLang'
-                    ),
-                ),
-                'submit' => array('title' => $this->l('Save'))
-            ),
-        );
+                    ],
+                ],
+                'submit' => ['title' => $this->l('Save')]
+            ],
+        ];
 
         parent::__construct();
 
@@ -81,77 +83,77 @@ class AdminReturnControllerCore extends AdminController
 
     public function renderForm()
     {
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('Return Merchandise Authorization (RMA)'),
                 'image' => '../img/admin/return.gif'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'hidden',
                     'name' => 'id_order'
-                ),
-                array(
+                ],
+                [
                     'type' => 'hidden',
                     'name' => 'id_customer'
-                ),
-                array(
+                ],
+                [
                     'type' => 'text_customer',
                     'label' => $this->l('Customer'),
                     'name' => '',
                     'size' => '',
                     'required' => false,
-                ),
-                array(
+                ],
+                [
                     'type' => 'text_order',
                     'label' => $this->l('Order'),
                     'name' => '',
                     'size' => '',
                     'required' => false,
-                ),
-                array(
+                ],
+                [
                     'type' => 'free',
                     'label' => $this->l('Customer explanation'),
                     'name' => 'question',
                     'size' => '',
                     'required' => false,
-                ),
-                array(
+                ],
+                [
                     'type' => 'select',
                     'label' => $this->l('Status'),
                     'name' => 'state',
                     'required' => false,
-                    'options' => array(
+                    'options' => [
                         'query' => OrderReturnState::getOrderReturnStates($this->context->language->id),
                         'id' => 'id_order_return_state',
                         'name' => 'name'
-                    ),
+                    ],
                     'desc' => $this->l('Merchandise return (RMA) status.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'list_products',
                     'label' => $this->l('Products'),
                     'name' => '',
                     'size' => '',
                     'required' => false,
                     'desc' => $this->l('List of products in return package.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'pdf_order_return',
                     'label' => $this->l('Return slip'),
                     'name' => '',
                     'size' => '',
                     'required' => false,
                     'desc' => $this->l('The link is only available after validation and before the parcel gets delivered.')
-                ),
-            ),
-            'submit' => array(
+                ],
+            ],
+            'submit' => [
                 'title' => $this->l('Save'),
-            )
-        );
+            ]
+        ];
 
         $order = new Order($this->object->id_order);
-        $quantity_displayed = array();
+        $quantity_displayed = [];
         // Customized products */
         if ($returned_customizations = OrderReturn::getReturnedCustomizedProducts((int)($this->object->id_order))) {
             foreach ($returned_customizations as $returned_customization) {
@@ -165,7 +167,7 @@ class AdminReturnControllerCore extends AdminController
         // Prepare customer explanation for display
         $this->object->question = '<span class="normal-text">'.nl2br($this->object->question).'</span>';
 
-        $this->tpl_form_vars = array(
+        $this->tpl_form_vars = [
             'customer' => new Customer($this->object->id_customer),
             'url_customer' => 'index.php?tab=AdminCustomers&id_customer='.(int)$this->object->id_customer.'&viewcustomer&token='.Tools::getAdminToken('AdminCustomers'.(int)(Tab::getIdFromClassName('AdminCustomers')).(int)$this->context->employee->id),
             'text_order' => sprintf($this->l('Order #%1$d from %2$s'), $order->id, Tools::displayDate($order->date_upd)),
@@ -177,7 +179,7 @@ class AdminReturnControllerCore extends AdminController
             'quantityDisplayed' => $quantity_displayed,
             'id_order_return' => $this->object->id,
             'state_order_return' => $this->object->state,
-        );
+        ];
 
         return parent::renderForm();
     }
@@ -188,12 +190,12 @@ class AdminReturnControllerCore extends AdminController
         if (!$this->display || $this->display == 'list') {
             return;
         } elseif ($this->display != 'options') {
-            $this->toolbar_btn['save-and-stay'] = array(
+            $this->toolbar_btn['save-and-stay'] = [
                 'short' => 'SaveAndStay',
                 'href' => '#',
                 'desc' => $this->l('Save and stay'),
                 'force_desc' => true,
-            );
+            ];
         }
 
         parent::initToolbar();
@@ -237,11 +239,12 @@ class AdminReturnControllerCore extends AdminController
                     $orderReturn->state = (int)(Tools::getValue('state'));
                     if ($orderReturn->save()) {
                         $orderReturnState = new OrderReturnState($orderReturn->state);
-                        $vars = array(
+                        $vars = [
                         '{lastname}' => $customer->lastname,
                         '{firstname}' => $customer->firstname,
                         '{id_order_return}' => $id_order_return,
-                        '{state_order_return}' => (isset($orderReturnState->name[(int)$order->id_lang]) ? $orderReturnState->name[(int)$order->id_lang] : $orderReturnState->name[(int)Configuration::get('PS_LANG_DEFAULT')]));
+                        '{state_order_return}' => (isset($orderReturnState->name[(int)$order->id_lang]) ? $orderReturnState->name[(int)$order->id_lang] : $orderReturnState->name[(int)Configuration::get('PS_LANG_DEFAULT')])
+                        ];
                         Mail::Send((int)$order->id_lang, 'order_return_state', Mail::l('Your order return status has changed', $order->id_lang),
                             $vars, $customer->email, $customer->firstname.' '.$customer->lastname, null, null, null,
                             null, _PS_MAIL_DIR_, true, (int)$order->id_shop);

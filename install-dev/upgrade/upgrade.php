@@ -166,7 +166,7 @@ if ($resultDB !== true)
 
 //
 //custom sql file creation
-$upgradeFiles = array();
+$upgradeFiles = [];
 if (empty($fail_result)) {
     if ($handle = opendir(_PS_INSTALLER_SQL_UPGRADE_DIR_)) {
         while (false !== ($file = readdir($handle))) {
@@ -197,7 +197,7 @@ if ($versionNumbers != 4) {
 $oldversion = implode('.', $arrayVersion);
 // end of fix
 
-$neededUpgradeFiles = array();
+$neededUpgradeFiles = [];
 foreach ($upgradeFiles as $version) {
     if (version_compare($version, $oldversion) == 1 and version_compare(_PS_INSTALL_VERSION_, $version) != -1) {
         $neededUpgradeFiles[] = $version;
@@ -223,37 +223,37 @@ if (defined('_PS_CACHING_SYSTEM_') and _PS_CACHING_SYSTEM_ == 'CacheFS') {
 } else {
     $cache_engine = 'CacheMemcache';
 }
-$datas = array(
-    array('_DB_SERVER_', _DB_SERVER_),
-    array('_DB_NAME_', _DB_NAME_),
-    array('_DB_USER_', _DB_USER_),
-    array('_DB_PASSWD_', _DB_PASSWD_),
-    array('_DB_PREFIX_', _DB_PREFIX_),
-    array('_MYSQL_ENGINE_', $mysqlEngine),
-    array('_PS_CACHING_SYSTEM_', $cache_engine),
-    array('_PS_CACHE_ENABLED_', defined('_PS_CACHE_ENABLED_') ? _PS_CACHE_ENABLED_ : '0'),
+$datas = [
+    ['_DB_SERVER_', _DB_SERVER_],
+    ['_DB_NAME_', _DB_NAME_],
+    ['_DB_USER_', _DB_USER_],
+    ['_DB_PASSWD_', _DB_PASSWD_],
+    ['_DB_PREFIX_', _DB_PREFIX_],
+    ['_MYSQL_ENGINE_', $mysqlEngine],
+    ['_PS_CACHING_SYSTEM_', $cache_engine],
+    ['_PS_CACHE_ENABLED_', defined('_PS_CACHE_ENABLED_') ? _PS_CACHE_ENABLED_ : '0'],
     // 1.4 only
     // array('__PS_BASE_URI__', __PS_BASE_URI__),
     // 1.4 only
     // array('_THEME_NAME_', _THEME_NAME_),
-    array('_PS_DIRECTORY_', __PS_BASE_URI__),
-    array('_COOKIE_KEY_', _COOKIE_KEY_),
-    array('_COOKIE_IV_', _COOKIE_IV_),
-    array('_PS_CREATION_DATE_', defined("_PS_CREATION_DATE_") ? _PS_CREATION_DATE_ : date('Y-m-d')),
-    array('_PS_VERSION_', _PS_INSTALL_VERSION_)
-);
+    ['_PS_DIRECTORY_', __PS_BASE_URI__],
+    ['_COOKIE_KEY_', _COOKIE_KEY_],
+    ['_COOKIE_IV_', _COOKIE_IV_],
+    ['_PS_CREATION_DATE_', defined("_PS_CREATION_DATE_") ? _PS_CREATION_DATE_ : date('Y-m-d')],
+    ['_PS_VERSION_', _PS_INSTALL_VERSION_]
+];
 
 if (version_compare(_PS_INSTALL_VERSION_, '1.6.0.11', '<')) {
-    $datas[] = array('_MEDIA_SERVER_1_', defined('_MEDIA_SERVER_1_') ? _MEDIA_SERVER_1_ : '');
-    $datas[] = array('_MEDIA_SERVER_2_', defined('_MEDIA_SERVER_2_') ? _MEDIA_SERVER_2_ : '');
-    $datas[] = array('_MEDIA_SERVER_3_', defined('_MEDIA_SERVER_3_') ? _MEDIA_SERVER_3_ : '');
+    $datas[] = ['_MEDIA_SERVER_1_', defined('_MEDIA_SERVER_1_') ? _MEDIA_SERVER_1_ : ''];
+    $datas[] = ['_MEDIA_SERVER_2_', defined('_MEDIA_SERVER_2_') ? _MEDIA_SERVER_2_ : ''];
+    $datas[] = ['_MEDIA_SERVER_3_', defined('_MEDIA_SERVER_3_') ? _MEDIA_SERVER_3_ : ''];
 }
 
 if (defined('_RIJNDAEL_KEY_')) {
-    $datas[] = array('_RIJNDAEL_KEY_', _RIJNDAEL_KEY_);
+    $datas[] = ['_RIJNDAEL_KEY_', _RIJNDAEL_KEY_];
 }
 if (defined('_RIJNDAEL_IV_')) {
-    $datas[] = array('_RIJNDAEL_IV_', _RIJNDAEL_IV_);
+    $datas[] = ['_RIJNDAEL_IV_', _RIJNDAEL_IV_];
 }
 if (!defined('_PS_CACHE_ENABLED_')) {
     define('_PS_CACHE_ENABLED_', '0');
@@ -293,7 +293,7 @@ if (isset($_GET['customModule']) and $_GET['customModule'] == 'desactivate') {
     require_once(_PS_INSTALLER_PHP_UPGRADE_DIR_.'deactivate_custom_modules.php');
     deactivate_custom_modules();
 }
-$sqlContentVersion = array();
+$sqlContentVersion = [];
 if (empty($fail_result)) {
     foreach ($neededUpgradeFiles as $version) {
         $file = _PS_INSTALLER_SQL_UPGRADE_DIR_.$version.'.sql';
@@ -306,7 +306,7 @@ if (empty($fail_result)) {
             $fail_result .= '<action result="fail" error="33" />'."\n";
         }
         $sqlContent .= "\n";
-        $sqlContent = str_replace(array($filePrefix, $engineType), array(_DB_PREFIX_, $mysqlEngine), $sqlContent);
+        $sqlContent = str_replace([$filePrefix, $engineType], [_DB_PREFIX_, $mysqlEngine], $sqlContent);
         $sqlContent = preg_split("/;\s*[\r\n]+/", $sqlContent);
 
         $sqlContentVersion[$version] = $sqlContent;
@@ -348,7 +348,7 @@ if (empty($fail_result)) {
                     if (isset($parameters[1])) {
                         $parameters = $parameters[1];
                     } else {
-                        $parameters = array();
+                        $parameters = [];
                     }
                     if (is_array($parameters)) {
                         foreach ($parameters as &$parameter) {
@@ -363,7 +363,7 @@ if (empty($fail_result)) {
                         $phpRes = call_user_func_array($func_name, $parameters);
                     } else {
                         /* Or an object method */
-                        $func_name = array($php[0], str_replace($pattern[0], '', $php[1]));
+                        $func_name = [$php[0], str_replace($pattern[0], '', $php[1])];
                         $phpRes = call_user_func_array($func_name, $parameters);
                     }
                     if ((is_array($phpRes) and !empty($phpRes['error'])) or $phpRes === false) {
@@ -406,12 +406,12 @@ if (empty($fail_result)) {
 
     // Settings updated, compile and cache directories must be emptied
     $tools_dir = rtrim(_PS_INSTALL_PATH_, '\\/').DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'tools'.DIRECTORY_SEPARATOR;
-    $arrayToClean = array(
+    $arrayToClean = [
         $tools_dir.'smarty'.DIRECTORY_SEPARATOR.'cache',
         $tools_dir.'smarty'.DIRECTORY_SEPARATOR.'compile',
         $tools_dir.'smarty_v2'.DIRECTORY_SEPARATOR.'cache',
         $tools_dir.'smarty_v2'.DIRECTORY_SEPARATOR.'compile'
-    );
+    ];
     foreach ($arrayToClean as $dir) {
         if (file_exists($dir)) {
             foreach (scandir($dir) as $file) {

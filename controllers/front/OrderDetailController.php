@@ -109,7 +109,7 @@ class OrderDetailControllerCore extends FrontController
 
                     if (Validate::isLoadedObject($customer)) {
                         Mail::Send($this->context->language->id, 'order_customer_comment', Mail::l('Message from a customer'),
-                        array(
+                        [
                             '{lastname}' => $customer->lastname,
                             '{firstname}' => $customer->firstname,
                             '{email}' => $customer->email,
@@ -117,7 +117,7 @@ class OrderDetailControllerCore extends FrontController
                             '{order_name}' => $order->getUniqReference(),
                             '{message}' => Tools::nl2br($msgText),
                             '{product_name}' => $product_name
-                        ),
+                        ],
                         $to, $toName, $customer->email, $customer->firstname.' '.$customer->lastname);
                     }
 
@@ -175,7 +175,8 @@ class OrderDetailControllerCore extends FrontController
                 $order_status = new OrderState((int)$id_order_state, (int)$order->id_lang);
 
                 $customer = new Customer($order->id_customer);
-                $this->context->smarty->assign(array(
+                $this->context->smarty->assign(
+                    [
                     'shop_name' => strval(Configuration::get('PS_SHOP_NAME')),
                     'order' => $order,
                     'return_allowed' => (int)$order->isReturnable(),
@@ -207,13 +208,14 @@ class OrderDetailControllerCore extends FrontController
                     'customizedDatas' => $customizedDatas,
                     /* DEPRECATED: customizedDatas @since 1.5 */
                     'reorderingAllowed' => !(bool)Configuration::get('PS_DISALLOW_HISTORY_REORDERING')
-                ));
+                    ]
+                );
 
                 if ($carrier->url && $order->shipping_number) {
                     $this->context->smarty->assign('followup', str_replace('@', $order->shipping_number, $carrier->url));
                 }
-                $this->context->smarty->assign('HOOK_ORDERDETAILDISPLAYED', Hook::exec('displayOrderDetail', array('order' => $order)));
-                Hook::exec('actionOrderDetail', array('carrier' => $carrier, 'order' => $order));
+                $this->context->smarty->assign('HOOK_ORDERDETAILDISPLAYED', Hook::exec('displayOrderDetail', ['order' => $order]));
+                Hook::exec('actionOrderDetail', ['carrier' => $carrier, 'order' => $order]);
 
                 unset($carrier, $addressInvoice, $addressDelivery);
             } else {

@@ -1,6 +1,6 @@
 <?php
-return array(
-    'informations' => array(
+return [
+    'informations' => [
         'documentation' => 'http://doc.prestashop.com/display/PS16/Installing+PrestaShop',
         'documentation_upgrade' => 'http://docs.prestashop.com/display/PS16/Updating+PrestaShop',
         'forum' => 'http://www.prestashop.com/forums/?lang=ru',
@@ -8,8 +8,8 @@ return array(
         'support' => 'https://www.prestashop.com/ru/support',
         'tutorial' => 'https://www.youtube.com/watch?v=psz4aIPZZuk',
         'tailored_help' => 'http://addons.prestashop.com/en/388-support',
-    ),
-    'translations' => array(
+    ],
+    'translations' => [
         'An SQL error occurred for entity <i>%1$s</i>: <i>%2$s</i>' => 'Произошла ошибка SQL для записи <i>%1$s</i>: <i>%2$s</i>',
         'Cannot create image "%1$s" for entity "%2$s"' => 'Невозможно создать изображение "%1$s" для значения "%2$s"',
         'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => 'Невозможно создать изображение "%1$s" (недостаточно разрешений для папки "%2$s")',
@@ -205,5 +205,5 @@ return array(
         'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => 'Выбранный Вами язык будет использован только в Помощнике установки. По окончании установки Вы можете выбрать любой из %d бесплатных переводов!',
         'http://doc.prestashop.com/display/PS16/Installing+PrestaShop#InstallingPrestaShop-Completingtheinstallation' => 'http://doc.prestashop.com/display/PS16/Installing+PrestaShop#InstallingPrestaShop-Completingtheinstallation',
         'Installing PrestaShop is quick and easy. In just a few moments, you will become part of a community consisting of more than 250,000 merchants. You are on the way to creating your own unique online store that you can manage easily every day.' => 'Установка PrestaShop легкая и не занимает много времени. Вскоре Вы станете частью сообщества, состоящего из более чем 250 000 участников. Вы находитесь на пути к созданию своего собственного уникального интернет-магазина, которым легко управлять, день за днем.',
-    ),
-);
+    ],
+];

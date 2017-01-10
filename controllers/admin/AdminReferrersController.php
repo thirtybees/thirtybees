@@ -36,7 +36,7 @@ if (Tools::getValue('token') == Tools::getAdminToken('AdminReferrers'.(int)Tab::
             new Employee((int)Tools::getValue('id_employee'))
         );
     } elseif (Tools::isSubmit('ajaxFillProducts')) {
-        $json_array = array();
+        $json_array = [];
         $result = Db::getInstance()->executeS('
 			SELECT p.id_product, pl.name
 			FROM '._DB_PREFIX_.'product p
@@ -63,96 +63,96 @@ class AdminReferrersControllerCore extends AdminController
         $this->bootstrap = true;
         $this->table = 'referrer';
         $this->className = 'Referrer';
-        $this->fields_list = array(
-            'id_referrer' => array(
+        $this->fields_list = [
+            'id_referrer' => [
                 'title' => $this->l('ID'),
                 'width' => 25,
                 'align' => 'center'
-            ),
-            'name' => array(
+            ],
+            'name' => [
                 'title' => $this->l('Name'),
                 'width' => 80
-            ),
-            'cache_visitors' => array(
+            ],
+            'cache_visitors' => [
                 'title' => $this->l('Visitors'),
                 'width' => 30,
                 'align' => 'center'
-            ),
-            'cache_visits' => array(
+            ],
+            'cache_visits' => [
                 'title' => $this->l('Visits'),
                 'width' => 30,
                 'align' => 'center'
-            ),
-            'cache_pages' => array(
+            ],
+            'cache_pages' => [
                 'title' => $this->l('Pages'),
                 'width' => 30,
                 'align' => 'center'
-            ),
-            'cache_registrations' => array(
+            ],
+            'cache_registrations' => [
                 'title' => $this->l('Reg.'),
                 'width' => 30,
                 'align' => 'center'
-            ),
-            'cache_orders' => array(
+            ],
+            'cache_orders' => [
                 'title' => $this->l('Orders'),
                 'width' => 30,
                 'align' => 'center'
-            ),
-            'cache_sales' => array(
+            ],
+            'cache_sales' => [
                 'title' => $this->l('Sales'),
                 'width' => 80,
                 'align' => 'right',
                 'prefix' => '<b>',
                 'suffix' => '</b>',
                 'price' => true
-            ),
-            'cart' => array(
+            ],
+            'cart' => [
                 'title' => $this->l('Avg. cart'),
                 'width' => 50,
                 'align' => 'right',
                 'price' => true,
                 'havingFilter' => true
-            ),
-            'cache_reg_rate' => array(
+            ],
+            'cache_reg_rate' => [
                 'title' => $this->l('Reg. rate'),
                 'width' => 30,
                 'align' => 'center'
-            ),
-            'cache_order_rate' => array(
+            ],
+            'cache_order_rate' => [
                 'title' => $this->l('Order rate'),
                 'width' => 30,
                 'align' => 'center'
-            ),
-            'fee0' => array(
+            ],
+            'fee0' => [
                 'title' => $this->l('Click'),
                 'width' => 30,
                 'align' => 'right',
                 'price' => true,
                 'havingFilter' => true
-            ),
-            'fee1' => array(
+            ],
+            'fee1' => [
                 'title' => $this->l('Base'),
                 'width' => 30,
                 'align' => 'right',
                 'price' => true,
                 'havingFilter' => true
-            ),
-            'fee2' => array(
+            ],
+            'fee2' => [
                 'title' => $this->l('Percent'),
                 'width' => 30,
                 'align' => 'right',
                 'price' => true,
                 'havingFilter' => true
-            )
-        );
+            ]
+        ];
 
-        $this->bulk_actions = array(
-            'delete' => array(
+        $this->bulk_actions = [
+            'delete' => [
                 'text' => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
                 'icon' => 'icon-trash'
-            )
-        );
+            ]
+        ];
 
         parent::__construct();
     }
@@ -166,11 +166,11 @@ class AdminReferrersControllerCore extends AdminController
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
-            $this->page_header_toolbar_btn['new_referrer'] = array(
+            $this->page_header_toolbar_btn['new_referrer'] = [
                 'href' => self::$currentIndex.'&addreferrer&token='.$this->token,
                 'desc' => $this->l('Add new referrer', null, null, false),
                 'icon' => 'process-icon-new'
-            );
+            ];
         }
         
         parent::initPageHeaderToolbar();
@@ -193,11 +193,11 @@ class AdminReferrersControllerCore extends AdminController
 
         $this->_group = 'GROUP BY sa.id_referrer';
 
-        $this->tpl_list_vars = array(
+        $this->tpl_list_vars = [
             'enable_calendar' => $this->enableCalendar(),
             'calendar_form' => $this->displayCalendar(),
             'settings_form' => $this->displaySettings()
-        );
+        ];
 
         return parent::renderList();
     }
@@ -206,160 +206,168 @@ class AdminReferrersControllerCore extends AdminController
     {
         $uri = Tools::getHttpHost(true, true).__PS_BASE_URI__;
 
-        $this->fields_form[0] = array('form' => array(
-            'legend' => array(
+        $this->fields_form[0] = [
+            'form' => [
+            'legend' => [
                 'title' => $this->l('Affiliate'),
                 'icon' => 'icon-group'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'text',
                     'label' => $this->l('Name'),
                     'name' => 'name',
                     'required' => true,
                     'autocomplete' => false
-                ),
-                array(
+                ],
+                [
                     'type' => 'password',
                     'label' => $this->l('Password'),
                     'name' => 'passwd',
                     'desc' => $this->l('Leave blank if no change.'),
                     'autocomplete' => false
-                )
-            ),
-            'submit' => array('title' => $this->l('Save')),
-        ));
+                ]
+            ],
+            'submit' => ['title' => $this->l('Save')],
+            ]
+        ];
 
         if (Module::isInstalled('trackingfront')) {
-            $this->fields_form[0]['form']['desc'] = array(
+            $this->fields_form[0]['form']['desc'] = [
                 $this->l('Affiliates can access their data with this name and password.'),
                 $this->l('Front access:').' <a class="btn btn-link" href="'.$uri.'modules/trackingfront/stats.php" onclick="return !window.open(this.href);"><i class="icon-external-link-sign"></i> '.$uri.'modules/trackingfront/stats.php</a>'
-            );
+            ];
         } else {
-            $this->fields_form[0]['form']['desc'] = array(
+            $this->fields_form[0]['form']['desc'] = [
                 sprintf($this->l('Please install the "%s" module in order to give your affiliates access their own statistics.'), Module::getModuleName('trackingfront'))
-            );
+            ];
         }
 
-        $this->fields_form[1] = array('form' => array(
-            'legend' => array(
+        $this->fields_form[1] = [
+            'form' => [
+            'legend' => [
                 'title' => $this->l('Commission plan'),
                 'icon' => 'icon-dollar'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'text',
                     'label' => $this->l('Click fee'),
                     'name' => 'click_fee',
                     'desc' => $this->l('Fee given for each visit.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Base fee'),
                     'name' => 'base_fee',
                     'desc' => $this->l('Fee given for each order placed.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Percent fee'),
                     'name' => 'percent_fee',
                     'desc' => $this->l('Percent of the sales.')
-                )
-            ),
-            'submit' => array('title' => $this->l('Save'))
-        ));
+                ]
+            ],
+            'submit' => ['title' => $this->l('Save')]
+            ]
+        ];
 
         if (Shop::isFeatureActive()) {
-            $this->fields_form[1]['form']['input'][] = array(
+            $this->fields_form[1]['form']['input'][] = [
                 'type' => 'shop',
                 'label' => $this->l('Shop association'),
                 'name' => 'checkBoxShopAsso',
-            );
+            ];
         }
 
-        $this->fields_form[2] = array('form' => array(
-            'legend' => array(
+        $this->fields_form[2] = [
+            'form' => [
+            'legend' => [
                 'title' => $this->l('Technical information -- Simple mode'),
                 'icon' => 'icon-cogs'
-            ),
+            ],
             'help' => true,
-            'input' => array(
-                array(
+            'input' => [
+                [
                     'type' => 'textarea',
                     'label' => $this->l('Include'),
                     'name' => 'http_referer_like',
                     'cols' => 40,
                     'rows' => 1,
                     'legend' => $this->l('HTTP referrer')
-                ),
-                array(
+                ],
+                [
                     'type' => 'textarea',
                     'label' => $this->l('Exclude'),
                     'name' => 'http_referer_like_not',
                     'cols' => 40,
                     'rows' => 1
-                ),
-                array(
+                ],
+                [
                     'type' => 'textarea',
                     'label' => $this->l('Include'),
                     'name' => 'request_uri_like',
                     'cols' => 40,
                     'rows' => 1,
                     'legend' => $this->l('Request URI')
-                ),
-                array(
+                ],
+                [
                     'type' => 'textarea',
                     'label' => $this->l('Exclude'),
                     'name' => 'request_uri_like_not',
                     'cols' => 40,
                     'rows' => 1
-                )
-            ),
+                ]
+            ],
             'desc' => $this->l('If you know how to use MySQL regular expressions, you can use the').'
 					<a style="cursor: pointer; font-weight: bold;" onclick="$(\'#tracking_expert\').slideToggle();">'.$this->l('expert mode').'.</a>',
-            'submit' => array(
+            'submit' => [
                 'title' => $this->l('Save'),
-            )
-        ));
+            ]
+            ]
+        ];
 
-        $this->fields_form[3] = array('form' => array(
-            'legend' => array(
+        $this->fields_form[3] = [
+            'form' => [
+            'legend' => [
                 'title' => $this->l('Technical information -- Expert mode'),
                 'icon' => 'icon-cogs'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'textarea',
                     'label' => $this->l('Include'),
                     'name' => 'http_referer_regexp',
                     'cols' => 40,
                     'rows' => 1,
                     'legend' => $this->l('HTTP referrer')
-                ),
-                array(
+                ],
+                [
                     'type' => 'textarea',
                     'label' => $this->l('Exclude'),
                     'name' => 'http_referer_regexp_not',
                     'cols' => 40,
                     'rows' => 1
-                ),
-                array(
+                ],
+                [
                     'type' => 'textarea',
                     'label' => $this->l('Include'),
                     'name' => 'request_uri_regexp',
                     'cols' => 40,
                     'rows' => 1,
                     'legend' => $this->l('Request URI')
-                ),
-                array(
+                ],
+                [
                     'type' => 'textarea',
                     'label' => $this->l('Exclude'),
                     'name' => 'request_uri_regexp_not',
                     'cols' => 40,
                     'rows' => 1
-                )
-            )
-        ));
+                ]
+            ]
+            ]
+        ];
 
         $this->multiple_fieldsets = true;
 
@@ -367,7 +375,7 @@ class AdminReferrersControllerCore extends AdminController
             return;
         }
 
-        $this->fields_value = array(
+        $this->fields_value = [
             'click_fee' => number_format((float)($this->getFieldValue($obj, 'click_fee')), 2),
             'base_fee' => number_format((float)($this->getFieldValue($obj, 'base_fee')), 2),
             'percent_fee' => number_format((float)($this->getFieldValue($obj, 'percent_fee')), 2),
@@ -375,21 +383,22 @@ class AdminReferrersControllerCore extends AdminController
             'http_referer_like_not' => str_replace('\\', '\\\\', htmlentities($this->getFieldValue($obj, 'http_referer_like_not'), ENT_COMPAT, 'UTF-8')),
             'request_uri_like' => str_replace('\\', '\\\\', htmlentities($this->getFieldValue($obj, 'request_uri_like'), ENT_COMPAT, 'UTF-8')),
             'request_uri_like_not' => str_replace('\\', '\\\\', htmlentities($this->getFieldValue($obj, 'request_uri_like_not'), ENT_COMPAT, 'UTF-8'))
-        );
+        ];
 
-        $this->tpl_form_vars = array('uri' => $uri);
+        $this->tpl_form_vars = ['uri' => $uri];
 
         return parent::renderForm();
     }
 
     public function displayCalendar($action = null, $table = null, $identifier = null, $id = null)
     {
-        return AdminReferrersController::displayCalendarForm(array(
+        return AdminReferrersController::displayCalendarForm(
+            [
             'Calendar' => $this->l('Calendar'),
             'Day' => $this->l('Today'),
             'Month' => $this->l('Month'),
             'Year' => $this->l('Year')
-        ), $this->token, $action, $table, $identifier, $id);
+            ], $this->token, $action, $table, $identifier, $id);
     }
 
     public static function displayCalendarForm($translations, $token, $action = null, $table = null, $identifier = null, $id = null)
@@ -399,7 +408,8 @@ class AdminReferrersControllerCore extends AdminController
 
         $context->controller->addJqueryUI('ui.datepicker');
 
-        $tpl->assign(array(
+        $tpl->assign(
+            [
             'current' => self::$currentIndex,
             'token' => $token,
             'action' => $action,
@@ -409,7 +419,8 @@ class AdminReferrersControllerCore extends AdminController
             'translations' => $translations,
             'datepickerFrom' => Tools::getValue('datepickerFrom', $context->employee->stats_date_from),
             'datepickerTo' => Tools::getValue('datepickerTo', $context->employee->stats_date_to)
-        ));
+            ]
+        );
 
         return $tpl->fetch();
     }
@@ -425,12 +436,14 @@ class AdminReferrersControllerCore extends AdminController
             if (Validate::isLoadedObject($statsdata)) {
                 $statsdata_name = $statsdata->displayName;
             }
-            $tpl->assign(array(
+            $tpl->assign(
+                [
                 'statsdata_name' => $statsdata_name,
                 'current' => self::$currentIndex,
                 'token' => $this->token,
                 'tracking_dt' => (int)Tools::getValue('tracking_dt', Configuration::get('TRACKING_DIRECT_TRAFFIC'))
-            ));
+                ]
+            );
 
             return $tpl->fetch();
         }
@@ -473,7 +486,7 @@ class AdminReferrersControllerCore extends AdminController
     {
         $referrer = new Referrer((int)Tools::getValue('id_referrer'));
 
-        $display_tab = array(
+        $display_tab = [
             'uniqs' => $this->l('Unique visitors'),
             'visitors' => $this->l('Visitors'),
             'visits' => $this->l('Visits'),
@@ -485,16 +498,17 @@ class AdminReferrersControllerCore extends AdminController
             'order_rate' => $this->l('Order rate'),
             'click_fee' => $this->l('Click fee'),
             'base_fee' => $this->l('Base fee'),
-            'percent_fee' => $this->l('Percent fee'));
+            'percent_fee' => $this->l('Percent fee')
+        ];
 
-        $this->tpl_view_vars = array(
+        $this->tpl_view_vars = [
             'enable_calendar' => $this->enableCalendar(),
             'calendar_form' => $this->displayCalendar($this->action, $this->table, $this->identifier, (int)Tools::getValue($this->identifier)),
             'referrer' => $referrer,
             'display_tab' => $display_tab,
             'id_employee' => (int)$this->context->employee->id,
             'id_lang' => (int)$this->context->language->id
-        );
+        ];
 
         return parent::renderView();
     }

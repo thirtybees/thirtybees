@@ -54,16 +54,16 @@ class AdminInformationControllerCore extends AdminController
     {
         $this->initPageHeaderToolbar();
 
-        $hosting_vars = array();
+        $hosting_vars = [];
         if (!defined('_PS_HOST_MODE_')) {
-            $hosting_vars = array(
-                'version' => array(
+            $hosting_vars = [
+                'version' => [
                     'php' => phpversion(),
                     'server' => $_SERVER['SERVER_SOFTWARE'],
                     'memory_limit' => ini_get('memory_limit'),
                     'max_execution_time' => ini_get('max_execution_time')
-                ),
-                'database' => array(
+                ],
+                'database' => [
                     'version' => Db::getInstance()->getVersion(),
                     'server' => _DB_SERVER_,
                     'name' => _DB_NAME_,
@@ -71,28 +71,28 @@ class AdminInformationControllerCore extends AdminController
                     'prefix' => _DB_PREFIX_,
                     'engine' => _MYSQL_ENGINE_,
                     'driver' => Db::getClass(),
-                ),
+                ],
                 'uname' => function_exists('php_uname') ? php_uname('s').' '.php_uname('v').' '.php_uname('m') : '',
                 'apache_instaweb' => Tools::apacheModExists('mod_instaweb')
-            );
+            ];
         }
 
-        $shop_vars = array(
-            'shop' => array(
+        $shop_vars = [
+            'shop' => [
                 'ps' => _PS_VERSION_,
                 'url' => $this->context->shop->getBaseURL(),
                 'theme' => $this->context->shop->theme_name,
-            ),
+            ],
             'mail' => Configuration::get('PS_MAIL_METHOD') == 1,
-            'smtp' => array(
+            'smtp' => [
                 'server' => Configuration::get('PS_MAIL_SERVER'),
                 'user' => Configuration::get('PS_MAIL_USER'),
                 'password' => Configuration::get('PS_MAIL_PASSWD'),
                 'encryption' => Configuration::get('PS_MAIL_SMTP_ENCRYPTION'),
                 'port' => Configuration::get('PS_MAIL_SMTP_PORT'),
-            ),
+            ],
             'user_agent' => $_SERVER['HTTP_USER_AGENT'],
-        );
+        ];
 
         $this->tpl_view_vars = array_merge($this->getTestResult(), array_merge($hosting_vars, $shop_vars));
 
@@ -106,7 +106,7 @@ class AdminInformationControllerCore extends AdminController
      */
     public function getTestResult()
     {
-        $tests_errors = array(
+        $tests_errors = [
             'phpversion' => $this->l('Update your PHP version.'),
             'upload' => $this->l('Configure your server to allow file uploads.'),
             'system' => $this->l('Configure your server to allow the creation of directories and files with write permissions.'),
@@ -128,7 +128,7 @@ class AdminInformationControllerCore extends AdminController
             'gz' => $this->l('Enable GZIP compression on your server.'),
             'files' => $this->l('Some PrestaShop files are missing from your server.'),
             'new_phpversion' => sprintf($this->l('You are using PHP %s version. Soon, the latest PHP version supported by PrestaShop will be PHP 5.4. To make sure you’re ready for the future, we recommend you to upgrade to PHP 5.4 now!'), phpversion())
-        );
+        ];
 
         // Functions list to test with 'test_system'
         // Test to execute (function/args): lets uses the default test
@@ -147,17 +147,18 @@ class AdminInformationControllerCore extends AdminController
             }
         }
 
-        $results = array(
+        $results = [
             'failRequired' => $fail_required,
             'testsErrors' => $tests_errors,
             'testsRequired' => $params_required_results,
-        );
+        ];
 
         if (!defined('_PS_HOST_MODE_')) {
-            $results = array_merge($results, array(
+            $results = array_merge($results, [
                 'failOptional' => in_array('fail', $params_optional_results),
                 'testsOptional' => $params_optional_results,
-            ));
+            ]
+            );
         }
 
         return $results;
@@ -165,7 +166,7 @@ class AdminInformationControllerCore extends AdminController
 
     public function displayAjaxCheckFiles()
     {
-        $this->file_list = array('missing' => array(), 'updated' => array());
+        $this->file_list = ['missing' => [], 'updated' => []];
         $xml = @simplexml_load_file(_PS_API_URL_.'/xml/md5/'._PS_VERSION_.'.xml');
         if (!$xml || !isset($xml->ps_root_dir[0])) {
             die(Tools::jsonEncode($this->file_list));

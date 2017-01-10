@@ -50,7 +50,7 @@ class GuestTrackingControllerCore extends FrontController
         if (Tools::isSubmit('submitGuestTracking') || Tools::isSubmit('submitTransformGuestToCustomer')) {
             // These lines are here for retrocompatibility with old theme
             $id_order = Tools::getValue('id_order');
-            $order_collection = array();
+            $order_collection = [];
             if ($id_order) {
                 if (is_numeric($id_order)) {
                     $order = new Order((int)$id_order);
@@ -118,10 +118,12 @@ class GuestTrackingControllerCore extends FrontController
             sleep(1);
         }
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'action' => $this->context->link->getPageLink('guest-tracking.php', true),
             'errors' => $this->errors,
-        ));
+            ]
+        );
         $this->setTemplate(_PS_THEME_DIR_.'guest-tracking.tpl');
     }
 
@@ -138,7 +140,7 @@ class GuestTrackingControllerCore extends FrontController
 
         $order_collection = ($order_collection->getAll());
 
-        $order_list = array();
+        $order_list = [];
         foreach ($order_collection as $order) {
             $order_list[] = $order;
         }
@@ -167,12 +169,13 @@ class GuestTrackingControllerCore extends FrontController
             if ($order->carrier->url && $order->shipping_number) {
                 $order->followup = str_replace('@', $order->shipping_number, $order->carrier->url);
             }
-            $order->hook_orderdetaildisplayed = Hook::exec('displayOrderDetail', array('order' => $order));
+            $order->hook_orderdetaildisplayed = Hook::exec('displayOrderDetail', ['order' => $order]);
 
-            Hook::exec('actionOrderDetail', array('carrier' => $order->carrier, 'order' => $order));
+            Hook::exec('actionOrderDetail', ['carrier' => $order->carrier, 'order' => $order]);
         }
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'shop_name' => Configuration::get('PS_SHOP_NAME'),
             'order_collection' => $order_list,
             'return_allowed' => false,
@@ -182,7 +185,8 @@ class GuestTrackingControllerCore extends FrontController
             'CUSTOMIZE_FILE' => Product::CUSTOMIZE_FILE,
             'CUSTOMIZE_TEXTFIELD' => Product::CUSTOMIZE_TEXTFIELD,
             'use_tax' => Configuration::get('PS_TAX'),
-            ));
+            ]
+        );
     }
 
     public function setMedia()

@@ -28,7 +28,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
 {
     public static function getVisits($unique = false, $date_from, $date_to, $granularity = false)
     {
-        $visits = ($granularity == false) ? 0 : array();
+        $visits = ($granularity == false) ? 0 : [];
         /** @var Gapi $gapi */
         $gapi = Module::isInstalled('gapi') ? Module::getInstanceByName('gapi') : false;
         if (Validate::isLoadedObject($gapi) && $gapi->isConfigured()) {
@@ -198,7 +198,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
     public static function getTotalSales($date_from, $date_to, $granularity = false)
     {
         if ($granularity == 'day') {
-            $sales = array();
+            $sales = [];
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS('
 			SELECT LEFT(`invoice_date`, 10) as date, SUM(total_paid_tax_excl / o.conversion_rate) as sales
 			FROM `'._DB_PREFIX_.'orders` o
@@ -211,7 +211,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
             }
             return $sales;
         } elseif ($granularity == 'month') {
-            $sales = array();
+            $sales = [];
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS('
 			SELECT LEFT(`invoice_date`, 7) as date, SUM(total_paid_tax_excl / o.conversion_rate) as sales
 			FROM `'._DB_PREFIX_.'orders` o
@@ -250,7 +250,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
     public static function getOrders($date_from, $date_to, $granularity = false)
     {
         if ($granularity == 'day') {
-            $orders = array();
+            $orders = [];
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS('
 			SELECT LEFT(`invoice_date`, 10) as date, COUNT(*) as orders
 			FROM `'._DB_PREFIX_.'orders` o
@@ -263,7 +263,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
             }
             return $orders;
         } elseif ($granularity == 'month') {
-            $orders = array();
+            $orders = [];
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS('
 			SELECT LEFT(`invoice_date`, 7) as date, COUNT(*) as orders
 			FROM `'._DB_PREFIX_.'orders` o
@@ -316,11 +316,11 @@ class AdminStatsControllerCore extends AdminStatsTabController
         if (!$row['total']) {
             return false;
         } elseif ($row['male'] > $row['female'] && $row['male'] >= $row['neutral']) {
-            return array('type' => 'male', 'value' => round(100 * $row['male'] / $row['total']));
+            return ['type' => 'male', 'value' => round(100 * $row['male'] / $row['total'])];
         } elseif ($row['female'] >= $row['male'] && $row['female'] >= $row['neutral']) {
-            return array('type' => 'female', 'value' => round(100 * $row['female'] / $row['total']));
+            return ['type' => 'female', 'value' => round(100 * $row['female'] / $row['total'])];
         }
-        return array('type' => 'neutral', 'value' => round(100 * $row['neutral'] / $row['total']));
+        return ['type' => 'neutral', 'value' => round(100 * $row['neutral'] / $row['total'])];
     }
 
     public static function getBestCategory($date_from, $date_to)
@@ -426,7 +426,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
     public static function getPurchases($date_from, $date_to, $granularity = false)
     {
         if ($granularity == 'day') {
-            $purchases = array();
+            $purchases = [];
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS('
 			SELECT
 				LEFT(`invoice_date`, 10) as date,
@@ -462,7 +462,7 @@ class AdminStatsControllerCore extends AdminStatsTabController
 
     public static function getExpenses($date_from, $date_to, $granularity = false)
     {
-        $expenses = ($granularity == 'day' ? array() : 0);
+        $expenses = ($granularity == 'day' ? [] : 0);
 
         $orders = Db::getInstance()->ExecuteS('
 		SELECT
@@ -627,14 +627,14 @@ class AdminStatsControllerCore extends AdminStatsTabController
                     $value = sprintf($this->l('%d%% Neutral Customers', null, null, false), $value['value']);
                 }
 
-                ConfigurationKPI::updateValue('CUSTOMER_MAIN_GENDER', array($this->context->language->id => $value));
-                ConfigurationKPI::updateValue('CUSTOMER_MAIN_GENDER_EXPIRE', array($this->context->language->id => strtotime('+1 day')));
+                ConfigurationKPI::updateValue('CUSTOMER_MAIN_GENDER', [$this->context->language->id => $value]);
+                ConfigurationKPI::updateValue('CUSTOMER_MAIN_GENDER_EXPIRE', [$this->context->language->id => strtotime('+1 day')]);
                 break;
 
             case 'avg_customer_age':
                 $value = sprintf($this->l('%d years', null, null, false), AdminStatsController::getAverageCustomerAge(), 1);
-                ConfigurationKPI::updateValue('AVG_CUSTOMER_AGE', array($this->context->language->id => $value));
-                ConfigurationKPI::updateValue('AVG_CUSTOMER_AGE_EXPIRE', array($this->context->language->id => strtotime('+1 day')));
+                ConfigurationKPI::updateValue('AVG_CUSTOMER_AGE', [$this->context->language->id => $value]);
+                ConfigurationKPI::updateValue('AVG_CUSTOMER_AGE_EXPIRE', [$this->context->language->id => strtotime('+1 day')]);
                 break;
 
             case 'pending_messages':
@@ -708,8 +708,8 @@ class AdminStatsControllerCore extends AdminStatsTabController
                     $value = sprintf($this->l('%d%% %s', null, null, false), $row['orders'], $country->name);
                 }
 
-                ConfigurationKPI::updateValue('MAIN_COUNTRY', array($this->context->language->id => $value));
-                ConfigurationKPI::updateValue('MAIN_COUNTRY_EXPIRE', array($this->context->language->id => strtotime('+1 day')));
+                ConfigurationKPI::updateValue('MAIN_COUNTRY', [$this->context->language->id => $value]);
+                ConfigurationKPI::updateValue('MAIN_COUNTRY_EXPIRE', [$this->context->language->id => strtotime('+1 day')]);
                 break;
 
             case 'orders_per_customer':
@@ -781,20 +781,20 @@ class AdminStatsControllerCore extends AdminStatsTabController
                         $value = $category->name;
                     }
 
-                    ConfigurationKPI::updateValue('TOP_CATEGORY', array($this->context->language->id => $value));
-                    ConfigurationKPI::updateValue('TOP_CATEGORY_EXPIRE', array($this->context->language->id => strtotime('+1 day')));
+                    ConfigurationKPI::updateValue('TOP_CATEGORY', [$this->context->language->id => $value]);
+                    ConfigurationKPI::updateValue('TOP_CATEGORY_EXPIRE', [$this->context->language->id => strtotime('+1 day')]);
                     break;
 
             default:
                 $value = false;
         }
         if ($value !== false) {
-            $array = array('value' => $value);
+            $array = ['value' => $value];
             if (isset($data)) {
                 $array['data'] = $data;
             }
             die(Tools::jsonEncode($array));
         }
-        die(Tools::jsonEncode(array('has_errors' => true)));
+        die(Tools::jsonEncode(['has_errors' => true]));
     }
 }

@@ -61,31 +61,31 @@ class CurrencyCore extends ObjectModel
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = array(
+    public static $definition = [
         'table' => 'currency',
         'primary' => 'id_currency',
         'multilang_shop' => true,
-        'fields' => array(
-            'name' =>            array('type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 32),
-            'iso_code' =>        array('type' => self::TYPE_STRING, 'validate' => 'isLanguageIsoCode', 'required' => true, 'size' => 3),
-            'iso_code_num' =>    array('type' => self::TYPE_STRING, 'validate' => 'isNumericIsoCode', 'size' => 3),
-            'blank' =>            array('type' => self::TYPE_INT, 'validate' => 'isInt'),
-            'sign' =>            array('type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 8),
-            'format' =>        array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true),
-            'decimals' =>        array('type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true),
-            'conversion_rate' =>array('type' => self::TYPE_FLOAT, 'validate' => 'isUnsignedFloat', 'required' => true, 'shop' => true),
-            'deleted' =>        array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
-            'active' =>        array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
-        ),
-    );
+        'fields' => [
+            'name' =>            ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 32],
+            'iso_code' =>        ['type' => self::TYPE_STRING, 'validate' => 'isLanguageIsoCode', 'required' => true, 'size' => 3],
+            'iso_code_num' =>    ['type' => self::TYPE_STRING, 'validate' => 'isNumericIsoCode', 'size' => 3],
+            'blank' =>            ['type' => self::TYPE_INT, 'validate' => 'isInt'],
+            'sign' =>            ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 8],
+            'format' =>        ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'decimals' =>        ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true],
+            'conversion_rate' => ['type' => self::TYPE_FLOAT, 'validate' => 'isUnsignedFloat', 'required' => true, 'shop' => true],
+            'deleted' =>        ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'active' =>        ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+        ],
+    ];
 
     /** @var array Currency cache */
-    protected static $currencies = array();
-    protected static $countActiveCurrencies = array();
+    protected static $currencies = [];
+    protected static $countActiveCurrencies = [];
 
-    protected $webserviceParameters = array(
+    protected $webserviceParameters = [
         'objectsNodeName' => 'currencies',
-    );
+    ];
 
     /**
      * contains the sign to display before price, according to its format
@@ -158,7 +158,7 @@ class CurrencyCore extends ObjectModel
             return false;
         }
 
-        $res = array();
+        $res = [];
         foreach ($selection as $id) {
             $obj = new Currency((int)$id);
             $res[$id] = $obj->delete();
@@ -196,18 +196,18 @@ class CurrencyCore extends ObjectModel
         if (!$side) {
             return $this->sign;
         }
-        $formated_strings = array(
+        $formated_strings = [
             'left' => $this->sign.' ',
             'right' => ' '.$this->sign
-        );
+        ];
 
-        $formats = array(
-            1 => array('left' => &$formated_strings['left'], 'right' => ''),
-            2 => array('left' => '', 'right' => &$formated_strings['right']),
-            3 => array('left' => &$formated_strings['left'], 'right' => ''),
-            4 => array('left' => '', 'right' => &$formated_strings['right']),
-            5 => array('left' => '', 'right' => &$formated_strings['right'])
-        );
+        $formats = [
+            1 => ['left' => &$formated_strings['left'], 'right' => ''],
+            2 => ['left' => '', 'right' => &$formated_strings['right']],
+            3 => ['left' => &$formated_strings['left'], 'right' => ''],
+            4 => ['left' => '', 'right' => &$formated_strings['right']],
+            5 => ['left' => '', 'right' => &$formated_strings['right']]
+        ];
         if (isset($formats[$this->format][$side])) {
             return ($formats[$this->format][$side]);
         }

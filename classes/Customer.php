@@ -135,65 +135,65 @@ class CustomerCore extends ObjectModel
 
     public $groupBox;
 
-    protected $webserviceParameters = array(
-        'fields' => array(
-            'id_default_group' => array('xlink_resource' => 'groups'),
-            'id_lang' => array('xlink_resource' => 'languages'),
-            'newsletter_date_add' => array(),
-            'ip_registration_newsletter' => array(),
-            'last_passwd_gen' => array('setter' => null),
-            'secure_key' => array('setter' => null),
-            'deleted' => array(),
-            'passwd' => array('setter' => 'setWsPasswd'),
-        ),
-        'associations' => array(
-            'groups' => array('resource' => 'group'),
-        )
-    );
+    protected $webserviceParameters = [
+        'fields' => [
+            'id_default_group' => ['xlink_resource' => 'groups'],
+            'id_lang' => ['xlink_resource' => 'languages'],
+            'newsletter_date_add' => [],
+            'ip_registration_newsletter' => [],
+            'last_passwd_gen' => ['setter' => null],
+            'secure_key' => ['setter' => null],
+            'deleted' => [],
+            'passwd' => ['setter' => 'setWsPasswd'],
+        ],
+        'associations' => [
+            'groups' => ['resource' => 'group'],
+        ]
+    ];
 
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = array(
+    public static $definition = [
         'table' => 'customer',
         'primary' => 'id_customer',
-        'fields' => array(
-            'secure_key' =>                array('type' => self::TYPE_STRING, 'validate' => 'isMd5', 'copy_post' => false),
-            'lastname' =>                    array('type' => self::TYPE_STRING, 'validate' => 'isName', 'required' => true, 'size' => 32),
-            'firstname' =>                    array('type' => self::TYPE_STRING, 'validate' => 'isName', 'required' => true, 'size' => 32),
-            'email' =>                        array('type' => self::TYPE_STRING, 'validate' => 'isEmail', 'required' => true, 'size' => 128),
-            'passwd' =>                    array('type' => self::TYPE_STRING, 'validate' => 'isPasswd', 'required' => true, 'size' => 32),
-            'last_passwd_gen' =>            array('type' => self::TYPE_STRING, 'copy_post' => false),
-            'id_gender' =>                    array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId'),
-            'birthday' =>                    array('type' => self::TYPE_DATE, 'validate' => 'isBirthDate'),
-            'newsletter' =>                array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
-            'newsletter_date_add' =>        array('type' => self::TYPE_DATE,'copy_post' => false),
-            'ip_registration_newsletter' =>    array('type' => self::TYPE_STRING, 'copy_post' => false),
-            'optin' =>                        array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
-            'website' =>                    array('type' => self::TYPE_STRING, 'validate' => 'isUrl'),
-            'company' =>                    array('type' => self::TYPE_STRING, 'validate' => 'isGenericName'),
-            'siret' =>                        array('type' => self::TYPE_STRING, 'validate' => 'isSiret'),
-            'ape' =>                        array('type' => self::TYPE_STRING, 'validate' => 'isApe'),
-            'outstanding_allow_amount' =>    array('type' => self::TYPE_FLOAT, 'validate' => 'isFloat', 'copy_post' => false),
-            'show_public_prices' =>            array('type' => self::TYPE_BOOL, 'validate' => 'isBool', 'copy_post' => false),
-            'id_risk' =>                    array('type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'copy_post' => false),
-            'max_payment_days' =>            array('type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'copy_post' => false),
-            'active' =>                    array('type' => self::TYPE_BOOL, 'validate' => 'isBool', 'copy_post' => false),
-            'deleted' =>                    array('type' => self::TYPE_BOOL, 'validate' => 'isBool', 'copy_post' => false),
-            'note' =>                        array('type' => self::TYPE_HTML, 'validate' => 'isCleanHtml', 'size' => 65000, 'copy_post' => false),
-            'is_guest' =>                    array('type' => self::TYPE_BOOL, 'validate' => 'isBool', 'copy_post' => false),
-            'id_shop' =>                    array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'copy_post' => false),
-            'id_shop_group' =>                array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'copy_post' => false),
-            'id_default_group' =>            array('type' => self::TYPE_INT, 'copy_post' => false),
-            'id_lang' =>                    array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'copy_post' => false),
-            'date_add' =>                    array('type' => self::TYPE_DATE, 'validate' => 'isDate', 'copy_post' => false),
-            'date_upd' =>                    array('type' => self::TYPE_DATE, 'validate' => 'isDate', 'copy_post' => false),
-        ),
-    );
+        'fields' => [
+            'secure_key' =>                ['type' => self::TYPE_STRING, 'validate' => 'isMd5', 'copy_post' => false],
+            'lastname' =>                    ['type' => self::TYPE_STRING, 'validate' => 'isName', 'required' => true, 'size' => 32],
+            'firstname' =>                    ['type' => self::TYPE_STRING, 'validate' => 'isName', 'required' => true, 'size' => 32],
+            'email' =>                        ['type' => self::TYPE_STRING, 'validate' => 'isEmail', 'required' => true, 'size' => 128],
+            'passwd' =>                    ['type' => self::TYPE_STRING, 'validate' => 'isPasswd', 'required' => true, 'size' => 32],
+            'last_passwd_gen' =>            ['type' => self::TYPE_STRING, 'copy_post' => false],
+            'id_gender' =>                    ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
+            'birthday' =>                    ['type' => self::TYPE_DATE, 'validate' => 'isBirthDate'],
+            'newsletter' =>                ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'newsletter_date_add' =>        ['type' => self::TYPE_DATE,'copy_post' => false],
+            'ip_registration_newsletter' =>    ['type' => self::TYPE_STRING, 'copy_post' => false],
+            'optin' =>                        ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'website' =>                    ['type' => self::TYPE_STRING, 'validate' => 'isUrl'],
+            'company' =>                    ['type' => self::TYPE_STRING, 'validate' => 'isGenericName'],
+            'siret' =>                        ['type' => self::TYPE_STRING, 'validate' => 'isSiret'],
+            'ape' =>                        ['type' => self::TYPE_STRING, 'validate' => 'isApe'],
+            'outstanding_allow_amount' =>    ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat', 'copy_post' => false],
+            'show_public_prices' =>            ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'copy_post' => false],
+            'id_risk' =>                    ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'copy_post' => false],
+            'max_payment_days' =>            ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'copy_post' => false],
+            'active' =>                    ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'copy_post' => false],
+            'deleted' =>                    ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'copy_post' => false],
+            'note' =>                        ['type' => self::TYPE_HTML, 'validate' => 'isCleanHtml', 'size' => 65000, 'copy_post' => false],
+            'is_guest' =>                    ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'copy_post' => false],
+            'id_shop' =>                    ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'copy_post' => false],
+            'id_shop_group' =>                ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'copy_post' => false],
+            'id_default_group' =>            ['type' => self::TYPE_INT, 'copy_post' => false],
+            'id_lang' =>                    ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'copy_post' => false],
+            'date_add' =>                    ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'copy_post' => false],
+            'date_upd' =>                    ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'copy_post' => false],
+        ],
+    ];
 
-    protected static $_defaultGroupId = array();
-    protected static $_customerHasAddress = array();
-    protected static $_customer_groups = array();
+    protected static $_defaultGroupId = [];
+    protected static $_customerHasAddress = [];
+    protected static $_customer_groups = [];
 
     public function __construct($id = null)
     {
@@ -575,7 +575,7 @@ class CustomerCore extends ObjectModel
     public function getLastEmails()
     {
         if (!$this->id) {
-            return array();
+            return [];
         }
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
 		SELECT m.*, l.name as language
@@ -589,7 +589,7 @@ class CustomerCore extends ObjectModel
     public function getLastConnections()
     {
         if (!$this->id) {
-            return array();
+            return [];
         }
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
 		SELECT c.id_connections, c.date_add, COUNT(cp.id_page) AS pages, TIMEDIFF(MAX(cp.time_end), c.date_add) as time, http_referer,INET_NTOA(ip_address) as ipaddress
@@ -639,7 +639,7 @@ class CustomerCore extends ObjectModel
             $this->cleanGroups();
             $this->addGroups($list);
         } else {
-            $this->addGroups(array($this->id_default_group));
+            $this->addGroups([$this->id_default_group]);
         }
     }
 
@@ -651,7 +651,7 @@ class CustomerCore extends ObjectModel
     public function addGroups($groups)
     {
         foreach ($groups as $group) {
-            $row = array('id_customer' => (int)$this->id, 'id_group' => (int)$group);
+            $row = ['id_customer' => (int)$this->id, 'id_group' => (int)$group];
             Db::getInstance()->insert('customer_group', $row, false, true, Db::INSERT_IGNORE);
         }
     }
@@ -659,15 +659,15 @@ class CustomerCore extends ObjectModel
     public static function getGroupsStatic($id_customer)
     {
         if (!Group::isFeatureActive()) {
-            return array(Configuration::get('PS_CUSTOMER_GROUP'));
+            return [Configuration::get('PS_CUSTOMER_GROUP')];
         }
 
         if ($id_customer == 0) {
-            self::$_customer_groups[$id_customer] = array((int)Configuration::get('PS_UNIDENTIFIED_GROUP'));
+            self::$_customer_groups[$id_customer] = [(int)Configuration::get('PS_UNIDENTIFIED_GROUP')];
         }
 
         if (!isset(self::$_customer_groups[$id_customer])) {
-            self::$_customer_groups[$id_customer] = array();
+            self::$_customer_groups[$id_customer] = [];
             $result = Db::getInstance()->executeS('
 			SELECT cg.`id_group`
 			FROM '._DB_PREFIX_.'customer_group cg
@@ -772,14 +772,14 @@ class CustomerCore extends ObjectModel
         $this->is_guest = 0;
         $this->passwd = Tools::encrypt($password);
         $this->cleanGroups();
-        $this->addGroups(array(Configuration::get('PS_CUSTOMER_GROUP'))); // add default customer group
+        $this->addGroups([Configuration::get('PS_CUSTOMER_GROUP')]); // add default customer group
         if ($this->update()) {
-            $vars = array(
+            $vars = [
                 '{firstname}' => $this->firstname,
                 '{lastname}' => $this->lastname,
                 '{email}' => $this->email,
                 '{passwd}' => $password
-            );
+            ];
 
             Mail::Send(
                 (int)$id_lang,
@@ -833,7 +833,7 @@ class CustomerCore extends ObjectModel
      */
     public function logout()
     {
-        Hook::exec('actionCustomerLogoutBefore', array('customer' => $this));
+        Hook::exec('actionCustomerLogoutBefore', ['customer' => $this]);
 
         if (isset(Context::getContext()->cookie)) {
             Context::getContext()->cookie->logout();
@@ -841,7 +841,7 @@ class CustomerCore extends ObjectModel
 
         $this->logged = 0;
 
-        Hook::exec('actionCustomerLogoutAfter', array('customer' => $this));
+        Hook::exec('actionCustomerLogoutAfter', ['customer' => $this]);
     }
 
     /**
@@ -852,7 +852,7 @@ class CustomerCore extends ObjectModel
      */
     public function mylogout()
     {
-        Hook::exec('actionCustomerLogoutBefore', array('customer' => $this));
+        Hook::exec('actionCustomerLogoutBefore', ['customer' => $this]);
 
         if (isset(Context::getContext()->cookie)) {
             Context::getContext()->cookie->mylogout();
@@ -860,7 +860,7 @@ class CustomerCore extends ObjectModel
 
         $this->logged = 0;
 
-        Hook::exec('actionCustomerLogoutAfter', array('customer' => $this));
+        Hook::exec('actionCustomerLogoutAfter', ['customer' => $this]);
     }
 
     public function getLastCart($with_order = true)
@@ -908,7 +908,7 @@ class CustomerCore extends ObjectModel
 
     public function setWsGroups($result)
     {
-        $groups = array();
+        $groups = [];
         foreach ($result as $row) {
             $groups[] = $row['id'];
         }

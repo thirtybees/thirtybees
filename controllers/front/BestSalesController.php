@@ -44,13 +44,15 @@ class BestSalesControllerCore extends FrontController
             $products = ProductSale::getBestSales($this->context->language->id, $this->p - 1, $this->n, $this->orderBy, $this->orderWay);
             $this->addColorsToProductList($products);
 
-            $this->context->smarty->assign(array(
+            $this->context->smarty->assign(
+                [
                 'products' => $products,
                 'add_prod_display' => Configuration::get('PS_ATTRIBUTE_CATEGORY_DISPLAY'),
                 'nbProducts' => $nb_products,
                 'homeSize' => Image::getSize(ImageType::getFormatedName('home')),
                 'comparator_max_item' => Configuration::get('PS_COMPARATOR_MAX_ITEM')
-            ));
+                ]
+            );
 
             $this->setTemplate(_PS_THEME_DIR_.'best-sales.tpl');
         } else {

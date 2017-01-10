@@ -52,7 +52,8 @@ class OrderReturnControllerCore extends FrontController
                 $order = new Order((int)($order_return->id_order));
                 if (Validate::isLoadedObject($order)) {
                     $state = new OrderReturnState((int)$order_return->state);
-                    $this->context->smarty->assign(array(
+                    $this->context->smarty->assign(
+                        [
                         'orderRet' => $order_return,
                         'order' => $order,
                         'state_name' => $state->name[(int)$this->context->language->id],
@@ -60,7 +61,8 @@ class OrderReturnControllerCore extends FrontController
                         'products' => OrderReturn::getOrdersReturnProducts((int)$order_return->id, $order),
                         'returnedCustomizations' => OrderReturn::getReturnedCustomizedProducts((int)$order_return->id_order),
                         'customizedDatas' => Product::getAllCustomizedDatas((int)$order->id_cart)
-                    ));
+                        ]
+                    );
                 } else {
                     $this->errors[] = Tools::displayError('Cannot find the order return.');
                 }
@@ -78,10 +80,12 @@ class OrderReturnControllerCore extends FrontController
     {
         parent::initContent();
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'errors' => $this->errors,
             'nbdaysreturn' => (int)Configuration::get('PS_ORDER_RETURN_NB_DAYS')
-        ));
+            ]
+        );
         $this->setTemplate(_PS_THEME_DIR_.'order-return.tpl');
     }
 

@@ -61,29 +61,29 @@ class SupplierCore extends ObjectModel
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = array(
+    public static $definition = [
         'table' => 'supplier',
         'primary' => 'id_supplier',
         'multilang' => true,
-        'fields' => array(
-            'name' =>                array('type' => self::TYPE_STRING, 'validate' => 'isCatalogName', 'required' => true, 'size' => 64),
-            'active' =>            array('type' => self::TYPE_BOOL),
-            'date_add' =>            array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
-            'date_upd' =>            array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
+        'fields' => [
+            'name' =>                ['type' => self::TYPE_STRING, 'validate' => 'isCatalogName', 'required' => true, 'size' => 64],
+            'active' =>            ['type' => self::TYPE_BOOL],
+            'date_add' =>            ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+            'date_upd' =>            ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
 
             /* Lang fields */
-            'description' =>        array('type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml'),
-            'meta_title' =>        array('type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 128),
-            'meta_description' =>    array('type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255),
-            'meta_keywords' =>        array('type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255),
-        ),
-    );
+            'description' =>        ['type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml'],
+            'meta_title' =>        ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 128],
+            'meta_description' =>    ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255],
+            'meta_keywords' =>        ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255],
+        ],
+    ];
 
-    protected $webserviceParameters = array(
-        'fields' => array(
-            'link_rewrite' => array('sqlId' => 'link_rewrite'),
-        ),
-    );
+    protected $webserviceParameters = [
+        'fields' => [
+            'link_rewrite' => ['sqlId' => 'link_rewrite'],
+        ],
+    ];
 
     public function __construct($id = null, $id_lang = null)
     {
@@ -154,7 +154,7 @@ class SupplierCore extends ObjectModel
 					GROUP BY ps.`id_supplier`'
                 );
 
-            $counts = array();
+            $counts = [];
             foreach ($results as $result) {
                 $counts[(int)$result['id_supplier']] = (int)$result['nb_products'];
             }
@@ -184,7 +184,7 @@ class SupplierCore extends ObjectModel
      * @param int $id_supplier Supplier ID
      * @return string name
      */
-    protected static $cache_name = array();
+    protected static $cache_name = [];
     public static function getNameById($id_supplier)
     {
         if (!isset(self::$cache_name[$id_supplier])) {
@@ -213,7 +213,7 @@ class SupplierCore extends ObjectModel
     {
         $context = Context::getContext();
         $front = true;
-        if (!in_array($context->controller->controller_type, array('front', 'modulefront'))) {
+        if (!in_array($context->controller->controller_type, ['front', 'modulefront'])) {
             $front = false;
         }
 
@@ -264,7 +264,7 @@ class SupplierCore extends ObjectModel
             $order_by = pSQL($order_by[0]).'.`'.pSQL($order_by[1]).'`';
         }
         $alias = '';
-        if (in_array($order_by, array('price', 'date_add', 'date_upd'))) {
+        if (in_array($order_by, ['price', 'date_add', 'date_upd'])) {
             $alias = 'product_shop.';
         } elseif ($order_by == 'id_product') {
             $alias = 'p.';
@@ -338,7 +338,7 @@ class SupplierCore extends ObjectModel
     {
         $context = Context::getContext();
         $front = true;
-        if (!in_array($context->controller->controller_type, array('front', 'modulefront'))) {
+        if (!in_array($context->controller->controller_type, ['front', 'modulefront'])) {
             $front = false;
         }
 

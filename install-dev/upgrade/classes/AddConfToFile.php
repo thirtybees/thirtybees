@@ -91,7 +91,7 @@ class    AddConfToFile
         }
         if (!is_numeric($string)) {
             $string = addslashes($string);
-            $string = str_replace(array("\n", "\r"), '', $string);
+            $string = str_replace(["\n", "\r"], '', $string);
         }
         return $string;
     }

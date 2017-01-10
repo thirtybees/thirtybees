@@ -40,48 +40,48 @@ class AdminTabsControllerCore extends AdminController
         $this->list_id = 'tab';
         $this->className = 'Tab';
         $this->lang = true;
-        $this->fieldImageSettings = array(
+        $this->fieldImageSettings = [
             'name' => 'icon',
             'dir' => 't'
-        );
+        ];
         $this->imageType = 'gif';
-        $this->bulk_actions = array(
-            'delete' => array(
+        $this->bulk_actions = [
+            'delete' => [
                 'text' => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
                 'icon' => 'icon-trash'
-            )
-        );
-        $this->fields_list = array(
-            'id_tab' => array(
+            ]
+        ];
+        $this->fields_list = [
+            'id_tab' => [
                 'title' => $this->l('ID'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs'
-            ),
-            'name' => array(
+            ],
+            'name' => [
                 'title' => $this->l('Name')
-            ),
-            'class_name' => array(
+            ],
+            'class_name' => [
                 'title' => $this->l('Class')
-            ),
-            'module' => array(
+            ],
+            'module' => [
                 'title' => $this->l('Module')
-            ),
-            'active' => array(
+            ],
+            'active' => [
                 'title' => $this->l('Enabled'),
                 'align' => 'center',
                 'active' => 'status',
                 'type' => 'bool',
                 'orderby' => false
-            ),
-            'position' => array(
+            ],
+            'position' => [
                 'title' => $this->l('Position'),
                 'filter_key' => 'a!position',
                 'position' => 'position',
                 'align' => 'center',
                 'class' => 'fixed-width-md'
-            )
-        );
+            ]
+        ];
 
         parent::__construct();
     }
@@ -91,17 +91,17 @@ class AdminTabsControllerCore extends AdminController
         $this->page_header_toolbar_title = $this->l('Menus');
 
         if ($this->display == 'details') {
-            $this->page_header_toolbar_btn['back_to_list'] = array(
+            $this->page_header_toolbar_btn['back_to_list'] = [
                 'href' => Context::getContext()->link->getAdminLink('AdminTabs'),
                 'desc' => $this->l('Back to list', null, null, false),
                 'icon' => 'process-icon-back'
-            );
+            ];
         } elseif (empty($this->display)) {
-            $this->page_header_toolbar_btn['new_menu'] = array(
+            $this->page_header_toolbar_btn['new_menu'] = [
                 'href' => self::$currentIndex.'&addtab&token='.$this->token,
                 'desc' => $this->l('Add new menu', null, null, false),
                 'icon' => 'process-icon-new'
-            );
+            ];
         }
 
         parent::initPageHeaderToolbar();
@@ -124,78 +124,78 @@ class AdminTabsControllerCore extends AdminController
         }
 
         // added category "Home" in var $tabs
-        $tab_zero = array(
+        $tab_zero = [
             'id_tab' => 0,
             'name' => $this->l('Home')
-        );
+        ];
         array_unshift($tabs, $tab_zero);
 
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('Menus'),
                 'icon' => 'icon-list-ul'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'hidden',
                     'name' => 'position',
                     'required' => false
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Name'),
                     'name' => 'name',
                     'lang' => true,
                     'required' => true,
                     'hint' => $this->l('Invalid characters:').' &lt;&gt;;=#{}'
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Class'),
                     'name' => 'class_name',
                     'required' => true
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Module'),
                     'name' => 'module'
-                ),
-                array(
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Status'),
                     'name' => 'active',
                     'required' => false,
                     'is_bool' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'active_on',
                             'value' => 1,
                             'label' => $this->l('Enabled')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'active_off',
                             'value' => 0,
                             'label' => $this->l('Disabled')
-                        )
-                    ),
+                        ]
+                    ],
                     'hint' => $this->l('Show or hide menu.')
-                ),
-            ),
-            'submit' => array(
+                ],
+            ],
+            'submit' => [
                 'title' => $this->l('Save'),
-            )
-        );
+            ]
+        ];
 
-        $this->fields_form['input'][] = array(
+        $this->fields_form['input'][] = [
             'type' => 'select',
             'label' => $this->l('Parent'),
             'name' => 'id_parent',
-            'options' => array(
+            'options' => [
                 'query' => $tabs,
                 'id' => 'id_tab',
                 'name' => 'name'
-            )
-        );
+            ]
+        ];
 
         return parent::renderForm();
     }
@@ -238,7 +238,7 @@ class AdminTabsControllerCore extends AdminController
             $this->list_id = 'details';
             $this->addRowAction('edit');
             $this->addRowAction('delete');
-            $this->toolbar_btn = array();
+            $this->toolbar_btn = [];
 
             /** @var Tab $tab */
             $tab = $this->loadObject($id);
@@ -286,16 +286,17 @@ class AdminTabsControllerCore extends AdminController
         } elseif (Tools::isSubmit('submitAdd'.$this->table) && $id_parent = (int)Tools::getValue('id_parent')) {
             $this->redirect_after = self::$currentIndex.'&id_'.$this->table.'='.$id_parent.'&details'.$this->table.'&conf=4&token='.$this->token;
         } elseif (isset($_GET['details'.$this->table]) && is_array($this->bulk_actions)) {
-            $submit_bulk_actions = array_merge(array(
-                'enableSelection' => array(
+            $submit_bulk_actions = array_merge(
+                [
+                'enableSelection' => [
                     'text' => $this->l('Enable selection'),
                     'icon' => 'icon-power-off text-success'
-                ),
-                'disableSelection' => array(
+                ],
+                'disableSelection' => [
                     'text' => $this->l('Disable selection'),
                     'icon' => 'icon-power-off text-danger'
-                )
-            ), $this->bulk_actions);
+                ]
+                ], $this->bulk_actions);
             foreach ($submit_bulk_actions as $bulk_action => $params) {
                 if (Tools::isSubmit('submitBulk' . $bulk_action . $this->table) || Tools::isSubmit('submitBulk' . $bulk_action)) {
                     if ($this->tabAccess['edit'] === '1') {

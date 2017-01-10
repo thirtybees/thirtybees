@@ -61,13 +61,13 @@ class HelperTreeCategoriesCore extends TreeCore
 
     private function fillTree(&$categories, $id_category)
     {
-        $tree = array();
+        $tree = [];
         foreach ($categories[$id_category] as $category) {
             $tree[$category['id_category']] = $category;
             if (!empty($categories[$category['id_category']])) {
                 $tree[$category['id_category']]['children'] = $this->fillTree($categories, $category['id_category']);
             } elseif ($result = Category::hasChildren($category['id_category'], $this->getLang(), false, $this->getShop()->id)) {
-                $tree[$category['id_category']]['children'] = array($result[0]['id_category'] => $result[0]);
+                $tree[$category['id_category']]['children'] = [$result[0]['id_category'] => $result[0]];
             }
         }
         return $tree;
@@ -94,7 +94,7 @@ class HelperTreeCategoriesCore extends TreeCore
                 if (empty($root_category)) {
                     $root_category = Category::getRootCategory()->id;
                 }
-                $new_selected_categories = array();
+                $new_selected_categories = [];
                 $selected_categories = $this->getSelectedCategories();
                 $categories[$root_category] = Category::getChildren($root_category, $lang, false, $shop->id);
                 foreach ($selected_categories as $selected_category) {
@@ -113,7 +113,7 @@ class HelperTreeCategoriesCore extends TreeCore
                     }
                 }
 
-                $tree = Category::getCategoryInformations(array($root_category), $lang);
+                $tree = Category::getCategoryInformations([$root_category], $lang);
 
                 $children = $this->fillTree($categories, $root_category);
 
@@ -234,7 +234,7 @@ class HelperTreeCategoriesCore extends TreeCore
     public function getSelectedCategories()
     {
         if (!isset($this->_selected_categories)) {
-            $this->_selected_categories = array();
+            $this->_selected_categories = [];
         }
 
         return $this->_selected_categories;
@@ -389,19 +389,23 @@ class HelperTreeCategoriesCore extends TreeCore
                 $html .= $this->getContext()->smarty->createTemplate(
                     $this->getTemplateFile($this->getNodeFolderTemplate()),
                     $this->getContext()->smarty
-                )->assign(array(
+                )->assign(
+                    [
                     'input_name' => $this->getInputName(),
                     'children' => $this->renderNodes($item['children']),
                     'node'     => $item
-                ))->fetch();
+                    ]
+                )->fetch();
             } else {
                 $html .= $this->getContext()->smarty->createTemplate(
                     $this->getTemplateFile($this->getNodeItemTemplate()),
                     $this->getContext()->smarty
-                )->assign(array(
+                )->assign(
+                    [
                     'input_name' => $this->getInputName(),
                     'node' => $item
-                ))->fetch();
+                    ]
+                )->fetch();
             }
         }
 

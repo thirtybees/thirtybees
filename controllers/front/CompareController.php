@@ -88,7 +88,7 @@ class CompareControllerCore extends FrontController
         } elseif (isset($this->context->cookie->id_compare)) {
             $ids = CompareProduct::getCompareProducts($this->context->cookie->id_compare);
             if (count($ids)) {
-                Tools::redirect($this->context->link->getPageLink('products-comparison', null, $this->context->language->id, array('compare_product_list' => implode('|', $ids))));
+                Tools::redirect($this->context->link->getPageLink('products-comparison', null, $this->context->language->id, ['compare_product_list' => implode('|', $ids)]));
             }
         }
 
@@ -98,8 +98,8 @@ class CompareControllerCore extends FrontController
                     $ids = array_slice($ids, 0, Configuration::get('PS_COMPARATOR_MAX_ITEM'));
                 }
 
-                $listProducts = array();
-                $listFeatures = array();
+                $listProducts = [];
+                $listFeatures = [];
 
                 foreach ($ids as $k => &$id) {
                     $curProduct = new Product((int)$id, true, $this->context->language->id);
@@ -117,7 +117,7 @@ class CompareControllerCore extends FrontController
 
                     $cover = Product::getCover((int)$id);
 
-                    $curProduct->id_image = Tools::htmlentitiesUTF8(Product::defineProductImage(array('id_image' => $cover['id_image'], 'id_product' => $id), $this->context->language->id));
+                    $curProduct->id_image = Tools::htmlentitiesUTF8(Product::defineProductImage(['id_image' => $cover['id_image'], 'id_product' => $id], $this->context->language->id));
                     $curProduct->allow_oosp = Product::isAvailableWhenOutOfStock($curProduct->out_of_stock);
                     $listProducts[] = $curProduct;
                 }
@@ -127,15 +127,17 @@ class CompareControllerCore extends FrontController
 
                     $hasProduct = true;
                     $ordered_features = Feature::getFeaturesForComparison($ids, $this->context->language->id);
-                    $this->context->smarty->assign(array(
+                    $this->context->smarty->assign(
+                        [
                         'ordered_features' => $ordered_features,
                         'product_features' => $listFeatures,
                         'products' => $listProducts,
                         'width' => $width,
-                        'HOOK_COMPARE_EXTRA_INFORMATION' => Hook::exec('displayCompareExtraInformation', array('list_ids_product' => $ids)),
-                        'HOOK_EXTRA_PRODUCT_COMPARISON' => Hook::exec('displayProductComparison', array('list_ids_product' => $ids)),
+                        'HOOK_COMPARE_EXTRA_INFORMATION' => Hook::exec('displayCompareExtraInformation', ['list_ids_product' => $ids]),
+                        'HOOK_EXTRA_PRODUCT_COMPARISON' => Hook::exec('displayProductComparison', ['list_ids_product' => $ids]),
                         'homeSize' => Image::getSize(ImageType::getFormatedName('home'))
-                    ));
+                        ]
+                    );
                 } elseif (isset($this->context->cookie->id_compare)) {
                     $object = new CompareProduct((int)$this->context->cookie->id_compare);
                     if (Validate::isLoadedObject($object)) {

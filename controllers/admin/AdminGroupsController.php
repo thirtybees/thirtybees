@@ -39,53 +39,53 @@ class AdminGroupsControllerCore extends AdminController
         $this->addRowAction('edit');
         $this->addRowAction('view');
         $this->addRowAction('delete');
-        $this->bulk_actions = array(
-            'delete' => array(
+        $this->bulk_actions = [
+            'delete' => [
                 'text' => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
                 'icon' => 'icon-trash'
-            )
-        );
+            ]
+        ];
 
-        $groups_to_keep = array(
+        $groups_to_keep = [
             Configuration::get('PS_UNIDENTIFIED_GROUP'),
             Configuration::get('PS_GUEST_GROUP'),
             Configuration::get('PS_CUSTOMER_GROUP')
-        );
+        ];
 
-        $this->fields_list = array(
-            'id_group' => array(
+        $this->fields_list = [
+            'id_group' => [
                 'title' => $this->l('ID'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs'
-            ),
-            'name' => array(
+            ],
+            'name' => [
                 'title' => $this->l('Group name'),
                 'filter_key' => 'b!name'
-            ),
-            'reduction' => array(
+            ],
+            'reduction' => [
                 'title' => $this->l('Discount (%)'),
                 'align' => 'right',
                 'type' => 'percent'
-            ),
-            'nb' => array(
+            ],
+            'nb' => [
                 'title' => $this->l('Members'),
                 'align' => 'center',
                 'havingFilter' => true,
-            ),
-            'show_prices' => array(
+            ],
+            'show_prices' => [
                 'title' => $this->l('Show prices'),
                 'align' => 'center',
                 'type' => 'bool',
                 'callback' => 'printShowPricesIcon',
                 'orderby' => false
-            ),
-            'date_add' => array(
+            ],
+            'date_add' => [
                 'title' => $this->l('Creation date'),
                 'type' => 'date',
                 'align' => 'right'
-            )
-        );
+            ]
+        ];
 
         $this->addRowActionSkipList('delete', $groups_to_keep);
 
@@ -101,40 +101,40 @@ class AdminGroupsControllerCore extends AdminController
 
         $groups = Group::getGroups(Context::getContext()->language->id, true);
         if (Shop::isFeatureActive()) {
-            $this->fields_options = array(
-                'general' => array(
+            $this->fields_options = [
+                'general' => [
                     'title' =>    $this->l('Default groups options'),
-                    'fields' =>    array(
-                        'PS_UNIDENTIFIED_GROUP' => array(
+                    'fields' =>    [
+                        'PS_UNIDENTIFIED_GROUP' => [
                             'title' => $this->l('Visitors group'),
                             'desc' => $this->l('The group defined for your un-identified visitors.'),
                             'cast' => 'intval',
                             'type' => 'select',
                             'list' => $groups,
                             'identifier' => 'id_group'
-                        ),
-                        'PS_GUEST_GROUP' => array(
+                        ],
+                        'PS_GUEST_GROUP' => [
                             'title' => $this->l('Guests group'),
                             'desc' => $this->l('The group defined for your identified guest customers (used in guest checkout).'),
                             'cast' => 'intval',
                             'type' => 'select',
                             'list' => $groups,
                             'identifier' => 'id_group'
-                        ),
-                        'PS_CUSTOMER_GROUP' => array(
+                        ],
+                        'PS_CUSTOMER_GROUP' => [
                             'title' => $this->l('Customers group'),
                             'desc' => $this->l('The group defined for your identified registered customers.'),
                             'cast' => 'intval',
                             'type' => 'select',
                             'list' => $groups,
                             'identifier' => 'id_group'
-                        ),
-                    ),
-                    'submit' => array(
+                        ],
+                    ],
+                    'submit' => [
                         'title' => $this->l('Save'),
-                    )
-                ),
-            );
+                    ]
+                ],
+            ];
         }
     }
 
@@ -148,12 +148,12 @@ class AdminGroupsControllerCore extends AdminController
     public function initToolbar()
     {
         if ($this->display == 'add' || $this->display == 'edit') {
-            $this->toolbar_btn['save-and-stay'] = array(
+            $this->toolbar_btn['save-and-stay'] = [
                 'short' => 'SaveAndStay',
                 'href' => '#',
                 'desc' => $this->l('Save, then add a category reduction.'),
                 'force_desc' => true,
-            );
+            ];
         }
         parent::initToolbar();
     }
@@ -161,11 +161,11 @@ class AdminGroupsControllerCore extends AdminController
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
-            $this->page_header_toolbar_btn['new_group'] = array(
+            $this->page_header_toolbar_btn['new_group'] = [
                 'href' => self::$currentIndex.'&addgroup&token='.$this->token,
                 'desc' => $this->l('Add new group', null, null, false),
                 'icon' => 'process-icon-new'
-            );
+            ];
         }
 
         parent::initPageHeaderToolbar();
@@ -199,20 +199,20 @@ class AdminGroupsControllerCore extends AdminController
             return;
         }
 
-        $this->tpl_view_vars = array(
+        $this->tpl_view_vars = [
             'group' => $group,
             'language' => $this->context->language,
             'customerList' => $this->renderCustomersList($group),
             'categorieReductions' => $this->formatCategoryDiscountList($group->id)
-        );
+        ];
 
         return parent::renderView();
     }
 
     protected function renderCustomersList($group)
     {
-        $genders = array(0 => '?');
-        $genders_icon = array('default' => 'unknown.gif');
+        $genders = [0 => '?'];
+        $genders_icon = ['default' => 'unknown.gif'];
         foreach (Gender::getGenders() as $gender) {
             /** @var Gender $gender */
             $genders_icon[$gender->id] = '../genders/'.(int)$gender->id.'.jpg';
@@ -221,23 +221,23 @@ class AdminGroupsControllerCore extends AdminController
         $this->table = 'customer_group';
         $this->lang = false;
         $this->list_id = 'customer_group';
-        $this->actions = array();
+        $this->actions = [];
         $this->addRowAction('edit');
         $this->identifier = 'id_customer';
         $this->bulk_actions = false;
         $this->list_no_link = true;
         $this->explicitSelect = true;
 
-        $this->fields_list = (array(
-            'id_customer' => array('title' => $this->l('ID'), 'align' => 'center', 'filter_key' => 'c!id_customer', 'class' => 'fixed-width-xs'),
-            'id_gender' => array('title' => $this->l('Social title'), 'icon' => $genders_icon, 'list' => $genders),
-            'firstname' => array('title' => $this->l('First name')),
-            'lastname' => array('title' => $this->l('Last name')),
-            'email' => array('title' => $this->l('Email address'), 'filter_key' => 'c!email', 'orderby' => true),
-            'birthday' => array('title' => $this->l('Birth date'), 'type' => 'date', 'class' => 'fixed-width-md', 'align' => 'center'),
-            'date_add' => array('title' => $this->l('Registration date'), 'type' => 'date', 'class' => 'fixed-width-md', 'align' => 'center'),
-            'active' => array('title' => $this->l('Enabled'), 'align' => 'center', 'class' => 'fixed-width-sm', 'type' => 'bool', 'search' => false, 'orderby' => false, 'filter_key' => 'c!active', 'callback' => 'printOptinIcon')
-        ));
+        $this->fields_list = ([
+            'id_customer' => ['title' => $this->l('ID'), 'align' => 'center', 'filter_key' => 'c!id_customer', 'class' => 'fixed-width-xs'],
+            'id_gender' => ['title' => $this->l('Social title'), 'icon' => $genders_icon, 'list' => $genders],
+            'firstname' => ['title' => $this->l('First name')],
+            'lastname' => ['title' => $this->l('Last name')],
+            'email' => ['title' => $this->l('Email address'), 'filter_key' => 'c!email', 'orderby' => true],
+            'birthday' => ['title' => $this->l('Birth date'), 'type' => 'date', 'class' => 'fixed-width-md', 'align' => 'center'],
+            'date_add' => ['title' => $this->l('Registration date'), 'type' => 'date', 'class' => 'fixed-width-md', 'align' => 'center'],
+            'active' => ['title' => $this->l('Enabled'), 'align' => 'center', 'class' => 'fixed-width-sm', 'type' => 'bool', 'search' => false, 'orderby' => false, 'filter_key' => 'c!active', 'callback' => 'printOptinIcon']
+        ]);
         $this->_select = 'c.*, a.id_group';
         $this->_join = 'LEFT JOIN `'._DB_PREFIX_.'customer` c ON (a.`id_customer` = c.`id_customer`)';
         $this->_where = 'AND a.`id_group` = '.(int)$group->id.' AND c.`deleted` != 1';
@@ -260,16 +260,16 @@ class AdminGroupsControllerCore extends AdminController
             return;
         }
 
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('Customer group'),
                 'icon' => 'icon-group'
-            ),
-            'submit' => array(
+            ],
+            'submit' => [
                 'title' => $this->l('Save'),
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'text',
                     'label' => $this->l('Name'),
                     'name' => 'name',
@@ -277,78 +277,78 @@ class AdminGroupsControllerCore extends AdminController
                     'lang' => true,
                     'col' => 4,
                     'hint' => $this->l('Forbidden characters:').' 0-9!&amp;lt;&amp;gt;,;?=+()@#"�{}_$%:'
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Discount'),
                     'name' => 'reduction',
                     'suffix' => '%',
                     'col' => 1,
                     'hint' => $this->l('Automatically apply this value as a discount on all products for members of this customer group.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'select',
                     'label' => $this->l('Price display method'),
                     'name' => 'price_display_method',
                     'col' => 2,
                     'hint' => $this->l('How prices are displayed in the order summary for this customer group.'),
-                    'options' => array(
-                        'query' => array(
-                            array(
+                    'options' => [
+                        'query' => [
+                            [
                                 'id_method' => PS_TAX_EXC,
                                 'name' => $this->l('Tax excluded')
-                            ),
-                            array(
+                            ],
+                            [
                                 'id_method' => PS_TAX_INC,
                                 'name' => $this->l('Tax included')
-                            )
-                        ),
+                            ]
+                        ],
                         'id' => 'id_method',
                         'name' => 'name'
-                    )
-                ),
-                array(
+                    ]
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Show prices'),
                     'name' => 'show_prices',
                     'required' => false,
                     'class' => 't',
                     'is_bool' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'show_prices_on',
                             'value' => 1,
                             'label' => $this->l('Enabled')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'show_prices_off',
                             'value' => 0,
                             'label' => $this->l('Disabled')
-                        )
-                    ),
+                        ]
+                    ],
                     'hint' => $this->l('Customers in this group can view prices.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'group_discount_category',
                     'label' => $this->l('Category discount'),
                     'name' => 'reduction',
-                    'values' => ($group->id ? $this->formatCategoryDiscountList((int)$group->id) : array())
-                ),
-                array(
+                    'values' => ($group->id ? $this->formatCategoryDiscountList((int)$group->id) : [])
+                ],
+                [
                     'type' => 'modules',
                     'label' => $this->l('Modules Authorization'),
                     'name' => 'auth_modules',
                     'values' => $this->formatModuleListAuth($group->id)
-                )
-            )
-        );
+                ]
+            ]
+        ];
 
         if (Shop::isFeatureActive()) {
-            $this->fields_form['input'][] = array(
+            $this->fields_form['input'][] = [
                 'type' => 'shop',
                 'label' => $this->l('Shop association'),
                 'name' => 'checkBoxShopAsso',
-            );
+            ];
         }
 
         if (Tools::getIsset('addgroup')) {
@@ -366,7 +366,7 @@ class AdminGroupsControllerCore extends AdminController
     protected function formatCategoryDiscountList($id_group)
     {
         $group_reductions = GroupReduction::getGroupReductions((int)$id_group, $this->context->language->id);
-        $category_reductions = array();
+        $category_reductions = [];
         $category_reduction = Tools::getValue('category_reduction');
 
         foreach ($group_reductions as $category) {
@@ -374,21 +374,21 @@ class AdminGroupsControllerCore extends AdminController
                 $category['reduction'] = $category_reduction[$category['id_category']];
             }
 
-            $category_reductions[(int)$category['id_category']] = array(
+            $category_reductions[(int)$category['id_category']] = [
                 'path' => getPath(Context::getContext()->link->getAdminLink('AdminCategories'), (int)$category['id_category']),
                 'reduction' => (float)$category['reduction'] * 100,
                 'id_category' => (int)$category['id_category']
-            );
+            ];
         }
 
         if (is_array($category_reduction)) {
             foreach ($category_reduction as $key => $val) {
                 if (!array_key_exists($key, $category_reductions)) {
-                    $category_reductions[(int)$key] = array(
+                    $category_reductions[(int)$key] = [
                         'path' => getPath(Context::getContext()->link->getAdminLink('AdminCategories'), $key),
                         'reduction' => (float)$val * 100,
                         'id_category' => (int)$key
-                    );
+                    ];
                 }
             }
         }
@@ -401,8 +401,8 @@ class AdminGroupsControllerCore extends AdminController
         $modules = Module::getModulesInstalled();
         $authorized_modules = '';
 
-        $auth_modules = array();
-        $unauth_modules = array();
+        $auth_modules = [];
+        $unauth_modules = [];
 
         if ($id_group) {
             $authorized_modules = Module::getAuthorizedModules($id_group);
@@ -426,7 +426,7 @@ class AdminGroupsControllerCore extends AdminController
         } else {
             $auth_modules = $modules;
         }
-        $auth_modules_tmp = array();
+        $auth_modules_tmp = [];
         foreach ($auth_modules as $key => $val) {
             if ($module = Module::getInstanceById($val['id_module'])) {
                 $auth_modules_tmp[] = $module;
@@ -435,7 +435,7 @@ class AdminGroupsControllerCore extends AdminController
 
         $auth_modules = $auth_modules_tmp;
 
-        $unauth_modules_tmp = array();
+        $unauth_modules_tmp = [];
         foreach ($unauth_modules as $key => $val) {
             if (($tmp_obj = Module::getInstanceById($val['id_module']))) {
                 $unauth_modules_tmp[] = $tmp_obj;
@@ -444,7 +444,7 @@ class AdminGroupsControllerCore extends AdminController
 
         $unauth_modules = $unauth_modules_tmp;
 
-        return array('unauth_modules' => $unauth_modules, 'auth_modules' => $auth_modules);
+        return ['unauth_modules' => $unauth_modules, 'auth_modules' => $auth_modules];
     }
 
     public function processSave()
@@ -473,7 +473,7 @@ class AdminGroupsControllerCore extends AdminController
         $category_reduction = Tools::getValue('category_reduction');
         $id_category = Tools::getValue('id_category'); //no cast validation is done with Validate::isUnsignedId($id_category)
 
-        $result = array();
+        $result = [];
         if (!Validate::isUnsignedId($id_category)) {
             $result['errors'][] = Tools::displayError('Wrong category ID.');
             $result['hasError'] = true;
@@ -614,11 +614,13 @@ class AdminGroupsControllerCore extends AdminController
             $href = Context::getContext()->link->getAdminLink('AdminCustomers').'&id_customer='.(int)$id.'&updatecustomer&back='.urlencode($href);
         }
 
-        $tpl->assign(array(
+        $tpl->assign(
+            [
             'href' => $href,
             'action' => self::$cache_lang['Edit'],
             'id' => $id
-        ));
+            ]
+        );
 
         return $tpl->fetch();
     }

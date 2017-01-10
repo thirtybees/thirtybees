@@ -31,7 +31,7 @@ use Tools;
 
 class ToolsCoreTest extends PHPUnit_Framework_TestCase
 {
-    private function setPostAndGet(array $post = array(), array $get = array())
+    private function setPostAndGet(array $post = [], array $get = [])
     {
         global $_POST;
         global $_GET;
@@ -44,7 +44,7 @@ class ToolsCoreTest extends PHPUnit_Framework_TestCase
 
     public function testGetValueBaseCase()
     {
-        $this->setPostAndGet(array('hello' => 'world'));
+        $this->setPostAndGet(['hello' => 'world']);
         $this->assertEquals('world', Tools::getValue('hello'));
     }
 
@@ -62,17 +62,19 @@ class ToolsCoreTest extends PHPUnit_Framework_TestCase
 
     public function testGetValuePrefersPost()
     {
-        $this->setPostAndGet(array('hello' => 'world'), array('hello' => 'cruel world'));
+        $this->setPostAndGet(['hello' => 'world'], ['hello' => 'cruel world']);
         $this->assertEquals('world', Tools::getValue('hello'));
     }
 
     public function testGetValueAcceptsOnlyTruthyStringsAsKeys()
     {
-        $this->setPostAndGet(array(
+        $this->setPostAndGet(
+            [
             '' => true,
             ' ' => true,
             null => true
-        ));
+            ]
+        );
 
         $this->assertEquals(false, Tools::getValue('', true));
         $this->assertEquals(true, Tools::getValue(' '));
@@ -81,11 +83,11 @@ class ToolsCoreTest extends PHPUnit_Framework_TestCase
 
     public function testGetValueStripsNullCharsFromReturnedStringsExamples()
     {
-        return array(
-            array("\0", ''),
-            array("haxx\0r", 'haxxr'),
-            array("haxx\0\0\0r", 'haxxr'),
-        );
+        return [
+            ["\0", ''],
+            ["haxx\0r", 'haxxr'],
+            ["haxx\0\0\0r", 'haxxr'],
+        ];
     }
 
     /**
@@ -96,13 +98,13 @@ class ToolsCoreTest extends PHPUnit_Framework_TestCase
         /**
          * Check it cleans values stored in POST
          */
-        $this->setPostAndGet(array('rawString' => $rawString));
+        $this->setPostAndGet(['rawString' => $rawString]);
         $this->assertEquals($cleanedString, Tools::getValue('rawString'));
 
         /**
          * Check it cleans values stored in GET
          */
-        $this->setPostAndGet(array(), array('rawString' => $rawString));
+        $this->setPostAndGet([], ['rawString' => $rawString]);
         $this->assertEquals($cleanedString, Tools::getValue('rawString'));
 
         /**
@@ -114,84 +116,84 @@ class ToolsCoreTest extends PHPUnit_Framework_TestCase
 
     public function testSpreadAmountExamples()
     {
-        return array(
-            array(
+        return [
+            [
                 // base case
-                array(array('a' => 2), array('a' => 1)), // expected result
+                [['a' => 2], ['a' => 1]], // expected result
                 1, 0,                                     // amount and precision
-                array(array('a' => 1), array('a' => 1)), // source rows
+                [['a' => 1], ['a' => 1]], // source rows
                 'a'                                         // sort column
-            ),
-            array(
+            ],
+            [
                 // check with 1 decimal
-                array(array('a' => 1.5), array('a' => 1.5)),
+                [['a' => 1.5], ['a' => 1.5]],
                 1, 1,
-                array(array('a' => 1), array('a' => 1)),
+                [['a' => 1], ['a' => 1]],
                 'a'
-            ),
-            array(
+            ],
+            [
                 // 2 decimals, but only one really needed
-                array(array('a' => 1.5), array('a' => 1.5)),
+                [['a' => 1.5], ['a' => 1.5]],
                 1, 2,
-                array(array('a' => 1), array('a' => 1)),
+                [['a' => 1], ['a' => 1]],
                 'a'
-            ),
-            array(
+            ],
+            [
                 // check that the biggest "a" gets the adjustment
-                array(array('a' => 3), array('a' => 1)),
+                [['a' => 3], ['a' => 1]],
                 1, 0,
-                array(array('a' => 1), array('a' => 2)),
+                [['a' => 1], ['a' => 2]],
                 'a'
-            ),
-            array(
+            ],
+            [
                 // check it works with amount > count($rows)
-                array(array('a' => 4), array('a' => 2)),
+                [['a' => 4], ['a' => 2]],
                 3, 0,
-                array(array('a' => 1), array('a' => 2)),
+                [['a' => 1], ['a' => 2]],
                 'a'
-            ),
-            array(
+            ],
+            [
                 // 2 decimals
-                array(array('a' => 2.01), array('a' => 1)),
+                [['a' => 2.01], ['a' => 1]],
                 0.01, 2,
-                array(array('a' => 1), array('a' => 2)),
+                [['a' => 1], ['a' => 2]],
                 'a'
-            ),
-            array(
+            ],
+            [
                 // 2 decimals, equal level of adjustment
-                array(array('a' => 2.01), array('a' => 1.01)),
+                [['a' => 2.01], ['a' => 1.01]],
                 0.02, 2,
-                array(array('a' => 1), array('a' => 2)),
+                [['a' => 1], ['a' => 2]],
                 'a'
-            ),
-            array(
+            ],
+            [
                 // 2 decimals, different levels of adjustmnt
-                array(array('a' => 2.02), array('a' => 1.01)),
+                [['a' => 2.02], ['a' => 1.01]],
                 0.03, 2,
-                array(array('a' => 1), array('a' => 2)),
+                [['a' => 1], ['a' => 2]],
                 'a'
-            ),
-            array(
+            ],
+            [
                 // check associative arrays are OK too
-                array(array('a' => 2.01), array('a' => 1.01)),
+                [['a' => 2.01], ['a' => 1.01]],
                 0.02, 2,
-                array('z' => array('a' => 1), 'x' => array('a' => 2)),
+                ['z' => ['a' => 1], 'x' => ['a' => 2]],
                 'a'
-            ),
-            array(
+            ],
+            [
                 // check amount is rounded if it needs more precision than asked for
-                array(array('a' => 2.02), array('a' => 1.01)),
+                [['a' => 2.02], ['a' => 1.01]],
                 0.025, 2,
-                array(array('a' => 1), array('a' => 2)),
+                [['a' => 1], ['a' => 2]],
                 'a'
-            ),
-            array(
-                array(array('a' => 7.69), array('a' => 4.09), array('a' => 1.8)),
+            ],
+            [
+                [['a' => 7.69], ['a' => 4.09], ['a' => 1.8]],
                 -0.32, 2,
-                array(array('a' => 7.8), array('a' => 4.2), array('a' => 1.9)),
+                [['a' => 7.8], ['a' => 4.2], ['a' => 1.9]],
                 'a'
-            )
-        );
+            ]
+        ];
     }
 
     /**

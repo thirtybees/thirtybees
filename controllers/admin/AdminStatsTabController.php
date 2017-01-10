@@ -57,13 +57,15 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
         $this->content .= $this->displayStats();
 
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'content' => $this->content,
             'url_post' => self::$currentIndex.'&token='.$this->token,
             'show_page_header_toolbar' => $this->show_page_header_toolbar,
             'page_header_toolbar_title' => $this->page_header_toolbar_title,
             'page_header_toolbar_btn' => $this->page_header_toolbar_btn
-        ));
+            ]
+        );
     }
 
     public function initPageHeaderToolbar()
@@ -74,7 +76,8 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
 
     public function displayCalendar()
     {
-        return AdminStatsTabController::displayCalendarForm(array(
+        return AdminStatsTabController::displayCalendarForm(
+            [
             'Calendar' => $this->l('Calendar', 'AdminStatsTab'),
             'Day' => $this->l('Day', 'AdminStatsTab'),
             'Month' => $this->l('Month', 'AdminStatsTab'),
@@ -82,7 +85,7 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
             'From' => $this->l('From:', 'AdminStatsTab'),
             'To' => $this->l('To:', 'AdminStatsTab'),
             'Save' => $this->l('Save', 'AdminStatsTab')
-        ), $this->token);
+            ], $this->token);
     }
 
     public static function displayCalendarForm($translations, $token, $action = null, $table = null, $identifier = null, $id = null)
@@ -104,7 +107,8 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
         $module = Tools::getValue('module');
         $action .= ($module ? '&module='.Tools::safeOutput($module) : '');
         $action .= (($id_product = Tools::getValue('id_product')) ? '&id_product='.Tools::safeOutput($id_product) : '');
-        $tpl->assign(array(
+        $tpl->assign(
+            [
             'current' => self::$currentIndex,
             'token' => $token,
             'action' => $action,
@@ -114,7 +118,8 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
             'translations' => $translations,
             'datepickerFrom' => Tools::getValue('datepickerFrom', $context->employee->stats_date_from),
             'datepickerTo' => Tools::getValue('datepickerTo', $context->employee->stats_date_to)
-        ));
+            ]
+        );
 
         return $tpl->fetch();
     }
@@ -124,14 +129,15 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
     {
         $tpl = $this->createTemplate('engines.tpl');
 
-        $autoclean_period = array(
+        $autoclean_period = [
             'never' =>    $this->l('Never', 'AdminStatsTab'),
             'week' =>    $this->l('Week', 'AdminStatsTab'),
             'month' =>    $this->l('Month', 'AdminStatsTab'),
             'year' =>    $this->l('Year', 'AdminStatsTab')
-        );
+        ];
 
-        $tpl->assign(array(
+        $tpl->assign(
+            [
             'current' => self::$currentIndex,
             'token' => $this->token,
             'graph_engine' => Configuration::get('PS_STATS_RENDER'),
@@ -140,7 +146,8 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
             'array_graph_engines' => ModuleGraphEngine::getGraphEngines(),
             'array_grid_engines' => ModuleGridEngine::getGridEngines(),
             'array_auto_clean' => $autoclean_period,
-        ));
+            ]
+        );
 
         return $tpl->fetch();
     }
@@ -150,7 +157,7 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
         $tpl = $this->createTemplate('menu.tpl');
 
         $modules = $this->getModules();
-        $module_instance = array();
+        $module_instance = [];
         foreach ($modules as $m => $module) {
             if ($module_instance[$module['name']] = Module::getInstanceByName($module['name'])) {
                 $modules[$m]['displayName'] = $module_instance[$module['name']]->displayName;
@@ -160,15 +167,17 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
             }
         }
 
-        uasort($modules, array($this, 'checkModulesNames'));
+        uasort($modules, [$this, 'checkModulesNames']);
 
-        $tpl->assign(array(
+        $tpl->assign(
+            [
             'current' => self::$currentIndex,
             'current_module_name' => Tools::getValue('module', 'statsforecast'),
             'token' => $this->token,
             'modules' => $modules,
             'module_instance' => $module_instance
-        ));
+            ]
+        );
 
         return $tpl->fetch();
     }
@@ -211,11 +220,13 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
             }
         }
 
-        $tpl->assign(array(
+        $tpl->assign(
+            [
             'module_name' => $module_name,
             'module_instance' => isset($module_instance) ? $module_instance : null,
             'hook' => isset($hook) ? $hook : null
-        ));
+            ]
+        );
 
         return $tpl->fetch();
     }
@@ -288,17 +299,21 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
         
         if ($this->isXmlHttpRequest()) {
             if (is_array($this->errors) && count($this->errors)) {
-                die(Tools::jsonEncode(array(
+                die(Tools::jsonEncode(
+                    [
                     'has_errors' => true,
-                    'errors' => array($this->errors),
+                    'errors' => [$this->errors],
                     'date_from' => $this->context->employee->stats_date_from,
-                    'date_to' => $this->context->employee->stats_date_to)
+                    'date_to' => $this->context->employee->stats_date_to
+                    ]
                 ));
             } else {
-                die(Tools::jsonEncode(array(
+                die(Tools::jsonEncode(
+                    [
                     'has_errors' => false,
                     'date_from' => $this->context->employee->stats_date_from,
-                    'date_to' => $this->context->employee->stats_date_to)
+                    'date_to' => $this->context->employee->stats_date_to
+                    ]
                     ));
             }
         }

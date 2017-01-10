@@ -46,7 +46,8 @@ class HelperKpiCore extends Helper
     {
         $this->tpl = $this->createTemplate($this->base_tpl);
 
-        $this->tpl->assign(array(
+        $this->tpl->assign(
+            [
             'id' => $this->id,
             'icon' => $this->icon,
             'chart' => (bool)$this->chart,
@@ -59,7 +60,8 @@ class HelperKpiCore extends Helper
             'refresh' => $this->refresh,
             'href' => $this->href,
             'tooltip' => $this->tooltip
-        ));
+            ]
+        );
         return $this->tpl->fetch();
     }
 }

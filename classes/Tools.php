@@ -26,7 +26,7 @@
 
 class ToolsCore
 {
-    protected static $file_exists_cache = array();
+    protected static $file_exists_cache = [];
     protected static $_forceCompile;
     protected static $_caching;
     protected static $_user_plateform;
@@ -206,7 +206,7 @@ class ToolsCore
         // Send additional headers
         if ($headers) {
             if (!is_array($headers)) {
-                $headers = array($headers);
+                $headers = [$headers];
             }
 
             foreach ($headers as $header) {
@@ -394,18 +394,18 @@ class ToolsCore
     public static function usingSecureMode()
     {
         if (isset($_SERVER['HTTPS'])) {
-            return in_array(Tools::strtolower($_SERVER['HTTPS']), array(1, 'on'));
+            return in_array(Tools::strtolower($_SERVER['HTTPS']), [1, 'on']);
         }
         // $_SERVER['SSL'] exists only in some specific configuration
         if (isset($_SERVER['SSL'])) {
-            return in_array(Tools::strtolower($_SERVER['SSL']), array(1, 'on'));
+            return in_array(Tools::strtolower($_SERVER['SSL']), [1, 'on']);
         }
         // $_SERVER['REDIRECT_HTTPS'] exists only in some specific configuration
         if (isset($_SERVER['REDIRECT_HTTPS'])) {
-            return in_array(Tools::strtolower($_SERVER['REDIRECT_HTTPS']), array(1, 'on'));
+            return in_array(Tools::strtolower($_SERVER['REDIRECT_HTTPS']), [1, 'on']);
         }
         if (isset($_SERVER['HTTP_SSL'])) {
-            return in_array(Tools::strtolower($_SERVER['HTTP_SSL']), array(1, 'on'));
+            return in_array(Tools::strtolower($_SERVER['HTTP_SSL']), [1, 'on']);
         }
         if (isset($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
             return Tools::strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) == 'https';
@@ -727,7 +727,7 @@ class ToolsCore
             $format = $currency->format;
         }
 
-        return number_format($number, 0, '.', in_array($format, array(1, 4)) ? ',': ' ');
+        return number_format($number, 0, '.', in_array($format, [1, 4]) ? ',': ' ');
     }
 
     public static function displayPriceSmarty($params, &$smarty)
@@ -791,7 +791,7 @@ class ToolsCore
         if (!function_exists('array_replace')) {
             $args     = func_get_args();
             $num_args = func_num_args();
-            $res      = array();
+            $res      = [];
             for ($i = 0; $i < $num_args; $i++) {
                 if (is_array($args[$i])) {
                     foreach ($args[$i] as $key => $val) {
@@ -909,7 +909,7 @@ class ToolsCore
     public static function htmlentitiesUTF8($string, $type = ENT_QUOTES)
     {
         if (is_array($string)) {
-            return array_map(array('Tools', 'htmlentitiesUTF8'), $string);
+            return array_map(['Tools', 'htmlentitiesUTF8'], $string);
         }
 
         return htmlentities((string)$string, $type, 'utf-8');
@@ -918,7 +918,7 @@ class ToolsCore
     public static function htmlentitiesDecodeUTF8($string)
     {
         if (is_array($string)) {
-            $string = array_map(array('Tools', 'htmlentitiesDecodeUTF8'), $string);
+            $string = array_map(['Tools', 'htmlentitiesDecodeUTF8'], $string);
             return (string)array_shift($string);
         }
         return html_entity_decode((string)$string, ENT_QUOTES, 'utf-8');
@@ -927,9 +927,9 @@ class ToolsCore
     public static function safePostVars()
     {
         if (!isset($_POST) || !is_array($_POST)) {
-            $_POST = array();
+            $_POST = [];
         } else {
-            $_POST = array_map(array('Tools', 'htmlentitiesUTF8'), $_POST);
+            $_POST = array_map(['Tools', 'htmlentitiesUTF8'], $_POST);
         }
     }
 
@@ -971,10 +971,10 @@ class ToolsCore
     * @param string $file File path
     * @param array $exclude_files Excluded files
     */
-    public static function deleteFile($file, $exclude_files = array())
+    public static function deleteFile($file, $exclude_files = [])
     {
         if (isset($exclude_files) && !is_array($exclude_files)) {
-            $exclude_files = array($exclude_files);
+            $exclude_files = [$exclude_files];
         }
 
         if (file_exists($file) && is_file($file) && array_search(basename($file), $exclude_files) === false) {
@@ -988,7 +988,7 @@ class ToolsCore
     */
     public static function clearXMLCache()
     {
-        $themes = array();
+        $themes = [];
         foreach (Theme::getThemes() as $theme) {
             /** @var Theme $theme */
             $themes[] = $theme->directory;
@@ -1056,7 +1056,7 @@ class ToolsCore
     */
     public static function fd($object, $type = 'log')
     {
-        $types = array('log', 'debug', 'info', 'warn', 'error', 'assert');
+        $types = ['log', 'debug', 'info', 'warn', 'error', 'assert'];
 
         if (!in_array($type, $types)) {
             $type = 'log';
@@ -1095,7 +1095,7 @@ class ToolsCore
             if ((int)$limit && (++$i > $limit)) {
                 break;
             }
-            $relative_file = (isset($trace['file'])) ? 'in /'.ltrim(str_replace(array(_PS_ROOT_DIR_, '\\'), array('', '/'), $trace['file']), '/') : '';
+            $relative_file = (isset($trace['file'])) ? 'in /'.ltrim(str_replace([_PS_ROOT_DIR_, '\\'], ['', '/'], $trace['file']), '/') : '';
             $current_line = (isset($trace['line'])) ? ':'.$trace['line'] : '';
 
             echo '<li>
@@ -1388,7 +1388,7 @@ class ToolsCore
      */
     public static function str2url($str)
     {
-        static $array_str = array();
+        static $array_str = [];
         static $allow_accented_chars = null;
         static $has_mb_strtolower = null;
 
@@ -1429,7 +1429,7 @@ class ToolsCore
         }
 
         $return_str = preg_replace('/[\s\'\:\/\[\]\-]+/', ' ', $return_str);
-        $return_str = str_replace(array(' ', '/'), '-', $return_str);
+        $return_str = str_replace([' ', '/'], '-', $return_str);
 
         // If it was not possible to lowercase the string with mb_strtolower, we do it after the transformations.
         // This way we lose fewer special chars.
@@ -1454,7 +1454,7 @@ class ToolsCore
             http://www.tachyonsoft.com/uc0001.htm
             http://www.tachyonsoft.com/uc0004.htm
         */
-        $patterns = array(
+        $patterns = [
 
             /* Lowercase */
             /* a  */ '/[\x{00E0}\x{00E1}\x{00E2}\x{00E3}\x{00E4}\x{00E5}\x{0101}\x{0103}\x{0105}\x{0430}\x{00C0}-\x{00C3}\x{1EA0}-\x{1EB7}]/u',
@@ -1531,16 +1531,17 @@ class ToolsCore
             /* YI */ '/[\x{0407}]/u',
             /* YO */ '/[\x{0401}]/u',
             /* YU */ '/[\x{042E}]/u',
-            /* ZH */ '/[\x{0416}]/u');
+            /* ZH */ '/[\x{0416}]/u'
+        ];
 
             // ö to oe
             // å to aa
             // ä to ae
 
-        $replacements = array(
+        $replacements = [
                 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 's', 'ss', 't', 'u', 'v', 'w', 'y', 'z', 'ae', 'ch', 'kh', 'oe', 'sh', 'shh', 'ya', 'ye', 'yi', 'yo', 'yu', 'zh',
                 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'R', 'S', 'T', 'U', 'V', 'W', 'Y', 'Z', 'AE', 'CH', 'KH', 'OE', 'SH', 'SHH', 'YA', 'YE', 'YI', 'YO', 'YU', 'ZH'
-            );
+        ];
 
         return preg_replace($patterns, $replacements, $str);
     }
@@ -1565,11 +1566,11 @@ class ToolsCore
     }
 
     /*Copied from CakePHP String utility file*/
-    public static function truncateString($text, $length = 120, $options = array())
+    public static function truncateString($text, $length = 120, $options = [])
     {
-        $default = array(
+        $default = [
             'ellipsis' => '...', 'exact' => true, 'html' => true
-        );
+        ];
 
         $options = array_merge($default, $options);
         extract($options);
@@ -1585,7 +1586,7 @@ class ToolsCore
             }
 
             $total_length = Tools::strlen(strip_tags($ellipsis));
-            $open_tags = array();
+            $open_tags = [];
             $truncate = '';
             preg_match_all('/(<\/?([\w+]+)[^>]*>)?([^<>]*)/', $text, $tags, PREG_SET_ORDER);
 
@@ -1698,7 +1699,7 @@ class ToolsCore
     */
     public static function dateYears()
     {
-        $tab = array();
+        $tab = [];
         for ($i = date('Y'); $i >= 1900; $i--) {
             $tab[] = $i;
         }
@@ -1707,7 +1708,7 @@ class ToolsCore
 
     public static function dateDays()
     {
-        $tab = array();
+        $tab = [];
         for ($i = 1; $i != 32; $i++) {
             $tab[] = $i;
         }
@@ -1716,7 +1717,7 @@ class ToolsCore
 
     public static function dateMonths()
     {
-        $tab = array();
+        $tab = [];
         for ($i = 1; $i != 13; $i++) {
             $tab[$i] = date('F', mktime(0, 0, 0, $i, date('m'), date('Y')));
         }
@@ -1725,7 +1726,7 @@ class ToolsCore
 
     public static function hourGenerate($hours, $minutes, $seconds)
     {
-        return implode(':', array($hours, $minutes, $seconds));
+        return implode(':', [$hours, $minutes, $seconds]);
     }
 
     public static function dateFrom($date)
@@ -2047,9 +2048,9 @@ class ToolsCore
     public static function file_get_contents($url, $use_include_path = false, $stream_context = null, $curl_timeout = 5)
     {
         if ($stream_context == null && preg_match('/^https?:\/\//', $url)) {
-            $stream_context = @stream_context_create(array('http' => array('timeout' => $curl_timeout)));
+            $stream_context = @stream_context_create(['http' => ['timeout' => $curl_timeout]]);
         }
-        if (in_array(ini_get('allow_url_fopen'), array('On', 'on', '1')) || !preg_match('/^https?:\/\//', $url)) {
+        if (in_array(ini_get('allow_url_fopen'), ['On', 'on', '1']) || !preg_match('/^https?:\/\//', $url)) {
             return @file_get_contents($url, $use_include_path, $stream_context);
         } elseif (function_exists('curl_init')) {
             $curl = curl_init();
@@ -2323,32 +2324,32 @@ class ToolsCore
             fwrite($write_fd, trim($specific_before)."\n\n");
         }
 
-        $domains = array();
+        $domains = [];
         foreach (ShopUrl::getShopUrls() as $shop_url) {
             /** @var ShopUrl $shop_url */
             if (!isset($domains[$shop_url->domain])) {
-                $domains[$shop_url->domain] = array();
+                $domains[$shop_url->domain] = [];
             }
 
-            $domains[$shop_url->domain][] = array(
+            $domains[$shop_url->domain][] = [
                 'physical' =>    $shop_url->physical_uri,
                 'virtual' =>    $shop_url->virtual_uri,
                 'id_shop' =>    $shop_url->id_shop
-            );
+            ];
 
             if ($shop_url->domain == $shop_url->domain_ssl) {
                 continue;
             }
 
             if (!isset($domains[$shop_url->domain_ssl])) {
-                $domains[$shop_url->domain_ssl] = array();
+                $domains[$shop_url->domain_ssl] = [];
             }
 
-            $domains[$shop_url->domain_ssl][] = array(
+            $domains[$shop_url->domain_ssl][] = [
                 'physical' =>    $shop_url->physical_uri,
                 'virtual' =>    $shop_url->virtual_uri,
                 'id_shop' =>    $shop_url->id_shop
-            );
+            ];
         }
 
         // Write data in .htaccess file
@@ -2379,11 +2380,11 @@ class ToolsCore
             && Configuration::getMultiShopValues('PS_MEDIA_SERVER_2')
             && Configuration::getMultiShopValues('PS_MEDIA_SERVER_3')
         ) {
-            $medias = array(
+            $medias = [
                 Configuration::getMultiShopValues('PS_MEDIA_SERVER_1'),
                 Configuration::getMultiShopValues('PS_MEDIA_SERVER_2'),
                 Configuration::getMultiShopValues('PS_MEDIA_SERVER_3')
-            );
+            ];
         }
 
         $media_domains = '';
@@ -2400,7 +2401,7 @@ class ToolsCore
         }
 
         foreach ($domains as $domain => $list_uri) {
-            $physicals = array();
+            $physicals = [];
             foreach ($list_uri as $uri) {
                 fwrite($write_fd, PHP_EOL.PHP_EOL.'#Domain: '.$domain.PHP_EOL);
                 if (Shop::isFeatureActive()) {
@@ -2747,7 +2748,7 @@ exit;
     public static function pRegexp($s, $delim)
     {
         $s = str_replace($delim, '\\'.$delim, $s);
-        foreach (array('?', '[', ']', '(', ')', '{', '}', '-', '.', '+', '*', '^', '$', '`', '"', '%') as $char) {
+        foreach (['?', '[', ']', '(', ')', '{', '}', '-', '.', '+', '*', '^', '$', '`', '"', '%'] as $char) {
             $s = str_replace($char, '\\'.$char, $s);
         }
         return $s;
@@ -2833,7 +2834,7 @@ exit;
         if (!$safe_mode = @ini_get('safe_mode')) {
             $safe_mode = '';
         }
-        return in_array(Tools::strtolower($safe_mode), array(1, 'on'));
+        return in_array(Tools::strtolower($safe_mode), [1, 'on']);
     }
 
     /**
@@ -2903,7 +2904,7 @@ exit;
     {
         switch ($type) {
             case 'by':
-                $list = array(0 => 'name', 1 => 'price', 2 => 'date_add', 3 => 'date_upd', 4 => 'position', 5 => 'manufacturer_name', 6 => 'quantity', 7 => 'reference');
+                $list = [0 => 'name', 1 => 'price', 2 => 'date_add', 3 => 'date_upd', 4 => 'position', 5 => 'manufacturer_name', 6 => 'quantity', 7 => 'reference'];
                 $value = (is_null($value) || $value === false || $value === '') ? (int)Configuration::get('PS_PRODUCTS_ORDER_BY') : $value;
                 $value = (isset($list[$value])) ? $list[$value] : ((in_array($value, $list)) ? $value : 'position');
                 $order_by_prefix = '';
@@ -2925,7 +2926,7 @@ exit;
 
             case 'way':
                 $value = (is_null($value) || $value === false || $value === '') ? (int)Configuration::get('PS_PRODUCTS_ORDER_WAY') : $value;
-                $list = array(0 => 'asc', 1 => 'desc');
+                $list = [0 => 'asc', 1 => 'desc'];
                 return ((isset($list[$value])) ? $list[$value] : ((in_array($value, $list)) ? $value : 'asc'));
             break;
         }
@@ -3006,7 +3007,7 @@ exit;
      */
     public static function nl2br($str)
     {
-        return str_replace(array("\r\n", "\r", "\n"), '<br />', $str);
+        return str_replace(["\r\n", "\r", "\n"], '<br />', $str);
     }
 
     /**
@@ -3231,10 +3232,10 @@ exit;
         $real_path = rtrim(rtrim($path.$dir, '\\'), '/').'/';
         $files = scandir($real_path);
         if (!$files) {
-            return array();
+            return [];
         }
 
-        $filtered_files = array();
+        $filtered_files = [];
 
         $real_ext = false;
         if (!empty($ext)) {
@@ -3348,21 +3349,23 @@ exit;
     }
 
     protected static $is_addons_up = true;
-    public static function addonsRequest($request, $params = array())
+    public static function addonsRequest($request, $params = [])
     {
         if (!self::$is_addons_up) {
             return false;
         }
 
-        $post_data = http_build_query(array(
+        $post_data = http_build_query(
+            [
             'version' => isset($params['version']) ? $params['version'] : _PS_VERSION_,
             'iso_lang' => Tools::strtolower(isset($params['iso_lang']) ? $params['iso_lang'] : Context::getContext()->language->iso_code),
             'iso_code' => Tools::strtolower(isset($params['iso_country']) ? $params['iso_country'] : Country::getIsoById(Configuration::get('PS_COUNTRY_DEFAULT'))),
             'shop_url' => isset($params['shop_url']) ? $params['shop_url'] : Tools::getShopDomain(),
             'mail' => isset($params['email']) ? $params['email'] : Configuration::get('PS_SHOP_EMAIL')
-        ));
+            ]
+        );
 
-        $protocols = array('https');
+        $protocols = ['https'];
         $end_point = 'api.addons.prestashop.com';
 
         switch ($request) {
@@ -3420,14 +3423,16 @@ exit;
                 return false;
         }
 
-        $context = stream_context_create(array(
-            'http' => array(
+        $context = stream_context_create(
+            [
+            'http' => [
                 'method'  => 'POST',
                 'content' => $post_data,
                 'header'  => 'Content-type: application/x-www-form-urlencoded',
                 'timeout' => 5,
-            )
-        ));
+            ]
+            ]
+        );
 
         foreach ($protocols as $protocol) {
             if ($content = Tools::file_get_contents($protocol.'://'.$end_point, false, $context)) {
@@ -3520,7 +3525,7 @@ exit;
             return '0';
         }
         $base = log($size) / log(1024);
-        $suffixes = array('', 'k', 'M', 'G', 'T');
+        $suffixes = ['', 'k', 'M', 'G', 'T'];
 
         return round(pow(1024, $base - floor($base)), $precision).$suffixes[floor($base)];
     }
@@ -3610,7 +3615,7 @@ exit;
                 $config->set('Attr.EnableID', true);
                 $config->set('HTML.Trusted', true);
                 $config->set('Cache.SerializerPath', _PS_CACHE_DIR_.'purifier');
-                $config->set('Attr.AllowedFrameTargets', array('_blank', '_self', '_parent', '_top'));
+                $config->set('Attr.AllowedFrameTargets', ['_blank', '_self', '_parent', '_top']);
                 if (is_array($uri_unescape)) {
                     $config->set('URI.UnescapeCharacters', implode('', $uri_unescape));
                 }
@@ -3624,7 +3629,7 @@ exit;
                 /** @var HTMLPurifier_HTMLDefinition|HTMLPurifier_HTMLModule $def */
                 // http://developers.whatwg.org/the-video-element.html#the-video-element
                 if ($def = $config->getHTMLDefinition(true)) {
-                    $def->addElement('video', 'Block', 'Optional: (source, Flow) | (Flow, source) | Flow', 'Common', array(
+                    $def->addElement('video', 'Block', 'Optional: (source, Flow) | (Flow, source) | Flow', 'Common', [
                         'src' => 'URI',
                         'type' => 'Text',
                         'width' => 'Length',
@@ -3632,13 +3637,15 @@ exit;
                         'poster' => 'URI',
                         'preload' => 'Enum#auto,metadata,none',
                         'controls' => 'Bool',
-                    ));
-                    $def->addElement('source', 'Block', 'Flow', 'Common', array(
+                    ]
+                    );
+                    $def->addElement('source', 'Block', 'Flow', 'Common', [
                         'src' => 'URI',
                         'type' => 'Text',
-                    ));
+                    ]
+                    );
                     if ($allow_style) {
-                        $def->addElement('style', 'Block', 'Flow', 'Common', array('type' => 'Text'));
+                        $def->addElement('style', 'Block', 'Flow', 'Common', ['type' => 'Text']);
                     }
                 }
 
@@ -3736,8 +3743,8 @@ exit;
         }
 
         foreach (array_slice(func_get_args(), 1) as $replacements) {
-            $bref_stack = array(&$base);
-            $head_stack = array($replacements);
+            $bref_stack = [&$base];
+            $head_stack = [$replacements];
 
             do {
                 end($bref_stack);

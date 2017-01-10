@@ -55,7 +55,7 @@ class PDFCore
 
         $this->objects = $objects;
         if (!($objects instanceof Iterator) && !is_array($objects)) {
-            $this->objects = array($objects);
+            $this->objects = [$objects];
         }
         
         if (count($this->objects)>1) { // when bulk mode only

@@ -42,48 +42,49 @@ class CustomerThreadCore extends ObjectModel
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = array(
+    public static $definition = [
         'table' => 'customer_thread',
         'primary' => 'id_customer_thread',
-        'fields' => array(
-            'id_lang' =>    array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true),
-            'id_contact' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true),
-            'id_shop' =>    array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId'),
-            'id_customer' =>array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId'),
-            'id_order' =>    array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId'),
-            'id_product' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId'),
-            'email' =>        array('type' => self::TYPE_STRING, 'validate' => 'isEmail', 'size' => 254),
-            'token' =>        array('type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true),
-            'status' =>    array('type' => self::TYPE_STRING),
-            'date_add' =>    array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
-            'date_upd' =>    array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
-        ),
-    );
+        'fields' => [
+            'id_lang' =>    ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'id_contact' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'id_shop' =>    ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
+            'id_customer' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
+            'id_order' =>    ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
+            'id_product' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
+            'email' =>        ['type' => self::TYPE_STRING, 'validate' => 'isEmail', 'size' => 254],
+            'token' =>        ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true],
+            'status' =>    ['type' => self::TYPE_STRING],
+            'date_add' =>    ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+            'date_upd' =>    ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+        ],
+    ];
 
-    protected $webserviceParameters = array(
-        'fields' => array(
-            'id_lang' => array(
+    protected $webserviceParameters = [
+        'fields' => [
+            'id_lang' => [
                 'xlink_resource' => 'languages'
-            ),
-            'id_shop' => array(
+            ],
+            'id_shop' => [
                 'xlink_resource' => 'shops'
-            ),
-            'id_customer' => array(
+            ],
+            'id_customer' => [
                 'xlink_resource' => 'customers'
-            ),
-            'id_order' => array(
+            ],
+            'id_order' => [
                 'xlink_resource' => 'orders'
-            ),
-            'id_product' => array(
+            ],
+            'id_product' => [
                 'xlink_resource' => 'products'
-            ),
-        ),
-        'associations' => array(
-            'customer_messages' => array(
+            ],
+        ],
+        'associations' => [
+            'customer_messages' => [
                 'resource' => 'customer_message',
-                'id' => array('required' => true)),
-        )
-    );
+                'id' => ['required' => true]
+            ],
+        ]
+    ];
 
     public function getWsCustomerMessages()
     {

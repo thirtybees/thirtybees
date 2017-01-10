@@ -32,9 +32,9 @@ if (Tools::isSubmit('submitTranslations')) {
 }
 
 $regex = '/->l\(\'(.*[^\\\\])\'(, ?\'(.+)\')?(, ?(.+))?\)/U';
-$dirs = array('classes', 'controllers', 'models', 'theme');
+$dirs = ['classes', 'controllers', 'models', 'theme'];
 $languages = scandir('../langs');
-$files = $translations = $translations_source = array();
+$files = $translations = $translations_source = [];
 foreach ($dirs as $dir) {
     $files = array_merge($files, Tools::scandir('..', 'php', $dir, true));
     $files = array_merge($files, Tools::scandir('..', 'phtml', $dir, true));

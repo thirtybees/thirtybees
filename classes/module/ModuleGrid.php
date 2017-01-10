@@ -29,7 +29,7 @@ abstract class ModuleGridCore extends Module
     protected $_employee;
 
     /** @var array of strings graph data */
-    protected $_values = array();
+    protected $_values = [];
 
     /** @var int total number of values **/
     protected $_totalCount = 0;
@@ -147,7 +147,7 @@ abstract class ModuleGridCore extends Module
         }
 
         require_once(_PS_ROOT_DIR_.'/modules/'.$render.'/'.$render.'.php');
-        return call_user_func(array($render, 'hookGridEngine'), $params, $grider);
+        return call_user_func([$render, 'hookGridEngine'], $params, $grider);
     }
 
     protected function csvExport($datas)

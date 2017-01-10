@@ -30,7 +30,7 @@
  */
 class AdminStockInstantStateControllerCore extends AdminController
 {
-    protected $stock_instant_state_warehouses = array();
+    protected $stock_instant_state_warehouses = [];
 
     public function __construct()
     {
@@ -43,58 +43,58 @@ class AdminStockInstantStateControllerCore extends AdminController
         $this->lang = false;
         $this->multishop_context = Shop::CONTEXT_ALL;
 
-        $this->fields_list = array(
-            'reference' => array(
+        $this->fields_list = [
+            'reference' => [
                 'title' => $this->l('Reference'),
                 'align' => 'center',
                 'havingFilter' => true
-            ),
-            'ean13' => array(
+            ],
+            'ean13' => [
                 'title' => $this->l('EAN13'),
                 'align' => 'center',
-            ),
-            'upc' => array(
+            ],
+            'upc' => [
                 'title' => $this->l('UPC'),
                 'align' => 'center',
-            ),
-            'name' => array(
+            ],
+            'name' => [
                 'title' => $this->l('Name'),
                 'havingFilter' => true
-            ),
-            'price_te' => array(
+            ],
+            'price_te' => [
                 'title' => $this->l('Price (tax excl.)'),
                 'orderby' => true,
                 'search' => false,
                 'type' => 'price',
                 'currency' => true,
-            ),
-            'valuation' => array(
+            ],
+            'valuation' => [
                 'title' => $this->l('Valuation'),
                 'orderby' => false,
                 'search' => false,
                 'type' => 'price',
                 'currency' => true,
                 'hint' => $this->l('Total value of the physical quantity. The sum (for all prices) is not available for all warehouses, please filter by warehouse.')
-            ),
-            'physical_quantity' => array(
+            ],
+            'physical_quantity' => [
                 'title' => $this->l('Physical quantity'),
                 'class' => 'fixed-width-xs',
                 'align' => 'center',
                 'orderby' => true,
                 'search' => false
-            ),
-            'usable_quantity' => array(
+            ],
+            'usable_quantity' => [
                 'title' => $this->l('Usable quantity'),
                 'class' => 'fixed-width-xs',
                 'align' => 'center',
                 'orderby' => true,
                 'search' => false,
-            ),
-        );
+            ],
+        ];
 
         $this->addRowAction('details');
         $this->stock_instant_state_warehouses = Warehouse::getWarehouses(true);
-        array_unshift($this->stock_instant_state_warehouses, array('id_warehouse' => -1, 'name' => $this->l('All Warehouses')));
+        array_unshift($this->stock_instant_state_warehouses, ['id_warehouse' => -1, 'name' => $this->l('All Warehouses')]);
 
         parent::__construct();
     }
@@ -104,25 +104,25 @@ class AdminStockInstantStateControllerCore extends AdminController
         $this->page_header_toolbar_title = $this->l('Instant stock status');
 
         if ($this->display == 'details') {
-            $this->page_header_toolbar_btn['back_to_list'] = array(
+            $this->page_header_toolbar_btn['back_to_list'] = [
                 'href' => Context::getContext()->link->getAdminLink('AdminStockInstantState').(Tools::getValue('id_warehouse') ? '&id_warehouse='.Tools::getValue('id_warehouse') : ''),
                 'desc' => $this->l('Back to list', null, null, false),
                 'icon' => 'process-icon-back'
-            );
+            ];
         } elseif (Tools::isSubmit('id_warehouse') && (int)Tools::getValue('id_warehouse') != -1) {
-            $this->page_header_toolbar_btn['export-stock-state-quantities-csv'] = array(
+            $this->page_header_toolbar_btn['export-stock-state-quantities-csv'] = [
                 'short' => $this->l('Export this list as CSV', null, null, false),
                 'href' => $this->context->link->getAdminLink('AdminStockInstantState').'&csv_quantities&id_warehouse='.(int)$this->getCurrentCoverageWarehouse(),
                 'desc' => $this->l('Export Quantities (CSV)', null, null, false),
                 'class' => 'process-icon-export'
-            );
+            ];
 
-            $this->page_header_toolbar_btn['export-stock-state-prices-csv'] = array(
+            $this->page_header_toolbar_btn['export-stock-state-prices-csv'] = [
                 'short' => $this->l('Export this list as CSV', null, null, false),
                 'href' => $this->context->link->getAdminLink('AdminStockInstantState').'&csv_prices&id_warehouse='.(int)$this->getCurrentCoverageWarehouse(),
                 'desc' => $this->l('Export Prices (CSV)', null, null, false),
                 'class' => 'process-icon-export'
-            );
+            ];
         }
 
         parent::initPageHeaderToolbar();
@@ -134,14 +134,14 @@ class AdminStockInstantStateControllerCore extends AdminController
      */
     public function renderList()
     {
-        $this->fields_list['real_quantity'] = array(
+        $this->fields_list['real_quantity'] = [
             'title' => $this->l('Real quantity'),
             'class' => 'fixed-width-xs',
             'align' => 'center',
             'orderby' => false,
             'search' => false,
             'hint' => $this->l('Physical quantity (usable) - Client orders + Supply Orders'),
-        );
+        ];
 
         // query
         $this->_select = 'IFNULL(pa.ean13, p.ean13) as ean13,
@@ -179,7 +179,7 @@ class AdminStockInstantStateControllerCore extends AdminController
         }
 
         // toolbar btn
-        $this->toolbar_btn = array();
+        $this->toolbar_btn = [];
         // disables link
         $this->list_no_link = true;
 
@@ -187,7 +187,7 @@ class AdminStockInstantStateControllerCore extends AdminController
         $this->tpl_list_vars['stock_instant_state_warehouses'] = $this->stock_instant_state_warehouses;
         $this->tpl_list_vars['stock_instant_state_cur_warehouse'] = $this->getCurrentCoverageWarehouse();
         // adds ajax params
-        $this->ajax_params = array('id_warehouse' => $this->getCurrentCoverageWarehouse());
+        $this->ajax_params = ['id_warehouse' => $this->getCurrentCoverageWarehouse()];
 
         // displays help information
         $this->displayInformation($this->l('This interface allows you to display detailed information about your stock per warehouse.'));
@@ -222,7 +222,7 @@ class AdminStockInstantStateControllerCore extends AdminController
             $this->list_id = 'details';
             $this->tpl_list_vars['show_filter'] = false;
             $lang_id = (int)$this->context->language->id;
-            $this->actions = array();
+            $this->actions = [];
             $this->list_simple_header = true;
             $ids = explode('_', Tools::getValue('id_stock'));
 
@@ -315,7 +315,7 @@ class AdminStockInstantStateControllerCore extends AdminController
                 $item['real_quantity'] = $manager->getProductRealQuantities(
                     $item['id_product'],
                     $item['id_product_attribute'],
-                    ($this->getCurrentCoverageWarehouse() == -1 ? null : array($this->getCurrentCoverageWarehouse())),
+                    ($this->getCurrentCoverageWarehouse() == -1 ? null : [$this->getCurrentCoverageWarehouse()]),
                     true
                 );
             }
@@ -369,7 +369,7 @@ class AdminStockInstantStateControllerCore extends AdminController
                 // gets real_quantity depending on the warehouse
                 $item['real_quantity'] = $manager->getProductRealQuantities($item['id_product'],
                                                                             $item['id_product_attribute'],
-                                                                            ($this->getCurrentCoverageWarehouse() == -1 ? null : array($this->getCurrentCoverageWarehouse())),
+                                                                            ($this->getCurrentCoverageWarehouse() == -1 ? null : [$this->getCurrentCoverageWarehouse()]),
                                                                             true);
 
                 // removes the valuation if the filter corresponds to 'all warehouses'
@@ -381,9 +381,9 @@ class AdminStockInstantStateControllerCore extends AdminController
             }
 
             if ($this->getCurrentCoverageWarehouse() != -1 && $order_by_valuation) {
-                usort($this->_list, array($this, 'valuationCmp'));
+                usort($this->_list, [$this, 'valuationCmp']);
             } elseif ($order_by_real_quantity) {
-                usort($this->_list, array($this, 'realQuantityCmp'));
+                usort($this->_list, [$this, 'realQuantityCmp']);
             }
         }
     }
@@ -446,19 +446,19 @@ class AdminStockInstantStateControllerCore extends AdminController
     public function initToolbar()
     {
         if (Tools::isSubmit('id_warehouse') && (int)Tools::getValue('id_warehouse') != -1) {
-            $this->toolbar_btn['export-stock-state-quantities-csv'] = array(
+            $this->toolbar_btn['export-stock-state-quantities-csv'] = [
                 'short' => 'Export this list as CSV',
                 'href' => $this->context->link->getAdminLink('AdminStockInstantState').'&csv_quantities&id_warehouse='.(int)$this->getCurrentCoverageWarehouse(),
                 'desc' => $this->l('Export Quantities (CSV)'),
                 'class' => 'process-icon-export'
-            );
+            ];
 
-            $this->toolbar_btn['export-stock-state-prices-csv'] = array(
+            $this->toolbar_btn['export-stock-state-prices-csv'] = [
                 'short' => 'Export this list as CSV',
                 'href' => $this->context->link->getAdminLink('AdminStockInstantState').'&csv_prices&id_warehouse='.(int)$this->getCurrentCoverageWarehouse(),
                 'desc' => $this->l('Export Prices (CSV)'),
                 'class' => 'process-icon-export'
-            );
+            ];
         }
         parent::initToolbar();
         unset($this->toolbar_btn['new']);
@@ -488,18 +488,19 @@ class AdminStockInstantStateControllerCore extends AdminController
             header('Content-disposition: attachment; filename="'.$filename);
 
             // puts keys
-            $keys = array('id_product', 'id_product_attribute', 'reference', 'ean13', 'upc', 'name', 'physical_quantity', 'usable_quantity', 'real_quantity');
+            $keys = ['id_product', 'id_product_attribute', 'reference', 'ean13', 'upc', 'name', 'physical_quantity', 'usable_quantity', 'real_quantity'];
             echo sprintf("%s\n", implode(';', $keys));
 
             // puts rows
             foreach ($this->_list as $row) {
-                $row_csv = array($row['id_product'], $row['id_product_attribute'], $row['reference'],
+                $row_csv = [
+                    $row['id_product'], $row['id_product_attribute'], $row['reference'],
                                  $row['ean13'], $row['upc'], $row['name'],
                                  $row['physical_quantity'], $row['usable_quantity'], $row['real_quantity']
-                );
+                ];
 
                 // puts one row
-                echo sprintf("%s\n", implode(';', array_map(array('CSVCore', 'wrap'), $row_csv)));
+                echo sprintf("%s\n", implode(';', array_map(['CSVCore', 'wrap'], $row_csv)));
             }
         }
         // if prices requested
@@ -513,7 +514,7 @@ class AdminStockInstantStateControllerCore extends AdminController
             header('Content-disposition: attachment; filename="'.$filename);
 
             // puts keys
-            $keys = array('id_product', 'id_product_attribute', 'reference', 'ean13', 'upc', 'name', 'price_te', 'physical_quantity', 'usable_quantity');
+            $keys = ['id_product', 'id_product_attribute', 'reference', 'ean13', 'upc', 'name', 'price_te', 'physical_quantity', 'usable_quantity'];
             echo sprintf("%s\n", implode(';', $keys));
 
             foreach ($this->_list as $row) {
@@ -532,12 +533,14 @@ class AdminStockInstantStateControllerCore extends AdminController
 
                 // puts data
                 foreach ($datas as $data) {
-                    $row_csv = array($row['id_product'], $row['id_product_attribute'], $row['reference'],
+                    $row_csv = [
+                        $row['id_product'], $row['id_product_attribute'], $row['reference'],
                                      $row['ean13'], $row['upc'], $row['name'],
-                                     $data['price_te'], $data['physical_quantity'], $data['usable_quantity']);
+                                     $data['price_te'], $data['physical_quantity'], $data['usable_quantity']
+                    ];
 
                     // puts one row
-                    echo sprintf("%s\n", implode(';', array_map(array('CSVCore', 'wrap'), $row_csv)));
+                    echo sprintf("%s\n", implode(';', array_map(['CSVCore', 'wrap'], $row_csv)));
                 }
             }
         }

@@ -34,11 +34,13 @@ class OrderSlipControllerCore extends FrontController
     public function setMedia()
     {
         parent::setMedia();
-        $this->addCSS(array(_THEME_CSS_DIR_.'history.css', _THEME_CSS_DIR_.'addresses.css'));
-        $this->addJqueryPlugin(array('scrollTo', 'footable', 'footable-sort'));
-        $this->addJS(array(
+        $this->addCSS([_THEME_CSS_DIR_.'history.css', _THEME_CSS_DIR_.'addresses.css']);
+        $this->addJqueryPlugin(['scrollTo', 'footable', 'footable-sort']);
+        $this->addJS(
+            [
             _THEME_JS_DIR_.'history.js',
-            _THEME_JS_DIR_.'tools.js') // retro compat themes 1.5
+            _THEME_JS_DIR_.'tools.js'
+            ] // retro compat themes 1.5
         );
     }
 

@@ -33,8 +33,8 @@ class UpgraderCore
      * @var bool contains true if last version is not installed
      */
     protected $need_upgrade = false;
-    protected $changed_files = array();
-    protected $missing_files = array();
+    protected $changed_files = [];
+    protected $missing_files = [];
 
     public $version_name;
     public $version_num;
@@ -114,7 +114,7 @@ class UpgraderCore
         // if we use the autoupgrade process, we will never refresh it
         // except if no check has been done before
         if ($force || ($last_check < time() - (3600 * Upgrader::DEFAULT_CHECK_VERSION_DELAY_HOURS))) {
-            libxml_set_streams_context(@stream_context_create(array('http' => array('timeout' => 3))));
+            libxml_set_streams_context(@stream_context_create(['http' => ['timeout' => 3]]));
             if ($feed = @simplexml_load_file($this->rss_version_link)) {
                 $this->version_name = (string)$feed->version->name;
                 $this->version_num = (string)$feed->version->num;
@@ -126,7 +126,7 @@ class UpgraderCore
                 $this->autoupgrade_last_version = (string)$feed->autoupgrade_last_version;
                 $this->autoupgrade_module_link = (string)$feed->autoupgrade_module_link;
                 $this->desc = (string)$feed->desc;
-                $config_last_version = array(
+                $config_last_version = [
                     'name' => $this->version_name,
                     'num' => $this->version_num,
                     'link' => $this->link,
@@ -137,7 +137,7 @@ class UpgraderCore
                     'autoupgrade_module_link' => $this->autoupgrade_module_link,
                     'changelog' => $this->changelog,
                     'desc' => $this->desc
-                );
+                ];
                 if (class_exists('Configuration')) {
                     Configuration::updateValue('PS_LAST_VERSION', serialize($config_last_version));
                     Configuration::updateValue('PS_LAST_VERSION_CHECK', time());
@@ -151,7 +151,7 @@ class UpgraderCore
         // false otherwise
         if (version_compare(_PS_VERSION_, $this->version_num, '<')) {
             $this->need_upgrade = true;
-            return array('name' => $this->version_name, 'link' => $this->link);
+            return ['name' => $this->version_name, 'link' => $this->link];
         } else {
             return false;
         }
@@ -208,7 +208,7 @@ class UpgraderCore
     public function getChangedFilesList()
     {
         if (is_array($this->changed_files) && count($this->changed_files) == 0) {
-            libxml_set_streams_context(@stream_context_create(array('http' => array('timeout' => 3))));
+            libxml_set_streams_context(@stream_context_create(['http' => ['timeout' => 3]]));
             $checksum = @simplexml_load_file($this->rss_md5file_link_dir._PS_VERSION_.'.xml');
             if ($checksum == false) {
                 $this->changed_files = false;
@@ -252,7 +252,7 @@ class UpgraderCore
         $this->missing_files[] = $path;
     }
 
-    protected function browseXmlAndCompare($node, &$current_path = array(), $level = 1)
+    protected function browseXmlAndCompare($node, &$current_path = [], $level = 1)
     {
         foreach ($node as $key => $child) {
             /** @var SimpleXMLElement $child */

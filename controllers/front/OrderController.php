@@ -72,8 +72,8 @@ class OrderControllerCore extends ParentOrderController
                 Tools::displayPrice($minimal_purchase, $currency), Tools::displayPrice($this->context->cart->getOrderTotal(false, Cart::ONLY_PRODUCTS), $currency)
             );
         }
-        if (!$this->context->customer->isLogged(true) && in_array($this->step, array(1, 2, 3))) {
-            $params = array();
+        if (!$this->context->customer->isLogged(true) && in_array($this->step, [1, 2, 3])) {
+            $params = [];
             if ($this->step) {
                 $params['step'] = (int)$this->step;
             }
@@ -83,7 +83,7 @@ class OrderControllerCore extends ParentOrderController
 
             $back_url = $this->context->link->getPageLink('order', true, (int)$this->context->language->id, $params);
 
-            $params = array('back' => $back_url);
+            $params = ['back' => $back_url];
             if ($multi) {
                 $params['multi-shipping'] = $multi;
             }
@@ -103,7 +103,7 @@ class OrderControllerCore extends ParentOrderController
         if ($this->context->customer->id) {
             $this->context->smarty->assign('address_list', $this->context->customer->getAddresses($this->context->language->id));
         } else {
-            $this->context->smarty->assign('address_list', array());
+            $this->context->smarty->assign('address_list', []);
         }
     }
 
@@ -130,14 +130,14 @@ class OrderControllerCore extends ParentOrderController
             $delivery_option[(int)Tools::getValue('id_address')] = Tools::getValue('id_delivery_option');
             $this->context->cart->setDeliveryOption($delivery_option);
             $this->context->cart->save();
-            $return = array(
+            $return = [
                 'content' => Hook::exec(
                     'displayCarrierList',
-                    array(
+                    [
                         'address' => new Address((int)Tools::getValue('id_address'))
-                    )
+                    ]
                 )
-            );
+            ];
             $this->ajaxDie(Tools::jsonEncode($return));
         }
 
@@ -251,9 +251,12 @@ class OrderControllerCore extends ParentOrderController
         $invoiceAddressFields = AddressFormat::getOrderedAddressFields($addressInvoice->id_country, false, true);
         $deliveryAddressFields = AddressFormat::getOrderedAddressFields($addressDelivery->id_country, false, true);
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'inv_adr_fields' => $invoiceAddressFields,
-            'dlv_adr_fields' => $deliveryAddressFields));
+            'dlv_adr_fields' => $deliveryAddressFields
+            ]
+        );
     }
 
     /**
@@ -346,7 +349,7 @@ class OrderControllerCore extends ParentOrderController
             }
 
             // Add checking for all addresses
-            $errors = array();
+            $errors = [];
             $address_without_carriers = $this->context->cart->getDeliveryAddressesWithoutCarriers(false, $errors);
             if (count($address_without_carriers) && !$this->context->cart->isVirtualCart()) {
                 $flag_error_message = false;
@@ -429,9 +432,10 @@ class OrderControllerCore extends ParentOrderController
         $this->_assignWrappingAndTOS();
 
         $this->context->smarty->assign(
-            array(
+            [
                 'is_guest' => (isset($this->context->customer->is_guest) ? $this->context->customer->is_guest : 0)
-            ));
+            ]
+        );
     }
 
     /**
@@ -442,7 +446,7 @@ class OrderControllerCore extends ParentOrderController
         global $orderTotal;
 
         // Redirect instead of displaying payment modules if any module are grefted on
-        Hook::exec('displayBeforePayment', array('module' => 'order.php?step=3'));
+        Hook::exec('displayBeforePayment', ['module' => 'order.php?step=3']);
 
         /* We may need to display an order summary */
         $this->context->smarty->assign($this->context->cart->getSummaryDetails());
@@ -456,14 +460,16 @@ class OrderControllerCore extends ParentOrderController
         // Test if we have to override TOS display through hook
         $hook_override_tos_display = Hook::exec('overrideTOSDisplay');
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'total_price' => (float)$orderTotal,
             'taxes_enabled' => (int)Configuration::get('PS_TAX'),
             'cms_id' => (int)Configuration::get('PS_CONDITIONS_CMS_ID'),
             'conditions' => (int)Configuration::get('PS_CONDITIONS'),
             'checkedTOS' => (int)$this->context->cart->checkedTOS,
             'override_tos_display' => $hook_override_tos_display
-        ));
+            ]
+        );
 
 
         parent::_assignPayment();

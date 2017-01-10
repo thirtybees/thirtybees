@@ -1,6 +1,6 @@
 <?php
-return array(
-    'informations' => array(
+return [
+    'informations' => [
         'documentation' => 'http://doc.prestashop.com/pages/viewpage.action?pageId=28016773',
         'documentation_upgrade' => 'http://docs.prestashop.com/display/PS16/Updating+PrestaShop',
         'forum' => 'http://www.prestashop.com/forums/',
@@ -8,8 +8,8 @@ return array(
         'support' => 'https://www.prestashop.com/en/support',
         'tutorial' => 'https://www.youtube.com/watch?v=psz4aIPZZuk',
         'tailored_help' => 'http://addons.prestashop.com/en/388-support',
-    ),
-    'translations' => array(
+    ],
+    'translations' => [
         'An SQL error occurred for entity <i>%1$s</i>: <i>%2$s</i>' => 'Ha succeït un error d\'SQL per a l\'entitat <i>%1$s</i>: <i>%2$s</i>',
         'Cannot create image "%1$s" for entity "%2$s"' => 'No es pot crear la imatge "%1$s" per a l\'entitat "%2$s"',
         'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => 'No es pot crear la imatge "%1$s" (permisos inadequats a la carpeta "%2$s")',
@@ -205,5 +205,5 @@ return array(
         'Continue the installation in:' => 'Continuar la instal·lació a:',
         'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => 'La secció d\'idiomes anterior només s\'aplica a l\'Assistent d\'Instal·lació. Quan la vostra botiga estigui instal·lada, podeu triar la llengua de la vostra botiga entre més de %d traduccions, totes de franc!',
         'Installing PrestaShop is quick and easy. In just a few moments, you will become part of a community consisting of more than 250,000 merchants. You are on the way to creating your own unique online store that you can manage easily every day.' => 'La instal·lació de PrestaShop és ràpida i fàcil. En uns instants, formareu part d\'una comunitat formada per més de 250.000 comerciants. Ara esteu en el procés de crear la vostra pròpia botiga online, la qual gestionareu fàcilment dia a dia.',
-    ),
-);
+    ],
+];

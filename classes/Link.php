@@ -29,7 +29,7 @@ class LinkCore
     /** @var bool Rewriting activation */
     protected $allow;
     protected $url;
-    public static $cache = array('page' => array());
+    public static $cache = ['page' => []];
 
     public $protocol_link;
     public $protocol_content;
@@ -56,7 +56,7 @@ class LinkCore
         }
 
         if (Link::$category_disable_rewrite === null) {
-            Link::$category_disable_rewrite = array(Configuration::get('PS_HOME_CATEGORY'), Configuration::get('PS_ROOT_CATEGORY'));
+            Link::$category_disable_rewrite = [Configuration::get('PS_HOME_CATEGORY'), Configuration::get('PS_ROOT_CATEGORY')];
         }
 
         $this->ssl_enable = Configuration::get('PS_SSL_ENABLED');
@@ -108,7 +108,7 @@ class LinkCore
         }
 
         // Set available keywords
-        $params = array();
+        $params = [];
         $params['id'] = $product->id;
         $params['rewrite'] = (!$alias) ? $product->getFieldByLang('link_rewrite') : $alias;
 
@@ -142,7 +142,7 @@ class LinkCore
 
         if ($dispatcher->hasKeyword('product_rule', $id_lang, 'categories', $id_shop)) {
             $params['category'] = (!$category) ? $product->category : $category;
-            $cats = array();
+            $cats = [];
             foreach ($product->getParentCategories($id_lang) as $cat) {
                 if (!in_array($cat['id_category'], Link::$category_disable_rewrite)) {
                     //remove root and home category from the URL
@@ -178,7 +178,7 @@ class LinkCore
         }
 
         // Set available keywords
-        $params = array();
+        $params = [];
         $params['id'] = $category->id;
         $params['rewrite'] = (!$alias) ? $category->link_rewrite : $alias;
         $params['meta_keywords'] =    Tools::str2url($category->getFieldByLang('meta_keywords'));
@@ -216,7 +216,7 @@ class LinkCore
         $dispatcher = Dispatcher::getInstance();
         if (!is_object($cms_category)) {
             if ($alias !== null && !$dispatcher->hasKeyword('cms_category_rule', $id_lang, 'meta_keywords', $id_shop) && !$dispatcher->hasKeyword('cms_category_rule', $id_lang, 'meta_title', $id_shop)) {
-                return $url.$dispatcher->createUrl('cms_category_rule', $id_lang, array('id' => (int)$cms_category, 'rewrite' => (string)$alias), $this->allow, '', $id_shop);
+                return $url.$dispatcher->createUrl('cms_category_rule', $id_lang, ['id' => (int)$cms_category, 'rewrite' => (string)$alias], $this->allow, '', $id_shop);
             }
             $cms_category = new CMSCategory($cms_category, $id_lang);
         }
@@ -231,7 +231,7 @@ class LinkCore
         }
 
         // Set available keywords
-        $params = array();
+        $params = [];
         $params['id'] = $cms_category->id;
         $params['rewrite'] = (!$alias) ? $cms_category->link_rewrite : $alias;
         $params['meta_keywords'] = Tools::str2url($cms_category->meta_keywords);
@@ -260,13 +260,13 @@ class LinkCore
         $dispatcher = Dispatcher::getInstance();
         if (!is_object($cms)) {
             if ($alias !== null && !$dispatcher->hasKeyword('cms_rule', $id_lang, 'meta_keywords', $id_shop) && !$dispatcher->hasKeyword('cms_rule', $id_lang, 'meta_title', $id_shop)) {
-                return $url.$dispatcher->createUrl('cms_rule', $id_lang, array('id' => (int)$cms, 'rewrite' => (string)$alias), $this->allow, '', $id_shop);
+                return $url.$dispatcher->createUrl('cms_rule', $id_lang, ['id' => (int)$cms, 'rewrite' => (string)$alias], $this->allow, '', $id_shop);
             }
             $cms = new CMS($cms, $id_lang);
         }
 
         // Set available keywords
-        $params = array();
+        $params = [];
         $params['id'] = $cms->id;
         $params['rewrite'] = (!$alias) ? (is_array($cms->link_rewrite) ? $cms->link_rewrite[(int)$id_lang] : $cms->link_rewrite) : $alias;
 
@@ -302,13 +302,13 @@ class LinkCore
         $dispatcher = Dispatcher::getInstance();
         if (!is_object($supplier)) {
             if ($alias !== null && !$dispatcher->hasKeyword('supplier_rule', $id_lang, 'meta_keywords', $id_shop) && !$dispatcher->hasKeyword('supplier_rule', $id_lang, 'meta_title', $id_shop)) {
-                return $url.$dispatcher->createUrl('supplier_rule', $id_lang, array('id' => (int)$supplier, 'rewrite' => (string)$alias), $this->allow, '', $id_shop);
+                return $url.$dispatcher->createUrl('supplier_rule', $id_lang, ['id' => (int)$supplier, 'rewrite' => (string)$alias], $this->allow, '', $id_shop);
             }
             $supplier = new Supplier($supplier, $id_lang);
         }
 
         // Set available keywords
-        $params = array();
+        $params = [];
         $params['id'] = $supplier->id;
         $params['rewrite'] = (!$alias) ? $supplier->link_rewrite : $alias;
         $params['meta_keywords'] =    Tools::str2url($supplier->meta_keywords);
@@ -336,13 +336,13 @@ class LinkCore
         $dispatcher = Dispatcher::getInstance();
         if (!is_object($manufacturer)) {
             if ($alias !== null && !$dispatcher->hasKeyword('manufacturer_rule', $id_lang, 'meta_keywords', $id_shop) && !$dispatcher->hasKeyword('manufacturer_rule', $id_lang, 'meta_title', $id_shop)) {
-                return $url.$dispatcher->createUrl('manufacturer_rule', $id_lang, array('id' => (int)$manufacturer, 'rewrite' => (string)$alias), $this->allow, '', $id_shop);
+                return $url.$dispatcher->createUrl('manufacturer_rule', $id_lang, ['id' => (int)$manufacturer, 'rewrite' => (string)$alias], $this->allow, '', $id_shop);
             }
             $manufacturer = new Manufacturer($manufacturer, $id_lang);
         }
 
         // Set available keywords
-        $params = array();
+        $params = [];
         $params['id'] = $manufacturer->id;
         $params['rewrite'] = (!$alias) ? $manufacturer->link_rewrite : $alias;
         $params['meta_keywords'] =    Tools::str2url($manufacturer->meta_keywords);
@@ -360,7 +360,7 @@ class LinkCore
      * @param int $id_lang
      * @return string
      */
-    public function getModuleLink($module, $controller = 'default', array $params = array(), $ssl = null, $id_lang = null, $id_shop = null, $relative_protocol = false)
+    public function getModuleLink($module, $controller = 'default', array $params = [], $ssl = null, $id_lang = null, $id_shop = null, $relative_protocol = false)
     {
         if (!$id_lang) {
             $id_lang = Context::getContext()->language->id;
@@ -391,7 +391,7 @@ class LinkCore
     {
         $id_lang = Context::getContext()->language->id;
 
-        $params = $with_token ? array('token' => Tools::getAdminTokenLite($controller)) : array();
+        $params = $with_token ? ['token' => Tools::getAdminTokenLite($controller)] : [];
         return Dispatcher::getInstance()->createUrl($controller, $id_lang, $params, false);
     }
 
@@ -588,10 +588,10 @@ class LinkCore
             $url = $this->getPageLink($name);
         }
 
-        $vars = array();
-        $vars_nb = array('n');
-        $vars_sort = array('orderby', 'orderway');
-        $vars_pagination = array('p');
+        $vars = [];
+        $vars_nb = ['n'];
+        $vars_sort = ['orderby', 'orderway'];
+        $vars_pagination = ['p'];
 
         foreach ($_GET as $k => $value) {
             if ($k != 'id_'.$type && $k != 'controller') {
@@ -605,7 +605,7 @@ class LinkCore
                     if (!is_array($value)) {
                         $vars[urlencode($k)] = $value;
                     } else {
-                        foreach (explode('&', http_build_query(array($k => $value), '', '&')) as $key => $val) {
+                        foreach (explode('&', http_build_query([$k => $value], '', '&')) as $key => $val) {
                             $data = explode('=', $val);
                             $vars[urldecode($data[0])] = $data[1];
                         }
@@ -645,7 +645,7 @@ class LinkCore
             $context = Context::getContext();
         }
 
-        if ((!$this->allow && in_array($id_shop, array($context->shop->id,  null))) || !Language::isMultiLanguageActivated($id_shop) || !(int)Configuration::get('PS_REWRITING_SETTINGS', null, null, $id_shop)) {
+        if ((!$this->allow && in_array($id_shop, [$context->shop->id,  null])) || !Language::isMultiLanguageActivated($id_shop) || !(int)Configuration::get('PS_REWRITING_SETTINGS', null, null, $id_shop)) {
             return '';
         }
 
@@ -685,7 +685,7 @@ class LinkCore
     public static function getQuickLink($url)
     {
         $parsedUrl = parse_url($url);
-        $output = array();
+        $output = [];
         if (is_array($parsedUrl) && isset($parsedUrl['query'])) {
             parse_str($parsedUrl['query'], $output);
             unset($output['token'], $output['conf'], $output['id_quick_access']);

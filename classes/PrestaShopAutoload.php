@@ -47,16 +47,16 @@ class PrestaShopAutoload
     /**
      *  @var array array('classname' => 'path/to/override', 'classnamecore' => 'path/to/class/core')
      */
-    public $index = array();
+    public $index = [];
 
     public $_include_override_path = true;
 
-    protected static $class_aliases = array(
+    protected static $class_aliases = [
         'Collection' => 'PrestaShopCollection',
         'Autoload' => 'PrestaShopAutoload',
         'Backup' => 'PrestaShopBackup',
         'Logger' => 'PrestaShopLogger'
-    );
+    ];
 
     protected function __construct()
     {
@@ -178,7 +178,7 @@ class PrestaShopAutoload
      */
     protected function getClassesFromDir($path, $host_mode = false)
     {
-        $classes = array();
+        $classes = [];
         $root_dir = $host_mode ? $this->normalizeDirectory(_PS_ROOT_DIR_) : $this->root_dir;
 
         foreach (scandir($root_dir.$path) as $file) {
@@ -193,18 +193,18 @@ class PrestaShopAutoload
                                 .'(?:\s+extends\s+'.$namespacePattern.'[a-z][a-z0-9_]*)?(?:\s+implements\s+'.$namespacePattern.'[a-z][\\a-z0-9_]*(?:\s*,\s*'.$namespacePattern.'[a-z][\\a-z0-9_]*)*)?\s*\{#i';
 
                     if (preg_match($pattern, $content, $m)) {
-                        $classes[$m['classname']] = array(
+                        $classes[$m['classname']] = [
                             'path' => $path.$file,
                             'type' => trim($m[1]),
                             'override' => $host_mode
-                        );
+                        ];
 
                         if (substr($m['classname'], -4) == 'Core') {
-                            $classes[substr($m['classname'], 0, -4)] = array(
+                            $classes[substr($m['classname'], 0, -4)] = [
                                 'path' => '',
                                 'type' => $classes[$m['classname']]['type'],
                                 'override' => $host_mode
-                            );
+                            ];
                         }
                     }
                 }

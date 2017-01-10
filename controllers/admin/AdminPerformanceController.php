@@ -38,100 +38,100 @@ class AdminPerformanceControllerCore extends AdminController
 
     public function initFieldsetSmarty()
     {
-        $this->fields_form[0]['form'] = array(
-            'legend' => array(
+        $this->fields_form[0]['form'] = [
+            'legend' => [
                 'title' => $this->l('Smarty'),
                 'icon' => 'icon-briefcase'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'hidden',
                     'name' => 'smarty_up'
-                ),
-                array(
+                ],
+                [
                     'type' => 'radio',
                     'label' => $this->l('Template compilation'),
                     'name' => 'smarty_force_compile',
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'smarty_force_compile_'._PS_SMARTY_NO_COMPILE_,
                             'value' => _PS_SMARTY_NO_COMPILE_,
                             'label' => $this->l('Never recompile template files'),
                             'hint' => $this->l('This option should be used in a production environment.')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'smarty_force_compile_'._PS_SMARTY_CHECK_COMPILE_,
                             'value' => _PS_SMARTY_CHECK_COMPILE_,
                             'label' => $this->l('Recompile templates if the files have been updated'),
                             'hint' => $this->l('Templates are recompiled when they are updated. If you experience compilation troubles when you update your template files, you should use Force Compile instead of this option. It should never be used in a production environment.')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'smarty_force_compile_'._PS_SMARTY_FORCE_COMPILE_,
                             'value' => _PS_SMARTY_FORCE_COMPILE_,
                             'label' => $this->l('Force compilation'),
                             'hint' => $this->l('This forces Smarty to (re)compile templates on every invocation. This is handy for development and debugging. Note: This should never be used in a production environment.')
-                        )
-                    )
-                ),
-                array(
+                        ]
+                    ]
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Cache'),
                     'name' => 'smarty_cache',
                     'is_bool' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'smarty_cache_1',
                             'value' => 1,
                             'label' => $this->l('Yes'),
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'smarty_cache_0',
                             'value' => 0,
                             'label' => $this->l('No')
-                        )
-                    ),
+                        ]
+                    ],
                     'hint' => $this->l('Should be enabled except for debugging.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'radio',
                     'label' => $this->l('Caching type'),
                     'name' => 'smarty_caching_type',
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'smarty_caching_type_filesystem',
                             'value' => 'filesystem',
                             'label' => $this->l('File System').(is_writable(_PS_CACHE_DIR_.'smarty/cache') ? '' : ' '.sprintf($this->l('(the directory %s must be writable)'), realpath(_PS_CACHE_DIR_.'smarty/cache')))
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'smarty_caching_type_mysql',
                             'value' => 'mysql',
                             'label' => $this->l('MySQL')
-                        ),
+                        ],
 
-                    )
-                ),
-                array(
+                    ]
+                ],
+                [
                     'type' => 'radio',
                     'label' => $this->l('Clear cache'),
                     'name' => 'smarty_clear_cache',
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'smarty_clear_cache_never',
                             'value' => 'never',
                             'label' => $this->l('Never clear cache files'),
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'smarty_clear_cache_everytime',
                             'value' => 'everytime',
                             'label' => $this->l('Clear cache everytime something has been modified'),
-                        ),
-                    )
-                ),
-            ),
-            'submit' => array(
+                        ],
+                    ]
+                ],
+            ],
+            'submit' => [
                 'title' => $this->l('Save')
-            )
-        );
+            ]
+        ];
 
         $this->fields_value['smarty_force_compile'] = Configuration::get('PS_SMARTY_FORCE_COMPILE');
         $this->fields_value['smarty_cache'] = Configuration::get('PS_SMARTY_CACHE');
@@ -143,57 +143,57 @@ class AdminPerformanceControllerCore extends AdminController
 
     public function initFieldsetDebugMode()
     {
-        $this->fields_form[1]['form'] = array(
-            'legend' => array(
+        $this->fields_form[1]['form'] = [
+            'legend' => [
                 'title' => $this->l('Debug mode'),
                 'icon' => 'icon-bug'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'switch',
                     'label' => $this->l('Disable non PrestaShop modules'),
                     'name' => 'native_module',
                     'class' => 't',
                     'is_bool' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'native_module_on',
                             'value' => 1,
                             'label' => $this->l('Enabled')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'native_module_off',
                             'value' => 0,
                             'label' => $this->l('Disabled')
-                        )
-                    ),
+                        ]
+                    ],
                     'hint' => $this->l('Enable or disable non PrestaShop Modules.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Disable all overrides'),
                     'name' => 'overrides',
                     'class' => 't',
                     'is_bool' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'overrides_module_on',
                             'value' => 1,
                             'label' => $this->l('Enabled')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'overrides_module_off',
                             'value' => 0,
                             'label' => $this->l('Disabled')
-                        )
-                    ),
+                        ]
+                    ],
                     'hint' => $this->l('Enable or disable all classes and controllers overrides.')
-                ),
-            ),
-            'submit' => array(
+                ],
+            ],
+            'submit' => [
                 'title' => $this->l('Save')
-            )
-        );
+            ]
+        ];
 
         $this->fields_value['native_module'] = Configuration::get('PS_DISABLE_NON_NATIVE_MODULE');
         $this->fields_value['overrides'] = Configuration::get('PS_DISABLE_OVERRIDES');
@@ -201,82 +201,82 @@ class AdminPerformanceControllerCore extends AdminController
 
     public function initFieldsetFeaturesDetachables()
     {
-        $this->fields_form[2]['form'] = array(
-            'legend' => array(
+        $this->fields_form[2]['form'] = [
+            'legend' => [
                 'title' => $this->l('Optional features'),
                 'icon' => 'icon-puzzle-piece'
-            ),
+            ],
             'description' => $this->l('Some features can be disabled in order to improve performance.'),
-            'input' => array(
-                array(
+            'input' => [
+                [
                     'type' => 'hidden',
                     'name' => 'features_detachables_up'
-                ),
-                array(
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Combinations'),
                     'name' => 'combination',
                     'is_bool' => true,
                     'disabled' => Combination::isCurrentlyUsed(),
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'combination_1',
                             'value' => 1,
                             'label' => $this->l('Yes'),
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'combination_0',
                             'value' => 0,
                             'label' => $this->l('No')
-                        )
-                    ),
+                        ]
+                    ],
                     'hint' => $this->l('Choose "No" to disable Product Combinations.'),
                     'desc' => Combination::isCurrentlyUsed() ? $this->l('You cannot set this parameter to No when combinations are already used by some of your products') : null
-                ),
-                array(
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Features'),
                     'name' => 'feature',
                     'is_bool' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'feature_1',
                             'value' => 1,
                             'label' => $this->l('Yes'),
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'feature_0',
                             'value' => 0,
                             'label' => $this->l('No')
-                        )
-                    ),
+                        ]
+                    ],
                     'hint' => $this->l('Choose "No" to disable Product Features.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Customer Groups'),
                     'name' => 'customer_group',
                     'is_bool' => true,
                     'disabled' => Group::isCurrentlyUsed(),
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'group_1',
                             'value' => 1,
                             'label' => $this->l('Yes'),
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'group_0',
                             'value' => 0,
                             'label' => $this->l('No')
-                        )
-                    ),
+                        ]
+                    ],
                     'hint' => $this->l('Choose "No" to disable Customer Groups.')
-                )
-            ),
-            'submit' => array(
+                ]
+            ],
+            'submit' => [
                 'title' => $this->l('Save')
-            )
-        );
+            ]
+        ];
 
         $this->fields_value['combination'] = Combination::isFeatureActive();
         $this->fields_value['feature'] = Feature::isFeatureActive();
@@ -285,128 +285,128 @@ class AdminPerformanceControllerCore extends AdminController
 
     public function initFieldsetCCC()
     {
-        $this->fields_form[3]['form'] = array(
-            'legend' => array(
+        $this->fields_form[3]['form'] = [
+            'legend' => [
                 'title' => $this->l('CCC (Combine, Compress and Cache)'),
                 'icon' => 'icon-fullscreen'
-            ),
+            ],
             'description' => $this->l('CCC allows you to reduce the loading time of your page. With these settings you will gain performance without even touching the code of your theme. Make sure, however, that your theme is compatible with PrestaShop 1.4+. Otherwise, CCC will cause problems.'),
-            'input' => array(
-                array(
+            'input' => [
+                [
                     'type' => 'hidden',
                     'name' => 'ccc_up',
-                ),
-                array(
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Smart cache for CSS'),
                     'name' => 'PS_CSS_THEME_CACHE',
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'PS_CSS_THEME_CACHE_1',
                             'value' => 1,
                             'label' => $this->l('Use CCC for CSS')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'PS_CSS_THEME_CACHE_0',
                             'value' => 0,
                             'label' => $this->l('Keep CSS as original')
-                        )
-                    )
-                ),
-                array(
+                        ]
+                    ]
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Smart cache for JavaScript'),
                     'name' => 'PS_JS_THEME_CACHE',
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'PS_JS_THEME_CACHE_1',
                             'value' => 1,
                             'label' => $this->l('Use CCC for JavaScript')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'PS_JS_THEME_CACHE_0',
                             'value' => 0,
                             'label' => $this->l('Keep JavaScript as original')
-                        )
-                    )
-                ),
-                array(
+                        ]
+                    ]
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Minify HTML'),
                     'name' => 'PS_HTML_THEME_COMPRESSION',
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'PS_HTML_THEME_COMPRESSION_1',
                             'value' => 1,
                             'label' => $this->l('Minify HTML after "Smarty compile" execution')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'PS_HTML_THEME_COMPRESSION_0',
                             'value' => 0,
                             'label' => $this->l('Keep HTML as original')
-                        )
-                    )
-                ),
-                array(
+                        ]
+                    ]
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Compress inline JavaScript in HTML'),
                     'name' => 'PS_JS_HTML_THEME_COMPRESSION',
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'PS_JS_HTML_THEME_COMPRESSION_1',
                             'value' => 1,
                             'label' => $this->l('Compress inline JavaScript in HTML after "Smarty compile" execution')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'PS_JS_HTML_THEME_COMPRESSION_0',
                             'value' => 0,
                             'label' => $this->l('Keep inline JavaScript in HTML as original')
-                        )
-                    )
-                ),
-                array(
+                        ]
+                    ]
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Move JavaScript to the end'),
                     'name' => 'PS_JS_DEFER',
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'PS_JS_DEFER_1',
                             'value' => 1,
                             'label' => $this->l('Move JavaScript to the end of the HTML document')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'PS_JS_DEFER_0',
                             'value' => 0,
                             'label' => $this->l('Keep JavaScript in HTML at its original position')
-                        )
-                    )
-                ),
+                        ]
+                    ]
+                ],
 
-            ),
-            'submit' => array(
+            ],
+            'submit' => [
                 'title' => $this->l('Save')
-            )
-        );
+            ]
+        ];
 
         if (!defined('_PS_HOST_MODE_')) {
-            $this->fields_form[3]['form']['input'][] = array(
+            $this->fields_form[3]['form']['input'][] = [
                 'type' => 'switch',
                 'label' => $this->l('Apache optimization'),
                 'name' => 'PS_HTACCESS_CACHE_CONTROL',
                 'hint' => $this->l('This will add directives to your .htaccess file, which should improve caching and compression.'),
-                'values' => array(
-                    array(
+                'values' => [
+                    [
                         'id' => 'PS_HTACCESS_CACHE_CONTROL_1',
                         'value' => 1,
                         'label' => $this->l('Yes'),
-                    ),
-                    array(
+                    ],
+                    [
                         'id' => 'PS_HTACCESS_CACHE_CONTROL_0',
                         'value' => 0,
                         'label' => $this->l('No'),
-                    ),
-                ),
-            );
+                    ],
+                ],
+            ];
         }
 
         $this->fields_value['PS_CSS_THEME_CACHE'] = Configuration::get('PS_CSS_THEME_CACHE');
@@ -420,40 +420,40 @@ class AdminPerformanceControllerCore extends AdminController
 
     public function initFieldsetMediaServer()
     {
-        $this->fields_form[4]['form'] = array(
-            'legend' => array(
+        $this->fields_form[4]['form'] = [
+            'legend' => [
                 'title' => $this->l('Media servers (use only with CCC)'),
                 'icon' => 'icon-link'
-            ),
+            ],
             'description' => $this->l('You must enter another domain, or subdomain, in order to use cookieless static content.'),
-            'input' => array(
-                array(
+            'input' => [
+                [
                     'type' => 'hidden',
                     'name' => 'media_server_up'
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Media server #1'),
                     'name' => '_MEDIA_SERVER_1_',
                     'hint' => $this->l('Name of the second domain of your shop, (e.g. myshop-media-server-1.com). If you do not have another domain, leave this field blank.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Media server #2'),
                     'name' => '_MEDIA_SERVER_2_',
                     'hint' => $this->l('Name of the third domain of your shop, (e.g. myshop-media-server-2.com). If you do not have another domain, leave this field blank.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Media server #3'),
                     'name' => '_MEDIA_SERVER_3_',
                     'hint' => $this->l('Name of the fourth domain of your shop, (e.g. myshop-media-server-3.com). If you do not have another domain, leave this field blank.')
-                ),
-            ),
-            'submit' => array(
+                ],
+            ],
+            'submit' => [
                 'title' => $this->l('Save')
-            )
-        );
+            ]
+        ];
 
         $this->fields_value['_MEDIA_SERVER_1_'] = Configuration::get('PS_MEDIA_SERVER_1');
         $this->fields_value['_MEDIA_SERVER_2_'] = Configuration::get('PS_MEDIA_SERVER_2');
@@ -462,7 +462,7 @@ class AdminPerformanceControllerCore extends AdminController
 
     public function initFieldsetCiphering()
     {
-        $phpdoc_langs = array('en', 'zh', 'fr', 'de', 'ja', 'pl', 'ro', 'ru', 'fa', 'es', 'tr');
+        $phpdoc_langs = ['en', 'zh', 'fr', 'de', 'ja', 'pl', 'ro', 'ru', 'fa', 'es', 'tr'];
         $php_lang = in_array($this->context->language->iso_code, $phpdoc_langs) ? $this->context->language->iso_code : 'en';
 
         $warning_mcrypt = ' '.$this->l('(you must install the [a]Mcrypt extension[/a])');
@@ -470,40 +470,40 @@ class AdminPerformanceControllerCore extends AdminController
         $warning_mcrypt = str_replace('[/a]', '</a>', $warning_mcrypt);
 
         if (defined('_RIJNDAEL_KEY_') && defined('_RIJNDAEL_IV_')) {
-            $this->fields_form[5]['form'] = array(
+            $this->fields_form[5]['form'] = [
 
-                'legend' => array(
+                'legend' => [
                     'title' => $this->l('Ciphering'),
                     'icon' => 'icon-desktop'
-                ),
-                'input' => array(
-                    array(
+                ],
+                'input' => [
+                    [
                         'type' => 'hidden',
                         'name' => 'ciphering_up'
-                    ),
-                    array(
+                    ],
+                    [
                         'type' => 'radio',
                         'label' => $this->l('Algorithm'),
                         'name' => 'PS_CIPHER_ALGORITHM',
                         'hint' => $this->l('Mcrypt is faster than our custom BlowFish class, but requires the "mcrypt" PHP extension. If you change this configuration, all cookies will be reset.'),
-                        'values' => array(
-                            array(
+                        'values' => [
+                            [
                                 'id' => 'PS_CIPHER_ALGORITHM_1',
                                 'value' => 1,
                                 'label' => $this->l('Use Rijndael with mcrypt lib.').(function_exists('mcrypt_encrypt') ? '' : $warning_mcrypt)
-                            ),
-                            array(
+                            ],
+                            [
                                 'id' => 'PS_CIPHER_ALGORITHM_0',
                                 'value' => 0,
                                 'label' => $this->l('Use the custom BlowFish class.')
-                            )
-                        )
-                    )
-                ),
-                'submit' => array(
+                            ]
+                        ]
+                    ]
+                ],
+                'submit' => [
                     'title' => $this->l('Save')
-                )
-            );
+                ]
+            ];
         }
 
         $this->fields_value['PS_CIPHER_ALGORITHM'] = Configuration::get('PS_CIPHER_ALGORITHM');
@@ -511,7 +511,7 @@ class AdminPerformanceControllerCore extends AdminController
 
     public function initFieldsetCaching()
     {
-        $phpdoc_langs = array('en', 'zh', 'fr', 'de', 'ja', 'pl', 'ro', 'ru', 'fa', 'es', 'tr');
+        $phpdoc_langs = ['en', 'zh', 'fr', 'de', 'ja', 'pl', 'ro', 'ru', 'fa', 'es', 'tr'];
         $php_lang = in_array($this->context->language->iso_code, $phpdoc_langs) ? $this->context->language->iso_code : 'en';
 
         $warning_memcache = ' '.$this->l('(you must install the [a]Memcache PECL extension[/a])');
@@ -532,79 +532,79 @@ class AdminPerformanceControllerCore extends AdminController
 
         $warning_fs = ' '.sprintf($this->l('(the directory %s must be writable)'), realpath(_PS_CACHEFS_DIRECTORY_));
 
-        $this->fields_form[6]['form'] = array(
-            'legend' => array(
+        $this->fields_form[6]['form'] = [
+            'legend' => [
                 'title' => $this->l('Caching'),
                 'icon' => 'icon-desktop'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'hidden',
                     'name' => 'cache_up'
-                ),
-                array(
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Use cache'),
                     'name' => 'cache_active',
                     'is_bool' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'cache_active_on',
                             'value' => 1,
                             'label' => $this->l('Enabled')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'cache_active_off',
                             'value' => 0,
                             'label' => $this->l('Disabled')
-                        )
-                    )
-                ),
-                array(
+                        ]
+                    ]
+                ],
+                [
                     'type' => 'radio',
                     'label' => $this->l('Caching system'),
                     'name' => 'caching_system',
                     'hint' => $this->l('The CacheFS system should be used only when the infrastructure contains one front-end server. If you are not sure, ask your hosting company.'),
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'CacheFs',
                             'value' => 'CacheFs',
                             'label' => $this->l('File System').(is_writable(_PS_CACHEFS_DIRECTORY_) ? '' : $warning_fs)
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'CacheMemcache',
                             'value' => 'CacheMemcache',
                             'label' => $this->l('Memcached via PHP::Memcache').(extension_loaded('memcache') ? '' : $warning_memcache)
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'CacheMemcached',
                             'value' => 'CacheMemcached',
                             'label' => $this->l('Memcached via PHP::Memcached').(extension_loaded('memcached') ? '' : $warning_memcached)
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'CacheApc',
                             'value' => 'CacheApc',
                             'label' => $this->l('APC').((extension_loaded('apc') || extension_loaded('apcu')) ? '' : $warning_apc)
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'CacheXcache',
                             'value' => 'CacheXcache',
                             'label' => $this->l('Xcache').(extension_loaded('xcache') ? '' : $warning_xcache)
-                        ),
+                        ],
 
-                    )
-                ),
-                array(
+                    ]
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Directory depth'),
                     'name' => 'ps_cache_fs_directory_depth'
-                ),
-            ),
-            'submit' => array(
+                ],
+            ],
+            'submit' => [
                 'title' => $this->l('Save')
-            ),
+            ],
             'memcachedServers' => true
-        );
+        ];
 
         $depth = Configuration::get('PS_CACHEFS_DIRECTORY_DEPTH');
         $this->fields_value['cache_active'] = _PS_CACHE_ENABLED_;
@@ -645,7 +645,8 @@ class AdminPerformanceControllerCore extends AdminController
         $this->display = '';
         $this->content .= $this->renderForm();
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'content' => $this->content,
             'url_post' => self::$currentIndex.'&token='.$this->token,
             'show_page_header_toolbar' => $this->show_page_header_toolbar,
@@ -653,18 +654,19 @@ class AdminPerformanceControllerCore extends AdminController
             'page_header_toolbar_btn' => $this->page_header_toolbar_btn,
             'title' => $this->page_header_toolbar_title,
             'toolbar_btn' => $this->page_header_toolbar_btn
-        ));
+            ]
+        );
     }
 
     public function initPageHeaderToolbar()
     {
         parent::initPageHeaderToolbar();
 
-        $this->page_header_toolbar_btn['clear_cache'] = array(
+        $this->page_header_toolbar_btn['clear_cache'] = [
             'href' => self::$currentIndex.'&token='.$this->token.'&empty_smarty_cache=1',
             'desc' => $this->l('Clear cache'),
             'icon' => 'process-icon-eraser'
-        );
+        ];
     }
 
     public function postProcess()
@@ -675,7 +677,7 @@ class AdminPerformanceControllerCore extends AdminController
             return;
         }
 
-        Hook::exec('action'.get_class($this).ucfirst($this->action).'Before', array('controller' => $this));
+        Hook::exec('action'.get_class($this).ucfirst($this->action).'Before', ['controller' => $this]);
         if (Tools::isSubmit('submitAddServer')) {
             if ($this->tabAccess['add'] === '1') {
                 if (!Tools::getValue('memcachedIp')) {
@@ -812,7 +814,7 @@ class AdminPerformanceControllerCore extends AdminController
                     $this->errors[] = Tools::displayError('Media server #3 is invalid');
                 }
                 if (!count($this->errors)) {
-                    $base_urls = array();
+                    $base_urls = [];
                     $base_urls['_MEDIA_SERVER_1_'] = Tools::getValue('_MEDIA_SERVER_1_');
                     $base_urls['_MEDIA_SERVER_2_'] = Tools::getValue('_MEDIA_SERVER_2_');
                     $base_urls['_MEDIA_SERVER_3_'] = Tools::getValue('_MEDIA_SERVER_3_');
@@ -829,7 +831,7 @@ class AdminPerformanceControllerCore extends AdminController
                     Media::clearCache();
 
                     if (is_writable(_PS_ROOT_DIR_.'/.htaccess')) {
-                        Tools::generateHtaccess(null, null, null, '', null, array($base_urls['_MEDIA_SERVER_1_'], $base_urls['_MEDIA_SERVER_2_'], $base_urls['_MEDIA_SERVER_3_']));
+                        Tools::generateHtaccess(null, null, null, '', null, [$base_urls['_MEDIA_SERVER_1_'], $base_urls['_MEDIA_SERVER_2_'], $base_urls['_MEDIA_SERVER_3_']]);
                         unset($this->_fieldsGeneral['_MEDIA_SERVER_1_']);
                         unset($this->_fieldsGeneral['_MEDIA_SERVER_2_']);
                         unset($this->_fieldsGeneral['_MEDIA_SERVER_3_']);
@@ -982,7 +984,7 @@ class AdminPerformanceControllerCore extends AdminController
         }
 
         if ($redirectAdmin && (!isset($this->errors) || !count($this->errors))) {
-            Hook::exec('action'.get_class($this).ucfirst($this->action).'After', array('controller' => $this, 'return' => ''));
+            Hook::exec('action'.get_class($this).ucfirst($this->action).'After', ['controller' => $this, 'return' => '']);
             Tools::redirectAdmin(self::$currentIndex.'&token='.Tools::getValue('token').'&conf=4');
         }
     }
@@ -1020,7 +1022,7 @@ class AdminPerformanceControllerCore extends AdminController
                         $res      = @memcache_get_server_status($memcache, $host, $port);
                     }
                 }
-                die(Tools::jsonEncode(array($res)));
+                die(Tools::jsonEncode([$res]));
             }
         }
         die;

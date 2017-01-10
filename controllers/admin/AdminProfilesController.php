@@ -39,49 +39,49 @@ class AdminProfilesControllerCore extends AdminController
         $this->lang = true;
         $this->addRowAction('edit');
         $this->addRowAction('delete');
-        $this->addRowActionSkipList('delete', array(1));
+        $this->addRowActionSkipList('delete', [1]);
 
-        $this->bulk_actions = array(
-            'delete' => array(
+        $this->bulk_actions = [
+            'delete' => [
                 'text' => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
                 'icon' => 'icon-trash'
-            )
-        );
+            ]
+        ];
 
-        $this->fields_list = array(
-            'id_profile' => array(
+        $this->fields_list = [
+            'id_profile' => [
                         'title' => $this->l('ID'),
                         'align' => 'center',
                         'class' => 'fixed-width-xs'
-                        ),
-            'name' => array('title' => $this->l('Name'))
-            );
+            ],
+            'name' => ['title' => $this->l('Name')]
+        ];
             
         $this->identifier = 'id_profile';
 
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('Profile'),
                 'icon' => 'icon-group'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'text',
                     'label' => $this->l('Name'),
                     'name' => 'name',
                     'required' => true,
                     'lang' => true,
-                )
-            ),
-            'submit' => array(
+                ]
+            ],
+            'submit' => [
                 'title' => $this->l('Save'),
-            )
-        );
+            ]
+        ];
 
-        $list_profile = array();
+        $list_profile = [];
         foreach (Profile::getProfiles($this->context->language->id) as $profil) {
-            $list_profile[] = array('value' => $profil['id_profile'], 'name' => $profil['name']);
+            $list_profile[] = ['value' => $profil['id_profile'], 'name' => $profil['name']];
         }
 
         parent::__construct();
@@ -106,11 +106,11 @@ class AdminProfilesControllerCore extends AdminController
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
-            $this->page_header_toolbar_btn['new_profile'] = array(
+            $this->page_header_toolbar_btn['new_profile'] = [
                 'href' => self::$currentIndex.'&addprofile&token='.$this->token,
                 'desc' => $this->l('Add new profile', null, null, false),
                 'icon' => 'process-icon-new'
-            );
+            ];
         }
         
         parent::initPageHeaderToolbar();

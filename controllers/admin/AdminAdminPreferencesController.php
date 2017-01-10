@@ -43,20 +43,20 @@ class AdminAdminPreferencesControllerCore extends AdminController
         $upload_mb = min($max_upload, $max_post);
 
         // Options list
-        $this->fields_options = array(
-            'general' => array(
+        $this->fields_options = [
+            'general' => [
                 'title' =>    $this->l('General'),
                 'icon' =>    'icon-cogs',
-                'fields' =>    array(
-                    'PRESTASTORE_LIVE' => array(
+                'fields' =>    [
+                    'PRESTASTORE_LIVE' => [
                         'title' => $this->l('Automatically check for module updates'),
                         'hint' => $this->l('New modules and updates are displayed on the modules page.'),
                         'validation' => 'isBool',
                         'cast' => 'intval',
                         'type' => 'bool',
                         'visibility' => Shop::CONTEXT_ALL
-                    ),
-                    'PS_COOKIE_CHECKIP' => array(
+                    ],
+                    'PS_COOKIE_CHECKIP' => [
                         'title' => $this->l('Check the cookie\'s IP address'),
                         'hint' => $this->l('Check the IP address of the cookie in order to prevent your cookie from being stolen.'),
                         'validation' => 'isBool',
@@ -64,8 +64,8 @@ class AdminAdminPreferencesControllerCore extends AdminController
                         'type' => 'bool',
                         'default' => '0',
                         'visibility' => Shop::CONTEXT_ALL
-                    ),
-                    'PS_COOKIE_LIFETIME_FO' => array(
+                    ],
+                    'PS_COOKIE_LIFETIME_FO' => [
                         'title' => $this->l('Lifetime of front office cookies'),
                         'hint' => $this->l('Set the amount of hours during which the front office cookies are valid. After that amount of time, the customer will have to log in again.'),
                         'validation' => 'isInt',
@@ -74,8 +74,8 @@ class AdminAdminPreferencesControllerCore extends AdminController
                         'suffix' => $this->l('hours'),
                         'default' => '480',
                         'visibility' => Shop::CONTEXT_ALL
-                    ),
-                    'PS_COOKIE_LIFETIME_BO' => array(
+                    ],
+                    'PS_COOKIE_LIFETIME_BO' => [
                         'title' => $this->l('Lifetime of back office cookies'),
                         'hint' => $this->l('Set the amount of hours during which the back office cookies are valid. After that amount of time, the PrestaShop user will have to log in again.'),
                         'validation' => 'isInt',
@@ -84,15 +84,15 @@ class AdminAdminPreferencesControllerCore extends AdminController
                         'suffix' => $this->l('hours'),
                         'default' => '480',
                         'visibility' => Shop::CONTEXT_ALL
-                    ),
-                ),
-                'submit' => array('title' => $this->l('Save'))
-            ),
-            'upload' => array(
+                    ],
+                ],
+                'submit' => ['title' => $this->l('Save')]
+            ],
+            'upload' => [
                 'title' =>    $this->l('Upload quota'),
                 'icon' =>    'icon-cloud-upload',
-                'fields' => array(
-                    'PS_ATTACHMENT_MAXIMUM_SIZE' => array(
+                'fields' => [
+                    'PS_ATTACHMENT_MAXIMUM_SIZE' => [
                         'title' => $this->l('Maximum size for attachment'),
                         'hint' =>  sprintf($this->l('Set the maximum size allowed for attachment files (in megabytes). This value has to be lower or equal to the maximum file upload allotted by your server (currently: %s MB).'), $upload_mb),
                         'validation' => 'isInt',
@@ -100,8 +100,8 @@ class AdminAdminPreferencesControllerCore extends AdminController
                         'type' => 'text',
                         'suffix' => $this->l('megabytes'),
                         'default' => '2'
-                    ),
-                    'PS_LIMIT_UPLOAD_FILE_VALUE' => array(
+                    ],
+                    'PS_LIMIT_UPLOAD_FILE_VALUE' => [
                         'title' => $this->l('Maximum size for a downloadable product'),
                         'hint' => sprintf($this->l('Define the upload limit for a downloadable product (in megabytes). This value has to be lower or equal to the maximum file upload allotted by your server (currently: %s MB).'), $upload_mb),
                         'validation' => 'isInt',
@@ -109,8 +109,8 @@ class AdminAdminPreferencesControllerCore extends AdminController
                         'type' => 'text',
                         'suffix' => $this->l('megabytes'),
                         'default' => '1'
-                    ),
-                    'PS_LIMIT_UPLOAD_IMAGE_VALUE' => array(
+                    ],
+                    'PS_LIMIT_UPLOAD_IMAGE_VALUE' => [
                         'title' => $this->l('Maximum size for a product\'s image'),
                         'hint' => sprintf($this->l('Define the upload limit for an image (in megabytes). This value has to be lower or equal to the maximum file upload allotted by your server (currently: %s MB).'), $upload_mb),
                         'validation' => 'isInt',
@@ -118,40 +118,40 @@ class AdminAdminPreferencesControllerCore extends AdminController
                         'type' => 'text',
                         'suffix' => $this->l('megabytes'),
                         'default' => '1'
-                    ),
-                ),
-                'submit' => array('title' => $this->l('Save'))
-            ),
-            'notifications' => array(
+                    ],
+                ],
+                'submit' => ['title' => $this->l('Save')]
+            ],
+            'notifications' => [
                 'title' =>    $this->l('Notifications'),
                 'icon' =>    'icon-list-alt',
                 'description' => $this->l('Notifications are numbered bubbles displayed at the very top of your back office, right next to the shop\'s name. They display the number of new items since you last clicked on them.'),
-                'fields' =>    array(
-                    'PS_SHOW_NEW_ORDERS' => array(
+                'fields' =>    [
+                    'PS_SHOW_NEW_ORDERS' => [
                         'title' => $this->l('Show notifications for new orders'),
                         'hint' => $this->l('This will display notifications when new orders are made in your shop.'),
                         'validation' => 'isBool',
                         'cast' => 'intval',
                         'type' => 'bool'
-                    ),
-                    'PS_SHOW_NEW_CUSTOMERS' => array(
+                    ],
+                    'PS_SHOW_NEW_CUSTOMERS' => [
                         'title' => $this->l('Show notifications for new customers'),
                         'hint' => $this->l('This will display notifications every time a new customer registers in your shop.'),
                         'validation' => 'isBool',
                         'cast' => 'intval',
                         'type' => 'bool'
-                    ),
-                    'PS_SHOW_NEW_MESSAGES' => array(
+                    ],
+                    'PS_SHOW_NEW_MESSAGES' => [
                         'title' => $this->l('Show notifications for new messages'),
                         'hint' => $this->l('This will display notifications when new messages are posted in your shop.'),
                         'validation' => 'isBool',
                         'cast' => 'intval',
                         'type' => 'bool'
-                    ),
-                ),
-                'submit' => array('title' => $this->l('Save'))
-            ),
-        );
+                    ],
+                ],
+                'submit' => ['title' => $this->l('Save')]
+            ],
+        ];
     }
 
     public function postProcess()

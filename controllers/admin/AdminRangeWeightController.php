@@ -38,13 +38,14 @@ class AdminRangeWeightControllerCore extends AdminController
 
         $this->addRowAction('edit');
         $this->addRowAction('delete');
-        $this->bulk_actions = array('delete' => array('text' => $this->l('Delete selected'), 'confirm' => $this->l('Delete selected items?')));
+        $this->bulk_actions = ['delete' => ['text' => $this->l('Delete selected'), 'confirm' => $this->l('Delete selected items?')]];
 
-        $this->fields_list = array(
-            'id_range_weight' => array('title' => $this->l('ID'), 'align' => 'center', 'width' => 25),
-            'carrier_name' => array('title' => $this->l('Carrier'), 'align' => 'left', 'width' => 'auto', 'filter_key' => 'ca!name'),
-            'delimiter1' => array('title' => $this->l('From'), 'width' => 86, 'type' => 'float', 'suffix' => Configuration::get('PS_WEIGHT_UNIT'), 'align' => 'right'),
-            'delimiter2' => array('title' => $this->l('To'), 'width' => 86, 'type' => 'float', 'suffix' => Configuration::get('PS_WEIGHT_UNIT'), 'align' => 'right'));
+        $this->fields_list = [
+            'id_range_weight' => ['title' => $this->l('ID'), 'align' => 'center', 'width' => 25],
+            'carrier_name' => ['title' => $this->l('Carrier'), 'align' => 'left', 'width' => 'auto', 'filter_key' => 'ca!name'],
+            'delimiter1' => ['title' => $this->l('From'), 'width' => 86, 'type' => 'float', 'suffix' => Configuration::get('PS_WEIGHT_UNIT'), 'align' => 'right'],
+            'delimiter2' => ['title' => $this->l('To'), 'width' => 86, 'type' => 'float', 'suffix' => Configuration::get('PS_WEIGHT_UNIT'), 'align' => 'right']
+        ];
 
         $this->_join = 'LEFT JOIN '._DB_PREFIX_.'carrier ca ON (ca.`id_carrier` = a.`id_carrier`)';
         $this->_select = 'ca.`name` AS carrier_name';
@@ -57,11 +58,11 @@ class AdminRangeWeightControllerCore extends AdminController
     public function initPageHeaderToolbar()
     {
         $this->page_header_toolbar_title = $this->l('Weight ranges');
-        $this->page_header_toolbar_btn['new_weight_range'] = array(
+        $this->page_header_toolbar_btn['new_weight_range'] = [
             'href' => self::$currentIndex.'&addrange_weight&token='.$this->token,
             'desc' => $this->l('Add new weight range', null, null, false),
             'icon' => 'process-icon-new'
-        );
+        ];
 
         parent::initPageHeaderToolbar();
     }
@@ -75,47 +76,47 @@ class AdminRangeWeightControllerCore extends AdminController
             }
         }
 
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('Weight ranges'),
                 'icon' => 'icon-suitcase'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'select',
                     'label' => $this->l('Carrier'),
                     'name' => 'id_carrier',
                     'required' => false,
                     'hint' => $this->l('You can apply this range to a different carrier by selecting its name.'),
-                    'options' => array(
+                    'options' => [
                         'query' => $carriers,
                         'id' => 'id_carrier',
                         'name' => 'name'
-                    ),
+                    ],
                     'empty_message' => '<p class="alert alert-block">'.$this->l('There is no carrier available for this weight range.').'</p>'
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('From'),
                     'name' => 'delimiter1',
                     'required' => true,
                     'suffix' => Configuration::get('PS_WEIGHT_UNIT'),
                     'hint' => $this->l('Start range (included).'),
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('To'),
                     'name' => 'delimiter2',
                     'required' => true,
                     'suffix' => Configuration::get('PS_WEIGHT_UNIT'),
                     'hint' => $this->l('End range (excluded).'),
-                ),
-            ),
-            'submit' => array(
+                ],
+            ],
+            'submit' => [
                 'title' => $this->l('   Save   '),
                 'class' => 'btn btn-default'
-            )
-        );
+            ]
+        ];
 
         return parent::renderForm();
     }

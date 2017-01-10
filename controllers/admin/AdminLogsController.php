@@ -37,63 +37,63 @@ class AdminLogsControllerCore extends AdminController
         $this->lang = false;
         $this->noLink = true;
 
-        $this->fields_list = array(
-            'id_log' => array(
+        $this->fields_list = [
+            'id_log' => [
                 'title' => $this->l('ID'),
                 'align' => 'text-center',
                 'class' => 'fixed-width-xs'
-            ),
-            'employee' => array(
+            ],
+            'employee' => [
                 'title' => $this->l('Employee'),
                 'havingFilter' => true,
                 'callback' => 'displayEmployee',
                 'callback_object' => $this
-            ),
-            'severity' => array(
+            ],
+            'severity' => [
                 'title' => $this->l('Severity (1-4)'),
                 'align' => 'text-center',
                 'class' => 'fixed-width-xs'
-            ),
-            'message' => array(
+            ],
+            'message' => [
                 'title' => $this->l('Message')
-            ),
-            'object_type' => array(
+            ],
+            'object_type' => [
                 'title' => $this->l('Object type'),
                 'class' => 'fixed-width-sm'
-            ),
-            'object_id' => array(
+            ],
+            'object_id' => [
                 'title' => $this->l('Object ID'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs'
-            ),
-            'error_code' => array(
+            ],
+            'error_code' => [
                 'title' => $this->l('Error code'),
                 'align' => 'center',
                 'prefix' => '0x',
                 'class' => 'fixed-width-xs'
-            ),
-            'date_add' => array(
+            ],
+            'date_add' => [
                 'title' => $this->l('Date'),
                 'align' => 'right',
                 'type' => 'datetime'
-            )
-        );
+            ]
+        ];
 
-        $this->fields_options = array(
-            'general' => array(
+        $this->fields_options = [
+            'general' => [
                 'title' =>    $this->l('Logs by email'),
                 'icon' => 'icon-envelope',
-                'fields' =>    array(
-                    'PS_LOGS_BY_EMAIL' => array(
+                'fields' =>    [
+                    'PS_LOGS_BY_EMAIL' => [
                         'title' => $this->l('Minimum severity level'),
                         'hint' => $this->l('Enter "5" if you do not want to receive any emails.').'<br />'.$this->l('Emails will be sent to the shop owner.'),
                         'cast' => 'intval',
                         'type' => 'text'
-                    )
-                ),
-                'submit' => array('title' => $this->l('Save'))
-            )
-        );
+                    ]
+                ],
+                'submit' => ['title' => $this->l('Save')]
+            ]
+        ];
         $this->list_no_link = true;
         $this->_select .= 'CONCAT(LEFT(e.firstname, 1), \'. \', e.lastname) employee';
         $this->_join .= ' LEFT JOIN '._DB_PREFIX_.'employee e ON (a.id_employee = e.id_employee)';
@@ -111,11 +111,11 @@ class AdminLogsControllerCore extends AdminController
     public function initToolbar()
     {
         parent::initToolbar();
-        $this->toolbar_btn['delete'] = array(
+        $this->toolbar_btn['delete'] = [
             'short' => 'Erase',
             'desc' => $this->l('Erase all'),
             'js' => 'if (confirm(\''.$this->l('Are you sure?').'\')) document.location = \''.Tools::safeOutput($this->context->link->getAdminLink('AdminLogs')).'&amp;token='.$this->token.'&amp;deletelog=1\';'
-        );
+        ];
         unset($this->toolbar_btn['new']);
     }
 
@@ -123,10 +123,12 @@ class AdminLogsControllerCore extends AdminController
     {
         $template = $this->context->smarty->createTemplate('controllers/logs/employee_field.tpl', $this->context->smarty);
         $employee = new Employee((int)$tr['id_employee']);
-        $template->assign(array(
+        $template->assign(
+            [
             'employee_image' => $employee->getImage(),
             'employee_name' => $value
-        ));
+            ]
+        );
         return $template->fetch();
     }
 }

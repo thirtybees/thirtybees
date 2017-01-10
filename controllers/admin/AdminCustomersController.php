@@ -34,13 +34,13 @@ class AdminCustomersControllerCore extends AdminController
     protected $_defaultOrderBy = 'date_add';
     protected $_defaultOrderWay = 'DESC';
     protected $can_add_customer = true;
-    protected static $meaning_status = array();
+    protected static $meaning_status = [];
 
     public function __construct()
     {
         $this->bootstrap = true;
         $this->required_database = true;
-        $this->required_fields = array('newsletter','optin');
+        $this->required_fields = ['newsletter','optin'];
         $this->table = 'customer';
         $this->className = 'Customer';
         $this->lang = false;
@@ -52,19 +52,19 @@ class AdminCustomersControllerCore extends AdminController
         $this->addRowAction('edit');
         $this->addRowAction('view');
         $this->addRowAction('delete');
-        $this->bulk_actions = array(
-            'delete' => array(
+        $this->bulk_actions = [
+            'delete' => [
                 'text' => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
                 'icon' => 'icon-trash'
-            )
-        );
+            ]
+        ];
 
         $this->context = Context::getContext();
 
         $this->default_form_language = $this->context->language->id;
 
-        $titles_array = array();
+        $titles_array = [];
         $genders = Gender::getGenders($this->context->language->id);
         foreach ($genders as $gender) {
             /** @var Gender $gender */
@@ -73,82 +73,84 @@ class AdminCustomersControllerCore extends AdminController
 
         $this->_join = 'LEFT JOIN '._DB_PREFIX_.'gender_lang gl ON (a.id_gender = gl.id_gender AND gl.id_lang = '.(int)$this->context->language->id.')';
         $this->_use_found_rows = false;
-        $this->fields_list = array(
-            'id_customer' => array(
+        $this->fields_list = [
+            'id_customer' => [
                 'title' => $this->l('ID'),
                 'align' => 'text-center',
                 'class' => 'fixed-width-xs'
-            ),
-            'title' => array(
+            ],
+            'title' => [
                 'title' => $this->l('Social title'),
                 'filter_key' => 'a!id_gender',
                 'type' => 'select',
                 'list' => $titles_array,
                 'filter_type' => 'int',
                 'order_key' => 'gl!name'
-            ),
-            'firstname' => array(
+            ],
+            'firstname' => [
                 'title' => $this->l('First name')
-            ),
-            'lastname' => array(
+            ],
+            'lastname' => [
                 'title' => $this->l('Last name')
-            ),
-            'email' => array(
+            ],
+            'email' => [
                 'title' => $this->l('Email address')
-            ),
-        );
+            ],
+        ];
 
         if (Configuration::get('PS_B2B_ENABLE')) {
-            $this->fields_list = array_merge($this->fields_list, array(
-                'company' => array(
+            $this->fields_list = array_merge($this->fields_list, [
+                'company' => [
                     'title' => $this->l('Company')
-                ),
-            ));
+                ],
+            ]
+            );
         }
 
-        $this->fields_list = array_merge($this->fields_list, array(
-            'total_spent' => array(
+        $this->fields_list = array_merge($this->fields_list, [
+            'total_spent' => [
                 'title' => $this->l('Sales'),
                 'type' => 'price',
                 'search' => false,
                 'havingFilter' => true,
                 'align' => 'text-right',
                 'badge_success' => true
-            ),
-            'active' => array(
+            ],
+            'active' => [
                 'title' => $this->l('Enabled'),
                 'align' => 'text-center',
                 'active' => 'status',
                 'type' => 'bool',
                 'orderby' => false,
                 'filter_key' => 'a!active'
-            ),
-            'newsletter' => array(
+            ],
+            'newsletter' => [
                 'title' => $this->l('Newsletter'),
                 'align' => 'text-center',
                 'type' => 'bool',
                 'callback' => 'printNewsIcon',
                 'orderby' => false
-            ),
-            'optin' => array(
+            ],
+            'optin' => [
                 'title' => $this->l('Opt-in'),
                 'align' => 'text-center',
                 'type' => 'bool',
                 'callback' => 'printOptinIcon',
                 'orderby' => false
-            ),
-            'date_add' => array(
+            ],
+            'date_add' => [
                 'title' => $this->l('Registration'),
                 'type' => 'date',
                 'align' => 'text-right'
-            ),
-            'connect' => array(
+            ],
+            'connect' => [
                 'title' => $this->l('Last visit'),
                 'type' => 'datetime',
                 'search' => false,
                 'havingFilter' => true
-            )
-        ));
+            ]
+        ]
+        );
 
         $this->shopLinkType = 'shop';
         $this->shopShareDatas = Shop::SHARE_CUSTOMER;
@@ -175,12 +177,12 @@ class AdminCustomersControllerCore extends AdminController
             $this->can_add_customer = false;
         }
 
-        self::$meaning_status = array(
+        self::$meaning_status = [
             'open' => $this->l('Open'),
             'closed' => $this->l('Closed'),
             'pending1' => $this->l('Pending 1'),
             'pending2' => $this->l('Pending 2')
-        );
+        ];
     }
 
     public function postProcess()
@@ -195,11 +197,13 @@ class AdminCustomersControllerCore extends AdminController
     public function initContent()
     {
         if ($this->action == 'select_delete') {
-            $this->context->smarty->assign(array(
+            $this->context->smarty->assign(
+                [
                 'delete_form' => true,
                 'url_delete' => htmlentities($_SERVER['REQUEST_URI']),
                 'boxes' => $this->boxes,
-            ));
+                ]
+            );
         }
 
         if (!$this->can_add_customer && !$this->display) {
@@ -216,10 +220,10 @@ class AdminCustomersControllerCore extends AdminController
         if (!$this->can_add_customer) {
             unset($this->toolbar_btn['new']);
         } elseif (!$this->display && $this->can_import) {
-            $this->toolbar_btn['import'] = array(
+            $this->toolbar_btn['import'] = [
                 'href' => $this->context->link->getAdminLink('AdminImport', true).'&import_type=customers',
                 'desc' => $this->l('Import')
-            );
+            ];
         }
     }
 
@@ -273,11 +277,11 @@ class AdminCustomersControllerCore extends AdminController
     public function initPageHeaderToolbar()
     {
         if (empty($this->display) && $this->can_add_customer) {
-            $this->page_header_toolbar_btn['new_customer'] = array(
+            $this->page_header_toolbar_btn['new_customer'] = [
                 'href' => self::$currentIndex.'&addcustomer&token='.$this->token,
                 'desc' => $this->l('Add new customer', null, null, false),
                 'icon' => 'process-icon-new'
-            );
+            ];
         }
 
         parent::initPageHeaderToolbar();
@@ -320,11 +324,11 @@ class AdminCustomersControllerCore extends AdminController
     public function renderList()
     {
         if ((Tools::isSubmit('submitBulkdelete'.$this->table) || Tools::isSubmit('delete'.$this->table)) && $this->tabAccess['delete'] === '1') {
-            $this->tpl_list_vars = array(
+            $this->tpl_list_vars = [
                 'delete_customer' => true,
                 'REQUEST_URI' => $_SERVER['REQUEST_URI'],
                 'POST' => $_POST
-            );
+            ];
         }
 
         return parent::renderList();
@@ -338,7 +342,7 @@ class AdminCustomersControllerCore extends AdminController
         }
 
         $genders = Gender::getGenders();
-        $list_genders = array();
+        $list_genders = [];
         foreach ($genders as $key => $gender) {
             /** @var Gender $gender */
             $list_genders[$key]['id'] = 'gender_'.$gender->id;
@@ -351,37 +355,37 @@ class AdminCustomersControllerCore extends AdminController
         $days = Tools::dateDays();
 
         $groups = Group::getGroups($this->default_form_language, true);
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('Customer'),
                 'icon' => 'icon-user'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'radio',
                     'label' => $this->l('Social title'),
                     'name' => 'id_gender',
                     'required' => false,
                     'class' => 't',
                     'values' => $list_genders
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('First name'),
                     'name' => 'firstname',
                     'required' => true,
                     'col' => '4',
                     'hint' => $this->l('Invalid characters:').' 0-9!&lt;&gt;,;?=+()@#"°{}_$%:'
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Last name'),
                     'name' => 'lastname',
                     'required' => true,
                     'col' => '4',
                     'hint' => $this->l('Invalid characters:').' 0-9!&lt;&gt;,;?=+()@#"°{}_$%:'
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'prefix' => '<i class="icon-envelope-o"></i>',
                     'label' => $this->l('Email address'),
@@ -389,8 +393,8 @@ class AdminCustomersControllerCore extends AdminController
                     'col' => '4',
                     'required' => true,
                     'autocomplete' => false
-                ),
-                array(
+                ],
+                [
                     'type' => 'password',
                     'label' => $this->l('Password'),
                     'name' => 'passwd',
@@ -398,91 +402,91 @@ class AdminCustomersControllerCore extends AdminController
                     'col' => '4',
                     'hint' => ($obj->id ? $this->l('Leave this field blank if there\'s no change.') :
                         sprintf($this->l('Password should be at least %s characters long.'), Validate::PASSWORD_LENGTH))
-                ),
-                array(
+                ],
+                [
                     'type' => 'birthday',
                     'label' => $this->l('Birthday'),
                     'name' => 'birthday',
-                    'options' => array(
+                    'options' => [
                         'days' => $days,
                         'months' => $months,
                         'years' => $years
-                    )
-                ),
-                array(
+                    ]
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Enabled'),
                     'name' => 'active',
                     'required' => false,
                     'class' => 't',
                     'is_bool' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'active_on',
                             'value' => 1,
                             'label' => $this->l('Enabled')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'active_off',
                             'value' => 0,
                             'label' => $this->l('Disabled')
-                        )
-                    ),
+                        ]
+                    ],
                     'hint' => $this->l('Enable or disable customer login.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Newsletter'),
                     'name' => 'newsletter',
                     'required' => false,
                     'class' => 't',
                     'is_bool' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'newsletter_on',
                             'value' => 1,
                             'label' => $this->l('Enabled')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'newsletter_off',
                             'value' => 0,
                             'label' => $this->l('Disabled')
-                        )
-                    ),
+                        ]
+                    ],
                     'disabled' =>  (bool)!Configuration::get('PS_CUSTOMER_NWSL'),
                     'hint' => $this->l('This customer will receive your newsletter via email.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Opt-in'),
                     'name' => 'optin',
                     'required' => false,
                     'class' => 't',
                     'is_bool' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'optin_on',
                             'value' => 1,
                             'label' => $this->l('Enabled')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'optin_off',
                             'value' => 0,
                             'label' => $this->l('Disabled')
-                        )
-                    ),
+                        ]
+                    ],
                     'disabled' =>  (bool)!Configuration::get('PS_CUSTOMER_OPTIN'),
                     'hint' => $this->l('This customer will receive your ads via email.')
-                ),
-            )
-        );
+                ],
+            ]
+        ];
 
         // if we add a customer via fancybox (ajax), it's a customer and he doesn't need to be added to the visitor and guest groups
         if (Tools::isSubmit('addcustomer') && Tools::isSubmit('submitFormAjax')) {
             $visitor_group = Configuration::get('PS_UNIDENTIFIED_GROUP');
             $guest_group = Configuration::get('PS_GUEST_GROUP');
             foreach ($groups as $key => $g) {
-                if (in_array($g['id_group'], array($visitor_group, $guest_group))) {
+                if (in_array($g['id_group'], [$visitor_group, $guest_group])) {
                     unset($groups[$key]);
                 }
             }
@@ -490,8 +494,8 @@ class AdminCustomersControllerCore extends AdminController
 
         $this->fields_form['input'] = array_merge(
             $this->fields_form['input'],
-            array(
-                array(
+            [
+                [
                     'type' => 'group',
                     'label' => $this->l('Group access'),
                     'name' => 'groupBox',
@@ -499,23 +503,23 @@ class AdminCustomersControllerCore extends AdminController
                     'required' => true,
                     'col' => '6',
                     'hint' => $this->l('Select all the groups that you would like to apply to this customer.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'select',
                     'label' => $this->l('Default customer group'),
                     'name' => 'id_default_group',
-                    'options' => array(
+                    'options' => [
                         'query' => $groups,
                         'id' => 'id_group',
                         'name' => 'name'
-                    ),
+                    ],
                     'col' => '4',
-                    'hint' => array(
+                    'hint' => [
                         $this->l('This group will be the user\'s default group.'),
                         $this->l('Only the discount for the selected group will be applied to this customer.')
-                    )
-                )
-            )
+                    ]
+                ]
+            ]
         );
 
         // if customer is a guest customer, password hasn't to be there
@@ -530,79 +534,79 @@ class AdminCustomersControllerCore extends AdminController
         if (Configuration::get('PS_B2B_ENABLE')) {
             $risks = Risk::getRisks();
 
-            $list_risks = array();
+            $list_risks = [];
             foreach ($risks as $key => $risk) {
                 /** @var Risk $risk */
                 $list_risks[$key]['id_risk'] = (int)$risk->id;
                 $list_risks[$key]['name'] = $risk->name;
             }
 
-            $this->fields_form['input'][] = array(
+            $this->fields_form['input'][] = [
                 'type' => 'text',
                 'label' => $this->l('Company'),
                 'name' => 'company'
-            );
-            $this->fields_form['input'][] = array(
+            ];
+            $this->fields_form['input'][] = [
                 'type' => 'text',
                 'label' => $this->l('SIRET'),
                 'name' => 'siret'
-            );
-            $this->fields_form['input'][] = array(
+            ];
+            $this->fields_form['input'][] = [
                 'type' => 'text',
                 'label' => $this->l('APE'),
                 'name' => 'ape'
-            );
-            $this->fields_form['input'][] = array(
+            ];
+            $this->fields_form['input'][] = [
                 'type' => 'text',
                 'label' => $this->l('Website'),
                 'name' => 'website'
-            );
-            $this->fields_form['input'][] = array(
+            ];
+            $this->fields_form['input'][] = [
                 'type' => 'text',
                 'label' => $this->l('Allowed outstanding amount'),
                 'name' => 'outstanding_allow_amount',
                 'hint' => $this->l('Valid characters:').' 0-9',
                 'suffix' => $this->context->currency->sign
-            );
-            $this->fields_form['input'][] = array(
+            ];
+            $this->fields_form['input'][] = [
                 'type' => 'text',
                 'label' => $this->l('Maximum number of payment days'),
                 'name' => 'max_payment_days',
                 'hint' => $this->l('Valid characters:').' 0-9'
-            );
-            $this->fields_form['input'][] = array(
+            ];
+            $this->fields_form['input'][] = [
                 'type' => 'select',
                 'label' => $this->l('Risk rating'),
                 'name' => 'id_risk',
                 'required' => false,
                 'class' => 't',
-                'options' => array(
+                'options' => [
                     'query' => $list_risks,
                     'id' => 'id_risk',
                     'name' => 'name'
-                ),
-            );
+                ],
+            ];
         }
 
-        $this->fields_form['submit'] = array(
+        $this->fields_form['submit'] = [
             'title' => $this->l('Save'),
-        );
+        ];
 
         $birthday = explode('-', $this->getFieldValue($obj, 'birthday'));
 
-        $this->fields_value = array(
+        $this->fields_value = [
             'years' => $this->getFieldValue($obj, 'birthday') ? $birthday[0] : 0,
             'months' => $this->getFieldValue($obj, 'birthday') ? $birthday[1] : 0,
             'days' => $this->getFieldValue($obj, 'birthday') ? $birthday[2] : 0,
-        );
+        ];
 
         // Added values of object Group
         if (!Validate::isUnsignedId($obj->id)) {
-            $customer_groups = array();
+            $customer_groups = [];
         } else {
             $customer_groups = $obj->getGroups();
         }
-        $customer_groups_ids = array();
+        $customer_groups_ids = [];
         if (is_array($customer_groups)) {
             foreach ($customer_groups as $customer_group) {
                 $customer_groups_ids[] = $customer_group;
@@ -611,7 +615,7 @@ class AdminCustomersControllerCore extends AdminController
 
         // if empty $carrier_groups_ids : object creation : we set the default groups
         if (empty($customer_groups_ids)) {
-            $preselected = array(Configuration::get('PS_UNIDENTIFIED_GROUP'), Configuration::get('PS_GUEST_GROUP'), Configuration::get('PS_CUSTOMER_GROUP'));
+            $preselected = [Configuration::get('PS_UNIDENTIFIED_GROUP'), Configuration::get('PS_GUEST_GROUP'), Configuration::get('PS_CUSTOMER_GROUP')];
             $customer_groups_ids = array_merge($customer_groups_ids, $preselected);
         }
 
@@ -631,7 +635,7 @@ class AdminCustomersControllerCore extends AdminController
     public function renderKpis()
     {
         $time = time();
-        $kpis = array();
+        $kpis = [];
 
         /* The data generation is located in AdminStatsControllerCore */
 
@@ -735,14 +739,14 @@ class AdminCustomersControllerCore extends AdminController
         $total_groups = count($groups);
         for ($i = 0; $i < $total_groups; $i++) {
             $group = new Group($groups[$i]);
-            $groups[$i] = array();
+            $groups[$i] = [];
             $groups[$i]['id_group'] = $group->id;
             $groups[$i]['name'] = $group->name[$this->default_form_language];
         }
 
         $total_ok = 0;
-        $orders_ok = array();
-        $orders_ko = array();
+        $orders_ok = [];
+        $orders_ko = [];
         foreach ($orders as $order) {
             if (!isset($order['order_state'])) {
                 $order['order_state'] = $this->l('There is no status defined for this order.');
@@ -809,7 +813,7 @@ class AdminCustomersControllerCore extends AdminController
 
         $connections = $customer->getLastConnections();
         if (!is_array($connections)) {
-            $connections = array();
+            $connections = [];
         }
         $total_connections = count($connections);
         for ($i = 0; $i < $total_connections; $i++) {
@@ -824,7 +828,7 @@ class AdminCustomersControllerCore extends AdminController
 
         $customerLanguage = new Language($customer->id_lang);
         $shop = new Shop($customer->id_shop);
-        $this->tpl_view_vars = array(
+        $this->tpl_view_vars = [
             'customer' => $customer,
             'gender' => $gender,
             'gender_image' => $gender_image,
@@ -868,7 +872,7 @@ class AdminCustomersControllerCore extends AdminController
             // Referrers
             'referrers' => $referrers,
             'show_toolbar' => true
-        );
+        ];
 
         return parent::renderView();
     }
@@ -1055,12 +1059,14 @@ class AdminCustomersControllerCore extends AdminController
         $name = $customer->lastname.' '.$customer->firstname;
         $name = '\n\n'.$this->l('Name:', 'helper').' '.$name;
 
-        $tpl->assign(array(
+        $tpl->assign(
+            [
             'href' => self::$currentIndex.'&'.$this->identifier.'='.$id.'&delete'.$this->table.'&token='.($token != null ? $token : $this->token),
             'confirm' => $this->l('Delete the selected item?').$name,
             'action' => $this->l('Delete'),
             'id' => $id,
-        ));
+            ]
+        );
 
         return $tpl->fetch();
     }
@@ -1074,7 +1080,7 @@ class AdminCustomersControllerCore extends AdminController
     public function ajaxProcessSearchCustomers()
     {
         $searches = explode(' ', Tools::getValue('customer_search'));
-        $customers = array();
+        $customers = [];
         $searches = array_unique($searches);
         foreach ($searches as $search) {
             if (!empty($search) && $results = Customer::searchByName($search, 50)) {
@@ -1087,12 +1093,12 @@ class AdminCustomersControllerCore extends AdminController
         }
 
         if (count($customers)) {
-            $to_return = array(
+            $to_return = [
                 'customers' => $customers,
                 'found' => true
-            );
+            ];
         } else {
-            $to_return = array('found' => false);
+            $to_return = ['found' => false];
         }
 
         $this->content = Tools::jsonEncode($to_return);

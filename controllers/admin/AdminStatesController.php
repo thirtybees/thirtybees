@@ -46,10 +46,10 @@ class AdminStatesControllerCore extends AdminController
             $this->deleted = false;
         }
 
-        $this->bulk_actions = array(
-            'delete' => array('text' => $this->l('Delete selected'), 'confirm' => $this->l('Delete selected items?')),
-            'affectzone' => array('text' => $this->l('Assign a new zone'))
-        );
+        $this->bulk_actions = [
+            'delete' => ['text' => $this->l('Delete selected'), 'confirm' => $this->l('Delete selected items?')],
+            'affectzone' => ['text' => $this->l('Assign a new zone')]
+        ];
 
         $this->_select = 'z.`name` AS zone, cl.`name` AS country';
         $this->_join = '
@@ -57,7 +57,7 @@ class AdminStatesControllerCore extends AdminController
 		LEFT JOIN `'._DB_PREFIX_.'country_lang` cl ON (cl.`id_country` = a.`id_country` AND cl.id_lang = '.(int)$this->context->language->id.')';
         $this->_use_found_rows = false;
 
-        $countries_array = $zones_array = array();
+        $countries_array = $zones_array = [];
         $this->zones = Zone::getZones();
         $this->countries = Country::getCountries($this->context->language->id, false, true, false);
         foreach ($this->zones as $zone) {
@@ -67,38 +67,38 @@ class AdminStatesControllerCore extends AdminController
             $countries_array[$country['id_country']] = $country['name'];
         }
 
-        $this->fields_list = array(
-            'id_state' => array(
+        $this->fields_list = [
+            'id_state' => [
                 'title' => $this->l('ID'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs'
-            ),
-            'name' => array(
+            ],
+            'name' => [
                 'title' => $this->l('Name'),
                 'filter_key' => 'a!name'
-            ),
-            'iso_code' => array(
+            ],
+            'iso_code' => [
                 'title' => $this->l('ISO code'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs'
-            ),
-            'zone' => array(
+            ],
+            'zone' => [
                 'title' => $this->l('Zone'),
                 'type' => 'select',
                 'list' => $zones_array,
                 'filter_key' => 'z!id_zone',
                 'filter_type' => 'int',
                 'order_key' => 'zone'
-            ),
-            'country' => array(
+            ],
+            'country' => [
                 'title' => $this->l('Country'),
                 'type' => 'select',
                 'list' => $countries_array,
                 'filter_key' => 'cl!id_country',
                 'filter_type' => 'int',
                 'order_key' => 'country'
-            ),
-            'active' => array(
+            ],
+            'active' => [
                 'title' => $this->l('Enabled'),
                 'active' => 'status',
                 'filter_key' => 'a!active',
@@ -106,8 +106,8 @@ class AdminStatesControllerCore extends AdminController
                 'type' => 'bool',
                 'orderby' => false,
                 'class' => 'fixed-width-sm'
-            )
-        );
+            ]
+        ];
 
         parent::__construct();
     }
@@ -115,11 +115,11 @@ class AdminStatesControllerCore extends AdminController
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
-            $this->page_header_toolbar_btn['new_state'] = array(
+            $this->page_header_toolbar_btn['new_state'] = [
                 'href' => self::$currentIndex.'&addstate&token='.$this->token,
                 'desc' => $this->l('Add new state', null, null, false),
                 'icon' => 'process-icon-new'
-            );
+            ];
         }
 
         parent::initPageHeaderToolbar();
@@ -127,21 +127,21 @@ class AdminStatesControllerCore extends AdminController
 
     public function renderForm()
     {
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('States'),
                 'icon' => 'icon-globe'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'text',
                     'label' => $this->l('Name'),
                     'name' => 'name',
                     'maxlength' => 32,
                     'required' => true,
                     'hint' => $this->l('Provide the State name to be display in addresses and on invoices.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('ISO code'),
                     'name' => 'iso_code',
@@ -149,58 +149,58 @@ class AdminStatesControllerCore extends AdminController
                     'required' => true,
                     'class' => 'uppercase',
                     'hint' => $this->l('1 to 4 letter ISO code.').' '.$this->l('You can prefix it with the country ISO code if needed.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'select',
                     'label' => $this->l('Country'),
                     'name' => 'id_country',
                     'required' => true,
                     'default_value' => (int)$this->context->country->id,
-                    'options' => array(
+                    'options' => [
                         'query' => Country::getCountries($this->context->language->id, false, true),
                         'id' => 'id_country',
                         'name' => 'name',
-                    ),
+                    ],
                     'hint' => $this->l('Country where the state is located.').' '.$this->l('Only the countries with the option "contains states" enabled are displayed.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'select',
                     'label' => $this->l('Zone'),
                     'name' => 'id_zone',
                     'required' => true,
-                    'options' => array(
+                    'options' => [
                         'query' => Zone::getZones(),
                         'id' => 'id_zone',
                         'name' => 'name'
-                    ),
-                    'hint' => array(
+                    ],
+                    'hint' => [
                         $this->l('Geographical region where this state is located.'),
                         $this->l('Used for shipping')
-                    )
-                ),
-                array(
+                    ]
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Status'),
                     'name' => 'active',
                     'required' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'active_on',
                             'value' => 1,
                             'label' => '<img src="../img/admin/enabled.gif" alt="'.$this->l('Enabled').'" title="'.$this->l('Enabled').'" />'
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'active_off',
                             'value' => 0,
                             'label' => '<img src="../img/admin/disabled.gif" alt="'.$this->l('Disabled').'" title="'.$this->l('Disabled').'" />'
-                        )
-                    )
-                )
-            ),
-            'submit' => array(
+                        ]
+                    ]
+                ]
+            ],
+            'submit' => [
                 'title' => $this->l('Save'),
-            )
-        );
+            ]
+        ];
 
         return parent::renderForm();
     }

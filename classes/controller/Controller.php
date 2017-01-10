@@ -34,13 +34,13 @@ abstract class ControllerCore
     protected $context;
 
     /** @var array List of CSS files */
-    public $css_files = array();
+    public $css_files = [];
 
     /** @var array List of JavaScript files */
-    public $js_files = array();
+    public $js_files = [];
 
     /** @var array List of PHP errors */
-    public static $php_errors = array();
+    public static $php_errors = [];
 
     /** @var bool Set to true to display page header */
     protected $display_header;
@@ -94,7 +94,7 @@ abstract class ControllerCore
     public function init()
     {
         if (_PS_MODE_DEV_ && $this->controller_type == 'admin') {
-            set_error_handler(array(__CLASS__, 'myErrorHandler'));
+            set_error_handler([__CLASS__, 'myErrorHandler']);
         }
 
         if (!defined('_PS_BASE_URL_')) {
@@ -299,7 +299,7 @@ abstract class ControllerCore
     public function addCSS($css_uri, $css_media_type = 'all', $offset = null, $check_path = true)
     {
         if (!is_array($css_uri)) {
-            $css_uri = array($css_uri);
+            $css_uri = [$css_uri];
         }
 
         foreach ($css_uri as $css_file => $media) {
@@ -307,13 +307,13 @@ abstract class ControllerCore
                 if ($check_path) {
                     $css_path = Media::getCSSPath($css_file, $media);
                 } else {
-                    $css_path = array($css_file => $media);
+                    $css_path = [$css_file => $media];
                 }
             } else {
                 if ($check_path) {
                     $css_path = Media::getCSSPath($media, $css_media_type);
                 } else {
-                    $css_path = array($media => $css_media_type);
+                    $css_path = [$media => $css_media_type];
                 }
             }
 
@@ -339,7 +339,7 @@ abstract class ControllerCore
     public function removeCSS($css_uri, $css_media_type = 'all', $check_path = true)
     {
         if (!is_array($css_uri)) {
-            $css_uri = array($css_uri);
+            $css_uri = [$css_uri];
         }
 
         foreach ($css_uri as $css_file => $media) {
@@ -347,13 +347,13 @@ abstract class ControllerCore
                 if ($check_path) {
                     $css_path = Media::getCSSPath($css_file, $media);
                 } else {
-                    $css_path = array($css_file => $media);
+                    $css_path = [$css_file => $media];
                 }
             } else {
                 if ($check_path) {
                     $css_path = Media::getCSSPath($media, $css_media_type);
                 } else {
-                    $css_path = array($media => $css_media_type);
+                    $css_path = [$media => $css_media_type];
                 }
             }
 
@@ -459,7 +459,7 @@ abstract class ControllerCore
     public function addJqueryUI($component, $theme = 'base', $check_dependencies = true)
     {
         if (!is_array($component)) {
-            $component = array($component);
+            $component = [$component];
         }
 
         foreach ($component as $ui) {
@@ -479,7 +479,7 @@ abstract class ControllerCore
     public function addJqueryPlugin($name, $folder = null, $css = true)
     {
         if (!is_array($name)) {
-            $name = array($name);
+            $name = [$name];
         }
         if (is_array($name)) {
             foreach ($name as $plugin) {
@@ -531,7 +531,7 @@ abstract class ControllerCore
 
         $html = trim($html);
 
-        if (in_array($this->controller_type, array('front', 'modulefront')) && !empty($html) && $this->getLayout()) {
+        if (in_array($this->controller_type, ['front', 'modulefront']) && !empty($html) && $this->getLayout()) {
             $live_edit_content = '';
             if (!$this->useMobileTheme() && $this->checkLiveEditAccess()) {
                 $live_edit_content = $this->getLiveEditFooter();
@@ -543,13 +543,15 @@ abstract class ControllerCore
             if ($defer && $dom_available) {
                 $html = Media::deferInlineScripts($html);
             }
-            $html = trim(str_replace(array('</body>', '</html>'), '', $html))."\n";
+            $html = trim(str_replace(['</body>', '</html>'], '', $html))."\n";
 
-            $this->context->smarty->assign(array(
+            $this->context->smarty->assign(
+                [
                 $js_tag => Media::getJsDef(),
-                'js_files' =>  $defer ? array_unique($this->js_files) : array(),
-                'js_inline' => ($defer && $dom_available) ? Media::getInlineScript() : array()
-            ));
+                'js_files' =>  $defer ? array_unique($this->js_files) : [],
+                'js_inline' => ($defer && $dom_available) ? Media::getInlineScript() : []
+                ]
+            );
 
             $javascript = $this->context->smarty->fetch(_PS_ALL_THEMES_DIR_.'javascript.tpl');
 
@@ -614,13 +616,13 @@ abstract class ControllerCore
             break;
         }
 
-        Controller::$php_errors[] = array(
+        Controller::$php_errors[] = [
             'type'    => $type,
             'errline' => (int)$errline,
             'errfile' => str_replace('\\', '\\\\', $errfile), // Hack for Windows paths
             'errno'   => (int)$errno,
             'errstr'  => $errstr
-        );
+        ];
         Context::getContext()->smarty->assign('php_errors', Controller::$php_errors);
 
         return true;
@@ -644,8 +646,8 @@ abstract class ControllerCore
             $method = $bt[1]['function'];
         }
 
-        Hook::exec('actionBeforeAjaxDie', array('controller' => $controller, 'method' => $method, 'value' => $value));
-        Hook::exec('actionBeforeAjaxDie'.$controller.$method, array('value' => $value));
+        Hook::exec('actionBeforeAjaxDie', ['controller' => $controller, 'method' => $method, 'value' => $value]);
+        Hook::exec('actionBeforeAjaxDie'.$controller.$method, ['value' => $value]);
 
         die($value);
     }

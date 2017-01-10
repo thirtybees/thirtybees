@@ -39,9 +39,10 @@ class TaxCalculatorCoreTest extends PHPUnit_Framework_TestCase
         $tax2 = new Tax();
         $tax2->rate = 5.5;
 
-        $tax_calculator = new TaxCalculator(array(
+        $tax_calculator = new TaxCalculator(
+            [
             $tax, $tax2
-        ), TaxCalculator::COMBINE_METHOD);
+            ], TaxCalculator::COMBINE_METHOD);
 
         $totalRate = $tax_calculator->getTotalRate();
 
@@ -55,9 +56,10 @@ class TaxCalculatorCoreTest extends PHPUnit_Framework_TestCase
         $tax2 = new Tax();
         $tax2->rate = 5.5;
 
-        $tax_calculator = new TaxCalculator(array(
+        $tax_calculator = new TaxCalculator(
+            [
             $tax, $tax2
-        ), TaxCalculator::ONE_AFTER_ANOTHER_METHOD);
+            ], TaxCalculator::ONE_AFTER_ANOTHER_METHOD);
 
         $totalRate = $tax_calculator->getTotalRate();
 

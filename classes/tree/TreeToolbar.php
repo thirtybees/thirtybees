@@ -54,7 +54,7 @@ class TreeToolbarCore implements ITreeToolbarCore
     public function getActions()
     {
         if (!isset($this->_actions)) {
-            $this->_actions = array();
+            $this->_actions = [];
         }
 
         return $this->_actions;
@@ -168,7 +168,7 @@ class TreeToolbarCore implements ITreeToolbarCore
         }
 
         if (!isset($this->_actions)) {
-            $this->_actions = array();
+            $this->_actions = [];
         }
 
         if (isset($this->_template_directory)) {
@@ -202,7 +202,7 @@ class TreeToolbarCore implements ITreeToolbarCore
     {
         $last = $directory[strlen($directory) - 1];
 
-        if (in_array($last, array('/', '\\'))) {
+        if (in_array($last, ['/', '\\'])) {
             $directory[strlen($directory) - 1] = DIRECTORY_SEPARATOR;
             return $directory;
         }

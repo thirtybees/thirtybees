@@ -61,7 +61,8 @@ class HelperShopCore extends Helper
         }
 
         $tpl = $this->createTemplate('helpers/shops_list/list.tpl');
-        $tpl->assign(array(
+        $tpl->assign(
+            [
             'tree' => $tree,
             'current_shop_name' => $current_shop_name,
             'current_shop_value' => $current_shop_value,
@@ -71,7 +72,8 @@ class HelperShopCore extends Helper
             'is_group_context' => ($context->controller->multishop_context & Shop::CONTEXT_GROUP),
             'shop_context' => $shop_context,
             'url' => $_SERVER['REQUEST_URI'].(($_SERVER['QUERY_STRING']) ? '&' : '?').'setShopContext='
-        ));
+            ]
+        );
 
         return $tpl->fetch();
     }

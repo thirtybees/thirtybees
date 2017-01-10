@@ -31,7 +31,7 @@
  */
 class AdminAttributeGeneratorControllerCore extends AdminController
 {
-    protected $combinations = array();
+    protected $combinations = [];
 
     /** @var Product */
     protected $product;
@@ -59,7 +59,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
             $weight += (float)preg_replace('/[^0-9.]/', '', str_replace(',', '.', Tools::getValue('weight_impact_'.(int)$attribute)));
         }
         if ($this->product->id) {
-            return array(
+            return [
                 'id_product' => (int)$this->product->id,
                 'price' => (float)$price,
                 'weight' => (float)$weight,
@@ -68,9 +68,9 @@ class AdminAttributeGeneratorControllerCore extends AdminController
                 'reference' => pSQL($_POST['reference']),
                 'default_on' => 0,
                 'available_date' => '0000-00-00'
-            );
+            ];
         }
-        return array();
+        return [];
     }
 
     protected static function createCombinations($list)
@@ -78,12 +78,12 @@ class AdminAttributeGeneratorControllerCore extends AdminController
         if (count($list) <= 1) {
             return count($list) ? array_map(create_function('$v', 'return (array($v));'), $list[0]) : $list;
         }
-        $res = array();
+        $res = [];
         $first = array_pop($list);
         foreach ($first as $attribute) {
             $tab = AdminAttributeGeneratorController::createCombinations($list);
             foreach ($tab as $to_add) {
-                $res[] = is_array($to_add) ? array_merge($to_add, array($attribute)) : array($to_add, $attribute);
+                $res[] = is_array($to_add) ? array_merge($to_add, [$attribute]) : [$to_add, $attribute];
             }
         }
         return $res;
@@ -121,7 +121,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
             if (count($tab) && Validate::isLoadedObject($this->product)) {
                 AdminAttributeGeneratorController::setAttributesImpacts($this->product->id, $tab);
                 $this->combinations = array_values(AdminAttributeGeneratorController::createCombinations($tab));
-                $values = array_values(array_map(array($this, 'addAttribute'), $this->combinations));
+                $values = array_values(array_map([$this, 'addAttribute'], $this->combinations));
 
                 // @since 1.5.0
                 if ($this->product->depends_on_stock == 0) {
@@ -163,7 +163,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
                 }
 
                 SpecificPriceRule::enableAnyApplication();
-                SpecificPriceRule::applyAllRules(array((int)$this->product->id));
+                SpecificPriceRule::applyAllRules([(int)$this->product->id]);
 
                 Tools::redirectAdmin($this->context->link->getAdminLink('AdminProducts').'&id_product='.(int)Tools::getValue('id_product').'&updateproduct&key_tab=Combinations&conf=4');
             } else {
@@ -174,7 +174,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
 
     protected static function setAttributesImpacts($id_product, $tab)
     {
-        $attributes = array();
+        $attributes = [];
         foreach ($tab as $group) {
             foreach ($group as $attribute) {
                 $price = preg_replace('/[^0-9.]/', '', str_replace(',', '.', Tools::getValue('price_impact_'.(int)$attribute)));
@@ -192,7 +192,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
     public function initGroupTable()
     {
         $combinations_groups = $this->product->getAttributesGroups($this->context->language->id);
-        $attributes = array();
+        $attributes = [];
         $impacts = Product::getAttributesImpacts($this->product->id);
         foreach ($combinations_groups as &$combination) {
             $target = &$attributes[$combination['id_attribute_group']][$combination['id_attribute']];
@@ -202,11 +202,13 @@ class AdminAttributeGeneratorControllerCore extends AdminController
                 $target['weight'] = $impacts[$combination['id_attribute']]['weight'];
             }
         }
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'currency_sign' => $this->context->currency->sign,
             'weight_unit' => Configuration::get('PS_WEIGHT_UNIT'),
             'attributes' => $attributes,
-        ));
+            ]
+        );
     }
 
     public function initPageHeaderToolbar()
@@ -214,10 +216,10 @@ class AdminAttributeGeneratorControllerCore extends AdminController
         parent::initPageHeaderToolbar();
 
         $this->page_header_toolbar_title = $this->l('Attributes generator', null, null, false);
-        $this->page_header_toolbar_btn['back'] = array(
+        $this->page_header_toolbar_btn['back'] = [
             'href' => $this->context->link->getAdminLink('AdminProducts').'&id_product='.(int)Tools::getValue('id_product').'&updateproduct&key_tab=Combinations',
             'desc' => $this->l('Back to the product', null, null, false)
-        );
+        ];
     }
 
     public function initBreadcrumbs($tab_id = null, $tabs = null)
@@ -240,7 +242,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
         $this->initGroupTable();
 
         $attributes = Attribute::getAttributes(Context::getContext()->language->id, true);
-        $attribute_js = array();
+        $attribute_js = [];
 
         foreach ($attributes as $k => $attribute) {
             $attribute_js[$attribute['id_attribute_group']][$attribute['id_attribute']] = $attribute['name'];
@@ -249,7 +251,8 @@ class AdminAttributeGeneratorControllerCore extends AdminController
         $attribute_groups = AttributeGroup::getAttributesGroups($this->context->language->id);
         $this->product = new Product((int)Tools::getValue('id_product'));
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'tax_rates' => $this->product->getTaxesRate(),
             'generate' => isset($_POST['generate']) && !count($this->errors),
             'combinations_size' => count($this->combinations),
@@ -263,6 +266,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
             'show_page_header_toolbar' => $this->show_page_header_toolbar,
             'page_header_toolbar_title' => $this->page_header_toolbar_title,
             'page_header_toolbar_btn' => $this->page_header_toolbar_btn
-        ));
+            ]
+        );
     }
 }

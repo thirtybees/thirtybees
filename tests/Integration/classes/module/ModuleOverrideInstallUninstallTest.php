@@ -51,7 +51,7 @@ class ModulesOverrideInstallUninstallTest extends IntegrationTestCase
 
     public function testInstall()
     {
-        $pscsx3241 = array();
+        $pscsx3241 = [];
         $pscsx3241['pscsx3241'] = Module::getInstanceByName('pscsx3241');
         $pscsx3241['pscsx32412'] = Module::getInstanceByName('pscsx32412');
         foreach ($pscsx3241 as $module) {
@@ -87,7 +87,7 @@ class ModulesOverrideInstallUninstallTest extends IntegrationTestCase
 
         $this->assertEquals($new_override_cart, $old_override_cart);
         $this->assertEquals($new_override_admin_product, $old_override_admin_product);
-        $pscsx3241 = array();
+        $pscsx3241 = [];
         $pscsx3241[] = Module::getInstanceByName('pscsx3241');
         $pscsx3241[] = Module::getInstanceByName('pscsx32412');
         foreach ($pscsx3241 as $module) {

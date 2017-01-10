@@ -54,7 +54,7 @@ class SynchronizeController extends InstallControllerHttp
     {
         $this->type = Tools::getValue('type');
         $this->loader = new InstallXmlLoader();
-        $languages = array();
+        $languages = [];
         foreach (Language::getLanguages(false) as $language) {
             $languages[$language['id_lang']] = $language['iso_code'];
         }
@@ -80,20 +80,20 @@ class SynchronizeController extends InstallControllerHttp
             $this->loader->setFixturesPath();
         }
 
-        $tables = isset($_POST['tables']) ? (array)$_POST['tables'] : array();
-        $columns = isset($_POST['columns']) ? (array)$_POST['columns'] : array();
-        $relations = isset($_POST['relations']) ? (array)$_POST['relations'] : array();
-        $ids = isset($_POST['id']) ? (array)$_POST['id'] : array();
-        $primaries = isset($_POST['primary']) ? (array)$_POST['primary'] : array();
-        $classes = isset($_POST['class']) ? (array)$_POST['class'] : array();
-        $sqls = isset($_POST['sql']) ? (array)$_POST['sql'] : array();
-        $orders = isset($_POST['order']) ? (array)$_POST['order'] : array();
-        $images = isset($_POST['image']) ? (array)$_POST['image'] : array();
-        $nulls = isset($_POST['null']) ? (array)$_POST['null'] : array();
+        $tables = isset($_POST['tables']) ? (array)$_POST['tables'] : [];
+        $columns = isset($_POST['columns']) ? (array)$_POST['columns'] : [];
+        $relations = isset($_POST['relations']) ? (array)$_POST['relations'] : [];
+        $ids = isset($_POST['id']) ? (array)$_POST['id'] : [];
+        $primaries = isset($_POST['primary']) ? (array)$_POST['primary'] : [];
+        $classes = isset($_POST['class']) ? (array)$_POST['class'] : [];
+        $sqls = isset($_POST['sql']) ? (array)$_POST['sql'] : [];
+        $orders = isset($_POST['order']) ? (array)$_POST['order'] : [];
+        $images = isset($_POST['image']) ? (array)$_POST['image'] : [];
+        $nulls = isset($_POST['null']) ? (array)$_POST['null'] : [];
 
-        $entities = array();
+        $entities = [];
         foreach ($tables as $table) {
-            $config = array();
+            $config = [];
             if (isset($ids[$table]) && $ids[$table]) {
                 $config['id'] = $ids[$table];
             }
@@ -122,20 +122,20 @@ class SynchronizeController extends InstallControllerHttp
                 $config['null'] = $nulls[$table];
             }
 
-            $fields = array();
+            $fields = [];
             if (isset($columns[$table])) {
                 foreach ($columns[$table] as $column) {
-                    $fields[$column] = array();
+                    $fields[$column] = [];
                     if (isset($relations[$table][$column]['check'])) {
                         $fields[$column]['relation'] = $relations[$table][$column];
                     }
                 }
             }
 
-            $entities[$table] = array(
+            $entities[$table] = [
                 'config' => $config,
                 'fields' => $fields,
-            );
+            ];
         }
 
         foreach ($entities as $entity => $info) {

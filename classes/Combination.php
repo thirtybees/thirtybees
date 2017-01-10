@@ -59,41 +59,41 @@ class CombinationCore extends ObjectModel
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = array(
+    public static $definition = [
         'table' => 'product_attribute',
         'primary' => 'id_product_attribute',
-        'fields' => array(
-            'id_product' =>        array('type' => self::TYPE_INT, 'shop' => 'both', 'validate' => 'isUnsignedId', 'required' => true),
-            'location' =>            array('type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'size' => 64),
-            'ean13' =>                array('type' => self::TYPE_STRING, 'validate' => 'isEan13', 'size' => 13),
-            'upc' =>                array('type' => self::TYPE_STRING, 'validate' => 'isUpc', 'size' => 12),
-            'quantity' =>            array('type' => self::TYPE_INT, 'validate' => 'isInt', 'size' => 10),
-            'reference' =>            array('type' => self::TYPE_STRING, 'size' => 32),
-            'supplier_reference' => array('type' => self::TYPE_STRING, 'size' => 32),
+        'fields' => [
+            'id_product' =>        ['type' => self::TYPE_INT, 'shop' => 'both', 'validate' => 'isUnsignedId', 'required' => true],
+            'location' =>            ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'size' => 64],
+            'ean13' =>                ['type' => self::TYPE_STRING, 'validate' => 'isEan13', 'size' => 13],
+            'upc' =>                ['type' => self::TYPE_STRING, 'validate' => 'isUpc', 'size' => 12],
+            'quantity' =>            ['type' => self::TYPE_INT, 'validate' => 'isInt', 'size' => 10],
+            'reference' =>            ['type' => self::TYPE_STRING, 'size' => 32],
+            'supplier_reference' => ['type' => self::TYPE_STRING, 'size' => 32],
 
             /* Shop fields */
-            'wholesale_price' =>    array('type' => self::TYPE_FLOAT, 'shop' => true, 'validate' => 'isPrice', 'size' => 27),
-            'price' =>                array('type' => self::TYPE_FLOAT, 'shop' => true, 'validate' => 'isNegativePrice', 'size' => 20),
-            'ecotax' =>            array('type' => self::TYPE_FLOAT, 'shop' => true, 'validate' => 'isPrice', 'size' => 20),
-            'weight' =>            array('type' => self::TYPE_FLOAT, 'shop' => true, 'validate' => 'isFloat'),
-            'unit_price_impact' =>    array('type' => self::TYPE_FLOAT, 'shop' => true, 'validate' => 'isNegativePrice', 'size' => 20),
-            'minimal_quantity' =>    array('type' => self::TYPE_INT, 'shop' => true, 'validate' => 'isUnsignedId', 'required' => true),
-            'default_on' =>        array('type' => self::TYPE_BOOL, 'allow_null' => true, 'shop' => true, 'validate' => 'isBool'),
-            'available_date' =>    array('type' => self::TYPE_DATE, 'shop' => true, 'validate' => 'isDateFormat'),
-        ),
-    );
+            'wholesale_price' =>    ['type' => self::TYPE_FLOAT, 'shop' => true, 'validate' => 'isPrice', 'size' => 27],
+            'price' =>                ['type' => self::TYPE_FLOAT, 'shop' => true, 'validate' => 'isNegativePrice', 'size' => 20],
+            'ecotax' =>            ['type' => self::TYPE_FLOAT, 'shop' => true, 'validate' => 'isPrice', 'size' => 20],
+            'weight' =>            ['type' => self::TYPE_FLOAT, 'shop' => true, 'validate' => 'isFloat'],
+            'unit_price_impact' =>    ['type' => self::TYPE_FLOAT, 'shop' => true, 'validate' => 'isNegativePrice', 'size' => 20],
+            'minimal_quantity' =>    ['type' => self::TYPE_INT, 'shop' => true, 'validate' => 'isUnsignedId', 'required' => true],
+            'default_on' =>        ['type' => self::TYPE_BOOL, 'allow_null' => true, 'shop' => true, 'validate' => 'isBool'],
+            'available_date' =>    ['type' => self::TYPE_DATE, 'shop' => true, 'validate' => 'isDateFormat'],
+        ],
+    ];
 
-    protected $webserviceParameters = array(
+    protected $webserviceParameters = [
         'objectNodeName' => 'combination',
         'objectsNodeName' => 'combinations',
-        'fields' => array(
-            'id_product' => array('required' => true, 'xlink_resource'=> 'products'),
-        ),
-        'associations' => array(
-            'product_option_values' => array('resource' => 'product_option_value'),
-            'images' => array('resource' => 'image', 'api' => 'images/products'),
-        ),
-    );
+        'fields' => [
+            'id_product' => ['required' => true, 'xlink_resource'=> 'products'],
+        ],
+        'associations' => [
+            'product_option_values' => ['resource' => 'product_option_value'],
+            'images' => ['resource' => 'image', 'api' => 'images/products'],
+        ],
+    ];
 
     public function delete()
     {
@@ -147,7 +147,7 @@ class CombinationCore extends ObjectModel
             StockAvailable::setProductOutOfStock((int)$this->id_product, StockAvailable::outOfStock((int)$this->id_product), null, $this->id);
         }
 
-        SpecificPriceRule::applyAllRules(array((int)$this->id_product));
+        SpecificPriceRule::applyAllRules([(int)$this->id_product]);
 
         Product::updateDefaultAttribute($this->id_product);
 
@@ -181,7 +181,7 @@ class CombinationCore extends ObjectModel
     {
         $result = $this->deleteAssociations();
         if ($result && !empty($ids_attribute)) {
-            $sql_values = array();
+            $sql_values = [];
             foreach ($ids_attribute as $value) {
                 $sql_values[] = '('.(int)$value.', '.(int)$this->id.')';
             }
@@ -196,7 +196,7 @@ class CombinationCore extends ObjectModel
 
     public function setWsProductOptionValues($values)
     {
-        $ids_attributes = array();
+        $ids_attributes = [];
         foreach ($values as $value) {
             $ids_attributes[] = $value['id'];
         }
@@ -233,7 +233,7 @@ class CombinationCore extends ObjectModel
         }
 
         if (is_array($ids_image) && count($ids_image)) {
-            $sql_values = array();
+            $sql_values = [];
 
             foreach ($ids_image as $value) {
                 $sql_values[] = '('.(int)$this->id.', '.(int)$value.')';
@@ -251,7 +251,7 @@ class CombinationCore extends ObjectModel
 
     public function setWsImages($values)
     {
-        $ids_images = array();
+        $ids_images = [];
         foreach ($values as $value) {
             $ids_images[] = (int)$value['id'];
         }

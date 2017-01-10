@@ -1,7 +1,7 @@
 <?php
 
-return array(
-    'informations' => array(
+return [
+    'informations' => [
         'documentation' => 'http://doc.prestashop.com/display/PS16/Instalacja+PrestaShop',
         'documentation_upgrade' => 'http://doc.prestashop.com/display/PS16/Aktualizacja+PrestaShop',
         'forum' => 'http://www.prestashop.com/forums',
@@ -9,8 +9,8 @@ return array(
         'support' => 'https://www.prestashop.com/pl/support',
         'tutorial' => 'https://www.youtube.com/watch?v=psz4aIPZZuk',
         'tailored_help' => 'http://addons.prestashop.com/pl/388-support',
-  ),
-    'translations' => array(
+    ],
+    'translations' => [
         'An SQL error occurred for entity <i>%1$s</i>: <i>%2$s</i>' => 'Wystąpił błąd SQL dla obiektu <i>%1$s</i>: <i>%2$s</i>',
         'Cannot create image "%1$s" for entity "%2$s"' => 'Nie można utworzyć obrazu "%1$s" dla rekordu "%2$s"',
         'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => 'Nie można utworzyć obrazu "%1$s" (brak uprawnień dla folderu "%2$s")',
@@ -205,5 +205,5 @@ return array(
         'If you need help, do not hesitate to <a href="%1$s" target="_blank">watch this short tutorial</a>, or check <a href="%2$s" target="_blank">our documentation</a>.' => 'Jeśli potrzebujesz pomocy, nie wahaj się <a href="%1$s" target="_blank">obejrzeć ten krótki samouczek</a>, lub sprawdź <a href="%2$s" target="_blank">naszą dokumentacje</a>.',
         'Continue the installation in:' => 'Kontynuuj instalację w:',
         'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => 'Wybór języka powyżej dotyczy tylko Instalatora. Po dokonaniu instalacji sklepu, wybierz język spośród %d darmowych tłumaczeń!',
-  ),
-);
+    ],
+];

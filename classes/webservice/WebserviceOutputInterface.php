@@ -26,7 +26,7 @@
 
 interface WebserviceOutputInterface
 {
-    public function __construct($languages = array());
+    public function __construct($languages = []);
     public function setWsUrl($url);
     public function getWsUrl();
     public function getContentType();

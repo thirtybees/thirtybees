@@ -128,17 +128,17 @@ class TranslateCore
     {
         global $_MODULES, $_MODULE, $_LANGADM;
 
-        static $lang_cache = array();
+        static $lang_cache = [];
         // $_MODULES is a cache of translations for all module.
         // $translations_merged is a cache of wether a specific module's translations have already been added to $_MODULES
-        static $translations_merged = array();
+        static $translations_merged = [];
 
         $name = $module instanceof Module ? $module->name : $module;
 
         $language = Context::getContext()->language;
 
         if (!isset($translations_merged[$name]) && isset(Context::getContext()->language)) {
-            $files_by_priority = array(
+            $files_by_priority = [
                 // Translations in theme
                 _PS_THEME_DIR_.'modules/'.$name.'/translations/'.$language->iso_code.'.php',
                 _PS_THEME_DIR_.'modules/'.$name.'/'.$language->iso_code.'.php',
@@ -146,7 +146,7 @@ class TranslateCore
                 _PS_MODULE_DIR_.$name.'/translations/'.$language->iso_code.'.php',
                 // PrestaShop 1.4 translations
                 _PS_MODULE_DIR_.$name.'/'.$language->iso_code.'.php'
-            );
+            ];
             foreach ($files_by_priority as $file) {
                 if (file_exists($file)) {
                     include_once($file);
@@ -265,7 +265,7 @@ class TranslateCore
     {
         if (preg_match_all('#(?:%%|%(?:[0-9]+\$)?[+-]?(?:[ 0]|\'.)?-?[0-9]*(?:\.[0-9]+)?[bcdeufFosxX])#', $string, $matches) && !is_null($args)) {
             if (!is_array($args)) {
-                $args = array($args);
+                $args = [$args];
             }
 
             return vsprintf($string, $args);
@@ -284,7 +284,7 @@ class TranslateCore
                 // Make positions start at 1 so that it behaves similar to the %1$d etc. sprintf positional params
                 $position = $index + 1;
                 // extract tag name
-                $match = array();
+                $match = [];
                 if (preg_match('/^\s*<\s*(\w+)/', $tag, $match)) {
                     $opener = $tag;
                     $closer = '</'.$match[1].'>';
@@ -313,6 +313,6 @@ class TranslateCore
      */
     public static function ppTags($string, $tags)
     {
-        return Translate::postProcessTranslation($string, array('tags' => $tags));
+        return Translate::postProcessTranslation($string, ['tags' => $tags]);
     }
 }

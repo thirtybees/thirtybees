@@ -46,7 +46,7 @@ class InstallModelInstall extends InstallAbstractModel
     public function setError($errors)
     {
         if (!is_array($errors)) {
-            $errors = array($errors);
+            $errors = [$errors];
         }
 
         parent::setError($errors);
@@ -71,7 +71,7 @@ class InstallModelInstall extends InstallAbstractModel
         }
 
         // Generate settings content and write file
-        $settings_constants = array(
+        $settings_constants = [
             '_DB_SERVER_' =>            $database_server,
             '_DB_NAME_' =>                $database_name,
             '_DB_USER_' =>                $database_login,
@@ -84,7 +84,7 @@ class InstallModelInstall extends InstallAbstractModel
             '_COOKIE_IV_' =>            Tools::passwdGen(8),
             '_PS_CREATION_DATE_' =>    date('Y-m-d'),
             '_PS_VERSION_' =>            _PS_INSTALL_VERSION_,
-        );
+        ];
 
         // If mcrypt is activated, add Rijndael 128 configuration
         if (function_exists('mcrypt_encrypt')) {
@@ -121,15 +121,17 @@ class InstallModelInstall extends InstallAbstractModel
             $this->clearDatabase();
         }
 
-        $allowed_collation = array('utf8_general_ci', 'utf8_unicode_ci');
+        $allowed_collation = ['utf8_general_ci', 'utf8_unicode_ci'];
         $collation_database = Db::getInstance()->getValue('SELECT @@collation_database');
         // Install database structure
         $sql_loader = new InstallSqlLoader();
-        $sql_loader->setMetaData(array(
+        $sql_loader->setMetaData(
+            [
             'PREFIX_' => _DB_PREFIX_,
             'ENGINE_TYPE' => _MYSQL_ENGINE_,
             'COLLATION' => (empty($collation_database) || !in_array($collation_database, $allowed_collation)) ? '' : 'COLLATE '.$collation_database
-        ));
+            ]
+        );
 
         try {
             $sql_loader->parse_file(_PS_INSTALL_DATA_PATH_.'db_structure.sql');
@@ -181,7 +183,7 @@ class InstallModelInstall extends InstallAbstractModel
         // Install languages
         try {
             if (!$all_languages) {
-                $iso_codes_to_install = array($this->language->getLanguageIso());
+                $iso_codes_to_install = [$this->language->getLanguageIso()];
                 if ($iso_country) {
                     $version = str_replace('.', '', _PS_VERSION_);
                     $version = substr($version, 0, 2);
@@ -217,7 +219,7 @@ class InstallModelInstall extends InstallAbstractModel
      */
     public function populateDatabase($entity = null)
     {
-        $languages = array();
+        $languages = [];
         foreach (Language::getLanguages(true) as $lang) {
             $languages[$lang['id_lang']] = $lang['iso_code'];
         }
@@ -247,10 +249,12 @@ class InstallModelInstall extends InstallAbstractModel
         // Install custom SQL data (db_data.sql file)
         if (file_exists(_PS_INSTALL_DATA_PATH_.'db_data.sql')) {
             $sql_loader = new InstallSqlLoader();
-            $sql_loader->setMetaData(array(
+            $sql_loader->setMetaData(
+                [
                 'PREFIX_' => _DB_PREFIX_,
                 'ENGINE_TYPE' => _MYSQL_ENGINE_,
-            ));
+                ]
+            );
 
             $sql_loader->parse_file(_PS_INSTALL_DATA_PATH_.'db_data.sql', false);
             if ($errors = $sql_loader->getErrors()) {
@@ -319,7 +323,7 @@ class InstallModelInstall extends InstallAbstractModel
         }
 
         $languages_available = $this->language->getIsoList();
-        $languages = array();
+        $languages = [];
         foreach ($languages_list as $iso) {
             if (!in_array($iso, $languages_available)) {
                 continue;
@@ -332,11 +336,11 @@ class InstallModelInstall extends InstallAbstractModel
                 throw new PrestashopInstallerException($this->language->l('File "language.xml" not valid for language iso "%s"', $iso));
             }
 
-            $params_lang = array(
+            $params_lang = [
                 'name' => (string)$xml->name,
                 'iso_code' => substr((string)$xml->language_code, 0, 2),
                 'allow_accented_chars_url' => (string)$xml->allow_accented_chars_url
-            );
+            ];
 
             if (InstallSession::getInstance()->safe_mode) {
                 Language::checkAndAddLanguage($iso, false, true, $params_lang);
@@ -369,7 +373,7 @@ class InstallModelInstall extends InstallAbstractModel
             return;
         }
 
-        $list = array(
+        $list = [
             'products' =>        _PS_PROD_IMG_DIR_,
             'categories' =>        _PS_CAT_IMG_DIR_,
             'manufacturers' =>    _PS_MANU_IMG_DIR_,
@@ -377,7 +381,7 @@ class InstallModelInstall extends InstallAbstractModel
             'scenes' =>            _PS_SCENE_IMG_DIR_,
             'stores' =>            _PS_STORE_IMG_DIR_,
             null =>                _PS_IMG_DIR_.'l/', // Little trick to copy images in img/l/ path with all types
-        );
+        ];
 
         foreach ($list as $cat => $dst_path) {
             if (!is_writable($dst_path)) {
@@ -429,7 +433,7 @@ class InstallModelInstall extends InstallAbstractModel
      * PROCESS : configureShop
      * Set default shop configuration
      */
-    public function configureShop(array $data = array())
+    public function configureShop(array $data = [])
     {
         //clear image cache in tmp folder
         if (file_exists(_PS_TMP_IMG_DIR_)) {
@@ -440,7 +444,7 @@ class InstallModelInstall extends InstallAbstractModel
             }
         }
 
-        $default_data = array(
+        $default_data = [
             'shop_name' => 'My Shop',
             'shop_activity' => '',
             'shop_country' => 'us',
@@ -449,7 +453,7 @@ class InstallModelInstall extends InstallAbstractModel
             'smtp_encryption' => 'off',
             'smtp_port' => 25,
             'rewrite_engine' => false,
-        );
+        ];
 
         foreach ($default_data as $k => $v) {
             if (!isset($data[$k])) {
@@ -592,7 +596,7 @@ class InstallModelInstall extends InstallAbstractModel
 
     public function getModulesList()
     {
-        $modules = array();
+        $modules = [];
         if (false) {
             foreach (scandir(_PS_MODULE_DIR_) as $module) {
                 if ($module[0] != '.' && is_dir(_PS_MODULE_DIR_.$module) && file_exists(_PS_MODULE_DIR_.$module.'/'.$module.'.php')) {
@@ -600,7 +604,7 @@ class InstallModelInstall extends InstallAbstractModel
                 }
             }
         } else {
-            $modules = array(
+            $modules = [
                 'socialsharing',
                 'blockbanner',
                 'bankwire',
@@ -664,20 +668,20 @@ class InstallModelInstall extends InstallAbstractModel
                 'statsstock',
                 'statsvisits',
                 'themeconfigurator',
-            );
+            ];
         }
         return $modules;
     }
 
-    public function getAddonsModulesList($params = array())
+    public function getAddonsModulesList($params = [])
     {
-        $addons_modules = array();
+        $addons_modules = [];
         $content = Tools::addonsRequest('install-modules', $params);
         $xml = @simplexml_load_string($content, null, LIBXML_NOCDATA);
 
         if ($xml !== false and isset($xml->module)) {
             foreach ($xml->module as $modaddons) {
-                $addons_modules[] = array('id_module' => $modaddons->id, 'name' => $modaddons->name);
+                $addons_modules[] = ['id_module' => $modaddons->id, 'name' => $modaddons->name];
             }
         }
 
@@ -690,11 +694,11 @@ class InstallModelInstall extends InstallAbstractModel
      */
     public function installModulesAddons($module = null)
     {
-        $addons_modules = $module ? array($module) : $this->getAddonsModulesList();
-        $modules = array();
+        $addons_modules = $module ? [$module] : $this->getAddonsModulesList();
+        $modules = [];
         if (!InstallSession::getInstance()->safe_mode) {
             foreach ($addons_modules as $addons_module) {
-                if (file_put_contents(_PS_MODULE_DIR_.$addons_module['name'].'.zip', Tools::addonsRequest('module', array('id_module' => $addons_module['id_module'])))) {
+                if (file_put_contents(_PS_MODULE_DIR_.$addons_module['name'].'.zip', Tools::addonsRequest('module', ['id_module' => $addons_module['id_module']]))) {
                     if (Tools::ZipExtract(_PS_MODULE_DIR_.$addons_module['name'].'.zip', _PS_MODULE_DIR_)) {
                         $modules[] = (string)$addons_module['name'];//if the module has been unziped we add the name in the modules list to install
                         unlink(_PS_MODULE_DIR_.$addons_module['name'].'.zip');
@@ -713,14 +717,14 @@ class InstallModelInstall extends InstallAbstractModel
     public function installModules($module = null)
     {
         if ($module && !is_array($module)) {
-            $module = array($module);
+            $module = [$module];
         }
 
         $modules = $module ? $module : $this->getModulesList();
 
         Module::updateTranslationsAfterInstall(false);
 
-        $errors = array();
+        $errors = [];
         foreach ($modules as $module_name) {
             if (!file_exists(_PS_MODULE_DIR_.$module_name.'/'.$module_name.'.php')) {
                 continue;
@@ -747,7 +751,7 @@ class InstallModelInstall extends InstallAbstractModel
      * PROCESS : installFixtures
      * Install fixtures (E.g. demo products)
      */
-    public function installFixtures($entity = null, array $data = array())
+    public function installFixtures($entity = null, array $data = [])
     {
         $fixtures_path = _PS_INSTALL_FIXTURES_PATH_.'fashion/';
         $fixtures_name = 'fashion';
@@ -799,7 +803,7 @@ class InstallModelInstall extends InstallAbstractModel
             $xml_loader->setIds($this->xml_loader_ids);
         }
 
-        $languages = array();
+        $languages = [];
         foreach (Language::getLanguages(false) as $lang) {
             $languages[$lang['id_lang']] = $lang['iso_code'];
         }
@@ -836,10 +840,12 @@ class InstallModelInstall extends InstallAbstractModel
     {
         // @todo do a real install of the theme
         $sql_loader = new InstallSqlLoader();
-        $sql_loader->setMetaData(array(
+        $sql_loader->setMetaData(
+            [
             'PREFIX_' => _DB_PREFIX_,
             'ENGINE_TYPE' => _MYSQL_ENGINE_,
-        ));
+            ]
+        );
 
         $sql_loader->parse_file(_PS_INSTALL_DATA_PATH_.'theme.sql', false);
         if ($errors = $sql_loader->getErrors()) {

@@ -1,6 +1,6 @@
 <?php
-return array(
-    'informations' => array(
+return [
+    'informations' => [
         'documentation' => 'http://doc.prestashop.com/pages/viewpage.action?pageId=28016773',
         'documentation_upgrade' => 'http://docs.prestashop.com/display/PS16/Updating+PrestaShop',
         'forum' => 'http://www.prestashop.com/forums/',
@@ -8,8 +8,8 @@ return array(
         'support' => 'https://www.prestashop.com/es/support',
         'tutorial' => 'https://www.youtube.com/watch?v=psz4aIPZZuk',
         'tailored_help' => 'http://addons.prestashop.com/es/388-soporte',
-    ),
-    'translations' => array(
+    ],
+    'translations' => [
         'An SQL error occurred for entity <i>%1$s</i>: <i>%2$s</i>' => 'Se ha producido un error de SQL para la entrada <i>%1$s</i>: <i>%2$s</i>',
         'Cannot create image "%1$s" for entity "%2$s"' => 'No se puede crear la imagen "%1$s" para la entidad "%2$s"',
         'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => 'No se puede crear la imagen "%1$s" (permisos incorrectos en el directorio "%2$s")',
@@ -205,5 +205,5 @@ return array(
         'Continue the installation in:' => 'Continúe con la instalación en:',
         'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => 'La elección del idioma se realiza sólo al inicio y se aplica al asistente de instalación. Una vez que tu tienda Online está instalada, podrás elegir el idioma de tu tienda, ¡entre las más de %d traducciones disponibles, ¡todas ellas de forma gratuitas!',
         'Installing PrestaShop is quick and easy. In just a few moments, you will become part of a community consisting of more than 250,000 merchants. You are on the way to creating your own unique online store that you can manage easily every day.' => 'Instalar PrestaShop es rápido y fácil. En tan sólo unos momentos, formará parte de una comunidad de más de 250,000 comerciantes. Está a punto de crear su propia tienda online que podrá gestionar fácilmente cada día.',
-    ),
-);
+    ],
+];

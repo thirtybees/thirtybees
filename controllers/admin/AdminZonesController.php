@@ -38,31 +38,31 @@ class AdminZonesControllerCore extends AdminController
         $this->className = 'Zone';
         $this->lang = false;
 
-        $this->fields_list = array(
-            'id_zone' => array(
+        $this->fields_list = [
+            'id_zone' => [
                 'title' => $this->l('ID'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs'
-            ),
-            'name' => array(
+            ],
+            'name' => [
                 'title' => $this->l('Zone'),
-            ),
-            'active' => array(
+            ],
+            'active' => [
                 'title' => $this->l('Enabled'),
                 'align' => 'center',
                 'active' => 'status',
                 'type' => 'bool',
                 'orderby' => false,
                 'class' => 'fixed-width-sm'
-            )
-        );
-        $this->bulk_actions = array(
-            'delete' => array(
+            ]
+        ];
+        $this->bulk_actions = [
+            'delete' => [
                 'text' => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
                 'icon' => 'icon-trash'
-            )
-        );
+            ]
+        ];
 
         parent::__construct();
     }
@@ -70,11 +70,11 @@ class AdminZonesControllerCore extends AdminController
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
-            $this->page_header_toolbar_btn['new_zone'] = array(
+            $this->page_header_toolbar_btn['new_zone'] = [
                 'href' => self::$currentIndex.'&addzone&token='.$this->token,
                 'desc' => $this->l('Add new zone', null, null, false),
                 'icon' => 'process-icon-new'
-            );
+            ];
         }
 
         parent::initPageHeaderToolbar();
@@ -90,53 +90,53 @@ class AdminZonesControllerCore extends AdminController
 
     public function renderForm()
     {
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('Zones'),
                 'icon' => 'icon-globe'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'text',
                     'label' => $this->l('Name'),
                     'name' => 'name',
                     'required' => true,
                     'hint' => $this->l('Zone name (e.g. Africa, West Coast, Neighboring Countries).'),
-                ),
-                array(
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Active'),
                     'name' => 'active',
                     'required' => false,
                     'is_bool' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'active_on',
                             'value' => 1,
                             'label' => $this->l('Enabled')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'active_off',
                             'value' => 0,
                             'label' => $this->l('Disabled')
-                        )
-                    ),
+                        ]
+                    ],
                     'hint' => $this->l('Allow or disallow shipping to this zone.')
-                )
-            )
-        );
+                ]
+            ]
+        ];
 
         if (Shop::isFeatureActive()) {
-            $this->fields_form['input'][] = array(
+            $this->fields_form['input'][] = [
                 'type' => 'shop',
                 'label' => $this->l('Shop association'),
                 'name' => 'checkBoxShopAsso',
-            );
+            ];
         }
 
-        $this->fields_form['submit'] = array(
+        $this->fields_form['submit'] = [
             'title' => $this->l('Save'),
-        );
+        ];
 
         return parent::renderForm();
     }

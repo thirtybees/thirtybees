@@ -30,8 +30,8 @@
 class AdminTaxRulesGroupControllerCore extends AdminController
 {
     public $tax_rule;
-    public $selected_countries = array();
-    public $selected_states = array();
+    public $selected_countries = [];
+    public $selected_states = [];
     public $errors_tax_rule;
 
     public function __construct()
@@ -43,32 +43,32 @@ class AdminTaxRulesGroupControllerCore extends AdminController
 
         $this->context = Context::getContext();
 
-        $this->fields_list = array(
-            'id_tax_rules_group' => array(
+        $this->fields_list = [
+            'id_tax_rules_group' => [
                 'title' => $this->l('ID'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs'
-            ),
-            'name' => array(
+            ],
+            'name' => [
                 'title' => $this->l('Name')
-            ),
-            'active' => array(
+            ],
+            'active' => [
                 'title' => $this->l('Enabled'),
                 'active' => 'status',
                 'type' => 'bool',
                 'orderby' => false,
                 'align' => 'center',
                 'class' => 'fixed-width-sm'
-            )
-        );
+            ]
+        ];
 
-        $this->bulk_actions = array(
-            'delete' => array(
+        $this->bulk_actions = [
+            'delete' => [
                 'text' => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
                 'icon' => 'icon-trash'
-            )
-        );
+            ]
+        ];
 
         $this->_where .= ' AND a.deleted = 0';
 
@@ -78,11 +78,11 @@ class AdminTaxRulesGroupControllerCore extends AdminController
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
-            $this->page_header_toolbar_btn['new_tax_rules_group'] = array(
+            $this->page_header_toolbar_btn['new_tax_rules_group'] = [
                 'href' => self::$currentIndex.'&addtax_rules_group&token='.$this->token,
                 'desc' => $this->l('Add new tax rules group', null, null, false),
                 'icon' => 'process-icon-new'
-            );
+            ];
         }
 
         parent::initPageHeaderToolbar();
@@ -107,32 +107,32 @@ class AdminTaxRulesGroupControllerCore extends AdminController
         $this->toolbar_btn = null;
         $this->list_no_link = true;
 
-        $this->bulk_actions = array(
-            'delete' => array('text' => $this->l('Delete selected'), 'confirm' => $this->l('Delete selected items?'), 'icon' => 'icon-trash')
-        );
+        $this->bulk_actions = [
+            'delete' => ['text' => $this->l('Delete selected'), 'confirm' => $this->l('Delete selected items?'), 'icon' => 'icon-trash']
+        ];
 
-        $this->fields_list = array(
-            'country_name' => array(
+        $this->fields_list = [
+            'country_name' => [
                 'title' => $this->l('Country')
-            ),
-            'state_name' => array(
+            ],
+            'state_name' => [
                 'title' => $this->l('State')
-            ),
-            'zipcode' => array(
+            ],
+            'zipcode' => [
                 'title' => $this->l('Zip/Postal code'),
                 'class' => 'fixed-width-md'
-            ),
-            'behavior' => array(
+            ],
+            'behavior' => [
                 'title' => $this->l('Behavior')
-            ),
-            'rate' => array(
+            ],
+            'rate' => [
                 'title' => $this->l('Tax'),
                 'class' => 'fixed-width-sm'
-            ),
-            'description' => array(
+            ],
+            'description' => [
                 'title' => $this->l('Description')
-            )
-        );
+            ]
+        ];
 
         $this->addRowAction('edit');
         $this->addRowAction('delete');
@@ -154,7 +154,7 @@ class AdminTaxRulesGroupControllerCore extends AdminController
         $this->_use_found_rows = false;
 
         $this->show_toolbar = false;
-        $this->tpl_list_vars = array('id_tax_rules_group' => (int)$id_group);
+        $this->tpl_list_vars = ['id_tax_rules_group' => (int)$id_group];
 
         $this->_filter = false;
 
@@ -163,51 +163,51 @@ class AdminTaxRulesGroupControllerCore extends AdminController
 
     public function renderForm()
     {
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('Tax Rules'),
                 'icon' => 'icon-money'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'text',
                     'label' => $this->l('Name'),
                     'name' => 'name',
                     'required' => true,
                     'hint' => $this->l('Invalid characters:').' <>;=#{}'
-                ),
-                array(
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Enable'),
                     'name' => 'active',
                     'required' => false,
                     'is_bool' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'active_on',
                             'value' => 1,
                             'label' => $this->l('Enabled')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'active_off',
                             'value' => 0,
                             'label' => $this->l('Disabled')
-                        )
-                    )
-                )
-            ),
-            'submit' => array(
+                        ]
+                    ]
+                ]
+            ],
+            'submit' => [
                 'title' => $this->l('Save and stay'),
                 'stay' => true
-            )
-        );
+            ]
+        ];
 
         if (Shop::isFeatureActive()) {
-            $this->fields_form['input'][] = array(
+            $this->fields_form['input'][] = [
                 'type' => 'shop',
                 'label' => $this->l('Shop association'),
                 'name' => 'checkBoxShopAsso',
-            );
+            ];
         }
 
         if (!($obj = $this->loadObject(true))) {
@@ -218,10 +218,10 @@ class AdminTaxRulesGroupControllerCore extends AdminController
             $content = parent::renderForm();
         } else {
             $this->no_back = true;
-            $this->page_header_toolbar_btn['new'] = array(
+            $this->page_header_toolbar_btn['new'] = [
                 'href' => '#',
                 'desc' => $this->l('Add a new tax rule')
-            );
+            ];
             $content = parent::renderForm();
             $this->tpl_folder = 'tax_rules/';
             $content .= $this->initRuleForm();
@@ -235,121 +235,121 @@ class AdminTaxRulesGroupControllerCore extends AdminController
 
     public function initRuleForm()
     {
-        $this->fields_form[0]['form'] = array(
-            'legend' => array(
+        $this->fields_form[0]['form'] = [
+            'legend' => [
                 'title' => $this->l('New tax rule'),
                 'icon' => 'icon-money'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'select',
                     'label' => $this->l('Country'),
                     'name' => 'country',
                     'id' => 'country',
-                    'options' => array(
+                    'options' => [
                         'query' => Country::getCountries($this->context->language->id),
                         'id' => 'id_country',
                         'name' => 'name',
-                        'default' => array(
+                        'default' => [
                             'value' => 0,
                             'label' => $this->l('All', 'AdminTaxRulesGroupController')
-                        )
-                    )
-                ),
-                array(
+                        ]
+                    ]
+                ],
+                [
                     'type' => 'select',
                     'label' => $this->l('State'),
                     'name' => 'states[]',
                     'id' => 'states',
                     'multiple' => true,
-                    'options' => array(
-                        'query' => array(),
+                    'options' => [
+                        'query' => [],
                         'id' => 'id_state',
                         'name' => 'name',
-                        'default' => array(
+                        'default' => [
                             'value' => 0,
                             'label' => $this->l('All', 'AdminTaxRulesGroupController')
-                        )
-                    )
-                ),
-                array(
+                        ]
+                    ]
+                ],
+                [
                     'type' => 'hidden',
                     'name' => 'action'
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Zip/postal code range'),
                     'name' => 'zipcode',
                     'required' => false,
                     'hint' => $this->l('You can define a range of Zip/postal codes (e.g., 75000-75015) or simply use one Zip/postal code.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'select',
                     'label' => $this->l('Behavior'),
                     'name' => 'behavior',
                     'required' => false,
-                    'options' => array(
-                        'query' => array(
-                            array(
+                    'options' => [
+                        'query' => [
+                            [
                                 'id' => 0,
                                 'name' => $this->l('This tax only')
-                            ),
-                            array(
+                            ],
+                            [
                                 'id' => 1,
                                 'name' => $this->l('Combine')
-                            ),
-                            array(
+                            ],
+                            [
                                 'id' => 2,
                                 'name' => $this->l('One after another')
-                            )
-                        ),
+                            ]
+                        ],
                         'id' => 'id',
                         'name' => 'name'
-                    ),
-                    'hint' => array(
+                    ],
+                    'hint' => [
                         $this->l('You must define the behavior if an address matches multiple rules:').'<br>',
                         $this->l('- This tax only: Will apply only this tax').'<br>',
                         $this->l('- Combine: Combine taxes (e.g.: 10% + 5% = 15%)').'<br>',
                         $this->l('- One after another: Apply taxes one after another (e.g.: 0 + 10% = 0 + 5% = 5.5)')
-                    )
-                ),
-                array(
+                    ]
+                ],
+                [
                     'type' => 'select',
                     'label' => $this->l('Tax'),
                     'name' => 'id_tax',
                     'required' => false,
-                    'options' => array(
+                    'options' => [
                         'query' => Tax::getTaxes((int)$this->context->language->id),
                         'id' => 'id_tax',
                         'name' => 'name',
-                        'default' => array(
+                        'default' => [
                             'value' => 0,
                             'label' => $this->l('No Tax')
-                        )
-                    ),
+                        ]
+                    ],
                     'hint' => sprintf($this->l('(Total tax: %s)'), '9%')
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Description'),
                     'name' => 'description',
-                )
-            ),
-            'submit' => array(
+                ]
+            ],
+            'submit' => [
                 'title' => $this->l('Save and stay'),
                 'stay' => true
-            )
-        );
+            ]
+        ];
 
         if (!($obj = $this->loadObject(true))) {
             return;
         }
 
-        $this->fields_value = array(
+        $this->fields_value = [
             'action' => 'create_rule',
             'id_tax_rules_group' => $obj->id,
             'id_tax_rule' => ''
-        );
+        ];
 
         $this->getlanguages();
         $helper = new HelperForm();
@@ -365,11 +365,11 @@ class AdminTaxRulesGroupControllerCore extends AdminController
         $helper->default_form_language = $this->default_form_language;
         $helper->allow_employee_form_lang = $this->allow_employee_form_lang;
         $helper->fields_value = $this->getFieldsValue($this->object);
-        $helper->toolbar_btn['save_new_rule'] = array(
+        $helper->toolbar_btn['save_new_rule'] = [
             'href' => self::$currentIndex.'&amp;id_tax_rules_group='.$obj->id.'&amp;action=create_rule&amp;token='.$this->token,
             'desc' => 'Save tax rule',
             'class' => 'process-icon-save'
-        );
+        ];
         $helper->submit_action = 'create_rule';
 
         return $helper->generateForm($this->fields_form);
@@ -412,17 +412,17 @@ class AdminTaxRulesGroupControllerCore extends AdminController
 
         if ((int)($id_country = Tools::getValue('country')) == 0) {
             $countries = Country::getCountries($this->context->language->id);
-            $this->selected_countries = array();
+            $this->selected_countries = [];
             foreach ($countries as $country) {
                 $this->selected_countries[] = (int)$country['id_country'];
             }
         } else {
-            $this->selected_countries = array($id_country);
+            $this->selected_countries = [$id_country];
         }
         $this->selected_states = Tools::getValue('states');
 
         if (empty($this->selected_states) || count($this->selected_states) == 0) {
-            $this->selected_states = array(0);
+            $this->selected_states = [0];
         }
         $tax_rules_group = new TaxRulesGroup((int)$id_tax_rules_group);
         foreach ($this->selected_countries as $id_country) {
@@ -452,7 +452,7 @@ class AdminTaxRulesGroupControllerCore extends AdminController
 
                 if ($zip_code && $country->need_zip_code) {
                     if ($country->zip_code_format) {
-                        foreach (array($tr->zipcode_from, $tr->zipcode_to) as $zip_code) {
+                        foreach ([$tr->zipcode_from, $tr->zipcode_to] as $zip_code) {
                             if ($zip_code) {
                                 if (!$country->checkZipCode($zip_code)) {
                                     $this->errors[] = sprintf(
@@ -500,7 +500,7 @@ class AdminTaxRulesGroupControllerCore extends AdminController
 
     protected function processDeleteTaxRule()
     {
-        $this->deleteTaxRule(array(Tools::getValue('id_tax_rule')));
+        $this->deleteTaxRule([Tools::getValue('id_tax_rule')]);
     }
 
     protected function deleteTaxRule(array $id_tax_rule_list)
@@ -542,7 +542,7 @@ class AdminTaxRulesGroupControllerCore extends AdminController
         if ($this->tabAccess['view'] === '1') {
             $id_tax_rule = Tools::getValue('id_tax_rule');
             $tax_rules = new TaxRule((int)$id_tax_rule);
-            $output = array();
+            $output = [];
             foreach ($tax_rules as $key => $result) {
                 $output[$key] = $result;
             }

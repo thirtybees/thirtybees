@@ -44,11 +44,13 @@ class AddressControllerCore extends FrontController
     public function setMedia()
     {
         parent::setMedia();
-        $this->addJS(array(
+        $this->addJS(
+            [
             _THEME_JS_DIR_.'tools/vatManagement.js',
             _THEME_JS_DIR_.'tools/statesManagement.js',
             _PS_JS_DIR_.'validate.js'
-        ));
+            ]
+        );
     }
 
     /**
@@ -200,10 +202,10 @@ class AddressControllerCore extends FrontController
         if ($this->ajax && Configuration::get('PS_ORDER_PROCESS_TYPE')) {
             $this->errors = array_unique(array_merge($this->errors, $address->validateController()));
             if (count($this->errors)) {
-                $return = array(
+                $return = [
                     'hasError' => (bool)$this->errors,
                     'errors' => $this->errors
-                );
+                ];
                 $this->ajaxDie(Tools::jsonEncode($return));
             }
         }
@@ -225,12 +227,12 @@ class AddressControllerCore extends FrontController
             $this->context->cart->update();
 
             if ($this->ajax) {
-                $return = array(
+                $return = [
                     'hasError' => (bool)$this->errors,
                     'errors' => $this->errors,
                     'id_address_delivery' => (int)$this->context->cart->id_address_delivery,
                     'id_address_invoice' => (int)$this->context->cart->id_address_invoice
-                );
+                ];
                 $this->ajaxDie(Tools::jsonEncode($return));
             }
 
@@ -261,7 +263,8 @@ class AddressControllerCore extends FrontController
         $this->assignAddressFormat();
 
         // Assign common vars
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'address_validation' => Address::$definition['fields'],
             'one_phone_at_least' => (int)Configuration::get('PS_ONE_PHONE_AT_LEAST'),
             'onr_phone_at_least' => (int)Configuration::get('PS_ONE_PHONE_AT_LEAST'), //retro compat
@@ -271,7 +274,8 @@ class AddressControllerCore extends FrontController
             'select_address' => (int)Tools::getValue('select_address'),
             'address' => $this->_address,
             'id_address' => (Validate::isLoadedObject($this->_address)) ? $this->_address->id : 0
-        ));
+            ]
+        );
 
         if ($back = Tools::getValue('back')) {
             $this->context->smarty->assign('back', Tools::safeOutput($back));
@@ -308,11 +312,13 @@ class AddressControllerCore extends FrontController
         }
 
         // Assign vars
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'countries_list' => $list,
             'countries' => $countries,
             'sl_country' => (int)$this->id_country,
-        ));
+            ]
+        );
     }
 
     /**
@@ -325,10 +331,12 @@ class AddressControllerCore extends FrontController
         $ordered_adr_fields = AddressFormat::getOrderedAddressFields($id_country, true, true);
         $ordered_adr_fields = array_unique(array_merge($ordered_adr_fields, $requireFormFieldsList));
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'ordered_adr_fields' => $ordered_adr_fields,
             'required_fields' => $requireFormFieldsList
-        ));
+            ]
+        );
     }
 
     /**
@@ -351,19 +359,21 @@ class AddressControllerCore extends FrontController
             $vat_display = 0;
         }
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'vatnumber_ajax_call' => file_exists(_PS_MODULE_DIR_.'vatnumber/ajax.php'),
             'vat_display' => $vat_display,
-        ));
+            ]
+        );
     }
 
     public function displayAjax()
     {
         if (count($this->errors)) {
-            $return = array(
+            $return = [
                 'hasError' => !empty($this->errors),
                 'errors' => $this->errors
-            );
+            ];
             $this->ajaxDie(Tools::jsonEncode($return));
         }
     }

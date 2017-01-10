@@ -44,32 +44,32 @@ class AdminShopControllerCore extends AdminController
             $_GET['id_shop'] = $this->id_shop;
         }
 
-        $this->list_skip_actions['delete'] = array((int)Configuration::get('PS_SHOP_DEFAULT'));
-        $this->fields_list = array(
-            'id_shop' => array(
+        $this->list_skip_actions['delete'] = [(int)Configuration::get('PS_SHOP_DEFAULT')];
+        $this->fields_list = [
+            'id_shop' => [
                 'title' => $this->l('Shop ID'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs'
-            ),
-            'name' => array(
+            ],
+            'name' => [
                 'title' => $this->l('Shop name'),
                 'filter_key' => 'a!name',
                 'width' => 200,
-            ),
-            'shop_group_name' => array(
+            ],
+            'shop_group_name' => [
                 'title' => $this->l('Shop group'),
                 'width' => 150,
                 'filter_key' => 'gs!name'
-            ),
-            'category_name' => array(
+            ],
+            'category_name' => [
                 'title' => $this->l('Root category'),
                 'width' => 150,
                 'filter_key' => 'cl!name'
-            ),
-            'url' => array(
+            ],
+            'url' => [
                 'title' => $this->l('Main URL for this shop'),
                 'havingFilter' => 'url',
-            ),
+            ],
             /*'active' => array(
                 'title' => $this->l('Enabled'),
                 'align' => 'center',
@@ -79,7 +79,7 @@ class AdminShopControllerCore extends AdminController
                 'filter_key' => 'active',
                 'width' => 50,
             )*/
-        );
+        ];
 
         parent::__construct();
     }
@@ -102,17 +102,17 @@ class AdminShopControllerCore extends AdminController
                 $this->id_shop_group = $this->object->id_shop_group;
             }
 
-            $this->page_header_toolbar_btn['edit'] = array(
+            $this->page_header_toolbar_btn['edit'] = [
                 'desc' => $this->l('Edit this shop group'),
                 'href' => $this->context->link->getAdminLink('AdminShopGroup').'&updateshop_group&id_shop_group='
                     .$this->id_shop_group,
-            );
+            ];
 
-            $this->page_header_toolbar_btn['new'] = array(
+            $this->page_header_toolbar_btn['new'] = [
                 'desc' => $this->l('Add new shop'),
                 'href' => $this->context->link->getAdminLink('AdminShop').'&add'.$this->table.'&id_shop_group='
                     .$this->id_shop_group,
-            );
+            ];
         }
     }
 
@@ -129,11 +129,11 @@ class AdminShopControllerCore extends AdminController
                 $this->id_shop_group = $this->object->id_shop_group;
             }
 
-            $this->toolbar_btn['new'] = array(
+            $this->toolbar_btn['new'] = [
                 'desc' => $this->l('Add new shop'),
                 'href' => $this->context->link->getAdminLink('AdminShop').'&add'.$this->table.'&id_shop_group='
                     .$this->id_shop_group,
-            );
+            ];
         }
     }
 
@@ -163,7 +163,8 @@ class AdminShopControllerCore extends AdminController
 
         $shops_tree = new HelperTreeShops('shops-tree', $this->l('Multistore tree'));
         $shops_tree->setNodeFolderTemplate('shop_tree_node_folder.tpl')->setNodeItemTemplate('shop_tree_node_item.tpl')
-            ->setHeaderTemplate('shop_tree_header.tpl')->setActions(array(
+            ->setHeaderTemplate('shop_tree_header.tpl')->setActions(
+                [
                 new TreeToolbarLink(
                     'Collapse All',
                     '#',
@@ -174,7 +175,8 @@ class AdminShopControllerCore extends AdminController
                     '#',
                     '$(\'#'.$shops_tree->getId().'\').tree(\'expandAll\'); return false;',
                     'icon-expand-alt')
-            ))
+                ]
+            )
             ->setAttribute('url_shop_group', $this->context->link->getAdminLink('AdminShopGroup'))
             ->setAttribute('url_shop', $this->context->link->getAdminLink('AdminShop'))
             ->setAttribute('url_shop_url', $this->context->link->getAdminLink('AdminShopUrl'))
@@ -188,12 +190,14 @@ class AdminShopControllerCore extends AdminController
             $this->toolbar_title[] = $group->name;
         }
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'toolbar_scroll' => 1,
             'toolbar_btn' => $this->toolbar_btn,
             'title' => $this->toolbar_title,
             'shops_tree' => $shops_tree
-        ));
+            ]
+        );
     }
 
     public function renderList()
@@ -222,7 +226,7 @@ class AdminShopControllerCore extends AdminController
     public function displayAjaxGetCategoriesFromRootCategory()
     {
         if (Tools::isSubmit('id_category')) {
-            $selected_cat = array((int)Tools::getValue('id_category'));
+            $selected_cat = [(int)Tools::getValue('id_category')];
             $children = Category::getChildren((int)Tools::getValue('id_category'), $this->context->language->id);
             foreach ($children as $child) {
                 $selected_cat[] = $child['id_category'];
@@ -297,7 +301,7 @@ class AdminShopControllerCore extends AdminController
      */
     protected function afterAdd($new_shop)
     {
-        $import_data = Tools::getValue('importData', array());
+        $import_data = Tools::getValue('importData', []);
 
         // The root category should be at least imported
         $new_shop->copyShopData((int)Tools::getValue('importFromShop'), $import_data);
@@ -352,7 +356,7 @@ class AdminShopControllerCore extends AdminController
         }
 
         parent::getList($id_lang, $order_by, $order_way, $start, $limit, $id_lang_shop);
-        $shop_delete_list = array();
+        $shop_delete_list = [];
 
         // don't allow to remove shop which have dependencies (customers / orders / ... )
         foreach ($this->_list as &$shop) {
@@ -370,23 +374,25 @@ class AdminShopControllerCore extends AdminController
             return;
         }
 
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('Shop'),
                 'icon' => 'icon-shopping-cart'
-            ),
+            ],
             'identifier' => 'shop_id',
-            'input' => array(
-                array(
+            'input' => [
+                [
                     'type' => 'text',
                     'label' => $this->l('Shop name'),
-                    'desc' => array($this->l('This field does not refer to the shop name visible in the front office.'),
-                            sprintf($this->l('Follow %sthis link%s to edit the shop name used on the front office.'), '<a href="'.$this->context->link->getAdminLink('AdminStores').'#store_fieldset_general">', '</a>')),
+                    'desc' => [
+                        $this->l('This field does not refer to the shop name visible in the front office.'),
+                            sprintf($this->l('Follow %sthis link%s to edit the shop name used on the front office.'), '<a href="'.$this->context->link->getAdminLink('AdminStores').'#store_fieldset_general">', '</a>')
+                    ],
                     'name' => 'name',
                     'required' => true,
-                )
-            )
-        );
+                ]
+            ]
+        ];
 
         $display_group_list = true;
         if ($this->display == 'edit') {
@@ -397,17 +403,17 @@ class AdminShopControllerCore extends AdminController
         }
 
         if ($display_group_list) {
-            $options = array();
+            $options = [];
             foreach (ShopGroup::getShopGroups() as $group) {
                 /** @var ShopGroup $group */
                 if ($this->display == 'edit' && ($group->share_customer || $group->share_order || $group->share_stock) && ShopGroup::hasDependency($group->id)) {
                     continue;
                 }
 
-                $options[] = array(
+                $options[] = [
                     'id_shop_group' =>    $group->id,
                     'name' =>            $group->name,
-                );
+                ];
             }
 
             if ($this->display == 'add') {
@@ -416,44 +422,44 @@ class AdminShopControllerCore extends AdminController
                 $group_desc = $this->l('You can only move your shop to a shop group with all "share" options disabled -- or to a shop group with no customers/orders.');
             }
 
-            $this->fields_form['input'][] = array(
+            $this->fields_form['input'][] = [
                 'type' => 'select',
                 'label' => $this->l('Shop group'),
                 'desc' => $group_desc,
                 'name' => 'id_shop_group',
-                'options' => array(
+                'options' => [
                     'query' => $options,
                     'id' => 'id_shop_group',
                     'name' => 'name',
-                ),
-            );
+                ],
+            ];
         } else {
-            $this->fields_form['input'][] = array(
+            $this->fields_form['input'][] = [
                 'type' => 'hidden',
                 'name' => 'id_shop_group',
                 'default' => $group->name
-            );
-            $this->fields_form['input'][] = array(
+            ];
+            $this->fields_form['input'][] = [
                 'type' => 'textShopGroup',
                 'label' => $this->l('Shop group'),
                 'desc' => $this->l('You can\'t edit the shop group because the current shop belongs to a group with the "share" option enabled.'),
                 'name' => 'id_shop_group',
                 'value' => $group->name
-            );
+            ];
         }
 
         $categories = Category::getRootCategories($this->context->language->id);
-        $this->fields_form['input'][] = array(
+        $this->fields_form['input'][] = [
             'type' => 'select',
             'label' => $this->l('Category root'),
             'desc' => sprintf($this->l('This is the root category of the store that you\'ve created. To define a new root category for your store, %splease click here%s.'), '<a href="'.$this->context->link->getAdminLink('AdminCategories').'&addcategoryroot" target="_blank">', '</a>'),
             'name' => 'id_category',
-            'options' => array(
+            'options' => [
                 'query' => $categories,
                 'id' => 'id_category',
                 'name' => 'name'
-            )
-        );
+            ]
+        ];
 
         if (Tools::isSubmit('id_shop')) {
             $shop = new Shop((int)Tools::getValue('id_shop'));
@@ -487,19 +493,19 @@ class AdminShopControllerCore extends AdminController
             $root_category = new Category($id_root);
         }
 
-        $this->fields_form['input'][] = array(
+        $this->fields_form['input'][] = [
             'type' => 'categories',
             'name' => 'categoryBox',
             'label' => $this->l('Associated categories'),
-            'tree' => array(
+            'tree' => [
                 'id' => 'categories-tree',
                 'selected_categories' => $selected_cat,
                 'root_category' => $root_category->id,
                 'use_search' => true,
                 'use_checkbox' => true
-            ),
+            ],
             'desc' => $this->l('By selecting associated categories, you are choosing to share the categories between shops. Once associated between shops, any alteration of this category will impact every shop.')
-        );
+        ];
         /*$this->fields_form['input'][] = array(
             'type' => 'switch',
             'label' => $this->l('Enabled'),
@@ -529,24 +535,24 @@ class AdminShopControllerCore extends AdminController
             }
         }
 
-        $this->fields_form['input'][] = array(
+        $this->fields_form['input'][] = [
             'type' => 'theme',
             'label' => $this->l('Theme'),
             'name' => 'theme',
             'values' => $themes
-        );
+        ];
 
-        $this->fields_form['submit'] = array(
+        $this->fields_form['submit'] = [
             'title' => $this->l('Save'),
-        );
+        ];
 
         if (Shop::getTotalShops() > 1 && $obj->id) {
-            $disabled = array('active' => false);
+            $disabled = ['active' => false];
         } else {
             $disabled = false;
         }
 
-        $import_data = array(
+        $import_data = [
             'carrier' => $this->l('Carriers'),
             'cms' => $this->l('CMS pages'),
             'contact' => $this->l('Contact information'),
@@ -575,7 +581,7 @@ class AdminShopControllerCore extends AdminController
             'referrer' => $this->l('Referrers/affiliates'),
             'zone' => $this->l('Zones'),
             'cart_rule' => $this->l('Cart rules'),
-        );
+        ];
         
         // Hook for duplication of shop data
         $modules_list = Hook::getHookModuleExecList('actionShopDataDuplication');
@@ -588,53 +594,53 @@ class AdminShopControllerCore extends AdminController
         asort($import_data);
                 
         if (!$this->object->id) {
-            $this->fields_import_form = array(
-                'radio' => array(
+            $this->fields_import_form = [
+                'radio' => [
                     'type' => 'radio',
                     'label' => $this->l('Import data'),
                     'name' => 'useImportData',
                     'value' => 1
-                ),
-                'select' => array(
+                ],
+                'select' => [
                     'type' => 'select',
                     'name' => 'importFromShop',
                     'label' => $this->l('Choose the source shop'),
-                    'options' => array(
+                    'options' => [
                         'query' => Shop::getShops(false),
                         'name' => 'name'
-                    )
-                ),
-                'allcheckbox' => array(
+                    ]
+                ],
+                'allcheckbox' => [
                     'type' => 'checkbox',
                     'label' => $this->l('Choose data to import'),
                     'values' => $import_data
-                ),
+                ],
                 'desc' => $this->l('Use this option to associate data (products, modules, etc.) the same way for each selected shop.')
-            );
+            ];
         }
 
-        $this->fields_value = array(
+        $this->fields_value = [
             'id_shop_group' => (Tools::getValue('id_shop_group') ? Tools::getValue('id_shop_group') :
                 (isset($obj->id_shop_group)) ? $obj->id_shop_group : Shop::getContextShopGroupID()),
             'id_category' => (Tools::getValue('id_category') ? Tools::getValue('id_category') :
                 (isset($obj->id_category)) ? $obj->id_category : (int)Configuration::get('PS_HOME_CATEGORY')),
             'id_theme_checked' => (isset($obj->id_theme) ? $obj->id_theme : $id_theme)
-        );
+        ];
 
-        $ids_category = array();
+        $ids_category = [];
         $shops = Shop::getShops(false);
         foreach ($shops as $shop) {
             $ids_category[$shop['id_shop']] = $shop['id_category'];
         }
 
-        $this->tpl_form_vars = array(
+        $this->tpl_form_vars = [
             'disabled' => $disabled,
             'checked' => (Tools::getValue('addshop') !== false) ? true : false,
             'defaultShop' => (int)Configuration::get('PS_SHOP_DEFAULT'),
             'ids_category' => $ids_category,
-        );
+        ];
         if (isset($this->fields_import_form)) {
-            $this->tpl_form_vars = array_merge($this->tpl_form_vars, array('form_import' => $this->fields_import_form));
+            $this->tpl_form_vars = array_merge($this->tpl_form_vars, ['form_import' => $this->fields_import_form]);
         }
 
         return parent::renderForm();
@@ -712,11 +718,13 @@ class AdminShopControllerCore extends AdminController
                 self::$cache_lang['Edit'] = $this->l('Edit', 'Helper');
             }
     
-            $tpl->assign(array(
+            $tpl->assign(
+                [
                 'href' => $this->context->link->getAdminLink('AdminShop').'&shop_id='.(int)$id.'&update'.$this->table,
                 'action' => self::$cache_lang['Edit'],
                 'id' => $id
-            ));
+                ]
+            );
     
             return $tpl->fetch();
         } else {
@@ -748,7 +756,7 @@ class AdminShopControllerCore extends AdminController
         } else {
             $root_category = new Category($id_root);
         }
-        $root_category = array('id_category' => $root_category->id, 'name' => $root_category->name[$this->context->language->id]);
+        $root_category = ['id_category' => $root_category->id, 'name' => $root_category->name[$this->context->language->id]];
 
         $helper = new Helper();
         return $helper->renderCategoryTree($root_category, $selected_cat, 'categoryBox', false, true);
@@ -756,7 +764,7 @@ class AdminShopControllerCore extends AdminController
 
     public function ajaxProcessTree()
     {
-        $tree = array();
+        $tree = [];
         $sql = 'SELECT g.id_shop_group, g.name as group_name, s.id_shop, s.name as shop_name, u.id_shop_url, u.domain, u.physical_uri, u.virtual_uri
 				FROM '._DB_PREFIX_.'shop_group g
 				LEFT JOIN  '._DB_PREFIX_.'shop s ON g.id_shop_group = s.id_shop_group
@@ -770,20 +778,20 @@ class AdminShopControllerCore extends AdminController
 
             // Group list
             if (!isset($tree[$id_shop_group])) {
-                $tree[$id_shop_group] = array(
-                    'data' => array(
+                $tree[$id_shop_group] = [
+                    'data' => [
                         'title' => '<b>'.$this->l('Group').'</b> '.$row['group_name'],
                         'icon' => 'themes/'.$this->context->employee->bo_theme.'/img/tree-multishop-groups.png',
-                        'attr' => array(
+                        'attr' => [
                             'href' => $this->context->link->getAdminLink('AdminShop').'&id_shop_group='.$id_shop_group,
                             'title' => sprintf($this->l('Click here to display the shops in the %s shop group', 'AdminShop', false, false), $row['group_name']),
-                        ),
-                    ),
-                    'attr' => array(
+                        ],
+                    ],
+                    'attr' => [
                         'id' => 'tree-group-'.$id_shop_group,
-                    ),
-                    'children' => array(),
-                );
+                    ],
+                    'children' => [],
+                ];
             }
 
             // Shop list
@@ -792,20 +800,20 @@ class AdminShopControllerCore extends AdminController
             }
 
             if (!isset($tree[$id_shop_group]['children'][$id_shop])) {
-                $tree[$id_shop_group]['children'][$id_shop] = array(
-                    'data' => array(
+                $tree[$id_shop_group]['children'][$id_shop] = [
+                    'data' => [
                         'title' => $row['shop_name'],
                         'icon' => 'themes/'.$this->context->employee->bo_theme.'/img/tree-multishop-shop.png',
-                        'attr' => array(
+                        'attr' => [
                             'href' => $this->context->link->getAdminLink('AdminShopUrl').'&shop_id='.(int)$id_shop,
                             'title' => sprintf($this->l('Click here to display the URLs of the %s shop', 'AdminShop', false, false), $row['shop_name']),
-                        )
-                    ),
-                    'attr' => array(
+                        ]
+                    ],
+                    'attr' => [
                         'id' => 'tree-shop-'.$id_shop,
-                    ),
-                    'children' => array(),
-                );
+                    ],
+                    'children' => [],
+                ];
             }
             // Url list
             if (!$id_shop_url) {
@@ -818,19 +826,19 @@ class AdminShopControllerCore extends AdminController
                     $url = substr($url, 0, 23).'...';
                 }
 
-                $tree[$id_shop_group]['children'][$id_shop]['children'][$id_shop_url] = array(
-                    'data' => array(
+                $tree[$id_shop_group]['children'][$id_shop]['children'][$id_shop_url] = [
+                    'data' => [
                         'title' => $url,
                         'icon' => 'themes/'.$this->context->employee->bo_theme.'/img/tree-multishop-url.png',
-                        'attr' => array(
+                        'attr' => [
                             'href' => $this->context->link->getAdminLink('AdminShopUrl').'&updateshop_url&id_shop_url='.$id_shop_url,
                             'title' => $row['domain'].$row['physical_uri'].$row['virtual_uri'],
-                        )
-                    ),
-                    'attr' => array(
+                        ]
+                    ],
+                    'attr' => [
                         'id' => 'tree-url-'.$id_shop_url,
-                    ),
-                );
+                    ],
+                ];
             }
         }
 
@@ -844,21 +852,23 @@ class AdminShopControllerCore extends AdminController
             }
         }
 
-        $tree = array(array(
-            'data' => array(
+        $tree = [
+            [
+            'data' => [
                 'title' => '<b>'.$this->l('Shop groups list').'</b>',
                 'icon' => 'themes/'.$this->context->employee->bo_theme.'/img/tree-multishop-root.png',
-                'attr' => array(
+                'attr' => [
                     'href' => $this->context->link->getAdminLink('AdminShopGroup'),
                     'title' => $this->l('Click here to display the list of shop groups', 'AdminShop', false, false),
-                )
-            ),
-            'attr' => array(
+                ]
+            ],
+            'attr' => [
                 'id' => 'tree-root',
-            ),
+            ],
             'state' => 'open',
             'children' => $tree,
-        ));
+            ]
+        ];
 
         die(Tools::jsonEncode($tree));
     }

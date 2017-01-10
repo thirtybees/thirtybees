@@ -44,12 +44,12 @@ class ModulesInstallUninstallTest extends IntegrationTestCase
 
     public function listModulesOnDisk()
     {
-        $modules = array();
+        $modules = [];
 
         foreach (scandir(_PS_MODULE_DIR_) as $entry) {
             if ($entry[0] !== '.') {
                 if (file_exists(_PS_MODULE_DIR_.$entry.DIRECTORY_SEPARATOR.$entry.'.php')) {
-                    $modules[] = array($entry);
+                    $modules[] = [$entry];
                 }
             }
         }

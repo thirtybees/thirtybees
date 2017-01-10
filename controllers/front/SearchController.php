@@ -62,7 +62,7 @@ class SearchControllerCore extends FrontController
                 foreach ($searchResults as &$product) {
                     $product['product_link'] = $this->context->link->getProductLink($product['id_product'], $product['prewrite'], $product['crewrite']);
                 }
-                Hook::exec('actionSearch', array('expr' => $query, 'total' => count($searchResults)));
+                Hook::exec('actionSearch', ['expr' => $query, 'total' => count($searchResults)]);
             }
             $this->ajaxDie(Tools::jsonEncode($searchResults));
         }
@@ -77,19 +77,22 @@ class SearchControllerCore extends FrontController
             $this->n = abs((int)(Tools::getValue('n', $product_per_page)));
             $this->p = abs((int)(Tools::getValue('p', 1)));
             $search = Search::find($this->context->language->id, $query, 1, 10, 'position', 'desc');
-            Hook::exec('actionSearch', array('expr' => $query, 'total' => $search['total']));
+            Hook::exec('actionSearch', ['expr' => $query, 'total' => $search['total']]);
             $nbProducts = $search['total'];
             $this->pagination($nbProducts);
 
             $this->addColorsToProductList($search['result']);
 
-            $this->context->smarty->assign(array(
+            $this->context->smarty->assign(
+                [
                 'products' => $search['result'], // DEPRECATED (since to 1.4), not use this: conflict with block_cart module
                 'search_products' => $search['result'],
                 'nbProducts' => $search['total'],
                 'search_query' => $original_query,
                 'instant_search' => $this->instant_search,
-                'homeSize' => Image::getSize(ImageType::getFormatedName('home'))));
+                'homeSize' => Image::getSize(ImageType::getFormatedName('home'))
+                ]
+            );
         } elseif (($query = Tools::getValue('search_query', Tools::getValue('ref'))) && !is_array($query)) {
             $this->productSort();
             $this->n = abs((int)(Tools::getValue('n', $product_per_page)));
@@ -103,40 +106,49 @@ class SearchControllerCore extends FrontController
                 }
             }
 
-            Hook::exec('actionSearch', array('expr' => $query, 'total' => $search['total']));
+            Hook::exec('actionSearch', ['expr' => $query, 'total' => $search['total']]);
             $nbProducts = $search['total'];
             $this->pagination($nbProducts);
 
             $this->addColorsToProductList($search['result']);
 
-            $this->context->smarty->assign(array(
+            $this->context->smarty->assign(
+                [
                 'products' => $search['result'], // DEPRECATED (since to 1.4), not use this: conflict with block_cart module
                 'search_products' => $search['result'],
                 'nbProducts' => $search['total'],
                 'search_query' => $original_query,
-                'homeSize' => Image::getSize(ImageType::getFormatedName('home'))));
+                'homeSize' => Image::getSize(ImageType::getFormatedName('home'))
+                ]
+            );
         } elseif (($tag = urldecode(Tools::getValue('tag'))) && !is_array($tag)) {
             $nbProducts = (int)(Search::searchTag($this->context->language->id, $tag, true));
             $this->pagination($nbProducts);
             $result = Search::searchTag($this->context->language->id, $tag, false, $this->p, $this->n, $this->orderBy, $this->orderWay);
-            Hook::exec('actionSearch', array('expr' => $tag, 'total' => count($result)));
+            Hook::exec('actionSearch', ['expr' => $tag, 'total' => count($result)]);
 
             $this->addColorsToProductList($result);
 
-            $this->context->smarty->assign(array(
+            $this->context->smarty->assign(
+                [
                 'search_tag' => $tag,
                 'products' => $result, // DEPRECATED (since to 1.4), not use this: conflict with block_cart module
                 'search_products' => $result,
                 'nbProducts' => $nbProducts,
-                'homeSize' => Image::getSize(ImageType::getFormatedName('home'))));
+                'homeSize' => Image::getSize(ImageType::getFormatedName('home'))
+                ]
+            );
         } else {
-            $this->context->smarty->assign(array(
-                'products' => array(),
-                'search_products' => array(),
+            $this->context->smarty->assign(
+                [
+                'products' => [],
+                'search_products' => [],
                 'pages_nb' => 1,
-                'nbProducts' => 0));
+                'nbProducts' => 0
+                ]
+            );
         }
-        $this->context->smarty->assign(array('add_prod_display' => Configuration::get('PS_ATTRIBUTE_CATEGORY_DISPLAY'), 'comparator_max_item' => Configuration::get('PS_COMPARATOR_MAX_ITEM')));
+        $this->context->smarty->assign(['add_prod_display' => Configuration::get('PS_ATTRIBUTE_CATEGORY_DISPLAY'), 'comparator_max_item' => Configuration::get('PS_COMPARATOR_MAX_ITEM')]);
 
         $this->setTemplate(_PS_THEME_DIR_.'search.tpl');
     }

@@ -44,18 +44,18 @@ class ThemeCore extends ObjectModel
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = array(
+    public static $definition = [
         'table' => 'theme',
         'primary' => 'id_theme',
-        'fields' => array(
-            'name' => array('type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'size' => 64, 'required' => true),
-            'directory' => array('type' => self::TYPE_STRING, 'validate' => 'isDirName', 'size' => 64, 'required' => true),
-            'responsive' => array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
-            'default_left_column' => array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
-            'default_right_column' => array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
-            'product_per_page' => array('type' => self::TYPE_INT, 'validate' => 'isInt')
-        ),
-    );
+        'fields' => [
+            'name' => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'size' => 64, 'required' => true],
+            'directory' => ['type' => self::TYPE_STRING, 'validate' => 'isDirName', 'size' => 64, 'required' => true],
+            'responsive' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'default_left_column' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'default_right_column' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'product_per_page' => ['type' => self::TYPE_INT, 'validate' => 'isInt']
+        ],
+    ];
 
     public static function getThemes()
     {
@@ -84,8 +84,8 @@ class ThemeCore extends ObjectModel
      */
     public static function getAvailable($installed_only = true)
     {
-        static $dirlist = array();
-        $available_theme = array();
+        static $dirlist = [];
+        $available_theme = [];
 
         if (empty($dirlist)) {
             $themes = scandir(_PS_ALL_THEMES_DIR_);
@@ -162,7 +162,7 @@ class ThemeCore extends ObjectModel
 
     public static function getInstalledThemeDirectories()
     {
-        $list = array();
+        $list = [];
         $tmp = Db::getInstance()->executeS('SELECT `directory` FROM '._DB_PREFIX_.'theme');
         foreach ($tmp as $t) {
             $list[] = $t['directory'];
@@ -174,7 +174,7 @@ class ThemeCore extends ObjectModel
     public static function getThemeInfo($id_theme)
     {
         $theme = new Theme((int)$id_theme);
-        $theme_arr = array();
+        $theme_arr = [];
 
         if (file_exists(_PS_ROOT_DIR_.'/config/xml/themes/'.$theme->directory.'.xml')) {
             $config_file = _PS_ROOT_DIR_.'/config/xml/themes/'.$theme->directory.'.xml';
@@ -214,13 +214,13 @@ class ThemeCore extends ObjectModel
     public static function getNonInstalledTheme()
     {
         $installed_theme_directories = Theme::getInstalledThemeDirectories();
-        $not_installed_theme = array();
+        $not_installed_theme = [];
         foreach (glob(_PS_ALL_THEMES_DIR_.'*', GLOB_ONLYDIR) as $theme_dir) {
             $dir = basename($theme_dir);
             $config_file = _PS_ALL_THEMES_DIR_.$dir.'/config.xml';
             if (!in_array($dir, $installed_theme_directories) && @filemtime($config_file)) {
                 if ($xml_theme = @simplexml_load_file($config_file)) {
-                    $theme = array();
+                    $theme = [];
                     foreach ($xml_theme->attributes() as $key => $value) {
                         $theme[$key] = (string)$value;
                     }
@@ -247,19 +247,19 @@ class ThemeCore extends ObjectModel
             Db::getInstance()->delete('theme_meta', 'id_theme='.(int)$this->id);
         }
 
-        $values = array();
+        $values = [];
         if ($this->id > 0) {
             foreach ($metas as $meta) {
                 if (!$full_update) {
                     Db::getInstance()->delete('theme_meta', 'id_theme='.(int)$this->id.' AND id_meta='.(int)$meta['id_meta']);
                 }
 
-                $values[] = array(
+                $values[] = [
                     'id_theme'     => (int)$this->id,
                     'id_meta'      => (int)$meta['id_meta'],
                     'left_column'  => (int)$meta['left'],
                     'right_column' => (int)$meta['right']
-                );
+                ];
             }
             Db::getInstance()->insert('theme_meta', $values);
         }
@@ -350,7 +350,7 @@ class ThemeCore extends ObjectModel
         }
 
         // Update only responsive field
-        $this->setFieldsToUpdate(array('responsive' => true));
+        $this->setFieldsToUpdate(['responsive' => true]);
 
         // Update active responsive on object
         $this->responsive = !(int)$this->responsive;
@@ -365,7 +365,7 @@ class ThemeCore extends ObjectModel
             throw new PrestaShopException('property "default_left_column" is missing in object '.get_class($this));
         }
 
-        $this->setFieldsToUpdate(array('default_left_column' => true));
+        $this->setFieldsToUpdate(['default_left_column' => true]);
 
         $this->default_left_column = !(int)$this->default_left_column;
 
@@ -378,7 +378,7 @@ class ThemeCore extends ObjectModel
             throw new PrestaShopException('property "default_right_column" is missing in object '.get_class($this));
         }
 
-        $this->setFieldsToUpdate(array('default_right_column' => true));
+        $this->setFieldsToUpdate(['default_right_column' => true]);
 
         $this->default_right_column = !(int)$this->default_right_column;
 

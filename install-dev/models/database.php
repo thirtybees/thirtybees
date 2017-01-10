@@ -40,7 +40,7 @@ class InstallModelDatabase extends InstallAbstractModel
      */
     public function testDatabaseSettings($server, $database, $login, $password, $prefix, $clear = false)
     {
-        $errors = array();
+        $errors = [];
 
         // Check if fields are correctly typed
         if (!$server || !Validate::isUrl($server)) {
@@ -104,7 +104,7 @@ class InstallModelDatabase extends InstallAbstractModel
     public function createDatabase($server, $database, $login, $password, $dropit = false)
     {
         $class = Db::getClass();
-        return call_user_func(array($class, 'createDatabase'), $server, $login, $password, $database, $dropit);
+        return call_user_func([$class, 'createDatabase'], $server, $login, $password, $database, $dropit);
     }
 
     public function getBestEngine($server, $database, $login, $password)

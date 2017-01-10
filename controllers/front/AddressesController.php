@@ -64,8 +64,8 @@ class AddressesControllerCore extends FrontController
         parent::initContent();
 
         $total = 0;
-        $multiple_addresses_formated = array();
-        $ordered_fields = array();
+        $multiple_addresses_formated = [];
+        $ordered_fields = [];
         $addresses = $this->context->customer->getAddresses($this->context->language->id);
         // @todo getAddresses() should send back objects
         foreach ($addresses as $detail) {
@@ -83,7 +83,7 @@ class AddressesControllerCore extends FrontController
             $ordered_fields[$key] = 'country';
         }
 
-        $addresses_style = array(
+        $addresses_style = [
             'company' => 'address_company',
             'vat_number' => 'address_company',
             'firstname' => 'address_name',
@@ -95,14 +95,16 @@ class AddressesControllerCore extends FrontController
             'phone' => 'address_phone',
             'phone_mobile' => 'address_phone_mobile',
             'alias' => 'address_title',
-        );
+        ];
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'addresses_style' => $addresses_style,
             'multipleAddresses' => $multiple_addresses_formated,
             'ordered_fields' => $ordered_fields,
             'addresses' => $addresses, // retro compat themes 1.5ibility Theme < 1.4.1
-        ));
+            ]
+        );
 
         $this->setTemplate(_PS_THEME_DIR_.'addresses.tpl');
     }

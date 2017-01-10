@@ -1,7 +1,7 @@
 <?php
 
 global $_MODULE;
-$_MODULE = array();
+$_MODULE = [];
 
 $_MODULE['<{bankwire}prestashop>bankwire_85ee0d0492a4e37e6c183520f5d59c40'] = 'Bonifico Bancario';
 $_MODULE['<{bankwire}prestashop>bankwire_65104b0722c068ec3e8ac48153af597b'] = 'Accetta pagamenti tramite bonifico bancario.';

@@ -99,7 +99,7 @@ class HelperTreeShopsCore extends TreeCore
     public function getSelectedShops()
     {
         if (!isset($this->_selected_shops)) {
-            $this->_selected_shops = array();
+            $this->_selected_shops = [];
         }
 
         return $this->_selected_shops;
@@ -121,7 +121,8 @@ class HelperTreeShopsCore extends TreeCore
         }
 
         if ($use_default_actions) {
-            $this->setActions(array(
+            $this->setActions(
+                [
                 new TreeToolbarLink(
                     'Collapse All',
                     '#',
@@ -142,7 +143,7 @@ class HelperTreeShopsCore extends TreeCore
                     '#',
                     'uncheckAllAssociatedShops($(\'#'.$this->getId().'\')); return false;',
                     'icon-check-empty')
-                )
+                ]
             );
         }
 
@@ -171,17 +172,21 @@ class HelperTreeShopsCore extends TreeCore
                 $html .= $this->getContext()->smarty->createTemplate(
                     $this->getTemplateFile($this->getNodeFolderTemplate()),
                     $this->getContext()->smarty
-                )->assign($this->getAttributes())->assign(array(
+                )->assign($this->getAttributes())->assign(
+                    [
                     'children' => $this->renderNodes($item['shops']),
                     'node'     => $item
-                ))->fetch();
+                    ]
+                )->fetch();
             } else {
                 $html .= $this->getContext()->smarty->createTemplate(
                     $this->getTemplateFile($this->getNodeItemTemplate()),
                     $this->getContext()->smarty
-                )->assign($this->getAttributes())->assign(array(
+                )->assign($this->getAttributes())->assign(
+                    [
                     'node' => $item
-                ))->fetch();
+                    ]
+                )->fetch();
             }
         }
 

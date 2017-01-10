@@ -52,19 +52,19 @@ class MessageCore extends ObjectModel
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = array(
+    public static $definition = [
         'table' => 'message',
         'primary' => 'id_message',
-        'fields' => array(
-            'message' =>        array('type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'required' => true, 'size' => 1600),
-            'id_cart' =>        array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId'),
-            'id_order' =>        array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId'),
-            'id_customer' =>    array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId'),
-            'id_employee' =>    array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId'),
-            'private' =>        array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
-            'date_add' =>        array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
-        ),
-    );
+        'fields' => [
+            'message' =>        ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'required' => true, 'size' => 1600],
+            'id_cart' =>        ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
+            'id_order' =>        ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
+            'id_customer' =>    ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
+            'id_employee' =>    ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
+            'private' =>        ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'date_add' =>        ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+        ],
+    ];
 
     /**
      * Return the last message from cart

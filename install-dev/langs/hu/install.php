@@ -1,6 +1,6 @@
 <?php
-return array(
-    'informations' => array(
+return [
+    'informations' => [
         'documentation' => 'http://doc.prestashop.com/display/PS16/Installing+PrestaShop',
         'documentation_upgrade' => 'http://docs.prestashop.com/display/PS16/Updating+PrestaShop',
         'forum' => 'http://www.prestashop.com/forums/',
@@ -8,8 +8,8 @@ return array(
         'support' => 'https://www.prestashop.com/en/support',
         'tutorial' => 'https://www.youtube.com/watch?v=psz4aIPZZuk',
         'tailored_help' => 'http://addons.prestashop.com/en/388-support',
-    ),
-    'translations' => array(
+    ],
+    'translations' => [
         'An SQL error occurred for entity <i>%1$s</i>: <i>%2$s</i>' => 'SQL hiba lépett fel a következőnél: <i>%1$s</i>, hibaüzenete <i>%2$s</i>',
         'Cannot create image "%1$s" for entity "%2$s"' => '"%1$s" kép nem hozható létre "%2$s" részére',
         'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => '"%1$s" kép nem létrehozható (jogosultságprobléma "%2$s" mappádnál)',
@@ -205,5 +205,5 @@ return array(
         'Continue the installation in:' => 'Telepítés nyelve:',
         'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => 'A fenti nyelv kiválasztása csak a telepítési asszisztensre érvényes. A bolt nyelvét a telepítés után tudod kiválasztani %d fordításból, és ez mind ingyenes!',
         'Installing PrestaShop is quick and easy. In just a few moments, you will become part of a community consisting of more than 250,000 merchants. You are on the way to creating your own unique online store that you can manage easily every day.' => 'A PrestaShop telepítése gyors és könnyű. Csupán néhány perc alatt részese lehetsz a több, mint 250.000 kereskedőből álló közösségnek! Úton vagy saját egyedi online webáruházad létrehozásához, melyet könnyen kezelhetsz nap-mint-nap.',
-    ),
-);
+    ],
+];

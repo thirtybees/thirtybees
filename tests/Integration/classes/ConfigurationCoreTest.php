@@ -36,22 +36,22 @@ class ConfigurationCoreTest extends IntegrationTestCase
 
     protected function setUp()
     {
-        $configuration = array();
-        $id_shops = array(1, 2);
-        $id_shop_groups = array(1, 2);
-        $id_langs = array(0, 1, 2);
+        $configuration = [];
+        $id_shops = [1, 2];
+        $id_shop_groups = [1, 2];
+        $id_langs = [0, 1, 2];
         foreach ($id_langs as $id_lang) {
-            $configuration['configuration'][$id_lang] = array(
-                'global' => array(),
-                'group' => array(),
-                'shop' => array()
-            );
+            $configuration['configuration'][$id_lang] = [
+                'global' => [],
+                'group' => [],
+                'shop' => []
+            ];
 
             foreach ($id_shop_groups as $id_group) {
-                $configuration['configuration'][$id_lang]['group'][$id_group] = array();
+                $configuration['configuration'][$id_lang]['group'][$id_group] = [];
             }
             foreach ($id_shops as $id_shop) {
-                $configuration['configuration'][$id_lang]['shop'][$id_shop] = array();
+                $configuration['configuration'][$id_lang]['shop'][$id_shop] = [];
             }
         }
 

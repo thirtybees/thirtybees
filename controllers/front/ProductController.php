@@ -44,18 +44,22 @@ class ProductControllerCore extends FrontController
         if (!$this->useMobileTheme()) {
             $this->addCSS(_THEME_CSS_DIR_.'product.css');
             $this->addCSS(_THEME_CSS_DIR_.'print.css', 'print');
-            $this->addJqueryPlugin(array('fancybox', 'idTabs', 'scrollTo', 'serialScroll', 'bxslider'));
-            $this->addJS(array(
+            $this->addJqueryPlugin(['fancybox', 'idTabs', 'scrollTo', 'serialScroll', 'bxslider']);
+            $this->addJS(
+                [
                 _THEME_JS_DIR_.'tools.js',  // retro compat themes 1.5
                 _THEME_JS_DIR_.'product.js'
-            ));
+                ]
+            );
         } else {
-            $this->addJqueryPlugin(array('scrollTo', 'serialScroll'));
-            $this->addJS(array(
+            $this->addJqueryPlugin(['scrollTo', 'serialScroll']);
+            $this->addJS(
+                [
                 _THEME_JS_DIR_.'tools.js',  // retro compat themes 1.5
                 _THEME_MOBILE_JS_DIR_.'product.js',
                 _THEME_MOBILE_JS_DIR_.'jquery.touch-gallery.js'
-            ));
+                ]
+            );
         }
 
         if (Configuration::get('PS_DISPLAY_JQZOOM') == 1) {
@@ -144,7 +148,7 @@ class ProductControllerCore extends FrontController
                         $id_object = (int)$regs[5];
                     }
                     if ($id_object) {
-                        $referers = array($_SERVER['HTTP_REFERER'],urldecode($_SERVER['HTTP_REFERER']));
+                        $referers = [$_SERVER['HTTP_REFERER'],urldecode($_SERVER['HTTP_REFERER'])];
                         if (in_array($this->context->link->getCategoryLink($id_object), $referers)) {
                             $id_category = (int)$id_object;
                         } elseif (isset($this->context->cookie->last_visited_category) && (int)$this->context->cookie->last_visited_category && in_array($this->context->link->getProductLink($id_object), $referers)) {
@@ -152,7 +156,7 @@ class ProductControllerCore extends FrontController
                         }
                     }
                 }
-                if (!$id_category || !Category::inShopStatic($id_category, $this->context->shop) || !Product::idIsOnCategoryId((int)$this->product->id, array('0' => array('id_category' => $id_category)))) {
+                if (!$id_category || !Category::inShopStatic($id_category, $this->context->shop) || !Product::idIsOnCategoryId((int)$this->product->id, ['0' => ['id_category' => $id_category]])) {
                     $id_category = (int)$this->product->id_category_default;
                 }
                 $this->category = new Category((int)$id_category, (int)$this->context->cookie->id_lang);
@@ -197,8 +201,8 @@ class ProductControllerCore extends FrontController
                 $this->errors[] = Tools::displayError('An error occurred while deleting the selected picture.');
             }
 
-            $pictures = array();
-            $text_fields = array();
+            $pictures = [];
+            $text_fields = [];
             if ($this->product->customizable) {
                 $files = $this->context->cart->getProductCustomization($this->product->id, Product::CUSTOMIZE_FILE, true);
                 foreach ($files as $file) {
@@ -212,9 +216,12 @@ class ProductControllerCore extends FrontController
                 }
             }
 
-            $this->context->smarty->assign(array(
+            $this->context->smarty->assign(
+                [
                 'pictures' => $pictures,
-                'textFields' => $text_fields));
+                'textFields' => $text_fields
+                ]
+            );
 
             $this->product->customization_required = false;
             $customization_fields = $this->product->customizable ? $this->product->getCustomizationFields($this->context->language->id) : false;
@@ -240,7 +247,7 @@ class ProductControllerCore extends FrontController
             $this->assignAttributesCombinations();
 
             // Pack management
-            $pack_items = Pack::isPack($this->product->id) ? Pack::getItemTable($this->product->id, $this->context->language->id, true) : array();
+            $pack_items = Pack::isPack($this->product->id) ? Pack::getItemTable($this->product->id, $this->context->language->id, true) : [];
             $this->context->smarty->assign('packItems', $pack_items);
             $this->context->smarty->assign('packs', Pack::getPacksTable($this->product->id, $this->context->language->id, true, 1));
 
@@ -258,7 +265,8 @@ class ProductControllerCore extends FrontController
                 $customization_datas = $this->context->cart->getProductCustomization($this->product->id, null, true);
             }
 
-            $this->context->smarty->assign(array(
+            $this->context->smarty->assign(
+                [
                 'stock_management' => Configuration::get('PS_STOCK_MANAGEMENT'),
                 'customizationFields' => $customization_fields,
                 'id_customization' => empty($customization_datas) ? null : $customization_datas[0]['id_customization'],
@@ -268,30 +276,31 @@ class ProductControllerCore extends FrontController
                 'product_manufacturer' => new Manufacturer((int)$this->product->id_manufacturer, $this->context->language->id),
                 'token' => Tools::getToken(false),
                 'features' => $this->product->getFrontFeatures($this->context->language->id),
-                'attachments' => (($this->product->cache_has_attachments) ? $this->product->getAttachments($this->context->language->id) : array()),
+                'attachments' => (($this->product->cache_has_attachments) ? $this->product->getAttachments($this->context->language->id) : []),
                 'allow_oosp' => $this->product->isAvailableWhenOutOfStock((int)$this->product->out_of_stock),
                 'last_qties' =>  (int)Configuration::get('PS_LAST_QTIES'),
                 'HOOK_EXTRA_LEFT' => Hook::exec('displayLeftColumnProduct'),
                 'HOOK_EXTRA_RIGHT' => Hook::exec('displayRightColumnProduct'),
-                'HOOK_PRODUCT_OOS' => Hook::exec('actionProductOutOfStock', array('product' => $this->product)),
-                'HOOK_PRODUCT_ACTIONS' => Hook::exec('displayProductButtons', array('product' => $this->product)),
-                'HOOK_PRODUCT_TAB' =>  Hook::exec('displayProductTab', array('product' => $this->product)),
-                'HOOK_PRODUCT_TAB_CONTENT' =>  Hook::exec('displayProductTabContent', array('product' => $this->product)),
-                'HOOK_PRODUCT_CONTENT' =>  Hook::exec('displayProductContent', array('product' => $this->product)),
+                'HOOK_PRODUCT_OOS' => Hook::exec('actionProductOutOfStock', ['product' => $this->product]),
+                'HOOK_PRODUCT_ACTIONS' => Hook::exec('displayProductButtons', ['product' => $this->product]),
+                'HOOK_PRODUCT_TAB' =>  Hook::exec('displayProductTab', ['product' => $this->product]),
+                'HOOK_PRODUCT_TAB_CONTENT' =>  Hook::exec('displayProductTabContent', ['product' => $this->product]),
+                'HOOK_PRODUCT_CONTENT' =>  Hook::exec('displayProductContent', ['product' => $this->product]),
                 'display_qties' => (int)Configuration::get('PS_DISPLAY_QTIES'),
                 'display_ht' => !Tax::excludeTaxeOption(),
                 'jqZoomEnabled' => Configuration::get('PS_DISPLAY_JQZOOM'),
                 'ENT_NOQUOTES' => ENT_NOQUOTES,
                 'outOfStockAllowed' => (int)Configuration::get('PS_ORDER_OUT_OF_STOCK'),
                 'errors' => $this->errors,
-                'body_classes' => array(
+                'body_classes' => [
                     $this->php_self.'-'.$this->product->id,
                     $this->php_self.'-'.$this->product->link_rewrite,
                     'category-'.(isset($this->category) ? $this->category->id : ''),
                     'category-'.(isset($this->category) ? $this->category->getFieldByLang('link_rewrite') : '')
-                ),
+                ],
                 'display_discount_price' => Configuration::get('PS_DISPLAY_DISCOUNT_PRICE'),
-            ));
+                ]
+            );
         }
         $this->setTemplate(_PS_THEME_DIR_.'product.tpl');
     }
@@ -347,7 +356,8 @@ class ProductControllerCore extends FrontController
 
         $product_price = $this->product->getPrice(Product::$_taxCalculationMethod == PS_TAX_INC, false);
         $address = new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'quantity_discounts' => $this->formatQuantityDiscounts($quantity_discounts, $product_price, (float)$tax, $ecotax_tax_amount),
             'ecotax_tax_inc' => $ecotax_tax_amount,
             'ecotax_tax_exc' => Tools::ps_round($this->product->ecotax, 2),
@@ -358,7 +368,8 @@ class ProductControllerCore extends FrontController
             'ecotax' => (!count($this->errors) && $this->product->ecotax > 0 ? Tools::convertPrice((float)$this->product->ecotax) : 0),
             'tax_enabled' => Configuration::get('PS_TAX') && !Configuration::get('AEUC_LABEL_TAX_INC_EXC'),
             'customer_group_without_tax' => Group::getPriceDisplayMethod($this->context->customer->id_default_group),
-        ));
+            ]
+        );
     }
 
     /**
@@ -367,7 +378,7 @@ class ProductControllerCore extends FrontController
     protected function assignImages()
     {
         $images = $this->product->getImages((int)$this->context->cookie->id_lang);
-        $product_images = array();
+        $product_images = [];
 
         if (isset($images[0])) {
             $this->context->smarty->assign('mainImage', $images[0]);
@@ -388,23 +399,26 @@ class ProductControllerCore extends FrontController
                 $cover['id_image'] = (Configuration::get('PS_LEGACY_IMAGES') ? ($this->product->id.'-'.$images[0]['id_image']) : $images[0]['id_image']);
                 $cover['id_image_only'] = (int)$images[0]['id_image'];
             } else {
-                $cover = array(
+                $cover = [
                     'id_image' => $this->context->language->iso_code.'-default',
                     'legend' => 'No picture',
                     'title' => 'No picture'
-                );
+                ];
             }
         }
         $size = Image::getSize(ImageType::getFormatedName('large'));
-        $this->context->smarty->assign(array(
-            'have_image' => (isset($cover['id_image']) && (int)$cover['id_image'])? array((int)$cover['id_image']) : Product::getCover((int)Tools::getValue('id_product')),
+        $this->context->smarty->assign(
+            [
+            'have_image' => (isset($cover['id_image']) && (int)$cover['id_image'])? [(int)$cover['id_image']] : Product::getCover((int)Tools::getValue('id_product')),
             'cover' => $cover,
             'imgWidth' => (int)$size['width'],
             'mediumSize' => Image::getSize(ImageType::getFormatedName('medium')),
             'largeSize' => Image::getSize(ImageType::getFormatedName('large')),
             'homeSize' => Image::getSize(ImageType::getFormatedName('home')),
             'cartSize' => Image::getSize(ImageType::getFormatedName('cart')),
-            'col_img_dir' => _PS_COL_IMG_DIR_));
+            'col_img_dir' => _PS_COL_IMG_DIR_
+            ]
+        );
         if (count($product_images)) {
             $this->context->smarty->assign('images', $product_images);
         }
@@ -415,14 +429,14 @@ class ProductControllerCore extends FrontController
      */
     protected function assignAttributesGroups()
     {
-        $colors = array();
-        $groups = array();
+        $colors = [];
+        $groups = [];
 
         // @todo (RM) should only get groups and not all declination ?
         $attributes_groups = $this->product->getAttributesGroups($this->context->language->id);
         if (is_array($attributes_groups) && $attributes_groups) {
             $combination_images = $this->product->getCombinationImages($this->context->language->id);
-            $combination_prices_set = array();
+            $combination_prices_set = [];
             foreach ($attributes_groups as $k => $row) {
                 // Color management
                 if (isset($row['is_color_group']) && $row['is_color_group'] && (isset($row['attribute_color']) && $row['attribute_color']) || (file_exists(_PS_COL_IMG_DIR_.$row['id_attribute'].'.jpg'))) {
@@ -434,12 +448,12 @@ class ProductControllerCore extends FrontController
                     $colors[$row['id_attribute']]['attributes_quantity'] += (int)$row['quantity'];
                 }
                 if (!isset($groups[$row['id_attribute_group']])) {
-                    $groups[$row['id_attribute_group']] = array(
+                    $groups[$row['id_attribute_group']] = [
                         'group_name' => $row['group_name'],
                         'name' => $row['public_group_name'],
                         'group_type' => $row['group_type'],
                         'default' => -1,
-                    );
+                    ];
                 }
 
                 $groups[$row['id_attribute_group']]['attributes'][$row['id_attribute']] = $row['attribute_name'];
@@ -545,12 +559,14 @@ class ProductControllerCore extends FrontController
                 $combinations[$id_product_attribute]['list'] = $attribute_list;
             }
 
-            $this->context->smarty->assign(array(
+            $this->context->smarty->assign(
+                [
                 'groups' => $groups,
                 'colors' => (count($colors)) ? $colors : false,
                 'combinations' => $combinations,
                 'combinationImages' => $combination_images
-            ));
+                ]
+            );
         }
     }
 
@@ -563,16 +579,17 @@ class ProductControllerCore extends FrontController
         if (is_array($attributes_combinations) && count($attributes_combinations)) {
             foreach ($attributes_combinations as &$ac) {
                 foreach ($ac as &$val) {
-                    $val = str_replace(Configuration::get('PS_ATTRIBUTE_ANCHOR_SEPARATOR'), '_', Tools::link_rewrite(str_replace(array(',', '.'), '-', $val)));
+                    $val = str_replace(Configuration::get('PS_ATTRIBUTE_ANCHOR_SEPARATOR'), '_', Tools::link_rewrite(str_replace([',', '.'], '-', $val)));
                 }
             }
         } else {
-            $attributes_combinations = array();
+            $attributes_combinations = [];
         }
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'attributesCombinations' =>  $attributes_combinations,
             'attribute_anchor_separator' => Configuration::get('PS_ATTRIBUTE_ANCHOR_SEPARATOR')
-            )
+            ]
         );
     }
 
@@ -594,12 +611,13 @@ class ProductControllerCore extends FrontController
             $path = Tools::getPath((int)$this->context->shop->id_category, $this->product->name);
         }
 
-        $sub_categories = array();
+        $sub_categories = [];
         if (Validate::isLoadedObject($this->category)) {
             $sub_categories = $this->category->getSubCategories($this->context->language->id, true);
 
             // various assignements before Hook::exec
-            $this->context->smarty->assign(array(
+            $this->context->smarty->assign(
+                [
                 'path' => $path,
                 'category' => $this->category,
                 'subCategories' => $sub_categories,
@@ -607,9 +625,10 @@ class ProductControllerCore extends FrontController
                 'id_category_parent' => (int)$this->category->id_parent,
                 'return_category_name' => Tools::safeOutput($this->category->getFieldByLang('name')),
                 'categories' => Category::getHomeCategories($this->context->language->id, true, (int)$this->context->shop->id)
-            ));
+                ]
+            );
         }
-        $this->context->smarty->assign(array('HOOK_PRODUCT_FOOTER' => Hook::exec('displayFooterProduct', array('product' => $this->product, 'category' => $this->category))));
+        $this->context->smarty->assign(['HOOK_PRODUCT_FOOTER' => Hook::exec('displayFooterProduct', ['product' => $this->product, 'category' => $this->category])]);
     }
 
     protected function transformDescriptionWithImg($desc)
@@ -629,7 +648,7 @@ class ProductControllerCore extends FrontController
         if (!$field_ids = $this->product->getCustomizationFieldIds()) {
             return false;
         }
-        $authorized_file_fields = array();
+        $authorized_file_fields = [];
         foreach ($field_ids as $field_id) {
             if ($field_id['type'] == Product::CUSTOMIZE_FILE) {
                 $authorized_file_fields[(int)$field_id['id_customization_field']] = 'file'.(int)$field_id['id_customization_field'];
@@ -673,7 +692,7 @@ class ProductControllerCore extends FrontController
             return false;
         }
 
-        $authorized_text_fields = array();
+        $authorized_text_fields = [];
         foreach ($field_ids as $field_id) {
             if ($field_id['type'] == Product::CUSTOMIZE_TEXTFIELD) {
                 $authorized_text_fields[(int)$field_id['id_customization_field']] = 'textField'.(int)$field_id['id_customization_field'];

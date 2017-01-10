@@ -34,28 +34,28 @@ class InstallXmlLoader
     /**
      * @var array List of languages stored as array(id_lang => iso)
      */
-    protected $languages = array();
+    protected $languages = [];
 
     /**
      * @var array Store in cache all loaded XML files
      */
-    protected $cache_xml_entity = array();
+    protected $cache_xml_entity = [];
 
     /**
      * @var array List of errors
      */
-    protected $errors = array();
+    protected $errors = [];
 
     protected $data_path;
     protected $lang_path;
     protected $img_path;
     public $path_type;
 
-    protected $ids = array();
+    protected $ids = [];
 
-    protected $primaries = array();
+    protected $primaries = [];
 
-    protected $delayed_inserts = array();
+    protected $delayed_inserts = [];
 
     public function __construct()
     {
@@ -149,8 +149,8 @@ class InstallXmlLoader
     public function getSortedEntities()
     {
         // Browse all XML files from data/xml directory
-        $entities = array();
-        $dependencies = array();
+        $entities = [];
+        $dependencies = [];
         $fd = opendir($this->data_path);
         while ($file = readdir($fd)) {
             if (preg_match('#^(.+)\.xml$#', $file, $m)) {
@@ -162,7 +162,7 @@ class InstallXmlLoader
                     foreach ($xml->fields->field as $field) {
                         if ($field['relation'] && $field['relation'] != $entity) {
                             if (!isset($dependencies[(string)$field['relation']])) {
-                                $dependencies[(string)$field['relation']] = array();
+                                $dependencies[(string)$field['relation']] = [];
                             }
                             $dependencies[(string)$field['relation']][] = $entity;
                         }
@@ -175,8 +175,8 @@ class InstallXmlLoader
 
         // Sort entities to populate database in good order (E.g. zones before countries)
         do {
-            $current = (isset($sort_entities)) ? $sort_entities : array();
-            $sort_entities = array();
+            $current = (isset($sort_entities)) ? $sort_entities : [];
+            $sort_entities = [];
             foreach ($entities as $key => $entity) {
                 if (isset($dependencies[$entity])) {
                     $min = count($entities) - 1;
@@ -188,7 +188,7 @@ class InstallXmlLoader
                     if ($min == 0) {
                         array_unshift($sort_entities, $entity);
                     } else {
-                        array_splice($sort_entities, $min, 0, array($entity));
+                        array_splice($sort_entities, $min, 0, [$entity]);
                     }
                 } else {
                     $sort_entities[] = $entity;
@@ -238,7 +238,7 @@ class InstallXmlLoader
 
         if ($this->isMultilang($entity)) {
             $multilang_columns = $this->getColumns($entity, true);
-            $xml_langs = array();
+            $xml_langs = [];
             $default_lang = null;
             foreach ($this->languages as $id_lang => $iso) {
                 if ($iso == $this->language->getLanguageIso()) {
@@ -255,7 +255,7 @@ class InstallXmlLoader
 
         // Load all row for current entity and prepare data to be populated
         foreach ($xml->entities->$entity as $node) {
-            $data = array();
+            $data = [];
             $identifier = (string)$node['id'];
 
             // Read attributes
@@ -271,7 +271,7 @@ class InstallXmlLoader
             }
 
             // Load multilang data
-            $data_lang = array();
+            $data_lang = [];
             if ($this->isMultilang($entity)) {
                 $xpath_query = $entity.'[@id="'.$identifier.'"]';
                 foreach ($xml_langs as $id_lang => $xml_lang) {
@@ -334,7 +334,7 @@ class InstallXmlLoader
             }
 
             $xml = $this->loadEntity('tag', $this->getFallBackToDefaultLanguage($iso));
-            $tags = array();
+            $tags = [];
             foreach ($xml->tag as $tag_node) {
                 $products = trim((string)$tag_node['products']);
                 if (!$products) {
@@ -345,7 +345,7 @@ class InstallXmlLoader
                     $product = trim($product);
                     $product_id = $this->retrieveId('product', $product);
                     if (!isset($tags[$product_id])) {
-                        $tags[$product_id] = array();
+                        $tags[$product_id] = [];
                     }
                     $tags[$product_id][] = trim((string)$tag_node['name']);
                 }
@@ -434,7 +434,7 @@ class InstallXmlLoader
      * @param array $data
      * @param array $data_lang
      */
-    public function createEntity($entity, $identifier, $classname, array $data, array $data_lang = array())
+    public function createEntity($entity, $identifier, $classname, array $data, array $data_lang = [])
     {
         $xml = $this->loadEntity($entity);
         if ($classname) {
@@ -466,7 +466,7 @@ class InstallXmlLoader
             // Store INSERT queries in order to optimize install with grouped inserts
             $this->delayed_inserts[$entity][] = array_map('pSQL', $data);
             if ($data_lang) {
-                $real_data_lang = array();
+                $real_data_lang = [];
                 foreach ($data_lang as $field => $list) {
                     foreach ($list as $id_lang => $value) {
                         $real_data_lang[$id_lang][$field] = $value;
@@ -482,10 +482,10 @@ class InstallXmlLoader
                 // Store INSERT queries for _shop associations
                 $entity_asso = Shop::getAssoTable($entity);
                 if ($entity_asso !== false && $entity_asso['type'] == 'shop') {
-                    $this->delayed_inserts[$entity.'_shop'][] = array(
+                    $this->delayed_inserts[$entity.'_shop'][] = [
                         'id_shop' => 1,
                         'id_'.$entity => $entity_id,
-                    );
+                    ];
                 }
             }
         }
@@ -506,7 +506,7 @@ class InstallXmlLoader
         // Store INSERT queries in order to optimize install with grouped inserts
         $this->delayed_inserts[$entity][] = array_map('pSQL', $data);
         if ($data_lang) {
-            $real_data_lang = array();
+            $real_data_lang = [];
             foreach ($data_lang as $field => $list) {
                 foreach ($list as $id_lang => $value) {
                     $real_data_lang[$id_lang][$field] = $value;
@@ -531,7 +531,7 @@ class InstallXmlLoader
 
     public function createEntityTab($identifier, array $data, array $data_lang)
     {
-        static $position = array();
+        static $position = [];
 
         $entity = 'tab';
         $xml = $this->loadEntity($entity);
@@ -558,7 +558,7 @@ class InstallXmlLoader
         // Store INSERT queries in order to optimize install with grouped inserts
         $this->delayed_inserts[$entity][] = array_map('pSQL', $data);
         if ($data_lang) {
-            $real_data_lang = array();
+            $real_data_lang = [];
             foreach ($data_lang as $field => $list) {
                 foreach ($list as $id_lang => $value) {
                     $real_data_lang[$id_lang][$field] = $value;
@@ -586,16 +586,16 @@ class InstallXmlLoader
     public function copyImages($entity, $identifier, $path, array $data, $extension = 'jpg')
     {
         // Get list of image types
-        $reference = array(
+        $reference = [
             'product' => 'products',
             'category' => 'categories',
             'manufacturer' => 'manufacturers',
             'supplier' => 'suppliers',
             'scene' => 'scenes',
             'store' => 'stores',
-        );
+        ];
 
-        $types = array();
+        $types = [];
         if (isset($reference[$entity])) {
             $types = ImageType::getImagesTypes($reference[$entity]);
         }
@@ -707,7 +707,7 @@ class InstallXmlLoader
         static $tables = null;
 
         if (is_null($tables)) {
-            $tables = array();
+            $tables = [];
             foreach (Db::getInstance()->executeS('SHOW TABLES') as $row) {
                 $table = current($row);
                 if (preg_match('#^'._DB_PREFIX_.'(.+?)(_lang)?$#i', $table, $m)) {
@@ -724,25 +724,25 @@ class InstallXmlLoader
         return (bool)Db::getInstance()->getValue('SELECT COUNT(*) FROM '._DB_PREFIX_.$table);
     }
 
-    public function getColumns($table, $multilang = false, array $exclude = array())
+    public function getColumns($table, $multilang = false, array $exclude = [])
     {
-        static $columns = array();
+        static $columns = [];
 
         if ($multilang) {
-            return ($this->isMultilang($table)) ? $this->getColumns($table.'_lang', false, array('id_'.$table)) : array();
+            return ($this->isMultilang($table)) ? $this->getColumns($table.'_lang', false, ['id_'.$table]) : [];
         }
 
         if (!isset($columns[$table])) {
-            $columns[$table] = array();
+            $columns[$table] = [];
             $sql = 'SHOW COLUMNS FROM `'._DB_PREFIX_.bqSQL($table).'`';
             foreach (Db::getInstance()->executeS($sql) as $row) {
                 $columns[$table][$row['Field']] = $this->checkIfTypeIsText($row['Type']);
             }
         }
 
-        $exclude = array_merge(array('id_'.$table, 'date_add', 'date_upd', 'deleted', 'id_lang'), $exclude);
+        $exclude = array_merge(['id_'.$table, 'date_add', 'date_upd', 'deleted', 'id_lang'], $exclude);
 
-        $list = array();
+        $list = [];
         foreach ($columns[$table] as $k => $v) {
             if (!in_array($k, $exclude)) {
                 $list[$k] = $v;
@@ -765,7 +765,7 @@ class InstallXmlLoader
             $dir = _PS_CLASS_DIR_;
         }
 
-        $classes = array();
+        $classes = [];
         foreach (scandir($dir) as $file) {
             if ($file[0] != '.' && $file != 'index.php') {
                 if (is_dir($dir.$file)) {
@@ -808,7 +808,7 @@ class InstallXmlLoader
 
     public function getEntitiesList()
     {
-        $entities = array();
+        $entities = [];
         foreach (scandir($this->data_path) as $file) {
             if ($file[0] != '.' && preg_match('#^(.+)\.xml$#', $file, $m)) {
                 $entities[] = $m[1];
@@ -819,8 +819,8 @@ class InstallXmlLoader
 
     public function getEntityInfo($entity)
     {
-        $info = array(
-            'config' => array(
+        $info = [
+            'config' => [
                 'id' =>        '',
                 'primary' =>    '',
                 'class' =>        '',
@@ -828,9 +828,9 @@ class InstallXmlLoader
                 'ordersql' =>    '',
                 'image' =>        '',
                 'null' =>        '',
-            ),
-            'fields' =>    array(),
-        );
+            ],
+            'fields' =>    [],
+        ];
 
         if (!$this->entityExists($entity)) {
             return $info;
@@ -871,7 +871,7 @@ class InstallXmlLoader
 
         foreach ($xml->fields->field as $field) {
             $column = (string)$field['name'];
-            $info['fields'][$column] = array();
+            $info['fields'][$column] = [];
             if (isset($field['relation'])) {
                 $info['fields'][$column]['relation'] = (string)$field['relation'];
             }
@@ -881,17 +881,17 @@ class InstallXmlLoader
 
     public function getDependencies()
     {
-        $entities = array();
+        $entities = [];
         foreach ($this->getEntitiesList() as $entity) {
             $entities[$entity] = $this->getEntityInfo($entity);
         }
 
-        $dependencies = array();
+        $dependencies = [];
         foreach ($entities as $entity => $info) {
             foreach ($info['fields'] as $field => $info_field) {
                 if (isset($info_field['relation']) && $info_field['relation'] != $entity) {
                     if (!isset($dependencies[$info_field['relation']])) {
-                        $dependencies[$info_field['relation']] = array();
+                        $dependencies[$info_field['relation']] = [];
                     }
                     $dependencies[$info_field['relation']][] = $entity;
                 }
@@ -940,7 +940,7 @@ class InstallXmlLoader
      */
     public function generateAllEntityFiles()
     {
-        $entities = array();
+        $entities = [];
         foreach ($this->getEntitiesList() as $entity) {
             $entities[$entity] = $this->getEntityInfo($entity);
         }
@@ -956,8 +956,8 @@ class InstallXmlLoader
 
         // Sort entities to populate database in good order (E.g. zones before countries)
         do {
-            $current = (isset($sort_entities)) ? $sort_entities : array();
-            $sort_entities = array();
+            $current = (isset($sort_entities)) ? $sort_entities : [];
+            $sort_entities = [];
             foreach ($entities as $entity) {
                 if (isset($dependencies[$entity])) {
                     $min = count($entities) - 1;
@@ -969,7 +969,7 @@ class InstallXmlLoader
                     if ($min == 0) {
                         array_unshift($sort_entities, $entity);
                     } else {
-                        array_splice($sort_entities, $min, 0, array($entity));
+                        array_splice($sort_entities, $min, 0, [$entity]);
                     }
                 } else {
                     $sort_entities[] = $entity;
@@ -1069,7 +1069,7 @@ class InstallXmlLoader
         }
 
         // Get multilang columns
-        $alias_multilang = array();
+        $alias_multilang = [];
         if ($is_multilang) {
             $columns = $this->getColumns($entity);
             $multilang_columns = $this->getColumns($entity, true);
@@ -1085,7 +1085,7 @@ class InstallXmlLoader
         }
 
         // Get all results
-        $nodes = $nodes_lang = array();
+        $nodes = $nodes_lang = [];
         $results = Db::getInstance()->executeS($sql);
         if (Db::getInstance()->getNumberError()) {
             $this->setError($this->language->l('SQL error on query <i>%s</i>', $sql));
@@ -1102,7 +1102,7 @@ class InstallXmlLoader
                 }
 
                 if (!isset($nodes[$id])) {
-                    $node = array();
+                    $node = [];
                     foreach ($xml->fields->field as $field) {
                         $column = (string)$field['name'];
                         if (isset($field['relation'])) {
@@ -1124,7 +1124,7 @@ class InstallXmlLoader
 
                 // Store multilang columns
                 if ($is_multilang && $row['id_lang']) {
-                    $node = array();
+                    $node = [];
                     foreach ($multilang_columns as $column => $is_text) {
                         $node[$column] = $row[isset($alias_multilang[$column]) ? $alias_multilang[$column] : $column];
                     }
@@ -1133,15 +1133,15 @@ class InstallXmlLoader
             }
         }
 
-        return array(
+        return [
             'nodes' =>        $nodes,
             'nodes_lang' =>    $nodes_lang,
-        );
+        ];
     }
 
     public function getEntityContentsTag()
     {
-        $nodes_lang = array();
+        $nodes_lang = [];
 
         $sql = 'SELECT t.id_tag, t.id_lang, t.name, pt.id_product
 				FROM '._DB_PREFIX_.'tag t
@@ -1150,38 +1150,38 @@ class InstallXmlLoader
         foreach (Db::getInstance()->executeS($sql) as $row) {
             $identifier = $this->generateId('tag', $row['id_tag']);
             if (!isset($nodes_lang[$row['id_lang']])) {
-                $nodes_lang[$row['id_lang']] = array();
+                $nodes_lang[$row['id_lang']] = [];
             }
 
             if (!isset($nodes_lang[$row['id_lang']][$identifier])) {
-                $nodes_lang[$row['id_lang']][$identifier] = array(
+                $nodes_lang[$row['id_lang']][$identifier] = [
                     'name' =>        $row['name'],
                     'products' =>    '',
-                );
+                ];
             }
 
             $nodes_lang[$row['id_lang']][$identifier]['products'] .= (($nodes_lang[$row['id_lang']][$identifier]['products']) ? ',' : '').$this->generateId('product', $row['id_product']);
         }
 
-        return array(
-            'nodes' =>        array(),
+        return [
+            'nodes' =>        [],
             'nodes_lang' => $nodes_lang,
-        );
+        ];
     }
 
     /**
      * ONLY FOR DEVELOPMENT PURPOSE
      */
-    public function generateId($entity, $primary, array $row = array(), $id_format = null)
+    public function generateId($entity, $primary, array $row = [], $id_format = null)
     {
-        static $ids = array();
+        static $ids = [];
 
         if (isset($ids[$entity][$primary])) {
             return $ids[$entity][$primary];
         }
 
         if (!isset($ids[$entity])) {
-            $ids[$entity] = array();
+            $ids[$entity] = [];
         }
 
         if (!$primary) {
@@ -1231,18 +1231,18 @@ class InstallXmlLoader
      */
     public function backupImage($entity, $path)
     {
-        $reference = array(
+        $reference = [
             'product' => 'products',
             'category' => 'categories',
             'manufacturer' => 'manufacturers',
             'supplier' => 'suppliers',
             'scene' => 'scenes',
             'store' => 'stores',
-        );
+        ];
 
-        $types = array();
+        $types = [];
         if (isset($reference[$entity])) {
-            $types = array();
+            $types = [];
             foreach (ImageType::getImagesTypes($reference[$entity]) as $type) {
                 $types[] = $type['name'];
             }
@@ -1273,7 +1273,7 @@ class InstallXmlLoader
      */
     public function backupImageImage()
     {
-        $types = array();
+        $types = [];
         foreach (ImageType::getImagesTypes('products') as $type) {
             $types[] = $type['name'];
         }

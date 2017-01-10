@@ -50,17 +50,19 @@ class CategoryControllerCore extends FrontController
 
         if (!$this->useMobileTheme()) {
             //TODO : check why cluetip css is include without js file
-            $this->addCSS(array(
+            $this->addCSS(
+                [
                 _THEME_CSS_DIR_.'scenes.css'       => 'all',
                 _THEME_CSS_DIR_.'category.css'     => 'all',
                 _THEME_CSS_DIR_.'product_list.css' => 'all',
-            ));
+                ]
+            );
         }
 
         $scenes = Scene::getScenes($this->category->id, $this->context->language->id, true, false);
         if ($scenes && count($scenes)) {
             $this->addJS(_THEME_JS_DIR_.'scenes.js');
-            $this->addJqueryPlugin(array('scrollTo', 'serialScroll'));
+            $this->addJqueryPlugin(['scrollTo', 'serialScroll']);
         }
 
         $this->addJS(_THEME_JS_DIR_.'category.js');
@@ -77,7 +79,7 @@ class CategoryControllerCore extends FrontController
             return;
         }
 
-        if (!Validate::isLoadedObject($this->category) || !$this->category->inShop() || !$this->category->isAssociatedToShop() || in_array($this->category->id, array(Configuration::get('PS_HOME_CATEGORY'), Configuration::get('PS_ROOT_CATEGORY')))) {
+        if (!Validate::isLoadedObject($this->category) || !$this->category->inShop() || !$this->category->isAssociatedToShop() || in_array($this->category->id, [Configuration::get('PS_HOME_CATEGORY'), Configuration::get('PS_ROOT_CATEGORY')])) {
             $this->redirect_after = '404';
             $this->redirect();
         }
@@ -145,7 +147,8 @@ class CategoryControllerCore extends FrontController
         $this->assignSubcategories();
         $this->assignProductList();
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'category'             => $this->category,
             'description_short'    => Tools::truncateString($this->category->description, 350),
             'products'             => (isset($this->cat_products) && $this->cat_products) ? $this->cat_products : null,
@@ -161,8 +164,9 @@ class CategoryControllerCore extends FrontController
             'allow_oosp'           => (int)Configuration::get('PS_ORDER_OUT_OF_STOCK'),
             'comparator_max_item'  => (int)Configuration::get('PS_COMPARATOR_MAX_ITEM'),
             'suppliers'            => Supplier::getSuppliers(),
-            'body_classes'         => array($this->php_self.'-'.$this->category->id, $this->php_self.'-'.$this->category->link_rewrite)
-        ));
+            'body_classes'         => [$this->php_self.'-'.$this->category->id, $this->php_self.'-'.$this->category->link_rewrite]
+            ]
+        );
     }
 
     /**
@@ -184,10 +188,12 @@ class CategoryControllerCore extends FrontController
                 }
             }
 
-            $this->context->smarty->assign(array(
+            $this->context->smarty->assign(
+                [
                 'thumbSceneImageType' => isset($thumb_scene_image_type) ? $thumb_scene_image_type : null,
                 'largeSceneImageType' => isset($large_scene_image_type) ? $large_scene_image_type : null,
-            ));
+                ]
+            );
         }
     }
 
@@ -197,11 +203,13 @@ class CategoryControllerCore extends FrontController
     protected function assignSubcategories()
     {
         if ($sub_categories = $this->category->getSubCategories($this->context->language->id)) {
-            $this->context->smarty->assign(array(
+            $this->context->smarty->assign(
+                [
                 'subcategories'          => $sub_categories,
                 'subcategories_nb_total' => count($sub_categories),
                 'subcategories_nb_half'  => ceil(count($sub_categories) / 2)
-            ));
+                ]
+            );
         }
     }
 
@@ -211,11 +219,12 @@ class CategoryControllerCore extends FrontController
     public function assignProductList()
     {
         $hook_executed = false;
-        Hook::exec('actionProductListOverride', array(
+        Hook::exec('actionProductListOverride', [
             'nbProducts'   => &$this->nbProducts,
             'catProducts'  => &$this->cat_products,
             'hookExecuted' => &$hook_executed,
-        ));
+        ]
+        );
 
         // The hook was not executed, standard working
         if (!$hook_executed) {
@@ -232,10 +241,11 @@ class CategoryControllerCore extends FrontController
         
         $this->addColorsToProductList($this->cat_products);
 
-        Hook::exec('actionProductListModifier', array(
+        Hook::exec('actionProductListModifier', [
             'nb_products'  => &$this->nbProducts,
             'cat_products' => &$this->cat_products,
-        ));
+        ]
+        );
 
         foreach ($this->cat_products as &$product) {
             if (isset($product['id_product_attribute']) && $product['id_product_attribute'] && isset($product['product_attribute_minimal_quantity'])) {

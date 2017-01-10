@@ -142,7 +142,7 @@ class GetFileControllerCore extends FrontController
             $bName = explode('.', $bName);
             $bName = strtolower($bName[count($bName) - 1]);
 
-            $mimeTypes = array(
+            $mimeTypes = [
             'ez' => 'application/andrew-inset',
             'hqx' => 'application/mac-binhex40',
             'cpt' => 'application/mac-compactpro',
@@ -269,7 +269,8 @@ class GetFileControllerCore extends FrontController
             'mxu' => 'video/vnd.mpegurl',
             'avi' => 'video/x-msvideo',
             'movie' => 'video/x-sgi-movie',
-            'ice' => 'x-conference-xcooltalk');
+            'ice' => 'x-conference-xcooltalk'
+            ];
 
             if (isset($mimeTypes[$bName])) {
                 $mimeType = $mimeTypes[$bName];
@@ -308,7 +309,7 @@ class GetFileControllerCore extends FrontController
      */
     protected function displayCustomError($msg)
     {
-        $translations = array(
+        $translations = [
         'Invalid key.' => Tools::displayError('Invalid key.'),
         'This product does not exist in our store.' => Tools::displayError('This product does not exist in our store.'),
         'This product has been deleted.' => Tools::displayError('This product has been deleted.'),
@@ -317,7 +318,8 @@ class GetFileControllerCore extends FrontController
         'The product deadline is in the past.' => Tools::displayError('The product deadline is in the past.'),
         'Expiration date exceeded' => Tools::displayError('The product expiration date has passed, preventing you from download this product.'),
         'Expiration date has passed, you cannot download this product' => Tools::displayError('Expiration date has passed, you cannot download this product.'),
-        'You have reached the maximum number of allowed downloads.' => Tools::displayError('You have reached the maximum number of downloads allowed.'));
+        'You have reached the maximum number of allowed downloads.' => Tools::displayError('You have reached the maximum number of downloads allowed.')
+        ];
         ?>
 		<script type="text/javascript">
 		//<![CDATA[

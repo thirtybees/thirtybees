@@ -31,27 +31,27 @@ class AdminLocalizationControllerCore extends AdminController
         $this->bootstrap = true;
         parent::__construct();
 
-        $this->fields_options = array(
-            'general' => array(
+        $this->fields_options = [
+            'general' => [
                 'title' =>    $this->l('Configuration'),
-                'fields' =>    array(
-                    'PS_LANG_DEFAULT' => array(
+                'fields' =>    [
+                    'PS_LANG_DEFAULT' => [
                         'title' => $this->l('Default language'),
                         'hint' => $this->l('The default language used in your shop.'),
                         'cast' => 'intval',
                         'type' => 'select',
                         'identifier' => 'id_lang',
                         'list' => Language::getLanguages(false)
-                    ),
-                    'PS_DETECT_LANG' => array(
+                    ],
+                    'PS_DETECT_LANG' => [
                         'title' => $this->l('Set language from browser'),
                         'desc' => $this->l('Set browser language as default language'),
                         'validation' => 'isBool',
                         'cast' => 'intval',
                         'type' => 'bool',
                         'default' => '1'
-                    ),
-                    'PS_COUNTRY_DEFAULT' => array(
+                    ],
+                    'PS_COUNTRY_DEFAULT' => [
                         'title' => $this->l('Default country'),
                         'hint' => $this->l('The default country used in your shop.'),
                         'cast' => 'intval',
@@ -59,16 +59,16 @@ class AdminLocalizationControllerCore extends AdminController
                         'class' => 'chosen',
                         'identifier' => 'id_country',
                         'list' => Country::getCountries($this->context->language->id)
-                    ),
-                    'PS_DETECT_COUNTRY' => array(
+                    ],
+                    'PS_DETECT_COUNTRY' => [
                         'title' => $this->l('Set default country from browser language'),
                         'desc' => $this->l('Set country corresponding to browser language'),
                         'validation' => 'isBool',
                         'cast' => 'intval',
                         'type' => 'bool',
                         'default' => '1'
-                    ),
-                    'PS_CURRENCY_DEFAULT' => array(
+                    ],
+                    'PS_CURRENCY_DEFAULT' => [
                         'title' => $this->l('Default currency'),
                         'hint' =>
                             $this->l('The default currency used in your shop.').' - '.$this->l('If you change the default currency, you will have to manually edit every product price.'),
@@ -76,75 +76,75 @@ class AdminLocalizationControllerCore extends AdminController
                         'type' => 'select',
                         'identifier' => 'id_currency',
                         'list' => Currency::getCurrencies(false, true, true)
-                    ),
-                ),
-                'submit' => array('title' => $this->l('Save'))
-            ),
-            'localization' => array(
+                    ],
+                ],
+                'submit' => ['title' => $this->l('Save')]
+            ],
+            'localization' => [
                 'title' =>    $this->l('Local units'),
                 'icon' =>    'icon-globe',
-                'fields' =>    array(
-                    'PS_WEIGHT_UNIT' => array(
+                'fields' =>    [
+                    'PS_WEIGHT_UNIT' => [
                         'title' => $this->l('Weight unit'),
                         'hint' => $this->l('The default weight unit for your shop (e.g. "kg" for kilograms, "lbs" for pound-mass, etc.).'),
                         'validation' => 'isWeightUnit',
                         'required' => true,
                         'type' => 'text',
                         'class' => 'fixed-width-sm'
-                    ),
-                    'PS_DISTANCE_UNIT' => array(
+                    ],
+                    'PS_DISTANCE_UNIT' => [
                         'title' => $this->l('Distance unit'),
                         'hint' => $this->l('The default distance unit for your shop (e.g. "km" for kilometer, "mi" for mile, etc.).'),
                         'validation' => 'isDistanceUnit',
                         'required' => true,
                         'type' => 'text',
                         'class' => 'fixed-width-sm'
-                    ),
-                    'PS_VOLUME_UNIT' => array(
+                    ],
+                    'PS_VOLUME_UNIT' => [
                         'title' => $this->l('Volume unit'),
                         'hint' => $this->l('The default volume unit for your shop (e.g. "L" for liter, "gal" for gallon, etc.).'),
                         'validation' => 'isWeightUnit',
                         'required' => true,
                         'type' => 'text',
                         'class' => 'fixed-width-sm'
-                    ),
-                    'PS_DIMENSION_UNIT' => array(
+                    ],
+                    'PS_DIMENSION_UNIT' => [
                         'title' => $this->l('Dimension unit'),
                         'hint' => $this->l('The default dimension unit for your shop (e.g. "cm" for centimeter, "in" for inch, etc.).'),
                         'validation' => 'isDistanceUnit',
                         'required' => true,
                         'type' => 'text',
                         'class' => 'fixed-width-sm'
-                    )
-                ),
-                'submit' => array('title' => $this->l('Save'))
-            ),
-            'options' => array(
+                    ]
+                ],
+                'submit' => ['title' => $this->l('Save')]
+            ],
+            'options' => [
                 'title' =>    $this->l('Advanced'),
-                'fields' =>    array(
-                    'PS_LOCALE_LANGUAGE' => array(
+                'fields' =>    [
+                    'PS_LOCALE_LANGUAGE' => [
                         'title' => $this->l('Language identifier'),
                         'hint' => $this->l('The ISO 639-1 identifier for the language of the country where your web server is located (en, fr, sp, ru, pl, nl, etc.).'),
                         'validation' => 'isLanguageIsoCode',
                         'type' => 'text',
                         'visibility' => Shop::CONTEXT_ALL,
                         'class' => 'fixed-width-sm'
-                    ),
-                    'PS_LOCALE_COUNTRY' => array(
+                    ],
+                    'PS_LOCALE_COUNTRY' => [
                         'title' => $this->l('Country identifier'),
                         'hint' => $this->l('The ISO 3166-1 alpha-2 identifier for the country/region where your web server is located, in lowercase (us, gb, fr, sp, ru, pl, nl, etc.).'),
                         'validation' => 'isLanguageIsoCode',
                         'type' => 'text',
                         'visibility' => Shop::CONTEXT_ALL,
                         'class' => 'fixed-width-sm'
-                    )
-                ),
-                'submit' => array('title' => $this->l('Save'))
-            )
-        );
+                    ]
+                ],
+                'submit' => ['title' => $this->l('Save')]
+            ]
+        ];
 
         if (function_exists('date_default_timezone_set')) {
-            $this->fields_options['general']['fields']['PS_TIMEZONE'] = array(
+            $this->fields_options['general']['fields']['PS_TIMEZONE'] = [
                 'title' => $this->l('Time zone'),
                 'validation' => 'isAnything',
                 'type' => 'select',
@@ -152,7 +152,7 @@ class AdminLocalizationControllerCore extends AdminController
                 'list' => Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('SELECT name FROM '._DB_PREFIX_.'timezone'),
                 'identifier' => 'name',
                 'visibility' => Shop::CONTEXT_ALL
-            );
+            ];
         }
     }
 
@@ -235,7 +235,7 @@ class AdminLocalizationControllerCore extends AdminController
         }
 
         // Array to hold the list of country ISOs that have a localization pack hosted on prestashop.com
-        $remote_isos = array();
+        $remote_isos = [];
 
         $i = 0;
         if ($xml_localization) {
@@ -253,7 +253,7 @@ class AdminLocalizationControllerCore extends AdminController
 
         // Add local localization .xml files to the list if they are not already there
         foreach (scandir(_PS_ROOT_DIR_.'/localization/') as $entry) {
-            $m = array();
+            $m = [];
             if (preg_match('/^([a-z]{2})\.xml$/', $entry, $m)) {
                 $iso = $m[1];
                 if (empty($remote_isos[$iso])) {
@@ -270,105 +270,105 @@ class AdminLocalizationControllerCore extends AdminController
             }
         }
 
-        usort($localizations_pack, array($this, 'sortLocalizationsPack'));
+        usort($localizations_pack, [$this, 'sortLocalizationsPack']);
 
-        $selection_import = array(
-            array(
+        $selection_import = [
+            [
                 'id' => 'states',
                 'val' => 'states',
                 'name' => $this->l('States')
-            ),
-            array(
+            ],
+            [
                 'id' => 'taxes',
                 'val' => 'taxes',
                 'name' => $this->l('Taxes')
-            ),
-            array(
+            ],
+            [
                 'id' => 'currencies',
                 'val' => 'currencies',
                 'name' => $this->l('Currencies')
-            ),
-            array(
+            ],
+            [
                 'id' => 'languages',
                 'val' => 'languages',
                 'name' => $this->l('Languages')
-            ),
-            array(
+            ],
+            [
                 'id' => 'units',
                 'val' => 'units',
                 'name' => $this->l('Units (e.g. weight, volume, distance)')
-            ),
-            array(
+            ],
+            [
                 'id' => 'groups',
                 'val' => 'groups',
                 'name' => $this->l('Change the behavior of the taxes displayed to the groups')
-            )
-        );
+            ]
+        ];
 
-        $this->fields_form = array(
+        $this->fields_form = [
             'tinymce' => true,
-            'legend' => array(
+            'legend' => [
                 'title' => $this->l('Import a localization pack'),
                 'icon' => 'icon-globe'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'select',
                     'class' => 'chosen',
                     'label' => $this->l('Localization pack you want to import'),
                     'name' => 'iso_localization_pack',
-                    'options' => array(
+                    'options' => [
                         'query' => $localizations_pack,
                         'id' => 'iso_localization_pack',
                         'name' => 'name'
-                    )
-                ),
-                array(
+                    ]
+                ],
+                [
                     'type' => 'checkbox',
                     'label' => $this->l('Content to import'),
                     'name' => 'selection[]',
                     'lang' => true,
-                    'values' => array(
+                    'values' => [
                         'query' => $selection_import,
                         'id' => 'id',
                         'name' => 'name'
-                    )
-                ),
-                array(
+                    ]
+                ],
+                [
                     'type'     => 'radio',
                     'label'  => $this->l('Download pack data'),
                     'desc'     => $this->l('If set to yes then the localization pack will be downloaded from prestashop.com. Otherwise the local xml file found in the localization folder of your PrestaShop installation will be used.'),
                     'name'     => 'download_updated_pack',
                     'is_bool'=> true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id'    => 'download_updated_pack_yes',
                             'value'    => 1,
                             'label' => $this->l('Yes')
-                        ),
-                        array(
+                        ],
+                        [
                             'id'    => 'download_updated_pack_no',
                             'value'    => 0,
                             'label' => $this->l('No')
-                        )
-                    )
-                )
-            ),
-            'submit' => array(
+                        ]
+                    ]
+                ]
+            ],
+            'submit' => [
                 'title' => $this->l('Import'),
                 'icon' => 'process-icon-import',
                 'name' => 'submitLocalizationPack'
-            ),
-        );
+            ],
+        ];
 
-        $this->fields_value = array(
+        $this->fields_value = [
             'selection[]_states' => true,
             'selection[]_taxes' => true,
             'selection[]_currencies' => true,
             'selection[]_languages' => true,
             'selection[]_units' => true,
             'download_updated_pack' => 1
-        );
+        ];
 
         $this->show_toolbar = true;
         return parent::renderForm();
@@ -383,14 +383,16 @@ class AdminLocalizationControllerCore extends AdminController
 
         $this->initToolbar();
         $this->initPageHeaderToolbar();
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'localization_form' => $this->renderForm(),
             'localization_options' => $this->renderOptions(),
             'url_post' => self::$currentIndex.'&token='.$this->token,
             'show_page_header_toolbar' => $this->show_page_header_toolbar,
             'page_header_toolbar_title' => $this->page_header_toolbar_title,
             'page_header_toolbar_btn' => $this->page_header_toolbar_btn
-        ));
+            ]
+        );
     }
 
     public function display()
@@ -417,7 +419,7 @@ class AdminLocalizationControllerCore extends AdminController
         Configuration::updateValue('PS_CURRENCY_DEFAULT', $value);
 
         /* Set conversion rate of default currency to 1 */
-        ObjectModel::updateMultishopTable('Currency', array('conversion_rate' => 1), 'a.id_currency');
+        ObjectModel::updateMultishopTable('Currency', ['conversion_rate' => 1], 'a.id_currency');
 
         $tmp_context = Shop::getContext();
         if ($tmp_context == Shop::CONTEXT_GROUP) {

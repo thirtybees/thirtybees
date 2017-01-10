@@ -42,19 +42,19 @@ class ContactCore extends ObjectModel
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = array(
+    public static $definition = [
         'table' => 'contact',
         'primary' => 'id_contact',
         'multilang' => true,
-        'fields' => array(
-            'email' =>                array('type' => self::TYPE_STRING, 'validate' => 'isEmail', 'size' => 128),
-            'customer_service' =>    array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
+        'fields' => [
+            'email' =>                ['type' => self::TYPE_STRING, 'validate' => 'isEmail', 'size' => 128],
+            'customer_service' =>    ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
 
             /* Lang fields */
-            'name' =>                array('type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 32),
-            'description' =>        array('type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCleanHtml'),
-        ),
-    );
+            'name' =>                ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 32],
+            'description' =>        ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCleanHtml'],
+        ],
+    ];
 
     /**
      * Return available contacts

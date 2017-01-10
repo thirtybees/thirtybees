@@ -1,6 +1,6 @@
 <?php
-return array(
-    'informations' => array(
+return [
+    'informations' => [
         'documentation' => 'http://doc.prestashop.com/display/PS16/Installing+PrestaShop',
         'documentation_upgrade' => 'http://docs.prestashop.com/display/PS16/Updating+PrestaShop',
         'forum' => 'http://www.prestashop.com/forums/',
@@ -8,8 +8,8 @@ return array(
         'support' => 'https://www.prestashop.com/en/support',
         'tutorial' => 'https://www.youtube.com/watch?v=psz4aIPZZuk',
         'tailored_help' => 'http://addons.prestashop.com/en/388-support',
-    ),
-    'translations' => array(
+    ],
+    'translations' => [
         'An SQL error occurred for entity <i>%1$s</i>: <i>%2$s</i>' => '所輸入的 <i>%1$s</i>: <i>%2$s</i> 發生了SQL錯誤',
         'Cannot create image "%1$s" for entity "%2$s"' => '無法建立圖片 "%s"，於 "%2$s"',
         'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => '無法建立圖片 "%s"（資料夾 "%2$s" 權限有誤）',
@@ -205,5 +205,5 @@ return array(
         'Continue the installation in:' => '繼續安裝：',
         'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => '上面選擇的語言只用在安裝過程，一旦完成安裝，您可以為商店加入超過 %d 種翻譯，而且都是免費的！',
         'Installing PrestaShop is quick and easy. In just a few moments, you will become part of a community consisting of more than 250,000 merchants. You are on the way to creating your own unique online store that you can manage easily every day.' => 'Prestashop 的安裝快速而簡單。在短短的幾分鐘，你就會成為一個擁有超過250,000位商人社區的一份子。在創建您獨特的網上商店途中，您可以很容易地每天管理它。',
-    ),
-);
+    ],
+];

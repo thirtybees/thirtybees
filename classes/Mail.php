@@ -48,17 +48,17 @@ class MailCore extends ObjectModel
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = array(
+    public static $definition = [
         'table' => 'mail',
         'primary' => 'id_mail',
-        'fields' => array(
-            'recipient' => array('type' => self::TYPE_STRING, 'validate' => 'isEmail', 'copy_post' => false, 'required' => true, 'size' => 126),
-            'template' => array('type' => self::TYPE_STRING, 'validate' => 'isTplName', 'copy_post' => false, 'required' => true, 'size' => 62),
-            'subject' => array('type' => self::TYPE_STRING, 'validate' => 'isMailSubject', 'copy_post' => false, 'required' => true, 'size' => 254),
-            'id_lang' => array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'copy_post' => false, 'required' => true),
-            'date_add' => array('type' => self::TYPE_DATE, 'validate' => 'isDate', 'copy_post' => false, 'required' => true),
-        ),
-    );
+        'fields' => [
+            'recipient' => ['type' => self::TYPE_STRING, 'validate' => 'isEmail', 'copy_post' => false, 'required' => true, 'size' => 126],
+            'template' => ['type' => self::TYPE_STRING, 'validate' => 'isTplName', 'copy_post' => false, 'required' => true, 'size' => 62],
+            'subject' => ['type' => self::TYPE_STRING, 'validate' => 'isMailSubject', 'copy_post' => false, 'required' => true, 'size' => 254],
+            'id_lang' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'copy_post' => false, 'required' => true],
+            'date_add' => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'copy_post' => false, 'required' => true],
+        ],
+    ];
 
     const TYPE_HTML = 1;
     const TYPE_TEXT = 2;
@@ -92,7 +92,8 @@ class MailCore extends ObjectModel
             $id_shop = Context::getContext()->shop->id;
         }
 
-        $configuration = Configuration::getMultiple(array(
+        $configuration = Configuration::getMultiple(
+            [
             'PS_SHOP_EMAIL',
             'PS_MAIL_METHOD',
             'PS_MAIL_SERVER',
@@ -102,7 +103,7 @@ class MailCore extends ObjectModel
             'PS_MAIL_SMTP_ENCRYPTION',
             'PS_MAIL_SMTP_PORT',
             'PS_MAIL_TYPE'
-        ), null, null, $id_shop);
+            ], null, null, $id_shop);
 
         // Returns immediatly if emails are deactivated
         if ($configuration['PS_MAIL_METHOD'] == 3) {
@@ -159,7 +160,7 @@ class MailCore extends ObjectModel
         }
 
         if (!is_array($template_vars)) {
-            $template_vars = array();
+            $template_vars = [];
         }
 
         // Do not crash for this error, that may be a complicated customer name
@@ -257,20 +258,20 @@ class MailCore extends ObjectModel
             }
             $template_html = '';
             $template_txt = '';
-            Hook::exec('actionEmailAddBeforeContent', array(
+            Hook::exec('actionEmailAddBeforeContent', [
                 'template' => $template,
                 'template_html' => &$template_html,
                 'template_txt' => &$template_txt,
                 'id_lang' => (int)$id_lang
-            ), null, true);
+            ], null, true);
             $template_html .= Tools::file_get_contents($template_path.$iso_template.'.html');
             $template_txt .= strip_tags(html_entity_decode(Tools::file_get_contents($template_path.$iso_template.'.txt'), null, 'utf-8'));
-            Hook::exec('actionEmailAddAfterContent', array(
+            Hook::exec('actionEmailAddAfterContent', [
                 'template' => $template,
                 'template_html' => &$template_html,
                 'template_txt' => &$template_txt,
                 'id_lang' => (int)$id_lang
-            ), null, true);
+            ], null, true);
             if ($override_mail && file_exists($template_path.$iso.'/lang.php')) {
                 include_once($template_path.$iso.'/lang.php');
             } elseif ($module_name && file_exists($theme_path.'mails/'.$iso.'/lang.php')) {
@@ -299,8 +300,8 @@ class MailCore extends ObjectModel
                 $message->setReplyTo($reply_to);
             }
 
-            $template_vars = array_map(array('Tools', 'htmlentitiesDecodeUTF8'), $template_vars);
-            $template_vars = array_map(array('Tools', 'stripslashes'), $template_vars);
+            $template_vars = array_map(['Tools', 'htmlentitiesDecodeUTF8'], $template_vars);
+            $template_vars = array_map(['Tools', 'stripslashes'], $template_vars);
 
             if (Configuration::get('PS_LOGO_MAIL') !== false && file_exists(_PS_IMG_DIR_.Configuration::get('PS_LOGO_MAIL', null, null, $id_shop))) {
                 $logo = _PS_IMG_DIR_.Configuration::get('PS_LOGO_MAIL', null, null, $id_shop);
@@ -328,15 +329,15 @@ class MailCore extends ObjectModel
             $template_vars['{history_url}'] = Context::getContext()->link->getPageLink('history', true, Context::getContext()->language->id, null, false, $id_shop);
             $template_vars['{color}'] = Tools::safeOutput(Configuration::get('PS_MAIL_COLOR', null, null, $id_shop));
             // Get extra template_vars
-            $extra_template_vars = array();
-            Hook::exec('actionGetExtraMailTemplateVars', array(
+            $extra_template_vars = [];
+            Hook::exec('actionGetExtraMailTemplateVars', [
                 'template' => $template,
                 'template_vars' => $template_vars,
                 'extra_template_vars' => &$extra_template_vars,
                 'id_lang' => (int)$id_lang
-            ), null, true);
+            ], null, true);
             $template_vars = array_merge($template_vars, $extra_template_vars);
-            $swift->registerPlugin(new Swift_Plugins_DecoratorPlugin(array($to_plugin => $template_vars)));
+            $swift->registerPlugin(new Swift_Plugins_DecoratorPlugin([$to_plugin => $template_vars]));
             if ($configuration['PS_MAIL_TYPE'] == Mail::TYPE_BOTH || $configuration['PS_MAIL_TYPE'] == Mail::TYPE_TEXT) {
                 $message->addPart($template_txt, 'text/plain', 'utf-8');
             }
@@ -346,7 +347,7 @@ class MailCore extends ObjectModel
             if ($file_attachment && !empty($file_attachment)) {
                 // Multiple attachments?
                 if (!is_array(current($file_attachment))) {
-                    $file_attachment = array($file_attachment);
+                    $file_attachment = [$file_attachment];
                 }
 
                 foreach ($file_attachment as $attachment) {
@@ -356,7 +357,7 @@ class MailCore extends ObjectModel
                 }
             }
             /* Send mail */
-            $message->setFrom(array($from => $from_name));
+            $message->setFrom([$from => $from_name]);
             $send = $swift->send($message);
 
             ShopUrl::resetMainDomainCache();
@@ -370,13 +371,13 @@ class MailCore extends ObjectModel
                 $recipients_cc = $message->getCc();
                 $recipients_bcc = $message->getBcc();
                 if (!is_array($recipients_to)) {
-                    $recipients_to = array();
+                    $recipients_to = [];
                 }
                 if (!is_array($recipients_cc)) {
-                    $recipients_cc = array();
+                    $recipients_cc = [];
                 }
                 if (!is_array($recipients_bcc)) {
-                    $recipients_bcc = array();
+                    $recipients_bcc = [];
                 }
                 foreach (array_merge($recipients_to, $recipients_cc, $recipients_bcc) as $email => $recipient_name) {
                     /** @var Swift_Address $recipient */
@@ -507,12 +508,12 @@ class MailCore extends ObjectModel
     /* Rewrite of Swift_Message::generateId() without getmypid() */
     protected static function generateId($idstring = null)
     {
-        $midparams = array(
+        $midparams = [
             'utctime' => gmstrftime('%Y%m%d%H%M%S'),
             'randint' => mt_rand(),
             'customstr' => (preg_match("/^(?<!\\.)[a-z0-9\\.]+(?!\\.)\$/iD", $idstring) ? $idstring : "swift") ,
             'hostname' => ((isset($_SERVER['SERVER_NAME']) && !empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : php_uname('n')),
-        );
+        ];
         return vsprintf("%s.%d.%s@%s", $midparams);
     }
 
@@ -555,7 +556,7 @@ class MailCore extends ObjectModel
         $length = $length - ($length % 4);
 
         if ($charset === 'UTF-8') {
-            $parts = array();
+            $parts = [];
             $maxchars = floor(($length * 3) / 4);
             $stringLength = Tools::strlen($string);
 

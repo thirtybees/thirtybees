@@ -93,7 +93,7 @@ class PageNotFoundControllerCore extends FrontController
             header('Content-Type: image/gif');
             readfile(_PS_IMG_DIR_.'404.gif');
             exit;
-        } elseif (in_array(Tools::strtolower(substr($_SERVER['REQUEST_URI'], -3)), array('.js', 'css'))) {
+        } elseif (in_array(Tools::strtolower(substr($_SERVER['REQUEST_URI'], -3)), ['.js', 'css'])) {
             $this->context->cookie->disallowWriting();
             exit;
         }

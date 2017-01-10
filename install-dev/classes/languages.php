@@ -59,9 +59,9 @@ class InstallLanguages
             throw new PrestashopInstallerException('English language is missing');
         }
 
-        $this->languages = array(
+        $this->languages = [
             self::DEFAULT_ISO => new InstallLanguage(self::DEFAULT_ISO),
-        );
+        ];
 
         // Load other languages
         foreach (scandir(_PS_INSTALL_LANGS_PATH_) as $lang) {
@@ -173,7 +173,7 @@ class InstallLanguages
         static $countries = null;
 
         if (is_null($countries)) {
-            $countries = array();
+            $countries = [];
             $countries_lang = $this->getLanguage()->getCountries();
             $countries_default = $this->getLanguage(self::DEFAULT_ISO)->getCountries();
             $xml = @simplexml_load_file(_PS_INSTALL_DATA_PATH_.'xml/country.xml');

@@ -231,7 +231,7 @@ class MySQLCore extends Db
             $result = $this->result;
         }
 
-        $data = array();
+        $data = [];
         while ($row = $this->nextRow($result)) {
             $data[] = $row;
         }
@@ -315,7 +315,7 @@ class MySQLCore extends Db
         $result = mysql_query($sql);
         while ($row = mysql_fetch_assoc($result)) {
             if ($row['Engine'] == 'InnoDB') {
-                if (in_array($row['Support'], array('DEFAULT', 'YES'))) {
+                if (in_array($row['Support'], ['DEFAULT', 'YES'])) {
                     $value = 'InnoDB';
                 }
                 break;

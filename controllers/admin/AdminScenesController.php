@@ -40,30 +40,30 @@ class AdminScenesControllerCore extends AdminController
         $this->addRowAction('delete');
 
         $this->identifier = 'id_scene';
-        $this->fieldImageSettings = array(
-            array('name' => 'image', 'dir' => 'scenes'),
-            array('name' => 'thumb', 'dir' => 'scenes/thumbs')
-        );
+        $this->fieldImageSettings = [
+            ['name' => 'image', 'dir' => 'scenes'],
+            ['name' => 'thumb', 'dir' => 'scenes/thumbs']
+        ];
 
-        $this->fields_list = array(
-            'id_scene' => array(
+        $this->fields_list = [
+            'id_scene' => [
                 'title' => $this->l('ID'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs'
-            ),
-            'name' => array(
+            ],
+            'name' => [
                 'title' => $this->l('Image Maps'),
                 'filter_key' => 'b!name'
-            ),
-            'active' => array(
+            ],
+            'active' => [
                 'title' => $this->l('Activated'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs',
                 'active' => 'status',
                 'type' => 'bool',
                 'orderby' => false
-            )
-        );
+            ]
+        ];
 
         parent::__construct();
     }
@@ -121,11 +121,11 @@ class AdminScenesControllerCore extends AdminController
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
-            $this->page_header_toolbar_btn['new_scene'] = array(
+            $this->page_header_toolbar_btn['new_scene'] = [
                 'href' => self::$currentIndex.'&addscene&token='.$this->token,
                 'desc' => $this->l('Add new image map', null, null, false),
                 'icon' => 'process-icon-new'
-            );
+            ];
         }
 
         parent::initPageHeaderToolbar();
@@ -135,12 +135,15 @@ class AdminScenesControllerCore extends AdminController
     {
         parent::initToolbar();
 
-        if (in_array($this->display, array('add', 'edit'))) {
-            $this->toolbar_btn = array_merge(array('save-and-stay' => array(
+        if (in_array($this->display, ['add', 'edit'])) {
+            $this->toolbar_btn = array_merge(
+                [
+                    'save-and-stay' => [
                 'short' => 'SaveAndStay',
                 'href' => '#',
                 'desc' => $this->l('Save and stay'),
-            )), $this->toolbar_btn);
+                    ]
+                ], $this->toolbar_btn);
         }
     }
 
@@ -158,11 +161,11 @@ class AdminScenesControllerCore extends AdminController
                 $thumb_scene_image_type = $scene_image_type;
             }
         }
-        $fields_form = array(
-            'legend' => array(
+        $fields_form = [
+            'legend' => [
                 'title' => $this->l('Image Maps'),
                 'icon' => 'icon-picture',
-            ),
+            ],
             'description' => '
 				<h4>'.$this->l('How to map products in the image:').'</h4>
 				<p>
@@ -174,40 +177,40 @@ class AdminScenesControllerCore extends AdminController
 					'.$this->l('Click the appropriate product and then click OK. Repeat these steps for each mapping zone you wish to create.').'<br/>
 					'.$this->l('When you have finished mapping zones, click "Save Image Map."').'
 				</p>',
-            'input' => array(
-                array(
+            'input' => [
+                [
                     'type' => 'text',
                     'label' => $this->l('Image map name'),
                     'name' => 'name',
                     'lang' => true,
                     'required' => true,
                     'hint' => $this->l('Invalid characters:').' <>;=#{}'
-                ),
-                array(
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Status'),
                     'name' => 'active',
                     'required' => false,
                     'class' => 't',
                     'is_bool' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'active_on',
                             'value' => 1,
                             'label' => $this->l('Enabled')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'active_off',
                             'value' => 0,
                             'label' => $this->l('Disabled')
-                        )
-                    )
-                ),
-            ),
-            'submit' => array(
+                        ]
+                    ]
+                ],
+            ],
+            'submit' => [
                 'title' => $this->l('Save')
-            ),
-        );
+            ],
+        ];
         $this->fields_form = $fields_form;
 
         $image_to_map_desc = '';
@@ -256,14 +259,14 @@ class AdminScenesControllerCore extends AdminController
                 $thumb_scene_image_type['width'], $thumb_scene_image_type['height']).'.<br />'
                 .$this->l('Note: To change image dimensions, please change the \'m_scene_default\' image type settings to the desired size (in Back Office > Preferences > Images).');
 
-            $input_img_alt = array(
+            $input_img_alt = [
                 'type' => 'file',
                 'label' => $this->l('Alternative thumbnail'),
                 'name' => 'thumb',
                 'desc' => $img_alt_desc
-            );
+            ];
 
-            $selected_cat = array();
+            $selected_cat = [];
             if (Tools::isSubmit('categories')) {
                 foreach (Tools::getValue('categories') as $row) {
                     $selected_cat[] = $row;
@@ -274,37 +277,37 @@ class AdminScenesControllerCore extends AdminController
                 }
             }
 
-            $this->fields_form['input'][] = array(
+            $this->fields_form['input'][] = [
                     'type'  => 'categories',
                     'label' => $this->l('Categories'),
                     'name'  => 'categories',
-                    'tree'  => array(
+                    'tree'  => [
                         'id'                  => 'categories-tree',
                         'title'               => 'Categories',
                         'selected_categories' => $selected_cat,
                         'use_search'          => true,
                         'use_checkbox'        => true
-                    )
-                );
+                    ]
+            ];
         } else {
             $image_to_map_desc .= '<span>'.$this->l('Please add a picture to continue mapping the image.').'</span>';
         }
 
         if (Shop::isFeatureActive()) {
-            $this->fields_form['input'][] = array(
+            $this->fields_form['input'][] = [
                 'type' => 'shop',
                 'label' => $this->l('Shop association'),
                 'name' => 'checkBoxShopAsso',
-            );
+            ];
         }
 
-        $this->fields_form['input'][] = array(
+        $this->fields_form['input'][] = [
             'type' => 'file',
             'label' => $this->l('Image to be mapped'),
             'name' => 'image',
             'display_image' => true,
             'desc' => $image_to_map_desc,
-        );
+        ];
 
         if (isset($input_img_alt)) {
             $this->fields_form['input'][] = $input_img_alt;

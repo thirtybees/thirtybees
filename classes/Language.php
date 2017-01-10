@@ -52,38 +52,38 @@ class LanguageCore extends ObjectModel
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = array(
+    public static $definition = [
         'table' => 'lang',
         'primary' => 'id_lang',
-        'fields' => array(
-            'name' =>                array('type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 32),
-            'iso_code' =>            array('type' => self::TYPE_STRING, 'validate' => 'isLanguageIsoCode', 'required' => true, 'size' => 2),
-            'language_code' =>        array('type' => self::TYPE_STRING, 'validate' => 'isLanguageCode', 'size' => 5),
-            'active' =>            array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
-            'is_rtl' =>            array('type' => self::TYPE_BOOL, 'validate' => 'isBool'),
-            'date_format_lite' =>    array('type' => self::TYPE_STRING, 'validate' => 'isPhpDateFormat', 'required' => true, 'size' => 32),
-            'date_format_full' =>    array('type' => self::TYPE_STRING, 'validate' => 'isPhpDateFormat', 'required' => true, 'size' => 32),
-        ),
-    );
+        'fields' => [
+            'name' =>                ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 32],
+            'iso_code' =>            ['type' => self::TYPE_STRING, 'validate' => 'isLanguageIsoCode', 'required' => true, 'size' => 2],
+            'language_code' =>        ['type' => self::TYPE_STRING, 'validate' => 'isLanguageCode', 'size' => 5],
+            'active' =>            ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'is_rtl' =>            ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'date_format_lite' =>    ['type' => self::TYPE_STRING, 'validate' => 'isPhpDateFormat', 'required' => true, 'size' => 32],
+            'date_format_full' =>    ['type' => self::TYPE_STRING, 'validate' => 'isPhpDateFormat', 'required' => true, 'size' => 32],
+        ],
+    ];
 
 
     /** @var array Languages cache */
     protected static $_checkedLangs;
     protected static $_LANGUAGES;
-    protected static $countActiveLanguages = array();
+    protected static $countActiveLanguages = [];
 
-    protected $webserviceParameters = array(
+    protected $webserviceParameters = [
         'objectNodeName' => 'language',
         'objectsNodeName' => 'languages',
-    );
+    ];
 
-    protected $translationsFilesAndVars = array(
+    protected $translationsFilesAndVars = [
             'fields' => '_FIELDS',
             'errors' => '_ERRORS',
             'admin' => '_LANGADM',
             'pdf' => '_LANGPDF',
             'tabs' => 'tabs',
-        );
+    ];
 
     public function __construct($id = null, $id_lang = null)
     {
@@ -195,13 +195,13 @@ class LanguageCore extends ObjectModel
     {
         Tools::displayAsDeprecated();
 
-        static $themes = array();
+        static $themes = [];
 
         if (empty($themes)) {
             $installed_themes = Theme::getThemes();
             foreach ($installed_themes as $theme) {
                 /** @var Theme $theme */
-                $themes[$theme->directory] = array('name' => $theme->name);
+                $themes[$theme->directory] = ['name' => $theme->name];
             }
         }
         return $themes;
@@ -275,10 +275,10 @@ class LanguageCore extends ObjectModel
             $mPath_to = _PS_MAIL_DIR_.(string)$iso_to.'/';
         }
 
-        $lFiles = array('admin.php', 'errors.php', 'fields.php', 'pdf.php', 'tabs.php');
+        $lFiles = ['admin.php', 'errors.php', 'fields.php', 'pdf.php', 'tabs.php'];
 
         // Added natives mails files
-        $mFiles = array(
+        $mFiles = [
             'account.html', 'account.txt',
             'backoffice_order.html', 'backoffice_order.txt',
             'bankwire.html', 'bankwire.txt',
@@ -311,15 +311,15 @@ class LanguageCore extends ObjectModel
             'voucher.html', 'voucher.txt',
             'voucher_new.html', 'voucher_new.txt',
             'order_changed.html', 'order_changed.txt'
-        );
+        ];
 
         $number = -1;
 
-        $files = array();
-        $files_tr = array();
-        $files_theme = array();
-        $files_mail = array();
-        $files_modules = array();
+        $files = [];
+        $files_tr = [];
+        $files_theme = [];
+        $files_mail = [];
+        $files_modules = [];
 
         // When a copy is made from a theme in specific language
         // to an other theme for the same language,
@@ -390,7 +390,7 @@ class LanguageCore extends ObjectModel
                 $files_theme[$pPath_from.'lang/'.(string)$iso_from.'.php'] = ($copy ? $pPath_to.'lang/'.(string)$iso_to.'.php' : ++$number);
             }
 
-            $module_theme_files = (file_exists($tPath_from.'modules/') ? scandir($tPath_from.'modules/') : array());
+            $module_theme_files = (file_exists($tPath_from.'modules/') ? scandir($tPath_from.'modules/') : []);
             foreach ($module_theme_files as $module) {
                 if ($module !== '.' && $module != '..' && $module !== '.svn' && file_exists($tPath_from.'modules/'.$module.'/translations/'.(string)$iso_from.'.php')) {
                     $files_theme[$tPath_from.'modules/'.$module.'/translations/'.(string)$iso_from.'.php'] = ($copy ? $tPath_to.'modules/'.$module.'/translations/'.(string)$iso_to.'.php' : ++$number);
@@ -414,7 +414,7 @@ class LanguageCore extends ObjectModel
     public function loadUpdateSQL()
     {
         $tables = Db::getInstance()->executeS('SHOW TABLES LIKE \''.str_replace('_', '\\_', _DB_PREFIX_).'%\_lang\' ');
-        $langTables = array();
+        $langTables = [];
 
         foreach ($tables as $table) {
             foreach ($table as $t) {
@@ -557,15 +557,15 @@ class LanguageCore extends ObjectModel
                 Language::recurseDeleteDir(_PS_TRANSLATIONS_DIR_.$this->iso_code);
             }
 
-            $images = array(
+            $images = [
                 '.jpg',
                 '-default-'.ImageType::getFormatedName('thickbox').'.jpg',
                 '-default-'.ImageType::getFormatedName('home').'.jpg',
                 '-default-'.ImageType::getFormatedName('large').'.jpg',
                 '-default-'.ImageType::getFormatedName('medium').'.jpg',
                 '-default-'.ImageType::getFormatedName('small').'.jpg'
-            );
-            $images_directories = array(_PS_CAT_IMG_DIR_, _PS_MANU_IMG_DIR_, _PS_PROD_IMG_DIR_, _PS_SUPP_IMG_DIR_);
+            ];
+            $images_directories = [_PS_CAT_IMG_DIR_, _PS_MANU_IMG_DIR_, _PS_PROD_IMG_DIR_, _PS_SUPP_IMG_DIR_];
             foreach ($images_directories as $image_directory) {
                 foreach ($images as $image) {
                     if (file_exists($image_directory.$this->iso_code.$image)) {
@@ -615,7 +615,7 @@ class LanguageCore extends ObjectModel
             Language::loadLanguages();
         }
 
-        $languages = array();
+        $languages = [];
         foreach (self::$_LANGUAGES as $language) {
             if ($active && !$language['active'] || ($id_shop && !isset($language['shops'][(int)$id_shop]))) {
                 continue;
@@ -768,7 +768,7 @@ class LanguageCore extends ObjectModel
      */
     public static function loadLanguages()
     {
-        self::$_LANGUAGES = array();
+        self::$_LANGUAGES = [];
 
         $sql = 'SELECT l.*, ls.`id_shop`
 				FROM `'._DB_PREFIX_.'lang` l
@@ -826,7 +826,7 @@ class LanguageCore extends ObjectModel
             return false;
         }
 
-        if (isset($params_lang['allow_accented_chars_url']) && in_array($params_lang['allow_accented_chars_url'], array('1', 'true'))) {
+        if (isset($params_lang['allow_accented_chars_url']) && in_array($params_lang['allow_accented_chars_url'], ['1', 'true'])) {
             Configuration::updateGlobalValue('PS_ALLOW_ACCENTED_CHARS_URL', 1);
         }
 
@@ -843,7 +843,7 @@ class LanguageCore extends ObjectModel
             Language::_copyNoneFlag((int)$lang->id);
         }
 
-        $files_copy = array(
+        $files_copy = [
             '/en.jpg',
             '/en-default-'.ImageType::getFormatedName('thickbox').'.jpg',
             '/en-default-'.ImageType::getFormatedName('home').'.jpg',
@@ -851,9 +851,9 @@ class LanguageCore extends ObjectModel
             '/en-default-'.ImageType::getFormatedName('medium').'.jpg',
             '/en-default-'.ImageType::getFormatedName('small').'.jpg',
             '/en-default-'.ImageType::getFormatedName('scene').'.jpg'
-        );
+        ];
 
-        foreach (array(_PS_CAT_IMG_DIR_, _PS_MANU_IMG_DIR_, _PS_PROD_IMG_DIR_, _PS_SUPP_IMG_DIR_) as $to) {
+        foreach ([_PS_CAT_IMG_DIR_, _PS_MANU_IMG_DIR_, _PS_PROD_IMG_DIR_, _PS_SUPP_IMG_DIR_] as $to) {
             foreach ($files_copy as $file) {
                 @copy(_PS_ROOT_DIR_.'/img/l'.$file, $to.str_replace('/en', '/'.$iso_code, $file));
             }
@@ -871,7 +871,7 @@ class LanguageCore extends ObjectModel
     public static function isInstalled($iso_code)
     {
         if (self::$_cache_language_installation === null) {
-            self::$_cache_language_installation = array();
+            self::$_cache_language_installation = [];
             $result = Db::getInstance()->executeS('SELECT `id_lang`, `iso_code` FROM `'._DB_PREFIX_.'lang`');
             foreach ($result as $row) {
                 self::$_cache_language_installation[$row['iso_code']] = $row['id_lang'];
@@ -908,7 +908,7 @@ class LanguageCore extends ObjectModel
 
         $lang_pack = false;
         $lang_pack_ok = false;
-        $errors = array();
+        $errors = [];
         $file = _PS_TRANSLATIONS_DIR_.(string)$iso.'.gzip';
 
         if (!$lang_pack_link = Tools::file_get_contents('http://www.prestashop.com/download/lang_packs/get_language_pack.php?version='.$version.'&iso_lang='.Tools::strtolower((string)$iso))) {
@@ -935,7 +935,7 @@ class LanguageCore extends ObjectModel
             $files_paths = AdminTranslationsController::filesListToPaths($files_list);
 
             $i = 0;
-            $tmp_array = array();
+            $tmp_array = [];
 
             foreach ($files_paths as $files_path) {
                 $path = dirname($files_path);
@@ -946,8 +946,8 @@ class LanguageCore extends ObjectModel
             }
 
             if (defined('_PS_HOST_MODE_')) {
-                $mails_files = array();
-                $other_files = array();
+                $mails_files = [];
+                $other_files = [];
 
                 foreach ($files_list as $key => $data) {
                     if (substr($data['filename'], 0, 5) == 'mails') {
@@ -1012,7 +1012,7 @@ class LanguageCore extends ObjectModel
         $languages = Language::getLanguages(false);
         foreach ($languages as $lang) {
             $gz = false;
-            $files_listing = array();
+            $files_listing = [];
             foreach ($modules_list as $module_name) {
                 $filegz = _PS_TRANSLATIONS_DIR_.$lang['iso_code'].'.gzip';
 

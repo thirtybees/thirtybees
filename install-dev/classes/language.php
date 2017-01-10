@@ -78,7 +78,7 @@ class InstallLanguage
     public function getMetaInformation($key)
     {
         if (!is_array($this->meta)) {
-            $this->meta = array();
+            $this->meta = [];
             $xml = @simplexml_load_file($this->path.'language.xml');
             if ($xml) {
                 foreach ($xml->children() as $node) {
@@ -93,7 +93,7 @@ class InstallLanguage
     public function getTranslation($key, $type = 'translations')
     {
         if (!is_array($this->data)) {
-            $this->data = file_exists($this->path.'install.php') ? include($this->path.'install.php') : array();
+            $this->data = file_exists($this->path.'install.php') ? include($this->path.'install.php') : [];
         }
 
         return isset($this->data[$type][$key]) ? $this->data[$type][$key] : null;
@@ -102,7 +102,7 @@ class InstallLanguage
     public function getCountries()
     {
         if (!is_array($this->countries)) {
-            $this->countries = array();
+            $this->countries = [];
             if (file_exists($this->path.'data/country.xml')) {
                 if ($xml = @simplexml_load_file($this->path.'data/country.xml')) {
                     foreach ($xml->country as $country) {

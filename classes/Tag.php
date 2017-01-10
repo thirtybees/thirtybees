@@ -35,21 +35,21 @@ class TagCore extends ObjectModel
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = array(
+    public static $definition = [
         'table' => 'tag',
         'primary' => 'id_tag',
-        'fields' => array(
-            'id_lang' =>    array('type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true),
-            'name' =>        array('type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 32),
-        ),
-    );
+        'fields' => [
+            'id_lang' =>    ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'name' =>        ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 32],
+        ],
+    ];
 
 
-    protected $webserviceParameters = array(
-        'fields' => array(
-            'id_lang' => array('xlink_resource' => 'languages'),
-        ),
-    );
+    protected $webserviceParameters = [
+        'fields' => [
+            'id_lang' => ['xlink_resource' => 'languages'],
+        ],
+    ];
 
     public function __construct($id = null, $name = null, $id_lang = null)
     {
@@ -100,7 +100,7 @@ class TagCore extends ObjectModel
             $tag_list = array_filter(array_unique(array_map('trim', preg_split('#\\'.$separator.'#', $tag_list, null, PREG_SPLIT_NO_EMPTY))));
         }
 
-        $list = array();
+        $list = [];
         if (is_array($tag_list)) {
             foreach ($tag_list as $tag) {
                 if (!Validate::isGenericName($tag)) {
@@ -130,7 +130,7 @@ class TagCore extends ObjectModel
 		INSERT INTO `'._DB_PREFIX_.'product_tag` (`id_tag`, `id_product`, `id_lang`)
 		VALUES '.$data);
 
-        if ($list != array()) {
+        if ($list != []) {
             self::updateTagCount($list);
         }
 
@@ -205,7 +205,7 @@ class TagCore extends ObjectModel
 		WHERE pt.`id_product`='.(int)$id_product)) {
             return false;
         }
-        $result = array();
+        $result = [];
         foreach ($tmp as $tag) {
             $result[$tag['id_lang']][] = $tag['name'];
         }
@@ -220,7 +220,7 @@ class TagCore extends ObjectModel
         $id_lang = $this->id_lang ? $this->id_lang : $context->language->id;
 
         if (!$this->id && $associated) {
-            return array();
+            return [];
         }
 
         $in = $associated ? 'IN' : 'NOT IN';
@@ -240,8 +240,8 @@ class TagCore extends ObjectModel
         $result = Db::getInstance()->delete('product_tag', 'id_tag = '.(int)$this->id);
         if (is_array($array)) {
             $array = array_map('intval', $array);
-            $result &= ObjectModel::updateMultishopTable('Product', array('indexed' => 0), 'a.id_product IN ('.implode(',', $array).')');
-            $ids = array();
+            $result &= ObjectModel::updateMultishopTable('Product', ['indexed' => 0], 'a.id_product IN ('.implode(',', $array).')');
+            $ids = [];
             foreach ($array as $id_product) {
                 $ids[] = '('.(int)$id_product.','.(int)$this->id.','.(int)$this->id_lang.')';
             }
@@ -253,7 +253,7 @@ class TagCore extends ObjectModel
                 }
             }
         }
-        self::updateTagCount(array((int)$this->id));
+        self::updateTagCount([(int)$this->id]);
         return $result;
     }
 
@@ -263,11 +263,11 @@ class TagCore extends ObjectModel
         $result = Db::getInstance()->delete('product_tag', 'id_product = '.(int)$id_product);
         Db::getInstance()->delete('tag', 'NOT EXISTS (SELECT 1 FROM '._DB_PREFIX_.'product_tag
         												WHERE '._DB_PREFIX_.'product_tag.id_tag = '._DB_PREFIX_.'tag.id_tag)');
-        $tag_list = array();
+        $tag_list = [];
         foreach($tags_removed as $tag_removed) {
             $tag_list[] = $tag_removed['id_tag'];
         }
-        if ($tag_list != array()) {
+        if ($tag_list != []) {
             self::updateTagCount($tag_list);
         }
         return $result;

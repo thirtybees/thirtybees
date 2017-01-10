@@ -48,26 +48,26 @@ class ReferrerCore extends ObjectModel
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = array(
+    public static $definition = [
         'table' => 'referrer',
         'primary' => 'id_referrer',
-        'fields' => array(
-            'name' =>                        array('type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 64),
-            'passwd' =>                    array('type' => self::TYPE_STRING, 'validate' => 'isPasswd', 'size' => 32),
-            'http_referer_regexp' =>        array('type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 64),
-            'request_uri_regexp' =>        array('type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 64),
-            'http_referer_like' =>            array('type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 64),
-            'request_uri_like' =>            array('type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 64),
-            'http_referer_regexp_not' =>    array('type' => self::TYPE_STRING, 'validate' => 'isCleanHtml'),
-            'request_uri_regexp_not' =>    array('type' => self::TYPE_STRING, 'validate' => 'isCleanHtml'),
-            'http_referer_like_not' =>        array('type' => self::TYPE_STRING, 'validate' => 'isCleanHtml'),
-            'request_uri_like_not' =>        array('type' => self::TYPE_STRING, 'validate' => 'isCleanHtml'),
-            'base_fee' =>                    array('type' => self::TYPE_FLOAT, 'validate' => 'isFloat'),
-            'percent_fee' =>                array('type' => self::TYPE_FLOAT, 'validate' => 'isPercentage'),
-            'click_fee' =>                    array('type' => self::TYPE_FLOAT, 'validate' => 'isFloat'),
-            'date_add' =>                    array('type' => self::TYPE_DATE, 'validate' => 'isDate'),
-        ),
-    );
+        'fields' => [
+            'name' =>                        ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 64],
+            'passwd' =>                    ['type' => self::TYPE_STRING, 'validate' => 'isPasswd', 'size' => 32],
+            'http_referer_regexp' =>        ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 64],
+            'request_uri_regexp' =>        ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 64],
+            'http_referer_like' =>            ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 64],
+            'request_uri_like' =>            ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 64],
+            'http_referer_regexp_not' =>    ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml'],
+            'request_uri_regexp_not' =>    ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml'],
+            'http_referer_like_not' =>        ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml'],
+            'request_uri_like_not' =>        ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml'],
+            'base_fee' =>                    ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat'],
+            'percent_fee' =>                ['type' => self::TYPE_FLOAT, 'validate' => 'isPercentage'],
+            'click_fee' =>                    ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat'],
+            'date_add' =>                    ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+        ],
+    ];
 
     protected static $_join = '(r.http_referer_like IS NULL OR r.http_referer_like = \'\' OR cs.http_referer LIKE r.http_referer_like)
 			AND (r.request_uri_like IS NULL OR r.request_uri_like = \'\' OR cs.request_uri LIKE r.request_uri_like)
@@ -83,8 +83,8 @@ class ReferrerCore extends ObjectModel
         if (!($result = parent::add($autodate, $null_values))) {
             return false;
         }
-        Referrer::refreshCache(array(array('id_referrer' => $this->id)));
-        Referrer::refreshIndex(array(array('id_referrer' => $this->id)));
+        Referrer::refreshCache([['id_referrer' => $this->id]]);
+        Referrer::refreshIndex([['id_referrer' => $this->id]]);
         return $result;
     }
 
@@ -226,7 +226,7 @@ class ReferrerCore extends ObjectModel
                     .$where;
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
 
-        $implode = array();
+        $implode = [];
         foreach ($result as $row) {
             if ((int)$row['id_order']) {
                 $implode[] = (int)$row['id_order'];
@@ -241,7 +241,7 @@ class ReferrerCore extends ObjectModel
 						AND valid = 1';
             return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
         } else {
-            return array('orders' => 0, 'sales' => 0);
+            return ['orders' => 0, 'sales' => 0];
         }
     }
 
@@ -268,7 +268,7 @@ class ReferrerCore extends ObjectModel
                 $registrations = $referrer->getRegistrations(null, $employee);
                 $stats_sales = $referrer->getStatsSales(null, $employee);
 
-                Db::getInstance()->update('referrer_shop', array(
+                Db::getInstance()->update('referrer_shop', [
                     'cache_visitors' => (int)$stats_visits['uniqs'],
                     'cache_visits' => (int)$stats_visits['visits'],
                     'cache_pages' => (int)$stats_visits['pages'],
@@ -277,7 +277,7 @@ class ReferrerCore extends ObjectModel
                     'cache_sales' => number_format($stats_sales['sales'], 2, '.', ''),
                     'cache_reg_rate' => $stats_visits['uniqs'] ? $registrations / $stats_visits['uniqs'] : 0,
                     'cache_order_rate' => $stats_visits['uniqs'] ? $stats_sales['orders'] / $stats_visits['uniqs'] : 0,
-                ), 'id_referrer = '.(int)$referrer->id.' AND id_shop = '.(int)$shop_id);
+                ], 'id_referrer = '.(int)$referrer->id.' AND id_shop = '.(int)$shop_id);
             }
         }
 
@@ -331,7 +331,7 @@ class ReferrerCore extends ObjectModel
             exit;
         }
 
-        $json_array = array(
+        $json_array = [
             'id_product' => (int)$product->id,
             'product_name' => htmlspecialchars($product->name),
             'uniqs' => (int)$stats_visits['uniqs'],
@@ -347,7 +347,7 @@ class ReferrerCore extends ObjectModel
             'click_fee' => Tools::displayPrice((int)$stats_visits['visits'] * $referrer->click_fee, $currency),
             'base_fee' => Tools::displayPrice($stats_sales['orders'] * $referrer->base_fee, $currency),
             'percent_fee' => Tools::displayPrice($stats_sales['sales'] * $referrer->percent_fee / 100, $currency),
-        );
+        ];
 
         die('['.Tools::jsonEncode($json_array).']');
     }

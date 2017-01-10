@@ -66,12 +66,13 @@ class OrderOpcControllerCore extends ParentOrderController
                                 $this->_assignWrappingAndTOS();
                                 if ($this->_processCarrier()) {
                                     $carriers = $this->context->cart->simulateCarriersOutput();
-                                    $return = array_merge(array(
+                                    $return = array_merge(
+                                        [
                                         'HOOK_TOP_PAYMENT' => Hook::exec('displayPaymentTop'),
                                         'HOOK_PAYMENT' => $this->_getPaymentMethods(),
                                         'carrier_data' => $this->_getCarrierList(),
-                                        'HOOK_BEFORECARRIER' => Hook::exec('displayBeforeCarrier', array('carriers' => $carriers))
-                                        ),
+                                        'HOOK_BEFORECARRIER' => Hook::exec('displayBeforeCarrier', ['carriers' => $carriers])
+                                        ],
                                         $this->getFormatedSummaryDetail()
                                     );
                                     Cart::addExtraCarriers($return);
@@ -89,10 +90,12 @@ class OrderOpcControllerCore extends ParentOrderController
                         case 'updateTOSStatusAndGetPayments':
                             if (Tools::isSubmit('checked')) {
                                 $this->context->cookie->checkedTOS = (int)Tools::getValue('checked');
-                                $this->ajaxDie(Tools::jsonEncode(array(
+                                $this->ajaxDie(Tools::jsonEncode(
+                                    [
                                     'HOOK_TOP_PAYMENT' => Hook::exec('displayPaymentTop'),
                                     'HOOK_PAYMENT' => $this->_getPaymentMethods()
-                                )));
+                                    ]
+                                ));
                             }
                             break;
 
@@ -121,12 +124,12 @@ class OrderOpcControllerCore extends ParentOrderController
                             $this->context->customer->newsletter = (int)Tools::isSubmit('newsletter');
                             $this->context->customer->optin = (int)Tools::isSubmit('optin');
                             $this->context->customer->is_guest = (Tools::isSubmit('is_new_customer') ? !Tools::getValue('is_new_customer', 1) : 0);
-                            $return = array(
+                            $return = [
                                 'hasError' => !empty($this->errors),
                                 'errors' => $this->errors,
                                 'id_customer' => (int)$this->context->customer->id,
                                 'token' => Tools::getToken(false)
-                            );
+                            ];
                             if (!count($this->errors)) {
                                 $return['isSaved'] = (bool)$this->context->customer->update();
                             } else {
@@ -139,7 +142,7 @@ class OrderOpcControllerCore extends ParentOrderController
                             if ($this->context->customer->isLogged() || $this->context->customer->isGuest()) {
                                 // check if customer have addresses
                                 if (!Customer::getAddressesTotalById($this->context->customer->id)) {
-                                    $this->ajaxDie(Tools::jsonEncode(array('no_address' => 1)));
+                                    $this->ajaxDie(Tools::jsonEncode(['no_address' => 1]));
                                 }
                                 if (file_exists(_PS_MODULE_DIR_.'blockuserinfo/blockuserinfo.php')) {
                                     include_once(_PS_MODULE_DIR_.'blockuserinfo/blockuserinfo.php');
@@ -150,7 +153,7 @@ class OrderOpcControllerCore extends ParentOrderController
                                 $this->_assignAddress();
 
                                 if (!($formated_address_fields_values_list = $this->context->smarty->getTemplateVars('formatedAddressFieldsValuesList'))) {
-                                    $formated_address_fields_values_list = array();
+                                    $formated_address_fields_values_list = [];
                                 }
 
                                 // Wrapping fees
@@ -161,16 +164,17 @@ class OrderOpcControllerCore extends ParentOrderController
                                 if ($is_adv_api) {
                                     $tpl = 'order-address-advanced.tpl';
                                     $this->context->smarty->assign(
-                                        array('products' => $this->context->cart->getProducts())
+                                        ['products' => $this->context->cart->getProducts()]
                                     );
                                 } else {
                                     $tpl = 'order-address.tpl';
                                 }
 
-                                $return = array_merge(array(
+                                $return = array_merge(
+                                    [
                                     'order_opc_adress' => $this->context->smarty->fetch(_PS_THEME_DIR_.$tpl),
-                                    'block_user_info' => (isset($block_user_info) ? $block_user_info->hookDisplayTop(array()) : ''),
-                                    'block_user_info_nav' => (isset($block_user_info) ? $block_user_info->hookDisplayNav(array()) : ''),
+                                    'block_user_info' => (isset($block_user_info) ? $block_user_info->hookDisplayTop([]) : ''),
+                                    'block_user_info_nav' => (isset($block_user_info) ? $block_user_info->hookDisplayNav([]) : ''),
                                     'formatedAddressFieldsValuesList' => $formated_address_fields_values_list,
                                     'carrier_data' => ($is_adv_api ? '' : $this->_getCarrierList()),
                                     'HOOK_TOP_PAYMENT' => ($is_adv_api ? '' : Hook::exec('displayPaymentTop')),
@@ -179,7 +183,7 @@ class OrderOpcControllerCore extends ParentOrderController
                                     'gift_price' => Tools::displayPrice(Tools::convertPrice(
                                         Product::getTaxCalculationMethod() == 1 ? $wrapping_fees : $wrapping_fees_tax_inc,
                                         new Currency((int)$this->context->cookie->id_currency)))
-                                    ),
+                                    ],
                                     $this->getFormatedSummaryDetail()
                                 );
                                 $this->ajaxDie(Tools::jsonEncode($return));
@@ -234,7 +238,7 @@ class OrderOpcControllerCore extends ParentOrderController
                                         if (count($cart_rules2) != count($cart_rules)) {
                                             $this->ajax_refresh = true;
                                         } else {
-                                            $rule_list = array();
+                                            $rule_list = [];
                                             foreach ($cart_rules2 as $rule) {
                                                 $rule_list[] = $rule['id_cart_rule'];
                                             }
@@ -256,22 +260,25 @@ class OrderOpcControllerCore extends ParentOrderController
                                         // Wrapping fees
                                         $wrapping_fees = $this->context->cart->getGiftWrappingPrice(false);
                                         $wrapping_fees_tax_inc = $this->context->cart->getGiftWrappingPrice();
-                                        $result = array_merge($result, array(
+                                        $result = array_merge($result, [
                                             'HOOK_TOP_PAYMENT' => Hook::exec('displayPaymentTop'),
                                             'HOOK_PAYMENT' => $this->_getPaymentMethods(),
                                             'gift_price' => Tools::displayPrice(Tools::convertPrice(Product::getTaxCalculationMethod() == 1 ? $wrapping_fees : $wrapping_fees_tax_inc, new Currency((int)$this->context->cookie->id_currency))),
                                             'carrier_data' => $this->_getCarrierList(),
-                                            'refresh' => (bool)$this->ajax_refresh),
+                                            'refresh' => (bool)$this->ajax_refresh
+                                        ],
                                             $this->getFormatedSummaryDetail()
                                         );
                                         $this->ajaxDie(Tools::jsonEncode($result));
                                     }
                                 }
                                 if (count($this->errors)) {
-                                    $this->ajaxDie(Tools::jsonEncode(array(
+                                    $this->ajaxDie(Tools::jsonEncode(
+                                        [
                                         'hasError' => true,
                                         'errors' => $this->errors
-                                    )));
+                                        ]
+                                    ));
                                 }
                             }
                             die(Tools::displayError());
@@ -284,7 +291,7 @@ class OrderOpcControllerCore extends ParentOrderController
                             if ($this->context->customer->id) {
                                 $this->context->smarty->assign('address_list', $this->context->customer->getAddresses($this->context->language->id));
                             } else {
-                                $this->context->smarty->assign('address_list', array());
+                                $this->context->smarty->assign('address_list', []);
                             }
                             $this->setTemplate(_PS_THEME_DIR_.'order-address-multishipping-products.tpl');
                             $this->display();
@@ -296,7 +303,7 @@ class OrderOpcControllerCore extends ParentOrderController
                             if ($this->context->customer->id) {
                                 $this->context->smarty->assign('address_list', $this->context->customer->getAddresses($this->context->language->id));
                             } else {
-                                $this->context->smarty->assign('address_list', array());
+                                $this->context->smarty->assign('address_list', []);
                             }
                             $this->context->smarty->assign('opc', true);
                             $this->setTemplate(_PS_THEME_DIR_.'shopping-cart.tpl');
@@ -336,12 +343,14 @@ class OrderOpcControllerCore extends ParentOrderController
             $this->addJS(_THEME_MOBILE_JS_DIR_.'opc.js');
         }
 
-        $this->addJS(array(
+        $this->addJS(
+            [
             _THEME_JS_DIR_.'tools/vatManagement.js',
             _THEME_JS_DIR_.'tools/statesManagement.js',
             _THEME_JS_DIR_.'order-carrier.js',
             _PS_JS_DIR_.'validate.js'
-        ));
+            ]
+        );
     }
 
     /**
@@ -382,7 +391,8 @@ class OrderOpcControllerCore extends ParentOrderController
             }
         }
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'free_shipping' => $free_shipping,
             'isGuest' => isset($this->context->cookie->is_guest) ? $this->context->cookie->is_guest : 0,
             'countries' => $countries,
@@ -395,15 +405,18 @@ class OrderOpcControllerCore extends ParentOrderController
             'one_phone_at_least' => (int)Configuration::get('PS_ONE_PHONE_AT_LEAST'),
             'HOOK_CREATE_ACCOUNT_FORM' => Hook::exec('displayCustomerAccountForm'),
             'HOOK_CREATE_ACCOUNT_TOP' => Hook::exec('displayCustomerAccountFormTop')
-        ));
+            ]
+        );
         $years = Tools::dateYears();
         $months = Tools::dateMonths();
         $days = Tools::dateDays();
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'years' => $years,
             'months' => $months,
             'days' => $days,
-        ));
+            ]
+        );
 
         /* Load guest informations */
         if ($this->isLogged && $this->context->cookie->is_guest) {
@@ -445,10 +458,10 @@ class OrderOpcControllerCore extends ParentOrderController
         if ($customer->birthday) {
             $birthday = explode('-', $customer->birthday);
         } else {
-            $birthday = array('0', '0', '0');
+            $birthday = ['0', '0', '0'];
         }
 
-        return array(
+        return [
             'id_customer' => (int)$customer->id,
             'email' => Tools::htmlentitiesUTF8($customer->email),
             'customer_lastname' => Tools::htmlentitiesUTF8($customer->lastname),
@@ -500,7 +513,7 @@ class OrderOpcControllerCore extends ParentOrderController
             'invoice_phone_mobile' => Tools::htmlentitiesUTF8($address_invoice->phone_mobile),
             'invoice_id_country' => (int)$address_invoice->id_country,
             'invoice_id_state' => (int)$address_invoice->id_state,
-        );
+        ];
     }
 
     protected function _assignCarrier()
@@ -508,17 +521,20 @@ class OrderOpcControllerCore extends ParentOrderController
         if (!$this->isLogged) {
             $carriers = $this->context->cart->simulateCarriersOutput();
             $old_message = Message::getMessageByCartId((int)$this->context->cart->id);
-            $this->context->smarty->assign(array(
+            $this->context->smarty->assign(
+                [
                 'HOOK_EXTRACARRIER' => null,
                 'HOOK_EXTRACARRIER_ADDR' => null,
                 'oldMessage' => isset($old_message['message'])? $old_message['message'] : '',
-                'HOOK_BEFORECARRIER' => Hook::exec('displayBeforeCarrier', array(
+                'HOOK_BEFORECARRIER' => Hook::exec('displayBeforeCarrier', [
                     'carriers' => $carriers,
                     'checked' => $this->context->cart->simulateCarrierSelectedOutput(),
                     'delivery_option_list' => $this->context->cart->getDeliveryOptionList(),
                     'delivery_option' => $this->context->cart->getDeliveryOption(null, true)
-                ))
-            ));
+                ]
+                )
+                ]
+            );
         } else {
             parent::_assignCarrier();
         }
@@ -527,17 +543,21 @@ class OrderOpcControllerCore extends ParentOrderController
     protected function _assignPayment()
     {
         if ((bool)Configuration::get('PS_ADVANCED_PAYMENT_API')) {
-            $this->context->smarty->assign(array(
+            $this->context->smarty->assign(
+                [
                 'HOOK_TOP_PAYMENT' => ($this->isLogged ? Hook::exec('displayPaymentTop') : ''),
                 'HOOK_PAYMENT' => $this->_getPaymentMethods(),
-                'HOOK_ADVANCED_PAYMENT' => Hook::exec('advancedPaymentOptions', array(), null, true),
+                'HOOK_ADVANCED_PAYMENT' => Hook::exec('advancedPaymentOptions', [], null, true),
                 'link_conditions' => $this->link_conditions
-            ));
+                ]
+            );
         } else {
-            $this->context->smarty->assign(array(
+            $this->context->smarty->assign(
+                [
                 'HOOK_TOP_PAYMENT' => ($this->isLogged ? Hook::exec('displayPaymentTop') : ''),
                 'HOOK_PAYMENT' => $this->_getPaymentMethods()
-            ));
+                ]
+            );
         }
     }
 
@@ -635,7 +655,7 @@ class OrderOpcControllerCore extends ParentOrderController
 
         $this->context->smarty->assign('isVirtualCart', $this->context->cart->isVirtualCart());
 
-        $vars = array(
+        $vars = [
             'advanced_payment_api' => (bool)Configuration::get('PS_ADVANCED_PAYMENT_API'),
             'free_shipping' => $free_shipping,
             'checkedTOS' => (int)$this->context->cookie->checkedTOS,
@@ -655,12 +675,13 @@ class OrderOpcControllerCore extends ParentOrderController
             'address_collection' => $this->context->cart->getAddressCollection(),
             'opc' => true,
             'oldMessage' => isset($old_message['message'])? $old_message['message'] : '',
-            'HOOK_BEFORECARRIER' => Hook::exec('displayBeforeCarrier', array(
+            'HOOK_BEFORECARRIER' => Hook::exec('displayBeforeCarrier', [
                 'carriers' => $carriers,
                 'delivery_option_list' => $this->context->cart->getDeliveryOptionList(),
                 'delivery_option' => $delivery_option
-            ))
-        );
+            ]
+            )
+        ];
 
         Cart::addExtraCarriers($vars);
 
@@ -671,24 +692,25 @@ class OrderOpcControllerCore extends ParentOrderController
         } elseif ((!Validate::isLoadedObject($address_delivery) || $address_delivery->deleted) && $this->context->cart->id_address_delivery != 0) {
             $this->errors[] = Tools::displayError('This address is invalid.');
         } else {
-            $result = array(
-                'HOOK_BEFORECARRIER' => Hook::exec('displayBeforeCarrier', array(
+            $result = [
+                'HOOK_BEFORECARRIER' => Hook::exec('displayBeforeCarrier', [
                     'carriers' => $carriers,
                     'delivery_option_list' => $this->context->cart->getDeliveryOptionList(),
                     'delivery_option' => $this->context->cart->getDeliveryOption(null, true)
-                )),
+                ]
+                ),
                 'carrier_block' => $this->context->smarty->fetch(_PS_THEME_DIR_.'order-carrier.tpl')
-            );
+            ];
 
             Cart::addExtraCarriers($result);
             return $result;
         }
         if (count($this->errors)) {
-            return array(
+            return [
                 'hasError' => true,
                 'errors' => $this->errors,
                 'carrier_block' => $this->context->smarty->fetch(_PS_THEME_DIR_.'order-carrier.tpl')
-            );
+            ];
         }
     }
 
@@ -714,10 +736,10 @@ class OrderOpcControllerCore extends ParentOrderController
             }
         }
 
-        $inv_all_fields = array();
-        $dlv_all_fields = array();
+        $inv_all_fields = [];
+        $dlv_all_fields = [];
 
-        foreach (array('inv', 'dlv') as $adr_type) {
+        foreach (['inv', 'dlv'] as $adr_type) {
             foreach (${$adr_type.'_adr_fields'} as $fields_line) {
                 foreach (explode(' ', $fields_line) as $field_item) {
                     ${$adr_type.'_all_fields'}[] = trim($field_item);
@@ -727,18 +749,22 @@ class OrderOpcControllerCore extends ParentOrderController
             ${$adr_type.'_adr_fields'} = array_unique(${$adr_type.'_adr_fields'});
             ${$adr_type.'_all_fields'} = array_unique(${$adr_type.'_all_fields'});
 
-            $this->context->smarty->assign(array(
+            $this->context->smarty->assign(
+                [
                 $adr_type.'_adr_fields' => ${$adr_type.'_adr_fields'},
                 $adr_type.'_all_fields' => ${$adr_type.'_all_fields'},
                 'required_fields' => $require_form_fields_list
-            ));
+                ]
+            );
         }
     }
 
     protected function getFormatedSummaryDetail()
     {
-        $result = array('summary' => $this->context->cart->getSummaryDetails(),
-                        'customizedDatas' => Product::getAllCustomizedDatas($this->context->cart->id, null, true));
+        $result = [
+            'summary' => $this->context->cart->getSummaryDetails(),
+                        'customizedDatas' => Product::getAllCustomizedDatas($this->context->cart->id, null, true)
+        ];
 
         foreach ($result['summary']['products'] as $key => &$product) {
             $product['quantity_without_customization'] = $product['quantity'];

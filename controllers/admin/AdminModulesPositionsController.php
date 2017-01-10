@@ -41,14 +41,18 @@ class AdminModulesPositionsControllerCore extends AdminController
             $this->display_key = (int)Tools::getValue('show_modules');
         }
 
-        $this->addjQueryPlugin(array(
+        $this->addjQueryPlugin(
+            [
             'select2',
-        ));
+            ]
+        );
 
-        $this->addJS(array(
+        $this->addJS(
+            [
             _PS_JS_DIR_.'admin/modules-position.js',
             _PS_JS_DIR_.'jquery/plugins/select2/select2_locale_'.$this->context->language->iso_code.'.js',
-        ));
+            ]
+        );
 
 
         // Change position in hook
@@ -92,7 +96,7 @@ class AdminModulesPositionsControllerCore extends AdminController
                         $this->errors[] = Tools::displayError('An error occurred while transplanting the module to its hook.');
                     } else {
                         $exceptions = Tools::getValue('exceptions');
-                        $exceptions = (isset($exceptions[0])) ? $exceptions[0] : array();
+                        $exceptions = (isset($exceptions[0])) ? $exceptions[0] : [];
                         $exceptions = explode(',', str_replace(' ', '', $exceptions));
                         $exceptions = array_unique($exceptions);
 
@@ -242,21 +246,23 @@ class AdminModulesPositionsControllerCore extends AdminController
             $this->content .= $this->initMain();
         }
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'content' => $this->content,
             'show_page_header_toolbar' => $this->show_page_header_toolbar,
             'page_header_toolbar_title' => $this->page_header_toolbar_title,
             'page_header_toolbar_btn' => $this->page_header_toolbar_btn
-        ));
+            ]
+        );
     }
 
     public function initPageHeaderToolbar()
     {
-        $this->page_header_toolbar_btn['save'] = array(
+        $this->page_header_toolbar_btn['save'] = [
             'href' => self::$currentIndex.'&addToHook'.($this->display_key ? '&show_modules='.$this->display_key : '').'&token='.$this->token,
             'desc' => $this->l('Transplant a module', null, null, false),
             'icon' => 'process-icon-anchor'
-        );
+        ];
 
         return parent::initPageHeaderToolbar();
     }
@@ -269,7 +275,7 @@ class AdminModulesPositionsControllerCore extends AdminController
         $admin_dir = basename(_PS_ADMIN_DIR_);
         $modules = Module::getModulesInstalled();
 
-        $assoc_modules_id = array();
+        $assoc_modules_id = [];
         foreach ($modules as $module) {
             if ($tmp_instance = Module::getInstanceById((int)$module['id_module'])) {
                 // We want to be able to sort modules by display name
@@ -300,20 +306,21 @@ class AdminModulesPositionsControllerCore extends AdminController
 
         $this->addJqueryPlugin('tablednd');
 
-        $this->toolbar_btn['save'] = array(
+        $this->toolbar_btn['save'] = [
             'href' => self::$currentIndex.'&addToHook'.($this->display_key ? '&show_modules='.$this->display_key : '').'&token='.$this->token,
             'desc' => $this->l('Transplant a module')
-        );
+        ];
 
-        $live_edit_params = array(
+        $live_edit_params = [
             'live_edit' => true,
             'ad' => $admin_dir,
             'liveToken' => $this->token,
             'id_employee' => (int)$this->context->employee->id,
             'id_shop' => (int)$this->context->shop->id
-        );
+        ];
 
-        $this->context->smarty->assign(array(
+        $this->context->smarty->assign(
+            [
             'show_toolbar' => true,
             'toolbar_btn' => $this->toolbar_btn,
             'title' => $this->toolbar_title,
@@ -328,7 +335,8 @@ class AdminModulesPositionsControllerCore extends AdminController
             'hooks' => $hooks,
             'url_submit' => self::$currentIndex.'&token='.$this->token,
             'can_move' => (Shop::isFeatureActive() && Shop::getContext() != Shop::CONTEXT_SHOP) ? false : true,
-        ));
+            ]
+        );
 
         return $this->createTemplate('list_modules.tpl')->fetch();
     }
@@ -393,11 +401,11 @@ class AdminModulesPositionsControllerCore extends AdminController
             }
         } else {
             $excepts_diff = false;
-            $excepts_list = Tools::getValue('exceptions', array(array()));
+            $excepts_list = Tools::getValue('exceptions', [[]]);
         }
         $modules = Module::getModulesInstalled(0);
 
-        $instances = array();
+        $instances = [];
         foreach ($modules as $module) {
             if ($tmp_instance = Module::getInstanceById($module['id_module'])) {
                 $instances[$tmp_instance->displayName] = $tmp_instance;
@@ -406,19 +414,20 @@ class AdminModulesPositionsControllerCore extends AdminController
         ksort($instances);
         $modules = $instances;
 
-        $hooks = array();
+        $hooks = [];
         if ($show_modules || (Tools::getValue('id_hook') > 0)) {
             $module_instance = Module::getInstanceById((int)Tools::getValue('id_module', $show_modules));
             $hooks = $module_instance->getPossibleHooksList();
         }
 
-        $exception_list_diff = array();
+        $exception_list_diff = [];
         foreach ($excepts_list as $shop_id => $file_list) {
             $exception_list_diff[] = $this->displayModuleExceptionList($file_list, $shop_id);
         }
 
         $tpl = $this->createTemplate('form.tpl');
-        $tpl->assign(array(
+        $tpl->assign(
+            [
             'url_submit' => self::$currentIndex.'&token='.$this->token,
             'edit_graft' => Tools::isSubmit('editGraft'),
             'id_module' => (int)Tools::getValue('id_module'),
@@ -435,7 +444,8 @@ class AdminModulesPositionsControllerCore extends AdminController
             'toolbar_scroll' => $this->toolbar_scroll,
             'title' => $this->toolbar_title,
             'table' => 'hook_module',
-        ));
+            ]
+        );
 
         return $tpl->fetch();
     }
@@ -443,7 +453,7 @@ class AdminModulesPositionsControllerCore extends AdminController
     public function displayModuleExceptionList($file_list, $shop_id)
     {
         if (!is_array($file_list)) {
-            $file_list = ($file_list) ? array($file_list) : array();
+            $file_list = ($file_list) ? [$file_list] : [];
         }
 
         $content = '<p><input type="text" name="exceptions['.$shop_id.']" value="'.implode(', ', $file_list).'" id="em_text_'.$shop_id.'" placeholder="'.$this->l('E.g. address, addresses, attachment').'"/></p>';
@@ -473,7 +483,7 @@ class AdminModulesPositionsControllerCore extends AdminController
             $content .= '<option value="'.$k.'">'.$k.'</option>';
         }
 
-        $modules_controllers_type = array('admin' => $this->l('Admin modules controller'), 'front' => $this->l('Front modules controller'));
+        $modules_controllers_type = ['admin' => $this->l('Admin modules controller'), 'front' => $this->l('Front modules controller')];
         foreach ($modules_controllers_type as $type => $label) {
             $content .= '<option disabled="disabled">____________ '.$label.' ____________</option>';
             $all_modules_controllers = Dispatcher::getModuleControllers($type);
@@ -525,7 +535,7 @@ class AdminModulesPositionsControllerCore extends AdminController
 
             $modules_list = Tools::getValue('modules_list');
             $hooks_list = Tools::getValue('hooks_list');
-            $hookableList = array();
+            $hookableList = [];
 
             foreach ($modules_list as $module) {
                 $module = trim($module);
@@ -544,7 +554,7 @@ class AdminModulesPositionsControllerCore extends AdminController
                         continue;
                     }
                     if (!array_key_exists($hook_name, $hookableList)) {
-                        $hookableList[$hook_name] = array();
+                        $hookableList[$hook_name] = [];
                     }
                     if ($moduleInstance->isHookableOn($hook_name)) {
                         array_push($hookableList[$hook_name], str_replace('_', '-', $module));
@@ -566,7 +576,7 @@ class AdminModulesPositionsControllerCore extends AdminController
             /* PrestaShop demo mode*/
 
             $hook_name = Tools::getValue('hook');
-            $hookableModulesList = array();
+            $hookableModulesList = [];
             $modules = Db::getInstance()->executeS('SELECT id_module, name FROM `'._DB_PREFIX_.'module` ');
             foreach ($modules as $module) {
                 if (!Validate::isModuleName($module['name'])) {
@@ -578,7 +588,7 @@ class AdminModulesPositionsControllerCore extends AdminController
                     /** @var Module $mod */
                     $mod = new $module['name']();
                     if ($mod->isHookableOn($hook_name)) {
-                        $hookableModulesList[] = array('id' => (int)$mod->id, 'name' => $mod->displayName, 'display' => Hook::exec($hook_name, array(), (int)$mod->id));
+                        $hookableModulesList[] = ['id' => (int)$mod->id, 'name' => $mod->displayName, 'display' => Hook::exec($hook_name, [], (int)$mod->id)];
                     }
                 }
             }
@@ -600,7 +610,7 @@ class AdminModulesPositionsControllerCore extends AdminController
             }
 
             $res = true;
-            $hookableList = array();
+            $hookableList = [];
             // $_POST['hook'] is an array of id_module
             $hooks_list = Tools::getValue('hook');
 
@@ -611,7 +621,7 @@ class AdminModulesPositionsControllerCore extends AdminController
 
                 $i = 1;
                 $value = '';
-                $ids = array();
+                $ids = [];
                 // then prepare sql query to rehook all chosen modules(id_module, id_shop, id_hook, position)
                 // position is i (autoincremented)
                 if (is_array($modules) && count($modules)) {

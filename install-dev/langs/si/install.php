@@ -1,6 +1,6 @@
 <?php
-return array(
-    'informations' => array(
+return [
+    'informations' => [
         'documentation' => 'http://doc.prestashop.com/display/PS16/Installing+PrestaShop',
         'documentation_upgrade' => 'http://docs.prestashop.com/display/PS16/Updating+PrestaShop',
         'forum' => 'http://www.prestashop.com/forums/',
@@ -8,8 +8,8 @@ return array(
         'support' => 'https://www.prestashop.com/en/support',
         'tutorial' => 'https://www.youtube.com/watch?v=psz4aIPZZuk',
         'tailored_help' => 'http://addons.prestashop.com/en/388-support',
-    ),
-    'translations' => array(
+    ],
+    'translations' => [
         'An SQL error occurred for entity <i>%1$s</i>: <i>%2$s</i>' => 'Prišlo je do SQL napake za entiteto <i>%1$s</i>: <i>%2$s</i>',
         'Cannot create image "%1$s" for entity "%2$s"' => 'Ne morem ustvariti slike "%1$s" za entiteto "%2$s"',
         'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => 'Ne morem ustvariti slike "%1$s" (nezadostne pravice za mapo "%2$s")',
@@ -205,5 +205,5 @@ return array(
         'Continue the installation in:' => 'Nadaljuj namestitev v:',
         'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => 'Zgornja izbira jezika je samo za namestitev. Ko je tvoja trgovina nameščena, lahko izbereš jezik tvoje trgovine med več kot %d prevodi, brezplačno!',
         'Installing PrestaShop is quick and easy. In just a few moments, you will become part of a community consisting of more than 250,000 merchants. You are on the way to creating your own unique online store that you can manage easily every day.' => 'Namestitev PrestaShop je hitra in enostavna. V samo nekaj trenutkih boste postali del skupnosti, v kateri je že več kot 250,000 prodajalcev. Ste na poti, da ustavrite svojo unikatno internetno trgovino, ki jo lahko preprosto urejate vsak dan.',
-    ),
-);
+    ],
+];

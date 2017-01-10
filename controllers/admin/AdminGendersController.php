@@ -44,53 +44,53 @@ class AdminGendersControllerCore extends AdminController
             $this->deleted = false;
         }
 
-        $this->bulk_actions = array(
-            'delete' => array(
+        $this->bulk_actions = [
+            'delete' => [
                 'text' => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
                 'icon' => 'icon-trash'
-            )
-        );
+            ]
+        ];
 
         $this->default_image_height = 16;
         $this->default_image_width = 16;
 
-        $this->fieldImageSettings = array(
+        $this->fieldImageSettings = [
             'name' => 'image',
             'dir' => 'genders'
-        );
+        ];
 
-        $this->fields_list = array(
-            'id_gender' => array(
+        $this->fields_list = [
+            'id_gender' => [
                 'title' => $this->l('ID'),
                 'align' => 'center',
                 'class' => 'fixed-width-xs'
-            ),
-            'name' => array(
+            ],
+            'name' => [
                 'title' => $this->l('Social title'),
                 'filter_key' => 'b!name'
-            ),
-            'type' => array(
+            ],
+            'type' => [
                 'title' => $this->l('Gender'),
                 'orderby' => false,
                 'type' => 'select',
-                'list' => array(
+                'list' => [
                     0 => $this->l('Male'),
                     1 => $this->l('Female'),
                     2 => $this->l('Neutral')
-                ),
+                ],
                 'filter_key' => 'a!type',
                 'callback' => 'displayGenderType',
                 'callback_object' => $this
-            ),
-            'image' => array(
+            ],
+            'image' => [
                 'title' => $this->l('Image'),
                 'align' => 'center',
                 'image' => 'genders',
                 'orderby' => false,
                 'search' => false
-            )
-        );
+            ]
+        ];
 
         parent::__construct();
     }
@@ -98,11 +98,11 @@ class AdminGendersControllerCore extends AdminController
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
-            $this->page_header_toolbar_btn['new_gender'] = array(
+            $this->page_header_toolbar_btn['new_gender'] = [
                 'href' => self::$currentIndex.'&addgender&token='.$this->token,
                 'desc' => $this->l('Add new title', null, null, false),
                 'icon' => 'process-icon-new'
-            );
+            ];
         }
 
         parent::initPageHeaderToolbar();
@@ -110,13 +110,13 @@ class AdminGendersControllerCore extends AdminController
 
     public function renderForm()
     {
-        $this->fields_form = array(
-            'legend' => array(
+        $this->fields_form = [
+            'legend' => [
                 'title' => $this->l('Social titles'),
                 'icon' => 'icon-male'
-            ),
-            'input' => array(
-                array(
+            ],
+            'input' => [
+                [
                     'type' => 'text',
                     'label' => $this->l('Social title'),
                     'name' => 'name',
@@ -124,68 +124,68 @@ class AdminGendersControllerCore extends AdminController
                     'col' => 4,
                     'hint' => $this->l('Invalid characters:').' 0-9!&lt;&gt;,;?=+()@#"�{}_$%:',
                     'required' => true
-                ),
-                array(
+                ],
+                [
                     'type' => 'radio',
                     'label' => $this->l('Gender'),
                     'name' => 'type',
                     'required' => false,
                     'class' => 't',
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'type_male',
                             'value' => 0,
                             'label' => $this->l('Male')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'type_female',
                             'value' => 1,
                             'label' => $this->l('Female')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'type_neutral',
                             'value' => 2,
                             'label' => $this->l('Neutral')
-                        )
-                    )
-                ),
-                array(
+                        ]
+                    ]
+                ],
+                [
                     'type' => 'file',
                     'label' => $this->l('Image'),
                     'name' => 'image',
                     'col' => 6,
                     'value' => true
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Image width'),
                     'name' => 'img_width',
                     'col' => 2,
                     'hint' => $this->l('Image width in pixels. Enter "0" to use the original size.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Image height'),
                     'name' => 'img_height',
                     'col' => 2,
                     'hint' => $this->l('Image height in pixels. Enter "0" to use the original size.')
-                )
-            ),
-            'submit' => array(
+                ]
+            ],
+            'submit' => [
                 'title' => $this->l('Save'),
-            )
-        );
+            ]
+        ];
 
         /** @var Gender $obj */
         if (!($obj = $this->loadObject(true))) {
             return;
         }
 
-        $this->fields_value = array(
+        $this->fields_value = [
             'img_width' => $this->default_image_width,
             'img_height' => $this->default_image_height,
             'image' => $obj->getImage()
-        );
+        ];
 
         return parent::renderForm();
     }

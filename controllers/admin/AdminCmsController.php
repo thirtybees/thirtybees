@@ -46,20 +46,20 @@ class AdminCmsControllerCore extends AdminController
         $this->addRowAction('delete');
         $this->_orderBy = 'position';
 
-        $this->bulk_actions = array(
-            'delete' => array(
+        $this->bulk_actions = [
+            'delete' => [
                 'text' => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
                 'icon' => 'icon-trash'
-            )
-        );
-        $this->fields_list = array(
-            'id_cms' => array('title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'),
-            'link_rewrite' => array('title' => $this->l('URL')),
-            'meta_title' => array('title' => $this->l('Title'), 'filter_key' => 'b!meta_title'),
-            'position' => array('title' => $this->l('Position'),'filter_key' => 'position', 'align' => 'center', 'class' => 'fixed-width-sm', 'position' => 'position'),
-            'active' => array('title' => $this->l('Displayed'), 'align' => 'center', 'active' => 'status', 'class' => 'fixed-width-sm', 'type' => 'bool', 'orderby' => false)
-        );
+            ]
+        ];
+        $this->fields_list = [
+            'id_cms' => ['title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'],
+            'link_rewrite' => ['title' => $this->l('URL')],
+            'meta_title' => ['title' => $this->l('Title'), 'filter_key' => 'b!meta_title'],
+            'position' => ['title' => $this->l('Position'),'filter_key' => 'position', 'align' => 'center', 'class' => 'fixed-width-sm', 'position' => 'position'],
+            'active' => ['title' => $this->l('Displayed'), 'align' => 'center', 'active' => 'status', 'class' => 'fixed-width-sm', 'type' => 'bool', 'orderby' => false]
+        ];
 
         // The controller can't be call directly
         // In this case, AdminCmsContentController::getCurrentCMSCategory() is null
@@ -82,15 +82,15 @@ class AdminCmsControllerCore extends AdminController
 
     public function initPageHeaderToolbar()
     {
-        $this->page_header_toolbar_btn['save-and-preview'] = array(
+        $this->page_header_toolbar_btn['save-and-preview'] = [
             'href' => '#',
             'desc' => $this->l('Save and preview', null, null, false)
-        );
-        $this->page_header_toolbar_btn['save-and-stay'] = array(
+        ];
+        $this->page_header_toolbar_btn['save-and-stay'] = [
             'short' => $this->l('Save and stay', null, null, false),
             'href' => '#',
             'desc' => $this->l('Save and stay', null, null, false),
-        );
+        ];
 
         return parent::initPageHeaderToolbar();
     }
@@ -113,23 +113,23 @@ class AdminCmsControllerCore extends AdminController
         $categories = CMSCategory::getCategories($this->context->language->id, false);
         $html_categories = CMSCategory::recurseCMSCategory($categories, $categories[0][1], 1, $this->getFieldValue($this->object, 'id_cms_category'), 1);
 
-        $this->fields_form = array(
+        $this->fields_form = [
             'tinymce' => true,
-            'legend' => array(
+            'legend' => [
                 'title' => $this->l('CMS Page'),
                 'icon' => 'icon-folder-close'
-            ),
-            'input' => array(
+            ],
+            'input' => [
                 // custom template
-                array(
+                [
                     'type' => 'select_category',
                     'label' => $this->l('CMS Category'),
                     'name' => 'id_cms_category',
-                    'options' => array(
+                    'options' => [
                         'html' => $html_categories,
-                    ),
-                ),
-                array(
+                    ],
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Meta title'),
                     'name' => 'meta_title',
@@ -138,33 +138,33 @@ class AdminCmsControllerCore extends AdminController
                     'required' => true,
                     'class' => 'copyMeta2friendlyURL',
                     'hint' => $this->l('Invalid characters:').' &lt;&gt;;=#{}'
-                ),
-                array(
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Meta description'),
                     'name' => 'meta_description',
                     'lang' => true,
                     'hint' => $this->l('Invalid characters:').' &lt;&gt;;=#{}'
-                ),
-                array(
+                ],
+                [
                     'type' => 'tags',
                     'label' => $this->l('Meta keywords'),
                     'name' => 'meta_keywords',
                     'lang' => true,
-                    'hint' => array(
+                    'hint' => [
                         $this->l('To add "tags" click in the field, write something, and then press "Enter."'),
                         $this->l('Invalid characters:').' &lt;&gt;;=#{}'
-                    )
-                ),
-                array(
+                    ]
+                ],
+                [
                     'type' => 'text',
                     'label' => $this->l('Friendly URL'),
                     'name' => 'link_rewrite',
                     'required' => true,
                     'lang' => true,
                     'hint' => $this->l('Only letters and the hyphen (-) character are allowed.')
-                ),
-                array(
+                ],
+                [
                     'type' => 'textarea',
                     'label' => $this->l('Page content'),
                     'name' => 'content',
@@ -173,77 +173,77 @@ class AdminCmsControllerCore extends AdminController
                     'rows' => 5,
                     'cols' => 40,
                     'hint' => $this->l('Invalid characters:').' <>;=#{}'
-                ),
-                array(
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Indexation by search engines'),
                     'name' => 'indexation',
                     'required' => false,
                     'class' => 't',
                     'is_bool' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'indexation_on',
                             'value' => 1,
                             'label' => $this->l('Enabled')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'indexation_off',
                             'value' => 0,
                             'label' => $this->l('Disabled')
-                        )
-                    ),
-                ),
-                array(
+                        ]
+                    ],
+                ],
+                [
                     'type' => 'switch',
                     'label' => $this->l('Displayed'),
                     'name' => 'active',
                     'required' => false,
                     'is_bool' => true,
-                    'values' => array(
-                        array(
+                    'values' => [
+                        [
                             'id' => 'active_on',
                             'value' => 1,
                             'label' => $this->l('Enabled')
-                        ),
-                        array(
+                        ],
+                        [
                             'id' => 'active_off',
                             'value' => 0,
                             'label' => $this->l('Disabled')
-                        )
-                    ),
-                ),
-            ),
-            'submit' => array(
+                        ]
+                    ],
+                ],
+            ],
+            'submit' => [
                 'title' => $this->l('Save'),
-            ),
-            'buttons' => array(
-                'save_and_preview' => array(
+            ],
+            'buttons' => [
+                'save_and_preview' => [
                     'name' => 'viewcms',
                     'type' => 'submit',
                     'title' => $this->l('Save and preview'),
                     'class' => 'btn btn-default pull-right',
                     'icon' => 'process-icon-preview'
-                )
-            )
-        );
+                ]
+            ]
+        ];
 
         if (Shop::isFeatureActive()) {
-            $this->fields_form['input'][] = array(
+            $this->fields_form['input'][] = [
                 'type' => 'shop',
                 'label' => $this->l('Shop association'),
                 'name' => 'checkBoxShopAsso',
-            );
+            ];
         }
 
         if (Validate::isLoadedObject($this->object)) {
             $this->context->smarty->assign('url_prev', $this->getPreviewUrl($this->object));
         }
 
-        $this->tpl_form_vars = array(
+        $this->tpl_form_vars = [
             'active' => $this->object->active,
             'PS_ALLOW_ACCENTED_CHARS_URL', (int)Configuration::get('PS_ALLOW_ACCENTED_CHARS_URL')
-        );
+        ];
         return parent::renderForm();
     }
 
@@ -254,10 +254,10 @@ class AdminCmsControllerCore extends AdminController
         $this->position_group_identifier = (int)$this->id_cms_category;
 
         $this->toolbar_title = $this->l('Pages in this category');
-        $this->toolbar_btn['new'] = array(
+        $this->toolbar_btn['new'] = [
             'href' => self::$currentIndex.'&add'.$this->table.'&id_cms_category='.(int)$this->id_cms_category.'&token='.$this->token,
             'desc' => $this->l('Add new')
-        );
+        ];
 
         return parent::renderList();
     }
@@ -401,11 +401,12 @@ class AdminCmsControllerCore extends AdminController
     {
         $preview_url = $this->context->link->getCMSLink($cms, null, null, $this->context->language->id);
         if (!$cms->active) {
-            $params = http_build_query(array(
+            $params = http_build_query(
+                [
                 'adtoken' => Tools::getAdminTokenLite('AdminCmsContent'),
                 'ad' => basename(_PS_ADMIN_DIR_),
                 'id_employee' => (int)$this->context->employee->id
-                )
+                ]
             );
             $preview_url .= (strpos($preview_url, '?') === false ? '?' : '&').$params;
         }

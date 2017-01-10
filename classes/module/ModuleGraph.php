@@ -29,13 +29,13 @@ abstract class ModuleGraphCore extends Module
     protected $_employee;
 
     /** @var array of integers graph data */
-    protected $_values = array();
+    protected $_values = [];
 
     /** @var array of strings graph legends (X axis) */
-    protected $_legend = array();
+    protected $_legend = [];
 
     /**@var array string graph titles */
-    protected $_titles = array('main' => null, 'x' => null, 'y' => null);
+    protected $_titles = ['main' => null, 'x' => null, 'y' => null];
 
     /** @var ModuleGraphEngine graph engine */
     protected $_render;
@@ -72,7 +72,7 @@ abstract class ModuleGraphCore extends Module
                     $this->_legend[$i] = ($i % 2) ? '' : sprintf('%02dh', $i);
                 }
             }
-            if (is_callable(array($this, 'setDayValues'))) {
+            if (is_callable([$this, 'setDayValues'])) {
                 $this->setDayValues($layers);
             }
         }
@@ -80,7 +80,7 @@ abstract class ModuleGraphCore extends Module
         // @TODO : change to manage 28 to 31 days
         elseif (strtotime($this->_employee->stats_date_to) - strtotime($this->_employee->stats_date_from) <= 2678400) {
             if ($legend) {
-                $days = array();
+                $days = [];
                 if ($from_array['mon'] == $to_array['mon']) {
                     for ($i = $from_array['mday']; $i <= $to_array['mday']; ++$i) {
                         $days[] = $i;
@@ -105,14 +105,14 @@ abstract class ModuleGraphCore extends Module
                     $this->_legend[$i] = ($i % 2) ? '' : sprintf('%02d', $i);
                 }
             }
-            if (is_callable(array($this, 'setMonthValues'))) {
+            if (is_callable([$this, 'setMonthValues'])) {
                 $this->setMonthValues($layers);
             }
         }
         // If the granularity is less than 1 year
         elseif (strtotime('-1 year', strtotime($this->_employee->stats_date_to)) < strtotime($this->_employee->stats_date_from)) {
             if ($legend) {
-                $months = array();
+                $months = [];
                 if ($from_array['year'] == $to_array['year']) {
                     for ($i = $from_array['mon']; $i <= $to_array['mon']; ++$i) {
                         $months[] = $i;
@@ -136,14 +136,14 @@ abstract class ModuleGraphCore extends Module
                     $this->_legend[$i] = sprintf('%02d', $i);
                 }
             }
-            if (is_callable(array($this, 'setYearValues'))) {
+            if (is_callable([$this, 'setYearValues'])) {
                 $this->setYearValues($layers);
             }
         }
         // If the granularity is greater than 1 year
         else {
             if ($legend) {
-                $years = array();
+                $years = [];
                 for ($i = $from_array['year']; $i <= $to_array['year']; ++$i) {
                     $years[] = $i;
                 }
@@ -158,7 +158,7 @@ abstract class ModuleGraphCore extends Module
                     $this->_legend[$i] = sprintf('%04d', $i);
                 }
             }
-            if (is_callable(array($this, 'setAllTimeValues'))) {
+            if (is_callable([$this, 'setAllTimeValues'])) {
                 $this->setAllTimeValues($layers);
             }
         }
@@ -309,7 +309,7 @@ abstract class ModuleGraphCore extends Module
         $drawer = 'drawer.php?'.http_build_query(array_map('Tools::safeOutput', $url_params), '', '&');
 
         require_once(_PS_ROOT_DIR_.'/modules/'.$render.'/'.$render.'.php');
-        return call_user_func(array($render, 'hookGraphEngine'), $params, $drawer);
+        return call_user_func([$render, 'hookGraphEngine'], $params, $drawer);
     }
 
     protected static function getEmployee($employee = null, Context $context = null)
