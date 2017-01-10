@@ -32,7 +32,7 @@
 /**
  * SQL query builder
  *
- * @since 1.5.0.1
+ * @since 1.0.0
  */
 class DbQueryCore
 {
@@ -40,6 +40,9 @@ class DbQueryCore
      * List of data to build the query
      *
      * @var array
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     protected $query = [
         'type'   => 'SELECT',
@@ -59,6 +62,9 @@ class DbQueryCore
      * @param string $type SELECT|DELETE
      *
      * @return DbQuery
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function type($type)
     {
@@ -77,6 +83,9 @@ class DbQueryCore
      * @param string $fields List of fields to concat to other fields
      *
      * @return DbQuery
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function select($fields)
     {
@@ -94,6 +103,9 @@ class DbQueryCore
      * @param string|null $alias Table alias
      *
      * @return DbQuery
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function from($table, $alias = null)
     {
@@ -114,6 +126,9 @@ class DbQueryCore
      * @param string $join Complete string
      *
      * @return DbQuery
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function join($join)
     {
@@ -132,6 +147,9 @@ class DbQueryCore
      * @param string|null $on    ON clause
      *
      * @return DbQuery
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function leftJoin($table, $alias = null, $on = null)
     {
@@ -147,6 +165,9 @@ class DbQueryCore
      * @param string|null $on    ON clause
      *
      * @return DbQuery
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function innerJoin($table, $alias = null, $on = null)
     {
@@ -161,6 +182,9 @@ class DbQueryCore
      * @param string|null $on    ON clause
      *
      * @return DbQuery
+     *
+     *@since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function leftOuterJoin($table, $alias = null, $on = null)
     {
@@ -174,6 +198,9 @@ class DbQueryCore
      * @param string|null $alias Table alias
      *
      * @return DbQuery
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function naturalJoin($table, $alias = null)
     {
@@ -188,6 +215,9 @@ class DbQueryCore
      * @param string|null $on    ON clause
      *
      * @return DbQuery
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function rightJoin($table, $alias = null, $on = null)
     {
@@ -200,6 +230,9 @@ class DbQueryCore
      * @param string $restriction
      *
      * @return DbQuery
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function where($restriction)
     {
@@ -216,6 +249,9 @@ class DbQueryCore
      * @param string $restriction
      *
      * @return DbQuery
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function having($restriction)
     {
@@ -232,6 +268,9 @@ class DbQueryCore
      * @param string $fields List of fields to sort. E.g. $this->order('myField, b.mySecondField DESC')
      *
      * @return DbQuery
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function orderBy($fields)
     {
@@ -248,6 +287,9 @@ class DbQueryCore
      * @param string $fields List of fields to group. E.g. $this->group('myField1, myField2')
      *
      * @return DbQuery
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function groupBy($fields)
     {
@@ -265,6 +307,9 @@ class DbQueryCore
      * @param int $offset
      *
      * @return DbQuery
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function limit($limit, $offset = 0)
     {
@@ -286,6 +331,9 @@ class DbQueryCore
      *
      * @return string
      * @throws PrestaShopException
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function build()
     {
@@ -333,6 +381,9 @@ class DbQueryCore
      * Converts object to string
      *
      * @return string
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function __toString()
     {

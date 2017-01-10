@@ -104,9 +104,9 @@ class ProductDownloadCore extends ObjectModel
         return $fields;
     }
 
-    public function add($autodate = true, $null_values = false)
+    public function add($autodate = true, $nullValues = false)
     {
-        return (bool)parent::add($autodate, $null_values);
+        return (bool)parent::add($autodate, $nullValues);
     }
 
     public function update($null_values = false)

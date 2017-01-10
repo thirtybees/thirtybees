@@ -31,11 +31,19 @@
 
 /**
  * Use this helper to generate preferences forms, with values stored in the configuration table
+ *
+ * @since 1.0.0
  */
 class HelperOptionsCore extends Helper
 {
     public $required = false;
 
+    /**
+     * HelperOptionsCore constructor.
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function __construct()
     {
         $this->base_folder = 'helpers/options/';
@@ -45,10 +53,15 @@ class HelperOptionsCore extends Helper
 
     /**
      * Generate a form for options
-     * @param array $option_list
+     *
+     * @param array $optionList
+     *
      * @return string html
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
-    public function generateOptions($option_list)
+    public function generateOptions($optionList)
     {
         $this->tpl = $this->createTemplate($this->base_tpl);
         $tab = Tab::getTab($this->context->language->id, $this->id);
@@ -56,31 +69,31 @@ class HelperOptionsCore extends Helper
             $languages = Language::getLanguages(false);
         }
 
-        $use_multishop = false;
-        $hide_multishop_checkbox = (Shop::getTotalShops(false, null) < 2) ? true : false;
-        foreach ($option_list as $category => $category_data) {
-            if (!is_array($category_data)) {
+        $useMultishop = false;
+        $hideMultishopCheckbox = (Shop::getTotalShops(false, null) < 2) ? true : false;
+        foreach ($optionList as $category => $categoryData) {
+            if (!is_array($categoryData)) {
                 continue;
             }
 
-            if (!isset($category_data['image'])) {
-                $category_data['image'] = (!empty($tab['module']) && file_exists($_SERVER['DOCUMENT_ROOT']._MODULE_DIR_.$tab['module'].'/'.$tab['class_name'].'.gif') ? _MODULE_DIR_.$tab['module'].'/' : '../img/t/').$tab['class_name'].'.gif';
+            if (!isset($categoryData['image'])) {
+                $categoryData['image'] = (!empty($tab['module']) && file_exists($_SERVER['DOCUMENT_ROOT']._MODULE_DIR_.$tab['module'].'/'.$tab['class_name'].'.gif') ? _MODULE_DIR_.$tab['module'].'/' : '../img/t/').$tab['class_name'].'.gif';
             }
 
-            if (!isset($category_data['fields'])) {
-                $category_data['fields'] = [];
+            if (!isset($categoryData['fields'])) {
+                $categoryData['fields'] = [];
             }
 
-            $category_data['hide_multishop_checkbox'] = true;
+            $categoryData['hide_multishop_checkbox'] = true;
 
-            if (isset($category_data['tabs'])) {
-                $tabs[$category] = $category_data['tabs'];
+            if (isset($categoryData['tabs'])) {
+                $tabs[$category] = $categoryData['tabs'];
                 $tabs[$category]['misc'] = $this->l('Miscellaneous');
             }
 
-            foreach ($category_data['fields'] as $key => $field) {
-                if (empty($field['no_multishop_checkbox']) && !$hide_multishop_checkbox) {
-                    $category_data['hide_multishop_checkbox'] = false;
+            foreach ($categoryData['fields'] as $key => $field) {
+                if (empty($field['no_multishop_checkbox']) && !$hideMultishopCheckbox) {
+                    $categoryData['hide_multishop_checkbox'] = false;
                 }
 
                 // Set field value unless explicitly denied
@@ -89,17 +102,17 @@ class HelperOptionsCore extends Helper
                 }
 
                 // Check if var is invisible (can't edit it in current shop context), or disable (use default value for multishop)
-                $is_disabled = $is_invisible = false;
+                $isDisabled = $isInvisible = false;
                 if (Shop::isFeatureActive()) {
                     if (isset($field['visibility']) && $field['visibility'] > Shop::getContext()) {
-                        $is_disabled = true;
-                        $is_invisible = true;
+                        $isDisabled = true;
+                        $isInvisible = true;
                     } elseif (Shop::getContext() != Shop::CONTEXT_ALL && !Configuration::isOverridenByCurrentContext($key)) {
-                        $is_disabled = true;
+                        $isDisabled = true;
                     }
                 }
-                $field['is_disabled'] = $is_disabled;
-                $field['is_invisible'] = $is_invisible;
+                $field['is_disabled'] = $isDisabled;
+                $field['is_invisible'] = $isInvisible;
 
                 $field['required'] = isset($field['required']) ? $field['required'] : $this->required;
 
@@ -125,12 +138,12 @@ class HelperOptionsCore extends Helper
                     } elseif (isset($field['image']) && $field['image']) { // Use for retrocompatibility
                         $uploader->setFiles(
                             [
-                            0 => [
-                            'type'       => HelperUploader::TYPE_IMAGE,
-                            'image'      => isset($field['image'])?$field['image']:null,
-                            'size'       => isset($field['size'])?$field['size']:null,
-                            'delete_url' => isset($field['delete_url'])?$field['delete_url']:null
-                            ]
+                                0 => [
+                                    'type'       => HelperUploader::TYPE_IMAGE,
+                                    'image'      => isset($field['image']) ? $field['image'] : null,
+                                    'size'       => isset($field['size']) ? $field['size'] : null,
+                                    'delete_url' => isset($field['delete_url']) ? $field['delete_url'] : null,
+                                ],
                             ]
                         );
                     }
@@ -138,12 +151,12 @@ class HelperOptionsCore extends Helper
                     if (isset($field['file']) && $field['file']) { // Use for retrocompatibility
                         $uploader->setFiles(
                             [
-                            0 => [
-                            'type'       => HelperUploader::TYPE_FILE,
-                            'size'       => isset($field['size'])?$field['size']:null,
-                            'delete_url' => isset($field['delete_url'])?$field['delete_url']:null,
-                            'download_url' => isset($field['file'])?$field['file']:null
-                            ]
+                                0 => [
+                                    'type'         => HelperUploader::TYPE_FILE,
+                                    'size'         => isset($field['size']) ? $field['size'] : null,
+                                    'delete_url'   => isset($field['delete_url']) ? $field['delete_url'] : null,
+                                    'download_url' => isset($field['file']) ? $field['file'] : null,
+                                ],
                             ]
                         );
                     }
@@ -151,10 +164,10 @@ class HelperOptionsCore extends Helper
                     if (isset($field['thumb']) && $field['thumb']) { // Use for retrocompatibility
                         $uploader->setFiles(
                             [
-                            0 => [
-                            'type'       => HelperUploader::TYPE_IMAGE,
-                            'image'      => isset($field['thumb'])?'<img src="'.$field['thumb'].'" alt="'.$field['title'].'" title="'.$field['title'].'" />':null,
-                            ]
+                                0 => [
+                                    'type'  => HelperUploader::TYPE_IMAGE,
+                                    'image' => isset($field['thumb']) ? '<img src="'.$field['thumb'].'" alt="'.$field['title'].'" title="'.$field['title'].'" />' : null,
+                                ],
                             ]
                         );
                     }
@@ -165,8 +178,8 @@ class HelperOptionsCore extends Helper
 
                 // Cast options values if specified
                 if ($field['type'] == 'select' && isset($field['cast'])) {
-                    foreach ($field['list'] as $option_key => $option) {
-                        $field['list'][$option_key][$field['identifier']] = $field['cast']($option[$field['identifier']]);
+                    foreach ($field['list'] as $optionKey => $option) {
+                        $field['list'][$optionKey][$field['identifier']] = $field['cast']($option[$field['identifier']]);
                     }
                 }
 
@@ -204,39 +217,39 @@ class HelperOptionsCore extends Helper
 
                 // Multishop default value
                 $field['multishop_default'] = false;
-                if (Shop::isFeatureActive() && Shop::getContext() != Shop::CONTEXT_ALL && !$is_invisible) {
+                if (Shop::isFeatureActive() && Shop::getContext() != Shop::CONTEXT_ALL && !$isInvisible) {
                     $field['multishop_default'] = true;
-                    $use_multishop = true;
+                    $useMultishop = true;
                 }
 
                 // Assign the modifications back to parent array
-                $category_data['fields'][$key] = $field;
+                $categoryData['fields'][$key] = $field;
 
                 // Is at least one required field present?
                 if (isset($field['required']) && $field['required']) {
-                    $category_data['required_fields'] = true;
+                    $categoryData['required_fields'] = true;
                 }
             }
             // Assign the modifications back to parent array
-            $option_list[$category] = $category_data;
+            $optionList[$category] = $categoryData;
         }
 
         $this->tpl->assign(
             [
-            'title' => $this->title,
-            'toolbar_btn' => $this->toolbar_btn,
-            'show_toolbar' => $this->show_toolbar,
-            'toolbar_scroll' => $this->toolbar_scroll,
-            'current' => $this->currentIndex,
-            'table' => $this->table,
-            'token' => $this->token,
-            'tabs' => (isset($tabs)) ? $tabs : null,
-            'option_list' => $option_list,
-            'current_id_lang' => $this->context->language->id,
-            'languages' => isset($languages) ? $languages : null,
-            'currency_left_sign' => $this->context->currency->getSign('left'),
-            'currency_right_sign' => $this->context->currency->getSign('right'),
-            'use_multishop' => $use_multishop,
+                'title' => $this->title,
+                'toolbar_btn' => $this->toolbar_btn,
+                'show_toolbar' => $this->show_toolbar,
+                'toolbar_scroll' => $this->toolbar_scroll,
+                'current' => $this->currentIndex,
+                'table' => $this->table,
+                'token' => $this->token,
+                'tabs' => (isset($tabs)) ? $tabs : null,
+                'option_list' => $optionList,
+                'current_id_lang' => $this->context->language->id,
+                'languages' => isset($languages) ? $languages : null,
+                'currency_left_sign' => $this->context->currency->getSign('left'),
+                'currency_right_sign' => $this->context->currency->getSign('right'),
+                'use_multishop' => $useMultishop,
             ]
         );
 
@@ -245,6 +258,9 @@ class HelperOptionsCore extends Helper
 
     /**
      * Type = image
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function displayOptionTypeImage($key, $field, $value)
     {
@@ -272,6 +288,9 @@ class HelperOptionsCore extends Helper
 
     /**
      * Type = price
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function displayOptionTypePrice($key, $field, $value)
     {
@@ -282,12 +301,24 @@ class HelperOptionsCore extends Helper
 
     /**
      * Type = disabled
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function displayOptionTypeDisabled($key, $field, $value)
     {
         echo $field['disabled'];
     }
 
+    /**
+     * @param $key
+     * @param $field
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getOptionValue($key, $field)
     {
         $value = Tools::getValue($key, Configuration::get($key));

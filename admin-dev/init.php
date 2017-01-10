@@ -67,9 +67,9 @@ try {
     }
 
     /* Server Params */
-    $protocol_link = (Configuration::get('PS_SSL_ENABLED')) ? 'https://' : 'http://';
-    $protocol_content = (isset($useSSL) and $useSSL and Configuration::get('PS_SSL_ENABLED')) ? 'https://' : 'http://';
-    $link = new Link($protocol_link, $protocol_content);
+    $protocolLink = (Configuration::get('PS_SSL_ENABLED')) ? 'https://' : 'http://';
+    $protocolContent = (isset($useSSL) and $useSSL and Configuration::get('PS_SSL_ENABLED')) ? 'https://' : 'http://';
+    $link = new Link($protocolLink, $protocolContent);
     $context->link = $link;
     if (!defined('_PS_BASE_URL_')) {
         define('_PS_BASE_URL_', Tools::getShopDomain(true));

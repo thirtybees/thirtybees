@@ -83,9 +83,9 @@ class ReferrerCore extends ObjectModel
 			AND (r.http_referer_regexp_not IS NULL OR r.http_referer_regexp_not = \'\' OR cs.http_referer NOT REGEXP r.http_referer_regexp_not)
 			AND (r.request_uri_regexp_not IS NULL OR r.request_uri_regexp_not = \'\' OR cs.request_uri NOT REGEXP r.request_uri_regexp_not)';
 
-    public function add($autodate = true, $null_values = false)
+    public function add($autodate = true, $nullValues = false)
     {
-        if (!($result = parent::add($autodate, $null_values))) {
+        if (!($result = parent::add($autodate, $nullValues))) {
             return false;
         }
         Referrer::refreshCache([['id_referrer' => $this->id]]);

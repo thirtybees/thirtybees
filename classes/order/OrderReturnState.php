@@ -29,41 +29,49 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class OrderReturnStateCore
+ *
+ * @since 1.0.0
+ */
 class OrderReturnStateCore extends ObjectModel
 {
+    // @codingStandardsIgnoreStart
     /** @var string Name */
     public $name;
 
     /** @var string Display state in the specified color */
     public $color;
+    // @codingStandardsIgnoreEnd
 
     /**
      * @see ObjectModel::$definition
      */
     public static $definition = [
-        'table' => 'order_return_state',
-        'primary' => 'id_order_return_state',
+        'table'     => 'order_return_state',
+        'primary'   => 'id_order_return_state',
         'multilang' => true,
-        'fields' => [
-            'color' =>    ['type' => self::TYPE_STRING, 'validate' => 'isColor'],
-
-            /* Lang fields */
-            'name' =>    ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 64],
+        'fields'    => [
+            'color' => ['type' => self::TYPE_STRING,                 'validate' => 'isColor'                                        ],
+            'name'  => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 64],
         ],
     ];
 
     /**
     * Get all available order statuses
     *
-    * @param int $id_lang Language id for status name
+    * @param int $idLang Language id for status name
     * @return array Order statuses
+     *               
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
     */
-    public static function getOrderReturnStates($id_lang)
+    public static function getOrderReturnStates($idLang)
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
 		SELECT *
 		FROM `'._DB_PREFIX_.'order_return_state` ors
-		LEFT JOIN `'._DB_PREFIX_.'order_return_state_lang` orsl ON (ors.`id_order_return_state` = orsl.`id_order_return_state` AND orsl.`id_lang` = '.(int)$id_lang.')
+		LEFT JOIN `'._DB_PREFIX_.'order_return_state_lang` orsl ON (ors.`id_order_return_state` = orsl.`id_order_return_state` AND orsl.`id_lang` = '.(int)$idLang.')
 		ORDER BY ors.`id_order_return_state` ASC');
     }
 }

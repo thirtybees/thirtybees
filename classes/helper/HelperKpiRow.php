@@ -29,18 +29,32 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class HelperKpiRowCore
+ *
+ * @since 1.0.0
+ */
 class HelperKpiRowCore extends Helper
 {
+    // @codingStandardsIgnoreStart
     public $base_folder = 'helpers/kpi/';
     public $base_tpl = 'row.tpl';
+    // @codingStandardsIgnoreEnd
 
     public $kpis = [];
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function generate()
     {
         $this->tpl = $this->createTemplate($this->base_tpl);
 
         $this->tpl->assign('kpis', $this->kpis);
+
         return $this->tpl->fetch();
     }
 }

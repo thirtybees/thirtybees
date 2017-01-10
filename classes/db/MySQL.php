@@ -31,6 +31,8 @@
 
 /**
  * Class MySQLCore
+ *
+ * @since 1.0.0
  */
 class MySQLCore extends Db
 {
@@ -46,6 +48,9 @@ class MySQLCore extends Db
      * @see DbCore::connect()
      * @return resource
      * @throws PrestaShopDatabaseException
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function connect()
     {
@@ -77,7 +82,11 @@ class MySQLCore extends Db
      * @param string $password
      * @param string $dbname
      * @param bool $dropit If true, drops the created database.
+     *
      * @return bool|resource
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public static function createDatabase($host, $user, $password, $dbname, $dropit = false)
     {
@@ -94,6 +103,9 @@ class MySQLCore extends Db
      * Destroys the database connection link
      *
      * @see DbCore::disconnect()
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function disconnect()
     {
@@ -105,7 +117,11 @@ class MySQLCore extends Db
      *
      * @see DbCore::_query()
      * @param string $sql
+     *
      * @return resource
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     protected function _query($sql)
     {
@@ -117,7 +133,11 @@ class MySQLCore extends Db
      *
      * @see DbCore::nextRow()
      * @param bool|resource $result
+     *
      * @return array|bool
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function nextRow($result = false)
     {
@@ -136,7 +156,11 @@ class MySQLCore extends Db
      *
      * @see DbCore::_numRows()
      * @param resource $result
+     *
      * @return int
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     protected function _numRows($result)
     {
@@ -147,7 +171,11 @@ class MySQLCore extends Db
      * Returns ID of the last inserted row.
      *
      * @see DbCore::Insert_ID()
+     *
      * @return int
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function Insert_ID()
     {
@@ -159,6 +187,9 @@ class MySQLCore extends Db
      *
      * @see DbCore::Affected_Rows()
      * @return int
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function Affected_Rows()
     {
@@ -171,6 +202,9 @@ class MySQLCore extends Db
      * @see DbCore::getMsgError()
      * @param bool $query
      * @return string
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getMsgError($query = false)
     {
@@ -182,6 +216,9 @@ class MySQLCore extends Db
      *
      * @see DbCore::getNumberError()
      * @return int
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getNumberError()
     {
@@ -193,6 +230,9 @@ class MySQLCore extends Db
      *
      * @see DbCore::getVersion()
      * @return string
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getVersion()
     {
@@ -205,6 +245,9 @@ class MySQLCore extends Db
      * @see DbCore::_escape()
      * @param string $str
      * @return string
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function _escape($str)
     {
@@ -215,12 +258,14 @@ class MySQLCore extends Db
      * Switches to a different database.
      *
      * @see DbCore::set_db()
-     * @param string $db_name
+     *
+     * @param string $dbName
+     *
      * @return bool
      */
-    public function set_db($db_name)
+    public function set_db($dbName)
     {
-        return mysql_select_db($db_name, $this->link);
+        return mysql_select_db($dbName, $this->link);
     }
 
     /**
@@ -229,6 +274,9 @@ class MySQLCore extends Db
      * @see DbCore::getAll()
      * @param bool|resource $result
      * @return array
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     protected function getAll($result = false)
     {
@@ -253,7 +301,11 @@ class MySQLCore extends Db
      * @param string $pwd Password for database connection
      * @param string $db Database name
      * @param string $prefix Tables prefix
+     *
      * @return bool
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public static function hasTableWithSamePrefix($server, $user, $pwd, $db, $prefix)
     {
@@ -280,12 +332,16 @@ class MySQLCore extends Db
      * @param bool $newDbLink
      * @param string|null $engine
      * @param int $timeout
+     *
      * @return int Error code or 0 if connection was successful
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
-    public static function tryToConnect($server, $user, $pwd, $db, $new_db_link = true, $engine = null, $timeout = 5)
+    public static function tryToConnect($server, $user, $pwd, $db, $newDbLink = true, $engine = null, $timeout = 5)
     {
         ini_set('mysql.connect_timeout', $timeout);
-        if (!$link = @mysql_connect($server, $user, $pwd, $new_db_link)) {
+        if (!$link = @mysql_connect($server, $user, $pwd, $newDbLink)) {
             return 1;
         }
         if (!@mysql_select_db($db, $link)) {
@@ -300,6 +356,9 @@ class MySQLCore extends Db
      * Selects best table engine.
      *
      * @return string
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getBestEngine()
     {
@@ -339,7 +398,11 @@ class MySQLCore extends Db
      * @param string $db
      * @param string $prefix
      * @param string|null $engine Table engine
+     *
      * @return bool|string True, false or error
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public static function checkCreatePrivilege($server, $user, $pwd, $db, $prefix, $engine = null)
     {
@@ -365,6 +428,7 @@ class MySQLCore extends Db
         }
 
         mysql_query('DROP TABLE `'.$prefix.'test`', $link);
+
         return true;
     }
 
@@ -375,13 +439,18 @@ class MySQLCore extends Db
      * @param string $server Server address
      * @param string $user Login for database connection
      * @param string $pwd Password for database connection
+     *
      * @return bool
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public static function tryUTF8($server, $user, $pwd)
     {
         $link = @mysql_connect($server, $user, $pwd);
         $ret = mysql_query('SET NAMES \'utf8\'', $link);
         @mysql_close($link);
+
         return $ret;
     }
 
@@ -391,14 +460,19 @@ class MySQLCore extends Db
      * @param string $server
      * @param string $user
      * @param string $pwd
+     *
      * @return bool
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public static function checkAutoIncrement($server, $user, $pwd)
     {
         $link = @mysql_connect($server, $user, $pwd);
-        $ret = (bool)(($result = mysql_query('SELECT @@auto_increment_increment as aii', $link)) && ($row = mysql_fetch_assoc($result)) && $row['aii'] == 1);
-        $ret &= (bool)(($result = mysql_query('SELECT @@auto_increment_offset as aio', $link)) && ($row = mysql_fetch_assoc($result)) && $row['aio'] == 1);
+        $ret = (bool) (($result = mysql_query('SELECT @@auto_increment_increment as aii', $link)) && ($row = mysql_fetch_assoc($result)) && $row['aii'] == 1);
+        $ret &= (bool) (($result = mysql_query('SELECT @@auto_increment_offset as aio', $link)) && ($row = mysql_fetch_assoc($result)) && $row['aio'] == 1);
         @mysql_close($link);
+
         return $ret;
     }
 }

@@ -29,11 +29,17 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class HelperCalendarCore
+ *
+ * @since 1.0.0
+ */
 class HelperCalendarCore extends Helper
 {
     const DEFAULT_DATE_FORMAT    = 'Y-mm-dd';
     const DEFAULT_COMPARE_OPTION = 1;
 
+    // @codingStandardsIgnoreStart
     private $_actions;
     private $_compare_actions;
     private $_compare_date_from;
@@ -43,7 +49,14 @@ class HelperCalendarCore extends Helper
     private $_date_from;
     private $_date_to;
     private $_rtl;
+    // @codingStandardsIgnoreEnd
 
+    /**
+     * HelperCalendarCore constructor.
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function __construct()
     {
         $this->base_folder = 'helpers/calendar/';
@@ -51,6 +64,15 @@ class HelperCalendarCore extends Helper
         parent::__construct();
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     * @throws PrestaShopException
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setActions($value)
     {
         if (!is_array($value) && !$value instanceof Traversable) {
@@ -58,9 +80,16 @@ class HelperCalendarCore extends Helper
         }
 
         $this->_actions = $value;
+
         return $this;
     }
 
+    /**
+     * @return array
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getActions()
     {
         if (!isset($this->_actions)) {
@@ -70,6 +99,15 @@ class HelperCalendarCore extends Helper
         return $this->_actions;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     * @throws PrestaShopException
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setCompareActions($value)
     {
         if (!is_array($value) && !$value instanceof Traversable) {
@@ -77,9 +115,16 @@ class HelperCalendarCore extends Helper
         }
 
         $this->_compare_actions = $value;
+
         return $this;
     }
 
+    /**
+     * @return array
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getCompareActions()
     {
         if (!isset($this->_compare_actions)) {
@@ -89,34 +134,78 @@ class HelperCalendarCore extends Helper
         return $this->_compare_actions;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setCompareDateFrom($value)
     {
         $this->_compare_date_from = $value;
+
         return $this;
     }
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getCompareDateFrom()
     {
         return $this->_compare_date_from;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setCompareDateTo($value)
     {
         $this->_compare_date_to = $value;
+
         return $this;
     }
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getCompareDateTo()
     {
         return $this->_compare_date_to;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setCompareOption($value)
     {
-        $this->_compare_date_option = (int)$value;
+        $this->_compare_date_option = (int) $value;
         return $this;
     }
 
+    /**
+     * @return int
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getCompareOption()
     {
         if (!isset($this->_compare_date_option)) {
@@ -126,6 +215,15 @@ class HelperCalendarCore extends Helper
         return $this->_compare_date_option;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     * @throws PrestaShopException
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setDateFormat($value)
     {
         if (!is_string($value)) {
@@ -133,9 +231,16 @@ class HelperCalendarCore extends Helper
         }
 
         $this->_date_format = $value;
+
         return $this;
     }
 
+    /**
+     * @return string
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getDateFormat()
     {
         if (!isset($this->_date_format)) {
@@ -145,6 +250,15 @@ class HelperCalendarCore extends Helper
         return $this->_date_format;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     * @throws PrestaShopException
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setDateFrom($value)
     {
         if (!isset($value) || $value == '') {
@@ -156,9 +270,16 @@ class HelperCalendarCore extends Helper
         }
 
         $this->_date_from = $value;
+
         return $this;
     }
 
+    /**
+     * @return false|string
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getDateFrom()
     {
         if (!isset($this->_date_from)) {
@@ -168,6 +289,15 @@ class HelperCalendarCore extends Helper
         return $this->_date_from;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     * @throws PrestaShopException
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setDateTo($value)
     {
         if (!isset($value) || $value == '') {
@@ -179,9 +309,16 @@ class HelperCalendarCore extends Helper
         }
 
         $this->_date_to = $value;
+
         return $this;
     }
 
+    /**
+     * @return false|string
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getDateTo()
     {
         if (!isset($this->_date_to)) {
@@ -191,12 +328,28 @@ class HelperCalendarCore extends Helper
         return $this->_date_to;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setRTL($value)
     {
-        $this->_rtl = (bool)$value;
+        $this->_rtl = (bool) $value;
         return $this;
     }
 
+    /**
+     * @param $action
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function addAction($action)
     {
         if (!isset($this->_actions)) {
@@ -208,6 +361,14 @@ class HelperCalendarCore extends Helper
         return $this;
     }
 
+    /**
+     * @param $action
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function addCompareAction($action)
     {
         if (!isset($this->_compare_actions)) {
@@ -219,51 +380,59 @@ class HelperCalendarCore extends Helper
         return $this;
     }
 
+    /**
+     * @return string
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function generate()
     {
         $context = Context::getContext();
-        $admin_webpath = str_ireplace(_PS_CORE_DIR_, '', _PS_ADMIN_DIR_);
-        $admin_webpath = preg_replace('/^'.preg_quote(DIRECTORY_SEPARATOR, '/').'/', '', $admin_webpath);
-        $bo_theme = ((Validate::isLoadedObject($context->employee)
+        $adminWebpath = str_ireplace(_PS_CORE_DIR_, '', _PS_ADMIN_DIR_);
+        $adminWebpath = preg_replace('/^'.preg_quote(DIRECTORY_SEPARATOR, '/').'/', '', $adminWebpath);
+        $boTheme = ((Validate::isLoadedObject($context->employee)
             && $context->employee->bo_theme) ? $context->employee->bo_theme : 'default');
 
-        if (!file_exists(_PS_BO_ALL_THEMES_DIR_.$bo_theme.DIRECTORY_SEPARATOR
-            .'template')) {
-            $bo_theme = 'default';
+        if (!file_exists(_PS_BO_ALL_THEMES_DIR_.$boTheme.DIRECTORY_SEPARATOR.'template')) {
+            $boTheme = 'default';
         }
 
         if ($context->controller->ajax) {
-            $html = '<script type="text/javascript" src="'.__PS_BASE_URI__.$admin_webpath
-                .'/themes/'.$bo_theme.'/js/date-range-picker.js"></script>';
-            $html .= '<script type="text/javascript" src="'.__PS_BASE_URI__.$admin_webpath
-                .'/themes/'.$bo_theme.'/js/calendar.js"></script>';
+            $html = '<script type="text/javascript" src="'.__PS_BASE_URI__.$adminWebpath.'/themes/'.$boTheme.'/js/date-range-picker.js"></script>';
+            $html .= '<script type="text/javascript" src="'.__PS_BASE_URI__.$adminWebpath.'/themes/'.$boTheme.'/js/calendar.js"></script>';
         } else {
             $html = '';
-            $context->controller->addJs(__PS_BASE_URI__.$admin_webpath
-                .'/themes/'.$bo_theme.'/js/date-range-picker.js');
-            $context->controller->addJs(__PS_BASE_URI__.$admin_webpath
-                .'/themes/'.$bo_theme.'/js/calendar.js');
+            $context->controller->addJs(__PS_BASE_URI__.$adminWebpath.'/themes/'.$boTheme.'/js/date-range-picker.js');
+            $context->controller->addJs(__PS_BASE_URI__.$adminWebpath.'/themes/'.$boTheme.'/js/calendar.js');
         }
 
         $this->tpl = $this->createTemplate($this->base_tpl);
         $this->tpl->assign(
             [
-            'date_format'       => $this->getDateFormat(),
-            'date_from'         => $this->getDateFrom(),
-            'date_to'           => $this->getDateTo(),
-            'compare_date_from' => $this->getCompareDateFrom(),
-            'compare_date_to'   => $this->getCompareDateTo(),
-            'actions'           => $this->getActions(),
-            'compare_actions'   => $this->getCompareActions(),
-            'compare_option'    => $this->getCompareOption(),
-            'is_rtl'            => $this->isRTL()
+                'date_format'       => $this->getDateFormat(),
+                'date_from'         => $this->getDateFrom(),
+                'date_to'           => $this->getDateTo(),
+                'compare_date_from' => $this->getCompareDateFrom(),
+                'compare_date_to'   => $this->getCompareDateTo(),
+                'actions'           => $this->getActions(),
+                'compare_actions'   => $this->getCompareActions(),
+                'compare_option'    => $this->getCompareOption(),
+                'is_rtl'            => $this->isRTL(),
             ]
         );
 
         $html .= parent::generate();
+
         return $html;
     }
 
+    /**
+     * @return bool
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function isRTL()
     {
         if (!isset($this->_rtl)) {

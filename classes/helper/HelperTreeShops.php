@@ -29,15 +29,32 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class HelperTreeShopsCore
+ *
+ * @since 1.0.0
+ */
 class HelperTreeShopsCore extends TreeCore
 {
     const DEFAULT_TEMPLATE             = 'tree_shops.tpl';
     const DEFAULT_NODE_FOLDER_TEMPLATE = 'tree_node_folder_checkbox_shops.tpl';
     const DEFAULT_NODE_ITEM_TEMPLATE   = 'tree_node_item_checkbox_shops.tpl';
 
-    private $_lang;
-    private $_selected_shops;
+    // @codingStandardsIgnoreStart
+    protected $_lang;
+    protected $_selected_shops;
+    // @codingStandardsIgnoreEnd
 
+    /**
+     * HelperTreeShopsCore constructor.
+     *
+     * @param int  $id
+     * @param null $title
+     * @param null $lang
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function __construct($id, $title = null, $lang = null)
     {
         parent::__construct($id);
@@ -49,6 +66,12 @@ class HelperTreeShopsCore extends TreeCore
         $this->setLang($lang);
     }
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getData()
     {
         if (!isset($this->_data)) {
@@ -58,12 +81,27 @@ class HelperTreeShopsCore extends TreeCore
         return $this->_data;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setLang($value)
     {
         $this->_lang = $value;
+
         return $this;
     }
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getLang()
     {
         if (!isset($this->_lang)) {
@@ -73,6 +111,12 @@ class HelperTreeShopsCore extends TreeCore
         return $this->_lang;
     }
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getNodeFolderTemplate()
     {
         if (!isset($this->_node_folder_template)) {
@@ -82,6 +126,12 @@ class HelperTreeShopsCore extends TreeCore
         return $this->_node_folder_template;
     }
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getNodeItemTemplate()
     {
         if (!isset($this->_node_item_template)) {
@@ -91,6 +141,15 @@ class HelperTreeShopsCore extends TreeCore
         return $this->_node_item_template;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     * @throws PrestaShopException
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setSelectedShops($value)
     {
         if (!is_array($value)) {
@@ -101,6 +160,12 @@ class HelperTreeShopsCore extends TreeCore
         return $this;
     }
 
+    /**
+     * @return array
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getSelectedShops()
     {
         if (!isset($this->_selected_shops)) {
@@ -110,6 +175,12 @@ class HelperTreeShopsCore extends TreeCore
         return $this->_selected_shops;
     }
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getTemplate()
     {
         if (!isset($this->_template)) {
@@ -119,46 +190,69 @@ class HelperTreeShopsCore extends TreeCore
         return $this->_template;
     }
 
-    public function render($data = null, $use_default_actions = true, $use_selected_shop = true)
+    /**
+     * @param null $data
+     * @param bool $useDefaultActions
+     * @param bool $useSelectedShop
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function render($data = null, $useDefaultActions = true, $useSelectedShop = true)
     {
         if (!isset($data)) {
             $data = $this->getData();
         }
 
-        if ($use_default_actions) {
+        if ($useDefaultActions) {
             $this->setActions(
                 [
-                new TreeToolbarLink(
-                    'Collapse All',
-                    '#',
-                    '$(\'#'.$this->getId().'\').tree(\'collapseAll\'); return false;',
-                    'icon-collapse-alt'),
-                new TreeToolbarLink(
-                    'Expand All',
-                    '#',
-                    '$(\'#'.$this->getId().'\').tree(\'expandAll\'); return false;',
-                    'icon-expand-alt'),
-                new TreeToolbarLink(
-                    'Check All',
-                    '#',
-                    'checkAllAssociatedShops($(\'#'.$this->getId().'\')); return false;',
-                    'icon-check-sign'),
-                new TreeToolbarLink(
-                    'Uncheck All',
-                    '#',
-                    'uncheckAllAssociatedShops($(\'#'.$this->getId().'\')); return false;',
-                    'icon-check-empty')
+                    new TreeToolbarLink(
+                        'Collapse All',
+                        '#',
+                        '$(\'#'.$this->getId().'\').tree(\'collapseAll\'); return false;',
+                        'icon-collapse-alt'
+                    ),
+                    new TreeToolbarLink(
+                        'Expand All',
+                        '#',
+                        '$(\'#'.$this->getId().'\').tree(\'expandAll\'); return false;',
+                        'icon-expand-alt'
+                    ),
+                    new TreeToolbarLink(
+                        'Check All',
+                        '#',
+                        'checkAllAssociatedShops($(\'#'.$this->getId().'\')); return false;',
+                        'icon-check-sign'
+                    ),
+                    new TreeToolbarLink(
+                        'Uncheck All',
+                        '#',
+                        'uncheckAllAssociatedShops($(\'#'.$this->getId().'\')); return false;',
+                        'icon-check-empty'
+                    ),
                 ]
             );
         }
 
-        if ($use_selected_shop) {
+        if ($useSelectedShop) {
             $this->setAttribute('selected_shops', $this->getSelectedShops());
         }
 
         return parent::render($data);
     }
 
+    /**
+     * @param null $data
+     *
+     * @return string
+     * @throws PrestaShopException
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function renderNodes($data = null)
     {
         if (!isset($data)) {
@@ -179,8 +273,8 @@ class HelperTreeShopsCore extends TreeCore
                     $this->getContext()->smarty
                 )->assign($this->getAttributes())->assign(
                     [
-                    'children' => $this->renderNodes($item['shops']),
-                    'node'     => $item
+                        'children' => $this->renderNodes($item['shops']),
+                        'node'     => $item,
                     ]
                 )->fetch();
             } else {
@@ -189,7 +283,7 @@ class HelperTreeShopsCore extends TreeCore
                     $this->getContext()->smarty
                 )->assign($this->getAttributes())->assign(
                     [
-                    'node' => $item
+                        'node' => $item,
                     ]
                 )->fetch();
             }

@@ -30,11 +30,13 @@
  */
 
 /**
- * @TODO Move undeclared variables and methods to this (base) class: $errors, $layout, checkLiveEditAccess, etc.
- * @since 1.5.0
+ * Class ControllerCore
+ *
+ * @since 1.0.0
  */
 abstract class ControllerCore
 {
+    // @codingStandardsIgnoreStart
     /** @var Context */
     protected $context;
 
@@ -82,19 +84,29 @@ abstract class ControllerCore
 
     /** @var string Controller name */
     public $php_self;
+    // @codingStandardsIgnoreEnd
 
     /**
      * Check if the controller is available for the current user/visitor
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     abstract public function checkAccess();
 
     /**
      * Check if the current user/visitor has valid view permissions
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     abstract public function viewAccess();
 
     /**
      * Initialize the page
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function init()
     {
@@ -113,32 +125,51 @@ abstract class ControllerCore
 
     /**
      * Do the page treatment: process input, process AJAX, etc.
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     abstract public function postProcess();
 
     /**
      * Displays page view
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     abstract public function display();
 
     /**
      * Sets default media list for this controller
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     abstract public function setMedia();
 
     /**
      * returns a new instance of this controller
      *
-     * @param string $class_name
-     * @param bool $auth
-     * @param bool $ssl
+     * @param string $className
+     * @param bool   $auth
+     * @param bool   $ssl
+     *
      * @return Controller
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
-    public static function getController($class_name, $auth = false, $ssl = false)
+    public static function getController($className, $auth = false, $ssl = false)
     {
-        return new $class_name($auth, $ssl);
+        return new $className($auth, $ssl);
     }
 
+    /**
+     * ControllerCore constructor.
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function __construct()
     {
         if (is_null($this->display_header)) {
@@ -169,6 +200,9 @@ abstract class ControllerCore
 
     /**
      * Starts the controller process (this method should not be overridden!)
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function run()
     {
@@ -223,6 +257,9 @@ abstract class ControllerCore
      * Sets page header display
      *
      * @param bool $display
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function displayHeader($display = true)
     {
@@ -233,6 +270,9 @@ abstract class ControllerCore
      * Sets page header javascript display
      *
      * @param bool $display
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function displayHeaderJavaScript($display = true)
     {
@@ -243,6 +283,9 @@ abstract class ControllerCore
      * Sets page header display
      *
      * @param bool $display
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function displayFooter($display = true)
     {
@@ -253,6 +296,9 @@ abstract class ControllerCore
      * Sets template file for page content output
      *
      * @param string $template
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function setTemplate($template)
     {
@@ -261,31 +307,49 @@ abstract class ControllerCore
 
     /**
      * Assigns Smarty variables for the page header
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     abstract public function initHeader();
 
     /**
      * Assigns Smarty variables for the page main content
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     abstract public function initContent();
 
     /**
      * Assigns Smarty variables when access is forbidden
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     abstract public function initCursedPage();
 
     /**
      * Assigns Smarty variables for the page footer
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     abstract public function initFooter();
 
     /**
      * Redirects to $this->redirect_after after the process if there is no error
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     abstract protected function redirect();
 
     /**
      * Set $this->redirect_after that will be used by redirect() after the process
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function setRedirectAfter($url)
     {
@@ -295,41 +359,45 @@ abstract class ControllerCore
     /**
      * Adds a new stylesheet(s) to the page header.
      *
-     * @param string|array $css_uri Path to CSS file, or list of css files like this : array(array(uri => media_type), ...)
-     * @param string $css_media_type
-     * @param int|null $offset
-     * @param bool $check_path
+     * @param string|array $cssUri Path to CSS file, or list of css files like this : array(array(uri => media_type), ...)
+     * @param string       $cssMediaType
+     * @param int|null     $offset
+     * @param bool         $checkPath
+     *
      * @return true
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
-    public function addCSS($css_uri, $css_media_type = 'all', $offset = null, $check_path = true)
+    public function addCSS($cssUri, $cssMediaType = 'all', $offset = null, $checkPath = true)
     {
-        if (!is_array($css_uri)) {
-            $css_uri = [$css_uri];
+        if (!is_array($cssUri)) {
+            $cssUri = [$cssUri];
         }
 
-        foreach ($css_uri as $css_file => $media) {
-            if (is_string($css_file) && strlen($css_file) > 1) {
-                if ($check_path) {
-                    $css_path = Media::getCSSPath($css_file, $media);
+        foreach ($cssUri as $cssFile => $media) {
+            if (is_string($cssFile) && strlen($cssFile) > 1) {
+                if ($checkPath) {
+                    $cssPath = Media::getCSSPath($cssFile, $media);
                 } else {
-                    $css_path = [$css_file => $media];
+                    $cssPath = [$cssFile => $media];
                 }
             } else {
-                if ($check_path) {
-                    $css_path = Media::getCSSPath($media, $css_media_type);
+                if ($checkPath) {
+                    $cssPath = Media::getCSSPath($media, $cssMediaType);
                 } else {
-                    $css_path = [$media => $css_media_type];
+                    $cssPath = [$media => $cssMediaType];
                 }
             }
 
-            $key = is_array($css_path) ? key($css_path) : $css_path;
-            if ($css_path && (!isset($this->css_files[$key]) || ($this->css_files[$key] != reset($css_path)))) {
+            $key = is_array($cssPath) ? key($cssPath) : $cssPath;
+            if ($cssPath && (!isset($this->css_files[$key]) || ($this->css_files[$key] != reset($cssPath)))) {
                 $size = count($this->css_files);
                 if ($offset === null || $offset > $size || $offset < 0 || !is_numeric($offset)) {
                     $offset = $size;
                 }
 
-                $this->css_files = array_merge(array_slice($this->css_files, 0, $offset), $css_path, array_slice($this->css_files, $offset));
+                $this->css_files = array_merge(array_slice($this->css_files, 0, $offset), $cssPath, array_slice($this->css_files, $offset));
             }
         }
     }
@@ -337,33 +405,36 @@ abstract class ControllerCore
     /**
      * Removes CSS stylesheet(s) from the queued stylesheet list
      *
-     * @param string|array $css_uri Path to CSS file or an array like: array(array(uri => media_type), ...)
-     * @param string $css_media_type
-     * @param bool $check_path
+     * @param string|array $cssUri Path to CSS file or an array like: array(array(uri => media_type), ...)
+     * @param string       $cssMediaType
+     * @param bool         $checkPath
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
-    public function removeCSS($css_uri, $css_media_type = 'all', $check_path = true)
+    public function removeCSS($cssUri, $cssMediaType = 'all', $checkPath = true)
     {
-        if (!is_array($css_uri)) {
-            $css_uri = [$css_uri];
+        if (!is_array($cssUri)) {
+            $cssUri = [$cssUri];
         }
 
-        foreach ($css_uri as $css_file => $media) {
-            if (is_string($css_file) && strlen($css_file) > 1) {
-                if ($check_path) {
-                    $css_path = Media::getCSSPath($css_file, $media);
+        foreach ($cssUri as $cssFile => $media) {
+            if (is_string($cssFile) && strlen($cssFile) > 1) {
+                if ($checkPath) {
+                    $cssPath = Media::getCSSPath($cssFile, $media);
                 } else {
-                    $css_path = [$css_file => $media];
+                    $cssPath = [$cssFile => $media];
                 }
             } else {
-                if ($check_path) {
-                    $css_path = Media::getCSSPath($media, $css_media_type);
+                if ($checkPath) {
+                    $cssPath = Media::getCSSPath($media, $cssMediaType);
                 } else {
-                    $css_path = [$media => $css_media_type];
+                    $cssPath = [$media => $cssMediaType];
                 }
             }
 
-            if ($css_path && isset($this->css_files[key($css_path)]) && ($this->css_files[key($css_path)] == reset($css_path))) {
-                unset($this->css_files[key($css_path)]);
+            if ($cssPath && isset($this->css_files[key($cssPath)]) && ($this->css_files[key($cssPath)] == reset($cssPath))) {
+                unset($this->css_files[key($cssPath)]);
             }
         }
     }
@@ -371,42 +442,46 @@ abstract class ControllerCore
     /**
      * Adds a new JavaScript file(s) to the page header.
      *
-     * @param string|array $js_uri Path to JS file or an array like: array(uri, ...)
-     * @param bool $check_path
+     * @param string|array $jsUri Path to JS file or an array like: array(uri, ...)
+     * @param bool         $checkPath
+     *
      * @return void
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
-    public function addJS($js_uri, $check_path = true)
+    public function addJS($jsUri, $checkPath = true)
     {
-        if (is_array($js_uri)) {
-            foreach ($js_uri as $js_file) {
-                $js_file = explode('?', $js_file);
+        if (is_array($jsUri)) {
+            foreach ($jsUri as $jsFile) {
+                $jsFile = explode('?', $jsFile);
                 $version = '';
-                if (isset($js_file[1]) && $js_file[1]) {
-                    $version = $js_file[1];
+                if (isset($jsFile[1]) && $jsFile[1]) {
+                    $version = $jsFile[1];
                 }
-                $js_path = $js_file = $js_file[0];
-                if ($check_path) {
-                    $js_path = Media::getJSPath($js_file);
+                $jsPath = $jsFile = $jsFile[0];
+                if ($checkPath) {
+                    $jsPath = Media::getJSPath($jsFile);
                 }
 
                 // $key = is_array($js_path) ? key($js_path) : $js_path;
-                if ($js_path && !in_array($js_path, $this->js_files)) {
-                    $this->js_files[] = $js_path.($version ? '?'.$version : '');
+                if ($jsPath && !in_array($jsPath, $this->js_files)) {
+                    $this->js_files[] = $jsPath.($version ? '?'.$version : '');
                 }
             }
         } else {
-            $js_uri = explode('?', $js_uri);
+            $jsUri = explode('?', $jsUri);
             $version = '';
-            if (isset($js_uri[1]) && $js_uri[1]) {
-                $version = $js_uri[1];
+            if (isset($jsUri[1]) && $jsUri[1]) {
+                $version = $jsUri[1];
             }
-            $js_path = $js_uri = $js_uri[0];
-            if ($check_path) {
-                $js_path = Media::getJSPath($js_uri);
+            $jsPath = $jsUri = $jsUri[0];
+            if ($checkPath) {
+                $jsPath = Media::getJSPath($jsUri);
             }
 
-            if ($js_path && !in_array($js_path, $this->js_files)) {
-                $this->js_files[] = $js_path.($version ? '?'.$version : '');
+            if ($jsPath && !in_array($jsPath, $this->js_files)) {
+                $this->js_files[] = $jsPath.($version ? '?'.$version : '');
             }
         }
     }
@@ -414,30 +489,33 @@ abstract class ControllerCore
     /**
      * Removes JS file(s) from the queued JS file list
      *
-     * @param string|array $js_uri Path to JS file or an array like: array(uri, ...)
-     * @param bool $check_path
+     * @param string|array $jsUri Path to JS file or an array like: array(uri, ...)
+     * @param bool         $checkPath
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
-    public function removeJS($js_uri, $check_path = true)
+    public function removeJS($jsUri, $checkPath = true)
     {
-        if (is_array($js_uri)) {
-            foreach ($js_uri as $js_file) {
-                $js_path = $js_file;
-                if ($check_path) {
-                    $js_path = Media::getJSPath($js_file);
+        if (is_array($jsUri)) {
+            foreach ($jsUri as $jsFile) {
+                $jsPath = $jsFile;
+                if ($checkPath) {
+                    $jsPath = Media::getJSPath($jsFile);
                 }
 
-                if ($js_path && in_array($js_path, $this->js_files)) {
-                    unset($this->js_files[array_search($js_path, $this->js_files)]);
+                if ($jsPath && in_array($jsPath, $this->js_files)) {
+                    unset($this->js_files[array_search($jsPath, $this->js_files)]);
                 }
             }
         } else {
-            $js_path = $js_uri;
-            if ($check_path) {
-                $js_path = Media::getJSPath($js_uri);
+            $jsPath = $jsUri;
+            if ($checkPath) {
+                $jsPath = Media::getJSPath($jsUri);
             }
 
-            if ($js_path) {
-                unset($this->js_files[array_search($js_path, $this->js_files)]);
+            if ($jsPath) {
+                unset($this->js_files[array_search($jsPath, $this->js_files)]);
             }
         }
     }
@@ -445,9 +523,12 @@ abstract class ControllerCore
     /**
      * Adds jQuery library file to queued JS file list
      *
-     * @param string|null $version jQuery library version
-     * @param string|null $folder jQuery file folder
-     * @param bool $minifier If set tot true, a minified version will be included.
+     * @param string|null $version  jQuery library version
+     * @param string|null $folder   jQuery file folder
+     * @param bool        $minifier If set tot true, a minified version will be included.
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function addJquery($version = null, $folder = null, $minifier = true)
     {
@@ -458,19 +539,22 @@ abstract class ControllerCore
      * Adds jQuery UI component(s) to queued JS file list
      *
      * @param string|array $component
-     * @param string $theme
-     * @param bool $check_dependencies
+     * @param string       $theme
+     * @param bool         $checkDependencies
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
-    public function addJqueryUI($component, $theme = 'base', $check_dependencies = true)
+    public function addJqueryUI($component, $theme = 'base', $checkDependencies = true)
     {
         if (!is_array($component)) {
             $component = [$component];
         }
 
         foreach ($component as $ui) {
-            $ui_path = Media::getJqueryUIPath($ui, $theme, $check_dependencies);
-            $this->addCSS($ui_path['css'], 'all', false);
-            $this->addJS($ui_path['js'], false);
+            $uiPath = Media::getJqueryUIPath($ui, $theme, $checkDependencies);
+            $this->addCSS($uiPath['css'], 'all', false);
+            $this->addJS($uiPath['js'], false);
         }
     }
 
@@ -478,8 +562,11 @@ abstract class ControllerCore
      * Adds jQuery plugin(s) to queued JS file list
      *
      * @param string|array $name
-     * @param string null $folder
-     * @param bool $css
+     * @param              string null $folder
+     * @param bool         $css
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function addJqueryPlugin($name, $folder = null, $css = true)
     {
@@ -488,13 +575,13 @@ abstract class ControllerCore
         }
         if (is_array($name)) {
             foreach ($name as $plugin) {
-                $plugin_path = Media::getJqueryPluginPath($plugin, $folder);
+                $pluginPath = Media::getJqueryPluginPath($plugin, $folder);
 
-                if (!empty($plugin_path['js'])) {
-                    $this->addJS($plugin_path['js'], false);
+                if (!empty($pluginPath['js'])) {
+                    $this->addJS($pluginPath['js'], false);
                 }
-                if ($css && !empty($plugin_path['css'])) {
-                    $this->addCSS(key($plugin_path['css']), 'all', null, false);
+                if ($css && !empty($pluginPath['css'])) {
+                    $this->addCSS(key($pluginPath['css']), 'all', null, false);
                 }
             }
         }
@@ -505,6 +592,9 @@ abstract class ControllerCore
      *
      * @since 1.5
      * @return bool
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function isXmlHttpRequest()
     {
@@ -517,14 +607,17 @@ abstract class ControllerCore
      * @param array|string $content Template file(s) to be rendered
      * @throws Exception
      * @throws SmartyException
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     protected function smartyOutputContent($content)
     {
         $this->context->cookie->write();
 
         $html = '';
-        $js_tag = 'js_def';
-        $this->context->smarty->assign($js_tag, $js_tag);
+        $jsTag = 'js_def';
+        $this->context->smarty->assign($jsTag, $jsTag);
 
         if (is_array($content)) {
             foreach ($content as $tpl) {
@@ -537,24 +630,24 @@ abstract class ControllerCore
         $html = trim($html);
 
         if (in_array($this->controller_type, ['front', 'modulefront']) && !empty($html) && $this->getLayout()) {
-            $live_edit_content = '';
+            $liveEditContent = '';
             if (!$this->useMobileTheme() && $this->checkLiveEditAccess()) {
-                $live_edit_content = $this->getLiveEditFooter();
+                $liveEditContent = $this->getLiveEditFooter();
             }
 
-            $dom_available = extension_loaded('dom') ? true : false;
-            $defer = (bool)Configuration::get('PS_JS_DEFER');
+            $domAvailable = extension_loaded('dom') ? true : false;
+            $defer = (bool) Configuration::get('PS_JS_DEFER');
 
-            if ($defer && $dom_available) {
+            if ($defer && $domAvailable) {
                 $html = Media::deferInlineScripts($html);
             }
             $html = trim(str_replace(['</body>', '</html>'], '', $html))."\n";
 
             $this->context->smarty->assign(
                 [
-                $js_tag => Media::getJsDef(),
-                'js_files' =>  $defer ? array_unique($this->js_files) : [],
-                'js_inline' => ($defer && $dom_available) ? Media::getInlineScript() : []
+                    $jsTag      => Media::getJsDef(),
+                    'js_files'  => $defer ? array_unique($this->js_files) : [],
+                    'js_inline' => ($defer && $domAvailable) ? Media::getInlineScript() : [],
                 ]
             );
 
@@ -563,9 +656,9 @@ abstract class ControllerCore
             if ($defer && (!isset($this->ajax) || ! $this->ajax)) {
                 echo $html.$javascript;
             } else {
-                echo preg_replace('/(?<!\$)'.$js_tag.'/', $javascript, $html);
+                echo preg_replace('/(?<!\$)'.$jsTag.'/', $javascript, $html);
             }
-            echo $live_edit_content.((!isset($this->ajax) || ! $this->ajax) ? '</body></html>' : '');
+            echo $liveEditContent.((!isset($this->ajax) || ! $this->ajax) ? '</body></html>' : '');
         } else {
             echo $html;
         }
@@ -574,15 +667,19 @@ abstract class ControllerCore
     /**
      * Checks if a template is cached
      *
-     * @param string $template
-     * @param string|null $cache_id Cache item ID
-     * @param string|null $compile_id
+     * @param string      $template
+     * @param string|null $cacheId Cache item ID
+     * @param string|null $compileId
+     *
      * @return bool
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
-    protected function isCached($template, $cache_id = null, $compile_id = null)
+    protected function isCached($template, $cacheId = null, $compileId = null)
     {
         Tools::enableCache();
-        $res = $this->context->smarty->isCached($template, $cache_id, $compile_id);
+        $res = $this->context->smarty->isCached($template, $cacheId, $compileId);
         Tools::restoreCacheSettings();
 
         return $res;
@@ -595,7 +692,11 @@ abstract class ControllerCore
      * @param string $errstr
      * @param string $errfile
      * @param int $errline
+     *
      * @return bool
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public static function myErrorHandler($errno, $errstr, $errfile, $errline)
     {
@@ -623,11 +724,12 @@ abstract class ControllerCore
 
         Controller::$php_errors[] = [
             'type'    => $type,
-            'errline' => (int)$errline,
+            'errline' => (int) $errline,
             'errfile' => str_replace('\\', '\\\\', $errfile), // Hack for Windows paths
-            'errno'   => (int)$errno,
-            'errstr'  => $errstr
+            'errno'   => (int) $errno,
+            'errstr'  => $errstr,
         ];
+
         Context::getContext()->smarty->assign('php_errors', Controller::$php_errors);
 
         return true;
@@ -639,6 +741,9 @@ abstract class ControllerCore
      * @param string|null $value
      * @param string|null $controller
      * @param string|null $method
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     protected function ajaxDie($value = null, $controller = null, $method = null)
     {

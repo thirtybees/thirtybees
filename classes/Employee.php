@@ -144,12 +144,12 @@ class EmployeeCore extends ObjectModel
 
     protected $associated_shops = [];
 
-    public function __construct($id = null, $id_lang = null, $id_shop = null)
+    public function __construct($id = null, $idLang = null, $id_shop = null)
     {
         parent::__construct($id, null, $id_shop);
 
-        if (!is_null($id_lang)) {
-            $this->id_lang = (int)(Language::getLanguage($id_lang) !== false) ? $id_lang : Configuration::get('PS_LANG_DEFAULT');
+        if (!is_null($idLang)) {
+            $this->id_lang = (int)(Language::getLanguage($idLang) !== false) ? $idLang : Configuration::get('PS_LANG_DEFAULT');
         }
 
         if ($this->id) {
@@ -184,12 +184,12 @@ class EmployeeCore extends ObjectModel
         return parent::getFields();
     }
 
-    public function add($autodate = true, $null_values = true)
+    public function add($autodate = true, $nullValues = true)
     {
         $this->last_passwd_gen = date('Y-m-d H:i:s', strtotime('-'.Configuration::get('PS_PASSWD_TIME_BACK').'minutes'));
         $this->saveOptin();
         $this->updateTextDirection();
-        return parent::add($autodate, $null_values);
+        return parent::add($autodate, $nullValues);
     }
 
     public function update($null_values = false)

@@ -45,9 +45,9 @@ class CartControllerCore extends FrontController
     /**
      * This is not a public page, so the canonical redirection is disabled
      *
-     * @param string $canonicalURL
+     * @param string $canonicalUrl
      */
-    public function canonicalRedirection($canonicalURL = '')
+    public function canonicalRedirection($canonicalUrl = '')
     {
     }
 

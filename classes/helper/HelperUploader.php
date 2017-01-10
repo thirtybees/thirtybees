@@ -29,6 +29,11 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class HelperUploaderCore
+ *
+ * @since 1.0.0
+ */
 class HelperUploaderCore extends Uploader
 {
     const DEFAULT_TEMPLATE_DIRECTORY = 'helpers/uploader';
@@ -38,6 +43,7 @@ class HelperUploaderCore extends Uploader
     const TYPE_IMAGE                 = 'image';
     const TYPE_FILE                  = 'file';
 
+    // @codingStandardsIgnoreStart
     private $_context;
     private $_drop_zone;
     private $_id;
@@ -51,13 +57,28 @@ class HelperUploaderCore extends Uploader
     private $_title;
     private $_url;
     private $_use_ajax;
+    // @codingStandardsIgnoreEnd
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setContext($value)
     {
         $this->_context = $value;
         return $this;
     }
 
+    /**
+     * @return Context
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getContext()
     {
         if (!isset($this->_context)) {
@@ -67,12 +88,26 @@ class HelperUploaderCore extends Uploader
         return $this->_context;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setDropZone($value)
     {
         $this->_drop_zone = $value;
         return $this;
     }
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getDropZone()
     {
         if (!isset($this->_drop_zone)) {
@@ -82,12 +117,23 @@ class HelperUploaderCore extends Uploader
         return $this->_drop_zone;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setId($value)
     {
         $this->_id = (string)$value;
         return $this;
     }
 
+    /**
+     * @return mixed
+     */
     public function getId()
     {
         if (!isset($this->_id) || trim($this->_id) === '') {
@@ -97,12 +143,24 @@ class HelperUploaderCore extends Uploader
         return $this->_id;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     */
     public function setFiles($value)
     {
         $this->_files = $value;
+
         return $this;
     }
 
+    /**
+     * @return array
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getFiles()
     {
         if (!isset($this->_files)) {
@@ -112,41 +170,95 @@ class HelperUploaderCore extends Uploader
         return $this->_files;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setMaxFiles($value)
     {
         $this->_max_files = isset($value) ? intval($value) : $value;
+
         return $this;
     }
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getMaxFiles()
     {
         return $this->_max_files;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setMultiple($value)
     {
-        $this->_multiple = (bool)$value;
+        $this->_multiple = (bool) $value;
+
         return $this;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setName($value)
     {
-        $this->_name = (string)$value;
+        $this->_name = (string) $value;
+
         return $this;
     }
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getName()
     {
         return $this->_name;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setPostMaxSize($value)
     {
         $this->_post_max_size = $value;
         $this->setMaxSize($value);
+
         return $this;
     }
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getPostMaxSize()
     {
         if (!isset($this->_post_max_size)) {
@@ -156,12 +268,27 @@ class HelperUploaderCore extends Uploader
         return $this->_post_max_size;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setTemplate($value)
     {
         $this->_template = $value;
+
         return $this;
     }
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getTemplate()
     {
         if (!isset($this->_template)) {
@@ -171,12 +298,27 @@ class HelperUploaderCore extends Uploader
         return $this->_template;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setTemplateDirectory($value)
     {
         $this->_template_directory = $value;
+
         return $this;
     }
 
+    /**
+     * @return string
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getTemplateDirectory()
     {
         if (!isset($this->_template_directory)) {
@@ -186,21 +328,29 @@ class HelperUploaderCore extends Uploader
         return $this->_normalizeDirectory($this->_template_directory);
     }
 
+    /**
+     * @param $template
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getTemplateFile($template)
     {
         if (preg_match_all('/((?:^|[A-Z])[a-z]+)/', get_class($this->getContext()->controller), $matches) !== false) {
-            $controller_name = strtolower($matches[0][1]);
+            $controllerName = strtolower($matches[0][1]);
         }
 
-        if ($this->getContext()->controller instanceof ModuleAdminController && file_exists($this->_normalizeDirectory(
-                $this->getContext()->controller->getTemplatePath()).$this->getTemplateDirectory().$template)) {
+        if ($this->getContext()->controller instanceof ModuleAdminController &&
+            file_exists($this->_normalizeDirectory($this->getContext()->controller->getTemplatePath()).$this->getTemplateDirectory().$template)) {
             return $this->_normalizeDirectory($this->getContext()->controller->getTemplatePath())
                 .$this->getTemplateDirectory().$template;
-        } elseif ($this->getContext()->controller instanceof AdminController && isset($controller_name)
+        } elseif ($this->getContext()->controller instanceof AdminController && isset($controllerName)
             && file_exists($this->_normalizeDirectory($this->getContext()->smarty->getTemplateDir(0)).'controllers'
-                .DIRECTORY_SEPARATOR.$controller_name.DIRECTORY_SEPARATOR.$this->getTemplateDirectory().$template)) {
+                .DIRECTORY_SEPARATOR.$controllerName.DIRECTORY_SEPARATOR.$this->getTemplateDirectory().$template)) {
             return $this->_normalizeDirectory($this->getContext()->smarty->getTemplateDir(0)).'controllers'
-                .DIRECTORY_SEPARATOR.$controller_name.DIRECTORY_SEPARATOR.$this->getTemplateDirectory().$template;
+                .DIRECTORY_SEPARATOR.$controllerName.DIRECTORY_SEPARATOR.$this->getTemplateDirectory().$template;
         } elseif (file_exists($this->_normalizeDirectory($this->getContext()->smarty->getTemplateDir(1))
                 .$this->getTemplateDirectory().$template)) {
             return $this->_normalizeDirectory($this->getContext()->smarty->getTemplateDir(1))
@@ -214,59 +364,110 @@ class HelperUploaderCore extends Uploader
         }
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setTitle($value)
     {
         $this->_title = $value;
+
         return $this;
     }
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getTitle()
     {
         return $this->_title;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setUrl($value)
     {
-        $this->_url = (string)$value;
+        $this->_url = (string) $value;
+
         return $this;
     }
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getUrl()
     {
         return $this->_url;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setUseAjax($value)
     {
-        $this->_use_ajax = (bool)$value;
+        $this->_use_ajax = (bool) $value;
+
         return $this;
     }
 
+    /**
+     * @return bool
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function isMultiple()
     {
         return (isset($this->_multiple) && $this->_multiple);
     }
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function render()
     {
-        $admin_webpath = str_ireplace(_PS_CORE_DIR_, '', _PS_ADMIN_DIR_);
-        $admin_webpath = preg_replace('/^'.preg_quote(DIRECTORY_SEPARATOR, '/').'/', '', $admin_webpath);
-        $bo_theme = ((Validate::isLoadedObject($this->getContext()->employee)
+        $adminWebpath = str_ireplace(_PS_CORE_DIR_, '', _PS_ADMIN_DIR_);
+        $adminWebpath = preg_replace('/^'.preg_quote(DIRECTORY_SEPARATOR, '/').'/', '', $adminWebpath);
+        $boTheme = ((Validate::isLoadedObject($this->getContext()->employee)
             && $this->getContext()->employee->bo_theme) ? $this->getContext()->employee->bo_theme : 'default');
 
-        if (!file_exists(_PS_BO_ALL_THEMES_DIR_.$bo_theme.DIRECTORY_SEPARATOR
+        if (!file_exists(_PS_BO_ALL_THEMES_DIR_.$boTheme.DIRECTORY_SEPARATOR
             .'template')) {
-            $bo_theme = 'default';
+            $boTheme = 'default';
         }
 
-        $this->getContext()->controller->addJs(__PS_BASE_URI__.$admin_webpath
-            .'/themes/'.$bo_theme.'/js/jquery.iframe-transport.js');
-        $this->getContext()->controller->addJs(__PS_BASE_URI__.$admin_webpath
-            .'/themes/'.$bo_theme.'/js/jquery.fileupload.js');
-        $this->getContext()->controller->addJs(__PS_BASE_URI__.$admin_webpath
-            .'/themes/'.$bo_theme.'/js/jquery.fileupload-process.js');
-        $this->getContext()->controller->addJs(__PS_BASE_URI__.$admin_webpath
-            .'/themes/'.$bo_theme.'/js/jquery.fileupload-validate.js');
+        $this->getContext()->controller->addJs(__PS_BASE_URI__.$adminWebpath
+            .'/themes/'.$boTheme.'/js/jquery.iframe-transport.js');
+        $this->getContext()->controller->addJs(__PS_BASE_URI__.$adminWebpath
+            .'/themes/'.$boTheme.'/js/jquery.fileupload.js');
+        $this->getContext()->controller->addJs(__PS_BASE_URI__.$adminWebpath
+            .'/themes/'.$boTheme.'/js/jquery.fileupload-process.js');
+        $this->getContext()->controller->addJs(__PS_BASE_URI__.$adminWebpath
+            .'/themes/'.$boTheme.'/js/jquery.fileupload-validate.js');
         $this->getContext()->controller->addJs(__PS_BASE_URI__.'js/vendor/spin.js');
         $this->getContext()->controller->addJs(__PS_BASE_URI__.'js/vendor/ladda.js');
 
@@ -280,21 +481,27 @@ class HelperUploaderCore extends Uploader
 
         $template->assign(
             [
-            'id'            => $this->getId(),
-            'name'          => $this->getName(),
-            'url'           => $this->getUrl(),
-            'multiple'      => $this->isMultiple(),
-            'files'         => $this->getFiles(),
-            'title'         => $this->getTitle(),
-            'max_files'     => $this->getMaxFiles(),
-            'post_max_size' => $this->getPostMaxSizeBytes(),
-            'drop_zone'     => $this->getDropZone()
+                'id'            => $this->getId(),
+                'name'          => $this->getName(),
+                'url'           => $this->getUrl(),
+                'multiple'      => $this->isMultiple(),
+                'files'         => $this->getFiles(),
+                'title'         => $this->getTitle(),
+                'max_files'     => $this->getMaxFiles(),
+                'post_max_size' => $this->getPostMaxSizeBytes(),
+                'drop_zone'     => $this->getDropZone(),
             ]
         );
 
         return $template->fetch();
     }
 
+    /**
+     * @return bool
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function useAjax()
     {
         return (isset($this->_use_ajax) && $this->_use_ajax);

@@ -171,9 +171,9 @@ class CarrierCore extends ObjectModel
         ],
     ];
 
-    public function __construct($id = null, $id_lang = null)
+    public function __construct($id = null, $idLang = null)
     {
-        parent::__construct($id, $id_lang);
+        parent::__construct($id, $idLang);
 
         /**
          * keep retrocompatibility SHIPPING_METHOD_DEFAULT
@@ -198,12 +198,12 @@ class CarrierCore extends ObjectModel
         $this->image_dir = _PS_SHIP_IMG_DIR_;
     }
 
-    public function add($autodate = true, $null_values = false)
+    public function add($autodate = true, $nullValues = false)
     {
         if ($this->position <= 0) {
             $this->position = Carrier::getHigherPosition() + 1;
         }
-        if (!parent::add($autodate, $null_values) || !Validate::isLoadedObject($this)) {
+        if (!parent::add($autodate, $nullValues) || !Validate::isLoadedObject($this)) {
             return false;
         }
         if (!$count = Db::getInstance()->getValue('SELECT count(`id_carrier`) FROM `'._DB_PREFIX_.$this->def['table'].'` WHERE `deleted` = 0')) {

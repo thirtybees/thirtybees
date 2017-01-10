@@ -90,7 +90,7 @@ class LanguageCore extends ObjectModel
             'tabs' => 'tabs',
     ];
 
-    public function __construct($id = null, $id_lang = null)
+    public function __construct($id = null, $idLang = null)
     {
         parent::__construct($id);
     }

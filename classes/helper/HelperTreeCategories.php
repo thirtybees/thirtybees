@@ -29,30 +29,49 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class HelperTreeCategoriesCore
+ *
+ * @since 1.0.0
+ */
 class HelperTreeCategoriesCore extends TreeCore
 {
     const DEFAULT_TEMPLATE = 'tree_categories.tpl';
     const DEFAULT_NODE_FOLDER_TEMPLATE = 'tree_node_folder_radio.tpl';
     const DEFAULT_NODE_ITEM_TEMPLATE = 'tree_node_item_radio.tpl';
 
-    private $_disabled_categories;
-    private $_input_name;
-    private $_lang;
-    private $_root_category;
-    private $_selected_categories;
-    private $_full_tree = false;
-    private $_shop;
-    private $_use_checkbox;
-    private $_use_search;
-    private $_use_shop_restriction;
-    private $_children_only = false;
+    // @codingStandardsIgnoreStart
+    protected $_disabled_categories;
+    protected $_input_name;
+    protected $_lang;
+    protected $_root_category;
+    protected $_selected_categories;
+    protected $_full_tree = false;
+    protected $_shop;
+    protected $_use_checkbox;
+    protected $_use_search;
+    protected $_use_shop_restriction;
+    protected $_children_only = false;
+    // @codingStandardsIgnoreEnd
 
+    /**
+     * HelperTreeCategoriesCore constructor.
+     *
+     * @param      $id
+     * @param null $title
+     * @param null $rootCategory
+     * @param null $lang
+     * @param bool $useShopRestriction
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function __construct(
         $id,
         $title = null,
-        $root_category = null,
+        $rootCategory = null,
         $lang = null,
-        $use_shop_restriction = true
+        $useShopRestriction = true
     ) {
         parent::__construct($id);
 
@@ -60,18 +79,27 @@ class HelperTreeCategoriesCore extends TreeCore
             $this->setTitle($title);
         }
 
-        if (isset($root_category)) {
-            $this->setRootCategory($root_category);
+        if (isset($rootCategory)) {
+            $this->setRootCategory($rootCategory);
         }
 
         $this->setLang($lang);
-        $this->setUseShopRestriction($use_shop_restriction);
+        $this->setUseShopRestriction($useShopRestriction);
     }
 
-    private function fillTree(&$categories, $id_category)
+    /**
+     * @param $categories
+     * @param $idCategory
+     *
+     * @return array
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
+    protected function fillTree(&$categories, $idCategory)
     {
         $tree = [];
-        foreach ($categories[$id_category] as $category) {
+        foreach ($categories[$idCategory] as $category) {
             $tree[$category['id_category']] = $category;
             if (!empty($categories[$category['id_category']])) {
                 $tree[$category['id_category']]['children'] = $this->fillTree($categories, $category['id_category']);
@@ -83,65 +111,75 @@ class HelperTreeCategoriesCore extends TreeCore
         return $tree;
     }
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getData()
     {
         if (!isset($this->_data)) {
             $shop = $this->getShop();
             $lang = $this->getLang();
-            $root_category = (int) $this->getRootCategory();
+            $rootCategory = (int) $this->getRootCategory();
             if ($this->_full_tree) {
-                $this->setData(
-                    Category::getNestedCategories(
-                        $root_category, $lang, false, null, $this->useShopRestriction()
-                    )
-                );
-                $this->setDataSearch(Category::getAllCategoriesName($root_category, $lang, false, null, $this->useShopRestriction()));
+                $this->setData(Category::getNestedCategories($rootCategory, $lang, false, null, $this->useShopRestriction()));
+                $this->setDataSearch(Category::getAllCategoriesName($rootCategory, $lang, false, null, $this->useShopRestriction()));
             } elseif ($this->_children_only) {
-                if (empty($root_category)) {
-                    $root_category = Category::getRootCategory()->id;
+                if (empty($rootCategory)) {
+                    $rootCategory = Category::getRootCategory()->id;
                 }
-                $categories[$root_category] = Category::getChildren($root_category, $lang, false, $shop->id);
-                $children = $this->fillTree($categories, $root_category);
+                $categories[$rootCategory] = Category::getChildren($rootCategory, $lang, false, $shop->id);
+                $children = $this->fillTree($categories, $rootCategory);
                 $this->setData($children);
             } else {
-                if (empty($root_category)) {
-                    $root_category = Category::getRootCategory()->id;
+                if (empty($rootCategory)) {
+                    $rootCategory = Category::getRootCategory()->id;
                 }
-                $new_selected_categories = [];
-                $selected_categories = $this->getSelectedCategories();
-                $categories[$root_category] = Category::getChildren($root_category, $lang, false, $shop->id);
-                foreach ($selected_categories as $selected_category) {
-                    $category = new Category($selected_category, $lang, $shop->id);
-                    $new_selected_categories[] = $selected_category;
+                $newSelectedCategories = [];
+                $selectedCategories = $this->getSelectedCategories();
+                $categories[$rootCategory] = Category::getChildren($rootCategory, $lang, false, $shop->id);
+                foreach ($selectedCategories as $selectedCategory) {
+                    $category = new Category($selectedCategory, $lang, $shop->id);
+                    $newSelectedCategories[] = $selectedCategory;
                     $parents = $category->getParentsCategories($lang);
                     foreach ($parents as $value) {
-                        $new_selected_categories[] = $value['id_category'];
+                        $newSelectedCategories[] = $value['id_category'];
                     }
                 }
-                $new_selected_categories = array_unique($new_selected_categories);
-                foreach ($new_selected_categories as $selected_category) {
-                    $current_category = Category::getChildren($selected_category, $lang, false, $shop->id);
-                    if (!empty($current_category)) {
-                        $categories[$selected_category] = $current_category;
+                $newSelectedCategories = array_unique($newSelectedCategories);
+                foreach ($newSelectedCategories as $selectedCategory) {
+                    $currentCategory = Category::getChildren($selectedCategory, $lang, false, $shop->id);
+                    if (!empty($currentCategory)) {
+                        $categories[$selectedCategory] = $currentCategory;
                     }
                 }
 
-                $tree = Category::getCategoryInformations([$root_category], $lang);
+                $tree = Category::getCategoryInformations([$rootCategory], $lang);
 
-                $children = $this->fillTree($categories, $root_category);
+                $children = $this->fillTree($categories, $rootCategory);
 
                 if (!empty($children)) {
-                    $tree[$root_category]['children'] = $children;
+                    $tree[$rootCategory]['children'] = $children;
                 }
 
                 $this->setData($tree);
-                $this->setDataSearch(Category::getAllCategoriesName($root_category, $lang, false, null, $this->useShopRestriction()));
+                $this->setDataSearch(Category::getAllCategoriesName($rootCategory, $lang, false, null, $this->useShopRestriction()));
             }
         }
 
         return $this->_data;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setChildrenOnly($value)
     {
         $this->_children_only = $value;
@@ -149,6 +187,14 @@ class HelperTreeCategoriesCore extends TreeCore
         return $this;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setFullTree($value)
     {
         $this->_full_tree = $value;
@@ -156,11 +202,25 @@ class HelperTreeCategoriesCore extends TreeCore
         return $this;
     }
 
+    /**
+     * @return bool
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getFullTree()
     {
         return $this->_full_tree;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setDisabledCategories($value)
     {
         $this->_disabled_categories = $value;
@@ -168,11 +228,25 @@ class HelperTreeCategoriesCore extends TreeCore
         return $this;
     }
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getDisabledCategories()
     {
         return $this->_disabled_categories;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setInputName($value)
     {
         $this->_input_name = $value;
@@ -180,6 +254,12 @@ class HelperTreeCategoriesCore extends TreeCore
         return $this;
     }
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getInputName()
     {
         if (!isset($this->_input_name)) {
@@ -189,6 +269,14 @@ class HelperTreeCategoriesCore extends TreeCore
         return $this->_input_name;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setLang($value)
     {
         $this->_lang = $value;
@@ -196,6 +284,12 @@ class HelperTreeCategoriesCore extends TreeCore
         return $this;
     }
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getLang()
     {
         if (!isset($this->_lang)) {
@@ -205,6 +299,12 @@ class HelperTreeCategoriesCore extends TreeCore
         return $this->_lang;
     }
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getNodeFolderTemplate()
     {
         if (!isset($this->_node_folder_template)) {
@@ -214,6 +314,12 @@ class HelperTreeCategoriesCore extends TreeCore
         return $this->_node_folder_template;
     }
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getNodeItemTemplate()
     {
         if (!isset($this->_node_item_template)) {
@@ -223,6 +329,15 @@ class HelperTreeCategoriesCore extends TreeCore
         return $this->_node_item_template;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     * @throws PrestaShopException
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setRootCategory($value)
     {
         if (!Validate::isInt($value)) {
@@ -234,11 +349,26 @@ class HelperTreeCategoriesCore extends TreeCore
         return $this;
     }
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getRootCategory()
     {
         return $this->_root_category;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     * @throws PrestaShopException
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setSelectedCategories($value)
     {
         if (!is_array($value)) {
@@ -250,6 +380,12 @@ class HelperTreeCategoriesCore extends TreeCore
         return $this;
     }
 
+    /**
+     * @return array
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getSelectedCategories()
     {
         if (!isset($this->_selected_categories)) {
@@ -259,6 +395,14 @@ class HelperTreeCategoriesCore extends TreeCore
         return $this->_selected_categories;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setShop($value)
     {
         $this->_shop = $value;
@@ -266,6 +410,12 @@ class HelperTreeCategoriesCore extends TreeCore
         return $this;
     }
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getShop()
     {
         if (!isset($this->_shop)) {
@@ -283,6 +433,12 @@ class HelperTreeCategoriesCore extends TreeCore
         return $this->_shop;
     }
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getTemplate()
     {
         if (!isset($this->_template)) {
@@ -292,6 +448,14 @@ class HelperTreeCategoriesCore extends TreeCore
         return $this->_template;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setUseCheckBox($value)
     {
         $this->_use_checkbox = (bool) $value;
@@ -299,6 +463,14 @@ class HelperTreeCategoriesCore extends TreeCore
         return $this;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setUseSearch($value)
     {
         $this->_use_search = (bool) $value;
@@ -306,6 +478,14 @@ class HelperTreeCategoriesCore extends TreeCore
         return $this;
     }
 
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setUseShopRestriction($value)
     {
         $this->_use_shop_restriction = (bool) $value;
@@ -313,21 +493,47 @@ class HelperTreeCategoriesCore extends TreeCore
         return $this;
     }
 
+    /**
+     * @return bool
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function useCheckBox()
     {
         return (isset($this->_use_checkbox) && $this->_use_checkbox);
     }
 
+    /**
+     * @return bool
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function useSearch()
     {
         return (isset($this->_use_search) && $this->_use_search);
     }
 
+    /**
+     * @return bool
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function useShopRestriction()
     {
         return (isset($this->_use_shop_restriction) && $this->_use_shop_restriction);
     }
 
+    /**
+     * @param null $data
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function render($data = null)
     {
         if (!isset($data)) {
@@ -357,40 +563,40 @@ class HelperTreeCategoriesCore extends TreeCore
             $this->setAttribute('use_search', $this->useSearch());
         }
 
-        $collapse_all = new TreeToolbarLink(
+        $collapseAll = new TreeToolbarLink(
             'Collapse All',
             '#',
             '$(\'#'.$this->getId().'\').tree(\'collapseAll\');$(\'#collapse-all-'.$this->getId().'\').hide();$(\'#expand-all-'.$this->getId().'\').show(); return false;',
             'icon-collapse-alt'
         );
-        $collapse_all->setAttribute('id', 'collapse-all-'.$this->getId());
-        $expand_all = new TreeToolbarLink(
+        $collapseAll->setAttribute('id', 'collapse-all-'.$this->getId());
+        $expandAll = new TreeToolbarLink(
             'Expand All',
             '#',
             '$(\'#'.$this->getId().'\').tree(\'expandAll\');$(\'#collapse-all-'.$this->getId().'\').show();$(\'#expand-all-'.$this->getId().'\').hide(); return false;',
             'icon-expand-alt'
         );
-        $expand_all->setAttribute('id', 'expand-all-'.$this->getId());
-        $this->addAction($collapse_all);
-        $this->addAction($expand_all);
+        $expandAll->setAttribute('id', 'expand-all-'.$this->getId());
+        $this->addAction($collapseAll);
+        $this->addAction($expandAll);
 
         if ($this->useCheckBox()) {
-            $check_all = new TreeToolbarLink(
+            $checkAll = new TreeToolbarLink(
                 'Check All',
                 '#',
                 'checkAllAssociatedCategories($(\'#'.$this->getId().'\')); return false;',
                 'icon-check-sign'
             );
-            $check_all->setAttribute('id', 'check-all-'.$this->getId());
-            $uncheck_all = new TreeToolbarLink(
+            $checkAll->setAttribute('id', 'check-all-'.$this->getId());
+            $uncheckAll = new TreeToolbarLink(
                 'Uncheck All',
                 '#',
                 'uncheckAllAssociatedCategories($(\'#'.$this->getId().'\')); return false;',
                 'icon-check-empty'
             );
-            $uncheck_all->setAttribute('id', 'uncheck-all-'.$this->getId());
-            $this->addAction($check_all);
-            $this->addAction($uncheck_all);
+            $uncheckAll->setAttribute('id', 'uncheck-all-'.$this->getId());
+            $this->addAction($checkAll);
+            $this->addAction($uncheckAll);
             $this->setNodeFolderTemplate('tree_node_folder_checkbox.tpl');
             $this->setNodeItemTemplate('tree_node_item_checkbox.tpl');
             $this->setAttribute('use_checkbox', $this->useCheckBox());
@@ -403,7 +609,15 @@ class HelperTreeCategoriesCore extends TreeCore
         return parent::render($data);
     }
 
-    /* Override */
+    /**
+     * @param null $data
+     *
+     * @return string
+     * @throws PrestaShopException
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function renderNodes($data = null)
     {
         if (!isset($data)) {
@@ -445,31 +659,48 @@ class HelperTreeCategoriesCore extends TreeCore
         return $html;
     }
 
-    private function _disableCategories(&$categories, $disabled_categories = null)
+    /**
+     * @param      $categories
+     * @param null $disabledCategories
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
+    protected function _disableCategories(&$categories, $disabledCategories = null)
     {
         foreach ($categories as &$category) {
-            if (!isset($disabled_categories) || in_array($category['id_category'], $disabled_categories)) {
+            if (!isset($disabledCategories) || in_array($category['id_category'], $disabledCategories)) {
                 $category['disabled'] = true;
                 if (array_key_exists('children', $category) && is_array($category['children'])) {
                     self::_disableCategories($category['children']);
                 }
             } elseif (array_key_exists('children', $category) && is_array($category['children'])) {
-                self::_disableCategories($category['children'], $disabled_categories);
+                self::_disableCategories($category['children'], $disabledCategories);
             }
         }
     }
 
-    private function _getSelectedChildNumbers(&$categories, $selected, &$parent = null)
+    /**
+     * @param      $categories
+     * @param      $selected
+     * @param null $parent
+     *
+     * @return int
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
+    protected function _getSelectedChildNumbers(&$categories, $selected, &$parent = null)
     {
-        $selected_childs = 0;
+        $selectedChilds = 0;
 
         foreach ($categories as $key => &$category) {
             if (isset($parent) && in_array($category['id_category'], $selected)) {
-                $selected_childs++;
+                $selectedChilds++;
             }
 
             if (isset($category['children']) && !empty($category['children'])) {
-                $selected_childs += $this->_getSelectedChildNumbers($category['children'], $selected, $category);
+                $selectedChilds += $this->_getSelectedChildNumbers($category['children'], $selected, $category);
             }
         }
 
@@ -477,8 +708,8 @@ class HelperTreeCategoriesCore extends TreeCore
             $parent['selected_childs'] = 0;
         }
 
-        $parent['selected_childs'] = $selected_childs;
+        $parent['selected_childs'] = $selectedChilds;
 
-        return $selected_childs;
+        return $selectedChilds;
     }
 }

@@ -21,19 +21,22 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * @since 1.5.0
+ * Class HelperFormCore
+ *
+ * @since 1.0.0
  */
 class HelperFormCore extends Helper
 {
+    // @codingStandardsIgnoreStart
     public $id;
     public $first_call = true;
 
@@ -56,7 +59,14 @@ class HelperFormCore extends Helper
     public $allow_employee_form_lang = null;
     public $show_cancel_button = false;
     public $back_url = '#';
+    // @codingStandardsIgnoreEnd
 
+    /**
+     * HelperFormCore constructor.
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function __construct()
     {
         $this->base_folder = 'helpers/form/';
@@ -64,12 +74,28 @@ class HelperFormCore extends Helper
         parent::__construct();
     }
 
-    public function generateForm($fields_form)
+    /**
+     * @param $fieldsForm
+     *
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function generateForm($fieldsForm)
     {
-        $this->fields_form = $fields_form;
+        $this->fields_form = $fieldsForm;
+
         return $this->generate();
     }
 
+    /**
+     * @return string
+     * @throws PrestaShopException
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function generate()
     {
         $this->tpl = $this->createTemplate($this->base_tpl);
@@ -81,9 +107,9 @@ class HelperFormCore extends Helper
         $color = true;
         $date = true;
         $tinymce = true;
-        $textarea_autosize = true;
+        $textareaAutosize = true;
         $file = true;
-        foreach ($this->fields_form as $fieldset_key => &$fieldset) {
+        foreach ($this->fields_form as $fieldsetKey => &$fieldset) {
             if (isset($fieldset['form']['tabs'])) {
                 $tabs[] = $fieldset['form']['tabs'];
             }
@@ -92,13 +118,13 @@ class HelperFormCore extends Helper
                 foreach ($fieldset['form']['input'] as $key => &$params) {
                     // If the condition is not met, the field will not be displayed
                     if (isset($params['condition']) && !$params['condition']) {
-                        unset($this->fields_form[$fieldset_key]['form']['input'][$key]);
+                        unset($this->fields_form[$fieldsetKey]['form']['input'][$key]);
                     }
                     switch ($params['type']) {
                         case 'select':
-                            $field_name = (string)$params['name'];
+                            $fieldName = (string) $params['name'];
                             // If multiple select check that 'name' field is suffixed with '[]'
-                            if (isset($params['multiple']) && $params['multiple'] && stripos($field_name, '[]') === false) {
+                            if (isset($params['multiple']) && $params['multiple'] && stripos($fieldName, '[]') === false) {
                                 $params['name'] .= '[]';
                             }
                             break;
@@ -142,28 +168,28 @@ class HelperFormCore extends Helper
                                 $this->context->smarty->assign('categories_tree', $tree->render());
                                 $categories = false;
                             }
-                        break;
+                            break;
 
                         case 'file':
                             $uploader = new HelperUploader();
-                            $uploader->setId(isset($params['id'])?$params['id']:null);
+                            $uploader->setId(isset($params['id']) ? $params['id'] : null);
                             $uploader->setName($params['name']);
-                            $uploader->setUrl(isset($params['url'])?$params['url']:null);
-                            $uploader->setMultiple(isset($params['multiple'])?$params['multiple']:false);
-                            $uploader->setUseAjax(isset($params['ajax'])?$params['ajax']:false);
-                            $uploader->setMaxFiles(isset($params['max_files'])?$params['max_files']:null);
+                            $uploader->setUrl(isset($params['url']) ? $params['url'] : null);
+                            $uploader->setMultiple(isset($params['multiple']) ? $params['multiple'] : false);
+                            $uploader->setUseAjax(isset($params['ajax']) ? $params['ajax'] : false);
+                            $uploader->setMaxFiles(isset($params['max_files']) ? $params['max_files'] : null);
 
                             if (isset($params['files']) && $params['files']) {
                                 $uploader->setFiles($params['files']);
                             } elseif (isset($params['image']) && $params['image']) { // Use for retrocompatibility
                                 $uploader->setFiles(
                                     [
-                                    0 => [
-                                    'type'       => HelperUploader::TYPE_IMAGE,
-                                    'image'      => isset($params['image'])?$params['image']:null,
-                                    'size'       => isset($params['size'])?$params['size']:null,
-                                    'delete_url' => isset($params['delete_url'])?$params['delete_url']:null
-                                    ]
+                                        0 => [
+                                            'type'       => HelperUploader::TYPE_IMAGE,
+                                            'image'      => isset($params['image']) ? $params['image'] : null,
+                                            'size'       => isset($params['size']) ? $params['size'] : null,
+                                            'delete_url' => isset($params['delete_url']) ? $params['delete_url'] : null,
+                                        ],
                                     ]
                                 );
                             }
@@ -171,12 +197,12 @@ class HelperFormCore extends Helper
                             if (isset($params['file']) && $params['file']) { // Use for retrocompatibility
                                 $uploader->setFiles(
                                     [
-                                    0 => [
-                                    'type'       => HelperUploader::TYPE_FILE,
-                                    'size'       => isset($params['size'])?$params['size']:null,
-                                    'delete_url' => isset($params['delete_url'])?$params['delete_url']:null,
-                                    'download_url' => isset($params['file'])?$params['file']:null
-                                    ]
+                                        0 => [
+                                            'type'         => HelperUploader::TYPE_FILE,
+                                            'size'         => isset($params['size']) ? $params['size'] : null,
+                                            'delete_url'   => isset($params['delete_url']) ? $params['delete_url'] : null,
+                                            'download_url' => isset($params['file']) ? $params['file'] : null,
+                                        ],
                                     ]
                                 );
                             }
@@ -184,17 +210,17 @@ class HelperFormCore extends Helper
                             if (isset($params['thumb']) && $params['thumb']) { // Use for retrocompatibility
                                 $uploader->setFiles(
                                     [
-                                    0 => [
-                                    'type'       => HelperUploader::TYPE_IMAGE,
-                                    'image'      => isset($params['thumb'])?'<img src="'.$params['thumb'].'" alt="'.(isset($params['title']) ? $params['title'] : '').'" title="'.(isset($params['title']) ? $params['title'] : '').'" />':null,
-                                    ]
+                                        0 => [
+                                            'type'  => HelperUploader::TYPE_IMAGE,
+                                            'image' => isset($params['thumb']) ? '<img src="'.$params['thumb'].'" alt="'.(isset($params['title']) ? $params['title'] : '').'" title="'.(isset($params['title']) ? $params['title'] : '').'" />' : null,
+                                        ],
                                     ]
                                 );
                             }
 
-                            $uploader->setTitle(isset($params['title'])?$params['title']:null);
+                            $uploader->setTitle(isset($params['title']) ? $params['title'] : null);
                             $params['file'] = $uploader->render();
-                        break;
+                            break;
 
                         case 'color':
                             if ($color) {
@@ -202,14 +228,14 @@ class HelperFormCore extends Helper
                                 $this->context->controller->addJqueryPlugin('colorpicker');
                                 $color = false;
                             }
-                        break;
+                            break;
 
                         case 'date':
                             if ($date) {
                                 $this->context->controller->addJqueryUI('ui.datepicker');
                                 $date = false;
                             }
-                        break;
+                            break;
 
                         case 'textarea':
                             if ($tinymce) {
@@ -224,21 +250,21 @@ class HelperFormCore extends Helper
                                 $tinymce = false;
                             }
 
-                            if ($textarea_autosize) {
+                            if ($textareaAutosize) {
                                 $this->context->controller->addJqueryPlugin('autosize');
-                                $textarea_autosize = false;
+                                $textareaAutosize = false;
                             }
-                        break;
+                            break;
 
                         case 'shop' :
-                            $disable_shops = isset($params['disable_shared']) ? $params['disable_shared'] : false;
-                            $params['html'] = $this->renderAssoShop($disable_shops);
+                            $disableShops = isset($params['disable_shared']) ? $params['disable_shared'] : false;
+                            $params['html'] = $this->renderAssoShop($disableShops);
                             if (Shop::getTotalShops(false) == 1) {
-                                if ((isset($this->fields_form[$fieldset_key]['form']['force']) && !$this->fields_form[$fieldset_key]['form']['force']) || !isset($this->fields_form[$fieldset_key]['form']['force'])) {
-                                    unset($this->fields_form[$fieldset_key]['form']['input'][$key]);
+                                if ((isset($this->fields_form[$fieldsetKey]['form']['force']) && !$this->fields_form[$fieldsetKey]['form']['force']) || !isset($this->fields_form[$fieldsetKey]['form']['force'])) {
+                                    unset($this->fields_form[$fieldsetKey]['form']['input'][$key]);
                                 }
                             }
-                        break;
+                            break;
                     }
                 }
             }
@@ -246,32 +272,32 @@ class HelperFormCore extends Helper
 
         $this->tpl->assign(
             [
-            'title' => $this->title,
-            'toolbar_btn' => $this->toolbar_btn,
-            'show_toolbar' => $this->show_toolbar,
-            'toolbar_scroll' => $this->toolbar_scroll,
-            'submit_action' => $this->submit_action,
-            'firstCall' => $this->first_call,
-            'current' => $this->currentIndex,
-            'token' => $this->token,
-            'table' => $this->table,
-            'identifier' => $this->identifier,
-            'name_controller' => $this->name_controller,
-            'languages' => $this->languages,
-            'current_id_lang' => $this->context->language->id,
-            'defaultFormLanguage' => $this->default_form_language,
-            'allowEmployeeFormLang' => $this->allow_employee_form_lang,
-            'form_id' => $this->id,
-            'tabs' => (isset($tabs)) ? $tabs : null,
-            'fields' => $this->fields_form,
-            'fields_value' => $this->fields_value,
-            'required_fields' => $this->getFieldsRequired(),
-            'vat_number' => Module::isInstalled('vatnumber') && file_exists(_PS_MODULE_DIR_.'vatnumber/ajax.php'),
-            'module_dir' => _MODULE_DIR_,
-            'base_url' => $this->context->shop->getBaseURL(),
-            'contains_states' => (isset($this->fields_value['id_country']) && isset($this->fields_value['id_state'])) ? Country::containsStates($this->fields_value['id_country']) : null,
-            'show_cancel_button' => $this->show_cancel_button,
-            'back_url' => $this->back_url
+                'title'                 => $this->title,
+                'toolbar_btn'           => $this->toolbar_btn,
+                'show_toolbar'          => $this->show_toolbar,
+                'toolbar_scroll'        => $this->toolbar_scroll,
+                'submit_action'         => $this->submit_action,
+                'firstCall'             => $this->first_call,
+                'current'               => $this->currentIndex,
+                'token'                 => $this->token,
+                'table'                 => $this->table,
+                'identifier'            => $this->identifier,
+                'name_controller'       => $this->name_controller,
+                'languages'             => $this->languages,
+                'current_id_lang'       => $this->context->language->id,
+                'defaultFormLanguage'   => $this->default_form_language,
+                'allowEmployeeFormLang' => $this->allow_employee_form_lang,
+                'form_id'               => $this->id,
+                'tabs'                  => (isset($tabs)) ? $tabs : null,
+                'fields'                => $this->fields_form,
+                'fields_value'          => $this->fields_value,
+                'required_fields'       => $this->getFieldsRequired(),
+                'vat_number'            => Module::isInstalled('vatnumber') && file_exists(_PS_MODULE_DIR_.'vatnumber/ajax.php'),
+                'module_dir'            => _MODULE_DIR_,
+                'base_url'              => $this->context->shop->getBaseURL(),
+                'contains_states'       => (isset($this->fields_value['id_country']) && isset($this->fields_value['id_state'])) ? Country::containsStates($this->fields_value['id_country']) : null,
+                'show_cancel_button'    => $this->show_cancel_button,
+                'back_url'              => $this->back_url,
             ]
         );
 
@@ -280,6 +306,9 @@ class HelperFormCore extends Helper
 
     /**
      * Return true if there are required fields
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getFieldsRequired()
     {
@@ -292,6 +321,7 @@ class HelperFormCore extends Helper
                 }
             }
         }
+
         return false;
     }
 
@@ -299,39 +329,42 @@ class HelperFormCore extends Helper
      * Render an area to determinate shop association
      *
      * @return string
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
-    public function renderAssoShop($disable_shared = false, $template_directory = null)
+    public function renderAssoShop($disableShared = false, $templateDirectory = null)
     {
         if (!Shop::isFeatureActive()) {
             return;
         }
 
         $assos = [];
-        if ((int)$this->id) {
+        if ((int) $this->id) {
             $sql = 'SELECT `id_shop`, `'.bqSQL($this->identifier).'`
 					FROM `'._DB_PREFIX_.bqSQL($this->table).'_shop`
-					WHERE `'.bqSQL($this->identifier).'` = '.(int)$this->id;
+					WHERE `'.bqSQL($this->identifier).'` = '.(int) $this->id;
 
             foreach (Db::getInstance()->executeS($sql) as $row) {
                 $assos[$row['id_shop']] = $row['id_shop'];
             }
         } else {
             switch (Shop::getContext()) {
-                case Shop::CONTEXT_SHOP :
-                        $assos[Shop::getContextShopID()] = Shop::getContextShopID();
-                break;
+                case Shop::CONTEXT_SHOP:
+                    $assos[Shop::getContextShopID()] = Shop::getContextShopID();
+                    break;
 
-                case Shop::CONTEXT_GROUP :
-                    foreach (Shop::getShops(false, Shop::getContextShopGroupID(), true) as $id_shop) {
-                        $assos[$id_shop] = $id_shop;
+                case Shop::CONTEXT_GROUP:
+                    foreach (Shop::getShops(false, Shop::getContextShopGroupID(), true) as $idShop) {
+                        $assos[$idShop] = $idShop;
                     }
-                break;
+                    break;
 
-                default :
-                        foreach (Shop::getShops(false, null, true) as $id_shop) {
-                            $assos[$id_shop] = $id_shop;
-                        }
-                break;
+                default:
+                    foreach (Shop::getShops(false, null, true) as $idShop) {
+                        $assos[$idShop] = $idShop;
+                    }
+                    break;
             }
         }
 
@@ -343,11 +376,12 @@ class HelperFormCore extends Helper
         }*/
 
         $tree = new HelperTreeShops('shop-tree', 'Shops');
-        if (isset($template_directory)) {
-            $tree->setTemplateDirectory($template_directory);
+        if (isset($templateDirectory)) {
+            $tree->setTemplateDirectory($templateDirectory);
         }
         $tree->setSelectedShops($assos);
         $tree->setAttribute('table', $this->table);
+
         return $tree->render();
     }
 }

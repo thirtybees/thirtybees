@@ -72,15 +72,17 @@ class PaymentCCCore extends OrderPayment
 
     /**
     * Get the detailed payment of an order
-    * @param int $id_order
-    * @return array
+    *
+*@param int $idOrder
+     *
+*@return array
     * @deprecated 1.5.0.1
     * @see OrderPaymentCore
     */
-    public static function getByOrderId($id_order)
+    public static function getByOrderId($idOrder)
     {
         Tools::displayAsDeprecated();
-        $order = new Order($id_order);
+        $order = new Order($idOrder);
         return OrderPayment::getByOrderReference($order->reference);
     }
 }

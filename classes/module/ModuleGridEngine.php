@@ -29,23 +29,51 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class ModuleGridEngineCore
+ *
+ * @since 1.0.0
+ */
 abstract class ModuleGridEngineCore extends Module
 {
+    // @codingStandardsIgnoreStart
     protected $_type;
+    // @codingStandardsIgnoreEnd
 
+    /**
+     * ModuleGridEngineCore constructor.
+     *
+     * @param null|string $type
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function __construct($type)
     {
         $this->_type = $type;
     }
 
+    /**
+     * @return bool
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function install()
     {
         if (!parent::install()) {
             return false;
         }
+
         return Configuration::updateValue('PS_STATS_GRID_RENDER', $this->name);
     }
 
+    /**
+     * @return array
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public static function getGridEngines()
     {
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
@@ -56,22 +84,75 @@ abstract class ModuleGridEngineCore extends Module
 	    	WHERE h.`name` = \'displayAdminStatsGridEngine\'
 	    ');
 
-        $array_engines = [];
+        $arrayEngines = [];
         foreach ($result as $module) {
             $instance = Module::getInstanceByName($module['name']);
             if (!$instance) {
                 continue;
             }
-            $array_engines[$module['name']] = [$instance->displayName, $instance->description];
+            $arrayEngines[$module['name']] = [$instance->displayName, $instance->description];
         }
 
-        return $array_engines;
+        return $arrayEngines;
     }
 
+    /**
+     * @param $values
+     *
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     abstract public function setValues($values);
+
+    /**
+     * @param $title
+     *
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     abstract public function setTitle($title);
+
+    /**
+     * @param $width
+     * @param $height
+     *
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     abstract public function setSize($width, $height);
-    abstract public function setTotalCount($total_count);
+
+    /**
+     * @param $totalCount
+     *
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
+    abstract public function setTotalCount($totalCount);
+
+    /**
+     * @param $start
+     * @param $limit
+     *
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     abstract public function setLimit($start, $limit);
+
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     abstract public function render();
 }

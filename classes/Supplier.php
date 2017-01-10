@@ -90,9 +90,9 @@ class SupplierCore extends ObjectModel
         ],
     ];
 
-    public function __construct($id = null, $id_lang = null)
+    public function __construct($id = null, $idLang = null)
     {
-        parent::__construct($id, $id_lang);
+        parent::__construct($id, $idLang);
 
         $this->link_rewrite = $this->getLink();
         $this->image_dir = _PS_SUPP_IMG_DIR_;

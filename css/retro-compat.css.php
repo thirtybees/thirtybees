@@ -32,7 +32,7 @@
 header('content-type: text/css');
 $css_folder = dirname(__FILE__).'/../js/jquery/';
 
-$css_files = [
+$cssFiles = [
                 'datepicker.css' =>
                     ['new_file' => $css_folder.'ui/themes/base/jquery.ui.datepicker.css'],
                 'fileuploader.css' =>
@@ -62,10 +62,10 @@ $css_files = [
 
 $file = $_GET['file'];
 
-if (!array_key_exists($file, $css_files)) { //check if file is a real prestashop native CSS
+if (!array_key_exists($file, $cssFiles)) { //check if file is a real prestashop native CSS
     die('file_not_found');
 } else {
-    $html = file_get_contents($css_files[$file]['new_file']);
+    $html = file_get_contents($cssFiles[$file]['new_file']);
 }
 
 if ($file == 'datepicker.css') {

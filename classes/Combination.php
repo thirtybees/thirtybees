@@ -133,7 +133,7 @@ class CombinationCore extends ObjectModel
             .' AND id_product_attribute = '.(int)$this->id);
     }
 
-    public function add($autodate = true, $null_values = false)
+    public function add($autodate = true, $nullValues = false)
     {
         if ($this->default_on) {
             $this->default_on = 1;
@@ -141,7 +141,7 @@ class CombinationCore extends ObjectModel
             $this->default_on = null;
         }
 
-        if (!parent::add($autodate, $null_values)) {
+        if (!parent::add($autodate, $nullValues)) {
             return false;
         }
 

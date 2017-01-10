@@ -158,22 +158,22 @@ class AddressCore extends ObjectModel
      *
      * @param int $id_address Existing address id in order to load object (optional)
      */
-    public function __construct($id_address = null, $id_lang = null)
+    public function __construct($id_address = null, $idLang = null)
     {
         parent::__construct($id_address);
 
         /* Get and cache address country name */
         if ($this->id) {
-            $this->country = Country::getNameById($id_lang ? $id_lang : Configuration::get('PS_LANG_DEFAULT'), $this->id_country);
+            $this->country = Country::getNameById($idLang ? $idLang : Configuration::get('PS_LANG_DEFAULT'), $this->id_country);
         }
     }
 
     /**
      * @see ObjectModel::add()
      */
-    public function add($autodate = true, $null_values = false)
+    public function add($autodate = true, $nullValues = false)
     {
-        if (!parent::add($autodate, $null_values)) {
+        if (!parent::add($autodate, $nullValues)) {
             return false;
         }
 

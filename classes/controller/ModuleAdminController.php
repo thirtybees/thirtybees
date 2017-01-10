@@ -30,7 +30,9 @@
  */
 
 /**
- * @since 1.5.0
+ * Class ModuleAdminControllerCore
+ *
+ * @since 1.0.0
  */
 abstract class ModuleAdminControllerCore extends AdminController
 {
@@ -39,6 +41,9 @@ abstract class ModuleAdminControllerCore extends AdminController
 
     /**
      * @throws PrestaShopException
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function __construct()
     {
@@ -60,24 +65,31 @@ abstract class ModuleAdminControllerCore extends AdminController
     /**
      * Creates a template object
      *
-     * @param string $tpl_name Template filename
+     * @param string $tplName Template filename
+     *
      * @return Smarty_Internal_Template
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
-    public function createTemplate($tpl_name)
+    public function createTemplate($tplName)
     {
-        if (file_exists(_PS_THEME_DIR_.'modules/'.$this->module->name.'/views/templates/admin/'.$tpl_name) && $this->viewAccess()) {
-            return $this->context->smarty->createTemplate(_PS_THEME_DIR_.'modules/'.$this->module->name.'/views/templates/admin/'.$tpl_name, $this->context->smarty);
-        } elseif (file_exists($this->getTemplatePath().$this->override_folder.$tpl_name) && $this->viewAccess()) {
-            return $this->context->smarty->createTemplate($this->getTemplatePath().$this->override_folder.$tpl_name, $this->context->smarty);
+        if (file_exists(_PS_THEME_DIR_.'modules/'.$this->module->name.'/views/templates/admin/'.$tplName) && $this->viewAccess()) {
+            return $this->context->smarty->createTemplate(_PS_THEME_DIR_.'modules/'.$this->module->name.'/views/templates/admin/'.$tplName, $this->context->smarty);
+        } elseif (file_exists($this->getTemplatePath().$this->override_folder.$tplName) && $this->viewAccess()) {
+            return $this->context->smarty->createTemplate($this->getTemplatePath().$this->override_folder.$tplName, $this->context->smarty);
         }
 
-        return parent::createTemplate($tpl_name);
+        return parent::createTemplate($tplName);
     }
 
     /**
      * Get path to back office templates for the module
      *
      * @return string
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getTemplatePath()
     {

@@ -212,7 +212,7 @@ abstract class TreeToolbarButtonCore
         )->assign($this->getAttributes())->fetch();
     }
 
-    private function _normalizeDirectory($directory)
+    protected function _normalizeDirectory($directory)
     {
         $last = $directory[strlen($directory) - 1];
 

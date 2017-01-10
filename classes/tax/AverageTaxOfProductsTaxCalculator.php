@@ -43,7 +43,7 @@ class AverageTaxOfProductsTaxCalculator
         $this->configuration = $configuration;
     }
 
-    private function getProductTaxes()
+    protected function getProductTaxes()
     {
         $prefix = $this->configuration->get('_DB_PREFIX_');
 

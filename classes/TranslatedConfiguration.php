@@ -55,7 +55,7 @@ class TranslatedConfigurationCore extends Configuration
         ],
     ];
 
-    public function __construct($id = null, $id_lang = null)
+    public function __construct($id = null, $idLang = null)
     {
         $this->def = ObjectModel::getDefinition($this);
         // Check if the id configuration is set in the configuration_lang table.
@@ -70,7 +70,7 @@ class TranslatedConfigurationCore extends Configuration
                 $id = null;
             }
         }
-        parent::__construct($id, $id_lang);
+        parent::__construct($id, $idLang);
     }
 
     public function add($autodate = true, $nullValues = false)
@@ -100,17 +100,17 @@ class TranslatedConfigurationCore extends Configuration
         return true;
     }
 
-    public function getWebserviceObjectList($sql_join, $sql_filter, $sql_sort, $sql_limit)
+    public function getWebserviceObjectList($sqlJoin, $sqlFilter, $sqlSort, $sqlLimit)
     {
         $query = '
 		SELECT DISTINCT main.`'.$this->def['primary'].'` FROM `'._DB_PREFIX_.$this->def['table'].'` main
-		'.$sql_join.'
+		'.$sqlJoin.'
 		WHERE id_configuration IN
 		(	SELECT id_configuration
 			FROM '._DB_PREFIX_.$this->def['table'].'_lang
-		) '.$sql_filter.'
-		'.($sql_sort != '' ? $sql_sort : '').'
-		'.($sql_limit != '' ? $sql_limit : '').'
+		) '.$sqlFilter.'
+		'.($sqlSort != '' ? $sqlSort : '').'
+		'.($sqlLimit != '' ? $sqlLimit : '').'
 		';
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
     }

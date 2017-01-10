@@ -50,9 +50,9 @@ class GroupReductionCore extends ObjectModel
 
     protected static $reduction_cache = [];
 
-    public function add($autodate = true, $null_values = false)
+    public function add($autodate = true, $nullValues = false)
     {
-        return (parent::add($autodate, $null_values) && $this->_setCache());
+        return (parent::add($autodate, $nullValues) && $this->_setCache());
     }
 
     public function update($null_values = false)

@@ -39,6 +39,12 @@ class HelperViewCore extends Helper
     /** @var string|null If not null, a title will be added on that list */
     public $title = null;
 
+    /**
+     * HelperViewCore constructor.
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function __construct()
     {
         $this->base_folder = 'helpers/view/';
@@ -46,20 +52,26 @@ class HelperViewCore extends Helper
         parent::__construct();
     }
 
+    /**
+     * @return string
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function generateView()
     {
         $this->tpl = $this->createTemplate($this->base_tpl);
 
         $this->tpl->assign(
             [
-            'title' => $this->title,
-            'current' => $this->currentIndex,
-            'token' => $this->token,
-            'table' => $this->table,
-            'show_toolbar' => $this->show_toolbar,
-            'toolbar_scroll' => $this->toolbar_scroll,
-            'toolbar_btn' => $this->toolbar_btn,
-            'link' => $this->context->link
+                'title'          => $this->title,
+                'current'        => $this->currentIndex,
+                'token'          => $this->token,
+                'table'          => $this->table,
+                'show_toolbar'   => $this->show_toolbar,
+                'toolbar_scroll' => $this->toolbar_scroll,
+                'toolbar_btn'    => $this->toolbar_btn,
+                'link'           => $this->context->link,
             ]
         );
 

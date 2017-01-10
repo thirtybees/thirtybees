@@ -4250,25 +4250,26 @@ class AdminControllerCore extends Controller
     /**
      * Create a template from the override file, else from the base file.
      *
-     * @param string $tpl_name filename
-     * @return Smarty_Internal_Template
+     * @param string $tplName filename
+     *
+*@return Smarty_Internal_Template
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
-    public function createTemplate($tpl_name)
+    public function createTemplate($tplName)
     {
         // Use override tpl if it exists
         // If view access is denied, we want to use the default template that will be used to display an error
         if ($this->viewAccess() && $this->override_folder) {
-            if (!Configuration::get('PS_DISABLE_OVERRIDES') && file_exists($this->context->smarty->getTemplateDir(1).DIRECTORY_SEPARATOR.$this->override_folder.$tpl_name)) {
-                return $this->context->smarty->createTemplate($this->override_folder.$tpl_name, $this->context->smarty);
-            } elseif (file_exists($this->context->smarty->getTemplateDir(0).'controllers'.DIRECTORY_SEPARATOR.$this->override_folder.$tpl_name)) {
-                return $this->context->smarty->createTemplate('controllers'.DIRECTORY_SEPARATOR.$this->override_folder.$tpl_name, $this->context->smarty);
+            if (!Configuration::get('PS_DISABLE_OVERRIDES') && file_exists($this->context->smarty->getTemplateDir(1).DIRECTORY_SEPARATOR.$this->override_folder.$tplName)) {
+                return $this->context->smarty->createTemplate($this->override_folder.$tplName, $this->context->smarty);
+            } elseif (file_exists($this->context->smarty->getTemplateDir(0).'controllers'.DIRECTORY_SEPARATOR.$this->override_folder.$tplName)) {
+                return $this->context->smarty->createTemplate('controllers'.DIRECTORY_SEPARATOR.$this->override_folder.$tplName, $this->context->smarty);
             }
         }
 
-        return $this->context->smarty->createTemplate($this->context->smarty->getTemplateDir(0).$tpl_name, $this->context->smarty);
+        return $this->context->smarty->createTemplate($this->context->smarty->getTemplateDir(0).$tplName, $this->context->smarty);
     }
 
     /**

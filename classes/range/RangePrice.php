@@ -58,15 +58,17 @@ class RangePriceCore extends ObjectModel
 
     /**
      * Override add to create delivery value for all zones
-     * @see classes/ObjectModelCore::add()
      *
-     * @param bool $null_values
+*@see classes/ObjectModelCore::add()
+     *
+     * @param bool $nullValues
      * @param bool $autodate
-     * @return bool Insertion result
+     *
+*@return bool Insertion result
      */
-    public function add($autodate = true, $null_values = false)
+    public function add($autodate = true, $nullValues = false)
     {
-        if (!parent::add($autodate, $null_values) || !Validate::isLoadedObject($this)) {
+        if (!parent::add($autodate, $nullValues) || !Validate::isLoadedObject($this)) {
             return false;
         }
         if (defined('PS_INSTALLATION_IN_PROGRESS')) {

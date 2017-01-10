@@ -159,12 +159,12 @@ class CartCore extends ObjectModel
     const ONLY_PRODUCTS_WITHOUT_SHIPPING = 7;
     const ONLY_PHYSICAL_PRODUCTS_WITHOUT_SHIPPING = 8;
 
-    public function __construct($id = null, $id_lang = null)
+    public function __construct($id = null, $idLang = null)
     {
         parent::__construct($id);
 
-        if (!is_null($id_lang)) {
-            $this->id_lang = (int)(Language::getLanguage($id_lang) !== false) ? $id_lang : Configuration::get('PS_LANG_DEFAULT');
+        if (!is_null($idLang)) {
+            $this->id_lang = (int)(Language::getLanguage($idLang) !== false) ? $idLang : Configuration::get('PS_LANG_DEFAULT');
         }
 
         if ($this->id_customer) {
@@ -190,7 +190,7 @@ class CartCore extends ObjectModel
         $this->_taxCalculationMethod = Group::getPriceDisplayMethod(Group::getCurrent()->id);
     }
 
-    public function add($autodate = true, $null_values = false)
+    public function add($autodate = true, $nullValues = false)
     {
         if (!$this->id_lang) {
             $this->id_lang = Configuration::get('PS_LANG_DEFAULT');
@@ -199,7 +199,7 @@ class CartCore extends ObjectModel
             $this->id_shop = Context::getContext()->shop->id;
         }
 
-        $return = parent::add($autodate, $null_values);
+        $return = parent::add($autodate, $nullValues);
         Hook::exec('actionCartSave');
 
         return $return;

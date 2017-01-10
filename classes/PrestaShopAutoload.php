@@ -224,7 +224,7 @@ class PrestaShopAutoload
         return (isset($this->index[$classname]) && isset($this->index[$classname]['path'])) ? $this->index[$classname]['path'] : null;
     }
 
-    private function normalizeDirectory($directory)
+    protected function normalizeDirectory($directory)
     {
         return rtrim($directory, '/\\').DIRECTORY_SEPARATOR;
     }

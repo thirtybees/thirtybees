@@ -30,14 +30,13 @@
  */
 
 /**
- * ImportModule class, ImportModule.php
- * Import module management
- * @category classes
+ * Class ImportModuleCore
  *
+ * @since 1.0.0
  */
-
 abstract class ImportModuleCore extends Module
 {
+    // @codingStandardsIgnoreStart
     protected $_link = null;
 
     public $server;
@@ -50,8 +49,12 @@ abstract class ImportModuleCore extends Module
 
     /** @var string Prefix database */
     public $prefix;
+    // @codingStandardsIgnoreEnd
 
-
+    /**
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function __destruct()
     {
         if ($this->_link) {
@@ -59,6 +62,12 @@ abstract class ImportModuleCore extends Module
         }
     }
 
+    /**
+     * @return null|resource
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     protected function initDatabaseConnection()
     {
         if ($this->_link != null) {
@@ -74,28 +83,55 @@ abstract class ImportModuleCore extends Module
         } else {
             die(Tools::displayError('Link to database cannot be established.'));
         }
+
         return $this->_link;
     }
 
+    /**
+     * @param $query
+     *
+     * @return array
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function ExecuteS($query)
     {
         $this->initDatabaseConnection();
         $result = mysql_query($query, $this->_link);
-        $result_array = [];
+        $resultArray = [];
         if ($result !== true) {
             while ($row = mysql_fetch_assoc($result)) {
-                $result_array[] = $row;
+                $resultArray[] = $row;
             }
         }
-        return $result_array;
+
+        return $resultArray;
     }
 
+    /**
+     * @param $query
+     *
+     * @return resource
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function Execute($query)
     {
         $this->initDatabaseConnection();
+
         return mysql_query($query, $this->_link);
     }
 
+    /**
+     * @param $query
+     *
+     * @return int|mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getValue($query)
     {
         $this->initDatabaseConnection();
@@ -107,6 +143,12 @@ abstract class ImportModuleCore extends Module
         }
     }
 
+    /**
+     * @return array
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public static function getImportModulesOnDisk()
     {
         $modules = Module::getModulesOnDisk(true);
@@ -115,8 +157,15 @@ abstract class ImportModuleCore extends Module
                 unset($modules[$key]);
             }
         }
+
         return $modules;
     }
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     abstract public function getDefaultIdLang();
 }

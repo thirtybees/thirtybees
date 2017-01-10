@@ -221,10 +221,10 @@ class StockMvtWSCore extends ObjectModelCore
     /**
      * @see ObjectModel
      */
-    public function __construct($id = null, $id_lang = null, $id_shop = null)
+    public function __construct($id = null, $idLang = null, $id_shop = null)
     {
         // calls parent
-        parent::__construct($id, $id_lang, $id_shop);
+        parent::__construct($id, $idLang, $id_shop);
 
         if ((int)$this->id != 0) {
             $res = $this->getWebserviceObjectList(null, (' AND '.$this->def['primary'].' = '.(int)$this->id), null, null, true);

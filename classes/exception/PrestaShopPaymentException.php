@@ -30,7 +30,9 @@
 */
 
 /**
- * @since 1.5.0
+ * Class PrestaShopPaymentExceptionCore
+ *
+ * @since 1.0.0
  */
 class PrestaShopPaymentExceptionCore extends PrestaShopException
 {

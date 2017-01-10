@@ -29,6 +29,11 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class FileLoggerCore
+ *
+ * @since 1.0.0
+ */
 class FileLoggerCore extends AbstractLogger
 {
     protected $filename = '';
@@ -38,6 +43,9 @@ class FileLoggerCore extends AbstractLogger
     *
     * @param string message
     * @param level
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
     */
     protected function logMessage($message, $level)
     {
@@ -45,13 +53,17 @@ class FileLoggerCore extends AbstractLogger
             $message = print_r($message, true);
         }
         $formatted_message = '*'.$this->level_value[$level].'* '."\t".date('Y/m/d - H:i:s').': '.$message."\r\n";
-        return (bool)file_put_contents($this->getFilename(), $formatted_message, FILE_APPEND);
+
+        return (bool) file_put_contents($this->getFilename(), $formatted_message, FILE_APPEND);
     }
 
     /**
     * Check if the specified filename is writable and set the filename
     *
     * @param string $filename
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
     */
     public function setFilename($filename)
     {
@@ -67,6 +79,9 @@ class FileLoggerCore extends AbstractLogger
     *
     * @param string message
     * @param level
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
     */
     public function getFilename()
     {

@@ -60,10 +60,10 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     public $id;
 
     /** @var int Language ID */
-    protected $id_lang = null;
+    public $id_lang = null;
 
     /** @var int Shop ID */
-    protected $id_shop = null;
+    public $id_shop = null;
 
     /** @var array|null List of shop IDs */
     public $id_shop_list = null;
@@ -197,13 +197,13 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * Builds the object
      *
      * @param int|null $id      If specified, loads and existing object from DB (optional).
-     * @param int|null $id_lang Required if object is multilingual (optional).
+     * @param int|null $idLang  Required if object is multilingual (optional).
      * @param int|null $id_shop ID shop for objects with multishop tables.
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function __construct($id = null, $id_lang = null, $id_shop = null)
+    public function __construct($id = null, $idLang = null, $id_shop = null)
     {
         $class_name = get_class($this);
         if (!isset(ObjectModel::$loaded_classes[$class_name])) {
@@ -220,8 +220,8 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             }
         }
 
-        if ($id_lang !== null) {
-            $this->id_lang = (Language::getLanguage($id_lang) !== false) ? $id_lang : Configuration::get('PS_LANG_DEFAULT');
+        if ($idLang !== null) {
+            $this->id_lang = (Language::getLanguage($idLang) !== false) ? $idLang : Configuration::get('PS_LANG_DEFAULT');
         }
 
         if ($id_shop && $this->isMultishop()) {
@@ -235,7 +235,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
         if ($id) {
             $entity_mapper = Adapter_ServiceLocator::get("Adapter_EntityMapper");
-            $entity_mapper->load($id, $id_lang, $this, $this->def, $this->id_shop, self::$cache_objects);
+            $entity_mapper->load($id, $idLang, $this, $this->def, $this->id_shop, self::$cache_objects);
         }
     }
 
@@ -454,13 +454,13 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * Adds current object to the database
      *
      * @param bool $auto_date
-     * @param bool $null_values
+     * @param bool $nullValues
      *
      * @return bool Insertion result
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function add($auto_date = true, $null_values = false)
+    public function add($auto_date = true, $nullValues = false)
     {
         if (isset($this->id) && !$this->force_id) {
             unset($this->id);
@@ -489,7 +489,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         if (Shop::checkIdShopDefault($this->def['table'])) {
             $this->id_shop_default = (in_array(Configuration::get('PS_SHOP_DEFAULT'), $id_shop_list) == true) ? Configuration::get('PS_SHOP_DEFAULT') : min($id_shop_list);
         }
-        if (!$result = Db::getInstance()->insert($this->def['table'], $this->getFields(), $null_values)) {
+        if (!$result = Db::getInstance()->insert($this->def['table'], $this->getFields(), $nullValues)) {
             return false;
         }
 
@@ -503,7 +503,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
             foreach ($id_shop_list as $id_shop) {
                 $fields['id_shop'] = (int)$id_shop;
-                $result &= Db::getInstance()->insert($this->def['table'].'_shop', $fields, $null_values);
+                $result &= Db::getInstance()->insert($this->def['table'].'_shop', $fields, $nullValues);
             }
         }
 
@@ -1281,15 +1281,15 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     /**
      * Returns webservice object list.
      *
-     * @param string $sql_join
-     * @param string $sql_filter
-     * @param string $sql_sort
-     * @param string $sql_limit
+     * @param string $sqlJoin
+     * @param string $sqlFilter
+     * @param string $sqlSort
+     * @param string $sqlLimit
      *
      * @return array|null
      * @throws PrestaShopDatabaseException
      */
-    public function getWebserviceObjectList($sql_join, $sql_filter, $sql_sort, $sql_limit)
+    public function getWebserviceObjectList($sqlJoin, $sqlFilter, $sqlSort, $sqlLimit)
     {
         $assoc = Shop::getAssoTable($this->def['table']);
         $class_name = WebserviceRequest::$ws_current_classname;
@@ -1299,8 +1299,8 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                 $multi_shop_join = ' LEFT JOIN `'._DB_PREFIX_.bqSQL($this->def['table']).'_'.bqSQL($assoc['type']).'`
 										AS `multi_shop_'.bqSQL($this->def['table']).'`
 										ON (main.`'.bqSQL($this->def['primary']).'` = `multi_shop_'.bqSQL($this->def['table']).'`.`'.bqSQL($this->def['primary']).'`)';
-                $sql_filter = 'AND `multi_shop_'.bqSQL($this->def['table']).'`.id_shop = '.Context::getContext()->shop->id.' '.$sql_filter;
-                $sql_join = $multi_shop_join.' '.$sql_join;
+                $sqlFilter = 'AND `multi_shop_'.bqSQL($this->def['table']).'`.id_shop = '.Context::getContext()->shop->id.' '.$sqlFilter;
+                $sqlJoin = $multi_shop_join.' '.$sqlJoin;
             } else {
                 $vars = get_class_vars($class_name);
                 foreach ($vars['shopIDs'] as $id_shop) {
@@ -1311,15 +1311,15 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                 if (count($or)) {
                     $prepend = 'AND ('.implode('OR', $or).')';
                 }
-                $sql_filter = $prepend.' '.$sql_filter;
+                $sqlFilter = $prepend.' '.$sqlFilter;
             }
         }
         $query = '
 		SELECT DISTINCT main.`'.bqSQL($this->def['primary']).'` FROM `'._DB_PREFIX_.bqSQL($this->def['table']).'` AS main
-		'.$sql_join.'
-		WHERE 1 '.$sql_filter.'
-		'.($sql_sort != '' ? $sql_sort : '').'
-		'.($sql_limit != '' ? $sql_limit : '');
+		'.$sqlJoin.'
+		WHERE 1 '.$sqlFilter.'
+		'.($sqlSort != '' ? $sqlSort : '').'
+		'.($sqlLimit != '' ? $sqlLimit : '');
 
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
     }

@@ -128,12 +128,12 @@ class ShopCore extends ObjectModel
      * On shop instance, get its theme and URL data too
      *
      * @param int $id
-     * @param int $id_lang
+     * @param int $idLang
      * @param int $id_shop
      */
-    public function __construct($id = null, $id_lang = null, $id_shop = null)
+    public function __construct($id = null, $idLang = null, $id_shop = null)
     {
-        parent::__construct($id, $id_lang, $id_shop);
+        parent::__construct($id, $idLang, $id_shop);
         if ($this->id) {
             $this->setUrl();
         }
@@ -229,12 +229,13 @@ class ShopCore extends ObjectModel
      * Add a shop, and clear the cache
      *
      * @param bool $autodate
-     * @param bool $null_values
-     * @return bool
+     * @param bool $nullValues
+     *
+*@return bool
      */
-    public function add($autodate = true, $null_values = false)
+    public function add($autodate = true, $nullValues = false)
     {
-        $res = parent::add($autodate, $null_values);
+        $res = parent::add($autodate, $nullValues);
         Shop::cacheShops(true);
         return $res;
     }

@@ -203,7 +203,7 @@ class TreeToolbarCore implements ITreeToolbarCore
         )->assign('actions', $this->getActions())->fetch();
     }
 
-    private function _normalizeDirectory($directory)
+    protected function _normalizeDirectory($directory)
     {
         $last = $directory[strlen($directory) - 1];
 

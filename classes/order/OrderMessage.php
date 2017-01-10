@@ -29,8 +29,14 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class OrderMessageCore
+ *
+ * @since 1.0.0
+ */
 class OrderMessageCore extends ObjectModel
 {
+    // @codingStandardsIgnoreStart
     /** @var string name name */
     public $name;
 
@@ -39,37 +45,44 @@ class OrderMessageCore extends ObjectModel
 
     /** @var string Object creation date */
     public $date_add;
+    // @codingStandardsIgnoreEnd
 
     /**
      * @see ObjectModel::$definition
      */
     public static $definition = [
-        'table' => 'order_message',
-        'primary' => 'id_order_message',
+        'table'     => 'order_message',
+        'primary'   => 'id_order_message',
         'multilang' => true,
-        'fields' => [
-            'date_add' =>    ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
-
-            /* Lang fields */
-            'name' =>        ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128],
-            'message' =>    ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isMessage', 'required' => true, 'size' => 1200],
+        'fields'    => [
+            'date_add' => ['type' => self::TYPE_DATE,                   'validate' => 'isDate'                                           ],
+            'name'     => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128 ],
+            'message'  => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isMessage',     'required' => true, 'size' => 1200],
         ],
     ];
 
     protected $webserviceParameters = [
-            'fields' => [
-            'id' => ['sqlId' => 'id_discount_type', 'xlink_resource' => 'order_message_lang'],
-            'date_add' => ['sqlId' => 'date_add']
-            ]
+        'fields' => [
+            'id'       => ['sqlId' => 'id_discount_type', 'xlink_resource' => 'order_message_lang'],
+            'date_add' => ['sqlId' => 'date_add'],
+        ],
     ];
 
-    public static function getOrderMessages($id_lang)
+    /**
+     * @param $idLang
+     *
+     * @return array|false|mysqli_result|null|PDOStatement|resource
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function getOrderMessages($idLang)
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
 		SELECT om.id_order_message, oml.name, oml.message
 		FROM '._DB_PREFIX_.'order_message om
 		LEFT JOIN '._DB_PREFIX_.'order_message_lang oml ON (oml.id_order_message = om.id_order_message)
-		WHERE oml.id_lang = '.(int)$id_lang.'
+		WHERE oml.id_lang = '.(int) $idLang.'
 		ORDER BY name ASC');
     }
 }

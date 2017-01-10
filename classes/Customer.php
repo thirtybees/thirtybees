@@ -206,7 +206,7 @@ class CustomerCore extends ObjectModel
         parent::__construct($id);
     }
 
-    public function add($autodate = true, $null_values = true)
+    public function add($autodate = true, $nullValues = true)
     {
         $this->id_shop = ($this->id_shop) ? $this->id_shop : Context::getContext()->shop->id;
         $this->id_shop_group = ($this->id_shop_group) ? $this->id_shop_group : Context::getContext()->shop->id_shop_group;
@@ -231,7 +231,7 @@ class CustomerCore extends ObjectModel
         if ($this->is_guest && !Configuration::get('PS_GUEST_CHECKOUT_ENABLED')) {
             return false;
         }
-        $success = parent::add($autodate, $null_values);
+        $success = parent::add($autodate, $nullValues);
         $this->updateGroup($this->groupBox);
         return $success;
     }
@@ -925,9 +925,9 @@ class CustomerCore extends ObjectModel
     /**
      * @see ObjectModel::getWebserviceObjectList()
      */
-    public function getWebserviceObjectList($sql_join, $sql_filter, $sql_sort, $sql_limit)
+    public function getWebserviceObjectList($sqlJoin, $sqlFilter, $sqlSort, $sqlLimit)
     {
-        $sql_filter .= Shop::addSqlRestriction(Shop::SHARE_CUSTOMER, 'main');
-        return parent::getWebserviceObjectList($sql_join, $sql_filter, $sql_sort, $sql_limit);
+        $sqlFilter .= Shop::addSqlRestriction(Shop::SHARE_CUSTOMER, 'main');
+        return parent::getWebserviceObjectList($sqlJoin, $sqlFilter, $sqlSort, $sqlLimit);
     }
 }

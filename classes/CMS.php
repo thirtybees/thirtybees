@@ -70,7 +70,7 @@ class CMSCore extends ObjectModel
         'objectsNodeName' => 'content_management_system',
     ];
 
-    public function add($autodate = true, $null_values = false)
+    public function add($autodate = true, $nullValues = false)
     {
         $this->position = CMS::getLastPosition((int)$this->id_cms_category);
         return parent::add($autodate, true);

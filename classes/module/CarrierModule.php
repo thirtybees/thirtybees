@@ -29,8 +29,31 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class CarrierModuleCore
+ *
+ * @since 1.0.0
+ */
 abstract class CarrierModuleCore extends Module
 {
-    abstract public function getOrderShippingCost($params, $shipping_cost);
+    /**
+     * @param $params
+     * @param $shippingCost
+     *
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
+    abstract public function getOrderShippingCost($params, $shippingCost);
+
+    /**
+     * @param $params
+     *
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     abstract public function getOrderShippingCostExternal($params);
 }

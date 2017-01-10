@@ -29,8 +29,14 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class OrderCarrierCore
+ *
+ * @since 1.0.0
+ */
 class OrderCarrierCore extends ObjectModel
 {
+    // @codingStandardsIgnoreStart
     /** @var int */
     public $id_order_carrier;
 
@@ -57,28 +63,29 @@ class OrderCarrierCore extends ObjectModel
 
     /** @var string Object creation date */
     public $date_add;
+    // @codingStandardsIgnoreEnd
 
     /**
      * @see ObjectModel::$definition
      */
     public static $definition = [
-        'table' => 'order_carrier',
+        'table'   => 'order_carrier',
         'primary' => 'id_order_carrier',
-        'fields' => [
-            'id_order' =>                ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'id_carrier' =>            ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'id_order_invoice' =>        ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
-            'weight' =>                ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat'],
-            'shipping_cost_tax_excl' => ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat'],
-            'shipping_cost_tax_incl' => ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat'],
-            'tracking_number' =>        ['type' => self::TYPE_STRING, 'validate' => 'isTrackingNumber'],
-            'date_add' =>                ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+        'fields'  => [
+            'id_order'               => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',     'required' => true],
+            'id_carrier'             => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',     'required' => true],
+            'id_order_invoice'       => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId'                        ],
+            'weight'                 => ['type' => self::TYPE_FLOAT,  'validate' => 'isFloat'                             ],
+            'shipping_cost_tax_excl' => ['type' => self::TYPE_FLOAT,  'validate' => 'isFloat'                             ],
+            'shipping_cost_tax_incl' => ['type' => self::TYPE_FLOAT,  'validate' => 'isFloat'                             ],
+            'tracking_number'        => ['type' => self::TYPE_STRING, 'validate' => 'isTrackingNumber'                    ],
+            'date_add'               => ['type' => self::TYPE_DATE,   'validate' => 'isDate'                              ],
         ],
     ];
 
     protected $webserviceParameters = [
         'fields' => [
-            'id_order' => ['xlink_resource' => 'orders'],
+            'id_order'   => ['xlink_resource' => 'orders'  ],
             'id_carrier' => ['xlink_resource' => 'carriers'],
         ],
     ];

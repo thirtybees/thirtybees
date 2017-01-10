@@ -199,11 +199,11 @@ class SupplyOrderCore extends ObjectModel
     /**
      * @see ObjectModel::add()
      */
-    public function add($autodate = true, $null_values = false)
+    public function add($autodate = true, $nullValues = false)
     {
         $this->calculatePrices();
 
-        $res = parent::add($autodate, $null_values);
+        $res = parent::add($autodate, $nullValues);
 
         if ($res && !$this->is_template) {
             $this->addHistory();

@@ -63,12 +63,12 @@ class SceneCore extends ObjectModel
 
     protected static $feature_active = null;
 
-    public function __construct($id = null, $id_lang = null, $lite_result = true, $hide_scene_position = false)
+    public function __construct($id = null, $idLang = null, $lite_result = true, $hide_scene_position = false)
     {
-        parent::__construct($id, $id_lang);
+        parent::__construct($id, $idLang);
 
         if (!$lite_result) {
-            $this->products = $this->getProducts(true, (int)$id_lang, false);
+            $this->products = $this->getProducts(true, (int)$idLang, false);
         }
         if ($hide_scene_position) {
             $this->name = Scene::hideScenePosition($this->name);
@@ -93,7 +93,7 @@ class SceneCore extends ObjectModel
         return false;
     }
 
-    public function add($autodate = true, $null_values = false)
+    public function add($autodate = true, $nullValues = false)
     {
         if (!empty($this->zones)) {
             $this->addZoneProducts($this->zones);
@@ -102,7 +102,7 @@ class SceneCore extends ObjectModel
             $this->addCategories($this->categories);
         }
 
-        if (parent::add($autodate, $null_values)) {
+        if (parent::add($autodate, $nullValues)) {
             // Put cache of feature detachable only if this new scene is active else we keep the old value
             if ($this->active) {
                 Configuration::updateGlobalValue('PS_SCENE_FEATURE_ACTIVE', '1');

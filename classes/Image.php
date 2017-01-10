@@ -80,14 +80,14 @@ class ImageCore extends ObjectModel
 
     protected static $_cacheGetSize = [];
 
-    public function __construct($id = null, $id_lang = null)
+    public function __construct($id = null, $idLang = null)
     {
-        parent::__construct($id, $id_lang);
+        parent::__construct($id, $idLang);
         $this->image_dir = _PS_PROD_IMG_DIR_;
         $this->source_index = _PS_PROD_IMG_DIR_.'index.php';
     }
 
-    public function add($autodate = true, $null_values = false)
+    public function add($autodate = true, $nullValues = false)
     {
         if ($this->position <= 0) {
             $this->position = Image::getHighestPosition($this->id_product) + 1;
@@ -99,7 +99,7 @@ class ImageCore extends ObjectModel
             $this->cover = null;
         }
 
-        return parent::add($autodate, $null_values);
+        return parent::add($autodate, $nullValues);
     }
 
     public function update($null_values = false)

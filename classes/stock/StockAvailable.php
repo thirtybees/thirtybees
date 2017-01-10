@@ -392,9 +392,9 @@ class StockAvailableCore extends ObjectModel
      * Upgrades total_quantity_available after having saved
      * @see ObjectModel::add()
      */
-    public function add($autodate = true, $null_values = false)
+    public function add($autodate = true, $nullValues = false)
     {
-        if (!$result = parent::add($autodate, $null_values)) {
+        if (!$result = parent::add($autodate, $nullValues)) {
             return false;
         }
 

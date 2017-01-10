@@ -35,6 +35,8 @@ if (file_exists(_PS_ROOT_DIR_.'/config/settings.inc.php')) {
 
 /**
  * Class DbCore
+ *
+ * @since 1.0.0
  */
 abstract class DbCore
 {
@@ -194,10 +196,11 @@ abstract class DbCore
      * Sets the current active database on the server that's associated with the specified link identifier.
      * Do not remove, useful for some modules.
      *
-     * @param string $db_name
-     * @return bool|int
+     * @param string $dbName
+     *
+*@return bool|int
      */
-    abstract public function set_db($db_name);
+    abstract public function set_db($dbName);
 
     /**
      * Selects best table engine.
@@ -211,6 +214,9 @@ abstract class DbCore
      *
      * @param bool $master Decides whether the connection to be returned by the master server or the slave server
      * @return Db Singleton instance of Db object
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public static function getInstance($master = true)
     {
@@ -227,38 +233,44 @@ abstract class DbCore
             Db::loadSlaveServers();
         }
 
-        $total_servers = count(self::$_servers);
-        if ($master || $total_servers == 1) {
-            $id_server = 0;
+        $totalServers = count(self::$_servers);
+        if ($master || $totalServers == 1) {
+            $idServer = 0;
         } else {
             $id++;
-            $id_server = ($total_servers > 2 && ($id % $total_servers) != 0) ? $id % $total_servers : 1;
+            $idServer = ($totalServers > 2 && ($id % $totalServers) != 0) ? $id % $totalServers : 1;
         }
 
-        if (!isset(self::$instance[$id_server])) {
+        if (!isset(self::$instance[$idServer])) {
             $class = Db::getClass();
-            self::$instance[$id_server] = new $class(
-                self::$_servers[$id_server]['server'],
-                self::$_servers[$id_server]['user'],
-                self::$_servers[$id_server]['password'],
-                self::$_servers[$id_server]['database']
+            self::$instance[$idServer] = new $class(
+                self::$_servers[$idServer]['server'],
+                self::$_servers[$idServer]['user'],
+                self::$_servers[$idServer]['password'],
+                self::$_servers[$idServer]['database']
             );
         }
 
-        return self::$instance[$id_server];
+        return self::$instance[$idServer];
     }
 
     /**
-     * @param $test_db Db
+     * @param $testDb Db
      * Unit testing purpose only
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
-    public static function setInstanceForTesting($test_db)
+    public static function setInstanceForTesting($testDb)
     {
-        self::$instance[0] = $test_db;
+        self::$instance[0] = $testDb;
     }
 
     /**
      * Unit testing purpose only
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public static function deleteTestingInstance()
     {
@@ -267,6 +279,9 @@ abstract class DbCore
 
     /**
      * Loads configuration settings for slave servers if needed.
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     protected static function loadSlaveServers()
     {
@@ -286,6 +301,9 @@ abstract class DbCore
      * Returns the best child layer database class.
      *
      * @return string
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public static function getClass()
     {
@@ -302,11 +320,14 @@ abstract class DbCore
     /**
      * Instantiates a database connection
      *
-     * @param string $server Server address
-     * @param string $user User login
+     * @param string $server   Server address
+     * @param string $user     User login
      * @param string $password User password
      * @param string $database Database name
-     * @param bool $connect If false, don't connect in constructor (since 1.5.0.1)
+     * @param bool   $connect  If false, don't connect in constructor (since 1.5.0.1)
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function __construct($server, $user, $password, $database, $connect = true)
     {
@@ -328,6 +349,8 @@ abstract class DbCore
     /**
      * Disable the use of the cache
      *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function disableCache()
     {
@@ -337,6 +360,8 @@ abstract class DbCore
     /**
      * Enable & flush the cache
      *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function enableCache()
     {
@@ -346,6 +371,9 @@ abstract class DbCore
 
     /**
      * Closes connection to database
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function __destruct()
     {
@@ -358,33 +386,38 @@ abstract class DbCore
      * Executes SQL query based on selected type
      *
      * @deprecated 1.5.0.1 Use insert() or update() method instead.
+     *
      * @param string $table
-     * @param array $data
+     * @param array  $data
      * @param string $type (INSERT, INSERT IGNORE, REPLACE, UPDATE).
      * @param string $where
-     * @param int $limit
-     * @param bool $use_cache
-     * @param bool $use_null
+     * @param int    $limit
+     * @param bool   $useCache
+     * @param bool   $useNull
+     *
      * @return bool
      * @throws PrestaShopDatabaseException
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
-    public function autoExecute($table, $data, $type, $where = '', $limit = 0, $use_cache = true, $use_null = false)
+    public function autoExecute($table, $data, $type, $where = '', $limit = 0, $useCache = true, $useNull = false)
     {
         $type = strtoupper($type);
         switch ($type) {
-            case 'INSERT' :
-                return $this->insert($table, $data, $use_null, $use_cache, Db::INSERT, false);
+            case 'INSERT':
+                return $this->insert($table, $data, $useNull, $useCache, Db::INSERT, false);
 
-            case 'INSERT IGNORE' :
-                return $this->insert($table, $data, $use_null, $use_cache, Db::INSERT_IGNORE, false);
+            case 'INSERT IGNORE':
+                return $this->insert($table, $data, $useNull, $useCache, Db::INSERT_IGNORE, false);
 
-            case 'REPLACE' :
-                return $this->insert($table, $data, $use_null, $use_cache, Db::REPLACE, false);
+            case 'REPLACE':
+                return $this->insert($table, $data, $useNull, $useCache, Db::REPLACE, false);
 
-            case 'UPDATE' :
-                return $this->update($table, $data, $where, $limit, $use_null, $use_cache, false);
+            case 'UPDATE':
+                return $this->update($table, $data, $where, $limit, $useNull, $useCache, false);
 
-            default :
+            default:
                 throw new PrestaShopDatabaseException('Wrong argument (miss type) in Db::autoExecute()');
         }
     }
@@ -392,13 +425,17 @@ abstract class DbCore
     /**
      * Filter SQL query within a blacklist
      *
-     * @param string $table Table where insert/update data
-     * @param array $values Data to insert/update
-     * @param string $type INSERT or UPDATE
-     * @param string $where WHERE clause, only for UPDATE (optional)
-     * @param int $limit LIMIT clause (optional)
+     * @param string $table  Table where insert/update data
+     * @param array  $values Data to insert/update
+     * @param string $type   INSERT or UPDATE
+     * @param string $where  WHERE clause, only for UPDATE (optional)
+     * @param int    $limit  LIMIT clause (optional)
+     *
      * @return bool
      * @throws PrestaShopDatabaseException
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function autoExecuteWithNullValues($table, $values, $type, $where = '', $limit = 0)
     {
@@ -409,8 +446,12 @@ abstract class DbCore
      * Execute a query and get result resource
      *
      * @param string|DbQuery $sql
+     *
      * @return bool|mysqli_result|PDOStatement|resource
      * @throws PrestaShopDatabaseException
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function query($sql)
     {
@@ -436,33 +477,37 @@ abstract class DbCore
     /**
      * Executes an INSERT query
      *
-     * @param string $table Table name without prefix
-     * @param array $data Data to insert as associative array. If $data is a list of arrays, multiple insert will be done
-     * @param bool $null_values If we want to use NULL values instead of empty quotes
-     * @param bool $use_cache
-     * @param int $type Must be Db::INSERT or Db::INSERT_IGNORE or Db::REPLACE
-     * @param bool $add_prefix Add or not _DB_PREFIX_ before table name
+     * @param string $table      Table name without prefix
+     * @param array  $data       Data to insert as associative array. If $data is a list of arrays, multiple insert will be done
+     * @param bool   $nullValues If we want to use NULL values instead of empty quotes
+     * @param bool   $useCache
+     * @param int    $type       Must be Db::INSERT or Db::INSERT_IGNORE or Db::REPLACE
+     * @param bool   $addPrefix  Add or not _DB_PREFIX_ before table name
+     *
      * @return bool
      * @throws PrestaShopDatabaseException
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
-    public function insert($table, $data, $null_values = false, $use_cache = true, $type = Db::INSERT, $add_prefix = true)
+    public function insert($table, $data, $nullValues = false, $useCache = true, $type = Db::INSERT, $addPrefix = true)
     {
-        if (!$data && !$null_values) {
+        if (!$data && !$nullValues) {
             return true;
         }
 
-        if ($add_prefix) {
+        if ($addPrefix) {
             $table = _DB_PREFIX_.$table;
         }
 
         if ($type == Db::INSERT) {
-            $insert_keyword = 'INSERT';
+            $insertKeyword = 'INSERT';
         } elseif ($type == Db::INSERT_IGNORE) {
-            $insert_keyword = 'INSERT IGNORE';
+            $insertKeyword = 'INSERT IGNORE';
         } elseif ($type == Db::REPLACE) {
-            $insert_keyword = 'REPLACE';
+            $insertKeyword = 'REPLACE';
         } elseif ($type == Db::ON_DUPLICATE_KEY) {
-            $insert_keyword = 'INSERT';
+            $insertKeyword = 'INSERT';
         } else {
             throw new PrestaShopDatabaseException('Bad keyword, must be Db::INSERT or Db::INSERT_IGNORE or Db::REPLACE');
         }
@@ -474,19 +519,19 @@ abstract class DbCore
         }
 
         $keys = [];
-        $values_stringified = [];
-        $first_loop = true;
-        $duplicate_key_stringified = '';
-        foreach ($data as $row_data) {
+        $valuesStringified = [];
+        $firstLoop = true;
+        $duplicateKeyStringified = '';
+        foreach ($data as $rowData) {
             $values = [];
-            foreach ($row_data as $key => $value) {
-                if (!$first_loop) {
+            foreach ($rowData as $key => $value) {
+                if (!$firstLoop) {
                     // Check if row array mapping are the same
                     if (!in_array("`$key`", $keys)) {
                         throw new PrestaShopDatabaseException('Keys form $data subarray don\'t match');
                     }
 
-                    if ($duplicate_key_stringified != '') {
+                    if ($duplicateKeyStringified != '') {
                         throw new PrestaShopDatabaseException('On duplicate key cannot be used on insert with more than 1 VALUE group');
                     }
                 } else {
@@ -497,47 +542,48 @@ abstract class DbCore
                     $value = ['type' => 'text', 'value' => $value];
                 }
                 if ($value['type'] == 'sql') {
-                    $values[] = $string_value = $value['value'];
+                    $values[] = $stringValue = $value['value'];
                 } else {
-                    $values[] = $string_value = $null_values && ($value['value'] === '' || is_null($value['value'])) ? 'NULL' : "'{$value['value']}'";
+                    $values[] = $stringValue = $nullValues && ($value['value'] === '' || is_null($value['value'])) ? 'NULL' : "'{$value['value']}'";
                 }
 
                 if ($type == Db::ON_DUPLICATE_KEY) {
-                    $duplicate_key_stringified .= '`'.bqSQL($key).'` = '.$string_value.',';
+                    $duplicateKeyStringified .= '`'.bqSQL($key).'` = '.$stringValue.',';
                 }
             }
-            $first_loop = false;
-            $values_stringified[] = '('.implode(', ', $values).')';
+            $firstLoop = false;
+            $valuesStringified[] = '('.implode(', ', $values).')';
         }
-        $keys_stringified = implode(', ', $keys);
+        $keysStringified = implode(', ', $keys);
 
-        $sql = $insert_keyword.' INTO `'.$table.'` ('.$keys_stringified.') VALUES '.implode(', ', $values_stringified);
+        $sql = $insertKeyword.' INTO `'.$table.'` ('.$keysStringified.') VALUES '.implode(', ', $valuesStringified);
         if ($type == Db::ON_DUPLICATE_KEY) {
-            $sql .= ' ON DUPLICATE KEY UPDATE '.substr($duplicate_key_stringified, 0, -1);
+            $sql .= ' ON DUPLICATE KEY UPDATE '.substr($duplicateKeyStringified, 0, -1);
         }
 
-        return (bool)$this->q($sql, $use_cache);
+        return (bool) $this->q($sql, $useCache);
     }
 
     /**
      * Executes an UPDATE query
      *
-     * @param string $table Table name without prefix
-     * @param array $data Data to insert as associative array. If $data is a list of arrays, multiple insert will be done
-     * @param string $where WHERE condition
-     * @param int $limit
-     * @param bool $null_values If we want to use NULL values instead of empty quotes
-     * @param bool $use_cache
-     * @param bool $add_prefix Add or not _DB_PREFIX_ before table name
+     * @param string $table      Table name without prefix
+     * @param array  $data       Data to insert as associative array. If $data is a list of arrays, multiple insert will be done
+     * @param string $where      WHERE condition
+     * @param int    $limit
+     * @param bool   $nullValues If we want to use NULL values instead of empty quotes
+     * @param bool   $useCache
+     * @param bool   $addPrefix  Add or not _DB_PREFIX_ before table name
+     *
      * @return bool
      */
-    public function update($table, $data, $where = '', $limit = 0, $null_values = false, $use_cache = true, $add_prefix = true)
+    public function update($table, $data, $where = '', $limit = 0, $nullValues = false, $useCache = true, $addPrefix = true)
     {
         if (!$data) {
             return true;
         }
 
-        if ($add_prefix) {
+        if ($addPrefix) {
             $table = _DB_PREFIX_.$table;
         }
 
@@ -549,7 +595,7 @@ abstract class DbCore
             if ($value['type'] == 'sql') {
                 $sql .= '`'.bqSQL($key)."` = {$value['value']},";
             } else {
-                $sql .= ($null_values && ($value['value'] === '' || is_null($value['value']))) ? '`'.bqSQL($key).'` = NULL,' : '`'.bqSQL($key)."` = '{$value['value']}',";
+                $sql .= ($nullValues && ($value['value'] === '' || is_null($value['value']))) ? '`'.bqSQL($key).'` = NULL,' : '`'.bqSQL($key)."` = '{$value['value']}',";
             }
         }
 
@@ -558,69 +604,72 @@ abstract class DbCore
             $sql .= ' WHERE '.$where;
         }
         if ($limit) {
-            $sql .= ' LIMIT '.(int)$limit;
+            $sql .= ' LIMIT '.(int) $limit;
         }
 
-        return (bool)$this->q($sql, $use_cache);
+        return (bool) $this->q($sql, $useCache);
     }
 
     /**
      * Executes a DELETE query
      *
-     * @param string $table Name of the table to delete
-     * @param string $where WHERE clause on query
-     * @param int $limit Number max of rows to delete
-     * @param bool $use_cache Use cache or not
-     * @param bool $add_prefix Add or not _DB_PREFIX_ before table name
+     * @param string $table     Name of the table to delete
+     * @param string $where     WHERE clause on query
+     * @param int    $limit     Number max of rows to delete
+     * @param bool   $useCache  Use cache or not
+     * @param bool   $addPrefix Add or not _DB_PREFIX_ before table name
+     *
      * @return bool
      */
-    public function delete($table, $where = '', $limit = 0, $use_cache = true, $add_prefix = true)
+    public function delete($table, $where = '', $limit = 0, $useCache = true, $addPrefix = true)
     {
-        if (_DB_PREFIX_ && !preg_match('#^'._DB_PREFIX_.'#i', $table) && $add_prefix) {
+        if (_DB_PREFIX_ && !preg_match('#^'._DB_PREFIX_.'#i', $table) && $addPrefix) {
             $table = _DB_PREFIX_.$table;
         }
 
         $this->result = false;
-        $sql = 'DELETE FROM `'.bqSQL($table).'`'.($where ? ' WHERE '.$where : '').($limit ? ' LIMIT '.(int)$limit : '');
+        $sql = 'DELETE FROM `'.bqSQL($table).'`'.($where ? ' WHERE '.$where : '').($limit ? ' LIMIT '.(int) $limit : '');
         $res = $this->query($sql);
-        if ($use_cache && $this->is_cache_enabled) {
+        if ($useCache && $this->is_cache_enabled) {
             Cache::getInstance()->deleteQuery($sql);
         }
 
-        return (bool)$res;
+        return (bool) $res;
     }
 
     /**
      * Executes a query
      *
      * @param string|DbQuery $sql
-     * @param bool $use_cache
+     * @param bool           $useCache
+     *
      * @return bool
      */
-    public function execute($sql, $use_cache = true)
+    public function execute($sql, $useCache = true)
     {
         if ($sql instanceof DbQuery) {
             $sql = $sql->build();
         }
 
         $this->result = $this->query($sql);
-        if ($use_cache && $this->is_cache_enabled) {
+        if ($useCache && $this->is_cache_enabled) {
             Cache::getInstance()->deleteQuery($sql);
         }
 
-        return (bool)$this->result;
+        return (bool) $this->result;
     }
 
     /**
      * Executes return the result of $sql as array
      *
-     * @param string|DbQuery $sql Query to execute
-     * @param bool $array Return an array instead of a result object (deprecated since 1.5.0.1, use query method instead)
-     * @param bool $use_cache
+     * @param string|DbQuery $sql   Query to execute
+     * @param bool           $array Return an array instead of a result object (deprecated since 1.5.0.1, use query method instead)
+     * @param bool           $useCache
+     *
      * @return array|false|null|mysqli_result|PDOStatement|resource
      * @throws PrestaShopDatabaseException
      */
-    public function executeS($sql, $array = true, $use_cache = true)
+    public function executeS($sql, $array = true, $useCache = true)
     {
         if ($sql instanceof DbQuery) {
             $sql = $sql->build();
@@ -629,10 +678,11 @@ abstract class DbCore
         $this->result = false;
         $this->last_query = $sql;
 
-        if ($use_cache && $this->is_cache_enabled && $array) {
+        if ($useCache && $this->is_cache_enabled && $array) {
             $this->last_query_hash = Tools::encryptIV($sql);
             if (($result = Cache::getInstance()->get($this->last_query_hash)) !== false) {
                 $this->last_cached = true;
+
                 return $result;
             }
         }
@@ -642,7 +692,8 @@ abstract class DbCore
             if (defined('_PS_MODE_DEV_') && _PS_MODE_DEV_) {
                 throw new PrestaShopDatabaseException('Db->executeS() must be used only with select, show, explain or describe queries');
             }
-            return $this->execute($sql, $use_cache);
+
+            return $this->execute($sql, $useCache);
         }
 
         $this->result = $this->query($sql);
@@ -651,7 +702,7 @@ abstract class DbCore
             $result = false;
         } else {
             if (!$array) {
-                $use_cache = false;
+                $useCache = false;
                 $result = $this->result;
             } else {
                 $result = $this->getAll($this->result);
@@ -659,7 +710,7 @@ abstract class DbCore
         }
 
         $this->last_cached = false;
-        if ($use_cache && $this->is_cache_enabled && $array) {
+        if ($useCache && $this->is_cache_enabled && $array) {
             Cache::getInstance()->setQuery($sql, $result);
         }
 
@@ -670,11 +721,12 @@ abstract class DbCore
      * Returns an associative array containing the first row of the query
      * This function automatically adds "LIMIT 1" to the query
      *
-     * @param string|DbQuery $sql the select query (without "LIMIT 1")
-     * @param bool $use_cache Find it in cache first
+     * @param string|DbQuery $sql      the select query (without "LIMIT 1")
+     * @param bool           $useCache Find it in cache first
+     *
      * @return array|bool|object|null
      */
-    public function getRow($sql, $use_cache = true)
+    public function getRow($sql, $useCache = true)
     {
         if ($sql instanceof DbQuery) {
             $sql = $sql->build();
@@ -684,10 +736,11 @@ abstract class DbCore
         $this->result = false;
         $this->last_query = $sql;
 
-        if ($use_cache && $this->is_cache_enabled) {
+        if ($useCache && $this->is_cache_enabled) {
             $this->last_query_hash = Tools::encryptIV($sql);
             if (($result = Cache::getInstance()->get($this->last_query_hash)) !== false) {
                 $this->last_cached = true;
+
                 return $result;
             }
         }
@@ -705,7 +758,7 @@ abstract class DbCore
             $result = false;
         }
 
-        if ($use_cache && $this->is_cache_enabled) {
+        if ($useCache && $this->is_cache_enabled) {
             Cache::getInstance()->setQuery($sql, $result);
         }
 
@@ -716,16 +769,17 @@ abstract class DbCore
      * Returns a value from the first row, first column of a SELECT query
      *
      * @param string|DbQuery $sql
-     * @param bool $use_cache
+     * @param bool           $useCache
+     *
      * @return string|false|null
      */
-    public function getValue($sql, $use_cache = true)
+    public function getValue($sql, $useCache = true)
     {
         if ($sql instanceof DbQuery) {
             $sql = $sql->build();
         }
 
-        if (!$result = $this->getRow($sql, $use_cache)) {
+        if (!$result = $this->getRow($sql, $useCache)) {
             return false;
         }
 
@@ -744,6 +798,7 @@ abstract class DbCore
             if ($this->is_cache_enabled) {
                 Cache::getInstance()->set($this->last_query_hash.'_nrows', $nrows);
             }
+
             return $nrows;
         } elseif ($this->is_cache_enabled && $this->last_cached) {
             return Cache::getInstance()->get($this->last_query_hash.'_nrows');
@@ -754,11 +809,12 @@ abstract class DbCore
      * Executes a query
      *
      * @param string|DbQuery $sql
-     * @param bool $use_cache
+     * @param bool           $useCache
+     *
      * @return bool|mysqli_result|PDOStatement|resource
      * @throws PrestaShopDatabaseException
      */
-    protected function q($sql, $use_cache = true)
+    protected function q($sql, $useCache = true)
     {
         if ($sql instanceof DbQuery) {
             $sql = $sql->build();
@@ -766,7 +822,7 @@ abstract class DbCore
 
         $this->result = false;
         $result = $this->query($sql);
-        if ($use_cache && $this->is_cache_enabled) {
+        if ($useCache && $this->is_cache_enabled) {
             Cache::getInstance()->deleteQuery($sql);
         }
 
@@ -785,10 +841,10 @@ abstract class DbCore
      */
     public function displayError($sql = false)
     {
-        global $webservice_call;
+        global $webserviceCall;
 
         $errno = $this->getNumberError();
-        if ($webservice_call && $errno) {
+        if ($webserviceCall && $errno) {
             $dbg = debug_backtrace();
             WebserviceRequest::getInstance()->setError(500, '[SQL Error] '.$this->getMsgError().'. From '.(isset($dbg[3]['class']) ? $dbg[3]['class'] : '').'->'.$dbg[3]['function'].'() Query was : '.$sql, 97);
         } elseif (_PS_DEBUG_SQL_ && $errno && !defined('PS_INSTALLATION_IN_PROGRESS')) {
@@ -804,10 +860,11 @@ abstract class DbCore
      * Sanitize data which will be injected into SQL query
      *
      * @param string $string SQL data which will be injected into SQL query
-     * @param bool $html_ok Does data contain HTML code ? (optional)
+     * @param bool   $htmlOk Does data contain HTML code ? (optional)
+     *
      * @return string Sanitized data
      */
-    public function escape($string, $html_ok = false, $bq_sql = false)
+    public function escape($string, $htmlOk = false, $bqSql = false)
     {
         if (_PS_MAGIC_QUOTES_GPC_) {
             $string = stripslashes($string);
@@ -816,11 +873,11 @@ abstract class DbCore
         if (!is_numeric($string)) {
             $string = $this->_escape($string);
 
-            if (!$html_ok) {
+            if (!$htmlOk) {
                 $string = strip_tags(Tools::nl2br($string));
             }
 
-            if ($bq_sql === true) {
+            if ($bqSql === true) {
                 $string = str_replace('`', '\`', $string);
             }
         }
@@ -831,18 +888,19 @@ abstract class DbCore
     /**
      * Try a connection to the database
      *
-     * @param string $server Server address
-     * @param string $user Login for database connection
-     * @param string $pwd Password for database connection
-     * @param string $db Database name
-     * @param bool $new_db_link
+     * @param string      $server Server address
+     * @param string      $user Login for database connection
+     * @param string      $pwd Password for database connection
+     * @param string      $db Database name
+     * @param bool        $newDbLink
      * @param string|bool $engine
-     * @param int $timeout
+     * @param int         $timeout
+     *
      * @return int Error code or 0 if connection was successful
      */
-    public static function checkConnection($server, $user, $pwd, $db, $new_db_link = true, $engine = null, $timeout = 5)
+    public static function checkConnection($server, $user, $pwd, $db, $newDbLink = true, $engine = null, $timeout = 5)
     {
-        return call_user_func_array([Db::getClass(), 'tryToConnect'], [$server, $user, $pwd, $db, $new_db_link, $engine, $timeout]);
+        return call_user_func_array([Db::getClass(), 'tryToConnect'], [$server, $user, $pwd, $db, $newDbLink, $engine, $timeout]);
     }
 
     /**
@@ -851,6 +909,7 @@ abstract class DbCore
      * @param string $server Server address
      * @param string $user Login for database connection
      * @param string $pwd Password for database connection
+     *
      * @return bool
      */
     public static function checkEncoding($server, $user, $pwd)
@@ -866,6 +925,7 @@ abstract class DbCore
      * @param string $pwd Password for database connection
      * @param string $db Database name
      * @param string $prefix Tables prefix
+     *
      * @return bool
      */
     public static function hasTableWithSamePrefix($server, $user, $pwd, $db, $prefix)
@@ -882,6 +942,7 @@ abstract class DbCore
      * @param string $db
      * @param string $prefix
      * @param string|null $engine Table engine
+     *
      * @return bool|string True, false or error
      */
     public static function checkCreatePrivilege($server, $user, $pwd, $db, $prefix, $engine = null)
@@ -895,6 +956,7 @@ abstract class DbCore
      * @param string $server
      * @param string $user
      * @param string $pwd
+     *
      * @return bool
      */
     public static function checkAutoIncrement($server, $user, $pwd)
@@ -905,44 +967,50 @@ abstract class DbCore
     /**
      * Executes a query
      *
-     * @deprecated 1.5.0.1
      * @param string|DbQuery $sql
-     * @param bool $use_cache
+     * @param bool           $useCache
+     *
      * @return array|bool|mysqli_result|PDOStatement|resource
      * @throws PrestaShopDatabaseException
+     *
+     * @deprecated 2.0.0
      */
-    public static function s($sql, $use_cache = true)
+    public static function s($sql, $useCache = true)
     {
         Tools::displayAsDeprecated();
-        return Db::getInstance()->executeS($sql, true, $use_cache);
+
+        return Db::getInstance()->executeS($sql, true, $useCache);
     }
 
     /**
      * Executes a query
      *
-     * @deprecated 1.5.0.1
-     * @param $sql
-     * @param int $use_cache
+     * @param string $sql
+     * @param int $useCache
      * @return array|bool|mysqli_result|PDOStatement|resource
+     *
+     * @deprecated 2.0.0
      */
-    public static function ps($sql, $use_cache = 1)
+    public static function ps($sql, $useCache = 1)
     {
         Tools::displayAsDeprecated();
-        $ret = Db::s($sql, $use_cache);
+        $ret = Db::s($sql, $useCache);
+
         return $ret;
     }
 
     /**
      * Executes a query and kills process (dies)
      *
-     * @deprecated 1.5.0.1
-     * @param $sql
-     * @param int $use_cache
+     * @param string $sql
+     * @param int $useCache
+     *
+     * @deprecated 2.0.0
      */
-    public static function ds($sql, $use_cache = 1)
+    public static function ds($sql, $useCache = 1)
     {
         Tools::displayAsDeprecated();
-        Db::s($sql, $use_cache);
+        Db::s($sql, $useCache);
         die();
     }
 
@@ -950,6 +1018,9 @@ abstract class DbCore
      * Get used link instance
      *
      * @return PDO|mysqli|resource Resource
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getLink()
     {

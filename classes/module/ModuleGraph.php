@@ -29,8 +29,14 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class ModuleGraphCore
+ *
+ * @since 1.0.0
+ */
 abstract class ModuleGraphCore extends Module
 {
+    // @codingStandardsIgnoreStart
     protected $_employee;
 
     /** @var array of integers graph data */
@@ -44,23 +50,51 @@ abstract class ModuleGraphCore extends Module
 
     /** @var ModuleGraphEngine graph engine */
     protected $_render;
+    // @codingStandardsIgnoreEnd
 
+    /**
+     * @param $layers
+     *
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     abstract protected function getData($layers);
 
-    public function setEmployee($id_employee)
+    /**
+     * @param $idEmployee
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function setEmployee($idEmployee)
     {
-        $this->_employee = new Employee($id_employee);
+        $this->_employee = new Employee($idEmployee);
     }
 
+    /**
+     * @param $id_lang
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setLang($id_lang)
     {
         $this->_id_lang = $id_lang;
     }
 
+    /**
+     * @param      $layers
+     * @param bool $legend
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     protected function setDateGraph($layers, $legend = false)
     {
         // Get dates in a manageable format
-        $from_array = getdate(strtotime($this->_employee->stats_date_from));
+        $fromArray = getdate(strtotime($this->_employee->stats_date_from));
         $to_array = getdate(strtotime($this->_employee->stats_date_to));
 
         // If the granularity is inferior to 1 day
@@ -86,13 +120,13 @@ abstract class ModuleGraphCore extends Module
         elseif (strtotime($this->_employee->stats_date_to) - strtotime($this->_employee->stats_date_from) <= 2678400) {
             if ($legend) {
                 $days = [];
-                if ($from_array['mon'] == $to_array['mon']) {
-                    for ($i = $from_array['mday']; $i <= $to_array['mday']; ++$i) {
+                if ($fromArray['mon'] == $to_array['mon']) {
+                    for ($i = $fromArray['mday']; $i <= $to_array['mday']; ++$i) {
                         $days[] = $i;
                     }
                 } else {
-                    $imax = date('t', mktime(0, 0, 0, $from_array['mon'], 1, $from_array['year']));
-                    for ($i = $from_array['mday']; $i <= $imax; ++$i) {
+                    $imax = date('t', mktime(0, 0, 0, $fromArray['mon'], 1, $fromArray['year']));
+                    for ($i = $fromArray['mday']; $i <= $imax; ++$i) {
                         $days[] = $i;
                     }
                     for ($i = 1; $i <= $to_array['mday']; ++$i) {
@@ -118,12 +152,12 @@ abstract class ModuleGraphCore extends Module
         elseif (strtotime('-1 year', strtotime($this->_employee->stats_date_to)) < strtotime($this->_employee->stats_date_from)) {
             if ($legend) {
                 $months = [];
-                if ($from_array['year'] == $to_array['year']) {
-                    for ($i = $from_array['mon']; $i <= $to_array['mon']; ++$i) {
+                if ($fromArray['year'] == $to_array['year']) {
+                    for ($i = $fromArray['mon']; $i <= $to_array['mon']; ++$i) {
                         $months[] = $i;
                     }
                 } else {
-                    for ($i = $from_array['mon']; $i <= 12; ++$i) {
+                    for ($i = $fromArray['mon']; $i <= 12; ++$i) {
                         $months[] = $i;
                     }
                     for ($i = 1; $i <= $to_array['mon']; ++$i) {
@@ -149,7 +183,7 @@ abstract class ModuleGraphCore extends Module
         else {
             if ($legend) {
                 $years = [];
-                for ($i = $from_array['year']; $i <= $to_array['year']; ++$i) {
+                for ($i = $fromArray['year']; $i <= $to_array['year']; ++$i) {
                     $years[] = $i;
                 }
                 foreach ($years as $i) {
@@ -169,6 +203,12 @@ abstract class ModuleGraphCore extends Module
         }
     }
 
+    /**
+     * @param $datas
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     protected function csvExport($datas)
     {
         $context = Context::getContext();
@@ -185,7 +225,7 @@ abstract class ModuleGraphCore extends Module
         // @todo use native CSV PHP functions ?
         // Generate first line (column titles)
         if (is_array($this->_titles['main'])) {
-            for ($i = 0, $total_main = count($this->_titles['main']); $i <= $total_main; $i++) {
+            for ($i = 0, $totalMain = count($this->_titles['main']); $i <= $totalMain; $i++) {
                 if ($i > 0) {
                     $this->_csv .= ';';
                 }
@@ -201,14 +241,14 @@ abstract class ModuleGraphCore extends Module
             $total = 0;
             if ($datas['type'] == 'pie') {
                 foreach ($this->_legend as $key => $legend) {
-                    for ($i = 0, $total_main = (is_array($this->_titles['main']) ? count($this->_values) : 1); $i < $total_main; ++$i) {
+                    for ($i = 0, $totalMain = (is_array($this->_titles['main']) ? count($this->_values) : 1); $i < $totalMain; ++$i) {
                         $total += (is_array($this->_values[$i])  ? $this->_values[$i][$key] : $this->_values[$key]);
                     }
                 }
             }
             foreach ($this->_legend as $key => $legend) {
                 $this->_csv .= $legend.';';
-                for ($i = 0, $total_main = (is_array($this->_titles['main']) ? count($this->_values) : 1); $i < $total_main; ++$i) {
+                for ($i = 0, $totalMain = (is_array($this->_titles['main']) ? count($this->_values) : 1); $i < $totalMain; ++$i) {
                     if (!isset($this->_values[$i]) || !is_array($this->_values[$i])) {
                         if (isset($this->_values[$key])) {
                             // We don't want strings to be divided. Example: product name
@@ -236,6 +276,10 @@ abstract class ModuleGraphCore extends Module
         $this->_displayCsv();
     }
 
+    /**
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     protected function _displayCsv()
     {
         if (ob_get_level() && ob_get_length() > 0) {
@@ -247,6 +291,16 @@ abstract class ModuleGraphCore extends Module
         exit;
     }
 
+    /**
+     * @param $render
+     * @param $type
+     * @param $width
+     * @param $height
+     * @param $layers
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function create($render, $type, $width, $height, $layers)
     {
         if (!Validate::isModuleName($render)) {
@@ -265,18 +319,34 @@ abstract class ModuleGraphCore extends Module
         $this->_render->setTitles($this->_titles);
     }
 
+    /**
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function draw()
     {
         $this->_render->draw();
     }
 
     /**
-     * @todo Set this method as abstracted ? Quid of module compatibility.
+     * @param     $option
+     * @param int $layers
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function setOption($option, $layers = 1)
     {
     }
 
+    /**
+     * @param $params
+     *
+     * @return array|mixed|string
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function engine($params)
     {
         $context = Context::getContext();
@@ -290,8 +360,8 @@ abstract class ModuleGraphCore extends Module
             return Tools::displayError('Graph engine selected is unavailable.');
         }
 
-        $id_employee = (int)$context->employee->id;
-        $id_lang = (int)$context->language->id;
+        $idEmployee = (int) $context->employee->id;
+        $idLang = (int) $context->language->id;
 
         if (!isset($params['layers'])) {
             $params['layers'] = 1;
@@ -306,17 +376,27 @@ abstract class ModuleGraphCore extends Module
             $params['height'] = 270;
         }
 
-        $url_params = $params;
-        $url_params['render'] = $render;
-        $url_params['module'] = Tools::getValue('module');
-        $url_params['id_employee'] = $id_employee;
-        $url_params['id_lang'] = $id_lang;
-        $drawer = 'drawer.php?'.http_build_query(array_map('Tools::safeOutput', $url_params), '', '&');
+        $urlParams = $params;
+        $urlParams['render'] = $render;
+        $urlParams['module'] = Tools::getValue('module');
+        $urlParams['id_employee'] = $idEmployee;
+        $urlParams['id_lang'] = $idLang;
+        $drawer = 'drawer.php?'.http_build_query(array_map('Tools::safeOutput', $urlParams), '', '&');
 
         require_once(_PS_ROOT_DIR_.'/modules/'.$render.'/'.$render.'.php');
+
         return call_user_func([$render, 'hookGraphEngine'], $params, $drawer);
     }
 
+    /**
+     * @param null         $employee
+     * @param Context|null $context
+     *
+     * @return bool|Employee|null
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     protected static function getEmployee($employee = null, Context $context = null)
     {
         if (!Validate::isLoadedObject($employee)) {
@@ -339,22 +419,44 @@ abstract class ModuleGraphCore extends Module
             }
             $employee->update();
         }
+
         return $employee;
     }
 
+    /**
+     * @return string
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getDate()
     {
         return ModuleGraph::getDateBetween($this->_employee);
     }
 
+    /**
+     * @param null $employee
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public static function getDateBetween($employee = null)
     {
         if ($employee = ModuleGraph::getEmployee($employee)) {
             return ' \''.$employee->stats_date_from.' 00:00:00\' AND \''.$employee->stats_date_to.' 23:59:59\' ';
         }
+
         return ' \''.date('Y-m').'-01 00:00:00\' AND \''.date('Y-m-t').' 23:59:59\' ';
     }
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getLang()
     {
         return $this->_id_lang;

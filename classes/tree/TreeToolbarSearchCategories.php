@@ -70,7 +70,7 @@ class TreeToolbarSearchCategoriesCore extends TreeToolbarButtonCore implements
         return (isset($html) ? $html : '').parent::render();
     }
 
-    private function _renderData($data)
+    protected function _renderData($data)
     {
         if (!is_array($data) && !$data instanceof Traversable) {
             throw new PrestaShopException('Data value must be a traversable array');

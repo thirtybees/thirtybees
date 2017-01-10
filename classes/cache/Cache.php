@@ -31,6 +31,8 @@
 
 /**
  * Class CacheCore
+ *
+ * @since 1.0.0
  */
 abstract class CacheCore
 {

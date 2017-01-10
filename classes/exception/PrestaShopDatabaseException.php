@@ -30,10 +30,18 @@
  */
 
 /**
- * @since 1.5.0
+ * Class PrestaShopDatabaseExceptionCore
+ *
+ * @since 1.0.0
  */
 class PrestaShopDatabaseExceptionCore extends PrestaShopException
 {
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function __toString()
     {
         return $this->message;

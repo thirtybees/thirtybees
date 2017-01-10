@@ -137,9 +137,9 @@ class CategoryCore extends ObjectModel
         ],
     ];
 
-    public function __construct($id_category = null, $id_lang = null, $id_shop = null)
+    public function __construct($id_category = null, $idLang = null, $id_shop = null)
     {
-        parent::__construct($id_category, $id_lang, $id_shop);
+        parent::__construct($id_category, $idLang, $id_shop);
         $this->id_image = ($this->id && file_exists(_PS_CAT_IMG_DIR_.(int)$this->id.'.jpg')) ? (int)$this->id : false;
         $this->image_dir = _PS_CAT_IMG_DIR_;
     }
@@ -149,7 +149,7 @@ class CategoryCore extends ObjectModel
         return Tools::getDescriptionClean($description);
     }
 
-    public function add($autodate = true, $null_values = false)
+    public function add($autodate = true, $nullValues = false)
     {
         if (!isset($this->level_depth)) {
             $this->level_depth = $this->calcLevelDepth();
@@ -159,7 +159,7 @@ class CategoryCore extends ObjectModel
             $this->id_parent = $id_root_category;
         }
 
-        $ret = parent::add($autodate, $null_values);
+        $ret = parent::add($autodate, $nullValues);
         if (Tools::isSubmit('checkBoxShopAsso_category')) {
             foreach (Tools::getValue('checkBoxShopAsso_category') as $id_shop => $value) {
                 $position = (int)Category::getLastPosition((int)$this->id_parent, $id_shop);

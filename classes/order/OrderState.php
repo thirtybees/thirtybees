@@ -31,9 +31,12 @@
 
 /**
  * Class OrderStateCore
+ *
+ * @since 1.0.0
  */
 class OrderStateCore extends ObjectModel
 {
+    // @codingStandardsIgnoreStart
     /** @var string Name */
     public $name;
 
@@ -76,40 +79,41 @@ class OrderStateCore extends ObjectModel
 
     /** @var bool True if carrier has been deleted (staying in database as deleted) */
     public $deleted = 0;
+    // @codingStandardsIgnoreEnd
 
     /**
      * @see ObjectModel::$definition
      */
     public static $definition = [
-        'table' => 'order_state',
-        'primary' => 'id_order_state',
+        'table'     => 'order_state',
+        'primary'   => 'id_order_state',
         'multilang' => true,
-        'fields' => [
-            'send_email' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'module_name' => ['type' => self::TYPE_STRING, 'validate' => 'isModuleName'],
-            'invoice' =>    ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'color' =>        ['type' => self::TYPE_STRING, 'validate' => 'isColor'],
-            'logable' =>    ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'shipped' =>    ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'unremovable' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'delivery' =>    ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'hidden' =>        ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'paid' =>        ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'pdf_delivery' =>        ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'pdf_invoice' =>        ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'deleted' =>    ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+        'fields'    => [
+            'send_email'   => ['type' => self::TYPE_BOOL,    'validate' => 'isBool'      ],
+            'module_name'  => ['type' => self::TYPE_STRING,  'validate' => 'isModuleName'],
+            'invoice'      => ['type' => self::TYPE_BOOL,    'validate' => 'isBool'      ],
+            'color'        => ['type' => self::TYPE_STRING,  'validate' => 'isColor'     ],
+            'logable'      => ['type' => self::TYPE_BOOL,    'validate' => 'isBool'      ],
+            'shipped'      => ['type' => self::TYPE_BOOL,    'validate' => 'isBool'      ],
+            'unremovable'  => ['type' => self::TYPE_BOOL,    'validate' => 'isBool'      ],
+            'delivery'     => ['type' => self::TYPE_BOOL,    'validate' => 'isBool'      ],
+            'hidden'       => ['type' => self::TYPE_BOOL,    'validate' => 'isBool'      ],
+            'paid'         => ['type' => self::TYPE_BOOL,    'validate' => 'isBool'      ],
+            'pdf_delivery' => ['type' => self::TYPE_BOOL,    'validate' => 'isBool'      ],
+            'pdf_invoice'  => ['type' => self::TYPE_BOOL,    'validate' => 'isBool'      ],
+            'deleted'      => ['type' => self::TYPE_BOOL,    'validate' => 'isBool'      ],
 
             /* Lang fields */
-            'name' =>        ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 64],
-            'template' =>    ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isTplName', 'size' => 64],
+            'name'         => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 64],
+            'template'     => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isTplName',                         'size' => 64],
         ],
     ];
 
     protected $webserviceParameters = [
         'fields' => [
             'unremovable' => [],
-            'delivery' => [],
-            'hidden' => [],
+            'delivery'    => [],
+            'hidden'      => [],
         ],
     ];
 
@@ -122,41 +126,49 @@ class OrderStateCore extends ObjectModel
     /**
     * Get all available order statuses
     *
-    * @param int $id_lang Language id for status name
+    * @param int $idLang Language id for status name
+    *
     * @return array Order statuses
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
     */
-    public static function getOrderStates($id_lang)
+    public static function getOrderStates($idLang)
     {
-        $cache_id = 'OrderState::getOrderStates_'.(int)$id_lang;
-        if (!Cache::isStored($cache_id)) {
+        $cacheId = 'OrderState::getOrderStates_'.(int) $idLang;
+        if (!Cache::isStored($cacheId)) {
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
 			SELECT *
 			FROM `'._DB_PREFIX_.'order_state` os
-			LEFT JOIN `'._DB_PREFIX_.'order_state_lang` osl ON (os.`id_order_state` = osl.`id_order_state` AND osl.`id_lang` = '.(int)$id_lang.')
+			LEFT JOIN `'._DB_PREFIX_.'order_state_lang` osl ON (os.`id_order_state` = osl.`id_order_state` AND osl.`id_lang` = '.(int) $idLang.')
 			WHERE deleted = 0
 			ORDER BY `name` ASC');
-            Cache::store($cache_id, $result);
+            Cache::store($cacheId, $result);
             return $result;
         }
-        return Cache::retrieve($cache_id);
+        return Cache::retrieve($cacheId);
     }
 
     /**
-    * Check if we can make a invoice when order is in this state
-    *
-    * @param int $id_order_state State ID
-    * @return bool availability
-    */
-    public static function invoiceAvailable($id_order_state)
+     * Check if we can make a invoice when order is in this state
+     *
+     * @param int $idOrderState State ID
+     *
+     * @return bool availability
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function invoiceAvailable($idOrderState)
     {
         $result = false;
         if (Configuration::get('PS_INVOICE')) {
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('
 			SELECT `invoice`
 			FROM `'._DB_PREFIX_.'order_state`
-			WHERE `id_order_state` = '.(int)$id_order_state);
+			WHERE `id_order_state` = '.(int) $idOrderState);
         }
-        return (bool)$result;
+        return (bool) $result;
     }
 
     public function isRemovable()

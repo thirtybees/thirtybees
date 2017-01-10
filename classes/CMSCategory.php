@@ -100,7 +100,7 @@ class CMSCategoryCore extends ObjectModel
         ],
     ];
 
-    public function add($autodate = true, $null_values = false)
+    public function add($autodate = true, $nullValues = false)
     {
         $this->position = CMSCategory::getLastPosition((int)$this->id_parent);
         $this->level_depth = $this->calcLevelDepth();
@@ -109,7 +109,7 @@ class CMSCategoryCore extends ObjectModel
                 $this->name[$k] = '0'.$value;
             }
         }
-        $ret = parent::add($autodate, $null_values);
+        $ret = parent::add($autodate, $nullValues);
         $this->cleanPositions($this->id_parent);
         return $ret;
     }

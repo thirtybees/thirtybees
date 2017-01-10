@@ -29,8 +29,14 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class HelperKpiCore
+ *
+ * @since 1.0.0
+ */
 class HelperKpiCore extends Helper
 {
+    // @codingStandardsIgnoreStart
     public $base_folder = 'helpers/kpi/';
     public $base_tpl = 'kpi.tpl';
 
@@ -46,27 +52,35 @@ class HelperKpiCore extends Helper
     public $refresh = true;
     public $href;
     public $tooltip;
+    // @codingStandardsIgnoreEnd
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function generate()
     {
         $this->tpl = $this->createTemplate($this->base_tpl);
 
         $this->tpl->assign(
             [
-            'id' => $this->id,
-            'icon' => $this->icon,
-            'chart' => (bool)$this->chart,
-            'color' => $this->color,
-            'title' => $this->title,
-            'subtitle' => $this->subtitle,
-            'value' => $this->value,
-            'data' => $this->data,
-            'source' => $this->source,
-            'refresh' => $this->refresh,
-            'href' => $this->href,
-            'tooltip' => $this->tooltip
+                'id'       => $this->id,
+                'icon'     => $this->icon,
+                'chart'    => (bool) $this->chart,
+                'color'    => $this->color,
+                'title'    => $this->title,
+                'subtitle' => $this->subtitle,
+                'value'    => $this->value,
+                'data'     => $this->data,
+                'source'   => $this->source,
+                'refresh'  => $this->refresh,
+                'href'     => $this->href,
+                'tooltip'  => $this->tooltip,
             ]
         );
+
         return $this->tpl->fetch();
     }
 }

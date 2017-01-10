@@ -75,9 +75,9 @@ class GroupCore extends ObjectModel
 
     protected $webserviceParameters = [];
 
-    public function __construct($id = null, $id_lang = null, $id_shop = null)
+    public function __construct($id = null, $idLang = null, $id_shop = null)
     {
-        parent::__construct($id, $id_lang, $id_shop);
+        parent::__construct($id, $idLang, $id_shop);
         if ($this->id && !isset(Group::$group_price_display_method[$this->id])) {
             self::$group_price_display_method[$this->id] = $this->price_display_method;
         }
@@ -156,10 +156,10 @@ class GroupCore extends ObjectModel
         return Group::getPriceDisplayMethod((int)Configuration::get('PS_CUSTOMER_GROUP'));
     }
 
-    public function add($autodate = true, $null_values = false)
+    public function add($autodate = true, $nullValues = false)
     {
         Configuration::updateGlobalValue('PS_GROUP_FEATURE_ACTIVE', '1');
-        if (parent::add($autodate, $null_values)) {
+        if (parent::add($autodate, $nullValues)) {
             Category::setNewGroupForHome((int)$this->id);
             Carrier::assignGroupToAllCarriers((int)$this->id);
             return true;

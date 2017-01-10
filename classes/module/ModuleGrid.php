@@ -29,8 +29,14 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class ModuleGridCore
+ *
+ * @since 1.0.0
+ */
 abstract class ModuleGridCore extends Module
 {
+    // @codingStandardsIgnoreStart
     protected $_employee;
 
     /** @var array of strings graph data */
@@ -56,19 +62,51 @@ abstract class ModuleGridCore extends Module
 
     /** @var ModuleGridEngine grid engine */
     protected $_render;
+    // @codingStandardsIgnoreEnd
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     abstract protected function getData();
 
-    public function setEmployee($id_employee)
+    /**
+     * @param $idEmployee
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function setEmployee($idEmployee)
     {
-        $this->_employee = new Employee($id_employee);
+        $this->_employee = new Employee($idEmployee);
     }
 
-    public function setLang($id_lang)
+    /**
+     * @param $idLang
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function setLang($idLang)
     {
-        $this->_id_lang = $id_lang;
+        $this->_id_lang = $idLang;
     }
 
+    /**
+     * @param $render
+     * @param $type
+     * @param $width
+     * @param $height
+     * @param $start
+     * @param $limit
+     * @param $sort
+     * @param $dir
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function create($render, $type, $width, $height, $start, $limit, $sort, $dir)
     {
         if (!Validate::isModuleName($render)) {
@@ -94,11 +132,23 @@ abstract class ModuleGridCore extends Module
         $this->_render->setLimit($this->_start, $this->_limit);
     }
 
+    /**
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function render()
     {
         $this->_render->render();
     }
 
+    /**
+     * @param $params
+     *
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function engine($params)
     {
         if (!($render = Configuration::get('PS_STATS_GRID_RENDER'))) {
@@ -114,8 +164,8 @@ abstract class ModuleGridCore extends Module
         $grider = 'grider.php?render='.$render.'&module='.Tools::safeOutput(Tools::getValue('module'));
 
         $context = Context::getContext();
-        $grider .= '&id_employee='.(int)$context->employee->id;
-        $grider .= '&id_lang='.(int)$context->language->id;
+        $grider .= '&id_employee='.(int) $context->employee->id;
+        $grider .= '&id_lang='.(int) $context->language->id;
 
         if (!isset($params['width']) || !Validate::IsUnsignedInt($params['width'])) {
             $params['width'] = 600;
@@ -152,9 +202,16 @@ abstract class ModuleGridCore extends Module
         }
 
         require_once(_PS_ROOT_DIR_.'/modules/'.$render.'/'.$render.'.php');
+
         return call_user_func([$render, 'hookGridEngine'], $params, $grider);
     }
 
+    /**
+     * @param $datas
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     protected function csvExport($datas)
     {
         $this->_sort = $datas['defaultSortColumn'];
@@ -183,6 +240,10 @@ abstract class ModuleGridCore extends Module
         $this->_displayCsv();
     }
 
+    /**
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     protected function _displayCsv()
     {
         if (ob_get_level() && ob_get_length() > 0) {
@@ -194,11 +255,23 @@ abstract class ModuleGridCore extends Module
         exit;
     }
 
+    /**
+     * @return string
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getDate()
     {
         return ModuleGraph::getDateBetween($this->_employee);
     }
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getLang()
     {
         return $this->_id_lang;

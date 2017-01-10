@@ -32,7 +32,7 @@
 /**
  * Class DbPDOCore
  *
- * @since 1.5.0.1
+ * @since 1.0.0
  */
 class DbPDOCore extends Db
 {
@@ -50,7 +50,11 @@ class DbPDOCore extends Db
      * @param string $password
      * @param string $dbname
      * @param int $timeout
+     *
      * @return PDO
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     protected static function _getPDO($host, $user, $password, $dbname, $timeout = 5)
     {
@@ -77,7 +81,11 @@ class DbPDOCore extends Db
      * @param string $password
      * @param string $dbname
      * @param bool $dropit If true, drops the created database.
+     *
      * @return bool|int
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public static function createDatabase($host, $user, $password, $dbname, $dropit = false)
     {
@@ -90,6 +98,7 @@ class DbPDOCore extends Db
         } catch (PDOException $e) {
             return false;
         }
+
         return $success;
     }
 
@@ -98,6 +107,9 @@ class DbPDOCore extends Db
      *
      * @see DbCore::connect()
      * @return PDO
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function connect()
     {
@@ -121,6 +133,9 @@ class DbPDOCore extends Db
      * Destroys the database connection link
      *
      * @see DbCore::disconnect()
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function disconnect()
     {
@@ -132,7 +147,11 @@ class DbPDOCore extends Db
      *
      * @see DbCore::_query()
      * @param string $sql
+     *
      * @return PDOStatement
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     protected function _query($sql)
     {
@@ -144,7 +163,11 @@ class DbPDOCore extends Db
      *
      * @see DbCore::nextRow()
      * @param bool $result
+     *
      * @return array|false|null
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function nextRow($result = false)
     {
@@ -165,6 +188,9 @@ class DbPDOCore extends Db
      * @see DbCore::getAll()
      * @param bool $result
      * @return array|false|null
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     protected function getAll($result = false)
     {
@@ -185,6 +211,9 @@ class DbPDOCore extends Db
      * @see DbCore::_numRows()
      * @param PDOStatement $result
      * @return int
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     protected function _numRows($result)
     {
@@ -196,6 +225,9 @@ class DbPDOCore extends Db
      *
      * @see DbCore::Insert_ID()
      * @return string|int
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function Insert_ID()
     {
@@ -207,6 +239,9 @@ class DbPDOCore extends Db
      *
      * @see DbCore::Affected_Rows()
      * @return int
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function Affected_Rows()
     {
@@ -219,10 +254,14 @@ class DbPDOCore extends Db
      * @see DbCore::getMsgError()
      * @param bool $query
      * @return string
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getMsgError($query = false)
     {
         $error = $this->link->errorInfo();
+
         return ($error[0] == '00000') ? '' : $error[2];
     }
 
@@ -231,10 +270,14 @@ class DbPDOCore extends Db
      *
      * @see DbCore::getNumberError()
      * @return int
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getNumberError()
     {
         $error = $this->link->errorInfo();
+
         return isset($error[1]) ? $error[1] : 0;
     }
 
@@ -243,6 +286,9 @@ class DbPDOCore extends Db
      *
      * @see DbCore::getVersion()
      * @return string
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getVersion()
     {
@@ -255,11 +301,15 @@ class DbPDOCore extends Db
      * @see DbCore::_escape()
      * @param string $str
      * @return string
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function _escape($str)
     {
         $search = ["\\", "\0", "\n", "\r", "\x1a", "'", '"'];
         $replace = ["\\\\", "\\0", "\\n", "\\r", "\Z", "\'", '\"'];
+
         return str_replace($search, $replace, $str);
     }
 
@@ -267,12 +317,17 @@ class DbPDOCore extends Db
      * Switches to a different database.
      *
      * @see DbCore::set_db()
-     * @param string $db_name
+     *
+     * @param string $dbName
+     *
      * @return int
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
-    public function set_db($db_name)
+    public function set_db($dbName)
     {
-        return $this->link->exec('USE '.pSQL($db_name));
+        return $this->link->exec('USE '.pSQL($dbName));
     }
 
     /**
@@ -285,6 +340,9 @@ class DbPDOCore extends Db
      * @param string $db Database name
      * @param string $prefix Tables prefix
      * @return bool
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public static function hasTableWithSamePrefix($server, $user, $pwd, $db, $prefix)
     {
@@ -296,19 +354,24 @@ class DbPDOCore extends Db
 
         $sql = 'SHOW TABLES LIKE \''.$prefix.'%\'';
         $result = $link->query($sql);
-        return (bool)$result->fetch();
+
+        return (bool) $result->fetch();
     }
 
     /**
      * Tries to connect to the database and create a table (checking creation privileges)
      *
-     * @param string $server
-     * @param string $user
-     * @param string $pwd
-     * @param string $db
-     * @param string $prefix
+     * @param string      $server
+     * @param string      $user
+     * @param string      $pwd
+     * @param string      $db
+     * @param string      $prefix
      * @param string|null $engine Table engine
+     *
      * @return bool|string True, false or error
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public static function checkCreatePrivilege($server, $user, $pwd, $db, $prefix, $engine = null)
     {
@@ -328,9 +391,11 @@ class DbPDOCore extends Db
 		) ENGINE='.$engine);
         if (!$result) {
             $error = $link->errorInfo();
+
             return $error[2];
         }
         $link->query('DROP TABLE `'.$prefix.'test`');
+
         return true;
     }
 
@@ -338,16 +403,21 @@ class DbPDOCore extends Db
      * Try a connection to the database
      *
      * @see Db::checkConnection()
-     * @param string $server Server address
-     * @param string $user Login for database connection
-     * @param string $pwd Password for database connection
-     * @param string $db Database name
-     * @param bool $newDbLink
+     *
+     * @param string      $server Server address
+     * @param string      $user   Login for database connection
+     * @param string      $pwd    Password for database connection
+     * @param string      $db     Database name
+     * @param bool        $newDbLink
      * @param string|bool $engine
-     * @param int $timeout
+     * @param int         $timeout
+     *
      * @return int Error code or 0 if connection was successful
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
-    public static function tryToConnect($server, $user, $pwd, $db, $new_db_link = true, $engine = null, $timeout = 5)
+    public static function tryToConnect($server, $user, $pwd, $db, $newDbLink = true, $engine = null, $timeout = 5)
     {
         try {
             $link = DbPDO::_getPDO($server, $user, $pwd, $db, $timeout);
@@ -356,6 +426,7 @@ class DbPDOCore extends Db
             return ($e->getCode() == 1049 || (defined('HHVM_VERSION') && $e->getCode() == 42000)) ? 2 : 1;
         }
         unset($link);
+
         return 0;
     }
 
@@ -363,6 +434,9 @@ class DbPDOCore extends Db
      * Selects best table engine.
      *
      * @return string
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getBestEngine()
     {
@@ -398,10 +472,15 @@ class DbPDOCore extends Db
      * Try a connection to the database and set names to UTF-8
      *
      * @see Db::checkEncoding()
+     *
      * @param string $server Server address
      * @param string $user Login for database connection
      * @param string $pwd Password for database connection
+     *
      * @return bool
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public static function tryUTF8($server, $user, $pwd)
     {
@@ -423,6 +502,9 @@ class DbPDOCore extends Db
      * @param string $user
      * @param string $pwd
      * @return bool
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public static function checkAutoIncrement($server, $user, $pwd)
     {
@@ -431,9 +513,10 @@ class DbPDOCore extends Db
         } catch (PDOException $e) {
             return false;
         }
-        $ret = (bool)(($result = $link->query('SELECT @@auto_increment_increment as aii')) && ($row = $result->fetch()) && $row['aii'] == 1);
-        $ret &= (bool)(($result = $link->query('SELECT @@auto_increment_offset as aio')) && ($row = $result->fetch()) && $row['aio'] == 1);
+        $ret = (bool) (($result = $link->query('SELECT @@auto_increment_increment as aii')) && ($row = $result->fetch()) && $row['aii'] == 1);
+        $ret &= (bool) (($result = $link->query('SELECT @@auto_increment_offset as aio')) && ($row = $result->fetch()) && $row['aio'] == 1);
         unset($link);
+
         return $ret;
     }
 }

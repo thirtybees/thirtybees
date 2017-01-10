@@ -29,23 +29,51 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class ModuleGraphEngineCore
+ *
+ * @since 1.0.0
+ */
 abstract class ModuleGraphEngineCore extends Module
 {
+    // @codingStandardsIgnoreStart
     protected $_type;
+    // @codingStandardsIgnoreEnd
 
+    /**
+     * ModuleGraphEngineCore constructor.
+     *
+     * @param null|string $type
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function __construct($type)
     {
         $this->_type = $type;
     }
 
+    /**
+     * @return bool
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function install()
     {
         if (!parent::install()) {
             return false;
         }
+
         return Configuration::updateValue('PS_STATS_RENDER', $this->name);
     }
 
+    /**
+     * @return array
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public static function getGraphEngines()
     {
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
@@ -68,9 +96,51 @@ abstract class ModuleGraphEngineCore extends Module
         return $array_engines;
     }
 
+    /**
+     * @param $values
+     *
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     abstract public function createValues($values);
+
+    /**
+     * @param $width
+     * @param $height
+     *
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     abstract public function setSize($width, $height);
+
+    /**
+     * @param $legend
+     *
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     abstract public function setLegend($legend);
+
+    /**
+     * @param $titles
+     *
+     * @return mixed
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     abstract public function setTitles($titles);
+
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     abstract public function draw();
 }

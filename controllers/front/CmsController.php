@@ -39,15 +39,15 @@ class CmsControllerCore extends FrontController
     public $cms_category;
     public $ssl = false;
 
-    public function canonicalRedirection($canonicalURL = '')
+    public function canonicalRedirection($canonicalUrl = '')
     {
         if (Tools::getValue('live_edit')) {
             return;
         }
-        if (Validate::isLoadedObject($this->cms) && ($canonicalURL = $this->context->link->getCMSLink($this->cms, $this->cms->link_rewrite, $this->ssl))) {
-            parent::canonicalRedirection($canonicalURL);
-        } elseif (Validate::isLoadedObject($this->cms_category) && ($canonicalURL = $this->context->link->getCMSCategoryLink($this->cms_category))) {
-            parent::canonicalRedirection($canonicalURL);
+        if (Validate::isLoadedObject($this->cms) && ($canonicalUrl = $this->context->link->getCMSLink($this->cms, $this->cms->link_rewrite, $this->ssl))) {
+            parent::canonicalRedirection($canonicalUrl);
+        } elseif (Validate::isLoadedObject($this->cms_category) && ($canonicalUrl = $this->context->link->getCMSCategoryLink($this->cms_category))) {
+            parent::canonicalRedirection($canonicalUrl);
         }
     }
 

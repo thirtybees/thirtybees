@@ -30,12 +30,17 @@
  */
 
 /**
- * @since 1.5.0
+ * Class PrestaShopExceptionCore
+ *
+ * @since 1.0.0
  */
 class PrestaShopExceptionCore extends Exception
 {
     /**
      * This method acts like an error handler, if dev mode is on, display the error else use a better silent way
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function displayMessage()
     {
@@ -62,20 +67,20 @@ class PrestaShopExceptionCore extends Exception
             // Display debug backtrace
             echo '<ul>';
             foreach ($this->getTrace() as $id => $trace) {
-                $relative_file = (isset($trace['file'])) ? ltrim(str_replace([_PS_ROOT_DIR_, '\\'], ['', '/'], $trace['file']), '/') : '';
-                $current_line = (isset($trace['line'])) ? $trace['line'] : '';
+                $relativeFile = (isset($trace['file'])) ? ltrim(str_replace([_PS_ROOT_DIR_, '\\'], ['', '/'], $trace['file']), '/') : '';
+                $currentLine = (isset($trace['line'])) ? $trace['line'] : '';
                 if (defined('_PS_ADMIN_DIR_')) {
-                    $relative_file = str_replace(basename(_PS_ADMIN_DIR_).DIRECTORY_SEPARATOR, 'admin'.DIRECTORY_SEPARATOR, $relative_file);
+                    $relativeFile = str_replace(basename(_PS_ADMIN_DIR_).DIRECTORY_SEPARATOR, 'admin'.DIRECTORY_SEPARATOR, $relativeFile);
                 }
                 echo '<li>';
                 echo '<b>'.((isset($trace['class'])) ? $trace['class'] : '').((isset($trace['type'])) ? $trace['type'] : '').$trace['function'].'</b>';
-                echo ' - <a style="font-size: 12px; color: #000000; cursor:pointer; color: blue;" onclick="document.getElementById(\'psTrace_'.$id.'\').style.display = (document.getElementById(\'psTrace_'.$id.'\').style.display != \'block\') ? \'block\' : \'none\'; return false">[line '.$current_line.' - '.$relative_file.']</a>';
+                echo ' - <a style="font-size: 12px; color: #000000; cursor:pointer; color: blue;" onclick="document.getElementById(\'psTrace_'.$id.'\').style.display = (document.getElementById(\'psTrace_'.$id.'\').style.display != \'block\') ? \'block\' : \'none\'; return false">[line '.$currentLine.' - '.$relativeFile.']</a>';
 
                 if (isset($trace['args']) && count($trace['args'])) {
                     echo ' - <a style="font-size: 12px; color: #000000; cursor:pointer; color: blue;" onclick="document.getElementById(\'psArgs_'.$id.'\').style.display = (document.getElementById(\'psArgs_'.$id.'\').style.display != \'block\') ? \'block\' : \'none\'; return false">['.count($trace['args']).' Arguments]</a>';
                 }
 
-                if ($relative_file) {
+                if ($relativeFile) {
                     $this->displayFileDebug($trace['file'], $trace['line'], $id);
                 }
                 if (isset($trace['args']) && count($trace['args'])) {
@@ -102,6 +107,9 @@ class PrestaShopExceptionCore extends Exception
      * @param string $file
      * @param int $line
      * @param string $id
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     protected function displayFileDebug($file, $line, $id = null)
     {
@@ -132,6 +140,9 @@ class PrestaShopExceptionCore extends Exception
      *
      * @param array $args List of arguments
      * @param string $id ID of argument
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     protected function displayArgsDebug($args, $id)
     {
@@ -146,6 +157,9 @@ class PrestaShopExceptionCore extends Exception
 
     /**
      * Log the error on the disk
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     protected function logError()
     {
@@ -155,17 +169,21 @@ class PrestaShopExceptionCore extends Exception
     }
 
     /**
-     * @deprecated 1.5.5
+     * @deprecated 2.0.0
      */
     protected function getExentedMessage($html = true)
     {
         Tools::displayAsDeprecated();
+
         return $this->getExtendedMessage($html);
     }
 
     /**
      * Return the content of the Exception
-     * @return string content of the exception
+     * @return string content of the exception.
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     protected function getExtendedMessage($html = true)
     {
@@ -175,10 +193,10 @@ class PrestaShopExceptionCore extends Exception
         }
 
         return sprintf(
-                    $format,
-                    $this->getMessage(),
-                    $this->getLine(),
-                    ltrim(str_replace([_PS_ROOT_DIR_, '\\'], ['', '/'], $this->getFile()), '/')
-                );
+            $format,
+            $this->getMessage(),
+            $this->getLine(),
+            ltrim(str_replace([_PS_ROOT_DIR_, '\\'], ['', '/'], $this->getFile()), '/')
+        );
     }
 }

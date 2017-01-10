@@ -605,24 +605,25 @@ class ConfigurationCore extends ObjectModel
     /**
      * This method is override to allow TranslatedConfiguration entity
      *
-     * @param $sql_join
-     * @param $sql_filter
-     * @param $sql_sort
-     * @param $sql_limit
-     * @return array
+     * @param $sqlJoin
+     * @param $sqlFilter
+     * @param $sqlSort
+     * @param $sqlLimit
+     *
+*@return array
      */
-    public function getWebserviceObjectList($sql_join, $sql_filter, $sql_sort, $sql_limit)
+    public function getWebserviceObjectList($sqlJoin, $sqlFilter, $sqlSort, $sqlLimit)
     {
         $query = '
         SELECT DISTINCT main.`'.bqSQL($this->def['primary']).'`
         FROM `'._DB_PREFIX_.bqSQL($this->def['table']).'` main
-        '.$sql_join.'
+        '.$sqlJoin.'
         WHERE id_configuration NOT IN (
             SELECT id_configuration
             FROM '._DB_PREFIX_.bqSQL($this->def['table']).'_lang
-        ) '.$sql_filter.'
-        '.($sql_sort != '' ? $sql_sort : '').'
-        '.($sql_limit != '' ? $sql_limit : '');
+        ) '.$sqlFilter.'
+        '.($sqlSort != '' ? $sqlSort : '').'
+        '.($sqlLimit != '' ? $sqlLimit : '');
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
     }
 }

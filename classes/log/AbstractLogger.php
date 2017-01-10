@@ -29,8 +29,12 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class AbstractLoggerCore
+ */
 abstract class AbstractLoggerCore
 {
+    // @codingStandardsIgnoreStart
     public $level;
     protected $level_value = [
         0 => 'DEBUG',
@@ -38,12 +42,21 @@ abstract class AbstractLoggerCore
         2 => 'WARNING',
         3 => 'ERROR',
     ];
+    // @codingStandardsIgnoreEnd
 
     const DEBUG = 0;
     const INFO = 1;
     const WARNING = 2;
     const ERROR = 3;
 
+    /**
+     * AbstractLoggerCore constructor.
+     *
+     * @param int $level
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function __construct($level = self::INFO)
     {
         if (array_key_exists((int)$level, $this->level_value)) {
@@ -58,6 +71,9 @@ abstract class AbstractLoggerCore
     *
     * @param string message
     * @param level
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
     */
     abstract protected function logMessage($message, $level);
 
@@ -66,6 +82,9 @@ abstract class AbstractLoggerCore
      *
      * @param string message
      * @param level
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
     public function log($message, $level = self::DEBUG)
     {
@@ -78,6 +97,9 @@ abstract class AbstractLoggerCore
     * Log a debug message
     *
     * @param string message
+    *
+    * @since 1.0.0
+    * @version 1.0.0 Initial version
     */
     public function logDebug($message)
     {
@@ -88,6 +110,9 @@ abstract class AbstractLoggerCore
     * Log an info message
     *
     * @param string message
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
     */
     public function logInfo($message)
     {
@@ -98,6 +123,9 @@ abstract class AbstractLoggerCore
     * Log a warning message
     *
     * @param string message
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
     */
     public function logWarning($message)
     {
@@ -108,6 +136,9 @@ abstract class AbstractLoggerCore
     * Log an error message
     *
     * @param string message
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
     */
     public function logError($message)
     {

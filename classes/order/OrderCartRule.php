@@ -29,8 +29,14 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class OrderCartRuleCore
+ *
+ * @since 1.0.0
+ */
 class OrderCartRuleCore extends ObjectModel
 {
+    // @codingStandardsIgnoreStart
     /** @var int */
     public $id_order_cart_rule;
 
@@ -54,22 +60,23 @@ class OrderCartRuleCore extends ObjectModel
 
     /** @var bool value : voucher gives free shipping or not */
     public $free_shipping;
+    // @codingStandardsIgnoreEnd
 
     /**
      * @see ObjectModel::$definition
      */
     public static $definition = [
-        'table' => 'order_cart_rule',
+        'table'   => 'order_cart_rule',
         'primary' => 'id_order_cart_rule',
-        'fields' => [
-            'id_order' =>            ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'id_cart_rule' =>        ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'id_order_invoice' =>    ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
-            'name' =>                ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'required' => true],
-            'value' =>                ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat', 'required' => true],
-            'value_tax_excl' =>    ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat', 'required' => true],
-            'free_shipping' =>        ['type' => self::TYPE_BOOL, 'validate' => 'isBool']
-        ]
+        'fields'  => [
+            'id_order'         => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'required' => true],
+            'id_cart_rule'     => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'required' => true],
+            'id_order_invoice' => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId'                    ],
+            'name'             => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml',  'required' => true],
+            'value'            => ['type' => self::TYPE_FLOAT,  'validate' => 'isFloat',      'required' => true],
+            'value_tax_excl'   => ['type' => self::TYPE_FLOAT,  'validate' => 'isFloat',      'required' => true],
+            'free_shipping'    => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                          ],
+        ],
     ];
 
     protected $webserviceParameters = [
