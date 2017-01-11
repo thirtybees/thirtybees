@@ -1,0 +1,21 @@
+a:hover {
+  text-decoration: none;
+}
+
+// Make sure lists are correctly displayed in tinyMCE BO edition mode too
+#short_description_content,
+#tinymce {
+  ul, ol, dl {
+    margin-left: 20px;
+  }
+}
+
+.rte {
+  ul {
+    list-style-type: disc;
+    padding-left: 15px;
+  }
+  em {
+    font-style: italic !important;
+  }
+}

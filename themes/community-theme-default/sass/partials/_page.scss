@@ -1,0 +1,33 @@
+$header-banner-bg: #000;
+$page-body-bg: #edecec;
+$page-content-bg: #fff;
+
+body {
+  background-color: $page-body-bg;
+  &.content_only {
+    background-color: $page-content-bg;
+  }
+}
+
+#header-blocks {
+  background-color: $page-content-bg;
+  padding-top: 15px;
+  position: relative;
+}
+
+#columns {
+  position: relative;
+  padding-bottom: 50px;
+  padding-top: 15px;
+  background-color: $page-content-bg;
+}
+
+#header-banners {
+  background-color: $header-banner-bg;
+}
+
+#header {
+  .navbar {
+    margin-bottom: 0;
+  }
+}

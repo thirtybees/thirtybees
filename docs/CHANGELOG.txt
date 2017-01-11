@@ -263,7 +263,7 @@ Release Notes for PrestaShop 1.6
 	[-] FO : Report of https://github.com/PrestaShop/PrestaShop/pull/3928
 	[-] FO : Fix #PSCSX-5182, for newsletter flag for customer if previously registred as guet
 	[-] FO : fix when clicking filters labels, not checkbox. Fixed an #3337 reported on 1.6.1.x
-	[-] FO : Footer fix in default-bootstrap theme: nocache on copyright year #3351 reported on 1.6.1.x
+	[-] FO : Footer fix in community-theme-default theme: nocache on copyright year #3351 reported on 1.6.1.x
 	[-] FO : #PSCSX-6820 part 2/2
 	[-] FO : Fix bug #PSCSX-6770, bad redirection to my account in accordion footer
 	[-] FO : Fix #PSCSX-6749, OrderHistory multishop getCustomerOrders shared orders
@@ -2423,7 +2423,7 @@ Release Notes for PrestaShop 1.6
 	[-] FO : Fix bug #PSCFV-12189, module can be disabled
 	[-] FO : Fix bug #PSCSX-2025 again, group by empty color for textures
 	[-] FO : Fix bug #PSCSX-2418, no thickbow when only one image
-	[-] FO : Fix bug #PSCFV-12204, bad deletion of cart rule    Conflicts:    	themes/default-bootstrap/js/cart-summary.js
+	[-] FO : Fix bug #PSCFV-12204, bad deletion of cart rule    Conflicts:    	themes/community-theme-default/js/cart-summary.js
 
 	[-] BO : Fix bug #PSCSX-2455, lang not valid
 	[-] BO : Fix bug duplicate manufacturers, follow up https://github.com/PrestaShop/PrestaShop/pull/1892
@@ -2453,7 +2453,7 @@ Release Notes for PrestaShop 1.6
 
 	[-] Installer : Fix the name of the language    PT-BR is Portuguese of Brazil's, PT-PT is Portuguese of Portugal
 
-	[-] FO : Fix bug #PSCSX-2388, fancybox on visible thumbs    Conflicts: themes/default-bootstrap/js/product.js
+	[-] FO : Fix bug #PSCSX-2388, fancybox on visible thumbs    Conflicts: themes/community-theme-default/js/product.js
 	[-] FO : product-list-colors bad cache id
 	[-] FO : Fix bug #PSCFV-12176, var not sanitized in stores.js
 	[-] FO : Fix bug #PSCSX-2236, bad check on addJs array
@@ -2727,7 +2727,7 @@ Release Notes for PrestaShop 1.6
 
 	[-] Installer : BR was missing from the timezones in the installer
 
-	[-] FO : Made ribbon NEW and SALE clickable on product page and quickview    Conflicts:    	themes/default-bootstrap/css/product.css
+	[-] FO : Made ribbon NEW and SALE clickable on product page and quickview    Conflicts:    	themes/community-theme-default/css/product.css
 	[-] FO : Fix #PSCFV-11235, transitionIn is fancybox 2
 	[-] FO: Bad redirection on add to cart in quick view without PS_BLOCK_CART_AJAX
 	[-] FO : Fix bug #PSCFV-11457, missing available_ values in queries
@@ -2855,7 +2855,7 @@ Release Notes for PrestaShop 1.6
 	[*] BO : updating labels and descriptions for order document section.
 	[*] BO : Init
 	[*] BO : RTL
-	[*] BO : missing name change to Default-bootstrap
+	[*] BO : missing name change to community-theme-default
 	[*] BO : updating labels and descriptions for AdminAttributesGroups.
 	[*] BO : fixed misspelled automatically
 	[*] BO : Add index.php in MODULES/mails/ISO_CODE
@@ -3354,7 +3354,7 @@ Release Notes for PrestaShop 1.6
 
 	Fixed bugs:
 
-	[-] installer : the theme default-bootstrap is now installed during an upgrade
+	[-] installer : the theme community-theme-default is now installed during an upgrade
 	[-] Installer : query added to hydrate the table PREFIX_theme_meta
 	[-] Installer : configuration : homeslider missing var
 	[-] Installer : fixed offline installation

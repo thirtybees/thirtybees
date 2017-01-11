@@ -1,0 +1,83 @@
+.star_content {
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 1.2em;
+}
+
+.star_content:before, .star_content:after {
+  content: " ";
+  display: table;
+}
+
+.star_content:after {
+  clear: both;
+}
+
+.star_content .cancel,
+.star_content .star {
+  position: relative;
+  overflow: hidden;
+  float: left;
+  margin-right: 0.15em;
+  cursor: pointer;
+}
+
+.star_content .cancel a,
+.star_content .star a {
+  position: absolute;
+  text-indent: -5000px;
+}
+
+.star_content .cancel:after {
+  content: "\f05e";
+  font-family: "FontAwesome";
+  color: #777;
+}
+
+.star_content .star:after {
+  content: "\f006";
+  font-family: "FontAwesome";
+  color: #777;
+}
+
+.star_content .star.star_on:after, .star_content .star.star_hover:after {
+  content: "\f005";
+  font-family: "FontAwesome";
+  color: #ef8743;
+}
+
+#product_comments_block_extra {
+  padding: 10px;
+  margin: 0 0 15px;
+  background: #fbfbfb;
+  border: 1px solid #d6d4d4;
+}
+
+.comments_advices {
+  margin: 0;
+}
+
+#product_comments_block_tab .comment {
+  margin: 0 0 20px;
+  padding-top: 10px;
+  border-top: 1px solid #d6d4d4;
+}
+
+#product_comments_block_tab .comment:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+.report_btn {
+  padding-left: 0;
+}
+
+@media (min-width: 768px) {
+  .comment_author {
+    text-align: center;
+  }
+  .comment .comment_details {
+    border-left: 1px solid #d6d4d4;
+    padding-left: 15px;
+  }
+}

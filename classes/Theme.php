@@ -184,7 +184,7 @@ class ThemeCore extends ObjectModel
 
         if (file_exists(_PS_ROOT_DIR_.'/config/xml/themes/'.$theme->directory.'.xml')) {
             $config_file = _PS_ROOT_DIR_.'/config/xml/themes/'.$theme->directory.'.xml';
-        } elseif ($theme->name == 'default-bootstrap') {
+        } elseif ($theme->name == 'community-theme-default') {
             $config_file = _PS_ROOT_DIR_.'/config/xml/themes/default.xml';
         } else {
             $config_file = false;
@@ -203,7 +203,7 @@ class ThemeCore extends ObjectModel
                     $theme_arr['author_'.$key] = (string)$value;
                 }
 
-                if ($theme_arr['theme_name'] == 'default-bootstrap') {
+                if ($theme_arr['theme_name'] == 'community-theme-default') {
                     $theme_arr['tc'] = Module::isEnabled('themeconfigurator');
                 }
             }

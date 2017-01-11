@@ -1,0 +1,63 @@
+// .product-name {}
+
+.price {
+  white-space: nowrap;
+  // &.product-price {}
+}
+
+.old-price {
+  color: $product-price-old-color;
+  text-decoration: line-through;
+  // &.product-price {}
+}
+
+.special-price {
+  color: $product-price-special-color;
+}
+
+.price-percent-reduction {
+  background-color: $product-price-reduction-bg;
+  color: $product-price-reduction-color;;
+  padding: 0 0.25em;
+  display: inline-block;
+  // &.small {}
+}
+
+.product-label-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  @include clearfix();
+  .product-label {
+    float: left;
+  }
+}
+
+.product-label {
+  font-size: 0.9em;
+  margin: 4px 0 0 4px;
+  padding: 2px 5px;
+  font-weight: bold;
+  background-color: #ccc;
+  color: #fff;
+  @include box-shadow(0 1px 2px rgba(0,0,0,0.15));
+  &:last-of-type {
+    margin-right: 0;
+  }
+}
+
+.product-label-new {
+  background: #6ad4ff;
+}
+
+.product-label-sale {
+  background: #f13340;
+}
+
+.product-label-discount {
+  background-color: #f13340;
+}
+
+.product-label-online {
+  background-color: orange;
+}

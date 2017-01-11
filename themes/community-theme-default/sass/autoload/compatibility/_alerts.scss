@@ -1,0 +1,7 @@
+// Non-bootstrap confirmation alert from PrestaShop 1.5
+.confirmation {
+  background-color: #ffffe0;
+  border: 1px solid #e6db55;
+  padding: $alert-padding;
+  margin-bottom: $line-height-computed;
+}

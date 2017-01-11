@@ -1,0 +1,28 @@
+// .content_sortPagiBar = product list top/bottom form wrapper
+// .content_sortPagiBar {}
+
+// .sortPagiBar = top-product-list-sort-form
+// .sortPagiBar {}
+
+.instant_search {
+  .productsSortForm {
+    display: none;
+  }
+}
+
+// #product-list-switcher {}
+
+@media (min-width: $screen-sm-min) {
+  .sortPagiBar .form-group {
+    margin-bottom: 15px; // Makes .form-group collapse nicely if they don't fit in SM width
+  }
+
+  .js-per-page {
+    float: right;
+  }
+
+  .productsSortForm {
+    float: right;
+    margin-left: 10px;
+  }
+}

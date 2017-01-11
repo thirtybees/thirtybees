@@ -1,0 +1,106 @@
+
+@import "./../../theme_variables";
+@import "./../../vendor_variables";
+
+$icon-star-neutral-color: #777;
+$icon-star-active-color : #ef8743;
+
+$panel-comments-info-bg: #fbfbfb;
+$panel-comments-info-border: $ps-border-color;
+
+$product-comment-border: $ps-border-color;
+
+.star_content {
+
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 1.2em;
+  @include clearfix();
+
+  .cancel,
+  .star {
+    position: relative;
+    overflow: hidden;
+    float: left;
+    margin-right: 0.15em;
+    cursor: pointer;
+    a {
+      position: absolute;
+      text-indent: -5000px;
+    }
+  }
+
+  .cancel {
+    &:after {
+      content: "\f05e"; // fa-ban
+      font-family: $font-icon;
+      color: $icon-star-neutral-color;
+    }
+  }
+
+  .star {
+    &:after {
+      content: "\f006"; // fa-star-o
+      font-family: $font-icon;
+      color: $icon-star-neutral-color;
+    }
+    &.star_on,
+    &.star_hover {
+      &:after {
+        content: "\f005"; // fa-star
+        font-family: $font-icon;
+        color: $icon-star-active-color;
+      }
+    }
+  }
+
+}
+
+//
+// Comments info block in product description column
+//
+
+#product_comments_block_extra {
+  padding: 10px;
+  margin: 0 0 15px;
+  background: $panel-comments-info-bg;
+  border: 1px solid $panel-comments-info-border;
+}
+
+.comments_advices {
+  margin: 0;
+}
+
+//
+// Comment popup form
+//
+
+//
+// Product comments section in product page
+//
+
+#product_comments_block_tab {
+  .comment {
+    margin: 0 0 20px;
+    padding-top: 10px;
+    border-top: 1px solid $product-comment-border;
+    &:first-child {
+      padding-top: 0;
+      border-top: none;
+    }
+  }
+}
+
+.report_btn {
+  padding-left: 0;
+}
+
+@media (min-width: $screen-sm-min) {
+  .comment_author {
+    text-align: center;
+  }
+  .comment .comment_details {
+    border-left: 1px solid $product-comment-border;
+    padding-left: 15px;
+  }
+}

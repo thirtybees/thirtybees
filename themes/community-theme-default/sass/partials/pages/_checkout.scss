@@ -1,0 +1,240 @@
+//
+// Common Order Page Styles
+//
+
+.not-displayable {
+  display: none;
+}
+
+#order_step {
+  margin-bottom: 15px;
+  .completed {
+    background: #eee;
+  }
+}
+
+//
+// Step 1: Cart Summary
+//
+
+.cart_navigation {
+  margin-bottom: 20px;
+}
+
+.cart_quantity,
+.cart_gift_quantity {
+  width: 91px;
+}
+
+.cart_quantity_input {
+  width: 91px;
+  margin-bottom: 3px;
+}
+
+.cart_quantity_button {
+  .btn {
+    float: left;
+    margin-right: 3px;
+    &:last-of-type {
+      margin-right: 0;
+    }
+  }
+}
+
+.cart_quantity_delete,
+.price_discount_delete {
+  font-size: 2em;
+}
+
+.cart_product,
+.cart_avail,
+.cart_delete,
+.cart_discount_delete {
+  text-align: center;
+}
+
+.cart_unit,
+.cart_total,
+.cart_discount_price,
+#cart_summary tfoot td {
+  text-align: right;
+}
+
+.cart_description {
+  small {
+    display: block;
+  }
+}
+
+.total_price_container,
+#total_price_container {
+  font-size: 1.5em;
+}
+
+#cart_summary #cart_voucher {
+  text-align: left;
+}
+
+#cart_voucher {
+  fieldset {
+    margin-bottom: 10px;
+  }
+}
+
+#discount_name {
+  float: left;
+  width: 210px;
+}
+
+#display_cart_vouchers {
+  span {
+    font-weight: bold;
+    cursor: pointer;
+    color: $link-color;
+    &:hover {
+      color: $link-hover-color;
+    }
+  }
+}
+
+#cart_summary {
+  .gift-icon {
+    color: #fff;
+    background-color: #0088cc;
+    display: inline-block;
+    padding: 2px 5px;
+  }
+}
+
+//
+// Step 3: Address
+//
+
+#id_address_invoice,
+#id_address_delivery {
+  width: 270px;
+}
+
+.address_delivery,
+#address_invoice_form {
+  position: relative;
+}
+
+.addresses {
+  .waitimage {
+    display: none;
+    width: 24px;
+    height: 24px;
+    background-image: url("../../../img/loader.gif");
+    background-repeat: no-repeat;
+    position: absolute;
+    top: 31px;
+    left: 280px;
+  }
+}
+
+.multishipping_close_container {
+  text-align: center;
+}
+
+//
+// Step 4: Carriers
+//
+
+.delivery_option {
+  table {
+    background: #fff;
+    > tbody > tr > td {
+      vertical-align: middle;
+    }
+  }
+}
+
+.delivery_option_radio {
+  width: 20px;
+}
+
+.delivery_option_logo {
+  width: 90px;
+  text-align: center;
+}
+
+//.delivery_option_price { width: 160px; }
+
+.carrier_title {
+  font-weight: bold;
+}
+
+#gift_div {
+  display: none;
+}
+
+//
+// Step 5: Payment
+//
+
+.payment_module {
+  a {
+    display: block;
+    border: 1px solid $table-border-color;
+    font-size: 1.25em;
+    font-weight: bold;
+    padding: 33px 40px 34px 99px;
+    position: relative;
+    &:hover {
+      background-color: #f6f6f6;
+    }
+    &.bankwire {
+      background: url('../img/bankwire.png') 15px 12px no-repeat #fbfbfb;
+    }
+    &.cheque {
+      background: url('../img/cheque.png') 15px 15px no-repeat #fbfbfb;
+    }
+    &.cash {
+      background: url('../img/cash.png') 15px 15px no-repeat #fbfbfb;
+    }
+    &.cheque,
+    &.bankwire,
+    &.cash {
+      &:after {
+        display: block;
+        content: "\f054";
+        position: absolute;
+        right: 15px;
+        margin-top: -11px;
+        top: 50%;
+        font-family: $font-icon;
+        font-size: 25px;
+        height: 22px;
+        width: 14px;
+      }
+    }
+  }
+}
+
+//
+// Order: Advanced
+//
+
+.payment_option_form {
+  display: none;
+}
+
+.payment_option_logo {
+  height: 50px;
+  max-height: 50px;
+}
+
+.payment_module_adv {
+  height: 120px;
+  max-height: 120px;
+}
+
+.payment_option_selected {
+  i {
+    color: green;
+  }
+  display: none;
+  margin-top: 15px;
+}
+

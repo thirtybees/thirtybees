@@ -1,0 +1,9 @@
+@import "../../vendor_variables";
+
+$side-padding: floor(($grid-gutter-width / 2));
+
+#blocksocial {
+  padding: 0 $side-padding 15px;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 15px;
+}

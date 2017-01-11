@@ -1,0 +1,37 @@
+.top-pagination-content,
+.bottom-pagination-content {
+  text-align: center;
+}
+
+.content_sortPagiBar {
+  margin-bottom: 15px;
+  .pagination {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+
+#pagination,
+#pagination_bottom {
+  line-height: 0;
+}
+
+@media (min-width: $screen-sm-min) {
+  .top-pagination-content,
+  .bottom-pagination-content {
+    .form-group {
+      margin-bottom: 15px; // Makes .form-group collapse nicely if they don't fit in SM width
+    }
+  }
+
+  .product-count {
+    float: left;
+  }
+  .showall {
+    float: right;
+  }
+  .compare-form {
+    float: right;
+    margin-left: 10px;
+  }
+}

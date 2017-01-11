@@ -19,7 +19,7 @@ Clicking the "Download ZIP" button from the root of this repository will downloa
 
 Note that the ZIP file does not contain the default modules: you need to make a recursive clone using your local Git client in order to download their files too. See [CONTRIBUTING.md][7] for more information about using Git and GitHub.
 
-Also, the ZIP file contains resources for developers and designers that are not in the public archive, for instance the SCSS sources files for the default themes (in the /default-bootstrap/sass folder) or the unit testing files (in the /tests folder).
+Also, the ZIP file contains resources for developers and designers that are not in the public archive, for instance the SCSS sources files for the default themes (in the /community-theme-default/sass folder) or the unit testing files (in the /tests folder).
 
 
 Server configuration

@@ -49,7 +49,7 @@ class ConfigurationTestCore
         '/modules/index.php',
         '/override/controllers/front/index.php',
         '/pdf/order-return.tpl',
-        '/themes/default-bootstrap/css/global.css',
+        '/themes/community-theme-default/css/global.css',
         '/translations/export/index.php',
         '/webservice/dispatcher.php',
         '/index.php'

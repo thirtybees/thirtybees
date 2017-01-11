@@ -1,0 +1,36 @@
+$form-control-width: 280px;
+
+#address form.std,      // address
+#identity form.std,     // identity
+#form_forgotpassword,   // password
+#account-creation_form, // authentication
+#create-account_form,   // authentication
+#login_form,            // authentication
+#guestTracking,         // guest-tracking
+#new_account_form,
+#opc_account_form {
+  .form-control {
+    max-width: $form-control-width;
+  }
+}
+
+// p.help-block.required
+p.required {
+  color: $state-danger-text; // same as .has-error
+}
+
+// Birth date select boxes
+.date-select {
+  .row {
+    max-width: $form-control-width + 10px;
+    margin: 0 -5px;
+  }
+  .col-xs-4 {
+    padding: 0 5px;
+  }
+}
+
+// Bottom margin for registration form sections
+.account_creation {
+  margin-bottom: 15px;
+}

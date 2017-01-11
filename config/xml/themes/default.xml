@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright Prestashop -->
-<theme version="1.0" name="default-bootstrap" directory="default-bootstrap">
+<theme version="1.0" name="community-theme-default" directory="community-theme-default">
     <author name="PrestaShop" email="contact@prestashop.com" url="http://www.prestashop.com"/>
     <descriptions>
         <description iso="en"></description>
     </descriptions>
     <variations>
-        <variation name="default-bootstrap" directory="default-bootstrap" responsive="1" default_left_column="1"
+        <variation name="community-theme-default" directory="community-theme-default" responsive="1" default_left_column="1"
                    default_right_column="0" product_per_page="12" from="1.6.0.5" to="1.6.0.5"/>
     </variations>
     <docs>

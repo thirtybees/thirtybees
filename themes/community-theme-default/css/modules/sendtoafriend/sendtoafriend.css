@@ -1,0 +1,10 @@
+#send_friend_form {
+  width: 560px;
+  overflow: hidden;
+}
+
+@media (max-width: 767px) {
+  #send_friend_form {
+    width: 280px;
+  }
+}

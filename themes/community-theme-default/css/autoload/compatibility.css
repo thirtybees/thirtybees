@@ -1,0 +1,230 @@
+p.checkbox input[type="checkbox"] {
+  margin-left: 0;
+}
+
+.confirmation {
+  background-color: #ffffe0;
+  border: 1px solid #e6db55;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.button_mini,
+.button_small,
+.button,
+.button_large,
+.button_mini_disabled,
+.button_small_disabled,
+.button_disabled,
+.button_large_disabled,
+.exclusive_mini,
+.exclusive_small,
+.exclusive,
+.exclusive_large,
+.exclusive_mini_disabled,
+.exclusive_small_disabled,
+.exclusive_disabled,
+.exclusive_large_disabled {
+  display: inline-block;
+  margin-bottom: 0;
+  font-weight: normal;
+  text-align: center;
+  vertical-align: middle;
+  touch-action: manipulation;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  position: relative;
+  padding: 5px 7px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  border-radius: 0;
+  color: #333;
+  background-color: #f4b61b;
+  border-color: #cc9900;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.button_mini:hover,
+.button_small:hover,
+.button:hover,
+.button_large:hover,
+.button_mini_disabled:hover,
+.button_small_disabled:hover,
+.button_disabled:hover,
+.button_large_disabled:hover,
+.exclusive_mini:hover,
+.exclusive_small:hover,
+.exclusive:hover,
+.exclusive_large:hover,
+.exclusive_mini_disabled:hover,
+.exclusive_small_disabled:hover,
+.exclusive_disabled:hover,
+.exclusive_large_disabled:hover {
+  background-color: #dca00b;
+  border-color: #8f6b00;
+}
+
+.button_mini_disabled,
+.button_small_disabled,
+.button_disabled,
+.button_large_disabled,
+.exclusive_mini_disabled,
+.exclusive_small_disabled,
+.exclusive_disabled,
+.exclusive_large_disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+  filter: alpha(opacity=65);
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+.button.button-small {
+  padding: 0 0;
+  font-size: 14px;
+  line-height: 1.42857143;
+  border-radius: 0;
+  padding: 0;
+  color: #fff;
+  background-color: #6f6f6f;
+  border-color: #5f5f5f;
+}
+
+.button.button-small span {
+  display: block;
+  padding: 3px 8px;
+  border: 1px solid transparent;
+}
+
+.button.button-small:hover {
+  background-color: #5b5b5b;
+  border-color: #404040;
+}
+
+.button.button-medium {
+  padding: 0 0;
+  font-size: 18px;
+  line-height: 1.3333333;
+  border-radius: 0;
+  padding: 0;
+  color: #fff;
+  background-color: #43b754;
+  border-color: #399a49;
+}
+
+.button.button-medium span {
+  display: block;
+  padding: 10px 10px;
+  border: 1px solid transparent;
+}
+
+.button.button-medium:hover {
+  background-color: #389946;
+  border-color: #286d34;
+}
+
+.button.button-medium.exclusive {
+  padding: 0;
+  color: #fff;
+  background-color: #fdaa02;
+  border-color: #d98305;
+}
+
+.button.button-medium.exclusive span {
+  display: block;
+  padding: 10px 10px;
+  border: 1px solid transparent;
+}
+
+.button.button-medium.exclusive:hover {
+  background-color: #d58f02;
+  border-color: #9d5f04;
+}
+
+.button.exclusive-medium,
+.button.lnk_view {
+  padding: 0 0;
+  font-size: 18px;
+  line-height: 1.3333333;
+  border-radius: 0;
+  padding: 0;
+  color: #333;
+  background-color: #f7f7f7;
+  border-color: #b7b7b7;
+}
+
+.button.exclusive-medium span,
+.button.lnk_view span {
+  display: block;
+  padding: 10px 10px;
+  border: 1px solid transparent;
+}
+
+.button.exclusive-medium:hover,
+.button.lnk_view:hover {
+  background-color: #e3e3e3;
+  border-color: #989898;
+}
+
+.button.ajax_add_to_cart_button {
+  padding: 0 0;
+  font-size: 18px;
+  line-height: 1.3333333;
+  border-radius: 0;
+  padding: 0;
+  color: #fff;
+  background-color: #007ab7;
+  border-color: #006fa8;
+}
+
+.button.ajax_add_to_cart_button span {
+  display: block;
+  padding: 10px 10px;
+  border: 1px solid transparent;
+}
+
+.button.ajax_add_to_cart_button:hover {
+  background-color: #005f8e;
+  border-color: #00476b;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.link-button i,
+.button-exclusive i {
+  margin-right: 0.5em;
+}
+
+.button .button-medium i.left,
+.button .lnk_view i.left,
+.button .button-small i.left {
+  margin-right: 0.5em;
+}
+
+.button .button-medium i.right,
+.button .lnk_view i.right,
+.button .button-small i.right {
+  margin-left: 0.5em;
+  margin-right: 0;
+}
+
+.button .button-small {
+  margin-right: 0.5em;
+}
+
+.footer_links {
+  padding: 0;
+}
+
+.footer_links li {
+  display: inline-block;
+}

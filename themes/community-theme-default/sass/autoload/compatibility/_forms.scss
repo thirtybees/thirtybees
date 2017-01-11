@@ -1,0 +1,6 @@
+// Old checkbox markup which doesn't follow Bootstrap's checkbox markup
+p.checkbox {
+  input[type="checkbox"] {
+    margin-left: 0;
+  }
+}

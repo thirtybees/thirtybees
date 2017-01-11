@@ -1,0 +1,10 @@
+
+@import "./../../theme_variables";
+@import "./../../vendor_variables";
+
+.themeconfigurator-block {
+  margin-bottom: 30px;
+  @media (max-width: $screen-xs-max) {
+    text-align: center;
+  }
+}

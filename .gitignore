@@ -56,12 +56,12 @@ admin-dev/themes/default/css/screen.css
 translations/*
 mails/*
 !mails/en/
-themes/default-bootstrap/lang/*
-themes/default-bootstrap/modules/*/translations/*.php
-themes/default-bootstrap/mails/*
-!themes/default-bootstrap/mails/en/
-themes/default-bootstrap/modules/*/mails/*
-!themes/default-bootstrap/modules/*/mails/en
+themes/community-theme-default/lang/*
+themes/community-theme-default/modules/*/translations/*.php
+themes/community-theme-default/mails/*
+!themes/community-theme-default/mails/en/
+themes/community-theme-default/modules/*/mails/*
+!themes/community-theme-default/modules/*/mails/en
 
 # MISC
 
