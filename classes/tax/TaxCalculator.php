@@ -21,18 +21,18 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * @since 1.5.0
+ * Class TaxCalculatorCore
  *
- * TaxCaculator is responsible of the tax computation
+ * @since 1.0.0
  */
 class TaxCalculatorCore
 {
@@ -48,6 +48,7 @@ class TaxCalculatorCore
      */
     const ONE_AFTER_ANOTHER_METHOD = 2;
 
+    // @codingStandardsIgnoreStart
     /**
      * @var array $taxes
      */
@@ -57,13 +58,17 @@ class TaxCalculatorCore
      * @var int $computation_method (COMBINE_METHOD | ONE_AFTER_ANOTHER_METHOD)
      */
     public $computation_method;
-
+    // @codingStandardsIgnoreEnd
 
     /**
      * @param array $taxes
-     * @param int $computation_method (COMBINE_METHOD | ONE_AFTER_ANOTHER_METHOD)
+     * @param int   $computationMethod (COMBINE_METHOD | ONE_AFTER_ANOTHER_METHOD)
+     *
+     * @throws Exception
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
-    public function __construct(array $taxes = [], $computation_method = TaxCalculator::COMBINE_METHOD)
+    public function __construct(array $taxes = [], $computationMethod = TaxCalculator::COMBINE_METHOD)
     {
         // sanity check
         foreach ($taxes as $tax) {
@@ -73,34 +78,41 @@ class TaxCalculatorCore
         }
 
         $this->taxes = $taxes;
-        $this->computation_method = (int)$computation_method;
+        $this->computation_method = (int) $computationMethod;
     }
 
     /**
      * Compute and add the taxes to the specified price
      *
-     * @param float $price_te price tax excluded
+     * @param float $priceTaxExcluded price tax excluded
+     *
      * @return float price with taxes
      */
-    public function addTaxes($price_te)
+    public function addTaxes($priceTaxExcluded)
     {
-        return $price_te * (1 + ($this->getTotalRate() / 100));
+        return $priceTaxExcluded * (1 + ($this->getTotalRate() / 100));
     }
-
 
     /**
      * Compute and remove the taxes to the specified price
      *
-     * @param float $price_ti price tax inclusive
+     * @param float $priceTaxIncluded price tax inclusive
+     *
      * @return float price without taxes
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
-    public function removeTaxes($price_ti)
+    public function removeTaxes($priceTaxIncluded)
     {
-        return $price_ti / (1 + $this->getTotalRate() / 100);
+        return $priceTaxIncluded / (1 + $this->getTotalRate() / 100);
     }
 
     /**
      * @return float total taxes rate
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getTotalRate()
     {
@@ -119,14 +131,20 @@ class TaxCalculatorCore
             }
         }
 
-        return (float)$taxes;
+        return (float) $taxes;
     }
 
+    /**
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getTaxesName()
     {
         $name = '';
         foreach ($this->taxes as $tax) {
-            $name .= $tax->name[(int)Context::getContext()->language->id].' - ';
+            $name .= $tax->name[(int) Context::getContext()->language->id].' - ';
         }
 
         $name = rtrim($name, ' - ');
@@ -137,36 +155,44 @@ class TaxCalculatorCore
     /**
      * Return the tax amount associated to each taxes of the TaxCalculator
      *
-     * @param float $price_te
+     * @param float $priceTaxExcluded
+     *
      * @return array $taxes_amount
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
-    public function getTaxesAmount($price_te)
+    public function getTaxesAmount($priceTaxExcluded)
     {
-        $taxes_amounts = [];
+        $taxesAmounts = [];
 
         foreach ($this->taxes as $tax) {
             if ($this->computation_method == TaxCalculator::ONE_AFTER_ANOTHER_METHOD) {
-                $taxes_amounts[$tax->id] = $price_te * (abs($tax->rate) / 100);
-                $price_te = $price_te + $taxes_amounts[$tax->id];
+                $taxesAmounts[$tax->id] = $priceTaxExcluded * (abs($tax->rate) / 100);
+                $priceTaxExcluded = $priceTaxExcluded + $taxesAmounts[$tax->id];
             } else {
-                $taxes_amounts[$tax->id] = ($price_te * (abs($tax->rate) / 100));
+                $taxesAmounts[$tax->id] = ($priceTaxExcluded * (abs($tax->rate) / 100));
             }
         }
 
-        return $taxes_amounts;
+        return $taxesAmounts;
     }
 
     /**
      * Return the total taxes amount
      *
-     * @param float $price_te
+     * @param float $priceTaxExcluded
+     *
      * @return float $amount
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
-    public function getTaxesTotalAmount($price_te)
+    public function getTaxesTotalAmount($priceTaxExcluded)
     {
         $amount = 0;
 
-        $taxes = $this->getTaxesAmount($price_te);
+        $taxes = $this->getTaxesAmount($priceTaxExcluded);
         foreach ($taxes as $tax) {
             $amount += $tax;
         }

@@ -21,16 +21,22 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class TaxRulesGroupCore
+ *
+ * @since 1.0.0
+ */
 class TaxRulesGroupCore extends ObjectModel
 {
+    // @codingStandardsIgnoreStart
     public $name;
 
     /** @var bool active state */
@@ -43,135 +49,186 @@ class TaxRulesGroupCore extends ObjectModel
 
     /** @var string Object last modification date */
     public $date_upd;
+    // @codingStandardsIgnoreEnd
 
     /**
      * @see ObjectModel::$definition
      */
     public static $definition = [
-        'table' => 'tax_rules_group',
+        'table'   => 'tax_rules_group',
         'primary' => 'id_tax_rules_group',
-        'fields' => [
-            'name' =>        ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 64],
-            'active' =>        ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'deleted' =>    ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'date_add' =>    ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
-            'date_upd' =>    ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+        'fields'  => [
+            'name'     => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 64],
+            'active'   => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                         ],
+            'deleted'  => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                         ],
+            'date_add' => ['type' => self::TYPE_DATE,   'validate' => 'isDate'                                         ],
+            'date_upd' => ['type' => self::TYPE_DATE,   'validate' => 'isDate'                                         ],
         ],
     ];
 
     protected $webserviceParameters = [
-    'objectsNodeName' => 'tax_rule_groups',
-    'objectNodeName' => 'tax_rule_group',
-        'fields' => [
+        'objectsNodeName' => 'tax_rule_groups',
+        'objectNodeName'  => 'tax_rule_group',
+        'fields'          => [
         ],
     ];
 
     protected static $_taxes = [];
 
-
-    public function update($null_values = false)
+    /**
+     * @param bool $nullValues
+     *
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function update($nullValues = false)
     {
         if (!$this->deleted && $this->isUsed()) {
-            $current_tax_rules_group = new TaxRulesGroup((int)$this->id);
-            if ((!$new_tax_rules_group = $current_tax_rules_group->duplicateObject()) || !$current_tax_rules_group->historize($new_tax_rules_group)) {
+            $currentTaxRulesGroup = new TaxRulesGroup((int) $this->id);
+            if ((!$newTaxRulesGroup = $currentTaxRulesGroup->duplicateObject()) || !$currentTaxRulesGroup->historize($newTaxRulesGroup)) {
                 return false;
             }
 
-            $this->id = (int)$new_tax_rules_group->id;
+            $this->id = (int) $newTaxRulesGroup->id;
         }
 
-        return parent::update($null_values);
+        return parent::update($nullValues);
     }
 
     /**
      * Save the object with the field deleted to true
      *
-     *  @return bool
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
-    public function historize(TaxRulesGroup $tax_rules_group)
+    public function historize(TaxRulesGroup $taxRulesGroup)
     {
         $this->deleted = true;
 
         return parent::update() &&
-        Db::getInstance()->execute('
+            Db::getInstance()->execute(
+                '
 		INSERT INTO '._DB_PREFIX_.'tax_rule
 		(id_tax_rules_group, id_country, id_state, zipcode_from, zipcode_to, id_tax, behavior, description)
 		(
-			SELECT '.(int)$tax_rules_group->id.', id_country, id_state, zipcode_from, zipcode_to, id_tax, behavior, description
+			SELECT '.(int) $taxRulesGroup->id.', id_country, id_state, zipcode_from, zipcode_to, id_tax, behavior, description
 			FROM '._DB_PREFIX_.'tax_rule
-			WHERE id_tax_rules_group='.(int)$this->id.'
-		)') &&
-        Db::getInstance()->execute('
+			WHERE id_tax_rules_group='.(int) $this->id.'
+		)'
+            ) &&
+            Db::getInstance()->execute(
+                '
 		UPDATE '._DB_PREFIX_.'product
-		SET id_tax_rules_group='.(int)$tax_rules_group->id.'
-		WHERE id_tax_rules_group='.(int)$this->id) &&
-        Db::getInstance()->execute('
+		SET id_tax_rules_group='.(int) $taxRulesGroup->id.'
+		WHERE id_tax_rules_group='.(int) $this->id
+            ) &&
+            Db::getInstance()->execute(
+                '
 		UPDATE '._DB_PREFIX_.'product_shop
-		SET id_tax_rules_group='.(int)$tax_rules_group->id.'
-		WHERE id_tax_rules_group='.(int)$this->id) &&
-        Db::getInstance()->execute('
+		SET id_tax_rules_group='.(int) $taxRulesGroup->id.'
+		WHERE id_tax_rules_group='.(int) $this->id
+            ) &&
+            Db::getInstance()->execute(
+                '
 		UPDATE '._DB_PREFIX_.'carrier
-		SET id_tax_rules_group='.(int)$tax_rules_group->id.'
-		WHERE id_tax_rules_group='.(int)$this->id) &&
-        Db::getInstance()->execute('
+		SET id_tax_rules_group='.(int) $taxRulesGroup->id.'
+		WHERE id_tax_rules_group='.(int) $this->id
+            ) &&
+            Db::getInstance()->execute(
+                '
 		UPDATE '._DB_PREFIX_.'carrier_tax_rules_group_shop
-		SET id_tax_rules_group='.(int)$tax_rules_group->id.'
-		WHERE id_tax_rules_group='.(int)$this->id);
-    }
-
-    public function getIdTaxRuleGroupFromHistorizedId($id_tax_rule)
-    {
-        $params = Db::getInstance()->getRow('
-		SELECT id_country, id_state, zipcode_from, zipcode_to, id_tax, behavior
-		FROM '._DB_PREFIX_.'tax_rule
-		WHERE id_tax_rule='.(int)$id_tax_rule
-        );
-
-        return Db::getInstance()->getValue('
-		SELECT id_tax_rule
-		FROM '._DB_PREFIX_.'tax_rule
-		WHERE
-			id_tax_rules_group = '.(int)$this->id.' AND
-			id_country='.(int)$params['id_country'].' AND id_state='.(int)$params['id_state'].' AND id_tax='.(int)$params['id_tax'].' AND
-			zipcode_from=\''.pSQL($params['zipcode_from']).'\' AND zipcode_to=\''.pSQL($params['zipcode_to']).'\' AND behavior='.(int)$params['behavior']
-        );
-    }
-
-    public static function getTaxRulesGroups($only_active = true)
-    {
-        return Db::getInstance()->executeS('
-			SELECT DISTINCT g.id_tax_rules_group, g.name, g.active
-			FROM `'._DB_PREFIX_.'tax_rules_group` g'
-            .Shop::addSqlAssociation('tax_rules_group', 'g').' WHERE deleted = 0'
-            .($only_active ? ' AND g.`active` = 1' : '').'
-			ORDER BY name ASC');
+		SET id_tax_rules_group='.(int) $taxRulesGroup->id.'
+		WHERE id_tax_rules_group='.(int) $this->id
+            );
     }
 
     /**
-    * @return array an array of tax rules group formatted as $id => $name
-    */
+     * @param $idTaxRule
+     *
+     * @return false|null|string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function getIdTaxRuleGroupFromHistorizedId($idTaxRule)
+    {
+        $params = Db::getInstance()->getRow(
+            '
+		SELECT id_country, id_state, zipcode_from, zipcode_to, id_tax, behavior
+		FROM '._DB_PREFIX_.'tax_rule
+		WHERE id_tax_rule='.(int) $idTaxRule
+        );
+
+        return Db::getInstance()->getValue(
+            '
+		SELECT id_tax_rule
+		FROM '._DB_PREFIX_.'tax_rule
+		WHERE
+			id_tax_rules_group = '.(int) $this->id.' AND
+			id_country='.(int) $params['id_country'].' AND id_state='.(int) $params['id_state'].' AND id_tax='.(int) $params['id_tax'].' AND
+			zipcode_from=\''.pSQL($params['zipcode_from']).'\' AND zipcode_to=\''.pSQL($params['zipcode_to']).'\' AND behavior='.(int) $params['behavior']
+        );
+    }
+
+    /**
+     * @param bool $onlyActive
+     *
+     * @return array|false|mysqli_result|null|PDOStatement|resource
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function getTaxRulesGroups($onlyActive = true)
+    {
+        return Db::getInstance()->executeS(
+            '
+			SELECT DISTINCT g.id_tax_rules_group, g.name, g.active
+			FROM `'._DB_PREFIX_.'tax_rules_group` g'
+            .Shop::addSqlAssociation('tax_rules_group', 'g').' WHERE deleted = 0'
+            .($onlyActive ? ' AND g.`active` = 1' : '').'
+			ORDER BY name ASC'
+        );
+    }
+
+    /**
+     * @return array an array of tax rules group formatted as $id => $name
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public static function getTaxRulesGroupsForOptions()
     {
-        $tax_rules[] = ['id_tax_rules_group' => 0, 'name' => Tools::displayError('No tax')];
-        return array_merge($tax_rules, TaxRulesGroup::getTaxRulesGroups());
+        $taxRules[] = ['id_tax_rules_group' => 0, 'name' => Tools::displayError('No tax')];
+
+        return array_merge($taxRules, TaxRulesGroup::getTaxRulesGroups());
     }
 
     public function delete()
     {
-        $res = Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'tax_rule` WHERE `id_tax_rules_group`='.(int)$this->id);
+        $res = Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'tax_rule` WHERE `id_tax_rules_group`='.(int) $this->id);
+
         return (parent::delete() && $res);
     }
+
     /**
-    * @return array
-    */
-    public static function getAssociatedTaxRatesByIdCountry($id_country)
+     * @return array
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function getAssociatedTaxRatesByIdCountry($idCountry)
     {
-        $rows = Db::getInstance()->executeS('
+        $rows = Db::getInstance()->executeS(
+            '
 			SELECT rg.`id_tax_rules_group`, t.`rate`
 			FROM `'._DB_PREFIX_.'tax_rules_group` rg
 			LEFT JOIN `'._DB_PREFIX_.'tax_rule` tr ON (tr.`id_tax_rules_group` = rg.`id_tax_rules_group`)
 			LEFT JOIN `'._DB_PREFIX_.'tax` t ON (t.`id_tax` = tr.`id_tax`)
-			WHERE tr.`id_country` = '.(int)$id_country.'
+			WHERE tr.`id_country` = '.(int) $idCountry.'
 			AND tr.`id_state` = 0
 			AND 0 between `zipcode_from` AND `zipcode_to`'
         );
@@ -185,11 +242,15 @@ class TaxRulesGroupCore extends ObjectModel
     }
 
     /**
-    * Returns the tax rules group id corresponding to the name
-    *
-    * @param string $name
-    * @return int id of the tax rules
-    */
+     * Returns the tax rules group id corresponding to the name
+     *
+     * @param string $name
+     *
+     * @return int id of the tax rules
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public static function getIdByName($name)
     {
         return Db::getInstance()->getValue(
@@ -199,11 +260,21 @@ class TaxRulesGroupCore extends ObjectModel
         );
     }
 
-    public function hasUniqueTaxRuleForCountry($id_country, $id_state, $id_tax_rule = false)
+    /**
+     * @param      $idCountry
+     * @param      $idState
+     * @param bool $idTaxRule
+     *
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function hasUniqueTaxRuleForCountry($idCountry, $idState, $idTaxRule = false)
     {
-        $rules = TaxRule::getTaxRulesByGroupId((int)Context::getContext()->language->id, (int)$this->id);
+        $rules = TaxRule::getTaxRulesByGroupId((int) Context::getContext()->language->id, (int) $this->id);
         foreach ($rules as $rule) {
-            if ($rule['id_country'] == $id_country && $id_state == $rule['id_state'] && !$rule['behavior'] && (int)$id_tax_rule != $rule['id_tax_rule']) {
+            if ($rule['id_country'] == $idCountry && $idState == $rule['id_state'] && !$rule['behavior'] && (int) $idTaxRule != $rule['id_tax_rule']) {
                 return true;
             }
         }
@@ -211,36 +282,19 @@ class TaxRulesGroupCore extends ObjectModel
         return false;
     }
 
+    /**
+     * @return false|null|string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function isUsed()
     {
-        return Db::getInstance()->getValue('
+        return Db::getInstance()->getValue(
+            '
 		SELECT `id_tax_rules_group`
 		FROM `'._DB_PREFIX_.'order_detail`
-		WHERE `id_tax_rules_group` = '.(int)$this->id
+		WHERE `id_tax_rules_group` = '.(int) $this->id
         );
-    }
-
-    /**
-    * @deprecated since 1.5
-    */
-    public static function getTaxesRate($id_tax_rules_group, $id_country, $id_state, $zipcode)
-    {
-        Tools::displayAsDeprecated();
-        $rate = 0;
-        foreach (TaxRulesGroup::getTaxes($id_tax_rules_group, $id_country, $id_state, $zipcode) as $tax) {
-            $rate += (float)$tax->rate;
-        }
-
-        return $rate;
-    }
-
-    /**
-     * Return taxes associated to this para
-     * @deprecated since 1.5
-     */
-    public static function getTaxes($id_tax_rules_group, $id_country, $id_state, $id_county)
-    {
-        Tools::displayAsDeprecated();
-        return [];
     }
 }

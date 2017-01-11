@@ -76,7 +76,7 @@ class SceneCore extends ObjectModel
         $this->image_dir = _PS_SCENE_IMG_DIR_;
     }
 
-    public function update($null_values = false)
+    public function update($nullValues = false)
     {
         if (!$this->updateZoneProducts()) {
             return false;
@@ -85,7 +85,7 @@ class SceneCore extends ObjectModel
             return false;
         }
 
-        if (parent::update($null_values)) {
+        if (parent::update($nullValues)) {
             // Refresh cache of feature detachable
             Configuration::updateGlobalValue('PS_SCENE_FEATURE_ACTIVE', Scene::isCurrentlyUsed($this->def['table'], true));
             return true;

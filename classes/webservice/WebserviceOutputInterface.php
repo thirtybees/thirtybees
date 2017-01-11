@@ -29,6 +29,11 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Interface WebserviceOutputInterface
+ *
+ * @since 1.0.0
+ */
 interface WebserviceOutputInterface
 {
     public function __construct($languages = []);
@@ -38,10 +43,10 @@ interface WebserviceOutputInterface
     public function setSchemaToDisplay($schema);
     public function getSchemaToDisplay();
     public function renderField($field);
-    public function renderNodeHeader($obj, $params, $more_attr = null);
+    public function renderNodeHeader($obj, $params, $moreAttr = null);
     public function renderNodeFooter($obj, $params);
-    public function renderAssociationHeader($obj, $params, $assoc_name);
-    public function renderAssociationFooter($obj, $params, $assoc_name);
+    public function renderAssociationHeader($obj, $params, $assocName);
+    public function renderAssociationFooter($obj, $params, $assocName);
     public function overrideContent($content);
     public function renderErrorsHeader();
     public function renderErrorsFooter();

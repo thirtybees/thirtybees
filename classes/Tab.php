@@ -523,10 +523,12 @@ class TabCore extends ObjectModel
      * Overrides update to set position to last when changing parent tab
      *
      * @see ObjectModel::update
-     * @param bool $null_values
-     * @return bool
+     *
+*@param bool $nullValues
+     *
+*@return bool
      */
-    public function update($null_values = false)
+    public function update($nullValues = false)
     {
         $current_tab = new Tab($this->id);
         if ($current_tab->id_parent != $this->id_parent) {
@@ -534,7 +536,7 @@ class TabCore extends ObjectModel
         }
 
         self::$_cache_tabs = [];
-        return parent::update($null_values);
+        return parent::update($nullValues);
     }
 
     public static function getTabByIdProfile($id_parent, $id_profile)

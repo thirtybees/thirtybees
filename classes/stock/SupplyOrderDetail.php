@@ -21,20 +21,22 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * Represents one product ordered
- * @since 1.5.0
+ * Class SupplyOrderDetailCore
+ *
+ * @since 1.0.0
  */
 class SupplyOrderDetailCore extends ObjectModel
 {
+    // @codingStandardsIgnoreStart
     /**
      * @var int Supply order
      */
@@ -146,36 +148,37 @@ class SupplyOrderDetailCore extends ObjectModel
      * (i.e. if SupplyOrder::discount_rate is set)
      */
     public $price_with_order_discount_te = 0;
+    // @codingStandardsIgnoreEnd
 
     /**
      * @see ObjectModel::$definition
      */
     public static $definition = [
-        'table' => 'supply_order_detail',
+        'table'   => 'supply_order_detail',
         'primary' => 'id_supply_order_detail',
-        'fields' => [
-            'id_supply_order' =>                ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'id_product' =>                    ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'id_product_attribute' =>            ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'reference' =>                        ['type' => self::TYPE_STRING, 'validate' => 'isReference'],
-            'supplier_reference' =>            ['type' => self::TYPE_STRING, 'validate' => 'isReference'],
-            'name' =>                            ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true],
-            'ean13' =>                            ['type' => self::TYPE_STRING, 'validate' => 'isEan13'],
-            'upc' =>                            ['type' => self::TYPE_STRING, 'validate' => 'isUpc'],
-            'id_currency' =>                    ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'exchange_rate' =>                    ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat', 'required' => true],
-            'unit_price_te' =>                    ['type' => self::TYPE_FLOAT, 'validate' => 'isPrice', 'required' => true],
-            'quantity_expected' =>                ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true],
-            'quantity_received' =>                ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
-            'price_te' =>                        ['type' => self::TYPE_FLOAT, 'validate' => 'isPrice', 'required' => true],
-            'discount_rate' =>                    ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat', 'required' => true],
-            'discount_value_te' =>                ['type' => self::TYPE_FLOAT, 'validate' => 'isPrice', 'required' => true],
-            'price_with_discount_te' =>        ['type' => self::TYPE_FLOAT, 'validate' => 'isPrice', 'required' => true],
-            'tax_rate' =>                        ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat', 'required' => true],
-            'tax_value' =>                        ['type' => self::TYPE_FLOAT, 'validate' => 'isPrice', 'required' => true],
-            'price_ti' =>                        ['type' => self::TYPE_FLOAT, 'validate' => 'isPrice', 'required' => true],
-            'tax_value_with_order_discount' =>    ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat', 'required' => true],
-            'price_with_order_discount_te' =>    ['type' => self::TYPE_FLOAT, 'validate' => 'isPrice', 'required' => true],
+        'fields'  => [
+            'id_supply_order'               => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',  'required' => true],
+            'id_product'                    => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',  'required' => true],
+            'id_product_attribute'          => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',  'required' => true],
+            'reference'                     => ['type' => self::TYPE_STRING, 'validate' => 'isReference'                      ],
+            'supplier_reference'            => ['type' => self::TYPE_STRING, 'validate' => 'isReference'                      ],
+            'name'                          => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true],
+            'ean13'                         => ['type' => self::TYPE_STRING, 'validate' => 'isEan13'                          ],
+            'upc'                           => ['type' => self::TYPE_STRING, 'validate' => 'isUpc'                            ],
+            'id_currency'                   => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',  'required' => true],
+            'exchange_rate'                 => ['type' => self::TYPE_FLOAT,  'validate' => 'isFloat',       'required' => true],
+            'unit_price_te'                 => ['type' => self::TYPE_FLOAT,  'validate' => 'isPrice',       'required' => true],
+            'quantity_expected'             => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt', 'required' => true],
+            'quantity_received'             => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt'                    ],
+            'price_te'                      => ['type' => self::TYPE_FLOAT,  'validate' => 'isPrice',       'required' => true],
+            'discount_rate'                 => ['type' => self::TYPE_FLOAT,  'validate' => 'isFloat',       'required' => true],
+            'discount_value_te'             => ['type' => self::TYPE_FLOAT,  'validate' => 'isPrice',       'required' => true],
+            'price_with_discount_te'        => ['type' => self::TYPE_FLOAT,  'validate' => 'isPrice',       'required' => true],
+            'tax_rate'                      => ['type' => self::TYPE_FLOAT,  'validate' => 'isFloat',       'required' => true],
+            'tax_value'                     => ['type' => self::TYPE_FLOAT,  'validate' => 'isPrice',       'required' => true],
+            'price_ti'                      => ['type' => self::TYPE_FLOAT,  'validate' => 'isPrice',       'required' => true],
+            'tax_value_with_order_discount' => ['type' => self::TYPE_FLOAT,  'validate' => 'isFloat',       'required' => true],
+            'price_with_order_discount_te'  => ['type' => self::TYPE_FLOAT,  'validate' => 'isPrice',       'required' => true],
         ],
     ];
 
@@ -184,29 +187,35 @@ class SupplyOrderDetailCore extends ObjectModel
      */
     protected $webserviceParameters = [
         'objectsNodeName' => 'supply_order_details',
-        'objectNodeName' => 'supply_order_detail',
-        'fields' => [
-            'id_supply_order' => ['xlink_resource' => 'supply_orders'],
-            'id_product' => ['xlink_resource' => 'products'],
+        'objectNodeName'  => 'supply_order_detail',
+        'fields'          => [
+            'id_supply_order'      => ['xlink_resource' => 'supply_orders'],
+            'id_product'           => ['xlink_resource' => 'products'],
             'id_product_attribute' => ['xlink_resource' => 'combinations'],
         ],
-        'hidden_fields' => [
+        'hidden_fields'   => [
             'id_currency',
         ],
     ];
 
     /**
      * @see ObjectModel::update()
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
-    public function update($null_values = false)
+    public function update($nullValues = false)
     {
         $this->calculatePrices();
 
-        parent::update($null_values);
+        parent::update($nullValues);
     }
 
     /**
      * @see ObjectModel::add()
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function add($autodate = true, $nullValues = false)
     {
@@ -219,22 +228,25 @@ class SupplyOrderDetailCore extends ObjectModel
      * Calculates all prices for this product based on its quantity and unit price
      * Applies discount if necessary
      * Calculates tax value, function of tax rate
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     protected function calculatePrices()
     {
         // calculates entry price
-        $this->price_te = Tools::ps_round((float)$this->unit_price_te * (int)$this->quantity_expected, 6);
+        $this->price_te = Tools::ps_round((float) $this->unit_price_te * (int) $this->quantity_expected, 6);
 
         // calculates entry discount value
         if ($this->discount_rate != null && (is_float($this->discount_rate) || is_numeric($this->discount_rate)) && $this->discount_rate > 0) {
-            $this->discount_value_te = Tools::ps_round((float)$this->price_te * ($this->discount_rate / 100), 6);
+            $this->discount_value_te = Tools::ps_round((float) $this->price_te * ($this->discount_rate / 100), 6);
         }
 
         // calculates entry price with discount
         $this->price_with_discount_te = Tools::ps_round($this->price_te - $this->discount_value_te, 6);
 
         // calculates tax value
-        $this->tax_value = Tools::ps_round($this->price_with_discount_te * ((float)$this->tax_rate / 100), 6);
+        $this->tax_value = Tools::ps_round($this->price_with_discount_te * ((float) $this->tax_rate / 100), 6);
         $this->price_ti = Tools::ps_round($this->price_with_discount_te + $this->tax_value, 6);
 
         // defines default values for order discount fields
@@ -246,18 +258,21 @@ class SupplyOrderDetailCore extends ObjectModel
      * Applies a global order discount rate, for the current product (i.e detail)
      * Calls ObjectModel::update()
      *
-     * @param float|int $discount_rate The discount rate in percent (Ex. 5 for 5 percents)
+     * @param float|int $discountRate The discount rate in percent (Ex. 5 for 5 percents)
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
-    public function applyGlobalDiscount($discount_rate)
+    public function applyGlobalDiscount($discountRate)
     {
-        if ($discount_rate != null && is_numeric($discount_rate) && (float)$discount_rate > 0) {
+        if ($discountRate != null && is_numeric($discountRate) && (float) $discountRate > 0) {
             // calculates new price, with global order discount, tax ecluded
-            $discount_value = $this->price_with_discount_te - (($this->price_with_discount_te * (float)$discount_rate) / 100);
+            $discount_value = $this->price_with_discount_te - (($this->price_with_discount_te * (float) $discountRate) / 100);
 
             $this->price_with_order_discount_te = Tools::ps_round($discount_value, 6);
 
             // calculates new tax value, with global order discount
-            $this->tax_value_with_order_discount = Tools::ps_round($this->price_with_order_discount_te * ((float)$this->tax_rate / 100), 6);
+            $this->tax_value_with_order_discount = Tools::ps_round($this->price_with_order_discount_te * ((float) $this->tax_rate / 100), 6);
 
             parent::update();
         }
@@ -267,38 +282,42 @@ class SupplyOrderDetailCore extends ObjectModel
      * @see ObjectModel::validateController()
      *
      * @param bool $htmlentities Optional
+     *
      * @return array Errors, if any..
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function validateController($htmlentities = true)
     {
         $errors = [];
 
         /* required fields */
-        $fields_required = $this->fieldsRequired;
+        $fieldsRequired = $this->fieldsRequired;
 
         if (isset(self::$fieldsRequiredDatabase[get_class($this)])) {
-            $fields_required = array_merge(
+            $fieldsRequired = array_merge(
                 $this->fieldsRequired,
                 self::$fieldsRequiredDatabase[get_class($this)]
             );
         }
 
-        foreach ($fields_required as $field) {
-            if (($value = $this->{$field}) == false && (string)$value != '0') {
+        foreach ($fieldsRequired as $field) {
+            if (($value = $this->{$field}) == false && (string) $value != '0') {
                 if (!$this->id || $field != 'passwd') {
                     $errors[] = '<b>'.SupplyOrderDetail::displayFieldName($field, get_class($this), $htmlentities)
-                                .'</b> '.Tools::displayError('is required.');
+                        .'</b> '.Tools::displayError('is required.');
                 }
             }
         }
 
         /* Checks maximum fields sizes */
-        foreach ($this->fieldsSize as $field => $max_length) {
-            if ($value = $this->{$field} && Tools::strlen($value) > $max_length) {
+        foreach ($this->fieldsSize as $field => $maxLength) {
+            if ($value = $this->{$field} && Tools::strlen($value) > $maxLength) {
                 $errors[] = sprintf(
                     Tools::displayError('%1$s is too long. Maximum length: %2$d'),
                     SupplyOrderDetail::displayFieldName($field, get_class($this), $htmlentities),
-                    $max_length
+                    $maxLength
                 );
             }
         }
@@ -335,10 +354,13 @@ class SupplyOrderDetailCore extends ObjectModel
 
     /**
      * @see ObjectModel::hydrate()
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
-    public function hydrate(array $data, $id_lang = null)
+    public function hydrate(array $data, $idLang = null)
     {
-        $this->id_lang = $id_lang;
+        $this->id_lang = $idLang;
         if (isset($data[$this->def['primary']])) {
             $this->id = $data[$this->def['primary']];
         }
@@ -346,7 +368,8 @@ class SupplyOrderDetailCore extends ObjectModel
             if (array_key_exists($key, $this)) {
                 // formats prices and floats
                 if ($this->def['fields'][$key]['validate'] == 'isFloat' ||
-                    $this->def['fields'][$key]['validate'] == 'isPrice') {
+                    $this->def['fields'][$key]['validate'] == 'isPrice'
+                ) {
                     $value = Tools::ps_round($value, 6);
                 }
                 $this->$key = $value;

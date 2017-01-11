@@ -102,7 +102,7 @@ class ImageCore extends ObjectModel
         return parent::add($autodate, $nullValues);
     }
 
-    public function update($null_values = false)
+    public function update($nullValues = false)
     {
         if ($this->cover) {
             $this->cover = 1;
@@ -111,7 +111,7 @@ class ImageCore extends ObjectModel
         }
 
 
-        return parent::update($null_values);
+        return parent::update($nullValues);
     }
 
     public function delete()

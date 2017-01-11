@@ -29,6 +29,11 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Interface WebserviceSpecificManagementInterface
+ *
+ * @since 1.0.0
+ */
 interface WebserviceSpecificManagementInterface
 {
     public function setObjectOutput(WebserviceOutputBuilderCore $obj);
@@ -42,6 +47,9 @@ interface WebserviceSpecificManagementInterface
      * This must be return an array with specific values as WebserviceRequest expects.
      *
      * @return array
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getContent();
 }

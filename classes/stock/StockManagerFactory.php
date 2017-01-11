@@ -29,56 +29,63 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-/*
- * StockManagerFactory : factory of stock manager
- * @since 1.5.0
+/**
+ * Class StockManagerFactoryCore
+ *
+ * @since 1.0.0
  */
 class StockManagerFactoryCore
 {
-    /**
-     * @var $stock_manager : instance of the current StockManager.
-     */
+    // @codingStandardsIgnoreStart
+    /** @var $stock_manager : instance of the current StockManager. */
     protected static $stock_manager;
+    // @codingStandardsIgnoreEnd
 
     /**
      * Returns a StockManager
      *
      * @return StockManagerInterface
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public static function getManager()
     {
         if (!isset(StockManagerFactory::$stock_manager)) {
-            $stock_manager = StockManagerFactory::execHookStockManagerFactory();
-            if (!($stock_manager instanceof StockManagerInterface)) {
-                $stock_manager = new StockManager();
+            $stockManager = StockManagerFactory::execHookStockManagerFactory();
+            if (!($stockManager instanceof StockManagerInterface)) {
+                $stockManager = new StockManager();
             }
-            StockManagerFactory::$stock_manager = $stock_manager;
+            StockManagerFactory::$stock_manager = $stockManager;
         }
         return StockManagerFactory::$stock_manager;
     }
 
     /**
-     *  Looks for a StockManager in the modules list.
+     * Looks for a StockManager in the modules list.
      *
-     *  @return StockManagerInterface
+     * @return StockManagerInterface
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public static function execHookStockManagerFactory()
     {
-        $modules_infos = Hook::getModulesFromHook(Hook::getIdByName('stockManager'));
-        $stock_manager = false;
+        $modulesInfos = Hook::getModulesFromHook(Hook::getIdByName('stockManager'));
+        $stockManager = false;
 
-        foreach ($modules_infos as $module_infos) {
-            $module_instance = Module::getInstanceByName($module_infos['name']);
+        foreach ($modulesInfos as $moduleInfos) {
+            $moduleInstance = Module::getInstanceByName($moduleInfos['name']);
 
-            if (is_callable([$module_instance, 'hookStockManager'])) {
-                $stock_manager = $module_instance->hookStockManager();
+            if (is_callable([$moduleInstance, 'hookStockManager'])) {
+                $stockManager = $moduleInstance->hookStockManager();
             }
 
-            if ($stock_manager) {
+            if ($stockManager) {
                 break;
             }
         }
 
-        return $stock_manager;
+        return $stockManager;
     }
 }

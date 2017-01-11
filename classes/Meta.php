@@ -154,9 +154,9 @@ class MetaCore extends ObjectModel
 		'.Shop::addSqlRestrictionOnLang('ml'));
     }
 
-    public function update($null_values = false)
+    public function update($nullValues = false)
     {
-        if (!parent::update($null_values)) {
+        if (!parent::update($nullValues)) {
             return false;
         }
 

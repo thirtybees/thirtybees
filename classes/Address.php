@@ -183,7 +183,7 @@ class AddressCore extends ObjectModel
         return true;
     }
 
-    public function update($null_values = false)
+    public function update($nullValues = false)
     {
         // Empty related caches
         if (isset(self::$_idCountries[$this->id])) {
@@ -197,7 +197,7 @@ class AddressCore extends ObjectModel
             Customer::resetAddressCache($this->id_customer, $this->id);
         }
 
-        return parent::update($null_values);
+        return parent::update($nullValues);
     }
 
     /**

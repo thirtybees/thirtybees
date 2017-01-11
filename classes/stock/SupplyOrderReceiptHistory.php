@@ -21,20 +21,22 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * History of receipts
- * @since 1.5.0
+ * Class SupplyOrderReceiptHistoryCore
+ *
+ * @since 1.0.0
  */
 class SupplyOrderReceiptHistoryCore extends ObjectModel
 {
+    // @codingStandardsIgnoreStart
     /**
      * @var int Detail of the supply order (i.e. One particular product)
      */
@@ -69,21 +71,22 @@ class SupplyOrderReceiptHistoryCore extends ObjectModel
      * @var string Date of delivery
      */
     public $date_add;
+    // @codingStandardsIgnoreEnd
 
     /**
      * @see ObjectModel::$definition
      */
     public static $definition = [
-        'table' => 'supply_order_receipt_history',
+        'table'   => 'supply_order_receipt_history',
         'primary' => 'id_supply_order_receipt_history',
-        'fields' => [
-            'id_supply_order_detail' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'id_supply_order_state' =>    ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'id_employee' =>            ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'employee_firstname' =>    ['type' => self::TYPE_STRING, 'validate' => 'isName'],
-            'employee_lastname' =>        ['type' => self::TYPE_STRING, 'validate' => 'isName'],
-            'quantity' =>                ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true],
-            'date_add' =>                ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+        'fields'  => [
+            'id_supply_order_detail' => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',  'required' => true],
+            'id_supply_order_state'  => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',  'required' => true],
+            'id_employee'            => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',  'required' => true],
+            'employee_firstname'     => ['type' => self::TYPE_STRING, 'validate' => 'isName'                           ],
+            'employee_lastname'      => ['type' => self::TYPE_STRING, 'validate' => 'isName'                           ],
+            'quantity'               => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt', 'required' => true],
+            'date_add'               => ['type' => self::TYPE_DATE,   'validate' => 'isDate'                           ],
         ],
     ];
 
@@ -92,11 +95,11 @@ class SupplyOrderReceiptHistoryCore extends ObjectModel
      */
     protected $webserviceParameters = [
         'objectsNodeName' => 'supply_order_receipt_histories',
-        'objectNodeName' => 'supply_order_receipt_history',
-        'fields' => [
+        'objectNodeName'  => 'supply_order_receipt_history',
+        'fields'          => [
             'id_supply_order_detail' => ['xlink_resource' => 'supply_order_details'],
-            'id_employee' => ['xlink_resource' => 'employees'],
-            'id_supply_order_state' => ['xlink_resource' => 'supply_order_states'],
+            'id_employee'            => ['xlink_resource' => 'employees'],
+            'id_supply_order_state'  => ['xlink_resource' => 'supply_order_states'],
         ],
     ];
 }

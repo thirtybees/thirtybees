@@ -321,39 +321,46 @@ class ReferrerCore extends ObjectModel
         }
     }
 
-    public static function getAjaxProduct($id_referrer, $id_product, $employee = null)
+    /**
+     * @param int  $idReferrer
+     * @param int  $idProduct
+     * @param null $employee
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function getAjaxProduct($idReferrer, $idProduct, $employee = null)
     {
-        $context = Context::getContext();
-        $product = new Product($id_product, false, Configuration::get('PS_LANG_DEFAULT'));
+        $product = new Product($idProduct, false, Configuration::get('PS_LANG_DEFAULT'));
         $currency = Currency::getCurrencyInstance(Configuration::get('PS_CURRENCY_DEFAULT'));
-        $referrer = new Referrer($id_referrer);
-        $stats_visits = $referrer->getStatsVisits($id_product, $employee);
-        $registrations = $referrer->getRegistrations($id_product, $employee);
-        $stats_sales = $referrer->getStatsSales($id_product, $employee);
+        $referrer = new Referrer($idReferrer);
+        $statsVisits = $referrer->getStatsVisits($idProduct, $employee);
+        $registrations = $referrer->getRegistrations($idProduct, $employee);
+        $statsSales = $referrer->getStatsSales($idProduct, $employee);
 
         // If it's a product and it has no visits nor orders
-        if ((int)$id_product && !$stats_visits['visits'] && !$stats_sales['orders']) {
+        if ((int) $idProduct && !$statsVisits['visits'] && !$statsSales['orders']) {
             exit;
         }
 
-        $json_array = [
-            'id_product' => (int)$product->id,
-            'product_name' => htmlspecialchars($product->name),
-            'uniqs' => (int)$stats_visits['uniqs'],
-            'visitors' => (int)$stats_visits['visitors'],
-            'visits' => (int)$stats_visits['visits'],
-            'pages' => (int)$stats_visits['pages'],
-            'registrations' => (int)$registrations,
-            'orders' => (int)$stats_sales['orders'],
-            'sales' => Tools::displayPrice($stats_sales['sales'], $currency),
-            'cart' => Tools::displayPrice(((int)$stats_sales['orders'] ? $stats_sales['sales'] / (int)$stats_sales['orders'] : 0), $currency),
-            'reg_rate' => number_format((int)$stats_visits['uniqs'] ? (int)$registrations / (int)$stats_visits['uniqs'] : 0, 4, '.', ''),
-            'order_rate' => number_format((int)$stats_visits['uniqs'] ? (int)$stats_sales['orders'] / (int)$stats_visits['uniqs'] : 0, 4, '.', ''),
-            'click_fee' => Tools::displayPrice((int)$stats_visits['visits'] * $referrer->click_fee, $currency),
-            'base_fee' => Tools::displayPrice($stats_sales['orders'] * $referrer->base_fee, $currency),
-            'percent_fee' => Tools::displayPrice($stats_sales['sales'] * $referrer->percent_fee / 100, $currency),
+        $jsonArray = [
+            'id_product'    => (int) $product->id,
+            'product_name'  => htmlspecialchars($product->name),
+            'uniqs'         => (int) $statsVisits['uniqs'],
+            'visitors'      => (int) $statsVisits['visitors'],
+            'visits'        => (int) $statsVisits['visits'],
+            'pages'         => (int) $statsVisits['pages'],
+            'registrations' => (int) $registrations,
+            'orders'        => (int) $statsSales['orders'],
+            'sales'         => Tools::displayPrice($statsSales['sales'], $currency),
+            'cart'          => Tools::displayPrice(((int) $statsSales['orders'] ? $statsSales['sales'] / (int) $statsSales['orders'] : 0), $currency),
+            'reg_rate'      => number_format((int) $statsVisits['uniqs'] ? (int) $registrations / (int) $statsVisits['uniqs'] : 0, 4, '.', ''),
+            'order_rate'    => number_format((int) $statsVisits['uniqs'] ? (int) $statsSales['orders'] / (int) $statsVisits['uniqs'] : 0, 4, '.', ''),
+            'click_fee'     => Tools::displayPrice((int) $statsVisits['visits'] * $referrer->click_fee, $currency),
+            'base_fee'      => Tools::displayPrice($statsSales['orders'] * $referrer->base_fee, $currency),
+            'percent_fee'   => Tools::displayPrice($statsSales['sales'] * $referrer->percent_fee / 100, $currency),
         ];
 
-        die('['.Tools::jsonEncode($json_array).']');
+        die('['.json_encode($jsonArray).']');
     }
 }

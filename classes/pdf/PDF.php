@@ -21,24 +21,29 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * @since 1.5
+ * Class PDFCore
+ *
+ * @since 1.0.0
  */
 class PDFCore
 {
+    // @codingStandardsIgnoreStart
+    /** @var string $filename */
     public $filename;
     public $pdf_renderer;
     public $objects;
     public $template;
     public $send_bulk_flag = false;
+    // @codingStandardsIgnoreEnd
 
     const TEMPLATE_INVOICE = 'Invoice';
     const TEMPLATE_ORDER_RETURN = 'OrderReturn';
@@ -47,14 +52,17 @@ class PDFCore
     const TEMPLATE_SUPPLY_ORDER_FORM = 'SupplyOrderForm';
 
     /**
-     * @param $objects
-     * @param $template
-     * @param $smarty
+     * @param        $objects
+     * @param        $template
+     * @param        $smarty
      * @param string $orientation
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function __construct($objects, $template, $smarty, $orientation = 'P')
     {
-        $this->pdf_renderer = new PDFGenerator((bool)Configuration::get('PS_PDF_USE_CACHE'), $orientation);
+        $this->pdf_renderer = new PDFGenerator((bool) Configuration::get('PS_PDF_USE_CACHE'), $orientation);
         $this->template = $template;
         $this->smarty = $smarty;
 
@@ -62,8 +70,8 @@ class PDFCore
         if (!($objects instanceof Iterator) && !is_array($objects)) {
             $this->objects = [$objects];
         }
-        
-        if (count($this->objects)>1) { // when bulk mode only
+
+        if (count($this->objects) > 1) { // when bulk mode only
             $this->send_bulk_flag = true;
         }
     }
@@ -72,8 +80,12 @@ class PDFCore
      * Render PDF
      *
      * @param bool $display
+     *
      * @return mixed
      * @throws PrestaShopException
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function render($display = true)
     {
@@ -110,6 +122,7 @@ class PDFCore
             if (ob_get_level() && ob_get_length() > 0) {
                 ob_clean();
             }
+
             return $this->pdf_renderer->render($this->filename, $display);
         }
     }
@@ -118,18 +131,22 @@ class PDFCore
      * Get correct PDF template classes
      *
      * @param mixed $object
+     *
      * @return HTMLTemplate|false
      * @throws PrestaShopException
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getTemplateObject($object)
     {
         $class = false;
-        $class_name = 'HTMLTemplate'.$this->template;
+        $className = 'HTMLTemplate'.$this->template;
 
-        if (class_exists($class_name)) {
+        if (class_exists($className)) {
             // Some HTMLTemplateXYZ implementations won't use the third param but this is not a problem (no warning in PHP),
             // the third param is then ignored if not added to the method signature.
-            $class = new $class_name($object, $this->smarty, $this->send_bulk_flag);
+            $class = new $className($object, $this->smarty, $this->send_bulk_flag);
 
             if (!($class instanceof HTMLTemplate)) {
                 throw new PrestaShopException('Invalid class. It should be an instance of HTMLTemplate');

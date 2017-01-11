@@ -21,19 +21,22 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * @since 1.5.0 It now defines stock movements when the advanced stock management system is available
+ * Class StockMvtCore
+ *
+ * @since 1.0.0
  */
 class StockMvtCore extends ObjectModel
 {
+    // @codingStandardsIgnoreStart
     public $id;
 
     /**
@@ -124,49 +127,50 @@ class StockMvtCore extends ObjectModel
 
     /**
      * @deprecated since 1.5.0
-     * @see physical_quantity
+     * @see        physical_quantity
      * @var int
      */
     public $quantity;
+    // @codingStandardsIgnoreEnd
 
     /**
      * @see ObjectModel::$definition
      */
     public static $definition = [
-        'table' => 'stock_mvt',
+        'table'   => 'stock_mvt',
         'primary' => 'id_stock_mvt',
-        'fields' => [
-            'id_employee' =>        ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'employee_firstname' => ['type' => self::TYPE_STRING, 'validate' => 'isName'],
-            'employee_lastname' =>    ['type' => self::TYPE_STRING, 'validate' => 'isName'],
-            'id_stock' =>            ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'physical_quantity' =>    ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true],
-            'id_stock_mvt_reason' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'id_order' =>            ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
-            'id_supply_order' =>    ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
-            'sign' =>                ['type' => self::TYPE_INT, 'validate' => 'isInt', 'required' => true],
-            'last_wa' =>            ['type' => self::TYPE_FLOAT, 'validate' => 'isPrice'],
-            'current_wa' =>        ['type' => self::TYPE_FLOAT, 'validate' => 'isPrice'],
-            'price_te' =>            ['type' => self::TYPE_FLOAT, 'validate' => 'isPrice', 'required' => true],
-            'referer' =>            ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
-            'date_add' =>            ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'required' => true],
+        'fields'  => [
+            'id_employee'         => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',  'required' => true],
+            'employee_firstname'  => ['type' => self::TYPE_STRING, 'validate' => 'isName'                           ],
+            'employee_lastname'   => ['type' => self::TYPE_STRING, 'validate' => 'isName'                           ],
+            'id_stock'            => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',  'required' => true],
+            'physical_quantity'   => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt', 'required' => true],
+            'id_stock_mvt_reason' => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',  'required' => true],
+            'id_order'            => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId'                     ],
+            'id_supply_order'     => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId'                     ],
+            'sign'                => ['type' => self::TYPE_INT,    'validate' => 'isInt',         'required' => true],
+            'last_wa'             => ['type' => self::TYPE_FLOAT,  'validate' => 'isPrice'                          ],
+            'current_wa'          => ['type' => self::TYPE_FLOAT,  'validate' => 'isPrice'                          ],
+            'price_te'            => ['type' => self::TYPE_FLOAT,  'validate' => 'isPrice',       'required' => true],
+            'referer'             => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId'                     ],
+            'date_add'            => ['type' => self::TYPE_DATE,   'validate' => 'isDate',        'required' => true],
         ],
     ];
 
     protected $webserviceParameters = [
         'objectsNodeName' => 'stock_movements',
-        'objectNodeName' => 'stock_movement',
-        'fields' => [
-            'id_employee' => ['xlink_resource'=> 'employees'],
-            'id_stock' => ['xlink_resource'=> 'stock'],
-            'id_stock_mvt_reason' => ['xlink_resource'=> 'stock_movement_reasons'],
-            'id_order' => ['xlink_resource'=> 'orders'],
-            'id_supply_order' => ['xlink_resource'=> 'supply_order'],
+        'objectNodeName'  => 'stock_movement',
+        'fields'          => [
+            'id_employee'         => ['xlink_resource' => 'employees'],
+            'id_stock'            => ['xlink_resource' => 'stock'],
+            'id_stock_mvt_reason' => ['xlink_resource' => 'stock_movement_reasons'],
+            'id_order'            => ['xlink_resource' => 'orders'],
+            'id_supply_order'     => ['xlink_resource' => 'supply_order'],
         ],
     ];
 
     /**
-     * @deprecated since 1.5.0
+     * @deprecated 1.0.0
      *
      * This method no longer exists.
      * There is no equivalent or replacement, considering that this should be handled by inventories.
@@ -181,18 +185,21 @@ class StockMvtCore extends ObjectModel
      * Gets the negative (decrements the stock) stock mvts that correspond to the given order, for :
      * the given product, in the given quantity.
      *
-     * @since 1.5.0
-     * @param int $id_order
-     * @param int $id_product
-     * @param int $id_product_attribute Use 0 if the product does not have attributes
+     * @param int $idOrder
+     * @param int $idProduct
+     * @param int $idProductAttribute Use 0 if the product does not have attributes
      * @param int $quantity
-     * @param int $id_warehouse Optional
-     * @return Array mvts
+     * @param int $idWarehouse        Optional
+     *
+     * @return array mvts
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
-    public static function getNegativeStockMvts($id_order, $id_product, $id_product_attribute, $quantity, $id_warehouse = null)
+    public static function getNegativeStockMvts($idOrder, $idProduct, $idProductAttribute, $quantity, $idWarehouse = null)
     {
         $movements = [];
-        $quantity_total = 0;
+        $quantityTotal = 0;
 
         // preps query
         $query = new DbQuery();
@@ -200,12 +207,12 @@ class StockMvtCore extends ObjectModel
         $query->from('stock_mvt', 'sm');
         $query->innerJoin('stock', 's', 's.id_stock = sm.id_stock');
         $query->where('sm.sign = -1');
-        $query->where('sm.id_order = '.(int)$id_order);
-        $query->where('s.id_product = '.(int)$id_product.' AND s.id_product_attribute = '.(int)$id_product_attribute);
+        $query->where('sm.id_order = '.(int) $idOrder);
+        $query->where('s.id_product = '.(int) $idProduct.' AND s.id_product_attribute = '.(int) $idProductAttribute);
 
         // if filer by warehouse
-        if (!is_null($id_warehouse)) {
-            $query->where('s.id_warehouse = '.(int)$id_warehouse);
+        if (!is_null($idWarehouse)) {
+            $query->where('s.id_warehouse = '.(int) $idWarehouse);
         }
 
         // orders the movements by date
@@ -216,10 +223,10 @@ class StockMvtCore extends ObjectModel
 
         // fills the movements array
         while ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->nextRow($res)) {
-            if ($quantity_total >= $quantity) {
+            if ($quantityTotal >= $quantity) {
                 break;
             }
-            $quantity_total += (int)$row['physical_quantity'];
+            $quantityTotal += (int) $row['physical_quantity'];
             $movements[] = $row;
         }
 
@@ -229,12 +236,15 @@ class StockMvtCore extends ObjectModel
     /**
      * For a given product, gets the last positive stock mvt
      *
-     * @since 1.5.0
-     * @param int $id_product
-     * @param int $id_product_attribute Use 0 if the product does not have attributes
+     * @param int $idProduct
+     * @param int $idProductAttribute Use 0 if the product does not have attributes
+     *
      * @return bool|array
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
-    public static function getLastPositiveStockMvt($id_product, $id_product_attribute)
+    public static function getLastPositiveStockMvt($idProduct, $idProductAttribute)
     {
         $query = new DbQuery();
         $query->select('sm.*, w.id_currency, (s.usable_quantity = sm.physical_quantity) as is_usable');
@@ -242,10 +252,10 @@ class StockMvtCore extends ObjectModel
         $query->innerJoin('stock', 's', 's.id_stock = sm.id_stock');
         $query->innerJoin('warehouse', 'w', 'w.id_warehouse = s.id_warehouse');
         $query->where('sm.sign = 1');
-        if ($id_product_attribute) {
-            $query->where('s.id_product = '.(int)$id_product.' AND s.id_product_attribute = '.(int)$id_product_attribute);
+        if ($idProductAttribute) {
+            $query->where('s.id_product = '.(int) $idProduct.' AND s.id_product_attribute = '.(int) $idProductAttribute);
         } else {
-            $query->where('s.id_product = '.(int)$id_product);
+            $query->where('s.id_product = '.(int) $idProduct);
         }
         $query->orderBy('date_add DESC');
 
@@ -254,6 +264,7 @@ class StockMvtCore extends ObjectModel
         if ($res != false) {
             return $res['0'];
         }
+
         return false;
     }
 }

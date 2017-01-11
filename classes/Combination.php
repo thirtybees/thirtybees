@@ -159,7 +159,7 @@ class CombinationCore extends ObjectModel
         return true;
     }
 
-    public function update($null_values = false)
+    public function update($nullValues = false)
     {
         if ($this->default_on) {
             $this->default_on = 1;
@@ -167,7 +167,7 @@ class CombinationCore extends ObjectModel
             $this->default_on = null;
         }
 
-        $return = parent::update($null_values);
+        $return = parent::update($nullValues);
         Product::updateDefaultAttribute($this->id_product);
 
         return $return;

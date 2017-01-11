@@ -21,28 +21,49 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class AverageTaxOfProductsTaxCalculator
+ *
+ * @since   1.0.0
+ * @version 1.0.0 Initial version
+ */
 class AverageTaxOfProductsTaxCalculator
 {
-    private $id_order;
-    private $configuration;
-    private $db;
+    protected $id_order;
+    protected $configuration;
+    protected $db;
 
     public $computation_method = 'average_tax_of_products';
 
+    /**
+     * AverageTaxOfProductsTaxCalculator constructor.
+     *
+     * @param Core_Foundation_Database_DatabaseInterface $db
+     * @param Core_Business_ConfigurationInterface       $configuration
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function __construct(Core_Foundation_Database_DatabaseInterface $db, Core_Business_ConfigurationInterface $configuration)
     {
         $this->db = $db;
         $this->configuration = $configuration;
     }
 
+    /**
+     * @return mixed
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     protected function getProductTaxes()
     {
         $prefix = $this->configuration->get('_DB_PREFIX_');
@@ -51,49 +72,69 @@ class AverageTaxOfProductsTaxCalculator
                 INNER JOIN '.$prefix.'order_detail od ON od.id_order = o.id_order
                 INNER JOIN '.$prefix.'order_detail_tax odt ON odt.id_order_detail = od.id_order_detail
                 INNER JOIN '.$prefix.'tax t ON t.id_tax = odt.id_tax
-                WHERE o.id_order = '.(int)$this->id_order;
+                WHERE o.id_order = '.(int) $this->id_order;
 
         return $this->db->select($sql);
     }
 
-    public function setIdOrder($id_order)
+    /**
+     * @param $idOrder
+     *
+     * @return $this
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function setIdOrder($idOrder)
     {
-        $this->id_order = $id_order;
+        $this->id_order = $idOrder;
+
         return $this;
     }
 
-    public function getTaxesAmount($price_before_tax, $price_after_tax = null, $round_precision = 2, $round_mode = null)
+    /**
+     * @param      $priceBeforeTax
+     * @param null $priceAfterTax
+     * @param int  $roundPrecision
+     * @param null $roundMode
+     *
+     * @return array
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function getTaxesAmount($priceBeforeTax, $priceAfterTax = null, $roundPrecision = 2, $roundMode = null)
     {
         $amounts = [];
-        $total_base = 0;
+        $totalBase = 0;
 
         foreach ($this->getProductTaxes() as $row) {
             if (!array_key_exists($row['id_tax'], $amounts)) {
                 $amounts[$row['id_tax']] = [
                     'rate' => $row['rate'],
-                    'base' => 0
+                    'base' => 0,
                 ];
             }
 
             $amounts[$row['id_tax']]['base'] += $row['total_price_tax_excl'];
-            $total_base += $row['total_price_tax_excl'];
+            $totalBase += $row['total_price_tax_excl'];
         }
 
-        $actual_tax = 0;
+        $actualTax = 0;
         foreach ($amounts as &$data) {
             $data = Tools::ps_round(
-                $price_before_tax * ($data['base'] / $total_base) * $data['rate'] / 100,
-                $round_precision,
-                $round_mode
+                $priceBeforeTax * ($data['base'] / $totalBase) * $data['rate'] / 100,
+                $roundPrecision,
+                $roundMode
             );
-            $actual_tax += $data;
+            $actualTax += $data;
         }
         unset($data);
 
-        if ($price_after_tax) {
+        if ($priceAfterTax) {
             Tools::spreadAmount(
-                $price_after_tax - $price_before_tax - $actual_tax,
-                $round_precision,
+                $priceAfterTax - $priceBeforeTax - $actualTax,
+                $roundPrecision,
                 $amounts,
                 'id_tax'
             );

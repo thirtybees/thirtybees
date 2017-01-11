@@ -75,9 +75,9 @@ class GroupCore extends ObjectModel
 
     protected $webserviceParameters = [];
 
-    public function __construct($id = null, $idLang = null, $id_shop = null)
+    public function __construct($id = null, $idLang = null, $idShop = null)
     {
-        parent::__construct($id, $idLang, $id_shop);
+        parent::__construct($id, $idLang, $idShop);
         if ($this->id && !isset(Group::$group_price_display_method[$this->id])) {
             self::$group_price_display_method[$this->id] = $this->price_display_method;
         }

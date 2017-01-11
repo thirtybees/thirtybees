@@ -68,11 +68,11 @@ class AttributeCore extends ObjectModel
         ]
     ];
 
-    public function __construct($id = null, $idLang = null, $id_shop = null)
+    public function __construct($id = null, $idLang = null, $idShop = null)
     {
         $this->image_dir = _PS_COL_IMG_DIR_;
 
-        parent::__construct($id, $idLang, $id_shop);
+        parent::__construct($id, $idLang, $idShop);
     }
 
     public function delete()
@@ -116,9 +116,9 @@ class AttributeCore extends ObjectModel
         return $return;
     }
 
-    public function update($null_values = false)
+    public function update($nullValues = false)
     {
-        $return = parent::update($null_values);
+        $return = parent::update($nullValues);
 
         if ($return) {
             Hook::exec('actionAttributeSave', ['id_attribute' => $this->id]);

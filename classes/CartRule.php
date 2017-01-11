@@ -139,7 +139,7 @@ class CartRuleCore extends ObjectModel
         return true;
     }
 
-    public function update($null_values = false)
+    public function update($nullValues = false)
     {
         Cache::clean('getContextualValue_'.$this->id.'_*');
 
@@ -147,7 +147,7 @@ class CartRuleCore extends ObjectModel
             $this->reduction_currency = (int)Configuration::get('PS_CURRENCY_DEFAULT');
         }
 
-        return parent::update($null_values);
+        return parent::update($nullValues);
     }
 
     /**

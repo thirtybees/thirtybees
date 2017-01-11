@@ -560,9 +560,9 @@ class ProductCore extends ObjectModel
         return true;
     }
 
-    public function update($null_values = false)
+    public function update($nullValues = false)
     {
-        $return = parent::update($null_values);
+        $return = parent::update($nullValues);
         $this->setGroupReduction();
 
         // Sync stock Reference, EAN13 and UPC

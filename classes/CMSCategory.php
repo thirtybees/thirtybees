@@ -114,7 +114,7 @@ class CMSCategoryCore extends ObjectModel
         return $ret;
     }
 
-    public function update($null_values = false)
+    public function update($nullValues = false)
     {
         $this->level_depth = $this->calcLevelDepth();
         foreach ($this->name as $k => $value) {
@@ -122,7 +122,7 @@ class CMSCategoryCore extends ObjectModel
                 $this->name[$k] = '0'.$value;
             }
         }
-        return parent::update($null_values);
+        return parent::update($nullValues);
     }
 
     /**

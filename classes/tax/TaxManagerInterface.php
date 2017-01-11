@@ -31,6 +31,8 @@
 
 /**
 * A TaxManager define a way to retrieve tax.
+ *
+ * @since 1.0.0
 */
 interface TaxManagerInterface
 {
@@ -40,6 +42,9 @@ interface TaxManagerInterface
     * @param Address $address
     *
     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
     */
     public static function isAvailableForThisAddress(Address $address);
 
@@ -47,6 +52,9 @@ interface TaxManagerInterface
     * Return the tax calculator associated to this address
     *
     * @return TaxCalculator
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
     */
     public function getTaxCalculator();
 }

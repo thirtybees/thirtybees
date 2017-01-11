@@ -21,16 +21,22 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class WebserviceOutputJSON
+ *
+ * @since 1.0.0
+ */
 class WebserviceOutputJSON implements WebserviceOutputInterface
 {
+    // @codingStandardsIgnoreStart
     public $docUrl = '';
     public $languages = [];
     protected $wsUrl;
@@ -50,55 +56,118 @@ class WebserviceOutputJSON implements WebserviceOutputInterface
      * Json content
      */
     protected $content = [];
+    // @codingStandardsIgnoreEnd
 
+    /**
+     * WebserviceOutputJSON constructor.
+     *
+     * @param array $languages
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function __construct($languages = [])
     {
         $this->languages = $languages;
     }
 
+    /**
+     * @param $schema
+     *
+     * @return $this
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setSchemaToDisplay($schema)
     {
         if (is_string($schema)) {
             $this->schemaToDisplay = $schema;
         }
+
         return $this;
     }
 
+    /**
+     * @return mixed
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getSchemaToDisplay()
     {
         return $this->schemaToDisplay;
     }
 
+    /**
+     * @param $url
+     *
+     * @return $this
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setWsUrl($url)
     {
         $this->wsUrl = $url;
+
         return $this;
     }
 
+    /**
+     * @return mixed
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getWsUrl()
     {
         return $this->wsUrl;
     }
 
+    /**
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getContentType()
     {
         return 'application/json';
     }
 
+    /**
+     * @param      $message
+     * @param null $code
+     *
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function renderErrors($message, $code = null)
     {
         $this->content['errors'][] = ['code' => $code, 'message' => $message];
+
         return '';
     }
 
+    /**
+     * @param $field
+     *
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function renderField($field)
     {
-        $is_association = (isset($field['is_association']) && $field['is_association'] == true);
+        $isAssociation = (isset($field['is_association']) && $field['is_association'] == true);
 
         if (is_array($field['value'])) {
             $tmp = [];
-            foreach ($this->languages as $id_lang) {
-                $tmp[] = ['id' => $id_lang, 'value' => $field['value'][$id_lang]];
+            foreach ($this->languages as $idLang) {
+                $tmp[] = ['id' => $idLang, 'value' => $field['value'][$idLang]];
             }
             if (count($tmp) == 1) {
                 $field['value'] = $tmp[0]['value'];
@@ -107,42 +176,71 @@ class WebserviceOutputJSON implements WebserviceOutputInterface
             }
         }
         // Case 1 : fields of the current entity (not an association)
-        if (!$is_association) {
-            $this->currentEntity[$field['sqlId']]  = $field['value'];
+        if (!$isAssociation) {
+            $this->currentEntity[$field['sqlId']] = $field['value'];
         } else { // Case 2 : fields of an associated entity to the current one
             $this->currentAssociatedEntity[] = ['name' => $field['entities_name'], 'key' => $field['sqlId'], 'value' => $field['value']];
         }
+
         return '';
     }
 
-    public function renderNodeHeader($node_name, $params, $more_attr = null, $has_child = true)
+    /**
+     * @param      $nodeName
+     * @param      $params
+     * @param null $moreAttr
+     * @param bool $hasChild
+     *
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function renderNodeHeader($nodeName, $params, $moreAttr = null, $hasChild = true)
     {
         // api ?
         static $isAPICall = false;
-        if ($node_name == 'api' && ($isAPICall == false)) {
+        if ($nodeName == 'api' && ($isAPICall == false)) {
             $isAPICall = true;
         }
-        if ($isAPICall && !in_array($node_name, ['description', 'schema', 'api'])) {
-            $this->content[] = $node_name;
+        if ($isAPICall && !in_array($nodeName, ['description', 'schema', 'api'])) {
+            $this->content[] = $nodeName;
         }
-        if (isset($more_attr, $more_attr['id'])) {
-            $this->content[$params['objectsNodeName']][] = ['id' => $more_attr['id']];
+        if (isset($moreAttr, $moreAttr['id'])) {
+            $this->content[$params['objectsNodeName']][] = ['id' => $moreAttr['id']];
         }
+
         return '';
     }
 
+    /**
+     * @param $params
+     *
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getNodeName($params)
     {
-        $node_name = '';
+        $nodeName = '';
         if (isset($params['objectNodeName'])) {
-            $node_name = $params['objectNodeName'];
+            $nodeName = $params['objectNodeName'];
         }
-        return $node_name;
+
+        return $nodeName;
     }
 
-    public function renderNodeFooter($node_name, $params)
+    /**
+     * @param $nodeName
+     * @param $params
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function renderNodeFooter($nodeName, $params)
     {
-        if (isset($params['objectNodeName']) && $params['objectNodeName'] == $node_name) {
+        if (isset($params['objectNodeName']) && $params['objectNodeName'] == $nodeName) {
             if (array_key_exists('display', $_GET)) {
                 $this->content[$params['objectsNodeName']][] = $this->currentEntity;
             } else {
@@ -161,48 +259,132 @@ class WebserviceOutputJSON implements WebserviceOutputInterface
         }
     }
 
+    /**
+     * @param $content
+     *
+     * @return mixed|string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function overrideContent($content)
     {
         $content = '';
         $content .= json_encode($this->content);
         $content = preg_replace("/\\\\u([a-f0-9]{4})/e", "iconv('UCS-4LE','UTF-8',pack('V', hexdec('U$1')))", $content);
+
         return $content;
     }
 
+    /**
+     * @param $languages
+     *
+     * @return $this
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setLanguages($languages)
     {
         $this->languages = $languages;
+
         return $this;
     }
 
+    /**
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function renderAssociationWrapperHeader()
     {
         return '';
     }
+
+    /**
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function renderAssociationWrapperFooter()
     {
         return '';
     }
-    public function renderAssociationHeader($obj, $params, $assoc_name, $closed_tags = false)
+
+    /**
+     * @param      $obj
+     * @param      $params
+     * @param      $assocName
+     * @param bool $closedTags
+     *
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function renderAssociationHeader($obj, $params, $assocName, $closedTags = false)
     {
         return '';
     }
-    public function renderAssociationFooter($obj, $params, $assoc_name)
+
+    /**
+     * @param $obj
+     * @param $params
+     * @param $assocName
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function renderAssociationFooter($obj, $params, $assocName)
     {
         return;
     }
+
+    /**
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function renderErrorsHeader()
     {
         return '';
     }
+
+    /**
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function renderErrorsFooter()
     {
         return '';
     }
+
+    /**
+     * @param $field
+     *
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function renderAssociationField($field)
     {
         return '';
     }
+
+    /**
+     * @param $field
+     *
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function renderi18nField($field)
     {
         return '';

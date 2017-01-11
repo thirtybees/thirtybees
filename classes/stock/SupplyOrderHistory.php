@@ -30,10 +30,13 @@
  */
 
 /**
- * @since 1.5.0
+ * Class SupplyOrderHistoryCore
+ *
+ * @since 1.0.0
  */
 class SupplyOrderHistoryCore extends ObjectModel
 {
+    // @codingStandardsIgnoreStart
     /**
      * @var int Supply order Id
      */
@@ -63,20 +66,21 @@ class SupplyOrderHistoryCore extends ObjectModel
      * @var string Date
      */
     public $date_add;
+    // @codingStandardsIgnoreEnd
 
     /**
      * @see ObjectModel::$definition
      */
     public static $definition = [
-        'table' => 'supply_order_history',
+        'table'   => 'supply_order_history',
         'primary' => 'id_supply_order_history',
-        'fields' => [
-            'id_supply_order' =>    ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'id_employee' =>        ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'employee_firstname' => ['type' => self::TYPE_STRING, 'validate' => 'isName'],
-            'employee_lastname' =>    ['type' => self::TYPE_STRING, 'validate' => 'isName'],
-            'id_state' =>            ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'date_add' =>            ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'required' => true],
+        'fields'  => [
+            'id_supply_order'    => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'required' => true],
+            'id_employee'        => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'required' => true],
+            'employee_firstname' => ['type' => self::TYPE_STRING, 'validate' => 'isName'                          ],
+            'employee_lastname'  => ['type' => self::TYPE_STRING, 'validate' => 'isName'                          ],
+            'id_state'           => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'required' => true],
+            'date_add'           => ['type' => self::TYPE_DATE,  'validate' => 'isDate',        'required' => true],
         ],
     ];
 

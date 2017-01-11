@@ -53,9 +53,9 @@ class GenderCore extends ObjectModel
         ],
     ];
 
-    public function __construct($id = null, $idLang = null, $id_shop = null)
+    public function __construct($id = null, $idLang = null, $idShop = null)
     {
-        parent::__construct($id, $idLang, $id_shop);
+        parent::__construct($id, $idLang, $idShop);
 
         $this->image_dir = _PS_GENDERS_DIR_;
     }

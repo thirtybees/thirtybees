@@ -1,4 +1,5 @@
 <?php
+
 /**
  * 2007-2016 PrestaShop
  *
@@ -21,16 +22,16 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
-
 class TaxRuleCore extends ObjectModel
 {
+    // @codingStandardsIgnoreStart
     public $id_tax_rules_group;
     public $id_country;
     public $id_state;
@@ -39,55 +40,85 @@ class TaxRuleCore extends ObjectModel
     public $id_tax;
     public $behavior;
     public $description;
+    // @codingStandardsIgnoreEnd
 
     /**
      * @see ObjectModel::$definition
      */
     public static $definition = [
-        'table' => 'tax_rule',
+        'table'   => 'tax_rule',
         'primary' => 'id_tax_rule',
-        'fields' => [
-            'id_tax_rules_group' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'id_country' =>        ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'id_state' =>            ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
-            'zipcode_from' =>        ['type' => self::TYPE_STRING, 'validate' => 'isPostCode'],
-            'zipcode_to' =>        ['type' => self::TYPE_STRING, 'validate' => 'isPostCode'],
-            'id_tax' =>            ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'behavior' =>            ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
-            'description' =>        ['type' => self::TYPE_STRING, 'validate' => 'isString'],
+        'fields'  => [
+            'id_tax_rules_group' => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'required' => true],
+            'id_country'         => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'required' => true],
+            'id_state'           => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId'                    ],
+            'zipcode_from'       => ['type' => self::TYPE_STRING, 'validate' => 'isPostCode'                      ],
+            'zipcode_to'         => ['type' => self::TYPE_STRING, 'validate' => 'isPostCode'                      ],
+            'id_tax'             => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'required' => true],
+            'behavior'           => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt'                   ],
+            'description'        => ['type' => self::TYPE_STRING, 'validate' => 'isString'                        ],
         ],
     ];
 
     protected $webserviceParameters = [
         'fields' => [
-            'id_tax_rules_group' => ['xlink_resource'=> 'tax_rule_groups'],
-            'id_state' => ['xlink_resource'=> 'states'],
-            'id_country' => ['xlink_resource'=> 'countries']
+            'id_tax_rules_group' => ['xlink_resource' => 'tax_rule_groups'],
+            'id_state'           => ['xlink_resource' => 'states'],
+            'id_country'         => ['xlink_resource' => 'countries'],
         ],
     ];
 
-    public static function deleteByGroupId($id_group)
+    /**
+     * @param $idGroup
+     *
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function deleteByGroupId($idGroup)
     {
-        if (empty($id_group)) {
+        if (empty($idGroup)) {
             die(Tools::displayError());
         }
 
-        return Db::getInstance()->execute('
+        return Db::getInstance()->execute(
+            '
 			DELETE FROM `'._DB_PREFIX_.'tax_rule`
-			WHERE `id_tax_rules_group` = '.(int)$id_group
+			WHERE `id_tax_rules_group` = '.(int) $idGroup
         );
     }
 
-    public static function retrieveById($id_tax_rule)
+    /**
+     * @param $idTaxRule
+     *
+     * @return array|bool|null|object
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function retrieveById($idTaxRule)
     {
-        return Db::getInstance()->getRow('
+        return Db::getInstance()->getRow(
+            '
 			SELECT * FROM `'._DB_PREFIX_.'tax_rule`
-			WHERE `id_tax_rule` = '.(int)$id_tax_rule);
+			WHERE `id_tax_rule` = '.(int) $idTaxRule
+        );
     }
 
-    public static function getTaxRulesByGroupId($id_lang, $id_group)
+    /**
+     * @param $idLang
+     * @param $idGroup
+     *
+     * @return array|false|mysqli_result|null|PDOStatement|resource
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function getTaxRulesByGroupId($idLang, $idGroup)
     {
-        return Db::getInstance()->executeS('
+        return Db::getInstance()->executeS(
+            '
 		SELECT g.`id_tax_rule`,
 				 c.`name` AS country_name,
 				 s.`name` AS state_name,
@@ -98,69 +129,88 @@ class TaxRuleCore extends ObjectModel
 				 g.`id_country`,
 				 g.`id_state`
 		FROM `'._DB_PREFIX_.'tax_rule` g
-		LEFT JOIN `'._DB_PREFIX_.'country_lang` c ON (g.`id_country` = c.`id_country` AND `id_lang` = '.(int)$id_lang.')
+		LEFT JOIN `'._DB_PREFIX_.'country_lang` c ON (g.`id_country` = c.`id_country` AND `id_lang` = '.(int) $idLang.')
 		LEFT JOIN `'._DB_PREFIX_.'state` s ON (g.`id_state` = s.`id_state`)
 		LEFT JOIN `'._DB_PREFIX_.'tax` t ON (g.`id_tax` = t.`id_tax`)
-		WHERE `id_tax_rules_group` = '.(int)$id_group.'
+		WHERE `id_tax_rules_group` = '.(int) $idGroup.'
 		ORDER BY `country_name` ASC, `state_name` ASC, `zipcode_from` ASC, `zipcode_to` ASC'
         );
     }
 
-    public static function deleteTaxRuleByIdTax($id_tax)
+    /**
+     * @param $idTax
+     *
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function deleteTaxRuleByIdTax($idTax)
     {
-        return Db::getInstance()->execute('
+        return Db::getInstance()->execute(
+            '
 			DELETE FROM `'._DB_PREFIX_.'tax_rule`
-			WHERE `id_tax` = '.(int)$id_tax
+			WHERE `id_tax` = '.(int) $idTax
         );
     }
 
     /**
-    * @deprecated since 1.5
-    */
-    public static function deleteTaxRuleByIdCounty($id_county)
+     * @deprecated 1.0.0
+     */
+    public static function deleteTaxRuleByIdCounty($idCounty)
     {
         Tools::displayAsDeprecated();
+
         return true;
     }
 
     /**
-    * @param int $id_tax
-    * @return bool
-    */
-    public static function isTaxInUse($id_tax)
+     * @param int $idTax
+     *
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function isTaxInUse($idTax)
     {
-        $cache_id = 'TaxRule::isTaxInUse_'.(int)$id_tax;
-        if (!Cache::isStored($cache_id)) {
-            $result = (int)Db::getInstance()->getValue('SELECT COUNT(*) FROM `'._DB_PREFIX_.'tax_rule` WHERE `id_tax` = '.(int)$id_tax);
-            Cache::store($cache_id, $result);
+        $cacheId = 'TaxRule::isTaxInUse_'.(int) $idTax;
+        if (!Cache::isStored($cacheId)) {
+            $result = (int) Db::getInstance()->getValue('SELECT COUNT(*) FROM `'._DB_PREFIX_.'tax_rule` WHERE `id_tax` = '.(int) $idTax);
+            Cache::store($cacheId, $result);
+
             return $result;
         }
-        return Cache::retrieve($cache_id);
-    }
 
+        return Cache::retrieve($cacheId);
+    }
 
     /**
      * @param string $zipcode a range of zipcode (eg: 75000 / 75000-75015)
+     *
      * @return array an array containing two zipcode ordered by zipcode
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
-    public function breakDownZipCode($zip_codes)
+    public function breakDownZipCode($zipCodes)
     {
-        $zip_codes = preg_split('/-/', $zip_codes);
+        $zipCodes = preg_split('/-/', $zipCodes);
 
-        $from = $zip_codes[0];
-        $to = isset($zip_codes[1]) ? $zip_codes[1]: 0;
-        if (count($zip_codes) == 2) {
-            $from = $zip_codes[0];
-            $to   = $zip_codes[1];
-            if ($zip_codes[0] > $zip_codes[1]) {
-                $from = $zip_codes[1];
-                $to   = $zip_codes[0];
-            } elseif ($zip_codes[0] == $zip_codes[1]) {
-                $from = $zip_codes[0];
-                $to   = 0;
+        $from = $zipCodes[0];
+        $to = isset($zipCodes[1]) ? $zipCodes[1] : 0;
+        if (count($zipCodes) == 2) {
+            $from = $zipCodes[0];
+            $to = $zipCodes[1];
+            if ($zipCodes[0] > $zipCodes[1]) {
+                $from = $zipCodes[1];
+                $to = $zipCodes[0];
+            } elseif ($zipCodes[0] == $zipCodes[1]) {
+                $from = $zipCodes[0];
+                $to = 0;
             }
-        } elseif (count($zip_codes) == 1) {
-            $from = $zip_codes[0];
+        } elseif (count($zipCodes) == 1) {
+            $from = $zipCodes[0];
             $to = 0;
         }
 
@@ -168,17 +218,21 @@ class TaxRuleCore extends ObjectModel
     }
 
     /**
-    * Replace a tax_rule id by an other one in the tax_rule table
-    *
-    * @param int $old_id
-    * @param int $new_id
-    */
-    public static function swapTaxId($old_id, $new_id)
+     * Replace a tax_rule id by an other one in the tax_rule table
+     *
+     * @param int $oldId
+     * @param int $newId
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function swapTaxId($oldId, $newId)
     {
-        return Db::getInstance()->execute('
+        return Db::getInstance()->execute(
+            '
 		UPDATE `'._DB_PREFIX_.'tax_rule`
-		SET `id_tax` = '.(int)$new_id.'
-		WHERE `id_tax` = '.(int)$old_id
+		SET `id_tax` = '.(int) $newId.'
+		WHERE `id_tax` = '.(int) $oldId
         );
     }
 }

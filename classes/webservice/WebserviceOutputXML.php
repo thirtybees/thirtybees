@@ -21,14 +21,19 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class WebserviceOutputXMLCore
+ *
+ * @since 1.0.0
+ */
 class WebserviceOutputXMLCore implements WebserviceOutputInterface
 {
     public $docUrl = '';
@@ -36,63 +41,154 @@ class WebserviceOutputXMLCore implements WebserviceOutputInterface
     protected $wsUrl;
     protected $schemaToDisplay;
 
+    /**
+     * @param $schema
+     *
+     * @return $this
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setSchemaToDisplay($schema)
     {
         if (is_string($schema)) {
             $this->schemaToDisplay = $schema;
         }
+
         return $this;
     }
 
+    /**
+     * @return mixed
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getSchemaToDisplay()
     {
         return $this->schemaToDisplay;
     }
 
+    /**
+     * @param $url
+     *
+     * @return $this
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setWsUrl($url)
     {
         $this->wsUrl = $url;
+
         return $this;
     }
+
+    /**
+     * @return mixed
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getWsUrl()
     {
         return $this->wsUrl;
     }
+
+    /**
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getContentType()
     {
         return 'text/xml';
     }
+
+    /**
+     * WebserviceOutputXMLCore constructor.
+     *
+     * @param array $languages
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function __construct($languages = [])
     {
         $this->languages = $languages;
     }
+
+    /**
+     * @param $languages
+     *
+     * @return $this
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setLanguages($languages)
     {
         $this->languages = $languages;
+
         return $this;
     }
+
+    /**
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function renderErrorsHeader()
     {
         return '<errors>'."\n";
     }
+
+    /**
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function renderErrorsFooter()
     {
         return '</errors>'."\n";
     }
+
+    /**
+     * @param      $message
+     * @param null $code
+     *
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function renderErrors($message, $code = null)
     {
-        $str_output = '<error>'."\n";
+        $strOutput = '<error>'."\n";
         if ($code !== null) {
-            $str_output .= '<code><![CDATA['.$code.']]></code>'."\n";
+            $strOutput .= '<code><![CDATA['.$code.']]></code>'."\n";
         }
-        $str_output .= '<message><![CDATA['.$message.']]></message>'."\n";
-        $str_output .= '</error>'."\n";
-        return $str_output;
+        $strOutput .= '<message><![CDATA['.$message.']]></message>'."\n";
+        $strOutput .= '</error>'."\n";
+
+        return $strOutput;
     }
+
+    /**
+     * @param $field
+     *
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function renderField($field)
     {
         $ret = '';
-        $node_content = '';
+        $nodeContent = '';
         $ret .= '<'.$field['sqlId'];
         // display i18n fields
         if (isset($field['i18n']) && $field['i18n']) {
@@ -104,21 +200,20 @@ class WebserviceOutputXMLCore implements WebserviceOutputInterface
                         $more_attr .= ' format="isUnsignedId" ';
                     }
                 }
-                $node_content .= '<language id="'.$language.'"'.$more_attr.'>';
-                if (isset($field['value']) &&  is_array($field['value']) &&  isset($field['value'][$language])) {
-                    $node_content .= '<![CDATA['.$field['value'][$language].']]>';
+                $nodeContent .= '<language id="'.$language.'"'.$more_attr.'>';
+                if (isset($field['value']) && is_array($field['value']) && isset($field['value'][$language])) {
+                    $nodeContent .= '<![CDATA['.$field['value'][$language].']]>';
                 }
-                $node_content .= '</language>';
+                $nodeContent .= '</language>';
             }
-        }
-        // display not i18n fields value
+        } // display not i18n fields value
         else {
             if (array_key_exists('xlink_resource', $field) && $this->schemaToDisplay != 'blank') {
                 if (!is_array($field['xlink_resource'])) {
                     $ret .= ' xlink:href="'.$this->getWsUrl().$field['xlink_resource'].'/'.$field['value'].'"';
                 } else {
                     $ret .= ' xlink:href="'.$this->getWsUrl().$field['xlink_resource']['resourceName'].'/'.
-                    (isset($field['xlink_resource']['subResourceName']) ? $field['xlink_resource']['subResourceName'].'/'.$field['object_id'].'/' : '').$field['value'].'"';
+                        (isset($field['xlink_resource']['subResourceName']) ? $field['xlink_resource']['subResourceName'].'/'.$field['object_id'].'/' : '').$field['value'].'"';
                 }
             }
 
@@ -131,7 +226,7 @@ class WebserviceOutputXMLCore implements WebserviceOutputInterface
             }
 
             if ($field['value'] != '') {
-                $node_content .= '<![CDATA['.$field['value'].']]>';
+                $nodeContent .= '<![CDATA['.$field['value'].']]>';
             }
         }
 
@@ -145,76 +240,158 @@ class WebserviceOutputXMLCore implements WebserviceOutputInterface
             }
         }
         $ret .= '>';
-        $ret .= $node_content;
+        $ret .= $nodeContent;
         $ret .= '</'.$field['sqlId'].'>'."\n";
+
         return $ret;
     }
-    public function renderNodeHeader($node_name, $params, $more_attr = null, $has_child = true)
+
+    /**
+     * @param      $nodeName
+     * @param      $params
+     * @param null $moreAttr
+     * @param bool $hasChild
+     *
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function renderNodeHeader($nodeName, $params, $moreAttr = null, $hasChild = true)
     {
-        $string_attr = '';
-        if (is_array($more_attr)) {
-            foreach ($more_attr as $key => $attr) {
+        $stringAttr = '';
+        if (is_array($moreAttr)) {
+            foreach ($moreAttr as $key => $attr) {
                 if ($key === 'xlink_resource') {
-                    $string_attr .= ' xlink:href="'.$attr.'"';
+                    $stringAttr .= ' xlink:href="'.$attr.'"';
                 } else {
-                    $string_attr .= ' '.$key.'="'.$attr.'"';
+                    $stringAttr .= ' '.$key.'="'.$attr.'"';
                 }
             }
         }
-        $end_tag = (!$has_child) ? '/>' : '>';
-        return '<'.$node_name.$string_attr.$end_tag."\n";
+        $end_tag = (!$hasChild) ? '/>' : '>';
+
+        return '<'.$nodeName.$stringAttr.$end_tag."\n";
     }
+
+    /**
+     * @param $params
+     *
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getNodeName($params)
     {
-        $node_name = '';
+        $nodeName = '';
         if (isset($params['objectNodeName'])) {
-            $node_name = $params['objectNodeName'];
+            $nodeName = $params['objectNodeName'];
         }
-        return $node_name;
+
+        return $nodeName;
     }
-    public function renderNodeFooter($node_name, $params)
+
+    /**
+     * @param $nodeName
+     * @param $params
+     *
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function renderNodeFooter($nodeName, $params)
     {
-        return '</'.$node_name.'>'."\n";
+        return '</'.$nodeName.'>'."\n";
     }
+
+    /**
+     * @param $content
+     *
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function overrideContent($content)
     {
         $xml = '<?xml version="1.0" encoding="UTF-8"?>'."\n";
         $xml .= '<prestashop xmlns:xlink="http://www.w3.org/1999/xlink">'."\n";
         $xml .= $content;
         $xml .= '</prestashop>'."\n";
+
         return $xml;
     }
+
+    /**
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function renderAssociationWrapperHeader()
     {
         return '<associations>'."\n";
     }
+
+    /**
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function renderAssociationWrapperFooter()
     {
         return '</associations>'."\n";
     }
-    public function renderAssociationHeader($obj, $params, $assoc_name, $closed_tags = false)
+
+    /**
+     * @param      $obj
+     * @param      $params
+     * @param      $assocName
+     * @param bool $closedTags
+     *
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function renderAssociationHeader($obj, $params, $assocName, $closedTags = false)
     {
-        $end_tag = ($closed_tags) ? '/>' : '>';
+        $endTag = ($closedTags) ? '/>' : '>';
         $more = '';
         if ($this->schemaToDisplay != 'blank') {
-            if (array_key_exists('setter', $params['associations'][$assoc_name]) && !$params['associations'][$assoc_name]['setter']) {
+            if (array_key_exists('setter', $params['associations'][$assocName]) && !$params['associations'][$assocName]['setter']) {
                 $more .= ' readOnly="true"';
             }
-            $more .= ' nodeType="'.$params['associations'][$assoc_name]['resource'].'"';
-            if (isset($params['associations'][$assoc_name]['virtual_entity']) && $params['associations'][$assoc_name]['virtual_entity']) {
+            $more .= ' nodeType="'.$params['associations'][$assocName]['resource'].'"';
+            if (isset($params['associations'][$assocName]['virtual_entity']) && $params['associations'][$assocName]['virtual_entity']) {
                 $more .= ' virtualEntity="true"';
             } else {
-                if (isset($params['associations'][$assoc_name]['api'])) {
-                    $more .= ' api="'.$params['associations'][$assoc_name]['api'].'"';
+                if (isset($params['associations'][$assocName]['api'])) {
+                    $more .= ' api="'.$params['associations'][$assocName]['api'].'"';
                 } else {
-                    $more .= ' api="'.$assoc_name.'"';
+                    $more .= ' api="'.$assocName.'"';
                 }
             }
         }
-        return '<'.$assoc_name.$more.$end_tag."\n";
+
+        return '<'.$assocName.$more.$endTag."\n";
     }
-    public function renderAssociationFooter($obj, $params, $assoc_name)
+
+    /**
+     * @param $obj
+     * @param $params
+     * @param $assocName
+     *
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function renderAssociationFooter($obj, $params, $assocName)
     {
-        return '</'.$assoc_name.'>'."\n";
+        return '</'.$assocName.'>'."\n";
     }
 }

@@ -196,14 +196,14 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     /**
      * Builds the object
      *
-     * @param int|null $id      If specified, loads and existing object from DB (optional).
-     * @param int|null $idLang  Required if object is multilingual (optional).
-     * @param int|null $id_shop ID shop for objects with multishop tables.
+     * @param int|null $id     If specified, loads and existing object from DB (optional).
+     * @param int|null $idLang Required if object is multilingual (optional).
+     * @param int|null $idShop ID shop for objects with multishop tables.
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function __construct($id = null, $idLang = null, $id_shop = null)
+    public function __construct($id = null, $idLang = null, $idShop = null)
     {
         $class_name = get_class($this);
         if (!isset(ObjectModel::$loaded_classes[$class_name])) {
@@ -224,8 +224,8 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             $this->id_lang = (Language::getLanguage($idLang) !== false) ? $idLang : Configuration::get('PS_LANG_DEFAULT');
         }
 
-        if ($id_shop && $this->isMultishop()) {
-            $this->id_shop = (int)$id_shop;
+        if ($idShop && $this->isMultishop()) {
+            $this->id_shop = (int)$idShop;
             $this->get_shop_from_context = false;
         }
 
@@ -615,13 +615,13 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     /**
      * Updates the current object in the database
      *
-     * @param bool $null_values
+     * @param bool $nullValues
      *
      * @return bool
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function update($null_values = false)
+    public function update($nullValues = false)
     {
         // @hook actionObject*UpdateBefore
         Hook::exec('actionObjectUpdateBefore', ['object' => $this]);
@@ -654,7 +654,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             $this->id_shop_default = (in_array(Configuration::get('PS_SHOP_DEFAULT'), $id_shop_list) == true) ? Configuration::get('PS_SHOP_DEFAULT') : min($id_shop_list);
         }
         // Database update
-        if (!$result = Db::getInstance()->update($this->def['table'], $this->getFields(), '`'.pSQL($this->def['primary']).'` = '.(int)$this->id, 0, $null_values)) {
+        if (!$result = Db::getInstance()->update($this->def['table'], $this->getFields(), '`'.pSQL($this->def['primary']).'` = '.(int)$this->id, 0, $nullValues)) {
             return false;
         }
 
@@ -681,9 +681,9 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                 // only if we are in a shop context (if we are in all context, we just want to update entries that alread exists)
                 $shop_exists = Db::getInstance()->getValue('SELECT '.$this->def['primary'].' FROM '._DB_PREFIX_.$this->def['table'].'_shop WHERE '.$where);
                 if ($shop_exists) {
-                    $result &= Db::getInstance()->update($this->def['table'].'_shop', $fields, $where, 0, $null_values);
+                    $result &= Db::getInstance()->update($this->def['table'].'_shop', $fields, $where, 0, $nullValues);
                 } elseif (Shop::getContext() == Shop::CONTEXT_SHOP) {
-                    $result &= Db::getInstance()->insert($this->def['table'].'_shop', $all_fields, $null_values);
+                    $result &= Db::getInstance()->insert($this->def['table'].'_shop', $all_fields, $nullValues);
                 }
             }
         }
@@ -725,7 +725,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                         if (Db::getInstance()->getValue('SELECT COUNT(*) FROM '.pSQL(_DB_PREFIX_.$this->def['table']).'_lang WHERE '.$where)) {
                             $result &= Db::getInstance()->update($this->def['table'].'_lang', $field, $where);
                         } else {
-                            $result &= Db::getInstance()->insert($this->def['table'].'_lang', $field, $null_values);
+                            $result &= Db::getInstance()->insert($this->def['table'].'_lang', $field, $nullValues);
                         }
                     }
                 }
@@ -1737,12 +1737,13 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * array(objProperty => value, objProperty2 => value, etc.)
      *
      * @since 1.5.0.1
-     * @param array    $data
-     * @param int|null $id_lang
+     *
+*@param array          $data
+     * @param int|null $idLang
      */
-    public function hydrate(array $data, $id_lang = null)
+    public function hydrate(array $data, $idLang = null)
     {
-        $this->id_lang = $id_lang;
+        $this->id_lang = $idLang;
         if (isset($data[$this->def['primary']])) {
             $this->id = $data[$this->def['primary']];
         }

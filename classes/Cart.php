@@ -205,7 +205,7 @@ class CartCore extends ObjectModel
         return $return;
     }
 
-    public function update($null_values = false)
+    public function update($nullValues = false)
     {
         if (isset(self::$_nbProducts[$this->id])) {
             unset(self::$_nbProducts[$this->id]);
@@ -216,7 +216,7 @@ class CartCore extends ObjectModel
         }
 
         $this->_products = null;
-        $return = parent::update($null_values);
+        $return = parent::update($nullValues);
         Hook::exec('actionCartSave');
 
         return $return;

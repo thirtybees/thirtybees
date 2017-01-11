@@ -76,9 +76,9 @@ class CMSCore extends ObjectModel
         return parent::add($autodate, true);
     }
 
-    public function update($null_values = false)
+    public function update($nullValues = false)
     {
-        if (parent::update($null_values)) {
+        if (parent::update($nullValues)) {
             return $this->cleanPositions($this->id_cms_category);
         }
         return false;

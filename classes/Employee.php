@@ -144,9 +144,9 @@ class EmployeeCore extends ObjectModel
 
     protected $associated_shops = [];
 
-    public function __construct($id = null, $idLang = null, $id_shop = null)
+    public function __construct($id = null, $idLang = null, $idShop = null)
     {
-        parent::__construct($id, null, $id_shop);
+        parent::__construct($id, null, $idShop);
 
         if (!is_null($idLang)) {
             $this->id_lang = (int)(Language::getLanguage($idLang) !== false) ? $idLang : Configuration::get('PS_LANG_DEFAULT');
@@ -192,7 +192,7 @@ class EmployeeCore extends ObjectModel
         return parent::add($autodate, $nullValues);
     }
 
-    public function update($null_values = false)
+    public function update($nullValues = false)
     {
         if (empty($this->stats_date_from) || $this->stats_date_from == '0000-00-00') {
             $this->stats_date_from = date('Y-m-d');
@@ -209,7 +209,7 @@ class EmployeeCore extends ObjectModel
         }
 
         $this->updateTextDirection();
-        return parent::update($null_values);
+        return parent::update($nullValues);
     }
 
     protected function updateTextDirection()

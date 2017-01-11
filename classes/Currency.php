@@ -103,9 +103,9 @@ class CurrencyCore extends ObjectModel
      */
     public $suffix = null;
 
-    public function __construct($id = null, $idLang = null, $id_shop = null)
+    public function __construct($id = null, $idLang = null, $idShop = null)
     {
-        parent::__construct($id, $idLang, $id_shop);
+        parent::__construct($id, $idLang, $idShop);
         // prefix and suffix are convenient shortcut for displaying
         // price sign before or after the price number
         $this->prefix =    $this->format % 2 != 0 ? $this->sign.' ' : '';

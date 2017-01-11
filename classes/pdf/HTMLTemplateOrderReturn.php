@@ -30,64 +30,78 @@
  */
 
 /**
- * @since 1.5
+ * Class HTMLTemplateOrderReturnCore
+ *
+ * @since 1.0.0
  */
 class HTMLTemplateOrderReturnCore extends HTMLTemplate
 {
+    // @codingStandardsIgnoreStart
+    /** @var OrderReturn $order_return */
     public $order_return;
+
+    /** @var Order $order */
     public $order;
+    // @codingStandardsIgnoreEnd
 
     /**
-     * @param OrderReturn $order_return
-     * @param $smarty
+     * @param OrderReturn $orderReturn
+     * @param Smarty      $smarty
+     *
      * @throws PrestaShopException
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
-    public function __construct(OrderReturn $order_return, $smarty)
+    public function __construct(OrderReturn $orderReturn, Smarty $smarty)
     {
-        $this->order_return = $order_return;
+        $this->order_return = $orderReturn;
         $this->smarty = $smarty;
-        $this->order = new Order($order_return->id_order);
+        $this->order = new Order($orderReturn->id_order);
 
         // header informations
         $this->date = Tools::displayDate($this->order->invoice_date);
         $prefix = Configuration::get('PS_RETURN_PREFIX', Context::getContext()->language->id);
         $this->title = sprintf(HTMLTemplateOrderReturn::l('%1$s%2$06d'), $prefix, $this->order_return->id);
 
-        $this->shop = new Shop((int)$this->order->id_shop);
+        $this->shop = new Shop((int) $this->order->id_shop);
     }
 
     /**
      * Returns the template's HTML content
      *
      * @return string HTML content
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getContent()
     {
-        $delivery_address = new Address((int)$this->order->id_address_delivery);
-        $formatted_delivery_address = AddressFormat::generateAddress($delivery_address, [], '<br />', ' ');
-        $formatted_invoice_address = '';
+        $deliveryAddress = new Address((int) $this->order->id_address_delivery);
+        $formattedDeliveryAddress = AddressFormat::generateAddress($deliveryAddress, [], '<br />', ' ');
+        $formattedInvoiceAddress = '';
 
         if ($this->order->id_address_delivery != $this->order->id_address_invoice) {
-            $invoice_address = new Address((int)$this->order->id_address_invoice);
-            $formatted_invoice_address = AddressFormat::generateAddress($invoice_address, [], '<br />', ' ');
+            $invoiceAddress = new Address((int) $this->order->id_address_invoice);
+            $formattedInvoiceAddress = AddressFormat::generateAddress($invoiceAddress, [], '<br />', ' ');
         }
 
         $this->smarty->assign(
             [
-            'order_return' => $this->order_return,
-            'return_nb_days' => (int)Configuration::get('PS_ORDER_RETURN_NB_DAYS'),
-            'products' => OrderReturn::getOrdersReturnProducts((int)$this->order_return->id, $this->order),
-            'delivery_address' => $formatted_delivery_address,
-            'invoice_address' => $formatted_invoice_address,
-            'shop_address' => AddressFormat::generateAddress($this->shop->getAddress(), [], '<br />', ' ')
+                'order_return'     => $this->order_return,
+                'return_nb_days'   => (int) Configuration::get('PS_ORDER_RETURN_NB_DAYS'),
+                'products'         => OrderReturn::getOrdersReturnProducts((int) $this->order_return->id, $this->order),
+                'delivery_address' => $formattedDeliveryAddress,
+                'invoice_address'  => $formattedInvoiceAddress,
+                'shop_address'     => AddressFormat::generateAddress($this->shop->getAddress(), [], '<br />', ' '),
             ]
         );
-        
+
         $tpls = [
-            'style_tab' => $this->smarty->fetch($this->getTemplate('invoice.style-tab')),
-            'addresses_tab' => $this->smarty->fetch($this->getTemplate('order-return.addresses-tab')),
-            'summary_tab' => $this->smarty->fetch($this->getTemplate('order-return.summary-tab')),
-            'product_tab' => $this->smarty->fetch($this->getTemplate('order-return.product-tab')),
+            'style_tab'      => $this->smarty->fetch($this->getTemplate('invoice.style-tab')),
+            'addresses_tab'  => $this->smarty->fetch($this->getTemplate('order-return.addresses-tab')),
+            'summary_tab'    => $this->smarty->fetch($this->getTemplate('order-return.summary-tab')),
+            'product_tab'    => $this->smarty->fetch($this->getTemplate('order-return.product-tab')),
             'conditions_tab' => $this->smarty->fetch($this->getTemplate('order-return.conditions-tab')),
         ];
         $this->smarty->assign($tpls);
@@ -99,6 +113,9 @@ class HTMLTemplateOrderReturnCore extends HTMLTemplate
      * Returns the template filename
      *
      * @return string filename
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getFilename()
     {
@@ -109,16 +126,22 @@ class HTMLTemplateOrderReturnCore extends HTMLTemplate
      * Returns the template filename when using bulk rendering
      *
      * @return string filename
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getBulkFilename()
     {
         return 'invoices.pdf';
     }
-    
+
     /**
      * Returns the template's HTML header
      *
      * @return string HTML header
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getHeader()
     {

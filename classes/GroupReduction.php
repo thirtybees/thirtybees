@@ -55,9 +55,9 @@ class GroupReductionCore extends ObjectModel
         return (parent::add($autodate, $nullValues) && $this->_setCache());
     }
 
-    public function update($null_values = false)
+    public function update($nullValues = false)
     {
-        return (parent::update($null_values) && $this->_updateCache());
+        return (parent::update($nullValues) && $this->_updateCache());
     }
 
     public function delete()

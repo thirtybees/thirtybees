@@ -29,11 +29,29 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class TreeToolbarSearchCore
+ *
+ * @since 1.0.0
+ */
 class TreeToolbarSearchCore extends TreeToolbarButtonCore implements
     ITreeToolbarButtonCore
 {
+    // @codingStandardsIgnoreStart
     protected $_template = 'tree_toolbar_search.tpl';
+    // @codingStandardsIgnoreEnd
 
+    /**
+     * TreeToolbarSearchCore constructor.
+     *
+     * @param      $label
+     * @param null $id
+     * @param null $name
+     * @param null $class
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function __construct($label, $id, $name = null, $class = null)
     {
         parent::__construct($label);
@@ -43,6 +61,12 @@ class TreeToolbarSearchCore extends TreeToolbarButtonCore implements
         $this->setClass($class);
     }
 
+    /**
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function render()
     {
         if ($this->hasAttribute('data_search')) {
@@ -53,27 +77,35 @@ class TreeToolbarSearchCore extends TreeToolbarButtonCore implements
                 $this->_renderData($this->getAttribute('data')));
         }
 
-        $admin_webpath = str_ireplace(_PS_CORE_DIR_, '', _PS_ADMIN_DIR_);
-        $admin_webpath = preg_replace('/^'.preg_quote(DIRECTORY_SEPARATOR, '/').'/', '', $admin_webpath);
-        $bo_theme = ((Validate::isLoadedObject($this->getContext()->employee)
+        $adminWebpath = str_ireplace(_PS_CORE_DIR_, '', _PS_ADMIN_DIR_);
+        $adminWebpath = preg_replace('/^'.preg_quote(DIRECTORY_SEPARATOR, '/').'/', '', $adminWebpath);
+        $boTheme = ((Validate::isLoadedObject($this->getContext()->employee)
             && $this->getContext()->employee->bo_theme) ? $this->getContext()->employee->bo_theme : 'default');
 
-        if (!file_exists(_PS_BO_ALL_THEMES_DIR_.$bo_theme.DIRECTORY_SEPARATOR.'template')) {
-            $bo_theme = 'default';
+        if (!file_exists(_PS_BO_ALL_THEMES_DIR_.$boTheme.DIRECTORY_SEPARATOR.'template')) {
+            $boTheme = 'default';
         }
 
         if ($this->getContext()->controller->ajax) {
-            $path = __PS_BASE_URI__.$admin_webpath.'/themes/'.$bo_theme.'/js/vendor/typeahead.min.js';
+            $path = __PS_BASE_URI__.$adminWebpath.'/themes/'.$boTheme.'/js/vendor/typeahead.min.js';
             $html = '<script type="text/javascript">
                 $(function(){ $.getScript(\''.$path.'\'); });
             </script>';
         } else {
-            $this->getContext()->controller->addJs(__PS_BASE_URI__.$admin_webpath.'/themes/'.$bo_theme.'/js/vendor/typeahead.min.js');
+            $this->getContext()->controller->addJs(__PS_BASE_URI__.$adminWebpath.'/themes/'.$boTheme.'/js/vendor/typeahead.min.js');
         }
 
         return (isset($html) ? $html : '').parent::render();
     }
 
+    /**
+     * @param $data
+     *
+     * @return string
+     * @throws PrestaShopException
+     *
+     * @deprecated 2.0.0
+     */
     protected function _renderData($data)
     {
         if (!is_array($data) && !$data instanceof Traversable) {
@@ -83,7 +115,7 @@ class TreeToolbarSearchCore extends TreeToolbarButtonCore implements
         $html = '';
 
         foreach ($data as $item) {
-            $html .= Tools::jsonEncode($item).',';
+            $html .= json_encode($item).',';
             if (array_key_exists('children', $item) && !empty($item['children'])) {
                 $html .= $this->_renderData($item['children']);
             }

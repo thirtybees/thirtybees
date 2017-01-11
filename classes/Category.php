@@ -137,9 +137,9 @@ class CategoryCore extends ObjectModel
         ],
     ];
 
-    public function __construct($id_category = null, $idLang = null, $id_shop = null)
+    public function __construct($id_category = null, $idLang = null, $idShop = null)
     {
-        parent::__construct($id_category, $idLang, $id_shop);
+        parent::__construct($id_category, $idLang, $idShop);
         $this->id_image = ($this->id && file_exists(_PS_CAT_IMG_DIR_.(int)$this->id.'.jpg')) ? (int)$this->id : false;
         $this->image_dir = _PS_CAT_IMG_DIR_;
     }
@@ -182,10 +182,11 @@ class CategoryCore extends ObjectModel
     /**
      * update category positions in parent
      *
-     * @param mixed $null_values
-     * @return bool
+     * @param mixed $nullValues
+     *
+*@return bool
      */
-    public function update($null_values = false)
+    public function update($nullValues = false)
     {
         if ($this->id_parent == $this->id) {
             throw new PrestaShopException('a category cannot be its own parent');
@@ -221,7 +222,7 @@ class CategoryCore extends ObjectModel
             }
         }
 
-        $ret = parent::update($null_values);
+        $ret = parent::update($nullValues);
         if ($changed && (!isset($this->doNotRegenerateNTree) || !$this->doNotRegenerateNTree)) {
             $this->cleanPositions((int)$this->id_parent);
             Category::regenerateEntireNtree();

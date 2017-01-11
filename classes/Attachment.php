@@ -66,10 +66,10 @@ class AttachmentCore extends ObjectModel
         return parent::add($autodate, $nullValues);
     }
 
-    public function update($null_values = false)
+    public function update($nullValues = false)
     {
         $this->file_size = filesize(_PS_DOWNLOAD_DIR_.$this->file);
-        return parent::update($null_values);
+        return parent::update($nullValues);
     }
 
     public function delete()

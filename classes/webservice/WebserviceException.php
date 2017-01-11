@@ -21,16 +21,22 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class WebserviceExceptionCore
+ *
+ * @since 1.0.0
+ */
 class WebserviceExceptionCore extends Exception
 {
+    // @codingStandardsIgnoreStart
     protected $status;
     protected $wrong_value;
     protected $available_values;
@@ -38,48 +44,117 @@ class WebserviceExceptionCore extends Exception
 
     const SIMPLE = 0;
     const DID_YOU_MEAN = 1;
+    // @codingStandardsIgnoreEnd
 
+    /**
+     * WebserviceExceptionCore constructor.
+     *
+     * @param string $message
+     * @param int    $code
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function __construct($message, $code)
     {
-        $exception_code = $code;
+        $exceptionCode = $code;
         if (is_array($code)) {
-            $exception_code = $code[0];
+            $exceptionCode = $code[0];
             $this->setStatus($code[1]);
         }
-        parent::__construct($message, $exception_code);
+        parent::__construct($message, $exceptionCode);
         $this->type = self::SIMPLE;
     }
+
+    /**
+     * @return int
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getType()
     {
         return $this->type;
     }
+
+    /**
+     * @param $type
+     *
+     * @return $this
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setType($type)
     {
         $this->type = $type;
+
         return $this;
     }
+
+    /**
+     * @param $status
+     *
+     * @return $this
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setStatus($status)
     {
         if (Validate::isInt($status)) {
             $this->status = $status;
         }
+
         return $this;
     }
+
+    /**
+     * @return mixed
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getStatus()
     {
         return $this->status;
     }
+
+    /**
+     * @return mixed
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getWrongValue()
     {
         return $this->wrong_value;
     }
-    public function setDidYouMean($wrong_value, $available_values)
+
+    /**
+     * @param $wrongValue
+     * @param $availableValues
+     *
+     * @return $this
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function setDidYouMean($wrongValue, $availableValues)
     {
         $this->type = self::DID_YOU_MEAN;
-        $this->wrong_value = $wrong_value;
-        $this->available_values = $available_values;
+        $this->wrong_value = $wrongValue;
+        $this->available_values = $availableValues;
+
         return $this;
     }
+
+    /**
+     * @return mixed
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getAvailableValues()
     {
         return $this->available_values;

@@ -21,11 +21,11 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
@@ -33,12 +33,15 @@ require_once(_PS_TOOL_DIR_.'tcpdf/config/lang/eng.php');
 require_once(_PS_TOOL_DIR_.'tcpdf/tcpdf.php');
 
 /**
- * @since 1.5
+ * Class PDFGeneratorCore
+ *
+ * @since 1.0.0
  */
 class PDFGeneratorCore extends TCPDF
 {
     const DEFAULT_FONT = 'helvetica';
 
+    // @codingStandardsIgnoreStart
     public $header;
     public $footer;
     public $pagination;
@@ -75,16 +78,20 @@ class PDFGeneratorCore extends TCPDF
         'ko' => 'cid0kr',
         'zh' => 'cid0cs',
         'tw' => 'cid0cs',
-        'th' => 'freeserif'
+        'th' => 'freeserif',
     ];
+    // @codingStandardsIgnoreEnd
 
     /**
-     * @param bool $use_cache
+     * @param bool   $useCache
      * @param string $orientation
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
-    public function __construct($use_cache = false, $orientation = 'P')
+    public function __construct($useCache = false, $orientation = 'P')
     {
-        parent::__construct($orientation, 'mm', 'A4', true, 'UTF-8', $use_cache, false);
+        parent::__construct($orientation, 'mm', 'A4', true, 'UTF-8', $useCache, false);
         $this->setRTL(Context::getContext()->language->is_rtl);
     }
 
@@ -92,6 +99,9 @@ class PDFGeneratorCore extends TCPDF
      * set the PDF encoding
      *
      * @param string $encoding
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function setEncoding($encoding)
     {
@@ -103,6 +113,9 @@ class PDFGeneratorCore extends TCPDF
      * set the PDF header
      *
      * @param string $header HTML
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function createHeader($header)
     {
@@ -114,6 +127,9 @@ class PDFGeneratorCore extends TCPDF
      * set the PDF footer
      *
      * @param string $footer HTML
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function createFooter($footer)
     {
@@ -125,6 +141,9 @@ class PDFGeneratorCore extends TCPDF
      * create the PDF content
      *
      * @param string $content HTML
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function createContent($content)
     {
@@ -136,6 +155,9 @@ class PDFGeneratorCore extends TCPDF
      * create the PDF pagination
      *
      * @param string $pagination HTML
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function createPagination($pagination)
     {
@@ -145,13 +167,16 @@ class PDFGeneratorCore extends TCPDF
     /**
      * Change the font
      *
-     * @param string $iso_lang
+     * @param string $isoLang
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
-    public function setFontForLang($iso_lang)
+    public function setFontForLang($isoLang)
     {
-        if (array_key_exists($iso_lang, $this->font_by_lang)) {
-            $this->font = $this->font_by_lang[$iso_lang];
-        }else {
+        if (array_key_exists($isoLang, $this->font_by_lang)) {
+            $this->font = $this->font_by_lang[$isoLang];
+        } else {
             $this->font = self::DEFAULT_FONT;
         }
 
@@ -163,6 +188,9 @@ class PDFGeneratorCore extends TCPDF
 
     /**
      * @see TCPDF::Header()
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function Header()
     {
@@ -171,6 +199,9 @@ class PDFGeneratorCore extends TCPDF
 
     /**
      * @see TCPDF::Footer()
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function Footer()
     {
@@ -181,11 +212,16 @@ class PDFGeneratorCore extends TCPDF
 
     /**
      * Render HTML template
+     *
      * @param string $filename
-     * @param bool $display true:display to user, false:save, 'I','D','S' as fpdf display
+     * @param bool   $display true:display to user, false:save, 'I','D','S' as fpdf display
+     *
      * @throws PrestaShopException
      *
      * @return string HTML rendered
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function render($filename, $display = true)
     {
@@ -214,6 +250,9 @@ class PDFGeneratorCore extends TCPDF
 
     /**
      * Write a PDF page
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function writePage()
     {
@@ -226,7 +265,10 @@ class PDFGeneratorCore extends TCPDF
 
     /**
      * Override of TCPDF::getRandomSeed() - getmypid() is blocked on several hosting
-    */
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     protected function getRandomSeed($seed = '')
     {
         $seed .= microtime();

@@ -31,19 +31,29 @@
 
 /**
  * @since 1.0.0
+ * @version 1.0.0 Initial version
  */
 class HTMLTemplateDeliverySlipCore extends HTMLTemplate
 {
+    // @codingStandardsIgnoreStart
+    /** @var Order $order */
     public $order;
 
+    /** @var OrderInvoice $order_invoice */
+    public $order_invoice;
+    // @codingStandardsIgnoreEnd
+
     /**
-     * @param OrderInvoice $order_invoice
-     * @param $smarty
-     * @throws PrestaShopException
+     * @param OrderInvoice $orderInvoice
+     * @param Smarty       $smarty
+     * @param bool         $bulkMode
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
-    public function __construct(OrderInvoice $order_invoice, $smarty, $bulk_mode = false)
+    public function __construct(OrderInvoice $orderInvoice, Smarty $smarty, $bulkMode = false)
     {
-        $this->order_invoice = $order_invoice;
+        $this->order_invoice = $orderInvoice;
         $this->order = new Order($this->order_invoice->id_order);
         $this->smarty = $smarty;
 
@@ -51,25 +61,28 @@ class HTMLTemplateDeliverySlipCore extends HTMLTemplate
         // But no DB save required here to avoid massive updates for bulk PDF generation case.
         // (DB: bug fixed in 1.6.1.1 with upgrade SQL script to avoid null shop_address in old orderInvoices)
         if (!isset($this->order_invoice->shop_address) || !$this->order_invoice->shop_address) {
-            $this->order_invoice->shop_address = OrderInvoice::getCurrentFormattedShopAddress((int)$this->order->id_shop);
-            if (!$bulk_mode) {
+            $this->order_invoice->shop_address = OrderInvoice::getCurrentFormattedShopAddress((int) $this->order->id_shop);
+            if (!$bulkMode) {
                 OrderInvoice::fixAllShopAddresses();
             }
         }
 
         // header informations
-        $this->date = Tools::displayDate($order_invoice->date_add);
+        $this->date = Tools::displayDate($orderInvoice->date_add);
         $prefix = Configuration::get('PS_DELIVERY_PREFIX', Context::getContext()->language->id);
         $this->title = sprintf(HTMLTemplateDeliverySlip::l('%1$s%2$06d'), $prefix, $this->order_invoice->delivery_number);
 
         // footer informations
-        $this->shop = new Shop((int)$this->order->id_shop);
+        $this->shop = new Shop((int) $this->order->id_shop);
     }
 
     /**
      * Returns the template's HTML header
      *
      * @return string HTML header
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getHeader()
     {
@@ -83,29 +96,32 @@ class HTMLTemplateDeliverySlipCore extends HTMLTemplate
      * Returns the template's HTML content
      *
      * @return string HTML content
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getContent()
     {
-        $delivery_address = new Address((int)$this->order->id_address_delivery);
-        $formatted_delivery_address = AddressFormat::generateAddress($delivery_address, [], '<br />', ' ');
-        $formatted_invoice_address = '';
+        $deliveryAddress = new Address((int) $this->order->id_address_delivery);
+        $formattedDeliveryAddress = AddressFormat::generateAddress($deliveryAddress, [], '<br />', ' ');
+        $formattedInvoiceAddress = '';
 
         if ($this->order->id_address_delivery != $this->order->id_address_invoice) {
-            $invoice_address = new Address((int)$this->order->id_address_invoice);
-            $formatted_invoice_address = AddressFormat::generateAddress($invoice_address, [], '<br />', ' ');
+            $invoiceAddress = new Address((int) $this->order->id_address_invoice);
+            $formattedInvoiceAddress = AddressFormat::generateAddress($invoiceAddress, [], '<br />', ' ');
         }
 
         $carrier = new Carrier($this->order->id_carrier);
         $carrier->name = ($carrier->name == '0' ? Configuration::get('PS_SHOP_NAME') : $carrier->name);
 
-        $order_details = $this->order_invoice->getProducts();
+        $orderDetails = $this->order_invoice->getProducts();
         if (Configuration::get('PS_PDF_IMG_DELIVERY')) {
-            foreach ($order_details as &$order_detail) {
-                if ($order_detail['image'] != null) {
-                    $name = 'product_mini_'.(int)$order_detail['product_id'].(isset($order_detail['product_attribute_id']) ? '_'.(int)$order_detail['product_attribute_id'] : '').'.jpg';
-                    $path = _PS_PROD_IMG_DIR_.$order_detail['image']->getExistingImgPath().'.jpg';
+            foreach ($orderDetails as &$orderDetail) {
+                if ($orderDetail['image'] != null) {
+                    $name = 'product_mini_'.(int) $orderDetail['product_id'].(isset($orderDetail['product_attribute_id']) ? '_'.(int) $orderDetail['product_attribute_id'] : '').'.jpg';
+                    $path = _PS_PROD_IMG_DIR_.$orderDetail['image']->getExistingImgPath().'.jpg';
 
-                    $order_detail['image_tag'] = preg_replace(
+                    $orderDetail['image_tag'] = preg_replace(
                         '/\.*'.preg_quote(__PS_BASE_URI__, '/').'/',
                         _PS_ROOT_DIR_.DIRECTORY_SEPARATOR,
                         ImageManager::thumbnail($path, $name, 45, 'jpg', false),
@@ -113,9 +129,9 @@ class HTMLTemplateDeliverySlipCore extends HTMLTemplate
                     );
 
                     if (file_exists(_PS_TMP_IMG_DIR_.$name)) {
-                        $order_detail['image_size'] = getimagesize(_PS_TMP_IMG_DIR_.$name);
+                        $orderDetail['image_size'] = getimagesize(_PS_TMP_IMG_DIR_.$name);
                     } else {
-                        $order_detail['image_size'] = false;
+                        $orderDetail['image_size'] = false;
                     }
                 }
             }
@@ -123,22 +139,22 @@ class HTMLTemplateDeliverySlipCore extends HTMLTemplate
 
         $this->smarty->assign(
             [
-            'order' => $this->order,
-            'order_details' => $order_details,
-            'delivery_address' => $formatted_delivery_address,
-            'invoice_address' => $formatted_invoice_address,
-            'order_invoice' => $this->order_invoice,
-            'carrier' => $carrier,
-            'display_product_images' => Configuration::get('PS_PDF_IMG_DELIVERY')
+                'order'                  => $this->order,
+                'order_details'          => $orderDetails,
+                'delivery_address'       => $formattedDeliveryAddress,
+                'invoice_address'        => $formattedInvoiceAddress,
+                'order_invoice'          => $this->order_invoice,
+                'carrier'                => $carrier,
+                'display_product_images' => Configuration::get('PS_PDF_IMG_DELIVERY'),
             ]
         );
 
         $tpls = [
-            'style_tab' => $this->smarty->fetch($this->getTemplate('delivery-slip.style-tab')),
+            'style_tab'     => $this->smarty->fetch($this->getTemplate('delivery-slip.style-tab')),
             'addresses_tab' => $this->smarty->fetch($this->getTemplate('delivery-slip.addresses-tab')),
-            'summary_tab' => $this->smarty->fetch($this->getTemplate('delivery-slip.summary-tab')),
-            'product_tab' => $this->smarty->fetch($this->getTemplate('delivery-slip.product-tab')),
-            'payment_tab' => $this->smarty->fetch($this->getTemplate('delivery-slip.payment-tab')),
+            'summary_tab'   => $this->smarty->fetch($this->getTemplate('delivery-slip.summary-tab')),
+            'product_tab'   => $this->smarty->fetch($this->getTemplate('delivery-slip.product-tab')),
+            'payment_tab'   => $this->smarty->fetch($this->getTemplate('delivery-slip.payment-tab')),
         ];
         $this->smarty->assign($tpls);
 
@@ -149,6 +165,9 @@ class HTMLTemplateDeliverySlipCore extends HTMLTemplate
      * Returns the template filename when using bulk rendering
      *
      * @return string filename
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getBulkFilename()
     {
@@ -159,6 +178,9 @@ class HTMLTemplateDeliverySlipCore extends HTMLTemplate
      * Returns the template filename
      *
      * @return string filename
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getFilename()
     {

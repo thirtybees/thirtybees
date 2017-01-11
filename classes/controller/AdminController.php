@@ -1851,14 +1851,14 @@ class AdminControllerCore extends Controller
         }
 
         if ($conf = Tools::getValue('conf')) {
-            $this->context->smarty->assign('conf', $this->json ? Tools::jsonEncode($this->_conf[(int)$conf]) : $this->_conf[(int)$conf]);
+            $this->context->smarty->assign('conf', $this->json ? json_encode($this->_conf[(int)$conf]) : $this->_conf[(int)$conf]);
         }
 
         foreach (['errors', 'warnings', 'informations', 'confirmations'] as $type) {
             if (!is_array($this->$type)) {
                 $this->$type = (array)$this->$type;
             }
-            $this->context->smarty->assign($type, $this->json ? Tools::jsonEncode(array_unique($this->$type)) : array_unique($this->$type));
+            $this->context->smarty->assign($type, $this->json ? json_encode(array_unique($this->$type)) : array_unique($this->$type));
         }
 
         if ($this->show_page_header_toolbar && !$this->lite_display) {
@@ -1872,7 +1872,7 @@ class AdminControllerCore extends Controller
 
         $this->context->smarty->assign(
             [
-                'page' =>  $this->json ? Tools::jsonEncode($page) : $page,
+                'page' =>  $this->json ? json_encode($page) : $page,
                 'header' => $this->context->smarty->fetch($header_tpl),
                 'footer' => $this->context->smarty->fetch($footer_tpl),
             ]

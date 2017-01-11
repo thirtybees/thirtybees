@@ -121,9 +121,9 @@ class SpecificPriceCore extends ObjectModel
         return false;
     }
 
-    public function update($null_values = false)
+    public function update($nullValues = false)
     {
-        if (parent::update($null_values)) {
+        if (parent::update($nullValues)) {
             // Flush cache when we updating a new specific price
             $this->flushCache();
             return true;

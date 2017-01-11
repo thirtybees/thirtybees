@@ -29,24 +29,45 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class TaxManagerModuleCore
+ *
+ * @since 1.0.0
+ */
 abstract class TaxManagerModuleCore extends Module
 {
+    // @codingStandardsIgnoreStart
     public $tax_manager_class;
+    // @codingStandardsIgnoreEnd
 
+    /**
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function install()
     {
         return (parent::install() && $this->registerHook('taxManager'));
     }
 
+    /**
+     * @param $args
+     *
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function hookTaxManager($args)
     {
-        $class_file = _PS_MODULE_DIR_.'/'.$this->name.'/'.$this->tax_manager_class.'.php';
+        $classFile = _PS_MODULE_DIR_.'/'.$this->name.'/'.$this->tax_manager_class.'.php';
 
-        if (!isset($this->tax_manager_class) || !file_exists($class_file)) {
+        if (!isset($this->tax_manager_class) || !file_exists($classFile)) {
             die(sprintf(Tools::displayError('Incorrect Tax Manager class [%s]'), $this->tax_manager_class));
         }
 
-        require_once($class_file);
+        require_once($classFile);
 
         if (!class_exists($this->tax_manager_class)) {
             die(sprintf(Tools::displayError('Tax Manager class not found [%s]'), $this->tax_manager_class));

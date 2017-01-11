@@ -21,77 +21,94 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * @since 1.5
+ * Class HTMLTemplateSupplyOrderFormCore
+ *
+ * @since 1.0.0
  */
 class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
 {
+    // @codingStandardsIgnoreStart
+    /** @var SupplyOrder $supply_order */
     public $supply_order;
+
+    /** @var Warehouse $warehouse */
     public $warehouse;
+
+    /** @var Address $address_warehouse */
     public $address_warehouse;
+
+    /** @var Address $address_supplier */
     public $address_supplier;
+
+    /** @var Context $context */
     public $context;
+    // @codingStandardsIgnoreEnd
 
     /**
-     * @param SupplyOrder $supply_order
-     * @param $smarty
+     * @param SupplyOrder $supplyOrder
+     * @param Smarty      $smarty
+     *
      * @throws PrestaShopException
      */
-    public function __construct(SupplyOrder $supply_order, $smarty)
+    public function __construct(SupplyOrder $supplyOrder, Smarty $smarty)
     {
-        $this->supply_order = $supply_order;
+        $this->supply_order = $supplyOrder;
         $this->smarty = $smarty;
         $this->context = Context::getContext();
-        $this->warehouse = new Warehouse((int)$supply_order->id_warehouse);
-        $this->address_warehouse = new Address((int)$this->warehouse->id_address);
-        $this->address_supplier = new Address(Address::getAddressIdBySupplierId((int)$supply_order->id_supplier));
+        $this->warehouse = new Warehouse((int) $supplyOrder->id_warehouse);
+        $this->address_warehouse = new Address((int) $this->warehouse->id_address);
+        $this->address_supplier = new Address(Address::getAddressIdBySupplierId((int) $supplyOrder->id_supplier));
 
         // header informations
-        $this->date = Tools::displayDate($supply_order->date_add);
+        $this->date = Tools::displayDate($supplyOrder->date_add);
         $this->title = HTMLTemplateSupplyOrderForm::l('Supply order form');
 
-        $this->shop = new Shop((int)$this->order->id_shop);
+        $this->shop = new Shop((int) $this->order->id_shop);
     }
 
     /**
-     * @see HTMLTemplate::getContent()
+     * @see     HTMLTemplate::getContent()
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getContent()
     {
-        $supply_order_details = $this->supply_order->getEntriesCollection((int)$this->supply_order->id_lang);
-        $this->roundSupplyOrderDetails($supply_order_details);
+        $supplyOrderDetails = $this->supply_order->getEntriesCollection((int) $this->supply_order->id_lang);
+        $this->roundSupplyOrderDetails($supplyOrderDetails);
 
         $this->roundSupplyOrder($this->supply_order);
 
-        $tax_order_summary = $this->getTaxOrderSummary();
-        $currency = new Currency((int)$this->supply_order->id_currency);
+        $taxOrderSummary = $this->getTaxOrderSummary();
+        $currency = new Currency((int) $this->supply_order->id_currency);
 
         $this->smarty->assign(
             [
-            'warehouse' => $this->warehouse,
-            'address_warehouse' => $this->address_warehouse,
-            'address_supplier' => $this->address_supplier,
-            'supply_order' => $this->supply_order,
-            'supply_order_details' => $supply_order_details,
-            'tax_order_summary' => $tax_order_summary,
-            'currency' => $currency,
+                'warehouse'            => $this->warehouse,
+                'address_warehouse'    => $this->address_warehouse,
+                'address_supplier'     => $this->address_supplier,
+                'supply_order'         => $this->supply_order,
+                'supply_order_details' => $supplyOrderDetails,
+                'tax_order_summary'    => $taxOrderSummary,
+                'currency'             => $currency,
             ]
         );
-        
+
         $tpls = [
-            'style_tab' => $this->smarty->fetch($this->getTemplate('invoice.style-tab')),
+            'style_tab'     => $this->smarty->fetch($this->getTemplate('invoice.style-tab')),
             'addresses_tab' => $this->smarty->fetch($this->getTemplate('supply-order.addresses-tab')),
-            'product_tab' => $this->smarty->fetch($this->getTemplate('supply-order.product-tab')),
-            'tax_tab' => $this->smarty->fetch($this->getTemplate('supply-order.tax-tab')),
-            'total_tab' => $this->smarty->fetch($this->getTemplate('supply-order.total-tab')),
+            'product_tab'   => $this->smarty->fetch($this->getTemplate('supply-order.product-tab')),
+            'tax_tab'       => $this->smarty->fetch($this->getTemplate('supply-order.tax-tab')),
+            'total_tab'     => $this->smarty->fetch($this->getTemplate('supply-order.total-tab')),
         ];
         $this->smarty->assign($tpls);
 
@@ -102,15 +119,18 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
      * Returns the invoice logo
      *
      * @return String Logo path
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     protected function getLogo()
     {
         $logo = '';
 
-        if (Configuration::get('PS_LOGO_INVOICE', null, null, (int)Shop::getContextShopID()) != false && file_exists(_PS_IMG_DIR_.Configuration::get('PS_LOGO_INVOICE', null, null, (int)Shop::getContextShopID()))) {
-            $logo = _PS_IMG_DIR_.Configuration::get('PS_LOGO_INVOICE', null, null, (int)Shop::getContextShopID());
-        } elseif (Configuration::get('PS_LOGO', null, null, (int)Shop::getContextShopID()) != false && file_exists(_PS_IMG_DIR_.Configuration::get('PS_LOGO', null, null, (int)Shop::getContextShopID()))) {
-            $logo = _PS_IMG_DIR_.Configuration::get('PS_LOGO', null, null, (int)Shop::getContextShopID());
+        if (Configuration::get('PS_LOGO_INVOICE', null, null, (int) Shop::getContextShopID()) != false && file_exists(_PS_IMG_DIR_.Configuration::get('PS_LOGO_INVOICE', null, null, (int) Shop::getContextShopID()))) {
+            $logo = _PS_IMG_DIR_.Configuration::get('PS_LOGO_INVOICE', null, null, (int) Shop::getContextShopID());
+        } elseif (Configuration::get('PS_LOGO', null, null, (int) Shop::getContextShopID()) != false && file_exists(_PS_IMG_DIR_.Configuration::get('PS_LOGO', null, null, (int) Shop::getContextShopID()))) {
+            $logo = _PS_IMG_DIR_.Configuration::get('PS_LOGO', null, null, (int) Shop::getContextShopID());
         }
 
         return $logo;
@@ -118,6 +138,9 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
 
     /**
      * @see HTMLTemplate::getBulkFilename()
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getBulkFilename()
     {
@@ -126,6 +149,9 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
 
     /**
      * @see HTMLTemplate::getFileName()
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getFilename()
     {
@@ -137,18 +163,22 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      * @throws PrestaShopDatabaseException
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
-
     protected function getTaxOrderSummary()
     {
         $query = new DbQuery();
-        $query->select('
+        $query->select(
+            '
 			SUM(price_with_order_discount_te) as base_te,
 			tax_rate,
 			SUM(tax_value_with_order_discount) as total_tax_value
-		');
+		'
+        );
         $query->from('supply_order_detail');
-        $query->where('id_supply_order = '.(int)$this->supply_order->id);
+        $query->where('id_supply_order = '.(int) $this->supply_order->id);
         $query->groupBy('tax_rate');
 
         $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
@@ -166,28 +196,31 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
 
     /**
      * @see HTMLTemplate::getHeader()
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getHeader()
     {
-        $shop_name = Configuration::get('PS_SHOP_NAME');
-        $path_logo = $this->getLogo();
+        $shopName = Configuration::get('PS_SHOP_NAME');
+        $pathLogo = $this->getLogo();
         $width = $height = 0;
 
-        if (!empty($path_logo)) {
-            list($width, $height) = getimagesize($path_logo);
+        if (!empty($pathLogo)) {
+            list($width, $height) = getimagesize($pathLogo);
         }
 
         $this->smarty->assign(
             [
-            'logo_path' => $path_logo,
-            'img_ps_dir' => 'http://'.Tools::getMediaServer(_PS_IMG_)._PS_IMG_,
-            'img_update_time' => Configuration::get('PS_IMG_UPDATE_TIME'),
-            'title' => $this->title,
-            'reference' => $this->supply_order->reference,
-            'date' => $this->date,
-            'shop_name' => $shop_name,
-            'width_logo' => $width,
-            'height_logo' => $height
+                'logo_path'       => $pathLogo,
+                'img_ps_dir'      => 'http://'.Tools::getMediaServer(_PS_IMG_)._PS_IMG_,
+                'img_update_time' => Configuration::get('PS_IMG_UPDATE_TIME'),
+                'title'           => $this->title,
+                'reference'       => $this->supply_order->reference,
+                'date'            => $this->date,
+                'shop_name'       => $shopName,
+                'width_logo'      => $width,
+                'height_logo'     => $height,
             ]
         );
 
@@ -196,23 +229,27 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
 
     /**
      * @see HTMLTemplate::getFooter()
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getFooter()
     {
         $this->address = $this->address_warehouse;
-        $free_text = [];
-        $free_text[] = HTMLTemplateSupplyOrderForm::l('TE: Tax excluded');
-        $free_text[] = HTMLTemplateSupplyOrderForm::l('TI: Tax included');
+        $freeText = [];
+        $freeText[] = HTMLTemplateSupplyOrderForm::l('TE: Tax excluded');
+        $freeText[] = HTMLTemplateSupplyOrderForm::l('TI: Tax included');
 
         $this->smarty->assign(
             [
-            'shop_address' => $this->getShopAddress(),
-            'shop_fax' => Configuration::get('PS_SHOP_FAX'),
-            'shop_phone' => Configuration::get('PS_SHOP_PHONE'),
-            'shop_details' => Configuration::get('PS_SHOP_DETAILS'),
-            'free_text' => $free_text,
+                'shop_address' => $this->getShopAddress(),
+                'shop_fax'     => Configuration::get('PS_SHOP_FAX'),
+                'shop_phone'   => Configuration::get('PS_SHOP_PHONE'),
+                'shop_details' => Configuration::get('PS_SHOP_DETAILS'),
+                'free_text'    => $freeText,
             ]
         );
+
         return $this->smarty->fetch($this->getTemplate('supply-order-footer'));
     }
 
@@ -220,31 +257,37 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
      * Rounds values of a SupplyOrderDetail object
      *
      * @param array|PrestaShopCollection $collection
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     protected function roundSupplyOrderDetails(&$collection)
     {
-        foreach ($collection as $supply_order_detail) {
-            /** @var SupplyOrderDetail $supply_order_detail */
-            $supply_order_detail->unit_price_te = Tools::ps_round($supply_order_detail->unit_price_te, 2);
-            $supply_order_detail->price_te = Tools::ps_round($supply_order_detail->price_te, 2);
-            $supply_order_detail->discount_rate = Tools::ps_round($supply_order_detail->discount_rate, 2);
-            $supply_order_detail->price_with_discount_te = Tools::ps_round($supply_order_detail->price_with_discount_te, 2);
-            $supply_order_detail->tax_rate = Tools::ps_round($supply_order_detail->tax_rate, 2);
-            $supply_order_detail->price_ti = Tools::ps_round($supply_order_detail->price_ti, 2);
+        foreach ($collection as $supplyOrderDetail) {
+            /** @var SupplyOrderDetail $supplyOrderDetail */
+            $supplyOrderDetail->unit_price_te = Tools::ps_round($supplyOrderDetail->unit_price_te, 2);
+            $supplyOrderDetail->price_te = Tools::ps_round($supplyOrderDetail->price_te, 2);
+            $supplyOrderDetail->discount_rate = Tools::ps_round($supplyOrderDetail->discount_rate, 2);
+            $supplyOrderDetail->price_with_discount_te = Tools::ps_round($supplyOrderDetail->price_with_discount_te, 2);
+            $supplyOrderDetail->tax_rate = Tools::ps_round($supplyOrderDetail->tax_rate, 2);
+            $supplyOrderDetail->price_ti = Tools::ps_round($supplyOrderDetail->price_ti, 2);
         }
     }
 
     /**
      * Rounds values of a SupplyOrder object
      *
-     * @param SupplyOrder $supply_order
+     * @param SupplyOrder $supplyOrder
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
-    protected function roundSupplyOrder(SupplyOrder &$supply_order)
+    protected function roundSupplyOrder(SupplyOrder &$supplyOrder)
     {
-        $supply_order->total_te = Tools::ps_round($supply_order->total_te, 2);
-        $supply_order->discount_value_te = Tools::ps_round($supply_order->discount_value_te, 2);
-        $supply_order->total_with_discount_te = Tools::ps_round($supply_order->total_with_discount_te, 2);
-        $supply_order->total_tax = Tools::ps_round($supply_order->total_tax, 2);
-        $supply_order->total_ti = Tools::ps_round($supply_order->total_ti, 2);
+        $supplyOrder->total_te = Tools::ps_round($supplyOrder->total_te, 2);
+        $supplyOrder->discount_value_te = Tools::ps_round($supplyOrder->discount_value_te, 2);
+        $supplyOrder->total_with_discount_te = Tools::ps_round($supplyOrder->total_with_discount_te, 2);
+        $supplyOrder->total_tax = Tools::ps_round($supplyOrder->total_tax, 2);
+        $supplyOrder->total_ti = Tools::ps_round($supplyOrder->total_ti, 2);
     }
 }

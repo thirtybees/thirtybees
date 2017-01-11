@@ -29,6 +29,11 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Interface ITreeToolbarButtonCore
+ *
+ * @since 1.0.0
+ */
 interface ITreeToolbarButtonCore
 {
     public function __toString();
