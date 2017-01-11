@@ -21,14 +21,19 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class AliasCore
+ *
+ * @since 1.0.0
+ */
 class AliasCore extends ObjectModel
 {
     public $alias;
@@ -39,16 +44,27 @@ class AliasCore extends ObjectModel
      * @see ObjectModel::$definition
      */
     public static $definition = [
-        'table' => 'alias',
+        'table'   => 'alias',
         'primary' => 'id_alias',
-        'fields' => [
+        'fields'  => [
             'search' => ['type' => self::TYPE_STRING, 'validate' => 'isValidSearch', 'required' => true, 'size' => 255],
-            'alias' =>    ['type' => self::TYPE_STRING, 'validate' => 'isValidSearch', 'required' => true, 'size' => 255],
-            'active' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'alias'  => ['type' => self::TYPE_STRING, 'validate' => 'isValidSearch', 'required' => true, 'size' => 255],
+            'active' => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                          ],
         ],
     ];
 
-    public function __construct($id = null, $alias = null, $search = null, $id_lang = null)
+    /**
+     * AliasCore constructor.
+     *
+     * @param null $id
+     * @param null $alias
+     * @param null $search
+     * @param null $idLang
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function __construct($id = null, $alias = null, $search = null, $idLang = null)
     {
         $this->def = Alias::getDefinition($this);
         $this->setDefinitionRetrocompatibility();
@@ -60,13 +76,15 @@ class AliasCore extends ObjectModel
                 $this->alias = trim($alias);
                 $this->search = trim($search);
             } else {
-                $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow('
+                $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                    '
 				SELECT a.id_alias, a.search, a.alias
 				FROM `'._DB_PREFIX_.'alias` a
-				WHERE `alias` = \''.pSQL($alias).'\' AND `active` = 1');
+				WHERE `alias` = \''.pSQL($alias).'\' AND `active` = 1'
+                );
 
                 if ($row) {
-                    $this->id = (int)$row['id_alias'];
+                    $this->id = (int) $row['id_alias'];
                     $this->search = $search ? trim($search) : $row['search'];
                     $this->alias = $row['alias'];
                 } else {
@@ -77,7 +95,15 @@ class AliasCore extends ObjectModel
         }
     }
 
-
+    /**
+     * @param bool $autodate
+     * @param bool $nullValues
+     *
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function add($autodate = true, $nullValues = false)
     {
         $this->alias = Tools::replaceAccentedChars($this->alias);
@@ -86,40 +112,61 @@ class AliasCore extends ObjectModel
         if (parent::add($autodate, $nullValues)) {
             // Set cache of feature detachable to true
             Configuration::updateGlobalValue('PS_ALIAS_FEATURE_ACTIVE', '1');
+
             return true;
         }
+
         return false;
     }
 
+    /**
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function delete()
     {
         if (parent::delete()) {
             // Refresh cache of feature detachable
             Configuration::updateGlobalValue('PS_ALIAS_FEATURE_ACTIVE', Alias::isCurrentlyUsed($this->def['table'], true));
+
             return true;
         }
+
         return false;
     }
 
+    /**
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getAliases()
     {
         if (!Alias::isFeatureActive()) {
             return '';
         }
 
-        $aliases = Db::getInstance()->executeS('
+        $aliases = Db::getInstance()->executeS(
+            '
 		SELECT a.alias
 		FROM `'._DB_PREFIX_.'alias` a
-		WHERE `search` = \''.pSQL($this->search).'\'');
+		WHERE `search` = \''.pSQL($this->search).'\''
+        );
 
         $aliases = array_map('implode', $aliases);
+
         return implode(', ', $aliases);
     }
 
     /**
      * This method is allow to know if a feature is used or active
-     * @since 1.5.0.1
+     *
      * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public static function isFeatureActive()
     {
@@ -128,19 +175,23 @@ class AliasCore extends ObjectModel
 
     /**
      * This method is allow to know if a alias exist for AdminImportController
-     * @since 1.5.6.0
+     *
      * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
-    public static function aliasExists($id_alias)
+    public static function aliasExists($idAlias)
     {
         if (!Alias::isFeatureActive()) {
             return false;
         }
 
-        $row = Db::getInstance()->getRow('
+        $row = Db::getInstance()->getRow(
+            '
 			SELECT `id_alias`
 			FROM '._DB_PREFIX_.'alias a
-			WHERE a.`id_alias` = '.(int)$id_alias
+			WHERE a.`id_alias` = '.(int) $idAlias
         );
 
         return isset($row['id_alias']);

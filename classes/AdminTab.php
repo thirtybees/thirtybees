@@ -30,7 +30,7 @@
  */
 
 /**
- * @deprecated 1.5.0
+ * @deprecated 1.0.0
  */
 abstract class AdminTabCore
 {
