@@ -32,7 +32,7 @@
 /**
  * Class CarrierCore
  *
- * @since   1.0.0
+ * @since 1.0.0
  */
 class CarrierCore extends ObjectModel
 {
