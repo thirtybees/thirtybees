@@ -49,7 +49,7 @@
 		<div class="alert alert-warning">{$warningSslMessage}</div>
 		{/if}
 	</div>
-	<div id="shop-img"><img src="{$img_dir}preston-login@2x.png" alt="{$shop_name}" width="69.5px" height="118.5px" /></div>
+	<div id="shop-img"><img src="{$img_dir}thirty-bees-avatar.png" alt="{$shop_name}" width="69.5px" height="118.5px" /></div>
 	<div class="flip-container">
 		<div class="flipper">
 			<div class="front panel">

@@ -1,28 +1,33 @@
 <?php
-/*
-* 2007-2016 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Open Software License (OSL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/osl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2016 PrestaShop SA
-*  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*/
+/**
+ * 2007-2016 PrestaShop
+ *
+ * Thirty Bees is an extension to the PrestaShop e-commerce software developed by PrestaShop SA
+ * Copyright (C) 2017 Thirty Bees
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@thirtybees.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://www.thirtybees.com for more information.
+ *
+ *  @author    Thirty Bees <contact@thirtybees.com>
+ *  @author    PrestaShop SA <contact@prestashop.com>
+ *  @copyright 2017 Thirty Bees
+ *  @copyright 2007-2016 PrestaShop SA
+ *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
+ */
 
 function reorderpositions()
 {
@@ -50,7 +55,7 @@ function reorderpositions()
             }
         }
     }
-    
+
     $cat_parent = Db::getInstance()->executeS('SELECT DISTINCT c.id_parent FROM `'._DB_PREFIX_.'category` c WHERE id_category != 1');
     foreach ($cat_parent as $parent) {
         $result = Db::getInstance()->executeS('
@@ -66,14 +71,14 @@ function reorderpositions()
 			WHERE `id_parent` = '.(int)($categ['id_parent']).'
 			AND `id_category` = '.(int)($categ['id_category']));
         }
-        
+
         $result = Db::getInstance()->executeS('
 							SELECT DISTINCT c.*, cl.*
 							FROM `'._DB_PREFIX_.'category` c
 							LEFT JOIN `'._DB_PREFIX_.'category_lang` cl ON (c.`id_category` = cl.`id_category`)
 							WHERE c.id_parent = '.(int)($parent['id_parent']).'
 							ORDER BY name ASC');
-        
+
         // Remove number from category name
         foreach ($result as $i => $categ) {
             Db::getInstance()->execute('UPDATE `'._DB_PREFIX_.'category` c
@@ -82,7 +87,7 @@ function reorderpositions()
 			WHERE c.id_category = '.(int)($categ['id_category']).' AND id_lang = \''.(int)($categ['id_lang']).'\'');
         }
     }
-    
+
     /* Clean CMS positions */
     $cms_cat = Db::getInstance()->executeS('SELECT id_cms_category FROM `'._DB_PREFIX_.'cms_category` WHERE active=1');
     if ($cms_cat) {
