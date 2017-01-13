@@ -1947,7 +1947,7 @@ class AdminThemesControllerCore extends AdminController
     private function getNativeModule($type = 0)
     {
         $guzzle = new \GuzzleHttp\Client();
-        $xml = @simplexml_load_string($guzzle->get(_PS_API_URL_.'/xml/modules_list_16.xml'));
+        $xml = @simplexml_load_string((string) $guzzle->get(_PS_API_URL_.'/xml/modules_list_16.xml')->getBody());
 
         if ($xml) {
             $natives = [];

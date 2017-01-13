@@ -181,7 +181,7 @@ class AdminLocalizationControllerCore extends AdminController
 
             if (($isoLocalizationPack = Tools::getValue('iso_localization_pack')) && Validate::isFileName($isoLocalizationPack)) {
                 if (Tools::getValue('download_updated_pack') == '1' || defined('_PS_HOST_MODE_')) {
-                    $pack = $guzzle->get(_PS_API_URL_.'/localization/'.$version.'/'.$isoLocalizationPack.'.xml');
+                    $pack = (string) $guzzle->get(_PS_API_URL_.'/localization/'.$version.'/'.$isoLocalizationPack.'.xml')->getBody();
                 } else {
                     $pack = false;
                 }
@@ -192,7 +192,7 @@ class AdminLocalizationControllerCore extends AdminController
                     $path = _PS_ROOT_DIR_.'/localization/'.$isoLocalizationPack.'.xml';
                 }
 
-                if (!$pack && !($pack = $guzzle->get($path))) {
+                if (!$pack && !($pack = (string) $guzzle->get($path)->getBody())) {
                     $this->errors[] = Tools::displayError('Cannot load the localization pack.');
                 }
 

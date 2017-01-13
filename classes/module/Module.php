@@ -1617,7 +1617,7 @@ abstract class ModuleCore
 
                 $guzzle = new \GuzzleHttp\Client();
                 $file = $f['file'];
-                $content = $guzzle->get($file);
+                $content = (string) $guzzle->get($file)->getBody();
                 $xml = @simplexml_load_string($content, null, LIBXML_NOCDATA);
 
                 if ($xml && isset($xml->module)) {
@@ -1665,7 +1665,7 @@ abstract class ModuleCore
                             if (isset($modaddons->img)) {
                                 if (!file_exists(_PS_TMP_IMG_DIR_.md5((int)$modaddons->id.'-'.$modaddons->name).'.jpg')) {
                                     $guzzle = new \GuzzleHttp\Client();
-                                    if (!file_put_contents(_PS_TMP_IMG_DIR_.md5((int)$modaddons->id.'-'.$modaddons->name).'.jpg', $guzzle->get($modaddons->img))) {
+                                    if (!file_put_contents(_PS_TMP_IMG_DIR_.md5((int)$modaddons->id.'-'.$modaddons->name).'.jpg', (string) $guzzle->get($modaddons->img)->getBody())) {
                                         copy(_PS_IMG_DIR_.'404.gif', _PS_TMP_IMG_DIR_.md5((int)$modaddons->id.'-'.$modaddons->name).'.jpg');
                                     }
                                 }

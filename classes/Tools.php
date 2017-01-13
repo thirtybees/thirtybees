@@ -2103,7 +2103,7 @@ class ToolsCore
         $cache_id = 'Tools::simplexml_load_file'.$url;
         if (!Cache::isStored($cache_id)) {
             $guzzle = new \GuzzleHttp\Client();
-            $result = @simplexml_load_string($guzzle->get($url), $class_name);
+            $result = @simplexml_load_string((string) $guzzle->get($url)->getBody(), $class_name);
             Cache::store($cache_id, $result);
             return $result;
         }
@@ -2117,7 +2117,7 @@ class ToolsCore
         }
         $guzzle = new \GuzzleHttp\Client();
 
-        return @file_put_contents($destination, $guzzle->get($source));
+        return @file_put_contents($destination, (string) $guzzle->get($source)->getBody());
     }
 
     /**

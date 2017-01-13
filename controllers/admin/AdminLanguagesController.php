@@ -548,7 +548,7 @@ class AdminLanguagesControllerCore extends AdminController
 
         // Get all iso code available
         $guzzle = new \GuzzleHttp\Client();
-        if ($lang_packs = $guzzle->get('http://www.prestashop.com/download/lang_packs/get_language_pack.php?version='.Tools::getValue('ps_version').'&iso_lang='.Tools::strtolower(Tools::getValue('iso_lang')))) {
+        if ($lang_packs = (string) $guzzle->get('http://www.prestashop.com/download/lang_packs/get_language_pack.php?version='.Tools::getValue('ps_version').'&iso_lang='.Tools::strtolower(Tools::getValue('iso_lang')))->getBody()) {
             $result = Tools::jsonDecode($lang_packs);
             if ($lang_packs !== '' && $result && !isset($result->error)) {
                 $this->status = 'ok';
