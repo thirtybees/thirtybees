@@ -21,21 +21,29 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class InstallControllerHttpProcess
+ *
+ * @since 1.0.0
+ */
 class InstallControllerHttpProcess extends InstallControllerHttp
 {
     const SETTINGS_FILE = 'config/settings.inc.php';
 
-    protected $model_install;
     public $process_steps = [];
+
     public $previous_button = false;
+
+    /** @var InstallModelInstall $model_install */
+    protected $model_install;
 
     public function init()
     {
@@ -56,24 +64,6 @@ class InstallControllerHttpProcess extends InstallControllerHttp
     public function validate()
     {
         return false;
-    }
-
-    public function initializeContext()
-    {
-        global $smarty;
-
-        Context::getContext()->shop = new Shop(1);
-        Shop::setContext(Shop::CONTEXT_SHOP, 1);
-        Configuration::loadConfiguration();
-        Context::getContext()->language = new Language(Configuration::get('PS_LANG_DEFAULT'));
-        Context::getContext()->country = new Country(Configuration::get('PS_COUNTRY_DEFAULT'));
-        Context::getContext()->currency = new Currency(Configuration::get('PS_CURRENCY_DEFAULT'));
-        Context::getContext()->cart = new Cart();
-        Context::getContext()->employee = new Employee(1);
-        define('_PS_SMARTY_FAST_LOAD_', true);
-        require_once _PS_ROOT_DIR_.'/config/smarty.config.inc.php';
-
-        Context::getContext()->smarty = $smarty;
     }
 
     public function process()
@@ -100,7 +90,7 @@ class InstallControllerHttpProcess extends InstallControllerHttp
             $this->processInstallFixtures();
         } elseif (Tools::getValue('installModules') && (!empty($this->session->process_validated['installFixtures']) || $this->session->install_type != 'full')) {
             $this->processInstallModules();
-        } elseif (Tools::getValue('installTheme') && !empty($this->session->process_validated['installModulesAddons'])) {
+        } elseif (Tools::getValue('installTheme')) {
             $this->processInstallTheme();
         } elseif (Tools::getValue('sendEmail') && !empty($this->session->process_validated['installTheme'])) {
             $this->processSendEmail();
@@ -188,6 +178,24 @@ class InstallControllerHttpProcess extends InstallControllerHttp
         $this->ajaxJsonAnswer(true);
     }
 
+    public function initializeContext()
+    {
+        global $smarty;
+
+        Context::getContext()->shop = new Shop(1);
+        Shop::setContext(Shop::CONTEXT_SHOP, 1);
+        Configuration::loadConfiguration();
+        Context::getContext()->language = new Language(Configuration::get('PS_LANG_DEFAULT'));
+        Context::getContext()->country = new Country(Configuration::get('PS_COUNTRY_DEFAULT'));
+        Context::getContext()->currency = new Currency(Configuration::get('PS_CURRENCY_DEFAULT'));
+        Context::getContext()->cart = new Cart();
+        Context::getContext()->employee = new Employee(1);
+        define('_PS_SMARTY_FAST_LOAD_', true);
+        require_once _PS_ROOT_DIR_.'/config/smarty.config.inc.php';
+
+        Context::getContext()->smarty = $smarty;
+    }
+
     /**
      * PROCESS : configureShop
      * Set default shop configuration
@@ -198,17 +206,17 @@ class InstallControllerHttpProcess extends InstallControllerHttp
 
         $success = $this->model_install->configureShop(
             [
-            'shop_name' =>                $this->session->shop_name,
-            'shop_activity' =>            $this->session->shop_activity,
-            'shop_country' =>            $this->session->shop_country,
-            'shop_timezone' =>            $this->session->shop_timezone,
-            'admin_firstname' =>        $this->session->admin_firstname,
-            'admin_lastname' =>            $this->session->admin_lastname,
-            'admin_password' =>            $this->session->admin_password,
-            'admin_email' =>            $this->session->admin_email,
-            'send_informations' =>        $this->session->send_informations,
-            'configuration_agrement' =>    $this->session->configuration_agrement,
-            'rewrite_engine' =>            $this->session->rewrite_engine,
+                'shop_name'              => $this->session->shop_name,
+                'shop_activity'          => $this->session->shop_activity,
+                'shop_country'           => $this->session->shop_country,
+                'shop_timezone'          => $this->session->shop_timezone,
+                'admin_firstname'        => $this->session->admin_firstname,
+                'admin_lastname'         => $this->session->admin_lastname,
+                'admin_password'         => $this->session->admin_password,
+                'admin_email'            => $this->session->admin_email,
+                'send_informations'      => $this->session->send_informations,
+                'configuration_agrement' => $this->session->configuration_agrement,
+                'rewrite_engine'         => $this->session->rewrite_engine,
             ]
         );
 
@@ -217,22 +225,6 @@ class InstallControllerHttpProcess extends InstallControllerHttp
         }
 
         $this->session->process_validated = array_merge($this->session->process_validated, ['configureShop' => true]);
-        $this->ajaxJsonAnswer(true);
-    }
-
-    /**
-     * PROCESS : installModules
-     * Install all modules in ~/modules/ directory
-     */
-    public function processInstallModules()
-    {
-        $this->initializeContext();
-
-        $result = $this->model_install->installModules(Tools::getValue('module'));
-        if (!$result || $this->model_install->getErrors()) {
-            $this->ajaxJsonAnswer(false, $this->model_install->getErrors());
-        }
-        $this->session->process_validated = array_merge($this->session->process_validated, ['installModules' => true]);
         $this->ajaxJsonAnswer(true);
     }
 
@@ -250,6 +242,22 @@ class InstallControllerHttpProcess extends InstallControllerHttp
         }
         $this->session->xml_loader_ids = $this->model_install->xml_loader_ids;
         $this->session->process_validated = array_merge($this->session->process_validated, ['installFixtures' => true]);
+        $this->ajaxJsonAnswer(true);
+    }
+
+    /**
+     * PROCESS : installModules
+     * Install all modules in ~/modules/ directory
+     */
+    public function processInstallModules()
+    {
+        $this->initializeContext();
+
+        $result = $this->model_install->installModules(Tools::getValue('module'));
+        if (!$result || $this->model_install->getErrors()) {
+            $this->ajaxJsonAnswer(false, $this->model_install->getErrors());
+        }
+        $this->session->process_validated = array_merge($this->session->process_validated, ['installModules' => true]);
         $this->ajaxJsonAnswer(true);
     }
 
@@ -314,23 +322,6 @@ class InstallControllerHttpProcess extends InstallControllerHttp
         if ($low_memory) {
             foreach ($this->model_install->getModulesList() as $module) {
                 $install_modules['subtasks'][] = ['module' => $module];
-            }
-        }
-        $this->process_steps[] = $install_modules;
-        
-        $install_modules = ['key' => 'installModulesAddons', 'lang' => $this->l('Install Addons modules')];
-
-        $params = [
-            'iso_lang' => $this->language->getLanguageIso(),
-            'iso_country' => $this->session->shop_country,
-            'email' => $this->session->admin_email,
-            'shop_url' => Tools::getHttpHost(),
-            'version' => _PS_INSTALL_VERSION_
-        ];
-
-        if ($low_memory) {
-            foreach ($this->model_install->getAddonsModulesList($params) as $module) {
-                $install_modules['subtasks'][] = ['module' => (string)$module['name'], 'id_module' => (string)$module['id_module']];
             }
         }
         $this->process_steps[] = $install_modules;
