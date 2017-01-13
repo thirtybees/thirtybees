@@ -158,11 +158,6 @@
 	url = https://github.com/thirtybees/blocktags.git
 	branch = master
 	ignore = dirty
-[submodule "modules/blocktopmenu"]
-	path = modules/blocktopmenu
-	url = https://github.com/thirtybees/blocktopmenu.git
-	branch = master
-	ignore = dirty
 [submodule "modules/blockuserinfo"]
 	path = modules/blockuserinfo
 	url = https://github.com/thirtybees/blockuserinfo.git
