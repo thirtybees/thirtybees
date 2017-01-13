@@ -378,9 +378,9 @@
 	url = https://github.com/thirtybees/sendtoafriend.git
 	branch = master
 	ignore = dirty
-[submodule "modules/ctconfiguration"]
-	path = modules/ctconfiguration
-	url = https://github.com/thirtybees/ctconfiguration.git
+[submodule "modules/paypal"]
+	path = modules/paypal
+	url = https://github.com/thirtybees/paypal.git
 	branch = master
 	ignore = dirty
 [submodule "modules/cttopmenu"]
@@ -388,8 +388,8 @@
 	url = https://github.com/thirtybees/cttopmenu.git
 	branch = master
 	ignore = dirty
-[submodule "modules/paypal"]
-	path = modules/paypal
-	url = https://github.com/thirtybees/paypal.git
+[submodule "modules/ctconfiguration"]
+	path = modules/ctconfiguration
+	url = https://github.com/thirtybees/ctconfiguration.git
 	branch = master
 	ignore = dirty
