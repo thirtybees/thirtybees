@@ -46,7 +46,6 @@ a {cursor:pointer;}
 #header {
 	padding:6px 16px 16px 16px;
 	height:50px;
-	background:#394049;
 }
 #loaderSpace{
 		display:none;
@@ -313,7 +312,7 @@ div.field {
 }
 	#header #headerLinks  li.last {background:none;}
 		#header #headerLinks  li a {
-			color:#fff;
+			color:#000;
 			text-decoration:none;
 }
 			#header #headerLinks li a:hover {text-decoration:underline;}
