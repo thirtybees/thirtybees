@@ -1615,8 +1615,9 @@ abstract class ModuleCore
                     break;
                 }
 
+                $guzzle = new \GuzzleHttp\Client();
                 $file = $f['file'];
-                $content = Tools::file_get_contents($file);
+                $content = $guzzle->get($file);
                 $xml = @simplexml_load_string($content, null, LIBXML_NOCDATA);
 
                 if ($xml && isset($xml->module)) {
@@ -1651,7 +1652,7 @@ abstract class ModuleCore
                             $item->need_instance = 0;
                             $item->not_on_disk = 1;
                             $item->available_on_addons = 1;
-                            $item->trusted = Module::isModuleTrusted($item->name);
+                            $item->trusted = true;
                             $item->active = 0;
                             $item->description_full = stripslashes($modaddons->description_full);
                             $item->additional_description = isset($modaddons->additional_description) ? stripslashes($modaddons->additional_description) : null;
@@ -1663,7 +1664,8 @@ abstract class ModuleCore
 
                             if (isset($modaddons->img)) {
                                 if (!file_exists(_PS_TMP_IMG_DIR_.md5((int)$modaddons->id.'-'.$modaddons->name).'.jpg')) {
-                                    if (!file_put_contents(_PS_TMP_IMG_DIR_.md5((int)$modaddons->id.'-'.$modaddons->name).'.jpg', Tools::file_get_contents($modaddons->img))) {
+                                    $guzzle = new \GuzzleHttp\Client();
+                                    if (!file_put_contents(_PS_TMP_IMG_DIR_.md5((int)$modaddons->id.'-'.$modaddons->name).'.jpg', $guzzle->get($modaddons->img))) {
                                         copy(_PS_IMG_DIR_.'404.gif', _PS_TMP_IMG_DIR_.md5((int)$modaddons->id.'-'.$modaddons->name).'.jpg');
                                     }
                                 }
@@ -1835,27 +1837,15 @@ abstract class ModuleCore
     /**
      * Create the Addons API call from the module name only
      *
-     * @param string $name Module dir name
+     * @param string $moduleName
+     *
      * @return bool Returns if the module is trusted by addons.prestashop.com
      *
      * @deprecated 1.0.0
      */
-    final public static function checkModuleFromAddonsApi($module_name)
+    final public static function checkModuleFromAddonsApi($moduleName)
     {
-        $obj = Module::getInstanceByName($module_name);
-
-        if (!is_object($obj)) {
-            return false;
-        } elseif ($obj->module_key === '') {
-            return false;
-        } else {
-            $params = [
-                'module_name' => $obj->name,
-                'module_key' => $obj->module_key,
-            ];
-            $xml = Tools::addonsRequest('check_module', $params);
-            return (bool)(strpos($xml, 'success') !== false);
-        }
+        return false;
     }
 
     /**

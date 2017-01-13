@@ -802,7 +802,8 @@ class LanguageCore extends ObjectModel
 
         // If the language pack has not been provided, retrieve it from prestashop.com
         if (!$lang_pack) {
-            $lang_pack = json_decode(Tools::file_get_contents('http://www.prestashop.com/download/lang_packs/get_language_pack.php?version='._PS_VERSION_.'&iso_lang='.$iso_code));
+            $guzzle = new \GuzzleHttp\Client();
+            $lang_pack = json_decode($guzzle->get('http://www.prestashop.com/download/lang_packs/get_language_pack.php?version='._PS_VERSION_.'&iso_lang='.$iso_code));
         }
 
         // If a language pack has been found or provided, prefill the language object with the value
@@ -835,7 +836,8 @@ class LanguageCore extends ObjectModel
             Configuration::updateGlobalValue('PS_ALLOW_ACCENTED_CHARS_URL', 1);
         }
 
-        $flag = Tools::file_get_contents('http://www.prestashop.com/download/lang_packs/flags/jpeg/'.$iso_code.'.jpg');
+        $guzzle = new \GuzzleHttp\Client();
+        $flag = $guzzle->get('http://www.prestashop.com/download/lang_packs/flags/jpeg/'.$iso_code.'.jpg');
         if ($flag != null && !preg_match('/<body>/', $flag)) {
             $file = fopen(_PS_ROOT_DIR_.'/img/l/'.(int)$lang->id.'.jpg', 'w');
             if ($file) {
@@ -916,11 +918,12 @@ class LanguageCore extends ObjectModel
         $errors = [];
         $file = _PS_TRANSLATIONS_DIR_.(string)$iso.'.gzip';
 
-        if (!$lang_pack_link = Tools::file_get_contents('http://www.prestashop.com/download/lang_packs/get_language_pack.php?version='.$version.'&iso_lang='.Tools::strtolower((string)$iso))) {
+        $guzzle = new GuzzleHttp\Client();
+        if (!$lang_pack_link = $guzzle->get('http://www.prestashop.com/download/lang_packs/get_language_pack.php?version='.$version.'&iso_lang='.Tools::strtolower((string)$iso))) {
             $errors[] = Tools::displayError('Archive cannot be downloaded from prestashop.com.');
         } elseif (!$lang_pack = json_decode($lang_pack_link)) {
             $errors[] = Tools::displayError('Error occurred when language was checked according to your Prestashop version.');
-        } elseif (empty($lang_pack->error) && ($content = Tools::file_get_contents('http://translations.prestashop.com/download/lang_packs/gzip/'.$lang_pack->version.'/'.Tools::strtolower($lang_pack->iso_code.'.gzip')))) {
+        } elseif (empty($lang_pack->error) && ($content = $guzzle->get('http://translations.prestashop.com/download/lang_packs/gzip/'.$lang_pack->version.'/'.Tools::strtolower($lang_pack->iso_code.'.gzip')))) {
             if (!@file_put_contents($file, $content)) {
                 if (is_writable(dirname($file))) {
                     @unlink($file);

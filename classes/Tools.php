@@ -2050,6 +2050,16 @@ class ToolsCore
         return file_exists($filename);
     }
 
+    /**
+     * @param      $url
+     * @param bool $use_include_path
+     * @param null $stream_context
+     * @param int  $curl_timeout
+     *
+     * @return bool|mixed|string
+     *
+     * @deprecated 1.0.0 Use Guzzle instead
+     */
     public static function file_get_contents($url, $use_include_path = false, $stream_context = null, $curl_timeout = 5)
     {
         if ($stream_context == null && preg_match('/^https?:\/\//', $url)) {
@@ -2082,11 +2092,18 @@ class ToolsCore
         }
     }
 
+    /**
+     * @param      $url
+     * @param null $class_name
+     *
+     * @return null|SimpleXMLElement
+     */
     public static function simplexml_load_file($url, $class_name = null)
     {
         $cache_id = 'Tools::simplexml_load_file'.$url;
         if (!Cache::isStored($cache_id)) {
-            $result = @simplexml_load_string(Tools::file_get_contents($url), $class_name);
+            $guzzle = new \GuzzleHttp\Client();
+            $result = @simplexml_load_string($guzzle->get($url), $class_name);
             Cache::store($cache_id, $result);
             return $result;
         }
@@ -2098,7 +2115,9 @@ class ToolsCore
         if (is_null($stream_context) && !preg_match('/^https?:\/\//', $source)) {
             return @copy($source, $destination);
         }
-        return @file_put_contents($destination, Tools::file_get_contents($source, false, $stream_context));
+        $guzzle = new \GuzzleHttp\Client();
+
+        return @file_put_contents($destination, $guzzle->get($source));
     }
 
     /**
@@ -3354,98 +3373,17 @@ exit;
     }
 
     protected static $is_addons_up = true;
+
+    /**
+     * @param       $request
+     * @param array $params
+     *
+     * @return bool
+     * 
+     * @deprecated 1.0.0
+     */
     public static function addonsRequest($request, $params = [])
     {
-        if (!self::$is_addons_up) {
-            return false;
-        }
-
-        $post_data = http_build_query(
-            [
-            'version' => isset($params['version']) ? $params['version'] : _PS_VERSION_,
-            'iso_lang' => Tools::strtolower(isset($params['iso_lang']) ? $params['iso_lang'] : Context::getContext()->language->iso_code),
-            'iso_code' => Tools::strtolower(isset($params['iso_country']) ? $params['iso_country'] : Country::getIsoById(Configuration::get('PS_COUNTRY_DEFAULT'))),
-            'shop_url' => isset($params['shop_url']) ? $params['shop_url'] : Tools::getShopDomain(),
-            'mail' => isset($params['email']) ? $params['email'] : Configuration::get('PS_SHOP_EMAIL')
-            ]
-        );
-
-        $protocols = ['https'];
-        $end_point = 'api.addons.prestashop.com';
-
-        switch ($request) {
-            case 'native':
-                $protocols[] = 'http';
-                $post_data .= '&method=listing&action=native';
-                break;
-            case 'native_all':
-                $protocols[] = 'http';
-                $post_data .= '&method=listing&action=native&iso_code=all';
-                break;
-            case 'must-have':
-                $protocols[] = 'http';
-                $post_data .= '&method=listing&action=must-have';
-                break;
-            case 'must-have-themes':
-                $protocols[] = 'http';
-                $post_data .= '&method=listing&action=must-have-themes';
-                break;
-            case 'customer':
-                $post_data .= '&method=listing&action=customer&username='.urlencode(trim(Context::getContext()->cookie->username_addons))
-                    .'&password='.urlencode(trim(Context::getContext()->cookie->password_addons));
-                break;
-            case 'customer_themes':
-                $post_data .= '&method=listing&action=customer-themes&username='.urlencode(trim(Context::getContext()->cookie->username_addons))
-                    .'&password='.urlencode(trim(Context::getContext()->cookie->password_addons));
-                break;
-            case 'check_customer':
-                $post_data .= '&method=check_customer&username='.urlencode($params['username_addons']).'&password='.urlencode($params['password_addons']);
-                break;
-            case 'check_module':
-                $post_data .= '&method=check&module_name='.urlencode($params['module_name']).'&module_key='.urlencode($params['module_key']);
-                break;
-            case 'module':
-                $post_data .= '&method=module&id_module='.urlencode($params['id_module']);
-                if (isset($params['username_addons']) && isset($params['password_addons'])) {
-                    $post_data .= '&username='.urlencode($params['username_addons']).'&password='.urlencode($params['password_addons']);
-                } else {
-                    $protocols[] = 'http';
-                }
-                break;
-            case 'hosted_module':
-                $post_data .= '&method=module&id_module='.urlencode((int)$params['id_module']).'&username='.urlencode($params['hosted_email'])
-                    .'&password='.urlencode($params['password_addons'])
-                    .'&shop_url='.urlencode(isset($params['shop_url']) ? $params['shop_url'] : Tools::getShopDomain())
-                    .'&mail='.urlencode(isset($params['email']) ? $params['email'] : Configuration::get('PS_SHOP_EMAIL'));
-                $protocols[] = 'https';
-                break;
-            case 'install-modules':
-                $protocols[] = 'http';
-                $post_data .= '&method=listing&action=install-modules';
-                $post_data .= defined('_PS_HOST_MODE_') ? '-od' : '';
-                break;
-            default:
-                return false;
-        }
-
-        $context = stream_context_create(
-            [
-            'http' => [
-                'method'  => 'POST',
-                'content' => $post_data,
-                'header'  => 'Content-type: application/x-www-form-urlencoded',
-                'timeout' => 5,
-            ]
-            ]
-        );
-
-        foreach ($protocols as $protocol) {
-            if ($content = Tools::file_get_contents($protocol.'://'.$end_point, false, $context)) {
-                return $content;
-            }
-        }
-
-        self::$is_addons_up = false;
         return false;
     }
 

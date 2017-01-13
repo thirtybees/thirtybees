@@ -29,6 +29,15 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+
+/**
+ * Class EmployeeCore
+ *
+ * @since 1.0.0
+ */
 class EmployeeCore extends ObjectModel
 {
     public $id;
@@ -240,16 +249,19 @@ class EmployeeCore extends ObjectModel
     {
         if ($this->optin && !defined('PS_INSTALLATION_IN_PROGRESS')) {
             $language = new Language($this->id_lang);
-            $params = http_build_query(
+            $guzzle = new \GuzzleHttp\Client();
+            $guzzle->get(
+                'http://www.prestashop.com/ajax/controller.php',
                 [
-                'email' => $this->email,
-                'method' => 'addMemberToNewsletter',
-                'language' => $language->iso_code,
-                'visitorType' => 1,
-                'source' => 'backoffice'
+                    'query' => [
+                        'email'       => $this->email,
+                        'method'      => 'addMemberToNewsletter',
+                        'language'    => $language->iso_code,
+                        'visitorType' => 1,
+                        'source'      => 'backoffice',
+                    ],
                 ]
             );
-            Tools::file_get_contents('http://www.prestashop.com/ajax/controller.php?'.$params);
         }
     }
 

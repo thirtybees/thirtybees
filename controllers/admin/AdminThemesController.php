@@ -127,14 +127,9 @@ class AdminThemesControllerCore extends AdminController
 
         libxml_use_internal_errors(true);
 
-        // Download user themes from Addons
-        if ($this->logged_on_addons) {
-            $this->downloadAddonsThemes();
-        }
-
         // Employee languages used for link and utm_source
         $lang = new Language($this->context->language->id);
-        $iso_lang_uc = strtoupper($lang->iso_code);
+        $isoLangUc = strtoupper($lang->iso_code);
 
         $this->fields_options = [
             'appearance' => [
@@ -223,7 +218,7 @@ class AdminThemesControllerCore extends AdminController
                         'icon' => 'process-icon-themes',
                         'href' => 'http://addons.prestashop.com/en/3-templates-prestashop'
                         .'?utm_source=back-office&utm_medium=theme-button'
-                        .'&utm_campaign=back-office-'.$iso_lang_uc
+                        .'&utm_campaign=back-office-'.$isoLangUc
                         .'&utm_content='.(defined('_PS_HOST_MODE_') ? 'cloud' : 'download'),
                         'js' => 'return !window.open(this.href)'
                     ]
@@ -512,47 +507,7 @@ class AdminThemesControllerCore extends AdminController
 
     public function downloadAddonsThemes()
     {
-        if (!$this->logged_on_addons) {
-            return false;
-        }
-
-        if (!$this->isFresh(Theme::CACHE_FILE_CUSTOMER_THEMES_LIST, 86400)) {
-            file_put_contents(_PS_ROOT_DIR_.Theme::CACHE_FILE_CUSTOMER_THEMES_LIST, Tools::addonsRequest('customer_themes'));
-        }
-
-        $customer_themes_list = file_get_contents(_PS_ROOT_DIR_.Theme::CACHE_FILE_CUSTOMER_THEMES_LIST);
-        if (!empty($customer_themes_list) && $customer_themes_list_xml = @simplexml_load_string($customer_themes_list)) {
-            foreach ($customer_themes_list_xml->theme as $addons_theme) {
-                //get addons theme if folder does not exist
-                $ids_themes = Tools::unSerialize(Configuration::get('PS_ADDONS_THEMES_IDS'));
-
-                if (!is_array($ids_themes) || (is_array($ids_themes) && !in_array((string)$addons_theme->id, $ids_themes))) {
-                    $zip_content = Tools::addonsRequest(
-                        'module',
-                        [
-                            'id_module' => pSQL($addons_theme->id),
-                            'username_addons' => pSQL(trim($this->context->cookie->username_addons)),
-                            'password_addons' => pSQL(trim($this->context->cookie->password_addons))
-                        ]
-                    );
-
-                    $uniqid = uniqid();
-                    $sandbox = _PS_CACHE_DIR_.'sandbox'.DIRECTORY_SEPARATOR.$uniqid.DIRECTORY_SEPARATOR;
-                    mkdir($sandbox);
-
-                    file_put_contents($sandbox.(string)$addons_theme->name.'.zip', $zip_content);
-
-                    if ($this->extractTheme($sandbox.(string)$addons_theme->name.'.zip', $sandbox)) {
-                        if ($theme_directory = $this->installTheme(Theme::UPLOADED_THEME_DIR_NAME, $sandbox, false)) {
-                            $ids_themes[$theme_directory] = (string)$addons_theme->id;
-                        }
-                    }
-
-                    Tools::deleteDirectory($sandbox);
-                }
-                Configuration::updateValue('PS_ADDONS_THEMES_IDS', serialize($ids_themes));
-            }
-        }
+        return true;
     }
 
     public function processAdd()
@@ -1861,14 +1816,15 @@ class AdminThemesControllerCore extends AdminController
 
     public function ajaxProcessGetAddonsThemes()
     {
-        $parent_domain = Tools::getHttpHost(true).substr($_SERVER['REQUEST_URI'], 0, -1 * strlen(basename($_SERVER['REQUEST_URI'])));
-        $iso_lang = $this->context->language->iso_code;
-        $iso_currency = $this->context->currency->iso_code;
-        $iso_country = $this->context->country->iso_code;
+        $parentDomain = Tools::getHttpHost(true).substr($_SERVER['REQUEST_URI'], 0, -1 * strlen(basename($_SERVER['REQUEST_URI'])));
+        $isoLang = $this->context->language->iso_code;
+        $isoCurrency = $this->context->currency->iso_code;
+        $isoCountry = $this->context->country->iso_code;
         $activity = Configuration::get('PS_SHOP_ACTIVITY');
-        $addons_url = 'http://addons.prestashop.com/iframe/search-1.6.php?psVersion='._PS_VERSION_.'&onlyThemes=1&isoLang='.$iso_lang.'&isoCurrency='.$iso_currency.'&isoCountry='.$iso_country.'&activity='.(int)$activity.'&parentUrl='.$parent_domain;
+        $addonsUrl = 'http://addons.prestashop.com/iframe/search-1.6.php?psVersion='._PS_VERSION_.'&onlyThemes=1&isoLang='.$isoLang.'&isoCurrency='.$isoCurrency.'&isoCountry='.$isoCountry.'&activity='.(int)$activity.'&parentUrl='.$parentDomain;
+        $guzzle = new \GuzzleHttp\Client();
 
-        die(Tools::file_get_contents($addons_url));
+        die($guzzle->get($addonsUrl));
     }
 
     /**
@@ -1990,7 +1946,8 @@ class AdminThemesControllerCore extends AdminController
      */
     private function getNativeModule($type = 0)
     {
-        $xml = @simplexml_load_string(Tools::file_get_contents(_PS_API_URL_.'/xml/modules_list_16.xml'));
+        $guzzle = new \GuzzleHttp\Client();
+        $xml = @simplexml_load_string($guzzle->get(_PS_API_URL_.'/xml/modules_list_16.xml'));
 
         if ($xml) {
             $natives = [];

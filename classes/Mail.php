@@ -269,8 +269,8 @@ class MailCore extends ObjectModel
                 'template_txt' => &$template_txt,
                 'id_lang' => (int)$id_lang
             ], null, true);
-            $template_html .= Tools::file_get_contents($template_path.$iso_template.'.html');
-            $template_txt .= strip_tags(html_entity_decode(Tools::file_get_contents($template_path.$iso_template.'.txt'), null, 'utf-8'));
+            $template_html .= file_get_contents($template_path.$iso_template.'.html');
+            $template_txt .= strip_tags(html_entity_decode(file_get_contents($template_path.$iso_template.'.txt'), null, 'utf-8'));
             Hook::exec('actionEmailAddAfterContent', [
                 'template' => $template,
                 'template_html' => &$template_html,

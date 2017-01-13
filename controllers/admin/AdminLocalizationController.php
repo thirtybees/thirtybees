@@ -161,12 +161,11 @@ class AdminLocalizationControllerCore extends AdminController
         }
     }
 
-
-
     public function postProcess()
     {
         if (_PS_MODE_DEMO_) {
             $this->errors[] = Tools::displayError('This functionality has been disabled.');
+
             return;
         }
 
@@ -175,23 +174,25 @@ class AdminLocalizationControllerCore extends AdminController
         }
 
         if (Tools::isSubmit('submitLocalizationPack')) {
+            $guzzle = new \GuzzleHttp\Client();
+
             $version = str_replace('.', '', _PS_VERSION_);
             $version = substr($version, 0, 2);
 
-            if (($iso_localization_pack = Tools::getValue('iso_localization_pack')) && Validate::isFileName($iso_localization_pack)) {
+            if (($isoLocalizationPack = Tools::getValue('iso_localization_pack')) && Validate::isFileName($isoLocalizationPack)) {
                 if (Tools::getValue('download_updated_pack') == '1' || defined('_PS_HOST_MODE_')) {
-                    $pack = @Tools::file_get_contents(_PS_API_URL_.'/localization/'.$version.'/'.$iso_localization_pack.'.xml');
+                    $pack = $guzzle->get(_PS_API_URL_.'/localization/'.$version.'/'.$isoLocalizationPack.'.xml');
                 } else {
                     $pack = false;
                 }
 
                 if (defined('_PS_HOST_MODE_')) {
-                    $path = _PS_CORE_DIR_.'/localization/'.$iso_localization_pack.'.xml';
+                    $path = _PS_CORE_DIR_.'/localization/'.$isoLocalizationPack.'.xml';
                 } else {
-                    $path = _PS_ROOT_DIR_.'/localization/'.$iso_localization_pack.'.xml';
+                    $path = _PS_ROOT_DIR_.'/localization/'.$isoLocalizationPack.'.xml';
                 }
 
-                if (!$pack && !($pack = @Tools::file_get_contents($path))) {
+                if (!$pack && !($pack = $guzzle->get($path))) {
                     $this->errors[] = Tools::displayError('Cannot load the localization pack.');
                 }
 
@@ -201,12 +202,13 @@ class AdminLocalizationControllerCore extends AdminController
                     foreach ($selection as $selected) {
                         if (!Validate::isLocalizationPackSelection($selected)) {
                             $this->errors[] = Tools::displayError('Invalid selection');
+
                             return;
                         }
                     }
-                    $localization_pack = new LocalizationPack();
-                    if (!$localization_pack->loadLocalisationPack($pack, $selection, false, $iso_localization_pack)) {
-                        $this->errors = array_merge($this->errors, $localization_pack->getErrors());
+                    $localizationPack = new LocalizationPack();
+                    if (!$localizationPack->loadLocalisationPack($pack, $selection, false, $isoLocalizationPack)) {
+                        $this->errors = array_merge($this->errors, $localizationPack->getErrors());
                     } else {
                         Tools::redirectAdmin(self::$currentIndex.'&conf=23&token='.$this->token);
                     }
@@ -214,10 +216,6 @@ class AdminLocalizationControllerCore extends AdminController
             }
         }
 
-        // Remove the module list cache if the default country changed
-        if (Tools::isSubmit('submitOptionsconfiguration') && file_exists(Module::CACHE_FILE_DEFAULT_COUNTRY_MODULES_LIST)) {
-            @unlink(Module::CACHE_FILE_DEFAULT_COUNTRY_MODULES_LIST);
-        }
         parent::postProcess();
     }
 

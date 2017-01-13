@@ -331,13 +331,15 @@ abstract class InstallControllerHttp
         }
         if ($this->phone === null) {
             $this->phone = $this->language->getInformation('phone', false);
-            if ($iframe = Tools::file_get_contents('http://api.prestashop.com/iframe/install.php?lang='.$this->language->getLanguageIso(), false, null, 3)) {
+            $guzzle = new \GuzzleHttp\Client();
+            if ($iframe = $guzzle->get('http://api.prestashop.com/iframe/install.php?lang='.$this->language->getLanguageIso(), false, null, 3)) {
                 if (preg_match('/<img.+alt="([^"]+)".*>/Ui', $iframe, $matches) && isset($matches[1])) {
                     $this->phone = $matches[1];
                 }
             }
         }
         InstallSession::getInstance()->support_phone = $this->phone;
+
         return $this->phone;
     }
 
