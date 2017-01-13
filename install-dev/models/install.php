@@ -414,7 +414,7 @@ class InstallModelInstall extends InstallAbstractModel
             if (is_file($path_cache_file)) {
                 $localization_file_content = file_get_contents($path_cache_file);
             } else {
-                $guzzle = new \GuzzleHttp\Client();
+                $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
                 $localization_file_content = (string) $guzzle->get('http://api.prestashop.com/localization/'.$version.'/'.$country.'.xml')->getBody();
                 if (!@simplexml_load_string($localization_file_content)) {
                     $localization_file_content = false;

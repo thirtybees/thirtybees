@@ -331,7 +331,7 @@ abstract class InstallControllerHttp
         }
         if ($this->phone === null) {
             $this->phone = $this->language->getInformation('phone', false);
-            $guzzle = new \GuzzleHttp\Client();
+            $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
 
             if ($iframe = (string) $guzzle->get('http://api.prestashop.com/iframe/install.php?lang='.$this->language->getLanguageIso())->getBody()) {
                 if (is_object($iframe)) {

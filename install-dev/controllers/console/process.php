@@ -111,7 +111,7 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
         }
 
         if ($this->datas->newsletter) {
-            $guzzle = new \GuzzleHttp\Client();
+            $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
             $guzzle->get('http://www.prestashop.com/ajax/controller.php?',
                 [
                     'query' => [

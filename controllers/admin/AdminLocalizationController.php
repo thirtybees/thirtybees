@@ -174,7 +174,7 @@ class AdminLocalizationControllerCore extends AdminController
         }
 
         if (Tools::isSubmit('submitLocalizationPack')) {
-            $guzzle = new \GuzzleHttp\Client();
+            $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
 
             $version = str_replace('.', '', _PS_VERSION_);
             $version = substr($version, 0, 2);

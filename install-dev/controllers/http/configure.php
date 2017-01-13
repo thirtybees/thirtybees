@@ -55,7 +55,7 @@ class InstallControllerHttpConfigure extends InstallControllerHttp
             $this->session->admin_email = trim(Tools::getValue('admin_email'));
             $this->session->send_informations = Tools::getValue('send_informations');
             if ($this->session->send_informations) {
-                $guzzle = new GuzzleHttp\Client();
+                $guzzle = new GuzzleHttp\Client(['http_errors' => false]);
                 $guzzle->get(
                     'http://www.prestashop.com/ajax/controller.php?',
                     [

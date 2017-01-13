@@ -249,7 +249,7 @@ class EmployeeCore extends ObjectModel
     {
         if ($this->optin && !defined('PS_INSTALLATION_IN_PROGRESS')) {
             $language = new Language($this->id_lang);
-            $guzzle = new \GuzzleHttp\Client();
+            $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
             $guzzle->get(
                 'http://www.prestashop.com/ajax/controller.php',
                 [

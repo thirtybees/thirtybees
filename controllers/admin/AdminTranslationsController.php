@@ -186,7 +186,7 @@ class AdminTranslationsControllerCore extends AdminController
         $token = Tools::getAdminToken('AdminLanguages'.(int)Tab::getIdFromClassName('AdminLanguages').(int)$this->context->employee->id);
         $file_name = $this->link_lang_pack.'?version='._PS_VERSION_;
 
-        $guzzle = new \GuzzleHttp\Client();
+        $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
         if ($lang_packs = (string) $guzzle->get($file_name)->getBody()) {
             // Notice : for php < 5.2 compatibility, Tools::jsonDecode. The second parameter to true will set us
             if ($lang_packs != '' && $lang_packs = Tools::jsonDecode($lang_packs, true)) {
@@ -863,7 +863,7 @@ class AdminTranslationsControllerCore extends AdminController
     {
         $arr_import_lang = explode('|', Tools::getValue('params_import_language')); /* 0 = Language ISO code, 1 = PS version */
         if (Validate::isLangIsoCode($arr_import_lang[0])) {
-            $guzzle = new \GuzzleHttp\Client();
+            $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
             $content = (string) $guzzle->get('http://www.prestashop.com/download/lang_packs/gzip/'.$arr_import_lang[1].'/'.Tools::strtolower($arr_import_lang[0]).'.gzip')->getBody();
             if ($content) {
                 $file = _PS_TRANSLATIONS_DIR_.$arr_import_lang[0].'.gzip';

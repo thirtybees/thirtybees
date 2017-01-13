@@ -802,7 +802,7 @@ class LanguageCore extends ObjectModel
 
         // If the language pack has not been provided, retrieve it from prestashop.com
         if (!$lang_pack) {
-            $guzzle = new \GuzzleHttp\Client();
+            $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
             $lang_pack = json_decode((string) $guzzle->get('http://www.prestashop.com/download/lang_packs/get_language_pack.php?version='._PS_VERSION_.'&iso_lang='.$iso_code)->getBody());
         }
 
@@ -836,7 +836,7 @@ class LanguageCore extends ObjectModel
             Configuration::updateGlobalValue('PS_ALLOW_ACCENTED_CHARS_URL', 1);
         }
 
-        $guzzle = new \GuzzleHttp\Client();
+        $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
         $flag = (string) $guzzle->get('http://www.prestashop.com/download/lang_packs/flags/jpeg/'.$iso_code.'.jpg')->getBody();
         if (is_object($flag)) {
             ddd($flag);
@@ -921,7 +921,7 @@ class LanguageCore extends ObjectModel
         $errors = [];
         $file = _PS_TRANSLATIONS_DIR_.(string)$iso.'.gzip';
 
-        $guzzle = new GuzzleHttp\Client();
+        $guzzle = new GuzzleHttp\Client(['http_errors' => false]);
         if (!$lang_pack_link = (string) $guzzle->get('http://www.prestashop.com/download/lang_packs/get_language_pack.php?version='.$version.'&iso_lang='.Tools::strtolower((string)$iso))->getBody()) {
             $errors[] = Tools::displayError('Archive cannot be downloaded from prestashop.com.');
         } elseif (!$lang_pack = json_decode($lang_pack_link)) {

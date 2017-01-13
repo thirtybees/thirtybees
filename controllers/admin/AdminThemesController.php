@@ -1822,7 +1822,7 @@ class AdminThemesControllerCore extends AdminController
         $isoCountry = $this->context->country->iso_code;
         $activity = Configuration::get('PS_SHOP_ACTIVITY');
         $addonsUrl = 'http://addons.prestashop.com/iframe/search-1.6.php?psVersion='._PS_VERSION_.'&onlyThemes=1&isoLang='.$isoLang.'&isoCurrency='.$isoCurrency.'&isoCountry='.$isoCountry.'&activity='.(int)$activity.'&parentUrl='.$parentDomain;
-        $guzzle = new \GuzzleHttp\Client();
+        $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
 
         die($guzzle->get($addonsUrl));
     }
@@ -1946,7 +1946,7 @@ class AdminThemesControllerCore extends AdminController
      */
     private function getNativeModule($type = 0)
     {
-        $guzzle = new \GuzzleHttp\Client();
+        $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
         $xml = @simplexml_load_string((string) $guzzle->get(_PS_API_URL_.'/xml/modules_list_16.xml')->getBody());
 
         if ($xml) {

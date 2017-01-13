@@ -2102,7 +2102,7 @@ class ToolsCore
     {
         $cache_id = 'Tools::simplexml_load_file'.$url;
         if (!Cache::isStored($cache_id)) {
-            $guzzle = new \GuzzleHttp\Client();
+            $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
             $result = @simplexml_load_string((string) $guzzle->get($url)->getBody(), $class_name);
             Cache::store($cache_id, $result);
             return $result;
@@ -2115,7 +2115,7 @@ class ToolsCore
         if (is_null($stream_context) && !preg_match('/^https?:\/\//', $source)) {
             return @copy($source, $destination);
         }
-        $guzzle = new \GuzzleHttp\Client();
+        $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
 
         return @file_put_contents($destination, (string) $guzzle->get($source)->getBody());
     }
