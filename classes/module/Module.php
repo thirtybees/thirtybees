@@ -71,7 +71,7 @@ abstract class ModuleCore
     /** @var string URI author of the module */
     public $author_uri = '';
 
-    /** @var string Module key provided by addons.prestashop.com */
+    /** @var string Module key */
     public $module_key = '';
 
     public $description_full;
@@ -95,7 +95,7 @@ abstract class ModuleCore
     /** @var bool Status */
     public $active = false;
 
-    /** @var bool Is the module certified by addons.prestashop.com */
+    /** @var bool Is the module certified */
     public $trusted = false;
 
     /** @var string Fill it if the module is installed but not yet set up */
@@ -178,16 +178,6 @@ abstract class ModuleCore
     const CACHE_FILE_MODULES_LIST = '/config/xml/modules_list.xml';
 
     const CACHE_FILE_TAB_MODULES_LIST = '/config/xml/tab_modules_list.xml';
-
-    const CACHE_FILE_ALL_COUNTRY_MODULES_LIST     = '/config/xml/modules_native_addons.xml';
-    const CACHE_FILE_DEFAULT_COUNTRY_MODULES_LIST = '/config/xml/default_country_modules_list.xml';
-
-    const CACHE_FILE_CUSTOMER_MODULES_LIST = '/config/xml/customer_modules_list.xml';
-
-    const CACHE_FILE_MUST_HAVE_MODULES_LIST = '/config/xml/must_have_modules_list.xml';
-
-    const CACHE_FILE_TRUSTED_MODULES_LIST = '/config/xml/trusted_modules_list.xml';
-    const CACHE_FILE_UNTRUSTED_MODULES_LIST = '/config/xml/untrusted_modules_list.xml';
 
     public static $hosted_modules_blacklist = ['autoupgrade'];
     // @codingStandardsIgnoreEnd
@@ -1617,11 +1607,7 @@ abstract class ModuleCore
         }
 
         // Get Default Country Modules and customer module
-        $files_list = [
-            ['type' => 'addonsNative', 'file' => _PS_ROOT_DIR_.self::CACHE_FILE_DEFAULT_COUNTRY_MODULES_LIST, 'loggedOnAddons' => 0],
-            ['type' => 'addonsMustHave', 'file' => _PS_ROOT_DIR_.self::CACHE_FILE_MUST_HAVE_MODULES_LIST, 'loggedOnAddons' => 0],
-            ['type' => 'addonsBought', 'file' => _PS_ROOT_DIR_.self::CACHE_FILE_CUSTOMER_MODULES_LIST, 'loggedOnAddons' => 1],
-        ];
+        $files_list = [];
         foreach ($files_list as $f) {
             if (file_exists($f['file']) && ($f['loggedOnAddons'] == 0 || $loggedOnAddons)) {
                 if (Module::useTooMuchMemory()) {
@@ -1782,30 +1768,7 @@ abstract class ModuleCore
      */
     public static function getNonNativeModuleList()
     {
-        $db = Db::getInstance();
-        $module_list_xml = _PS_ROOT_DIR_.self::CACHE_FILE_MODULES_LIST;
-        $native_modules = @simplexml_load_file($module_list_xml);
-        if ($native_modules) {
-            $native_modules = $native_modules->modules;
-        }
-
-        $arr_native_modules = [];
-        if (is_array($native_modules)) {
-            foreach ($native_modules as $native_modules_type) {
-                if (in_array($native_modules_type['type'], ['native', 'partner'])) {
-                    $arr_native_modules[] = '""';
-                    foreach ($native_modules_type->module as $module) {
-                        $arr_native_modules[] = '"'.pSQL($module['name']).'"';
-                    }
-                }
-            }
-        }
-
-        if ($arr_native_modules) {
-            return $db->executeS('SELECT * FROM `'._DB_PREFIX_.'module` m WHERE `name` NOT IN ('.implode(',', $arr_native_modules).') ');
-        }
-
-        return false;
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('SELECT * FROM `'._DB_PREFIX_.'module`');
     }
 
     /**
@@ -1816,31 +1779,7 @@ abstract class ModuleCore
      */
     public static function getNativeModuleList()
     {
-        $module_list_xml = _PS_ROOT_DIR_.self::CACHE_FILE_MODULES_LIST;
-        if (!file_exists($module_list_xml)) {
-            return false;
-        }
-
-        $native_modules = @simplexml_load_file($module_list_xml);
-
-        if ($native_modules) {
-            $native_modules = $native_modules->modules;
-        }
-
-        $modules = [];
-        if (is_object($native_modules)) {
-            foreach ($native_modules as $native_modules_type) {
-                if (in_array($native_modules_type['type'], ['native', 'partner'])) {
-                    foreach ($native_modules_type->module as $module) {
-                        $modules[] = $module['name'];
-                    }
-                }
-            }
-        }
-        if ($modules) {
-            return $modules;
-        }
-        return false;
+        return self::getNonNativeModuleList();
     }
 
     /**
@@ -1872,159 +1811,25 @@ abstract class ModuleCore
      *
      * @return int
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @deprecated 1.0.0
      */
     final public static function isModuleTrusted($moduleName)
     {
-        static $trusted_modules_list_content = null;
-        static $modules_list_content = null;
-        static $default_country_modules_list_content = null;
-        static $untrusted_modules_list_content = null;
+        Tools::displayAsDeprecated();
 
-        $context = Context::getContext();
-
-        // If the xml file exist, isn't empty, isn't too old
-        // and if the theme hadn't change
-        // we use the file, otherwise we regenerate it
-        if (!(file_exists(_PS_ROOT_DIR_.self::CACHE_FILE_TRUSTED_MODULES_LIST)
-            && filesize(_PS_ROOT_DIR_.self::CACHE_FILE_TRUSTED_MODULES_LIST) > 0
-            && ((time() - filemtime(_PS_ROOT_DIR_.self::CACHE_FILE_TRUSTED_MODULES_LIST)) < 86400)
-            )) {
-            self::generateTrustedXml();
-        }
-
-        if ($trusted_modules_list_content === null) {
-            $trusted_modules_list_content = Tools::file_get_contents(_PS_ROOT_DIR_.self::CACHE_FILE_TRUSTED_MODULES_LIST);
-            if (strpos($trusted_modules_list_content, $context->theme->name) === false) {
-                self::generateTrustedXml();
-            }
-        }
-
-        if ($modules_list_content === null) {
-            $modules_list_content = Tools::file_get_contents(_PS_ROOT_DIR_.self::CACHE_FILE_MODULES_LIST);
-        }
-
-        if ($default_country_modules_list_content === null) {
-            $default_country_modules_list_content = Tools::file_get_contents(_PS_ROOT_DIR_.self::CACHE_FILE_DEFAULT_COUNTRY_MODULES_LIST);
-        }
-
-        if ($untrusted_modules_list_content === null) {
-            $untrusted_modules_list_content = Tools::file_get_contents(_PS_ROOT_DIR_.self::CACHE_FILE_UNTRUSTED_MODULES_LIST);
-        }
-
-        // If the module is trusted, which includes both partner modules and modules bought on Addons
-
-        if (stripos($trusted_modules_list_content, $moduleName) !== false) {
-            // If the module is not a partner, then return 1 (which means the module is "trusted")
-            if (stripos($modules_list_content, '<module name="'.$moduleName.'"/>') == false) {
-                return 1;
-            } elseif (stripos($default_country_modules_list_content, '<name><![CDATA['.$moduleName.']]></name>') !== false) {
-                // The module is a parter. If the module is in the file that contains module for this country then return 1 (which means the module is "trusted")
-                return 1;
-            }
-            // The module seems to be trusted, but it does not seem to be dedicated to this country
-            return 2;
-        } elseif (stripos($untrusted_modules_list_content, $moduleName) !== false) {
-            // If the module is already in the untrusted list, then return 0 (untrusted)
-            return 0;
-        } else {
-            // If the module isn't in one of the xml files
-            // It might have been uploaded recenlty so we check
-            // Addons API and clear XML files to be regenerated next time
-            Tools::deleteFile(_PS_ROOT_DIR_.self::CACHE_FILE_TRUSTED_MODULES_LIST);
-            Tools::deleteFile(_PS_ROOT_DIR_.self::CACHE_FILE_UNTRUSTED_MODULES_LIST);
-
-            return (int)Module::checkModuleFromAddonsApi($moduleName);
-        }
+        return true;
     }
 
     /**
      * Generate XML files for trusted and untrusted modules
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @deprecated 1.0.0
      */
     final public static function generateTrustedXml()
     {
-        $modules_on_disk = Module::getModulesDirOnDisk();
-        $trusted   = [];
-        $untrusted = [];
+        Tools::displayAsDeprecated();
 
-        $trusted_modules_xml = [
-                                    _PS_ROOT_DIR_.self::CACHE_FILE_ALL_COUNTRY_MODULES_LIST,
-                                    _PS_ROOT_DIR_.self::CACHE_FILE_MUST_HAVE_MODULES_LIST,
-        ];
-
-        if (file_exists(_PS_ROOT_DIR_.self::CACHE_FILE_CUSTOMER_MODULES_LIST)) {
-            $trusted_modules_xml[] = _PS_ROOT_DIR_.self::CACHE_FILE_CUSTOMER_MODULES_LIST;
-        }
-
-        // Create 2 arrays with trusted and untrusted modules
-        foreach ($trusted_modules_xml as $file) {
-            $content  = Tools::file_get_contents($file);
-            $xml = @simplexml_load_string($content, null, LIBXML_NOCDATA);
-
-            if ($xml && isset($xml->module)) {
-                foreach ($xml->module as $modaddons) {
-                    $trusted[] = Tools::strtolower((string)$modaddons->name);
-                }
-            }
-        }
-
-        foreach (glob(_PS_ROOT_DIR_.'/config/xml/themes/*.xml') as $theme_xml) {
-            if (file_exists($theme_xml)) {
-                $content  = Tools::file_get_contents($theme_xml);
-                $xml = @simplexml_load_string($content, null, LIBXML_NOCDATA);
-
-                if ($xml) {
-                    foreach ($xml->modules->module as $modaddons) {
-                        if ((string)$modaddons['action'] == 'install') {
-                            $trusted[] = Tools::strtolower((string)$modaddons['name']);
-                        }
-                    }
-                }
-            }
-        }
-
-        foreach ($modules_on_disk as $name) {
-            if (!in_array($name, $trusted)) {
-                if (Module::checkModuleFromAddonsApi($name)) {
-                    $trusted[] = Tools::strtolower($name);
-                } else {
-                    $untrusted[] = Tools::strtolower($name);
-                }
-            }
-        }
-
-        $context = Context::getContext();
-        $theme = new Theme($context->shop->id_theme);
-
-        // Save the 2 arrays into XML files
-        $trusted_xml = new SimpleXMLElement('<modules_list/>');
-        $trusted_xml->addAttribute('theme', $theme->name);
-        $modules = $trusted_xml->addChild('modules');
-        $modules->addAttribute('type', 'trusted');
-        foreach ($trusted as $key => $name) {
-            $module = $modules->addChild('module');
-            $module->addAttribute('name', $name);
-        }
-        $success = file_put_contents(_PS_ROOT_DIR_.self::CACHE_FILE_TRUSTED_MODULES_LIST, $trusted_xml->asXML());
-
-        $untrusted_xml = new SimpleXMLElement('<modules_list/>');
-        $modules = $untrusted_xml->addChild('modules');
-        $modules->addAttribute('type', 'untrusted');
-        foreach ($untrusted as $key => $name) {
-            $module = $modules->addChild('module');
-            $module->addAttribute('name', $name);
-        }
-        $success &= file_put_contents(_PS_ROOT_DIR_.self::CACHE_FILE_UNTRUSTED_MODULES_LIST, $untrusted_xml->asXML());
-
-        if ($success) {
-            return true;
-        } else {
-            Tools::displayError('Trusted and Untrusted XML have not been generated properly');
-        }
+        return true;
     }
 
     /**
@@ -2033,8 +1838,7 @@ abstract class ModuleCore
      * @param string $name Module dir name
      * @return bool Returns if the module is trusted by addons.prestashop.com
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @deprecated 1.0.0
      */
     final public static function checkModuleFromAddonsApi($module_name)
     {
@@ -2064,10 +1868,10 @@ abstract class ModuleCore
      *
      * @deprecated 2.0.0
      */
-    public static function hookExec($hook_name, $hook_args = [], $id_module = null)
+    public static function hookExec($hook_name, $hook_args = [], $idModule = null)
     {
         Tools::displayAsDeprecated();
-        return Hook::exec($hook_name, $hook_args, $id_module);
+        return Hook::exec($hook_name, $hook_args, $idModule);
     }
 
     /**

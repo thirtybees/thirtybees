@@ -317,9 +317,9 @@ class AdminShopGroupControllerCore extends AdminController
         return parent::renderForm();
     }
 
-    public function getList($id_lang, $order_by = null, $order_way = null, $start = 0, $limit = null, $id_lang_shop = false)
+    public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
-        parent::getList($id_lang, $order_by, $order_way, $start, $limit, $id_lang_shop);
+        parent::getList($idLang, $orderBy, $orderWay, $start, $limit, $idLangShop);
         $shop_group_delete_list = [];
 
         // test store authorized to remove

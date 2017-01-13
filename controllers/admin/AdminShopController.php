@@ -354,13 +354,13 @@ class AdminShopControllerCore extends AdminController
         return parent::afterUpdate($new_shop);
     }
 
-    public function getList($id_lang, $order_by = null, $order_way = null, $start = 0, $limit = null, $id_lang_shop = false)
+    public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
         if (Shop::getContext() == Shop::CONTEXT_GROUP) {
             $this->_where .= ' AND a.id_shop_group = '.(int)Shop::getContextShopGroupID();
         }
 
-        parent::getList($id_lang, $order_by, $order_way, $start, $limit, $id_lang_shop);
+        parent::getList($idLang, $orderBy, $orderWay, $start, $limit, $idLangShop);
         $shop_delete_list = [];
 
         // don't allow to remove shop which have dependencies (customers / orders / ... )

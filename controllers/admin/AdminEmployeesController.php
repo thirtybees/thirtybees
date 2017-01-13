@@ -614,7 +614,7 @@ class AdminEmployeesControllerCore extends AdminController
         return parent::processSave();
     }
 
-    public function validateRules($class_name = false)
+    public function validateRules($className = false)
     {
         $employee = new Employee((int)Tools::getValue('id_employee'));
 
@@ -623,7 +623,7 @@ class AdminEmployeesControllerCore extends AdminController
                 Validate::ADMIN_PASSWORD_LENGTH));
         }
 
-        return parent::validateRules($class_name);
+        return parent::validateRules($className);
     }
 
     public function postProcess()

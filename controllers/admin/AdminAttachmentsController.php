@@ -171,12 +171,12 @@ class AdminAttachmentsControllerCore extends AdminController
         return parent::renderForm();
     }
 
-    public function getList($id_lang, $order_by = null, $order_way = null, $start = 0, $limit = null, $id_lang_shop = false)
+    public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
-        parent::getList((int)$id_lang, $order_by, $order_way, $start, $limit, $id_lang_shop);
+        parent::getList((int)$idLang, $orderBy, $orderWay, $start, $limit, $idLangShop);
 
         if (count($this->_list)) {
-            $this->product_attachements = Attachment::getProductAttached((int)$id_lang, $this->_list);
+            $this->product_attachements = Attachment::getProductAttached((int)$idLang, $this->_list);
 
             $list_product_list = [];
             foreach ($this->_list as $list) {

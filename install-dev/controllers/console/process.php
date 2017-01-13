@@ -1,4 +1,5 @@
 <?php
+
 /**
  * 2007-2016 PrestaShop
  *
@@ -21,21 +22,19 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
-
 class InstallControllerConsoleProcess extends InstallControllerConsole
 {
     const SETTINGS_FILE = 'config/settings.inc.php';
-
-    protected $model_install;
     public $process_steps = [];
     public $previous_button = false;
+    protected $model_install;
 
     public function init()
     {
@@ -60,47 +59,11 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
         return false;
     }
 
-    public function initializeContext()
-    {
-        global $smarty;
-
-        // Clean all cache values
-        Cache::clean('*');
-
-        Context::getContext()->shop = new Shop(1);
-        Shop::setContext(Shop::CONTEXT_SHOP, 1);
-        Configuration::loadConfiguration();
-        if (!isset(Context::getContext()->language) || !Validate::isLoadedObject(Context::getContext()->language)) {
-            if ($id_lang = (int)Configuration::get('PS_LANG_DEFAULT')) {
-                Context::getContext()->language = new Language($id_lang);
-            }
-        }
-        if (!isset(Context::getContext()->country) || !Validate::isLoadedObject(Context::getContext()->country)) {
-            if ($id_country = (int)Configuration::get('PS_COUNTRY_DEFAULT')) {
-                Context::getContext()->country = new Country((int)$id_country);
-            }
-        }
-        if (!isset(Context::getContext()->currency) || !Validate::isLoadedObject(Context::getContext()->currency)) {
-            if ($id_currency = (int)Configuration::get('PS_CURRENCY_DEFAULT')) {
-                Context::getContext()->currency = new Currency((int)$id_currency);
-            }
-        }
-
-        Context::getContext()->cart = new Cart();
-        Context::getContext()->employee = new Employee(1);
-        if (!defined('_PS_SMARTY_FAST_LOAD_')) {
-            define('_PS_SMARTY_FAST_LOAD_', true);
-        }
-        require_once _PS_ROOT_DIR_.'/config/smarty.config.inc.php';
-
-        Context::getContext()->smarty = $smarty;
-    }
-
     public function process()
     {
         $steps = explode(',', $this->datas->step);
         if (in_array('all', $steps)) {
-            $steps = ['database','fixtures','theme','modules','addons_modules'];
+            $steps = ['database', 'fixtures', 'theme', 'modules', 'addons_modules'];
         }
 
         if (in_array('database', $steps)) {
@@ -141,12 +104,6 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
             }
         }
 
-        if (in_array('addons_modules', $steps)) {
-            if (!$this->processInstallAddonsModules()) {
-                $this->printErrors();
-            }
-        }
-
         if (in_array('theme', $steps)) {
             if (!$this->processInstallTheme()) {
                 $this->printErrors();
@@ -156,11 +113,11 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
         if ($this->datas->newsletter) {
             $params = http_build_query(
                 [
-                    'email' => $this->datas->admin_email,
-                    'method' => 'addMemberToNewsletter',
-                    'language' => $this->datas->lang,
+                    'email'       => $this->datas->admin_email,
+                    'method'      => 'addMemberToNewsletter',
+                    'language'    => $this->datas->lang,
                     'visitorType' => 1,
-                    'source' => 'installer'
+                    'source'      => 'installer',
                 ]
             );
             Tools::file_get_contents('http://www.prestashop.com/ajax/controller.php?'.$params);
@@ -204,7 +161,7 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
     public function processInstallDefaultData()
     {
         $this->initializeContext();
-        if (!$res = $this->model_install->installDefaultData($this->datas->shop_name, $this->datas->shop_country, (int)$this->datas->all_languages, true)) {
+        if (!$res = $this->model_install->installDefaultData($this->datas->shop_name, $this->datas->shop_country, (int) $this->datas->all_languages, true)) {
             return false;
         }
 
@@ -215,6 +172,42 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
         }
 
         return $res;
+    }
+
+    public function initializeContext()
+    {
+        global $smarty;
+
+        // Clean all cache values
+        Cache::clean('*');
+
+        Context::getContext()->shop = new Shop(1);
+        Shop::setContext(Shop::CONTEXT_SHOP, 1);
+        Configuration::loadConfiguration();
+        if (!isset(Context::getContext()->language) || !Validate::isLoadedObject(Context::getContext()->language)) {
+            if ($id_lang = (int) Configuration::get('PS_LANG_DEFAULT')) {
+                Context::getContext()->language = new Language($id_lang);
+            }
+        }
+        if (!isset(Context::getContext()->country) || !Validate::isLoadedObject(Context::getContext()->country)) {
+            if ($id_country = (int) Configuration::get('PS_COUNTRY_DEFAULT')) {
+                Context::getContext()->country = new Country((int) $id_country);
+            }
+        }
+        if (!isset(Context::getContext()->currency) || !Validate::isLoadedObject(Context::getContext()->currency)) {
+            if ($id_currency = (int) Configuration::get('PS_CURRENCY_DEFAULT')) {
+                Context::getContext()->currency = new Currency((int) $id_currency);
+            }
+        }
+
+        Context::getContext()->cart = new Cart();
+        Context::getContext()->employee = new Employee(1);
+        if (!defined('_PS_SMARTY_FAST_LOAD_')) {
+            define('_PS_SMARTY_FAST_LOAD_', true);
+        }
+        require_once _PS_ROOT_DIR_.'/config/smarty.config.inc.php';
+
+        Context::getContext()->smarty = $smarty;
     }
 
     /**
@@ -243,30 +236,19 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
 
         return $this->model_install->configureShop(
             [
-            'shop_name' =>                $this->datas->shop_name,
-            'shop_activity' =>            $this->datas->shop_activity,
-            'shop_country' =>            $this->datas->shop_country,
-            'shop_timezone' =>            $this->datas->timezone,
-            'use_smtp' =>                false,
-            'admin_firstname' =>        $this->datas->admin_firstname,
-            'admin_lastname' =>            $this->datas->admin_lastname,
-            'admin_password' =>            $this->datas->admin_password,
-            'admin_email' =>            $this->datas->admin_email,
-            'configuration_agrement' =>    true,
-            'send_informations' => true,
+                'shop_name'              => $this->datas->shop_name,
+                'shop_activity'          => $this->datas->shop_activity,
+                'shop_country'           => $this->datas->shop_country,
+                'shop_timezone'          => $this->datas->timezone,
+                'use_smtp'               => false,
+                'admin_firstname'        => $this->datas->admin_firstname,
+                'admin_lastname'         => $this->datas->admin_lastname,
+                'admin_password'         => $this->datas->admin_password,
+                'admin_email'            => $this->datas->admin_email,
+                'configuration_agrement' => true,
+                'send_informations'      => true,
             ]
         );
-    }
-
-    /**
-     * PROCESS : installModules
-     * Install all modules in ~/modules/ directory
-     */
-    public function processInstallModules()
-    {
-        $this->initializeContext();
-
-        return $this->model_install->installModules();
     }
 
     /**
@@ -284,7 +266,19 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
         $this->model_install->xml_loader_ids = $this->datas->xml_loader_ids;
         $result = $this->model_install->installFixtures(null, ['shop_activity' => $this->datas->shop_activity, 'shop_country' => $this->datas->shop_country]);
         $this->datas->xml_loader_ids = $this->model_install->xml_loader_ids;
+
         return $result;
+    }
+
+    /**
+     * PROCESS : installModules
+     * Install all modules in ~/modules/ directory
+     */
+    public function processInstallModules()
+    {
+        $this->initializeContext();
+
+        return $this->model_install->installModules();
     }
 
     /**
@@ -299,52 +293,43 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
     }
 
     /**
-     * PROCESS : installModulesAddons
-     * Install modules from addons
+     * PROCESS : sendEmail
+     * Send information e-mail
      */
-    public function processInstallAddonsModules()
+    public function processSendEmail()
     {
-        return $this->model_install->installModulesAddons();
+        require_once _PS_INSTALL_MODELS_PATH_.'mail.php';
+        $mail = new InstallModelMail(
+            false,
+            $this->datas->smtp_server,
+            $this->datas->smtp_login,
+            $this->datas->smtp_password,
+            $this->datas->smtp_port,
+            $this->datas->smtp_encryption,
+            $this->datas->admin_email
+        );
+
+        if (file_exists(_PS_INSTALL_LANGS_PATH_.$this->language->getLanguageIso().'/mail_identifiers.txt')) {
+            $content = file_get_contents(_PS_INSTALL_LANGS_PATH_.$this->language->getLanguageIso().'/mail_identifiers.txt');
+        } else {
+            $content = file_get_contents(_PS_INSTALL_LANGS_PATH_.InstallLanguages::DEFAULT_ISO.'/mail_identifiers.txt');
+        }
+
+        $vars = [
+            '{firstname}' => $this->datas->admin_firstname,
+            '{lastname}'  => $this->datas->admin_lastname,
+            '{shop_name}' => $this->datas->shop_name,
+            '{passwd}'    => $this->datas->admin_password,
+            '{email}'     => $this->datas->admin_email,
+            '{shop_url}'  => Tools::getHttpHost(true).__PS_BASE_URI__,
+        ];
+        $content = str_replace(array_keys($vars), array_values($vars), $content);
+
+        $mail->send(
+            $this->l('%s Login information', $this->datas->shop_name),
+            $content
+        );
+
+        return true;
     }
-
-  /**
-  * PROCESS : sendEmail
-  * Send information e-mail
-  */
-  public function processSendEmail()
-  {
-      require_once _PS_INSTALL_MODELS_PATH_.'mail.php';
-      $mail = new InstallModelMail(
-      false,
-      $this->datas->smtp_server,
-      $this->datas->smtp_login,
-      $this->datas->smtp_password,
-      $this->datas->smtp_port,
-      $this->datas->smtp_encryption,
-      $this->datas->admin_email
-    );
-
-      if (file_exists(_PS_INSTALL_LANGS_PATH_.$this->language->getLanguageIso().'/mail_identifiers.txt')) {
-          $content = file_get_contents(_PS_INSTALL_LANGS_PATH_.$this->language->getLanguageIso().'/mail_identifiers.txt');
-      } else {
-          $content = file_get_contents(_PS_INSTALL_LANGS_PATH_.InstallLanguages::DEFAULT_ISO.'/mail_identifiers.txt');
-      }
-
-      $vars = [
-      '{firstname}' => $this->datas->admin_firstname,
-      '{lastname}' => $this->datas->admin_lastname,
-      '{shop_name}' => $this->datas->shop_name,
-      '{passwd}' => $this->datas->admin_password,
-      '{email}' => $this->datas->admin_email,
-      '{shop_url}' => Tools::getHttpHost(true).__PS_BASE_URI__,
-      ];
-      $content = str_replace(array_keys($vars), array_values($vars), $content);
-
-      $mail->send(
-      $this->l('%s Login information', $this->datas->shop_name),
-      $content
-    );
-
-      return true;
-  }
 }

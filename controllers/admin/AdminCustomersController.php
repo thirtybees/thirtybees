@@ -232,9 +232,9 @@ class AdminCustomersControllerCore extends AdminController
         }
     }
 
-    public function getList($id_lang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $id_lang_shop = null)
+    public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = null)
     {
-        parent::getList($id_lang, $orderBy, $orderWay, $start, $limit, $id_lang_shop);
+        parent::getList($idLang, $orderBy, $orderWay, $start, $limit, $idLangShop);
 
         if ($this->_list) {
             foreach ($this->_list as &$row) {
@@ -969,9 +969,9 @@ class AdminCustomersControllerCore extends AdminController
         return parent::processSave();
     }
 
-    protected function afterDelete($object, $old_id)
+    protected function afterDelete($object, $oldId)
     {
-        $customer = new Customer($old_id);
+        $customer = new Customer($oldId);
         $addresses = $customer->getAddresses($this->default_form_language);
         foreach ($addresses as $k => $v) {
             $address = new Address($v['id_address']);

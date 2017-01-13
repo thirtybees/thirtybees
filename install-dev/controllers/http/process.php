@@ -100,8 +100,6 @@ class InstallControllerHttpProcess extends InstallControllerHttp
             $this->processInstallFixtures();
         } elseif (Tools::getValue('installModules') && (!empty($this->session->process_validated['installFixtures']) || $this->session->install_type != 'full')) {
             $this->processInstallModules();
-        } elseif (Tools::getValue('installModulesAddons') && !empty($this->session->process_validated['installModules'])) {
-            $this->processInstallAddonsModules();
         } elseif (Tools::getValue('installTheme') && !empty($this->session->process_validated['installModulesAddons'])) {
             $this->processInstallTheme();
         } elseif (Tools::getValue('sendEmail') && !empty($this->session->process_validated['installTheme'])) {
@@ -235,25 +233,6 @@ class InstallControllerHttpProcess extends InstallControllerHttp
             $this->ajaxJsonAnswer(false, $this->model_install->getErrors());
         }
         $this->session->process_validated = array_merge($this->session->process_validated, ['installModules' => true]);
-        $this->ajaxJsonAnswer(true);
-    }
-    
-    /**
-     * PROCESS : installModulesAddons
-     * Install modules from addons
-     */
-    public function processInstallAddonsModules()
-    {
-        $this->initializeContext();
-        if (($module = Tools::getValue('module')) && $id_module = Tools::getValue('id_module')) {
-            $result = $this->model_install->installModulesAddons(['name' => $module, 'id_module' => $id_module]);
-        } else {
-            $result = $this->model_install->installModulesAddons();
-        }
-        if (!$result || $this->model_install->getErrors()) {
-            $this->ajaxJsonAnswer(false, $this->model_install->getErrors());
-        }
-        $this->session->process_validated = array_merge($this->session->process_validated, ['installModulesAddons' => true]);
         $this->ajaxJsonAnswer(true);
     }
 

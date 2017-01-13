@@ -548,9 +548,9 @@ class AdminMetaControllerCore extends AdminController
         }
     }
 
-    public function getList($id_lang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $id_lang_shop = false)
+    public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
-        parent::getList($id_lang, $orderBy, $orderWay, $start, $limit, Context::getContext()->shop->id);
+        parent::getList($idLang, $orderBy, $orderWay, $start, $limit, Context::getContext()->shop->id);
     }
 
     public function renderList()

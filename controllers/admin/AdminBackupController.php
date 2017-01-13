@@ -198,41 +198,41 @@ class AdminBackupControllerCore extends AdminController
         parent::postProcess();
     }
 
-    public function getList($id_lang, $order_by = null, $order_way = null, $start = 0, $limit = null,
-        $id_lang_shop = null)
+    public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null,
+        $idLangShop = null)
     {
         if (!Validate::isTableOrIdentifier($this->table)) {
             die('filter is corrupted');
         }
 
-        if (empty($order_by)) {
-            $order_by = Tools::getValue($this->table.'Orderby', $this->_defaultOrderBy);
+        if (empty($orderBy)) {
+            $orderBy = Tools::getValue($this->table.'Orderby', $this->_defaultOrderBy);
         }
 
-        if (empty($order_way)) {
-            $order_way = Tools::getValue($this->table.'Orderway', 'ASC');
+        if (empty($orderWay)) {
+            $orderWay = Tools::getValue($this->table.'Orderway', 'ASC');
         }
 
         // Try and obtain getList arguments from $_GET
-        $order_by = Tools::getValue($this->table.'Orderby');
-        $order_way = Tools::getValue($this->table.'Orderway');
+        $orderBy = Tools::getValue($this->table.'Orderby');
+        $orderWay = Tools::getValue($this->table.'Orderway');
 
         // Validate the orderBy and orderWay fields
-        switch ($order_by) {
+        switch ($orderBy) {
             case 'filename':
             case 'filesize':
             case 'date':
             case 'age':
                 break;
             default:
-                $order_by = 'date';
+                $orderBy = 'date';
         }
-        switch ($order_way) {
+        switch ($orderWay) {
             case 'asc':
             case 'desc':
                 break;
             default:
-                $order_way = 'desc';
+                $orderWay = 'desc';
         }
         if (empty($limit)) {
             $limit = ((!isset($this->context->cookie->{$this->table.'_pagination'})) ? $this->_pagination[0] : $limit =
@@ -246,9 +246,9 @@ class AdminBackupControllerCore extends AdminController
             $start = (int)$_POST['submitFilter'.$this->list_id] - 1 * $limit;
         }
 
-        $this->_lang = (int)$id_lang;
-        $this->_orderBy = $order_by;
-        $this->_orderWay = strtoupper($order_way);
+        $this->_lang = (int)$idLang;
+        $this->_orderBy = $orderBy;
+        $this->_orderWay = strtoupper($orderWay);
         $this->_list = [];
 
         // Find all the backups

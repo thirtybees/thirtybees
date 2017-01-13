@@ -255,9 +255,9 @@ class AdminCategoriesControllerCore extends AdminController
         return parent::renderList();
     }
 
-    public function getList($id_lang, $order_by = null, $order_way = null, $start = 0, $limit = null, $id_lang_shop = false)
+    public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
-        parent::getList($id_lang, $order_by, $order_way, $start, $limit, Context::getContext()->shop->id);
+        parent::getList($idLang, $orderBy, $orderWay, $start, $limit, Context::getContext()->shop->id);
         // Check each row to see if there are combinations and get the correct action in consequence
 
         $nb_items = count($this->_list);

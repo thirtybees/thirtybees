@@ -681,43 +681,6 @@ class InstallModelInstall extends InstallAbstractModel
         return $modules;
     }
 
-    public function getAddonsModulesList($params = [])
-    {
-        $addons_modules = [];
-        $content = Tools::addonsRequest('install-modules', $params);
-        $xml = @simplexml_load_string($content, null, LIBXML_NOCDATA);
-
-        if ($xml !== false and isset($xml->module)) {
-            foreach ($xml->module as $modaddons) {
-                $addons_modules[] = ['id_module' => $modaddons->id, 'name' => $modaddons->name];
-            }
-        }
-
-        return $addons_modules;
-    }
-
-    /**
-     * PROCESS : installModules
-     * Download module from addons and Install all modules in ~/modules/ directory
-     */
-    public function installModulesAddons($module = null)
-    {
-        $addons_modules = $module ? [$module] : $this->getAddonsModulesList();
-        $modules = [];
-        if (!InstallSession::getInstance()->safe_mode) {
-            foreach ($addons_modules as $addons_module) {
-                if (file_put_contents(_PS_MODULE_DIR_.$addons_module['name'].'.zip', Tools::addonsRequest('module', ['id_module' => $addons_module['id_module']]))) {
-                    if (Tools::ZipExtract(_PS_MODULE_DIR_.$addons_module['name'].'.zip', _PS_MODULE_DIR_)) {
-                        $modules[] = (string)$addons_module['name'];//if the module has been unziped we add the name in the modules list to install
-                        unlink(_PS_MODULE_DIR_.$addons_module['name'].'.zip');
-                    }
-                }
-            }
-        }
-
-        return count($modules) ? $this->installModules($modules) : true;
-    }
-
     /**
      * PROCESS : installModules
      * Download module from addons and Install all modules in ~/modules/ directory

@@ -278,21 +278,22 @@ class AdminStockInstantStateControllerCore extends AdminController
 
     /**
      * AdminController::getList() override
-     * @see AdminController::getList()
      *
-     * @param int         $id_lang
-     * @param string|null $order_by
-     * @param string|null $order_way
+*@see AdminController::getList()
+     *
+     * @param int         $idLang
+     * @param string|null $orderBy
+     * @param string|null $orderWay
      * @param int         $start
      * @param int|null    $limit
-     * @param int|bool    $id_lang_shop
+     * @param int|bool    $idLangShop
      *
      * @throws PrestaShopException
      */
-    public function getList($id_lang, $order_by = null, $order_way = null, $start = 0, $limit = null, $id_lang_shop = false)
+    public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
         if (Tools::isSubmit('id_stock')) {
-            parent::getList($id_lang, $order_by, $order_way, $start, $limit, $id_lang_shop);
+            parent::getList($idLang, $orderBy, $orderWay, $start, $limit, $idLangShop);
 
             $nb_items = count($this->_list);
 
@@ -341,7 +342,7 @@ class AdminStockInstantStateControllerCore extends AdminController
                 $order_by_real_quantity = true;
             }
 
-            parent::getList($id_lang, $order_by, $order_way, $start, $limit, $id_lang_shop);
+            parent::getList($idLang, $orderBy, $orderWay, $start, $limit, $idLangShop);
 
             $nb_items = count($this->_list);
 

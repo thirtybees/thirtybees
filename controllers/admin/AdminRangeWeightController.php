@@ -126,9 +126,9 @@ class AdminRangeWeightControllerCore extends AdminController
         return parent::renderForm();
     }
 
-    public function getList($id_lang, $order_by = null, $order_way = null, $start = 0, $limit = null, $id_lang_shop = false)
+    public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
-        parent::getList($id_lang, $order_by, $order_way, $start, $limit, $id_lang_shop);
+        parent::getList($idLang, $orderBy, $orderWay, $start, $limit, $idLangShop);
         if ($this->_list && is_array($this->_list)) {
             foreach ($this->_list as $key => $list) {
                 if ($list['carrier_name'] == '0') {

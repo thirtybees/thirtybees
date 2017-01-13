@@ -490,27 +490,28 @@ class AdminWarehousesControllerCore extends AdminController
 
     /**
      * AdminController::getList() override
-     * @see AdminController::getList()
      *
-     * @param int         $id_lang
-     * @param string|null $order_by
-     * @param string|null $order_way
+*@see AdminController::getList()
+     *
+     * @param int         $idLang
+     * @param string|null $orderBy
+     * @param string|null $orderWay
      * @param int         $start
      * @param int|null    $limit
-     * @param int|bool    $id_lang_shop
+     * @param int|bool    $idLangShop
      *
      * @throws PrestaShopException
      */
     public function getList(
-        $id_lang,
-        $order_by = null,
-        $order_way = null,
+        $idLang,
+        $orderBy = null,
+        $orderWay = null,
         $start = 0,
         $limit = null,
-        $id_lang_shop = false
+        $idLangShop = false
     )
     {
-        parent::getList($id_lang, $order_by, $order_way, $start, $limit, $id_lang_shop);
+        parent::getList($idLang, $orderBy, $orderWay, $start, $limit, $idLangShop);
 
         // foreach item in the list to render
         $nb_items = count($this->_list);
@@ -749,9 +750,9 @@ class AdminWarehousesControllerCore extends AdminController
         return parent::processUpdate();
     }
 
-    protected function updateAssoShop($id_object)
+    protected function updateAssoShop($idObject)
     {
-        parent::updateAssoShop($id_object);
+        parent::updateAssoShop($idObject);
         if (!($obj = $this->loadObject(true))) {
             return;
         }

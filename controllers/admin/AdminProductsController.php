@@ -404,7 +404,7 @@ class AdminProductsControllerCore extends AdminController
         return false;
     }
 
-    public function getList($id_lang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $id_lang_shop = null)
+    public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = null)
     {
         $orderByPriceFinal = (empty($orderBy) ? ($this->context->cookie->__get($this->table.'Orderby') ? $this->context->cookie->__get($this->table.'Orderby') : 'id_'.$this->table) : $orderBy);
         $orderWayPriceFinal = (empty($orderWay) ? ($this->context->cookie->__get($this->table.'Orderway') ? $this->context->cookie->__get($this->table.'Orderby') : 'ASC') : $orderWay);
@@ -412,7 +412,7 @@ class AdminProductsControllerCore extends AdminController
             $orderBy = 'id_'.$this->table;
             $orderWay = 'ASC';
         }
-        parent::getList($id_lang, $orderBy, $orderWay, $start, $limit, $this->context->shop->id);
+        parent::getList($idLang, $orderBy, $orderWay, $start, $limit, $this->context->shop->id);
 
         /* update product quantity with attributes ...*/
         $nb = count($this->_list);
@@ -1860,7 +1860,7 @@ class AdminProductsControllerCore extends AdminController
         }
     }
 
-    protected function updateAssoShop($id_object)
+    protected function updateAssoShop($idObject)
     {
         //override AdminController::updateAssoShop() specifically for products because shop association is set with the context in ObjectModel
         return;
