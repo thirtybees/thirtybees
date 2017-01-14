@@ -435,18 +435,24 @@ class ValidateCore
     /**
      * Check for password validity
      *
-     * @param string $passwd Password to validate
-     * @param int $size
+     * @param string $plainTextPassword Password to validate
+     * @param int    $size
+     *
      * @return bool Validity is ok or not
      */
-    public static function isPasswd($passwd, $size = Validate::PASSWORD_LENGTH)
+    public static function isPasswd($plainTextPassword, $size = Validate::PASSWORD_LENGTH)
     {
-        return (Tools::strlen($passwd) >= $size && Tools::strlen($passwd) < 255);
+        return (Tools::strlen($plainTextPassword) >= $size && Tools::strlen($plainTextPassword) < 255);
     }
 
-    public static function isPasswdAdmin($passwd)
+    /**
+     * @param string $plainTextPassword
+     *
+     * @return bool
+     */
+    public static function isPasswdAdmin($plainTextPassword)
     {
-        return Validate::isPasswd($passwd, Validate::ADMIN_PASSWORD_LENGTH);
+        return Validate::isPasswd($plainTextPassword, Validate::ADMIN_PASSWORD_LENGTH);
     }
 
     /**

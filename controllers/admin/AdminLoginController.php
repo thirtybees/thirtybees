@@ -263,7 +263,7 @@ class AdminLoginControllerCore extends AdminController
 
         if (!count($this->errors)) {
             $pwd = Tools::passwdGen(10, 'RANDOM');
-            $employee->passwd = Tools::encrypt($pwd);
+            $employee->passwd = Tools::hash($pwd);
             $employee->last_passwd_gen = date('Y-m-d H:i:s', time());
 
             $params = [
@@ -281,7 +281,7 @@ class AdminLoginControllerCore extends AdminController
                 if (!$result) {
                     $this->errors[] = Tools::displayError('An error occurred while attempting to change your password.');
                 } else {
-                    die(Tools::jsonEncode(
+                    die(json_encode(
                         [
                         'hasErrors' => false,
                         'confirm' => $this->l('Your password has been emailed to you.', 'AdminTab', false, false)
@@ -289,7 +289,7 @@ class AdminLoginControllerCore extends AdminController
                     ));
                 }
             } else {
-                die(Tools::jsonEncode(
+                die(json_encode(
                     [
                     'hasErrors' => true,
                     'errors' => [Tools::displayError('An error occurred while attempting to change your password.')]
@@ -297,7 +297,7 @@ class AdminLoginControllerCore extends AdminController
                 ));
             }
         } elseif (Tools::isSubmit('ajax')) {
-            die(Tools::jsonEncode(['hasErrors' => true, 'errors' => $this->errors]));
+            die(json_encode(['hasErrors' => true, 'errors' => $this->errors]));
         }
     }
 }

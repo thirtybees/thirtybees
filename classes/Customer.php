@@ -21,197 +21,459 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class CustomerCore
+ *
+ * @since 1.0.0
+ */
 class CustomerCore extends ObjectModel
 {
-    public $id;
-
-    public $id_shop;
-
+    // @codingStandardsIgnoreStart
+    protected static $_defaultGroupId = [];
+    protected static $_customerHasAddress = [];
+    protected static $_customer_groups = [];
     public $id_shop_group;
-
     /** @var string Secure key */
     public $secure_key;
-
     /** @var string protected note */
     public $note;
-
     /** @var int Gender ID */
     public $id_gender = 0;
-
     /** @var int Default group ID */
     public $id_default_group;
-
     /** @var int Current language used by the customer */
     public $id_lang;
-
     /** @var string Lastname */
     public $lastname;
-
     /** @var string Firstname */
     public $firstname;
-
     /** @var string Birthday (yyyy-mm-dd) */
     public $birthday = null;
-
     /** @var string e-mail */
     public $email;
-
     /** @var bool Newsletter subscription */
     public $newsletter;
-
     /** @var string Newsletter ip registration */
     public $ip_registration_newsletter;
-
     /** @var string Newsletter ip registration */
     public $newsletter_date_add;
-
     /** @var bool Opt-in subscription */
     public $optin;
-
-    /** @var string WebSite **/
+    /** @var string WebSite * */
     public $website;
-
     /** @var string Company */
     public $company;
-
     /** @var string SIRET */
     public $siret;
-
     /** @var string APE */
     public $ape;
-
-    /** @var float Outstanding allow amount (B2B opt)  */
+    /** @var float Outstanding allow amount (B2B opt) */
     public $outstanding_allow_amount = 0;
-
     /** @var int Show public prices (B2B opt) */
     public $show_public_prices = 0;
-
     /** @var int Risk ID (B2B opt) */
     public $id_risk;
-
     /** @var int Max payment day */
     public $max_payment_days = 0;
-
     /** @var int Password */
     public $passwd;
-
     /** @var string Datetime Password */
     public $last_passwd_gen;
-
     /** @var bool Status */
     public $active = true;
-
     /** @var bool Status */
     public $is_guest = 0;
-
     /** @var bool True if carrier has been deleted (staying in database as deleted) */
     public $deleted = 0;
-
     /** @var string Object creation date */
     public $date_add;
-
     /** @var string Object last modification date */
     public $date_upd;
-
     public $years;
     public $days;
     public $months;
-
     /** @var int customer id_country as determined by geolocation */
     public $geoloc_id_country;
     /** @var int customer id_state as determined by geolocation */
     public $geoloc_id_state;
     /** @var string customer postcode as determined by geolocation */
     public $geoloc_postcode;
-
     /** @var bool is the customer logged in */
     public $logged = 0;
-
-    /** @var int id_guest meaning the guest table, not the guest customer  */
+    /** @var int id_guest meaning the guest table, not the guest customer */
     public $id_guest;
-
     public $groupBox;
-
-    protected $webserviceParameters = [
-        'fields' => [
-            'id_default_group' => ['xlink_resource' => 'groups'],
-            'id_lang' => ['xlink_resource' => 'languages'],
-            'newsletter_date_add' => [],
-            'ip_registration_newsletter' => [],
-            'last_passwd_gen' => ['setter' => null],
-            'secure_key' => ['setter' => null],
-            'deleted' => [],
-            'passwd' => ['setter' => 'setWsPasswd'],
-        ],
-        'associations' => [
-            'groups' => ['resource' => 'group'],
-        ]
-    ];
+    // @codingStandardsIgnoreEnd
 
     /**
      * @see ObjectModel::$definition
      */
     public static $definition = [
-        'table' => 'customer',
+        'table'   => 'customer',
         'primary' => 'id_customer',
-        'fields' => [
-            'secure_key' =>                ['type' => self::TYPE_STRING, 'validate' => 'isMd5', 'copy_post' => false],
-            'lastname' =>                    ['type' => self::TYPE_STRING, 'validate' => 'isName', 'required' => true, 'size' => 32],
-            'firstname' =>                    ['type' => self::TYPE_STRING, 'validate' => 'isName', 'required' => true, 'size' => 32],
-            'email' =>                        ['type' => self::TYPE_STRING, 'validate' => 'isEmail', 'required' => true, 'size' => 128],
-            'passwd' =>                    ['type' => self::TYPE_STRING, 'validate' => 'isPasswd', 'required' => true, 'size' => 32],
-            'last_passwd_gen' =>            ['type' => self::TYPE_STRING, 'copy_post' => false],
-            'id_gender' =>                    ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
-            'birthday' =>                    ['type' => self::TYPE_DATE, 'validate' => 'isBirthDate'],
-            'newsletter' =>                ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'newsletter_date_add' =>        ['type' => self::TYPE_DATE,'copy_post' => false],
-            'ip_registration_newsletter' =>    ['type' => self::TYPE_STRING, 'copy_post' => false],
-            'optin' =>                        ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'website' =>                    ['type' => self::TYPE_STRING, 'validate' => 'isUrl'],
-            'company' =>                    ['type' => self::TYPE_STRING, 'validate' => 'isGenericName'],
-            'siret' =>                        ['type' => self::TYPE_STRING, 'validate' => 'isSiret'],
-            'ape' =>                        ['type' => self::TYPE_STRING, 'validate' => 'isApe'],
-            'outstanding_allow_amount' =>    ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat', 'copy_post' => false],
-            'show_public_prices' =>            ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'copy_post' => false],
-            'id_risk' =>                    ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'copy_post' => false],
-            'max_payment_days' =>            ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'copy_post' => false],
-            'active' =>                    ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'copy_post' => false],
-            'deleted' =>                    ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'copy_post' => false],
-            'note' =>                        ['type' => self::TYPE_HTML, 'validate' => 'isCleanHtml', 'size' => 65000, 'copy_post' => false],
-            'is_guest' =>                    ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'copy_post' => false],
-            'id_shop' =>                    ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'copy_post' => false],
-            'id_shop_group' =>                ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'copy_post' => false],
-            'id_default_group' =>            ['type' => self::TYPE_INT, 'copy_post' => false],
-            'id_lang' =>                    ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'copy_post' => false],
-            'date_add' =>                    ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'copy_post' => false],
-            'date_upd' =>                    ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'copy_post' => false],
+        'fields'  => [
+            'secure_key'                 => ['type' => self::TYPE_STRING, 'validate' => 'isMd5',           'copy_post' => false                                                          ],
+            'lastname'                   => ['type' => self::TYPE_STRING, 'validate' => 'isName',                                'required' => true, 'size' => 32                        ],
+            'firstname'                  => ['type' => self::TYPE_STRING, 'validate' => 'isName',                                'required' => true, 'size' => 32                        ],
+            'email'                      => ['type' => self::TYPE_STRING, 'validate' => 'isEmail',                               'required' => true, 'size' => 128                       ],
+            'passwd'                     => ['type' => self::TYPE_STRING, 'validate' => 'isPasswd',                              'required' => true, 'size' => 60                        ],
+            'last_passwd_gen'            => ['type' => self::TYPE_STRING,                                  'copy_post' => false                                                          ],
+            'id_gender'                  => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId'                                                                                   ],
+            'birthday'                   => ['type' => self::TYPE_DATE,   'validate' => 'isBirthDate'                                                                                    ],
+            'newsletter'                 => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                                                                         ],
+            'newsletter_date_add'        => ['type' => self::TYPE_DATE,                                    'copy_post' => false                                                          ],
+            'ip_registration_newsletter' => ['type' => self::TYPE_STRING,                                  'copy_post' => false                                                          ],
+            'optin'                      => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                                                                         ],
+            'website'                    => ['type' => self::TYPE_STRING, 'validate' => 'isUrl'                                                                                          ],
+            'company'                    => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName'                                                                                  ],
+            'siret'                      => ['type' => self::TYPE_STRING, 'validate' => 'isSiret'                                                                                        ],
+            'ape'                        => ['type' => self::TYPE_STRING, 'validate' => 'isApe'                                                                                          ],
+            'outstanding_allow_amount'   => ['type' => self::TYPE_FLOAT,  'validate' => 'isFloat',         'copy_post' => false                                                          ],
+            'show_public_prices'         => ['type' => self::TYPE_BOOL,   'validate' => 'isBool',          'copy_post' => false                                                          ],
+            'id_risk'                    => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt',   'copy_post' => false                                                          ],
+            'max_payment_days'           => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt',   'copy_post' => false                                                          ],
+            'active'                     => ['type' => self::TYPE_BOOL,   'validate' => 'isBool',          'copy_post' => false                                                          ],
+            'deleted'                    => ['type' => self::TYPE_BOOL,   'validate' => 'isBool',          'copy_post' => false                                                          ],
+            'note'                       => ['type' => self::TYPE_HTML,   'validate' => 'isCleanHtml',     'copy_post' => false,                                          'size' => 65000],
+            'is_guest'                   => ['type' => self::TYPE_BOOL,   'validate' => 'isBool',          'copy_post' => false                                                          ],
+            'id_shop'                    => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',    'copy_post' => false                                                          ],
+            'id_shop_group'              => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',    'copy_post' => false                                                          ],
+            'id_default_group'           => ['type' => self::TYPE_INT,                                     'copy_post' => false                                                          ],
+            'id_lang'                    => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',    'copy_post' => false                                                          ],
+            'date_add'                   => ['type' => self::TYPE_DATE,   'validate' => 'isDate',          'copy_post' => false                                                          ],
+            'date_upd'                   => ['type' => self::TYPE_DATE,   'validate' => 'isDate',          'copy_post' => false                                                          ],
         ],
     ];
 
-    protected static $_defaultGroupId = [];
-    protected static $_customerHasAddress = [];
-    protected static $_customer_groups = [];
+    protected $webserviceParameters = [
+        'fields'       => [
+            'id_default_group'           => ['xlink_resource' => 'groups'],
+            'id_lang'                    => ['xlink_resource' => 'languages'],
+            'newsletter_date_add'        => [],
+            'ip_registration_newsletter' => [],
+            'last_passwd_gen'            => ['setter' => null],
+            'secure_key'                 => ['setter' => null],
+            'deleted'                    => [],
+            'passwd'                     => ['setter' => 'setWsPasswd'],
+        ],
+        'associations' => [
+            'groups' => ['resource' => 'group'],
+        ],
+    ];
 
+    /**
+     * CustomerCore constructor.
+     *
+     * @param int|null $id
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function __construct($id = null)
     {
-        $this->id_default_group = (int)Configuration::get('PS_CUSTOMER_GROUP');
+        $this->id_default_group = (int) Configuration::get('PS_CUSTOMER_GROUP');
         parent::__construct($id);
     }
 
+    /**
+     * Return customers list
+     *
+     * @param null|bool $onlyActive Returns only active customers when true
+     *
+     * @return array Customers
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function getCustomers($onlyActive = null)
+    {
+        $sql = new DbQuery();
+        $sql->select('`id_customer`, `email`, `firstname`, `lastname`');
+        $sql->from(bqSQL(self::$definition['table']));
+        $sql->where('1 '.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER));
+        if ($onlyActive) {
+            $sql->where('`active` = 1');
+        }
+        $sql->orderBy('`id_customer` ASC');
+
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+    }
+
+    /**
+     * Retrieve customers by email address
+     *
+     * @param string $email
+     *
+     * @return array
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function getCustomersByEmail($email)
+    {
+        $sql = new DbQuery();
+        $sql->select('*');
+        $sql->from(bqSQL(self::$definition['table']));
+        $sql->where('`email` = \''.pSQL($email).'\' '.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER));
+
+        return Db::getInstance()->executeS($sql);
+    }
+
+    /**
+     * Check id the customer is active or not
+     *
+     * @return bool customer validity
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function isBanned($idCustomer)
+    {
+        if (!Validate::isUnsignedId($idCustomer)) {
+            return true;
+        }
+        $cacheId = 'Customer::isBanned_'.(int) $idCustomer;
+        if (!Cache::isStored($cacheId)) {
+            $sql = new DbQuery();
+            $sql->select('`id_customer`');
+            $sql->from(bqSQL(self::$definition['table']));
+            $sql->where('`id_customer` = '.(int) $idCustomer);
+            $sql->where('`active` = 1');
+            $sql->where('`deleted` = 0');
+            $result = (bool) !Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
+            Cache::store($cacheId, $result);
+
+            return $result;
+        }
+
+        return Cache::retrieve($cacheId);
+    }
+
+    /**
+     * Check if e-mail is already registered in database
+     *
+     * @param string $email       e-mail
+     * @param bool   $returnId    boolean
+     * @param bool   $ignoreGuest boolean, to exclude guest customer
+     *
+     * @return int|bool if found, false otherwise
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function customerExists($email, $returnId = false, $ignoreGuest = true)
+    {
+        if (!Validate::isEmail($email)) {
+            if (defined('_PS_MODE_DEV_') && _PS_MODE_DEV_) {
+                die(Tools::displayError('Invalid email'));
+            }
+
+            return false;
+        }
+
+        $sql = new DbQuery();
+        $sql->select('`id_customer`');
+        $sql->from(bqSQL(self::$definition['table']));
+        $sql->where('`email` = \''.pSQL($email).'\' '.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER));
+        $sql->where('`is_guest` = 0');
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+
+        return ($returnId ? (int) $result : (bool) $result);
+    }
+
+    /**
+     * Check if an address is owned by a customer
+     *
+     * @param int $idCustomer Customer ID
+     * @param int $idAddress  Address ID
+     *
+     * @return bool result
+     */
+    public static function customerHasAddress($idCustomer, $idAddress)
+    {
+        $key = (int) $idCustomer.'-'.(int) $idAddress;
+        if (!array_key_exists($key, self::$_customerHasAddress)) {
+            self::$_customerHasAddress[$key] = (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                '
+			SELECT `id_address`
+			FROM `'._DB_PREFIX_.'address`
+			WHERE `id_customer` = '.(int) $idCustomer.'
+			AND `id_address` = '.(int) $idAddress.'
+			AND `deleted` = 0'
+            );
+        }
+
+        return self::$_customerHasAddress[$key];
+    }
+
+    /**
+     * @param int $idCustomer
+     * @param int $idAddress
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function resetAddressCache($idCustomer, $idAddress)
+    {
+        $key = (int) $idCustomer.'-'.(int) $idAddress;
+        if (array_key_exists($key, self::$_customerHasAddress)) {
+            unset(self::$_customerHasAddress[$key]);
+        }
+    }
+
+    /**
+     * Count the number of addresses for a customer
+     *
+     * @param int $idCustomer Customer ID
+     *
+     * @return int Number of addresses
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function getAddressesTotalById($idCustomer)
+    {
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            '
+			SELECT COUNT(`id_address`)
+			FROM `'._DB_PREFIX_.'address`
+			WHERE `id_customer` = '.(int) $idCustomer.'
+			AND `deleted` = 0'
+        );
+    }
+
+    /**
+     * Light back office search for customers
+     *
+     * @param string   $query Searched string
+     * @param null|int $limit Limit query results
+     *
+     * @return array|false|mysqli_result|null|PDOStatement|resource Corresponding customers
+     * @throws PrestaShopDatabaseException
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function searchByName($query, $limit = null)
+    {
+        $sqlBase = 'SELECT *
+				FROM `'._DB_PREFIX_.'customer`';
+        $sql = '('.$sqlBase.' WHERE `email` LIKE \'%'.pSQL($query).'%\' '.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER).')';
+        $sql .= ' UNION ('.$sqlBase.' WHERE `id_customer` = '.(int) $query.' '.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER).')';
+        $sql .= ' UNION ('.$sqlBase.' WHERE `lastname` LIKE \'%'.pSQL($query).'%\' '.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER).')';
+        $sql .= ' UNION ('.$sqlBase.' WHERE `firstname` LIKE \'%'.pSQL($query).'%\' '.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER).')';
+
+        if ($limit) {
+            $sql .= ' LIMIT 0, '.(int) $limit;
+        }
+
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+    }
+
+    /**
+     * Search for customers by ip address
+     *
+     * @param string $ip Searched string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function searchByIp($ip)
+    {
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            '
+		SELECT DISTINCT c.*
+		FROM `'._DB_PREFIX_.'customer` c
+		LEFT JOIN `'._DB_PREFIX_.'guest` g ON g.id_customer = c.id_customer
+		LEFT JOIN `'._DB_PREFIX_.'connections` co ON g.id_guest = co.id_guest
+		WHERE co.`ip_address` = \''.(int) ip2long(trim($ip)).'\''
+        );
+    }
+
+    /**
+     * @param $idCustomer
+     *
+     * @return mixed|null|string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function getDefaultGroupId($idCustomer)
+    {
+        if (!Group::isFeatureActive()) {
+            static $psCustomerGroup = null;
+            if ($psCustomerGroup === null) {
+                $psCustomerGroup = Configuration::get('PS_CUSTOMER_GROUP');
+            }
+
+            return $psCustomerGroup;
+        }
+
+        if (!isset(self::$_defaultGroupId[(int) $idCustomer])) {
+            self::$_defaultGroupId[(int) $idCustomer] = Db::getInstance()->getValue(
+                '
+				SELECT `id_default_group`
+				FROM `'._DB_PREFIX_.'customer`
+				WHERE `id_customer` = '.(int) $idCustomer
+            );
+        }
+
+        return self::$_defaultGroupId[(int) $idCustomer];
+    }
+
+    /**
+     * @param int       $idCustomer
+     * @param Cart|null $cart
+     *
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function getCurrentCountry($idCustomer, Cart $cart = null)
+    {
+        if (!$cart) {
+            $cart = Context::getContext()->cart;
+        }
+        if (!$cart || !$cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}) {
+            $idAddress = (int) Db::getInstance()->getValue(
+                '
+				SELECT `id_address`
+				FROM `'._DB_PREFIX_.'address`
+				WHERE `id_customer` = '.(int) $idCustomer.'
+				AND `deleted` = 0 ORDER BY `id_address`'
+            );
+        } else {
+            $idAddress = $cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')};
+        }
+        $ids = Address::getCountryAndState($idAddress);
+
+        return (int) $ids['id_country'] ? $ids['id_country'] : Configuration::get('PS_COUNTRY_DEFAULT');
+    }
+
+    /**
+     * @param bool $autodate
+     * @param bool $nullValues
+     *
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function add($autodate = true, $nullValues = true)
     {
         $this->id_shop = ($this->id_shop) ? $this->id_shop : Context::getContext()->shop->id;
         $this->id_shop_group = ($this->id_shop_group) ? $this->id_shop_group : Context::getContext()->shop->id_shop_group;
         $this->id_lang = ($this->id_lang) ? $this->id_lang : Context::getContext()->language->id;
-        $this->birthday = (empty($this->years) ? $this->birthday : (int)$this->years.'-'.(int)$this->months.'-'.(int)$this->days);
+        $this->birthday = (empty($this->years) ? $this->birthday : (int) $this->years.'-'.(int) $this->months.'-'.(int) $this->days);
         $this->secure_key = md5(uniqid(rand(), true));
         $this->last_passwd_gen = date('Y-m-d H:i:s', strtotime('-'.Configuration::get('PS_PASSWD_TIME_FRONT').'minutes'));
 
@@ -221,9 +483,9 @@ class CustomerCore extends ObjectModel
 
         if ($this->id_default_group == Configuration::get('PS_CUSTOMER_GROUP')) {
             if ($this->is_guest) {
-                $this->id_default_group = (int)Configuration::get('PS_GUEST_GROUP');
+                $this->id_default_group = (int) Configuration::get('PS_GUEST_GROUP');
             } else {
-                $this->id_default_group = (int)Configuration::get('PS_CUSTOMER_GROUP');
+                $this->id_default_group = (int) Configuration::get('PS_CUSTOMER_GROUP');
             }
         }
 
@@ -233,410 +495,17 @@ class CustomerCore extends ObjectModel
         }
         $success = parent::add($autodate, $nullValues);
         $this->updateGroup($this->groupBox);
+
         return $success;
-    }
-
-    public function update($nullValues = false)
-    {
-        $this->birthday = (empty($this->years) ? $this->birthday : (int)$this->years.'-'.(int)$this->months.'-'.(int)$this->days);
-
-        if ($this->newsletter && !Validate::isDate($this->newsletter_date_add)) {
-            $this->newsletter_date_add = date('Y-m-d H:i:s');
-        }
-        if (isset(Context::getContext()->controller) && Context::getContext()->controller->controller_type == 'admin') {
-            $this->updateGroup($this->groupBox);
-        }
-
-        if ($this->deleted) {
-            $addresses = $this->getAddresses((int)Configuration::get('PS_LANG_DEFAULT'));
-            foreach ($addresses as $address) {
-                $obj = new Address((int)$address['id_address']);
-                $obj->delete();
-            }
-        }
-
-        return parent::update(true);
-    }
-
-    public function delete()
-    {
-        if (!count(Order::getCustomerOrders((int)$this->id))) {
-            $addresses = $this->getAddresses((int)Configuration::get('PS_LANG_DEFAULT'));
-            foreach ($addresses as $address) {
-                $obj = new Address((int)$address['id_address']);
-                $obj->delete();
-            }
-        }
-        Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'customer_group` WHERE `id_customer` = '.(int)$this->id);
-        Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'message WHERE id_customer='.(int)$this->id);
-        Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'specific_price WHERE id_customer='.(int)$this->id);
-        Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'compare WHERE id_customer='.(int)$this->id);
-
-        $carts = Db::getInstance()->executes('SELECT id_cart
-															FROM '._DB_PREFIX_.'cart
-															WHERE id_customer='.(int)$this->id);
-        if ($carts) {
-            foreach ($carts as $cart) {
-                Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'cart WHERE id_cart='.(int)$cart['id_cart']);
-                Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'cart_product WHERE id_cart='.(int)$cart['id_cart']);
-            }
-        }
-
-        $cts = Db::getInstance()->executes('SELECT id_customer_thread
-															FROM '._DB_PREFIX_.'customer_thread
-															WHERE id_customer='.(int)$this->id);
-        if ($cts) {
-            foreach ($cts as $ct) {
-                Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'customer_thread WHERE id_customer_thread='.(int)$ct['id_customer_thread']);
-                Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'customer_message WHERE id_customer_thread='.(int)$ct['id_customer_thread']);
-            }
-        }
-
-        CartRule::deleteByIdCustomer((int)$this->id);
-        return parent::delete();
-    }
-
-    /**
-     * Return customers list
-     *
-     * @param null|bool $only_active Returns only active customers when true
-     * @return array Customers
-     */
-    public static function getCustomers($only_active = null)
-    {
-        $sql = 'SELECT `id_customer`, `email`, `firstname`, `lastname`
-				FROM `'._DB_PREFIX_.'customer`
-				WHERE 1 '.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER).
-				($only_active ? ' AND `active` = 1' : '').'
-				ORDER BY `id_customer` ASC';
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
-    }
-
-    /**
-     * Return customer instance from its e-mail (optionnaly check password)
-     *
-     * @param string $email e-mail
-     * @param string $passwd Password is also checked if specified
-     * @return Customer instance
-     */
-    public function getByEmail($email, $passwd = null, $ignore_guest = true)
-    {
-        if (!Validate::isEmail($email) || ($passwd && !Validate::isPasswd($passwd))) {
-            die(Tools::displayError());
-        }
-
-        $result = Db::getInstance()->getRow('
-		SELECT *
-		FROM `'._DB_PREFIX_.'customer`
-		WHERE `email` = \''.pSQL($email).'\'
-		'.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER).'
-		'.(isset($passwd) ? 'AND `passwd` = \''.pSQL(Tools::encrypt($passwd)).'\'' : '').'
-		AND `deleted` = 0
-		'.($ignore_guest ? ' AND `is_guest` = 0' : ''));
-
-        if (!$result) {
-            return false;
-        }
-        $this->id = $result['id_customer'];
-        foreach ($result as $key => $value) {
-            if (property_exists($this, $key)) {
-                $this->{$key} = $value;
-            }
-        }
-        return $this;
-    }
-
-    /**
-     * Retrieve customers by email address
-     *
-     * @param $email
-     * @return array
-     */
-    public static function getCustomersByEmail($email)
-    {
-        $sql = 'SELECT *
-				FROM `'._DB_PREFIX_.'customer`
-				WHERE `email` = \''.pSQL($email).'\'
-					'.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER);
-
-        return Db::getInstance()->ExecuteS($sql);
-    }
-
-
-    /**
-     * Check id the customer is active or not
-     *
-     * @return bool customer validity
-     */
-    public static function isBanned($id_customer)
-    {
-        if (!Validate::isUnsignedId($id_customer)) {
-            return true;
-        }
-        $cache_id = 'Customer::isBanned_'.(int)$id_customer;
-        if (!Cache::isStored($cache_id)) {
-            $result = (bool)!Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow('
-			SELECT `id_customer`
-			FROM `'._DB_PREFIX_.'customer`
-			WHERE `id_customer` = \''.(int)$id_customer.'\'
-			AND active = 1
-			AND `deleted` = 0');
-            Cache::store($cache_id, $result);
-            return $result;
-        }
-        return Cache::retrieve($cache_id);
-    }
-
-    /**
-     * Check if e-mail is already registered in database
-     *
-     * @param string $email e-mail
-     * @param $return_id boolean
-     * @param $ignore_guest boolean, to exclude guest customer
-     * @return Customer ID if found, false otherwise
-     */
-    public static function customerExists($email, $return_id = false, $ignore_guest = true)
-    {
-        if (!Validate::isEmail($email)) {
-            if (defined('_PS_MODE_DEV_') && _PS_MODE_DEV_) {
-                die(Tools::displayError('Invalid email'));
-            }
-            return false;
-        }
-
-        $result = Db::getInstance()->getValue('
-		SELECT `id_customer`
-		FROM `'._DB_PREFIX_.'customer`
-		WHERE `email` = \''.pSQL($email).'\'
-		'.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER).'
-		'.($ignore_guest ? ' AND `is_guest` = 0' : ''));
-        return ($return_id ? (int)$result : (bool)$result);
-    }
-
-    /**
-     * Check if an address is owned by a customer
-     *
-     * @param int $id_customer Customer ID
-     * @param int $id_address Address ID
-     * @return bool result
-     */
-    public static function customerHasAddress($id_customer, $id_address)
-    {
-        $key = (int)$id_customer.'-'.(int)$id_address;
-        if (!array_key_exists($key, self::$_customerHasAddress)) {
-            self::$_customerHasAddress[$key] = (bool)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('
-			SELECT `id_address`
-			FROM `'._DB_PREFIX_.'address`
-			WHERE `id_customer` = '.(int)$id_customer.'
-			AND `id_address` = '.(int)$id_address.'
-			AND `deleted` = 0');
-        }
-        return self::$_customerHasAddress[$key];
-    }
-
-    public static function resetAddressCache($id_customer, $id_address)
-    {
-        $key = (int)$id_customer.'-'.(int)$id_address;
-        if (array_key_exists($key, self::$_customerHasAddress)) {
-            unset(self::$_customerHasAddress[$key]);
-        }
-    }
-
-    /**
-     * Return customer addresses
-     *
-     * @param int $id_lang Language ID
-     * @return array Addresses
-     */
-    public function getAddresses($id_lang)
-    {
-        $share_order = (bool)Context::getContext()->shop->getGroup()->share_order;
-        $cache_id = 'Customer::getAddresses'.(int)$this->id.'-'.(int)$id_lang.'-'.$share_order;
-        if (!Cache::isStored($cache_id)) {
-            $sql = 'SELECT DISTINCT a.*, cl.`name` AS country, s.name AS state, s.iso_code AS state_iso
-					FROM `'._DB_PREFIX_.'address` a
-					LEFT JOIN `'._DB_PREFIX_.'country` c ON (a.`id_country` = c.`id_country`)
-					LEFT JOIN `'._DB_PREFIX_.'country_lang` cl ON (c.`id_country` = cl.`id_country`)
-					LEFT JOIN `'._DB_PREFIX_.'state` s ON (s.`id_state` = a.`id_state`)
-					'.($share_order ? '' : Shop::addSqlAssociation('country', 'c')).'
-					WHERE `id_lang` = '.(int)$id_lang.' AND `id_customer` = '.(int)$this->id.' AND a.`deleted` = 0';
-
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
-            Cache::store($cache_id, $result);
-            return $result;
-        }
-        return Cache::retrieve($cache_id);
-    }
-
-    /**
-     * Count the number of addresses for a customer
-     *
-     * @param int $id_customer Customer ID
-     * @return int Number of addresses
-     */
-    public static function getAddressesTotalById($id_customer)
-    {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('
-			SELECT COUNT(`id_address`)
-			FROM `'._DB_PREFIX_.'address`
-			WHERE `id_customer` = '.(int)$id_customer.'
-			AND `deleted` = 0'
-        );
-    }
-
-    /**
-     * Check if customer password is the right one
-     *
-     * @param string $passwd Password
-     * @return bool result
-     */
-    public static function checkPassword($id_customer, $passwd)
-    {
-        if (!Validate::isUnsignedId($id_customer) || !Validate::isMd5($passwd)) {
-            die(Tools::displayError());
-        }
-        $cache_id = 'Customer::checkPassword'.(int)$id_customer.'-'.$passwd;
-        if (!Cache::isStored($cache_id)) {
-            $result = (bool)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('
-			SELECT `id_customer`
-			FROM `'._DB_PREFIX_.'customer`
-			WHERE `id_customer` = '.(int)$id_customer.'
-			AND `passwd` = \''.pSQL($passwd).'\'');
-            Cache::store($cache_id, $result);
-            return $result;
-        }
-        return Cache::retrieve($cache_id);
-    }
-
-    /**
-     * Light back office search for customers
-     *
-     * @param string $query Searched string
-     * @param null|int $limit Limit query results
-     * @return array|false|mysqli_result|null|PDOStatement|resource Corresponding customers
-     * @throws PrestaShopDatabaseException
-     */
-    public static function searchByName($query, $limit = null)
-    {
-        $sql_base = 'SELECT *
-				FROM `'._DB_PREFIX_.'customer`';
-        $sql = '('.$sql_base.' WHERE `email` LIKE \'%'.pSQL($query).'%\' '.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER).')';
-        $sql .= ' UNION ('.$sql_base.' WHERE `id_customer` = '.(int)$query.' '.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER).')';
-        $sql .= ' UNION ('.$sql_base.' WHERE `lastname` LIKE \'%'.pSQL($query).'%\' '.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER).')';
-        $sql .= ' UNION ('.$sql_base.' WHERE `firstname` LIKE \'%'.pSQL($query).'%\' '.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER).')';
-
-        if ($limit) {
-            $sql .= ' LIMIT 0, '.(int)$limit;
-        }
-
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
-    }
-
-
-    /**
-     * Search for customers by ip address
-     *
-     * @param string $ip Searched string
-     */
-    public static function searchByIp($ip)
-    {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
-		SELECT DISTINCT c.*
-		FROM `'._DB_PREFIX_.'customer` c
-		LEFT JOIN `'._DB_PREFIX_.'guest` g ON g.id_customer = c.id_customer
-		LEFT JOIN `'._DB_PREFIX_.'connections` co ON g.id_guest = co.id_guest
-		WHERE co.`ip_address` = \''.(int)ip2long(trim($ip)).'\'');
-    }
-
-    /**
-     * Return several useful statistics about customer
-     *
-     * @return array Stats
-     */
-    public function getStats()
-    {
-        $result = Db::getInstance()->getRow('
-		SELECT COUNT(`id_order`) AS nb_orders, SUM(`total_paid` / o.`conversion_rate`) AS total_orders
-		FROM `'._DB_PREFIX_.'orders` o
-		WHERE o.`id_customer` = '.(int)$this->id.'
-		AND o.valid = 1');
-
-        $result2 = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow('
-		SELECT MAX(c.`date_add`) AS last_visit
-		FROM `'._DB_PREFIX_.'guest` g
-		LEFT JOIN `'._DB_PREFIX_.'connections` c ON c.id_guest = g.id_guest
-		WHERE g.`id_customer` = '.(int)$this->id);
-
-        $result3 = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow('
-		SELECT (YEAR(CURRENT_DATE)-YEAR(c.`birthday`)) - (RIGHT(CURRENT_DATE, 5)<RIGHT(c.`birthday`, 5)) AS age
-		FROM `'._DB_PREFIX_.'customer` c
-		WHERE c.`id_customer` = '.(int)$this->id);
-
-        $result['last_visit'] = $result2['last_visit'];
-        $result['age'] = ($result3['age'] != date('Y') ? $result3['age'] : '--');
-        return $result;
-    }
-
-    public function getLastEmails()
-    {
-        if (!$this->id) {
-            return [];
-        }
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
-		SELECT m.*, l.name as language
-		FROM `'._DB_PREFIX_.'mail` m
-		LEFT JOIN `'._DB_PREFIX_.'lang` l ON m.id_lang = l.id_lang
-		WHERE `recipient` = "'.pSQL($this->email).'"
-		ORDER BY m.date_add DESC
-		LIMIT 10');
-    }
-
-    public function getLastConnections()
-    {
-        if (!$this->id) {
-            return [];
-        }
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
-		SELECT c.id_connections, c.date_add, COUNT(cp.id_page) AS pages, TIMEDIFF(MAX(cp.time_end), c.date_add) as time, http_referer,INET_NTOA(ip_address) as ipaddress
-		FROM `'._DB_PREFIX_.'guest` g
-		LEFT JOIN `'._DB_PREFIX_.'connections` c ON c.id_guest = g.id_guest
-		LEFT JOIN `'._DB_PREFIX_.'connections_page` cp ON c.id_connections = cp.id_connections
-		WHERE g.`id_customer` = '.(int)$this->id.'
-		GROUP BY c.`id_connections`
-		ORDER BY c.date_add DESC
-		LIMIT 10');
-    }
-
-    /*
-    * Specify if a customer already in base
-    *
-    * @param $id_customer Customer id
-    * @return bool
-    */
-    /* DEPRECATED */
-    public function customerIdExists($id_customer)
-    {
-        return Customer::customerIdExistsStatic((int)$id_customer);
-    }
-
-    public static function customerIdExistsStatic($id_customer)
-    {
-        $cache_id = 'Customer::customerIdExistsStatic'.(int)$id_customer;
-        if (!Cache::isStored($cache_id)) {
-            $result = (int)Db::getInstance()->getValue('
-			SELECT `id_customer`
-			FROM '._DB_PREFIX_.'customer c
-			WHERE c.`id_customer` = '.(int)$id_customer);
-            Cache::store($cache_id, $result);
-            return $result;
-        }
-        return Cache::retrieve($cache_id);
     }
 
     /**
      * Update customer groups associated to the object
      *
      * @param array $list groups
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function updateGroup($list)
     {
@@ -648,121 +517,408 @@ class CustomerCore extends ObjectModel
         }
     }
 
+    /**
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function cleanGroups()
     {
-    	return Db::getInstance()->delete('customer_group', 'id_customer = '.(int)$this->id);
+        return Db::getInstance()->delete('customer_group', 'id_customer = '.(int) $this->id);
     }
 
+    /**
+     * @param $groups
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function addGroups($groups)
     {
         foreach ($groups as $group) {
-            $row = ['id_customer' => (int)$this->id, 'id_group' => (int)$group];
+            $row = ['id_customer' => (int) $this->id, 'id_group' => (int) $group];
             Db::getInstance()->insert('customer_group', $row, false, true, Db::INSERT_IGNORE);
         }
     }
 
-    public static function getGroupsStatic($id_customer)
+    /**
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function delete()
+    {
+        if (!count(Order::getCustomerOrders((int) $this->id))) {
+            $addresses = $this->getAddresses((int) Configuration::get('PS_LANG_DEFAULT'));
+            foreach ($addresses as $address) {
+                $obj = new Address((int) $address['id_address']);
+                $obj->delete();
+            }
+        }
+        Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'customer_group` WHERE `id_customer` = '.(int) $this->id);
+        Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'message WHERE id_customer='.(int) $this->id);
+        Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'specific_price WHERE id_customer='.(int) $this->id);
+        Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'compare WHERE id_customer='.(int) $this->id);
+
+        $carts = Db::getInstance()->executes(
+            'SELECT id_cart
+															FROM '._DB_PREFIX_.'cart
+															WHERE id_customer='.(int) $this->id
+        );
+        if ($carts) {
+            foreach ($carts as $cart) {
+                Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'cart WHERE id_cart='.(int) $cart['id_cart']);
+                Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'cart_product WHERE id_cart='.(int) $cart['id_cart']);
+            }
+        }
+
+        $cts = Db::getInstance()->executes(
+            'SELECT id_customer_thread
+															FROM '._DB_PREFIX_.'customer_thread
+															WHERE id_customer='.(int) $this->id
+        );
+        if ($cts) {
+            foreach ($cts as $ct) {
+                Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'customer_thread WHERE id_customer_thread='.(int) $ct['id_customer_thread']);
+                Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'customer_message WHERE id_customer_thread='.(int) $ct['id_customer_thread']);
+            }
+        }
+
+        CartRule::deleteByIdCustomer((int) $this->id);
+
+        return parent::delete();
+    }
+
+    /**
+     * Return customer addresses
+     *
+     * @param int $idLang Language ID
+     *
+     * @return array Addresses
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function getAddresses($idLang)
+    {
+        $shareOrder = (bool) Context::getContext()->shop->getGroup()->share_order;
+        $cacheId = 'Customer::getAddresses'.(int) $this->id.'-'.(int) $idLang.'-'.$shareOrder;
+        if (!Cache::isStored($cacheId)) {
+            $sql = 'SELECT DISTINCT a.*, cl.`name` AS country, s.name AS state, s.iso_code AS state_iso
+					FROM `'._DB_PREFIX_.'address` a
+					LEFT JOIN `'._DB_PREFIX_.'country` c ON (a.`id_country` = c.`id_country`)
+					LEFT JOIN `'._DB_PREFIX_.'country_lang` cl ON (c.`id_country` = cl.`id_country`)
+					LEFT JOIN `'._DB_PREFIX_.'state` s ON (s.`id_state` = a.`id_state`)
+					'.($shareOrder ? '' : Shop::addSqlAssociation('country', 'c')).'
+					WHERE `id_lang` = '.(int) $idLang.' AND `id_customer` = '.(int) $this->id.' AND a.`deleted` = 0';
+
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+            Cache::store($cacheId, $result);
+
+            return $result;
+        }
+
+        return Cache::retrieve($cacheId);
+    }
+
+    /**
+     * Return customer instance from its e-mail (optionnaly check password)
+     *
+     * @param string $email             e-mail
+     * @param string $plainTextPassword Password is also checked if specified
+     * @param bool   $ignoreGuest
+     *
+     * @return Customer|bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function getByEmail($email, $plainTextPassword = null, $ignoreGuest = true)
+    {
+        if (!Validate::isEmail($email) || ($plainTextPassword && !Validate::isPasswd($plainTextPassword))) {
+            die(Tools::displayError());
+        }
+
+        $sql = new DbQuery();
+        $sql->select('*');
+        $sql->from(bqSQL(self::$definition['table']));
+        $sql->where('`email` = \''.pSQL($email).'\' '.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER));
+        $sql->where('`deleted` = 0');
+        if ($ignoreGuest) {
+            $sql->where('`is_guest` = 0');
+        }
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
+        if ($plainTextPassword && !password_verify($plainTextPassword, $result['passwd'])) {
+            if (!$plainTextPassword) {
+                return false;
+            }
+
+            $sql = new DbQuery();
+            $sql->select('*');
+            $sql->from(bqSQL(self::$definition['table']));
+            $sql->where('`email` = \''.pSQL($email).'\' '.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER));
+            if ($plainTextPassword) {
+                $sql->where('`passwd` = \''.md5(_COOKIE_KEY_.$plainTextPassword).'\'');
+            }
+            $sql->where('`deleted` = 0');
+            if ($ignoreGuest) {
+                $sql->where('`is_guest` = 0');
+            }
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
+            if ($result) {
+                $newHash = Tools::hash($plainTextPassword);
+                Db::getInstance()->update(
+                    bqSQL(self::$definition['table']),
+                    [
+                        'passwd' => pSQL($newHash),
+                    ],
+                    '`id_customer` = '.(int) $result['id_customer']
+                );
+                $result['passwd'] = $newHash;
+            } else {
+                return false;
+            }
+        }
+
+        $this->id = $result['id_customer'];
+        foreach ($result as $key => $value) {
+            if (property_exists($this, $key)) {
+                $this->{$key} = $value;
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Return several useful statistics about customer
+     *
+     * @return array Stats
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function getStats()
+    {
+        $result = Db::getInstance()->getRow(
+            '
+		SELECT COUNT(`id_order`) AS nb_orders, SUM(`total_paid` / o.`conversion_rate`) AS total_orders
+		FROM `'._DB_PREFIX_.'orders` o
+		WHERE o.`id_customer` = '.(int) $this->id.'
+		AND o.valid = 1'
+        );
+
+        $result2 = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            '
+		SELECT MAX(c.`date_add`) AS last_visit
+		FROM `'._DB_PREFIX_.'guest` g
+		LEFT JOIN `'._DB_PREFIX_.'connections` c ON c.id_guest = g.id_guest
+		WHERE g.`id_customer` = '.(int) $this->id
+        );
+
+        $result3 = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            '
+		SELECT (YEAR(CURRENT_DATE)-YEAR(c.`birthday`)) - (RIGHT(CURRENT_DATE, 5)<RIGHT(c.`birthday`, 5)) AS age
+		FROM `'._DB_PREFIX_.'customer` c
+		WHERE c.`id_customer` = '.(int) $this->id
+        );
+
+        $result['last_visit'] = $result2['last_visit'];
+        $result['age'] = ($result3['age'] != date('Y') ? $result3['age'] : '--');
+
+        return $result;
+    }
+
+    /**
+     * @return array|false|mysqli_result|null|PDOStatement|resource
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function getLastEmails()
+    {
+        if (!$this->id) {
+            return [];
+        }
+
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            '
+		SELECT m.*, l.name AS language
+		FROM `'._DB_PREFIX_.'mail` m
+		LEFT JOIN `'._DB_PREFIX_.'lang` l ON m.id_lang = l.id_lang
+		WHERE `recipient` = "'.pSQL($this->email).'"
+		ORDER BY m.date_add DESC
+		LIMIT 10'
+        );
+    }
+
+    /**
+     * @return array|false|mysqli_result|null|PDOStatement|resource
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function getLastConnections()
+    {
+        if (!$this->id) {
+            return [];
+        }
+
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            '
+		SELECT c.id_connections, c.date_add, COUNT(cp.id_page) AS pages, TIMEDIFF(MAX(cp.time_end), c.date_add) AS time, http_referer,INET_NTOA(ip_address) AS ipaddress
+		FROM `'._DB_PREFIX_.'guest` g
+		LEFT JOIN `'._DB_PREFIX_.'connections` c ON c.id_guest = g.id_guest
+		LEFT JOIN `'._DB_PREFIX_.'connections_page` cp ON c.id_connections = cp.id_connections
+		WHERE g.`id_customer` = '.(int) $this->id.'
+		GROUP BY c.`id_connections`
+		ORDER BY c.date_add DESC
+		LIMIT 10'
+        );
+    }
+
+    /**
+     * @param int $idCustomer
+     *
+     * @return int|null
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function customerIdExists($idCustomer)
+    {
+        return Customer::customerIdExistsStatic((int) $idCustomer);
+    }
+
+    /**
+     * @param int $idCustomer
+     *
+     * @return int|null
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function customerIdExistsStatic($idCustomer)
+    {
+        $cacheId = 'Customer::customerIdExistsStatic'.(int) $idCustomer;
+        if (!Cache::isStored($cacheId)) {
+            $result = (int) Db::getInstance()->getValue(
+                '
+			SELECT `id_customer`
+			FROM '._DB_PREFIX_.'customer c
+			WHERE c.`id_customer` = '.(int) $idCustomer
+            );
+            Cache::store($cacheId, $result);
+
+            return $result;
+        }
+
+        return Cache::retrieve($cacheId);
+    }
+
+    /**
+     * @return array|mixed
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function getGroups()
+    {
+        return Customer::getGroupsStatic((int) $this->id);
+    }
+
+    /**
+     * @param $idCustomer
+     *
+     * @return array|mixed
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function getGroupsStatic($idCustomer)
     {
         if (!Group::isFeatureActive()) {
             return [Configuration::get('PS_CUSTOMER_GROUP')];
         }
 
-        if ($id_customer == 0) {
-            self::$_customer_groups[$id_customer] = [(int)Configuration::get('PS_UNIDENTIFIED_GROUP')];
+        if ($idCustomer == 0) {
+            self::$_customer_groups[$idCustomer] = [(int) Configuration::get('PS_UNIDENTIFIED_GROUP')];
         }
 
-        if (!isset(self::$_customer_groups[$id_customer])) {
-            self::$_customer_groups[$id_customer] = [];
-            $result = Db::getInstance()->executeS('
+        if (!isset(self::$_customer_groups[$idCustomer])) {
+            self::$_customer_groups[$idCustomer] = [];
+            $result = Db::getInstance()->executeS(
+                '
 			SELECT cg.`id_group`
 			FROM '._DB_PREFIX_.'customer_group cg
-			WHERE cg.`id_customer` = '.(int)$id_customer);
+			WHERE cg.`id_customer` = '.(int) $idCustomer
+            );
             foreach ($result as $group) {
-                self::$_customer_groups[$id_customer][] = (int)$group['id_group'];
+                self::$_customer_groups[$idCustomer][] = (int) $group['id_group'];
             }
         }
-        return self::$_customer_groups[$id_customer];
-    }
 
-    public function getGroups()
-    {
-        return Customer::getGroupsStatic((int)$this->id);
+        return self::$_customer_groups[$idCustomer];
     }
 
     /**
-     * @deprecated since 1.5
+     * @deprecated since 1.0.0
      */
     public function isUsed()
     {
         Tools::displayAsDeprecated();
+
         return false;
     }
 
+    /**
+     * @return array|false|mysqli_result|null|PDOStatement|resource
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getBoughtProducts()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            '
 		SELECT * FROM `'._DB_PREFIX_.'orders` o
 		LEFT JOIN `'._DB_PREFIX_.'order_detail` od ON o.id_order = od.id_order
-		WHERE o.valid = 1 AND o.`id_customer` = '.(int)$this->id);
+		WHERE o.valid = 1 AND o.`id_customer` = '.(int) $this->id
+        );
     }
 
-    public static function getDefaultGroupId($id_customer)
-    {
-        if (!Group::isFeatureActive()) {
-            static $ps_customer_group = null;
-            if ($ps_customer_group === null) {
-                $ps_customer_group = Configuration::get('PS_CUSTOMER_GROUP');
-            }
-            return $ps_customer_group;
-        }
-
-        if (!isset(self::$_defaultGroupId[(int)$id_customer])) {
-            self::$_defaultGroupId[(int)$id_customer] = Db::getInstance()->getValue('
-				SELECT `id_default_group`
-				FROM `'._DB_PREFIX_.'customer`
-				WHERE `id_customer` = '.(int)$id_customer
-            );
-        }
-        return self::$_defaultGroupId[(int)$id_customer];
-    }
-
-    public static function getCurrentCountry($id_customer, Cart $cart = null)
-    {
-        if (!$cart) {
-            $cart = Context::getContext()->cart;
-        }
-        if (!$cart || !$cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}) {
-            $id_address = (int)Db::getInstance()->getValue('
-				SELECT `id_address`
-				FROM `'._DB_PREFIX_.'address`
-				WHERE `id_customer` = '.(int)$id_customer.'
-				AND `deleted` = 0 ORDER BY `id_address`'
-            );
-        } else {
-            $id_address = $cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')};
-        }
-        $ids = Address::getCountryAndState($id_address);
-        return (int)$ids['id_country'] ? $ids['id_country'] : Configuration::get('PS_COUNTRY_DEFAULT');
-    }
-
+    /**
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function toggleStatus()
     {
         parent::toggleStatus();
 
         /* Change status to active/inactive */
-        return Db::getInstance()->execute('
+
+        return Db::getInstance()->execute(
+            '
 		UPDATE `'._DB_PREFIX_.bqSQL($this->def['table']).'`
 		SET `date_upd` = NOW()
-		WHERE `'.bqSQL($this->def['primary']).'` = '.(int)$this->id);
+		WHERE `'.bqSQL($this->def['primary']).'` = '.(int) $this->id
+        );
     }
 
-
-    public function isGuest()
-    {
-        return (bool)$this->is_guest;
-    }
-
-    public function transformToCustomer($id_lang, $password = null)
+    /**
+     * @param int  $idLang
+     * @param null $password
+     *
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function transformToCustomer($idLang, $password = null)
     {
         if (!$this->isGuest()) {
             return false;
@@ -775,21 +931,21 @@ class CustomerCore extends ObjectModel
         }
 
         $this->is_guest = 0;
-        $this->passwd = Tools::encrypt($password);
+        $this->passwd = Tools::hash($password);
         $this->cleanGroups();
         $this->addGroups([Configuration::get('PS_CUSTOMER_GROUP')]); // add default customer group
         if ($this->update()) {
             $vars = [
                 '{firstname}' => $this->firstname,
-                '{lastname}' => $this->lastname,
-                '{email}' => $this->email,
-                '{passwd}' => $password
+                '{lastname}'  => $this->lastname,
+                '{email}'     => $this->email,
+                '{passwd}'    => $password,
             ];
 
             Mail::Send(
-                (int)$id_lang,
+                (int) $idLang,
                 'guest_to_customer',
-                Mail::l('Your guest account has been transformed into a customer account', (int)$id_lang),
+                Mail::l('Your guest account has been transformed into a customer account', (int) $idLang),
                 $vars,
                 $this->email,
                 $this->firstname.' '.$this->lastname,
@@ -799,18 +955,70 @@ class CustomerCore extends ObjectModel
                 null,
                 _PS_MAIL_DIR_,
                 false,
-                (int)$this->id_shop
+                (int) $this->id_shop
             );
+
             return true;
         }
+
         return false;
     }
 
+    /**
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function isGuest()
+    {
+        return (bool) $this->is_guest;
+    }
+
+    /**
+     * @param bool $nullValues
+     *
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function update($nullValues = false)
+    {
+        $this->birthday = (empty($this->years) ? $this->birthday : (int) $this->years.'-'.(int) $this->months.'-'.(int) $this->days);
+
+        if ($this->newsletter && !Validate::isDate($this->newsletter_date_add)) {
+            $this->newsletter_date_add = date('Y-m-d H:i:s');
+        }
+        if (isset(Context::getContext()->controller) && Context::getContext()->controller->controller_type == 'admin') {
+            $this->updateGroup($this->groupBox);
+        }
+
+        if ($this->deleted) {
+            $addresses = $this->getAddresses((int) Configuration::get('PS_LANG_DEFAULT'));
+            foreach ($addresses as $address) {
+                $obj = new Address((int) $address['id_address']);
+                $obj->delete();
+            }
+        }
+
+        return parent::update(true);
+    }
+
+    /**
+     * @param $passwd
+     *
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setWsPasswd($passwd)
     {
         if ($this->id == 0 || $this->passwd != $passwd) {
-            $this->passwd = Tools::encrypt($passwd);
+            $this->passwd = Tools::hash($passwd);
         }
+
         return true;
     }
 
@@ -818,23 +1026,65 @@ class CustomerCore extends ObjectModel
      * Check customer informations and return customer validity
      *
      * @since 1.5.0
-     * @param bool $with_guest
+     *
+     * @param bool $withGuest
+     *
      * @return bool customer validity
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
-    public function isLogged($with_guest = false)
+    public function isLogged($withGuest = false)
     {
-        if (!$with_guest && $this->is_guest == 1) {
+        if (!$withGuest && $this->is_guest == 1) {
             return false;
         }
 
         /* Customer is valid only if it can be load and if object password is the same as database one */
+
         return ($this->logged == 1 && $this->id && Validate::isUnsignedId($this->id) && Customer::checkPassword($this->id, $this->passwd));
+    }
+
+    /**
+     * Check if customer password is the right one
+     *
+     * @param string $hashedPassword Password
+     *
+     * @return bool result
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     *
+     * @todo: adapt validation for hashed password
+     * @todo: find out why both hashed and plaintext password are passed
+     */
+    public static function checkPassword($idCustomer, $hashedPassword)
+    {
+        if (!Validate::isUnsignedId($idCustomer)) {
+            die(Tools::displayError());
+        }
+
+        $cacheId = 'Customer::checkPassword'.(int) $idCustomer.'-'.$hashedPassword;
+        if (!Cache::isStored($cacheId)) {
+            $sql = new DbQuery();
+            $sql->select('`id_customer`');
+            $sql->from(bqSQL(self::$definition['table']));
+            $sql->where('`id_customer` = '.(int) $idCustomer);
+            $sql->where('`passwd` = \''.pSQL($hashedPassword).'\'');
+            $result = (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+            Cache::store($cacheId, $result);
+
+            return $result;
+        }
+
+        return Cache::retrieve($cacheId);
     }
 
     /**
      * Logout
      *
-     * @since 1.5.0
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function logout()
     {
@@ -853,7 +1103,8 @@ class CustomerCore extends ObjectModel
      * Soft logout, delete everything links to the customer
      * but leave there affiliate's informations
      *
-     * @since 1.5.0
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function mylogout()
     {
@@ -868,17 +1119,32 @@ class CustomerCore extends ObjectModel
         Hook::exec('actionCustomerLogoutAfter', ['customer' => $this]);
     }
 
-    public function getLastCart($with_order = true)
+    /**
+     * @param bool $withOrder
+     *
+     * @return bool|int
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function getLastCart($withOrder = true)
     {
-        $carts = Cart::getCustomerCarts((int)$this->id, $with_order);
+        $carts = Cart::getCustomerCarts((int) $this->id, $withOrder);
         if (!count($carts)) {
             return false;
         }
         $cart = array_shift($carts);
-        $cart = new Cart((int)$cart['id_cart']);
-        return ($cart->nbProducts() === 0 ? (int)$cart->id : false);
+        $cart = new Cart((int) $cart['id_cart']);
+
+        return ($cart->nbProducts() === 0 ? (int) $cart->id : false);
     }
 
+    /**
+     * @return float
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getOutstanding()
     {
         $query = new DbQuery();
@@ -886,8 +1152,8 @@ class CustomerCore extends ObjectModel
         $query->from('order_invoice', 'oi');
         $query->leftJoin('orders', 'o', 'oi.id_order = o.id_order');
         $query->groupBy('o.id_customer');
-        $query->where('o.id_customer = '.(int)$this->id);
-        $total_paid = (float)Db::getInstance()->getValue($query->build());
+        $query->where('o.id_customer = '.(int) $this->id);
+        $totalPaid = (float) Db::getInstance()->getValue($query->build());
 
         $query = new DbQuery();
         $query->select('SUM(op.amount)');
@@ -895,22 +1161,37 @@ class CustomerCore extends ObjectModel
         $query->leftJoin('order_invoice_payment', 'oip', 'op.id_order_payment = oip.id_order_payment');
         $query->leftJoin('orders', 'o', 'oip.id_order = o.id_order');
         $query->groupBy('o.id_customer');
-        $query->where('o.id_customer = '.(int)$this->id);
-        $total_rest = (float)Db::getInstance()->getValue($query->build());
+        $query->where('o.id_customer = '.(int) $this->id);
+        $totalRest = (float) Db::getInstance()->getValue($query->build());
 
-        return $total_paid - $total_rest;
+        return $totalPaid - $totalRest;
     }
 
+    /**
+     * @return array|false|mysqli_result|null|PDOStatement|resource
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getWsGroups()
     {
-        return Db::getInstance()->executeS('
-			SELECT cg.`id_group` as id
+        return Db::getInstance()->executeS(
+            '
+			SELECT cg.`id_group` AS id
 			FROM '._DB_PREFIX_.'customer_group cg
 			'.Shop::addSqlAssociation('group', 'cg').'
-			WHERE cg.`id_customer` = '.(int)$this->id
+			WHERE cg.`id_customer` = '.(int) $this->id
         );
     }
 
+    /**
+     * @param array $result
+     *
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setWsGroups($result)
     {
         $groups = [];
@@ -919,15 +1200,25 @@ class CustomerCore extends ObjectModel
         }
         $this->cleanGroups();
         $this->addGroups($groups);
+
         return true;
     }
 
     /**
-     * @see ObjectModel::getWebserviceObjectList()
+     * @param string $sqlJoin
+     * @param string $sqlFilter
+     * @param string $sqlSort
+     * @param string $sqlLimit
+     *
+     * @return array|null
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getWebserviceObjectList($sqlJoin, $sqlFilter, $sqlSort, $sqlLimit)
     {
         $sqlFilter .= Shop::addSqlRestriction(Shop::SHARE_CUSTOMER, 'main');
+
         return parent::getWebserviceObjectList($sqlJoin, $sqlFilter, $sqlSort, $sqlLimit);
     }
 }
