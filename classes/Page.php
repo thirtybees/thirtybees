@@ -21,70 +21,79 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class PageCore
+ *
+ * @since 1.0.0
+ */
 class PageCore extends ObjectModel
 {
+    // @codingStandardsIgnoreStart
     public $id_page_type;
     public $id_object;
-
     public $name;
-
+    // @codingStandardsIgnoreEnd
     /**
      * @see ObjectModel::$definition
      */
     public static $definition = [
-        'table' => 'page',
+        'table'   => 'page',
         'primary' => 'id_page',
-        'fields' => [
-            'id_page_type' =>    ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'id_object' =>        ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
+        'fields'  => [
+            'id_page_type' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'id_object'    => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
         ],
     ];
 
     /**
      * @return int Current page ID
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public static function getCurrentId()
     {
         $controller = Dispatcher::getInstance()->getController();
-        $page_type_id = Page::getPageTypeByName($controller);
+        $pageTypeId = Page::getPageTypeByName($controller);
 
         // Some pages must be distinguished in order to record exactly what is being seen
         // @todo dispatcher module
-        $special_array = [
-            'product' => 'id_product',
-            'category' => 'id_category',
-            'order' => 'step',
+        $specialArray = [
+            'product'      => 'id_product',
+            'category'     => 'id_category',
+            'order'        => 'step',
             'manufacturer' => 'id_manufacturer',
         ];
 
         $where = '';
-        $insert_data = [
-            'id_page_type' => $page_type_id,
+        $insertData = [
+            'id_page_type' => $pageTypeId,
         ];
 
-        if (array_key_exists($controller, $special_array)) {
-            $object_id = Tools::getValue($special_array[$controller], null);
-            $where = ' AND `id_object` = '.(int)$object_id;
-            $insert_data['id_object'] = (int)$object_id;
+        if (array_key_exists($controller, $specialArray)) {
+            $objectId = Tools::getValue($specialArray[$controller], null);
+            $where = ' AND `id_object` = '.(int) $objectId;
+            $insertData['id_object'] = (int) $objectId;
         }
 
         $sql = 'SELECT `id_page`
 				FROM `'._DB_PREFIX_.'page`
-				WHERE `id_page_type` = '.(int)$page_type_id.$where;
+				WHERE `id_page_type` = '.(int) $pageTypeId.$where;
         $result = Db::getInstance()->getRow($sql);
         if ($result['id_page']) {
             return $result['id_page'];
         }
 
-        Db::getInstance()->insert('page', $insert_data, true);
+        Db::getInstance()->insert('page', $insertData, true);
+
         return Db::getInstance()->Insert_ID();
     }
 
@@ -92,15 +101,19 @@ class PageCore extends ObjectModel
      * Return page type ID from page name
      *
      * @param string $name Page name (E.g. product.php)
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public static function getPageTypeByName($name)
     {
-        if ($value = Db::getInstance()->getValue('
+        if ($value = Db::getInstance()->getValue(
+            '
 				SELECT id_page_type
 				FROM '._DB_PREFIX_.'page_type
 				WHERE name = \''.pSQL($name).'\''
-                )
-            ) {
+        )
+        ) {
             return $value;
         }
 
@@ -109,28 +122,35 @@ class PageCore extends ObjectModel
         return Db::getInstance()->Insert_ID();
     }
 
-    public static function setPageViewed($id_page)
+    /**
+     * @param $idPage
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function setPageViewed($idPage)
     {
-        $id_date_range = DateRange::getCurrentRange();
+        $idDateRange = DateRange::getCurrentRange();
         $context = Context::getContext();
 
         // Try to increment the visits counter
         $sql = 'UPDATE `'._DB_PREFIX_.'page_viewed`
 				SET `counter` = `counter` + 1
-				WHERE `id_date_range` = '.(int)$id_date_range.'
-					AND `id_page` = '.(int)$id_page.'
-					AND `id_shop` = '.(int)$context->shop->id;
+				WHERE `id_date_range` = '.(int) $idDateRange.'
+					AND `id_page` = '.(int) $idPage.'
+					AND `id_shop` = '.(int) $context->shop->id;
         Db::getInstance()->execute($sql);
 
         // If no one has seen the page in this date range, it is added
         if (Db::getInstance()->Affected_Rows() == 0) {
-            Db::getInstance()->insert('page_viewed', [
-                'id_date_range' =>    (int)$id_date_range,
-                'id_page' =>        (int)$id_page,
-                'counter' =>        1,
-                'id_shop' =>        (int)$context->shop->id,
-                'id_shop_group' =>    (int)$context->shop->id_shop_group,
-            ]
+            Db::getInstance()->insert(
+                'page_viewed', [
+                    'id_date_range' => (int) $idDateRange,
+                    'id_page'       => (int) $idPage,
+                    'counter'       => 1,
+                    'id_shop'       => (int) $context->shop->id,
+                    'id_shop_group' => (int) $context->shop->id_shop_group,
+                ]
             );
         }
     }
