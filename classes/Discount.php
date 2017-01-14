@@ -30,7 +30,7 @@
  */
 
 /**
- * @deprecated 1.5.0.1
+ * @deprecated 1.0.0
  */
 class DiscountCore extends CartRule
 {

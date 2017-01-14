@@ -21,37 +21,53 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class DateRangeCore
+ *
+ * @since 1.0.0
+ */
 class DateRangeCore extends ObjectModel
 {
+    // @codingStandardsIgnoreStart
+    /** @var string $time_start */
     public $time_start;
+    /** @var string $time_end */
     public $time_end;
-
+    // @codingStandardsIgnoreEnd
     /**
      * @see ObjectModel::$definition
      */
     public static $definition = [
-        'table' => 'date_range',
+        'table'   => 'date_range',
         'primary' => 'id_date_range',
-        'fields' => [
+        'fields'  => [
             'time_start' => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'required' => true],
-            'time_end' =>    ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'required' => true],
+            'time_end'   => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'required' => true],
         ],
     ];
 
+    /**
+     * @return mixed
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public static function getCurrentRange()
     {
-        $result = Db::getInstance()->getRow('
+        $result = Db::getInstance()->getRow(
+            '
 		SELECT `id_date_range`, `time_end`
 		FROM `'._DB_PREFIX_.'date_range`
-		WHERE `time_end` = (SELECT MAX(`time_end`) FROM `'._DB_PREFIX_.'date_range`)');
+		WHERE `time_end` = (SELECT MAX(`time_end`) FROM `'._DB_PREFIX_.'date_range`)'
+        );
         if (!$result['id_date_range'] || strtotime($result['time_end']) < strtotime(date('Y-m-d H:i:s'))) {
             // The default range is set to 1 day less 1 second (in seconds)
             $rangeSize = 86399;
@@ -59,8 +75,10 @@ class DateRangeCore extends ObjectModel
             $dateRange->time_start = date('Y-m-d');
             $dateRange->time_end = strftime('%Y-%m-%d %H:%M:%S', strtotime($dateRange->time_start) + $rangeSize);
             $dateRange->add();
+
             return $dateRange->id;
         }
+
         return $result['id_date_range'];
     }
 }

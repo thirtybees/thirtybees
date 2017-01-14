@@ -29,6 +29,11 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class FileUploaderCore
+ *
+ * @since 1.0.0
+ */
 class FileUploaderCore
 {
     protected $allowedExtensions = [];
@@ -37,6 +42,15 @@ class FileUploaderCore
     protected $file;
     protected $sizeLimit;
 
+    /**
+     * FileUploaderCore constructor.
+     *
+     * @param array $allowedExtensions
+     * @param int   $sizeLimit
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function __construct(array $allowedExtensions = [], $sizeLimit = 10485760)
     {
         $allowedExtensions = array_map('strtolower', $allowedExtensions);
@@ -53,6 +67,14 @@ class FileUploaderCore
         }
     }
 
+    /**
+     * @param $str
+     *
+     * @return int|string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     protected function toBytes($str)
     {
         $val = trim($str);
@@ -67,6 +89,9 @@ class FileUploaderCore
 
     /**
      * Returns array('success'=>true) or array('error'=>'error message')
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function handleUpload()
     {
@@ -97,6 +122,11 @@ class FileUploaderCore
     }
 }
 
+/**
+ * Class QqUploadedFileForm
+ *
+ * @since 1.0.0
+ */
 class QqUploadedFileForm
 {
     /**
@@ -139,26 +169,36 @@ class QqUploadedFileForm
         }
     }
 
-    public function copyImage($id_product, $id_image, $method = 'auto')
+    /**
+     * @param        $idProduct
+     * @param        $idImage
+     * @param string $method
+     *
+     * @return array
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function copyImage($idProduct, $idImage, $method = 'auto')
     {
-        $image = new Image($id_image);
-        if (!$new_path = $image->getPathForCreation()) {
+        $image = new Image($idImage);
+        if (!$newPath = $image->getPathForCreation()) {
             return ['error' => Tools::displayError('An error occurred during new folder creation')];
         }
         if (!($tmpName = tempnam(_PS_TMP_IMG_DIR_, 'PS')) || !move_uploaded_file($_FILES['qqfile']['tmp_name'], $tmpName)) {
             return ['error' => Tools::displayError('An error occurred during the image upload')];
-        } elseif (!ImageManager::resize($tmpName, $new_path.'.'.$image->image_format)) {
+        } elseif (!ImageManager::resize($tmpName, $newPath.'.'.$image->image_format)) {
             return ['error' => Tools::displayError('An error occurred while copying image.')];
         } elseif ($method == 'auto') {
             $imagesTypes = ImageType::getImagesTypes('products');
             foreach ($imagesTypes as $imageType) {
-                if (!ImageManager::resize($tmpName, $new_path.'-'.stripslashes($imageType['name']).'.'.$image->image_format, $imageType['width'], $imageType['height'], $image->image_format)) {
+                if (!ImageManager::resize($tmpName, $newPath.'-'.stripslashes($imageType['name']).'.'.$image->image_format, $imageType['width'], $imageType['height'], $image->image_format)) {
                     return ['error' => Tools::displayError('An error occurred while copying image:').' '.stripslashes($imageType['name'])];
                 }
             }
         }
         unlink($tmpName);
-        Hook::exec('actionWatermark', ['id_image' => $id_image, 'id_product' => $id_product]);
+        Hook::exec('actionWatermark', ['id_image' => $idImage, 'id_product' => $idProduct]);
 
         if (!$image->update()) {
             return ['error' => Tools::displayError('Error while updating status')];
@@ -167,11 +207,23 @@ class QqUploadedFileForm
         return ['success' => $img];
     }
 
+    /**
+     * @return mixed
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getName()
     {
         return $_FILES['qqfile']['name'];
     }
 
+    /**
+     * @return mixed
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getSize()
     {
         return $_FILES['qqfile']['size'];
@@ -179,6 +231,8 @@ class QqUploadedFileForm
 }
 /**
  * Handle file uploads via XMLHttpRequest
+ *
+ * @since 1.0.0
  */
 class QqUploadedFileXhr
 {
@@ -202,6 +256,12 @@ class QqUploadedFileXhr
         return true;
     }
 
+    /**
+     * @return array
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function save()
     {
         $product = new Product($_GET['id_product']);
@@ -238,15 +298,25 @@ class QqUploadedFileXhr
         }
     }
 
-    public function copyImage($id_product, $id_image, $method = 'auto')
+    /**
+     * @param        $idProduct
+     * @param        $idImage
+     * @param string $method
+     *
+     * @return array
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function copyImage($idProduct, $idImage, $method = 'auto')
     {
-        $image = new Image($id_image);
-        if (!$new_path = $image->getPathForCreation()) {
+        $image = new Image($idImage);
+        if (!$newPath = $image->getPathForCreation()) {
             return ['error' => Tools::displayError('An error occurred during new folder creation')];
         }
         if (!($tmpName = tempnam(_PS_TMP_IMG_DIR_, 'PS')) || !$this->upload($tmpName)) {
             return ['error' => Tools::displayError('An error occurred during the image upload')];
-        } elseif (!ImageManager::resize($tmpName, $new_path.'.'.$image->image_format)) {
+        } elseif (!ImageManager::resize($tmpName, $newPath.'.'.$image->image_format)) {
             return ['error' => Tools::displayError('An error occurred while copying image.')];
         } elseif ($method == 'auto') {
             $imagesTypes = ImageType::getImagesTypes('products');
@@ -256,13 +326,13 @@ class QqUploadedFileXhr
                     if (!ImageManager::resize($tmpName, $new_path.'-'.stripslashes($imageType['name']).$theme.'.'.$image->image_format, $imageType['width'], $imageType['height'], $image->image_format))
                         return array('error' => Tools::displayError('An error occurred while copying image:').' '.stripslashes($imageType['name']));
                 */
-                if (!ImageManager::resize($tmpName, $new_path.'-'.stripslashes($imageType['name']).'.'.$image->image_format, $imageType['width'], $imageType['height'], $image->image_format)) {
+                if (!ImageManager::resize($tmpName, $newPath.'-'.stripslashes($imageType['name']).'.'.$image->image_format, $imageType['width'], $imageType['height'], $image->image_format)) {
                     return ['error' => Tools::displayError('An error occurred while copying image:').' '.stripslashes($imageType['name'])];
                 }
             }
         }
         unlink($tmpName);
-        Hook::exec('actionWatermark', ['id_image' => $id_image, 'id_product' => $id_product]);
+        Hook::exec('actionWatermark', ['id_image' => $idImage, 'id_product' => $idProduct]);
 
         if (!$image->update()) {
             return ['error' => Tools::displayError('Error while updating status')];
@@ -271,11 +341,23 @@ class QqUploadedFileXhr
         return ['success' => $img];
     }
 
+    /**
+     * @return mixed
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getName()
     {
         return $_GET['qqfile'];
     }
 
+    /**
+     * @return bool|int
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getSize()
     {
         if (isset($_SERVER['CONTENT_LENGTH']) || isset($_SERVER['HTTP_CONTENT_LENGTH'])) {
