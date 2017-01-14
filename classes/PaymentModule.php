@@ -971,7 +971,6 @@ abstract class PaymentModuleCore extends Module
             return true;
         } else {
             $error = Tools::displayError('Cart cannot be loaded or an order has already been placed using this cart');
-            Logger::addLog($error, 4, '0000001', 'Cart', intval($this->context->cart->id));
             die($error);
         }
     }
