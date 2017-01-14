@@ -13,7 +13,6 @@ thirty bees is an opensource fork of PrestaShop. Our aim with this fork is to pr
   - GD
   - intl
   - imap
-  - cURL (with TLSv1.2 support)
   - SimpleXML
   - json
   - zip
