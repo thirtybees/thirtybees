@@ -21,16 +21,22 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class ChartCore
+ *
+ * @since 1.0.0
+ */
 class ChartCore
 {
+    // @codingStandardsIgnoreStart
     protected static $poolId = 0;
 
     protected $width = 600;
@@ -44,30 +50,55 @@ class ChartCore
     protected $granularity;
 
     protected $curves = [];
+    // @codingStandardsIgnoreEnd
 
-    /** @prototype void public static function init(void) */
-    public static function init()
-    {
-        if (!self::$poolId) {
-            ++self::$poolId;
-            return true;
-        }
-    }
-
-    /** @prototype void public function __construct() */
+    /**
+     * ChartCore constructor.
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function __construct()
     {
         ++self::$poolId;
     }
 
-    /** @prototype void public function setSize(int $width, int $height) */
-    public function setSize($width, $height)
+    /**
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function init()
     {
-        $this->width = (int)$width;
-        $this->height = (int)$height;
+        if (!self::$poolId) {
+            ++self::$poolId;
+
+            return true;
+        }
     }
 
-    /** @prototype void public function setTimeMode($from, $to, $granularity) */
+    /**
+     * @param int $width
+     * @param int $height
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function setSize($width, $height)
+    {
+        $this->width = (int) $width;
+        $this->height = (int) $height;
+    }
+
+    /**
+     * @param string $from
+     * @param string $to
+     * @param string $granularity
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setTimeMode($from, $to, $granularity)
     {
         $this->granularity = $granularity;
@@ -97,20 +128,38 @@ class ChartCore
         $this->timeMode = true;
     }
 
+    /**
+     * @param $i
+     *
+     * @return mixed
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getCurve($i)
     {
         if (!array_key_exists($i, $this->curves)) {
             $this->curves[$i] = new Curve();
         }
+
         return $this->curves[$i];
     }
 
-    /** @prototype void public function display() */
+    /**
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function display()
     {
         echo $this->fetch();
     }
 
+    /**
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function fetch()
     {
         if ($this->timeMode) {
@@ -140,45 +189,80 @@ class ChartCore
 					$.plot($(\'#flot'.self::$poolId.'\'), ['.implode(',', $jsCurves).'], {'.$options.'});
 				});
 			</script>';
-        } else {
-            return ErrorFacade::Display(PS_ERROR_UNDEFINED, 'No values for this chart.');
         }
     }
 }
 
+/**
+ * Class Curve
+ *
+ * @since 1.0.0
+ */
 class Curve
 {
     protected $values = [];
     protected $label;
     protected $type;
 
-    /** @prototype void public function setValues($values) */
-    public function setValues($values)
-    {
-        $this->values = $values;
-    }
-
+    /**
+     * @param bool $time_mode
+     *
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getValues($time_mode = false)
     {
         ksort($this->values);
         $string = '';
         foreach ($this->values as $key => $value) {
-            $string .= '['.addslashes((string)$key).($time_mode ? '000' : '').','.(float)$value.'],';
+            $string .= '['.addslashes((string) $key).($time_mode ? '000' : '').','.(float) $value.'],';
         }
+
         return '{data:['.rtrim($string, ',').']'.(!empty($this->label) ? ',label:"'.$this->label.'"' : '').''.(!empty($this->type) ? ','.$this->type : '').'}';
     }
 
-    /** @prototype void public function setPoint(float $x, float $y) */
-    public function setPoint($x, $y)
+    /**
+     * @param $values
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function setValues($values)
     {
-        $this->values[(string)$x] = (float)$y;
+        $this->values = $values;
     }
 
+    /**
+     * @param $x
+     * @param $y
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function setPoint($x, $y)
+    {
+        $this->values[(string) $x] = (float) $y;
+    }
+
+    /**
+     * @param $label
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setLabel($label)
     {
         $this->label = $label;
     }
 
+    /**
+     * @param $type
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setType($type)
     {
         $this->type = '';
@@ -190,10 +274,18 @@ class Curve
         }
     }
 
+    /**
+     * @param $x
+     *
+     * @return mixed
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getPoint($x)
     {
-        if (array_key_exists((string)$x, $this->values)) {
-            return $this->values[(string)$x];
+        if (array_key_exists((string) $x, $this->values)) {
+            return $this->values[(string) $x];
         }
     }
 }

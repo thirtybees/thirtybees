@@ -212,12 +212,15 @@ class CustomizationCore extends ObjectModel
 
     /**
      * This method is allow to know if a Customization entity is currently used
-     * @since 1.5.0.1
-     * @param $table
-     * @param $has_active_column
-     * @return bool
+     *
+*@since 1.5.0.1
+     *
+*@param $table
+     * @param $hasActiveColumn
+     *
+*@return bool
      */
-    public static function isCurrentlyUsed($table = null, $has_active_column = false)
+    public static function isCurrentlyUsed($table = null, $hasActiveColumn = false)
     {
         return (bool)Db::getInstance()->getValue('
 			SELECT `id_customization_field`

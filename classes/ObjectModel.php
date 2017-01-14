@@ -1711,12 +1711,13 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * Checks if an object type exists in the database.
      *
      * @since 1.5.0.1
-     * @param string|null $table             Name of table linked to entity
-     * @param bool        $has_active_column True if the table has an active column
+     *
+*@param string|null $table           Name of table linked to entity
+     * @param bool  $hasActiveColumn True if the table has an active column
      *
      * @return bool
      */
-    public static function isCurrentlyUsed($table = null, $has_active_column = false)
+    public static function isCurrentlyUsed($table = null, $hasActiveColumn = false)
     {
         if ($table === null) {
             $table = self::$definition['table'];
@@ -1725,7 +1726,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         $query = new DbQuery();
         $query->select('`id_'.bqSQL($table).'`');
         $query->from($table);
-        if ($has_active_column) {
+        if ($hasActiveColumn) {
             $query->where('`active` = 1');
         }
 

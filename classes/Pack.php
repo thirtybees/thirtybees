@@ -344,12 +344,15 @@ class PackCore extends Product
 
     /**
      * This method is allow to know if a Pack entity is currently used
-     * @since 1.5.0
-     * @param $table
-     * @param $has_active_column
-     * @return bool
+     *
+*@since 1.5.0
+     *
+*@param $table
+     * @param $hasActiveColumn
+     *
+*@return bool
      */
-    public static function isCurrentlyUsed($table = null, $has_active_column = false)
+    public static function isCurrentlyUsed($table = null, $hasActiveColumn = false)
     {
         // We dont't use the parent method because the identifier isn't id_pack
         return (bool)Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('

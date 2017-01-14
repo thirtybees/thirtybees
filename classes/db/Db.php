@@ -450,8 +450,7 @@ abstract class DbCore
      * @return bool|mysqli_result|PDOStatement|resource
      * @throws PrestaShopDatabaseException
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @deprecated 1.0.0 Use execute(s) instead
      */
     public function query($sql)
     {
