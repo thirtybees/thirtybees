@@ -786,68 +786,26 @@ class ToolsCore
         }
 
         if (is_array($currency)) {
-            $currencySymbol = $currency['sign'];
-            $currencyFormat = $currency['format'];
+            $currencyIso = $currency['iso_code'];
             $currencyDecimals = (int) $currency['decimals'] * _PS_PRICE_DISPLAY_PRECISION_;
-            $currencyBlank = $currency['blank'];
         } elseif (is_object($currency)) {
-            $currencySymbol = $currency->sign;
-            $currencyFormat = $currency->format;
+            $currencyIso = $currency->iso_code;
             $currencyDecimals = (int) $currency->decimals * _PS_PRICE_DISPLAY_PRECISION_;
-            $currencyBlank = $currency->blank;
         } else {
             return false;
         }
 
-        $blank = ($currencyBlank ? ' ' : '');
-        $ret = 0;
-        if (($isNegative = ($price < 0))) {
-            $price *= -1;
-        }
         $price = Tools::ps_round($price, $currencyDecimals);
-
-        /*
-        * If the language is RTL and the selected currency format contains spaces as thousands separator
-        * then the number will be printed in reverse since the space is interpreted as separating words.
-        * To avoid this we replace the currency format containing a space with the one containing a comma (,) as thousand
-        * separator when the language is RTL.
-        *
-        * TODO: This is not ideal, a currency format should probably be tied to a language, not to a currency.
-        */
-        if (($currencyFormat == 2) && ($context->language->is_rtl == 1)) {
-            $currencyFormat = 4;
+        $languageIso = $context->language->language_code;
+        if (Tools::strlen($languageIso) === 5) {
+            $languageIso = Tools::strtolower(Tools::substr($languageIso, 0, 2)).'_'.Tools::strtoupper(Tools::substr($languageIso, 3, 2));
+        } else {
+            $languageIso = 'en_US';
         }
 
-        switch ($currencyFormat) {
-            /* X 0,000.00 */
-            case 1:
-                $ret = $currencySymbol.$blank.number_format($price, $currencyDecimals, '.', ',');
-                break;
-            /* 0 000,00 X*/
-            case 2:
-                $ret = number_format($price, $currencyDecimals, ',', ' ').$blank.$currencySymbol;
-                break;
-            /* X 0.000,00 */
-            case 3:
-                $ret = $currencySymbol.$blank.number_format($price, $currencyDecimals, ',', '.');
-                break;
-            /* 0,000.00 X */
-            case 4:
-                $ret = number_format($price, $currencyDecimals, '.', ',').$blank.$currencySymbol;
-                break;
-            /* X 0'000.00  Added for the switzerland currency */
-            case 5:
-                $ret = number_format($price, $currencyDecimals, '.', "'").$blank.$currencySymbol;
-                break;
-        }
-        if ($isNegative) {
-            $ret = '-'.$ret;
-        }
-        if ($noUtf8) {
-            return str_replace('€', chr(128), $ret);
-        }
+        $numberFormatter = new NumberFormatter($languageIso, NumberFormatter::CURRENCY);
 
-        return $ret;
+        return $numberFormatter->formatCurrency($price, $currencyIso);
     }
 
     /**
