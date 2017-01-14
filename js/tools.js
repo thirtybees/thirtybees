@@ -68,7 +68,13 @@ function formatCurrency(price, currencyFormat, currencySign, currencyBlank) {
 	price = parseFloat(price).toFixed(10);
 	price = ps_round(price, priceDisplayPrecision);
 	var locale = document.documentElement.lang;
-	locale = locale.substring(0, 2).toLowerCase() + '-' + locale.substring(3, 5).toUpperCase();
+	if (locale.length === 5) {
+		locale = locale.substring(0, 2).toLowerCase() + '-' + locale.substring(3, 5).toUpperCase();
+	} else if (typeof window.full_language_code !== 'undefined') {
+		locale = window.full_language_code.substring(0, 2).toLowerCase() + '-' + window.full_language_code.substring(3, 5).toUpperCase();
+	} else if (getBrowserLocale().length === 5) {
+		locale = getBrowserLocale().substring(0, 2).toLowerCase() + '-' + getBrowserLocale().substring(3, 5).toUpperCase();
+	}
 
 	return price.toLocaleString(locale, { style: 'currency', currency: 'EUR' });
 }
@@ -611,6 +617,15 @@ function getStorageAvailable() {
 	}
 	catch (error) {
 		return null;
+	}
+}
+
+function getBrowserLocale()
+{
+	if (navigator.languages != undefined) {
+		return navigator.languages[0];
+	} else {
+		return navigator.language;
 	}
 }
 
