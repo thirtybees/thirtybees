@@ -105,7 +105,7 @@ class CartControllerCore extends FrontController
             }
         } elseif (!$this->isTokenValid()) {
             if (Tools::getValue('ajax')) {
-                $this->ajaxDie(Tools::jsonEncode(
+                $this->ajaxDie(json_encode(
                     [
                     'hasError' => true,
                     'errors' => [Tools::displayError('Impossible to add the product to the cart. Please refresh page.')],
@@ -139,7 +139,7 @@ class CartControllerCore extends FrontController
             }
 
             if ($total_quantity < $minimal_quantity) {
-                $this->ajaxDie(Tools::jsonEncode(
+                $this->ajaxDie(json_encode(
                     [
                         'hasError' => true,
                         'errors' => [sprintf(Tools::displayError('You must add %d minimum quantity', !Tools::getValue('ajax')), $minimal_quantity)],
@@ -182,7 +182,7 @@ class CartControllerCore extends FrontController
         $new_id_address_delivery = (int)Tools::getValue('new_id_address_delivery');
 
         if (!count(Carrier::getAvailableCarrierList(new Product($this->id_product), null, $new_id_address_delivery))) {
-            $this->ajaxDie(Tools::jsonEncode(
+            $this->ajaxDie(json_encode(
                 [
                 'hasErrors' => true,
                 'error' => Tools::displayError('It is not possible to deliver this product to the selected address.', false),
@@ -388,10 +388,10 @@ class CartControllerCore extends FrontController
     public function displayAjax()
     {
         if ($this->errors) {
-            $this->ajaxDie(Tools::jsonEncode(['hasError' => true, 'errors' => $this->errors]));
+            $this->ajaxDie(json_encode(['hasError' => true, 'errors' => $this->errors]));
         }
         if ($this->ajax_refresh) {
-            $this->ajaxDie(Tools::jsonEncode(['refresh' => true]));
+            $this->ajaxDie(json_encode(['refresh' => true]));
         }
 
         // write cookie if can't on destruct
@@ -429,7 +429,7 @@ class CartControllerCore extends FrontController
 
             $json = '';
             Hook::exec('actionCartListOverride', ['summary' => $result, 'json' => &$json]);
-            $this->ajaxDie(Tools::jsonEncode(array_merge($result, (array)Tools::jsonDecode($json, true))));
+            $this->ajaxDie(json_encode(array_merge($result, (array)json_decode($json, true))));
         }
         // @todo create a hook
         elseif (file_exists(_PS_MODULE_DIR_.'/blockcart/blockcart-ajax.php')) {

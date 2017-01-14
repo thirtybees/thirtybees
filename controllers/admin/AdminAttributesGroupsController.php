@@ -304,7 +304,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
             $associations = [];
         }
 
-        $this->fields_form['shop_associations'] = Tools::jsonEncode($associations);
+        $this->fields_form['shop_associations'] = json_encode($associations);
 
         $this->fields_form['input'][] = [
             'type' => 'color',

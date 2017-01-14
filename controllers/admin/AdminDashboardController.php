@@ -378,7 +378,7 @@ class AdminDashboardControllerCore extends AdminController
             'extra' => (int)Tools::getValue('extra')
         ];
 
-        die(Tools::jsonEncode(Hook::exec('dashboardData', $params, $id_module, true, true, (int)Tools::getValue('dashboard_use_push'))));
+        die(json_encode(Hook::exec('dashboardData', $params, $id_module, true, true, (int)Tools::getValue('dashboard_use_push'))));
     }
 
     public function ajaxProcessSetSimulationMode()
@@ -427,6 +427,6 @@ class AdminDashboardControllerCore extends AdminController
             $return['widget_html'] = $module_obj->$hook($params);
         }
 
-        die(Tools::jsonEncode($return));
+        die(json_encode($return));
     }
 }

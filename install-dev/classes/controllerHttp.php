@@ -423,7 +423,7 @@ abstract class InstallControllerHttp
         if (!$success && empty($message)) {
             $message = print_r(@error_get_last(), true);
         }
-        die(Tools::jsonEncode(
+        die(json_encode(
             [
             'success' => (bool)$success,
             'message' => $message,

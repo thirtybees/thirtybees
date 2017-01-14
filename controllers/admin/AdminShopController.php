@@ -875,6 +875,6 @@ class AdminShopControllerCore extends AdminController
             ]
         ];
 
-        die(Tools::jsonEncode($tree));
+        die(json_encode($tree));
     }
 }

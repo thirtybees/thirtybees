@@ -188,8 +188,8 @@ class AdminTranslationsControllerCore extends AdminController
 
         $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
         if ($lang_packs = (string) $guzzle->get($file_name)->getBody()) {
-            // Notice : for php < 5.2 compatibility, Tools::jsonDecode. The second parameter to true will set us
-            if ($lang_packs != '' && $lang_packs = Tools::jsonDecode($lang_packs, true)) {
+            // Notice : for php < 5.2 compatibility, json_decode. The second parameter to true will set us
+            if ($lang_packs != '' && $lang_packs = json_decode($lang_packs, true)) {
                 foreach ($lang_packs as $key => $lang_pack) {
                     if (!Language::isInstalled($lang_pack['iso_code'])) {
                         $packs_to_install[$key] = $lang_pack;

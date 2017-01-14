@@ -69,7 +69,7 @@ class SearchControllerCore extends FrontController
                 }
                 Hook::exec('actionSearch', ['expr' => $query, 'total' => count($searchResults)]);
             }
-            $this->ajaxDie(Tools::jsonEncode($searchResults));
+            $this->ajaxDie(json_encode($searchResults));
         }
 
         //Only controller content initialization when the user use the normal search

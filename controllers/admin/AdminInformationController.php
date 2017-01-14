@@ -174,11 +174,11 @@ class AdminInformationControllerCore extends AdminController
         $this->file_list = ['missing' => [], 'updated' => []];
         $xml = @simplexml_load_file(_PS_API_URL_.'/xml/md5/'._PS_VERSION_.'.xml');
         if (!$xml || !isset($xml->ps_root_dir[0])) {
-            die(Tools::jsonEncode($this->file_list));
+            die(json_encode($this->file_list));
         }
 
         $this->getListOfUpdatedFiles($xml->ps_root_dir[0]);
-        die(Tools::jsonEncode($this->file_list));
+        die(json_encode($this->file_list));
     }
 
     public function getListOfUpdatedFiles(SimpleXMLElement $dir, $path = '')

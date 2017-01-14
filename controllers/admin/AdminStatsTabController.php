@@ -304,7 +304,7 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
         
         if ($this->isXmlHttpRequest()) {
             if (is_array($this->errors) && count($this->errors)) {
-                die(Tools::jsonEncode(
+                die(json_encode(
                     [
                     'has_errors' => true,
                     'errors' => [$this->errors],
@@ -313,7 +313,7 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
                     ]
                 ));
             } else {
-                die(Tools::jsonEncode(
+                die(json_encode(
                     [
                     'has_errors' => false,
                     'date_from' => $this->context->employee->stats_date_from,

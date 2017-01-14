@@ -230,14 +230,14 @@ class AdminLoginControllerCore extends AdminController
                 }
 
                 if (Tools::isSubmit('ajax')) {
-                    die(Tools::jsonEncode(['hasErrors' => false, 'redirect' => $url]));
+                    die(json_encode(['hasErrors' => false, 'redirect' => $url]));
                 } else {
                     $this->redirect_after = $url;
                 }
             }
         }
         if (Tools::isSubmit('ajax')) {
-            die(Tools::jsonEncode(['hasErrors' => true, 'errors' => $this->errors]));
+            die(json_encode(['hasErrors' => true, 'errors' => $this->errors]));
         }
     }
 

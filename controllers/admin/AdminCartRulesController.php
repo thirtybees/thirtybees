@@ -124,7 +124,7 @@ class AdminCartRulesControllerCore extends AdminController
                 }
             }
         }
-        echo Tools::jsonEncode(['html' => $html, 'next_link' => $next_link]);
+        echo json_encode(['html' => $html, 'next_link' => $next_link]);
     }
 
     public function setMedia()
@@ -546,12 +546,12 @@ class AdminCartRulesControllerCore extends AdminController
                 )
                 ORDER BY c.`firstname`, c.`lastname` ASC
                 LIMIT 50');
-            die(Tools::jsonEncode($customers));
+            die(json_encode($customers));
         }
         // Both product filter (free product and product discount) search for products
         if (Tools::isSubmit('giftProductFilter') || Tools::isSubmit('reductionProductFilter')) {
             $products = Product::searchByName(Context::getContext()->language->id, trim(Tools::getValue('q')));
-            die(Tools::jsonEncode($products));
+            die(json_encode($products));
         }
     }
 
@@ -594,7 +594,7 @@ class AdminCartRulesControllerCore extends AdminController
     public function ajaxProcessSearchProducts()
     {
         $array = $this->searchProducts(Tools::getValue('product_search'));
-        $this->content = trim(Tools::jsonEncode($array));
+        $this->content = trim(json_encode($array));
     }
 
     public function renderForm()
@@ -727,6 +727,6 @@ class AdminCartRulesControllerCore extends AdminController
         if ($vouchers = CartRule::getCartsRuleByCode(Tools::getValue('q'), (int)$this->context->language->id, true)) {
             $found = true;
         }
-        echo Tools::jsonEncode(['found' => $found, 'vouchers' => $vouchers]);
+        echo json_encode(['found' => $found, 'vouchers' => $vouchers]);
     }
 }
