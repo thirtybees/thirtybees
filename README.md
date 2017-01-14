@@ -42,3 +42,16 @@ Core modules will be refactored to remove legacy code. Code that supports previo
 * MailChimp sync
 * Stripe (Credit cards, Apple Pay, AliPay, Bitcoins)
 * Thirty Bees blog module
+
+## Installation
+There is currently no release package available, but you can install from git. These are the instructions:
+- Recursively clone the repository:
+```shell
+$ git clone https://github.com/thirtybees/ThirtyBees.git --recursive
+```
+- Then cd into the `ThirtyBees` folder
+- Run composer to install the dependencies:
+```shell
+$ composer install
+```
+- Then install the software as usual, using either the web interface (https://example.com/install-dev) or cli (/install-dev/index_cli.php) 
