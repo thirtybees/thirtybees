@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 2007-2016 PrestaShop
  *
@@ -28,6 +27,12 @@
  * @copyright 2007-2016 PrestaShop SA
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
+ */
+
+/**
+ * Class ConfigurationCore
+ *
+ * @since 1.0.0
  */
 class ConfigurationCore extends ObjectModel
 {
@@ -96,8 +101,7 @@ class ConfigurationCore extends ObjectModel
     /**
      * WARNING: For testing only. Do NOT rely on this method, it may be removed at any time.
      *
-     * @todo    Delegate static calls from Configuration to an instance
-     *       of a class to be created.
+     * @todo    Delegate static calls from Configuration to an instance of a class to be created.
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version

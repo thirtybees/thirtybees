@@ -30,14 +30,14 @@
  */
 
 /**
- * Controllers don't need to be loaded with includeController anymore since they use Autoload
+ * Class ControllerFactoryCore
  *
- * @deprecated since 1.5.0
+ * @deprecated 1.0.0
  */
 class ControllerFactoryCore
 {
     /**
-     * @deprecated since 1.5.0
+     * @deprecated since 1.0.0
      */
     public static function includeController($className)
     {
@@ -59,11 +59,12 @@ class ControllerFactoryCore
     }
 
     /**
-     * @deprecated since 1.5.0
+     * @deprecated 1.0.0
      */
     public static function getController($className, $auth = false, $ssl = false)
     {
         ControllerFactory::includeController($className);
+
         return new $className($auth, $ssl);
     }
 }

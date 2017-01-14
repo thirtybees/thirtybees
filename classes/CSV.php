@@ -32,13 +32,16 @@
 /**
  * Simple class to output CSV data
  * Uses CollectionCore
- * @since 1.5
+ *
+ * @since 1.0.0
  */
 class CSVCore
 {
+    // @codingStandardsIgnoreStart
     public $filename;
     public $collection;
     public $delimiter;
+    // @codingStandardsIgnoreEnd
 
     /**
     * Loads objects, filename and optionnaly a delimiter.
@@ -57,18 +60,21 @@ class CSVCore
      * Main function
      * Adds headers
      * Outputs
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function export()
     {
         $this->headers();
 
-        $header_line = false;
+        $headerLine = false;
 
         foreach ($this->collection as $object) {
             $vars = get_object_vars($object);
-            if (!$header_line) {
+            if (!$headerLine) {
                 $this->output(array_keys($vars));
-                $header_line = true;
+                $headerLine = true;
             }
 
             // outputs values
@@ -80,26 +86,36 @@ class CSVCore
     /**
      * Wraps data and echoes
      * Uses defined delimiter
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function output($data)
     {
-        $wraped_data = array_map(['CSVCore', 'wrap'], $data);
-        echo sprintf("%s\n", implode($this->delimiter, $wraped_data));
+        $wrappedData = array_map(['CSVCore', 'wrap'], $data);
+        echo sprintf("%s\n", implode($this->delimiter, $wrappedData));
     }
 
     /**
      * Escapes data
      * @param string $data
      * @return string $data
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public static function wrap($data)
     {
         $data = str_replace(['"', ';'], '', $data);
+
         return sprintf('"%s"', $data);
     }
 
     /**
     * Adds headers
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
     */
     public function headers()
     {

@@ -21,46 +21,53 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class ConnectionsSourceCore
+ *
+ * @since 1.0.0
+ */
 class ConnectionsSourceCore extends ObjectModel
 {
+    // @codingStandardsIgnoreStart
+    public static $uri_max_size = 255;
     public $id_connections;
     public $http_referer;
     public $request_uri;
     public $keywords;
     public $date_add;
-    public static $uri_max_size = 255;
+    // @codingStandardsIgnoreEnd
 
     /**
      * @see ObjectModel::$definition
      */
     public static $definition = [
-        'table' => 'connections_source',
+        'table'   => 'connections_source',
         'primary' => 'id_connections_source',
-        'fields' => [
+        'fields'  => [
             'id_connections' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'http_referer' =>    ['type' => self::TYPE_STRING, 'validate' => 'isAbsoluteUrl'],
-            'request_uri' =>    ['type' => self::TYPE_STRING, 'validate' => 'isUrl'],
-            'keywords' =>        ['type' => self::TYPE_STRING, 'validate' => 'isMessage'],
-            'date_add' =>        ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'required' => true],
+            'http_referer'   => ['type' => self::TYPE_STRING, 'validate' => 'isAbsoluteUrl'],
+            'request_uri'    => ['type' => self::TYPE_STRING, 'validate' => 'isUrl'],
+            'keywords'       => ['type' => self::TYPE_STRING, 'validate' => 'isMessage'],
+            'date_add'       => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'required' => true],
         ],
     ];
 
-    public function add($autodate = true, $nullValues = false)
-    {
-        if ($result = parent::add($autodate, $nullValues)) {
-            Referrer::cacheNewSource($this->id);
-        }
-        return $result;
-    }
-
+    /**
+     * @param Cookie|null $cookie
+     *
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public static function logHttpReferer(Cookie $cookie = null)
     {
         if (!$cookie) {
@@ -85,13 +92,13 @@ class ConnectionsSourceCore extends ObjectModel
         if (isset($_SERVER['HTTP_REFERER'])) {
             // If the referrer is internal (i.e. from your own website), then we drop the connection
             $parsed = parse_url($_SERVER['HTTP_REFERER']);
-            $parsed_host = parse_url(Tools::getProtocol().Tools::getHttpHost(false, false).__PS_BASE_URI__);
+            $parsedHost = parse_url(Tools::getProtocol().Tools::getHttpHost(false, false).__PS_BASE_URI__);
 
-            if (!isset($parsed['host']) || (!isset($parsed['path']) || !isset($parsed_host['path']))) {
+            if (!isset($parsed['host']) || (!isset($parsed['path']) || !isset($parsedHost['path']))) {
                 return false;
             }
 
-            if ((preg_replace('/^www./', '', $parsed['host']) == preg_replace('/^www./', '', Tools::getHttpHost(false, false))) && !strncmp($parsed['path'], $parsed_host['path'], strlen(__PS_BASE_URI__))) {
+            if ((preg_replace('/^www./', '', $parsed['host']) == preg_replace('/^www./', '', Tools::getHttpHost(false, false))) && !strncmp($parsed['path'], $parsedHost['path'], strlen(__PS_BASE_URI__))) {
                 return false;
             }
 
@@ -99,7 +106,7 @@ class ConnectionsSourceCore extends ObjectModel
             $source->keywords = substr(trim(SearchEngine::getKeywords($_SERVER['HTTP_REFERER'])), 0, ConnectionsSource::$uri_max_size);
         }
 
-        $source->id_connections = (int)$cookie->id_connections;
+        $source->id_connections = (int) $cookie->id_connections;
         $source->request_uri = Tools::getHttpHost(false, false);
 
         if (isset($_SERVER['REQUEST_URI'])) {
@@ -112,18 +119,47 @@ class ConnectionsSourceCore extends ObjectModel
             $source->request_uri = '';
         }
         $source->request_uri = substr($source->request_uri, 0, ConnectionsSource::$uri_max_size);
+
         return $source->add();
     }
 
-    public static function getOrderSources($id_order)
+    /**
+     * @param bool $autodate
+     * @param bool $nullValues
+     *
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function add($autodate = true, $nullValues = false)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
+        if ($result = parent::add($autodate, $nullValues)) {
+            Referrer::cacheNewSource($this->id);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $idOrder
+     *
+     * @return array|false|mysqli_result|null|PDOStatement|resource
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function getOrderSources($idOrder)
+    {
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            '
 		SELECT cos.http_referer, cos.request_uri, cos.keywords, cos.date_add
 		FROM '._DB_PREFIX_.'orders o
 		INNER JOIN '._DB_PREFIX_.'guest g ON g.id_customer = o.id_customer
 		INNER JOIN '._DB_PREFIX_.'connections co  ON co.id_guest = g.id_guest
 		INNER JOIN '._DB_PREFIX_.'connections_source cos ON cos.id_connections = co.id_connections
-		WHERE id_order = '.(int)($id_order).'
-		ORDER BY cos.date_add DESC');
+		WHERE id_order = '.(int) ($idOrder).'
+		ORDER BY cos.date_add DESC'
+        );
     }
 }

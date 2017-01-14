@@ -21,16 +21,22 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class CustomizationFieldCore
+ *
+ * @since 1.0.0
+ */
 class CustomizationFieldCore extends ObjectModel
 {
+    // @codingStandardsIgnoreStart
     /** @var int */
     public $id_product;
     /** @var int Customization type (0 File, 1 Textfield) (See Product class) */
@@ -39,31 +45,32 @@ class CustomizationFieldCore extends ObjectModel
     public $required;
     /** @var string Label for customized field */
     public $name;
+    // @codingStandardsIgnoreEnd
 
     /**
      * @see ObjectModel::$definition
      */
     public static $definition = [
-        'table' => 'customization_field',
-        'primary' => 'id_customization_field',
-        'multilang' => true,
+        'table'          => 'customization_field',
+        'primary'        => 'id_customization_field',
+        'multilang'      => true,
         'multilang_shop' => true,
-        'fields' => [
+        'fields'         => [
             /* Classic fields */
-            'id_product' =>            ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'type' =>                ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'required' =>                ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true],
+            'id_product' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'type'       => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'required'   => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true],
 
             /* Lang fields */
-            'name' =>                ['type' => self::TYPE_STRING, 'lang' => true, 'required' => true, 'size' => 255],
+            'name'       => ['type' => self::TYPE_STRING, 'lang' => true, 'required' => true, 'size' => 255],
         ],
     ];
     protected $webserviceParameters = [
         'fields' => [
             'id_product' => [
                 'xlink_resource' => [
-                    'resourceName' => 'products'
-                ]
+                    'resourceName' => 'products',
+                ],
             ],
         ],
     ];
