@@ -94,7 +94,6 @@ class CarrierCore extends ObjectModel
     public $external_module_name = null;
     /** @var bool Need Range */
     public $need_range = 0;
-    // @codingStandardsIgnoreEnd
     /** @var int Position */
     public $position;
     /** @var int maximum package width managed by the transporter */
@@ -137,7 +136,7 @@ class CarrierCore extends ObjectModel
             'is_module'            => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                         ],
             'need_range'           => ['type' => self::TYPE_BOOL                                                                   ],
             'position'             => ['type' => self::TYPE_INT                                                                    ],
-            'deleted'              => ['type' => self::TYPE_BOOL,    'validate' => 'isBool'                                        ],
+            'deleted'              => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                         ],
 
             /* Lang fields */
             'delay'                => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128],
@@ -196,24 +195,42 @@ class CarrierCore extends ObjectModel
         $this->image_dir = _PS_SHIP_IMG_DIR_;
     }
 
+    /**
+     * @param Context|null $context
+     *
+     * @return false|null|string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getIdTaxRulesGroup(Context $context = null)
     {
         return Carrier::getIdTaxRulesGroupByIdCarrier((int) $this->id, $context);
     }
 
-    public static function getIdTaxRulesGroupByIdCarrier($id_carrier, Context $context = null)
+    /**
+     * @param int          $idCarrier
+     * @param Context|null $context
+     *
+     * @return false|null|string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function getIdTaxRulesGroupByIdCarrier($idCarrier, Context $context = null)
     {
         if (!$context) {
             $context = Context::getContext();
         }
-        $key = 'carrier_id_tax_rules_group_'.(int) $id_carrier.'_'.(int) $context->shop->id;
+
+        $key = 'carrier_id_tax_rules_group_'.(int) $idCarrier.'_'.(int) $context->shop->id;
         if (!Cache::isStored($key)) {
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-                '
-							SELECT `id_tax_rules_group`
-							FROM `'._DB_PREFIX_.'carrier_tax_rules_group_shop`
-							WHERE `id_carrier` = '.(int) $id_carrier.' AND id_shop='.(int) Context::getContext()->shop->id
-            );
+            $sql = new DbQuery();
+            $sql->select('`id_tax_rules_group`');
+            $sql->from('carrier_tax_rules_group_shop');
+            $sql->where('`id_carrier` = '.(int) $idCarrier);
+            $sql->where('`id_shop` = '.(int) $context->shop->id);
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
             Cache::store($key, $result);
 
             return $result;
@@ -242,19 +259,23 @@ class CarrierCore extends ObjectModel
      * Get delivery prices for a given shipping method (price/weight)
      *
      * @param string $rangeTable Table name (price or weight)
+     * @param int    $idCarrier
      *
      * @return array Delivery prices
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public static function getDeliveryPriceByRanges($rangeTable, $idCarrier)
     {
-        $sql = 'SELECT d.`id_'.bqSQL($rangeTable).'`, d.id_carrier, d.id_zone, d.price
-				FROM '._DB_PREFIX_.'delivery d
-				LEFT JOIN `'._DB_PREFIX_.bqSQL($rangeTable).'` r ON r.`id_'.bqSQL($rangeTable).'` = d.`id_'.bqSQL($rangeTable).'`
-				WHERE d.id_carrier = '.(int) $idCarrier.'
-					AND d.`id_'.bqSQL($rangeTable).'` IS NOT NULL
-					AND d.`id_'.bqSQL($rangeTable).'` != 0
-					'.Carrier::sqlDeliveryRangeShop($rangeTable).'
-				ORDER BY r.delimiter1';
+        $sql = new DbQuery();
+        $sql->select('d.`id_'.bqSQL($rangeTable).'`, d.`id_carrier`, d.`id_zone`, d.`price`');
+        $sql->from('delivery', 'd');
+        $sql->leftJoin(bqSQL($rangeTable), 'r', 'r.`id_'.bqSQL($rangeTable).'` = d.`id_'.bqSQL($rangeTable).'`');
+        $sql->where('d.`id_carrier` = '.(int) $idCarrier);
+        $sql->where('d.`id_'.bqSQL($rangeTable).'` IS NOT NULL');
+        $sql->where('d.`id_'.bqSQL($rangeTable).'` != 0 '.self::sqlDeliveryRangeShop($rangeTable));
+        $sql->orderBy('r.`delimiter1`');
 
         return Db::getInstance()->executeS($sql);
     }
@@ -271,7 +292,7 @@ class CarrierCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function sqlDeliveryRangeShop($range_table, $alias = 'd')
+    public static function sqlDeliveryRangeShop($rangeTable, $alias = 'd')
     {
         if (Shop::getContext() == Shop::CONTEXT_ALL) {
             $where = 'AND d2.id_shop IS NULL AND d2.id_shop_group IS NULL';
@@ -287,7 +308,7 @@ class CarrierCore extends ObjectModel
 					FROM '._DB_PREFIX_.'delivery d2
 					WHERE d2.id_carrier = `'.bqSQL($alias).'`.id_carrier
 						AND d2.id_zone = `'.bqSQL($alias).'`.id_zone
-						AND d2.`id_'.bqSQL($range_table).'` = `'.bqSQL($alias).'`.`id_'.bqSQL($range_table).'`
+						AND d2.`id_'.bqSQL($rangeTable).'` = `'.bqSQL($alias).'`.`id_'.bqSQL($rangeTable).'`
 						'.$where.'
 					ORDER BY d2.id_shop DESC, d2.id_shop_group DESC
 					LIMIT 1
@@ -320,7 +341,7 @@ class CarrierCore extends ObjectModel
     }
 
     /**
-     * @param      $idLang
+     * @param int  $idLang
      * @param bool $activeCountries
      * @param bool $activeCarriers
      * @param null $containStates
@@ -1039,7 +1060,7 @@ class CarrierCore extends ObjectModel
     }
 
     /**
-     * @see     ObjectModel::delete()
+     * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -1051,8 +1072,9 @@ class CarrierCore extends ObjectModel
         }
         Carrier::cleanPositions();
 
-        return (Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'cart_rule_carrier WHERE id_carrier = '.(int) $this->id) &&
-            $this->deleteTaxRulesGroup(Shop::getShops(true, null, true)));
+        return (Db::getInstance()->delete('cart_rule_carrier', '`id_carrier` = '.(int) $this->id)
+            && Db::getInstance()->delete('module_carrier', '`id_reference` = '.(int) $this->id_reference)
+            && $this->deleteTaxRulesGroup(Shop::getShops(true, null, true)));
     }
 
     /**

@@ -585,7 +585,9 @@ class CurrencyCore extends ObjectModel
         }
         $this->deleted = 1;
 
-        return $this->update();
+        $res = (bool) Db::getInstance()->delete('module_currency', '`id_currency` = '.(int) $this->id);
+
+        return $res && $this->update();
     }
 
     /**

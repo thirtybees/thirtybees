@@ -93,8 +93,8 @@ class GroupCore extends ObjectModel
     }
 
     /**
-     * @param      $idLang
-     * @param bool $idShop
+     * @param int      $idLang
+     * @param int|bool $idShop
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
@@ -103,9 +103,9 @@ class GroupCore extends ObjectModel
      */
     public static function getGroups($idLang, $idShop = false)
     {
-        $shop_criteria = '';
+        $shopCriteria = '';
         if ($idShop) {
-            $shop_criteria = Shop::addSqlAssociation('group', 'g');
+            $shopCriteria = Shop::addSqlAssociation('group', 'g');
         }
 
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
@@ -113,7 +113,7 @@ class GroupCore extends ObjectModel
 		SELECT DISTINCT g.`id_group`, g.`reduction`, g.`price_display_method`, gl.`name`
 		FROM `'._DB_PREFIX_.'group` g
 		LEFT JOIN `'._DB_PREFIX_.'group_lang` AS gl ON (g.`id_group` = gl.`id_group` AND gl.`id_lang` = '.(int) $idLang.')
-		'.$shop_criteria.'
+		'.$shopCriteria.'
 		ORDER BY g.`id_group` ASC'
         );
     }
@@ -181,7 +181,7 @@ class GroupCore extends ObjectModel
     }
 
     /**
-     * @param $idGroup
+     * @param int $idGroup
      *
      * @return mixed
      *
@@ -257,9 +257,8 @@ class GroupCore extends ObjectModel
     /**
      * This method is allow to know if there are other groups than the default ones
      *
-     *
-     * @param $table
-     * @param $hasActiveColumn
+     * @param string $table
+     * @param bool   $hasActiveColumn
      *
      * @return bool
      *
@@ -438,20 +437,20 @@ class GroupCore extends ObjectModel
 
     /**
      * @param bool $autodate
-     * @param bool $null_values
+     * @param bool $nullValues
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function update($autodate = true, $null_values = false)
+    public function update($autodate = true, $nullValues = false)
     {
         if (!Configuration::getGlobalValue('PS_GROUP_FEATURE_ACTIVE') && $this->reduction > 0) {
             Configuration::updateGlobalValue('PS_GROUP_FEATURE_ACTIVE', 1);
         }
 
-        return parent::update($autodate, $null_values);
+        return parent::update($autodate, $nullValues);
     }
 
     /**
@@ -494,7 +493,7 @@ class GroupCore extends ObjectModel
 				WHERE `id_default_group` = '.(int) $this->id
             );
 
-            return true;
+            return Db::getInstance()->delete('module_group', '`id_group` = '.(int) $this->id);
         }
 
         return false;
@@ -512,10 +511,9 @@ class GroupCore extends ObjectModel
      */
     public static function truncateModulesRestrictions($idGroup)
     {
-        return Db::getInstance()->execute(
-            '
-		DELETE FROM `'._DB_PREFIX_.'module_group`
-		WHERE `id_group` = '.(int) $idGroup
+        return Db::getInstance()->delete(
+            'module_group',
+            '`id_group` = '.(int) $idGroup
         );
     }
 }

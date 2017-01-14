@@ -149,6 +149,9 @@ abstract class PaymentModuleCore extends Module
         // Insert countries availability
         $return = $this->addCheckboxCountryRestrictionsForModule();
 
+        // Insert carrier availability
+        $return &= $this->addCheckboxCarrierRestrictionsForModule();
+
         if (!Configuration::get('CONF_'.strtoupper($this->name).'_FIXED')) {
             Configuration::updateValue('CONF_'.strtoupper($this->name).'_FIXED', '0.2');
         }
@@ -246,6 +249,40 @@ abstract class PaymentModuleCore extends Module
     }
 
     /**
+     * Add checkbox carrier restrictions for a new module
+     *
+     * @param array $shops
+     *
+     * @return bool
+     */
+    public function addCheckboxCarrierRestrictionsForModule(array $shops = array())
+    {
+        if (!$shops) {
+            $shops = Shop::getShops(true, null, true);
+        }
+
+        $carriers = Carrier::getCarriers((int) Context::getContext()->language->id);
+        $carrierIds = array();
+        foreach ($carriers as $carrier) {
+            $carrierIds[] = $carrier['id_reference'];
+        }
+
+        foreach ($shops as $s) {
+            foreach ($carrierIds as $idCarrier) {
+                if (!Db::getInstance()->execute(
+                    'INSERT INTO `'._DB_PREFIX_.'module_carrier` (`id_module`, `id_shop`, `id_reference`)
+ 				VALUES ('.(int) $this->id.', "'.(int) $s.'", '.(int) $idCarrier.')'
+                )
+                ) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * @return bool
      *
      * @since   1.0.0
@@ -256,6 +293,7 @@ abstract class PaymentModuleCore extends Module
         if (!Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'module_country` WHERE id_module = '.(int) $this->id)
             || !Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'module_currency` WHERE id_module = '.(int) $this->id)
             || !Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'module_group` WHERE id_module = '.(int) $this->id)
+            || !Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'module_carrier` WHERE id_module = '.(int) $this->id)
         ) {
             return false;
         }

@@ -482,6 +482,12 @@ class HookCore extends ObjectModel
                 if (Validate::isLoadedObject($context->currency)) {
                     $sql->where('((h.`name` = "displayPayment" OR h.`name` = "displayPaymentEU") AND (SELECT `id_currency` FROM `'._DB_PREFIX_.'module_currency` mcr WHERE mcr.`id_module` = m.`id_module` AND `id_currency` IN ('.(int) $context->currency->id.', -1, -2) LIMIT 1) IN ('.(int) $context->currency->id.', -1, -2))');
                 }
+                if (Validate::isLoadedObject($context->cart)) {
+                    $carrier = new Carrier($context->cart->id_carrier);
+                    if (Validate::isLoadedObject($carrier)) {
+                        $sql->where('((h.`name` = "displayPayment" OR h.`name` = "displayPaymentEU") AND (SELECT `id_reference` FROM `'._DB_PREFIX_.'module_carrier` mcar WHERE mcar.`id_module` = m.`id_module` AND `id_reference` = '.(int) $carrier->id_reference.' AND `id_shop` = '.(int) $context->shop->id.' LIMIT 1) = '.(int) $carrier->id_reference.')');
+                    }
+                }
             }
             if (Validate::isLoadedObject($context->shop)) {
                 $sql->where('hm.`id_shop` = '.(int) $context->shop->id);
@@ -540,9 +546,9 @@ class HookCore extends ObjectModel
                 $insertedModules[] = $module['id_module'];
             }
             if (isset($list[$retroHookName])) {
-                foreach ($list[$retroHookName] as $retro_module_call) {
-                    if (!in_array($retro_module_call['id_module'], $insertedModules)) {
-                        $return[] = $retro_module_call;
+                foreach ($list[$retroHookName] as $retroModuleCall) {
+                    if (!in_array($retroModuleCall['id_module'], $insertedModules)) {
+                        $return[] = $retroModuleCall;
                     }
                 }
             }
