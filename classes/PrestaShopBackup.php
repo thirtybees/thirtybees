@@ -21,32 +21,42 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class PrestaShopBackupCore
+ *
+ * @since 1.0.0
+ */
 class PrestaShopBackupCore
 {
+    // @codingStandardsIgnoreStart
+    /** @var string default backup directory. */
+    public static $backupDir = '/backups/';
     /** @var int Object id */
     public $id;
     /** @var string Last error messages */
     public $error;
-/** @var string default backup directory. */
-    public static $backupDir = '/backups/';
     /** @var string custom backup directory. */
     public $customBackupDir = null;
 
     public $psBackupAll = true;
     public $psBackupDropTable = true;
+    // @codingStandardsIgnoreEnd
 
     /**
      * Creates a new backup object
      *
      * @param string $filename Filename of the backup file
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function __construct($filename = null)
     {
@@ -61,41 +71,29 @@ class PrestaShopBackupCore
     }
 
     /**
-     * you can set a different path with that function
-     *
-     * @TODO include the prefix name
-     * @param string $dir
-     * @return bool bo
-     */
-    public function setCustomBackupPath($dir)
-    {
-        $custom_dir = DIRECTORY_SEPARATOR.trim($dir, '/').DIRECTORY_SEPARATOR;
-        if (is_dir((defined('_PS_HOST_MODE_') ? _PS_ROOT_DIR_ : _PS_ADMIN_DIR_).$custom_dir)) {
-            $this->customBackupDir = $custom_dir;
-        } else {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * get the path to use for backup (customBackupDir if specified, or default)
      *
      * @param string $filename filename to use
+     *
      * @return string full path
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getRealBackupPath($filename = null)
     {
         $backupDir = PrestaShopBackup::getBackupPath($filename);
         if (!empty($this->customBackupDir)) {
-            $backupDir = str_replace((defined('_PS_HOST_MODE_') ? _PS_ROOT_DIR_ : _PS_ADMIN_DIR_).self::$backupDir,
-                (defined('_PS_HOST_MODE_') ? _PS_ROOT_DIR_ : _PS_ADMIN_DIR_).$this->customBackupDir, $backupDir);
+            $backupDir = str_replace(
+                (defined('_PS_HOST_MODE_') ? _PS_ROOT_DIR_ : _PS_ADMIN_DIR_).self::$backupDir,
+                (defined('_PS_HOST_MODE_') ? _PS_ROOT_DIR_ : _PS_ADMIN_DIR_).$this->customBackupDir, $backupDir
+            );
 
             if (strrpos($backupDir, DIRECTORY_SEPARATOR)) {
                 $backupDir .= DIRECTORY_SEPARATOR;
             }
         }
+
         return $backupDir;
     }
 
@@ -103,7 +101,11 @@ class PrestaShopBackupCore
      * Get the full path of the backup file
      *
      * @param string $filename prefix of the backup file (datetime will be the second part)
+     *
      * @return string The full path of the backup file, or false if the backup file does not exists
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public static function getBackupPath($filename = '')
     {
@@ -131,7 +133,11 @@ class PrestaShopBackupCore
      * Check if a backup file exist
      *
      * @param string $filename prefix of the backup file (datetime will be the second part)
+     *
      * @return bool true if backup file exist
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public static function backupExist($filename)
     {
@@ -143,10 +149,38 @@ class PrestaShopBackupCore
 
         return @filemtime($backupdir.DIRECTORY_SEPARATOR.$filename);
     }
+
+    /**
+     * you can set a different path with that function
+     *
+     * @TODO    include the prefix name
+     *
+     * @param string $dir
+     *
+     * @return bool bo
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function setCustomBackupPath($dir)
+    {
+        $customDir = DIRECTORY_SEPARATOR.trim($dir, '/').DIRECTORY_SEPARATOR;
+        if (is_dir((defined('_PS_HOST_MODE_') ? _PS_ROOT_DIR_ : _PS_ADMIN_DIR_).$customDir)) {
+            $this->customBackupDir = $customDir;
+        } else {
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Get the URL used to retrieve this backup file
      *
      * @return string The url used to request the backup file
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getBackupURL()
     {
@@ -154,24 +188,12 @@ class PrestaShopBackupCore
     }
 
     /**
-     * Delete the current backup file
-     *
-     * @return bool Deletion result, true on success
-     */
-    public function delete()
-    {
-        if (!$this->id || !unlink($this->id)) {
-            $this->error = Tools::displayError('Error deleting').' '.($this->id ? '"'.$this->id.'"' :
-                Tools::displayError('Invalid ID'));
-            return false;
-        }
-        return true;
-    }
-
-    /**
      * Deletes a range of backup files
      *
      * @return bool True on success
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function deleteSelection($list)
     {
@@ -179,9 +201,11 @@ class PrestaShopBackupCore
             $backup = new PrestaShopBackup($file);
             if (!$backup->delete()) {
                 $this->error = $backup->error;
+
                 return false;
             }
         }
+
         return true;
     }
 
@@ -189,16 +213,19 @@ class PrestaShopBackupCore
      * Creates a new backup file
      *
      * @return bool true on successful backup
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function add()
     {
         if (!$this->psBackupAll) {
-            $ignore_insert_table = [
+            $ignoreInsertTable = [
                 _DB_PREFIX_.'connections', _DB_PREFIX_.'connections_page', _DB_PREFIX_
-                .'connections_source', _DB_PREFIX_.'guest', _DB_PREFIX_.'statssearch'
+                .'connections_source', _DB_PREFIX_.'guest', _DB_PREFIX_.'statssearch',
             ];
         } else {
-            $ignore_insert_table = [];
+            $ignoreInsertTable = [];
         }
 
         // Generate some random number, to make it extra hard to guess backup file names
@@ -219,6 +246,7 @@ class PrestaShopBackupCore
 
         if ($fp === false) {
             echo Tools::displayError('Unable to create backup file').' "'.addslashes($backupfile).'"';
+
             return false;
         }
 
@@ -245,6 +273,7 @@ class PrestaShopBackupCore
                 fclose($fp);
                 $this->delete();
                 echo Tools::displayError('An error occurred while backing up. Unable to obtain the schema of').' "'.$table;
+
                 return false;
             }
 
@@ -256,8 +285,8 @@ class PrestaShopBackupCore
 
             fwrite($fp, $schema[0]['Create Table'].";\n\n");
 
-            if (!in_array($schema[0]['Table'], $ignore_insert_table)) {
-                $data = Db::getInstance()->query('SELECT * FROM `'.$schema[0]['Table'].'`', false);
+            if (!in_array($schema[0]['Table'], $ignoreInsertTable)) {
+                $data = Db::getInstance()->query('SELECT * FROM `'.$schema[0]['Table'].'`');
                 $sizeof = DB::getInstance()->NumRows();
                 $lines = explode("\n", $schema[0]['Create Table']);
 
@@ -307,6 +336,27 @@ class PrestaShopBackupCore
         if ($found == 0) {
             $this->delete();
             echo Tools::displayError('No valid tables were found to backup.');
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Delete the current backup file
+     *
+     * @return bool Deletion result, true on success
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function delete()
+    {
+        if (!$this->id || !unlink($this->id)) {
+            $this->error = Tools::displayError('Error deleting').' '.($this->id ? '"'.$this->id.'"' :
+                    Tools::displayError('Invalid ID'));
+
             return false;
         }
 
