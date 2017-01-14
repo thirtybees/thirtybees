@@ -21,40 +21,59 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class LocalizationPackCore
+ *
+ * @since 1.0.0
+ */
 class LocalizationPackCore
 {
+    // @codingStandardsIgnoreStart
     public $name;
     public $version;
 
     protected $iso_code_lang;
     protected $iso_currency;
     protected $_errors = [];
+    // @codingStandardsIgnoreEnd
 
-    public function loadLocalisationPack($file, $selection, $install_mode = false, $iso_localization_pack = null)
+    /**
+     * @param      $file
+     * @param      $selection
+     * @param bool $installMode
+     * @param null $isoLocalizationPack
+     *
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function loadLocalisationPack($file, $selection, $installMode = false, $isoLocalizationPack = null)
     {
         if (!$xml = @simplexml_load_string($file)) {
             return false;
         }
         libxml_clear_errors();
-        $main_attributes = $xml->attributes();
-        $this->name = (string)$main_attributes['name'];
-        $this->version = (string)$main_attributes['version'];
-        if ($iso_localization_pack) {
-            $id_country = (int)Country::getByIso($iso_localization_pack);
+        $mainAttributes = $xml->attributes();
+        $this->name = (string) $mainAttributes['name'];
+        $this->version = (string) $mainAttributes['version'];
+        if ($isoLocalizationPack) {
+            $idCountry = (int) Country::getByIso($isoLocalizationPack);
 
-            if ($id_country) {
-                $country = new Country($id_country);
+            if ($idCountry) {
+                $country = new Country($idCountry);
             }
-            if (!$id_country || !Validate::isLoadedObject($country)) {
-                $this->_errors[] = Tools::displayError(sprintf('Cannot load country : %1d', $id_country));
+            if (!$idCountry || !Validate::isLoadedObject($country)) {
+                $this->_errors[] = Tools::displayError(sprintf('Cannot load country : %1d', $idCountry));
+
                 return false;
             }
             if (!$country->active) {
@@ -70,30 +89,30 @@ class LocalizationPackCore
         if (empty($selection)) {
             $res &= $this->_installStates($xml);
             $res &= $this->_installTaxes($xml);
-            $res &= $this->_installCurrencies($xml, $install_mode);
+            $res &= $this->_installCurrencies($xml, $installMode);
             $res &= $this->installConfiguration($xml);
             $res &= $this->installModules($xml);
             $res &= $this->updateDefaultGroupDisplayMethod($xml);
 
-            if (($res || $install_mode) && isset($this->iso_code_lang)) {
-                if (!($id_lang = (int)Language::getIdByIso($this->iso_code_lang, true))) {
-                    $id_lang = 1;
+            if (($res || $installMode) && isset($this->iso_code_lang)) {
+                if (!($idLang = (int) Language::getIdByIso($this->iso_code_lang, true))) {
+                    $idLang = 1;
                 }
-                if (!$install_mode) {
-                    Configuration::updateValue('PS_LANG_DEFAULT', $id_lang);
+                if (!$installMode) {
+                    Configuration::updateValue('PS_LANG_DEFAULT', $idLang);
                 }
-            } elseif (!isset($this->iso_code_lang) && $install_mode) {
-                $id_lang = 1;
+            } elseif (!isset($this->iso_code_lang) && $installMode) {
+                $idLang = 1;
             }
 
-            if (!Language::isInstalled(Language::getIsoById($id_lang))) {
-                $res &= $this->_installLanguages($xml, $install_mode);
+            if (!Language::isInstalled(Language::getIsoById($idLang))) {
+                $res &= $this->_installLanguages($xml, $installMode);
                 $res &= $this->_installUnits($xml);
             }
 
-            if ($install_mode && $res && isset($this->iso_currency)) {
+            if ($installMode && $res && isset($this->iso_currency)) {
                 Cache::clean('Currency::getIdByIsoCode_*');
-                $res &= Configuration::updateValue('PS_CURRENCY_DEFAULT', (int)Currency::getIdByIsoCode($this->iso_currency));
+                $res &= Configuration::updateValue('PS_CURRENCY_DEFAULT', (int) Currency::getIdByIsoCode($this->iso_currency));
                 Currency::refreshCurrencies();
             }
         } else {
@@ -108,8 +127,12 @@ class LocalizationPackCore
 
     /**
      * @param SimpleXMLElement $xml
+     *
      * @return bool
      * @throws PrestaShopException
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     protected function _installStates($xml)
     {
@@ -117,33 +140,35 @@ class LocalizationPackCore
             foreach ($xml->states->state as $data) {
                 /** @var SimpleXMLElement $data */
                 $attributes = $data->attributes();
-                $id_country = ($attributes['country']) ? (int)Country::getByIso(strval($attributes['country'])) : false;
-                $id_state = ($id_country) ? State::getIdByIso($attributes['iso_code'], $id_country) : State::getIdByName($attributes['name']);
+                $idCountry = ($attributes['country']) ? (int) Country::getByIso(strval($attributes['country'])) : false;
+                $idState = ($idCountry) ? State::getIdByIso($attributes['iso_code'], $idCountry) : State::getIdByName($attributes['name']);
 
-                if (!$id_state) {
+                if (!$idState) {
                     $state = new State();
                     $state->name = strval($attributes['name']);
                     $state->iso_code = strval($attributes['iso_code']);
-                    $state->id_country = $id_country;
+                    $state->id_country = $idCountry;
 
-                    $id_zone = (int)Zone::getIdByName(strval($attributes['zone']));
-                    if (!$id_zone) {
+                    $idZone = (int) Zone::getIdByName(strval($attributes['zone']));
+                    if (!$idZone) {
                         $zone = new Zone();
-                        $zone->name = (string)$attributes['zone'];
+                        $zone->name = (string) $attributes['zone'];
                         $zone->active = true;
 
                         if (!$zone->add()) {
                             $this->_errors[] = Tools::displayError('Invalid Zone name.');
+
                             return false;
                         }
 
-                        $id_zone = $zone->id;
+                        $idZone = $zone->id;
                     }
 
-                    $state->id_zone = $id_zone;
+                    $state->id_zone = $idZone;
 
                     if (!$state->validateFields()) {
                         $this->_errors[] = Tools::displayError('Invalid state properties.');
+
                         return false;
                     }
 
@@ -157,12 +182,14 @@ class LocalizationPackCore
 
                     if (!$state->add()) {
                         $this->_errors[] = Tools::displayError('An error occurred while adding the state.');
+
                         return false;
                     }
                 } else {
-                    $state = new State($id_state);
+                    $state = new State($idState);
                     if (!Validate::isLoadedObject($state)) {
                         $this->_errors[] = Tools::displayError('An error occurred while fetching the state.');
+
                         return false;
                     }
                 }
@@ -174,36 +201,42 @@ class LocalizationPackCore
 
     /**
      * @param SimpleXMLElement $xml
+     *
      * @return bool
      * @throws PrestaShopException
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     protected function _installTaxes($xml)
     {
         if (isset($xml->taxes->tax)) {
-            $assoc_taxes = [];
+            $assocTaxes = [];
             foreach ($xml->taxes->tax as $taxData) {
                 /** @var SimpleXMLElement $taxData */
                 $attributes = $taxData->attributes();
-                if (($id_tax = Tax::getTaxIdByName($attributes['name']))) {
-                    $assoc_taxes[(int)$attributes['id']] = $id_tax;
+                if (($idTax = Tax::getTaxIdByName($attributes['name']))) {
+                    $assocTaxes[(int) $attributes['id']] = $idTax;
                     continue;
                 }
                 $tax = new Tax();
-                $tax->name[(int)Configuration::get('PS_LANG_DEFAULT')] = (string)$attributes['name'];
-                $tax->rate = (float)$attributes['rate'];
+                $tax->name[(int) Configuration::get('PS_LANG_DEFAULT')] = (string) $attributes['name'];
+                $tax->rate = (float) $attributes['rate'];
                 $tax->active = 1;
 
                 if (($error = $tax->validateFields(false, true)) !== true || ($error = $tax->validateFieldsLang(false, true)) !== true) {
                     $this->_errors[] = Tools::displayError('Invalid tax properties.').' '.$error;
+
                     return false;
                 }
 
                 if (!$tax->add()) {
-                    $this->_errors[] = Tools::displayError('An error occurred while importing the tax: ').(string)$attributes['name'];
+                    $this->_errors[] = Tools::displayError('An error occurred while importing the tax: ').(string) $attributes['name'];
+
                     return false;
                 }
 
-                $assoc_taxes[(int)$attributes['id']] = $tax->id;
+                $assocTaxes[(int) $attributes['id']] = $tax->id;
             }
 
             foreach ($xml->taxes->taxRulesGroup as $group) {
@@ -223,91 +256,99 @@ class LocalizationPackCore
 
                 if (!$trg->save()) {
                     $this->_errors[] = Tools::displayError('This tax rule cannot be saved.');
+
                     return false;
                 }
 
                 foreach ($group->taxRule as $rule) {
                     /** @var SimpleXMLElement $rule */
-                    $rule_attributes = $rule->attributes();
+                    $ruleAttributes = $rule->attributes();
 
                     // Validation
-                    if (!isset($rule_attributes['iso_code_country'])) {
+                    if (!isset($ruleAttributes['iso_code_country'])) {
                         continue;
                     }
 
-                    $id_country = (int)Country::getByIso(strtoupper($rule_attributes['iso_code_country']));
-                    if (!$id_country) {
+                    $idCountry = (int) Country::getByIso(strtoupper($ruleAttributes['iso_code_country']));
+                    if (!$idCountry) {
                         continue;
                     }
 
-                    if (!isset($rule_attributes['id_tax']) || !array_key_exists(strval($rule_attributes['id_tax']), $assoc_taxes)) {
+                    if (!isset($ruleAttributes['id_tax']) || !array_key_exists(strval($ruleAttributes['id_tax']), $assocTaxes)) {
                         continue;
                     }
 
                     // Default values
-                    $id_state = (int)isset($rule_attributes['iso_code_state']) ? State::getIdByIso(strtoupper($rule_attributes['iso_code_state'])) : 0;
-                    $id_county = 0;
-                    $zipcode_from = 0;
-                    $zipcode_to = 0;
-                    $behavior = $rule_attributes['behavior'];
+                    $idState = (int) isset($ruleAttributes['iso_code_state']) ? State::getIdByIso(strtoupper($ruleAttributes['iso_code_state'])) : 0;
+                    $idCounty = 0;
+                    $zipcodeFrom = 0;
+                    $zipcodeTo = 0;
+                    $behavior = $ruleAttributes['behavior'];
 
-                    if (isset($rule_attributes['zipcode_from'])) {
-                        $zipcode_from = $rule_attributes['zipcode_from'];
-                        if (isset($rule_attributes['zipcode_to'])) {
-                            $zipcode_to = $rule_attributes['zipcode_to'];
+                    if (isset($ruleAttributes['zipcode_from'])) {
+                        $zipcodeFrom = $ruleAttributes['zipcode_from'];
+                        if (isset($ruleAttributes['zipcode_to'])) {
+                            $zipcodeTo = $ruleAttributes['zipcode_to'];
                         }
                     }
 
                     // Creation
                     $tr = new TaxRule();
                     $tr->id_tax_rules_group = $trg->id;
-                    $tr->id_country = $id_country;
-                    $tr->id_state = $id_state;
-                    $tr->id_county = $id_county;
-                    $tr->zipcode_from = $zipcode_from;
-                    $tr->zipcode_to = $zipcode_to;
+                    $tr->id_country = $idCountry;
+                    $tr->id_state = $idState;
+                    $tr->id_county = $idCounty;
+                    $tr->zipcode_from = $zipcodeFrom;
+                    $tr->zipcode_to = $zipcodeTo;
                     $tr->behavior = $behavior;
                     $tr->description = '';
-                    $tr->id_tax = $assoc_taxes[strval($rule_attributes['id_tax'])];
+                    $tr->id_tax = $assocTaxes[strval($ruleAttributes['id_tax'])];
                     $tr->save();
                 }
             }
         }
+
         return true;
     }
 
     /**
      * @param SimpleXMLElement $xml
-     * @param bool $install_mode
+     * @param bool             $installMode
+     *
      * @return bool
      * @throws PrestaShopException
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
-    protected function _installCurrencies($xml, $install_mode = false)
+    protected function _installCurrencies($xml, $installMode = false)
     {
         if (isset($xml->currencies->currency)) {
             foreach ($xml->currencies->currency as $data) {
                 /** @var SimpleXMLElement $data */
                 $attributes = $data->attributes();
-                if (Currency::exists($attributes['iso_code'], (int)$attributes['iso_code_num'])) {
+                if (Currency::exists($attributes['iso_code'], (int) $attributes['iso_code_num'])) {
                     continue;
                 }
                 $currency = new Currency();
-                $currency->name = (string)$attributes['name'];
-                $currency->iso_code = (string)$attributes['iso_code'];
-                $currency->iso_code_num = (int)$attributes['iso_code_num'];
-                $currency->sign = (string)$attributes['sign'];
-                $currency->blank = (int)$attributes['blank'];
+                $currency->name = (string) $attributes['name'];
+                $currency->iso_code = (string) $attributes['iso_code'];
+                $currency->iso_code_num = (int) $attributes['iso_code_num'];
+                $currency->sign = (string) $attributes['sign'];
+                $currency->blank = (int) $attributes['blank'];
                 $currency->conversion_rate = 1; // This value will be updated if the store is online
-                $currency->format = (int)$attributes['format'];
-                $currency->decimals = (int)$attributes['decimals'];
+                $currency->format = (int) $attributes['format'];
+                $currency->decimals = (int) $attributes['decimals'];
                 $currency->active = true;
                 if (!$currency->validateFields()) {
                     $this->_errors[] = Tools::displayError('Invalid currency properties.');
+
                     return false;
                 }
                 if (!Currency::exists($currency->iso_code, $currency->iso_code_num)) {
                     if (!$currency->add()) {
                         $this->_errors[] = Tools::displayError('An error occurred while importing the currency: ').strval($attributes['name']);
+
                         return false;
                     }
 
@@ -319,7 +360,7 @@ class LocalizationPackCore
                 $this->_errors[] = $error;
             }
 
-            if (!count($this->_errors) && $install_mode && isset($attributes['iso_code']) && count($xml->currencies->currency) == 1) {
+            if (!count($this->_errors) && $installMode && isset($attributes['iso_code']) && count($xml->currencies->currency) == 1) {
                 $this->iso_currency = $attributes['iso_code'];
             }
         }
@@ -328,68 +369,47 @@ class LocalizationPackCore
     }
 
     /**
+     * Update a configuration variable from a localization file
+     * <configuration>
+     * <configuration name="variable_name" value="variable_value" />
+     *
      * @param SimpleXMLElement $xml
-     * @param bool $install_mode
+     *
      * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
-    protected function _installLanguages($xml, $install_mode = false)
+    protected function installConfiguration($xml)
     {
-        $attributes = [];
-        if (isset($xml->languages->language)) {
-            foreach ($xml->languages->language as $data) {
+        if (isset($xml->configurations)) {
+            foreach ($xml->configurations->configuration as $data) {
                 /** @var SimpleXMLElement $data */
                 $attributes = $data->attributes();
-                // if we are not in an installation context or if the pack is not available in the local directory
-                if (Language::getIdByIso($attributes['iso_code']) && !$install_mode) {
-                    continue;
-                }
+                $name = (string) $attributes['name'];
 
-                $errors = Language::downloadAndInstallLanguagePack($attributes['iso_code'], $attributes['version'], $attributes);
-                if ($errors !== true && is_array($errors)) {
-                    $this->_errors = array_merge($this->_errors, $errors);
+                if (isset($name) && isset($attributes['value']) && Configuration::get($name) !== false) {
+                    if (!Configuration::updateValue($name, (string) $attributes['value'])) {
+                        $this->_errors[] = Tools::displayError('An error occurred during the configuration setup: '.$name);
+                    }
                 }
             }
         }
 
-        // change the default language if there is only one language in the localization pack
-        if (!count($this->_errors) && $install_mode && isset($attributes['iso_code']) && count($xml->languages->language) == 1) {
-            $this->iso_code_lang = $attributes['iso_code'];
-        }
-
-        return !count($this->_errors);
-    }
-
-    /**
-     * @param SimpleXMLElement $xml
-     * @return bool
-     */
-    protected function _installUnits($xml)
-    {
-        $varNames = ['weight' => 'PS_WEIGHT_UNIT', 'volume' => 'PS_VOLUME_UNIT', 'short_distance' => 'PS_DIMENSION_UNIT', 'base_distance' => 'PS_BASE_DISTANCE_UNIT', 'long_distance' => 'PS_DISTANCE_UNIT'];
-        if (isset($xml->units->unit)) {
-            foreach ($xml->units->unit as $data) {
-                /** @var SimpleXMLElement $data */
-                $attributes = $data->attributes();
-                if (!isset($varNames[strval($attributes['type'])])) {
-                    $this->_errors[] = Tools::displayError('Localization pack corrupted: wrong unit type.');
-                    return false;
-                }
-                if (!Configuration::updateValue($varNames[strval($attributes['type'])], strval($attributes['value']))) {
-                    $this->_errors[] = Tools::displayError('An error occurred while setting the units.');
-                    return false;
-                }
-            }
-        }
         return true;
     }
 
     /**
      * Install/Uninstall a module from a localization file
      * <modules>
-     *	<module name="module_name" [install="0|1"] />
+     *    <module name="module_name" [install="0|1"] />
      *
      * @param SimpleXMLElement $xml
+     *
      * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     protected function installModules($xml)
     {
@@ -397,7 +417,7 @@ class LocalizationPackCore
             foreach ($xml->modules->module as $data) {
                 /** @var SimpleXMLElement $data */
                 $attributes = $data->attributes();
-                $name = (string)$attributes['name'];
+                $name = (string) $attributes['name'];
                 if (isset($name) && $module = Module::getInstanceByName($name)) {
                     $install = ($attributes['install'] == 1) ? true : false;
 
@@ -424,55 +444,23 @@ class LocalizationPackCore
     }
 
     /**
-     * Update a configuration variable from a localization file
-     * <configuration>
-     * <configuration name="variable_name" value="variable_value" />
+     * @param SimpleXMLElement $xml
      *
-     * @param SimpleXMLElement $xml
      * @return bool
-     */
-    protected function installConfiguration($xml)
-    {
-        if (isset($xml->configurations)) {
-            foreach ($xml->configurations->configuration as $data) {
-                /** @var SimpleXMLElement $data */
-                $attributes = $data->attributes();
-                $name = (string)$attributes['name'];
-
-                if (isset($name) && isset($attributes['value']) && Configuration::get($name) !== false) {
-                    if (!Configuration::updateValue($name, (string)$attributes['value'])) {
-                        $this->_errors[] = Tools::displayError('An error occurred during the configuration setup: '.$name);
-                    }
-                }
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * @param SimpleXMLElement $xml
-     * @return bool
-     */
-    protected function _installGroups($xml)
-    {
-        return $this->updateDefaultGroupDisplayMethod($xml);
-    }
-
-    /**
-     * @param SimpleXMLElement $xml
-     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     protected function updateDefaultGroupDisplayMethod($xml)
     {
         if (isset($xml->group_default)) {
             $attributes = $xml->group_default->attributes();
-            if (isset($attributes['price_display_method']) && in_array((int)$attributes['price_display_method'], [0, 1])) {
-                Configuration::updateValue('PRICE_DISPLAY_METHOD', (int)$attributes['price_display_method']);
+            if (isset($attributes['price_display_method']) && in_array((int) $attributes['price_display_method'], [0, 1])) {
+                Configuration::updateValue('PRICE_DISPLAY_METHOD', (int) $attributes['price_display_method']);
 
-                foreach ([(int)Configuration::get('PS_CUSTOMER_GROUP'), (int)Configuration::get('PS_GUEST_GROUP'), (int)Configuration::get('PS_UNIDENTIFIED_GROUP')] as $id_group) {
-                    $group = new Group((int)$id_group);
-                    $group->price_display_method = (int)$attributes['price_display_method'];
+                foreach ([(int) Configuration::get('PS_CUSTOMER_GROUP'), (int) Configuration::get('PS_GUEST_GROUP'), (int) Configuration::get('PS_UNIDENTIFIED_GROUP')] as $id_group) {
+                    $group = new Group((int) $id_group);
+                    $group->price_display_method = (int) $attributes['price_display_method'];
                     if (!$group->save()) {
                         $this->_errors[] = Tools::displayError('An error occurred during the default group update');
                     }
@@ -485,8 +473,94 @@ class LocalizationPackCore
         return true;
     }
 
+    /**
+     * @param SimpleXMLElement $xml
+     * @param bool             $installMode
+     *
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    protected function _installLanguages($xml, $installMode = false)
+    {
+        $attributes = [];
+        if (isset($xml->languages->language)) {
+            foreach ($xml->languages->language as $data) {
+                /** @var SimpleXMLElement $data */
+                $attributes = $data->attributes();
+                // if we are not in an installation context or if the pack is not available in the local directory
+                if (Language::getIdByIso($attributes['iso_code']) && !$installMode) {
+                    continue;
+                }
+
+                $errors = Language::downloadAndInstallLanguagePack($attributes['iso_code'], $attributes['version'], $attributes);
+                if ($errors !== true && is_array($errors)) {
+                    $this->_errors = array_merge($this->_errors, $errors);
+                }
+            }
+        }
+
+        // change the default language if there is only one language in the localization pack
+        if (!count($this->_errors) && $installMode && isset($attributes['iso_code']) && count($xml->languages->language) == 1) {
+            $this->iso_code_lang = $attributes['iso_code'];
+        }
+
+        return !count($this->_errors);
+    }
+
+    /**
+     * @param SimpleXMLElement $xml
+     *
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    protected function _installUnits($xml)
+    {
+        $varNames = ['weight' => 'PS_WEIGHT_UNIT', 'volume' => 'PS_VOLUME_UNIT', 'short_distance' => 'PS_DIMENSION_UNIT', 'base_distance' => 'PS_BASE_DISTANCE_UNIT', 'long_distance' => 'PS_DISTANCE_UNIT'];
+        if (isset($xml->units->unit)) {
+            foreach ($xml->units->unit as $data) {
+                /** @var SimpleXMLElement $data */
+                $attributes = $data->attributes();
+                if (!isset($varNames[strval($attributes['type'])])) {
+                    $this->_errors[] = Tools::displayError('Localization pack corrupted: wrong unit type.');
+
+                    return false;
+                }
+                if (!Configuration::updateValue($varNames[strval($attributes['type'])], strval($attributes['value']))) {
+                    $this->_errors[] = Tools::displayError('An error occurred while setting the units.');
+
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @return array
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getErrors()
     {
         return $this->_errors;
+    }
+
+    /**
+     * @param SimpleXMLElement $xml
+     *
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    protected function _installGroups($xml)
+    {
+        return $this->updateDefaultGroupDisplayMethod($xml);
     }
 }
