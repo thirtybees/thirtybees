@@ -68,7 +68,6 @@ class AdminThemesControllerCore extends AdminController
                     'check_if_not_valid' => [
                         'PS_CSS_THEME_CACHE' => 0,
                         'PS_JS_THEME_CACHE' => 0,
-                        'PS_HTML_THEME_COMPRESSION' => 0,
                         'PS_JS_HTML_THEME_COMPRESSION' => 0,
                     ],
                 ],
