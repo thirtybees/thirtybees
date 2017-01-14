@@ -16,6 +16,7 @@ thirty bees is an opensource fork of PrestaShop. Our aim with this fork is to pr
   - SimpleXML
   - json
   - zip
+  - MySQL (PDO only)
 
 **Overview of the general goal:**
 
