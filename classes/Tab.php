@@ -116,7 +116,7 @@ class TabCore extends ObjectModel
         return false;
     }
 
-    public function save($null_values = false, $autodate = true)
+    public function save($nullValues = false, $autodate = true)
     {
         self::$_getIdFromClassName = null;
         return parent::save();

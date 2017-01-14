@@ -123,7 +123,7 @@ class SceneCore extends ObjectModel
         return false;
     }
 
-    public function deleteImage($force_delete = false)
+    public function deleteImage($forceDelete = false)
     {
         if (file_exists($this->image_dir.'thumbs/'.$this->id.'-m_scene_default.'.$this->image_format)
             && !unlink($this->image_dir.'thumbs/'.$this->id.'-m_scene_default.'.$this->image_format)) {

@@ -798,7 +798,7 @@ class ImageCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function deleteImage($force_delete = false)
+    public function deleteImage($forceDelete = false)
     {
         if (!$this->id) {
             return false;

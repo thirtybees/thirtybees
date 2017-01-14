@@ -865,7 +865,7 @@ class ProductCore extends ObjectModel
     /**
      * @see ObjectModel::validateField()
      */
-    public function validateField($field, $value, $id_lang = null, $skip = [], $human_errors = false)
+    public function validateField($field, $value, $idLang = null, $skip = [], $humanErrors = false)
     {
         if ($field == 'description_short') {
             $limit = (int)Configuration::get('PS_PRODUCT_SHORT_DESC_LIMIT');
@@ -877,7 +877,7 @@ class ProductCore extends ObjectModel
             $size_with_html = Tools::strlen($value);
             $this->def['fields']['description_short']['size'] = $limit + $size_with_html - $size_without_html;
         }
-        return parent::validateField($field, $value, $id_lang, $skip, $human_errors);
+        return parent::validateField($field, $value, $idLang, $skip, $humanErrors);
     }
 
     public function toggleStatus()
