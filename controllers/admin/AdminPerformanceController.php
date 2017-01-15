@@ -653,7 +653,9 @@ class AdminPerformanceControllerCore extends AdminController
             if ($this->tabAccess['edit'] === '1') {
                 $themeCacheDirectory = _PS_ALL_THEMES_DIR_.$this->context->shop->theme_directory.'/cache/';
                 if (((bool) Tools::getValue('PS_CSS_THEME_CACHE') || (bool) Tools::getValue('PS_JS_THEME_CACHE')) && !is_writable($themeCacheDirectory)) {
-                    $this->errors[] = sprintf(Tools::displayError('To use Smart Cache directory %s must be writable.'), realpath($themeCacheDirectory));
+                    if (@file_exists($themeCacheDirectory) || !@mkdir($themeCacheDirectory, 0777, true)) {
+                        $this->errors[] = sprintf(Tools::displayError('To use Smart Cache directory %s must be writable.'), realpath($themeCacheDirectory));
+                    }
                 }
 
                 if ($tmp = (int) Tools::getValue('PS_CSS_THEME_CACHE')) {
