@@ -30,67 +30,40 @@
  */
 
 /**
- * This class require Xcache extension
+ * Class ModuleFrontControllerCore
  *
- * @since 1.5.0
+ * @since 1.0.0
  */
-class CacheXcacheCore extends Cache
+class ModuleAjaxControllerCore extends AjaxController
 {
+    /** @var Module $module */
+    public $module;
+
+    /**
+     * ModuleFrontControllerCore constructor.
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function __construct()
     {
-        $this->keys = xcache_get(self::KEYS_NAME);
-        if (!is_array($this->keys)) {
-            $this->keys = [];
+        $this->module = Module::getInstanceByName(Tools::getValue('module'));
+        if (!$this->module->active) {
+            Tools::redirect('index');
         }
+
+        $this->page_name = 'module-'.$this->module->name.'-'.Dispatcher::getInstance()->getController();
+
+        parent::__construct();
+
+        $this->controller_type = 'moduleajax';
     }
 
     /**
-     * @see Cache::_set()
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
      */
-    protected function _set($key, $value, $ttl = 0)
+    public function initContent()
     {
-        return xcache_set($key, $value, $ttl);
-    }
-
-    /**
-     * @see Cache::_get()
-     */
-    protected function _get($key)
-    {
-        return xcache_isset($key) ? xcache_get($key) : false;
-    }
-
-    /**
-     * @see Cache::_exists()
-     */
-    protected function _exists($key)
-    {
-        return xcache_isset($key);
-    }
-
-    /**
-     * @see Cache::_delete()
-     */
-    protected function _delete($key)
-    {
-        return xcache_unset($key);
-    }
-
-    /**
-     * @see Cache::_writeKeys()
-     */
-    protected function _writeKeys()
-    {
-        xcache_set(self::KEYS_NAME, $this->keys);
-    }
-
-    /**
-     * @see Cache::flush()
-     */
-    public function flush()
-    {
-        $this->delete('*');
-
-        return true;
     }
 }

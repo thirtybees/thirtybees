@@ -276,6 +276,91 @@ class HookCore extends ObjectModel
         $usePush = false,
         $idShop = null
     ) {
+        if (!Configuration::get('TB_PAGE_CACHE_ENABLED')) {
+            return self::execWithoutCache($hookName, $hookArgs, $idModule, $arrayReturn, $checkExceptions, $usePush, $idShop);
+        }
+
+        $activehooks = json_decode(Configuration::get('TB_PAGE_CACHE_HOOKS'));
+
+        $found = false;
+        if (is_array($activehooks)) {
+            foreach ($activehooks as $hookArr) {
+                if (is_array($hookArr) && in_array($hookName, $hookArr)) {
+                    $found = true;
+                    break;
+                }
+            }
+        }
+
+        if (!$found) {
+            return self::execWithoutCache($hookName, $hookArgs, $idModule, $arrayReturn, $checkExceptions, $usePush, $idShop);
+        }
+
+        if (!$moduleList = self::getHookModuleExecList($hookName)) {
+            return '';
+        }
+
+        if ($arrayReturn) {
+            $return = array();
+        } else {
+            $return = '';
+        }
+
+        if (!$idModule) {
+            foreach ($moduleList as $m) {
+                $data = self::execWithoutCache($hookName, $hookArgs, $m['id_module'], $arrayReturn, $checkExceptions, $usePush, $idShop);
+                //version 2.3.2 - Hook bundler
+                if (isset($data)) {
+                    if (is_array($data)) {
+                        $data = array_shift($data);
+                    }
+                    if (is_array($data)) {
+                        $return[$m['module']] = $data;
+                    } else {
+                        $dataWrapped = '<!--[hook '.$hookName.'] '.$m['id_module'].'-->'.$data.'<!--[hook '.$hookName.'] '.$m['id_module'].'-->';
+
+                        if ($arrayReturn) {
+                            $return[$m['module']] = $dataWrapped;
+                        } else {
+                            $return .= $dataWrapped;
+                        }
+                    }
+                }
+            }
+        } else {
+            $return = self::execWithoutCache($hookName, $hookArgs, $idModule, $arrayReturn, $checkExceptions, $usePush, $idShop);
+        }
+
+        return $return;
+    }
+
+    /**
+     * Execute modules for specified hook
+     *
+     * @param string $hookName        Hook Name
+     * @param array  $hookArgs        Parameters for the functions
+     * @param int    $idModule        Execute hook for this module only
+     * @param bool   $arrayReturn     If specified, module output will be set by name in an array
+     * @param bool   $checkExceptions Check permission exceptions
+     * @param bool   $usePush         Force change to be refreshed on Dashboard widgets
+     * @param int    $idShop          If specified, hook will be execute the shop with this ID
+     *
+     * @throws PrestaShopException
+     *
+     * @return string/array modules output
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function execWithoutCache(
+        $hookName,
+        $hookArgs = [],
+        $idModule = null,
+        $arrayReturn = false,
+        $checkExceptions = true,
+        $usePush = false,
+        $idShop = null
+    ) {
         if (defined('PS_INSTALLATION_IN_PROGRESS')) {
             return;
         }

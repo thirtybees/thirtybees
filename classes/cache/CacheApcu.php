@@ -34,20 +34,16 @@
  *
  * @since 1.5.0
  */
-class CacheApcCore extends Cache
+class CacheApcuCore extends CacheCore
 {
-    /** @var bool Whether APCu is enabled */
-    public $apcu;
-
     /**
      * CacheApcCore constructor.
      */
     public function __construct()
     {
-        if (!extension_loaded('apc') && !extension_loaded('apcu')) {
-            throw new PrestaShopException('APC cache has been enabled, but the APC or APCu extension is not available');
+        if (!extension_loaded('apcu')) {
+            throw new PrestaShopException('APCu cache has been enabled, but the APCu extension is not available');
         }
-        $this->apcu = extension_loaded('apcu');
     }
 
     /**
@@ -70,7 +66,7 @@ class CacheApcCore extends Cache
         } else {
             $pattern = str_replace('\\*', '.*', preg_quote($key));
 
-            $cacheInfo = (($this->apcu) ? apcu_cache_info('') : apc_cache_info(''));
+            $cacheInfo = apcu_cache_info('');
             foreach ($cacheInfo['cache_list'] as $entry) {
                 if (isset($entry['key'])) {
                     $key = $entry['key'];
@@ -94,7 +90,7 @@ class CacheApcCore extends Cache
      */
     protected function _set($key, $value, $ttl = 0)
     {
-        return (($this->apcu) ? apcu_store($key, $value, $ttl) : apc_store($key, $value, $ttl));
+        return apcu_store($key, $value, $ttl);
     }
 
     /**
@@ -105,7 +101,7 @@ class CacheApcCore extends Cache
      */
     protected function _get($key)
     {
-        return (($this->apcu) ? apcu_fetch($key) : apc_fetch($key));
+        return apcu_fetch($key);
     }
 
     /**
@@ -116,12 +112,7 @@ class CacheApcCore extends Cache
      */
     protected function _exists($key)
     {
-        if (!function_exists('apc_exists') && !function_exists('apcu_exists')) {
-            // We're dealing with APC < 3.1.4; use this boolean wrapper as a fallback:
-            return (bool) apc_fetch($key);
-        } else {
-            return (($this->apcu) ? apcu_exists($key) : apc_exists($key));
-        }
+        return apcu_exists($key);
     }
 
     /**
@@ -132,7 +123,7 @@ class CacheApcCore extends Cache
      */
     protected function _delete($key)
     {
-        return (($this->apcu) ? apcu_delete($key) : apc_delete($key));
+        return apcu_delete($key);
     }
 
     /**
@@ -153,7 +144,7 @@ class CacheApcCore extends Cache
      */
     public function flush()
     {
-        return (($this->apcu) ? apcu_clear_cache() : apc_clear_cache());
+        return apcu_clear_cache();
     }
 
     /**

@@ -1539,8 +1539,6 @@ class ToolsCore
      * Encrypt password
      *
      * @param string $passwd String to encrypt
-     *
-     * @deprecated 1.0.0 Use Tools::hash instead
      */
     public static function encrypt($passwd)
     {

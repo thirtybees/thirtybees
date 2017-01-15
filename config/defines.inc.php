@@ -104,6 +104,7 @@ if (!defined('_PS_UPLOAD_DIR_')) {
 define('_PS_CONTROLLER_DIR_',        _PS_CORE_DIR_.'/controllers/');
 define('_PS_ADMIN_CONTROLLER_DIR_',  _PS_CORE_DIR_.'/controllers/admin/');
 define('_PS_FRONT_CONTROLLER_DIR_',  _PS_CORE_DIR_.'/controllers/front/');
+define('_PS_AJAX_CONTROLLER_DIR_',  _PS_CORE_DIR_.'/controllers/ajax/');
 
 define('_PS_TOOL_DIR_',              _PS_CORE_DIR_.'/tools/');
 if (!defined('_PS_GEOIP_DIR_')) {

@@ -38,15 +38,12 @@ class CacheFsCore extends Cache
 {
     /**
      * @var int Number of subfolders to dispatch cached filenames
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected $depth;
 
     protected function __construct()
     {
-        $this->depth = Db::getInstance()->getValue('SELECT value FROM '._DB_PREFIX_.'configuration WHERE name= \'PS_CACHEFS_DIRECTORY_DEPTH\'', false);
+        $this->depth = (int) Db::getInstance()->getValue('SELECT value FROM '._DB_PREFIX_.'configuration WHERE name= \'PS_CACHEFS_DIRECTORY_DEPTH\'', false);
 
         $keysFilename = $this->getFilename(self::KEYS_NAME);
         if (@filemtime($keysFilename)) {
@@ -56,9 +53,6 @@ class CacheFsCore extends Cache
 
     /**
      * @see Cache::_set()
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function _set($key, $value, $ttl = 0)
     {
@@ -67,9 +61,6 @@ class CacheFsCore extends Cache
 
     /**
      * @see Cache::_get()
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function _get($key)
     {
@@ -93,9 +84,6 @@ class CacheFsCore extends Cache
 
     /**
      * @see Cache::_exists()
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function _exists($key)
     {
@@ -110,9 +98,6 @@ class CacheFsCore extends Cache
 
     /**
      * @see Cache::_delete()
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function _delete($key)
     {
@@ -126,9 +111,6 @@ class CacheFsCore extends Cache
 
     /**
      * @see Cache::_writeKeys()
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function _writeKeys()
     {
@@ -137,9 +119,6 @@ class CacheFsCore extends Cache
 
     /**
      * @see Cache::flush()
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public function flush()
     {
@@ -150,9 +129,6 @@ class CacheFsCore extends Cache
 
     /**
      * Delete cache directory
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function deleteCacheDirectory()
     {
@@ -164,15 +140,13 @@ class CacheFsCore extends Cache
      *
      * @param int    $levelDepth
      * @param string $directory
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     public static function createCacheDirectories($levelDepth, $directory = false)
     {
         if (!$directory) {
             $directory = _PS_CACHEFS_DIRECTORY_;
         }
+
         $chars = '0123456789abcdef';
         for ($i = 0, $length = strlen($chars); $i < $length; $i++) {
             $newDir = $directory.$chars[$i].'/';
@@ -190,11 +164,7 @@ class CacheFsCore extends Cache
      * Transform a key into its absolute path
      *
      * @param string $key
-     *
      * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
      */
     protected function getFilename($key)
     {

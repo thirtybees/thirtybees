@@ -42,6 +42,7 @@ class DispatcherCore
     const FC_FRONT = 1;
     const FC_ADMIN = 2;
     const FC_MODULE = 3;
+    const FC_AJAX = 4;
 
     // @codingStandardsIgnoreStart
     /**
@@ -101,6 +102,16 @@ class DispatcherCore
                 'rewrite'       => ['regexp' => '[_a-zA-Z0-9\pL\pS-]*'],
                 'meta_keywords' => ['regexp' => '[_a-zA-Z0-9-\pL]*'],
                 'meta_title'    => ['regexp' => '[_a-zA-Z0-9-\pL]*'],
+            ],
+        ],
+        'ajax'            => [
+            'controller' => null,
+            'rule'       => 'ajax/{controller}',
+            'keywords'   => [
+                'controller' => ['regexp' => '[_a-zA-Z0-9_-]+', 'param' => 'controller'],
+            ],
+            'params'     => [
+                'fc' => 'ajax',
             ],
         ],
         'module'            => [
@@ -207,6 +218,9 @@ class DispatcherCore
             $this->controller_not_found = 'adminnotfound';
         } elseif (Tools::getValue('fc') == 'module') {
             $this->front_controller = self::FC_MODULE;
+            $this->controller_not_found = 'pagenotfound';
+        } elseif (Tools::getValue('fc') == 'ajax') {
+            $this->front_controller = self::FC_AJAX;
             $this->controller_not_found = 'pagenotfound';
         } else {
             $this->front_controller = self::FC_FRONT;
@@ -496,7 +510,7 @@ class DispatcherCore
         // Dispatch with right front controller
         switch ($this->front_controller) {
             // Dispatch front office controller
-            case self::FC_FRONT :
+            case self::FC_FRONT:
                 $controllers = Dispatcher::getControllers([_PS_FRONT_CONTROLLER_DIR_, _PS_OVERRIDE_DIR_.'controllers/front/']);
                 $controllers['index'] = 'IndexController';
                 if (isset($controllers['auth'])) {
@@ -516,8 +530,20 @@ class DispatcherCore
                 $paramsHookActionDispatcher = ['controller_type' => self::FC_FRONT, 'controller_class' => $controllerClass, 'is_module' => 0];
                 break;
 
-            // Dispatch module controller for front office
-            case self::FC_MODULE :
+            // Dispatch ajax controller
+            case self::FC_AJAX:
+                $controllers = Dispatcher::getControllers([_PS_AJAX_CONTROLLER_DIR_, _PS_OVERRIDE_DIR_.'controllers/ajax/']);
+
+                if (!isset($controllers[strtolower($this->controller)])) {
+                    header('Content-Type: text/plain');
+                    die('0');
+                }
+                $controllerClass = $controllers[strtolower($this->controller)];
+                $paramsHookActionDispatcher = ['controller_type' => self::FC_AJAX, 'controller_class' => $controllerClass, 'is_module' => 0];
+                break;
+
+            // Dispatch module controller for front office and ajax
+            case self::FC_MODULE:
                 $moduleName = Validate::isModuleName(Tools::getValue('module')) ? Tools::getValue('module') : '';
                 $module = Module::getInstanceByName($moduleName);
                 $controllerClass = 'PageNotFoundController';
@@ -527,12 +553,18 @@ class DispatcherCore
                         include_once(_PS_MODULE_DIR_.$moduleName.'/controllers/front/'.$this->controller.'.php');
                         $controllerClass = $moduleName.$this->controller.'ModuleFrontController';
                     }
+
+                    $ajaxControllers = Dispatcher::getControllers(_PS_MODULE_DIR_.$moduleName.'/controllers/ajax/');
+                    if (isset($ajaxControllers[strtolower($this->controller)])) {
+                        include_once(_PS_MODULE_DIR_.$moduleName.'/controllers/ajax/'.$this->controller.'.php');
+                        $controllerClass = $moduleName.$this->controller.'ModuleAjaxController';
+                    }
                 }
                 $paramsHookActionDispatcher = ['controller_type' => self::FC_FRONT, 'controller_class' => $controllerClass, 'is_module' => 1];
                 break;
 
             // Dispatch back office controller + module back office controller
-            case self::FC_ADMIN :
+            case self::FC_ADMIN:
                 if ($this->use_default_controller && !Tools::getValue('token') && Validate::isLoadedObject(Context::getContext()->employee) && Context::getContext()->employee->isLoggedBack()) {
                     Tools::redirectAdmin('index.php?controller='.$this->controller.'&token='.Tools::getAdminTokenLite($this->controller));
                 }
@@ -685,7 +717,10 @@ class DispatcherCore
 
                             if (isset($_GET['fc']) && $_GET['fc'] == 'module') {
                                 $this->front_controller = self::FC_MODULE;
+                            } elseif (isset($_GET['fc']) && $_GET['fc'] == 'ajax') {
+                                $this->front_controller = self::FC_AJAX;
                             }
+
                             break;
                         }
                     }

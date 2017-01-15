@@ -206,50 +206,150 @@ abstract class ControllerCore
      */
     public function run()
     {
-        $this->init();
-        if ($this->checkAccess()) {
-            // setMedia MUST be called before postProcess
-            if (!$this->content_only && ($this->display_header || (isset($this->className) && $this->className))) {
-                $this->setMedia();
+        $cached = false;
+        if (Configuration::get('TB_PAGE_CACHE_ENABLED')) {
+            $pageName = Dispatcher::getInstance()->getController();
+            $cacheableControllers = json_decode(Configuration::get('TB_PAGE_CACHE_CONTROLLERS'));
+            $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && Tools::strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+            $isLogged = Tools::getIsset($this->context->customer) ? $this->context->customer->isLogged() && Configuration::get('TB_PAGE_CACHE_SKIPLOGIN') : false;
+
+            if (in_array($pageName, $cacheableControllers) && !Tools::isSubmit('refresh_cache') && !Tools::isSubmit('live_edit') && !Tools::isSubmit('live_configurator_token') && !Tools::isSubmit('no_cache') && count($_POST) == 0 && !$isAjax && !$isLogged) {
+                if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
+                    $proto = 'https'.':'.'/'.'/';
+                } else {
+                    $proto = 'http'.':'.'/'.'/';
+                }
+
+                //remove ignored url vars
+                list($urlpart, $qspart) = array_pad(explode('?', $_SERVER['REQUEST_URI']), 2, '');
+                parse_str($qspart, $query);
+                $ignoreParams = Configuration::get('TB_PAGE_CACHE_IGNOREPARAMS');
+                $ignoreParams = explode(',', $ignoreParams);
+                foreach ($ignoreParams as $ignoreParam) {
+                    $ignoreParam = trim($ignoreParam);
+                    unset($query[$ignoreParam]);
+                }
+
+                $queryString = http_build_query($query);
+                if ($queryString == '') {
+                    $url = $proto.$_SERVER['HTTP_HOST'].$urlpart;
+                } else {
+                    $url = $proto.$_SERVER['HTTP_HOST'].$urlpart.'?'.$queryString;
+                }
+
+                $idPage = md5($url);
+                $idLanguage = (int) $this->context->language->id;
+                $idCountry = (int) $this->context->country->id;
+                $idShop = (int) $this->context->shop->id;
+                $currency = Tools::setCurrency($this->context->cookie);
+                $idCurrency = $currency->id;
+                $countryCheck = (bool) Configuration::get('TB_PAGE_CACHE_COUNTRY');
+
+                $key = 'pagecache_public_'.$idPage.$idCurrency.$idLanguage.($countryCheck ? $idCountry : '').$idShop;
+                $redis = Cache::getInstance();
+                if ($fromCache = $redis->get($key) /*file_exists($cacheFile)*/) {
+                    if (Configuration::Get('TB_PAGE_CACHE_DEBUG')) {
+                        header('X-thirtybees-PageCache: HIT');
+                    }
+                    $cached = true;
+                    $content = $fromCache;
+                } else {
+                    if (Configuration::get('TB_PAGE_CACHE_DEBUG')) {
+                        header('X-thirtybees-PageCache: MISS');
+                    }
+                }
+            }
+        }
+
+        if ($cached) {
+            $this->init();
+
+            $this->context->cookie->write();
+
+            if (Configuration::get('TB_PAGE_CACHE_GZIP') || !strstr($content, 'body')) {
+                $content = gzinflate($content);
             }
 
-            // postProcess handles ajaxProcess
-            $this->postProcess();
+            $hookInfo = json_decode(Configuration::get('TB_PAGE_CACHE_HOOKS'));
+            if (is_array($hookInfo)) {
+                foreach ($hookInfo as $idModule => $hookArray) {
+                    if (is_array($hookArray)) {
+                        foreach ($hookArray as $hookName) {
+                            $hookContent = Hook::exec($hookName, [], $idModule, false, true, false, null);
 
-            if (!empty($this->redirect_after)) {
-                $this->redirect();
+                            $pattern = "/<!--\[hook $hookName\] $idModule-->(.|\n)*?<!--\[hook $hookName\] $idModule-->/";
+
+                            $hookContent = preg_replace('/\$(\d)/', '\\\$$1', $hookContent);
+                            $count = 0;
+                            $pageContent = preg_replace($pattern, $hookContent, $content, 1, $count);
+
+                            if (preg_last_error() === PREG_NO_ERROR && $count > 0) {
+                                $content = $pageContent;
+                            }
+                        }
+                    }
+                }
             }
 
-            if (!$this->content_only && ($this->display_header || (isset($this->className) && $this->className))) {
-                $this->initHeader();
+            if (Configuration::get('PS_TOKEN_ENABLE')) {
+                $newToken = Tools::getToken(false);
+                if (preg_match("/static_token[ ]?=[ ]?'([a-f0-9]{32})'/", $content, $matches)) {
+                    if (count($matches) > 1 && $matches[1] != '') {
+                        $oldToken = $matches[1];
+                        $content = preg_replace("/$oldToken/", $newToken, $content);
+                    }
+                } else {
+                    $content = preg_replace('/name="token" value="[a-f0-9]{32}/', 'name="token" value="'.$newToken, $content);
+                    $content = preg_replace('/token=[a-f0-9]{32}"/', 'token='.$newToken.'"', $content);
+                    $content = preg_replace('/static_token[ ]?=[ ]?\'[a-f0-9]{32}/', 'static_token = \''.$newToken, $content);
+                }
             }
 
-            if ($this->viewAccess()) {
-                $this->initContent();
-            } else {
-                $this->errors[] = Tools::displayError('Access denied.');
-            }
+            echo $content;
+        } else {
+            $this->init();
+            if ($this->checkAccess()) {
+                if (!$this->content_only && ($this->display_header || (isset($this->className) && $this->className))) {
+                    $this->setMedia();
+                }
 
-            if (!$this->content_only && ($this->display_footer || (isset($this->className) && $this->className))) {
-                $this->initFooter();
-            }
+                $this->postProcess();
 
-            // Default behavior for ajax process is to use $_POST[action] or $_GET[action]
-            // then using displayAjax[action]
-            if ($this->ajax) {
-                $action = Tools::toCamelCase(Tools::getValue('action'), true);
+                if (!empty($this->redirect_after)) {
+                    $this->redirect();
+                }
 
-                if (!empty($action) && method_exists($this, 'displayAjax'.$action)) {
-                    $this->{'displayAjax'.$action}();
-                } elseif (method_exists($this, 'displayAjax')) {
-                    $this->displayAjax();
+                if (!$this->content_only && ($this->display_header || (isset($this->className) && $this->className))) {
+                    $this->initHeader();
+                }
+
+                if ($this->viewAccess()) {
+                    $this->initContent();
+                } else {
+                    $this->errors[] = Tools::displayError('Access denied.');
+                }
+
+                if (!$this->content_only && ($this->display_footer || (isset($this->className) && $this->className))) {
+                    $this->initFooter();
+                }
+
+                if ($this->ajax) {
+                    $action = Tools::toCamelCase(Tools::getValue('action'), true);
+
+                    if (!empty($action) && method_exists($this, 'displayAjax'.$action)) {
+                        $this->{'displayAjax'.$action}();
+                    } elseif (method_exists($this, 'displayAjax')) {
+                        $this->displayAjax();
+                    }
+                } else {
+                    $this->display();
                 }
             } else {
-                $this->display();
+                $this->initCursedPage();
+                if (isset($this->layout)) {
+                    $this->smartyOutputContent($this->layout);
+                }
             }
-        } else {
-            $this->initCursedPage();
-            $this->smartyOutputContent($this->layout);
         }
     }
 
@@ -614,11 +714,9 @@ abstract class ControllerCore
     protected function smartyOutputContent($content)
     {
         $this->context->cookie->write();
-
         $html = '';
         $jsTag = 'js_def';
         $this->context->smarty->assign($jsTag, $jsTag);
-
         if (is_array($content)) {
             foreach ($content as $tpl) {
                 $html .= $this->context->smarty->fetch($tpl);
@@ -626,23 +724,18 @@ abstract class ControllerCore
         } else {
             $html = $this->context->smarty->fetch($content);
         }
-
         $html = trim($html);
-
         if (in_array($this->controller_type, ['front', 'modulefront']) && !empty($html) && $this->getLayout()) {
             $liveEditContent = '';
             if (!$this->useMobileTheme() && $this->checkLiveEditAccess()) {
                 $liveEditContent = $this->getLiveEditFooter();
             }
-
             $domAvailable = extension_loaded('dom') ? true : false;
             $defer = (bool) Configuration::get('PS_JS_DEFER');
-
             if ($defer && $domAvailable) {
                 $html = Media::deferInlineScripts($html);
             }
             $html = trim(str_replace(['</body>', '</html>'], '', $html))."\n";
-
             $this->context->smarty->assign(
                 [
                     $jsTag      => Media::getJsDef(),
@@ -650,9 +743,7 @@ abstract class ControllerCore
                     'js_inline' => ($defer && $domAvailable) ? Media::getInlineScript() : [],
                 ]
             );
-
             $javascript = $this->context->smarty->fetch(_PS_ALL_THEMES_DIR_.'javascript.tpl');
-
             if ($defer && (!isset($this->ajax) || ! $this->ajax)) {
                 echo $html.$javascript;
             } else {
@@ -691,7 +782,7 @@ abstract class ControllerCore
      * @param string $errno
      * @param string $errstr
      * @param string $errfile
-     * @param int $errline
+     * @param int    $errline
      *
      * @return bool
      *
@@ -708,18 +799,18 @@ abstract class ControllerCore
             case E_USER_ERROR:
             case E_ERROR:
                 die('Fatal error: '.$errstr.' in '.$errfile.' on line '.$errline);
-            break;
+                break;
             case E_USER_WARNING:
             case E_WARNING:
                 $type = 'Warning';
-            break;
+                break;
             case E_USER_NOTICE:
             case E_NOTICE:
                 $type = 'Notice';
-            break;
+                break;
             default:
                 $type = 'Unknown error';
-            break;
+                break;
         }
 
         Controller::$php_errors[] = [
