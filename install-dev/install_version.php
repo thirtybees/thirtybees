@@ -29,4 +29,4 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-define('_PS_INSTALL_VERSION_', '1.6.1.10');
+define('_PS_INSTALL_VERSION_', '1.6.1.11');
