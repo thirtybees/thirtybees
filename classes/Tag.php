@@ -56,18 +56,18 @@ class TagCore extends ObjectModel
         ],
     ];
 
-    public function __construct($id = null, $name = null, $id_lang = null)
+    public function __construct($id = null, $name = null, $idLang = null)
     {
         $this->def = Tag::getDefinition($this);
         $this->setDefinitionRetrocompatibility();
 
         if ($id) {
             parent::__construct($id);
-        } elseif ($name && Validate::isGenericName($name) && $id_lang && Validate::isUnsignedId($id_lang)) {
+        } elseif ($name && Validate::isGenericName($name) && $idLang && Validate::isUnsignedId($idLang)) {
             $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow('
 			SELECT *
 			FROM `'._DB_PREFIX_.'tag` t
-			WHERE `name` = \''.pSQL($name).'\' AND `id_lang` = '.(int)$id_lang);
+			WHERE `name` = \''.pSQL($name).'\' AND `id_lang` = '.(int)$idLang);
 
             if ($row) {
                 $this->id = (int)$row['id_tag'];

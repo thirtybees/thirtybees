@@ -364,16 +364,17 @@ class PackCore extends Product
     /**
      * For a given pack, tells if it has at least one product using the advanced stock management
      *
-     * @param int $id_product id_pack
-     * @return bool
+     * @param int $idProduct id_pack
+     *
+*@return bool
      */
-    public static function usesAdvancedStockManagement($id_product)
+    public static function usesAdvancedStockManagement($idProduct)
     {
-        if (!Pack::isPack($id_product)) {
+        if (!Pack::isPack($idProduct)) {
             return false;
         }
 
-        $products = Pack::getItems($id_product, Configuration::get('PS_LANG_DEFAULT'));
+        $products = Pack::getItems($idProduct, Configuration::get('PS_LANG_DEFAULT'));
         foreach ($products as $product) {
             // if one product uses the advanced stock management
             if ($product->advanced_stock_management == 1) {
