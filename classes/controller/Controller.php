@@ -270,14 +270,18 @@ abstract class ControllerCore
                 $content = gzinflate($content);
             }
 
-            $hookInfo = json_decode(Configuration::get('TB_PAGE_CACHE_HOOKS'));
+            $hookInfo = json_decode(Configuration::get('TB_PAGE_CACHE_HOOKS'), true);
             if (is_array($hookInfo)) {
                 foreach ($hookInfo as $idModule => $hookArray) {
                     if (is_array($hookArray)) {
                         foreach ($hookArray as $hookName) {
-                            $hookContent = Hook::exec($hookName, [], $idModule, false, true, false, null);
+                            try {
+                                $hookContent = Hook::execWithoutCache($hookName, [], $idModule, false, true, false, null);
+                            } catch (Exception $e) {
+                                $hookContent = sprintf(Tools::displayError('Error while displaying module "%s"'), Module::getInstanceById($idModule)->displayName);
+                            }
 
-                            $pattern = "/<!--\[hook $hookName\] $idModule-->(.|\n)*?<!--\[hook $hookName\] $idModule-->/";
+                            $pattern = "/<!--\[hook $hookName\] $idModule-->.*?<!--\[hook $hookName\] $idModule-->/s";
 
                             $hookContent = preg_replace('/\$(\d)/', '\\\$$1', $hookContent);
                             $count = 0;

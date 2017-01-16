@@ -280,7 +280,7 @@ class HookCore extends ObjectModel
             return self::execWithoutCache($hookName, $hookArgs, $idModule, $arrayReturn, $checkExceptions, $usePush, $idShop);
         }
 
-        $activehooks = json_decode(Configuration::get('TB_PAGE_CACHE_HOOKS'));
+        $activehooks = json_decode(Configuration::get('TB_PAGE_CACHE_HOOKS'), true);
 
         $found = false;
         if (is_array($activehooks)) {
@@ -308,27 +308,36 @@ class HookCore extends ObjectModel
 
         if (!$idModule) {
             foreach ($moduleList as $m) {
-                $data = self::execWithoutCache($hookName, $hookArgs, $m['id_module'], $arrayReturn, $checkExceptions, $usePush, $idShop);
-                //version 2.3.2 - Hook bundler
-                if (isset($data)) {
-                    if (is_array($data)) {
-                        $data = array_shift($data);
-                    }
-                    if (is_array($data)) {
-                        $return[$m['module']] = $data;
-                    } else {
+                try {
+                    $data = self::execWithoutCache($hookName, $hookArgs, $m['id_module'], $arrayReturn, $checkExceptions, $usePush, $idShop);
+                } catch (Exception $e) {
+                    $data = sprintf(Tools::displayError('Error while displaying module "%s"'), Module::getInstanceById($m['id_module'])->displayName);
+                }
+                if (is_array($data)) {
+                    $data = array_shift($data);
+                }
+                if (is_array($data)) {
+                    $return[$m['module']] = $data;
+                } else {
+                    if (isset($activehooks[$m['id_module']]) && in_array($hookName, $activehooks[$m['id_module']])) {
                         $dataWrapped = '<!--[hook '.$hookName.'] '.$m['id_module'].'-->'.$data.'<!--[hook '.$hookName.'] '.$m['id_module'].'-->';
+                    } else {
+                        $dataWrapped = $data;
+                    }
 
-                        if ($arrayReturn) {
-                            $return[$m['module']] = $dataWrapped;
-                        } else {
-                            $return .= $dataWrapped;
-                        }
+                    if ($arrayReturn) {
+                        $return[$m['module']] = $dataWrapped;
+                    } else {
+                        $return .= $dataWrapped;
                     }
                 }
             }
         } else {
-            $return = self::execWithoutCache($hookName, $hookArgs, $idModule, $arrayReturn, $checkExceptions, $usePush, $idShop);
+            try {
+                $return = self::execWithoutCache($hookName, $hookArgs, $idModule, $arrayReturn, $checkExceptions, $usePush, $idShop);
+            } catch (Exception $e) {
+                $return = sprintf(Tools::displayError('Error while displaying module "%s"'), Module::getInstanceById($idModule)->displayName);
+            }
         }
 
         return $return;
