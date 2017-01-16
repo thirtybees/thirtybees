@@ -21,14 +21,19 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class SearchEngineCore
+ *
+ * @since 1.0.0
+ */
 class SearchEngineCore extends ObjectModel
 {
     public $server;
@@ -38,29 +43,37 @@ class SearchEngineCore extends ObjectModel
      * @see ObjectModel::$definition
      */
     public static $definition = [
-        'table' => 'search_engine',
+        'table'   => 'search_engine',
         'primary' => 'id_search_engine',
-        'fields' => [
+        'fields'  => [
             'server' => ['type' => self::TYPE_STRING, 'validate' => 'isUrl', 'required' => true],
             'getvar' => ['type' => self::TYPE_STRING, 'validate' => 'isModuleName', 'required' => true],
         ],
     ];
 
+    /**
+     * @param $url
+     *
+     * @return bool|string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public static function getKeywords($url)
     {
-        $parsed_url = @parse_url($url);
-        if (!isset($parsed_url['host']) || !isset($parsed_url['query'])) {
+        $parsedUrl = @parse_url($url);
+        if (!isset($parsedUrl['host']) || !isset($parsedUrl['query'])) {
             return false;
         }
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('SELECT `server`, `getvar` FROM `'._DB_PREFIX_.'search_engine`');
         foreach ($result as $row) {
-            $host =& $row['server'];
-            $varname =& $row['getvar'];
-            if (strstr($parsed_url['host'], $host)) {
+            $host = &$row['server'];
+            $varname = &$row['getvar'];
+            if (strstr($parsedUrl['host'], $host)) {
                 $array = [];
-                preg_match('/[^a-z]'.$varname.'=.+\&/U', $parsed_url['query'], $array);
+                preg_match('/[^a-z]'.$varname.'=.+\&/U', $parsedUrl['query'], $array);
                 if (empty($array[0])) {
-                    preg_match('/[^a-z]'.$varname.'=.+$/', $parsed_url['query'], $array);
+                    preg_match('/[^a-z]'.$varname.'=.+$/', $parsedUrl['query'], $array);
                 }
                 if (empty($array[0])) {
                     return false;
@@ -69,6 +82,7 @@ class SearchEngineCore extends ObjectModel
                 if (!Validate::isMessage($str)) {
                     return false;
                 }
+
                 return $str;
             }
         }

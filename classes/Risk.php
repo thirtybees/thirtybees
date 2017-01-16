@@ -21,41 +21,71 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * @since 1.5.0
+ * Class RiskCore
+ *
+ * @since 1.0.0
  */
 class RiskCore extends ObjectModel
 {
+    // @codingStandardsIgnoreStart
     public $id_risk;
     public $name;
     public $color;
     public $percent;
+    // @codingStandardsIgnoreEnd
 
     public static $definition = [
-        'table' => 'risk',
-        'primary' => 'id_risk',
+        'table'     => 'risk',
+        'primary'   => 'id_risk',
         'multilang' => true,
-        'fields' => [
-            'name' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isString', 'required' => true, 'size' => 20],
-            'color' =>  ['type' => self::TYPE_STRING, 'validate' => 'isColor', 'size' => 32],
-            'percent' => ['type' => self::TYPE_INT, 'validate' => 'isPercentage']
+        'fields'    => [
+            'name'    => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isString', 'required' => true, 'size' => 20],
+            'color'   => ['type' => self::TYPE_STRING, 'validate' => 'isColor', 'size' => 32],
+            'percent' => ['type' => self::TYPE_INT, 'validate' => 'isPercentage'],
         ],
     ];
 
+    /**
+     * @param int|null $idLang
+     *
+     * @return PrestaShopCollection
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function getRisks($idLang = null)
+    {
+        if (is_null($idLang)) {
+            $idLang = Context::getContext()->language->id;
+        }
+
+        $risks = new PrestaShopCollection('Risk', $idLang);
+
+        return $risks;
+    }
+
+    /**
+     * @return mixed
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getFields()
     {
         $this->validateFields();
-        $fields['id_risk'] = (int)$this->id_risk;
+        $fields['id_risk'] = (int) $this->id_risk;
         $fields['color'] = pSQL($this->color);
-        $fields['percent'] = (int)$this->percent;
+        $fields['percent'] = (int) $this->percent;
+
         return $fields;
     }
 
@@ -63,20 +93,14 @@ class RiskCore extends ObjectModel
      * Check then return multilingual fields for database interaction
      *
      * @return array Multilingual fields
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function getTranslationsFieldsChild()
     {
         $this->validateFieldsLang();
+
         return $this->getTranslationsFields(['name']);
-    }
-
-    public static function getRisks($id_lang = null)
-    {
-        if (is_null($id_lang)) {
-            $id_lang = Context::getContext()->language->id;
-        }
-
-        $risks = new PrestaShopCollection('Risk', $id_lang);
-        return $risks;
     }
 }

@@ -59,14 +59,14 @@ class HelperImageUploaderCore extends HelperUploader
     }
 
     /**
-     * @param null $file_name
+     * @param null $fileName
      *
      * @return string
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
-    public function getFilePath($file_name = null)
+    public function getFilePath($fileName = null)
     {
         //Force file path
         return tempnam($this->getSavePath(), $this->getUniqueFileName());

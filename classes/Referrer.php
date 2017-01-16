@@ -21,59 +21,22 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class ReferrerCore
+ *
+ * @since 1.0.0
+ */
 class ReferrerCore extends ObjectModel
 {
-    public $id_shop;
-    public $name;
-    public $passwd;
-
-    public $http_referer_regexp;
-    public $http_referer_like;
-    public $request_uri_regexp;
-    public $request_uri_like;
-    public $http_referer_regexp_not;
-    public $http_referer_like_not;
-    public $request_uri_regexp_not;
-    public $request_uri_like_not;
-
-    public $base_fee;
-    public $percent_fee;
-    public $click_fee;
-
-    public $date_add;
-
-    /**
-     * @see ObjectModel::$definition
-     */
-    public static $definition = [
-        'table' => 'referrer',
-        'primary' => 'id_referrer',
-        'fields' => [
-            'name' =>                        ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 64],
-            'passwd' =>                    ['type' => self::TYPE_STRING, 'validate' => 'isPasswd', 'size' => 32],
-            'http_referer_regexp' =>        ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 64],
-            'request_uri_regexp' =>        ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 64],
-            'http_referer_like' =>            ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 64],
-            'request_uri_like' =>            ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 64],
-            'http_referer_regexp_not' =>    ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml'],
-            'request_uri_regexp_not' =>    ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml'],
-            'http_referer_like_not' =>        ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml'],
-            'request_uri_like_not' =>        ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml'],
-            'base_fee' =>                    ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat'],
-            'percent_fee' =>                ['type' => self::TYPE_FLOAT, 'validate' => 'isPercentage'],
-            'click_fee' =>                    ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat'],
-            'date_add' =>                    ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
-        ],
-    ];
-
+    // @codingStandardsIgnoreStart
     protected static $_join = '(r.http_referer_like IS NULL OR r.http_referer_like = \'\' OR cs.http_referer LIKE r.http_referer_like)
 			AND (r.request_uri_like IS NULL OR r.request_uri_like = \'\' OR cs.request_uri LIKE r.request_uri_like)
 			AND (r.http_referer_like_not IS NULL OR r.http_referer_like_not = \'\' OR cs.http_referer NOT LIKE r.http_referer_like_not)
@@ -82,20 +45,59 @@ class ReferrerCore extends ObjectModel
 			AND (r.request_uri_regexp IS NULL OR r.request_uri_regexp = \'\' OR cs.request_uri REGEXP r.request_uri_regexp)
 			AND (r.http_referer_regexp_not IS NULL OR r.http_referer_regexp_not = \'\' OR cs.http_referer NOT REGEXP r.http_referer_regexp_not)
 			AND (r.request_uri_regexp_not IS NULL OR r.request_uri_regexp_not = \'\' OR cs.request_uri NOT REGEXP r.request_uri_regexp_not)';
+    /** @var int $id_shop */
+    public $id_shop;
+    /** @var string $name */
+    public $name;
+    /** @var string $passwd */
+    public $passwd;
+    public $http_referer_regexp;
+    public $http_referer_like;
+    public $request_uri_regexp;
+    public $request_uri_like;
+    public $http_referer_regexp_not;
+    public $http_referer_like_not;
+    public $request_uri_regexp_not;
+    public $request_uri_like_not;
+    public $base_fee;
+    public $percent_fee;
+    public $click_fee;
+    public $date_add;
+    // @codingStandardsIgnoreEnd
 
-    public function add($autodate = true, $nullValues = false)
-    {
-        if (!($result = parent::add($autodate, $nullValues))) {
-            return false;
-        }
-        Referrer::refreshCache([['id_referrer' => $this->id]]);
-        Referrer::refreshIndex([['id_referrer' => $this->id]]);
-        return $result;
-    }
+    /**
+     * @see ObjectModel::$definition
+     */
+    public static $definition = [
+        'table'   => 'referrer',
+        'primary' => 'id_referrer',
+        'fields'  => [
+            'name'                    => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 64],
+            'passwd'                  => ['type' => self::TYPE_STRING, 'validate' => 'isPasswd', 'size' => 32],
+            'http_referer_regexp'     => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 64],
+            'request_uri_regexp'      => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 64],
+            'http_referer_like'       => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 64],
+            'request_uri_like'        => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 64],
+            'http_referer_regexp_not' => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml'],
+            'request_uri_regexp_not'  => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml'],
+            'http_referer_like_not'   => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml'],
+            'request_uri_like_not'    => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml'],
+            'base_fee'                => ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat'],
+            'percent_fee'             => ['type' => self::TYPE_FLOAT, 'validate' => 'isPercentage'],
+            'click_fee'               => ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat'],
+            'date_add'                => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+        ],
+    ];
 
-    public static function cacheNewSource($id_connections_source)
+    /**
+     * @param int $idConnectionsSource
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function cacheNewSource($idConnectionsSource)
     {
-        if (!$id_connections_source) {
+        if (!$idConnectionsSource) {
             return;
         }
 
@@ -103,7 +105,7 @@ class ReferrerCore extends ObjectModel
 					SELECT id_referrer, id_connections_source
 					FROM '._DB_PREFIX_.'referrer r
 					LEFT JOIN '._DB_PREFIX_.'connections_source cs ON ('.self::$_join.')
-					WHERE id_connections_source = '.(int)$id_connections_source.'
+					WHERE id_connections_source = '.(int) $idConnectionsSource.'
 				)';
         Db::getInstance()->execute($sql);
     }
@@ -111,9 +113,12 @@ class ReferrerCore extends ObjectModel
     /**
      * Get list of referrers connections of a customer
      *
-     * @param int $id_customer
+     * @param int $idCustomer
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
-    public static function getReferrers($id_customer)
+    public static function getReferrers($idCustomer)
     {
         $sql = 'SELECT DISTINCT c.date_add, r.name, s.name AS shop_name
 				FROM '._DB_PREFIX_.'guest g
@@ -121,204 +126,11 @@ class ReferrerCore extends ObjectModel
 				LEFT JOIN '._DB_PREFIX_.'connections_source cs ON c.id_connections = cs.id_connections
 				LEFT JOIN '._DB_PREFIX_.'referrer r ON ('.self::$_join.')
 				LEFT JOIN '._DB_PREFIX_.'shop s ON s.id_shop = c.id_shop
-				WHERE g.id_customer = '.(int)$id_customer.'
+				WHERE g.id_customer = '.(int) $idCustomer.'
 					AND r.name IS NOT NULL
 				ORDER BY c.date_add DESC';
+
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
-    }
-
-    /**
-     * Get some statistics on visitors connection for current referrer
-     *
-     * @param int $id_product
-     * @param int $employee
-     */
-    public function getStatsVisits($id_product, $employee)
-    {
-        $join = $where = '';
-        if ($id_product) {
-            $join = 'LEFT JOIN `'._DB_PREFIX_.'page` p ON cp.`id_page` = p.`id_page`
-					 LEFT JOIN `'._DB_PREFIX_.'page_type` pt ON pt.`id_page_type` = p.`id_page_type`';
-            $where = ' AND pt.`name` = \'product\'
-					  AND p.`id_object` = '.(int)$id_product;
-        }
-
-        $sql = 'SELECT COUNT(DISTINCT cs.id_connections_source) AS visits,
-			COUNT(DISTINCT cs.id_connections) as visitors,
-			COUNT(DISTINCT c.id_guest) as uniqs,
-			COUNT(DISTINCT cp.time_start) as pages
-			FROM '._DB_PREFIX_.'referrer_cache rc
-			LEFT JOIN '._DB_PREFIX_.'referrer r ON rc.id_referrer = r.id_referrer
-			LEFT JOIN '._DB_PREFIX_.'referrer_shop rs ON r.id_referrer = rs.id_referrer
-			LEFT JOIN '._DB_PREFIX_.'connections_source cs ON rc.id_connections_source = cs.id_connections_source
-			LEFT JOIN '._DB_PREFIX_.'connections c ON cs.id_connections = c.id_connections
-			LEFT JOIN '._DB_PREFIX_.'connections_page cp ON cp.id_connections = c.id_connections
-			'.$join.'
-			WHERE 1'.
-            ((isset($employee->stats_date_from) && isset($employee->stats_date_to))? ' AND cs.date_add BETWEEN \''.pSQL($employee->stats_date_from).' 00:00:00\' AND \''.pSQL($employee->stats_date_to).' 23:59:59\'' : '').
-            Shop::addSqlRestriction(false, 'rs').
-            Shop::addSqlRestriction(false, 'c').
-            ' AND rc.id_referrer = '.(int)$this->id.
-            $where;
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
-    }
-
-    /**
-     * Get some statistics on customers registrations for current referrer
-     *
-     * @param int $id_product
-     * @param int $employee
-     */
-    public function getRegistrations($id_product, $employee)
-    {
-        $join = $where = '';
-        if ($id_product) {
-            $join = 'LEFT JOIN '._DB_PREFIX_.'connections_page cp ON cp.id_connections = c.id_connections
-					 LEFT JOIN `'._DB_PREFIX_.'page` p ON cp.`id_page` = p.`id_page`
-					 LEFT JOIN `'._DB_PREFIX_.'page_type` pt ON pt.`id_page_type` = p.`id_page_type`';
-            $where = ' AND pt.`name` = \'product\'
-					  AND p.`id_object` = '.(int)$id_product;
-        }
-
-        $sql = 'SELECT COUNT(DISTINCT cu.id_customer) AS registrations
-				FROM '._DB_PREFIX_.'referrer_cache rc
-				LEFT JOIN '._DB_PREFIX_.'referrer_shop rs ON rc.id_referrer = rs.id_referrer
-				LEFT JOIN '._DB_PREFIX_.'connections_source cs ON rc.id_connections_source = cs.id_connections_source
-				LEFT JOIN '._DB_PREFIX_.'connections c ON cs.id_connections = c.id_connections
-				LEFT JOIN '._DB_PREFIX_.'guest g ON g.id_guest = c.id_guest
-				LEFT JOIN '._DB_PREFIX_.'customer cu ON cu.id_customer = g.id_customer
-				'.$join.'
-				WHERE cu.date_add BETWEEN '.ModuleGraph::getDateBetween($employee).'
-					'.Shop::addSqlRestriction(false, 'rs').'
-					'.Shop::addSqlRestriction(false, 'c').'
-					'.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER, 'cu').'
-					AND cu.date_add > cs.date_add
-					AND rc.id_referrer = '.(int)$this->id
-                    .$where;
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
-        return (int)$result['registrations'];
-    }
-
-    /**
-     * Get some statistics on orders for current referrer
-     *
-     * @param int $id_product
-     * @param int $employee
-     */
-    public function getStatsSales($id_product, $employee)
-    {
-        $join = $where = '';
-        if ($id_product) {
-            $join =    'LEFT JOIN '._DB_PREFIX_.'order_detail od ON oo.id_order = od.id_order';
-            $where = ' AND od.product_id = '.(int)$id_product;
-        }
-
-        $sql = 'SELECT oo.id_order
-				FROM '._DB_PREFIX_.'referrer_cache rc
-				LEFT JOIN '._DB_PREFIX_.'referrer_shop rs ON rc.id_referrer = rs.id_referrer
-				INNER JOIN '._DB_PREFIX_.'connections_source cs ON rc.id_connections_source = cs.id_connections_source
-				INNER JOIN '._DB_PREFIX_.'connections c ON cs.id_connections = c.id_connections
-				INNER JOIN '._DB_PREFIX_.'guest g ON g.id_guest = c.id_guest
-				LEFT JOIN '._DB_PREFIX_.'orders oo ON oo.id_customer = g.id_customer
-				'.$join.'
-				WHERE oo.invoice_date BETWEEN '.ModuleGraph::getDateBetween($employee).'
-					'.Shop::addSqlRestriction(false, 'rs').'
-					'.Shop::addSqlRestriction(false, 'c').'
-					'.Shop::addSqlRestriction(Shop::SHARE_ORDER, 'oo').'
-					AND oo.date_add > cs.date_add
-					AND rc.id_referrer = '.(int)$this->id.'
-					AND oo.valid = 1'
-                    .$where;
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
-
-        $implode = [];
-        foreach ($result as $row) {
-            if ((int)$row['id_order']) {
-                $implode[] = (int)$row['id_order'];
-            }
-        }
-
-        if ($implode) {
-            $sql = 'SELECT COUNT(id_order) AS orders, SUM(total_paid_real / conversion_rate) AS sales
-					FROM '._DB_PREFIX_.'orders
-					WHERE id_order IN ('.implode($implode, ',').')
-						'.Shop::addSqlRestriction(Shop::SHARE_ORDER).'
-						AND valid = 1';
-            return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
-        } else {
-            return ['orders' => 0, 'sales' => 0];
-        }
-    }
-
-    /**
-     * Refresh cache data of referrer statistics in referrer_shop table
-     *
-     * @param array $referrers
-     * @param int $employee
-     * @return true
-     */
-    public static function refreshCache($referrers = null, $employee = null)
-    {
-        if (!$referrers || !is_array($referrers)) {
-            $referrers = Db::getInstance()->executeS('SELECT id_referrer FROM '._DB_PREFIX_.'referrer');
-        }
-        foreach ($referrers as $row) {
-            $referrer = new Referrer($row['id_referrer']);
-            foreach (Shop::getShops(true, null, true) as $shop_id) {
-                if (!$referrer->isAssociatedToShop($shop_id)) {
-                    continue;
-                }
-
-                $stats_visits = $referrer->getStatsVisits(null, $employee);
-                $registrations = $referrer->getRegistrations(null, $employee);
-                $stats_sales = $referrer->getStatsSales(null, $employee);
-
-                Db::getInstance()->update('referrer_shop', [
-                    'cache_visitors' => (int)$stats_visits['uniqs'],
-                    'cache_visits' => (int)$stats_visits['visits'],
-                    'cache_pages' => (int)$stats_visits['pages'],
-                    'cache_registrations' => (int)$registrations,
-                    'cache_orders' => (int)$stats_sales['orders'],
-                    'cache_sales' => number_format($stats_sales['sales'], 2, '.', ''),
-                    'cache_reg_rate' => $stats_visits['uniqs'] ? $registrations / $stats_visits['uniqs'] : 0,
-                    'cache_order_rate' => $stats_visits['uniqs'] ? $stats_sales['orders'] / $stats_visits['uniqs'] : 0,
-                ], 'id_referrer = '.(int)$referrer->id.' AND id_shop = '.(int)$shop_id);
-            }
-        }
-
-        Configuration::updateValue('PS_REFERRERS_CACHE_LIKE', ModuleGraph::getDateBetween($employee));
-        Configuration::updateValue('PS_REFERRERS_CACHE_DATE', date('Y-m-d H:i:s'));
-        return true;
-    }
-
-    /**
-     * Cache liaison between connections_source data and referrers data
-     *
-     * @param array $referrers
-     */
-    public static function refreshIndex($referrers = null)
-    {
-        if (!$referrers || !is_array($referrers)) {
-            Db::getInstance()->execute('TRUNCATE '._DB_PREFIX_.'referrer_cache');
-            Db::getInstance()->execute('
-			INSERT INTO '._DB_PREFIX_.'referrer_cache (id_referrer, id_connections_source) (
-				SELECT id_referrer, id_connections_source
-				FROM '._DB_PREFIX_.'referrer r
-				LEFT JOIN '._DB_PREFIX_.'connections_source cs ON ('.self::$_join.')
-			)');
-        } else {
-            foreach ($referrers as $row) {
-                Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'referrer_cache WHERE id_referrer = '.(int)$row['id_referrer']);
-                Db::getInstance()->execute('
-				INSERT INTO '._DB_PREFIX_.'referrer_cache (id_referrer, id_connections_source) (
-					SELECT id_referrer, id_connections_source
-					FROM '._DB_PREFIX_.'referrer r
-					LEFT JOIN '._DB_PREFIX_.'connections_source cs ON ('.self::$_join.')
-					WHERE id_referrer = '.(int)$row['id_referrer'].'
-					AND id_connections_source IS NOT NULL
-				)');
-            }
-        }
     }
 
     /**
@@ -326,7 +138,7 @@ class ReferrerCore extends ObjectModel
      * @param int  $idProduct
      * @param null $employee
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function getAjaxProduct($idReferrer, $idProduct, $employee = null)
@@ -362,5 +174,248 @@ class ReferrerCore extends ObjectModel
         ];
 
         die('['.json_encode($jsonArray).']');
+    }
+
+    /**
+     * Get some statistics on visitors connection for current referrer
+     *
+     * @param int $idProduct
+     * @param int $employee
+     *
+     * @return array|bool|null|object
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     *
+     */
+    public function getStatsVisits($idProduct, $employee)
+    {
+        $join = $where = '';
+        if ($idProduct) {
+            $join = 'LEFT JOIN `'._DB_PREFIX_.'page` p ON cp.`id_page` = p.`id_page`
+					 LEFT JOIN `'._DB_PREFIX_.'page_type` pt ON pt.`id_page_type` = p.`id_page_type`';
+            $where = ' AND pt.`name` = \'product\'
+					  AND p.`id_object` = '.(int) $idProduct;
+        }
+
+        $sql = 'SELECT COUNT(DISTINCT cs.id_connections_source) AS visits,
+			COUNT(DISTINCT cs.id_connections) AS visitors,
+			COUNT(DISTINCT c.id_guest) AS uniqs,
+			COUNT(DISTINCT cp.time_start) AS pages
+			FROM '._DB_PREFIX_.'referrer_cache rc
+			LEFT JOIN '._DB_PREFIX_.'referrer r ON rc.id_referrer = r.id_referrer
+			LEFT JOIN '._DB_PREFIX_.'referrer_shop rs ON r.id_referrer = rs.id_referrer
+			LEFT JOIN '._DB_PREFIX_.'connections_source cs ON rc.id_connections_source = cs.id_connections_source
+			LEFT JOIN '._DB_PREFIX_.'connections c ON cs.id_connections = c.id_connections
+			LEFT JOIN '._DB_PREFIX_.'connections_page cp ON cp.id_connections = c.id_connections
+			'.$join.'
+			WHERE 1'.
+            ((isset($employee->stats_date_from) && isset($employee->stats_date_to)) ? ' AND cs.date_add BETWEEN \''.pSQL($employee->stats_date_from).' 00:00:00\' AND \''.pSQL($employee->stats_date_to).' 23:59:59\'' : '').
+            Shop::addSqlRestriction(false, 'rs').
+            Shop::addSqlRestriction(false, 'c').
+            ' AND rc.id_referrer = '.(int) $this->id.
+            $where;
+
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
+    }
+
+    /**
+     * Get some statistics on customers registrations for current referrer
+     *
+     * @param int $idProduct
+     * @param int $employee
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function getRegistrations($idProduct, $employee)
+    {
+        $join = $where = '';
+        if ($idProduct) {
+            $join = 'LEFT JOIN '._DB_PREFIX_.'connections_page cp ON cp.id_connections = c.id_connections
+					 LEFT JOIN `'._DB_PREFIX_.'page` p ON cp.`id_page` = p.`id_page`
+					 LEFT JOIN `'._DB_PREFIX_.'page_type` pt ON pt.`id_page_type` = p.`id_page_type`';
+            $where = ' AND pt.`name` = \'product\'
+					  AND p.`id_object` = '.(int) $idProduct;
+        }
+
+        $sql = 'SELECT COUNT(DISTINCT cu.id_customer) AS registrations
+				FROM '._DB_PREFIX_.'referrer_cache rc
+				LEFT JOIN '._DB_PREFIX_.'referrer_shop rs ON rc.id_referrer = rs.id_referrer
+				LEFT JOIN '._DB_PREFIX_.'connections_source cs ON rc.id_connections_source = cs.id_connections_source
+				LEFT JOIN '._DB_PREFIX_.'connections c ON cs.id_connections = c.id_connections
+				LEFT JOIN '._DB_PREFIX_.'guest g ON g.id_guest = c.id_guest
+				LEFT JOIN '._DB_PREFIX_.'customer cu ON cu.id_customer = g.id_customer
+				'.$join.'
+				WHERE cu.date_add BETWEEN '.ModuleGraph::getDateBetween($employee).'
+					'.Shop::addSqlRestriction(false, 'rs').'
+					'.Shop::addSqlRestriction(false, 'c').'
+					'.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER, 'cu').'
+					AND cu.date_add > cs.date_add
+					AND rc.id_referrer = '.(int) $this->id
+            .$where;
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
+
+        return (int) $result['registrations'];
+    }
+
+    /**
+     * Get some statistics on orders for current referrer
+     *
+     * @param int $idProduct
+     * @param int $employee
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function getStatsSales($idProduct, $employee)
+    {
+        $join = $where = '';
+        if ($idProduct) {
+            $join = 'LEFT JOIN '._DB_PREFIX_.'order_detail od ON oo.id_order = od.id_order';
+            $where = ' AND od.product_id = '.(int) $idProduct;
+        }
+
+        $sql = 'SELECT oo.id_order
+				FROM '._DB_PREFIX_.'referrer_cache rc
+				LEFT JOIN '._DB_PREFIX_.'referrer_shop rs ON rc.id_referrer = rs.id_referrer
+				INNER JOIN '._DB_PREFIX_.'connections_source cs ON rc.id_connections_source = cs.id_connections_source
+				INNER JOIN '._DB_PREFIX_.'connections c ON cs.id_connections = c.id_connections
+				INNER JOIN '._DB_PREFIX_.'guest g ON g.id_guest = c.id_guest
+				LEFT JOIN '._DB_PREFIX_.'orders oo ON oo.id_customer = g.id_customer
+				'.$join.'
+				WHERE oo.invoice_date BETWEEN '.ModuleGraph::getDateBetween($employee).'
+					'.Shop::addSqlRestriction(false, 'rs').'
+					'.Shop::addSqlRestriction(false, 'c').'
+					'.Shop::addSqlRestriction(Shop::SHARE_ORDER, 'oo').'
+					AND oo.date_add > cs.date_add
+					AND rc.id_referrer = '.(int) $this->id.'
+					AND oo.valid = 1'
+            .$where;
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+
+        $implode = [];
+        foreach ($result as $row) {
+            if ((int) $row['id_order']) {
+                $implode[] = (int) $row['id_order'];
+            }
+        }
+
+        if ($implode) {
+            $sql = 'SELECT COUNT(id_order) AS orders, SUM(total_paid_real / conversion_rate) AS sales
+					FROM '._DB_PREFIX_.'orders
+					WHERE id_order IN ('.implode($implode, ',').')
+						'.Shop::addSqlRestriction(Shop::SHARE_ORDER).'
+						AND valid = 1';
+
+            return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
+        } else {
+            return ['orders' => 0, 'sales' => 0];
+        }
+    }
+
+    /**
+     * @param bool $autodate
+     * @param bool $nullValues
+     *
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function add($autodate = true, $nullValues = false)
+    {
+        if (!($result = parent::add($autodate, $nullValues))) {
+            return false;
+        }
+        Referrer::refreshCache([['id_referrer' => $this->id]]);
+        Referrer::refreshIndex([['id_referrer' => $this->id]]);
+
+        return $result;
+    }
+
+    /**
+     * Refresh cache data of referrer statistics in referrer_shop table
+     *
+     * @param array $referrers
+     * @param int   $employee
+     *
+     * @return true
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function refreshCache($referrers = null, $employee = null)
+    {
+        if (!$referrers || !is_array($referrers)) {
+            $referrers = Db::getInstance()->executeS('SELECT id_referrer FROM '._DB_PREFIX_.'referrer');
+        }
+        foreach ($referrers as $row) {
+            $referrer = new Referrer($row['id_referrer']);
+            foreach (Shop::getShops(true, null, true) as $idShop) {
+                if (!$referrer->isAssociatedToShop($idShop)) {
+                    continue;
+                }
+
+                $statsVisits = $referrer->getStatsVisits(null, $employee);
+                $registrations = $referrer->getRegistrations(null, $employee);
+                $statsSales = $referrer->getStatsSales(null, $employee);
+
+                Db::getInstance()->update(
+                    'referrer_shop', [
+                    'cache_visitors'      => (int) $statsVisits['uniqs'],
+                    'cache_visits'        => (int) $statsVisits['visits'],
+                    'cache_pages'         => (int) $statsVisits['pages'],
+                    'cache_registrations' => (int) $registrations,
+                    'cache_orders'        => (int) $statsSales['orders'],
+                    'cache_sales'         => number_format($statsSales['sales'], 2, '.', ''),
+                    'cache_reg_rate'      => $statsVisits['uniqs'] ? $registrations / $statsVisits['uniqs'] : 0,
+                    'cache_order_rate'    => $statsVisits['uniqs'] ? $statsSales['orders'] / $statsVisits['uniqs'] : 0,
+                ], 'id_referrer = '.(int) $referrer->id.' AND id_shop = '.(int) $idShop
+                );
+            }
+        }
+
+        Configuration::updateValue('PS_REFERRERS_CACHE_LIKE', ModuleGraph::getDateBetween($employee));
+        Configuration::updateValue('PS_REFERRERS_CACHE_DATE', date('Y-m-d H:i:s'));
+
+        return true;
+    }
+
+    /**
+     * Cache liaison between connections_source data and referrers data
+     *
+     * @param array $referrers
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function refreshIndex($referrers = null)
+    {
+        if (!$referrers || !is_array($referrers)) {
+            Db::getInstance()->execute('TRUNCATE '._DB_PREFIX_.'referrer_cache');
+            Db::getInstance()->execute(
+                '
+			INSERT INTO '._DB_PREFIX_.'referrer_cache (id_referrer, id_connections_source) (
+				SELECT id_referrer, id_connections_source
+				FROM '._DB_PREFIX_.'referrer r
+				LEFT JOIN '._DB_PREFIX_.'connections_source cs ON ('.self::$_join.')
+			)'
+            );
+        } else {
+            foreach ($referrers as $row) {
+                Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'referrer_cache WHERE id_referrer = '.(int) $row['id_referrer']);
+                Db::getInstance()->execute(
+                    '
+				INSERT INTO '._DB_PREFIX_.'referrer_cache (id_referrer, id_connections_source) (
+					SELECT id_referrer, id_connections_source
+					FROM '._DB_PREFIX_.'referrer r
+					LEFT JOIN '._DB_PREFIX_.'connections_source cs ON ('.self::$_join.')
+					WHERE id_referrer = '.(int) $row['id_referrer'].'
+					AND id_connections_source IS NOT NULL
+				)'
+                );
+            }
+        }
     }
 }

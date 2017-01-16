@@ -21,55 +21,72 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class QuickAccessCore
+ *
+ * @since 1.0.0
+ */
 class QuickAccessCore extends ObjectModel
 {
+    // @codingStandardsIgnoreStart
     /** @var string Name */
     public $name;
-
     /** @var string Link */
     public $link;
-
     /** @var bool New windows or not */
     public $new_window;
+    // @codingStandardsIgnoreEnd
 
     /**
      * @see ObjectModel::$definition
      */
     public static $definition = [
-        'table' => 'quick_access',
-        'primary' => 'id_quick_access',
+        'table'     => 'quick_access',
+        'primary'   => 'id_quick_access',
         'multilang' => true,
-        'fields' => [
-            'link' =>        ['type' => self::TYPE_STRING, 'validate' => 'isUrl', 'required' => true, 'size' => 255],
+        'fields'    => [
+            'link'       => ['type' => self::TYPE_STRING, 'validate' => 'isUrl', 'required' => true, 'size' => 255],
             'new_window' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true],
 
             /* Lang fields */
-            'name' =>        ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCleanHtml', 'required' => true, 'size' => 32],
+            'name'       => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCleanHtml', 'required' => true, 'size' => 32],
         ],
     ];
 
     /**
-    * Get all available quick_accesses
-    *
-    * @return array QuickAccesses
-    */
-    public static function getQuickAccesses($id_lang)
+     * Get all available quick_accesses
+     *
+     * @return array QuickAccesses
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function getQuickAccesses($idLang)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            '
 		SELECT *
 		FROM `'._DB_PREFIX_.'quick_access` qa
-		LEFT JOIN `'._DB_PREFIX_.'quick_access_lang` qal ON (qa.`id_quick_access` = qal.`id_quick_access` AND qal.`id_lang` = '.(int)$id_lang.')
-		ORDER BY `name` ASC');
+		LEFT JOIN `'._DB_PREFIX_.'quick_access_lang` qal ON (qa.`id_quick_access` = qal.`id_quick_access` AND qal.`id_lang` = '.(int) $idLang.')
+		ORDER BY `name` ASC'
+        );
     }
 
+    /**
+     * @return bool
+     * @throws PrestaShopException
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function toggleNewWindow()
     {
         if (!array_key_exists('new_window', $this)) {
@@ -78,7 +95,7 @@ class QuickAccessCore extends ObjectModel
 
         $this->setFieldsToUpdate(['new_window' => true]);
 
-        $this->new_window = !(int)$this->new_window;
+        $this->new_window = !(int) $this->new_window;
 
         return $this->update(false);
     }

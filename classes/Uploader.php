@@ -21,14 +21,19 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class UploaderCore
+ *
+ * @since 1.0.0
+ */
 class UploaderCore
 {
     const DEFAULT_MAX_SIZE = 10485760;
@@ -40,6 +45,14 @@ class UploaderCore
     private $_name;
     private $_save_path;
 
+    /**
+     * UploaderCore constructor.
+     *
+     * @param null $name
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function __construct($name = null)
     {
         $this->setName($name);
@@ -47,35 +60,27 @@ class UploaderCore
         $this->files = [];
     }
 
-    public function setAcceptTypes($value)
-    {
-        if (is_array($value) && count($value)) {
-            $value = array_map(['Tools', 'strtolower'], $value);
-        }
-        $this->_accept_types = $value;
-        return $this;
-    }
-
-    public function getAcceptTypes()
-    {
-        return $this->_accept_types;
-    }
-
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function setCheckFileSize($value)
     {
         $this->_check_file_size = $value;
+
         return $this;
     }
 
-    public function getFilePath($file_name = null)
-    {
-        if (!isset($file_name)) {
-            return tempnam($this->getSavePath(), $this->getUniqueFileName());
-        }
-
-        return $this->getSavePath().$file_name;
-    }
-
+    /**
+     * @return array
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function getFiles()
     {
         if (!isset($this->_files)) {
@@ -85,75 +90,14 @@ class UploaderCore
         return $this->_files;
     }
 
-    public function setMaxSize($value)
-    {
-        $this->_max_size = intval($value);
-        return $this;
-    }
-
-    public function getMaxSize()
-    {
-        if (!isset($this->_max_size) || empty($this->_max_size)) {
-            $this->setMaxSize(self::DEFAULT_MAX_SIZE);
-        }
-
-        return $this->_max_size;
-    }
-
-    public function setName($value)
-    {
-        $this->_name = $value;
-        return $this;
-    }
-
-    public function getName()
-    {
-        return $this->_name;
-    }
-
-    public function setSavePath($value)
-    {
-        $this->_save_path = $value;
-        return $this;
-    }
-
-    public function getPostMaxSizeBytes()
-    {
-        $post_max_size = ini_get('post_max_size');
-        $bytes         = trim($post_max_size);
-        $last          = strtolower($post_max_size[strlen($post_max_size) - 1]);
-
-        switch ($last) {
-            case 'g': $bytes *= 1024;
-            case 'm': $bytes *= 1024;
-            case 'k': $bytes *= 1024;
-        }
-
-        if ($bytes == '') {
-            $bytes = null;
-        }
-        return $bytes;
-    }
-
-    public function getSavePath()
-    {
-        if (!isset($this->_save_path)) {
-            $this->setSavePath(_PS_UPLOAD_DIR_);
-        }
-
-        return $this->_normalizeDirectory($this->_save_path);
-    }
-
-    public function getUniqueFileName($prefix = 'PS')
-    {
-        return uniqid($prefix, true);
-    }
-
-    public function checkFileSize()
-    {
-        return (isset($this->_check_file_size) && $this->_check_file_size);
-    }
-
+    /**
+     * @param null $dest
+     *
+     * @return array
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function process($dest = null)
     {
         $upload = isset($_FILES[$this->getName()]) ? $_FILES[$this->getName()] : null;
@@ -166,7 +110,7 @@ class UploaderCore
                     'name'     => $upload['name'][$index],
                     'size'     => $upload['size'][$index],
                     'type'     => $upload['type'][$index],
-                    'error'    => $upload['error'][$index]
+                    'error'    => $upload['error'][$index],
                 ];
 
                 $this->files[] = $this->upload($tmp[$index], $dest);
@@ -178,29 +122,64 @@ class UploaderCore
         return $this->files;
     }
 
+    /**
+     * @return mixed
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function getName()
+    {
+        return $this->_name;
+    }
+
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function setName($value)
+    {
+        $this->_name = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param      $file
+     * @param null $dest
+     *
+     * @return mixed
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function upload($file, $dest = null)
     {
         if ($this->validate($file)) {
             if (isset($dest) && is_dir($dest)) {
-                $file_path = $dest;
+                $filePath = $dest;
             } else {
-                $file_path = $this->getFilePath(isset($dest) ? $dest : $file['name']);
+                $filePath = $this->getFilePath(isset($dest) ? $dest : $file['name']);
             }
 
             if ($file['tmp_name'] && is_uploaded_file($file['tmp_name'])) {
-                move_uploaded_file($file['tmp_name'], $file_path);
+                move_uploaded_file($file['tmp_name'], $filePath);
             } else {
                 // Non-multipart uploads (PUT method support)
-                file_put_contents($file_path, fopen('php://input', 'r'));
+                file_put_contents($filePath, fopen('php://input', 'r'));
             }
 
-            $file_size = $this->_getFileSize($file_path, true);
+            $fileSize = $this->_getFileSize($filePath, true);
 
-            if ($file_size === $file['size']) {
-                $file['save_path'] = $file_path;
+            if ($fileSize === $file['size']) {
+                $file['save_path'] = $filePath;
             } else {
-                $file['size'] = $file_size;
-                unlink($file_path);
+                $file['size'] = $fileSize;
+                unlink($filePath);
                 $file['error'] = Tools::displayError('Server file size is different from local file size');
             }
         }
@@ -208,10 +187,66 @@ class UploaderCore
         return $file;
     }
 
-    protected function checkUploadError($error_code)
+    /**
+     * @param $file
+     *
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    protected function validate(&$file)
+    {
+        $file['error'] = $this->checkUploadError($file['error']);
+
+        if ($file['error']) {
+            return false;
+        }
+
+        $postMaxSize = $this->getPostMaxSizeBytes();
+
+        if ($postMaxSize && ($this->_getServerVars('CONTENT_LENGTH') > $postMaxSize)) {
+            $file['error'] = Tools::displayError('The uploaded file exceeds the post_max_size directive in php.ini');
+
+            return false;
+        }
+
+        if (preg_match('/\%00/', $file['name'])) {
+            $file['error'] = Tools::displayError('Invalid file name');
+
+            return false;
+        }
+
+        $types = $this->getAcceptTypes();
+
+        //TODO check mime type.
+        if (isset($types) && !in_array(Tools::strtolower(pathinfo($file['name'], PATHINFO_EXTENSION)), $types)) {
+            $file['error'] = Tools::displayError('Filetype not allowed');
+
+            return false;
+        }
+
+        if ($this->checkFileSize() && $file['size'] > $this->getMaxSize()) {
+            $file['error'] = sprintf(Tools::displayError('File (size : %1s) is too big (max : %2s)'), $file['size'], $this->getMaxSize());
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param $errorCode
+     *
+     * @return array|int|mixed|string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    protected function checkUploadError($errorCode)
     {
         $error = 0;
-        switch ($error_code) {
+        switch ($errorCode) {
             case 1:
                 $error = sprintf(Tools::displayError('The uploaded file exceeds %s'), ini_get('upload_max_filesize'));
                 break;
@@ -236,69 +271,219 @@ class UploaderCore
             default:
                 break;
         }
+
         return $error;
     }
 
-    protected function validate(&$file)
+    /**
+     * @return int|null|string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function getPostMaxSizeBytes()
     {
-        $file['error'] = $this->checkUploadError($file['error']);
+        $postMaxSize = ini_get('post_max_size');
+        $bytes = trim($postMaxSize);
+        $last = strtolower($postMaxSize[strlen($postMaxSize) - 1]);
 
-        if ($file['error']) {
-            return false;
+        switch ($last) {
+            case 'g':
+                $bytes *= 1024;
+            case 'm':
+                $bytes *= 1024;
+            case 'k':
+                $bytes *= 1024;
         }
 
-        $post_max_size = $this->getPostMaxSizeBytes();
-
-        if ($post_max_size && ($this->_getServerVars('CONTENT_LENGTH') > $post_max_size)) {
-            $file['error'] = Tools::displayError('The uploaded file exceeds the post_max_size directive in php.ini');
-            return false;
+        if ($bytes == '') {
+            $bytes = null;
         }
 
-        if (preg_match('/\%00/', $file['name'])) {
-            $file['error'] = Tools::displayError('Invalid file name');
-            return false;
-        }
-
-        $types = $this->getAcceptTypes();
-
-        //TODO check mime type.
-        if (isset($types) && !in_array(Tools::strtolower(pathinfo($file['name'], PATHINFO_EXTENSION)), $types)) {
-            $file['error'] = Tools::displayError('Filetype not allowed');
-            return false;
-        }
-
-        if ($this->checkFileSize() && $file['size'] > $this->getMaxSize()) {
-            $file['error'] = sprintf(Tools::displayError('File (size : %1s) is too big (max : %2s)'), $file['size'], $this->getMaxSize());
-            return false;
-        }
-
-        return true;
+        return $bytes;
     }
 
-    protected function _getFileSize($file_path, $clear_stat_cache = false)
-    {
-        if ($clear_stat_cache) {
-            clearstatcache(true, $file_path);
-        }
-
-        return filesize($file_path);
-    }
-
+    /**
+     * @param $var
+     *
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     protected function _getServerVars($var)
     {
         return (isset($_SERVER[$var]) ? $_SERVER[$var] : '');
     }
 
+    /**
+     * @return mixed
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function getAcceptTypes()
+    {
+        return $this->_accept_types;
+    }
+
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function setAcceptTypes($value)
+    {
+        if (is_array($value) && count($value)) {
+            $value = array_map(['Tools', 'strtolower'], $value);
+        }
+        $this->_accept_types = $value;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function checkFileSize()
+    {
+        return (isset($this->_check_file_size) && $this->_check_file_size);
+    }
+
+    /**
+     * @return mixed
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function getMaxSize()
+    {
+        if (!isset($this->_max_size) || empty($this->_max_size)) {
+            $this->setMaxSize(self::DEFAULT_MAX_SIZE);
+        }
+
+        return $this->_max_size;
+    }
+
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function setMaxSize($value)
+    {
+        $this->_max_size = intval($value);
+
+        return $this;
+    }
+
+    /**
+     * @param null $fileName
+     *
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function getFilePath($fileName = null)
+    {
+        if (!isset($fileName)) {
+            return tempnam($this->getSavePath(), $this->getUniqueFileName());
+        }
+
+        return $this->getSavePath().$fileName;
+    }
+
+    /**
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function getSavePath()
+    {
+        if (!isset($this->_save_path)) {
+            $this->setSavePath(_PS_UPLOAD_DIR_);
+        }
+
+        return $this->_normalizeDirectory($this->_save_path);
+    }
+
+    /**
+     * @param $value
+     *
+     * @return $this
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function setSavePath($value)
+    {
+        $this->_save_path = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param $directory
+     *
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     protected function _normalizeDirectory($directory)
     {
         $last = $directory[strlen($directory) - 1];
 
         if (in_array($last, ['/', '\\'])) {
             $directory[strlen($directory) - 1] = DIRECTORY_SEPARATOR;
+
             return $directory;
         }
 
         $directory .= DIRECTORY_SEPARATOR;
+
         return $directory;
+    }
+
+    /**
+     * @param string $prefix
+     *
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function getUniqueFileName($prefix = 'PS')
+    {
+        return uniqid($prefix, true);
+    }
+
+    /**
+     * @param      $filePath
+     * @param bool $clearStatCache
+     *
+     * @return int
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    protected function _getFileSize($filePath, $clearStatCache = false)
+    {
+        if ($clearStatCache) {
+            clearstatcache(true, $filePath);
+        }
+
+        return filesize($filePath);
     }
 }

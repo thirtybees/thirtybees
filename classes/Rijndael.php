@@ -21,19 +21,33 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class RijndaelCore
+ *
+ * @since 1.0.0
+ */
 class RijndaelCore
 {
     protected $_key;
     protected $_iv;
 
+    /**
+     * RijndaelCore constructor.
+     *
+     * @param string $key
+     * @param string $iv
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function __construct($key, $iv)
     {
         $this->_key = $key;
@@ -44,7 +58,11 @@ class RijndaelCore
      * Base64 is not required, but it is be more compact than urlencode
      *
      * @param string $plaintext
+     *
      * @return bool|string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
      */
     public function encrypt($plaintext)
     {
@@ -53,14 +71,24 @@ class RijndaelCore
         if ($length >= 1048576) {
             return false;
         }
+
         return base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $this->_key, $plaintext, MCRYPT_MODE_CBC, $this->_iv)).sprintf('%06d', $length);
     }
 
+    /**
+     * @param string $ciphertext
+     *
+     * @return string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function decrypt($ciphertext)
     {
         if (ini_get('mbstring.func_overload') & 2) {
             $length = intval(mb_substr($ciphertext, -6, 6, ini_get('default_charset')));
             $ciphertext = mb_substr($ciphertext, 0, -6, ini_get('default_charset'));
+
             return mb_substr(
                 mcrypt_decrypt(MCRYPT_RIJNDAEL_128, $this->_key, base64_decode($ciphertext), MCRYPT_MODE_CBC, $this->_iv),
                 0,
@@ -70,6 +98,7 @@ class RijndaelCore
         } else {
             $length = intval(substr($ciphertext, -6));
             $ciphertext = substr($ciphertext, 0, -6);
+
             return substr(mcrypt_decrypt(MCRYPT_RIJNDAEL_128, $this->_key, base64_decode($ciphertext), MCRYPT_MODE_CBC, $this->_iv), 0, $length);
         }
     }
