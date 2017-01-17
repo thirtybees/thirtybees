@@ -1,8 +1,0 @@
-.DS_Store
-.sass-cache
-*.less
-node_modules
-bower_components
-*.css
-*.html
-assets

@@ -393,3 +393,14 @@
 	url = https://github.com/thirtybees/ctconfiguration.git
 	branch = master
 	ignore = dirty
+[submodule "themes/community-theme-default"]
+	path = themes/community-theme-default
+	url = https://github.com/thirtybees/community-theme-default.git
+	branch = master
+	ignore = dirty
+[submodule "themes/community-theme-united"]
+	path = themes/community-theme-united
+	url = https://github.com/thirtybees/community-theme-united.git
+	branch = master
+	ignore = dirty
+

@@ -1,9 +1,0 @@
-/* line 5, ../sass/rtl.scss */
-* {
-  direction: rtl !important;
-}
-
-/* line 9, ../sass/rtl.scss */
-body {
-  text-align: right !important;
-}
