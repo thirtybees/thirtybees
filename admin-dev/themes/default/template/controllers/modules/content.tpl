@@ -36,13 +36,13 @@
 				<div class="panel">
 					<div class="row">
 						<div class="col-lg-3 col-md-4 col-sm-12 col-xs-12">
-							<img class="img-responsive" alt="PrestaShop Addons" src="themes/default/img/prestashop-addons-logo.png">
+							<img class="img-responsive" alt="thirty bees Addons" src="themes/default/img/prestashop-addons-logo.png">
 						</div>
 						<div class="col-lg-4 col-lg-offset-1 col-md-4 col-sm-7 col-xs-12 addons-style-search-bar">
 							<form id="addons-search-form" method="get" action="http://addons.prestashop.com/{$iso_code}/search" class="float">
-							<label>{l s='Search on PrestaShop Marketplace:'}</label>
+							<label>{l s='Search on thirty bees Marketplace:'}</label>
 							<div class="input-group">
-								<input id="addons-search-box" class="form-control" type="text" autocomplete="off" name="query" value="" placeholder="Search on PrestaShop Marketplace">
+								<input id="addons-search-box" class="form-control" type="text" autocomplete="off" name="query" value="" placeholder="Search on thirty bees Marketplace">
 								<div id="addons-search-btn" class="btn btn-primary input-group-addon">
 									<i class="icon-search"></i>
 								</div>
@@ -64,7 +64,7 @@
 
 					<div class="form-wrapper">
 						<div class="form-group">
-							<p>{l s='To add a new module, simply connect to your PrestaShop Addons account and all your purchases will be automatically imported.'}</p>
+							<p>{l s='To add a new module, simply connect to your thirty bees Addons account and all your purchases will be automatically imported.'}</p>
 						</div>
 					</div><!-- /.form-wrapper -->
 
@@ -82,7 +82,7 @@
 
 				<div class="alert alert-info">
 					<h4>{l s='Can I add my own modules?'}</h4>
-					<p>{l s='Please note that for security reasons, you can only add modules that are being distributed on PrestaShop Addons, the official marketplace.'}</p>
+					<p>{l s='Please note that for security reasons, you can only add modules that are being distributed on thirty bees Addons, the official marketplace.'}</p>
 				</div>
 
 		</div>

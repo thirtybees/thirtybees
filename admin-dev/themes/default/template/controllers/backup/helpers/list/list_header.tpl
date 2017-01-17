@@ -47,8 +47,8 @@
 			<button data-dismiss="alert" class="close" type="button">×</button>
 			<h4>{l s='Disclaimer before creating a new backup'}</h4>
 			<ol>
-				<li>{l s='PrestaShop is not responsible for your database, its backups and/or recovery.'}</li>
-				<li>{l s='PrestaShop is open-source software. You are using it at your own risk under the license agreement.'}</li>
+				<li>{l s='thirty bees is not responsible for your database, its backups and/or recovery.'}</li>
+				<li>{l s='thirty bees is open-source software. You are using it at your own risk under the license agreement.'}</li>
 				<li>{l s='You should back up your data on a regular basis (both files and database).'}</li>
 				<li>{l s='This function only backs up your database, not your files.'}</li>
 				<li>{l s='By default, your existing database tables will be dropped during the backup recovery (see "Backup options" below).'}</li>
@@ -75,7 +75,7 @@
 			<br />
 			{l s='Why can\'t I restore it by myself?'}
 			<br />
-			{l s='Your shop is hosted by PrestaShop. Although you can create backup files here below, there are core settings you cannot access for security reasons, like the database management. Thus, only our team can proceed to a restoration.'}
+			{l s='Your shop is hosted by thirty bees. Although you can create backup files here below, there are core settings you cannot access for security reasons, like the database management. Thus, only our team can proceed to a restoration.'}
 		</div>
 		{else}
 		<div class="alert alert-info">

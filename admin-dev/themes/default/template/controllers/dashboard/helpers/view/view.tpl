@@ -97,9 +97,9 @@
 		</div>
 		<div class="col-md-12 col-lg-2">
 			<section class="dash_news panel">
-				<h3><i class="icon-rss"></i> {l s='PrestaShop News'}</h3>
+				<h3><i class="icon-rss"></i> {l s='thirty bees News'}</h3>
 				<div class="dash_news_content"></div>
-				<div class="text-center"><h4><a href="http://www.prestashop.com/blog/" onclick="return !window.open(this.href);">{l s='Find more news'}</a></h4></div>
+				<div class="text-center"><h4><a href="http://www.thirtybees.com/blog/" onclick="return !window.open(this.href);">{l s='Find more news'}</a></h4></div>
 			</section>
 			<section id="dash_version" class="visible-lg">
 				<iframe style="overflow:hidden;border:none" src="{$new_version_url|escape:'html':'UTF-8'}" ></iframe>
@@ -111,19 +111,19 @@
 						<dd>{l s="User, Developer and Designer Guides"}</dd>
 					</dl>
 					<dl>
-						<dt><a href="http://www.prestashop.com/forums?utm_source=back-office&amp;utm_medium=dashboard&amp;utm_campaign=back-office-{$lang_iso|upper}&amp;utm_content={if $host_mode}cloud{else}download{/if}" class="_blank">{l s="PrestaShop Forum"}</a></dt>
-						<dd>{l s="Connect with the PrestaShop community"}</dd>
+						<dt><a href="http://www.thirtybees.com/forums?utm_source=back-office&amp;utm_medium=dashboard&amp;utm_campaign=back-office-{$lang_iso|upper}&amp;utm_content={if $host_mode}cloud{else}download{/if}" class="_blank">{l s="thirty bees Forum"}</a></dt>
+						<dd>{l s="Connect with the thirty bees community"}</dd>
 					</dl>
+					{*<dl>*}
+						{*<dt><a href="http://apps.thirtybees.com?utm_source=back-office&amp;utm_medium=dashboard&amp;utm_campaign=back-office-{$lang_iso|upper}&amp;utm_content=download" class="_blank">{l s="thirty bees apps"}</a></dt>*}
+						{*<dd>{l s="Enhance your store with templates & modules"}</dd>*}
+					{*</dl>*}
+					{*<dl>*}
+						{*<dt><a href="http://www.thirtybees.com/bug-tracker/?utm_source=back-office&amp;utm_medium=dashboard&amp;utm_campaign=back-office-{$lang_iso|upper}&amp;utm_content=download" class="_blank">{l s="The Forge"}</a></dt>*}
+						{*<dd>{l s="Report issues in the Bug Tracker"}</dd>*}
+					{*</dl>*}
 					<dl>
-						<dt><a href="http://addons.prestashop.com?utm_source=back-office&amp;utm_medium=dashboard&amp;utm_campaign=back-office-{$lang_iso|upper}&amp;utm_content={if $host_mode}cloud{else}download{/if}" class="_blank">{l s="PrestaShop Addons"}</a></dt>
-						<dd>{l s="Enhance your store with templates & modules"}</dd>
-					</dl>
-					<dl>
-						<dt><a href="http://forge.prestashop.com?utm_source=back-office&amp;utm_medium=dashboard&amp;utm_campaign=back-office-{$lang_iso|upper}&amp;utm_content={if $host_mode}cloud{else}download{/if}" class="_blank">{l s="The Forge"}</a></dt>
-						<dd>{l s="Report issues in the Bug Tracker"}</dd>
-					</dl>
-					<dl>
-						<dt><a href="http://www.prestashop.com/en/contact-us?utm_source=back-office&amp;utm_medium=dashboard&amp;utm_campaign=back-office-{$lang_iso|upper}&amp;utm_content={if $host_mode}cloud{else}download{/if}" class="_blank">{l s="Contact Us!"}</a></dt>
+						<dt><a href="http://www.thirtybees.com/en/contact-us?utm_source=back-office&amp;utm_medium=dashboard&amp;utm_campaign=back-office-{$lang_iso|upper}&amp;utm_content={if $host_mode}cloud{else}download{/if}" class="_blank">{l s="Contact Us!"}</a></dt>
 						<dd></dd>
 					</dl>
 			</section>

@@ -25,7 +25,7 @@
 <div id="login-panel">
 	<div id="login-header">
 		<h1 class="text-center">
-			<img id="logo" src="{$img_dir}prestashop@2x.png" width="123px" height="24px" alt="PrestaShop" />
+			<img id="logo" src="{$img_dir}thirtybees@2x.png" width="155px" height="39px" alt="thirty bees" />
 		</h1>
 		<div class="text-center">{$ps_version}</div>
 		<div id="error" class="hide alert alert-danger">
@@ -49,7 +49,6 @@
 		<div class="alert alert-warning">{$warningSslMessage}</div>
 		{/if}
 	</div>
-	<div id="shop-img"><img src="{$img_dir}thirty-bees-avatar.png" alt="{$shop_name}" width="69.5px" height="118.5px" /></div>
 	<div class="flip-container">
 		<div class="flipper">
 			<div class="front panel">
@@ -135,18 +134,18 @@
 	{hook h="displayAdminLogin"}
 	<div id="login-footer">
 		<p class="text-center text-muted">
-			<a href="http://www.prestashop.com/" onclick="return !window.open(this.href);">
-				&copy; PrestaShop&#8482; 2007-{$smarty.now|date_format:"%Y"} - All rights reserved
+			<a href="http://www.thirtybees.com/" onclick="return !window.open(this.href);">
+				&copy; thirty bees&#8482; 2007-{$smarty.now|date_format:"%Y"} - All rights reserved
 			</a>
 		</p>
 		<p class="text-center">
-			<a class="link-social link-twitter _blank" href="https://twitter.com/PrestaShop" title="Twitter">
+			<a class="link-social link-twitter _blank" href="https://twitter.com/thirty bees" title="Twitter">
 				<i class="icon-twitter"></i>
 			</a>
 			<a class="link-social link-facebook _blank" href="https://www.facebook.com/prestashop" title="Facebook">
 				<i class="icon-facebook"></i>
 			</a>
-			<a class="link-social link-github _blank" href="https://www.prestashop.com/github" title="Github">
+			<a class="link-social link-github _blank" href="https://www.thirtybees.com/github" title="Github">
 				<i class="icon-github"></i>
 			</a>
 			<a class="link-social link-google _blank" href="https://plus.google.com/+prestashop/" title="Google">

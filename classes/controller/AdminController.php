@@ -2293,7 +2293,7 @@ class AdminControllerCore extends Controller
                 'class_name'                => $this->className,
                 'iso_user'                  => $this->context->language->iso_code,
                 'country_iso_code'          => $this->context->country->iso_code,
-                'version'                   => _PS_VERSION_,
+                'version'                   => _TB_VERSION_,
                 'lang_iso'                  => $this->context->language->iso_code,
                 'full_language_code'        => $this->context->language->language_code,
                 'link'                      => $this->context->link,
@@ -3688,7 +3688,7 @@ class AdminControllerCore extends Controller
 
         $this->context->smarty->assign(
             [
-                'ps_version'  => _PS_VERSION_,
+                'ps_version'  => _TB_VERSION_,
                 'timer_start' => $this->timer_start,
                 'iso_is_fr'   => strtoupper($this->context->language->iso_code) == 'FR',
                 'modals'      => $this->renderModal(),

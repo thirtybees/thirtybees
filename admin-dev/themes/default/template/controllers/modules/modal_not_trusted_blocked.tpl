@@ -25,9 +25,9 @@
 
 <div class="modal-body">
 	<div class="alert alert-warning">
-		<h3>{l s='This module could not be verified by PrestaShop.'}</h3>
+		<h3>{l s='This module could not be verified by thirty bees.'}</h3>
 
-		<p>{l s="This generally happens when the module isn't distributed through our official marketplace, PrestaShop Addons - or when your server failed to communicate with PrestaShop Addons."}</p>
+		<p>{l s="This generally happens when the module isn't distributed through our official marketplace, thirty bees Addons - or when your server failed to communicate with thirty bees Addons."}</p>
 	</div>
 
 	<div class="row">
@@ -55,10 +55,10 @@
 
 <div class="modal-footer">
 	<div class="alert alert-info">
-		<p>{l s='Since you may not have installed this module from PrestaShop Addons, we cannot assert that the module is complying with our safety requirements (e.g. that it is not adding some undisclosed functionalities such as ads, hidden links, spam, etc...).'}</p>
+		<p>{l s='Since you may not have installed this module from thirty bees Addons, we cannot assert that the module is complying with our safety requirements (e.g. that it is not adding some undisclosed functionalities such as ads, hidden links, spam, etc...).'}</p>
 
 		<p>{l s='You can search for similar modules on the official marketplace.'}</p>
 
-		<p>{l s="[1]Click here to browse our catalog on PrestaShop Addons[/1]." tags=['<a class="catalog-link" href="#">']}
+		<p>{l s="[1]Click here to browse our catalog on thirty bees Addons[/1]." tags=['<a class="catalog-link" href="#">']}
 	</div>
 </div>

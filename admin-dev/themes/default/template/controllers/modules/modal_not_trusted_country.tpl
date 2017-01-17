@@ -29,7 +29,7 @@
 	<div class="alert alert-warning">
 		<h4>{l s='You are about to install "%s", a module which is not compatible with your country.' sprintf=$module_name}</h4>
 		<p>
-			{l s='This module was not verified by PrestaShop hence we cannot certify that it works well in your country and that it complies with our quality requirements.'}
+			{l s='This module was not verified by thirty bees hence we cannot certify that it works well in your country and that it complies with our quality requirements.'}
 			<strong>{l s='Use at your own risk.'}</strong>
 		</p>
 	</div>
@@ -40,7 +40,7 @@
 	</p>
 	<p>
 		{l s='If you are unsure about this module, you can look for similar modules on the official marketplace.'}
-		<a class="_blank" href="http://addons.prestashop.com/">{l s='Click here to browse PrestaShop Addons.'}</a>
+		<a class="_blank" href="http://addons.prestashop.com/">{l s='Click here to browse thirty bees Addons.'}</a>
 	</p>
 </div>
 

@@ -44,7 +44,7 @@
 		var iso_user = '{$iso_user|@addcslashes:'\''}';
 		var full_language_code = '{$full_language_code|@addcslashes:'\''}';
 		var country_iso_code = '{$country_iso_code|@addcslashes:'\''}';
-		var _PS_VERSION_ = '{$smarty.const._PS_VERSION_|@addcslashes:'\''}';
+		var _PS_VERSION_ = '{$smarty.const._TB_VERSION_|@addcslashes:'\''}';
 		var roundMode = {$round_mode|intval};
 {if isset($shop_context)}
 	{if $shop_context == Shop::CONTEXT_ALL}
@@ -78,7 +78,7 @@
 		var admin_modules_link = '{$link->getAdminLink("AdminModules")|addslashes}';
 		var tab_modules_list = '{if isset($tab_modules_list) && $tab_modules_list}{$tab_modules_list|addslashes}{/if}';
 		var update_success_msg = '{l s='Update successful' js=1}';
-		var errorLogin = '{l s='PrestaShop was unable to log in to Addons. Please check your credentials and your Internet connection.' js=1}';
+		var errorLogin = '{l s='thirty bees was unable to log in to Addons. Please check your credentials and your Internet connection.' js=1}';
 		var search_product_msg = '{l s='Search for a product' js=1}';
 	</script>
 {/if}
@@ -298,10 +298,10 @@
 				<ul id="header_employee_box">
 					{if (!isset($logged_on_addons) || !$logged_on_addons) && (isset($display_addons_connection) && $display_addons_connection)}
 						<li class="hidden-sm hidden-xs">
-							<a href="#" class="addons_connect toolbar_btn" data-toggle="modal" data-target="#modal_addons_connect" title="{l s='Connect to PrestaShop Marketplace account'}">
+							<a href="#" class="addons_connect toolbar_btn" data-toggle="modal" data-target="#modal_addons_connect" title="{l s='Connect to thirty bees Marketplace account'}">
 								<i class="icon-chain-broken"></i>
-								<span class="string-long">{l s='Connect to PrestaShop Marketplace account'}</span>
-								<span class="string-short">{l s='PrestaShop Marketplace'}</span>
+								<span class="string-long">{l s='Connect to thirty bees Marketplace account'}</span>
+								<span class="string-short">{l s='thirty bees Marketplace'}</span>
 							</a>
 						</li>
 					{/if}
@@ -341,7 +341,7 @@
 							<li class="divider"></li>
 							<li><a href="{$link->getAdminLink('AdminEmployees')|escape:'html':'UTF-8'}&amp;id_employee={$employee->id|intval}&amp;updateemployee"><i class="icon-wrench"></i> {l s='My preferences'}</a></li>
 							{if $host_mode}
-							<li><a href="https://www.prestashop.com/cloud/" class="_blank"><i class="icon-wrench"></i> {l s='My PrestaShop account'}</a></li>
+							<li><a href="https://www.thirtybees.com/cloud/" class="_blank"><i class="icon-wrench"></i> {l s='My thirty bees account'}</a></li>
 							{/if}
 							<li class="divider"></li>
 							<li><a id="header_logout" href="{$login_link|escape:'html':'UTF-8'}&amp;logout"><i class="icon-signout"></i> {l s='Sign out'}</a></li>

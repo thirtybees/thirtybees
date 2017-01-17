@@ -240,7 +240,8 @@ $datas = [
     ['_COOKIE_KEY_', _COOKIE_KEY_],
     ['_COOKIE_IV_', _COOKIE_IV_],
     ['_PS_CREATION_DATE_', defined("_PS_CREATION_DATE_") ? _PS_CREATION_DATE_ : date('Y-m-d')],
-    ['_PS_VERSION_', _PS_INSTALL_VERSION_]
+    ['_PS_VERSION_', _PS_INSTALL_VERSION_],
+    ['_TB_VERSION_', _TB_INSTALL_VERSION_],
 ];
 
 if (version_compare(_PS_INSTALL_VERSION_, '1.6.0.11', '<')) {

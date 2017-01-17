@@ -176,7 +176,7 @@
 				page:'themes'
 			},
 			success: function(htmlData) {
-				$("#prestastore-content").html("<h3><i class='icon-picture-o'></i> {l s='Live from PrestaShop Addons!'}</h3>"+htmlData);
+				$("#prestastore-content").html("<h3><i class='icon-picture-o'></i> {l s='Live from thirty bees Addons!'}</h3>"+htmlData);
 			}
 		});
 

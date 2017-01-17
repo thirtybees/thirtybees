@@ -30,7 +30,7 @@
 			{if isset($logged_on_addons) && $logged_on_addons}
 				<p><i class="icon-user"></i>{l s='You are currently connected as %s' sprintf=$username_addons}</p>
 				<a class="btn btn-default" href="#" id="addons_logout_button">
-					<i class="icon-signout"></i> {l s='Sign out from PrestaShop Addons'}
+					<i class="icon-signout"></i> {l s='Sign out from thirty bees Addons'}
 				</a>
 			{else}
 				<a class="btn btn-default" data-toggle="modal" href="#" data-target="#modal_addons_connect">
