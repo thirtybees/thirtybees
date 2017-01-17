@@ -1,0 +1,35 @@
+$icon-text-space: 0.5em;
+
+//
+// @see /sass/vendor/_font-awesome.scss for FA compatibility styles
+//
+
+// Margin between text and icon for legacy buttons
+// Source: old stylesheets
+.link-button,
+.button-exclusive {
+  i {
+    margin-right: $icon-text-space;
+  }
+}
+
+.button {
+  .button-medium,
+  .lnk_view,
+  .button-small {
+    i {
+      &.left {
+        margin-right: $icon-text-space;
+      }
+      &.right {
+        margin-left: $icon-text-space;
+        margin-right: 0;
+      }
+    }
+  }
+
+  // Automatic margin.
+  .button-small {
+    margin-right: $icon-text-space;
+  }
+}

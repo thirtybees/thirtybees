@@ -1,0 +1,7 @@
+// From @import 'compass/reset'
+// @TODO Disable this during development, reset styles for lists separately
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}

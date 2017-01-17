@@ -1,0 +1,420 @@
+// Paper 3.2.0
+// Bootswatch
+// -----------------------------------------------------
+
+@import url("//fonts.googleapis.com/css?family=Roboto:300,400,500");
+
+// Navbar =====================================================================
+
+.navbar {
+  border: none;
+  @include box-shadow(0 1px 2px rgba(0,0,0,.3));
+}
+
+.navbar-brand {
+  font-size: 24px;
+}
+
+.navbar-inverse {
+  .form-control {
+    color: #fff;
+    @include placeholder($navbar-inverse-link-color);
+
+    &[type=text] {
+      @include box-shadow(inset 0 -1px 0 $navbar-inverse-link-color);
+
+      &:focus {
+        @include box-shadow(inset 0 -2px 0 #fff);
+      }
+    }
+  }
+}
+
+.navbar-nav > li > .dropdown-menu {
+  margin-top: 2px;
+}
+
+// Buttons ====================================================================
+
+.btn-default {
+
+  &:hover {
+    background-color: darken($btn-default-bg, 3%);
+  }
+
+  &:active {
+    background-color: darken($btn-default-bg, 6%);
+    @include box-shadow(2px 2px 2px rgba(0,0,0,.3));
+  }
+}
+
+.btn-primary {
+
+  &:hover {
+    background-color: darken($btn-primary-bg, 3%);
+  }
+
+  &:active {
+    background-color: darken($btn-primary-bg, 6%);
+    @include box-shadow(2px 2px 2px rgba(0,0,0,.3));
+  }
+}
+.btn-success {
+
+  &:hover {
+    background-color: darken($btn-success-bg, 3%);
+  }
+
+  &:active {
+    background-color: darken($btn-success-bg, 6%);
+    @include box-shadow(2px 2px 2px rgba(0,0,0,.3));
+  }
+}
+.btn-info {
+
+  &:hover {
+    background-color: darken($btn-info-bg, 3%);
+  }
+
+  &:active {
+    background-color: darken($btn-info-bg, 6%);
+    @include box-shadow(2px 2px 2px rgba(0,0,0,.3));
+  }
+}
+.btn-warning {
+
+  &:hover {
+    background-color: darken($btn-warning-bg, 3%);
+  }
+
+  &:active {
+    background-color: darken($btn-warning-bg, 6%);
+    @include box-shadow(2px 2px 2px rgba(0,0,0,.3));
+  }
+}
+.btn-danger {
+
+  &:hover {
+    background-color: darken($btn-danger-bg, 3%);
+  }
+
+  &:active {
+    background-color: darken($btn-danger-bg, 6%);
+    @include box-shadow(2px 2px 2px rgba(0,0,0,.3));
+  }
+}
+
+.btn {
+  text-transform: uppercase;
+  border-right: none;
+  border-bottom: none;
+  @include box-shadow(1px 1px 2px rgba(0,0,0,.3));
+  @include transition(all 0.2s);
+}
+
+.btn-link {
+  @include box-shadow(none);
+
+  &:hover,
+  &:focus {
+    color: $brand-primary;
+    text-decoration: none;
+  }
+}
+
+.btn-default.disabled {
+  border: 1px solid $btn-default-border;
+}
+
+// Typography =================================================================
+
+body {
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: .1px;
+  text-rendering: optimizeLegibility;
+}
+
+p {
+  margin: 0 0 1em;
+}
+
+input {
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: .1px;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  @include transition(all 0.2s);
+}
+
+// Tables =====================================================================
+
+// Forms ======================================================================
+
+input[type=text],
+input[type=password],
+input[type=email],
+textarea,
+[type=text].form-control,
+[type=password].form-control,
+textarea.form-control {
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  @include box-shadow(inset 0 -1px 0 #ddd);
+  font-size: 16px;
+
+  &:focus {
+    @include box-shadow(inset 0 -2px 0 $brand-primary);
+  }
+
+  &[disabled],
+  &[readonly] {
+    @include box-shadow(none);
+    border-bottom: 1px dotted #ddd;
+  }
+}
+
+select,
+select.form-control {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  @include box-shadow(none);
+}
+
+.has-warning {
+  input,
+  .form-control,
+  input:focus,
+  .form-control:focus {
+    @include box-shadow(inset 0 -2px 0 $brand-warning);
+  }
+}
+
+.has-error {
+  input,
+  .form-control,
+  input:focus,
+  .form-control:focus {
+    @include box-shadow(inset 0 -2px 0 $brand-danger);
+  }
+}
+
+.has-success {
+  input,
+  .form-control,
+  input:focus,
+  .form-control:focus {
+    @include box-shadow(inset 0 -2px 0 $brand-success);
+  }
+}
+
+// Navs =======================================================================
+
+.nav-tabs {
+  & > li > a {
+    border: none;
+    margin-right: 0;
+    color: $navbar-default-link-color;
+    @include box-shadow(inset 0 -1px 0 #ddd);
+    @include transition(all 0.2s);
+
+    &:hover {
+      background-color: transparent;
+      @include box-shadow(inset 0 -2px 0 $brand-primary);
+      color: $brand-primary;
+    }
+  }
+
+  & > li.active > a {
+    border: none;
+    @include box-shadow(inset 0 -2px 0 $brand-primary);
+    color: $brand-primary;
+
+    &:hover {
+      border: none;
+    }
+  }
+
+  & > li.disabled > a {
+    @include box-shadow(inset 0 -1px 0 #ddd);
+  }
+
+  .dropdown-menu {
+    margin-top: 0;
+  }
+}
+
+.dropdown-menu {
+  border: none;
+  @include box-shadow(0 1px 4px rgba(0,0,0,.3));
+}
+
+// Indicators =================================================================
+
+.alert {
+  border: none;
+  color: #fff;
+
+  a,
+  .alert-link {
+    color: #fff;
+    font-weight: bold;
+  }
+
+  .close {
+    color: #fff;
+  }
+}
+
+.alert-success {
+  background-color: $brand-success;
+}
+
+.alert-info {
+  background-color: $brand-info;
+}
+
+.alert-warning {
+  background-color: $brand-warning;
+}
+
+.alert-danger {
+  background-color: $brand-danger;
+}
+
+.badge {
+  padding: 3px 6px 5px;
+}
+
+.progress {
+  position: relative;
+  z-index: 1;
+  height: 6px;
+  border-radius: 0;
+
+  @include box-shadow(none);
+}
+
+.progress-bar {
+  @include box-shadow(none);
+
+  &:last-child {
+    border-radius: 0 3px 3px 0;
+  }
+}
+
+.progress-bar:last-child.progress-bar:before {
+  display: block;
+  content: 'div::before';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  background-color: lighten($progress-bar-bg, 35%);
+}
+
+.progress-bar-success:last-child.progress-bar:before {
+  background-color: lighten($brand-success, 35%);
+}
+
+.progress-bar-info:last-child.progress-bar:before {
+  background-color: lighten($brand-info, 45%);
+}
+
+.progress-bar-warning:last-child.progress-bar:before {
+  background-color: lighten($brand-warning, 35%);
+}
+
+.progress-bar-danger:last-child.progress-bar:before {
+  background-color: lighten($brand-danger, 25%);
+}
+
+// Progress bars ==============================================================
+
+// Containers =================================================================
+
+.close {
+  font-size: 34px;
+  font-weight: 300;
+  opacity: 0.6;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.list-group-item {
+  padding: 15px;
+}
+
+.list-group-item-text {
+  color: $gray-light;
+}
+
+.well {
+  border-radius: 0;
+  @include box-shadow(none);
+}
+
+.panel {
+  border: none;
+  border-radius: 2px;
+  @include box-shadow(0 1px 4px rgba(0,0,0,.3));
+}
+
+.panel-heading {
+  border-bottom: none;
+}
+
+.panel-footer {
+  border-top: none;
+}
+
+.panel-success {
+  .panel-heading {
+    background-color: $brand-success;
+  }
+
+  .panel-title {
+    color: #fff;
+  }
+}
+
+.panel-info {
+  .panel-heading {
+    background-color: $brand-info;
+  }
+
+  .panel-title {
+    color: #fff;
+  }
+}
+
+.panel-warning {
+  .panel-heading {
+    background-color: $brand-warning;
+  }
+
+  .panel-title {
+    color: #fff;
+  }
+}
+
+.panel-danger {
+  .panel-heading {
+    background-color: $brand-danger;
+  }
+
+  .panel-title {
+    color: #fff;
+  }
+}
+
+.popover {
+  border: none;
+  @include box-shadow(0 1px 4px rgba(0,0,0,.3));
+}

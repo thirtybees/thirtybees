@@ -1,0 +1,134 @@
+@mixin simple-legacy-button($color, $background, $border) {
+  color: $color;
+  background-color: $background;
+  border-color: $border;
+  &:hover {
+    background-color: darken($background, 8%);
+    border-color: darken($border, 12%);
+  }
+}
+
+@mixin legacy-button($vertical-padding, $horizontal-padding, $color, $background, $border) {
+  padding: 0;
+  color: $color;
+  background-color: $background;
+  border-color: $border;
+  span {
+    display: block;
+    padding: $vertical-padding $horizontal-padding;
+    border: 1px solid transparent;
+  }
+  &:hover {
+    background-color: darken($background, 8%);
+    border-color: darken($border, 12%);
+  }
+}
+
+$btn-legacy-yellow-color  : #333;
+$btn-legacy-yellow-bg     : #f4b61b;
+$btn-legacy-yellow-border : #cc9900;
+
+$btn-legacy-gray-color    : #fff;
+$btn-legacy-gray-bg       : #6f6f6f;
+$btn-legacy-gray-border   : #5f5f5f;
+
+$btn-legacy-green-color   : #fff;
+$btn-legacy-green-bg      : #43b754;
+$btn-legacy-green-border  : #399a49;
+
+$btn-legacy-orange-color  : #fff;
+$btn-legacy-orange-bg     : #fdaa02;
+$btn-legacy-orange-border : #d98305;
+
+$btn-legacy-default-color : #333;
+$btn-legacy-default-bg    : #f7f7f7;
+$btn-legacy-default-border: #b7b7b7;
+
+$btn-legacy-buy-color     : #fff;
+$btn-legacy-buy-bg        : #007ab7;
+$btn-legacy-buy-border    : #006fa8;
+
+// Buttons from PS 1.5?
+// A single class to render a button (as opposed to .button.button-small)
+// These buttons don't rely on having a span inside them
+.button_mini,
+.button_small,
+.button,
+.button_large,
+
+.button_mini_disabled,
+.button_small_disabled,
+.button_disabled,
+.button_large_disabled,
+
+.exclusive_mini,
+.exclusive_small,
+.exclusive,
+.exclusive_large,
+
+.exclusive_mini_disabled,
+.exclusive_small_disabled,
+.exclusive_disabled,
+.exclusive_large_disabled {
+  // Copied from Bootstrap buttons
+  display: inline-block;
+  margin-bottom: 0; // For input.btn
+  font-weight: $btn-font-weight;
+  text-align: center;
+  vertical-align: middle;
+  touch-action: manipulation;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  white-space: nowrap;
+
+  // PrestaShop stuff
+  position: relative;
+
+  @include button-size(5px, 7px, $font-size-base, $line-height-base, $border-radius-base);
+  @include simple-legacy-button($btn-legacy-yellow-color, $btn-legacy-yellow-bg, $btn-legacy-yellow-border);
+  @include user-select(none);
+}
+
+// Buttons from PS 1.5?
+// Renders disabled button
+.button_mini_disabled,
+.button_small_disabled,
+.button_disabled,
+.button_large_disabled,
+
+.exclusive_mini_disabled,
+.exclusive_small_disabled,
+.exclusive_disabled,
+.exclusive_large_disabled {
+  cursor: $cursor-disabled;
+  @include opacity(.65);
+  @include box-shadow(none);
+}
+
+// Buttons from PS 1.5, but used in combination with PS 1.6 buttons (Bootstrap) - .btn.btn-default
+// Opposite of the buttons above, these buttons have borders/bgs both for the button and the span inside it.
+// The span gives the actual size of the button, which makes it so fun, yay!
+.button.button-small {
+  @include button-size(0, 0, $font-size-base, $line-height-base, $border-radius-base);
+  @include legacy-button(3px, 8px, $btn-legacy-gray-color, $btn-legacy-gray-bg, $btn-legacy-gray-border);
+}
+
+.button.button-medium {
+  @include button-size(0, 0, $font-size-large, $line-height-large, $border-radius-large);
+  @include legacy-button(10px, 10px, $btn-legacy-green-color, $btn-legacy-green-bg, $btn-legacy-green-border);
+  &.exclusive {
+    @include legacy-button(10px, 10px, $btn-legacy-orange-color, $btn-legacy-orange-bg, $btn-legacy-orange-border);
+  }
+}
+
+.button.exclusive-medium,
+.button.lnk_view {
+  @include button-size(0, 0, $font-size-large, $line-height-large, $border-radius-large);
+  @include legacy-button(10px, 10px, $btn-legacy-default-color, $btn-legacy-default-bg, $btn-legacy-default-border);
+}
+
+.button.ajax_add_to_cart_button {
+  @include button-size(0, 0, $font-size-large, $line-height-large, $border-radius-large);
+  @include legacy-button(10px, 10px, $btn-legacy-buy-color, $btn-legacy-buy-bg, $btn-legacy-buy-border);
+}

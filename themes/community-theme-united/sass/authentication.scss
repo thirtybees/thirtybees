@@ -1,0 +1,11 @@
+
+@import "theme_variables";
+@import "vendor_variables";
+
+#account-creation_form {
+  .id_state,
+  .dni,
+  .postcode {
+    display: none;
+  }
+}

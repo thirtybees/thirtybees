@@ -1,0 +1,35 @@
+{
+  "name": "community-theme-16",
+  "private": true,
+  "devDependencies": {
+    "del": "^2.2.0",
+    "fs-extra": "^0.30.0",
+    "glob-all": "^3.0.1",
+    "gulp": "^3.9.0",
+    "gulp-sass": "^2.3.1",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-jscs": "^3.0.2",
+    "gulp-zip": "^3.0.2",
+    "node-bourbon": "^4.2.8",
+    "mkdirp": "^0.5.1",
+    "run-sequence": "^1.1.5",
+    "gulp-notify": "^2.2.0",
+    "gulp-if": "^2.0.1",
+    "gulp-rename": "^1.2.2"
+  },
+  "options": {
+    "themeName": "community-theme-16",
+    "themeModulePrefix" : "ct",
+    "sourcemaps": false
+  },
+  "scripts": {
+    "build": "./node_modules/.bin/gulp build",
+    "compile-css": "./node_modules/.bin/gulp compile-css",
+    "watch-sass": "./node_modules/.bin/gulp watch-sass",
+    "clean-up": "./node_modules/.bin/gulp clean-up",
+    "copy-index": "./node_modules/.bin/gulp copy-index",
+    "format-js": "./node_modules/.bin/gulp format-js",
+    "create-zip": "./node_modules/.bin/gulp create-zip",
+    "scan-translations": "./node_modules/.bin/gulp scan-translations"
+  }
+}

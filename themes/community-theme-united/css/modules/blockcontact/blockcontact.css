@@ -1,0 +1,35 @@
+#blockcontact-phone .navbar-text {
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+@media (max-width: 767px) {
+  #contact_block {
+    margin-bottom: 20px;
+  }
+}
+
+#contact_block .label {
+  display: none;
+}
+
+#contact_block .block_content {
+  color: #888888;
+}
+
+#contact_block p {
+  margin-bottom: 4px;
+}
+
+#contact_block p.tel {
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 21px;
+  margin-bottom: 6px;
+}
+
+#contact_block p.tel i {
+  font-size: 25px;
+  vertical-align: -2px;
+  padding-right: 10px;
+}

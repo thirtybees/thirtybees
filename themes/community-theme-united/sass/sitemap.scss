@@ -1,0 +1,16 @@
+
+@import "theme_variables";
+@import "vendor_variables";
+
+.sitemap_block,
+.categTree {
+  > ul {
+    padding-left: 0;
+    list-style: none;
+    margin: 0;
+  }
+  ul ul {
+    padding-left: 2em;
+    list-style: disc;
+  }
+}

@@ -1,0 +1,31 @@
+
+@import "./../../theme_variables";
+@import "./../../vendor_variables";
+
+#search_block_top {
+  margin-top: 30px;
+  @media (max-width: $screen-xs-max) {
+    margin-top: 15px;
+  }
+  @media (min-width: $screen-sm) and (max-width: $screen-sm-max) {
+    margin-top: 10px;
+  }
+  @media (min-width: $screen-md) and (max-width: $screen-md-max) {
+    margin-top: 20px;
+  }
+}
+
+// .ac_results results is appended to body,
+// use body.prestashop to override the default styles
+.blocksearch {
+  &.ac_results {
+    border: 1px solid $ps-border-color;
+    margin-top: -1px;
+    li {
+      &.ac_over {
+        color: #fff;
+        background-color: $brand-primary;
+      }
+    }
+  }
+}

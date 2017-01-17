@@ -1,0 +1,21 @@
+// This file contains style rules for elements which have been removed
+// or refactored in this theme, but may come from custom module templates
+// which have copied element markup and classes from the default theme.
+//
+// If you are developing a custom shop with this theme,
+// you may remove this file if you can take care of any
+// theme style compatibility issues with custom modules.
+
+// Variable imports
+@import "./../theme_variables";
+@import "./../vendor_variables";
+@import "./../vendor_mixins";
+
+// Compatibility styles, split into partials
+@import "compatibility/forms";
+@import "compatibility/alerts";
+@import "compatibility/buttons";
+@import "compatibility/type";
+@import "compatibility/icons";
+@import "compatibility/components";
+

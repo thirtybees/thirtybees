@@ -1,0 +1,23 @@
+#product_comparison .product-image-container {
+  position: relative;
+}
+
+#product_comparison .td_empty {
+  font-weight: bold;
+}
+
+#product_comparison .availability_label {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  #product_comparison .td-product-description {
+    white-space: normal;
+  }
+}
+
+@media (min-width: 768px) {
+  #product_comparison {
+    table-layout: fixed;
+  }
+}

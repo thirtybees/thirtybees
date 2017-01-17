@@ -1,0 +1,46 @@
+#center_column .lost_password {
+  display: block;
+  margin-bottom: 15px;
+}
+
+#center_column .title_block {
+  font-size: 1.15em;
+}
+
+#center_column .bullet {
+  margin-bottom: 10px;
+}
+
+#opc_account_saved {
+  margin-top: 15px;
+  margin-bottom: 0;
+}
+
+p.warning {
+  padding: 15px;
+  margin-bottom: 20px;
+  border: 1px solid transparent;
+  border-radius: 0;
+  background-color: #fcf8e3;
+  border-color: #faebcc;
+  color: #8a6d3b;
+}
+
+p.warning hr {
+  border-top-color: #f7e1b5;
+}
+
+p.warning .alert-link {
+  color: #66512c;
+}
+
+#opc_account,
+#message {
+  margin-bottom: 15px;
+}
+
+#new_account_form .id_state,
+#new_account_form .dni,
+#new_account_form .postcode {
+  display: none;
+}

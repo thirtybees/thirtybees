@@ -1,0 +1,37 @@
+$has-error-bg  : $state-danger-bg;
+$has-warning-bg: $state-warning-bg;
+$has-success-bg: $state-success-bg;
+
+textarea {
+  resize: vertical;
+}
+
+label {
+  &.required {
+    &:after {
+      content: '*';
+      color: $state-danger-text;
+    }
+  }
+}
+
+.form-error {
+  @extend .has-error;
+  .form-control {
+    background-color: $has-error-bg;
+  }
+}
+
+.form-ok {
+  @extend .has-success;
+  .form-control {
+    background-color: $has-success-bg;
+  }
+}
+
+.form-warning {
+  @extend .has-warning;
+  .form-control {
+    background-color: $has-warning-bg;
+  }
+}

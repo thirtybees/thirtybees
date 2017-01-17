@@ -1,0 +1,49 @@
+
+@import "theme_variables";
+@import "vendor_variables";
+@import "vendor_mixins";
+
+//
+// OPC Styles
+//
+
+// #order-opc
+#center_column {
+  .lost_password {
+    display: block;
+    margin-bottom: 15px;
+  }
+  .title_block {
+    font-size: 1.15em;
+  }
+  .bullet {
+    margin-bottom: 10px;
+  }
+}
+
+#opc_account_saved {
+  margin-top: 15px;
+  margin-bottom: 0;
+}
+
+// Copy .alert.alert-warning style
+p.warning {
+  padding: $alert-padding;
+  margin-bottom: $line-height-computed;
+  border: 1px solid transparent;
+  border-radius: $alert-border-radius;
+  @include alert-variant($alert-warning-bg, $alert-warning-border, $alert-warning-text);
+}
+
+#opc_account,
+#message {
+  margin-bottom: 15px;
+}
+
+#new_account_form {
+  .id_state,
+  .dni,
+  .postcode {
+    display: none;
+  }
+}

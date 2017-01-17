@@ -1,0 +1,7 @@
+/* line 5, ../sass/cms.scss */
+.cms-content,
+.cms-category-content,
+.cms-page-list,
+.cms-category-list {
+  margin-bottom: 15px;
+}

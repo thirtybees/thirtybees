@@ -1,0 +1,24 @@
+#my-account-menu {
+  margin-bottom: 15px;
+}
+
+.nav-pills.stacked-menu > li {
+  margin-bottom: 5px;
+}
+
+.nav-pills.stacked-menu > li + li {
+  margin-top: 5px;
+}
+
+.nav-pills.stacked-menu > li > a {
+  background-color: #eeeeee;
+}
+
+.nav-pills.stacked-menu > li > a:hover, .nav-pills.stacked-menu > li > a:focus {
+  color: #fff;
+  background-color: #337ab7;
+}
+
+.nav-pills.stacked-menu > li > a .icon {
+  width: 1.28571429em;
+}

@@ -1,0 +1,29 @@
+//BOXES
+.box {
+  border: 1px solid $ps-border-color;
+  margin: 0 0 20px ;
+  padding: 10px;
+  background-color: #f5f5f5;
+}
+
+.product-box {
+  width: 178px;
+  float: left;
+  .product-image {
+    border: 1px solid #d6d4d4;
+    background: white;
+    padding: 5px;
+    display: block;
+    img {
+      max-width: 100%;
+      width: 100%;
+      height: auto;
+    }
+  }
+}
+
+// address, checkout pages
+.address > ul,
+ul.address {
+  list-style: none;
+}

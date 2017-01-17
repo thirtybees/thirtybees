@@ -1,0 +1,7 @@
+// This theme uses .pager instead of this elements. Custom modules may add this element, especially to account pages
+.footer_links {
+  padding: 0;
+  li {
+    display: inline-block;
+  }
+}

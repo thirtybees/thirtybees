@@ -1,0 +1,44 @@
+#favoriteproducts_block_account .favoriteproduct {
+  position: relative;
+  margin-bottom: 14px;
+  padding: 12px 8px;
+  border: 1px solid #d6d4d4;
+  border-radius: 3px;
+}
+
+#favoriteproducts_block_account .favoriteproduct a.product_img_link {
+  border: 1px solid #d6d4d4;
+  display: block;
+  float: left;
+  margin-right: 14px;
+  overflow: hidden;
+  position: relative;
+}
+
+#favoriteproducts_block_account .favoriteproduct p.product_desc {
+  line-height: 16px;
+  overflow: hidden;
+  padding: 0;
+}
+
+#favoriteproducts_block_account .favoriteproduct .remove {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+#favoriteproducts_block_account .favoriteproduct .remove .icon {
+  cursor: pointer;
+}
+
+#favoriteproducts_block_extra_add,
+#favoriteproducts_block_extra_remove,
+#favoriteproducts_block_extra_added,
+#favoriteproducts_block_extra_removed {
+  cursor: pointer;
+}
+
+#favoriteproducts_block_extra_added,
+#favoriteproducts_block_extra_removed {
+  display: none;
+}

@@ -1,0 +1,11 @@
+{
+    "name": "log0ymxm/bootswatch-scss",
+    "description": "Bootswatch themes in scss format",
+    "licenses": "Apache-2.0",
+    "authors": [
+        {
+            "name": "log0ymxm",
+            "email": "paul@redbrainlabs.com"
+        }
+    ]
+}

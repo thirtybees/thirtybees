@@ -1,0 +1,24 @@
+@import './../../theme_variables';
+@import "./../../vendor_variables";
+
+.tags_block {
+
+  .block_content {
+    overflow:hidden;
+
+    a {
+      display:inline-block;
+      font-size:13px;
+      line-height:16px;
+      font-weight:bold;
+      padding:4px 9px 5px 9px;
+      border:1px solid $ps-border-color;
+      float:left;
+      margin:0 3px 3px 0;
+
+      &:hover {
+        background:#f6f6f6;
+      }
+    }
+  }
+}

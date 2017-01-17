@@ -1,0 +1,51 @@
+$bc-header-bg: $brand-primary;
+$bc-header-color: #fff;
+
+#blockcart {
+  position: relative;
+  margin-top: 30px;
+
+  @media (max-width: $screen-xs-max) {
+    margin-top: 15px;
+  }
+
+  @media (min-width: $screen-sm) and (max-width: $screen-sm-max) {
+    margin-top: 10px;
+  }
+
+  @media (min-width: $screen-md) and (max-width: $screen-md-max) {
+    margin-top: 20px;
+  }
+}
+
+.ajax_cart_total {
+  display: none !important;
+}
+
+#blockcart-header {
+
+  // Make this block the same dimensions as input-lg (search block to the left)
+  // @see /sass/vendor/bootstrap/bootstrap/_forms.scss
+  height: $input-height-large;
+  padding: 0 $padding-large-horizontal;
+  // font-size: $font-size-large;
+  line-height: $input-height-large;
+
+  background: $bc-header-bg;
+  color: $bc-header-color;
+  display: block;
+  overflow: hidden;
+
+  &:after {
+    content: "\f0d7";
+    font-family: $font-icon;
+    float: right;
+  }
+
+  &:hover {
+    &:after {
+      content: "\f0d8";
+    }
+  }
+
+}

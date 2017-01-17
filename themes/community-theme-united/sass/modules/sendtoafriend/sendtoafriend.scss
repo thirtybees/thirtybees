@@ -1,0 +1,11 @@
+
+@import "./../../theme_variables";
+@import "./../../vendor_variables";
+
+#send_friend_form {
+  width: 560px;
+  overflow: hidden;
+  @media (max-width: $screen-xs-max) { // max 767px
+    width: 280px;
+  }
+}

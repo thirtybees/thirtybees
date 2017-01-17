@@ -1,0 +1,29 @@
+#order-detail-content table .return_quantity_buttons {
+  margin-top: 3px;
+}
+
+#order-detail-content table .return_quantity_buttons a {
+  display: none;
+  float: left;
+}
+
+#order-detail-content table .return_quantity_buttons a + a {
+  margin-left: 3px;
+}
+
+#order-detail-content table .order_qte_input {
+  display: none;
+  width: 91px;
+}
+
+#order-detail-content table label {
+  font-weight: 400;
+}
+
+#sendOrderMessage {
+  margin-bottom: 30px;
+}
+
+#sendOrderMessage select.form-control {
+  width: 263px;
+}

@@ -1,0 +1,36 @@
+
+@import "./../../theme_variables";
+@import "./../../vendor_variables";
+
+#blockcontact-phone {
+  .navbar-text {
+    margin-left: 15px;
+    margin-right: 15px;
+  }
+}
+
+#contact_block {
+  @media (max-width: $screen-xs-max) { // max 767px
+    margin-bottom: 20px;
+  }
+  .label {
+    display: none
+  }
+  .block_content {
+    color: #888888;
+  }
+  p {
+    margin-bottom: 4px;
+  }
+  p.tel {
+    font-weight: 400;
+    font-size: 17px;
+    line-height: 21px;
+    margin-bottom: 6px;
+    i {
+      font-size: 25px;
+      vertical-align: -2px;
+      padding-right: 10px;
+    }
+  }
+}
