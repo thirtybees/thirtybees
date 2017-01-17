@@ -1,5 +1,5 @@
 // PrestaShop Admin Theme Colors
-$main-color: #363A41 !default
+$main-color: #e95420 !default
 $primary-color: $blueSkype !default
 $secondary-color: $greenPrestashop !default
 $bg-content-color: #EFF1F2 !default
@@ -15,6 +15,8 @@ $badge-notif-color: $greenPrestashop
 $brand-addons: $pinkPrestashop
 
 $font-family-mono: 'Droid Sans Mono', Helvetica, Arial, sans-serif
+
+$img-path: '../../img'
 
 // FontAwesome icons
 $icon-font-family: 'FontAwesome'
@@ -44,44 +46,52 @@ $brand-info: #25b9d7 !default
 $alert-success-bg:            lighten($brand-success, 30%) !default
 $alert-success-text:          $brand-success !default
 $alert-success-border:        $brand-success !default
+$alert-success-link:          $brand-primary !default
+$alert-success-icon:          lighten($brand-success, 9%) !default
 
 $alert-info-bg:               #DCF4F9 !default
 $alert-info-text:             #1e94ab !default
 $alert-info-border:           $brand-info !default
+$alert-info-link:             $brand-primary !default
+$alert-info-icon:             lighten($brand-info, 9%) !default
 
 $alert-warning-bg:            #FFF3D7 !default
 $alert-warning-text:          #D2A63C !default
 $alert-warning-border:        #D2A63C !default
+$alert-warning-link:          $brand-primary !default
+$alert-warning-icon:          lighten($brand-warning, 9%) !default
 
 $alert-danger-bg:             #FFE2E4 !default
 $alert-danger-text:           #D27C82 !default
 $alert-danger-border:         $brand-danger !default
+$alert-danger-link:           $brand-primary !default
+$alert-danger-icon:           lighten($brand-danger, 9%) !default
 
 // Sidebar
 $sidebar-menu-color: #BEBEBE !default
 $sidebar-menu-active-color: white !default
 $sidebar-menu-hover-color: white !default
-$sidebar-menu-bg-hover-color: #282b30
+$sidebar-menu-bg-hover-color: #282b30 !default
 
 // Toolbar
-$toolbar-buttons-color: #2eacce
-$toolbar-buttons-hover-color: #40c9ed
+$toolbar-buttons-color: #2eacce !default
+$toolbar-buttons-hover-color: #40c9ed !default
 
 // Scaffolding
-$body-bg: $bg-content-color
-$text-color: $gray
+$body-bg: $bg-content-color !default
+$text-color: $gray !default
 
 // Typography
 $url-font-content: "//fonts.googleapis.com/css?family=Open+Sans:300,400,700" !default
 $url-font-content-name : 'Open Sans' !default
 $url-font-headings: "//fonts.googleapis.com/css?family=Ubuntu+Condensed" !default
 $url-font-headings-name: 'Ubuntu Condensed' !default
-$font-family-sans-serif: $url-font-content-name, Helvetica, Arial, sans-serif
-$headings-font-family: $url-font-headings-name, Helvetica, Arial, sans-serif
-$font-size-base: 12px
-$line-height-base: 1.428571429
-$line-height-computed: floor($font-size-base * $line-height-base)
-$headings-font-weight: 400
+$font-family-sans-serif: $url-font-content-name, Helvetica, Arial, sans-serif !default
+$headings-font-family: $url-font-headings-name, Helvetica, Arial, sans-serif !default
+$font-size-base: 12px !default
+$line-height-base: 1.428571429 !default
+$line-height-computed: floor($font-size-base * $line-height-base) !default
+$headings-font-weight: 400 !default
 
 // Components
 $padding-base-vertical: 6px
@@ -95,12 +105,12 @@ $table-bg-accent: #f9f9f9  //for striping
 $table-bg-hover: #EDF7FB
 
 // Buttons
-$btn-default-color: $main-color
-$btn-default-bg: white
-$btn-default-border: #DEDEDE
-$btn-primary-color: $btn-default-color
-$btn-primary-bg: #2eacce
-$btn-primary-border: #2eacce
+$btn-default-color: $main-color !default
+$btn-default-bg: white !default
+$btn-default-border: #DEDEDE !default
+$btn-primary-color: $btn-default-color !default
+$btn-primary-bg: #2eacce !default
+$btn-primary-border: #2eacce !default
 
 // Forms
 $input-bg: #F5F8F9
@@ -110,6 +120,9 @@ $input-border: #C7D6DB
 // Dropdowns
 $dropdown-link-hover-color: white
 $dropdown-link-hover-bg: $brand-primary
+
+// Menu
+$menu-bg: #363A41 !default
 
 // Grid system
 $grid-gutter-width: 10px  // Navbar
@@ -148,3 +161,6 @@ $container-desktop: 940px
 
 // Large screen / wide desktop
 $container-large-desktop: 1170px  //light
+
+// Header logo
+$avatar-img: '#{$img-path}/thirty-bees-avatar-header_shopname.png' !default
