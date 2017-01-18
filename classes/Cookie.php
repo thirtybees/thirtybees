@@ -80,6 +80,7 @@ class CookieCore
         $this->_content = [];
         $this->_standalone = $standalone;
         $this->_expire = is_null($expire) ? time() + 1728000 : (int) $expire;
+
         $this->_path = trim(($this->_standalone ? '' : Context::getContext()->shop->physical_uri).$path, '/\\').'/';
         if ($this->_path{0} != '/') {
             $this->_path = '/'.$this->_path;
@@ -87,7 +88,11 @@ class CookieCore
         $this->_path = rawurlencode($this->_path);
         $this->_path = str_replace('%2F', '/', $this->_path);
         $this->_path = str_replace('%7E', '~', $this->_path);
-        $this->_path = Tools::strtolower($this->_path);
+        // Take Windows case insensitivity of file paths into account
+        if (DIRECTORY_SEPARATOR === '\\') {
+            $this->_path = Tools::strtolower($this->_path);
+        }
+
         $this->_domain = $this->getDomain($sharedUrls);
         $this->_name = 'PrestaShop-'.md5(($this->_standalone ? '' : _PS_VERSION_).$name.$this->_domain);
         $this->_allow_writing = true;
