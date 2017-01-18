@@ -29,10 +29,6 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-if (!defined('_TB_VERSION_')) {
-    exit;
-}
-
 /**
  * Class EmployeeCore
  *
