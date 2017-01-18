@@ -306,5 +306,8 @@
     <tab id="Configuration" id_parent="Stock" active="1" hide_host_mode="0">
       <class_name>AdminStockConfiguration</class_name>
     </tab>
+    <tab id="Custom_Code" id_parent="Preferences" active="1" hide_host_mode="0">
+      <class_name>AdminCustomCode</class_name>
+    </tab>
   </entities>
 </entity_tab>
