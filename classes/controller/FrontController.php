@@ -603,9 +603,16 @@ class FrontControllerCore extends Controller
         if (!$this->useMobileTheme()) {
             // These hooks aren't used for the mobile theme.
             // Needed hooks are called in the tpl files.
+            
+            // To be removed: append extra css and metas to the header hook
+            $hook_header = Hook::exec('displayHeader');
+            $extra_code = Configuration::getMultiple(['PS_CUSTOMCODE_METAS', 'PS_CUSTOMCODE_CSS']);
+            $extra_css = $extra_code['PS_CUSTOMCODE_CSS'] ? '<style>'.$extra_code['PS_CUSTOMCODE_CSS'].'</style>' : '';
+            $hook_header .= $extra_code['PS_CUSTOMCODE_METAS'] . $extra_css;
+
             $this->context->smarty->assign(
                 [
-                'HOOK_HEADER'       => Hook::exec('displayHeader'),
+                'HOOK_HEADER'       => $hook_header,
                 'HOOK_TOP'          => Hook::exec('displayTop'),
                 'HOOK_LEFT_COLUMN'  => ($this->display_column_left  ? Hook::exec('displayLeftColumn') : ''),
                 'HOOK_RIGHT_COLUMN' => ($this->display_column_right ? Hook::exec('displayRightColumn', ['cart' => $this->context->cart]) : ''),
@@ -1105,8 +1112,17 @@ class FrontControllerCore extends Controller
      */
     public function initFooter()
     {
+
+        $hook_footer = Hook::exec('displayFooter');
+        $extra_js = Configuration::get('PS_CUSTOMCODE_JS');
+        $extra_js_conf = '';
+        if(isset($this->php_self) && $this->php_self == 'order-confirmation')
+            $extra_js_conf = Configuration::get('PS_CUSTOMCODE_ORDERCONF_JS');
+
+        $hook_footer .= '<script>' . $extra_js . $extra_js_conf . '</script>';
+
         $this->context->smarty->assign([
-            'HOOK_FOOTER'            => Hook::exec('displayFooter'),
+            'HOOK_FOOTER'            => $hook_footer,
             'conditions'             => Configuration::get('PS_CONDITIONS'),
             'id_cgv'                 => Configuration::get('PS_CONDITIONS_CMS_ID'),
             'PS_SHOP_NAME'           => Configuration::get('PS_SHOP_NAME'),
