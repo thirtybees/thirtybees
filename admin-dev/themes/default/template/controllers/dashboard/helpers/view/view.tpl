@@ -89,11 +89,6 @@
 		</div>
 		<div class="col-md-8 col-lg-7" id="hookDashboardZoneTwo">
 			{$hookDashboardZoneTwo}
-			<div id="dashaddons" class="row-margin-bottom">
-				<a href="http://addons.prestashop.com/en/209-dashboards?utm_source=back-office&amp;utm_medium=dashboard&amp;utm_campaign=back-office-{$lang_iso|upper}&amp;utm_content={if $host_mode}cloud{else}download{/if}" class="_blank">
-					<i class="icon-plus"></i> {l s='Add more dashboard modules'}
-				</a>
-			</div>
 		</div>
 		<div class="col-md-12 col-lg-2">
 			<section class="dash_news panel">

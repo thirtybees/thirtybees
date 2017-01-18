@@ -13,6 +13,7 @@
   min-height: $navbar-height; // Ensure a navbar always shows (e.g., without a .navbar-brand in collapsed mode)
   margin-bottom: $navbar-margin-bottom;
   border: 1px solid transparent;
+  font-weight: $navbar-font-weight;
 
   // Prevent floats from breaking the navbar
   @include clearfix();
@@ -55,6 +56,7 @@
   box-shadow: inset 0 1px 0 rgba(255,255,255,.1);
   @include clearfix();
   -webkit-overflow-scrolling: touch;
+  font-weight: $navbar-font-weight;
 
   &.in {
     overflow-y: auto;
