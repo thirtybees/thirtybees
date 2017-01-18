@@ -32,7 +32,7 @@ $spinnerSize: 32px
 	@include prefix( transform-origin, $value )
 
 @mixin buttonColor( $name, $color )
-	&[data-color=#{$name}]
+	&[data-color="#{$name}"]
 		background: $color
 		&:hover
 			background-color: lighten( $color, 5% )
