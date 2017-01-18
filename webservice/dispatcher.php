@@ -62,34 +62,34 @@ if (isset($_SERVER['PHP_AUTH_USER'])) {
 }
 
 
-$input_xml = null;
+$inputXml = null;
 
 // if a XML is in PUT or in POST
 if (($_SERVER['REQUEST_METHOD'] == 'PUT') || ($_SERVER['REQUEST_METHOD'] == 'POST')) {
     $putresource = fopen("php://input", "r");
     while ($putData = fread($putresource, 1024)) {
-        $input_xml .= $putData;
+        $inputXml .= $putData;
     }
     fclose($putresource);
 }
-if (isset($input_xml) && strncmp($input_xml, 'xml=', 4) == 0) {
-    $input_xml = substr($input_xml, 4);
+if (isset($inputXml) && strncmp($inputXml, 'xml=', 4) == 0) {
+    $inputXml = substr($inputXml, 4);
 }
 
 $params = $_GET;
 unset($params['url']);
 
-$class_name = WebserviceKey::getClassFromKey($key);
-$bad_class_name = false;
-if (!class_exists($class_name)) {
-    $bad_class_name = $class_name;
-    $class_name = 'WebserviceRequest';
+$className = WebserviceKey::getClassFromKey($key);
+$badClassName = false;
+if (!class_exists($className)) {
+    $badClassName = $className;
+    $className = 'WebserviceRequest';
 }
 // fetch the request
-WebserviceRequest::$ws_current_classname = $class_name;
-$request = call_user_func([$class_name, 'getInstance']);
+WebserviceRequest::$ws_current_classname = $className;
+$request = call_user_func([$className, 'getInstance']);
 
-$result = $request->fetch($key, $method, $_GET['url'], $params, $bad_class_name, $input_xml);
+$result = $request->fetch($key, $method, $_GET['url'], $params, $badClassName, $inputXml);
 
 // display result
 if (ob_get_length() != 0) {
@@ -102,8 +102,8 @@ if (isset($_SERVER['HTTP_LOCAL_CONTENT_SHA1']) && $_SERVER['HTTP_LOCAL_CONTENT_S
 }
 
 if (is_array($result['headers'])) {
-    foreach ($result['headers'] as $param_value) {
-        header($param_value);
+    foreach ($result['headers'] as $paramValue) {
+        header($paramValue);
     }
 }
 if (isset($result['type'])) {

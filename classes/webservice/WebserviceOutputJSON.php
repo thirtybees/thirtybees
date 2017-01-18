@@ -34,7 +34,7 @@
  *
  * @since 1.0.0
  */
-class WebserviceOutputJSON implements WebserviceOutputInterface
+class WebserviceOutputJSONCore implements WebserviceOutputInterface
 {
     // @codingStandardsIgnoreStart
     public $docUrl = '';
@@ -269,9 +269,20 @@ class WebserviceOutputJSON implements WebserviceOutputInterface
      */
     public function overrideContent($content)
     {
+        $options = 0;
+        if (Tools::getValue('pretty') === 'true') {
+            $options += JSON_PRETTY_PRINT;
+        }
+
         $content = '';
-        $content .= json_encode($this->content);
-        $content = preg_replace("/\\\\u([a-f0-9]{4})/e", "iconv('UCS-4LE','UTF-8',pack('V', hexdec('U$1')))", $content);
+        $content .= json_encode($this->content, $options);
+        $content = preg_replace_callback(
+            "/\\\\u([a-f0-9]{4})/",
+            function () {
+                return iconv('UCS-4LE', 'UTF-8', pack('V', hexdec('U$1')));
+            },
+            $content
+        );
 
         return $content;
     }
