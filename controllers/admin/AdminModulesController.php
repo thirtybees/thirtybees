@@ -835,7 +835,7 @@ class AdminModulesControllerCore extends AdminController
                     }
                 }
             }
-            if (isset($module_errors) && ount($module_errors)) {
+            if (isset($module_errors) && count($module_errors)) {
                 // If error during module installation, no redirection
                 $html_error = $this->generateHtmlMessage($module_errors);
                 if ($key == 'uninstall') {
