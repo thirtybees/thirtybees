@@ -317,33 +317,41 @@ class ConfigurationTestCore
     }
 
     /**
-     * @param      $relativeDir
-     * @param bool $recursive
-     * @param null $fullReport
+     * @param string $dir         Directory path, absolute or relative
+     * @param bool   $recursive
+     * @param null   $fullReport
+     * @param bool   $absolute    Is absolute path to directory
      *
      * @return bool
      *
-     * @since   1.0.0
+     * @since   1.0.0 Added $absolute parameter
      * @version 1.0.0 Initial version
      */
-    public static function test_dir($relativeDir, $recursive = false, &$fullReport = null)
+    public static function test_dir($dir, $recursive = false, &$fullReport = null, $absolute = false)
     {
-        $dir = rtrim(_PS_ROOT_DIR_, '\\/').DIRECTORY_SEPARATOR.trim($relativeDir, '\\/');
-        if (!file_exists($dir)) {
-            $fullReport = sprintf('Directory %s does not exist or is not writable', $dir);
+        if ($absolute) {
+            $absoluteDir = $dir;
+        } else {
+            $absoluteDir = rtrim(_PS_ROOT_DIR_, '\\/').DIRECTORY_SEPARATOR.trim($dir, '\\/');
+        }
+
+        if (!file_exists($absoluteDir)) {
+            $fullReport = sprintf('Directory %s does not exist or is not writable', $absoluteDir);
 
             return false;
         }
 
-        if (!is_writable($dir)) {
-            $fullReport = sprintf('Directory %s is not writable', $dir);
+        if (!is_writable($absoluteDir)) {
+            $fullReport = sprintf('Directory %s is not writable', $absoluteDir);
 
             return false;
         }
 
         if ($recursive) {
-            foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir)) as $file) {
+            foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($absoluteDir)) as $file) {
                 if (!is_writable($file)) {
+                    $fullReport = sprintf('File %s is not writable', $file);
+
                     return false;
                 }
             }

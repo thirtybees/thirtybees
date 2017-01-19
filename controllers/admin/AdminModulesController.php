@@ -635,11 +635,15 @@ class AdminModulesControllerCore extends AdminController
                         $module->uninstall();
                     }
                     $moduleDir = _PS_MODULE_DIR_.str_replace(['.', '/', '\\'], ['', '', ''], Tools::getValue('module_name'));
-                    $this->recursiveDeleteOnDisk($moduleDir);
-                    if (!file_exists($moduleDir)) {
-                        Tools::redirectAdmin(self::$currentIndex.'&conf=22&token='.$this->token.'&tab_module='.Tools::getValue('tab_module').'&module_name='.Tools::getValue('module_name'));
+                    if (!ConfigurationTest::test_dir($moduleDir, true, $report, true)) {
+                        $this->errors[] = Tools::displayError('Sorry, the module cannot be deleted:').' '.$report;
                     } else {
-                        $this->errors[] = Tools::displayError('Sorry, the module cannot be deleted. Please check if you have the right permissions on this folder.');
+                        $this->recursiveDeleteOnDisk($moduleDir);
+                        if (!file_exists($moduleDir)) {
+                            Tools::redirectAdmin(self::$currentIndex.'&conf=22&token='.$this->token.'&tab_module='.Tools::getValue('tab_module').'&module_name='.Tools::getValue('module_name'));
+                        } else {
+                            $this->errors[] = Tools::displayError('Sorry, the module cannot be deleted. Please check if you have the right permissions on this folder.');
+                        }
                     }
                 }
             }
@@ -713,10 +717,10 @@ class AdminModulesControllerCore extends AdminController
                             $_POST['tab'] = Tools::safeOutput(Tools::getValue('controller'));
                         }
                         $echo = '';
-                        if ($key != 'update' && $key != 'updateAll' && $key != 'checkAndUpdate') {
+                        if ($key != 'update' && $key != 'updateAll' && $key != 'checkAndUpdate' && $key != 'delete') {
                             // We check if method of module exists
                             if (!method_exists($module, $method)) {
-                                throw new PrestaShopException('Method of module cannot be found');
+                                throw new PrestaShopException(sprintf('Method %s of module cannot be found', $method));
                             }
                             if ($key == 'uninstall' && !Module::getPermissionStatic($module->id, 'uninstall')) {
                                 $this->errors[] = Tools::displayError('You do not have permission to uninstall this module.');
