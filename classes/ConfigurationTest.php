@@ -88,7 +88,8 @@ class ConfigurationTestCore
 
         if (!defined('_PS_HOST_MODE_')) {
             $tests = array_merge(
-                $tests, [
+                $tests,
+                [
                     'system'        => [
                         'fopen', 'fclose', 'fread', 'fwrite',
                         'rename', 'file_exists', 'unlink', 'rmdir', 'mkdir',
@@ -328,33 +329,28 @@ class ConfigurationTestCore
     public static function test_dir($relativeDir, $recursive = false, &$fullReport = null)
     {
         $dir = rtrim(_PS_ROOT_DIR_, '\\/').DIRECTORY_SEPARATOR.trim($relativeDir, '\\/');
+        // Check if folder exists and claim the folder for the time being
         if (!file_exists($dir) || !$dh = @opendir($dir)) {
-            $fullReport = sprintf('Directory %s does not exist or is not writable', $dir); // sprintf for future translation
+            $fullReport = sprintf('Directory %s does not exist or is not writable', $dir);
+
             return false;
         }
-        $dummy = rtrim($dir, '\\/').DIRECTORY_SEPARATOR.uniqid();
-        if (@file_put_contents($dummy, 'test')) {
-            @unlink($dummy);
-            if (!$recursive) {
-                closedir($dh);
 
-                return true;
-            }
-        } elseif (!is_writable($dir)) {
-            $fullReport = sprintf('Directory %s is not writable', $dir); // sprintf for future translation
+        if (!is_writable($dir)) {
+            $fullReport = sprintf('Directory %s is not writable', $dir);
+
             return false;
         }
 
         if ($recursive) {
-            while (($file = readdir($dh)) !== false) {
-                if (is_dir($dir.DIRECTORY_SEPARATOR.$file) && $file != '.' && $file != '..' && $file != '.svn') {
-                    if (!ConfigurationTest::test_dir($relativeDir.DIRECTORY_SEPARATOR.$file, $recursive, $fullReport)) {
-                        return false;
-                    }
+            foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir)) as $file) {
+                if (!is_writable($file)) {
+                    return false;
                 }
             }
         }
 
+        // Release the folder
         closedir($dh);
 
         return true;
