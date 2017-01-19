@@ -389,9 +389,9 @@ class SpecificPriceCore extends ObjectModel
 
         $priority = SpecificPrice::getPriority($idProduct);
         foreach (array_reverse($priority) as $k => $field) {
-            $field = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $field))));
-            if (!empty($field)) {
-                $select .= ' IF (`'.bqSQL($field).'` = '.(int) $$field.', '.pow(2, $k + 1).', 0) + ';
+            $snakeCaseField = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $field))));
+            if (!empty($field) && isset($$field)) {
+                $select .= ' IF (`'.bqSQL($snakeCaseField).'` = '.(int) $$field.', '.pow(2, $k + 1).', 0) + ';
             }
         }
 
