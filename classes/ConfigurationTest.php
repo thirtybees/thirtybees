@@ -329,8 +329,7 @@ class ConfigurationTestCore
     public static function test_dir($relativeDir, $recursive = false, &$fullReport = null)
     {
         $dir = rtrim(_PS_ROOT_DIR_, '\\/').DIRECTORY_SEPARATOR.trim($relativeDir, '\\/');
-        // Check if folder exists and claim the folder for the time being
-        if (!file_exists($dir) || !$dh = @opendir($dir)) {
+        if (!file_exists($dir)) {
             $fullReport = sprintf('Directory %s does not exist or is not writable', $dir);
 
             return false;
@@ -349,9 +348,6 @@ class ConfigurationTestCore
                 }
             }
         }
-
-        // Release the folder
-        closedir($dh);
 
         return true;
     }
