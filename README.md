@@ -15,6 +15,11 @@ To launch version 1.0.0 of Thirty Bees around February 1st 2017. In this version
 * Ability to add CSS from the back office
 * Ability to add JavaScript snippets from the back office
 * Enhanced Favicon / device icon support
+* Full page caching in the core, with the following caching mechanisms:
+  * redis
+  * memcached(d)
+  * APCu
+  * file system
 
 **Core Modules:**
 
