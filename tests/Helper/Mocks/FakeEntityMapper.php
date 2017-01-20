@@ -71,16 +71,16 @@ class FakeEntityMapper extends Adapter_EntityMapper
     /**
      * Fills the given entity with fields from the entity stored in the fake database if it exists.
      *
-     * @param int         $id
-     * @param int         $idLang
-     * @param ObjectModel $entity
-     * @param array       $entityDefs
-     * @param int         $idShop
-     * @param bool        $shouldCacheObjects
+     * @param int    $id
+     * @param int    $idLang
+     * @param object $entity
+     * @param array  $entityDefs
+     * @param int    $idShop
+     * @param bool   $shouldCacheObjects
      *
      * @throws Exception
      */
-    public function load($id, $idLang, ObjectModel $entity, $entityDefs, $idShop, $shouldCacheObjects)
+    public function load($id, $idLang, $entity, $entityDefs, $idShop, $shouldCacheObjects)
     {
         if ($this->entity_being_built !== null) {
             throw new Exception('Unifinished entity build : an entity build was started with FakeEntityMapper::willReturn, please call FakeEntityMapper::forId to finish building your entity.');

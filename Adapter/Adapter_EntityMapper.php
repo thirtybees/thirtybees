@@ -42,19 +42,19 @@ class Adapter_EntityMapper
     /**
      * Load ObjectModel
      *
-     * @param int         $id
-     * @param int         $idLang
-     * @param ObjectModel $entity
-     * @param mixed       $entityDefs
-     * @param int         $idShop
-     * @param bool        $shouldCacheObjects
+     * @param int    $id
+     * @param int    $idLang
+     * @param object $entity
+     * @param mixed  $entityDefs
+     * @param int    $idShop
+     * @param bool   $shouldCacheObjects
      *
      * @throws PrestaShopDatabaseException
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
-    public function load($id, $idLang, ObjectModel $entity, $entityDefs, $idShop, $shouldCacheObjects)
+    public function load($id, $idLang, $entity, $entityDefs, $idShop, $shouldCacheObjects)
     {
         // Load object from database if object id is present
         $cacheId = 'objectmodel_'.$entityDefs['classname'].'_'.(int) $id.'_'.(int) $idShop.'_'.(int) $idLang;

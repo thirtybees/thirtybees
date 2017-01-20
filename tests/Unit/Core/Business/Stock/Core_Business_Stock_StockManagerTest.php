@@ -2,6 +2,9 @@
 /**
  * 2007-2016 PrestaShop
  *
+ * Thirty Bees is an extension to the PrestaShop e-commerce software developed by PrestaShop SA
+ * Copyright (C) 2017 Thirty Bees
+ *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
@@ -10,18 +13,20 @@
  * http://opensource.org/licenses/osl-3.0.php
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
+ * to license@thirtybees.com so we can send you a copy immediately.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
+ * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author 	PrestaShop SA <contact@prestashop.com>
- *  @copyright  2007-2016 PrestaShop SA
- *  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
- *  International Registered Trademark & Property of PrestaShop SA
+ *  @author    Thirty Bees <contact@thirtybees.com>
+ *  @author    PrestaShop SA <contact@prestashop.com>
+ *  @copyright 2017 Thirty Bees
+ *  @copyright 2007-2016 PrestaShop SA
+ *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Tests\Unit\Core\Business\Stock;
@@ -30,13 +35,23 @@ use Exception;
 use PrestaShop\PrestaShop\Tests\TestCase\UnitTestCase;
 use Core_Business_Stock_StockManager;
 
+/**
+ * Class FakeStockAvailable4759
+ *
+ * @package PrestaShop\PrestaShop\Tests\Unit\Core\Business\Stock
+ */
 class FakeStockAvailable4759
 {
     public $quantity = 0;
+
     public function __construct($quantity)
     {
         $this->quantity = $quantity;
     }
+
+    /**
+     *
+     */
     public function update()
     {
     }
@@ -47,11 +62,11 @@ class FakeProduct4759
     public $id;
     public $pack_stock_type;
     public $stock_available;
-    public function __construct($stock_available, $pack_stock_type = false)
+    public function __construct($stockAvailable, $packStockType = false)
     {
         $this->id = ++FakeProduct4759::$LAST_ID;
-        $this->pack_stock_type = $pack_stock_type ? $pack_stock_type : 0;
-        $this->stock_available = new FakeStockAvailable4759($stock_available);
+        $this->pack_stock_type = $packStockType ? $packStockType : 0;
+        $this->stock_available = new FakeStockAvailable4759($stockAvailable);
     }
 }
 class FakePackItemsManager4759
@@ -59,12 +74,12 @@ class FakePackItemsManager4759
     private $packs = [];
     private $items = [];
     private $stockAvailables = [];
-    public function addProduct(FakeProduct4759 $pack, FakeProduct4759 $product, $product_attribute_id, $quantity)
+    public function addProduct(FakeProduct4759 $pack, FakeProduct4759 $product, $productAttributeId, $quantity)
     {
         $entry = [
             'productObj' => $product,
             'id' => $product->id,
-            'id_pack_product_attribute' => $product_attribute_id,
+            'id_pack_product_attribute' => $productAttributeId,
             'pack_quantity' => $quantity
         ];
         $this->packs[$pack->id][] = (object) $entry;
@@ -75,9 +90,9 @@ class FakePackItemsManager4759
             'pack_stock_type' => $pack->pack_stock_type
 
         ];
-        $this->items[$product->id][$product_attribute_id][$pack->id] = (object) $entry;
+        $this->items[$product->id][$productAttributeId][$pack->id] = (object) $entry;
         $this->stockAvailables[$pack->id][0] = $pack->stock_available;
-        $this->stockAvailables[$product->id][$product_attribute_id] = $product->stock_available;
+        $this->stockAvailables[$product->id][$productAttributeId] = $product->stock_available;
     }
     public function getPackItems($pack, $id_lang = false)
     {

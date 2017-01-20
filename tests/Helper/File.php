@@ -21,23 +21,28 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 namespace PrestaShop\PrestaShop\Tests\Helper;
 
+/**
+ * Class File
+ *
+ * @package PrestaShop\PrestaShop\Tests\Helper
+ */
 class File
 {
     /**
      * Recursivly copy a directory
      *
-     * @var $src the source path (eg. /home/dir/to/copy)
-     * @var $dst the destination path (eg. /home/)
+     * @var string $src the source path (eg. /home/dir/to/copy)
+     * @var string $dst the destination path (eg. /home/)
      */
     public static function recurseCopy($src, $dst)
     {
@@ -60,7 +65,7 @@ class File
     /**
      * Recursivly delete a directory
      *
-     * @var $dir the directory to delete path (eg. /home/dir/to/delete)
+     * @var string $dir the directory to delete path (eg. /home/dir/to/delete)
      */
     public static function recurseDelete($dir)
     {

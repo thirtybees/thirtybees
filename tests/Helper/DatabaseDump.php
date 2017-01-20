@@ -1,34 +1,43 @@
 <?php
-
-/*
-* 2007-2016 PrestaShop
-*
-* NOTICE OF LICENSE
-*
-* This source file is subject to the Academic Free License (AFL 3.0)
-* that is bundled with this package in the file LICENSE.txt.
-* It is also available through the world-wide-web at this URL:
-* http://opensource.org/licenses/afl-3.0.php
-* If you did not receive a copy of the license and are unable to
-* obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
-*
-* DISCLAIMER
-*
-* Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-* versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
-*
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2016 PrestaShop SA
-*  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
-*/
+/**
+ * 2007-2016 PrestaShop
+ *
+ * Thirty Bees is an extension to the PrestaShop e-commerce software developed by PrestaShop SA
+ * Copyright (C) 2017 Thirty Bees
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@thirtybees.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to https://www.thirtybees.com for more information.
+ *
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
+ */
 
 namespace PrestaShop\PrestaShop\Tests\Helper;
 
 use Exception;
 
+/**
+ * Class DatabaseDump
+ *
+ * @package PrestaShop\PrestaShop\Tests\Helper
+ */
 class DatabaseDump
 {
     private $host;
@@ -44,19 +53,42 @@ class DatabaseDump
      */
     private function __construct()
     {
-        $host_and_maybe_port = explode(':', _DB_SERVER_);
+        $hostAndMaybePort = explode(':', _DB_SERVER_);
 
-        if (count($host_and_maybe_port) === 1) {
-            $this->host = $host_and_maybe_port[0];
+        if (count($hostAndMaybePort) === 1) {
+            $this->host = $hostAndMaybePort[0];
             $this->port = 3306;
-        } elseif (count($host_and_maybe_port) === 2) {
-            $this->host = $host_and_maybe_port[0];
-            $this->port = $host_and_maybe_port[1];
+        } elseif (count($hostAndMaybePort) === 2) {
+            $this->host = $hostAndMaybePort[0];
+            $this->port = $hostAndMaybePort[1];
         }
 
         $this->databaseName = _DB_NAME_;
         $this->user = _DB_USER_;
         $this->password = _DB_PASSWD_;
+    }
+
+    /**
+     * Make a database dump and return an object on which you can call `restore` to restore the dump.
+     */
+    public static function create()
+    {
+        $dump = new DatabaseDump();
+
+        $dump->dump();
+
+        return $dump;
+    }
+
+    /**
+     * The actual dump function.
+     */
+    private function dump()
+    {
+        $dumpCommand = $this->buildMySQLCommand('mysqldump', [$this->databaseName]);
+        $this->dumpFile = tempnam(sys_get_temp_dir(), 'ps_dump');
+        $dumpCommand .= ' > '.escapeshellarg($this->dumpFile);
+        $this->exec($dumpCommand);
     }
 
     /**
@@ -68,6 +100,16 @@ class DatabaseDump
             unlink($this->dumpFile);
             $this->dumpFile = null;
         }
+    }
+
+    /**
+     * Restore the dump to the actual database.
+     */
+    public function restore()
+    {
+        $restoreCommand = $this->buildMySQLCommand('mysql', [$this->databaseName]);
+        $restoreCommand .= ' < '.escapeshellarg($this->dumpFile);
+        $this->exec($restoreCommand);
     }
 
     /**
@@ -105,38 +147,5 @@ class DatabaseDump
         }
 
         return $output;
-    }
-
-    /**
-     * The actual dump function.
-     */
-    private function dump()
-    {
-        $dumpCommand = $this->buildMySQLCommand('mysqldump', [$this->databaseName]);
-        $this->dumpFile = tempnam(sys_get_temp_dir(), 'ps_dump');
-        $dumpCommand .= ' > ' . escapeshellarg($this->dumpFile);
-        $this->exec($dumpCommand);
-    }
-
-    /**
-     * Restore the dump to the actual database.
-     */
-    public function restore()
-    {
-        $restoreCommand = $this->buildMySQLCommand('mysql', [$this->databaseName]);
-        $restoreCommand .= ' < ' . escapeshellarg($this->dumpFile);
-        $this->exec($restoreCommand);
-    }
-
-    /**
-     * Make a database dump and return an object on which you can call `restore` to restore the dump.
-     */
-    public static function create()
-    {
-        $dump = new DatabaseDump();
-
-        $dump->dump();
-
-        return $dump;
     }
 }
