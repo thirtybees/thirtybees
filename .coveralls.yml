@@ -1,3 +1,0 @@
-coverage_clover: /var/www/tb.unit.test/tests/logs/clover.xml
-json_path: /var/www/tb.unit.test/tests/logs/coveralls-upload.json
-service_name: travis-ci
