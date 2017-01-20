@@ -10,7 +10,9 @@
     ],
     "require": {
         "phpunit/phpunit": "~5.7",
-        "phake/phake": "@stable"
+        "phake/phake": "@stable",
+        "satooshi/php-coveralls": "dev-master",
+        "phpunit/phpcov": "2.*"
     },
     "autoload": {
         "psr-4": {
