@@ -1,12 +1,16 @@
 <?php
 
-
 namespace PrestaShop\PrestaShop\Tests\Helper\Mocks;
 
 use Adapter_EntityMapper;
 use Exception;
 use ObjectModel;
 
+/**
+ * Class FakeEntityMapper
+ *
+ * @package PrestaShop\PrestaShop\Tests\Helper\Mocks
+ */
 class FakeEntityMapper extends Adapter_EntityMapper
 {
     private $fake_db = [];
@@ -15,7 +19,9 @@ class FakeEntityMapper extends Adapter_EntityMapper
 
     /**
      * Stores the given entity in the fake database, so load call with the same id will fill the entity with it.
+     *
      * @param ObjectModel $entity
+     *
      * @return $this
      * @throws Exception
      */
@@ -31,50 +37,61 @@ class FakeEntityMapper extends Adapter_EntityMapper
     }
 
     /**
-     * @param $id
-     * @param null $id_lang
-     * @param null $id_shop
+     * @param int      $id
+     * @param int|null $idLang
+     * @param int|null $idShop
+     *
      * @throws Exception
      */
-    public function forId($id, $id_lang = null, $id_shop = null)
+    public function forId($id, $idLang = null, $idShop = null)
     {
         if ($this->entity_being_built === null) {
             throw new Exception('Invalid usage of FakeEntityMapper::forId : you need to call willReturn first.');
         }
 
-        $cache_id = $this->buildCacheId($id, get_class($this->entity_being_built), $id_lang, $id_shop);
-        $this->fake_db[$cache_id] = $this->entity_being_built;
+        $cacheId = $this->buildCacheId($id, get_class($this->entity_being_built), $idLang, $idShop);
+        $this->fake_db[$cacheId] = $this->entity_being_built;
 
         $this->entity_being_built = null;
     }
 
     /**
+     * @param int    $id
+     * @param string $className
+     * @param int    $idLang
+     * @param int    $idShop
+     *
+     * @return string
+     */
+    private function buildCacheId($id, $className, $idLang, $idShop)
+    {
+        return 'objectmodel_'.$className.'_'.(int) $id.'_'.(int) $idShop.'_'.(int) $idLang;
+    }
+
+    /**
      * Fills the given entity with fields from the entity stored in the fake database if it exists.
      *
-*@param $id
-     * @param $idLang
-     * @param $entity
-     * @param $entityDefs
-     * @param $idShop
+     * @param int         $id
+     * @param int         $idLang
+     * @param ObjectModel $entity
+     * @param array       $entityDefs
+     * @param int         $idShop
+     * @param bool        $shouldCacheObjects
+     *
+     * @throws Exception
      */
-    public function load($id, $idLang, $entity, $entityDefs, $idShop, $shouldCacheObjects)
+    public function load($id, $idLang, ObjectModel $entity, $entityDefs, $idShop, $shouldCacheObjects)
     {
         if ($this->entity_being_built !== null) {
             throw new Exception('Unifinished entity build : an entity build was started with FakeEntityMapper::willReturn, please call FakeEntityMapper::forId to finish building your entity.');
         }
 
-        $cache_id = $this->buildCacheId($id, $entityDefs['classname'], $idLang, $idShop);
+        $cacheId = $this->buildCacheId($id, $entityDefs['classname'], $idLang, $idShop);
 
-        if (isset($this->fake_db[$cache_id])) {
-            foreach ($this->fake_db[$cache_id] as $key => $value) {
+        if (isset($this->fake_db[$cacheId])) {
+            foreach ($this->fake_db[$cacheId] as $key => $value) {
                 $entity->$key = $value;
             }
         }
-    }
-
-
-    private function buildCacheId($id, $class_name, $id_lang, $id_shop)
-    {
-        return 'objectmodel_' . $class_name . '_' . (int)$id . '_' . (int)$id_shop . '_' . (int)$id_lang;
     }
 }
