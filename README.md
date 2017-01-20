@@ -1,4 +1,7 @@
 # thirty bees 
+[![Build Status](https://travis-ci.org/thirtybees/ThirtyBees.svg?branch=master)](https://travis-ci.org/thirtybees/ThirtyBees)
+[![Coverage Status](https://coveralls.io/repos/github/thirtybees/ThirtyBees/badge.svg)](https://coveralls.io/github/thirtybees/ThirtyBees)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/thirtybees/ThirtyBees/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/thirtybees/ThirtyBees/?branch=master)
 thirty bees is an opensource fork of PrestaShop. Our aim with this fork is to provide a feature set that merchants. We are rewriting a lot of the core modules and cleaning up the legacy code. We aim to provide a stable, feature rich ecommerce platform to grow businesses.
 
 ![thirty bees screenshot](https://cloud.githubusercontent.com/assets/6775736/22063185/c5ef8e3c-dd7d-11e6-923c-4b62ac404c86.png)
