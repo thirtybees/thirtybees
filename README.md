@@ -6,26 +6,6 @@ thirty bees is an opensource fork of PrestaShop. Our aim with this fork is to pr
 
 ## Roadmap for thirty bees to version 1.0.0
 
-**General server requirements:**
-
-- PHP 5.5 - PHP 7.1
-- Apache, nginx or IIS
-- Windows, Linux or OS X
-- MySQL/MariaDB
-- PHP extensions:
-  - Required:
-    - GD
-    - intl
-    - imap
-    - SimpleXML
-    - json
-    - zip
-    - MySQL (PDO only)
-  - Recommended:
-    - cURL
-    - mbstring
-    - opcache
-
 **Overview of the general goal:**
 
 To launch version 1.0.0 of Thirty Bees around February 1st 2017. In this version we are striving to fix as many bugs as possible, while maintaining compatibility with existing themes and modules. We want to provide the stablest platform for current users to migrate into. 
@@ -51,6 +31,27 @@ Core modules will be refactored to remove legacy code. Code that supports previo
 * Stripe (Credit cards, Apple Pay, AliPay, Bitcoins)
 * Thirty Bees blog module
 
+## Requirements
+**General server requirements:**
+
+- PHP 5.5 - PHP 7.1
+- Apache, nginx or IIS
+- Windows, Linux or OS X
+- MySQL/MariaDB
+- PHP extensions:
+  - Required:
+    - GD
+    - intl
+    - imap
+    - SimpleXML
+    - json
+    - zip
+    - MySQL (PDO only)
+  - Recommended:
+    - cURL
+    - mbstring
+    - opcache
+
 ## Installation
 There is currently no release package available, but you can install from git. These are the instructions:
 - Recursively clone the repository:
@@ -63,3 +64,6 @@ $ git clone https://github.com/thirtybees/ThirtyBees.git --recursive
 $ composer install
 ```
 - Then install the software as usual, using either the web interface (https://example.com/install-dev) or cli (/install-dev/index_cli.php) 
+
+## Contributing
+See [CONTRIBUTING.md](CONTRIBUTING.md)
