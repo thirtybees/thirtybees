@@ -29,6 +29,6 @@ notifications:
 script:
   - /var/www/tb.unit.test/tests/check_php_parse_errors.sh
   - php /var/www/tb.unit.test/install-dev/index_cli.php --language=en --country=us --domain=localhost --base_uri=/tb.unit.test --db_name=tb.unit.test --db_create=1 --name=tb.unit.test --password=123456789
-  - cd /var/www/tb.unit.test/tests && bash getcomposer.sh && php composer.phar install --dev --no-interaction --no-progress && php vendor/bin/phpunit --coverage-clover=../coverage.xml -c .
+  - cd /var/www/tb.unit.test/tests && bash getcomposer.sh && php composer.phar install --dev --no-interaction --no-progress && php vendor/bin/phpunit -c .
 after_success:
  - bash <(curl -s https://codecov.io/bash)
