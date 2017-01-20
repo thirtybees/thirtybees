@@ -7,14 +7,4 @@
             <directory>Integration</directory>
         </testsuite>
     </testsuites>
-    <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">../classes/</directory>
-            <directory suffix=".php">../controllers/</directory>
-            <directory suffix=".php">../webservice/</directory>
-        </whitelist>
-    </filter>
-    <logging>
-        <log type="coverage-clover" target="/var/www/tb.unit.test/clover.xml"/>
-    </logging>
 </phpunit>
