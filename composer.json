@@ -2,5 +2,9 @@
     "require": {
         "guzzlehttp/guzzle": "~6.0",
         "swiftmailer/swiftmailer": "~5.4"
+    },
+    "require-dev": {
+        "satooshi/php-coveralls": "dev-master",
+        "phpunit/phpcov": "2.*"
     }
 }
