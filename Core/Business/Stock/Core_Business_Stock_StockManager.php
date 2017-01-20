@@ -90,7 +90,7 @@ class Core_Business_Stock_StockManager
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
-    public function updatePacksQuantityContainingProduct(Product $product, $idProductAttribute, $stockAvailable, $idShop = null)
+    public function updatePacksQuantityContainingProduct($product, $idProductAttribute, $stockAvailable, $idShop = null)
     {
         /** @var Core_Business_ConfigurationInterface $configuration */
         $configuration = Adapter_ServiceLocator::get('Core_Business_ConfigurationInterface');
@@ -137,7 +137,7 @@ class Core_Business_Stock_StockManager
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
-    public function updateQuantity(Product $product, $idProductAttribute, $deltaQuantity, $idShop = null)
+    public function updateQuantity($product, $idProductAttribute, $deltaQuantity, $idShop = null)
     {
         /** @var Adapter_StockManager $stockManager */
         $stockManager = Adapter_ServiceLocator::get('Adapter_StockManager');
