@@ -9,9 +9,9 @@
     </testsuites>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">classes/</directory>
-            <directory suffix=".php">controllers/</directory>
-            <directory suffix=".php">webservice/</directory>
+            <directory suffix=".php">../classes/</directory>
+            <directory suffix=".php">../controllers/</directory>
+            <directory suffix=".php">../webservice/</directory>
         </whitelist>
     </filter>
     <logging>
