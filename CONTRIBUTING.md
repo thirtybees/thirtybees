@@ -1,7 +1,7 @@
 # Contributing to thirty bees
 thirty bees is an open-source e-commerce solution, forked from PrestaShop. We'd like to encourage everyone to participate in the project, including contributing your own improvements to the source code.
  
- ## Procedure
+## Procedure
  In order to contribute to this project, you need to be familiar with Git, an open source version control system used extensively by thirty bees developers, as well as GitHub:
  - A nice tutorial about Git can be found here: https://try.github.io/
  - GitHub help: https://help.github.com/
@@ -18,7 +18,7 @@ thirty bees is an open-source e-commerce solution, forked from PrestaShop. We'd 
  
  That's it. Thank you for your contribution!
  
- ## Coding standards
+## Coding standards
  We like to aim for a very high quality open source e-commerce platform. This means that we need to implement high quality standards, guidelines and coding styles that should be used by everyone participating in the project, at all times. Not abiding by the project's coding standards may be a reason to decline your contribution, so be sure to read this section in order to maximize the chance of your changes to land in thirty bees' codebase.  
  The majority of thirty bees is written in PHP, but in our codebase you will also find JavaScript, HTML, CSS, Smarty templates, SQL, XML and JSON. For these languages we use the following code standards:
  - PHP: [Symfony Standards](http://symfony.com/doc/current/contributing/code/standards.html) PLUS [shorthand aligned arrays](https://github.com/thirtybees/ThirtyBees/blob/de63e54d405c6e3c4660a846684937868838732f/classes/Address.php#L122-L149) MINUS [yoda conditions](https://en.wikipedia.org/wiki/Yoda_conditions)
@@ -37,51 +37,52 @@ thirty bees is an open-source e-commerce solution, forked from PrestaShop. We'd 
 
 #### SQL Query
 1. For simple queries the `DbQuery` class MUST be used:
-```php
-$sql = new DbQuery();
-$sql->select('p.`name`');
-$sql->from('product', 'p');
-$sql->innerJoin('product_lang', 'pl', 'p.`id_lang` = pl.`id_lang`');
-$sql->where('pl.`id_lang` = 1');
-```
+    ```php
+    $sql = new DbQuery();
+    $sql->select('p.`name`');
+    $sql->from('product', 'p');
+    $sql->innerJoin('product_lang', 'pl', 'p.`id_lang` = pl.`id_lang`');
+    $sql->where('pl.`id_lang` = 1');
+    ```
+
 2. When referring to an `ObjectModel`s primary key or table name, use the escaped `$definition` property:
-```php
-$sql = new DbQuery();
-$sql->select('p.`'.bqSQL(self::$definition['primary']).'`');
-$sql->from(bqSQL(self::$definition['table']), 'p');
-$sql->where('p.`'.bqSQL(self::$definition['primary']).'` = 1');
-```
+    ```php
+    $sql = new DbQuery();
+    $sql->select('p.`'.bqSQL(self::$definition['primary']).'`');
+    $sql->from(bqSQL(self::$definition['table']), 'p');
+    $sql->where('p.`'.bqSQL(self::$definition['primary']).'` = 1');
+    ```  
 
-2. Keywords in raw db queries must be written in uppercase.
-```sql
-SELECT `firstname`
-FROM `'._DB_PREFIX_.'customer`
-```
+3. Keywords in raw db queries must be written in uppercase.
+    ```sql
+    SELECT `firstname`
+    FROM `'._DB_PREFIX_.'customer`
+    ```  
 
-3. Table aliases have to be named by taking the first letter of each word and must be lowercase:
-```php
-$sql = new DbQuery();
-$sql->select('p.`'.bqSQL(self::$definition['primary']).'`');
-$sql->from(bqSQL(self::$definition['table']), 'p');
-$sql->where('p.`'.bqSQL(self::$definition['primary']).'` = 1');
-```
+4. Table aliases have to be named by taking the first letter of each word and must be lowercase:
+    ```php
+    $sql = new DbQuery();
+    $sql->select('p.`'.bqSQL(self::$definition['primary']).'`');
+    $sql->from(bqSQL(self::$definition['table']), 'p');
+    $sql->where('p.`'.bqSQL(self::$definition['primary']).'` = 1');
+    ```  
 
-4. When conflicts between table aliases occur, the second character also has to be used in the name:
-```php
-$sql = new DbQuery();
-$sql->select('ca.`'.bqSQL(Product::$definition['primary']).'`, cu.`firstname`');
-$sql->from(bqSQL(Cart::$definition['table']), 'ca');
-$sql->innerJoin(bqSQL(Customer::$definition['table']), 'cu', 'ca.`'.bqSQL(Customer::$definition['primary']).'` = cu.`'.Customer::$definition['primary']).'`');
-```
+5. When conflicts between table aliases occur, the second character also has to be used in the name:
+    ```php
+    $sql = new DbQuery();
+    $sql->select('ca.`'.bqSQL(Product::$definition['primary']).'`, cu.`firstname`');
+    $sql->from(bqSQL(Cart::$definition['table']), 'ca');
+    $sql->innerJoin(bqSQL(Customer::$definition['table']), 'cu', 'ca.`'.bqSQL(Customer::$definition['primary']).'` = cu.`'.Customer::$definition['primary']).'`');
+    ```  
 
-5. A new line has to be created for each clause in raw db queries:
-```php
-$sql = 'SELECT pl.`name`
-FROM `'._DB_PREFIX_'.product_lang` pl
-WHERE pl.`id_product` = 17';
-```
+6. A new line has to be created for each clause in raw db queries:
+    ```php
+    $sql = 'SELECT pl.`name`
+    FROM `'._DB_PREFIX_'.product_lang` pl
+    WHERE pl.`id_product` = 17';
+    ```  
 
-6. It is forbidden to make a `JOIN` in a `WHERE` clause
+7. It is forbidden to make a `JOIN` in a `WHERE` clause
 
 ## Licenses
 Do not change the license headers of a file, except updating the copyright year.  
