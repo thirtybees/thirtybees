@@ -29,24 +29,42 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class InstallModelMail
+ */
 class InstallModelMail extends InstallAbstractModel
 {
+    // @codingStandardsIgnoreStart
+    /** @var bool $smtp_checked */
+    public $smtp_checked;
+    /** @var string $server */
+    public $server;
+    /** @var string $login */
+    public $login;
+    /** @var string $password */
+    public $password;
+    /** @var int $port */
+    public $port;
+    /** @var string $encryption */
+    public $encryption;
+    /** @var string $email */
+    public $email;
+    // @codingStandardsIgnoreEnd
+
     /**
-     * @param bool $smtp_checked
+     * @param bool   $smtpChecked
      * @param string $server
      * @param string $login
      * @param string $password
-     * @param int $port
+     * @param int    $port
      * @param string $encryption
      * @param string $email
      */
-    public function __construct($smtp_checked, $server, $login, $password, $port, $encryption, $email)
+    public function __construct($smtpChecked, $server, $login, $password, $port, $encryption, $email)
     {
         parent::__construct();
 
-        require_once(_PS_CORE_DIR_.'/tools/swift/swift_required.php');
-
-        $this->smtp_checked = $smtp_checked;
+        $this->smtp_checked = $smtpChecked;
         $this->server = $server;
         $this->login = $login;
         $this->password = $password;
