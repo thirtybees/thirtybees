@@ -392,7 +392,7 @@ class SpecificPriceCore extends ObjectModel
         foreach (array_reverse($priority) as $k => $snakeCaseField) {
             $camelCaseField = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $snakeCaseField))));
             if (!empty($snakeCaseField) && isset($$camelCaseField) && in_array($snakeCaseField, $definition)) {
-                $select .= ' IF (`'.bqSQL($camelCaseField).'` = '.(int) $$camelCaseField.', '.pow(2, $k + 1).', 0) + ';
+                $select .= ' IF (`'.bqSQL($snakeCaseField).'` = '.(int) $$camelCaseField.', '.pow(2, $k + 1).', 0) + ';
             }
         }
 
