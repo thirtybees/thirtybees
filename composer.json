@@ -2,5 +2,15 @@
     "require": {
         "guzzlehttp/guzzle": "~6.0",
         "swiftmailer/swiftmailer": "~5.4"
+    },
+    "require-dev": {
+        "satooshi/php-coveralls": "^1.0",
+        "phpunit/phpunit": "~4.8 || ~5.7",
+        "phake/phake": "@stable"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PrestaShop\\PrestaShop\\Tests\\": "tests/"
+        }
     }
 }
