@@ -1,4 +1,6 @@
 <?php
 // This is global bootstrap for autoloading
-require_once __DIR__.'/../config/defines.inc.php';
-require_once _PS_CONFIG_DIR_.'autoload.php';
+require_once __DIR__.'/../config/config.inc.php';
+
+// Disable mails
+Configuration::updateValue('PS_MAIL_METHOD', 3);
