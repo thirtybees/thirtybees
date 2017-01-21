@@ -39,7 +39,7 @@ class AdminCustomCodeControllerCore extends AdminController
 	            ],
 	    	);
 
-        $fields2 = array(
+        $fields2 = [
             'PS_CUSTOMCODE_ORDERCONF_JS' => [
                     'title' => $this->l('Add extra JS to the order confirmation page'),
                     'desc' => $this->l('You can use this form to add extra javascript code to the order confirmation page (trackings, etc)'),
@@ -48,7 +48,7 @@ class AdminCustomCodeControllerCore extends AdminController
                     'rows' => 3,
                     'visibility' => Shop::CONTEXT_ALL
                 ]
-            );
+            ];
 
         $this->fields_options = [
                 'general' => [
@@ -59,6 +59,18 @@ class AdminCustomCodeControllerCore extends AdminController
                 ],
                 'order_confirmation' => [
                     'title' =>    $this->l('Order Confirmation Page'),
+                    'description' => $this->l('Available variables:') .'<br/>
+                                bought_products '.$this->l('(List of products in JSON format)').'<br/>
+                                total_products_tax_incl<br/>
+                                total_products_tax_excl<br/>
+                                total_shipping_tax_incl<br/>
+                                total_shipping_tax_excl<br/>
+                                total_discounts_tax_incl<br/>
+                                total_discounts_tax_excl<br/>
+                                total_paid_tax_incl<br/>
+                                total_paid_tax_excl<br/>
+                                id_customer<br/>
+                                currency.iso_code',
                     'icon' =>    'icon-cogs',
                     'fields' =>    $fields2,
                     'submit' => ['title' => $this->l('Save')],

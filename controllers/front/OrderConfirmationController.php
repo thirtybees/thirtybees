@@ -87,6 +87,41 @@ class OrderConfirmationControllerCore extends FrontController
     {
         parent::initContent();
 
+        /* variables available in the custom scripts:
+            - list of products with few info
+            - products total
+            - shipping total
+            - total amount
+        */ 
+       
+        $id_cart = (int)Tools::getValue('id_cart');
+        $id_order = Order::getOrderByCartId($id_cart);
+        $order = new Order($id_order);
+        $var_products = [];
+
+        if(Validate::isLoadedObject($order)) {
+            $products = $order->getProducts();
+            if($products) {
+                foreach ($products as $product) {
+                    $var_products[] = ['id_product' => $product['id_product'], 'name' => $product['product_name'], 'price' => $product['product_price'], 'quantity' => $product['product_quantity']];
+                }
+            }
+        }
+
+        Media::AddJsDef([
+            'bought_products' => $var_products,
+            'total_products_tax_incl' => $order->total_products_wt,
+            'total_products_tax_excl' => $order->total_products,
+            'total_shipping_tax_incl' => $order->total_shipping_tax_incl,
+            'total_shipping_tax_excl' => $order->total_shipping_tax_excl,
+            'total_discounts_tax_incl' => $order->total_discounts_tax_incl,
+            'total_discounts_tax_excl' => $order->total_discounts_tax_excl,
+            'total_paid_tax_incl' => $order->total_paid_tax_incl,
+            'total_paid_tax_excl' => $order->total_paid_tax_excl,
+            'id_customer' => $this->context->customer->id,
+            ]);
+
+
         $this->context->smarty->assign(
             [
             'is_guest' => $this->context->customer->is_guest,
