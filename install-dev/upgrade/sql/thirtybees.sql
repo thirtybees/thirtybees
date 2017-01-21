@@ -2,6 +2,7 @@ SET NAMES 'utf8';
 
 ALTER TABLE `PREFIX_customer` MODIFY `passwd` VARCHAR(60) NOT NULL;
 ALTER TABLE `PREFIX_employee` MODIFY `passwd` VARCHAR(60) NOT NULL;
+ALTER TABLE `PREFIX_category` ADD `display_from_sub` TINYINT(1) UNSIGNED NOT NULL;
 
 CREATE TABLE `PREFIX_module_carrier` (
   `id_module`INT(10) unsigned NOT NULL,

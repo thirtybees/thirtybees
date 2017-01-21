@@ -384,6 +384,7 @@ CREATE TABLE `PREFIX_category` (
   `nleft`            INT(10) UNSIGNED    NOT NULL DEFAULT '0',
   `nright`           INT(10) UNSIGNED    NOT NULL DEFAULT '0',
   `active`           TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
+  `display_from_sub` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
   `date_add`         DATETIME            NOT NULL,
   `date_upd`         DATETIME            NOT NULL,
   `position`         INT(10) UNSIGNED    NOT NULL DEFAULT '0',
