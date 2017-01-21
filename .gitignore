@@ -67,3 +67,5 @@ themes/community-theme-default/modules/*/mails/*
 
 *sitemap.xml
 robots.txt
+
+tests/_output/*

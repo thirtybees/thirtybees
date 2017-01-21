@@ -6,7 +6,8 @@
     "require-dev": {
         "satooshi/php-coveralls": "^1.0",
         "phpunit/phpunit": "~4.8 || ~5.7",
-        "phake/phake": "@stable"
+        "phake/phake": "@stable",
+        "codeception/codeception": "^2.2"
     },
     "autoload-dev": {
         "psr-4": {
