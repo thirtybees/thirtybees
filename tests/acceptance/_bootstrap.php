@@ -1,2 +1,6 @@
 <?php
-// Here you can initialize variables that will be available to your tests
+// Enable Friendly URLs
+Configuration::updateValue('PS_REWRITING_SETTINGS', 0);
+
+// Disable Smarty cache
+Configuration::updateValue('PS_SMARTY_CACHE', 0);
