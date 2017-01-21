@@ -518,6 +518,25 @@ class AdminCategoriesControllerCore extends AdminController
                     ]
                 ],
                 [
+                    'type' => 'switch',
+                    'label' => $this->l('Display products from subcategories'),
+                    'name' => 'display_from_sub',
+                    'required' => false,
+                    'is_bool' => true,
+                    'values' => [
+                        [
+                            'id' => 'display_from_sub_on',
+                            'value' => 1,
+                            'label' => $this->l('Yes')
+                        ],
+                        [
+                            'id' => 'display_from_sub_off',
+                            'value' => 0,
+                            'label' => $this->l('No')
+                        ]
+                    ]
+                ],
+                [
                     'type'  => 'categories',
                     'label' => $this->l('Parent category'),
                     'name'  => 'id_parent',

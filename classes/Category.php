@@ -50,6 +50,7 @@ class CategoryCore extends ObjectModel
             'nright'           => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
             'level_depth'      => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
             'active'           => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true],
+            'display_from_sub' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
             'id_parent'        => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
             'id_shop_default'  => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
             'is_root_category' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
@@ -72,6 +73,8 @@ class CategoryCore extends ObjectModel
     public $name;
     /** @var bool Status for display */
     public $active = 1;
+    /** @var bool Status for displaying subcategory products */
+    public $display_from_sub = 1;
     /** @var  int category position */
     public $position;
     /** @var string Description */
@@ -1801,13 +1804,23 @@ class CategoryCore extends ObjectModel
         $front = in_array($context->controller->controller_type, ['front', 'modulefront']);
         $idSupplier = (int) Tools::getValue('id_supplier');
 
+        $subcats = $this->getAllSubcategories();
+        $cats_to_search_in = array($this->id);
+        if($subcats && $this->display_from_sub)
+        {
+            foreach ($subcats as $scat) {
+                $cats_to_search_in[] = $scat['id_category'];
+            }
+        }
+
+
         /** Return only the number of products */
         if ($getTotal) {
-            $sql = 'SELECT COUNT(cp.`id_product`) AS total
+            $sql = 'SELECT COUNT(DISTINCT(cp.`id_product`)) AS total
 					FROM `'._DB_PREFIX_.'product` p
 					'.Shop::addSqlAssociation('product', 'p').'
 					LEFT JOIN `'._DB_PREFIX_.'category_product` cp ON p.`id_product` = cp.`id_product`
-					WHERE cp.`id_category` = '.(int) $this->id.
+					WHERE cp.`id_category` IN ('.implode(',', $cats_to_search_in).')'.
                 ($front ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '').
                 ($active ? ' AND product_shop.`active` = 1' : '').
                 ($idSupplier ? 'AND p.id_supplier = '.(int) $idSupplier : '');
@@ -1871,10 +1884,11 @@ class CategoryCore extends ObjectModel
 				LEFT JOIN `'._DB_PREFIX_.'manufacturer` m
 					ON m.`id_manufacturer` = p.`id_manufacturer`
 				WHERE product_shop.`id_shop` = '.(int) $context->shop->id.'
-					AND cp.`id_category` = '.(int) $this->id
+					AND cp.`id_category` IN ('.implode(',', $cats_to_search_in).')'
             .($active ? ' AND product_shop.`active` = 1' : '')
             .($front ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '')
-            .($idSupplier ? ' AND p.id_supplier = '.(int) $idSupplier : '');
+            .($idSupplier ? ' AND p.id_supplier = '.(int) $idSupplier : ''
+            .' GROUP BY cp.id_product');
 
         if ($random === true) {
             $sql .= ' ORDER BY RAND() LIMIT '.(int) $randomNumberProducts;
@@ -2391,4 +2405,22 @@ class CategoryCore extends ObjectModel
             $this->recursiveDelete($toDelete, (int) $row['id_category']);
         }
     }
+
+    /**
+     * Get all ids of all subcategories of the current category
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     * @return array list of ids of the subcategories
+     */
+    public function getAllSubcategories()
+    {
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS('
+            SELECT id_category
+            FROM '._DB_PREFIX_.'category
+            WHERE nleft > '.$this->nleft.'
+            AND nright < '.$this->nright.'
+            ');
+    }  
+
 }
