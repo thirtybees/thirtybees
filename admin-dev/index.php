@@ -28,6 +28,9 @@
  *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
+if (file_exists('../c3.php')) {
+    require_once '../c3.php';
+}
 
 $timer_start = microtime(true);
 if (!defined('_PS_ADMIN_DIR_')) {

@@ -1,0 +1,37 @@
+actor: Tester
+paths:
+    tests: tests
+    log: tests/_output
+    data: tests/_data
+    support: tests/_support
+    envs: tests/_envs
+settings:
+    bootstrap: _bootstrap.php
+    colors: true
+    memory_limit: 1024M
+extensions:
+    enabled:
+        - Codeception\Extension\RunFailed
+modules:
+    config:
+        Db:
+            dsn: 'mysql:host=localhost;dbname=tb.unit.test'
+            user: 'root'
+            password: ''
+            populate: false
+            cleanup: false
+            reconnect: true
+        WebDriver:
+            url: 'http://127.0.0.1:8888'
+            browser: phantomjs
+            window_size: 1920x1080
+        PhpBrowser:
+            url: 'http://127.0.0.1:8888'
+coverage:
+    enabled: true
+    remote: false
+    include:
+        - classes/*
+        - controllers/*
+    low_limit: 30
+    high_limit: 70
