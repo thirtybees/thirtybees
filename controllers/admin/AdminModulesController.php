@@ -635,7 +635,7 @@ class AdminModulesControllerCore extends AdminController
                         $module->uninstall();
                     }
                     $moduleDir = _PS_MODULE_DIR_.str_replace(['.', '/', '\\'], ['', '', ''], Tools::getValue('module_name'));
-                    if (!ConfigurationTest::test_dir($moduleDir, true, $report, true)) {
+                    if (!ConfigurationTest::testDir($moduleDir, true, $report, true)) {
                         $this->errors[] = Tools::displayError('Sorry, the module cannot be deleted:').' '.$report;
                     } else {
                         $this->recursiveDeleteOnDisk($moduleDir);

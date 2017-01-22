@@ -20,7 +20,7 @@ before_install:
   - composer install --prefer-dist --no-interaction --no-progress
 
 install:
-  - php install-dev/index_cli.php --language=en --country=us --domain=127.0.0.1:8888 --db_name=tb.unit.test --db_create=1 --name=tb.unit.test --password=123456789
+  - php install-dev/index_cli.php --language=en --country=us --domain=127.0.0.1:8888 --db_name=tb.unit.test --db_create=1 --name=tb.unit.test --email=test@test.test --firstname=test --lastname=test --password=testtest
 
 script:
   - xdebug-enable
