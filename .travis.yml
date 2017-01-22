@@ -15,9 +15,9 @@ notifications:
   slack: thirtybees:L2Dyesn7En8jZ008IUwCrMnl
 
 before_install:
-    - php -S 127.0.0.1:8888 -t . >/dev/null 2>&1 &
-    - phantomjs --webdriver=4444 >/dev/null 2>&1 &
-    - composer install --prefer-dist --no-interaction --no-progress
+  - php -S 127.0.0.1:8888 -t . >/dev/null 2>&1 &
+  - phantomjs --webdriver=4444 >/dev/null 2>&1 &
+  - composer install --prefer-dist --no-interaction --no-progress
 
 install:
   - php install-dev/index_cli.php --language=en --country=us --domain=127.0.0.1:8888 --db_name=tb.unit.test --db_create=1 --name=tb.unit.test --password=123456789
