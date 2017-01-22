@@ -15,12 +15,14 @@ notifications:
   slack: thirtybees:L2Dyesn7En8jZ008IUwCrMnl
 
 before_install:
+  - phpenv config-rm xdebug.ini
   - composer install --prefer-dist --no-interaction --no-progress
 
 install:
   - php install-dev/index_cli.php --language=en --country=us --domain=127.0.0.1:8888 --db_name=tb.unit.test --db_create=1 --name=tb.unit.test --password=123456789
 
 script:
+  - phpenv config-add xdebug.ini
   - vendor/bin/codecept run unit,integration -c . --coverage --coverage-xml
   - phpenv config-rm xdebug.ini
   - php -S 127.0.0.1:8888 -t . >/dev/null 2>&1 &
