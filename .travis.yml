@@ -15,8 +15,6 @@ notifications:
   slack: thirtybees:L2Dyesn7En8jZ008IUwCrMnl
 
 before_install:
-  - php -S 127.0.0.1:8888 -t . >/dev/null 2>&1 &
-  - phantomjs --webdriver=4444 >/dev/null 2>&1 &
   - composer install --prefer-dist --no-interaction --no-progress
 
 install:
@@ -24,6 +22,10 @@ install:
 
 script:
   - vendor/bin/codecept run unit,integration -c . --coverage --coverage-xml
+  - phpenv config-rm xdebug.ini
+  - php -S 127.0.0.1:8888 -t . >/dev/null 2>&1 &
+  - phantomjs --webdriver=4444 >/dev/null 2>&1 &
+  - sleep 10
   - vendor/bin/codecept run functional,acceptance -c .
 
 after_success:
