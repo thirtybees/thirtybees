@@ -29,19 +29,41 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class InstallModelSystem
+ *
+ * @since 1.0.0
+ */
 class InstallModelSystem extends InstallAbstractModel
 {
+    /**
+     * @return array
+     *
+     * @since 1.0.0
+     */
     public function checkRequiredTests()
     {
-        return self::checkTests(ConfigurationTest::getDefaultTests(), 'required');
+        return self::checkTests(ConfigurationTest::getDefaultTests());
     }
 
+    /**
+     * @return array
+     *
+     * @since 1.0.0
+     */
     public function checkOptionalTests()
     {
-        return self::checkTests(ConfigurationTest::getExtendedTestsOp(), 'optional');
+        return self::checkTests(ConfigurationTest::getDefaultTestsOp());
     }
 
-    public function checkTests($list, $type)
+    /**
+     * @param array $list
+     *
+     * @return array
+     *
+     * @since 1.0.0 Removed $type parameter
+     */
+    public function checkTests($list)
     {
         $tests = ConfigurationTest::check($list);
 

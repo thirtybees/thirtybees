@@ -36,7 +36,12 @@
  */
 class ConfigurationTestCore
 {
-    public static $test_files = [
+    /**
+     * @var array $testFiles
+     *
+     * @since 1.0.0 Renamed from $test_files
+     */
+    public static $testFiles = [
         '/cache/smarty/compile/index.php',
         '/classes/log/index.php',
         '/classes/cache/index.php',
@@ -52,6 +57,7 @@ class ConfigurationTestCore
         '/localization/fr.xml',
         '/mails/index.php',
         '/modules/index.php',
+        '/modules/cttopmenu/cttopmenu.php',
         '/override/controllers/front/index.php',
         '/pdf/order-return.tpl',
         '/themes/community-theme-default/css/global.css',
@@ -73,41 +79,33 @@ class ConfigurationTestCore
     public static function getDefaultTests()
     {
         $tests = [
-            'upload'                    => false,
-            'cache_dir'                 => 'cache',
-            'log_dir'                   => 'log',
-            'img_dir'                   => 'img',
-            'module_dir'                => 'modules',
-            'theme_lang_dir'            => 'themes/'._THEME_NAME_.'/lang/',
-            'theme_pdf_lang_dir'        => 'themes/'._THEME_NAME_.'/pdf/lang/',
-            'theme_cache_dir'           => 'themes/'._THEME_NAME_.'/cache/',
-            'translations_dir'          => 'translations',
-            'customizable_products_dir' => 'upload',
-            'virtual_products_dir'      => 'download',
+            'Upload'                  => false,
+            'CacheDir'                => 'cache',
+            'LogDir'                  => 'log',
+            'ImgDir'                  => 'img',
+            'ModuleDir'               => 'modules',
+            'ThemeLangDir'            => 'themes/'._THEME_NAME_.'/lang/',
+            'ThemePdfLangDir'         => 'themes/'._THEME_NAME_.'/pdf/lang/',
+            'ThemeCacheDir'           => 'themes/'._THEME_NAME_.'/cache/',
+            'TranslationsDir'         => 'translations',
+            'CustomizableProductsDir' => 'upload',
+            'VirtualProductsDir'      => 'download',
+            'System'        => [
+                'fopen', 'fclose', 'fread', 'fwrite',
+                'rename', 'file_exists', 'unlink', 'rmdir', 'mkdir',
+                'getcwd', 'chdir', 'chmod',
+            ],
+            'PhpVersion' => false,
+            'Gd'         => false,
+            'ConfigDir'  => 'config',
+            'Files'      => false,
+            'MailsDir'  => 'mails',
+            'PdoMysql'   => false,
+            'Intl'       => false,
+            'Xml'        => false,
+            'Json'       => false,
+            'Zip'        => false,
         ];
-
-        if (!defined('_PS_HOST_MODE_')) {
-            $tests = array_merge(
-                $tests,
-                [
-                    'system'        => [
-                        'fopen', 'fclose', 'fread', 'fwrite',
-                        'rename', 'file_exists', 'unlink', 'rmdir', 'mkdir',
-                        'getcwd', 'chdir', 'chmod',
-                    ],
-                    'phpversion'    => false,
-                    'gd'            => false,
-                    'config_dir'    => 'config',
-                    'files'         => false,
-                    'mails_dir'     => 'mails',
-                    'pdo_mysql'     => false,
-                    'intl'          => false,
-                    'xml'           => false,
-                    'json'          => false,
-                    'zip'           => false,
-                ]
-            );
-        }
 
         return $tests;
     }
@@ -124,30 +122,11 @@ class ConfigurationTestCore
     public static function getDefaultTestsOp()
     {
         return [
-            'new_phpversion'   => false,
-            'register_globals' => false,
-            'gz'               => false,
-            'mbstring'         => false,
-        ];
-    }
-
-    /**
-     * getDefaultTestsOp return an array of tests to executes.
-     * key are method name, value are parameters (false for no parameter)
-     *
-     * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public static function getExtendedTestsOp()
-    {
-        return [
-            'new_phpversion'   => false,
-            'register_globals' => false,
-            'gz'               => false,
-            'mbstring'         => false,
-            'tlsv1_2'          => false,
+            'NewPhpVersion'   => false,
+            'RegisterGlobals' => false,
+            'Gz'               => false,
+            'Mbstring'         => false,
+            'Tlsv12'          => false,
         ];
     }
 
@@ -172,8 +151,8 @@ class ConfigurationTestCore
     }
 
     /**
-     * @param     $ptr
-     * @param int $arg
+     * @param string $ptr
+     * @param int    $arg
      *
      * @return string
      *
@@ -182,7 +161,7 @@ class ConfigurationTestCore
      */
     public static function run($ptr, $arg = 0)
     {
-        if (call_user_func(['ConfigurationTest', 'test_'.$ptr], $arg)) {
+        if (call_user_func(['ConfigurationTest', 'test'.$ptr], $arg)) {
             return 'ok';
         }
 
@@ -195,7 +174,7 @@ class ConfigurationTestCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_phpversion()
+    public static function testPhpVersion()
     {
         return PHP_VERSION_ID >= 50500;
     }
@@ -206,7 +185,7 @@ class ConfigurationTestCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_new_phpversion()
+    public static function testNewPhpVersion()
     {
         return PHP_VERSION_ID >= 50600;
     }
@@ -217,7 +196,7 @@ class ConfigurationTestCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_mysql_support()
+    public static function testMysqlSupport()
     {
         return extension_loaded('mysql') || extension_loaded('mysqli') || extension_loaded('pdo_mysql');
     }
@@ -228,7 +207,7 @@ class ConfigurationTestCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_pdo_mysql()
+    public static function testPdoMysql()
     {
         return extension_loaded('pdo_mysql');
     }
@@ -238,7 +217,7 @@ class ConfigurationTestCore
      *
      * @since 1.0.0
      */
-    public static function test_intl()
+    public static function testIntl()
     {
         return extension_loaded('intl') && class_exists('NumberFormatter');
     }
@@ -248,7 +227,7 @@ class ConfigurationTestCore
      *
      * @since 1.0.0
      */
-    public static function test_xml()
+    public static function testXml()
     {
         return class_exists('SimpleXMLElement');
     }
@@ -258,7 +237,7 @@ class ConfigurationTestCore
      *
      * @since 1.0.0
      */
-    public static function test_json()
+    public static function testJson()
     {
         return function_exists('json_encode') && function_exists('json_decode');
     }
@@ -268,7 +247,7 @@ class ConfigurationTestCore
      *
      * @since 1.0.0
      */
-    public static function test_zip()
+    public static function testZip()
     {
         return class_exists('ZipArchive');
     }
@@ -279,7 +258,7 @@ class ConfigurationTestCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_magicquotes()
+    public static function testMagicQuotes()
     {
         return !get_magic_quotes_gpc();
     }
@@ -290,7 +269,7 @@ class ConfigurationTestCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_upload()
+    public static function testUpload()
     {
         return ini_get('file_uploads');
     }
@@ -301,7 +280,7 @@ class ConfigurationTestCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_fopen()
+    public static function testFopen()
     {
         return ini_get('allow_url_fopen');
     }
@@ -311,7 +290,7 @@ class ConfigurationTestCore
      *
      * @since 1.0.0
      */
-    public static function test_tlsv1_2()
+    public static function testTlsv12()
     {
         $guzzle = new GuzzleHttp\Client([
             'http_errors' => false,
@@ -329,7 +308,7 @@ class ConfigurationTestCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_system($funcs)
+    public static function testSystem($funcs)
     {
         foreach ($funcs as $func) {
             if (!function_exists($func)) {
@@ -346,7 +325,7 @@ class ConfigurationTestCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_gd()
+    public static function testGd()
     {
         return function_exists('imagecreatetruecolor');
     }
@@ -357,7 +336,7 @@ class ConfigurationTestCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_register_globals()
+    public static function testRegisterGlobals()
     {
         return !ini_get('register_globals');
     }
@@ -368,7 +347,7 @@ class ConfigurationTestCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_gz()
+    public static function testGz()
     {
         if (function_exists('gzencode')) {
             return @gzencode('dd') !== false;
@@ -378,30 +357,30 @@ class ConfigurationTestCore
     }
 
     /**
-     * @param $dir
+     * @param string $dir
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_config_dir($dir)
+    public static function testConfigDir($dir)
     {
-        return ConfigurationTest::test_dir($dir);
+        return ConfigurationTest::testDir($dir);
     }
 
     /**
-     * @param string $dir         Directory path, absolute or relative
+     * @param string $dir        Directory path, absolute or relative
      * @param bool   $recursive
      * @param null   $fullReport
-     * @param bool   $absolute    Is absolute path to directory
+     * @param bool   $absolute   Is absolute path to directory
      *
      * @return bool
      *
      * @since   1.0.0 Added $absolute parameter
      * @version 1.0.0 Initial version
      */
-    public static function test_dir($dir, $recursive = false, &$fullReport = null, $absolute = false)
+    public static function testDir($dir, $recursive = false, &$fullReport = null, $absolute = false)
     {
         if ($absolute) {
             $absoluteDir = $dir;
@@ -435,27 +414,27 @@ class ConfigurationTestCore
     }
 
     /**
-     * @param $dir
+     * @param string $dir
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_sitemap($dir)
+    public static function testSitemap($dir)
     {
-        return ConfigurationTest::test_file($dir);
+        return ConfigurationTest::testFile($dir);
     }
 
     /**
-     * @param $fileRelative
+     * @param string $fileRelative
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_file($fileRelative)
+    public static function testFile($fileRelative)
     {
         $file = _PS_ROOT_DIR_.DIRECTORY_SEPARATOR.$fileRelative;
 
@@ -463,182 +442,213 @@ class ConfigurationTestCore
     }
 
     /**
-     * @param $dir
+     * @param string $dir
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_root_dir($dir)
+    public static function testRootDir($dir)
     {
-        return ConfigurationTest::test_dir($dir);
+        return ConfigurationTest::testDir($dir);
     }
 
     /**
-     * @param $dir
+     * @param string $dir
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_log_dir($dir)
+    public static function testLogDir($dir)
     {
-        return ConfigurationTest::test_dir($dir);
+        return ConfigurationTest::testDir($dir);
     }
 
     /**
-     * @param $dir
+     * @param string $dir
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_admin_dir($dir)
+    public static function testAdminDir($dir)
     {
-        return ConfigurationTest::test_dir($dir);
+        return ConfigurationTest::testDir($dir);
     }
 
     /**
-     * @param $dir
+     * @param string $dir
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_img_dir($dir)
+    public static function testImgDir($dir)
     {
-        return ConfigurationTest::test_dir($dir, true);
+        return ConfigurationTest::testDir($dir, true);
     }
 
     /**
-     * @param $dir
+     * @param string $dir
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_module_dir($dir)
+    public static function testModuleDir($dir)
     {
-        return ConfigurationTest::test_dir($dir, true);
+        return ConfigurationTest::testDir($dir, true);
     }
 
     /**
-     * @param $dir
+     * @param string $dir
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_cache_dir($dir)
+    public static function testCacheDir($dir)
     {
-        return ConfigurationTest::test_dir($dir, true);
+        return ConfigurationTest::testDir($dir, true);
     }
 
     /**
-     * @param $dir
+     * @param string $dir
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_tools_v2_dir($dir)
+    public static function testToolsV2Dir($dir)
     {
-        return ConfigurationTest::test_dir($dir);
+        return ConfigurationTest::testDir($dir);
     }
 
     /**
-     * @param $dir
+     * @param string $dir
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_cache_v2_dir($dir)
+    public static function testCacheV2Dir($dir)
     {
-        return ConfigurationTest::test_dir($dir);
+        return ConfigurationTest::testDir($dir);
     }
 
     /**
-     * @param $dir
+     * @param string $dir
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_download_dir($dir)
+    public static function testDownloadDir($dir)
     {
-        return ConfigurationTest::test_dir($dir);
+        return ConfigurationTest::testDir($dir);
     }
 
     /**
-     * @param $dir
+     * @param string $dir
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_mails_dir($dir)
+    public static function testMailsDir($dir)
     {
-        return ConfigurationTest::test_dir($dir, true);
+        return ConfigurationTest::testDir($dir, true);
     }
 
     /**
-     * @param $dir
+     * @param string $dir
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_translations_dir($dir)
+    public static function testTranslationsDir($dir)
     {
-        return ConfigurationTest::test_dir($dir, true);
+        return ConfigurationTest::testDir($dir, true);
     }
 
     /**
-     * @param $dir
+     * @param string $dir
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_theme_lang_dir($dir)
+    public static function testThemeLangDir($dir)
+    {
+        $absoluteDir = rtrim(_PS_ROOT_DIR_, '\\/').DIRECTORY_SEPARATOR.trim($dir, '\\/');
+        if (!file_exists($absoluteDir)) {
+            return false;
+        }
+
+        return ConfigurationTest::testDir($dir, true);
+    }
+
+    /**
+     * @param string $dir
+     *
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function testThemePdfLangDir($dir)
     {
         $absoluteDir = rtrim(_PS_ROOT_DIR_, '\\/').DIRECTORY_SEPARATOR.trim($dir, '\\/');
         if (!file_exists($absoluteDir)) {
             return true;
         }
 
-        return ConfigurationTest::test_dir($dir, true);
+        return ConfigurationTest::testDir($dir, true);
     }
 
     /**
-     * @param $dir
+     * @param string $dir
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_theme_pdf_lang_dir($dir)
+    public static function testThemeCacheDir($dir)
     {
         $absoluteDir = rtrim(_PS_ROOT_DIR_, '\\/').DIRECTORY_SEPARATOR.trim($dir, '\\/');
         if (!file_exists($absoluteDir)) {
             return true;
         }
 
-        return ConfigurationTest::test_dir($dir, true);
+        return ConfigurationTest::testDir($dir, true);
+    }
+
+    /**
+     * @param string $dir
+     *
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function testCustomizableProductsDir($dir)
+    {
+        return ConfigurationTest::testDir($dir);
     }
 
     /**
@@ -649,40 +659,9 @@ class ConfigurationTestCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_theme_cache_dir($dir)
+    public static function testVirtualProductsDir($dir)
     {
-        $absoluteDir = rtrim(_PS_ROOT_DIR_, '\\/').DIRECTORY_SEPARATOR.trim($dir, '\\/');
-        if (!file_exists($absoluteDir)) {
-            return true;
-        }
-
-        return ConfigurationTest::test_dir($dir, true);
-    }
-
-    /**
-     * @param $dir
-     *
-     * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public static function test_customizable_products_dir($dir)
-    {
-        return ConfigurationTest::test_dir($dir);
-    }
-
-    /**
-     * @param $dir
-     *
-     * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public static function test_virtual_products_dir($dir)
-    {
-        return ConfigurationTest::test_dir($dir);
+        return ConfigurationTest::testDir($dir);
     }
 
     /**
@@ -691,7 +670,7 @@ class ConfigurationTestCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_mbstring()
+    public static function testMbstring()
     {
         return function_exists('mb_strtolower');
     }
@@ -701,8 +680,10 @@ class ConfigurationTestCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @deprecated since PHP 7.1
      */
-    public static function test_mcrypt()
+    public static function testMcrypt()
     {
         return function_exists('mcrypt_encrypt');
     }
@@ -713,7 +694,7 @@ class ConfigurationTestCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_sessions()
+    public static function testSessions()
     {
         if (!$path = @ini_get('session.save_path')) {
             return true;
@@ -728,7 +709,7 @@ class ConfigurationTestCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_dom()
+    public static function testDom()
     {
         return extension_loaded('Dom');
     }
@@ -741,10 +722,10 @@ class ConfigurationTestCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function test_files($full = false)
+    public static function testFiles($full = false)
     {
         $return = [];
-        foreach (ConfigurationTest::$test_files as $file) {
+        foreach (ConfigurationTest::$testFiles as $file) {
             if (!file_exists(rtrim(_PS_ROOT_DIR_, DIRECTORY_SEPARATOR).str_replace('/', DIRECTORY_SEPARATOR, $file))) {
                 if ($full) {
                     array_push($return, $file);
