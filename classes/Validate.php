@@ -702,10 +702,7 @@ class ValidateCore
             return true;
         }
         if (preg_match('/^([0-9]{4})-((?:0?[1-9])|(?:1[0-2]))-((?:0?[1-9])|(?:[1-2][0-9])|(?:3[01]))([0-9]{2}:[0-9]{2}:[0-9]{2})?$/', $date, $birthDate)) {
-            if ($birthDate[1] > date('Y') && $birthDate[2] > date('m') && $birthDate[3] > date('d')
-                || $birthDate[1] == date('Y') && $birthDate[2] == date('m') && $birthDate[3] > date('d')
-                || $birthDate[1] == date('Y') && $birthDate[2] > date('m')
-            ) {
+            if (date('Y-m-d', strtotime($date)) > date('Y-m-d')) {
                 return false;
             }
 
