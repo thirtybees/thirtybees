@@ -49,17 +49,18 @@ Core modules will be refactored to remove legacy code. Code that supports previo
 - MySQL/MariaDB
 - PHP extensions:
   - Required:
-    - GD
+    - gd
     - intl
-    - imap
-    - SimpleXML
+    - xml (SimpleXML, DOMDocument)
     - json
     - zip
-    - MySQL (PDO only)
+    - mysql (PDO only)
   - Recommended:
-    - cURL
+    - imap
+    - curl
     - mbstring
     - opcache
+    - apcu/redis/memcache(d)
 
 ## Installation
 There is currently no release package available, but you can install from git. These are the instructions:
