@@ -97,10 +97,14 @@ class ConfigurationTestCore
                     ],
                     'phpversion'    => false,
                     'gd'            => false,
-                    'mysql_support' => false,
                     'config_dir'    => 'config',
                     'files'         => false,
                     'mails_dir'     => 'mails',
+                    'pdo_mysql'     => false,
+                    'intl'          => false,
+                    'xml'           => false,
+                    'json'          => false,
+                    'zip'           => false,
                 ]
             );
         }
@@ -121,14 +125,29 @@ class ConfigurationTestCore
     {
         return [
             'new_phpversion'   => false,
-            'fopen'            => false,
             'register_globals' => false,
             'gz'               => false,
-            'mcrypt'           => false,
             'mbstring'         => false,
-            'magicquotes'      => false,
-            'dom'              => false,
-            'pdo_mysql'        => false,
+        ];
+    }
+
+    /**
+     * getDefaultTestsOp return an array of tests to executes.
+     * key are method name, value are parameters (false for no parameter)
+     *
+     * @return array
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function getExtendedTestsOp()
+    {
+        return [
+            'new_phpversion'   => false,
+            'register_globals' => false,
+            'gz'               => false,
+            'mbstring'         => false,
+            'tlsv1_2'          => false,
         ];
     }
 
@@ -178,7 +197,7 @@ class ConfigurationTestCore
      */
     public static function test_phpversion()
     {
-        return version_compare(substr(phpversion(), 0, 5), '5.2.0', '>=');
+        return PHP_VERSION_ID >= 50500;
     }
 
     /**
@@ -189,7 +208,7 @@ class ConfigurationTestCore
      */
     public static function test_new_phpversion()
     {
-        return version_compare(substr(phpversion(), 0, 5), '5.4.0', '>=');
+        return PHP_VERSION_ID >= 50600;
     }
 
     /**
@@ -212,6 +231,46 @@ class ConfigurationTestCore
     public static function test_pdo_mysql()
     {
         return extension_loaded('pdo_mysql');
+    }
+
+    /**
+     * @return bool
+     *
+     * @since 1.0.0
+     */
+    public static function test_intl()
+    {
+        return extension_loaded('intl') && class_exists('NumberFormatter');
+    }
+
+    /**
+     * @return bool
+     *
+     * @since 1.0.0
+     */
+    public static function test_xml()
+    {
+        return class_exists('SimpleXMLElement');
+    }
+
+    /**
+     * @return bool
+     *
+     * @since 1.0.0
+     */
+    public static function test_json()
+    {
+        return function_exists('json_encode') && function_exists('json_decode');
+    }
+
+    /**
+     * @return bool
+     *
+     * @since 1.0.0
+     */
+    public static function test_zip()
+    {
+        return class_exists('ZipArchive');
     }
 
     /**
@@ -245,6 +304,21 @@ class ConfigurationTestCore
     public static function test_fopen()
     {
         return ini_get('allow_url_fopen');
+    }
+
+    /**
+     * @return bool
+     *
+     * @since 1.0.0
+     */
+    public static function test_tlsv1_2()
+    {
+        $guzzle = new GuzzleHttp\Client([
+            'http_errors' => false,
+        ]);
+        $response = $guzzle->get('https://tlstest.paypal.com/');
+
+        return (string) $response->getBody() === 'PayPal_Connection_OK';
     }
 
     /**

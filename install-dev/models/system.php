@@ -38,7 +38,7 @@ class InstallModelSystem extends InstallAbstractModel
 
     public function checkOptionalTests()
     {
-        return self::checkTests(ConfigurationTest::getDefaultTestsOp(), 'optional');
+        return self::checkTests(ConfigurationTest::getExtendedTestsOp(), 'optional');
     }
 
     public function checkTests($list, $type)
@@ -51,8 +51,8 @@ class InstallModelSystem extends InstallAbstractModel
         }
 
         return [
-            'checks' =>        $tests,
-            'success' =>    $success,
+            'checks'  => $tests,
+            'success' => $success,
         ];
     }
 }
