@@ -29,15 +29,24 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class AddressesControllerCore
+ *
+ * @since 1.0.0
+ */
 class AddressesControllerCore extends FrontController
 {
+    // @codingStandardsIgnoreStart
     public $auth = true;
     public $php_self = 'addresses';
     public $authRedirection = 'addresses';
     public $ssl = true;
+    // @codingStandardsIgnoreEnd
 
     /**
      * Set default medias for this controller
+     *
+     * @since 1.0.0
      */
     public function setMedia()
     {
@@ -50,6 +59,8 @@ class AddressesControllerCore extends FrontController
     /**
      * Initialize addresses controller
      * @see FrontController::init()
+     *
+     * @since 1.0.0
      */
     public function init()
     {
@@ -63,50 +74,52 @@ class AddressesControllerCore extends FrontController
     /**
      * Assign template vars related to page content
      * @see FrontController::initContent()
+     *
+     * @since 1.0.0
      */
     public function initContent()
     {
         parent::initContent();
 
         $total = 0;
-        $multiple_addresses_formated = [];
-        $ordered_fields = [];
+        $multipleAddressesFormated = [];
+        $orderedFields = [];
         $addresses = $this->context->customer->getAddresses($this->context->language->id);
         // @todo getAddresses() should send back objects
         foreach ($addresses as $detail) {
             $address = new Address($detail['id_address']);
-            $multiple_addresses_formated[$total] = AddressFormat::getFormattedLayoutData($address);
+            $multipleAddressesFormated[$total] = AddressFormat::getFormattedLayoutData($address);
             unset($address);
             ++$total;
 
             // Retro theme < 1.4.2
-            $ordered_fields = AddressFormat::getOrderedAddressFields($detail['id_country'], false, true);
+            $orderedFields = AddressFormat::getOrderedAddressFields($detail['id_country'], false, true);
         }
 
         // Retro theme 1.4.2
-        if ($key = array_search('Country:name', $ordered_fields)) {
-            $ordered_fields[$key] = 'country';
+        if ($key = array_search('Country:name', $orderedFields)) {
+            $orderedFields[$key] = 'country';
         }
 
-        $addresses_style = [
-            'company' => 'address_company',
-            'vat_number' => 'address_company',
-            'firstname' => 'address_name',
-            'lastname' => 'address_name',
-            'address1' => 'address_address1',
-            'address2' => 'address_address2',
-            'city' => 'address_city',
-            'country' => 'address_country',
-            'phone' => 'address_phone',
+        $addressesStyle = [
+            'company'      => 'address_company',
+            'vat_number'   => 'address_company',
+            'firstname'    => 'address_name',
+            'lastname'     => 'address_name',
+            'address1'     => 'address_address1',
+            'address2'     => 'address_address2',
+            'city'         => 'address_city',
+            'country'      => 'address_country',
+            'phone'        => 'address_phone',
             'phone_mobile' => 'address_phone_mobile',
-            'alias' => 'address_title',
+            'alias'        => 'address_title',
         ];
 
         $this->context->smarty->assign(
             [
-            'addresses_style' => $addresses_style,
-            'multipleAddresses' => $multiple_addresses_formated,
-            'ordered_fields' => $ordered_fields,
+            'addresses_style' => $addressesStyle,
+            'multipleAddresses' => $multipleAddressesFormated,
+            'ordered_fields' => $orderedFields,
             'addresses' => $addresses, // retro compat themes 1.5ibility Theme < 1.4.1
             ]
         );

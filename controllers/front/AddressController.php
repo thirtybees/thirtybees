@@ -46,12 +46,16 @@ class AddressControllerCore extends FrontController
 
     /**
      * @var Address Current address
+     *
+     * @since 1.0.0
      */
     protected $_address;
     protected $id_country;
 
     /**
      * Set default medias for this controller
+     *
+     * @since 1.0.0
      */
     public function setMedia()
     {
@@ -68,6 +72,8 @@ class AddressControllerCore extends FrontController
     /**
      * Initialize address controller
      * @see FrontController::init()
+     *
+     * @since 1.0.0
      */
     public function init()
     {
@@ -114,6 +120,8 @@ class AddressControllerCore extends FrontController
     /**
      * Start forms process
      * @see FrontController::postProcess()
+     *
+     * @since 1.0.0
      */
     public function postProcess()
     {
@@ -128,6 +136,8 @@ class AddressControllerCore extends FrontController
 
     /**
      * Process changes on an address
+     *
+     * @since 1.0.0
      */
     protected function processSubmitAddress()
     {
@@ -265,6 +275,8 @@ class AddressControllerCore extends FrontController
     /**
      * Assign template vars related to page content
      * @see FrontController::initContent()
+     *
+     * @since 1.0.0
      */
     public function initContent()
     {
@@ -305,6 +317,8 @@ class AddressControllerCore extends FrontController
 
     /**
      * Assign template vars related to countries display
+     *
+     * @since 1.0.0
      */
     protected function assignCountries()
     {
@@ -320,21 +334,23 @@ class AddressControllerCore extends FrontController
         $list = '';
         foreach ($countries as $country) {
             $selected = ((int) $country['id_country'] === $this->id_country) ? ' selected="selected"' : '';
-            $list .= '<option value="'.(int)$country['id_country'].'"'.$selected.'>'.htmlentities($country['name'], ENT_COMPAT, 'UTF-8').'</option>';
+            $list .= '<option value="'.(int) $country['id_country'].'"'.$selected.'>'.htmlentities($country['name'], ENT_COMPAT, 'UTF-8').'</option>';
         }
 
         // Assign vars
         $this->context->smarty->assign(
             [
-            'countries_list' => $list,
-            'countries' => $countries,
-            'sl_country' => (int)$this->id_country,
+                'countries_list' => $list,
+                'countries'      => $countries,
+                'sl_country'     => (int) $this->id_country,
             ]
         );
     }
 
     /**
      * Assign template vars related to address format
+     *
+     * @since 1.0.0
      */
     protected function assignAddressFormat()
     {
@@ -354,6 +370,8 @@ class AddressControllerCore extends FrontController
     /**
      * Assign template vars related to vat number
      * @todo move this in vatnumber module !
+     *
+     * @since 1.0.0
      */
     protected function assignVatNumber()
     {
@@ -379,6 +397,9 @@ class AddressControllerCore extends FrontController
         );
     }
 
+    /**
+     * @since 1.0.0
+     */
     public function displayAjax()
     {
         if (count($this->errors)) {
