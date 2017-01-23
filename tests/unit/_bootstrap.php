@@ -10,7 +10,7 @@ $kernel->init([
         __DIR__.'/../../classes',
         __DIR__.'/../../Core',
         __DIR__.'/../../Adapter',
-        __DIR__.'/../../override',
+        __DIR__.'/../_support/override',
     ],
 ]);
 
