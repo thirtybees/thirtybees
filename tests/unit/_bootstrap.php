@@ -4,10 +4,10 @@ require_once __DIR__.'/../../vendor/autoload.php';
 
 $kernel = AspectMock\Kernel::getInstance();
 $kernel->init([
-    'debug' => true,
     'appDir' => __DIR__,
     'includePaths' => [
         __DIR__.'/../../controllers',
+        __DIR__.'/../../classes',
         __DIR__.'/../../Core',
         __DIR__.'/../../Adapter',
         __DIR__.'/../../override',
