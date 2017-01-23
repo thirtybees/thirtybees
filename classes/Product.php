@@ -1974,7 +1974,7 @@ class ProductCore extends ObjectModel
             }
 
             $idsProducts = rtrim($idsProducts, ',');
-            Db::getInstance()->execute('CREATE TEMPORARY TABLE `'._DB_PREFIX_.'product_reductions` (id_product INT UNSIGNED NOT NULL DEFAULT 0, id_product_attribute INT UNSIGNED NOT NULL DEFAULT 0) ENGINE=MEMORY', false);
+            Db::getInstance()->execute('CREATE TEMPORARY TABLE IF NOT EXISTS `'._DB_PREFIX_.'product_reductions` (id_product INT UNSIGNED NOT NULL DEFAULT 0, id_product_attribute INT UNSIGNED NOT NULL DEFAULT 0) ENGINE=MEMORY', false);
             if ($idsProducts) {
                 Db::getInstance()->execute('INSERT INTO `'._DB_PREFIX_.'product_reductions` VALUES '.$idsProducts, false);
             }
@@ -1999,7 +1999,7 @@ class ProductCore extends ObjectModel
 
             $result = Db::getInstance()->getRow($sql);
 
-            Db::getInstance()->execute('DROP TEMPORARY TABLE `'._DB_PREFIX_.'product_reductions`', false);
+            Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'product_reductions`', false);
 
             if (!$idProduct = $result['id_product']) {
                 return false;
