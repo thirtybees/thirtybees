@@ -1199,22 +1199,6 @@ class AdminModulesControllerCore extends AdminController
             'modal_title' => $this->l('Translate this module'),
             'modal_content' => $modal_content
         ];
-
-        $modal_content = $this->context->smarty->fetch('controllers/modules/'.(($this->context->mode == Context::MODE_HOST) ? 'modal_not_trusted_blocked.tpl' : 'modal_not_trusted.tpl'));
-        $this->modals[] = [
-            'modal_id' => 'moduleNotTrusted',
-            'modal_class' => 'modal-lg',
-            'modal_title' => ($this->context->mode == Context::MODE_HOST) ? $this->l('This module cannot be installed') : $this->l('Important Notice'),
-            'modal_content' => $modal_content
-        ];
-
-        $modal_content = $this->context->smarty->fetch('controllers/modules/modal_not_trusted_country.tpl');
-        $this->modals[] = [
-            'modal_id' => 'moduleNotTrustedCountry',
-            'modal_class' => 'modal-lg',
-            'modal_title' => $this->l('This module is Untrusted for your country'),
-            'modal_content' => $modal_content
-        ];
     }
 
     public function initContent()
