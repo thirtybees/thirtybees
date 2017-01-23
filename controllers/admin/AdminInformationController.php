@@ -29,14 +29,41 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class AdminInformationControllerCore
+ *
+ * @since 1.0.0
+ */
 class AdminInformationControllerCore extends AdminController
 {
+    /**
+     * @var array $fileList
+     *
+     * @since 1.0.0
+     */
+    public $fileList = [];
+
+    /**
+     * @var string $excludeRegexp
+     *
+     * @since 1.0.0
+     */
+    protected $excludeRegexp = '^/(install(-dev|-new)?|vendor|themes|tools|cache|docs|download|img|localization|log|mails|translations|upload|modules|override/(.*|index\.php)$)';
+
+    /**
+     * AdminInformationControllerCore constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         $this->bootstrap = true;
         parent::__construct();
     }
 
+    /**
+     * @since 1.0.0
+     */
     public function initContent()
     {
         $this->show_toolbar = false;
@@ -44,62 +71,66 @@ class AdminInformationControllerCore extends AdminController
         parent::initContent();
     }
 
+    /**
+     * @since 1.0.0
+     */
     public function initToolbarTitle()
     {
         $this->toolbar_title = array_unique($this->breadcrumbs);
     }
 
+    /**
+     * @since 1.0.0
+     */
     public function initPageHeaderToolbar()
     {
         parent::initPageHeaderToolbar();
         unset($this->page_header_toolbar_btn['back']);
     }
 
+    /**
+     * @return string
+     *
+     * @since 1.0.0
+     */
     public function renderView()
     {
         $this->initPageHeaderToolbar();
-
-        $hosting_vars = [];
-        if (!defined('_PS_HOST_MODE_')) {
-            $hosting_vars = [
-                'version' => [
-                    'php' => phpversion(),
-                    'server' => $_SERVER['SERVER_SOFTWARE'],
-                    'memory_limit' => ini_get('memory_limit'),
-                    'max_execution_time' => ini_get('max_execution_time')
-                ],
-                'database' => [
-                    'version' => Db::getInstance()->getVersion(),
-                    'server' => _DB_SERVER_,
-                    'name' => _DB_NAME_,
-                    'user' => _DB_USER_,
-                    'prefix' => _DB_PREFIX_,
-                    'engine' => _MYSQL_ENGINE_,
-                    'driver' => Db::getClass(),
-                ],
-                'uname' => function_exists('php_uname') ? php_uname('s').' '.php_uname('v').' '.php_uname('m') : '',
-                'apache_instaweb' => Tools::apacheModExists('mod_instaweb')
-            ];
-        }
-
-        $shop_vars = [
-            'shop' => [
-                'ps' => _PS_VERSION_,
-                'url' => $this->context->shop->getBaseURL(),
+        $vars = [
+            'version'         => [
+                'php'                => phpversion(),
+                'server'             => $_SERVER['SERVER_SOFTWARE'],
+                'memory_limit'       => ini_get('memory_limit'),
+                'max_execution_time' => ini_get('max_execution_time'),
+            ],
+            'database'        => [
+                'version' => Db::getInstance()->getVersion(),
+                'server'  => _DB_SERVER_,
+                'name'    => _DB_NAME_,
+                'user'    => _DB_USER_,
+                'prefix'  => _DB_PREFIX_,
+                'engine'  => _MYSQL_ENGINE_,
+                'driver'  => Db::getClass(),
+            ],
+            'uname'           => function_exists('php_uname') ? php_uname('s').' '.php_uname('v').' '.php_uname('m') : '',
+            'apache_instaweb' => Tools::apacheModExists('mod_instaweb'),
+            'shop'            => [
+                'ps'    => _PS_VERSION_,
+                'url'   => $this->context->shop->getBaseURL(),
                 'theme' => $this->context->shop->theme_name,
             ],
-            'mail' => Configuration::get('PS_MAIL_METHOD') == 1,
-            'smtp' => [
-                'server' => Configuration::get('PS_MAIL_SERVER'),
-                'user' => Configuration::get('PS_MAIL_USER'),
-                'password' => Configuration::get('PS_MAIL_PASSWD'),
+            'mail'            => Configuration::get('PS_MAIL_METHOD') == 1,
+            'smtp'            => [
+                'server'     => Configuration::get('PS_MAIL_SERVER'),
+                'user'       => Configuration::get('PS_MAIL_USER'),
+                'password'   => Configuration::get('PS_MAIL_PASSWD'),
                 'encryption' => Configuration::get('PS_MAIL_SMTP_ENCRYPTION'),
-                'port' => Configuration::get('PS_MAIL_SMTP_PORT'),
+                'port'       => Configuration::get('PS_MAIL_SMTP_PORT'),
             ],
-            'user_agent' => $_SERVER['HTTP_USER_AGENT'],
+            'user_agent'      => $_SERVER['HTTP_USER_AGENT'],
         ];
 
-        $this->tpl_view_vars = array_merge($this->getTestResult(), array_merge($hosting_vars, $shop_vars));
+        $this->tpl_view_vars = array_merge($this->getTestResult(), array_merge($vars));
 
         return parent::renderView();
     }
@@ -111,99 +142,138 @@ class AdminInformationControllerCore extends AdminController
      */
     public function getTestResult()
     {
-        $tests_errors = [
-            'phpversion' => $this->l('Update your PHP version.'),
-            'upload' => $this->l('Configure your server to allow file uploads.'),
-            'system' => $this->l('Configure your server to allow the creation of directories and files with write permissions.'),
-            'gd' => $this->l('Enable the GD library on your server.'),
-            'mysql_support' => $this->l('Enable the MySQL support on your server.'),
-            'config_dir' => $this->l('Set write permissions for the "config" folder.'),
-            'cache_dir' => $this->l('Set write permissions for the "cache" folder.'),
-            'sitemap' => $this->l('Set write permissions for the "sitemap.xml" file.'),
-            'img_dir' => $this->l('Set write permissions for the "img" folder and subfolders.'),
-            'log_dir' => $this->l('Set write permissions for the "log" folder and subfolders.'),
-            'mails_dir' => $this->l('Set write permissions for the "mails" folder and subfolders.'),
-            'module_dir' => $this->l('Set write permissions for the "modules" folder and subfolders.'),
-            'theme_lang_dir' => sprintf($this->l('Set the write permissions for the "themes%s/lang/" folder and subfolders, recursively.'), _THEME_NAME_),
-            'translations_dir' => $this->l('Set write permissions for the "translations" folder and subfolders.'),
-            'customizable_products_dir' => $this->l('Set write permissions for the "upload" folder and subfolders.'),
-            'virtual_products_dir' => $this->l('Set write permissions for the "download" folder and subfolders.'),
-            'fopen' => $this->l('Allow the PHP fopen() function on your server.'),
-            'register_globals' => $this->l('Set PHP "register_globals" option to "Off".'),
-            'gz' => $this->l('Enable GZIP compression on your server.'),
-            'files' => $this->l('Some PrestaShop files are missing from your server.'),
-            'new_phpversion' => sprintf($this->l('You are using PHP %s version. Soon, the latest PHP version supported by PrestaShop will be PHP 5.4. To make sure you’re ready for the future, we recommend you to upgrade to PHP 5.4 now!'), phpversion())
+        $testsErrors = [
+            'PhpVersion'              => $this->l('Update your PHP version.'),
+            'Upload'                  => $this->l('Configure your server to allow file uploads.'),
+            'System'                  => $this->l('Configure your server to allow the creation of directories and files with write permissions.'),
+            'Gd'                      => $this->l('Enable the GD library on your server.'),
+            'MysqlSupport'            => $this->l('Enable the MySQL support on your server.'),
+            'ConfigDir'               => $this->l('Set write permissions for the "config" folder.'),
+            'CacheDir'                => $this->l('Set write permissions for the "cache" folder.'),
+            'itemap'                  => $this->l('Set write permissions for the "sitemap.xml" file.'),
+            'ImgDir'                  => $this->l('Set write permissions for the "img" folder and subfolders.'),
+            'LogDir'                  => $this->l('Set write permissions for the "log" folder and subfolders.'),
+            'MailsDir'                => $this->l('Set write permissions for the "mails" folder and subfolders.'),
+            'ModuleDir'               => $this->l('Set write permissions for the "modules" folder and subfolders.'),
+            'ThemeLangDir'            => sprintf($this->l('Set the write permissions for the "themes%s/lang/" folder and subfolders, recursively.'), _THEME_NAME_),
+            'TranslationsDir'         => $this->l('Set write permissions for the "translations" folder and subfolders.'),
+            'CustomizableProductsDir' => $this->l('Set write permissions for the "upload" folder and subfolders.'),
+            'VirtualProductsDir'      => $this->l('Set write permissions for the "download" folder and subfolders.'),
+            'Fopen'                   => $this->l('Allow the PHP fopen() function on your server.'),
+            'RegisterGlobals'         => $this->l('Set PHP "register_globals" option to "Off".'),
+            'Gz'                      => $this->l('Enable GZIP compression on your server.'),
+            'Files'                   => $this->l('Some thirty bees files are missing from your server.'),
+            'NewPhpVersion'           => sprintf($this->l('You are using PHP %s version. Soon, the oldest PHP version supported by thirty bees will be PHP 5.6. To make sure you’re ready for the future, we recommend you to upgrade to PHP 5.6 now!'), phpversion()),
         ];
 
         // Functions list to test with 'test_system'
         // Test to execute (function/args): lets uses the default test
-        $params_required_results = ConfigurationTest::check(ConfigurationTest::getDefaultTests());
+        $paramsRequiredResults = ConfigurationTest::check(ConfigurationTest::getDefaultTests());
+        $paramsOptionalResults = ConfigurationTest::check(ConfigurationTest::getDefaultTestsOp());
 
-        if (!defined('_PS_HOST_MODE_')) {
-            $params_optional_results = ConfigurationTest::check(ConfigurationTest::getDefaultTestsOp());
-        }
+        $failRequired = in_array('fail', $paramsRequiredResults);
 
-        $fail_required = in_array('fail', $params_required_results);
-
-        if ($fail_required && $params_required_results['files'] != 'ok') {
+        if ($failRequired && $paramsRequiredResults['files'] != 'ok') {
             $tmp = ConfigurationTest::testFiles(true);
             if (is_array($tmp) && count($tmp)) {
-                $tests_errors['files'] = $tests_errors['files'].'<br/>('.implode(', ', $tmp).')';
+                $testsErrors['files'] = $testsErrors['files'].'<br/>('.implode(', ', $tmp).')';
             }
         }
 
         $results = [
-            'failRequired' => $fail_required,
-            'testsErrors' => $tests_errors,
-            'testsRequired' => $params_required_results,
+            'failRequired'  => $failRequired,
+            'testsErrors'   => $testsErrors,
+            'testsRequired' => $paramsRequiredResults,
         ];
 
-        if (!defined('_PS_HOST_MODE_')) {
-            $results = array_merge($results, [
-                'failOptional' => in_array('fail', $params_optional_results),
-                'testsOptional' => $params_optional_results,
+        $results = array_merge(
+            $results,
+            [
+                'failOptional'  => in_array('fail', $paramsOptionalResults),
+                'testsOptional' => $paramsOptionalResults,
             ]
-            );
-        }
+        );
+
 
         return $results;
     }
 
+    /**
+     * @since 1.0.0
+     *
+     * @fixme: remove API call
+     */
     public function displayAjaxCheckFiles()
     {
-        $this->file_list = ['missing' => [], 'updated' => []];
-        $xml = @simplexml_load_file(_PS_API_URL_.'/xml/md5/'._PS_VERSION_.'.xml');
-        if (!$xml || !isset($xml->ps_root_dir[0])) {
-            die(json_encode($this->file_list));
+        $this->fileList = ['missing' => [], 'updated' => []];
+        if (file_exists(_PS_CONFIG_DIR_.'json/files.json')) {
+            $files = json_decode(file_get_contents(_PS_CONFIG_DIR_.'json/files.json'), true);
+            $this->getListOfUpdatedFiles($files);
         }
 
-        $this->getListOfUpdatedFiles($xml->ps_root_dir[0]);
-        die(json_encode($this->file_list));
+        die(json_encode($this->fileList));
     }
 
-    public function getListOfUpdatedFiles(SimpleXMLElement $dir, $path = '')
+    /**
+     * @return array md5 list
+     */
+    public function generateMd5List()
     {
-        $exclude_regexp = '(install(-dev|-new)?|themes|tools|cache|docs|download|img|localization|log|mails|translations|upload|modules|override/(:?.*)index.php$)';
-        $admin_dir = basename(_PS_ADMIN_DIR_);
+        $md5List = [];
+        $adminDir = str_replace(_PS_ROOT_DIR_, '', _PS_ADMIN_DIR_);
+        $iterator = new AppendIterator();
+        $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_PS_CLASS_DIR_)));
+        $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_PS_CONTROLLER_DIR_)));
+        $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_PS_ROOT_DIR_.'/Core')));
+        $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_PS_ROOT_DIR_.'/Adapter')));
+        $iterator->append(new DirectoryIterator(_PS_ADMIN_DIR_));
 
-        foreach ($dir->md5file as $file) {
-            $filename = preg_replace('#^admin/#', $admin_dir.'/', $path.$file['name']);
-            if (preg_match('#^'.$exclude_regexp.'#', $filename)) {
+        foreach ($iterator as $file) {
+            /** @var DirectoryIterator $file */
+            $filePath = $file->getPathname();
+            $filePath = str_replace(_PS_ROOT_DIR_, '', $filePath);
+            if (in_array($file->getFilename(), ['.', '..', 'index.php'])) {
                 continue;
             }
 
-            if (!file_exists(_PS_ROOT_DIR_.'/'.$filename)) {
-                $this->file_list['missing'][] = $filename;
-            } else {
-                $md5_local = md5_file(_PS_ROOT_DIR_.'/'.$filename);
-                if ($md5_local != (string)$file) {
-                    $this->file_list['updated'][] = $filename;
-                }
+            if (strpos($filePath, $adminDir) !== false) {
+                $filePath = str_replace($adminDir, '/admin', $filePath);
             }
+            $md5List[$filePath] = md5_file($file->getPathname());
         }
 
-        foreach ($dir->dir as $subdir) {
-            $this->getListOfUpdatedFiles($subdir, $path.$subdir['name'].'/');
+        file_put_contents(_PS_CONFIG_DIR_.'json/files.json', json_encode($md5List));
+
+        return $md5List;
+    }
+
+    /**
+     * @param array       $md5List
+     * @param string|null $basePath
+     *
+     * @since 1.0.0
+     */
+    public function getListOfUpdatedFiles(array $md5List, $basePath = null)
+    {
+        $adminDir = str_replace(_PS_ROOT_DIR_, '', _PS_ADMIN_DIR_);
+        if (is_null($basePath)) {
+            $basePath = rtrim(_PS_ROOT_DIR_, DIRECTORY_SEPARATOR);
+        }
+
+        foreach ($md5List as $file => $md5) {
+            if (strpos($file, '/admin') === 0) {
+                $file = str_replace('/admin', $adminDir, $file);
+            }
+
+            if (!file_exists($basePath.$file)) {
+                $this->fileList['missing'][] = $basePath.$file;
+                continue;
+            }
+
+            if (md5_file($basePath.$file) != $md5) {
+                $this->fileList['updated'][] = $basePath.$file;
+                continue;
+            }
         }
     }
 }
