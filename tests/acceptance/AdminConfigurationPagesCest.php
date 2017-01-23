@@ -101,12 +101,11 @@ class AdminConfigurationPagesCest
 
     public function _before(AcceptanceTester $I)
     {
-
+        $I->resizeWindow(1920, 1080);
     }
 
     public function _after(AcceptanceTester $I)
     {
-
     }
 
     private function login(AcceptanceTester $I)
@@ -121,7 +120,7 @@ class AdminConfigurationPagesCest
 
     private function checkAdminPage(AcceptanceTester $I, $child)
     {
-        $I->waitForElement(['css' => "#subtab-{$child} a"], 30);
+        $I->waitForElementVisible(['css' => "#subtab-{$child}"], 30);
         $I->click(['css' => "#subtab-{$child} a"]);
 
         $I->see('Quick Access');
@@ -132,8 +131,8 @@ class AdminConfigurationPagesCest
         $this->login($I);
 
         foreach ($this->adminPages as $parent => $children) {
-            $I->waitForElement(['css' => "#maintab-{$parent}"], 30);
-            $I->click(['css' => "#maintab-{$parent}"]);
+            $I->waitForElementVisible(['css' => "#maintab-{$parent}"], 30);
+            $I->click(['css' => "#maintab-{$parent} a"]);
 
             $I->see('Quick Access');
             foreach ($children as $child) {

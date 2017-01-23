@@ -230,7 +230,7 @@ abstract class DbCore
         }
 
         if (!$master) {
-            Db::loadSlaveServers();
+            self::loadSlaveServers();
         }
 
         $totalServers = count(self::$_servers);
@@ -242,7 +242,7 @@ abstract class DbCore
         }
 
         if (!isset(self::$instance[$idServer])) {
-            $class = Db::getClass();
+            $class = self::getClass();
             self::$instance[$idServer] = new $class(
                 self::$_servers[$idServer]['server'],
                 self::$_servers[$idServer]['user'],
@@ -405,19 +405,19 @@ abstract class DbCore
         $type = strtoupper($type);
         switch ($type) {
             case 'INSERT':
-                return $this->insert($table, $data, $useNull, $useCache, Db::INSERT, false);
+                return $this->insert($table, $data, $useNull, $useCache, self::INSERT, false);
 
             case 'INSERT IGNORE':
-                return $this->insert($table, $data, $useNull, $useCache, Db::INSERT_IGNORE, false);
+                return $this->insert($table, $data, $useNull, $useCache, self::INSERT_IGNORE, false);
 
             case 'REPLACE':
-                return $this->insert($table, $data, $useNull, $useCache, Db::REPLACE, false);
+                return $this->insert($table, $data, $useNull, $useCache, self::REPLACE, false);
 
             case 'UPDATE':
                 return $this->update($table, $data, $where, $limit, $useNull, $useCache, false);
 
             default:
-                throw new PrestaShopDatabaseException('Wrong argument (miss type) in Db::autoExecute()');
+                throw new PrestaShopDatabaseException('Wrong argument (miss type) in self::autoExecute()');
         }
     }
 
@@ -477,7 +477,7 @@ abstract class DbCore
      * @param array  $data       Data to insert as associative array. If $data is a list of arrays, multiple insert will be done
      * @param bool   $nullValues If we want to use NULL values instead of empty quotes
      * @param bool   $useCache
-     * @param int    $type       Must be Db::INSERT or Db::INSERT_IGNORE or Db::REPLACE
+     * @param int    $type       Must be self::INSERT or self::INSERT_IGNORE or self::REPLACE
      * @param bool   $addPrefix  Add or not _DB_PREFIX_ before table name
      *
      * @return bool
@@ -486,7 +486,7 @@ abstract class DbCore
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
-    public function insert($table, $data, $nullValues = false, $useCache = true, $type = Db::INSERT, $addPrefix = true)
+    public function insert($table, $data, $nullValues = false, $useCache = true, $type = self::INSERT, $addPrefix = true)
     {
         if (!$data && !$nullValues) {
             return true;
@@ -496,16 +496,16 @@ abstract class DbCore
             $table = _DB_PREFIX_.$table;
         }
 
-        if ($type == Db::INSERT) {
+        if ($type == self::INSERT) {
             $insertKeyword = 'INSERT';
-        } elseif ($type == Db::INSERT_IGNORE) {
+        } elseif ($type == self::INSERT_IGNORE) {
             $insertKeyword = 'INSERT IGNORE';
-        } elseif ($type == Db::REPLACE) {
+        } elseif ($type == self::REPLACE) {
             $insertKeyword = 'REPLACE';
-        } elseif ($type == Db::ON_DUPLICATE_KEY) {
+        } elseif ($type == self::ON_DUPLICATE_KEY) {
             $insertKeyword = 'INSERT';
         } else {
-            throw new PrestaShopDatabaseException('Bad keyword, must be Db::INSERT or Db::INSERT_IGNORE or Db::REPLACE');
+            throw new PrestaShopDatabaseException('Bad keyword, must be self::INSERT or self::INSERT_IGNORE or self::REPLACE');
         }
 
         // Check if $data is a list of row
@@ -543,7 +543,7 @@ abstract class DbCore
                     $values[] = $stringValue = $nullValues && ($value['value'] === '' || is_null($value['value'])) ? 'NULL' : "'{$value['value']}'";
                 }
 
-                if ($type == Db::ON_DUPLICATE_KEY) {
+                if ($type == self::ON_DUPLICATE_KEY) {
                     $duplicateKeyStringified .= '`'.bqSQL($key).'` = '.$stringValue.',';
                 }
             }
@@ -553,7 +553,7 @@ abstract class DbCore
         $keysStringified = implode(', ', $keys);
 
         $sql = $insertKeyword.' INTO `'.$table.'` ('.$keysStringified.') VALUES '.implode(', ', $valuesStringified);
-        if ($type == Db::ON_DUPLICATE_KEY) {
+        if ($type == self::ON_DUPLICATE_KEY) {
             $sql .= ' ON DUPLICATE KEY UPDATE '.substr($duplicateKeyStringified, 0, -1);
         }
 
@@ -852,7 +852,7 @@ abstract class DbCore
      */
     public static function checkConnection($server, $user, $pwd, $db, $newDbLink = true, $engine = null, $timeout = 5)
     {
-        return call_user_func_array([Db::getClass(), 'tryToConnect'], [$server, $user, $pwd, $db, $newDbLink, $engine, $timeout]);
+        return call_user_func_array([self::getClass(), 'tryToConnect'], [$server, $user, $pwd, $db, $newDbLink, $engine, $timeout]);
     }
 
     /**
@@ -866,7 +866,7 @@ abstract class DbCore
      */
     public static function checkEncoding($server, $user, $pwd)
     {
-        return call_user_func_array([Db::getClass(), 'tryUTF8'], [$server, $user, $pwd]);
+        return call_user_func_array([self::getClass(), 'tryUTF8'], [$server, $user, $pwd]);
     }
 
     /**
@@ -882,7 +882,7 @@ abstract class DbCore
      */
     public static function hasTableWithSamePrefix($server, $user, $pwd, $db, $prefix)
     {
-        return call_user_func_array([Db::getClass(), 'hasTableWithSamePrefix'], [$server, $user, $pwd, $db, $prefix]);
+        return call_user_func_array([self::getClass(), 'hasTableWithSamePrefix'], [$server, $user, $pwd, $db, $prefix]);
     }
 
     /**
@@ -899,7 +899,7 @@ abstract class DbCore
      */
     public static function checkCreatePrivilege($server, $user, $pwd, $db, $prefix, $engine = null)
     {
-        return call_user_func_array([Db::getClass(), 'checkCreatePrivilege'], [$server, $user, $pwd, $db, $prefix, $engine]);
+        return call_user_func_array([self::getClass(), 'checkCreatePrivilege'], [$server, $user, $pwd, $db, $prefix, $engine]);
     }
 
     /**
@@ -913,7 +913,7 @@ abstract class DbCore
      */
     public static function checkAutoIncrement($server, $user, $pwd)
     {
-        return call_user_func_array([Db::getClass(), 'checkAutoIncrement'], [$server, $user, $pwd]);
+        return call_user_func_array([self::getClass(), 'checkAutoIncrement'], [$server, $user, $pwd]);
     }
 
     /**
@@ -931,7 +931,7 @@ abstract class DbCore
     {
         Tools::displayAsDeprecated();
 
-        return Db::getInstance()->executeS($sql, true, $useCache);
+        return self::getInstance()->executeS($sql, true, $useCache);
     }
 
     /**
@@ -946,7 +946,7 @@ abstract class DbCore
     public static function ps($sql, $useCache = 1)
     {
         Tools::displayAsDeprecated();
-        $ret = Db::s($sql, $useCache);
+        $ret = self::s($sql, $useCache);
 
         return $ret;
     }
@@ -962,7 +962,7 @@ abstract class DbCore
     public static function ds($sql, $useCache = 1)
     {
         Tools::displayAsDeprecated();
-        Db::s($sql, $useCache);
+        self::s($sql, $useCache);
         die();
     }
 

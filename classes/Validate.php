@@ -165,7 +165,7 @@ class ValidateCore
      */
     public static function isOptFloat($float)
     {
-        return empty($float) || Validate::isFloat($float);
+        return empty($float) || self::isFloat($float);
     }
 
     /**
@@ -601,7 +601,7 @@ class ValidateCore
      */
     public static function isPasswdAdmin($plainTextPassword)
     {
-        return Validate::isPasswd($plainTextPassword, Validate::ADMIN_PASSWORD_LENGTH);
+        return self::isPasswd($plainTextPassword, self::ADMIN_PASSWORD_LENGTH);
     }
 
     /**
@@ -615,7 +615,7 @@ class ValidateCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function isPasswd($plainTextPassword, $size = Validate::PASSWORD_LENGTH)
+    public static function isPasswd($plainTextPassword, $size = self::PASSWORD_LENGTH)
     {
         return (Tools::strlen($plainTextPassword) >= $size && Tools::strlen($plainTextPassword) < 255);
     }
@@ -923,12 +923,12 @@ class ValidateCore
      */
     public static function isPercentage($value)
     {
-        return (Validate::isFloat($value) && $value >= 0 && $value <= 100);
+        return (self::isFloat($value) && $value >= 0 && $value <= 100);
     }
 
     public static function isNullOrUnsignedId($id)
     {
-        return $id === null || Validate::isUnsignedId($id);
+        return $id === null || self::isUnsignedId($id);
     }
 
     /**
@@ -944,7 +944,7 @@ class ValidateCore
      */
     public static function isUnsignedId($id)
     {
-        return Validate::isUnsignedInt($id); /* Because an id could be equal to zero when there is no association */
+        return self::isUnsignedInt($id); /* Because an id could be equal to zero when there is no association */
     }
 
     /**
@@ -1019,7 +1019,7 @@ class ValidateCore
      */
     public static function isUrlOrEmpty($url)
     {
-        return empty($url) || Validate::isUrl($url);
+        return empty($url) || self::isUrl($url);
     }
 
     /**
@@ -1151,7 +1151,7 @@ class ValidateCore
      */
     public static function isWeightUnit($unit)
     {
-        return (Validate::isGenericName($unit) & (Tools::strlen($unit) < 5));
+        return (self::isGenericName($unit) & (Tools::strlen($unit) < 5));
     }
 
     /**
@@ -1179,7 +1179,7 @@ class ValidateCore
      */
     public static function isDistanceUnit($unit)
     {
-        return (Validate::isGenericName($unit) & (Tools::strlen($unit) < 5));
+        return (self::isGenericName($unit) & (Tools::strlen($unit) < 5));
     }
 
     /**
@@ -1312,13 +1312,13 @@ class ValidateCore
     }
 
     /**
-     * @deprecated 1.0.0 Use Validate::isBoolId()
+     * @deprecated 1.0.0 Use self::isBoolId()
      */
     public static function isBool_Id($ids)
     {
         Tools::displayAsDeprecated();
 
-        return Validate::isBoolId($ids);
+        return self::isBoolId($ids);
     }
 
     /**
@@ -1424,7 +1424,7 @@ class ValidateCore
     {
         if (count($ids)) {
             foreach ($ids as $id) {
-                if ($id == 0 || !Validate::isUnsignedInt($id)) {
+                if ($id == 0 || !self::isUnsignedInt($id)) {
                     return false;
                 }
             }
@@ -1445,19 +1445,19 @@ class ValidateCore
     public static function isSceneZones($zones)
     {
         foreach ($zones as $zone) {
-            if (!isset($zone['x1']) || !Validate::isUnsignedInt($zone['x1'])) {
+            if (!isset($zone['x1']) || !self::isUnsignedInt($zone['x1'])) {
                 return false;
             }
-            if (!isset($zone['y1']) || !Validate::isUnsignedInt($zone['y1'])) {
+            if (!isset($zone['y1']) || !self::isUnsignedInt($zone['y1'])) {
                 return false;
             }
-            if (!isset($zone['width']) || !Validate::isUnsignedInt($zone['width'])) {
+            if (!isset($zone['width']) || !self::isUnsignedInt($zone['width'])) {
                 return false;
             }
-            if (!isset($zone['height']) || !Validate::isUnsignedInt($zone['height'])) {
+            if (!isset($zone['height']) || !self::isUnsignedInt($zone['height'])) {
                 return false;
             }
-            if (!isset($zone['id_product']) || !Validate::isUnsignedInt($zone['id_product'])) {
+            if (!isset($zone['id_product']) || !self::isUnsignedInt($zone['id_product'])) {
                 return false;
             }
         }

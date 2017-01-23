@@ -1,12 +1,13 @@
 {
     "require": {
         "guzzlehttp/guzzle": "~6.0",
-        "swiftmailer/swiftmailer": "~5.4"
+        "swiftmailer/swiftmailer": "~5.4",
+        "tecnickcom/tcpdf": "^6.2"
     },
     "require-dev": {
         "satooshi/php-coveralls": "^1.0",
         "phpunit/phpunit": "~4.8 || ~5.7",
-        "phake/phake": "@stable",
-        "codeception/codeception": "^2.2"
+        "codeception/codeception": "^2.2",
+        "codeception/aspect-mock": "^1.0 || ^2.0"
     }
 }
