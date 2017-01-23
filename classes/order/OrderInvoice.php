@@ -728,7 +728,7 @@ class OrderInvoiceCore extends ObjectModel
     public static function getCarrier($idOrderInvoice)
     {
         $carrier = false;
-        if ($idCarrier = OrderInvoice::getCarrierId($idOrderInvoice)) {
+        if ($idCarrier = self::getCarrierId($idOrderInvoice)) {
             $carrier = new Carrier((int) $idCarrier);
         }
 
@@ -847,7 +847,7 @@ class OrderInvoiceCore extends ObjectModel
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
-    public function getSiblingTotal($mod = OrderInvoice::TAX_INCL)
+    public function getSiblingTotal($mod = self::TAX_INCL)
     {
         $query = new DbQuery();
         $query->select('SUM(oi.total_paid_tax_incl) as total_paid_tax_incl, SUM(oi.total_paid_tax_excl) as total_paid_tax_excl');
@@ -867,9 +867,9 @@ class OrderInvoiceCore extends ObjectModel
         $row = Db::getInstance()->getRow($query);
 
         switch ($mod) {
-            case OrderInvoice::TAX_EXCL:
+            case self::TAX_EXCL:
                 return $row['total_paid_tax_excl'];
-            case OrderInvoice::TAX_INCL:
+            case self::TAX_INCL:
                 return $row['total_paid_tax_incl'];
             default:
                 return $row;

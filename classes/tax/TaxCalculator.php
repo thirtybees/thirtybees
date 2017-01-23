@@ -68,7 +68,7 @@ class TaxCalculatorCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function __construct(array $taxes = [], $computationMethod = TaxCalculator::COMBINE_METHOD)
+    public function __construct(array $taxes = [], $computationMethod = self::COMBINE_METHOD)
     {
         // sanity check
         foreach ($taxes as $tax) {
@@ -117,7 +117,7 @@ class TaxCalculatorCore
     public function getTotalRate()
     {
         $taxes = 0;
-        if ($this->computation_method == TaxCalculator::ONE_AFTER_ANOTHER_METHOD) {
+        if ($this->computation_method == self::ONE_AFTER_ANOTHER_METHOD) {
             $taxes = 1;
             foreach ($this->taxes as $tax) {
                 $taxes *= (1 + (abs($tax->rate) / 100));
@@ -167,7 +167,7 @@ class TaxCalculatorCore
         $taxesAmounts = [];
 
         foreach ($this->taxes as $tax) {
-            if ($this->computation_method == TaxCalculator::ONE_AFTER_ANOTHER_METHOD) {
+            if ($this->computation_method == self::ONE_AFTER_ANOTHER_METHOD) {
                 $taxesAmounts[$tax->id] = $priceTaxExcluded * (abs($tax->rate) / 100);
                 $priceTaxExcluded = $priceTaxExcluded + $taxesAmounts[$tax->id];
             } else {
