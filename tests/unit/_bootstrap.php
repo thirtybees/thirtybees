@@ -5,6 +5,7 @@ require_once __DIR__.'/../../vendor/autoload.php';
 $kernel = AspectMock\Kernel::getInstance();
 $kernel->init([
     'appDir' => __DIR__,
+    'cacheDir' => rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'mocks',
     'includePaths' => [
         __DIR__.'/../../classes',
         __DIR__.'/../../Core',
