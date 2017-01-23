@@ -6,7 +6,6 @@ $kernel = AspectMock\Kernel::getInstance();
 $kernel->init([
     'appDir' => __DIR__,
     'includePaths' => [
-        __DIR__.'/../../controllers',
         __DIR__.'/../../classes',
         __DIR__.'/../../Core',
         __DIR__.'/../../Adapter',
