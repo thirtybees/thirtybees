@@ -95,6 +95,24 @@ class LinkCore
         return $url.((strpos($url, '?')) ? '&' : '?').'deletePicture='.$idPicture;
     }
 
+    /**
+     * @param int|Product $product
+     * @param string|null $alias
+     * @param             string null  $category
+     * @param string|null $ean13
+     * @param int|null    $idLang
+     * @param int|null    $idShop
+     * @param int         $ipa
+     * @param bool        $forceRoutes
+     * @param bool        $relativeProtocol
+     * @param bool        $addAnchor
+     * @param array       $extraParams
+     *
+     * @return string
+     * @throws PrestaShopException
+     *
+     * @since 1.0.0
+     */
     public function getProductLink($product, $alias = null, $category = null, $ean13 = null, $idLang = null, $idShop = null, $ipa = 0, $forceRoutes = false, $relativeProtocol = false, $addAnchor = false, $extraParams = [])
     {
         $dispatcher = Dispatcher::getInstance();
@@ -163,18 +181,21 @@ class LinkCore
             $params['categories'] = implode('/', $cats);
         }
 
-        $anchor = '';
-        if ($ipa) {
-            /** @var MPCleanUrls $module */
-            $module = Module::getInstanceByName('mpcleanurls');
-            if (Validate::isLoadedObject($module)) {
-                $anchor = $module->getAnchor((int) $product->id, (int) $ipa, !Configuration::get('MPCLEANURLS_NO_ATTRIBUTE_ID'));
-            }
-        }
+        $anchor = $ipa ? $product->getAnchor((int) $ipa, (bool) $addAnchor) : '';
 
         return $url.$dispatcher->createUrl('product_rule', $idLang, array_merge($params, $extraParams), $forceRoutes, $anchor, $idShop);
     }
 
+    /**
+     * @param int|Category $category
+     * @param string|null  $alias
+     * @param int|null     $idLang
+     * @param string|null  $selectedFilters
+     * @param int|null     $idShop
+     * @param bool         $relativeProtocol
+     *
+     * @return string
+     */
     public function getCategoryLink($category, $alias = null, $idLang = null, $selectedFilters = null, $idShop = null, $relativeProtocol = false)
     {
         if (!$idLang) {
@@ -215,7 +236,16 @@ class LinkCore
         return $url.Dispatcher::getInstance()->createUrl($rule, $idLang, $params, $this->allow, '', $idShop);
     }
 
-
+    /**
+     * @param int|CMS     $cms
+     * @param string|null $alias
+     * @param null        $ssl
+     * @param null        $idLang
+     * @param null        $idShop
+     * @param bool        $relativeProtocol
+     *
+     * @return string
+     */
     public function getCMSLink($cms, $alias = null, $ssl = null, $idLang = null, $idShop = null, $relativeProtocol = false)
     {
         if (!$idLang) {
@@ -247,6 +277,15 @@ class LinkCore
         return $url.$dispatcher->createUrl('cms_rule', $idLang, $params, $this->allow, '', $idShop);
     }
 
+    /**
+     * @param int|CMSCategory $cmsCategory
+     * @param string|null     $alias
+     * @param int|null        $idLang
+     * @param int|null        $idShop
+     * @param bool            $relativeProtocol
+     *
+     * @return string
+     */
     public function getCMSCategoryLink($cmsCategory, $alias = null, $idLang = null, $idShop = null, $relativeProtocol = false)
     {
         if (empty($idLang)) {
@@ -285,16 +324,12 @@ class LinkCore
         return $url.$dispatcher->createUrl('cms_category_rule', $idLang, $params, $this->allow, '', $idShop);
     }
 
-    public function getBaseLinkPublic($idShop = null, $ssl = null, $relativeProtocol = false)
-    {
-        return $this->getBaseLink($idShop, $ssl, $relativeProtocol);
-    }
-
-    public function getLangLinkPublic($idLang = null, Context $context = null, $idShop = null)
-    {
-        return $this->getLangLink($idLang, $context, $idShop);
-    }
-
+    /**
+     * @param int $idCms
+     * @param int $idLang
+     *
+     * @return string
+     */
     protected function findCMSSubcategories($idCms, $idLang)
     {
         $sql = new DbQuery();
@@ -310,6 +345,12 @@ class LinkCore
         return trim($subcategories, '/');
     }
 
+    /**
+     * @param int $idCmsCategory
+     * @param int $idLang
+     *
+     * @return string
+     */
     protected function findCMSCategorySubcategories($idCmsCategory, $idLang)
     {
         if (empty($idCmsCategory) || $idCmsCategory === 1) {
@@ -325,6 +366,11 @@ class LinkCore
         return trim($subcategories, '/');
     }
 
+    /**
+     * @param int $idCmsCategory
+     *
+     * @return int
+     */
     protected function findCMSCategoryParent($idCmsCategory)
     {
         $sql = new DbQuery();
@@ -340,16 +386,15 @@ class LinkCore
     }
 
     /**
-     * @param null $idShop
-     * @param null $ssl
-     * @param bool $relativeProtocol
+     * @param int|null  $idShop
+     * @param bool|null $ssl
+     * @param bool      $relativeProtocol
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @since 1.0.0 Function has become public
      */
-    protected function getBaseLink($idShop = null, $ssl = null, $relativeProtocol = false)
+    public function getBaseLink($idShop = null, $ssl = null, $relativeProtocol = false)
     {
         static $forceSsl = null;
 
@@ -382,10 +427,9 @@ class LinkCore
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @since 1.0.0 Function has become public
      */
-    protected function getLangLink($idLang = null, Context $context = null, $idShop = null)
+    public function getLangLink($idLang = null, Context $context = null, $idShop = null)
     {
         if (!$context) {
             $context = Context::getContext();
@@ -507,7 +551,7 @@ class LinkCore
     /**
      * Create link after language change, for the change language block
      *
-     * @param int     $idLang Language ID
+     * @param int     $idLang  Language ID
      * @param Context $context
      *
      * @return string link
@@ -563,12 +607,13 @@ class LinkCore
     /**
      * Create a link to a supplier
      *
-     * @param mixed  $supplier Supplier object (can be an ID supplier, but deprecated)
-     * @param string $alias
-     * @param int    $idLang
+     * @param mixed    $supplier Supplier object (can be an ID supplier, but deprecated)
+     * @param string   $alias
+     * @param int      $idLang
+     * @param int|null $idShop
+     * @param bool     $relativeProtocol
      *
      * @return string
-     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -640,8 +685,7 @@ class LinkCore
     /**
      * Create a link to a module
      *
-     *
-     * @param string   $module Module name
+     * @param string   $module           Module name
      * @param string   $controller
      * @param array    $params
      * @param null     $ssl

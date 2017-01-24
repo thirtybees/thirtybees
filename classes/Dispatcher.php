@@ -390,8 +390,25 @@ class DispatcherCore
             $languageIds[] = (int) $context->language->id;
         }
 
+
+
         // Load the custom routes prior the defaults to avoid infinite loops
         if ($this->use_routes) {
+            // Set default routes
+            foreach ($languageIds as $idLang) {
+                foreach ($this->default_routes as $id => $route) {
+                    $this->addRoute(
+                        $id,
+                        $route['rule'],
+                        $route['controller'],
+                        $idLang,
+                        $route['keywords'],
+                        isset($route['params']) ? $route['params'] : array(),
+                        $idShop
+                    );
+                }
+            }
+
             /* Load routes from meta table */
             $sql = 'SELECT m.page, ml.url_rewrite, ml.id_lang
 					FROM `'._DB_PREFIX_.'meta` m
@@ -440,6 +457,21 @@ class DispatcherCore
                             $idShop
                         );
                     }
+                }
+            }
+        } else {
+            // Set default routes
+            foreach ($languageIds as $idLang) {
+                foreach ($this->default_routes as $id => $route) {
+                    $this->addRoute(
+                        $id,
+                        $route['rule'],
+                        $route['controller'],
+                        $idLang,
+                        $route['keywords'],
+                        isset($route['params']) ? $route['params'] : array(),
+                        $idShop
+                    );
                 }
             }
         }
@@ -775,18 +807,10 @@ class DispatcherCore
                 }
                 list($uri) = explode('?', $this->request_uri);
                 $uri = rtrim($uri, '/');
-                if (version_compare(_PS_VERSION_, '1.5.5.0', '<') && isset($this->routes[Context::getContext()->language->id])
-                    || version_compare(_PS_VERSION_, '1.5.5.0', '>=') && isset($this->routes[$idShop][Context::getContext()->language->id])) {
-                    if (version_compare(_PS_VERSION_, '1.5.5.0', '<')) {
-                        $routes = $this->routes[Context::getContext()->language->id];
-                    } else {
-                        $routes = $this->routes[$idShop][Context::getContext()->language->id];
-                    }
+                if (isset($this->routes[$idShop][Context::getContext()->language->id])) {
+                    $routes = $this->routes[$idShop][Context::getContext()->language->id];
                     foreach ($routes as $route) {
                         if (preg_match($route['regexp'], $uri, $m)) {
-                            // Try to recover the IDs which were previously unique
-                            // It will also tell us if the route leads to something
-                            // Skip this whole part if the url isn't rewritten
                             if (array_key_exists('rewrite', $m)) {
                                 if ($route['controller'] === 'category') {
                                     $idCategory = $this->categoryID($m['rewrite'], $uri);
@@ -1139,6 +1163,40 @@ class DispatcherCore
             }
         } // Build a classic url index.php?controller=foo&...
         else {
+            // Restore info
+            switch ($routeId) {
+                case 'product_rule':
+                    $params = [Product::$definition['primary'] => $params['id']];
+                    unset($route['keywords']['rewrite']);
+                    unset($queryParams['rewrite']);
+                    break;
+                case 'category_rule':
+                    $params = [Category::$definition['primary'] => $params['id']];
+                    unset($route['keywords']['rewrite']);
+                    unset($queryParams['rewrite']);
+                    break;
+                case 'supplier_rule':
+                    $params = [Supplier::$definition['primary'] => $params['id']];
+                    unset($route['keywords']['rewrite']);
+                    unset($queryParams['rewrite']);
+                    break;
+                case 'manufacturer_rule':
+                    $params = [Manufacturer::$definition['primary'] => $params['id']];
+                    unset($route['keywords']['rewrite']);
+                    unset($queryParams['rewrite']);
+                    break;
+                case 'cms_rule':
+                    $params = [CMS::$definition['primary'] => $params['id']];
+                    unset($route['keywords']['rewrite']);
+                    unset($queryParams['rewrite']);
+                    break;
+                case 'cms_category_rule':
+                    $route['params'] = [CMSCategory::$definition['primary'] => $params['id']];
+                    unset($route['keywords']['rewrite']);
+                    unset($queryParams['rewrite']);
+                    break;
+            }
+
             $addParams = [];
             foreach ($params as $key => $value) {
                 if (!isset($route['keywords'][$key]) && !isset($this->default_routes[$routeId]['keywords'][$key])) {
@@ -1195,7 +1253,7 @@ class DispatcherCore
 
         $results = Db::getInstance()->executeS($sql);
         if (!empty($results)) {
-            $baseLink = $link->getBaseLinkPublic().$link->getLangLinkPublic();
+            $baseLink = $link->getBaseLink().$link->getLangLink();
             if (count($results) > 1 && !empty($url)) {
                 // Multiple rewrites available, full URL needs to be checked
                 foreach ($results as $result) {
@@ -1251,7 +1309,7 @@ class DispatcherCore
 
         $results = Db::getInstance()->executeS($sql);
         if (!empty($results)) {
-            $baseLink = $link->getBaseLinkPublic().$link->getLangLinkPublic();
+            $baseLink = $link->getBaseLink().$link->getLangLink();
             if (count($results) > 1 && !empty($url)) {
                 // Multiple rewrites available, full URL needs to be checked
                 foreach ($results as $result) {
@@ -1360,7 +1418,7 @@ class DispatcherCore
 
         $results = Db::getInstance()->executeS($sql);
         if (!empty($results)) {
-            $baseLink = $link->getBaseLinkPublic().$link->getLangLinkPublic();
+            $baseLink = $link->getBaseLink().$link->getLangLink();
             if (count($results) > 1 && !empty($url)) {
                 // Multiple rewrites available, full URL needs to be checked
                 foreach ($results as $result) {
@@ -1426,7 +1484,7 @@ class DispatcherCore
         $results = Db::getInstance()->executeS($sql);
 
         if (!empty($results)) {
-            $baseLink = $link->getBaseLinkPublic().$link->getLangLinkPublic();
+            $baseLink = $link->getBaseLink().$link->getLangLink();
             if (count($results) > 1 && !empty($url)) {
                 // Multiple rewrites available, full URL needs to be checked
                 foreach ($results as $result) {
