@@ -34,7 +34,7 @@ Native modules will be refactored to remove legacy code. Code that supports prev
 * PayPal will totally be rewritten
 * Authorize.net will be refactored
 
-**New modules included in the core:**
+**New native modules:**
 
 * MailChimp sync
 * Stripe (Credit cards, Apple Pay, AliPay, Bitcoins)
