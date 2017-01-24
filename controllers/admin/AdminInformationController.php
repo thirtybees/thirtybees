@@ -173,10 +173,10 @@ class AdminInformationControllerCore extends AdminController
 
         $failRequired = in_array('fail', $paramsRequiredResults);
 
-        if ($failRequired && $paramsRequiredResults['files'] != 'ok') {
+        if ($failRequired && $paramsRequiredResults['Files'] != 'ok') {
             $tmp = ConfigurationTest::testFiles(true);
             if (is_array($tmp) && count($tmp)) {
-                $testsErrors['files'] = $testsErrors['files'].'<br/>('.implode(', ', $tmp).')';
+                $testsErrors['Files'] = $testsErrors['Files'].'<br/>('.implode(', ', $tmp).')';
             }
         }
 
