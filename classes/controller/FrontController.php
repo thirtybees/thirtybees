@@ -604,8 +604,13 @@ class FrontControllerCore extends Controller
             // These hooks aren't used for the mobile theme.
             // Needed hooks are called in the tpl files.
             
-            // To be removed: append extra css and metas to the header hook
             $hook_header = Hook::exec('displayHeader');
+            
+            if(isset($this->php_self)) // append some seo fields, canonical, hrefLang, rel prev/next
+                $hook_header = $this->getSeoFields();
+            
+
+            // To be removed: append extra css and metas to the header hook
             $extra_code = Configuration::getMultiple(['PS_CUSTOMCODE_METAS', 'PS_CUSTOMCODE_CSS']);
             $extra_css = $extra_code['PS_CUSTOMCODE_CSS'] ? '<style>'.$extra_code['PS_CUSTOMCODE_CSS'].'</style>' : '';
             $hook_header .= $extra_code['PS_CUSTOMCODE_METAS'] . $extra_css;
@@ -1997,4 +2002,187 @@ class FrontControllerCore extends Controller
 
         echo $template;
     }
+
+    /**
+     * Generates html for additional seo tags
+     * @return string html code for the new tags
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function getSeoFields()
+    {
+        $content = '';
+        $languages = Language::getLanguages();
+        $default_lang = Configuration::get('PS_LANG_DEFAULT');
+        switch ($this->php_self) {
+            
+            case 'product': // product page
+                $id_product = (int)Tools::getValue('id_product');
+                $canonical = $this->context->link->getProductLink($id_product);
+                $hreflang = $this->getHrefLang('product', $id_product, $languages, $default_lang);
+
+                break;
+                
+            case 'category':
+                $id_category = (int)Tools::getValue('id_category');
+                $content .= $this->getRelPrevNext('category', $id_category);
+                $canonical = $this->context->link->getCategoryLink((int)$id_category);
+                $hreflang = $this->getHrefLang('category', $id_category, $languages, $default_lang);
+
+                break;
+
+            case 'manufacturer':
+                $id_manufacturer = (int)Tools::getValue('id_manufacturer');
+                $content .= $this->getRelPrevNext('manufacturer', $id_manufacturer);
+                $hreflang = $this->getHrefLang('manufacturer', $id_manufacturer, $languages, $default_lang);
+
+                if(!$id_manufacturer)
+                    $canonical = $this->context->link->getPageLink('manufacturer');
+                else 
+                    $canonical = $this->context->link->getManufacturerLink($id_manufacturer);
+
+                
+                break;
+
+            case 'supplier':
+                $id_supplier = (int)Tools::getValue('id_supplier');
+                $content .= $this->getRelPrevNext('supplier', $id_supplier);
+                $hreflang = $this->getHrefLang('supplier', $id_supplier, $languages, $default_lang);
+            
+                if(!Tools::getValue('id_supplier'))
+                    $canonical = $this->context->link->getPageLink('supplier');
+                else 
+                    $canonical = $this->context->link->getSupplierLink((int)Tools::getValue('id_supplier'));
+
+                break;
+            default:
+                $canonical = $this->context->link->getPageLink($this->php_self);
+                $hreflang = $this->getHrefLang($this->php_self, 0, $languages, $default_lang);
+                break;              
+
+            
+        }
+        // build new content
+        $content .= '<link rel="canonical" href="'.$canonical.'">' . "\n";
+        if($hreflang)
+        {
+            foreach ($hreflang as $lang) {
+                $content .= "$lang\n";
+            }
+        }
+        return $content;
+        
+
+    }
+
+    /**
+     * creates hrefLang links for various entities
+     *
+     * @param string $entity name of the object/page to get the link for
+     * @param int $idItem eventual id of the object (if any)
+     * @param array $languages list of languages
+     * @param int $idLangDefault id of the default language
+     *
+     * @return string html of the hreflang tags
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function getHrefLang($entity, $idItem, $languages, $idLangDefault)
+    {
+        foreach ($languages as $lang)
+        {
+            switch ($entity) {
+                case 'product':
+                    $lnk = $this->context->link->getProductLink((int)$idItem, null, null, null, $lang['id_lang']);
+                    break;
+                
+                case 'category':
+                    $lnk = $this->context->link->getCategoryLink((int)$idItem, null, $lang['id_lang']);
+                    break;
+                case 'manufacturer':
+                    if(!$idItem)
+                        $lnk = $this->context->link->getPageLink('manufacturer', null, $lang['id_lang']);
+                    else 
+                        $lnk = $this->context->link->getManufacturerLink((int)$idItem, null, $lang['id_lang']);
+                    break;
+                case 'supplier':
+                    if(!$idItem)
+                        $lnk = $this->context->link->getPageLink('supplier', null, $lang['id_lang']);
+                    else 
+                        $lnk = $this->context->link->getSupplierLink((int)$idItem, null, $lang['id_lang']);
+                    break;
+                default:
+                    $lnk = $this->context->link->getPageLink($entity, null, $lang['id_lang']);
+                    break;
+            }
+
+            // append page number
+            if ($p = Tools::getValue('p'))
+                $lnk .= "?p=$p";
+            
+            $links[] = '<link rel="alternate" href="'.$lnk.'" hreflang="'.$lang['iso_code'].'">';
+            if($lang['id_lang'] == $idLangDefault)
+                $links[] = '<link rel="alternate" href="'.$lnk.'" hreflang="x-default">';
+        }
+        return $links;
+
+    }
+
+    /**
+     * Get rel prev/next tags for paginated pages
+     * @param  string $entity type of object
+     * @param  int $idItem id of he object
+     * @return string string containing the new tags
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function getRelPrevNext($entity, $idItem)
+    {
+
+        switch ($entity) {
+            case 'category':
+                $category = new Category((int)$idItem);
+                $nb_products = $category->getProducts(null, null, null, null,null, true);
+                break;
+            case 'manufacturer':
+                $manufacturer = new Manufacturer($idItem);
+                $nb_products = $manufacturer->getProducts($manufacturer->id, null, null, null, null, null, true);
+                break;
+            case 'supplier':
+                $supplier = new Supplier($idItem);
+                $nb_products = $supplier->getProducts($supplier->id, null, null, null, null, null, true);
+                break;
+            default:
+                break;
+        }
+        
+        
+        $p = Tools::getValue('p');
+        $n = (int)Configuration::get('PS_PRODUCTS_PER_PAGE');
+
+        $total_pages = ceil($nb_products / $n);
+
+        $linkprev = '';
+        $linknext = '';
+        $request_page = $this->context->link->getPaginationLink($entity, $idItem, $n, false, 1, false);
+        if(!$p)
+            $p = 1;
+
+        if($p > 1) // we need prev
+            $linkprev = $this->context->link->goPage($request_page, $p-1);
+
+        if ($total_pages > 1 && $p + 1 <= $total_pages) {
+            $linknext = $this->context->link->goPage($request_page, $p+1);
+        }
+
+        $return = '';
+
+        if($linkprev)
+            $return .= '<link rel="prev" href="'.$linkprev.'">';
+        if($linknext)
+            $return .= '<link rel="next" href="'.$linknext.'">';
+
+        return $return;
+    }    
+
 }
