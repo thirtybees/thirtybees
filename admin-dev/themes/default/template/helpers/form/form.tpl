@@ -487,6 +487,40 @@
 										{/if}
 									{/if}
 									{if isset($input.maxchar) && $input.maxchar}</div>{/if}
+								{elseif $input.type == 'code'}
+									<div class="ace-container col-lg-9">
+										<div class="ace-editor" data-name="{$input.id|escape:'htmlall':'UTF-8'}" id="ace{$input.id|escape:'htmlall':'UTF-8'}">{$fields_value[$input.name]|escape:'html':'UTF-8'}</div>
+										<input type="hidden" id="{$input.id|escape:'htmlall':'UTF-8'}" name="{$input.id|escape:'htmlall':'UTF-8'}" value="{$fields_value[$input.name]|escape:'html':'UTF-8'}">
+									</div>
+									<script>
+										(function () {
+											function initAce() {
+												if (typeof ace === 'undefined') {
+													setTimeout(initAce, 100);
+													return;
+												}
+												var editor = ace.edit("ace{$input.id|escape:'htmlall':'UTF-8'}");
+												editor.setTheme("ace/theme/xcode");
+												editor.getSession().setMode("ace/mode/{if isset($input.mode)}{$input.mode|escape:'javascript':'UTF-8'}{else}javascript{/if}");
+												editor.setOptions({
+													fontSize: {if isset($input.fontSize)}{$inpout.fontSize|intval}{else}14{/if},
+													minLines: {if isset($input.minLines)}{$input.minLines|intval}{else}10{/if},
+													maxLines: {if isset($input.maxLines)}{$input.maxLines|intval}{else}10{/if},
+													showPrintMargin: {if isset($input.showPrintMargin) && $input.showPrintMargin}true{else}false{/if},
+													enableBasicAutocompletion: {if isset($input.enableBasicAutocompletion) && $input.enableBasicAutocompletion}true{else}false{/if},
+													enableSnippets: {if isset($input.enableSnippets) && $input.enableSnippets}true{else}false{/if},
+													enableLiveAutocompletion: {if isset($input.enableLiveAutocompletion) && $input.enableLiveAutocompletion}true{else}false{/if}
+												});
+												var input_name = $('#ace{$key|escape:'htmlall':'UTF-8'}').attr('data-name');
+												$('#' + input_name).val(editor.getValue());
+												editor.on('change', function () {
+													$('#' + input_name).val(editor.getValue());
+												});
+											}
+
+											initAce();
+										})();
+									</script>
 								{elseif $input.type == 'checkbox'}
 									{if isset($input.expand)}
 										<a class="btn btn-default show_checkbox{if strtolower($input.expand.default) == 'hide'} hidden{/if}" href="#">

@@ -204,8 +204,42 @@
 										</div>
 									{elseif $field['type'] == 'textarea'}
 										<div class="col-lg-9">
-											<textarea class="textarea-autosize" name={$key} cols="{$field['cols']}" rows="{$field['rows']}">{$field['value']|escape:'html':'UTF-8'}</textarea>
+											<textarea class="textarea-autosize" name="{$key|escape:'htmlall':'UTF-8'}" cols="{$field['cols']|intval}" rows="{$field['rows']|intval}">{$field['value']|escape:'html':'UTF-8'}</textarea>
 										</div>
+									{elseif $field['type'] == 'code'}
+									<div class="ace-container col-lg-9">
+										<div class="ace-editor" data-name="{$key|escape:'htmlall':'UTF-8'}" id="ace{$key|escape:'htmlall':'UTF-8'}">{$field['value']|escape:'html':'UTF-8'}</div>
+										<input type="hidden" id="{$key|escape:'htmlall':'UTF-8'}" name="{$key|escape:'htmlall':'UTF-8'}" value="{$field['value']|escape:'html':'UTF-8'}">
+									</div>
+										<script>
+											(function () {
+												function initAce() {
+													if (typeof ace === 'undefined') {
+														setTimeout(initAce, 100);
+														return;
+													}
+													var editor = ace.edit("ace{$key|escape:'htmlall':'UTF-8'}");
+													editor.setTheme("ace/theme/xcode");
+													editor.getSession().setMode("ace/mode/{if isset($field['mode'])}{$field['mode']|escape:'javascript':'UTF-8'}{else}javascript{/if}");
+													editor.setOptions({
+														fontSize: {if isset($field['fontSize'])}{$field['fontSize']|intval}{else}14{/if},
+														minLines: {if isset($field['minLines'])}{$field['minLines']|intval}{else}10{/if},
+														maxLines: {if isset($field['maxLines'])}{$field['maxLines']|intval}{else}10{/if},
+														showPrintMargin: {if isset($field['showPrintMargin']) && $field['showPrintMargin']}true{else}false{/if},
+														enableBasicAutocompletion: {if isset($field['enableBasicAutocompletion']) && $field['enableBasicAutocompletion']}true{else}false{/if},
+														enableSnippets: {if isset($field['enableSnippets']) && $field['enableSnippets']}true{else}false{/if},
+														enableLiveAutocompletion: {if isset($field['enableLiveAutocompletion']) && $field['enableLiveAutocompletion']}true{else}false{/if}
+													});
+													var input_name = $('#ace{$key|escape:'htmlall':'UTF-8'}').attr('data-name');
+													$('#' + input_name).val(editor.getValue());
+													editor.on('change', function () {
+														$('#' + input_name).val(editor.getValue());
+													});
+												}
+
+												initAce();
+											})();
+										</script>
 									{elseif $field['type'] == 'file'}
 										<div class="col-lg-9">{$field['file']}</div>
 									{elseif $field['type'] == 'color'}
