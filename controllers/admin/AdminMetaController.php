@@ -138,7 +138,6 @@ class AdminMetaControllerCore extends AdminController
             $urlDescription .= $this->l('2) Give it write permissions (CHMOD 666 on Unix system).');
         }
 
-
         // Options for shop URL if multishop is disabled
         $shopUrlOptions = [
             'title' => $this->l('Set shop URL'),
@@ -315,13 +314,14 @@ class AdminMetaControllerCore extends AdminController
         $keywords = [];
         foreach (Dispatcher::getInstance()->default_routes[$routeId]['keywords'] as $keyword => $data) {
             $keywords[] = ((isset($data['param'])) ? '<span class="red">'.$keyword.'*</span>' : $keyword);
+
         }
 
         $this->fields_options['routes']['fields']['PS_ROUTE_'.$routeId] = [
             'title' =>    $title,
             'desc' => sprintf($this->l('Keywords: %s'), implode(', ', $keywords)),
             'validation' => 'isString',
-            'type' => 'text',
+            'type' => 'textLang',
             'size' => 70,
             'defaultValue' => Dispatcher::getInstance()->default_routes[$routeId]['rule'],
         ];
@@ -359,7 +359,7 @@ class AdminMetaControllerCore extends AdminController
         foreach ($files as $name => $file) {
             $k = (preg_match('#^module-#', $file)) ? 'module' : 'common';
             $pages[$k]['query'][] = [
-                'id' => $file,
+                'id'   => $file,
                 'page' => $name,
             ];
         }
@@ -447,7 +447,7 @@ class AdminMetaControllerCore extends AdminController
     }
 
     /**
-     * @return bool|Theme|void
+     * @return bool|Theme|null
      *
      * @since 1.0.0
      */
@@ -531,7 +531,7 @@ class AdminMetaControllerCore extends AdminController
                 ];
             }
             if (count($themeMetaValue) > 0) {
-                Db::getInstance()->insert('theme_meta', $themeMetaValue, false, true, DB::INSERT_IGNORE);
+                Db::getInstance()->insert('theme_meta', $themeMetaValue, false, true, Db::INSERT_IGNORE);
             }
         }
 
@@ -631,12 +631,12 @@ class AdminMetaControllerCore extends AdminController
     }
 
     /**
-     * @param int  $idLang
-     * @param null $orderBy
-     * @param null $orderWay
-     * @param int  $start
-     * @param null $limit
-     * @param bool $idLangShop
+     * @param int         $idLang
+     * @param string|null $orderBy
+     * @param string|null $orderWay
+     * @param int         $start
+     * @param int|null    $limit
+     * @param int|bool    $idLangShop
      *
      * @since 1.0.0
      */
@@ -662,34 +662,39 @@ class AdminMetaControllerCore extends AdminController
     /**
      * Validate route syntax and save it in configuration
      *
-     * @param string $routeId
+     * @param string $route
      *
-     * @since 1.0.0
+     * @since 1.0.0 Added optional $idLang parameter
      */
-    public function checkAndUpdateRoute($routeId)
+    public function checkAndUpdateRoute($route)
     {
         $defaultRoutes = Dispatcher::getInstance()->default_routes;
-        if (!isset($defaultRoutes[$routeId])) {
+        if (!isset($defaultRoutes[$route])) {
             return;
         }
 
-        $rule = Tools::getValue('PS_ROUTE_'.$routeId);
-        if (!Validate::isRoutePattern($rule)) {
-            $this->errors[] = sprintf('The route %s is not valid', htmlspecialchars($rule));
-        } else {
-            if (!$rule || $rule == $defaultRoutes[$routeId]['rule']) {
-                Configuration::updateValue('PS_ROUTE_'.$routeId, '');
+        $multiLang = !Tools::getValue('PS_ROUTE_'.$route);
 
-                return;
+        $errors = array();
+        $rule = Tools::getValue('PS_ROUTE_'.$route);
+        foreach (Language::getIDs(false) as $idLang) {
+            if ($multiLang) {
+                $rule = Tools::getValue('PS_ROUTE_'.$route.'_'.$idLang);
             }
-
-            $errors = [];
-            if (!Dispatcher::getInstance()->validateRoute($routeId, $rule, $errors)) {
+            if (!Dispatcher::getInstance()->validateRoute($route, $rule, $errors)) {
                 foreach ($errors as $error) {
-                    $this->errors[] = sprintf('Keyword "{%1$s}" required for route "%2$s" (rule: "%3$s")', $error, $routeId, htmlspecialchars($rule));
+                    $this->errors[] = sprintf('Keyword "{%1$s}" required for route "%2$s" (rule: "%3$s")', $error, $route, htmlspecialchars($rule));
                 }
             } else {
-                Configuration::updateValue('PS_ROUTE_'.$routeId, $rule);
+                if (preg_match('/}[a-zA-Z0-9-_]*{/', $rule)) {
+                    if (!preg_match('/:\/}[a-zA-Z0-9-_]*{/', $rule) && !preg_match('/}[a-zA-Z0-9-_]*{\/:/', $rule)) {
+                        $this->errors[] = sprintf('Route "%1$s" with rule: "%2$s" needs a correct delimiter', $route, htmlspecialchars($rule));
+                    } else {
+                        Configuration::updateValue('PS_ROUTE_'.$route, array((int) $idLang => $rule));
+                    }
+                } else {
+                    Configuration::updateValue('PS_ROUTE_'.$route, array((int) $idLang => $rule));
+                }
             }
         }
     }
@@ -914,6 +919,7 @@ class AdminMetaControllerCore extends AdminController
      * Check if a file is writable
      *
      * @param string $file
+     *
      * @return bool
      *
      * @since 1.0.0
