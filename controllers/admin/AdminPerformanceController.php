@@ -116,10 +116,10 @@ class AdminPerformanceControllerCore extends AdminController
         $this->initFieldsetFeaturesDetachables();
         $this->initFieldsetCCC();
 
-        if (!defined('_PS_HOST_MODE_')) {
-            $this->initFieldsetMediaServer();
-            $this->initFieldsetCiphering();
-        }
+        $this->initFieldsetMediaServer();
+        $this->initFieldsetCiphering();
+
+        $this->initFieldsetCaching();
 
         // Reindex fields
         $this->fields_form = array_values($this->fields_form);
@@ -652,6 +652,109 @@ class AdminPerformanceControllerCore extends AdminController
     }
 
     /**
+     * @since 1.0.0
+     */
+    public function initFieldsetCaching()
+    {
+        $phpdocLangs = ['en', 'zh', 'fr', 'de', 'ja', 'pl', 'ro', 'ru', 'fa', 'es', 'tr'];
+        $phpLang = in_array($this->context->language->iso_code, $phpdocLangs) ? $this->context->language->iso_code : 'en';
+        $warningMemcache = ' '.$this->l('(you must install the [a]Memcache PECL extension[/a])');
+        $warningMemcache = str_replace('[a]', '<a href="http://www.php.net/manual/'.substr($phpLang, 0, 2).'/memcache.installation.php" target="_blank">', $warningMemcache);
+        $warningMemcache = str_replace('[/a]', '</a>', $warningMemcache);
+        $warningMemcached = ' '.$this->l('(you must install the [a]Memcached PECL extension[/a])');
+        $warningMemcached = str_replace('[a]', '<a href="http://www.php.net/manual/'.substr($phpLang, 0, 2).'/memcached.installation.php" target="_blank">', $warningMemcached);
+        $warningMemcached = str_replace('[/a]', '</a>', $warningMemcached);
+        $warningApc = ' '.$this->l('(you must install the [a]APC PECL extension[/a])');
+        $warningApc = str_replace('[a]', '<a href="http://php.net/manual/'.substr($phpLang, 0, 2).'/apc.installation.php" target="_blank">', $warningApc);
+        $warningApc = str_replace('[/a]', '</a>', $warningApc);
+        $warningRedis = ' '.$this->l('(you must install the [a]redis extension[/a])');
+        $warningRedis = str_replace('[a]', '<a href="https://pecl.php.net/package/redis" target="_blank">', $warningRedis);
+        $warningRedis = str_replace('[/a]', '</a>', $warningRedis);
+
+        $warningFs = ' '.sprintf($this->l('(the directory %s must be writable)'), realpath(_PS_CACHEFS_DIRECTORY_));
+        $this->fields_form[6]['form'] = [
+            'legend'           => [
+                'title' => $this->l('Caching'),
+                'icon'  => 'icon-desktop',
+            ],
+            'input'            => [
+                [
+                    'type' => 'hidden',
+                    'name' => 'cache_up',
+                ],
+                [
+                    'type'    => 'switch',
+                    'label'   => $this->l('Use cache'),
+                    'name'    => 'cache_active',
+                    'is_bool' => true,
+                    'values'  => [
+                        [
+                            'id'    => 'cache_active_on',
+                            'value' => 1,
+                            'label' => $this->l('Enabled'),
+                        ],
+                        [
+                            'id'    => 'cache_active_off',
+                            'value' => 0,
+                            'label' => $this->l('Disabled'),
+                        ],
+                    ],
+                ],
+                [
+                    'type'   => 'radio',
+                    'label'  => $this->l('Caching system'),
+                    'name'   => 'caching_system',
+                    'hint'   => $this->l('The CacheFS system should be used only when the infrastructure contains one front-end server. If you are not sure, ask your hosting company.'),
+                    'values' => [
+                        [
+                            'id'    => 'CacheFs',
+                            'value' => 'CacheFs',
+                            'label' => $this->l('File System').(is_writable(_PS_CACHEFS_DIRECTORY_) ? '' : $warningFs),
+                        ],
+                        [
+                            'id'    => 'CacheMemcache',
+                            'value' => 'CacheMemcache',
+                            'label' => $this->l('Memcached via PHP::Memcache').(extension_loaded('memcache') ? '' : $warningMemcache),
+                        ],
+                        [
+                            'id'    => 'CacheMemcached',
+                            'value' => 'CacheMemcached',
+                            'label' => $this->l('Memcached via PHP::Memcached').(extension_loaded('memcached') ? '' : $warningMemcached),
+                        ],
+                        [
+                            'id'    => 'CacheApc',
+                            'value' => 'CacheApc',
+                            'label' => $this->l('APC').(extension_loaded('apcu')? '' : $warningApc),
+                        ],
+                        [
+                            'id'    => 'CacheRedis',
+                            'value' => 'CacheRedis',
+                            'label' => $this->l('redis').(extension_loaded('redis') ? '' : $warningRedis),
+                        ],
+                    ],
+                ],
+                [
+                    'type'  => 'text',
+                    'label' => $this->l('Directory depth'),
+                    'name'  => 'ps_cache_fs_directory_depth',
+                ],
+            ],
+            'submit'           => [
+                'title' => $this->l('Save'),
+            ],
+            'memcachedServers' => true,
+            'redisServers' => true,
+        ];
+        $depth = Configuration::get('PS_CACHEFS_DIRECTORY_DEPTH');
+        $this->fields_value['cache_active'] = Configuration::get('TB_CACHE_ENABLED');
+        $this->fields_value['caching_system'] = Configuration::get('TB_CACHE_SYSTEM');
+        $this->fields_value['ps_cache_fs_directory_depth'] = $depth ? $depth : 1;
+        $this->tpl_form_vars['memcached_servers'] = CacheMemcache::getMemcachedServers();
+        $this->tpl_form_vars['redis_servers'] = CacheRedis::getRedisServers();
+        $this->tpl_form_vars['_PS_CACHE_ENABLED_'] = Configuration::get('TB_CACHE_ENABLED');
+    }
+
+    /**
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -665,6 +768,81 @@ class AdminPerformanceControllerCore extends AdminController
         }
 
         Hook::exec('action'.get_class($this).ucfirst($this->action).'Before', ['controller' => $this]);
+        if (Tools::isSubmit('submitAddMemcachedServer')) {
+            if ($this->tabAccess['add'] === '1') {
+                if (!Tools::getValue('memcachedIp')) {
+                    $this->errors[] = Tools::displayError('The Memcached IP is missing.');
+                }
+                if (!Tools::getValue('memcachedPort')) {
+                    $this->errors[] = Tools::displayError('The Memcached port is missing.');
+                }
+                if (!Tools::getValue('memcachedWeight')) {
+                    $this->errors[] = Tools::displayError('The Memcached weight is missing.');
+                }
+                if (!count($this->errors)) {
+                    if (CacheMemcache::addServer(pSQL(Tools::getValue('memcachedIp')),
+                        (int) Tools::getValue('memcachedPort'),
+                        (int) Tools::getValue('memcachedWeight'))) {
+                        Tools::redirectAdmin(self::$currentIndex.'&token='.Tools::getValue('token').'&conf=4');
+                    } else {
+                        $this->errors[] = Tools::displayError('The Memcached server cannot be added.');
+                    }
+                }
+            } else {
+                $this->errors[] = Tools::displayError('You do not have permission to add this.');
+            }
+        }
+        if (Tools::getValue('deleteMemcachedServer')) {
+            if ($this->tabAccess['add'] === '1') {
+                if (CacheMemcache::deleteServer((int) Tools::getValue('deleteMemcachedServer'))) {
+                    Tools::redirectAdmin(self::$currentIndex.'&token='.Tools::getValue('token').'&conf=4');
+                } else {
+                    $this->errors[] = Tools::displayError('There was an error when attempting to delete the Memcached server.');
+                }
+            } else {
+                $this->errors[] = Tools::displayError('You do not have permission to delete this.');
+            }
+        }
+        if (Tools::isSubmit('submitAddRedisServer')) {
+            if ($this->tabAccess['add'] === '1') {
+                if (!Tools::getValue('redisIp')) {
+                    $this->errors[] = Tools::displayError('The Redis IP is missing.');
+                }
+                if (!Tools::getValue('redisPort')) {
+                    $this->errors[] = Tools::displayError('The Redis port is missing.');
+                }
+                if (!Tools::isSubmit('redisAuth')) {
+                    $this->errors[] = Tools::displayError('The Redis auth is missing.');
+                }
+                if (!Tools::isSubmit('redisDb')) {
+                    $this->errors[] = Tools::displayError('The Redis database is missing.');
+                }
+                if (!count($this->errors)) {
+                    if (CacheRedis::addServer(
+                        pSQL(Tools::getValue('redisIp')),
+                        (int) Tools::getValue('redisPort'),
+                        pSQL(Tools::getValue('redisAuth')),
+                        (int) Tools::getValue('redisDb'))) {
+                        Tools::redirectAdmin(self::$currentIndex.'&token='.Tools::getValue('token').'&conf=4');
+                    } else {
+                        $this->errors[] = Tools::displayError('The Redis server cannot be added.');
+                    }
+                }
+            } else {
+                $this->errors[] = Tools::displayError('You do not have permission to add this.');
+            }
+        }
+        if (Tools::getValue('deleteRedisServer')) {
+            if ($this->tabAccess['add'] === '1') {
+                if (CacheRedis::deleteServer((int) Tools::getValue('deleteRedisServer'))) {
+                    Tools::redirectAdmin(self::$currentIndex.'&token='.Tools::getValue('token').'&conf=4');
+                } else {
+                    $this->errors[] = Tools::displayError('There was an error when attempting to delete the Redis server.');
+                }
+            } else {
+                $this->errors[] = Tools::displayError('You do not have permission to delete this.');
+            }
+        }
 
         $redirectAdmin = false;
         if ((bool) Tools::getValue('smarty_up')) {
@@ -848,6 +1026,66 @@ class AdminPerformanceControllerCore extends AdminController
             }
         }
 
+        if ((bool) Tools::getValue('cache_up')) {
+            if ($this->tabAccess['edit'] === '1') {
+                $cacheActive = (bool) Tools::getValue('cache_active');
+                if ($cachingSystem = preg_replace('[^a-zA-Z0-9]', '', Tools::getValue('caching_system'))) {
+                    Configuration::updateGlobalValue('TB_CACHE_SYSTEM', $cachingSystem);
+                    Configuration::updateGlobalValue('TB_CACHE_ENABLED', true);
+                } else {
+                    Configuration::updateGlobalValue('TB_CACHE_ENABLED', false);
+                    $this->errors[] = Tools::displayError('The caching system is missing.');
+                }
+                if ($cacheActive) {
+                    if ($cachingSystem == 'CacheMemcache' && !extension_loaded('memcache')) {
+                        $this->errors[] = Tools::displayError('To use Memcached, you must install the Memcache PECL extension on your server.').'
+							<a href="http://www.php.net/manual/en/memcache.installation.php">http://www.php.net/manual/en/memcache.installation.php</a>';
+                    } elseif ($cachingSystem == 'CacheMemcached' && !extension_loaded('memcached')) {
+                        $this->errors[] = Tools::displayError('To use Memcached, you must install the Memcached PECL extension on your server.').'
+							<a href="http://www.php.net/manual/en/memcached.installation.php">http://www.php.net/manual/en/memcached.installation.php</a>';
+                    } elseif ($cachingSystem == 'CacheApc'  && !extension_loaded('apc') && !extension_loaded('apcu')) {
+                        $this->errors[] = Tools::displayError('To use APC cache, you must install the APC PECL extension on your server.').'
+							<a href="http://fr.php.net/manual/fr/apc.installation.php">http://fr.php.net/manual/fr/apc.installation.php</a>';
+                    } elseif ($cachingSystem == 'CacheXcache' && !extension_loaded('xcache')) {
+                        $this->errors[] = Tools::displayError('To use Xcache, you must install the Xcache extension on your server.').'
+							<a href="http://xcache.lighttpd.net">http://xcache.lighttpd.net</a>';
+                    } elseif ($cachingSystem == 'CacheRedis' && !extension_loaded('redis')) {
+                        $this->errors[] = Tools::displayError('To use Redis, you must install the Redis extension on your server.').'
+							<a href="https://pecl.php.net/package/redis">https://pecl.php.net/package/redis</a>';
+                    } elseif ($cachingSystem == 'CacheXcache' && !ini_get('xcache.var_size')) {
+                        $this->errors[] = Tools::displayError('To use Xcache, you must configure "xcache.var_size" for the Xcache extension (recommended value 16M to 64M).').'
+							<a href="http://xcache.lighttpd.net/wiki/XcacheIni">http://xcache.lighttpd.net/wiki/XcacheIni</a>';
+                    } elseif ($cachingSystem == 'CacheFs') {
+                        if (!is_dir(_PS_CACHEFS_DIRECTORY_)) {
+                            @mkdir(_PS_CACHEFS_DIRECTORY_, 0777, true);
+                        } elseif (!is_writable(_PS_CACHEFS_DIRECTORY_)) {
+                            $this->errors[] = sprintf(Tools::displayError('To use CacheFS, the directory %s must be writable.'), realpath(_PS_CACHEFS_DIRECTORY_));
+                        }
+                    }
+                    $cacheEnabled = Configuration::get('TB_CACHE_ENABLED');
+                    $cacheSystem = Configuration::get('TB_CACHE_SYSTEM');
+                    if ($cachingSystem == 'CacheFs') {
+                        if (!($depth = Tools::getValue('ps_cache_fs_directory_depth'))) {
+                            $this->errors[] = Tools::displayError('Please set a directory depth.');
+                        }
+                        if (!count($this->errors)) {
+                            CacheFs::deleteCacheDirectory();
+                            CacheFs::createCacheDirectories((int) $depth);
+                            Configuration::updateValue('PS_CACHEFS_DIRECTORY_DEPTH', (int) $depth);
+                        }
+                    } elseif ($cachingSystem == 'CacheMemcache' && !$cacheEnabled && $cacheSystem == 'CacheMemcache') {
+                        Cache::getInstance()->flush();
+                    } elseif ($cachingSystem == 'CacheMemcached' && !$cacheEnabled && $cachingSystem == 'CacheMemcached') {
+                        Cache::getInstance()->flush();
+                    } elseif ($cachingSystem == 'CacheRedis' && !$cacheEnabled && $cacheSystem == 'CacheRedis') {
+                        Cache::getInstance()->flush();
+                    }
+                }
+            } else {
+                $this->errors[] = Tools::displayError('You do not have permission to edit this.');
+            }
+        }
+
         if ((bool) Tools::getValue('empty_smarty_cache')) {
             $redirectAdmin = true;
             Tools::clearSmartyCache();
@@ -933,7 +1171,7 @@ class AdminPerformanceControllerCore extends AdminController
             $definesClean = php_strip_whitespace(_PS_ROOT_DIR_.'/config/defines_custom.inc.php');
         }
 
-        $m = array();
+        $m = [];
         if (!preg_match('/define\(\'_PS_MODE_DEV_\', ([a-zA-Z]+)\);/Ui', $definesClean, $m)) {
             $definesClean = php_strip_whitespace(_PS_ROOT_DIR_.'/config/defines.inc.php');
             if (!preg_match('/define\(\'_PS_MODE_DEV_\', ([a-zA-Z]+)\);/Ui', $definesClean, $m)) {
@@ -961,7 +1199,7 @@ class AdminPerformanceControllerCore extends AdminController
             $definesClean = php_strip_whitespace(_PS_ROOT_DIR_.'/config/defines_custom.inc.php');
         }
 
-        $m = array();
+        $m = [];
         if (!preg_match('/define\(\'_PS_DEBUG_PROFILING_\', ([a-zA-Z]+)\);/Ui', $definesClean, $m)) {
             $definesClean = php_strip_whitespace(_PS_ROOT_DIR_.'/config/defines.inc.php');
             if (!preg_match('/define\(\'_PS_DEBUG_PROFILING_\', ([a-zA-Z]+)\);/Ui', $definesClean, $m)) {
@@ -1172,5 +1410,86 @@ class AdminPerformanceControllerCore extends AdminController
         }
 
         return self::PROFILING_SUCCEEDED;
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    public function displayAjaxTestMemcachedServer()
+    {
+        if (_PS_MODE_DEMO_) {
+            die(Tools::displayError('This functionality has been disabled.'));
+        }
+
+        if (Tools::isSubmit('action') && Tools::getValue('action') == 'test_memcached_server') {
+            $host = pSQL(Tools::getValue('sHost', ''));
+            $port = (int) Tools::getValue('sPort', 0);
+            $type = Tools::getValue('type', '');
+            if ($host != '' && $port != 0) {
+                $res = 0;
+                if ($type == 'memcached') {
+                    if (extension_loaded('memcached') &&
+                        @fsockopen($host, $port)
+                    ) {
+                        $memcache = new Memcached();
+                        $memcache->addServer($host, $port);
+                        $res =  in_array('255.255.255', $memcache->getVersion(), true) === false;
+                    }
+                } else {
+                    if (function_exists('memcache_get_server_status') &&
+                        function_exists('memcache_connect') &&
+                        @fsockopen($host, $port)
+                    ) {
+                        $memcache = @memcache_connect($host, $port);
+                        $res      = @memcache_get_server_status($memcache, $host, $port);
+                    }
+                }
+                die(json_encode(array($res)));
+            }
+        }
+        die;
+    }
+
+    /**
+     * Perform a short test to see if Redis is enabled
+     * and return the result through ajax
+     *
+     * @since 1.0.0
+     */
+    public function displayAjaxTestRedisServer()
+    {
+        /* PrestaShop demo mode */
+        if (_PS_MODE_DEMO_) {
+            die(Tools::displayError('This functionality has been disabled.'));
+        }
+        /* PrestaShop demo mode*/
+        if (Tools::isSubmit('action') && Tools::getValue('action') == 'test_redis_server') {
+            $host = pSQL(Tools::getValue('sHost', ''));
+            $port = (int) Tools::getValue('sPort', 0);
+            $auth = (int) Tools::getValue('sAuth', 0);
+            $db = (int) Tools::getValue('sDb', 0);
+            if ($host != '' && $port != 0) {
+                $res = 0;
+                if (extension_loaded('redis')) {
+                    try {
+                        $redis = new Redis();
+                        if ($redis->connect($host, $port)) {
+                            $redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_PHP);
+                            if (!empty($auth)) {
+                                if (!($redis->auth($auth))) {
+                                    die(json_encode(array(0)));
+                                }
+                            }
+                            $redis->select($db);
+                            $res = (Tools::strtolower($redis->ping() === '+PONG') ? 1 : 0);
+                        }
+                    } catch (Exception $e) {
+                        die('0');
+                    }
+                }
+                die(json_encode(array($res)));
+            }
+        }
+        die;
     }
 }
