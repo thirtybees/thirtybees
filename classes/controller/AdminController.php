@@ -4392,7 +4392,9 @@ class AdminControllerCore extends Controller
                     } else {
                         $val = (isset($options['cast']) ? $options['cast'](Tools::getValue($key)) : Tools::getValue($key));
                         if ($this->validateField($val, $options)) {
-                            if (Validate::isCleanHtml($val)) {
+                            if ($options['type'] === 'code') {
+                                Configuration::updateValue($key, $val, true);
+                            } elseif (Validate::isCleanHtml($val)) {
                                 Configuration::updateValue($key, $val);
                             } else {
                                 $this->errors[] = Tools::displayError('Can not add configuration '.$key);

@@ -118,44 +118,24 @@ class AdminMetaControllerCore extends AdminController
         $urlDescription = '';
         if ($this->checkConfiguration($this->ht_file)) {
             $generalFields['PS_HTACCESS_DISABLE_MULTIVIEWS'] = [
-                'title'      => $this->l('Disable Apache\'s MultiViews option'),
-                'hint'       => $this->l('Enable this option only if you have problems with URL rewriting.'),
+                'title' => $this->l('Disable Apache\'s MultiViews option'),
+                'hint' => $this->l('Enable this option only if you have problems with URL rewriting.'),
                 'validation' => 'isBool',
-                'cast'       => 'intval',
-                'type'       => 'bool',
+                'cast' => 'intval',
+                'type' => 'bool',
             ];
 
             $generalFields['PS_HTACCESS_DISABLE_MODSEC'] = [
-                'title'      => $this->l('Disable Apache\'s mod_security module'),
-                'hint'       => $this->l('Some of PrestaShop\'s features might not work correctly with a specific configuration of Apache\'s mod_security module. We recommend to turn it off.'),
+                'title' => $this->l('Disable Apache\'s mod_security module'),
+                'hint' => $this->l('Some of PrestaShop\'s features might not work correctly with a specific configuration of Apache\'s mod_security module. We recommend to turn it off.'),
                 'validation' => 'isBool',
-                'cast'       => 'intval',
-                'type'       => 'bool',
+                'cast' => 'intval',
+                'type' => 'bool',
             ];
         } else {
             $urlDescription = $this->l('Before you can use this tool, you need to:');
             $urlDescription .= $this->l('1) Create a blank .htaccess file in your root directory.');
             $urlDescription .= $this->l('2) Give it write permissions (CHMOD 666 on Unix system).');
-        }
-
-        // Options to generate robot.txt
-        $robotsDescription = $this->l('Your robots.txt file MUST be in your website\'s root directory and nowhere else (e.g. http://www.example.com/robots.txt).');
-        if ($this->checkConfiguration($this->rb_file)) {
-            $robotsDescription .= $this->l('Generate your "robots.txt" file by clicking on the following button (this will erase the old robots.txt file)');
-            $robotsSubmit = ['name' => 'submitRobots', 'title' => $this->l('Generate robots.txt file')];
-        } else {
-            $robotsDescription .= $this->l('Before you can use this tool, you need to:');
-            $robotsDescription .= $this->l('1) Create a blank robots.txt file in your root directory.');
-            $robotsDescription .= $this->l('2) Give it write permissions (CHMOD 666 on Unix system).');
-        }
-
-        $robotsOptions = [
-            'title' => $this->l('Robots file generation'),
-            'description' => $robotsDescription,
-        ];
-
-        if (isset($robotsSubmit)) {
-            $robotsOptions['submit'] = $robotsSubmit;
         }
 
         // Options for shop URL if multishop is disabled
@@ -169,24 +149,24 @@ class AdminMetaControllerCore extends AdminController
             if ($this->url) {
                 $shopUrlOptions['description'] = $this->l('Here you can set the URL for your shop. If you migrate your shop to a new URL, remember to change the values below.');
                 $shopUrlOptions['fields'] = [
-                    'domain' => [
-                        'title' =>    $this->l('Shop domain'),
-                        'validation' => 'isString',
-                        'type' => 'text',
+                    'domain'     => [
+                        'title'        => $this->l('Shop domain'),
+                        'validation'   => 'isString',
+                        'type'         => 'text',
                         'defaultValue' => $this->url->domain,
                     ],
                     'domain_ssl' => [
-                        'title' =>    $this->l('SSL domain'),
-                        'validation' => 'isString',
-                        'type' => 'text',
+                        'title'        => $this->l('SSL domain'),
+                        'validation'   => 'isString',
+                        'type'         => 'text',
                         'defaultValue' => $this->url->domain_ssl,
                     ],
-                    'uri' => [
-                        'title' =>    $this->l('Base URI'),
-                        'validation' => 'isString',
-                        'type' => 'text',
+                    'uri'        => [
+                        'title'        => $this->l('Base URI'),
+                        'validation'   => 'isString',
+                        'type'         => 'text',
                         'defaultValue' => $this->url->physical_uri,
-                    ]
+                    ],
                 ];
                 $shopUrlOptions['submit'] = ['title' => $this->l('Save')];
             }
@@ -197,11 +177,11 @@ class AdminMetaControllerCore extends AdminController
         // List of options
         $this->fields_options = [
             'general' => [
-                'title' =>    $this->l('Set up URLs'),
+                'title'       => $this->l('Set up URLs'),
                 'description' => $urlDescription,
-                'fields' =>    $generalFields,
-                'submit' => ['title' => $this->l('Save')]
-            ]
+                'fields'      => $generalFields,
+                'submit'      => ['title' => $this->l('Save')],
+            ],
         ];
 
         $this->fields_options['shop_url'] = $shopUrlOptions;
@@ -216,7 +196,73 @@ class AdminMetaControllerCore extends AdminController
             $this->fields_options['routes']['submit'] = ['title' => $this->l('Save')];
         }
 
-        $this->fields_options['robots'] = $robotsOptions;
+        // Options to generate robot.txt
+        $robotsDescription = $this->l('Your robots.txt file MUST be in your website\'s root directory and nowhere else (e.g. http://www.example.com/robots.txt).').' ';
+        if ($this->checkConfiguration($this->rb_file)) {
+            $robotsDescription .= $this->l('Generate your "robots.txt" file by clicking on the following button (this will erase the old robots.txt file)');
+            $robotsSubmit = [];
+        } else {
+            $robotsDescription .= $this->l('Before you can use this tool, you need to:');
+            $robotsDescription .= $this->l('1) Create a blank robots.txt file in your root directory.');
+            $robotsDescription .= $this->l('2) Give it write permissions (CHMOD 666 on Unix system).');
+        }
+
+        $this->fields_options['robots'] = [
+            'title'  => $this->l('General'),
+            'description' => $robotsDescription,
+            'icon'   => 'icon-cogs',
+            'fields' => [
+                'robots' => [
+                    'title'                     => $this->l('robots.txt'),
+                    'type'                      => 'code',
+                    'mode'                      => 'text',
+                    'enableBasicAutocompletion' => true,
+                    'enableSnippets'            => true,
+                    'enableLiveAutocompletion'  => true,
+                    'maxLines'                  => 400,
+                    'visibility'                => Shop::CONTEXT_ALL,
+                    'value'                     => Tools::isSubmit('robots') ? Tools::getValue('robots') : @file_get_contents(_PS_ROOT_DIR_.'/robots.txt'),
+                    'auto_value'                => false,
+                ],
+            ],
+            'submit' => isset($robotsSubmit) ? ['title' => $this->l('Save')] : null,
+            'buttons' => [
+                'generateRobots' => [
+                    'class' => 'btn btn-default pull-left',
+                    'title' => $this->l('Generate robots.txt file'),
+                    'icon' => 'process-icon-cogs',
+                    'href' => Context::getContext()->link->getAdminLink('AdminMeta').'&submitGenerateRobots',
+                ],
+            ],
+        ];
+
+        $this->fields_options['htaccess'] = [
+            'title'  => $this->l('.htaccess file'),
+            'icon'   => 'icon-cogs',
+            'fields' => [
+                'htaccess' => [
+                    'title'                     => $this->l('.htaccess'),
+                    'type'                      => 'code',
+                    'mode'                      => 'apache_conf',
+                    'enableBasicAutocompletion' => true,
+                    'enableSnippets'            => true,
+                    'enableLiveAutocompletion'  => true,
+                    'maxLines'                  => 400,
+                    'visibility'                => Shop::CONTEXT_ALL,
+                    'value'                     => Tools::isSubmit('htaccess') ? Tools::getValue('htaccess') : @file_get_contents(_PS_ROOT_DIR_.'/.htaccess'),
+                    'auto_value'                => false,
+                ],
+            ],
+            'submit' => ['title' => $this->l('Save')],
+            'buttons' => [
+                'generateHtaccess' => [
+                    'class' => 'btn btn-default pull-left',
+                    'title' => $this->l('Generate .htaccess file'),
+                    'icon' => 'process-icon-cogs',
+                    'href' => Context::getContext()->link->getAdminLink('AdminMeta').'&submitGenerateHtaccess',
+                ],
+            ],
+        ];
     }
 
     /**
@@ -258,7 +304,7 @@ class AdminMetaControllerCore extends AdminController
     }
 
     /**
-     * @param int    $routeId
+     * @param string $routeId
      * @param string $title
      *
      * @since 1.0.0
@@ -268,6 +314,7 @@ class AdminMetaControllerCore extends AdminController
         $keywords = [];
         foreach (Dispatcher::getInstance()->default_routes[$routeId]['keywords'] as $keyword => $data) {
             $keywords[] = ((isset($data['param'])) ? '<span class="red">'.$keyword.'*</span>' : $keyword);
+
         }
 
         $this->fields_options['routes']['fields']['PS_ROUTE_'.$routeId] = [
@@ -395,6 +442,7 @@ class AdminMetaControllerCore extends AdminController
                 'title' => $this->l('Save'),
             ],
         ];
+
         return parent::renderForm();
     }
 
@@ -442,8 +490,21 @@ class AdminMetaControllerCore extends AdminController
             }
 
             Hook::exec('actionAdminMetaSave');
-        } elseif (Tools::isSubmit('submitRobots')) {
+        } elseif (Tools::isSubmit('submitGenerateRobots')) {
             $this->generateRobotsFile();
+        } elseif (Tools::isSubmit('submitGenerateHtaccess')) {
+            ddd('kanker');
+            Tools::generateHtaccess();
+        }
+
+        if (Tools::isSubmit('robots')) {
+            $this->saveRobotsFile();
+            unset($_POST['robots']);
+        }
+
+        if (Tools::isSubmit('htaccess')) {
+            $this->saveHtaccessFile();
+            unset($_POST['htaccess']);
         }
 
         if (Tools::isSubmit('PS_ROUTE_product_rule')) {
@@ -786,7 +847,29 @@ class AdminMetaControllerCore extends AdminController
     }
 
     /**
+     * Save robots.txt file
+     *
+     * @since 1.0.0
+     */
+    public function saveRobotsFile()
+    {
+        @file_put_contents(_PS_ROOT_DIR_.'/robots.txt', Tools::getValue('robots'));
+    }
+
+    /**
+     * Save .htaccess file
+     *
+     * @since 1.0.0
+     */
+    public function saveHtaccessFile()
+    {
+        @file_put_contents(_PS_ROOT_DIR_.'/.htaccess', Tools::getValue('htaccess'));
+    }
+
+    /**
      * Function used to render the options for this controller
+     *
+     * @return string
      *
      * @since 1.0.0
      */
