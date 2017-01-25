@@ -3002,7 +3002,11 @@ class ToolsCore
         // Check current content of .htaccess and save all code outside of prestashop comments
         $specific_before = $specific_after = '';
         if (file_exists($path)) {
-            $content = file_get_contents($path);
+            if (self::isSubmit('htaccess')) {
+                $content = self::getValue('htaccess');
+            } else {
+                $content = file_get_contents($path);
+            }
             if (preg_match('#^(.*)\# ~~start~~.*\# ~~end~~[^\n]*(.*)$#s', $content, $m)) {
                 $specific_before = $m[1];
                 $specific_after = $m[2];

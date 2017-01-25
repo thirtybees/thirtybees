@@ -378,15 +378,15 @@
 				{if isset($categoryData['submit']) || isset($categoryData['buttons'])}
 					<div class="panel-footer">
 						{if isset($categoryData['submit']) && !empty($categoryData['submit'])}
-						<button type="{if isset($categoryData['submit']['type'])}{$categoryData['submit']['type']}{else}submit{/if}" {if isset($categoryData['submit']['id'])}id="{$categoryData['submit']['id']}"{/if} class="btn btn-default pull-right" name="{if isset($categoryData['submit']['name'])}{$categoryData['submit']['name']}{else}submitOptions{$table}{/if}"><i class="process-icon-{if isset($categoryData['submit']['imgclass'])}{$categoryData['submit']['imgclass']}{else}save{/if}"></i> {$categoryData['submit']['title']}</button>
+							<button type="{if isset($categoryData['submit']['type'])}{$categoryData['submit']['type']}{else}submit{/if}" {if isset($categoryData['submit']['id'])}id="{$categoryData['submit']['id']}"{/if} class="btn btn-default pull-right" name="{if isset($categoryData['submit']['name'])}{$categoryData['submit']['name']}{else}submitOptions{$table}{/if}"><i class="process-icon-{if isset($categoryData['submit']['imgclass'])}{$categoryData['submit']['imgclass']}{else}save{/if}"></i> {$categoryData['submit']['title']}</button>
 						{/if}
 						{if isset($categoryData['buttons'])}
 						{foreach from=$categoryData['buttons'] item=btn key=k}
-						{if isset($btn.href) && trim($btn.href) != ''}
-							<a href="{$btn.href|escape:'html':'UTF-8'}" {if isset($btn['id'])}id="{$btn['id']}"{/if} class="btn btn-default{if isset($btn['class'])} {$btn['class']}{/if}" {if isset($btn.js) && $btn.js} onclick="{$btn.js}"{/if}>{if isset($btn['icon'])}<i class="{$btn['icon']}" ></i> {/if}{$btn.title}</a>
-						{else}
-							<button type="{if isset($btn['type'])}{$btn['type']}{else}button{/if}" {if isset($btn['id'])}id="{$btn['id']}"{/if} class="{if isset($btn['class'])}{$btn['class']}{else}btn btn-default{/if}" name="{if isset($btn['name'])}{$btn['name']}{else}submitOptions{$table}{/if}"{if isset($btn.js) && $btn.js} onclick="{$btn.js}"{/if}>{if isset($btn['icon'])}<i class="{$btn['icon']}" ></i> {/if}{$btn.title}</button>
-						{/if}
+							{if isset($btn.href) && trim($btn.href) != ''}
+								<a href="{$btn.href|escape:'html':'UTF-8'}" {if isset($btn['id'])}id="{$btn['id']}"{/if} class="btn btn-default{if isset($btn['class'])} {$btn['class']}{/if}" {if isset($btn.js) && $btn.js} onclick="{$btn.js}"{/if}>{if isset($btn['icon'])}<i class="{$btn['icon']}" ></i> {/if}{$btn.title}</a>
+							{else}
+								<button type="{if isset($btn['type'])}{$btn['type']}{else}button{/if}" {if isset($btn['id'])}id="{$btn['id']}"{/if} class="{if isset($btn['class'])}{$btn['class']}{else}btn btn-default{/if}" name="{if isset($btn['name'])}{$btn['name']}{else}submitOptions{$table}{/if}"{if isset($btn.js) && $btn.js} onclick="{$btn.js}"{/if}>{if isset($btn['icon'])}<i class="{$btn['icon']}" ></i> {/if}{$btn.title}</button>
+							{/if}
 						{/foreach}
 						{/if}
 					</div>
