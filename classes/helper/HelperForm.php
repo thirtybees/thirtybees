@@ -256,7 +256,12 @@ class HelperFormCore extends Helper
                             }
                             break;
 
-                        case 'shop' :
+                        case 'code':
+                            $this->context->controller->addJS(rtrim(_PS_ROOT_DIR_, DIRECTORY_SEPARATOR)._PS_JS_DIR_.'ace/ace.js');
+                            $this->context->controller->addCSS(rtrim(_PS_ROOT_DIR_, DIRECTORY_SEPARATOR)._PS_JS_DIR_.'ace/aceinput.css');
+                            break;
+
+                        case 'shop':
                             $disableShops = isset($params['disable_shared']) ? $params['disable_shared'] : false;
                             $params['html'] = $this->renderAssoShop($disableShops);
                             if (Shop::getTotalShops(false) == 1) {

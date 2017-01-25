@@ -124,6 +124,11 @@ class HelperOptionsCore extends Helper
                     $this->context->controller->addJqueryPlugin('autosize');
                 }
 
+                if ($field['type'] == 'code') {
+                    $this->context->controller->addJS(rtrim(_PS_ROOT_DIR_, DIRECTORY_SEPARATOR)._PS_JS_DIR_.'ace/ace.js');
+                    $this->context->controller->addCSS(rtrim(_PS_ROOT_DIR_, DIRECTORY_SEPARATOR)._PS_JS_DIR_.'ace/aceinput.css');
+                }
+
                 if ($field['type'] == 'file') {
                     $uploader = new HelperUploader();
                     $uploader->setId(isset($field['id'])?$field['id']:null);

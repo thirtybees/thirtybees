@@ -1,0 +1,44 @@
+.ace-editor {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	border: 1px solid #C7D6DB;
+	border-radius: 3px;
+	o-transition: border-color ease-in-out 0.15s,box-shadow ease-in-out 0.15s;
+	transition: border-color ease-in-out 0.15s,box-shadow ease-in-out 0.15s;
+	webkit-transition: border-color ease-in-out 0.15s,box-shadow ease-in-out 0.15s;
+	width: 100%;
+	margin-top: 5px;
+	min-height: 168px!important;
+}
+
+.ace_focus {
+	border-color: #66afe9 !important;
+	outline: 0 !important;
+}
+
+.advanced-tab {
+	border: 1px solid #ddd;
+	border-top-color: rgb(221, 221, 221);
+	border-top-style: solid;
+	border-top-width: 1px;
+	border-right-color: rgb(221, 221, 221);
+	border-right-style: solid;
+	border-right-width: 1px;
+	border-bottom-color: rgb(221, 221, 221);
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
+	border-top-right-radius: 3px;
+	border-left-color: rgb(221, 221, 221);
+	border-left-style: solid;
+	border-left-width: 1px;
+	padding: 10px;
+}
+
+.ace-editor * {
+	font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace!important;
+}
