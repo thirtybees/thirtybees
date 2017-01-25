@@ -3141,3 +3141,12 @@ CREATE TABLE IF NOT EXISTS `PREFIX_cms_role_lang` (
 )
   ENGINE = ENGINE_TYPE
   DEFAULT CHARSET = utf8;
+
+CREATE TABLE `PREFIX_redis_servers` (
+  `id_redis_server` INT(11) UNSIGNED PRIMARY KEY NOT NULL,
+  `ip`              VARCHAR(46)                  NOT NULL,
+  `port`            INT(11) UNSIGNED             NOT NULL,
+  `auth`            TEXT,
+  `db`              INT(11) UNSIGNED             NOT NULL
+)
+  ENGINE = ENGINE_TYPE DEFAULT CHARSET = utf8 COLLATION;

@@ -11,3 +11,12 @@ CREATE TABLE `PREFIX_module_carrier` (
 ) ENGINE=ENGINE_TYPE DEFAULT CHARSET=utf8 COLLATION;
 
 /* PHP:thirtybees_select_current_payment_modules(); */
+
+CREATE TABLE `PREFIX_redis_servers` (
+  `id_redis_server` INT(11) UNSIGNED PRIMARY KEY NOT NULL,
+  `ip`              VARCHAR(46)                  NOT NULL,
+  `port`            INT(11) UNSIGNED             NOT NULL,
+  `auth`            TEXT,
+  `db`              INT(11) UNSIGNED             NOT NULL
+)
+  ENGINE = ENGINE_TYPE DEFAULT CHARSET = utf8 COLLATION;
