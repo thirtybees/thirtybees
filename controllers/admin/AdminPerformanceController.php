@@ -120,6 +120,7 @@ class AdminPerformanceControllerCore extends AdminController
         $this->initFieldsetCiphering();
 
         $this->initFieldsetCaching();
+        $this->initFieldsetFullPageCache();
 
         // Reindex fields
         $this->fields_form = array_values($this->fields_form);
@@ -518,31 +519,29 @@ class AdminPerformanceControllerCore extends AdminController
                 ],
 
             ],
-            'submit'      => [
+            'submit' => [
                 'title' => $this->l('Save'),
             ],
         ];
-
-        if (!defined('_PS_HOST_MODE_')) {
-            $this->fields_form[3]['form']['input'][] = [
-                'type'   => 'switch',
-                'label'  => $this->l('Apache optimization'),
-                'name'   => 'PS_HTACCESS_CACHE_CONTROL',
-                'hint'   => $this->l('This will add directives to your .htaccess file, which should improve caching and compression.'),
-                'values' => [
-                    [
-                        'id'    => 'PS_HTACCESS_CACHE_CONTROL_1',
-                        'value' => 1,
-                        'label' => $this->l('Yes'),
-                    ],
-                    [
-                        'id'    => 'PS_HTACCESS_CACHE_CONTROL_0',
-                        'value' => 0,
-                        'label' => $this->l('No'),
-                    ],
+        $this->fields_form[3]['form']['input'][] = [
+            'type'   => 'switch',
+            'label'  => $this->l('Apache optimization'),
+            'name'   => 'PS_HTACCESS_CACHE_CONTROL',
+            'hint'   => $this->l('This will add directives to your .htaccess file, which should improve caching and compression.'),
+            'values' => [
+                [
+                    'id'    => 'PS_HTACCESS_CACHE_CONTROL_1',
+                    'value' => 1,
+                    'label' => $this->l('Yes'),
                 ],
-            ];
-        }
+                [
+                    'id'    => 'PS_HTACCESS_CACHE_CONTROL_0',
+                    'value' => 0,
+                    'label' => $this->l('No'),
+                ],
+            ],
+        ];
+
 
         $this->fields_value['PS_CSS_THEME_CACHE'] = Configuration::get('PS_CSS_THEME_CACHE');
         $this->fields_value['PS_JS_THEME_CACHE'] = Configuration::get('PS_JS_THEME_CACHE');
@@ -685,16 +684,16 @@ class AdminPerformanceControllerCore extends AdminController
                 [
                     'type'    => 'switch',
                     'label'   => $this->l('Use cache'),
-                    'name'    => 'cache_active',
+                    'name'    => 'TB_CACHE_ENABLED',
                     'is_bool' => true,
                     'values'  => [
                         [
-                            'id'    => 'cache_active_on',
+                            'id'    => 'TB_CACHE_ENABLED_on',
                             'value' => 1,
                             'label' => $this->l('Enabled'),
                         ],
                         [
-                            'id'    => 'cache_active_off',
+                            'id'    => 'TB_CACHE_ENABLED_off',
                             'value' => 0,
                             'label' => $this->l('Disabled'),
                         ],
@@ -739,19 +738,126 @@ class AdminPerformanceControllerCore extends AdminController
                     'name'  => 'ps_cache_fs_directory_depth',
                 ],
             ],
-            'submit'           => [
+            'submit' => [
                 'title' => $this->l('Save'),
             ],
             'memcachedServers' => true,
             'redisServers' => true,
         ];
         $depth = Configuration::get('PS_CACHEFS_DIRECTORY_DEPTH');
-        $this->fields_value['cache_active'] = Configuration::get('TB_CACHE_ENABLED');
+        $this->fields_value['TB_CACHE_ENABLED'] = (bool) Configuration::get('TB_CACHE_ENABLED');
         $this->fields_value['caching_system'] = Configuration::get('TB_CACHE_SYSTEM');
         $this->fields_value['ps_cache_fs_directory_depth'] = $depth ? $depth : 1;
         $this->tpl_form_vars['memcached_servers'] = CacheMemcache::getMemcachedServers();
         $this->tpl_form_vars['redis_servers'] = CacheRedis::getRedisServers();
         $this->tpl_form_vars['_PS_CACHE_ENABLED_'] = Configuration::get('TB_CACHE_ENABLED');
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    public function initFieldsetFullPageCache()
+    {
+        Cache::clean('hook_module_list');
+        $hooks = Hook::getHookModuleList();
+        $hookSettings = json_decode(Configuration::get('TB_PAGE_CACHE_HOOKS'), true);
+        $moduleSettings = [];
+        foreach ($hooks as $hook) {
+            foreach ($hook as &$hookInfo) {
+                $idModule = $hookInfo['id_module'];
+                $moduleName = $hookInfo['name'];
+                $moduleDisplayName = Module::getModuleName($moduleName);
+                $hookName = Hook::getNameById($hookInfo['id_hook']);
+                // We only want display hooks
+                if (strpos($hookName, 'action') === 0
+                    || strpos($hookName, 'displayAdmin') === 0
+                    || strpos($hookName, 'dashboard') === 0
+                    || strpos($hookName, 'BackOffice') !== false
+                ) {
+                    continue;
+                }
+
+                if (!isset($moduleSettings[$idModule])) {
+                    $moduleSettings[$idModule] = [
+                        'name' => $moduleName,
+                        'displayName' => $moduleDisplayName,
+                        'hooks' => [],
+                    ];
+                }
+                $moduleSettings[$hookInfo['id_module']]['hooks'][$hookName] = isset($hookSettings[$idModule][$hookName]);
+            }
+        }
+
+        $this->fields_form[7]['form'] = [
+            'legend'       => [
+                'title' => $this->l('Full page cache'),
+                'icon'  => 'icon-rocket',
+            ],
+            'input' => [
+                [
+                    'type'    => 'switch',
+                    'label'   => $this->l('Use full page cache'),
+                    'name'    => 'TB_PAGE_CACHE_ENABLED',
+                    'is_bool' => true,
+                    'values'  => [
+                        [
+                            'id'    => 'TB_PAGE_CACHE_ENABLED_on',
+                            'value' => 1,
+                            'label' => $this->l('Enabled'),
+                        ],
+                        [
+                            'id'    => 'TB_PAGE_CACHE_ENABLED_off',
+                            'value' => 0,
+                            'label' => $this->l('Disabled'),
+                        ],
+                    ],
+                    'disabled' => !Configuration::get('TB_CACHE_ENABLED'),
+                ],
+                [
+                    'type'    => 'switch',
+                    'label'   => $this->l('Debug mode'),
+                    'hint'    => $this->l('Enable this option to see the "X-thirtybees-PageCache" debug header'),
+                    'name'    => 'TB_PAGE_CACHE_DEBUG',
+                    'is_bool' => true,
+                    'values'  => [
+                        [
+                            'id'    => 'TB_PAGE_CACHE_DEBUG_on',
+                            'value' => 1,
+                            'label' => $this->l('Enabled'),
+                        ],
+                        [
+                            'id'    => 'TB_PAGE_CACHE_DEBUG_off',
+                            'value' => 0,
+                            'label' => $this->l('Disabled'),
+                        ],
+                    ],
+                ],
+                [
+                    'type'  => 'tags',
+                    'label' => $this->l('Ignore query parameters'),
+                    'name'  => 'TB_PAGE_CACHE_IGNOREPARAMS',
+                    'hint'  => [
+                        $this->l('To add parameters click in the field, write something, and then press "Enter."'),
+                        $this->l('Invalid characters:').' &lt;&gt;;=#{}',
+                    ],
+                    'tagPrompt' => $this->l('Add param'),
+                    'delimiters' => '13,44,32,59',
+                ],
+            ],
+            'submit'       => [
+                'title' => $this->l('Save'),
+            ],
+            'controllerList' => true,
+            'dynamicHooks' => true,
+        ];
+
+        $controllerList = $this->displayControllerList(json_decode(Configuration::get('TB_PAGE_CACHE_CONTROLLERS')), $this->context->shop->id);
+
+        $this->tpl_form_vars['controllerList'] = $controllerList;
+        $this->tpl_form_vars['moduleSettings'] = $moduleSettings;
+        $this->fields_value['TB_PAGE_CACHE_ENABLED'] = Configuration::get('TB_PAGE_CACHE_ENABLED') && Configuration::get('TB_CACHE_ENABLED');
+        $this->fields_value['TB_PAGE_CACHE_DEBUG'] = (bool) Configuration::get('TB_PAGE_CACHE_DEBUG');
+        $this->fields_value['TB_PAGE_CACHE_IGNOREPARAMS'] = Configuration::get('TB_PAGE_CACHE_IGNOREPARAMS');
     }
 
     /**
@@ -780,9 +886,11 @@ class AdminPerformanceControllerCore extends AdminController
                     $this->errors[] = Tools::displayError('The Memcached weight is missing.');
                 }
                 if (!count($this->errors)) {
-                    if (CacheMemcache::addServer(pSQL(Tools::getValue('memcachedIp')),
+                    if (CacheMemcache::addServer(
+                        pSQL(Tools::getValue('memcachedIp')),
                         (int) Tools::getValue('memcachedPort'),
-                        (int) Tools::getValue('memcachedWeight'))) {
+                        (int) Tools::getValue('memcachedWeight')
+                    )) {
                         Tools::redirectAdmin(self::$currentIndex.'&token='.Tools::getValue('token').'&conf=4');
                     } else {
                         $this->errors[] = Tools::displayError('The Memcached server cannot be added.');
@@ -857,6 +965,18 @@ class AdminPerformanceControllerCore extends AdminController
                 Configuration::updateValue('PS_SMARTY_CACHE', Tools::getValue('smarty_cache', 0));
                 Configuration::updateValue('PS_SMARTY_CACHING_TYPE', Tools::getValue('smarty_caching_type'));
                 Configuration::updateValue('PS_SMARTY_CLEAR_CACHE', Tools::getValue('smarty_clear_cache'));
+                $redirectAdmin = true;
+            } else {
+                $this->errors[] = Tools::displayError('You do not have permission to edit this.');
+            }
+        }
+
+        if (Tools::isSubmit('TB_PAGE_CACHE_IGNOREPARAMS')) {
+            if ($this->tabAccess['edit'] === '1') {
+                Configuration::updateValue('TB_PAGE_CACHE_ENABLED', (bool) Tools::getValue('TB_PAGE_CACHE_ENABLED'));
+                Configuration::updateValue('TB_PAGE_CACHE_DEBUG', (bool) Tools::getValue('TB_PAGE_CACHE_DEBUG'));
+                Configuration::updateValue('TB_PAGE_CACHE_IGNOREPARAMS', Tools::getValue('TB_PAGE_CACHE_IGNOREPARAMS'));
+                Configuration::updateValue('TB_PAGE_CACHE_CONTROLLERS', json_encode(array_map('trim', explode(',', Tools::getValue('TB_PAGE_CACHE_CONTROLLERS')))));
                 $redirectAdmin = true;
             } else {
                 $this->errors[] = Tools::displayError('You do not have permission to edit this.');
@@ -1029,10 +1149,10 @@ class AdminPerformanceControllerCore extends AdminController
 
         if ((bool) Tools::getValue('cache_up')) {
             if ($this->tabAccess['edit'] === '1') {
-                $cacheActive = (bool) Tools::getValue('cache_active');
+                $cacheActive = (bool) Tools::getValue('TB_CACHE_ENABLED');
                 if ($cachingSystem = preg_replace('[^a-zA-Z0-9]', '', Tools::getValue('caching_system'))) {
                     Configuration::updateGlobalValue('TB_CACHE_SYSTEM', $cachingSystem);
-                    Configuration::updateGlobalValue('TB_CACHE_ENABLED', true);
+                    Configuration::updateGlobalValue('TB_CACHE_ENABLED', $cacheActive);
                 } else {
                     Configuration::updateGlobalValue('TB_CACHE_ENABLED', false);
                     $this->errors[] = Tools::displayError('The caching system is missing.');
@@ -1157,6 +1277,62 @@ class AdminPerformanceControllerCore extends AdminController
             Hook::exec('action'.get_class($this).ucfirst($this->action).'After', ['controller' => $this, 'return' => '']);
             Tools::redirectAdmin(self::$currentIndex.'&token='.Tools::getValue('token').'&conf=4');
         }
+    }
+
+    /**
+     * @param $fileList
+     * @param $idShop
+     *
+     * @return string
+     */
+    public function displayControllerList($fileList, $idShop)
+    {
+        if (!is_array($fileList)) {
+            $fileList = ($fileList) ? [$fileList] : [];
+        }
+
+        $content = '<p><input type="text" name="TB_PAGE_CACHE_CONTROLLERS" value="'.implode(', ', $fileList).'" id="em_text_'.$idShop.'" placeholder="'.$this->l('E.g. address, addresses, attachment').'"/></p>';
+
+        if ($idShop) {
+            $shop = new Shop($idShop);
+            $content .= ' ('.$shop->name.')';
+        }
+
+        $content .= '<p>
+					<select size="25" id="em_list_'.$idShop.'" multiple="multiple">
+					<option disabled="disabled">'.$this->l('___________ CUSTOM ___________').'</option>';
+
+        // @todo do something better with controllers
+        $controllers = Dispatcher::getControllers(_PS_FRONT_CONTROLLER_DIR_);
+        ksort($controllers);
+
+        foreach ($fileList as $k => $v) {
+            if (! array_key_exists($v, $controllers)) {
+                $content .= '<option value="'.$v.'">'.$v.'</option>';
+            }
+        }
+
+        $content .= '<option disabled="disabled">'.$this->l('____________ CORE ____________').'</option>';
+
+        foreach ($controllers as $k => $v) {
+            $content .= '<option value="'.$k.'">'.$k.'</option>';
+        }
+
+        $modulesControllersType = ['admin' => $this->l('Admin modules controller'), 'front' => $this->l('Front modules controller')];
+        foreach ($modulesControllersType as $type => $label) {
+            $content .= '<option disabled="disabled">____________ '.$label.' ____________</option>';
+            $allModulesControllers = Dispatcher::getModuleControllers($type);
+            foreach ($allModulesControllers as $module => $modulesControllers) {
+                foreach ($modulesControllers as $cont) {
+                    $content .= '<option value="module-'.$module.'-'.$cont.'">module-'.$module.'-'.$cont.'</option>';
+                }
+            }
+        }
+
+        $content .= '</select>
+					</p>';
+
+        return $content;
     }
 
     /**
@@ -1493,5 +1669,33 @@ class AdminPerformanceControllerCore extends AdminController
             }
         }
         die;
+    }
+
+    /**
+     * Process dynamic hook setting
+     */
+    public function displayAjaxUpdateDynamicHooks()
+    {
+        $hookSettings = json_decode(Configuration::get('TB_PAGE_CACHE_HOOKS'), true);
+        $idModule = (int) Tools::getValue('idModule');
+        $status = Tools::getValue('status') === 'true';
+        $hookName = Tools::getValue('hookName');
+        if ($status) {
+            if (!isset($hookSettings[$idModule])) {
+                $hookSettings[$idModule] = [];
+            }
+            $hookSettings[$idModule][$hookName] = $status;
+        } else {
+            unset($hookSettings[$idModule][$hookName]);
+        }
+
+        if (Configuration::updateGlobalValue('TB_PAGE_CACHE_HOOKS', json_encode($hookSettings))) {
+            die(json_encode([
+                'success' => true,
+            ]));
+        }
+        die(json_encode([
+            'success' => false,
+        ]));
     }
 }

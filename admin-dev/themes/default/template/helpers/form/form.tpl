@@ -99,6 +99,7 @@
 								<div class="col-lg-{if isset($input.col)}{$input.col|intval}{else}9{/if}{if !isset($input.label)} col-lg-offset-3{/if}">
 								{block name="input"}
 								{if $input.type == 'text' || $input.type == 'tags'}
+
 									{if isset($input.lang) AND $input.lang}
 									{if $languages|count > 1}
 									<div class="form-group">
@@ -110,11 +111,12 @@
 											<div class="col-lg-9">
 										{/if}
 												{if $input.type == 'tags'}
-													{literal}
+													{ddd($input.delimiters)}
+												{literal}
 														<script type="text/javascript">
 															$().ready(function () {
 																var input_id = '{/literal}{if isset($input.id)}{$input.id}_{$language.id_lang}{else}{$input.name}_{$language.id_lang}{/if}{literal}';
-																$('#'+input_id).tagify({delimiters: [13,44], addTagPrompt: '{/literal}{l s='Add tag' js=1}{literal}'});
+																$('#'+input_id).tagify({delimiters: {/literal}{if isset($input.delimiters)}[{$input.delimiters}]{else}[13,44]{/if}{literal}, addTagPrompt: '{/literal}{if isset($input.tagPrompt)}{$input.tagPrompt|escape:'javascript':'UTF-8'}{l s='Add tag' js=1}{/if}{literal}'});
 																$({/literal}'#{$table}{literal}_form').submit( function() {
 																	$(this).find('#'+input_id).val($('#'+input_id).tagify('serialize'));
 																});
@@ -124,6 +126,19 @@
 												{/if}
 												{if isset($input.maxchar) || isset($input.prefix) || isset($input.suffix)}
 												<div class="input-group{if isset($input.class)} {$input.class}{/if}">
+												{/if}
+												{if isset($input.disableKeys) && is_array($input.disableKeys)}
+													<script type="text/javascript">
+														$().ready(function() {
+															$('#{if isset($input.id)}{$input.id|escape:'javascript':'UTF-8'}_{$language.id_lang|intval}{else}{$input.name|escape:'javascript':'UTF-8'}_{$language.id_lang|intval}{/if}').keydown(function (e) {
+																{foreach $input.disableKeys AS $disabledKey}
+																if (e.which == {$disabledKey|intval}) {
+																	return false;
+																}
+																{/foreach}
+															});
+														});
+													</script>
 												{/if}
 												{if isset($input.maxchar) && $input.maxchar}
 												<span id="{if isset($input.id)}{$input.id}_{$language.id_lang}{else}{$input.name}_{$language.id_lang}{/if}_counter" class="input-group-addon">
@@ -191,7 +206,7 @@
 											<script type="text/javascript">
 												$().ready(function () {
 													var input_id = '{/literal}{if isset($input.id)}{$input.id}{else}{$input.name}{/if}{literal}';
-													$('#'+input_id).tagify({delimiters: [13,44], addTagPrompt: '{/literal}{l s='Add tag'}{literal}'});
+													$('#'+input_id).tagify({delimiters: {/literal}{if isset($input.delimiters)}[{$input.delimiters}]{else}[13,44]{/if}{literal}, addTagPrompt: '{/literal}{if isset($input.tagPrompt)}{$input.tagPrompt|escape:'javascript':'UTF-8'}{else}{l s='Add tag'}{/if}{literal}'});
 													$({/literal}'#{$table}{literal}_form').submit( function() {
 														$(this).find('#'+input_id).val($('#'+input_id).tagify('serialize'));
 													});
@@ -230,7 +245,19 @@
 										  {$input.suffix}
 										</span>
 										{/if}
-
+										{if isset($input.disableKeys) && is_array($input.disableKeys)}
+											<script type="text/javascript">
+												$().ready(function() {
+													$('#{if isset($input.id)}{$input.id|escape:'javascript':'UTF-8'}_{$language.id_lang|intval}{else}{$input.name|escape:'javascript':'UTF-8'}_{$language.id_lang|intval}{/if}').keypress(function (e) {
+														{foreach $input.disableKeys AS $disabledKey}
+														if (e.which == {$disabledKey|intval}) {
+															return false;
+														}
+														{/foreach}
+													});
+												});
+											</script>
+										{/if}
 										{if isset($input.maxchar) || isset($input.prefix) || isset($input.suffix)}
 										</div>
 										{/if}
