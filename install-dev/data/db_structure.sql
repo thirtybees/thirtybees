@@ -3148,6 +3148,6 @@ CREATE TABLE `PREFIX_redis_servers` (
   `port`            INT(11) UNSIGNED NOT NULL,
   `auth`            TEXT,
   `db`              INT(11) UNSIGNED NOT NULL,
-  PRIMARY KEY (`id_modules_perfs`)
+  PRIMARY KEY (`id_redis_server`)
 )
   ENGINE = ENGINE_TYPE DEFAULT CHARSET = utf8 COLLATION;
