@@ -52,7 +52,8 @@ class CacheRedisCore extends CacheCore
      *
      * @since 1.0.0
      */
-    protected $_params = array();
+    protected $_params = [];
+    protected $_servers = [];
 
     /**
      * CacheRedisCore constructor.
@@ -66,7 +67,7 @@ class CacheRedisCore extends CacheCore
         if ($this->is_connected) {
             $this->keys = @$this->redis->get(_COOKIE_IV_);
             if (!is_array($this->keys)) {
-                $this->keys = array();
+                $this->keys = [];
             }
         }
     }
@@ -74,27 +75,62 @@ class CacheRedisCore extends CacheCore
     /**
      * Connect to redis server
      *
+     * @return void
+     *
      * @since 1.0.0
      */
     public function connect()
     {
         $this->is_connected = false;
-        $server = self::getRedisServer();
-
-        if (!$server) {
+        $this->_servers = self::getRedisServers();
+        if (!$this->_servers) {
             return;
         } else {
-            $this->redis = new Redis();
-
-            if ($this->redis->pconnect($server['TB_REDIS_SERVER'], $server['TB_REDIS_PORT'])) {
-                $this->redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_PHP);
-                if ($server['TB_REDIS_AUTH']) {
-                    if (!($this->redis->auth((string) $server['TB_REDIS_AUTH']))) {
+            if (count($this->_servers) > 1) {
+                // Multiple servers, set up redis array
+                $hosts = [];
+                foreach ($this->_servers as $server) {
+                    $hosts[] = $server['ip'].':'.$server['port'];
+                }
+                $this->redis = new RedisArray($hosts, ['pconnect' => true]);
+                foreach ($this->_servers as $server) {
+                    $instance = $this->redis->_instance($server['ip'].':'.$server['port']);
+                    if (!empty($server['auth'])) {
+                        if (is_object($instance)) {
+                            if ($instance->auth($server['auth'])) {
+                                // We're connected as soon as authentication is successful
+                                $this->is_connected = true;
+                            }
+                        }
+                    } else {
+                        $ping = array_values($this->redis->ping());
+                        if(!empty($ping) && $ping[0] === '+PONG') {
+                            // We're connected if a connection without +AUTH receives a +PONG
+                            $this->is_connected = true;
+                        }
+                    }
+                }
+                if (!empty($this->_servers[0]['auth'])) {
+                    if (!($this->redis->auth($this->_servers[0]['auth']))) {
                         return;
                     }
                 }
-                $this->redis->select((int) $server['TB_REDIS_DB']);
-                $this->is_connected = true;
+            } elseif (count($this->_servers) === 1) {
+                $this->redis = new Redis();
+                if ($this->redis->pconnect($this->_servers[0]['ip'], $this->_servers[0]['port'])) {
+                    $this->redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_PHP);
+                    if (!empty($this->_servers[0]['auth'])) {
+                        if (!($this->redis->auth($this->_servers[0]['auth']))) {
+                            return;
+                        }
+                    }
+                    $this->redis->select($this->_servers[0]['db']);
+                    try {
+                        $this->redis->select($this->_servers[0]['db']);
+                    } catch (Exception $e) {
+                        $this->is_connected = false;
+                    }
+                }
             }
         }
     }
@@ -108,7 +144,7 @@ class CacheRedisCore extends CacheCore
      */
     public static function getRedisServer()
     {
-        $server = array();
+        $server = [];
         // bypass the memory fatal error caused functions nesting on PS 1.5
         $sql = new DbQuery();
         $sql->select('`name`, `value`');
@@ -152,12 +188,12 @@ class CacheRedisCore extends CacheCore
 
         return Db::getInstance()->insert(
             'redis_servers',
-            array(
+            [
                 'ip'   => pSQL($ip),
                 'port' => (int) $port,
                 'auth' => pSQL($auth),
                 'db'   => (int) $db,
-            ),
+            ],
             false,
             false
         );

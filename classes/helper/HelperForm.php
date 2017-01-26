@@ -256,6 +256,10 @@ class HelperFormCore extends Helper
                             }
                             break;
 
+                        case 'tags':
+                            $this->context->controller->addJqueryPlugin('tagify');
+                            break;
+
                         case 'code':
                             $this->context->controller->addJS(rtrim(_PS_ROOT_DIR_, DIRECTORY_SEPARATOR)._PS_JS_DIR_.'ace/ace.js');
                             $this->context->controller->addCSS(rtrim(_PS_ROOT_DIR_, DIRECTORY_SEPARATOR)._PS_JS_DIR_.'ace/aceinput.css');
