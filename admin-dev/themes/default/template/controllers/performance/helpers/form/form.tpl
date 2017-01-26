@@ -239,13 +239,13 @@
 			</div>
 		{elseif $key === 'controllerList'}
 			<div class="form-group">
-				<label class="control-label col-lg-3">{l s='Exceptions'}</label>
+				<label class="control-label col-lg-3">{l s='Controllers'}</label>
 				<div class="col-lg-9">
 					<div class="well">
 						<div>
-							{l s='Please specify the files for which you do not want the module to be displayed.'}<br />
-							{l s='Please input each filename, separated by a comma (",").'}<br />
-							{l s='You can also click the filename in the list below, and even make a multiple selection by keeping the Ctrl key pressed while clicking, or choose a whole range of filename by keeping the Shift key pressed while clicking.'}<br />
+							{l s='Please specify the controllers for which you would like to enable full page caching.'}<br />
+							{l s='Please input each controller name, separated by a comma (",").'}<br />
+							{l s='You can also click the controller name in the list below, and even make a multiple selection by keeping the CTRL key pressed while clicking, or choose a whole range of filename by keeping the SHIFT key pressed while clicking.'}<br />
 							{$controllerList}
 						</div>
 					</div>
