@@ -311,18 +311,18 @@
 							action: 'test_redis_server',
 							sHost: host,
 							sPort: port,
+							sDb: db,
+							sAuth: auth,
 							type: type,
 							ajax: true
 						},
 					context: document.body,
 					dataType: 'json',
 					context: this,
-					async: false,
 					success: function(data)
 					{
-						if (data && $.isArray(data))
-						{
-							var color = data[0] != 0 ? 'green' : 'red';
+						if (data && $.isArray(data)) {
+							var color = data[0] != 0 ? 'lightgreen' : 'red';
 							$('#formRedisServerStatus').show();
 							$('input:text[name=redisIp]').css('background', color);
 							$('input:text[name=redisPort]').css('background', color);

@@ -180,6 +180,13 @@ abstract class ModuleCore
     const CACHE_FILE_TAB_MODULES_LIST = '/config/xml/tab_modules_list.xml';
 
     public static $hosted_modules_blacklist = ['autoupgrade'];
+
+    /**
+     * @var bool $bootstrap
+     *
+     * Indicates whether the module's configuration page supports bootstrap
+     */
+    public $bootstrap = false;
     // @codingStandardsIgnoreEnd
 
     /**

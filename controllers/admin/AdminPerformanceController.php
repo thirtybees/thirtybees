@@ -822,7 +822,8 @@ class AdminPerformanceControllerCore extends AdminController
                         pSQL(Tools::getValue('redisIp')),
                         (int) Tools::getValue('redisPort'),
                         pSQL(Tools::getValue('redisAuth')),
-                        (int) Tools::getValue('redisDb'))) {
+                        (int) Tools::getValue('redisDb')
+                    )) {
                         Tools::redirectAdmin(self::$currentIndex.'&token='.Tools::getValue('token').'&conf=4');
                     } else {
                         $this->errors[] = Tools::displayError('The Redis server cannot be added.');
@@ -832,7 +833,7 @@ class AdminPerformanceControllerCore extends AdminController
                 $this->errors[] = Tools::displayError('You do not have permission to add this.');
             }
         }
-        if (Tools::getValue('deleteRedisServer')) {
+        if (Tools::isSubmit('deleteRedisServer')) {
             if ($this->tabAccess['add'] === '1') {
                 if (CacheRedis::deleteServer((int) Tools::getValue('deleteRedisServer'))) {
                     Tools::redirectAdmin(self::$currentIndex.'&token='.Tools::getValue('token').'&conf=4');
@@ -1444,7 +1445,7 @@ class AdminPerformanceControllerCore extends AdminController
                         $res      = @memcache_get_server_status($memcache, $host, $port);
                     }
                 }
-                die(json_encode(array($res)));
+                die(json_encode([$res]));
             }
         }
         die;
@@ -1466,7 +1467,7 @@ class AdminPerformanceControllerCore extends AdminController
         if (Tools::isSubmit('action') && Tools::getValue('action') == 'test_redis_server') {
             $host = pSQL(Tools::getValue('sHost', ''));
             $port = (int) Tools::getValue('sPort', 0);
-            $auth = (int) Tools::getValue('sAuth', 0);
+            $auth = pSQL(Tools::getValue('sAuth', ''));
             $db = (int) Tools::getValue('sDb', 0);
             if ($host != '' && $port != 0) {
                 $res = 0;
@@ -1477,17 +1478,18 @@ class AdminPerformanceControllerCore extends AdminController
                             $redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_PHP);
                             if (!empty($auth)) {
                                 if (!($redis->auth($auth))) {
-                                    die(json_encode(array(0)));
+                                    die(json_encode([0]));
                                 }
                             }
                             $redis->select($db);
+
                             $res = (Tools::strtolower($redis->ping() === '+PONG') ? 1 : 0);
                         }
                     } catch (Exception $e) {
-                        die('0');
+                        die(json_encode([0]));
                     }
                 }
-                die(json_encode(array($res)));
+                die(json_encode([$res]));
             }
         }
         die;
