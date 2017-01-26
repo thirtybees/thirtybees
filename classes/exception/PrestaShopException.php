@@ -45,7 +45,7 @@ class PrestaShopExceptionCore extends Exception
     public function displayMessage()
     {
         header('HTTP/1.1 500 Internal Server Error');
-        if (_PS_MODE_DEV_ || defined('_PS_ADMIN_DIR_')) {
+        if (_PS_MODE_DEV_ || defined('_PS_ADMIN_DIR_') || getenv('CI')) {
             // Display error message
             echo '<style>
 				#psException{font-family: Verdana; font-size: 14px}
