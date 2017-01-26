@@ -123,15 +123,16 @@ class CacheRedisCore extends CacheCore
     }
 
     /**
-     * +     * Add a redis server
-     * +     *
-     * +     * @param string $ip IP address or hostname
-     * +     * @param int $port Port number
-     * +     * @param string $auth Authentication key
-     * +     * @param int $db Redis database ID
-     * +     * @return bool Whether the server was successfully added
-     * +     * @throws PrestaShopDatabaseException
-     * +     */
+     *Add a redis server
+     *
+     * @param string $ip   IP address or hostname
+     * @param int    $port Port number
+     * @param string $auth Authentication key
+     * @param int    $db   Redis database ID
+     *
+     * @return bool Whether the server was successfully added
+     * @throws PrestaShopDatabaseException
+     */
     public static function addServer($ip, $port, $auth, $db)
     {
         $sql = new DbQuery();
@@ -179,15 +180,15 @@ class CacheRedisCore extends CacheCore
     /**
      * Delete a redis server
      *
-     * @param int $id_server Server ID
+     * @param int $idServer Server ID
      *
      * @return bool Whether the server was successfully deleted
      */
-    public static function deleteServer($id_server)
+    public static function deleteServer($idServer)
     {
         return Db::getInstance()->delete(
             'redis_servers',
-            '`id_redis_server` = '.(int) $id_server,
+            '`id_redis_server` = '.(int) $idServer,
             0,
             false
         );

@@ -3143,10 +3143,11 @@ CREATE TABLE IF NOT EXISTS `PREFIX_cms_role_lang` (
   DEFAULT CHARSET = utf8;
 
 CREATE TABLE `PREFIX_redis_servers` (
-  `id_redis_server` INT(11) UNSIGNED PRIMARY KEY NOT NULL,
-  `ip`              VARCHAR(46)                  NOT NULL,
-  `port`            INT(11) UNSIGNED             NOT NULL,
+  `id_redis_server` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `ip`              VARCHAR(46)      NOT NULL,
+  `port`            INT(11) UNSIGNED NOT NULL,
   `auth`            TEXT,
-  `db`              INT(11) UNSIGNED             NOT NULL
+  `db`              INT(11) UNSIGNED NOT NULL,
+  PRIMARY KEY (`id_modules_perfs`)
 )
   ENGINE = ENGINE_TYPE DEFAULT CHARSET = utf8 COLLATION;
