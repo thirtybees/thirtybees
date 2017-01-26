@@ -702,7 +702,7 @@ class AdminPerformanceControllerCore extends AdminController
                 [
                     'type'   => 'radio',
                     'label'  => $this->l('Caching system'),
-                    'name'   => 'caching_system',
+                    'name'   => 'TB_CACHE_SYSTEM',
                     'hint'   => $this->l('The CacheFS system should be used only when the infrastructure contains one front-end server. If you are not sure, ask your hosting company.'),
                     'values' => [
                         [
@@ -746,7 +746,7 @@ class AdminPerformanceControllerCore extends AdminController
         ];
         $depth = Configuration::get('PS_CACHEFS_DIRECTORY_DEPTH');
         $this->fields_value['TB_CACHE_ENABLED'] = (bool) Configuration::get('TB_CACHE_ENABLED');
-        $this->fields_value['caching_system'] = Configuration::get('TB_CACHE_SYSTEM');
+        $this->fields_value['TB_CACHE_SYSTEM'] = Configuration::get('TB_CACHE_SYSTEM');
         $this->fields_value['ps_cache_fs_directory_depth'] = $depth ? $depth : 1;
         $this->tpl_form_vars['memcached_servers'] = CacheMemcache::getMemcachedServers();
         $this->tpl_form_vars['redis_servers'] = CacheRedis::getRedisServers();
@@ -1150,7 +1150,7 @@ class AdminPerformanceControllerCore extends AdminController
         if ((bool) Tools::getValue('cache_up')) {
             if ($this->tabAccess['edit'] === '1') {
                 $cacheActive = (bool) Tools::getValue('TB_CACHE_ENABLED');
-                if ($cachingSystem = preg_replace('[^a-zA-Z0-9]', '', Tools::getValue('caching_system'))) {
+                if ($cachingSystem = preg_replace('[^a-zA-Z0-9]', '', Tools::getValue('TB_CACHE_SYSTEM'))) {
                     Configuration::updateGlobalValue('TB_CACHE_SYSTEM', $cachingSystem);
                     Configuration::updateGlobalValue('TB_CACHE_ENABLED', $cacheActive);
                 } else {

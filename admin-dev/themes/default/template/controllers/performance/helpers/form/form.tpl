@@ -25,12 +25,12 @@
 {extends file="helpers/form/form.tpl"}
 
 {block name="input_row"}
-{if $input.name == 'caching_system'}
+{if $input.name == 'TB_CACHE_SYSTEM'}
 <div id="{$input.name}_wrapper"{if isset($_PS_CACHE_ENABLED_) && !$_PS_CACHE_ENABLED_} style="display:none"{/if}>{/if}
 	{if $input.name == 'smarty_caching_type' || $input.name == 'smarty_clear_cache'}
 	<div id="{$input.name}_wrapper"{if isset($fields_value.smarty_cache) && !$fields_value.smarty_cache} style="display:none"{/if}>{/if}
 		{$smarty.block.parent}
-		{if $input.name == 'caching_system' || $input.name == 'smarty_caching_type' || $input.name == 'smarty_clear_cache'}</div>{/if}
+		{if $input.name == 'TB_CACHE_SYSTEM' || $input.name == 'smarty_caching_type' || $input.name == 'smarty_clear_cache'}</div>{/if}
 	{/block}
 
 	{block name="input"}
@@ -258,16 +258,16 @@
 	{block name="script"}
 
 	function showMemcached() {
-		if ($('input[name="caching_system"]:radio:checked').val() == 'CacheMemcache' || $('input[name="caching_system"]:radio:checked').val() == 'CacheMemcached') {
+		if ($('input[name="TB_CACHE_SYSTEM"]:radio:checked').val() == 'CacheMemcache' || $('input[name="TB_CACHE_SYSTEM"]:radio:checked').val() == 'CacheMemcached') {
 			$('#memcachedServers').css('display', $('#TB_CACHE_ENABLED_on').is(':checked') ? 'block' : 'none');
 			$('#ps_cache_fs_directory_depth').closest('.form-group').hide();
 			$('#redisServers').hide();
 		}
-		else if ($('input[name="caching_system"]:radio:checked').val() == 'CacheFs') {
+		else if ($('input[name="TB_CACHE_SYSTEM"]:radio:checked').val() == 'CacheFs') {
 			$('#memcachedServers').hide();
 			$('#redisServers').hide();
 			$('#ps_cache_fs_directory_depth').closest('.form-group').css('display', $('#TB_CACHE_ENABLED_on').is(':checked') ? 'block' : 'none');
-		} else if ($('input[name="caching_system"]:radio:checked').val() == 'CacheRedis') {
+		} else if ($('input[name="TB_CACHE_SYSTEM"]:radio:checked').val() == 'CacheRedis') {
 			$('#redisServers').css('display', $('#TB_CACHE_ENABLED_on').is(':checked') ? 'block' : 'none');
 			$('#ps_cache_fs_directory_depth').closest('.form-group').hide();
 			$('#memcachedServers').hide();
@@ -358,19 +358,19 @@
 		showDynamicHooks();
 
 		$('input[name="cache_active"]').change(function () {
-			$('#caching_system_wrapper').css('display', ($(this).val() == 1) ? 'block' : 'none');
+			$('#TB_CACHE_SYSTEM_wrapper').css('display', ($(this).val() == 1) ? 'block' : 'none');
 			showMemcached();
 
-			if ($('input[name="caching_system"]:radio:checked').val() == 'CacheFs') {
+			if ($('input[name="TB_CACHE_SYSTEM"]:radio:checked').val() == 'CacheFs') {
 				$('#ps_cache_fs_directory_depth').focus();
 			}
 		});
 
-		$('input[name="caching_system"]').change(function () {
+		$('input[name="TB_CACHE_SYSTEM"]').change(function () {
 			$('#cache_up').val(1);
 			showMemcached();
 
-			if ($('input[name="caching_system"]:radio:checked').val() == 'CacheFs') {
+			if ($('input[name="TB_CACHE_SYSTEM"]:radio:checked').val() == 'CacheFs') {
 				$('#ps_cache_fs_directory_depth').focus();
 			}
 		});
@@ -388,7 +388,7 @@
 		$('#testMemcachedServer').click(function () {
 			var host = $('input:text[name=memcachedIp]').val();
 			var port = $('input:text[name=memcachedPort]').val();
-			var type = $('input[name="caching_system"]:radio:checked').val() == 'CacheMemcached' ? 'memcached' : 'memcache';
+			var type = $('input[name="TB_CACHE_SYSTEM"]:radio:checked').val() == 'CacheMemcached' ? 'memcached' : 'memcache';
 			if (host && port) {
 				$.ajax({
 					url: 'index.php',
@@ -427,7 +427,7 @@
 			var port = $('input:text[name=redisPort]').val();
 			var auth = $('input:text[name=redisAuth]').val();
 			var db = $('input:text[name=redisDb]').val();
-			var type = $('input[name="caching_system"]:radio:checked').val() == 'redis';
+			var type = $('input[name="TB_CACHE_SYSTEM"]:radio:checked').val() == 'redis';
 			if (host && port) {
 				$.ajax({
 					url: 'index.php',
