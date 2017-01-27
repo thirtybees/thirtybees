@@ -334,7 +334,7 @@ class LinkCore
     {
         $sql = new DbQuery();
         $sql->select('`'.bqSQL(CMSCategory::$definition['primary']).'`');
-        $sql->from(bqSQL(Category::$definition['table']));
+        $sql->from(bqSQL(CMSCategory::$definition['table']));
         $sql->where('`'.bqSQL(CMS::$definition['primary']).'` = '.(int) $idCms);
         $idCmsCategory = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
         if (empty($idCmsCategory)) {
