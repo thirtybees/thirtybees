@@ -293,7 +293,7 @@ class EmployeeCore extends ObjectModel
      */
     protected function saveOptin()
     {
-        if ($this->optin && !defined('PS_INSTALLATION_IN_PROGRESS')) {
+        if ($this->optin && !defined('TB_INSTALLATION_IN_PROGRESS')) {
             $language = new Language($this->id_lang);
             $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
             $guzzle->get(

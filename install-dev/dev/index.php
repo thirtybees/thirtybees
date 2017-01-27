@@ -31,7 +31,7 @@
 
 include_once('../init.php');
 include_once(_PS_ROOT_DIR_.'/config/settings.inc.php');
-include_once(_PS_INSTALL_PATH_.'classes/controllerHttp.php');
+include_once(_TB_INSTALL_PATH_.'classes/controllerHttp.php');
 
 class SynchronizeController extends InstallControllerHttp
 {
@@ -50,9 +50,9 @@ class SynchronizeController extends InstallControllerHttp
      */
     protected $loader;
 
-    public function displayTemplate($template, $get_output = false, $path = null)
+    public function displayTemplate($template, $getOutput = false, $path = null)
     {
-        parent::displayTemplate($template, false, _PS_INSTALL_PATH_.'dev/');
+        parent::displayTemplate($template, false, _TB_INSTALL_PATH_.'dev/');
     }
 
     public function init()

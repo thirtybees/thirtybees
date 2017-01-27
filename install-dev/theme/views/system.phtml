@@ -1,4 +1,7 @@
-<?php $this->displayTemplate('header') ?>
+<?php
+/** @var InstallControllerHttpSystem $this */
+$this->displayTemplate('header')
+?>
 
 <h2><?php echo $this->l('We are currently checking thirty bees compatibility with your system environment') ?></h2>
 
@@ -10,7 +13,7 @@
 	<h3 class="errorBlock"><?php echo $this->l('Oops! Please correct the item(s) below, and then click "Refresh information" to test the compatibility of your new system.') ?></h3>
 <?php endif; ?>
 <!-- Display tests results -->
-<?php foreach ($this->tests_render as $type => $categories): ?>
+<?php foreach ($this->testsRender as $type => $categories): ?>
 	<ul id="<?php echo $type ?>">
 	<?php foreach ($categories as $category): ?>
 		<li class="title <?php if ($category['success'] == 1): ?>ok<?php endif;?>"><?php echo $category['title'] ?></li>

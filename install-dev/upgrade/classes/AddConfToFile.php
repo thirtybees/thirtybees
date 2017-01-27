@@ -67,7 +67,7 @@ class    AddConfToFile
 
     public function writeInFile($name, $data)
     {
-        if (($name == '_PS_VERSION_' || $name == '_TB_VERSION_') && strpos($this->file, 'settings.inc') !== false) {
+        if (($name == '_TB_VERSION_' || $name == '_TB_VERSION_') && strpos($this->file, 'settings.inc') !== false) {
             $string = 'if (!defined(\''.$name.'\'))'."\n\t".'define(\''.$name.'\', \''.$this->checkString($data).'\');'."\n";
         } else {
             $string = 'define(\''.$name.'\', \''.$this->checkString($data).'\');'."\n";

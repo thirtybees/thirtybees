@@ -29,6 +29,11 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class InstallSqlLoader
+ *
+ * @since 1.0.0
+ */
 class InstallSqlLoader
 {
     /**
@@ -47,7 +52,11 @@ class InstallSqlLoader
     protected $errors = [];
 
     /**
-     * @param Db $db
+     * InstallSqlLoader constructor.
+     *
+     * @param Db|null $db
+     *
+     * @since 1.0.0
      */
     public function __construct(Db $db = null)
     {
@@ -61,6 +70,8 @@ class InstallSqlLoader
      * Set a list of keywords which will be replaced in queries
      *
      * @param array $data
+     *
+     * @since 1.0.0
      */
     public function setMetaData(array $data)
     {
@@ -70,27 +81,34 @@ class InstallSqlLoader
     }
 
     /**
-     * Parse a SQL file and execute queries
+     * Parse a SQL file and immediately executes the query
      *
      * @param string $filename
-     * @param bool $stop_when_fail
+     * @param bool   $stopWhenFail
+     *
+     * @return bool
+     * @throws PrestashopInstallerException
+     *
+     * @since 1.0.0
      */
-    public function parse_file($filename, $stop_when_fail = true)
+    public function parseFile($filename, $stopWhenFail = true)
     {
         if (!file_exists($filename)) {
             throw new PrestashopInstallerException("File $filename not found");
         }
 
-        return $this->parse(file_get_contents($filename), $stop_when_fail);
+        return $this->parse(file_get_contents($filename), $stopWhenFail);
     }
 
     /**
      * Parse and execute a list of SQL queries
      *
      * @param string $content
-     * @param bool $stop_when_fail
+     * @param bool   $stopWhenFail
+     *
+     * @return bool
      */
-    public function parse($content, $stop_when_fail = true)
+    public function parse($content, $stopWhenFail = true)
     {
         $this->errors = [];
 
@@ -109,7 +127,7 @@ class InstallSqlLoader
                     'query' => $query,
                 ];
 
-                if ($stop_when_fail) {
+                if ($stopWhenFail) {
                     return false;
                 }
             }
@@ -122,6 +140,8 @@ class InstallSqlLoader
      * Get list of errors from last parsing
      *
      * @return array
+     *
+     * @since 1.0.0
      */
     public function getErrors()
     {

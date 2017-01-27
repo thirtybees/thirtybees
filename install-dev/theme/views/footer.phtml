@@ -3,14 +3,14 @@
 
 <div id="buttons">
 	<?php if (!$this->isLastStep()): ?>
-		<?php if ($this->next_button): ?>
+		<?php if ($this->nextButton): ?>
 			<input id="btNext" class="button little" type="submit" name="submitNext" value="<?php echo $this->l('Next') ?>" />
 		<?php else: ?>
 			<input id="btNext" class="button little disabled" type="submit" name="submitNext" value="<?php echo $this->l('Next') ?>" disabled="disabled" />
 		<?php endif; ?>
 	<?php endif; ?>
 
-	<?php if (!$this->isFirstStep() && $this->previous_button): ?>
+	<?php if (!$this->isFirstStep() && $this->previousButton): ?>
 		<input id="btBack" class="button little" type="submit" name="submitPrevious" value="<?php echo $this->l('Back') ?>" />
 	<?php endif; ?>
 </div>
@@ -29,9 +29,8 @@
 	<li>&copy; 2007-<?php echo date('Y'); ?></li>
 </ul>
 <script type="text/javascript">
-	if (typeof psuser_assistance != 'undefined')
-	{
-		var errors = new Array();
+	if (typeof psuser_assistance !== 'undefined') {
+		var errors = [];
 		$.each($('li.fail'), function(i, item){
 			errors.push($(this).text().trim());
 		});

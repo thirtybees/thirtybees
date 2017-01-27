@@ -29,6 +29,11 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class InstallControllerConsole
+ *
+ * @since 1.0.0
+ */
 abstract class InstallControllerConsole
 {
     /**
@@ -65,26 +70,40 @@ abstract class InstallControllerConsole
      */
     public $model;
 
+    /** @var InstallModelInstall $modelInstall */
+    public $modelInstall;
+
+    /** @var Datas $datas */
+    public $datas;
+
     /**
      * Validate current step
      */
     abstract public function validate();
 
+    /**
+     * @param $argc
+     * @param $argv
+     *
+     * @throws PrestashopInstallerException
+     *
+     * @since 1.0.0
+     */
     final public static function execute($argc, $argv)
     {
         if (!($argc-1)) {
-            $available_arguments = Datas::getInstance()->getArgs();
+            $availableArguments = Datas::getInstance()->getArgs();
             echo 'Arguments available:'."\n";
-            foreach ($available_arguments as $key => $arg) {
+            foreach ($availableArguments as $key => $arg) {
                 $name = isset($arg['name']) ? $arg['name'] : $key;
                 echo '--'.$name."\t".(isset($arg['help']) ? $arg['help'] : '').(isset($arg['default']) ? "\t".'(Default: '.$arg['default'].')' : '')."\n";
             }
             exit;
         }
-        
+
         $errors = Datas::getInstance()->getAndCheckArgs($argv);
-        if (Datas::getInstance()->show_license) {
-            echo strip_tags(file_get_contents(_PS_INSTALL_PATH_.'theme/views/license_content.phtml'));
+        if (Datas::getInstance()->showLicense) {
+            echo strip_tags(file_get_contents(_TB_INSTALL_PATH_.'theme/views/license_content.phtml'));
             exit;
         }
 
@@ -102,24 +121,30 @@ abstract class InstallControllerConsole
         }
 
         require_once _PS_INSTALL_CONTROLLERS_PATH_.'console/process.php';
-        $classname = 'InstallControllerConsoleProcess';
         self::$instances['process'] = new InstallControllerConsoleProcess('process');
 
         $datas = Datas::getInstance();
 
         /* redefine HTTP_HOST  */
-        $_SERVER['HTTP_HOST'] = $datas->http_host;
+        $_SERVER['HTTP_HOST'] = $datas->httpHost;
 
         @date_default_timezone_set($datas->timezone);
 
         self::$instances['process']->process();
     }
 
+    /**
+     * InstallControllerConsole constructor.
+     *
+     * @param string $step
+     *
+     * @since 1.0.0
+     */
     final public function __construct($step)
     {
         $this->step = $step;
         $this->datas = Datas::getInstance();
-        
+
         // Set current language
         $this->language = InstallLanguages::getInstance();
         if (!$this->datas->language) {
@@ -132,21 +157,26 @@ abstract class InstallControllerConsole
 
     /**
      * Initialize model
+     *
+     * @since 1.0.0
      */
     public function init()
     {
     }
 
+    /**
+     * @since 1.0.0
+     */
     public function printErrors()
     {
-        $errors = $this->model_install->getErrors();
+        $errors = $this->modelInstall->getErrors();
         if (count($errors)) {
             if (!is_array($errors)) {
                 $errors = [$errors];
             }
             echo 'Errors :'."\n";
-            foreach ($errors as $error_process) {
-                foreach ($error_process as $error) {
+            foreach ($errors as $errorProcess) {
+                foreach ($errorProcess as $error) {
                     echo (is_string($error) ? $error : print_r($error, true))."\n";
                 }
             }
@@ -158,8 +188,10 @@ abstract class InstallControllerConsole
      * Get translated string
      *
      * @param string $str String to translate
-     * @param ... All other params will be used with sprintf
+     *
      * @return string
+     *
+     * @since 1.0.0
      */
     public function l($str)
     {
@@ -167,6 +199,9 @@ abstract class InstallControllerConsole
         return call_user_func_array([$this->language, 'l'], $args);
     }
 
+    /**
+     * @since 1.0.0
+     */
     public function process()
     {
     }

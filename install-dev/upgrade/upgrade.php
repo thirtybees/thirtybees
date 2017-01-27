@@ -80,9 +80,9 @@ if (!defined('_THEME_NAME_')) {
 require_once(dirname(__FILE__).'/../init.php');
 
 // set logger
-require_once(_PS_INSTALL_PATH_.'upgrade/classes/AbstractLogger.php');
+require_once(_TB_INSTALL_PATH_.'upgrade/classes/AbstractLogger.php');
 eval('abstract class AbstractLogger extends AbstractLoggerCore{}');
-require_once(_PS_INSTALL_PATH_.'upgrade/classes/FileLogger.php');
+require_once(_TB_INSTALL_PATH_.'upgrade/classes/FileLogger.php');
 eval('class FileLogger extends FileLoggerCore{}');
 
 $logger = new FileLogger();
@@ -96,15 +96,15 @@ if (function_exists('date_default_timezone_set')) {
 if (defined('_PS_ROOT_DIR_') and !defined('_PS_MODULE_DIR_')) {
     define('_PS_MODULE_DIR_', _PS_ROOT_DIR_.'/modules/');
 } elseif (!defined('_PS_MODULE_DIR_')) {
-    define('_PS_MODULE_DIR_', _PS_INSTALL_PATH_.'/../modules/');
+    define('_PS_MODULE_DIR_', _TB_INSTALL_PATH_.'/../modules/');
 }
 
 if (!defined('_PS_INSTALLER_PHP_UPGRADE_DIR_')) {
-    define('_PS_INSTALLER_PHP_UPGRADE_DIR_', _PS_INSTALL_PATH_.'upgrade/php/');
+    define('_PS_INSTALLER_PHP_UPGRADE_DIR_', _TB_INSTALL_PATH_.'upgrade/php/');
 }
 
 if (!defined('_PS_INSTALLER_SQL_UPGRADE_DIR_')) {
-    define('_PS_INSTALLER_SQL_UPGRADE_DIR_', _PS_INSTALL_PATH_.'upgrade/sql/');
+    define('_PS_INSTALLER_SQL_UPGRADE_DIR_', _TB_INSTALL_PATH_.'upgrade/sql/');
 }
 
 
@@ -132,15 +132,15 @@ if (!defined('_PS_CSS_DIR_')) {
     define('_PS_CSS_DIR_', __PS_BASE_URI__.'css/');
 }
 
-$oldversion = _PS_VERSION_;
+$oldversion = _TB_VERSION_;
 
-$versionCompare =  version_compare(_PS_INSTALL_VERSION_, $oldversion);
+$versionCompare =  version_compare(_TB_INSTALL_VERSION_, $oldversion);
 
 if ($versionCompare == '-1') {
     $logger->logError('This installer is too old.');
     $requests .= '<action result="fail" error="27" />'."\n";
 } elseif ($versionCompare == 0) {
-    $logger->logError(sprintf('You already have the %s version.', _PS_INSTALL_VERSION_));
+    $logger->logError(sprintf('You already have the %s version.', _TB_INSTALL_VERSION_));
     $fail_result .= '<action result="fail" error="28" />'."\n";
 } elseif ($versionCompare === false) {
     $logger->logError('There is no older version. Did you delete or rename the config/settings.inc.php file?');
@@ -199,7 +199,7 @@ $oldversion = implode('.', $arrayVersion);
 
 $neededUpgradeFiles = [];
 foreach ($upgradeFiles as $version) {
-    if (version_compare($version, $oldversion) == 1 and version_compare(_PS_INSTALL_VERSION_, $version) != -1) {
+    if (version_compare($version, $oldversion) == 1 and version_compare(_TB_INSTALL_VERSION_, $version) != -1) {
         $neededUpgradeFiles[] = $version;
     }
 }
@@ -211,7 +211,7 @@ if (empty($fail_result) && empty($neededUpgradeFiles)) {
 
 
 // refresh conf file
-require_once(_PS_INSTALL_PATH_.'upgrade/classes/AddConfToFile.php');
+require_once(_TB_INSTALL_PATH_.'upgrade/classes/AddConfToFile.php');
 
 $oldLevel = error_reporting(E_ALL);
 $mysqlEngine = (defined('_MYSQL_ENGINE_') ? _MYSQL_ENGINE_ : 'MyISAM');
@@ -240,11 +240,11 @@ $datas = [
     ['_COOKIE_KEY_', _COOKIE_KEY_],
     ['_COOKIE_IV_', _COOKIE_IV_],
     ['_PS_CREATION_DATE_', defined("_PS_CREATION_DATE_") ? _PS_CREATION_DATE_ : date('Y-m-d')],
-    ['_PS_VERSION_', _PS_INSTALL_VERSION_],
     ['_TB_VERSION_', _TB_INSTALL_VERSION_],
+    ['_PS_VERSION_', '1.6.1.999'],
 ];
 
-if (version_compare(_PS_INSTALL_VERSION_, '1.6.0.11', '<')) {
+if (version_compare(_TB_INSTALL_VERSION_, '1.6.0.11', '<')) {
     $datas[] = ['_MEDIA_SERVER_1_', defined('_MEDIA_SERVER_1_') ? _MEDIA_SERVER_1_ : ''];
     $datas[] = ['_MEDIA_SERVER_2_', defined('_MEDIA_SERVER_2_') ? _MEDIA_SERVER_2_ : ''];
     $datas[] = ['_MEDIA_SERVER_3_', defined('_MEDIA_SERVER_3_') ? _MEDIA_SERVER_3_ : ''];
@@ -406,7 +406,7 @@ if (empty($fail_result)) {
 
 
     // Settings updated, compile and cache directories must be emptied
-    $tools_dir = rtrim(_PS_INSTALL_PATH_, '\\/').DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'tools'.DIRECTORY_SEPARATOR;
+    $tools_dir = rtrim(_TB_INSTALL_PATH_, '\\/').DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'tools'.DIRECTORY_SEPARATOR;
     $arrayToClean = [
         $tools_dir.'smarty'.DIRECTORY_SEPARATOR.'cache',
         $tools_dir.'smarty'.DIRECTORY_SEPARATOR.'compile',
@@ -434,7 +434,7 @@ $result = '<?xml version="1.0" encoding="UTF-8"?>';
 if (empty($fail_result)) {
     Configuration::updateValue('PS_HIDE_OPTIMIZATION_TIPS', 0);
     Configuration::updateValue('PS_NEED_REBUILD_INDEX', 1);
-    Configuration::updateValue('PS_VERSION_DB', _PS_INSTALL_VERSION_);
+    Configuration::updateValue('PS_VERSION_DB', _TB_INSTALL_VERSION_);
     $result .= $warningExist ? '<action result="fail" error="34">'."\n" : '<action result="ok" error="">'."\n";
     $result .= $requests;
     $result .= '</action>'."\n";
@@ -461,8 +461,8 @@ if (empty($return_type) || $return_type == 'xml') {
     // result in xml to array
     $result = @simplexml_load_string($result);
     if (!class_exists('ToolsInstall', false)) {
-        if (file_exists(_PS_INSTALL_PATH_.'/upgrade/classes/ToolsInstall.php')) {
-            include_once(_PS_INSTALL_PATH_.'/upgrade/classes/ToolsInstall.php');
+        if (file_exists(_TB_INSTALL_PATH_.'/upgrade/classes/ToolsInstall.php')) {
+            include_once(_TB_INSTALL_PATH_.'/upgrade/classes/ToolsInstall.php');
         }
     }
 
@@ -489,7 +489,7 @@ if (empty($return_type) || $return_type == 'xml') {
 }
 function getConfValue($name)
 {
-    $full = version_compare('1.5.0.10', _PS_VERSION_) < 0;
+    $full = version_compare('1.5.0.10', _TB_VERSION_) < 0;
 
     $sql = 'SELECT IF(cl.`id_lang` IS NULL, c.`value`, cl.`value`) AS value
 			FROM `'._DB_PREFIX_.'configuration` c

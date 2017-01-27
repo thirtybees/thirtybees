@@ -32,16 +32,23 @@
 class InstallControllerConsoleProcess extends InstallControllerConsole
 {
     const SETTINGS_FILE = 'config/settings.inc.php';
-    public $process_steps = [];
-    public $previous_button = false;
-    protected $model_install;
+    public $processSteps = [];
+    public $previousButton = false;
+
+    /** @var InstallModelInstall $modelInstall */
+    protected $modelInstall;
+
+    /** @var InstallModelDatabase $modelDatabase */
+    public $modelDatabase;
+
+    public $xmlLoaderIds;
 
     public function init()
     {
         require_once _PS_INSTALL_MODELS_PATH_.'install.php';
         require_once _PS_INSTALL_MODELS_PATH_.'database.php';
-        $this->model_install = new InstallModelInstall();
-        $this->model_database = new InstallModelDatabase();
+        $this->modelInstall = new InstallModelInstall();
+        $this->modelDatabase = new InstallModelDatabase();
     }
 
     /**
@@ -71,11 +78,11 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
                 $this->printErrors();
             }
 
-            if ($this->datas->database_create) {
-                $this->model_database->createDatabase($this->datas->database_server, $this->datas->database_name, $this->datas->database_login, $this->datas->database_password);
+            if ($this->datas->databaseCreate) {
+                $this->modelDatabase->createDatabase($this->datas->databaseServer, $this->datas->databaseName, $this->datas->databaseLogin, $this->datas->databasePassword);
             }
 
-            if (!$this->model_database->testDatabaseSettings($this->datas->database_server, $this->datas->database_name, $this->datas->database_login, $this->datas->database_password, $this->datas->database_prefix, $this->datas->database_engine, $this->datas->database_clear)) {
+            if (!$this->modelDatabase->testDatabaseSettings($this->datas->databaseServer, $this->datas->databaseName, $this->datas->databaseLogin, $this->datas->databasePassword, $this->datas->databasePrefix, $this->datas->databaseEngine, $this->datas->databaseClear)) {
                 $this->printErrors();
             }
             if (!$this->processInstallDatabase()) {
@@ -112,10 +119,11 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
 
         if ($this->datas->newsletter) {
             $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
-            $guzzle->get('http://www.prestashop.com/ajax/controller.php?',
+            $guzzle->get(
+                'http://www.prestashop.com/ajax/controller.php?',
                 [
                     'query' => [
-                        'email'       => $this->datas->admin_email,
+                        'email'       => $this->datas->adminEmail,
                         'method'      => 'addMemberToNewsletter',
                         'language'    => $this->datas->lang,
                         'visitorType' => 1,
@@ -125,7 +133,7 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
             );
         }
 
-        if ($this->datas->send_email) {
+        if ($this->datas->sendEmail) {
             if (!$this->processSendEmail()) {
                 $this->printErrors();
             }
@@ -137,13 +145,12 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
      */
     public function processGenerateSettingsFile()
     {
-        return $this->model_install->generateSettingsFile(
-            $this->datas->database_server,
-            $this->datas->database_login,
-            $this->datas->database_password,
-            $this->datas->database_name,
-            $this->datas->database_prefix,
-            $this->datas->database_engine
+        return $this->modelInstall->generateSettingsFile(
+            $this->datas->databaseServer,
+            $this->datas->databaseLogin,
+            $this->datas->databasePassword,
+            $this->datas->databaseName,
+            $this->datas->databasePrefix
         );
     }
 
@@ -153,7 +160,7 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
      */
     public function processInstallDatabase()
     {
-        return $this->model_install->installDatabase($this->datas->database_clear);
+        return $this->modelInstall->installDatabase($this->datas->databaseClear);
     }
 
     /**
@@ -163,14 +170,14 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
     public function processInstallDefaultData()
     {
         $this->initializeContext();
-        if (!$res = $this->model_install->installDefaultData($this->datas->shop_name, $this->datas->shop_country, (int) $this->datas->all_languages, true)) {
+        if (!$res = $this->modelInstall->installDefaultData($this->datas->shopName, $this->datas->shopCountry, (int) $this->datas->allLanguages, true)) {
             return false;
         }
 
-        if ($this->datas->base_uri != '/') {
-            $shop_url = new ShopUrl(1);
-            $shop_url->physical_uri = $this->datas->base_uri;
-            $shop_url->save();
+        if ($this->datas->baseUri != '/') {
+            $shopUrl = new ShopUrl(1);
+            $shopUrl->physical_uri = $this->datas->baseUri;
+            $shopUrl->save();
         }
 
         return $res;
@@ -187,18 +194,18 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
         Shop::setContext(Shop::CONTEXT_SHOP, 1);
         Configuration::loadConfiguration();
         if (!isset(Context::getContext()->language) || !Validate::isLoadedObject(Context::getContext()->language)) {
-            if ($id_lang = (int) Configuration::get('PS_LANG_DEFAULT')) {
-                Context::getContext()->language = new Language($id_lang);
+            if ($idLang = (int) Configuration::get('PS_LANG_DEFAULT')) {
+                Context::getContext()->language = new Language($idLang);
             }
         }
         if (!isset(Context::getContext()->country) || !Validate::isLoadedObject(Context::getContext()->country)) {
-            if ($id_country = (int) Configuration::get('PS_COUNTRY_DEFAULT')) {
-                Context::getContext()->country = new Country((int) $id_country);
+            if ($idCountry = (int) Configuration::get('PS_COUNTRY_DEFAULT')) {
+                Context::getContext()->country = new Country((int) $idCountry);
             }
         }
         if (!isset(Context::getContext()->currency) || !Validate::isLoadedObject(Context::getContext()->currency)) {
-            if ($id_currency = (int) Configuration::get('PS_CURRENCY_DEFAULT')) {
-                Context::getContext()->currency = new Currency((int) $id_currency);
+            if ($idCurrency = (int) Configuration::get('PS_CURRENCY_DEFAULT')) {
+                Context::getContext()->currency = new Currency((int) $idCurrency);
             }
         }
 
@@ -220,10 +227,10 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
     {
         $this->initializeContext();
 
-        $this->model_install->xml_loader_ids = $this->datas->xml_loader_ids;
-        $result = $this->model_install->populateDatabase();
-        $this->datas->xml_loader_ids = $this->model_install->xml_loader_ids;
-        Configuration::updateValue('PS_INSTALL_XML_LOADERS_ID', json_encode($this->datas->xml_loader_ids));
+        $this->modelInstall->xmlLoaderIds = $this->datas->xmlLoaderIds;
+        $result = $this->modelInstall->populateDatabase();
+        $this->datas->xmlLoaderIds = $this->modelInstall->xmlLoaderIds;
+        Configuration::updateValue('PS_INSTALL_XML_LOADERS_ID', json_encode($this->datas->xmlLoaderIds));
 
         return $result;
     }
@@ -236,19 +243,19 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
     {
         $this->initializeContext();
 
-        return $this->model_install->configureShop(
+        return $this->modelInstall->configureShop(
             [
-                'shop_name'              => $this->datas->shop_name,
-                'shop_activity'          => $this->datas->shop_activity,
-                'shop_country'           => $this->datas->shop_country,
-                'shop_timezone'          => $this->datas->timezone,
-                'use_smtp'               => false,
-                'admin_firstname'        => $this->datas->admin_firstname,
-                'admin_lastname'         => $this->datas->admin_lastname,
-                'admin_password'         => $this->datas->admin_password,
-                'admin_email'            => $this->datas->admin_email,
-                'configuration_agrement' => true,
-                'send_informations'      => true,
+                'shopName'               => $this->datas->shopName,
+                'shopActivity'           => $this->datas->shopActivity,
+                'shopCountry'            => $this->datas->shopCountry,
+                'shopTimezone'           => $this->datas->timezone,
+                'useSmtp'                => false,
+                'adminFirstname'         => $this->datas->adminFirstname,
+                'adminLastname'          => $this->datas->adminLastname,
+                'adminPassword'          => $this->datas->adminPassword,
+                'adminEmail'             => $this->datas->adminEmail,
+                'configurationAgreement' => true,
+                'sendInformations'       => true,
             ]
         );
     }
@@ -261,13 +268,13 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
     {
         $this->initializeContext();
 
-        if ((!$this->datas->xml_loader_ids || !is_array($this->datas->xml_loader_ids)) && ($xml_ids = json_decode(Configuration::get('PS_INSTALL_XML_LOADERS_ID'), true))) {
-            $this->datas->xml_loader_ids = $xml_ids;
+        if ((!$this->datas->xmlLoaderIds || !is_array($this->datas->xmlLoaderIds)) && ($xmlIds = json_decode(Configuration::get('PS_INSTALL_XML_LOADERS_ID'), true))) {
+            $this->datas->xmlLoaderIds = $xmlIds;
         }
 
-        $this->model_install->xml_loader_ids = $this->datas->xml_loader_ids;
-        $result = $this->model_install->installFixtures(null, ['shop_activity' => $this->datas->shop_activity, 'shop_country' => $this->datas->shop_country]);
-        $this->datas->xml_loader_ids = $this->model_install->xml_loader_ids;
+        $this->modelInstall->xmlLoaderIds = $this->datas->xmlLoaderIds;
+        $result = $this->modelInstall->installFixtures(null, ['shopActivity' => $this->datas->shopActivity, 'shopCountry' => $this->datas->shopCountry]);
+        $this->datas->xmlLoaderIds = $this->modelInstall->xmlLoaderIds;
 
         return $result;
     }
@@ -280,7 +287,7 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
     {
         $this->initializeContext();
 
-        return $this->model_install->installModules();
+        return $this->modelInstall->installModules();
     }
 
     /**
@@ -291,7 +298,7 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
     {
         $this->initializeContext();
 
-        return $this->model_install->installTheme();
+        return $this->modelInstall->installTheme();
     }
 
     /**
@@ -303,12 +310,12 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
         require_once _PS_INSTALL_MODELS_PATH_.'mail.php';
         $mail = new InstallModelMail(
             false,
-            $this->datas->smtp_server,
-            $this->datas->smtp_login,
-            $this->datas->smtp_password,
-            $this->datas->smtp_port,
-            $this->datas->smtp_encryption,
-            $this->datas->admin_email
+            $this->datas->smtpServer,
+            $this->datas->smtpLogin,
+            $this->datas->smtpPassword,
+            $this->datas->smtpPort,
+            $this->datas->smtpEncryption,
+            $this->datas->adminEmail
         );
 
         if (file_exists(_PS_INSTALL_LANGS_PATH_.$this->language->getLanguageIso().'/mail_identifiers.txt')) {
@@ -318,17 +325,17 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
         }
 
         $vars = [
-            '{firstname}' => $this->datas->admin_firstname,
-            '{lastname}'  => $this->datas->admin_lastname,
-            '{shop_name}' => $this->datas->shop_name,
-            '{passwd}'    => $this->datas->admin_password,
-            '{email}'     => $this->datas->admin_email,
+            '{firstname}' => $this->datas->adminFirstname,
+            '{lastname}'  => $this->datas->adminLastname,
+            '{shop_name}' => $this->datas->shopName,
+            '{passwd}'    => $this->datas->adminPassword,
+            '{email}'     => $this->datas->adminEmail,
             '{shop_url}'  => Tools::getHttpHost(true).__PS_BASE_URI__,
         ];
         $content = str_replace(array_keys($vars), array_values($vars), $content);
 
         $mail->send(
-            $this->l('%s Login information', $this->datas->shop_name),
+            $this->l('%s Login information', $this->datas->shopName),
             $content
         );
 

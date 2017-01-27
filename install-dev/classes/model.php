@@ -29,6 +29,11 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class InstallAbstractModel
+ *
+ * @since 1.0.0
+ */
 abstract class InstallAbstractModel
 {
     /**
@@ -41,11 +46,21 @@ abstract class InstallAbstractModel
      */
     protected $errors = [];
 
+    /**
+     * InstallAbstractModel constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         $this->language = InstallLanguages::getInstance();
     }
 
+    /**
+     * @param $errors
+     *
+     * @since 1.0.0
+     */
     public function setError($errors)
     {
         if (!is_array($errors)) {
@@ -55,6 +70,11 @@ abstract class InstallAbstractModel
         $this->errors[] = $errors;
     }
 
+    /**
+     * @return array
+     *
+     * @since 1.0.0
+     */
     public function getErrors()
     {
         return $this->errors;

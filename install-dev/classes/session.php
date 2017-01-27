@@ -21,50 +21,110 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
  * Manage session for install script
+ *
+ * @since 1.0.0
  */
 class InstallSession
 {
-    protected static $_instance;
-    protected static $_cookie_mode = false;
-    protected static $_cookie = false;
+    /** @var InstallSession $instance */
+    protected static $instance;
 
+    /** @var bool $cookieMode */
+    protected static $cookieMode = false;
+
+    /** @var bool|Cookie $cookie */
+    protected static $cookie = false;
+
+//    public $databaseServer;
+//    public $databaseName;
+//    public $databaseLogin;
+//    public $databasePassword;
+//    public $databasePrefix;
+//    public $databaseClear;
+//    public $rewriteEngine;
+//
+//    public $installType;
+//
+//    public $shopName;
+//    public $shopActivity;
+//    public $shopCountry;
+//    public $shopTimezone;
+//    public $adminFirstname;
+//    public $adminLastname;
+//    public $adminEmail;
+//    public $sendInformations;
+//
+//    public $adminPassword;
+//    public $adminPasswordConfirm;
+//
+//    public $useSmtp;
+//    public $smtpEncryption;
+//    public $smtpPort;
+//
+//    public $lang;
+//    public $lastStep;
+//
+//    public $supportPhone;
+//
+//    public $licenseAgreement;
+//    public $configurationAgreement;
+//
+//    public $processValidated;
+//
+//    public $xmlLoaderIds;
+
+    /**
+     * @return InstallSession
+     *
+     * @since 1.0.0
+     */
     public static function getInstance()
     {
-        if (!self::$_instance) {
-            self::$_instance = new self();
+        if (!self::$instance) {
+            self::$instance = new self();
         }
-        return self::$_instance;
+
+        return self::$instance;
     }
 
+    /**
+     * InstallSession constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         session_name('install_'.substr(md5($_SERVER['HTTP_HOST']), 0, 12));
-        $session_started = session_start();
-        if (!($session_started)
-        || (!isset($_SESSION['session_mode']) && (isset($_GET['_']) || isset($_POST['submitNext']) || isset($_POST['submitPrevious']) || isset($_POST['language'])))) {
-            InstallSession::$_cookie_mode = true;
-            InstallSession::$_cookie = new Cookie('ps_install', null, time() + 7200, null, true);
+        $sessionStarted = session_start();
+        if (!($sessionStarted)
+            || (!isset($_SESSION['session_mode']) && (isset($_GET['_']) || isset($_POST['submitNext']) || isset($_POST['submitPrevious']) || isset($_POST['language'])))
+        ) {
+            InstallSession::$cookieMode = true;
+            InstallSession::$cookie = new Cookie('ps_install', null, time() + 7200, null, true);
         }
-        if ($session_started && !isset($_SESSION['session_mode'])) {
+        if ($sessionStarted && !isset($_SESSION['session_mode'])) {
             $_SESSION['session_mode'] = 'session';
             session_write_close();
         }
     }
 
+    /**
+     * @since 1.0.0
+     */
     public function clean()
     {
-        if (InstallSession::$_cookie_mode) {
-            InstallSession::$_cookie->logout();
+        if (InstallSession::$cookieMode) {
+            InstallSession::$cookie->logout();
         } else {
             foreach ($_SESSION as $k => $v) {
                 unset($_SESSION[$k]);
@@ -74,8 +134,8 @@ class InstallSession
 
     public function &__get($varname)
     {
-        if (InstallSession::$_cookie_mode) {
-            $ref = InstallSession::$_cookie->{$varname};
+        if (InstallSession::$cookieMode) {
+            $ref = InstallSession::$cookie->{$varname};
             if (0 === strncmp($ref, 'serialized_array:', strlen('serialized_array:'))) {
                 $ref = unserialize(substr($ref, strlen('serialized_array:')));
             }
@@ -92,14 +152,14 @@ class InstallSession
 
     public function __set($varname, $value)
     {
-        if (InstallSession::$_cookie_mode) {
+        if (InstallSession::$cookieMode) {
             if ($varname == 'xml_loader_ids') {
                 return;
             }
             if (is_array($value)) {
                 $value = 'serialized_array:'.serialize($value);
             }
-            InstallSession::$_cookie->{$varname} = $value;
+            InstallSession::$cookie->{$varname} = $value;
         } else {
             $_SESSION[$varname] = $value;
         }
@@ -107,8 +167,8 @@ class InstallSession
 
     public function __isset($varname)
     {
-        if (InstallSession::$_cookie_mode) {
-            return isset(InstallSession::$_cookie->{$varname});
+        if (InstallSession::$cookieMode) {
+            return isset(InstallSession::$cookie->{$varname});
         } else {
             return isset($_SESSION[$varname]);
         }
@@ -116,8 +176,8 @@ class InstallSession
 
     public function __unset($varname)
     {
-        if (InstallSession::$_cookie_mode) {
-            unset(InstallSession::$_cookie->{$varname});
+        if (InstallSession::$cookieMode) {
+            unset(InstallSession::$cookie->{$varname});
         } else {
             unset($_SESSION[$varname]);
         }

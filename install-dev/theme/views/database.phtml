@@ -12,37 +12,29 @@
 	<div id="formCheckSQL">
 		<p class="first" style="margin-top: 15px;">
 			<label for="dbServer"><?php echo $this->l('Database server address') ?> </label>
-			<input size="25" class="text" type="text" id="dbServer" name="dbServer" value="<?php echo htmlspecialchars($this->database_server) ?>" />
+			<input size="25" class="text" type="text" id="dbServer" name="dbServer" value="<?php echo htmlspecialchars($this->databaseServer) ?>" />
 			<span class="userInfos aligned"><?php echo $this->l('The default port is 3306. To use a different port, add the port number at the end of your server\'s address i.e ":4242".') ?></span>
 		</p>
 		<p>
 			<label for="dbName"><?php echo $this->l('Database name') ?> </label>
-			<input size="10" class="text" type="text" id="dbName" name="dbName" value="<?php echo htmlspecialchars($this->database_name) ?>" />
+			<input size="10" class="text" type="text" id="dbName" name="dbName" value="<?php echo htmlspecialchars($this->databaseName) ?>" />
 		</p>
 		<p>
 			<label for="dbLogin"><?php echo $this->l('Database login') ?> </label>
-			<input class="text" size="10" type="text" id="dbLogin" name="dbLogin" value="<?php echo htmlspecialchars($this->database_login) ?>" />
+			<input class="text" size="10" type="text" id="dbLogin" name="dbLogin" value="<?php echo htmlspecialchars($this->databaseLogin) ?>" />
 		</p>
 		<p>
 			<label for="dbPassword"><?php echo $this->l('Database password') ?> </label>
-			<input class="text" size="10" type="password" id="dbPassword" name="dbPassword" value="<?php echo htmlspecialchars($this->database_password) ?>" />
+			<input class="text" size="10" type="password" id="dbPassword" name="dbPassword" value="<?php echo htmlspecialchars($this->databasePassword) ?>" />
 		</p>
-		<!--
-		<p>
-			<label for="dbEngine"><?php echo $this->l('Database Engine') ?></label>
-			<select id="dbEngine" name="dbEngine">
-				<option value="InnoDB" <?php if ($this->database_engine == 'InnoDB'): ?>selected="selected"<?php endif; ?>>InnoDB</option>
-				<option value="MyISAM" <?php if ($this->database_engine == 'MyISAM'): ?>selected="selected"<?php endif; ?>>MyISAM</option>
-			</select>
-		</p>-->
 		<p>
 			<label for="db_prefix"><?php echo $this->l('Tables prefix')?></label>
-			<input class="text" type="text" id="db_prefix" name="db_prefix" value="<?php echo htmlspecialchars($this->database_prefix) ?>" />
+			<input class="text" type="text" id="db_prefix" name="db_prefix" value="<?php echo htmlspecialchars($this->databasePrefix) ?>" />
 		</p>
 		<?php if (_PS_MODE_DEV_): ?>
 			<p>
 				<label for="db_clear"><?php echo $this->l('Drop existing tables (mode dev)')?></label>
-				<input type="checkbox" name="database_clear" id="db_clear" value="1" <?php if ($this->database_clear): ?>checked="checked"<?php endif; ?> />
+				<input type="checkbox" name="database_clear" id="db_clear" value="1" <?php if ($this->databaseClear): ?>checked="checked"<?php endif; ?> />
 			</p>
 		<?php endif; ?>
 		<p class="aligned last">

@@ -2979,7 +2979,7 @@ class ToolsCore
      */
     public static function generateHtaccess($path = null, $rewrite_settings = null, $cache_control = null, $specific = '', $disable_multiviews = null, $medias = false, $disable_modsec = null)
     {
-        if (defined('PS_INSTALLATION_IN_PROGRESS') && $rewrite_settings === null) {
+        if (defined('TB_INSTALLATION_IN_PROGRESS') && $rewrite_settings === null) {
             return true;
         }
 
@@ -3273,7 +3273,7 @@ FileETag none
         }
         fclose($write_fd);
 
-        if (!defined('PS_INSTALLATION_IN_PROGRESS')) {
+        if (!defined('TB_INSTALLATION_IN_PROGRESS')) {
             Hook::exec('actionHtaccessCreate');
         }
 
@@ -4468,7 +4468,7 @@ exit;
         static $use_html_purifier = null;
         static $purifier = null;
 
-        if (defined('PS_INSTALLATION_IN_PROGRESS') || !Configuration::configurationIsLoaded()) {
+        if (defined('TB_INSTALLATION_IN_PROGRESS') || !Configuration::configurationIsLoaded()) {
             return $html;
         }
 

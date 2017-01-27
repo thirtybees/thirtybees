@@ -1,4 +1,5 @@
 <?php
+
 /**
  * 2007-2016 PrestaShop
  *
@@ -21,175 +22,209 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
-
 class Datas
 {
-    private static $instance = null;
-    protected static $available_args = [
-        'step' => [
-            'name' => 'step',
-            'default' => 'all',
+    protected static $availableArgs = [
+        'step'              => [
+            'name'     => 'step',
+            'default'  => 'all',
             'validate' => 'isGenericName',
-            'help' => 'all / database,fixtures,theme,modules,addons_modules',
+            'help'     => 'all / database,fixtures,theme,modules,addons_modules',
         ],
-        'language' => [
-            'default' => 'en',
+        'language'          => [
+            'default'  => 'en',
             'validate' => 'isLanguageIsoCode',
-            'alias' => 'l',
-            'help' => 'language iso code',
+            'alias'    => 'l',
+            'help'     => 'language iso code',
         ],
-        'all_languages' => [
-            'default' => '0',
+        'allLanguages'     => [
+            'default'  => '0',
             'validate' => 'isInt',
-            'alias' => 'l',
-            'help' => 'install all available languages',
+            'alias'    => 'l',
+            'help'     => 'install all available languages',
         ],
-        'timezone' => [
+        'timezone'          => [
             'default' => 'Europe/Paris',
-            'alias' => 't',
+            'alias'   => 't',
         ],
-        'base_uri' => [
-            'name' => 'base_uri',
+        'baseUri'          => [
+            'name'     => 'base_uri',
             'validate' => 'isUrl',
-            'default' => '/',
+            'default'  => '/',
         ],
-        'http_host' => [
-            'name' => 'domain',
+        'httpHost'         => [
+            'name'     => 'domain',
             'validate' => 'isGenericName',
-            'default' => 'localhost',
+            'default'  => 'localhost',
         ],
-        'database_server' => [
-            'name' => 'db_server',
-            'default' => 'localhost',
+        'databaseServer'   => [
+            'name'     => 'db_server',
+            'default'  => 'localhost',
             'validate' => 'isGenericName',
-            'alias' => 'h',
+            'alias'    => 'h',
         ],
-        'database_login' => [
-            'name' => 'db_user',
-            'alias' => 'u',
-            'default' => 'root',
+        'databaseLogin'    => [
+            'name'     => 'db_user',
+            'alias'    => 'u',
+            'default'  => 'root',
             'validate' => 'isGenericName',
         ],
-        'database_password' => [
-            'name' => 'db_password',
-            'alias' => 'p',
+        'databasePassword' => [
+            'name'    => 'db_password',
+            'alias'   => 'p',
             'default' => '',
         ],
-        'database_name' => [
-            'name' => 'db_name',
-            'alias' => 'd',
-            'default' => 'prestashop',
+        'databaseName'     => [
+            'name'     => 'db_name',
+            'alias'    => 'd',
+            'default'  => 'prestashop',
             'validate' => 'isGenericName',
         ],
-        'database_clear' => [
-            'name' => 'db_clear',
-            'default' => '1',
+        'databaseClear'    => [
+            'name'     => 'db_clear',
+            'default'  => '1',
             'validate' => 'isInt',
-            'help' => 'Drop existing tables'
+            'help'     => 'Drop existing tables',
         ],
-        'database_create' => [
-            'name' => 'db_create',
-            'default' => '0',
+        'databaseCreate'   => [
+            'name'     => 'db_create',
+            'default'  => '0',
             'validate' => 'isInt',
-            'help' => 'Create the database if not exist'
+            'help'     => 'Create the database if not exist',
         ],
-        'database_prefix' => [
-            'name' => 'prefix',
-            'default' => 'ps_',
+        'databasePrefix'   => [
+            'name'     => 'prefix',
+            'default'  => 'ps_',
             'validate' => 'isGenericName',
         ],
-        'database_engine' => [
-            'name' => 'engine',
+        'databaseEngine'   => [
+            'name'     => 'engine',
             'validate' => 'isMySQLEngine',
-            'default' => 'InnoDB',
-            'help' => 'InnoDB/MyISAM',
+            'default'  => 'InnoDB',
+            'help'     => 'InnoDB/MyISAM',
         ],
-        'shop_name' => [
-            'name' => 'name',
+        'shopName'         => [
+            'name'     => 'name',
             'validate' => 'isGenericName',
-            'default' => 'PrestaShop',
+            'default'  => 'PrestaShop',
         ],
-        'shop_activity'    => [
-            'name' => 'activity',
-            'default' => 0,
+        'shopActivity'     => [
+            'name'     => 'activity',
+            'default'  => 0,
             'validate' => 'isInt',
         ],
-        'shop_country' => [
-            'name' => 'country',
+        'shopCountry'      => [
+            'name'     => 'country',
             'validate' => 'isLanguageIsoCode',
-            'default' => 'fr',
+            'default'  => 'fr',
         ],
-        'admin_firstname' => [
-            'name' => 'firstname',
+        'adminFirstname'   => [
+            'name'     => 'firstname',
             'validate' => 'isName',
-            'default' => 'John',
+            'default'  => 'John',
         ],
-        'admin_lastname'    => [
-            'name' => 'lastname',
+        'adminLastname'    => [
+            'name'     => 'lastname',
             'validate' => 'isName',
-            'default' => 'Doe',
+            'default'  => 'Doe',
         ],
-        'admin_password' => [
-            'name' => 'password',
+        'adminPassword'    => [
+            'name'     => 'password',
             'validate' => 'isPasswd',
-            'default' => '0123456789',
+            'default'  => '0123456789',
         ],
-        'admin_email' => [
-            'name' => 'email',
+        'adminEmail'       => [
+            'name'     => 'email',
             'validate' => 'isEmail',
-            'default' => 'pub@prestashop.com'
+            'default'  => 'pub@prestashop.com',
         ],
-        'show_license' => [
-            'name' => 'license',
+        'showLicense'      => [
+            'name'    => 'license',
             'default' => 0,
-            'help' => 'show PrestaShop license'
+            'help'    => 'show PrestaShop license',
         ],
-        'newsletter' => [
-            'name' => 'newsletter',
+        'newsletter'        => [
+            'name'    => 'newsletter',
             'default' => 1,
-            'help' => 'get news from PrestaShop',
+            'help'    => 'get news from PrestaShop',
         ],
-        'send_email' => [
-            'name' => 'send_email',
+        'sendEmail'        => [
+            'name'    => 'send_email',
             'default' => 1,
-            'help' => 'send an email to the administrator after installation',
+            'help'    => 'send an email to the administrator after installation',
         ],
     ];
-
+    private static $instance = null;
     protected $datas = [];
+
+//    public $showLicense;
+//    public $httpHost;
+//    public $timezone;
+//    public $language;
+//
+//    public $databaseCreate;
+//    public $modelDatabase;
+//    public $newsletter;
+//    public $adminEmail;
+//    public $lang;
+//    public $sendEmail;
+//    public $databaseServer;
+//    public $databaseLogin;
+//    public $databasePassword;
+//    public $databaseName;
+//    public $databasePrefix;
+//    public $databaseEngine;
+//    public $databaseClear;
+//    public $shopName;
+//    public $baseUri;
+//    public $shopCountry;
+//    public $allLanguages;
+//
+//    public $step;
+//
+//    public $xmlLoaderIds;
+//
+//    public $shopActivity;
+//    public $adminFirstname;
+//    public $adminLastname;
+//    public $adminPassword;
+//
+//    public $smtpServer;
+//    public $smtpLogin;
+//    public $smtpPassword;
+//    public $smtpPort;
+//    public $smtpEncryption;
+
+
+    /**
+     * @return Datas
+     */
+    public static function getInstance()
+    {
+        if (Datas::$instance === null) {
+            Datas::$instance = new Datas();
+        }
+
+        return Datas::$instance;
+    }
 
     public function __get($key)
     {
         if (isset($this->datas[$key])) {
             return $this->datas[$key];
         }
-
         return false;
     }
-
     public function __set($key, $value)
     {
         $this->datas[$key] = $value;
-    }
-
-    public static function getInstance()
-    {
-        if (Datas::$instance === null) {
-            Datas::$instance = new Datas();
-        }
-        return Datas::$instance;
-    }
-
-    public static function getArgs()
-    {
-        return Datas::$available_args;
     }
 
     public function getAndCheckArgs($argv)
@@ -198,7 +233,7 @@ class Datas
             return false;
         }
 
-        $args_ok = [];
+        $argsOk = [];
         foreach ($argv as $arg) {
             if (!preg_match('/^--([^=\'"><|`]+)(?:=([^=><|`]+)|(?!license))/i', trim($arg), $res)) {
                 continue;
@@ -210,7 +245,7 @@ class Datas
                 continue;
             }
 
-            $args_ok[$res[1]] = $res[2];
+            $argsOk[$res[1]] = $res[2];
         }
 
         $errors = [];
@@ -220,19 +255,27 @@ class Datas
             } else {
                 $name = $key;
             }
-            if (!isset($args_ok[$name])) {
+            if (!isset($argsOk[$name])) {
                 if (!isset($row['default'])) {
                     $errors[] = 'Field '.$row['name'].' is empty';
                 } else {
                     $this->$key = $row['default'];
                 }
-            } elseif (isset($row['validate']) && !call_user_func(['Validate', $row['validate']], $args_ok[$name])) {
+            } elseif (isset($row['validate']) && !call_user_func(['Validate', $row['validate']], $argsOk[$name])) {
                 $errors[] = 'Field '.$key.' is not valid';
             } else {
-                $this->$key = $args_ok[$name];
+                $this->$key = $argsOk[$name];
             }
         }
 
         return count($errors) ? $errors : true;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getArgs()
+    {
+        return Datas::$availableArgs;
     }
 }

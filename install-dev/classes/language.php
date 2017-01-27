@@ -21,14 +21,19 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class InstallLanguage
+ *
+ * @since 1.0.0
+ */
 class InstallLanguage
 {
     /**
@@ -58,6 +63,13 @@ class InstallLanguage
      */
     protected $countries;
 
+    /**
+     * InstallLanguage constructor.
+     *
+     * @param string $iso
+     *
+     * @since 1.0.0
+     */
     public function __construct($iso)
     {
         $this->path = _PS_INSTALL_LANGS_PATH_.$iso.'/';
@@ -68,6 +80,8 @@ class InstallLanguage
      * Get iso for current language
      *
      * @return string
+     *
+     * @since 1.0.0
      */
     public function getIso()
     {
@@ -78,7 +92,10 @@ class InstallLanguage
      * Get an information from language.xml file (E.g. $this->getMetaInformation('name'))
      *
      * @param string $key
+     *
      * @return string
+     *
+     * @since 1.0.0
      */
     public function getMetaInformation($key)
     {
@@ -87,7 +104,7 @@ class InstallLanguage
             $xml = @simplexml_load_file($this->path.'language.xml');
             if ($xml) {
                 foreach ($xml->children() as $node) {
-                    $this->meta[$node->getName()] = (string)$node;
+                    $this->meta[$node->getName()] = (string) $node;
                 }
             }
         }
@@ -95,6 +112,14 @@ class InstallLanguage
         return isset($this->meta[$key]) ? $this->meta[$key] : null;
     }
 
+    /**
+     * @param string $key
+     * @param string $type
+     *
+     * @return null
+     *
+     * @since 1.0.0
+     */
     public function getTranslation($key, $type = 'translations')
     {
         if (!is_array($this->data)) {
@@ -104,6 +129,11 @@ class InstallLanguage
         return isset($this->data[$type][$key]) ? $this->data[$type][$key] : null;
     }
 
+    /**
+     * @return array
+     *
+     * @since 1.0.0
+     */
     public function getCountries()
     {
         if (!is_array($this->countries)) {
@@ -111,11 +141,12 @@ class InstallLanguage
             if (file_exists($this->path.'data/country.xml')) {
                 if ($xml = @simplexml_load_file($this->path.'data/country.xml')) {
                     foreach ($xml->country as $country) {
-                        $this->countries[strtolower((string)$country['id'])] = (string)$country->name;
+                        $this->countries[strtolower((string) $country['id'])] = (string) $country->name;
                     }
                 }
             }
         }
+
         return $this->countries;
     }
 }

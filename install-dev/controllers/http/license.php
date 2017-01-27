@@ -34,6 +34,9 @@
  */
 class InstallControllerHttpLicense extends InstallControllerHttp
 {
+    /** @var InstallSession $session */
+    public $session;
+
     /**
      * Process license form
      *
@@ -41,8 +44,8 @@ class InstallControllerHttpLicense extends InstallControllerHttp
      */
     public function processNextStep()
     {
-        $this->session->licence_agrement = Tools::getValue('licence_agrement');
-        $this->session->configuration_agrement = Tools::getValue('configuration_agrement');
+        $this->session->licenseAgreement = Tools::getValue('license_agreement');
+        $this->session->configurationAgreement = Tools::getValue('configuration_agreement');
     }
 
     /**
@@ -52,7 +55,7 @@ class InstallControllerHttpLicense extends InstallControllerHttp
      */
     public function validate()
     {
-        return $this->session->licence_agrement;
+        return $this->session->licenseAgreement;
     }
 
     public function process()

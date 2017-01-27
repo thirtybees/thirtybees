@@ -37,17 +37,27 @@ class InstallControllerHttpDatabase extends InstallControllerHttp
     /**
      * @var InstallModelDatabase
      */
-    public $model_database;
+    public $modelDatabase;
+
+    public $databaseServer;
+    public $databaseName;
+    public $databaseLogin;
+    public $databasePassword;
+    public $databasePrefix;
+    public $databaseClear;
+    public $useSmtp;
+    public $smtpEncryption;
+    public $smtpPort;
 
     /**
      * @var InstallModelMail
      */
-    public $model_mail;
+    public $modelMail;
 
     public function init()
     {
         require_once _PS_INSTALL_MODELS_PATH_.'database.php';
-        $this->model_database = new InstallModelDatabase();
+        $this->modelDatabase = new InstallModelDatabase();
     }
 
     /**
@@ -56,14 +66,13 @@ class InstallControllerHttpDatabase extends InstallControllerHttp
     public function processNextStep()
     {
         // Save database config
-        $this->session->database_server = trim(Tools::getValue('dbServer'));
-        $this->session->database_name = trim(Tools::getValue('dbName'));
-        $this->session->database_login = trim(Tools::getValue('dbLogin'));
-        $this->session->database_password = trim(Tools::getValue('dbPassword'));
-        $this->session->database_prefix = trim(Tools::getValue('db_prefix'));
-        $this->session->database_clear = Tools::getValue('database_clear');
-        
-        $this->session->rewrite_engine = Tools::getValue('rewrite_engine');
+        $this->session->databaseServer = trim(Tools::getValue('dbServer'));
+        $this->session->databaseName = trim(Tools::getValue('dbName'));
+        $this->session->databaseLogin = trim(Tools::getValue('dbLogin'));
+        $this->session->databasePassword = trim(Tools::getValue('dbPassword'));
+        $this->session->databasePrefix = trim(Tools::getValue('db_prefix'));
+        $this->session->databaseClear = Tools::getValue('database_clear');
+        $this->session->rewriteEngine = Tools::getValue('rewrite_engine');
     }
 
     /**
@@ -73,22 +82,19 @@ class InstallControllerHttpDatabase extends InstallControllerHttp
      */
     public function validate()
     {
-        $this->errors = $this->model_database->testDatabaseSettings(
-            $this->session->database_server,
-            $this->session->database_name,
-            $this->session->database_login,
-            $this->session->database_password,
-            $this->session->database_prefix,
+        $this->errors = $this->modelDatabase->testDatabaseSettings(
+            $this->session->databaseServer,
+            $this->session->databaseName,
+            $this->session->databaseLogin,
+            $this->session->databasePassword,
+            $this->session->databasePrefix,
             // We do not want to validate table prefix if we are already in install process
-            ($this->session->step == 'process') ? true : $this->session->database_clear
+            ($this->session->step == 'process') ? true : $this->session->databaseClear
         );
         if (count($this->errors)) {
             return false;
         }
-        
-        if (!isset($this->session->database_engine)) {
-            $this->session->database_engine = $this->model_database->getBestEngine($this->session->database_server, $this->session->database_name, $this->session->database_login, $this->session->database_password);
-        }
+
         return true;
     }
 
@@ -113,7 +119,7 @@ class InstallControllerHttpDatabase extends InstallControllerHttp
         $prefix = Tools::getValue('db_prefix');
         $clear = Tools::getValue('clear');
 
-        $errors = $this->model_database->testDatabaseSettings($server, $database, $login, $password, $prefix, $clear);
+        $errors = $this->modelDatabase->testDatabaseSettings($server, $database, $login, $password, $prefix, $clear);
 
         $this->ajaxJsonAnswer(
             (count($errors)) ? false : true,
@@ -131,7 +137,7 @@ class InstallControllerHttpDatabase extends InstallControllerHttp
         $login = Tools::getValue('dbLogin');
         $password = Tools::getValue('dbPassword');
 
-        $success = $this->model_database->createDatabase($server, $database, $login, $password);
+        $success = $this->modelDatabase->createDatabase($server, $database, $login, $password);
 
         $this->ajaxJsonAnswer(
             $success,
@@ -144,40 +150,37 @@ class InstallControllerHttpDatabase extends InstallControllerHttp
      */
     public function display()
     {
-        if (!$this->session->database_server) {
+        if (!$this->session->databaseServer) {
             if (file_exists(_PS_ROOT_DIR_.'/config/settings.inc.php')) {
                 @include_once _PS_ROOT_DIR_.'/config/settings.inc.php';
-                $this->database_server = _DB_SERVER_;
-                $this->database_name = _DB_NAME_;
-                $this->database_login = _DB_USER_;
-                $this->database_password = _DB_PASSWD_;
-                $this->database_engine = _MYSQL_ENGINE_;
-                $this->database_prefix = _DB_PREFIX_;
+                $this->databaseServer = _DB_SERVER_;
+                $this->databaseName = _DB_NAME_;
+                $this->databaseLogin = _DB_USER_;
+                $this->databasePassword = _DB_PASSWD_;
+                $this->databasePrefix = _DB_PREFIX_;
             } else {
-                $this->database_server = 'localhost';
-                $this->database_name = 'thirtybees';
-                $this->database_login = 'root';
-                $this->database_password = '';
-                $this->database_engine = 'InnoDB';
-                $this->database_prefix = 'tb_';
+                $this->databaseServer = 'localhost';
+                $this->databaseName = 'thirtybees';
+                $this->databaseLogin = 'root';
+                $this->databasePassword = '';
+                $this->databasePrefix = 'tb_';
             }
 
-            $this->database_clear = true;
-            $this->use_smtp = false;
-            $this->smtp_encryption = 'off';
-            $this->smtp_port = 25;
+            $this->databaseClear = true;
+            $this->useSmtp = false;
+            $this->smtpEncryption = 'off';
+            $this->smtpPort = 25;
         } else {
-            $this->database_server = $this->session->database_server;
-            $this->database_name = $this->session->database_name;
-            $this->database_login = $this->session->database_login;
-            $this->database_password = $this->session->database_password;
-            $this->database_engine = $this->session->database_engine;
-            $this->database_prefix = $this->session->database_prefix;
-            $this->database_clear = $this->session->database_clear;
+            $this->databaseServer = $this->session->databaseServer;
+            $this->databaseName = $this->session->databaseName;
+            $this->databaseLogin = $this->session->databaseLogin;
+            $this->databasePassword = $this->session->databasePassword;
+            $this->databasePrefix = $this->session->databasePrefix;
+            $this->databaseClear = $this->session->databaseClear;
 
-            $this->use_smtp = $this->session->use_smtp;
-            $this->smtp_encryption = $this->session->smtp_encryption;
-            $this->smtp_port = $this->session->smtp_port;
+            $this->useSmtp = $this->session->useSmtp;
+            $this->smtpEncryption = $this->session->smtpEncryption;
+            $this->smtpPort = $this->session->smtpPort;
         }
 
         $this->displayTemplate('database');

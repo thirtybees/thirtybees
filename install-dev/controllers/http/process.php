@@ -38,74 +38,82 @@ class InstallControllerHttpProcess extends InstallControllerHttp
 {
     const SETTINGS_FILE = 'config/settings.inc.php';
 
-    public $process_steps = [];
+    public $processSteps = [];
 
-    public $previous_button = false;
+    public $previousButton = false;
 
-    /** @var InstallModelInstall $model_install */
-    protected $model_install;
+    /** @var InstallModelInstall $modelInstall */
+    protected $modelInstall;
 
+    /**
+     * @since 1.0.0
+     */
     public function init()
     {
         require_once _PS_INSTALL_MODELS_PATH_.'install.php';
-        $this->model_install = new InstallModelInstall();
+        $this->modelInstall = new InstallModelInstall();
     }
 
     /**
-     * @see InstallAbstractModel::processNextStep()
+     * @since 1.0.0
      */
     public function processNextStep()
     {
     }
 
     /**
-     * @see InstallAbstractModel::validate()
+     * @return bool
+     *
+     * @since 1.0.0
      */
     public function validate()
     {
         return false;
     }
 
+    /**
+     * @since 1.0.0
+     */
     public function process()
     {
         if (file_exists(_PS_ROOT_DIR_.'/'.self::SETTINGS_FILE)) {
             require_once _PS_ROOT_DIR_.'/'.self::SETTINGS_FILE;
         }
 
-        if (!$this->session->process_validated) {
-            $this->session->process_validated = [];
+        if (!$this->session->processValidated) {
+            $this->session->processValidated = [];
         }
 
         if (Tools::getValue('generateSettingsFile')) {
             $this->processGenerateSettingsFile();
-        } elseif (Tools::getValue('installDatabase') && !empty($this->session->process_validated['generateSettingsFile'])) {
+        } elseif (Tools::getValue('installDatabase') && !empty($this->session->processValidated['generateSettingsFile'])) {
             $this->processInstallDatabase();
         } elseif (Tools::getValue('installDefaultData')) {
             $this->processInstallDefaultData();
-        } elseif (Tools::getValue('populateDatabase') && !empty($this->session->process_validated['installDatabase'])) {
+        } elseif (Tools::getValue('populateDatabase') && !empty($this->session->processValidated['installDatabase'])) {
             $this->processPopulateDatabase();
-        } elseif (Tools::getValue('configureShop') && !empty($this->session->process_validated['populateDatabase'])) {
+        } elseif (Tools::getValue('configureShop') && !empty($this->session->processValidated['populateDatabase'])) {
             $this->processConfigureShop();
-        } elseif (Tools::getValue('installFixtures') && !empty($this->session->process_validated['configureShop'])) {
+        } elseif (Tools::getValue('installFixtures') && !empty($this->session->processValidated['configureShop'])) {
             $this->processInstallFixtures();
-        } elseif (Tools::getValue('installModules') && (!empty($this->session->process_validated['installFixtures']) || $this->session->install_type != 'full')) {
+        } elseif (Tools::getValue('installModules') && (!empty($this->session->processValidated['installFixtures']) || $this->session->installType != 'full')) {
             $this->processInstallModules();
         } elseif (Tools::getValue('installTheme')) {
             $this->processInstallTheme();
-        } elseif (Tools::getValue('sendEmail') && !empty($this->session->process_validated['installTheme'])) {
+        } elseif (Tools::getValue('sendEmail') && !empty($this->session->processValidated['installTheme'])) {
             $this->processSendEmail();
         } else {
             // With no parameters, we consider that we are doing a new install, so session where the last process step
             // was stored can be cleaned
             if (Tools::getValue('restart')) {
-                $this->session->process_validated = [];
+                $this->session->processValidated = [];
                 $this->session->database_clear = true;
                 if (Tools::getSafeModeStatus()) {
                     $this->session->safe_mode = true;
                 }
             } elseif (!Tools::getValue('submitNext')) {
                 $this->session->step = 'configure';
-                $this->session->last_step = 'configure';
+                $this->session->lastStep = 'configure';
                 Tools::redirect('index.php');
             }
         }
@@ -113,22 +121,23 @@ class InstallControllerHttpProcess extends InstallControllerHttp
 
     /**
      * PROCESS : generateSettingsFile
+     *
+     * @since 1.0.0
      */
     public function processGenerateSettingsFile()
     {
-        $success = $this->model_install->generateSettingsFile(
-            $this->session->database_server,
-            $this->session->database_login,
-            $this->session->database_password,
-            $this->session->database_name,
-            $this->session->database_prefix,
-            $this->session->database_engine
+        $success = $this->modelInstall->generateSettingsFile(
+            $this->session->databaseServer,
+            $this->session->databaseLogin,
+            $this->session->databasePassword,
+            $this->session->databaseName,
+            $this->session->databasePrefix
         );
 
         if (!$success) {
             $this->ajaxJsonAnswer(false);
         }
-        $this->session->process_validated = array_merge($this->session->process_validated, ['generateSettingsFile' => true]);
+        $this->session->processValidated = array_merge($this->session->processValidated, ['generateSettingsFile' => true]);
         $this->ajaxJsonAnswer(true);
     }
 
@@ -138,10 +147,10 @@ class InstallControllerHttpProcess extends InstallControllerHttp
      */
     public function processInstallDatabase()
     {
-        if (!$this->model_install->installDatabase($this->session->database_clear) || $this->model_install->getErrors()) {
-            $this->ajaxJsonAnswer(false, $this->model_install->getErrors());
+        if (!$this->modelInstall->installDatabase($this->session->databaseClear) || $this->modelInstall->getErrors()) {
+            $this->ajaxJsonAnswer(false, $this->modelInstall->getErrors());
         }
-        $this->session->process_validated = array_merge($this->session->process_validated, ['installDatabase' => true]);
+        $this->session->processValidated = array_merge($this->session->processValidated, ['installDatabase' => true]);
         $this->ajaxJsonAnswer(true);
     }
 
@@ -152,10 +161,10 @@ class InstallControllerHttpProcess extends InstallControllerHttp
     public function processInstallDefaultData()
     {
         // @todo remove true in populateDatabase for 1.5.0 RC version
-        $result = $this->model_install->installDefaultData($this->session->shop_name, $this->session->shop_country, false, true);
+        $result = $this->modelInstall->installDefaultData($this->session->shopName, $this->session->shopCountry, false, true);
 
-        if (!$result || $this->model_install->getErrors()) {
-            $this->ajaxJsonAnswer(false, $this->model_install->getErrors());
+        if (!$result || $this->modelInstall->getErrors()) {
+            $this->ajaxJsonAnswer(false, $this->modelInstall->getErrors());
         }
         $this->ajaxJsonAnswer(true);
     }
@@ -168,13 +177,13 @@ class InstallControllerHttpProcess extends InstallControllerHttp
     {
         $this->initializeContext();
 
-        $this->model_install->xml_loader_ids = $this->session->xml_loader_ids;
-        $result = $this->model_install->populateDatabase(Tools::getValue('entity'));
-        if (!$result || $this->model_install->getErrors()) {
-            $this->ajaxJsonAnswer(false, $this->model_install->getErrors());
+        $this->modelInstall->xmlLoaderIds = $this->session->xmlLoaderIds;
+        $result = $this->modelInstall->populateDatabase(Tools::getValue('entity'));
+        if (!$result || $this->modelInstall->getErrors()) {
+            $this->ajaxJsonAnswer(false, $this->modelInstall->getErrors());
         }
-        $this->session->xml_loader_ids = $this->model_install->xml_loader_ids;
-        $this->session->process_validated = array_merge($this->session->process_validated, ['populateDatabase' => true]);
+        $this->session->xmlLoaderIds = $this->modelInstall->xmlLoaderIds;
+        $this->session->processValidated = array_merge($this->session->processValidated, ['populateDatabase' => true]);
         $this->ajaxJsonAnswer(true);
     }
 
@@ -204,27 +213,27 @@ class InstallControllerHttpProcess extends InstallControllerHttp
     {
         $this->initializeContext();
 
-        $success = $this->model_install->configureShop(
+        $success = $this->modelInstall->configureShop(
             [
-                'shop_name'              => $this->session->shop_name,
-                'shop_activity'          => $this->session->shop_activity,
-                'shop_country'           => $this->session->shop_country,
-                'shop_timezone'          => $this->session->shop_timezone,
-                'admin_firstname'        => $this->session->admin_firstname,
-                'admin_lastname'         => $this->session->admin_lastname,
-                'admin_password'         => $this->session->admin_password,
-                'admin_email'            => $this->session->admin_email,
-                'send_informations'      => $this->session->send_informations,
-                'configuration_agrement' => $this->session->configuration_agrement,
-                'rewrite_engine'         => $this->session->rewrite_engine,
+                'shopName'               => $this->session->shopName,
+                'shopActivity'           => $this->session->shopActivity,
+                'shopCountry'            => $this->session->shopCountry,
+                'shopTimezone'           => $this->session->shopTimezone,
+                'adminFirstname'         => $this->session->adminFirstname,
+                'adminLastname'          => $this->session->adminLastname,
+                'adminPassword'          => $this->session->adminPassword,
+                'adminEmail'             => $this->session->adminEmail,
+                'sendInformations'       => $this->session->sendInformations,
+                'configurationAgreement' => $this->session->configurationAgreement,
+                'rewriteEngine'          => $this->session->rewriteEngine,
             ]
         );
 
-        if (!$success || $this->model_install->getErrors()) {
-            $this->ajaxJsonAnswer(false, $this->model_install->getErrors());
+        if (!$success || $this->modelInstall->getErrors()) {
+            $this->ajaxJsonAnswer(false, $this->modelInstall->getErrors());
         }
 
-        $this->session->process_validated = array_merge($this->session->process_validated, ['configureShop' => true]);
+        $this->session->processValidated = array_merge($this->session->processValidated, ['configureShop' => true]);
         $this->ajaxJsonAnswer(true);
     }
 
@@ -236,12 +245,12 @@ class InstallControllerHttpProcess extends InstallControllerHttp
     {
         $this->initializeContext();
 
-        $this->model_install->xml_loader_ids = $this->session->xml_loader_ids;
-        if (!$this->model_install->installFixtures(Tools::getValue('entity', null), ['shop_activity' => $this->session->shop_activity, 'shop_country' => $this->session->shop_country]) || $this->model_install->getErrors()) {
-            $this->ajaxJsonAnswer(false, $this->model_install->getErrors());
+        $this->modelInstall->xmlLoaderIds = $this->session->xmlLoaderIds;
+        if (!$this->modelInstall->installFixtures(Tools::getValue('entity', null), ['shopActivity' => $this->session->shopActivity, 'shopCountry' => $this->session->shopCountry]) || $this->modelInstall->getErrors()) {
+            $this->ajaxJsonAnswer(false, $this->modelInstall->getErrors());
         }
-        $this->session->xml_loader_ids = $this->model_install->xml_loader_ids;
-        $this->session->process_validated = array_merge($this->session->process_validated, ['installFixtures' => true]);
+        $this->session->xmlLoaderIds = $this->modelInstall->xmlLoaderIds;
+        $this->session->processValidated = array_merge($this->session->processValidated, ['installFixtures' => true]);
         $this->ajaxJsonAnswer(true);
     }
 
@@ -253,11 +262,11 @@ class InstallControllerHttpProcess extends InstallControllerHttp
     {
         $this->initializeContext();
 
-        $result = $this->model_install->installModules(Tools::getValue('module'));
-        if (!$result || $this->model_install->getErrors()) {
-            $this->ajaxJsonAnswer(false, $this->model_install->getErrors());
+        $result = $this->modelInstall->installModules(Tools::getValue('module'));
+        if (!$result || $this->modelInstall->getErrors()) {
+            $this->ajaxJsonAnswer(false, $this->modelInstall->getErrors());
         }
-        $this->session->process_validated = array_merge($this->session->process_validated, ['installModules' => true]);
+        $this->session->processValidated = array_merge($this->session->processValidated, ['installModules' => true]);
         $this->ajaxJsonAnswer(true);
     }
 
@@ -269,12 +278,12 @@ class InstallControllerHttpProcess extends InstallControllerHttp
     {
         $this->initializeContext();
 
-        $this->model_install->installTheme();
-        if ($this->model_install->getErrors()) {
-            $this->ajaxJsonAnswer(false, $this->model_install->getErrors());
+        $this->modelInstall->installTheme();
+        if ($this->modelInstall->getErrors()) {
+            $this->ajaxJsonAnswer(false, $this->modelInstall->getErrors());
         }
 
-        $this->session->process_validated = array_merge($this->session->process_validated, ['installTheme' => true]);
+        $this->session->processValidated = array_merge($this->session->processValidated, ['installTheme' => true]);
         $this->ajaxJsonAnswer(true);
     }
 
@@ -284,49 +293,49 @@ class InstallControllerHttpProcess extends InstallControllerHttp
     public function display()
     {
         // The installer SHOULD take less than 32M, but may take up to 35/36M sometimes. So 42M is a good value :)
-        $low_memory = Tools::getMemoryLimit() < Tools::getOctets('42M');
+        $lowMemory = Tools::getMemoryLimit() < Tools::getOctets('42M');
 
         // We fill the process step used for Ajax queries
-        $this->process_steps[] = ['key' => 'generateSettingsFile', 'lang' => $this->l('Create settings.inc file')];
-        $this->process_steps[] = ['key' => 'installDatabase', 'lang' => $this->l('Create database tables')];
-        $this->process_steps[] = ['key' => 'installDefaultData', 'lang' => $this->l('Create default shop and languages')];
+        $this->processSteps[] = ['key' => 'generateSettingsFile', 'lang' => $this->l('Create settings.inc file')];
+        $this->processSteps[] = ['key' => 'installDatabase', 'lang' => $this->l('Create database tables')];
+        $this->processSteps[] = ['key' => 'installDefaultData', 'lang' => $this->l('Create default shop and languages')];
 
         // If low memory, create subtasks for populateDatabase step (entity per entity)
-        $populate_step = ['key' => 'populateDatabase', 'lang' => $this->l('Populate database tables')];
-        if ($low_memory) {
-            $populate_step['subtasks'] = [];
-            $xml_loader = new InstallXmlLoader();
-            foreach ($xml_loader->getSortedEntities() as $entity) {
-                $populate_step['subtasks'][] = ['entity' => $entity];
+        $populateStep = ['key' => 'populateDatabase', 'lang' => $this->l('Populate database tables')];
+        if ($lowMemory) {
+            $populateStep['subtasks'] = [];
+            $xmlLoader = new InstallXmlLoader();
+            foreach ($xmlLoader->getSortedEntities() as $entity) {
+                $populateStep['subtasks'][] = ['entity' => $entity];
             }
         }
 
-        $this->process_steps[] = $populate_step;
-        $this->process_steps[] = ['key' => 'configureShop', 'lang' => $this->l('Configure shop information')];
+        $this->processSteps[] = $populateStep;
+        $this->processSteps[] = ['key' => 'configureShop', 'lang' => $this->l('Configure shop information')];
 
-        if ($this->session->install_type == 'full') {
+        if ($this->session->installType == 'full') {
             // If low memory, create subtasks for installFixtures step (entity per entity)
-            $fixtures_step = ['key' => 'installFixtures', 'lang' => $this->l('Install demonstration data')];
-            if ($low_memory) {
-                $fixtures_step['subtasks'] = [];
-                $xml_loader = new InstallXmlLoader();
-                $xml_loader->setFixturesPath();
-                foreach ($xml_loader->getSortedEntities() as $entity) {
-                    $fixtures_step['subtasks'][] = ['entity' => $entity];
+            $fixturesStep = ['key' => 'installFixtures', 'lang' => $this->l('Install demonstration data')];
+            if ($lowMemory) {
+                $fixturesStep['subtasks'] = [];
+                $xmlLoader = new InstallXmlLoader();
+                $xmlLoader->setFixturesPath();
+                foreach ($xmlLoader->getSortedEntities() as $entity) {
+                    $fixturesStep['subtasks'][] = ['entity' => $entity];
                 }
             }
-            $this->process_steps[] = $fixtures_step;
+            $this->processSteps[] = $fixturesStep;
         }
 
-        $install_modules = ['key' => 'installModules', 'lang' => $this->l('Install modules')];
-        if ($low_memory) {
-            foreach ($this->model_install->getModulesList() as $module) {
-                $install_modules['subtasks'][] = ['module' => $module];
+        $installModules = ['key' => 'installModules', 'lang' => $this->l('Install modules')];
+        if ($lowMemory) {
+            foreach ($this->modelInstall->getModulesList() as $module) {
+                $installModules['subtasks'][] = ['module' => $module];
             }
         }
-        $this->process_steps[] = $install_modules;
+        $this->processSteps[] = $installModules;
 
-        $this->process_steps[] = ['key' => 'installTheme', 'lang' => $this->l('Install theme')];
+        $this->processSteps[] = ['key' => 'installTheme', 'lang' => $this->l('Install theme')];
 
         $this->displayTemplate('process');
     }

@@ -36,10 +36,12 @@ class InstallControllerHttpSystem extends InstallControllerHttp
 {
     public $tests = [];
 
+    public $testsRender;
+
     /**
      * @var InstallModelSystem
      */
-    public $model_system;
+    public $modelSystem;
 
     /**
      * @see InstallAbstractModel::init()
@@ -47,7 +49,7 @@ class InstallControllerHttpSystem extends InstallControllerHttp
     public function init()
     {
         require_once _PS_INSTALL_MODELS_PATH_.'system.php';
-        $this->model_system = new InstallModelSystem();
+        $this->modelSystem = new InstallModelSystem();
     }
 
     /**
@@ -64,7 +66,7 @@ class InstallControllerHttpSystem extends InstallControllerHttp
      */
     public function validate()
     {
-        $this->tests['required'] = $this->model_system->checkRequiredTests();
+        $this->tests['required'] = $this->modelSystem->checkRequiredTests();
 
         return $this->tests['required']['success'];
     }
@@ -75,10 +77,10 @@ class InstallControllerHttpSystem extends InstallControllerHttp
     public function display()
     {
         if (!isset($this->tests['required'])) {
-            $this->tests['required'] = $this->model_system->checkRequiredTests();
+            $this->tests['required'] = $this->modelSystem->checkRequiredTests();
         }
         if (!isset($this->tests['optional'])) {
-            $this->tests['optional'] = $this->model_system->checkOptionalTests();
+            $this->tests['optional'] = $this->modelSystem->checkOptionalTests();
         }
 
         if (!is_callable('getenv') || !($user = @getenv('APACHE_RUN_USER'))) {
@@ -86,7 +88,7 @@ class InstallControllerHttpSystem extends InstallControllerHttp
         }
 
         // Generate display array
-        $this->tests_render = [
+        $this->testsRender = [
             'required' => [
                 [
                     'title'   => $this->l('Required PHP parameters'),
@@ -107,7 +109,7 @@ class InstallControllerHttpSystem extends InstallControllerHttp
                     'title'   => $this->l('Files'),
                     'success' => 1,
                     'checks'  => [
-                        'files' => $this->l('Not all files were successfully uploaded on your server'),
+                        'Files' => $this->l('Not all files were successfully uploaded on your server'),
                     ],
                 ],
                 [
@@ -144,7 +146,7 @@ class InstallControllerHttpSystem extends InstallControllerHttp
             ],
         ];
 
-        foreach ($this->tests_render['required'] as &$category) {
+        foreach ($this->testsRender['required'] as &$category) {
             foreach ($category['checks'] as $id => $check) {
                 if ($this->tests['required']['checks'][$id] != 'ok') {
                     $category['success'] = 0;
@@ -154,7 +156,7 @@ class InstallControllerHttpSystem extends InstallControllerHttp
 
         // If required tests failed, disable next button
         if (!$this->tests['required']['success']) {
-            $this->next_button = false;
+            $this->nextButton = false;
         }
 
         $this->displayTemplate('system');

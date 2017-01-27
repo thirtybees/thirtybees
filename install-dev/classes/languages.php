@@ -21,42 +21,43 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class InstallLanguages
+ *
+ * @since 1.0.0
+ */
 class InstallLanguages
 {
     const DEFAULT_ISO = 'en';
+    protected static $instance;
     /**
      * @var array List of available languages
      */
     protected $languages;
-
     /**
      * @var string Current language
      */
     protected $language;
-
     /**
      * @var InstallLanguage Default language (english)
      */
     protected $default;
 
-    protected static $_instance;
-
-    public static function getInstance()
-    {
-        if (!self::$_instance) {
-            self::$_instance = new self();
-        }
-        return self::$_instance;
-    }
-
+    /**
+     * InstallLanguages constructor.
+     *
+     * @throws PrestashopInstallerException
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         // English language is required
@@ -74,26 +75,29 @@ class InstallLanguages
                 $this->languages[$lang] = new InstallLanguage($lang);
             }
         }
-        uasort($this->languages, 'ps_usort_languages');
+        uasort($this->languages, ['InstallLanguages', 'psUsortLanguages']);
     }
 
     /**
-     * Set current language
+     * @return InstallLanguages
      *
-     * @param string $iso Language iso
+     * @since 1.0.0
      */
-    public function setLanguage($iso)
+    public static function getInstance()
     {
-        if (!in_array($iso, $this->getIsoList())) {
-            throw new PrestashopInstallerException('Language '.$iso.' not found');
+        if (!self::$instance) {
+            self::$instance = new self();
         }
-        $this->language = $iso;
+
+        return self::$instance;
     }
 
     /**
      * Get current language
      *
      * @return string
+     *
+     * @since 1.0.0
      */
     public function getLanguageIso()
     {
@@ -101,27 +105,11 @@ class InstallLanguages
     }
 
     /**
-     * Get current language
-     *
-     * @return InstallLanguage
-     */
-    public function getLanguage($iso = null)
-    {
-        if (!$iso) {
-            $iso = $this->language;
-        }
-        return $this->languages[$iso];
-    }
-
-    public function getIsoList()
-    {
-        return array_keys($this->languages);
-    }
-
-    /**
      * Get list of languages iso supported by installer
      *
      * @return array
+     *
+     * @since 1.0.0
      */
     public function getLanguages()
     {
@@ -132,8 +120,10 @@ class InstallLanguages
      * Get translated string
      *
      * @param string $str String to translate
-     * @param ... All other params will be used with sprintf
+     *
      * @return string
+     *
+     * @since 1.0.0
      */
     public function l($str)
     {
@@ -155,16 +145,67 @@ class InstallLanguages
     }
 
     /**
+     * Get current language
+     *
+     * @param null $iso
+     *
+     * @return InstallLanguage
+     *
+     * @since 1.0.0
+     */
+    public function getLanguage($iso = null)
+    {
+        if (!$iso) {
+            $iso = $this->language;
+        }
+
+        return $this->languages[$iso];
+    }
+
+    /**
+     * Set current language
+     *
+     * @param string $iso Language iso
+     *
+     * @throws PrestashopInstallerException
+     *
+     * @since 1.0.0
+     */
+    public function setLanguage($iso)
+    {
+        if (!in_array($iso, $this->getIsoList())) {
+            throw new PrestashopInstallerException('Language '.$iso.' not found');
+        }
+        $this->language = $iso;
+    }
+
+    /**
+     * @return array
+     *
+     * @since 1.0.0
+     */
+    public function getIsoList()
+    {
+        return array_keys($this->languages);
+    }
+
+    /**
      * Get an information from language (phone, links, etc.)
      *
-     * @param string $key Information identifier
+     * @param string $key         Information identifier
+     * @param bool   $withDefault
+     *
+     * @return null
+     *
+     * @since 1.0.0
      */
-    public function getInformation($key, $with_default = true)
+    public function getInformation($key, $withDefault = true)
     {
         $information = $this->getLanguage()->getTranslation($key, 'informations');
-        if (is_null($information) && $with_default) {
+        if (is_null($information) && $withDefault) {
             return $this->getLanguage(self::DEFAULT_ISO)->getTranslation($key, 'informations');
         }
+
         return $information;
     }
 
@@ -172,6 +213,8 @@ class InstallLanguages
      * Get list of countries for current language
      *
      * @return array
+     *
+     * @since 1.0.0
      */
     public function getCountries()
     {
@@ -179,13 +222,13 @@ class InstallLanguages
 
         if (is_null($countries)) {
             $countries = [];
-            $countries_lang = $this->getLanguage()->getCountries();
-            $countries_default = $this->getLanguage(self::DEFAULT_ISO)->getCountries();
+            $countriesLang = $this->getLanguage()->getCountries();
+            $countriesDefault = $this->getLanguage(self::DEFAULT_ISO)->getCountries();
             $xml = @simplexml_load_file(_PS_INSTALL_DATA_PATH_.'xml/country.xml');
             if ($xml) {
                 foreach ($xml->entities->country as $country) {
-                    $iso = strtolower((string)$country['iso_code']);
-                    $countries[$iso] = isset($countries_lang[$iso]) ? $countries_lang[$iso] : $countries_default[$iso];
+                    $iso = strtolower((string) $country['iso_code']);
+                    $countries[$iso] = isset($countriesLang[$iso]) ? $countriesLang[$iso] : $countriesDefault[$iso];
                 }
             }
             asort($countries);
@@ -198,16 +241,18 @@ class InstallLanguages
      * Parse HTTP_ACCEPT_LANGUAGE and get first data matching list of available languages
      *
      * @return bool|array
+     *
+     * @since 1.0.0
      */
     public function detectLanguage()
     {
         // This code is from a php.net comment : http://www.php.net/manual/fr/reserved.variables.server.php#94237
-        $split_languages = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
-        if (!is_array($split_languages)) {
+        $splitLanguages = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
+        if (!is_array($splitLanguages)) {
             return false;
         }
 
-        foreach ($split_languages as $lang) {
+        foreach ($splitLanguages as $lang) {
             $pattern = '/^(?P<primarytag>[a-zA-Z]{2,8})'.
                 '(?:-(?P<subtag>[a-zA-Z]{2,8}))?(?:(?:;q=)'.
                 '(?P<quantifier>\d\.\d))?$/';
@@ -217,16 +262,26 @@ class InstallLanguages
                 }
             }
         }
+
         return false;
     }
-}
 
-function ps_usort_languages($a, $b)
-{
-    $aname = $a->getMetaInformation('name');
-    $bname = $b->getMetaInformation('name');
-    if ($aname == $bname) {
-        return 0;
+    /**
+     * @param InstallLanguage $a
+     * @param InstallLanguage $b
+     *
+     * @return int
+     *
+     * @since 1.0.0
+     */
+    protected function psUsortLanguages($a, $b)
+    {
+        $aname = $a->getMetaInformation('name');
+        $bname = $b->getMetaInformation('name');
+        if ($aname == $bname) {
+            return 0;
+        }
+
+        return ($aname < $bname) ? -1 : 1;
     }
-    return ($aname < $bname) ? -1 : 1;
 }

@@ -81,7 +81,7 @@ class RangePriceCore extends ObjectModel
         if (!parent::add($autodate, $nullValues) || !Validate::isLoadedObject($this)) {
             return false;
         }
-        if (defined('PS_INSTALLATION_IN_PROGRESS')) {
+        if (defined('TB_INSTALLATION_IN_PROGRESS')) {
             return true;
         }
         $carrier = new Carrier((int) $this->id_carrier);

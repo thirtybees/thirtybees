@@ -37,7 +37,9 @@
 class InstallModelInstall extends InstallAbstractModel
 {
     const SETTINGS_FILE = 'config/settings.inc.php';
-    private static $_cache_localization_pack_content = null;
+    private static $cacheLocalizationPackContent = null;
+
+    public $xmlLoaderIds;
     /**
      * @var FileLogger
      */
@@ -74,7 +76,7 @@ class InstallModelInstall extends InstallAbstractModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function generateSettingsFile($databaseServer, $databaseLogin, $databasePassword, $databaseName, $databasePrefix, $databaseEngine)
+    public function generateSettingsFile($databaseServer, $databaseLogin, $databasePassword, $databaseName, $databasePrefix)
     {
         // Check permissions for settings file
         if (file_exists(_PS_ROOT_DIR_.'/'.self::SETTINGS_FILE) && !is_writable(_PS_ROOT_DIR_.'/'.self::SETTINGS_FILE)) {
@@ -94,18 +96,18 @@ class InstallModelInstall extends InstallAbstractModel
             '_DB_USER_'           => $databaseLogin,
             '_DB_PASSWD_'         => $databasePassword,
             '_DB_PREFIX_'         => $databasePrefix,
-            '_MYSQL_ENGINE_'      => $databaseEngine,
+            '_MYSQL_ENGINE_'      => 'InnoDB',
             '_PS_CACHING_SYSTEM_' => 'CacheMemcache',
             '_PS_CACHE_ENABLED_'  => '0',
             '_COOKIE_KEY_'        => Tools::passwdGen(56),
             '_COOKIE_IV_'         => Tools::passwdGen(8),
             '_PS_CREATION_DATE_'  => date('Y-m-d'),
-            '_PS_VERSION_'        => _PS_INSTALL_VERSION_,
             '_TB_VERSION_'        => _TB_INSTALL_VERSION_,
+            '_PS_VERSION_'        => '1.6.1.999',
         ];
 
         // If mcrypt is activated, add Rijndael 128 configuration
-        if (function_exists('mcrypt_encrypt')) {
+        if (function_exists('mcrypt_encrypt') && PHP_VERSION_ID < 70100) {
             $settingsConstants['_RIJNDAEL_KEY_'] = Tools::passwdGen(mcrypt_get_key_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC));
             $settingsConstants['_RIJNDAEL_IV_'] = base64_encode(mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC), MCRYPT_RAND));
         }
@@ -113,7 +115,7 @@ class InstallModelInstall extends InstallAbstractModel
         $settingsContent = "<?php\n";
 
         foreach ($settingsConstants as $constant => $value) {
-            if ($constant == '_PS_VERSION_') {
+            if ($constant == '_TB_VERSION_') {
                 $settingsContent .= 'if (!defined(\''.$constant.'\'))'."\n\t";
             }
 
@@ -166,20 +168,16 @@ class InstallModelInstall extends InstallAbstractModel
             $this->clearDatabase();
         }
 
-        $allowedCollation = ['utf8_general_ci', 'utf8_unicode_ci'];
-        $collationDatabase = Db::getInstance()->getValue('SELECT @@collation_database');
         // Install database structure
         $sqlLoader = new InstallSqlLoader();
         $sqlLoader->setMetaData(
             [
-                'PREFIX_'     => _DB_PREFIX_,
-                'ENGINE_TYPE' => _MYSQL_ENGINE_,
-                'COLLATION'   => (empty($collationDatabase) || !in_array($collationDatabase, $allowedCollation)) ? '' : 'COLLATE '.$collationDatabase,
+                'PREFIX_' => _DB_PREFIX_,
             ]
         );
 
         try {
-            $sqlLoader->parse_file(_PS_INSTALL_DATA_PATH_.'db_structure.sql');
+            $sqlLoader->parseFile(_PS_INSTALL_DATA_PATH_.'db_schema.sql');
         } catch (PrestashopInstallerException $e) {
             $this->setError($this->language->l('Database structure file not found'));
 
@@ -188,6 +186,7 @@ class InstallModelInstall extends InstallAbstractModel
 
         if ($errors = $sqlLoader->getErrors()) {
             foreach ($errors as $error) {
+                ddd($error);
                 $this->setError($this->language->l('SQL error on query <i>%s</i>', $error['error']));
             }
 
@@ -201,13 +200,15 @@ class InstallModelInstall extends InstallAbstractModel
      * Clear database (only tables with same prefix)
      *
      * @param bool $truncate If true truncate the table, if false drop the table
+     *
+     * @since 1.0.0 Truncate no longer allowed!
      */
     public function clearDatabase($truncate = false)
     {
         foreach (Db::getInstance()->executeS('SHOW TABLES') as $row) {
             $table = current($row);
             if (!_DB_PREFIX_ || preg_match('#^'._DB_PREFIX_.'#i', $table)) {
-                Db::getInstance()->execute((($truncate) ? 'TRUNCATE' : 'DROP TABLE').' `'.$table.'`');
+                Db::getInstance()->execute(('DROP TABLE').' `'.$table.'`');
             }
         }
     }
@@ -228,10 +229,6 @@ class InstallModelInstall extends InstallAbstractModel
      */
     public function installDefaultData($shopName, $isoCountry = false, $allLanguages = false, $clearDatabase = false)
     {
-        if ($clearDatabase) {
-            $this->clearDatabase(true);
-        }
-
         // Install first shop
         if (!$this->createShop($shopName)) {
             return false;
@@ -242,7 +239,7 @@ class InstallModelInstall extends InstallAbstractModel
             if (!$allLanguages) {
                 $isoCodesToInstall = [$this->language->getLanguageIso()];
                 if ($isoCountry) {
-                    $version = str_replace('.', '', _PS_VERSION_);
+                    $version = str_replace('.', '', _TB_VERSION_);
                     $version = substr($version, 0, 2);
                     $localizationFileContent = $this->getLocalizationPackContent($version, $isoCountry);
 
@@ -266,8 +263,8 @@ class InstallModelInstall extends InstallAbstractModel
         $flipLanguages = array_flip($languages);
         $idLang = (!empty($flipLanguages[$this->language->getLanguageIso()])) ? $flipLanguages[$this->language->getLanguageIso()] : 1;
         Configuration::updateGlobalValue('PS_LANG_DEFAULT', $idLang);
-        Configuration::updateGlobalValue('PS_VERSION_DB', _PS_INSTALL_VERSION_);
-        Configuration::updateGlobalValue('PS_INSTALL_VERSION', _PS_INSTALL_VERSION_);
+        Configuration::updateGlobalValue('PS_VERSION_DB', _TB_INSTALL_VERSION_);
+        Configuration::updateGlobalValue('PS_INSTALL_VERSION', _TB_INSTALL_VERSION_);
 
         return true;
     }
@@ -334,7 +331,7 @@ class InstallModelInstall extends InstallAbstractModel
      */
     public function getLocalizationPackContent($version, $country)
     {
-        if (InstallModelInstall::$_cache_localization_pack_content === null || array_key_exists($country, InstallModelInstall::$_cache_localization_pack_content)) {
+        if (InstallModelInstall::$cacheLocalizationPackContent === null || array_key_exists($country, InstallModelInstall::$cacheLocalizationPackContent)) {
             $pathCacheFile = _PS_CACHE_DIR_.'sandbox'.DIRECTORY_SEPARATOR.$version.$country.'.xml';
             if (is_file($pathCacheFile)) {
                 $localizationFileContent = file_get_contents($pathCacheFile);
@@ -354,10 +351,10 @@ class InstallModelInstall extends InstallAbstractModel
                 }
                 file_put_contents($pathCacheFile, $localizationFileContent);
             }
-            InstallModelInstall::$_cache_localization_pack_content[$country] = $localizationFileContent;
+            InstallModelInstall::$cacheLocalizationPackContent[$country] = $localizationFileContent;
         }
 
-        return isset(InstallModelInstall::$_cache_localization_pack_content[$country]) ? InstallModelInstall::$_cache_localization_pack_content[$country] : false;
+        return isset(InstallModelInstall::$cacheLocalizationPackContent[$country]) ? InstallModelInstall::$cacheLocalizationPackContent[$country] : false;
     }
 
     /**
@@ -397,7 +394,7 @@ class InstallModelInstall extends InstallAbstractModel
             if (InstallSession::getInstance()->safe_mode) {
                 Language::checkAndAddLanguage($iso, false, true, $paramsLang);
             } else {
-                Language::downloadAndInstallLanguagePack($iso, _PS_INSTALL_VERSION_, $paramsLang);
+                Language::downloadAndInstallLanguagePack($iso, _TB_INSTALL_VERSION_, $paramsLang);
             }
 
             Language::loadLanguages();
@@ -440,8 +437,8 @@ class InstallModelInstall extends InstallAbstractModel
         $xmlLoader = new InstallXmlLoader();
         $xmlLoader->setLanguages($languages);
 
-        if (isset($this->xml_loader_ids) && $this->xml_loader_ids) {
-            $xmlLoader->setIds($this->xml_loader_ids);
+        if (isset($this->xmlLoaderIds) && $this->xmlLoaderIds) {
+            $xmlLoader->setIds($this->xmlLoaderIds);
         }
 
         if ($entity) {
@@ -456,7 +453,7 @@ class InstallModelInstall extends InstallAbstractModel
         }
 
         // IDS from xmlLoader are stored in order to use them for fixtures
-        $this->xml_loader_ids = $xmlLoader->getIds();
+        $this->xmlLoaderIds = $xmlLoader->getIds();
         unset($xmlLoader);
 
         // Install custom SQL data (db_data.sql file)
@@ -469,7 +466,7 @@ class InstallModelInstall extends InstallAbstractModel
                 ]
             );
 
-            $sqlLoader->parse_file(_PS_INSTALL_DATA_PATH_.'db_data.sql', false);
+            $sqlLoader->parseFile(_PS_INSTALL_DATA_PATH_.'db_data.sql', false);
             if ($errors = $sqlLoader->getErrors()) {
                 $this->setError($errors);
 
@@ -545,14 +542,14 @@ class InstallModelInstall extends InstallAbstractModel
         }
 
         $defaultData = [
-            'shop_name'       => 'My Shop',
-            'shop_activity'   => '',
-            'shop_country'    => 'us',
-            'shop_timezone'   => 'US/Eastern',
-            'use_smtp'        => false,
-            'smtp_encryption' => 'off',
-            'smtp_port'       => 25,
-            'rewrite_engine'  => false,
+            'shopName'       => 'My Shop',
+            'shopActivity'   => '',
+            'shopCountry'    => 'us',
+            'shopTimezone'   => 'US/Eastern',
+            'useSmtp'        => false,
+            'smtpEncryption' => 'off',
+            'smtpPort'       => 25,
+            'rewriteEngine'  => false,
         ];
 
         foreach ($defaultData as $k => $v) {
@@ -569,27 +566,27 @@ class InstallModelInstall extends InstallAbstractModel
             Configuration::updateGlobalValue('PS_LEGACY_IMAGES', 1);
         }
 
-        $idCountry = (int) Country::getByIso($data['shop_country']);
+        $idCountry = (int) Country::getByIso($data['shopCountry']);
 
         // Set default configuration
         Configuration::updateGlobalValue('PS_SHOP_DOMAIN', Tools::getHttpHost());
         Configuration::updateGlobalValue('PS_SHOP_DOMAIN_SSL', Tools::getHttpHost());
-        Configuration::updateGlobalValue('PS_INSTALL_VERSION', _PS_INSTALL_VERSION_);
+        Configuration::updateGlobalValue('PS_INSTALL_VERSION', _TB_INSTALL_VERSION_);
         Configuration::updateGlobalValue('PS_LOCALE_LANGUAGE', $this->language->getLanguageIso());
-        Configuration::updateGlobalValue('PS_SHOP_NAME', $data['shop_name']);
-        Configuration::updateGlobalValue('PS_SHOP_ACTIVITY', $data['shop_activity']);
+        Configuration::updateGlobalValue('PS_SHOP_NAME', $data['shopName']);
+        Configuration::updateGlobalValue('PS_SHOP_ACTIVITY', $data['shopActivity']);
         Configuration::updateGlobalValue('PS_COUNTRY_DEFAULT', $idCountry);
-        Configuration::updateGlobalValue('PS_LOCALE_COUNTRY', $data['shop_country']);
-        Configuration::updateGlobalValue('PS_TIMEZONE', $data['shop_timezone']);
-        Configuration::updateGlobalValue('PS_CONFIGURATION_AGREMENT', (int) $data['configuration_agrement']);
+        Configuration::updateGlobalValue('PS_LOCALE_COUNTRY', $data['shopCountry']);
+        Configuration::updateGlobalValue('PS_TIMEZONE', $data['shopTimezone']);
+        Configuration::updateGlobalValue('PS_CONFIGURATION_AGREMENT', (int) $data['configurationAgreement']);
 
         // Set mails configuration
-        Configuration::updateGlobalValue('PS_MAIL_METHOD', ($data['use_smtp']) ? 2 : 1);
-        Configuration::updateGlobalValue('PS_MAIL_SMTP_ENCRYPTION', $data['smtp_encryption']);
-        Configuration::updateGlobalValue('PS_MAIL_SMTP_PORT', $data['smtp_port']);
+        Configuration::updateGlobalValue('PS_MAIL_METHOD', ($data['useSmtp']) ? 2 : 1);
+        Configuration::updateGlobalValue('PS_MAIL_SMTP_ENCRYPTION', $data['smtpEncryption']);
+        Configuration::updateGlobalValue('PS_MAIL_SMTP_PORT', $data['smtpPort']);
 
         // Set default rewriting settings
-        Configuration::updateGlobalValue('PS_REWRITING_SETTINGS', $data['rewrite_engine']);
+        Configuration::updateGlobalValue('PS_REWRITING_SETTINGS', $data['rewriteEngine']);
 
         // Activate rijndael 128 encrypt algorihtm if mcrypt is activated
         Configuration::updateGlobalValue('PS_CIPHER_ALGORITHM', function_exists('mcrypt_encrypt') ? 1 : 0);
@@ -645,20 +642,20 @@ class InstallModelInstall extends InstallAbstractModel
         Db::getInstance()->execute('UPDATE '._DB_PREFIX_.'country SET active = 0 WHERE id_country != '.(int) $idCountry);
 
         // Set localization configuration
-        $version = str_replace('.', '', _PS_VERSION_);
+        $version = str_replace('.', '', _TB_VERSION_);
         $version = substr($version, 0, 2);
-        $localizationFileContent = $this->getLocalizationPackContent($version, $data['shop_country']);
+        $localizationFileContent = $this->getLocalizationPackContent($version, $data['shopCountry']);
 
         $locale = new LocalizationPackCore();
         $locale->loadLocalisationPack($localizationFileContent, '', true);
 
         // Create default employee
-        if (isset($data['admin_firstname']) && isset($data['admin_lastname']) && isset($data['admin_password']) && isset($data['admin_email'])) {
+        if (isset($data['adminFirstname']) && isset($data['adminLastname']) && isset($data['adminPassword']) && isset($data['adminEmail'])) {
             $employee = new Employee();
-            $employee->firstname = Tools::ucfirst($data['admin_firstname']);
-            $employee->lastname = Tools::ucfirst($data['admin_lastname']);
-            $employee->email = $data['admin_email'];
-            $employee->passwd = md5(_COOKIE_KEY_.$data['admin_password']);
+            $employee->firstname = Tools::ucfirst($data['adminFirstname']);
+            $employee->lastname = Tools::ucfirst($data['adminLastname']);
+            $employee->email = $data['adminEmail'];
+            $employee->passwd = md5(_COOKIE_KEY_.$data['adminPassword']);
             $employee->last_passwd_gen = date('Y-m-d h:i:s', strtotime('-360 minutes'));
             $employee->bo_theme = 'default';
             $employee->bo_css = 'schemes/admin-theme-thirtybees.css';
@@ -680,17 +677,18 @@ class InstallModelInstall extends InstallAbstractModel
         }
 
         // Update default contact
-        if (isset($data['admin_email'])) {
-            Configuration::updateGlobalValue('PS_SHOP_EMAIL', $data['admin_email']);
+        if (isset($data['adminEmail'])) {
+            Configuration::updateGlobalValue('PS_SHOP_EMAIL', $data['adminEmail']);
 
             $contacts = new PrestaShopCollection('Contact');
             foreach ($contacts as $contact) {
-                $contact->email = $data['admin_email'];
+                /** @var Contact $contact */
+                $contact->email = $data['adminEmail'];
                 $contact->update();
             }
         }
 
-        if (!@Tools::generateHtaccess(null, $data['rewrite_engine'])) {
+        if (!@Tools::generateHtaccess(null, $data['rewriteEngine'])) {
             Configuration::updateGlobalValue('PS_REWRITING_SETTINGS', 0);
         }
 
@@ -852,7 +850,7 @@ class InstallModelInstall extends InstallAbstractModel
 
         // try to download fixtures if no low memory mode
         if ($entity === null) {
-            if (Tools::copy('http://api.prestashop.com/fixtures/'.$data['shop_country'].'/'.$data['shop_activity'].'/fixtures.zip', $zipFile)) {
+            if (Tools::copy('http://api.prestashop.com/fixtures/'.$data['shopCountry'].'/'.$data['shopActivity'].'/fixtures.zip', $zipFile)) {
                 Tools::deleteDirectory($tempDir, true);
                 if (Tools::ZipTest($zipFile)) {
                     if (Tools::ZipExtract($zipFile, $tempDir)) {
@@ -893,8 +891,8 @@ class InstallModelInstall extends InstallAbstractModel
 
         // Install XML data (data/xml/ folder)
         $xmlLoader->setFixturesPath($fixturesPath);
-        if (isset($this->xml_loader_ids) && $this->xml_loader_ids) {
-            $xmlLoader->setIds($this->xml_loader_ids);
+        if (isset($this->xmlLoaderIds) && $this->xmlLoaderIds) {
+            $xmlLoader->setIds($this->xmlLoaderIds);
         }
 
         $languages = [];
@@ -918,7 +916,7 @@ class InstallModelInstall extends InstallAbstractModel
         }
 
         // IDS from xmlLoader are stored in order to use them for fixtures
-        $this->xml_loader_ids = $xmlLoader->getIds();
+        $this->xmlLoaderIds = $xmlLoader->getIds();
         unset($xmlLoader);
 
         // Index products in search tables
@@ -945,7 +943,7 @@ class InstallModelInstall extends InstallAbstractModel
             ]
         );
 
-        $sqlLoader->parse_file(_PS_INSTALL_DATA_PATH_.'theme.sql', false);
+        $sqlLoader->parseFile(_PS_INSTALL_DATA_PATH_.'theme.sql', false);
         if ($errors = $sqlLoader->getErrors()) {
             $this->setError($errors);
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * 2007-2016 PrestaShop
  *
@@ -21,36 +22,41 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
-
 class InstallSimplexmlElement extends SimpleXMLElement
 {
     /**
      * Can add SimpleXMLElement values in XML tree
      *
      * @see SimpleXMLElement::addChild()
+     *
+     * @param string $name
+     * @param null   $value
+     * @param null   $namespace
+     *
+     * @return SimpleXMLElement
      */
     public function addChild($name, $value = null, $namespace = null)
     {
         if ($value instanceof SimplexmlElement) {
-            $content = trim((string)$value);
+            $content = trim((string) $value);
             if (strlen($content) > 0) {
-                $new_element = parent::addChild($name, str_replace('&', '&amp;', $content), $namespace);
+                $newElement = parent::addChild($name, str_replace('&', '&amp;', $content), $namespace);
             } else {
-                $new_element = parent::addChild($name);
+                $newElement = parent::addChild($name);
                 foreach ($value->attributes() as $k => $v) {
-                    $new_element->addAttribute($k, $v);
+                    $newElement->addAttribute($k, $v);
                 }
             }
 
             foreach ($value->children() as $child) {
-                $new_element->addChild($child->getName(), $child);
+                $newElement->addChild($child->getName(), $child);
             }
         } else {
             return parent::addChild($name, str_replace('&', '&amp;', $value), $namespace);
@@ -60,7 +66,13 @@ class InstallSimplexmlElement extends SimpleXMLElement
     /**
      * Generate nice and sweet XML
      *
-     * @see SimpleXMLElement::asXML()
+     * @see   SimpleXMLElement::asXML()
+     *
+     * @since 1.0.0
+     *
+     * @param null $filename
+     *
+     * @return bool|mixed|string
      */
     public function asXML($filename = null)
     {
@@ -70,8 +82,9 @@ class InstallSimplexmlElement extends SimpleXMLElement
         $dom->loadXML(parent::asXML());
 
         if ($filename) {
-            return (bool)file_put_contents($filename, $dom->saveXML());
+            return (bool) file_put_contents($filename, $dom->saveXML());
         }
+
         return $dom->saveXML();
     }
 }

@@ -370,7 +370,7 @@ class HookCore extends ObjectModel
         $usePush = false,
         $idShop = null
     ) {
-        if (defined('PS_INSTALLATION_IN_PROGRESS')) {
+        if (defined('TB_INSTALLATION_IN_PROGRESS')) {
             return;
         }
 
