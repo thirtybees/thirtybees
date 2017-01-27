@@ -125,10 +125,10 @@ class HelperOptionsCore extends Helper
                 }
 
                 if ($field['type'] === 'code') {
-                    $this->context->controller->addJS(rtrim(_PS_ROOT_DIR_, DIRECTORY_SEPARATOR)._PS_JS_DIR_.'ace/ace.js');
-                    $this->context->controller->addJS(rtrim(_PS_ROOT_DIR_, DIRECTORY_SEPARATOR)._PS_JS_DIR_.'ace/ext-language_tools.js');
-                    $this->context->controller->addJS(rtrim(_PS_ROOT_DIR_, DIRECTORY_SEPARATOR)._PS_JS_DIR_.'ace/snippets/'.$field['mode'].'.js');
-                    $this->context->controller->addCSS(rtrim(_PS_ROOT_DIR_, DIRECTORY_SEPARATOR)._PS_JS_DIR_.'ace/aceinput.css');
+                    $this->context->controller->addJS(rtrim(_PS_JS_DIR_, DIRECTORY_SEPARATOR).'ace'.DIRECTORY_SEPARATOR.'ace.js');
+                    $this->context->controller->addJS(rtrim(_PS_JS_DIR_, DIRECTORY_SEPARATOR).'ace'.DIRECTORY_SEPARATOR.'ext-language_tools.js');
+                    $this->context->controller->addJS(rtrim(_PS_JS_DIR_, DIRECTORY_SEPARATOR).'ace'.DIRECTORY_SEPARATOR.'snippets'.DIRECTORY_SEPARATOR.''.$field['mode'].'.js');
+                    $this->context->controller->addCSS(rtrim(_PS_JS_DIR_, DIRECTORY_SEPARATOR).'ace'.DIRECTORY_SEPARATOR.'aceinput.css');
                 }
 
                 if ($field['type'] == 'tags') {
