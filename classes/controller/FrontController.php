@@ -39,32 +39,32 @@ class FrontControllerCore extends Controller
     /**
      * @deprecated Deprecated shortcuts as of 1.5.0.1 - Use $context->smarty instead
      *
-     * @var Smarty
+     * @var Smarty $smarty
      */
     protected static $smarty;
 
     /**
      * @deprecated Deprecated shortcuts as of 1.5.0.1 - Use $context->cookie instead
      *
-     * @var Cookie
+     * @var Cookie $cookie
      */
     protected static $cookie;
 
     /**
      * @deprecated Deprecated shortcuts as of 1.5.0.1 - Use $context->link instead
      *
-     * @var Link
+     * @var Link $link
      */
     protected static $link;
 
     /**
      * @deprecated Deprecated shortcuts as of 1.5.0.1 - Use $context->cart instead
      *
-     * @var Cart
+     * @var Cart $cart
      */
     protected static $cart;
 
-    /** @var array Controller errors */
+    /** @var $errorsarray  */
     public $errors = [];
 
     /** @var string Language ISO code */
