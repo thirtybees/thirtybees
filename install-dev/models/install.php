@@ -178,6 +178,7 @@ class InstallModelInstall extends InstallAbstractModel
 
         try {
             $sqlLoader->parseFile(_PS_INSTALL_DATA_PATH_.'db_schema.sql');
+            $sqlLoader->parseFile(_PS_INSTALL_DATA_PATH_.'foreign_keys.sql');
         } catch (PrestashopInstallerException $e) {
             $this->setError($this->language->l('Database structure file not found'));
 
