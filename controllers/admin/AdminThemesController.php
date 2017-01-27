@@ -138,7 +138,6 @@ class AdminThemesControllerCore extends AdminController
                     'logo' => $this->l('Logo'),
                     'logo2' => $this->l('Invoice & Email Logos'),
                     'icons' => $this->l('Icons'),
-                    'mobile' => $this->l('Mobile'),
                 ],
                 'fields' => [
                     'PS_LOGO' => [
@@ -148,15 +147,6 @@ class AdminThemesControllerCore extends AdminController
                         'name' => 'PS_LOGO',
                         'tab' => 'logo',
                         'thumb' => _PS_IMG_.Configuration::get('PS_LOGO')
-                    ],
-                    'PS_LOGO_MOBILE' => [
-                        'title' => $this->l('Header logo for mobile'),
-                        'desc' => ((Configuration::get('PS_LOGO_MOBILE') === false) ? '<span class="light-warning">'.$this->l('Warning: No mobile logo has been defined. The header logo will be used instead.').'</span><br />' : ''),
-                        'hint' => $this->l('Will appear on the main page of your mobile template. If left undefined, the header logo will be used.'),
-                        'type' => 'file',
-                        'name' => 'PS_LOGO_MOBILE',
-                        'tab' => 'mobile',
-                        'thumb' => (Configuration::get('PS_LOGO_MOBILE') !== false && file_exists(_PS_IMG_DIR_.Configuration::get('PS_LOGO_MOBILE'))) ? _PS_IMG_.Configuration::get('PS_LOGO_MOBILE') : _PS_IMG_.Configuration::get('PS_LOGO')
                     ],
                     'PS_LOGO_MAIL' => [
                         'title' => $this->l('Mail logo'),
@@ -191,20 +181,6 @@ class AdminThemesControllerCore extends AdminController
                         'name' => 'PS_STORES_ICON',
                         'tab' => 'icons',
                         'thumb' => _PS_IMG_.Configuration::get('PS_STORES_ICON')
-                    ],
-                    'PS_ALLOW_MOBILE_DEVICE' => [
-                        'title' => $this->l('Enable the mobile theme'),
-                        'hint' => $this->l('Allows visitors browsing on mobile devices to view a lighter version of your website.'),
-                        'type' => 'radio',
-                        'required' => true,
-                        'validation' => 'isGenericName',
-                        'tab' => 'mobile',
-                        'choices' => [
-                            0 => $this->l('I\'d like to disable it.'),
-                            1 => $this->l('I\'d like to enable it only on smartphones.'),
-                            2 => $this->l('I\'d like to enable it only on tablets.'),
-                            3 => $this->l('I\'d like to enable it on both smartphones and tablets.')
-                        ]
                     ],
                 ],
                 'after_tabs' => [
@@ -1800,12 +1776,6 @@ class AdminThemesControllerCore extends AdminController
                 Configuration::updateValue('SHOP_LOGO_HEIGHT', (int)round($height));
                 Configuration::updateValue('SHOP_LOGO_WIDTH', (int)round($width));
             }
-            if (Configuration::get('PS_LOGO_MOBILE') && trim(Configuration::get('PS_LOGO_MOBILE')) != ''
-                && file_exists(_PS_IMG_DIR_.Configuration::get('PS_LOGO_MOBILE')) && filesize(_PS_IMG_DIR_.Configuration::get('PS_LOGO_MOBILE'))) {
-                list($width, $height, $type, $attr) = getimagesize(_PS_IMG_DIR_.Configuration::get('PS_LOGO_MOBILE'));
-                Configuration::updateValue('SHOP_LOGO_MOBILE_HEIGHT', (int)round($height));
-                Configuration::updateValue('SHOP_LOGO_MOBILE_WIDTH', (int)round($width));
-            }
 
             $this->content .= $content;
 
@@ -2570,14 +2540,6 @@ class AdminThemesControllerCore extends AdminController
     public function updateOptionPsLogo()
     {
         $this->updateLogo('PS_LOGO', 'logo');
-    }
-
-    /**
-     * Update PS_LOGO_MOBILE
-     */
-    public function updateOptionPsLogoMobile()
-    {
-        $this->updateLogo('PS_LOGO_MOBILE', 'logo_mobile');
     }
 
     /**
