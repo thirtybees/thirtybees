@@ -43,7 +43,10 @@ class InstallControllerHttpProcess extends InstallControllerHttp
     public $previousButton = false;
 
     /** @var InstallModelInstall $modelInstall */
-    protected $modelInstall;
+    public $modelInstall;
+
+    /** @var InstallSession $session */
+    public $session;
 
     /**
      * @since 1.0.0
@@ -107,9 +110,9 @@ class InstallControllerHttpProcess extends InstallControllerHttp
             // was stored can be cleaned
             if (Tools::getValue('restart')) {
                 $this->session->processValidated = [];
-                $this->session->database_clear = true;
+                $this->session->databaseClear = true;
                 if (Tools::getSafeModeStatus()) {
-                    $this->session->safe_mode = true;
+                    $this->session->safeMode = true;
                 }
             } elseif (!Tools::getValue('submitNext')) {
                 $this->session->step = 'configure';
