@@ -36,7 +36,7 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
     public $previousButton = false;
 
     /** @var InstallModelInstall $modelInstall */
-    protected $modelInstall;
+    public $modelInstall;
 
     /** @var InstallModelDatabase $modelDatabase */
     public $modelDatabase;
@@ -82,7 +82,7 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
                 $this->modelDatabase->createDatabase($this->datas->databaseServer, $this->datas->databaseName, $this->datas->databaseLogin, $this->datas->databasePassword);
             }
 
-            if (!$this->modelDatabase->testDatabaseSettings($this->datas->databaseServer, $this->datas->databaseName, $this->datas->databaseLogin, $this->datas->databasePassword, $this->datas->databasePrefix, $this->datas->databaseEngine, $this->datas->databaseClear)) {
+            if (!$this->modelDatabase->testDatabaseSettings($this->datas->databaseServer, $this->datas->databaseName, $this->datas->databaseLogin, $this->datas->databasePassword, $this->datas->databasePrefix, $this->datas->databaseClear)) {
                 $this->printErrors();
             }
             if (!$this->processInstallDatabase()) {
