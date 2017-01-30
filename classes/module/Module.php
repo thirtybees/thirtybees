@@ -1202,7 +1202,7 @@ abstract class ModuleCore
                 }
 
                 $file = _PS_MODULE_DIR_.self::$classInModule[$currentClass].'/'.Context::getContext()->language->iso_code.'.php';
-                if (Tools::file_exists_cache($file) && include_once($file)) {
+                if (file_exists($file) && include_once($file)) {
                     $_MODULES = !empty($_MODULES) ? array_merge($_MODULES, $_MODULE) : $_MODULE;
                 }
             } else {
@@ -1377,7 +1377,7 @@ abstract class ModuleCore
         // Find translations
         global $_MODULES;
         $file = _PS_MODULE_DIR_.$module.'/'.Context::getContext()->language->iso_code.'.php';
-        if (Tools::file_exists_cache($file) && include_once($file)) {
+        if (file_exists($file) && include_once($file)) {
             if (isset($_MODULE) && is_array($_MODULE)) {
                 $_MODULES = !empty($_MODULES) ? array_merge($_MODULES, $_MODULE) : $_MODULE;
             }
@@ -1476,7 +1476,7 @@ abstract class ModuleCore
                 // If no errors in Xml, no need instand and no need new config.xml file, we load only translations
                 if (!count($errors) && (int)$xml_module->need_instance == 0) {
                     $file = _PS_MODULE_DIR_.$module.'/'.Context::getContext()->language->iso_code.'.php';
-                    if (Tools::file_exists_cache($file) && include_once($file)) {
+                    if (file_exists($file) && include_once($file)) {
                         if (isset($_MODULE) && is_array($_MODULE)) {
                             $_MODULES = !empty($_MODULES) ? array_merge($_MODULES, $_MODULE) : $_MODULE;
                         }
@@ -1763,7 +1763,7 @@ abstract class ModuleCore
         foreach ($modules as $name) {
             if (is_file(_PS_MODULE_DIR_.$name)) {
                 continue;
-            } elseif (is_dir(_PS_MODULE_DIR_.$name.DIRECTORY_SEPARATOR) && Tools::file_exists_cache(_PS_MODULE_DIR_.$name.'/'.$name.'.php')) {
+            } elseif (is_dir(_PS_MODULE_DIR_.$name.DIRECTORY_SEPARATOR) && file_exists(_PS_MODULE_DIR_.$name.'/'.$name.'.php')) {
                 if (!Validate::isModuleName($name)) {
                     throw new PrestaShopException(sprintf('Module %s is not a valid module name', $name));
                 }
@@ -2325,17 +2325,17 @@ abstract class ModuleCore
      */
     protected static function _isTemplateOverloadedStatic($module_name, $template)
     {
-        if (Tools::file_exists_cache(_PS_THEME_DIR_.'modules/'.$module_name.'/'.$template)) {
+        if (file_exists(_PS_THEME_DIR_.'modules/'.$module_name.'/'.$template)) {
             return _PS_THEME_DIR_.'modules/'.$module_name.'/'.$template;
-        } elseif (Tools::file_exists_cache(_PS_THEME_DIR_.'modules/'.$module_name.'/views/templates/hook/'.$template)) {
+        } elseif (file_exists(_PS_THEME_DIR_.'modules/'.$module_name.'/views/templates/hook/'.$template)) {
             return _PS_THEME_DIR_.'modules/'.$module_name.'/views/templates/hook/'.$template;
-        } elseif (Tools::file_exists_cache(_PS_THEME_DIR_.'modules/'.$module_name.'/views/templates/front/'.$template)) {
+        } elseif (file_exists(_PS_THEME_DIR_.'modules/'.$module_name.'/views/templates/front/'.$template)) {
             return _PS_THEME_DIR_.'modules/'.$module_name.'/views/templates/front/'.$template;
-        } elseif (Tools::file_exists_cache(_PS_MODULE_DIR_.$module_name.'/views/templates/hook/'.$template)) {
+        } elseif (file_exists(_PS_MODULE_DIR_.$module_name.'/views/templates/hook/'.$template)) {
             return false;
-        } elseif (Tools::file_exists_cache(_PS_MODULE_DIR_.$module_name.'/views/templates/front/'.$template)) {
+        } elseif (file_exists(_PS_MODULE_DIR_.$module_name.'/views/templates/front/'.$template)) {
             return false;
-        } elseif (Tools::file_exists_cache(_PS_MODULE_DIR_.$module_name.'/'.$template)) {
+        } elseif (file_exists(_PS_MODULE_DIR_.$module_name.'/'.$template)) {
             return false;
         }
         return null;
@@ -2475,11 +2475,11 @@ abstract class ModuleCore
 
         if ($overloaded) {
             return $overloaded;
-        } elseif (Tools::file_exists_cache(_PS_MODULE_DIR_.$this->name.'/views/templates/hook/'.$template)) {
+        } elseif (file_exists(_PS_MODULE_DIR_.$this->name.'/views/templates/hook/'.$template)) {
             return _PS_MODULE_DIR_.$this->name.'/views/templates/hook/'.$template;
-        } elseif (Tools::file_exists_cache(_PS_MODULE_DIR_.$this->name.'/views/templates/front/'.$template)) {
+        } elseif (file_exists(_PS_MODULE_DIR_.$this->name.'/views/templates/front/'.$template)) {
             return _PS_MODULE_DIR_.$this->name.'/views/templates/front/'.$template;
-        } elseif (Tools::file_exists_cache(_PS_MODULE_DIR_.$this->name.'/'.$template)) {
+        } elseif (file_exists(_PS_MODULE_DIR_.$this->name.'/'.$template)) {
             return _PS_MODULE_DIR_.$this->name.'/'.$template;
         } else {
             return null;

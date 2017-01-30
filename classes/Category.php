@@ -1610,7 +1610,7 @@ class CategoryCore extends ObjectModel
         );
 
         foreach ($result as &$row) {
-            $row['id_image'] = (Tools::file_exists_cache(_PS_CAT_IMG_DIR_.(int) $row['id_category'].'.jpg') || Tools::file_exists_cache(_PS_CAT_IMG_DIR_.(int) $row['id_category'].'_thumb.jpg')) ? (int) $row['id_category'] : Language::getIsoById($idLang).'-default';
+            $row['id_image'] = (file_exists(_PS_CAT_IMG_DIR_.(int) $row['id_category'].'.jpg') || file_exists(_PS_CAT_IMG_DIR_.(int) $row['id_category'].'_thumb.jpg')) ? (int) $row['id_category'] : Language::getIsoById($idLang).'-default';
             $row['legend'] = 'no picture';
         }
 

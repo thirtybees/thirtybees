@@ -2191,10 +2191,10 @@ class AdminControllerCore extends Controller
             }
 
             $imgCacheUrl = 'themes/'.$this->context->employee->bo_theme.'/img/t/'.$tab['class_name'].'.png';
-            $imgExistsCache = Tools::file_exists_cache(_PS_ADMIN_DIR_.$imgCacheUrl);
+            $imgExistsCache = file_exists(_PS_ADMIN_DIR_.$imgCacheUrl);
             // retrocompatibility : change png to gif if icon not exists
             if (!$imgExistsCache) {
-                $imgExistsCache = Tools::file_exists_cache(_PS_ADMIN_DIR_.str_replace('.png', '.gif', $imgCacheUrl));
+                $imgExistsCache = file_exists(_PS_ADMIN_DIR_.str_replace('.png', '.gif', $imgCacheUrl));
             }
 
             if ($imgExistsCache) {

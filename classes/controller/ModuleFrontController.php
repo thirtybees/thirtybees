@@ -98,11 +98,11 @@ class ModuleFrontControllerCore extends FrontController
      */
     public function getTemplatePath($template)
     {
-        if (Tools::file_exists_cache(_PS_THEME_DIR_.'modules/'.$this->module->name.'/'.$template)) {
+        if (file_exists(_PS_THEME_DIR_.'modules/'.$this->module->name.'/'.$template)) {
             return _PS_THEME_DIR_.'modules/'.$this->module->name.'/'.$template;
-        } elseif (Tools::file_exists_cache(_PS_THEME_DIR_.'modules/'.$this->module->name.'/views/templates/front/'.$template)) {
+        } elseif (file_exists(_PS_THEME_DIR_.'modules/'.$this->module->name.'/views/templates/front/'.$template)) {
             return _PS_THEME_DIR_.'modules/'.$this->module->name.'/views/templates/front/'.$template;
-        } elseif (Tools::file_exists_cache(_PS_MODULE_DIR_.$this->module->name.'/views/templates/front/'.$template)) {
+        } elseif (file_exists(_PS_MODULE_DIR_.$this->module->name.'/views/templates/front/'.$template)) {
             return _PS_MODULE_DIR_.$this->module->name.'/views/templates/front/'.$template;
         }
 

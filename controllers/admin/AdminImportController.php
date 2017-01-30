@@ -651,7 +651,7 @@ class AdminImportControllerCore extends AdminController
         $backOfficeTheme = ((Validate::isLoadedObject($this->context->employee)
             && $this->context->employee->bo_theme) ? $this->context->employee->bo_theme : 'default');
 
-        if (!Tools::file_exists_cache(_PS_BO_ALL_THEMES_DIR_.$backOfficeTheme.DIRECTORY_SEPARATOR.'template')) {
+        if (!file_exists(_PS_BO_ALL_THEMES_DIR_.$backOfficeTheme.DIRECTORY_SEPARATOR.'template')) {
             $backOfficeTheme = 'default';
         }
 

@@ -3995,12 +3995,12 @@ exit;
      */
     public static function recurseCopy($src, $dst, $del = false)
     {
-        if (!Tools::file_exists_cache($src)) {
+        if (!file_exists($src)) {
             return false;
         }
         $dir = opendir($src);
 
-        if (!Tools::file_exists_cache($dst)) {
+        if (!file_exists($dst)) {
             mkdir($dst);
         }
         while (false !== ($file = readdir($dir))) {
@@ -4028,8 +4028,7 @@ exit;
      *
      * @return bool Cached result of file_exists($filename)
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @deprecated 1.0.0 Please do not use this function. PHP already caches this function.
      */
     public static function file_exists_cache($filename)
     {

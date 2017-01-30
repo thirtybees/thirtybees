@@ -270,7 +270,7 @@ class AdminTranslationsControllerCore extends AdminController
         $path = dirname($dest);
 
         // If folder wasn't already added
-        // Do not use Tools::file_exists_cache because it changes over time!
+        // Do not use file_exists because it changes over time!
         if (!file_exists($path)) {
             if (!mkdir($path, 0777, true)) {
                 $bool &= false;
@@ -480,7 +480,7 @@ class AdminTranslationsControllerCore extends AdminController
         $path = $dir.'tabs.php';
 
         // Check if tabs.php exists for the selected Iso Code
-        if (!Tools::file_exists_cache($dir)) {
+        if (!file_exists($dir)) {
             if (!mkdir($dir, 0777, true)) {
                 throw new PrestaShopException('The file '.$dir.' cannot be created.');
             }
@@ -535,7 +535,7 @@ class AdminTranslationsControllerCore extends AdminController
 
         // 1 - Scan mails files
         $mails = [];
-        if (Tools::file_exists_cache(_PS_MAIL_DIR_.$default_language.'/')) {
+        if (file_exists(_PS_MAIL_DIR_.$default_language.'/')) {
             $mails = scandir(_PS_MAIL_DIR_.$default_language.'/');
         }
 
@@ -566,16 +566,16 @@ class AdminTranslationsControllerCore extends AdminController
         $module_mail_iso_code = [];
 
         foreach ($modules as $module) {
-            if (!in_array($module, self::$ignore_folder) && Tools::file_exists_cache(_PS_MODULE_DIR_.$module.'/mails/'.$default_language.'/')) {
+            if (!in_array($module, self::$ignore_folder) && file_exists(_PS_MODULE_DIR_.$module.'/mails/'.$default_language.'/')) {
                 $arr_files = scandir(_PS_MODULE_DIR_.$module.'/mails/'.$default_language.'/');
 
                 foreach ($arr_files as $file) {
                     if (!in_array($file, self::$ignore_folder)) {
-                        if (Tools::file_exists_cache(_PS_MODULE_DIR_.$module.'/mails/'.$default_language.'/'.$file)) {
+                        if (file_exists(_PS_MODULE_DIR_.$module.'/mails/'.$default_language.'/'.$file)) {
                             $module_mail_en[] = _PS_MODULE_DIR_.$module.'/mails/ISO_CODE/'.$file;
                         }
 
-                        if (Tools::file_exists_cache(_PS_MODULE_DIR_.$module.'/mails/'.$iso_code.'/'.$file)) {
+                        if (file_exists(_PS_MODULE_DIR_.$module.'/mails/'.$iso_code.'/'.$file)) {
                             $module_mail_iso_code[] = _PS_MODULE_DIR_.$module.'/mails/ISO_CODE/'.$file;
                         }
                     }
@@ -597,7 +597,7 @@ class AdminTranslationsControllerCore extends AdminController
                 file_put_contents($dir_iso_code.'/index.php', Tools::getDefaultIndexContent());
             }
 
-            if (Tools::file_exists_cache($file_en)) {
+            if (file_exists($file_en)) {
                 copy($file_en, $file_iso_code);
             }
         }
@@ -966,10 +966,10 @@ class AdminTranslationsControllerCore extends AdminController
         if (!isset($cache_file[$theme_name.'-'.$file_name])) {
             $str_write = '';
             $cache_file[$theme_name.'-'.$file_name] = true;
-            if (!Tools::file_exists_cache(dirname($file_name))) {
+            if (!file_exists(dirname($file_name))) {
                 mkdir(dirname($file_name), 0777, true);
             }
-            if (!Tools::file_exists_cache($file_name)) {
+            if (!file_exists($file_name)) {
                 file_put_contents($file_name, '');
             }
             if (!is_writable($file_name)) {
@@ -985,7 +985,7 @@ class AdminTranslationsControllerCore extends AdminController
         }
 
         foreach ($files as $file) {
-            if (preg_match('/^(.*)\.(tpl|php)$/', $file) && Tools::file_exists_cache($dir.$file) && !in_array($file, self::$ignore_folder)) {
+            if (preg_match('/^(.*)\.(tpl|php)$/', $file) && file_exists($dir.$file) && !in_array($file, self::$ignore_folder)) {
                 // Get content for this file
                 $content = file_get_contents($dir.$file);
 
@@ -1075,7 +1075,7 @@ class AdminTranslationsControllerCore extends AdminController
         // see below
         $array_check_duplicate = [];
         foreach ($files as $file) {
-            if ((preg_match('/^(.*).tpl$/', $file) || preg_match('/^(.*).php$/', $file)) && Tools::file_exists_cache($file_path = $dir.$file)) {
+            if ((preg_match('/^(.*).tpl$/', $file) || preg_match('/^(.*).php$/', $file)) && file_exists($file_path = $dir.$file)) {
                 // Get content for this file
                 $content = file_get_contents($file_path);
 
@@ -1136,7 +1136,7 @@ class AdminTranslationsControllerCore extends AdminController
                     unset($directories['tpl'][_PS_THEME_SELECTED_DIR_.'pdf/']);
                 }
 
-                if (Tools::file_exists_cache(_PS_THEME_OVERRIDE_DIR_)) {
+                if (file_exists(_PS_THEME_OVERRIDE_DIR_)) {
                     $directories['tpl'] = array_merge($directories['tpl'], $this->listFiles(_PS_THEME_OVERRIDE_DIR_));
                 }
 
@@ -1189,7 +1189,7 @@ class AdminTranslationsControllerCore extends AdminController
                 break;
 
             case 'pdf':
-                $tpl_theme = Tools::file_exists_cache(_PS_THEME_SELECTED_DIR_.'pdf/') ? scandir(_PS_THEME_SELECTED_DIR_.'pdf/') : [];
+                $tpl_theme = file_exists(_PS_THEME_SELECTED_DIR_.'pdf/') ? scandir(_PS_THEME_SELECTED_DIR_.'pdf/') : [];
                 $directories = [
                     'php' => [
                         _PS_CLASS_DIR_.'pdf/' => scandir(_PS_CLASS_DIR_.'pdf/'),
@@ -1723,12 +1723,12 @@ class AdminTranslationsControllerCore extends AdminController
         $file = $this->translations_informations[$this->type_selected]['file'];
 
         $$var = [];
-        if (!Tools::file_exists_cache($dir)) {
+        if (!file_exists($dir)) {
             if (!mkdir($dir, 0700)) {
                 throw new PrestaShopException('Directory '.$dir.' cannot be created.');
             }
         }
-        if (!Tools::file_exists_cache($dir.DIRECTORY_SEPARATOR.$file)) {
+        if (!file_exists($dir.DIRECTORY_SEPARATOR.$file)) {
             if (!file_put_contents($dir.'/'.$file, "<?php\n\nglobal \$".$var.";\n\$".$var." = array();\n\n?>")) {
                 throw new PrestaShopException('File "'.$file.'" doesn\'t exists and cannot be created in '.$dir);
             }
@@ -1812,7 +1812,7 @@ class AdminTranslationsControllerCore extends AdminController
             }
 
             foreach ($files as $file) {
-                if (preg_match('/^(.*).tpl$/', $file) && (Tools::file_exists_cache($file_path = $dir.$file))) {
+                if (preg_match('/^(.*).tpl$/', $file) && (file_exists($file_path = $dir.$file))) {
                     $prefix_key = $prefix.substr(basename($file), 0, -4);
                     $new_lang = [];
 
@@ -1888,7 +1888,7 @@ class AdminTranslationsControllerCore extends AdminController
         foreach ($files_per_directory['php'] as $dir => $files) {
             foreach ($files as $file) {
                 // Check if is a PHP file and if the override file exists
-                if (preg_match('/^(.*)\.php$/', $file) && Tools::file_exists_cache($file_path = $dir.$file) && !in_array($file, self::$ignore_folder)) {
+                if (preg_match('/^(.*)\.php$/', $file) && file_exists($file_path = $dir.$file) && !in_array($file, self::$ignore_folder)) {
                     $prefix_key = basename($file);
                     // -4 becomes -14 to remove the ending "Controller.php" from the filename
                     if (strpos($file, 'Controller.php') !== false) {
@@ -1936,7 +1936,7 @@ class AdminTranslationsControllerCore extends AdminController
 
         foreach ($files_per_directory['specific'] as $dir => $files) {
             foreach ($files as $file) {
-                if (Tools::file_exists_cache($file_path = $dir.$file) && !in_array($file, self::$ignore_folder)) {
+                if (file_exists($file_path = $dir.$file) && !in_array($file, self::$ignore_folder)) {
                     $prefix_key = 'index';
 
                     // Get content for this file
@@ -1970,7 +1970,7 @@ class AdminTranslationsControllerCore extends AdminController
 
         foreach ($files_per_directory['tpl'] as $dir => $files) {
             foreach ($files as $file) {
-                if (preg_match('/^(.*).tpl$/', $file) && Tools::file_exists_cache($file_path = $dir.$file)) {
+                if (preg_match('/^(.*).tpl$/', $file) && file_exists($file_path = $dir.$file)) {
                     // get controller name instead of file name
                     $prefix_key = Tools::toCamelCase(str_replace(_PS_ADMIN_DIR_.DIRECTORY_SEPARATOR.'themes', '', $file_path), true);
                     $pos = strrpos($prefix_key, DIRECTORY_SEPARATOR);
@@ -2083,7 +2083,7 @@ class AdminTranslationsControllerCore extends AdminController
      */
     public function getListModules()
     {
-        if (!Tools::file_exists_cache($this->translations_informations['modules']['dir'])) {
+        if (!file_exists($this->translations_informations['modules']['dir'])) {
             throw new PrestaShopException(Tools::displayError('Fatal error: The module directory does not exist.').'('.$this->translations_informations['modules']['dir'].')');
         }
         if (!is_writable($this->translations_informations['modules']['dir'])) {
@@ -2123,7 +2123,7 @@ class AdminTranslationsControllerCore extends AdminController
 
         foreach ($file_by_directory['php'] as $dir => $files) {
             foreach ($files as $file) {
-                if (preg_match('/\.php$/', $file) && Tools::file_exists_cache($file_path = $dir.$file) && !in_array($file, self::$ignore_folder)) {
+                if (preg_match('/\.php$/', $file) && file_exists($file_path = $dir.$file) && !in_array($file, self::$ignore_folder)) {
                     if (!filesize($file_path)) {
                         continue;
                     }
@@ -2288,7 +2288,7 @@ class AdminTranslationsControllerCore extends AdminController
         // Get path for english mail directory
         $dir_en = str_replace('/'.$this->lang_selected->iso_code.'/', '/'.$default_language.'/', $dir);
 
-        if (Tools::file_exists_cache($dir_en)) {
+        if (file_exists($dir_en)) {
             // Get all english files to compare with the language to translate
             foreach (scandir($dir_en) as $email_file) {
                 if (strripos($email_file, '.html') > 0 || strripos($email_file, '.txt') > 0) {
@@ -2301,7 +2301,7 @@ class AdminTranslationsControllerCore extends AdminController
                     $arr_return['files'][$email_name][$type]['en'] = $this->getMailContent($dir_en, $email_file);
 
                     // check if the file exists in the language to translate
-                    if (Tools::file_exists_cache($dir.'/'.$email_file)) {
+                    if (file_exists($dir.'/'.$email_file)) {
                         $arr_return['files'][$email_name][$type][$this->lang_selected->iso_code] = $this->getMailContent($dir, $email_file);
                         $this->total_expression++;
                     } else {
@@ -2545,9 +2545,9 @@ class AdminTranslationsControllerCore extends AdminController
         foreach (scandir($this->translations_informations['modules']['dir']) as $module_dir) {
             if (!in_array($module_dir, self::$ignore_folder)) {
                 $dir = false;
-                if ($this->theme_selected && Tools::file_exists_cache($this->translations_informations['modules']['override']['dir'].$module_dir.'/mails/')) {
+                if ($this->theme_selected && file_exists($this->translations_informations['modules']['override']['dir'].$module_dir.'/mails/')) {
                     $dir = $this->translations_informations['modules']['override']['dir'].$module_dir.'/';
-                } elseif (Tools::file_exists_cache($this->translations_informations['modules']['dir'].$module_dir.'/mails/')) {
+                } elseif (file_exists($this->translations_informations['modules']['dir'].$module_dir.'/mails/')) {
                     $dir = $this->translations_informations['modules']['dir'].$module_dir.'/';
                 }
                 if ($dir !== false) {
@@ -2579,18 +2579,18 @@ class AdminTranslationsControllerCore extends AdminController
             if (!in_array($module_dir, self::$ignore_folder)) {
                 $dir = false;
                 if ($classes) {
-                    if ($this->theme_selected && Tools::file_exists_cache($this->translations_informations['modules']['override']['dir'].$module_dir.'/classes/')) {
+                    if ($this->theme_selected && file_exists($this->translations_informations['modules']['override']['dir'].$module_dir.'/classes/')) {
                         $dir = $this->translations_informations['modules']['override']['dir'].$module_dir.'/classes/';
-                    } elseif (Tools::file_exists_cache($this->translations_informations['modules']['dir'].$module_dir.'/classes/')) {
+                    } elseif (file_exists($this->translations_informations['modules']['dir'].$module_dir.'/classes/')) {
                         $dir = $this->translations_informations['modules']['dir'].$module_dir.'/classes/';
                     }
                     if ($dir !== false) {
                         $arr_modules[$dir] = scandir($dir);
                     }
                 } else {
-                    if ($this->theme_selected && Tools::file_exists_cache($this->translations_informations['modules']['override']['dir'].$module_dir.'/pdf/')) {
+                    if ($this->theme_selected && file_exists($this->translations_informations['modules']['override']['dir'].$module_dir.'/pdf/')) {
                         $dir = $this->translations_informations['modules']['override']['dir'].$module_dir.'/pdf/';
-                    } elseif (Tools::file_exists_cache($this->translations_informations['modules']['dir'].$module_dir.'/pdf/')) {
+                    } elseif (file_exists($this->translations_informations['modules']['dir'].$module_dir.'/pdf/')) {
                         $dir = $this->translations_informations['modules']['dir'].$module_dir.'/pdf/';
                     }
                     if ($dir !== false) {
@@ -2605,7 +2605,7 @@ class AdminTranslationsControllerCore extends AdminController
     protected function getTinyMCEForMails($iso_lang)
     {
         // TinyMCE
-        $iso_tiny_mce = (Tools::file_exists_cache(_PS_ROOT_DIR_.'/js/tiny_mce/langs/'.$iso_lang.'.js') ? $iso_lang : 'en');
+        $iso_tiny_mce = (file_exists(_PS_ROOT_DIR_.'/js/tiny_mce/langs/'.$iso_lang.'.js') ? $iso_lang : 'en');
         $ad = __PS_BASE_URI__.basename(_PS_ADMIN_DIR_);
         //return false;
         return '
@@ -2643,7 +2643,7 @@ class AdminTranslationsControllerCore extends AdminController
         foreach ($files_by_directiories['php'] as $dir => $files) {
             foreach ($files as $file) {
                 // If file exist and is not in ignore_folder, in the next step we check if a folder or mail
-                if (Tools::file_exists_cache($dir.$file) && !in_array($file, self::$ignore_folder)) {
+                if (file_exists($dir.$file) && !in_array($file, self::$ignore_folder)) {
                     $subject_mail = $this->getSubjectMail($dir, $file, $subject_mail);
                 }
             }
@@ -2805,7 +2805,7 @@ class AdminTranslationsControllerCore extends AdminController
     {
         $subject_mail_content = [];
 
-        if (Tools::file_exists_cache($directory.'/lang.php')) {
+        if (file_exists($directory.'/lang.php')) {
             // we need to include this even if already included (no include once)
             include($directory.'/lang.php');
             foreach ($GLOBALS[$this->translations_informations[$this->type_selected]['var']] as $key => $subject) {
@@ -2824,7 +2824,7 @@ class AdminTranslationsControllerCore extends AdminController
 
     protected function writeSubjectTranslationFile($sub, $path)
     {
-        if (!Tools::file_exists_cache(dirname($path))) {
+        if (!file_exists(dirname($path))) {
             if (!mkdir(dirname($path), 0700)) {
                 throw new PrestaShopException('Directory '.dirname($path).' cannot be created.');
             }
@@ -2861,7 +2861,7 @@ class AdminTranslationsControllerCore extends AdminController
     protected function recursiveGetModuleFiles($path, &$array_files, $module_name, $lang_file, $is_default = false)
     {
         $files_module = [];
-        if (Tools::file_exists_cache($path)) {
+        if (file_exists($path)) {
             $files_module = scandir($path);
         }
         $files_for_module = $this->clearModuleFiles($files_module, 'file');
@@ -2915,7 +2915,7 @@ class AdminTranslationsControllerCore extends AdminController
                 }
 
                 $lang_file = $root_dir.$module.'/translations/'.$lang.'.php';
-                if (!Tools::file_exists_cache($root_dir.$module.'/translations/'.$lang.'.php') && Tools::file_exists_cache($root_dir.$module.'/'.$lang.'.php')) {
+                if (!file_exists($root_dir.$module.'/translations/'.$lang.'.php') && file_exists($root_dir.$module.'/'.$lang.'.php')) {
                     $lang_file = $root_dir.$module.'/'.$lang.'.php';
                 }
                 @include($lang_file);
@@ -2934,9 +2934,9 @@ class AdminTranslationsControllerCore extends AdminController
                 if (is_dir($i18n_dir.$module)) {
                     $root_dir = $i18n_dir;
                 }
-                if (Tools::file_exists_cache($root_dir.$module.'/translations/'.$lang.'.php')) {
+                if (file_exists($root_dir.$module.'/translations/'.$lang.'.php')) {
                     $lang_file = $root_dir.$module.'/translations/'.$lang.'.php';
-                } elseif (Tools::file_exists_cache($root_dir.$module.'/'.$lang.'.php')) {
+                } elseif (file_exists($root_dir.$module.'/'.$lang.'.php')) {
                     $lang_file = $root_dir.$module.'/'.$lang.'.php';
                 }
                 @include($lang_file);
@@ -3057,9 +3057,9 @@ class AdminTranslationsControllerCore extends AdminController
         foreach ($files_by_directory as $type => $directories) {
             foreach ($directories as $dir => $files) {
                 foreach ($files as $file) {
-                    if (!in_array($file, self::$ignore_folder) && Tools::file_exists_cache($file_path = $dir.$file)) {
+                    if (!in_array($file, self::$ignore_folder) && file_exists($file_path = $dir.$file)) {
                         if ($type == 'tpl') {
-                            if (Tools::file_exists_cache($file_path) && is_file($file_path)) {
+                            if (file_exists($file_path) && is_file($file_path)) {
                                 // Get content for this file
                                 $content = file_get_contents($file_path);
 
@@ -3082,7 +3082,7 @@ class AdminTranslationsControllerCore extends AdminController
                                     $tabs_array[$prefix_key][$key]['use_sprintf'] = $this->checkIfKeyUseSprintf($key);
                                 }
                             }
-                        } elseif (Tools::file_exists_cache($file_path)) {
+                        } elseif (file_exists($file_path)) {
                             $tabs_array = $this->parsePdfClass($file_path, 'php', $GLOBALS[$name_var], $prefix_key, $tabs_array, $missing_translations_pdf);
                         }
                     }
