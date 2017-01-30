@@ -261,8 +261,8 @@ class HelperFormCore extends Helper
                             break;
 
                         case 'code':
-                            $this->context->controller->addJS(rtrim(_PS_JS_DIR_, DIRECTORY_SEPARATOR).'ace'.DIRECTORY_SEPARATOR.'ace.js');
-                            $this->context->controller->addCSS(rtrim(_PS_JS_DIR_, DIRECTORY_SEPARATOR).'ace'.DIRECTORY_SEPARATOR.'aceinput.css');
+                            $this->context->controller->addJS(_PS_JS_DIR_.'ace/ace.js');
+                            $this->context->controller->addCSS(_PS_JS_DIR_.'ace/aceinput.css');
                             break;
 
                         case 'shop':
