@@ -176,6 +176,24 @@ class InstallModelInstall extends InstallAbstractModel
             return false;
         }
 
+        $engine = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            'SELECT `SUPPORT`
+             FROM `INFORMATION_SCHEMA`.`ENGINES`
+             WHERE `ENGINE` = \'InnoDB\';'
+        );
+        if (!in_array(Tools::strtolower($engine), ['default', 'yes'])) {
+            $this->setError(
+                sprintf(
+                    $this->language->l(
+                        'The InnoDB database engine does not seem to be available. If you are using a MySQL alternative, could you please open an issue on %s? Thank you!'
+                    ),
+                    '<a href="https://github.com/thirtybees/ThirtyBees.git" target="_blank">GitHub</a>'
+                )
+            );
+
+            return false;
+        }
+
         if ($clearDatabase) {
             $this->clearDatabase();
         }
