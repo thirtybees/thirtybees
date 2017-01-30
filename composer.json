@@ -2,7 +2,8 @@
     "require": {
         "guzzlehttp/guzzle": "~6.0",
         "swiftmailer/swiftmailer": "~5.4",
-        "tecnickcom/tcpdf": "^6.2"
+        "tecnickcom/tcpdf": "^6.2",
+        "phpoffice/phpexcel": "^1.8"
     },
     "require-dev": {
         "satooshi/php-coveralls": "^1.0",
