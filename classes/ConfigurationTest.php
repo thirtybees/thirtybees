@@ -407,7 +407,7 @@ class ConfigurationTestCore
         if ($recursive) {
             foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($absoluteDir)) as $file) {
                 /** @var DirectoryIterator $file */
-                if (in_array($file->getFilename(), ['.', '..'])) {
+                if ($file->isDot() || $file->isLink()) {
                     continue;
                 }
 
