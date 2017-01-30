@@ -97,9 +97,9 @@ class LinkCore
 
     /**
      * @param int|Product $product
-     * @param string|null $alias
-     * @param             string null  $category
-     * @param string|null $ean13
+     * @param string|null $alias            DEPRECATED
+     * @param string|null $category         DEPRECATED
+     * @param string|null $ean13            DEPRECATED
      * @param int|null    $idLang
      * @param int|null    $idShop
      * @param int         $ipa
@@ -132,46 +132,35 @@ class LinkCore
                 throw new PrestaShopException('Invalid product vars');
             }
         }
-
         // Set available keywords
         $params = [];
         $params['id'] = $product->id;
         $params['rewrite'] = (!$alias) ? $product->getFieldByLang('link_rewrite') : $alias;
-
         $params['ean13'] = (!$ean13) ? $product->ean13 : $ean13;
         $params['meta_keywords'] =    Tools::str2url($product->getFieldByLang('meta_keywords'));
         $params['meta_title'] = Tools::str2url($product->getFieldByLang('meta_title'));
-
         if ($dispatcher->hasKeyword('product_rule', $idLang, 'manufacturer', $idShop)) {
             $params['manufacturer'] = Tools::str2url($product->isFullyLoaded ? $product->manufacturer_name : Manufacturer::getNameById($product->id_manufacturer));
         }
-
         if ($dispatcher->hasKeyword('product_rule', $idLang, 'supplier', $idShop)) {
             $params['supplier'] = Tools::str2url($product->isFullyLoaded ? $product->supplier_name : Supplier::getNameById($product->id_supplier));
         }
-
         if ($dispatcher->hasKeyword('product_rule', $idLang, 'price', $idShop)) {
             $params['price'] = $product->isFullyLoaded ? $product->price : Product::getPriceStatic($product->id, false, null, 6, null, false, true, 1, false, null, null, null, $product->specificPrice);
         }
-
         if ($dispatcher->hasKeyword('product_rule', $idLang, 'tags', $idShop)) {
             $params['tags'] = Tools::str2url($product->getTags($idLang));
         }
-
         if ($dispatcher->hasKeyword('product_rule', $idLang, 'category', $idShop)) {
             $params['category'] = (!is_null($product->category) && !empty($product->category)) ? Tools::str2url($product->category) : Tools::str2url($category);
         }
-
         if ($dispatcher->hasKeyword('product_rule', $idLang, 'reference', $idShop)) {
             $params['reference'] = Tools::str2url($product->reference);
         }
-
         if ($dispatcher->hasKeyword('product_rule', $idLang, 'categories', $idShop)) {
             $params['category'] = (!$category) ? $product->category : $category;
             $cats = [];
-
             $categoryDisableRewrite = Link::$categoryDisableRewrite;
-
             foreach ($product->getParentCategories($idLang) as $cat) {
                 if (!in_array($cat['id_category'], $categoryDisableRewrite)) {
                     //remove root and home category from the URL
@@ -183,206 +172,11 @@ class LinkCore
 
         $anchor = $ipa ? $product->getAnchor((int) $ipa, (bool) $addAnchor) : '';
 
-        return $url.$dispatcher->createUrl('product_rule', $idLang, array_merge($params, $extraParams), $forceRoutes, $anchor, $idShop);
-    }
-
-    /**
-     * @param int|Category $category
-     * @param string|null  $alias
-     * @param int|null     $idLang
-     * @param string|null  $selectedFilters
-     * @param int|null     $idShop
-     * @param bool         $relativeProtocol
-     *
-     * @return string
-     */
-    public function getCategoryLink($category, $alias = null, $idLang = null, $selectedFilters = null, $idShop = null, $relativeProtocol = false)
-    {
-        if (!$idLang) {
-            $idLang = Context::getContext()->language->id;
-        }
-        $url = $this->getBaseLink($idShop, null, $relativeProtocol).$this->getLangLink($idLang, null, $idShop);
-        if (!is_object($category)) {
-            $category = new Category($category, $idLang);
-        }
-        // Set available keywords
-        $params = [];
-        $params['id'] = $category->id;
-        $params['rewrite'] = (!$alias) ? $category->link_rewrite : $alias;
-        $params['meta_keywords'] =    Tools::str2url($category->getFieldByLang('meta_keywords'));
-        $params['meta_title'] = Tools::str2url($category->getFieldByLang('meta_title'));
-        $cats = [];
-        $categoryDisableRewrite = Link::$categoryDisableRewrite;
-
-        foreach ($category->getParentsCategories($idLang) as $cat) {
-            if (!in_array($cat['id_category'], $categoryDisableRewrite)) {
-                //remove root and home category from the URL
-                $cats[] = $cat['link_rewrite'];
-            }
-        }
-        array_shift($cats);
-        $cats = array_reverse($cats);
-        $params['categories'] = trim(implode('/', $cats), '/');
-
-        // Selected filters is used by the module blocklayered
-        $selectedFilters = is_null($selectedFilters) ? '' : $selectedFilters;
-        if (empty($selectedFilters)) {
-            $rule = 'category_rule';
-        } else {
-            $rule = 'layered_rule';
-            $params['selected_filters'] = $selectedFilters;
+        if (isset($params)) {
+            $extraParams = array_merge($extraParams, $params);
         }
 
-        return $url.Dispatcher::getInstance()->createUrl($rule, $idLang, $params, $this->allow, '', $idShop);
-    }
-
-    /**
-     * @param int|CMS     $cms
-     * @param string|null $alias
-     * @param null        $ssl
-     * @param null        $idLang
-     * @param null        $idShop
-     * @param bool        $relativeProtocol
-     *
-     * @return string
-     */
-    public function getCMSLink($cms, $alias = null, $ssl = null, $idLang = null, $idShop = null, $relativeProtocol = false)
-    {
-        if (!$idLang) {
-            $idLang = Context::getContext()->language->id;
-        }
-        if (!$idShop) {
-            $idShop = Context::getContext()->shop->id;
-        }
-        $url = $this->getBaseLink($idShop, $ssl, $relativeProtocol).$this->getLangLink($idLang, null, $idShop);
-        $dispatcher = Dispatcher::getInstance();
-        if (!is_object($cms)) {
-            $cms = new CMS($cms, $idLang);
-        }
-        // Set available keywords
-        $params = [];
-        $params['id'] = $cms->id;
-        $params['rewrite'] = (!$alias) ? (is_array($cms->link_rewrite) ? $cms->link_rewrite[(int) $idLang] : $cms->link_rewrite) : $alias;
-        $params['meta_keywords'] = '';
-        $params['categories'] = $this->findCMSSubcategories($cms->id, $idLang);
-
-        if (isset($cms->meta_keywords) && !empty($cms->meta_keywords)) {
-            $params['meta_keywords'] = is_array($cms->meta_keywords) ?  Tools::str2url($cms->meta_keywords[(int) $idLang]) :  Tools::str2url($cms->meta_keywords);
-        }
-        $params['meta_title'] = '';
-        if (isset($cms->meta_title) && !empty($cms->meta_title)) {
-            $params['meta_title'] = is_array($cms->meta_title) ? Tools::str2url($cms->meta_title[(int) $idLang]) : Tools::str2url($cms->meta_title);
-        }
-
-        return $url.$dispatcher->createUrl('cms_rule', $idLang, $params, $this->allow, '', $idShop);
-    }
-
-    /**
-     * @param int|CMSCategory $cmsCategory
-     * @param string|null     $alias
-     * @param int|null        $idLang
-     * @param int|null        $idShop
-     * @param bool            $relativeProtocol
-     *
-     * @return string
-     */
-    public function getCMSCategoryLink($cmsCategory, $alias = null, $idLang = null, $idShop = null, $relativeProtocol = false)
-    {
-        if (empty($idLang)) {
-            $idLang = Context::getContext()->language->id;
-        }
-        if (empty($idShop)) {
-            $idShop = Context::getContext()->shop->id;
-        }
-        $url = $this->getBaseLink($idShop, null, $relativeProtocol).$this->getLangLink($idLang, null, $idShop);
-        $dispatcher = Dispatcher::getInstance();
-        if (!is_object($cmsCategory)) {
-            $cmsCategory = new CMSCategory($cmsCategory, $idLang);
-        }
-        if (is_array($cmsCategory->link_rewrite) && isset($cmsCategory->link_rewrite[(int) $idLang])) {
-            $cmsCategory->link_rewrite = $cmsCategory->link_rewrite[(int) $idLang];
-        }
-        if (is_array($cmsCategory->meta_keywords) && isset($cmsCategory->meta_keywords[(int) $idLang])) {
-            $cmsCategory->meta_keywords = $cmsCategory->meta_keywords[(int) $idLang];
-        }
-        if (is_array($cmsCategory->meta_title) && isset($cmsCategory->meta_title[(int) $idLang])) {
-            $cmsCategory->meta_title = $cmsCategory->meta_title[(int) $idLang];
-        }
-        // Set available keywords
-        $params = [];
-        $params['id'] = $cmsCategory->id;
-        $params['rewrite'] = (!$alias) ? $cmsCategory->link_rewrite : $alias;
-        $params['meta_keywords'] = Tools::str2url($cmsCategory->meta_keywords);
-        $params['meta_title'] = Tools::str2url($cmsCategory->meta_title);
-        $idParent = $this->findCMSCategoryParent($cmsCategory->id_cms_category);
-        if (empty($idParent)) {
-            $params['categories'] = '';
-        } else {
-            $params['categories'] = $this->findCMSCategorySubcategories($idParent, $idLang);
-        }
-
-        return $url.$dispatcher->createUrl('cms_category_rule', $idLang, $params, $this->allow, '', $idShop);
-    }
-
-    /**
-     * @param int $idCms
-     * @param int $idLang
-     *
-     * @return string
-     */
-    protected function findCMSSubcategories($idCms, $idLang)
-    {
-        $sql = new DbQuery();
-        $sql->select('`'.bqSQL(CMSCategory::$definition['primary']).'`');
-        $sql->from(bqSQL(CMS::$definition['table']));
-        $sql->where('`'.bqSQL(CMS::$definition['primary']).'` = '.(int) $idCms);
-        $idCmsCategory = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
-        if (empty($idCmsCategory)) {
-            return '';
-        }
-        $subcategories = $this->findCMSCategorySubcategories($idCmsCategory, $idLang);
-
-        return trim($subcategories, '/');
-    }
-
-    /**
-     * @param int $idCmsCategory
-     * @param int $idLang
-     *
-     * @return string
-     */
-    protected function findCMSCategorySubcategories($idCmsCategory, $idLang)
-    {
-        if (empty($idCmsCategory) || $idCmsCategory === 1) {
-            return '';
-        }
-        $subcategories = '';
-        while ($idCmsCategory > 1) {
-            $subcategory = new CMSCategory($idCmsCategory);
-            $subcategories = $subcategory->link_rewrite[$idLang].'/'.$subcategories;
-            $idCmsCategory = $subcategory->id_parent;
-        }
-
-        return trim($subcategories, '/');
-    }
-
-    /**
-     * @param int $idCmsCategory
-     *
-     * @return int
-     */
-    protected function findCMSCategoryParent($idCmsCategory)
-    {
-        $sql = new DbQuery();
-        $sql->select('`id_parent`');
-        $sql->from(bqSQL(CMSCategory::$definition['table']));
-        $sql->where('`'.bqSQL(CMSCategory::$definition['primary']).'` = '.(int) $idCmsCategory);
-        $idParent = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
-        if (empty($idParent)) {
-            return 0;
-        }
-
-        return (int) $idParent;
+        return $url.$dispatcher->createUrl('product_rule', $idLang, $extraParams, $forceRoutes, $anchor, $idShop);
     }
 
     /**
@@ -450,7 +244,7 @@ class LinkCore
      * Use controller name to create a link
      *
      * @param string $controller
-     * @param bool   $withToken  include or not the token in the url
+     * @param bool   $withToken include or not the token in the url
      *
      * @return string url
      *
@@ -551,7 +345,7 @@ class LinkCore
     /**
      * Create link after language change, for the change language block
      *
-     * @param int     $idLang  Language ID
+     * @param int     $idLang Language ID
      * @param Context $context
      *
      * @return string link
@@ -605,9 +399,59 @@ class LinkCore
     }
 
     /**
+     * @param int|Category $category
+     * @param string|null  $alias
+     * @param int|null     $idLang
+     * @param string|null  $selectedFilters
+     * @param int|null     $idShop
+     * @param bool         $relativeProtocol
+     *
+     * @return string
+     */
+    public function getCategoryLink($category, $alias = null, $idLang = null, $selectedFilters = null, $idShop = null, $relativeProtocol = false)
+    {
+        if (!$idLang) {
+            $idLang = Context::getContext()->language->id;
+        }
+        $url = $this->getBaseLink($idShop, null, $relativeProtocol).$this->getLangLink($idLang, null, $idShop);
+        if (!is_object($category)) {
+            $category = new Category($category, $idLang);
+        }
+        // Set available keywords
+        $params = [];
+        $params['id'] = $category->id;
+        $params['rewrite'] = (!$alias) ? $category->link_rewrite : $alias;
+        $params['meta_keywords'] = Tools::str2url($category->getFieldByLang('meta_keywords'));
+        $params['meta_title'] = Tools::str2url($category->getFieldByLang('meta_title'));
+        $cats = [];
+        $categoryDisableRewrite = Link::$categoryDisableRewrite;
+
+        foreach ($category->getParentsCategories($idLang) as $cat) {
+            if (!in_array($cat['id_category'], $categoryDisableRewrite)) {
+                //remove root and home category from the URL
+                $cats[] = $cat['link_rewrite'];
+            }
+        }
+        array_shift($cats);
+        $cats = array_reverse($cats);
+        $params['categories'] = trim(implode('/', $cats), '/');
+
+        // Selected filters is used by the module blocklayered
+        $selectedFilters = is_null($selectedFilters) ? '' : $selectedFilters;
+        if (empty($selectedFilters)) {
+            $rule = 'category_rule';
+        } else {
+            $rule = 'layered_rule';
+            $params['selected_filters'] = $selectedFilters;
+        }
+
+        return $url.Dispatcher::getInstance()->createUrl($rule, $idLang, $params, $this->allow, '', $idShop);
+    }
+
+    /**
      * Create a link to a supplier
      *
-     * @param mixed    $supplier Supplier object (can be an ID supplier, but deprecated)
+     * @param mixed    $supplier         Supplier object (can be an ID supplier, but deprecated)
      * @param string   $alias
      * @param int      $idLang
      * @param int|null $idShop
@@ -680,6 +524,155 @@ class LinkCore
         $params['meta_title'] = Tools::str2url($manufacturer->meta_title);
 
         return $url.$dispatcher->createUrl('manufacturer_rule', $idLang, $params, $this->allow, '', $idShop);
+    }
+
+    /**
+     * @param int|CMS     $cms
+     * @param string|null $alias
+     * @param null        $ssl
+     * @param null        $idLang
+     * @param null        $idShop
+     * @param bool        $relativeProtocol
+     *
+     * @return string
+     */
+    public function getCMSLink($cms, $alias = null, $ssl = null, $idLang = null, $idShop = null, $relativeProtocol = false)
+    {
+        if (!$idLang) {
+            $idLang = Context::getContext()->language->id;
+        }
+        if (!$idShop) {
+            $idShop = Context::getContext()->shop->id;
+        }
+        $url = $this->getBaseLink($idShop, $ssl, $relativeProtocol).$this->getLangLink($idLang, null, $idShop);
+        $dispatcher = Dispatcher::getInstance();
+        if (!is_object($cms)) {
+            $cms = new CMS($cms, $idLang);
+        }
+        // Set available keywords
+        $params = [];
+        $params['id'] = $cms->id;
+        $params['rewrite'] = (!$alias) ? (is_array($cms->link_rewrite) ? $cms->link_rewrite[(int) $idLang] : $cms->link_rewrite) : $alias;
+        $params['meta_keywords'] = '';
+        $params['categories'] = $this->findCMSSubcategories($cms->id, $idLang);
+
+        if (isset($cms->meta_keywords) && !empty($cms->meta_keywords)) {
+            $params['meta_keywords'] = is_array($cms->meta_keywords) ? Tools::str2url($cms->meta_keywords[(int) $idLang]) : Tools::str2url($cms->meta_keywords);
+        }
+        $params['meta_title'] = '';
+        if (isset($cms->meta_title) && !empty($cms->meta_title)) {
+            $params['meta_title'] = is_array($cms->meta_title) ? Tools::str2url($cms->meta_title[(int) $idLang]) : Tools::str2url($cms->meta_title);
+        }
+
+        return $url.$dispatcher->createUrl('cms_rule', $idLang, $params, $this->allow, '', $idShop);
+    }
+
+    /**
+     * @param int $idCms
+     * @param int $idLang
+     *
+     * @return string
+     */
+    protected function findCMSSubcategories($idCms, $idLang)
+    {
+        $sql = new DbQuery();
+        $sql->select('`'.bqSQL(CMSCategory::$definition['primary']).'`');
+        $sql->from(bqSQL(CMS::$definition['table']));
+        $sql->where('`'.bqSQL(CMS::$definition['primary']).'` = '.(int) $idCms);
+        $idCmsCategory = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+        if (empty($idCmsCategory)) {
+            return '';
+        }
+        $subcategories = $this->findCMSCategorySubcategories($idCmsCategory, $idLang);
+
+        return trim($subcategories, '/');
+    }
+
+    /**
+     * @param int $idCmsCategory
+     * @param int $idLang
+     *
+     * @return string
+     */
+    protected function findCMSCategorySubcategories($idCmsCategory, $idLang)
+    {
+        if (empty($idCmsCategory) || $idCmsCategory === 1) {
+            return '';
+        }
+        $subcategories = '';
+        while ($idCmsCategory > 1) {
+            $subcategory = new CMSCategory($idCmsCategory);
+            $subcategories = $subcategory->link_rewrite[$idLang].'/'.$subcategories;
+            $idCmsCategory = $subcategory->id_parent;
+        }
+
+        return trim($subcategories, '/');
+    }
+
+    /**
+     * @param int|CMSCategory $cmsCategory
+     * @param string|null     $alias
+     * @param int|null        $idLang
+     * @param int|null        $idShop
+     * @param bool            $relativeProtocol
+     *
+     * @return string
+     */
+    public function getCMSCategoryLink($cmsCategory, $alias = null, $idLang = null, $idShop = null, $relativeProtocol = false)
+    {
+        if (empty($idLang)) {
+            $idLang = Context::getContext()->language->id;
+        }
+        if (empty($idShop)) {
+            $idShop = Context::getContext()->shop->id;
+        }
+        $url = $this->getBaseLink($idShop, null, $relativeProtocol).$this->getLangLink($idLang, null, $idShop);
+        $dispatcher = Dispatcher::getInstance();
+        if (!is_object($cmsCategory)) {
+            $cmsCategory = new CMSCategory($cmsCategory, $idLang);
+        }
+        if (is_array($cmsCategory->link_rewrite) && isset($cmsCategory->link_rewrite[(int) $idLang])) {
+            $cmsCategory->link_rewrite = $cmsCategory->link_rewrite[(int) $idLang];
+        }
+        if (is_array($cmsCategory->meta_keywords) && isset($cmsCategory->meta_keywords[(int) $idLang])) {
+            $cmsCategory->meta_keywords = $cmsCategory->meta_keywords[(int) $idLang];
+        }
+        if (is_array($cmsCategory->meta_title) && isset($cmsCategory->meta_title[(int) $idLang])) {
+            $cmsCategory->meta_title = $cmsCategory->meta_title[(int) $idLang];
+        }
+        // Set available keywords
+        $params = [];
+        $params['id'] = $cmsCategory->id;
+        $params['rewrite'] = (!$alias) ? $cmsCategory->link_rewrite : $alias;
+        $params['meta_keywords'] = Tools::str2url($cmsCategory->meta_keywords);
+        $params['meta_title'] = Tools::str2url($cmsCategory->meta_title);
+        $idParent = $this->findCMSCategoryParent($cmsCategory->id_cms_category);
+        if (empty($idParent)) {
+            $params['categories'] = '';
+        } else {
+            $params['categories'] = $this->findCMSCategorySubcategories($idParent, $idLang);
+        }
+
+        return $url.$dispatcher->createUrl('cms_category_rule', $idLang, $params, $this->allow, '', $idShop);
+    }
+
+    /**
+     * @param int $idCmsCategory
+     *
+     * @return int
+     */
+    protected function findCMSCategoryParent($idCmsCategory)
+    {
+        $sql = new DbQuery();
+        $sql->select('`id_parent`');
+        $sql->from(bqSQL(CMSCategory::$definition['table']));
+        $sql->where('`'.bqSQL(CMSCategory::$definition['primary']).'` = '.(int) $idCmsCategory);
+        $idParent = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+        if (empty($idParent)) {
+            return 0;
+        }
+
+        return (int) $idParent;
     }
 
     /**
