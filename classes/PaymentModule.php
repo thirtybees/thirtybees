@@ -1035,11 +1035,11 @@ abstract class PaymentModuleCore extends Module
         $themeTemplatePath = _PS_THEME_DIR_.'mails'.DIRECTORY_SEPARATOR.$this->context->language->iso_code.DIRECTORY_SEPARATOR.$templateName;
         $defaultMailTemplatePath = _PS_MAIL_DIR_.$this->context->language->iso_code.DIRECTORY_SEPARATOR.$templateName;
 
-        if (Tools::file_exists_cache($themeTemplatePath)) {
+        if (file_exists($themeTemplatePath)) {
             $defaultMailTemplatePath = $themeTemplatePath;
         }
 
-        if (Tools::file_exists_cache($defaultMailTemplatePath)) {
+        if (file_exists($defaultMailTemplatePath)) {
             $this->context->smarty->assign('list', $var);
 
             return $this->context->smarty->fetch($defaultMailTemplatePath);

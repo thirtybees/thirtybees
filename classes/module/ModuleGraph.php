@@ -306,7 +306,7 @@ abstract class ModuleGraphCore extends Module
         if (!Validate::isModuleName($render)) {
             die(Tools::displayError());
         }
-        if (!Tools::file_exists_cache($file = _PS_ROOT_DIR_.'/modules/'.$render.'/'.$render.'.php')) {
+        if (!file_exists($file = _PS_ROOT_DIR_.'/modules/'.$render.'/'.$render.'.php')) {
             die(Tools::displayError());
         }
         require_once($file);

@@ -636,12 +636,12 @@ class MailCore extends ObjectModel
         $isoCode = Language::getIsoById((int) $idLang);
 
         $fileCore = _PS_ROOT_DIR_.'/mails/'.$isoCode.'/lang.php';
-        if (Tools::file_exists_cache($fileCore) && empty($_LANGMAIL)) {
+        if (file_exists($fileCore) && empty($_LANGMAIL)) {
             include($fileCore);
         }
 
         $fileTheme = _PS_THEME_DIR_.'mails/'.$isoCode.'/lang.php';
-        if (Tools::file_exists_cache($fileTheme)) {
+        if (file_exists($fileTheme)) {
             include($fileTheme);
         }
 
