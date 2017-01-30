@@ -1152,11 +1152,8 @@ class AdminPerformanceControllerCore extends AdminController
                 $cacheActive = (bool) Tools::getValue('TB_CACHE_ENABLED');
                 if ($cachingSystem = preg_replace('[^a-zA-Z0-9]', '', Tools::getValue('TB_CACHE_SYSTEM'))) {
                     Configuration::updateGlobalValue('TB_CACHE_SYSTEM', $cachingSystem);
-                    Configuration::updateGlobalValue('TB_CACHE_ENABLED', $cacheActive);
-                } else {
-                    Configuration::updateGlobalValue('TB_CACHE_ENABLED', false);
-                    $this->errors[] = Tools::displayError('The caching system is missing.');
                 }
+                Configuration::updateGlobalValue('TB_CACHE_ENABLED', $cacheActive);
                 if ($cacheActive) {
                     if ($cachingSystem == 'CacheMemcache' && !extension_loaded('memcache')) {
                         $this->errors[] = Tools::displayError('To use Memcached, you must install the Memcache PECL extension on your server.').'
