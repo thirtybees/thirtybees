@@ -164,15 +164,13 @@ class InstallModelInstall extends InstallAbstractModel
     {
         // Clear database (only tables with same prefix)
         require_once _PS_ROOT_DIR_.'/'.self::SETTINGS_FILE;
-        $collations = Db::getInstance()->executeS('SHOW COLLATION');
-        if (!is_array($collations)) {
-            $this->setError($this->language->l('Couldn\'t find the supported database collations while trying to find out of the database engine supports `utf8mb4_unicode_ci`'));
-
-            return false;
-        }
-
-        $collations = array_column($collations, 'Collation');
-        if (!in_array('utf8mb4_unicode_ci', $collations)) {
+        $collations = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            'SELECT `COLLATION_NAME`
+             FROM `INFORMATION_SCHEMA`.`COLLATIONS`
+             WHERE `COLLATION_NAME` = \'utf8mb4_unicode_ci\'
+             AND `CHARACTER_SET_NAME` = \'utf8mb4\';'
+        );
+        if (!$collations) {
             $this->setError($this->language->l('Your database does not seem to support the collation `utf8mb4_unicode_ci`. Make sure you are using at least MySQL 5.5.3 or MariaDB 5.5'));
 
             return false;
