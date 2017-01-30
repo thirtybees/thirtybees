@@ -294,13 +294,18 @@ class ConfigurationTestCore
         $guzzle = new GuzzleHttp\Client([
             'http_errors' => false,
         ]);
-        $response = $guzzle->get('https://tlstest.paypal.com/');
+        try {
+            $response = $guzzle->get('https://tlstest.paypal.com/');
+            $success = (string) $response->getBody() === 'PayPal_Connection_OK';
+        } catch (Exception $e) {
+            $success = false;
+        }
 
-        return (string) $response->getBody() === 'PayPal_Connection_OK';
+        return $success;
     }
 
     /**
-     * @param $funcs
+     * @param array $funcs
      *
      * @return bool
      *

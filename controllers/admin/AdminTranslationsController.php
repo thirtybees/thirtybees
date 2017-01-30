@@ -177,40 +177,49 @@ class AdminTranslationsControllerCore extends AdminController
 
     /**
      * Generate the Main page
+     *
+     * @return string
+     *
+     * @since 1.0.0
      */
     public function initMain()
     {
         // Block add/update a language
-        $packs_to_install = [];
-        $packs_to_update = [];
-        $token = Tools::getAdminToken('AdminLanguages'.(int)Tab::getIdFromClassName('AdminLanguages').(int)$this->context->employee->id);
-        $file_name = $this->link_lang_pack.'?version='._PS_VERSION_;
+        $packsToInstall = [];
+        $packsToUpdate = [];
+        $token = Tools::getAdminToken('AdminLanguages'.(int) Tab::getIdFromClassName('AdminLanguages').(int) $this->context->employee->id);
+        $fileName = $this->link_lang_pack.'?version='._PS_VERSION_;
 
         $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
-        if ($lang_packs = (string) $guzzle->get($file_name)->getBody()) {
+        try {
+            $langPacks = (string) $guzzle->get($fileName)->getBody();
+        } catch (Exception $e) {
+            $langPacks = null;
+        }
+        if ($langPacks) {
             // Notice : for php < 5.2 compatibility, json_decode. The second parameter to true will set us
-            if ($lang_packs != '' && $lang_packs = json_decode($lang_packs, true)) {
-                foreach ($lang_packs as $key => $lang_pack) {
-                    if (!Language::isInstalled($lang_pack['iso_code'])) {
-                        $packs_to_install[$key] = $lang_pack;
+            if ($langPacks != '' && $langPacks = json_decode($langPacks, true)) {
+                foreach ($langPacks as $key => $langPack) {
+                    if (!Language::isInstalled($langPack['iso_code'])) {
+                        $packsToInstall[$key] = $langPack;
                     } else {
-                        $packs_to_update[$key] = $lang_pack;
+                        $packsToUpdate[$key] = $langPack;
                     }
                 }
             }
         }
 
         $this->tpl_view_vars = [
-            'theme_default' => self::DEFAULT_THEME_NAME,
-            'theme_lang_dir' =>_THEME_LANG_DIR_,
-            'token' => $this->token,
-            'languages' => $this->languages,
-            'translations_type' => $this->translations_informations,
-            'packs_to_install' => $packs_to_install,
-            'packs_to_update' => $packs_to_update,
-            'url_submit' => self::$currentIndex.'&token='.$this->token,
-            'themes' => $this->themes,
-            'id_theme_current' => $this->context->shop->id_theme,
+            'theme_default'       => self::DEFAULT_THEME_NAME,
+            'theme_lang_dir'      => _THEME_LANG_DIR_,
+            'token'               => $this->token,
+            'languages'           => $this->languages,
+            'translations_type'   => $this->translations_informations,
+            'packs_to_install'    => $packsToInstall,
+            'packs_to_update'     => $packsToUpdate,
+            'url_submit'          => self::$currentIndex.'&token='.$this->token,
+            'themes'              => $this->themes,
+            'id_theme_current'    => $this->context->shop->id_theme,
             'url_create_language' => 'index.php?controller=AdminLanguages&addlang&token='.$token,
         ];
 
@@ -864,7 +873,11 @@ class AdminTranslationsControllerCore extends AdminController
         $arr_import_lang = explode('|', Tools::getValue('params_import_language')); /* 0 = Language ISO code, 1 = PS version */
         if (Validate::isLangIsoCode($arr_import_lang[0])) {
             $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
-            $content = (string) $guzzle->get('http://www.prestashop.com/download/lang_packs/gzip/'.$arr_import_lang[1].'/'.Tools::strtolower($arr_import_lang[0]).'.gzip')->getBody();
+            try {
+                $content = (string) $guzzle->get('http://www.prestashop.com/download/lang_packs/gzip/'.$arr_import_lang[1].'/'.Tools::strtolower($arr_import_lang[0]).'.gzip')->getBody();
+            } catch (Exception $e) {
+                $content = null;
+            }
             if ($content) {
                 $file = _PS_TRANSLATIONS_DIR_.$arr_import_lang[0].'.gzip';
                 if ((bool)@file_put_contents($file, $content)) {

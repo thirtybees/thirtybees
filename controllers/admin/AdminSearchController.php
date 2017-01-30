@@ -181,11 +181,14 @@ class AdminSearchControllerCore extends AdminController
         $this->_list['customers'] = Customer::searchByName($this->query);
     }
 
+    /**
+     * @since 1.0.0
+     */
     public function searchModule()
     {
         $this->_list['modules'] = [];
-        $all_modules = Module::getModulesOnDisk(true, true, Context::getContext()->employee->id);
-        foreach ($all_modules as $module) {
+        $allModules = Module::getModulesOnDisk(true, true, Context::getContext()->employee->id);
+        foreach ($allModules as $module) {
             if (stripos($module->name, $this->query) !== false || stripos($module->displayName, $this->query) !== false || stripos($module->description, $this->query) !== false) {
                 $module->linkto = 'index.php?tab=AdminModules&tab_module='.$module->tab.'&module_name='.$module->name.'&anchor='.ucfirst($module->name).'&token='.Tools::getAdminTokenLite('AdminModules');
                 $this->_list['modules'][] = $module;
@@ -193,11 +196,16 @@ class AdminSearchControllerCore extends AdminController
         }
 
         if (!is_numeric(trim($this->query)) && !Validate::isEmail($this->query)) {
-            $iso_lang = Tools::strtolower(Context::getContext()->language->iso_code);
-            $iso_country = Tools::strtolower(Country::getIsoById(Configuration::get('PS_COUNTRY_DEFAULT')));
+            $isoLang = Tools::strtolower(Context::getContext()->language->iso_code);
+            $isoCountry = Tools::strtolower(Country::getIsoById(Configuration::get('PS_COUNTRY_DEFAULT')));
             $guzzle = new \GuzzleHttp\Client();
-            if (($json_content = (string) $guzzle->get('https://api-addons.prestashop.com/'._PS_VERSION_.'/search/'.urlencode($this->query).'/'.$iso_country.'/'.$iso_lang.'/')->getBody())) {
-                $results = json_decode($json_content, true);
+            try {
+                $jsonContent = (string) $guzzle->get('https://api-addons.prestashop.com/'._PS_VERSION_.'/search/'.urlencode($this->query).'/'.$isoCountry.'/'.$isoLang.'/')->getBody();
+            } catch (Exception $e) {
+                $jsonContent = null;
+            }
+            if (($jsonContent)) {
+                $results = json_decode($jsonContent, true);
                 if (isset($results['id'])) {
                     $this->_list['addons']  = [$results];
                 } else {

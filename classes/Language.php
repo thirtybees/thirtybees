@@ -420,17 +420,21 @@ class LanguageCore extends ObjectModel
             $version = _PS_VERSION_;
         }
 
-        $lang_pack = false;
-        $lang_pack_ok = false;
+        $langPack = false;
         $errors = [];
         $file = _PS_TRANSLATIONS_DIR_.(string) $iso.'.gzip';
 
         $guzzle = new GuzzleHttp\Client(['http_errors' => false]);
-        if (!$lang_pack_link = (string) $guzzle->get('http://www.prestashop.com/download/lang_packs/get_language_pack.php?version='.$version.'&iso_lang='.Tools::strtolower((string) $iso))->getBody()) {
+        try {
+            $langPackLink = (string) $guzzle->get('http://www.prestashop.com/download/lang_packs/get_language_pack.php?version='.$version.'&iso_lang='.Tools::strtolower((string) $iso))->getBody();
+        } catch (Exception $e) {
+            $langPackLink = null;
+        }
+        if (!$langPackLink) {
             $errors[] = Tools::displayError('Archive cannot be downloaded from prestashop.com.');
-        } elseif (!$lang_pack = json_decode($lang_pack_link)) {
+        } elseif (!$langPack = json_decode($langPackLink)) {
             $errors[] = Tools::displayError('Error occurred when language was checked according to your Prestashop version.');
-        } elseif (empty($lang_pack->error) && ($content = (string) $guzzle->get('http://translations.prestashop.com/download/lang_packs/gzip/'.$lang_pack->version.'/'.Tools::strtolower($lang_pack->iso_code.'.gzip'))->getBody())) {
+        } elseif (empty($langPack->error) && ($content = (string) $guzzle->get('http://translations.prestashop.com/download/lang_packs/gzip/'.$langPack->version.'/'.Tools::strtolower($langPack->iso_code.'.gzip'))->getBody())) {
             if (!@file_put_contents($file, $content)) {
                 if (is_writable(dirname($file))) {
                     @unlink($file);
@@ -446,49 +450,49 @@ class LanguageCore extends ObjectModel
         } elseif ($install) {
             require_once(_PS_TOOL_DIR_.'tar/Archive_Tar.php');
             $gz = new Archive_Tar($file, true);
-            $files_list = AdminTranslationsController::filterTranslationFiles(Language::getLanguagePackListContent((string) $iso, $gz));
-            $files_paths = AdminTranslationsController::filesListToPaths($files_list);
+            $filesList = AdminTranslationsController::filterTranslationFiles(Language::getLanguagePackListContent((string) $iso, $gz));
+            $filesPaths = AdminTranslationsController::filesListToPaths($filesList);
 
             $i = 0;
-            $tmp_array = [];
+            $tmpArray = [];
 
-            foreach ($files_paths as $files_path) {
-                $path = dirname($files_path);
-                if (is_dir(_PS_TRANSLATIONS_DIR_.'../'.$path) && !is_writable(_PS_TRANSLATIONS_DIR_.'../'.$path) && !in_array($path, $tmp_array)) {
+            foreach ($filesPaths as $filesPath) {
+                $path = dirname($filesPath);
+                if (is_dir(_PS_TRANSLATIONS_DIR_.'../'.$path) && !is_writable(_PS_TRANSLATIONS_DIR_.'../'.$path) && !in_array($path, $tmpArray)) {
                     $errors[] = (!$i++ ? Tools::displayError('The archive cannot be extracted.').' ' : '').Tools::displayError('The server does not have permissions for writing.').' '.sprintf(Tools::displayError('Please check rights for %s'), $path);
-                    $tmp_array[] = $path;
+                    $tmpArray[] = $path;
                 }
             }
 
             if (defined('_PS_HOST_MODE_')) {
-                $mails_files = [];
-                $other_files = [];
+                $mailsFiles = [];
+                $otherFiles = [];
 
-                foreach ($files_list as $key => $data) {
+                foreach ($filesList as $key => $data) {
                     if (substr($data['filename'], 0, 5) == 'mails') {
-                        $mails_files[] = $data;
+                        $mailsFiles[] = $data;
                     } else {
-                        $other_files[] = $data;
+                        $otherFiles[] = $data;
                     }
                 }
 
-                $files_list = $other_files;
+                $filesList = $otherFiles;
             }
 
-            if (!$gz->extractList(AdminTranslationsController::filesListToPaths($files_list), _PS_TRANSLATIONS_DIR_.'../')) {
+            if (!$gz->extractList(AdminTranslationsController::filesListToPaths($filesList), _PS_TRANSLATIONS_DIR_.'../')) {
                 $errors[] = sprintf(Tools::displayError('Cannot decompress the translation file for the following language: %s'), (string) $iso);
             }
 
             // Clear smarty modules cache
             Tools::clearCache();
 
-            if (!Language::checkAndAddLanguage((string) $iso, $lang_pack, false, $params)) {
+            if (!Language::checkAndAddLanguage((string) $iso, $langPack, false, $params)) {
                 $errors[] = sprintf(Tools::displayError('An error occurred while creating the language: %s'), (string) $iso);
             } else {
                 // Reset cache
                 Language::loadLanguages();
-                AdminTranslationsController::checkAndAddMailsFiles((string) $iso, $files_list);
-                AdminTranslationsController::addNewTabs((string) $iso, $files_list);
+                AdminTranslationsController::checkAndAddMailsFiles((string) $iso, $filesList);
+                AdminTranslationsController::addNewTabs((string) $iso, $filesList);
             }
         }
 
@@ -512,10 +516,10 @@ class LanguageCore extends ObjectModel
     }
 
     /**
-     * @param      $iso_code
-     * @param bool $lang_pack
-     * @param bool $only_add
-     * @param null $params_lang
+     * @param      $isoCode
+     * @param bool $langPack
+     * @param bool $onlyAdd
+     * @param null $paramsLang
      *
      * @return bool
      *
@@ -523,27 +527,31 @@ class LanguageCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function checkAndAddLanguage($iso_code, $lang_pack = false, $only_add = false, $params_lang = null)
+    public static function checkAndAddLanguage($isoCode, $langPack = false, $onlyAdd = false, $paramsLang = null)
     {
-        if (Language::getIdByIso($iso_code)) {
+        if (Language::getIdByIso($isoCode)) {
             return true;
         }
 
         // Initialize the language
         $lang = new Language();
-        $lang->iso_code = Tools::strtolower($iso_code);
-        $lang->language_code = $iso_code; // Rewritten afterwards if the language code is available
+        $lang->iso_code = Tools::strtolower($isoCode);
+        $lang->language_code = $isoCode; // Rewritten afterwards if the language code is available
         $lang->active = true;
 
         // If the language pack has not been provided, retrieve it from prestashop.com
-        if (!$lang_pack) {
-            $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
-            $lang_pack = json_decode((string) $guzzle->get('http://www.prestashop.com/download/lang_packs/get_language_pack.php?version='._PS_VERSION_.'&iso_lang='.$iso_code)->getBody());
+        if (!$langPack) {
+            try {
+                $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
+                $langPack = json_decode((string) $guzzle->get('http://www.prestashop.com/download/lang_packs/get_language_pack.php?version='._PS_VERSION_.'&iso_lang='.$isoCode)->getBody());
+            } catch (Exception $e) {
+                $langPack = null;
+            }
         }
 
         // If a language pack has been found or provided, prefill the language object with the value
-        if ($lang_pack) {
-            foreach (get_object_vars($lang_pack) as $key => $value) {
+        if ($langPack) {
+            foreach (get_object_vars($langPack) as $key => $value) {
                 if ($key != 'iso_code' && isset(Language::$definition['fields'][$key])) {
                     $lang->$key = $value;
                 }
@@ -551,8 +559,8 @@ class LanguageCore extends ObjectModel
         }
 
         // Use the values given in parameters to override the data retrieved automatically
-        if ($params_lang !== null && is_array($params_lang)) {
-            foreach ($params_lang as $key => $value) {
+        if ($paramsLang !== null && is_array($paramsLang)) {
+            foreach ($paramsLang as $key => $value) {
                 if ($key != 'iso_code' && isset(Language::$definition['fields'][$key])) {
                     $lang->$key = $value;
                 }
@@ -563,16 +571,20 @@ class LanguageCore extends ObjectModel
             $lang->name = $lang->iso_code;
         }
 
-        if (!$lang->validateFields() || !$lang->validateFieldsLang() || !$lang->add(true, false, $only_add)) {
+        if (!$lang->validateFields() || !$lang->validateFieldsLang() || !$lang->add(true, false, $onlyAdd)) {
             return false;
         }
 
-        if (isset($params_lang['allow_accented_chars_url']) && in_array($params_lang['allow_accented_chars_url'], ['1', 'true'])) {
+        if (isset($paramsLang['allow_accented_chars_url']) && in_array($paramsLang['allow_accented_chars_url'], ['1', 'true'])) {
             Configuration::updateGlobalValue('PS_ALLOW_ACCENTED_CHARS_URL', 1);
         }
 
         $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
-        $flag = (string) $guzzle->get('http://www.prestashop.com/download/lang_packs/flags/jpeg/'.$iso_code.'.jpg')->getBody();
+        try {
+            $flag = (string) $guzzle->get('http://www.prestashop.com/download/lang_packs/flags/jpeg/'.$isoCode.'.jpg')->getBody();
+        } catch (Exception $e) {
+            $flag = null;
+        }
         if (is_object($flag)) {
             ddd($flag);
         }
@@ -600,7 +612,7 @@ class LanguageCore extends ObjectModel
 
         foreach ([_PS_CAT_IMG_DIR_, _PS_MANU_IMG_DIR_, _PS_PROD_IMG_DIR_, _PS_SUPP_IMG_DIR_] as $to) {
             foreach ($files_copy as $file) {
-                @copy(_PS_ROOT_DIR_.'/img/l'.$file, $to.str_replace('/en', '/'.$iso_code, $file));
+                @copy(_PS_ROOT_DIR_.'/img/l'.$file, $to.str_replace('/en', '/'.$isoCode, $file));
             }
         }
 

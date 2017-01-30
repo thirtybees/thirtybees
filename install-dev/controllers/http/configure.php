@@ -66,18 +66,22 @@ class InstallControllerHttpConfigure extends InstallControllerHttp
             $this->session->sendInformations = Tools::getValue('sendInformations');
             if ($this->session->sendInformations) {
                 $guzzle = new GuzzleHttp\Client(['http_errors' => false]);
-                $guzzle->get(
-                    'http://www.prestashop.com/ajax/controller.php?',
-                    [
-                        'query' => [
-                            'email'       => $this->session->adminEmail,
-                            'method'      => 'addMemberToNewsletter',
-                            'language'    => $this->language->getLanguageIso(),
-                            'visitorType' => 1,
-                            'source'      => 'installer',
-                        ],
-                    ]
-                );
+                try {
+                    $guzzle->get(
+                        'http://www.prestashop.com/ajax/controller.php?',
+                        [
+                            'query' => [
+                                'email'       => $this->session->adminEmail,
+                                'method'      => 'addMemberToNewsletter',
+                                'language'    => $this->language->getLanguageIso(),
+                                'visitorType' => 1,
+                                'source'      => 'installer',
+                            ],
+                        ]
+                    );
+                } catch (Exception $e) {
+                    // Don't care
+                }
             }
 
             // If password fields are empty, but are already stored in session, do not fill them again
