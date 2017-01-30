@@ -553,8 +553,8 @@ class ImageManagerCore
                 $maxFileSize / 1000
             );
         }
-        if (substr($file['name'], -4) != '.ico') {
-            return Tools::displayError('Image format not recognized, allowed formats are: .ico');
+        if (substr($file['name'], -4) != '.ico' && substr($file['name'], -4) != '.png') {
+            return Tools::displayError('Image format not recognized, allowed formats are: .ico, .png');
         }
         if ($file['error']) {
             return Tools::displayError('Error while uploading image; please change your server\'s settings.');

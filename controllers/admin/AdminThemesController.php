@@ -130,6 +130,7 @@ class AdminThemesControllerCore extends AdminController
         $lang = new Language($this->context->language->id);
         $isoLangUc = strtoupper($lang->iso_code);
 
+
         $this->fields_options = [
             'appearance' => [
                 'title' => $this->l('Your current theme'),
@@ -173,6 +174,38 @@ class AdminThemesControllerCore extends AdminController
                         'name' => 'PS_FAVICON',
                         'tab' => 'icons',
                         'thumb' => _PS_IMG_.Configuration::get('PS_FAVICON').(Tools::getValue('conf') ? sprintf('?%04d', rand(0, 9999)) : '')
+                    ],
+                    'PS_FAVICON_57' => [
+                        'title' => $this->l('iPhone/iPad Favicon 57px (PNG)'),
+                        'hint' => $this->l('Will appear in the address bar of your web browser.'),
+                        'type' => 'file',
+                        'name' => 'PS_FAVICON_57',
+                        'tab' => 'icons',
+                        'thumb' => _PS_IMG_.Configuration::get('PS_FAVICON_57').(Tools::getValue('conf') ? sprintf('?%04d', rand(0, 9999)) : '')
+                    ],
+                    'PS_FAVICON_72' => [
+                        'title' => $this->l('iPhone/iPad Favicon 72px (PNG)'),
+                        'hint' => $this->l('Will appear in the address bar of your web browser.'),
+                        'type' => 'file',
+                        'name' => 'PS_FAVICON_72',
+                        'tab' => 'icons',
+                        'thumb' => _PS_IMG_.Configuration::get('PS_FAVICON_72').(Tools::getValue('conf') ? sprintf('?%04d', rand(0, 9999)) : '')
+                    ],
+                    'PS_FAVICON_114' => [
+                        'title' => $this->l('iPhone/iPad Favicon 114px (PNG)'),
+                        'hint' => $this->l('Will appear in the address bar of your web browser.'),
+                        'type' => 'file',
+                        'name' => 'PS_FAVICON_114',
+                        'tab' => 'icons',
+                        'thumb' => _PS_IMG_.Configuration::get('PS_FAVICON_114').(Tools::getValue('conf') ? sprintf('?%04d', rand(0, 9999)) : '')
+                    ],
+                    'PS_FAVICON_144' => [
+                        'title' => $this->l('iPhone/iPad Favicon 144px (PNG)'),
+                        'hint' => $this->l('Will appear in the address bar of your web browser.'),
+                        'type' => 'file',
+                        'name' => 'PS_FAVICON_144',
+                        'tab' => 'icons',
+                        'thumb' => _PS_IMG_.Configuration::get('PS_FAVICON_144').(Tools::getValue('conf') ? sprintf('?%04d', rand(0, 9999)) : '')
                     ],
                     'PS_STORES_ICON' => [
                         'title' => $this->l('Store icon'),
@@ -2591,6 +2624,7 @@ class AdminThemesControllerCore extends AdminController
      */
     protected function updateLogo($field_name, $logo_prefix)
     {
+
         $id_shop = Context::getContext()->shop->id;
         if (isset($_FILES[$field_name]['tmp_name']) && $_FILES[$field_name]['tmp_name'] && $_FILES[$field_name]['size']) {
             if ($error = ImageManager::validateUpload($_FILES[$field_name], Tools::getMaxUploadSize())) {
@@ -2663,15 +2697,32 @@ class AdminThemesControllerCore extends AdminController
     public function updateOptionPsFavicon()
     {
         $id_shop = Context::getContext()->shop->id;
-        if ($id_shop == Configuration::get('PS_SHOP_DEFAULT')) {
+        $id_shop_default = Configuration::get('PS_SHOP_DEFAULT');
+        // Main Favicon
+        if ($id_shop == $id_shop_default) {
             $this->uploadIco('PS_FAVICON', _PS_IMG_DIR_.'favicon.ico');
         }
         if ($this->uploadIco('PS_FAVICON', _PS_IMG_DIR_.'favicon-'.(int)$id_shop.'.ico')) {
             Configuration::updateValue('PS_FAVICON', 'favicon-'.(int)$id_shop.'.ico');
         }
 
-        Configuration::updateGlobalValue('PS_FAVICON', 'favicon.ico');
-        $this->redirect_after = self::$currentIndex.'&token='.$this->token;
+        Configuration::updateGlobalValue('PS_FAVICON', 'favicon.ico');    
+
+        // Additional Favicons
+        $favicon_sizes = [57, 72, 114, 144];
+        foreach ($favicon_sizes as $size) {
+            if ($id_shop == $id_shop_default) {
+                $this->uploadIco('PS_FAVICON_'.$size, _PS_IMG_DIR_.'favicon_'.$size.'.png');
+            }
+            if ($this->uploadIco('PS_FAVICON_'.$size, _PS_IMG_DIR_.'favicon_'.$size.'-'.(int)$id_shop.'.png')) {
+                Configuration::updateValue('PS_FAVICON_'.$size, 'favicon_'.$size.'-'.(int)$id_shop.'.png');
+            }
+
+
+            Configuration::updateGlobalValue('PS_FAVICON_'.$size, 'favicon_'.$size.'.png');    
+        }
+        if(!$this->errors)
+            $this->redirect_after = self::$currentIndex.'&token='.$this->token;
     }
 
     /**
