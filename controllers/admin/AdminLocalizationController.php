@@ -174,14 +174,18 @@ class AdminLocalizationControllerCore extends AdminController
         }
 
         if (Tools::isSubmit('submitLocalizationPack')) {
-            $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
+            $guzzle = new \GuzzleHttp\Client();
 
             $version = str_replace('.', '', _PS_VERSION_);
             $version = substr($version, 0, 2);
 
             if (($isoLocalizationPack = Tools::getValue('iso_localization_pack')) && Validate::isFileName($isoLocalizationPack)) {
                 if (Tools::getValue('download_updated_pack') == '1' || defined('_PS_HOST_MODE_')) {
-                    $pack = (string) $guzzle->get(_PS_API_URL_.'/localization/'.$version.'/'.$isoLocalizationPack.'.xml')->getBody();
+                    try {
+                        $pack = (string) $guzzle->get(_PS_API_URL_.'/localization/'.$version.'/'.$isoLocalizationPack.'.xml')->getBody();
+                    } catch (Exception $e) {
+                        $pack = false;
+                    }
                 } else {
                     $pack = false;
                 }
@@ -192,7 +196,7 @@ class AdminLocalizationControllerCore extends AdminController
                     $path = _PS_ROOT_DIR_.'/localization/'.$isoLocalizationPack.'.xml';
                 }
 
-                if (!$pack && !($pack = (string) $guzzle->get($path)->getBody())) {
+                if (!$pack && !($pack = @file_get_contents($path))) {
                     $this->errors[] = Tools::displayError('Cannot load the localization pack.');
                 }
 
@@ -224,33 +228,38 @@ class AdminLocalizationControllerCore extends AdminController
         return $a['name'] > $b['name'];
     }
 
+    /**
+     * @return string|void
+     *
+     * @since 1.0.0
+     */
     public function renderForm()
     {
-        $localizations_pack = false;
+        $localizationsPack = false;
         $this->tpl_option_vars['options_content'] = $this->renderOptions();
 
-        $xml_localization = Tools::simplexml_load_file(_PS_API_URL_.'/rss/localization.xml');
-        if (!$xml_localization) {
-            $localization_file = _PS_ROOT_DIR_.'/localization/localization.xml';
-            if (file_exists($localization_file)) {
-                $xml_localization = @simplexml_load_file($localization_file);
+        $xmlLocalization = Tools::simplexml_load_file(_PS_API_URL_.'/rss/localization.xml');
+        if (!$xmlLocalization) {
+            $localizationFile = _PS_ROOT_DIR_.'/localization/localization.xml';
+            if (file_exists($localizationFile)) {
+                $xmlLocalization = @simplexml_load_file($localizationFile);
             }
         }
 
         // Array to hold the list of country ISOs that have a localization pack hosted on prestashop.com
-        $remote_isos = [];
+        $remoteIsos = [];
 
         $i = 0;
-        if ($xml_localization) {
-            foreach ($xml_localization->pack as $key => $pack) {
-                $remote_isos[(string)$pack->iso] = true;
-                $localizations_pack[$i]['iso_localization_pack'] = (string)$pack->iso;
-                $localizations_pack[$i]['name'] = (string)$pack->name;
+        if ($xmlLocalization) {
+            foreach ($xmlLocalization->pack as $key => $pack) {
+                $remoteIsos[(string) $pack->iso] = true;
+                $localizationsPack[$i]['iso_localization_pack'] = (string) $pack->iso;
+                $localizationsPack[$i]['name'] = (string) $pack->name;
                 $i++;
             }
         }
 
-        if (!$localizations_pack) {
+        if (!$localizationsPack) {
             return $this->displayWarning($this->l('Cannot connect to '._PS_API_URL_));
         }
 
@@ -259,21 +268,21 @@ class AdminLocalizationControllerCore extends AdminController
             $m = [];
             if (preg_match('/^([a-z]{2})\.xml$/', $entry, $m)) {
                 $iso = $m[1];
-                if (empty($remote_isos[$iso])) {
+                if (empty($remoteIsos[$iso])) {
                     // if the pack is only there locally and not on prestashop.com
 
-                    $xml_pack = @simplexml_load_file(_PS_ROOT_DIR_.'/localization/'.$entry);
-                    if (!$xml_pack) {
+                    $xmlPack = @simplexml_load_file(_PS_ROOT_DIR_.'/localization/'.$entry);
+                    if (!$xmlPack) {
                         return $this->displayWarning($this->l(sprintf('%1s could not be loaded', $entry)));
                     }
-                    $localizations_pack[$i]['iso_localization_pack'] = $iso;
-                    $localizations_pack[$i]['name'] = sprintf($this->l('%s (local)'), (string)$xml_pack['name']);
+                    $localizationsPack[$i]['iso_localization_pack'] = $iso;
+                    $localizationsPack[$i]['name'] = sprintf($this->l('%s (local)'), (string) $xmlPack['name']);
                     $i++;
                 }
             }
         }
 
-        usort($localizations_pack, [$this, 'sortLocalizationsPack']);
+        usort($localizationsPack, [$this, 'sortLocalizationsPack']);
 
         $selection_import = [
             [
@@ -321,7 +330,7 @@ class AdminLocalizationControllerCore extends AdminController
                     'label' => $this->l('Localization pack you want to import'),
                     'name' => 'iso_localization_pack',
                     'options' => [
-                        'query' => $localizations_pack,
+                        'query' => $localizationsPack,
                         'id' => 'iso_localization_pack',
                         'name' => 'name'
                     ]

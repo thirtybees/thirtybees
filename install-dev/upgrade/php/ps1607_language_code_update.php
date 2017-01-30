@@ -37,7 +37,11 @@ function ps1607_language_code_update()
             foreach ($langs as $lang) {
                 if (Tools::strlen($lang['language_code']) == 2) {
                     $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
-                    $result = json_decode((string) $guzzle->get('https://www.prestashop.com/download/lang_packs/get_language_pack.php?version='._TB_VERSION_.'&iso_lang='.Tools::strtolower($lang['iso_code']))->getBody());
+                    try {
+                        $result = json_decode((string) $guzzle->get('https://www.prestashop.com/download/lang_packs/get_language_pack.php?version='._TB_VERSION_.'&iso_lang='.Tools::strtolower($lang['iso_code']))->getBody());
+                    } catch (Exception $e) {
+                        $result = null;
+                    }
                     if ($result && !isset($result->error) && Tools::strlen($result->language_code) > 2) {
                         Db::getInstance()->execute('UPDATE `'._DB_PREFIX_.'lang` SET `language_code` = \''.pSQL($result->language_code).'\' WHERE `id_lang` = '.(int)$lang['id_lang']).' LIMIT 1';
                     }

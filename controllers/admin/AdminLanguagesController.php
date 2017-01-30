@@ -521,6 +521,8 @@ class AdminLanguagesControllerCore extends AdminController
     /**
      * @param Language $object
      * @param string   $table
+     *
+     * @since 1.0.0
      */
     protected function copyFromPost(&$object, $table)
     {
@@ -547,12 +549,17 @@ class AdminLanguagesControllerCore extends AdminController
         }
 
         // Get all iso code available
-        $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
-        if ($lang_packs = (string) $guzzle->get('http://www.prestashop.com/download/lang_packs/get_language_pack.php?version='.Tools::getValue('ps_version').'&iso_lang='.Tools::strtolower(Tools::getValue('iso_lang')))->getBody()) {
-            $result = json_decode($lang_packs);
-            if ($lang_packs !== '' && $result && !isset($result->error)) {
+        $guzzle = new \GuzzleHttp\Client();
+        try {
+            $langPacks = (string) $guzzle->get('http://www.prestashop.com/download/lang_packs/get_language_pack.php?version='.Tools::getValue('ps_version').'&iso_lang='.Tools::strtolower(Tools::getValue('iso_lang')))->getBody();
+        } catch (Exception $e) {
+            $langPacks = null;
+        }
+        if ($langPacks) {
+            $result = json_decode($langPacks);
+            if ($langPacks !== '' && $result && !isset($result->error)) {
                 $this->status = 'ok';
-                $this->content = $lang_packs;
+                $this->content = $langPacks;
             } else {
                 $this->status = 'error';
                 $this->errors[] = $this->l('Wrong ISO code, or the selected language pack is unavailable.');

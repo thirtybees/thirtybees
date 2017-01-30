@@ -296,18 +296,22 @@ class EmployeeCore extends ObjectModel
         if ($this->optin && !defined('TB_INSTALLATION_IN_PROGRESS')) {
             $language = new Language($this->id_lang);
             $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
-            $guzzle->get(
-                'http://www.prestashop.com/ajax/controller.php',
-                [
-                    'query' => [
-                        'email'       => $this->email,
-                        'method'      => 'addMemberToNewsletter',
-                        'language'    => $language->iso_code,
-                        'visitorType' => 1,
-                        'source'      => 'backoffice',
-                    ],
-                ]
-            );
+            try {
+                $guzzle->get(
+                    'http://www.prestashop.com/ajax/controller.php',
+                    [
+                        'query' => [
+                            'email'       => $this->email,
+                            'method'      => 'addMemberToNewsletter',
+                            'language'    => $language->iso_code,
+                            'visitorType' => 1,
+                            'source'      => 'backoffice',
+                        ],
+                    ]
+                );
+            } catch (Exception $e) {
+                // Don't care
+            }
         }
     }
 

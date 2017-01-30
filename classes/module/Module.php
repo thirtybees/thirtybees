@@ -1624,7 +1624,11 @@ abstract class ModuleCore
 
                 $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
                 $file = $f['file'];
-                $content = (string) $guzzle->get($file)->getBody();
+                try {
+                    $content = (string) $guzzle->get($file)->getBody();
+                } catch (Exception $e) {
+                    $content= '';
+                }
                 $xml = @simplexml_load_string($content, null, LIBXML_NOCDATA);
 
                 if ($xml && isset($xml->module)) {
@@ -1672,7 +1676,12 @@ abstract class ModuleCore
                             if (isset($modaddons->img)) {
                                 if (!file_exists(_PS_TMP_IMG_DIR_.md5((int)$modaddons->id.'-'.$modaddons->name).'.jpg')) {
                                     $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
-                                    if (!file_put_contents(_PS_TMP_IMG_DIR_.md5((int)$modaddons->id.'-'.$modaddons->name).'.jpg', (string) $guzzle->get($modaddons->img)->getBody())) {
+                                    try {
+                                        $contents = (string) $guzzle->get($modaddons->img)->getBody();
+                                    } catch (Exception $e) {
+                                        $contents = null;
+                                    }
+                                    if (!file_put_contents(_PS_TMP_IMG_DIR_.md5((int)$modaddons->id.'-'.$modaddons->name).'.jpg', $contents)) {
                                         copy(_PS_IMG_DIR_.'404.gif', _PS_TMP_IMG_DIR_.md5((int)$modaddons->id.'-'.$modaddons->name).'.jpg');
                                     }
                                 }

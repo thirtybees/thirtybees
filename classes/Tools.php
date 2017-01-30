@@ -2626,7 +2626,11 @@ class ToolsCore
         $cache_id = 'Tools::simplexml_load_file'.$url;
         if (!Cache::isStored($cache_id)) {
             $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
-            $result = @simplexml_load_string((string) $guzzle->get($url)->getBody(), $class_name);
+            try {
+                $result = @simplexml_load_string((string) $guzzle->get($url)->getBody(), $class_name);
+            } catch (Exception $e) {
+                return null;
+            }
             Cache::store($cache_id, $result);
 
             return $result;
@@ -2638,21 +2642,20 @@ class ToolsCore
     /**
      * @param      $source
      * @param      $destination
-     * @param null $stream_context
+     * @param null $streamContext
      *
      * @return bool|int
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function copy($source, $destination, $stream_context = null)
+    public static function copy($source, $destination, $streamContext = null)
     {
-        if (is_null($stream_context) && !preg_match('/^https?:\/\//', $source)) {
+        if (is_null($streamContext) && !preg_match('/^https?:\/\//', $source)) {
             return @copy($source, $destination);
         }
-        $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
 
-        return @file_put_contents($destination, (string) $guzzle->get($source)->getBody());
+        return @file_put_contents($destination, Tools::file_get_contents($source, false, $streamContext));
     }
 
     /**
