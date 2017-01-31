@@ -567,7 +567,6 @@ CREATE TABLE `PREFIX_configuration` (
   `date_add`         DATETIME         NOT NULL,
   `date_upd`         DATETIME         NOT NULL,
   PRIMARY KEY (`id_configuration`),
-  KEY `name` (`name`),
   KEY `id_shop` (`id_shop`),
   KEY `id_shop_group` (`id_shop_group`)
 )
@@ -652,9 +651,7 @@ CREATE TABLE `PREFIX_connections_source` (
   `date_add`              DATETIME         NOT NULL,
   PRIMARY KEY (`id_connections_source`),
   KEY `connections` (`id_connections`),
-  KEY `orderby` (`date_add`),
-  KEY `http_referer` (`http_referer`),
-  KEY `request_uri` (`request_uri`)
+  KEY `orderby` (`date_add`)
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
@@ -1705,7 +1702,7 @@ CREATE TABLE `PREFIX_order_state` (
   `id_order_state` INT(11) UNSIGNED    NOT NULL AUTO_INCREMENT,
   `invoice`        TINYINT(1) UNSIGNED          DEFAULT '0',
   `send_email`     TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
-  `module_name`    VARCHAR(255)        NULL     DEFAULT NULL,
+  `module_name`    VARCHAR(64)         NULL     DEFAULT NULL,
   `color`          VARCHAR(32)                  DEFAULT NULL,
   `unremovable`    TINYINT(1) UNSIGNED NOT NULL,
   `hidden`         TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
@@ -1761,8 +1758,7 @@ CREATE TABLE `PREFIX_page` (
 CREATE TABLE `PREFIX_page_type` (
   `id_page_type` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `name`         VARCHAR(255)     NOT NULL,
-  PRIMARY KEY (`id_page_type`),
-  KEY `name` (`name`)
+  PRIMARY KEY (`id_page_type`)
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
@@ -3383,11 +3379,12 @@ CREATE TABLE `PREFIX_redis_servers` (
 
 CREATE TABLE `PREFIX_url_rewrite` (
   `id_url_rewrite` INT(11) UNSIGNED    NOT NULL AUTO_INCREMENT,
-  `entity`        TINYINT(2) UNSIGNED NOT NULL,
-  `id_lang`       INT(11) UNSIGNED    NOT NULL,
-  `id_shop`       INT(11) UNSIGNED    NOT NULL,
-  `rewrite`       VARCHAR(1000)       NOT NULL,
-  `redirect`      TINYINT(2) UNSIGNED NOT NULL,
+  `id_entity`      INT(11) UNSIGNED    NOT NULL,
+  `entity`         TINYINT(2) UNSIGNED NOT NULL,
+  `id_lang`        INT(11) UNSIGNED    NOT NULL,
+  `id_shop`        INT(11) UNSIGNED    NOT NULL,
+  `rewrite`        VARCHAR(1000)       NOT NULL,
+  `redirect`       TINYINT(2) UNSIGNED NOT NULL,
   PRIMARY KEY (`id_url_rewrite`)
 )
   ENGINE = ENGINE_TYPE

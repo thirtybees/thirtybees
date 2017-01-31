@@ -313,7 +313,7 @@ class AdminMetaControllerCore extends AdminController
     {
         $keywords = [];
         foreach (Dispatcher::getInstance()->default_routes[$routeId]['keywords'] as $keyword => $data) {
-            $keywords[] = ((isset($data['param'])) ? '<span class="red">'.$keyword.'*</span>' : $keyword);
+            $keywords[] = ($keyword === 'rewrite') ? '<span class="red">'.$keyword.'*</span>' : $keyword;
 
         }
 
@@ -735,6 +735,7 @@ class AdminMetaControllerCore extends AdminController
     public function updateOptionPsRouteProductRule()
     {
         $this->checkAndUpdateRoute('product_rule');
+        UrlRewrite::regenerateUrlRewrites(null, null, [UrlRewrite::ENTITY_PRODUCT]);
     }
 
     /**
@@ -743,6 +744,7 @@ class AdminMetaControllerCore extends AdminController
     public function updateOptionPsRouteCategoryRule()
     {
         $this->checkAndUpdateRoute('category_rule');
+        UrlRewrite::regenerateUrlRewrites(null, null, [UrlRewrite::ENTITY_CATEGORY]);
     }
 
     /**
@@ -750,7 +752,7 @@ class AdminMetaControllerCore extends AdminController
      */
     public function updateOptionPsRouteLayeredRule()
     {
-        $this->checkAndUpdateRoute('layered_rule');
+//        $this->checkAndUpdateRoute('layered_rule');
     }
 
     /**
@@ -759,6 +761,7 @@ class AdminMetaControllerCore extends AdminController
     public function updateOptionPsRouteSupplierRule()
     {
         $this->checkAndUpdateRoute('supplier_rule');
+        UrlRewrite::regenerateUrlRewrites(null, null, [UrlRewrite::ENTITY_SUPPLIER]);
     }
 
     /**
@@ -767,6 +770,7 @@ class AdminMetaControllerCore extends AdminController
     public function updateOptionPsRouteManufacturerRule()
     {
         $this->checkAndUpdateRoute('manufacturer_rule');
+        UrlRewrite::regenerateUrlRewrites(null, null, [UrlRewrite::ENTITY_MANUFACTURER]);
     }
 
     /**
@@ -775,6 +779,7 @@ class AdminMetaControllerCore extends AdminController
     public function updateOptionPsRouteCmsRule()
     {
         $this->checkAndUpdateRoute('cms_rule');
+        UrlRewrite::regenerateUrlRewrites(null, null, [UrlRewrite::ENTITY_CMS]);
     }
 
     /**
@@ -783,6 +788,7 @@ class AdminMetaControllerCore extends AdminController
     public function updateOptionPsRouteCmsCategoryRule()
     {
         $this->checkAndUpdateRoute('cms_category_rule');
+        UrlRewrite::regenerateUrlRewrites(null, null, [UrlRewrite::ENTITY_CMS_CATEGORY]);
     }
 
     /**
@@ -907,12 +913,10 @@ class AdminMetaControllerCore extends AdminController
     {
         $this->addFieldRoute('product_rule', $this->l('Route to products'));
         $this->addFieldRoute('category_rule', $this->l('Route to category'));
-        $this->addFieldRoute('layered_rule', $this->l('Route to category which has the "selected_filter" attribute for the "Layered Navigation" (blocklayered) module'));
         $this->addFieldRoute('supplier_rule', $this->l('Route to supplier'));
         $this->addFieldRoute('manufacturer_rule', $this->l('Route to manufacturer'));
         $this->addFieldRoute('cms_rule', $this->l('Route to CMS page'));
         $this->addFieldRoute('cms_category_rule', $this->l('Route to CMS category'));
-        $this->addFieldRoute('module', $this->l('Route to modules'));
     }
 
     /**

@@ -54,194 +54,94 @@ class DispatcherCore
      * @var array List of default routes
      */
     public $default_routes = [
-        'category_rule' => [
+        'category_rule'     => [
             'controller' => 'category',
-            'rule' => '{rewrite}',
-            'keywords' => [
-                'id' => [
-                    'regexp' => '[0-9]+',
-                ],
-                'rewrite' => [
-                    'regexp' => '[_a-zA-Z0-9\pL\pS-]*',
-                    'param' => 'rewrite',
-                ],
-                'categories' => [
-                    'regexp' => '[/_a-zA-Z0-9-\pL]*',
-                ],
-                'meta_keywords' => [
-                    'regexp' => '[_a-zA-Z0-9-\pL]*',
-                ],
-                'meta_title' => [
-                    'regexp' => '[_a-zA-Z0-9-\pL]*',
-                ],
+            'rule'       => '{id}-{rewrite}',
+            'keywords'   => [
+                'id'            => ['regexp' => '[0-9]+', 'param' => 'id_category'],
+                'rewrite'       => ['regexp' => '[_a-zA-Z0-9\pL\pS-]*'],
+                'meta_keywords' => ['regexp' => '[_a-zA-Z0-9-\pL]*'],
+                'meta_title'    => ['regexp' => '[_a-zA-Z0-9-\pL]*'],
             ],
         ],
-        'supplier_rule' => [
+        'supplier_rule'     => [
             'controller' => 'supplier',
-            'rule' => '{rewrite}',
-            'keywords' => [
-                'id' => [
-                    'regexp' => '[0-9]+',
-                ],
-                'rewrite' => [
-                    'regexp' => '[_a-zA-Z0-9\pL\pS-]*',
-                    'param' => 'rewrite',
-                ],
-                'meta_keywords' => [
-                    'regexp' => '[_a-zA-Z0-9-\pL]*',
-                ],
-                'meta_title' => [
-                    'regexp' => '[_a-zA-Z0-9-\pL]*',
-                ],
+            'rule'       => '{id}__{rewrite}',
+            'keywords'   => [
+                'id'            => ['regexp' => '[0-9]+', 'param' => 'id_supplier'],
+                'rewrite'       => ['regexp' => '[_a-zA-Z0-9\pL\pS-]*'],
+                'meta_keywords' => ['regexp' => '[_a-zA-Z0-9-\pL]*'],
+                'meta_title'    => ['regexp' => '[_a-zA-Z0-9-\pL]*'],
             ],
         ],
         'manufacturer_rule' => [
             'controller' => 'manufacturer',
-            'rule' => 'manufacturer/{rewrite}',
-            'keywords' => [
-                'id' => [
-                    'regexp' => '[0-9]+',
-                ],
-                'rewrite' => [
-                    'regexp' => '[_a-zA-Z0-9\pL\pS-]*',
-                    'param' => 'rewrite',
-                ],
-                'meta_keywords' => [
-                    'regexp' => '[_a-zA-Z0-9-\pL]*',
-                ],
-                'meta_title' => [
-                    'regexp' => '[_a-zA-Z0-9-\pL]*',
-                ],
+            'rule'       => '{id}_{rewrite}',
+            'keywords'   => [
+                'id'            => ['regexp' => '[0-9]+', 'param' => 'id_manufacturer'],
+                'rewrite'       => ['regexp' => '[_a-zA-Z0-9\pL\pS-]*'],
+                'meta_keywords' => ['regexp' => '[_a-zA-Z0-9-\pL]*'],
+                'meta_title'    => ['regexp' => '[_a-zA-Z0-9-\pL]*'],
             ],
         ],
-        'cms_rule' => [
+        'cms_rule'          => [
             'controller' => 'cms',
-            'rule' => 'content/{rewrite}',
-            'keywords' => [
-                'id' => [
-                    'regexp' => '[0-9]+',
-                ],
-                'rewrite' => [
-                    'regexp' => '[_a-zA-Z0-9\pL\pS-]*',
-                    'param' => 'cms_rewrite',
-                ],
-                'categories' => [
-                    'regexp' => '[/_a-zA-Z0-9-\pL]*',
-                ],
-                'meta_keywords' => [
-                    'regexp' => '[_a-zA-Z0-9-\pL]*',
-                ],
-                'meta_title' => [
-                    'regexp' => '[_a-zA-Z0-9-\pL]*',
-                ],
+            'rule'       => 'content/{id}-{rewrite}',
+            'keywords'   => [
+                'id'            => ['regexp' => '[0-9]+', 'param' => 'id_cms'],
+                'rewrite'       => ['regexp' => '[_a-zA-Z0-9\pL\pS-]*'],
+                'meta_keywords' => ['regexp' => '[_a-zA-Z0-9-\pL]*'],
+                'meta_title'    => ['regexp' => '[_a-zA-Z0-9-\pL]*'],
             ],
         ],
         'cms_category_rule' => [
             'controller' => 'cms',
-            'rule' => 'content/category/{rewrite}',
-            'keywords' => [
-                'id' => [
-                    'regexp' => '[0-9]+',
-                ],
-                'rewrite' => [
-                    'regexp' => '[_a-zA-Z0-9\pL\pS-]*',
-                    'param' => 'cms_cat_rewrite',
-                ],
-                'categories' => [
-                    'regexp' => '[/_a-zA-Z0-9-\pL]*',
-                ],
-                'meta_keywords' => [
-                    'regexp' => '[_a-zA-Z0-9-\pL]*',
-                ],
-                'meta_title' => [
-                    'regexp' => '[_a-zA-Z0-9-\pL]*',
-                ],
+            'rule'       => 'content/category/{id}-{rewrite}',
+            'keywords'   => [
+                'id'            => ['regexp' => '[0-9]+', 'param' => 'id_cms_category'],
+                'rewrite'       => ['regexp' => '[_a-zA-Z0-9\pL\pS-]*'],
+                'meta_keywords' => ['regexp' => '[_a-zA-Z0-9-\pL]*'],
+                'meta_title'    => ['regexp' => '[_a-zA-Z0-9-\pL]*'],
             ],
         ],
-        'module' => [
+        'module'            => [
             'controller' => null,
-            'rule' => 'module/{module}{/:controller}',
-            'keywords' => [
-                'module' => [
-                    'regexp' => '[_a-zA-Z0-9_-]+',
-                    'param' => 'module',
-                ],
-                'controller' => [
-                    'regexp' => '[_a-zA-Z0-9_-]+',
-                    'param' => 'controller',
-                ],
+            'rule'       => 'module/{module}{/:controller}',
+            'keywords'   => [
+                'module'     => ['regexp' => '[_a-zA-Z0-9_-]+', 'param' => 'module'],
+                'controller' => ['regexp' => '[_a-zA-Z0-9_-]+', 'param' => 'controller'],
             ],
-            'params' => [
+            'params'     => [
                 'fc' => 'module',
             ],
         ],
-        'product_rule' => [
+        'product_rule'      => [
             'controller' => 'product',
-            'rule' => '{category:/}{rewrite}',
-            'keywords' => [
-                'id' => [
-                    'regexp' => '[0-9]+',
-                ],
-                'rewrite' => [
-                    'regexp' => '[_a-zA-Z0-9\pL\pS-]*',
-                    'param' => 'rewrite',
-                ],
-                'ean13' => [
-                    'regexp' => '[0-9\pL]*',
-                ],
-                'category' => [
-                    'regexp' => '[_a-zA-Z0-9-\pL]*',
-                ],
-                'categories' => [
-                    'regexp' => '[/_a-zA-Z0-9-\pL]*',
-                ],
-                'reference' => [
-                    'regexp' => '[_a-zA-Z0-9-\pL]*',
-                ],
-                'meta_keywords' => [
-                    'regexp' => '[_a-zA-Z0-9-\pL]*',
-                ],
-                'meta_title' => [
-                    'regexp' => '[_a-zA-Z0-9-\pL]*',
-                ],
-                'manufacturer' => [
-                    'regexp' => '[_a-zA-Z09-\pL]*',
-                ],
-                'supplier' => [
-                    'regexp' => '[_a-zA-Z0-9-\pL]*',
-                ],
-                'price' => [
-                    'regexp' => '[0-9\.,]*',
-                ],
-                'tags' => [
-                    'regexp' => '[a-zA-Z0-9-\pL]*',
-                ],
+            'rule'       => '{category:/}{id}-{rewrite}{-:ean13}.html',
+            'keywords'   => [
+                'id'            => ['regexp' => '[0-9]+', 'param' => 'id_product'],
+                'rewrite'       => ['regexp' => '[_a-zA-Z0-9\pL\pS-]*'],
+                'ean13'         => ['regexp' => '[0-9\pL]*'],
+                'category'      => ['regexp' => '[_a-zA-Z0-9-\pL]*'],
+                'categories'    => ['regexp' => '[/_a-zA-Z0-9-\pL]*'],
+                'reference'     => ['regexp' => '[_a-zA-Z0-9-\pL]*'],
+                'meta_keywords' => ['regexp' => '[_a-zA-Z0-9-\pL]*'],
+                'meta_title'    => ['regexp' => '[_a-zA-Z0-9-\pL]*'],
+                'manufacturer'  => ['regexp' => '[_a-zA-Z0-9-\pL]*'],
+                'supplier'      => ['regexp' => '[_a-zA-Z0-9-\pL]*'],
             ],
         ],
-        'layered_rule' => [
+        /* Must be after the product and category rules in order to avoid conflict */
+        'layered_rule'      => [
             'controller' => 'category',
-            'rule' => '{id}-{rewrite}{/:selected_filters}',
-            'keywords' => [
-                'id' => [
-                    'regexp' => '[0-9]+',
-                ],
-                'selected_filters' => [
-                    'regexp' => '.*',
-                    'param' => 'selected_filters',
-                ],
-                'rewrite' => [
-                    'regexp' => '[_a-zA-Z0-9\pL\pS-]*',
-                    'param' => 'rewrite',
-                ],
-                'categories' => [
-                    'regexp' => '[/_a-zA-Z0-9-\pL]*',
-                ],
-                'meta_keywords' => [
-                    'regexp' => '[_a-zA-0-9-\pL]*',
-                ],
-                'meta_title' => [
-                    'regexp' => '[_a-zA-Z0-9-\pL]*',
-                ],
+            'rule'       => '{id}-{rewrite}{/:selected_filters}',
+            'keywords'   => [
+                'id'               => ['regexp' => '[0-9]+', 'param' => 'id_category'],
+                /* Selected filters is used by the module blocklayered */
+                'selected_filters' => ['regexp' => '.*', 'param' => 'selected_filters'],
+                'rewrite'          => ['regexp' => '[_a-zA-Z0-9\pL\pS-]*'],
+                'meta_keywords'    => ['regexp' => '[_a-zA-Z0-9-\pL]*'],
+                'meta_title'       => ['regexp' => '[_a-zA-Z0-9-\pL]*'],
             ],
         ],
     ];
@@ -256,7 +156,7 @@ class DispatcherCore
     /**
      * @var array List of loaded routes
      */
-    protected $routes = [];
+    public $routes = [];
 
     /**
      * @var string Current controller name
@@ -289,6 +189,135 @@ class DispatcherCore
      */
     protected $front_controller = self::FC_FRONT;
     // @codingStandardsIgnoreEnd
+
+    /**
+     * Get current instance of dispatcher (singleton)
+     *
+     * @return Dispatcher
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function getInstance()
+    {
+        if (!self::$instance) {
+            self::$instance = new Dispatcher();
+        }
+
+        return self::$instance;
+    }
+
+    /**
+     * @param string $routeId    Name of the route (need to be uniq, a second route with same name will override the first)
+     * @param string $rule       Url rule
+     * @param string $controller Controller to call if request uri match the rule
+     * @param int    $idLang
+     * @param array  $keywords
+     * @param array  $params
+     * @param int    $idShop
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function addRoute($routeId, $rule, $controller, $idLang = null, array $keywords = [], array $params = [], $idShop = null)
+    {
+        if (isset(Context::getContext()->language) && $idLang === null) {
+            $idLang = (int) Context::getContext()->language->id;
+        }
+
+        if (isset(Context::getContext()->shop) && $idShop === null) {
+            $idShop = (int) Context::getContext()->shop->id;
+        }
+
+        $regexp = preg_quote($rule, '#');
+        if ($keywords) {
+            $transformKeywords = [];
+            preg_match_all('#\\\{(([^{}]*)\\\:)?('.implode('|', array_keys($keywords)).')(\\\:([^{}]*))?\\\}#', $regexp, $m);
+            for ($i = 0, $total = count($m[0]); $i < $total; $i++) {
+                $prepend = $m[2][$i];
+                $keyword = $m[3][$i];
+                $append = $m[5][$i];
+                $transformKeywords[$keyword] = [
+                    'required' => isset($keywords[$keyword]['param']),
+                    'prepend'  => stripslashes($prepend),
+                    'append'   => stripslashes($append),
+                ];
+
+                $prependRegexp = $appendRegexp = '';
+                if ($prepend || $append) {
+                    $prependRegexp = '('.$prepend;
+                    $appendRegexp = $append.')?';
+                }
+
+                if (isset($keywords[$keyword]['param'])) {
+                    $regexp = str_replace($m[0][$i], $prependRegexp.'(?P<'.$keywords[$keyword]['param'].'>'.$keywords[$keyword]['regexp'].')'.$appendRegexp, $regexp);
+                } else {
+                    $regexp = str_replace($m[0][$i], $prependRegexp.'('.$keywords[$keyword]['regexp'].')'.$appendRegexp, $regexp);
+                }
+            }
+            $keywords = $transformKeywords;
+        }
+
+        $regexp = '#^/'.$regexp.'$#u';
+        if (!isset($this->routes[$idShop])) {
+            $this->routes[$idShop] = [];
+        }
+        if (!isset($this->routes[$idShop][$idLang])) {
+            $this->routes[$idShop][$idLang] = [];
+        }
+
+        $this->routes[$idShop][$idLang][$routeId] = [
+            'rule'       => $rule,
+            'regexp'     => $regexp,
+            'controller' => $controller,
+            'keywords'   => $keywords,
+            'params'     => $params,
+        ];
+    }
+
+    /**
+     * Get list of all available Module Front controllers
+     *
+     * @param string $type
+     * @param null   $module
+     *
+     * @return array
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function getModuleControllers($type = 'all', $module = null)
+    {
+        $modulesControllers = [];
+        if (is_null($module)) {
+            $modules = Module::getModulesOnDisk(true);
+        } elseif (!is_array($module)) {
+            $modules = [Module::getInstanceByName($module)];
+        } else {
+            $modules = [];
+            foreach ($module as $_mod) {
+                $modules[] = Module::getInstanceByName($_mod);
+            }
+        }
+
+        foreach ($modules as $mod) {
+            foreach (Dispatcher::getControllersInDirectory(_PS_MODULE_DIR_.$mod->name.'/controllers/') as $controller) {
+                if ($type == 'admin') {
+                    if (strpos($controller, 'Admin') !== false) {
+                        $modulesControllers[$mod->name][] = $controller;
+                    }
+                } elseif ($type == 'front') {
+                    if (strpos($controller, 'Admin') === false) {
+                        $modulesControllers[$mod->name][] = $controller;
+                    }
+                } else {
+                    $modulesControllers[$mod->name][] = $controller;
+                }
+            }
+        }
+
+        return $modulesControllers;
+    }
 
     /**
      * Needs to be instantiated from getInstance() method
@@ -361,6 +390,8 @@ class DispatcherCore
     /**
      * Load default routes group by languages
      *
+     * @param int|null $idShop
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -390,8 +421,6 @@ class DispatcherCore
             $languageIds[] = (int) $context->language->id;
         }
 
-
-
         // Load the custom routes prior the defaults to avoid infinite loops
         if ($this->use_routes) {
             // Set default routes
@@ -403,7 +432,7 @@ class DispatcherCore
                         $route['controller'],
                         $idLang,
                         $route['keywords'],
-                        isset($route['params']) ? $route['params'] : array(),
+                        isset($route['params']) ? $route['params'] : [],
                         $idShop
                     );
                 }
@@ -453,7 +482,7 @@ class DispatcherCore
                             $routeData['controller'],
                             $idLang,
                             $routeData['keywords'],
-                            isset($routeData['params']) ? $routeData['params'] : array(),
+                            isset($routeData['params']) ? $routeData['params'] : [],
                             $idShop
                         );
                     }
@@ -469,137 +498,12 @@ class DispatcherCore
                         $route['controller'],
                         $idLang,
                         $route['keywords'],
-                        isset($route['params']) ? $route['params'] : array(),
+                        isset($route['params']) ? $route['params'] : [],
                         $idShop
                     );
                 }
             }
         }
-    }
-
-    /**
-     *
-     * @param string $routeId    Name of the route (need to be uniq, a second route with same name will override the first)
-     * @param string $rule       Url rule
-     * @param string $controller Controller to call if request uri match the rule
-     * @param int    $idLang
-     * @param int    $idShop
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public function addRoute($routeId, $rule, $controller, $idLang = null, array $keywords = [], array $params = [], $idShop = null)
-    {
-        if (isset(Context::getContext()->language) && $idLang === null) {
-            $idLang = (int) Context::getContext()->language->id;
-        }
-
-        if (isset(Context::getContext()->shop) && $idShop === null) {
-            $idShop = (int) Context::getContext()->shop->id;
-        }
-
-        $regexp = preg_quote($rule, '#');
-        if ($keywords) {
-            $transformKeywords = [];
-            preg_match_all('#\\\{(([^{}]*)\\\:)?('.implode('|', array_keys($keywords)).')(\\\:([^{}]*))?\\\}#', $regexp, $m);
-            for ($i = 0, $total = count($m[0]); $i < $total; $i++) {
-                $prepend = $m[2][$i];
-                $keyword = $m[3][$i];
-                $append = $m[5][$i];
-                $transformKeywords[$keyword] = [
-                    'required' => isset($keywords[$keyword]['param']),
-                    'prepend'  => stripslashes($prepend),
-                    'append'   => stripslashes($append),
-                ];
-
-                $prependRegexp = $appendRegexp = '';
-                if ($prepend || $append) {
-                    $prependRegexp = '('.$prepend;
-                    $appendRegexp = $append.')?';
-                }
-
-                if (isset($keywords[$keyword]['param'])) {
-                    $regexp = str_replace($m[0][$i], $prependRegexp.'(?P<'.$keywords[$keyword]['param'].'>'.$keywords[$keyword]['regexp'].')'.$appendRegexp, $regexp);
-                } else {
-                    $regexp = str_replace($m[0][$i], $prependRegexp.'('.$keywords[$keyword]['regexp'].')'.$appendRegexp, $regexp);
-                }
-            }
-            $keywords = $transformKeywords;
-        }
-
-        $regexp = '#^/'.$regexp.'$#u';
-        if (!isset($this->routes[$idShop])) {
-            $this->routes[$idShop] = [];
-        }
-        if (!isset($this->routes[$idShop][$idLang])) {
-            $this->routes[$idShop][$idLang] = [];
-        }
-
-        $this->routes[$idShop][$idLang][$routeId] = [
-            'rule'       => $rule,
-            'regexp'     => $regexp,
-            'controller' => $controller,
-            'keywords'   => $keywords,
-            'params'     => $params,
-        ];
-    }
-
-    /**
-     * Get current instance of dispatcher (singleton)
-     *
-     * @return Dispatcher
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public static function getInstance()
-    {
-        if (!self::$instance) {
-            self::$instance = new Dispatcher();
-        }
-
-        return self::$instance;
-    }
-
-    /**
-     * Get list of all available Module Front controllers
-     *
-     * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public static function getModuleControllers($type = 'all', $module = null)
-    {
-        $modulesControllers = [];
-        if (is_null($module)) {
-            $modules = Module::getModulesOnDisk(true);
-        } elseif (!is_array($module)) {
-            $modules = [Module::getInstanceByName($module)];
-        } else {
-            $modules = [];
-            foreach ($module as $_mod) {
-                $modules[] = Module::getInstanceByName($_mod);
-            }
-        }
-
-        foreach ($modules as $mod) {
-            foreach (Dispatcher::getControllersInDirectory(_PS_MODULE_DIR_.$mod->name.'/controllers/') as $controller) {
-                if ($type == 'admin') {
-                    if (strpos($controller, 'Admin') !== false) {
-                        $modulesControllers[$mod->name][] = $controller;
-                    }
-                } elseif ($type == 'front') {
-                    if (strpos($controller, 'Admin') === false) {
-                        $modulesControllers[$mod->name][] = $controller;
-                    }
-                } else {
-                    $modulesControllers[$mod->name][] = $controller;
-                }
-            }
-        }
-
-        return $modulesControllers;
     }
 
     /**
@@ -725,7 +629,7 @@ class DispatcherCore
                 }
                 break;
 
-            default :
+            default:
                 throw new PrestaShopException('Bad front controller chosen');
         }
 
@@ -748,6 +652,8 @@ class DispatcherCore
 
     /**
      * Retrieve the controller from url or request uri if routes are activated
+     *
+     * @param null $idShop
      *
      * @return string
      *
@@ -810,74 +716,41 @@ class DispatcherCore
                 if (isset($this->routes[$idShop][Context::getContext()->language->id])) {
                     $routes = $this->routes[$idShop][Context::getContext()->language->id];
                     foreach ($routes as $route) {
+                        $fullRewrite = ltrim($uri, '/');
+                        if ($fullRewrite && $entity = UrlRewrite::lookup(ltrim($uri, '/'), Context::getContext()->language->id, $idShop)) {
+                            switch ($entity[0]['entity']) {
+                                case UrlRewrite::ENTITY_PRODUCT:
+                                    $_GET['id_product'] = (int) $entity[0]['id_entity'];
+                                    $controller = 'product';
+                                    break 2;
+                                case UrlRewrite::ENTITY_CATEGORY:
+                                    $_GET['id_category'] = (int) $entity[0]['id_entity'];
+                                    $controller = 'category';
+                                    break 2;
+                                case UrlRewrite::ENTITY_SUPPLIER:
+                                    $_GET['id_supplier'] = (int) $entity[0]['id_entity'];
+                                    $controller = 'supplier';
+                                    break 2;
+                                case UrlRewrite::ENTITY_MANUFACTURER:
+                                    $_GET['id_manufacturer'] = (int) $entity[0]['id_entity'];
+                                    $controller = 'manufacturer';
+                                    break 2;
+                                case UrlRewrite::ENTITY_CMS:
+                                    $_GET['id_cms'] = (int) $entity[0]['id_entity'];
+                                    $controller = 'cms';
+                                    break 2;
+                                case UrlRewrite::ENTITY_CMS_CATEGORY:
+                                    $_GET['id_cms_category'] = (int) $entity[0]['id_entity'];
+                                    $controller = 'cms_category';
+                                    break 2;
+                                case UrlRewrite::ENTITY_PAGE:
+                                    $meta = new Meta($entity[0]['id_entity']);
+//                                    ddd($entity[0]['id_entity']);
+                                    $controller = $meta->page;
+                                    break 2;
+                            }
+                        }
                         if (preg_match($route['regexp'], $uri, $m)) {
-                            if (array_key_exists('rewrite', $m)) {
-                                if ($route['controller'] === 'category') {
-                                    $idCategory = $this->categoryID($m['rewrite'], $uri);
-                                    if (empty($idCategory)) {
-                                        $idCategory = in_array('id_category', $m) ? (int) $m['id_category'] : 0;
-                                        if (empty($idCategory)) {
-                                            continue;
-                                        }
-                                    }
-                                    $_GET['id_category'] = $idCategory;
-                                }
-                                if ($route['controller'] === 'product') {
-                                    $idProduct = $this->productID($m['rewrite'], $uri);
-                                    if (empty($idProduct)) {
-                                        $idProduct = in_array('id_product', $m) ? (int) $m['id_product'] : 0;
-                                        if (empty($idProduct)) {
-                                            continue;
-                                        }
-                                    }
-
-                                    $_GET['id_product'] = $idProduct;
-                                }
-                                if ($route['controller'] === 'supplier') {
-                                    $idSupplier = $this->supplierID($m['rewrite']);
-                                    if (empty($idSupplier)) {
-                                        $idSupplier = in_array('id_supplier', $m) ? (int) $m['id_supplier'] : 0;
-                                        if (empty($idSupplier)) {
-                                            continue;
-                                        }
-                                    }
-                                    $_GET['id_supplier'] = $idSupplier;
-                                }
-                                if ($route['controller'] === 'manufacturer') {
-                                    $idManufacturer = $this->manufacturerID($m['rewrite']);
-                                    if (empty($idManufacturer)) {
-                                        $idManufacturer = in_array('id_manufacturer', $m) ? (int) $m['id_manufacturer'] : 0;
-                                        if (empty($idManufacturer)) {
-                                            continue;
-                                        }
-                                    }
-                                    $_GET['id_manufacturer'] = $idManufacturer;
-                                }
-                            }
-                            if (array_key_exists('cms_cat_rewrite', $m)) {
-                                if ($route['controller'] === 'cms') {
-                                    $idCmsCat = $this->cmsCategoryID($m['cms_cat_rewrite'], $uri);
-                                    if (empty($idCmsCat)) {
-                                        $idCmsCat = in_array('id_cms_category', $m) ? (int) $m['id_cms_category'] : 0;
-                                        if (empty($idCmsCat)) {
-                                            continue;
-                                        }
-                                    }
-                                    $_GET['id_cms_category'] = $idCmsCat;
-                                }
-                            }
-                            if (array_key_exists('cms_rewrite', $m)) {
-                                if ($route['controller'] === 'cms') {
-                                    $idCms = $this->cmsID($m['cms_rewrite'], $uri);
-                                    if (empty($idCms)) {
-                                        $idCms = in_array('id_cms', $m) ? (int) $m['id_cms'] : 0;
-                                        if (empty($idCms)) {
-                                            continue;
-                                        }
-                                    }
-                                    $_GET['id_cms'] = $idCms;
-                                }
-                            }
                             foreach ($m as $k => $v) {
                                 // We might have us an external module page here, so just set whatever we can
                                 if ($controller === 'pagenotfound' || !is_numeric($k)
@@ -912,8 +785,7 @@ class DispatcherCore
 
             // Check if index
             if (!isset($uri) || $controller == 'index' || preg_match('/^\/index.php(?:\?.*)?$/', $this->request_uri) || $uri == '') {
-                $controller = (version_compare(_PS_VERSION_, '1.6', '>=')) ?
-                    $this->useDefaultController() : $this->default_controller;
+                $controller = $this->useDefaultController();
             }
         }
         $this->controller = str_replace('-', '', $controller);
@@ -952,7 +824,8 @@ class DispatcherCore
     /**
      * Get list of all available FO controllers
      *
-     * @var mixed $dirs
+     * @param mixed $dirs
+     *
      * @return array
      *
      * @since   1.0.0
@@ -1062,12 +935,14 @@ class DispatcherCore
      * Check if a route rule contain all required keywords of default route definition
      *
      * @param string $routeId
-     * @param string $rule   Rule to verify
-     * @param array  $errors List of missing keywords
+     * @param string $rule    Rule to verify
+     * @param array  $errors  List of missing keywords
      *
+     * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
      */
     public function validateRoute($routeId, $rule, &$errors = [])
     {
@@ -1077,6 +952,13 @@ class DispatcherCore
         }
 
         foreach ($this->default_routes[$routeId]['keywords'] as $keyword => $data) {
+            if ($this->use_routes && $keyword === 'id') {
+                continue;
+            }
+            if ($this->use_routes && $keyword === 'rewrite') {
+                $data['param'] = true;
+            }
+
             if (isset($data['param']) && !preg_match('#\{([^{}]*:)?'.$keyword.'(:[^{}]*)?\}#', $rule)) {
                 $errors[] = $keyword;
             }
@@ -1123,18 +1005,21 @@ class DispatcherCore
             return ($routeId == 'index') ? $indexLink.(($query) ? '?'.$query : '') : ((trim($routeId) == '') ? '' : 'index.php?controller='.$routeId).(($query) ? '&'.$query : '').$anchor;
         }
         $route = $this->routes[$idShop][$idLang][$routeId];
-        // Check required fields
-        $queryParams = isset($route['params']) ? $route['params'] : [];
-        foreach ($route['keywords'] as $key => $data) {
-            if (!$data['required']) {
-                continue;
-            }
 
-            if (!array_key_exists($key, $params)) {
-                throw new PrestaShopException('Dispatcher::createUrl() miss required parameter "'.$key.'" for route "'.$routeId.'"');
-            }
-            if (isset($this->default_routes[$routeId])) {
-                $queryParams[$this->default_routes[$routeId]['keywords'][$key]['param']] = $params[$key];
+        if ((!$this->use_routes && !$forceRoutes) || ($this->use_routes || $forceRoutes) && !in_array($routeId, ['product_rule', 'category_rule', 'supplier_rule', 'manufacturer_rule', 'cms_rule', 'cms_category_rule'])) {
+            // Check required fields
+            $queryParams = isset($route['params']) ? $route['params'] : [];
+            foreach ($route['keywords'] as $key => $data) {
+                if (!$data['required']) {
+                    continue;
+                }
+
+                if (!array_key_exists($key, $params)) {
+                    throw new PrestaShopException('Dispatcher::createUrl() miss required parameter "'.$key.'" for route "'.$routeId.'"');
+                }
+                if (isset($this->default_routes[$routeId])) {
+                    $queryParams[$this->default_routes[$routeId]['keywords'][$key]['param']] = $params[$key];
+                }
             }
         }
 
@@ -1143,71 +1028,53 @@ class DispatcherCore
             $url = $route['rule'];
             $addParam = [];
 
-            foreach ($params as $key => $value) {
-                if (!isset($route['keywords'][$key])) {
-                    if (!isset($this->default_routes[$routeId]['keywords'][$key])) {
-                        $addParam[$key] = $value;
-                    }
-                } else {
-                    if ($params[$key]) {
-                        $replace = $route['keywords'][$key]['prepend'].$params[$key].$route['keywords'][$key]['append'];
+            if ($routeId === 'product_rule') {
+                $url = UrlRewrite::reverseLookup($params['id'], UrlRewrite::ENTITY_PRODUCT, $idLang, $idShop, UrlRewrite::CANONICAL);
+            } elseif ($routeId === 'category_rule') {
+                $url = UrlRewrite::reverseLookup($params['id'], UrlRewrite::ENTITY_CATEGORY, $idLang, $idShop, UrlRewrite::CANONICAL);
+            } elseif ($routeId === 'supplier_rule') {
+                $url = UrlRewrite::reverseLookup($params['id'], UrlRewrite::ENTITY_SUPPLIER, $idLang, $idShop, UrlRewrite::CANONICAL);
+            } elseif ($routeId === 'manufacturer_rule') {
+                $url = UrlRewrite::reverseLookup($params['id'], UrlRewrite::ENTITY_MANUFACTURER, $idLang, $idShop, UrlRewrite::CANONICAL);
+            } elseif ($routeId === 'cms_rule') {
+                $url = UrlRewrite::reverseLookup($params['id'], UrlRewrite::ENTITY_CMS, $idLang, $idShop, UrlRewrite::CANONICAL);
+            } elseif ($routeId === 'cms_category_rule') {
+                $url = UrlRewrite::reverseLookup($params['id'], UrlRewrite::ENTITY_CMS_CATEGORY, $idLang, $idShop, UrlRewrite::CANONICAL);
+            } else {
+                foreach ($params as $key => $value) {
+                    if (!isset($route['keywords'][$key])) {
+                        if (!isset($this->default_routes[$routeId]['keywords'][$key])) {
+                            $addParam[$key] = $value;
+                        }
                     } else {
-                        $replace = '';
+                        if ($params[$key]) {
+                            $replace = $route['keywords'][$key]['prepend'].$params[$key].$route['keywords'][$key]['append'];
+                        } else {
+                            $replace = '';
+                        }
+                        $url = preg_replace('#\{([^{}]*:)?'.$key.'(:[^{}]*)?\}#', $replace, $url);
                     }
-                    $url = preg_replace('#\{([^{}]*:)?'.$key.'(:[^{}]*)?\}#', $replace, $url);
                 }
+                $url = preg_replace('#\{([^{}]*:)?[a-z0-9_]+?(:[^{}]*)?\}#', '', $url);
             }
-            $url = preg_replace('#\{([^{}]*:)?[a-z0-9_]+?(:[^{}]*)?\}#', '', $url);
+
             if (count($addParam)) {
                 $url .= '?'.http_build_query($addParam, '', '&');
             }
-        } // Build a classic url index.php?controller=foo&...
-        else {
-            // Restore info
-            switch ($routeId) {
-                case 'product_rule':
-                    $params = [Product::$definition['primary'] => $params['id']];
-                    unset($route['keywords']['rewrite']);
-                    unset($queryParams['rewrite']);
-                    break;
-                case 'category_rule':
-                    $params = [Category::$definition['primary'] => $params['id']];
-                    unset($route['keywords']['rewrite']);
-                    unset($queryParams['rewrite']);
-                    break;
-                case 'supplier_rule':
-                    $params = [Supplier::$definition['primary'] => $params['id']];
-                    unset($route['keywords']['rewrite']);
-                    unset($queryParams['rewrite']);
-                    break;
-                case 'manufacturer_rule':
-                    $params = [Manufacturer::$definition['primary'] => $params['id']];
-                    unset($route['keywords']['rewrite']);
-                    unset($queryParams['rewrite']);
-                    break;
-                case 'cms_rule':
-                    $params = [CMS::$definition['primary'] => $params['id']];
-                    unset($route['keywords']['rewrite']);
-                    unset($queryParams['rewrite']);
-                    break;
-                case 'cms_category_rule':
-                    $route['params'] = [CMSCategory::$definition['primary'] => $params['id']];
-                    unset($route['keywords']['rewrite']);
-                    unset($queryParams['rewrite']);
-                    break;
-            }
-
+        } else {
             $addParams = [];
             foreach ($params as $key => $value) {
                 if (!isset($route['keywords'][$key]) && !isset($this->default_routes[$routeId]['keywords'][$key])) {
                     $addParams[$key] = $value;
                 }
             }
-
             if (!empty($route['controller'])) {
                 $queryParams['controller'] = $route['controller'];
             }
-            $query = http_build_query(array_merge($addParams, $queryParams), '', '&');
+            if (isset($queryParams)) {
+                $addParams = array_merge($addParams, $queryParams);
+            }
+            $query = http_build_query($addParams, '', '&');
             if ($this->multilang_activated) {
                 $query .= (!empty($query) ? '&' : '').'id_lang='.(int) $idLang;
             }
@@ -1215,293 +1082,6 @@ class DispatcherCore
         }
 
         return $url.$anchor;
-    }
-
-    /**
-     * @param        $rewrite
-     * @param string $url
-     *
-     * @return int
-     *
-     * @since 1.0.0
-     */
-    protected function productID($rewrite, $url = '')
-    {
-        // Rewrite and url cannot both be empty
-        if (empty($rewrite)) {
-            return 0;
-        }
-        // Remove leading slash from URL
-        $url = ltrim($url, '/');
-
-        $context = Context::getContext();
-        $link = $context->link;
-        $idLang = $context->language->id;
-        $idShop = $context->shop->id;
-
-        // Context sometimes contains no link in older versions of PS
-        if (empty($link)) {
-            $link = new Link();
-        }
-
-        $sql = new DbQuery();
-        $sql->select('`id_product`');
-        $sql->from('product_lang');
-        $sql->where('`link_rewrite` = \''.pSQL($rewrite).'\'');
-        $sql->where('`id_lang` = '.(int) $idLang);
-        $sql->where('`id_shop` = '.(int) $idShop);
-
-        $results = Db::getInstance()->executeS($sql);
-        if (!empty($results)) {
-            $baseLink = $link->getBaseLink().$link->getLangLink();
-            if (count($results) > 1 && !empty($url)) {
-                // Multiple rewrites available, full URL needs to be checked
-                foreach ($results as $result) {
-                    $productLink = $link->getProductLink($result['id_product']);
-                    if ($url === str_replace($baseLink, '', $productLink)) {
-                        return (int) $result['id_product'];
-                    }
-                }
-            } else {
-                $productLink = $link->getProductLink((int) $results[0]['id_product']);
-                if ($url === str_replace($baseLink, '', $productLink)) {
-                    return (int) $results[0]['id_product'];
-                }
-            }
-        }
-
-        return 0;
-    }
-
-    /**
-     * @param string $rewrite
-     * @param string $url
-     *
-     * @return int
-     *
-     * @since 1.0.0
-     */
-    protected function categoryID($rewrite, $url = '')
-    {
-        // Rewrite cannot be empty
-        if (empty($rewrite)) {
-            return 0;
-        }
-        // Remove leading slash from URL
-        $url = ltrim($url, '/');
-
-        $context = Context::getContext();
-        $link = $context->link;
-        $idLang = $context->language->id;
-        $idShop = $context->shop->id;
-
-        // Context sometimes contains no link in older versions of PS
-        if (empty($link)) {
-            $link = new Link();
-        }
-
-        $sql = new DbQuery();
-        $sql->select('`id_category`');
-        $sql->from('category_lang');
-        $sql->where('`link_rewrite` = \''.pSQL($rewrite).'\'');
-        $sql->where('`id_lang` = '.(int) $idLang);
-        $sql->where('`id_shop` = '.(int) $idShop);
-
-        $results = Db::getInstance()->executeS($sql);
-        if (!empty($results)) {
-            $baseLink = $link->getBaseLink().$link->getLangLink();
-            if (count($results) > 1 && !empty($url)) {
-                // Multiple rewrites available, full URL needs to be checked
-                foreach ($results as $result) {
-                    $categoryLink = $link->getCategoryLink($result['id_category']);
-                    if ($url === str_replace($baseLink, '', $categoryLink)) {
-                        return (int) $result['id_category'];
-                    }
-                }
-            } else {
-                $categoryLink = $link->getCategoryLink((int) $results[0]['id_category']);
-                if ($url === str_replace($baseLink, '', $categoryLink)) {
-                    return (int) $results[0]['id_category'];
-                }
-            }
-        }
-
-        return 0;
-    }
-
-    /**
-     * @param string $rewrite
-     *
-     * @return int
-     *
-     * @since 1.0.0
-     */
-    protected function supplierID($rewrite)
-    {
-        // Rewrite cannot be empty
-        if (empty($rewrite)) {
-            return 0;
-        }
-
-        $context = Context::getContext();
-
-        $suppliers = Supplier::getSuppliers(false, $context->language->id, true);
-        foreach ($suppliers as $supplier) {
-            if (Tools::link_rewrite($supplier['name']) === $rewrite) {
-                return (int) $supplier['id_supplier'];
-            }
-        }
-
-        return 0;
-    }
-
-    /**
-     * @param string $rewrite
-     *
-     * @return int
-     *
-     * @since 1.0.0
-     */
-    protected function manufacturerID($rewrite)
-    {
-        // Rewrite cannot be empty
-        if (empty($rewrite)) {
-            return 0;
-        }
-
-        $context = Context::getContext();
-
-        $manufacturers = Manufacturer::getManufacturers(false, $context->language->id, true);
-        foreach ($manufacturers as $manufacturer) {
-            if (Tools::link_rewrite($manufacturer['name']) === $rewrite) {
-                return (int) $manufacturer['id_manufacturer'];
-            }
-        }
-
-        return 0;
-    }
-
-    /**
-     * @param string $rewrite
-     * @param string $url
-     *
-     * @return int
-     *
-     * @since 1.0.0
-     */
-    protected function cmsID($rewrite, $url = '')
-    {
-        // Rewrite cannot be empty
-        if (empty($rewrite)) {
-            return 0;
-        }
-        // Remove leading slash from URL
-        $url = ltrim($url, '/');
-
-        $context = Context::getContext();
-        $link = $context->link;
-        $idLang = $context->language->id;
-        $idShop = $context->shop->id;
-
-        // Context sometimes contains no link in older versions of PS
-        if (empty($link)) {
-            $link = new Link();
-        }
-
-        $sql = new DbQuery();
-        $sql->select('`cl`.`id_cms`');
-        $sql->from('cms_lang', 'cl');
-        $sql->innerJoin('cms_shop', 'cs', '`cl`.`id_cms` = `cs`.`id_cms`');
-        $sql->where('`link_rewrite` = \''.pSQL($rewrite).'\'');
-        $sql->where('`cl`.`id_lang` = '.(int) $idLang);
-        $sql->where('`cs`.`id_shop` = '.(int) $idShop);
-
-        $results = Db::getInstance()->executeS($sql);
-        if (!empty($results)) {
-            $baseLink = $link->getBaseLink().$link->getLangLink();
-            if (count($results) > 1 && !empty($url)) {
-                // Multiple rewrites available, full URL needs to be checked
-                foreach ($results as $result) {
-                    $cmsLink = $link->getCMSLink($result['id_cms']);
-                    if ($url === str_replace($baseLink, '', $cmsLink)) {
-                        return (int) $result['id_cms'];
-                    }
-                }
-            } else {
-                $cmsLink = $link->getCMSLink((int) $results[0]['id_cms']);
-                if ($url === str_replace($baseLink, '', $cmsLink)) {
-                    return (int) $results[0]['id_cms'];
-                }
-            }
-        }
-
-        return 0;
-    }
-
-    /**
-     * @param string $rewrite
-     * @param string $url
-     *
-     * @return int
-     *
-     * @since 1.0.0
-     */
-    protected function cmsCategoryID($rewrite, $url = '')
-    {
-        // Rewrite cannot be empty
-        if (empty($rewrite)) {
-            return 0;
-        }
-        // Remove leading slash from URL
-        $url = ltrim($url, '/');
-
-        $context = Context::getContext();
-        $link = $context->link;
-        $idLang = $context->language->id;
-        $idShop = $context->shop->id;
-
-        // Context sometimes contains no link in older versions of PS
-        if (empty($link)) {
-            $link = new Link();
-        }
-
-        $sql = new DbQuery();
-        // PrestaShop below 1.6.0.12 does not support multishop cms categories
-        if (version_compare(_PS_VERSION_, '1.6.0.12', '<')) {
-            $sql->select('`cl`.`id_cms_category`');
-            $sql->from('cms_category_lang', 'cl');
-            $sql->where('`link_rewrite` = \''.pSQL($rewrite).'\'');
-            $sql->where('`cl`.`id_lang` = '.(int) $idLang);
-        } else {
-            $sql->select('`cl`.`id_cms_category`');
-            $sql->from('cms_category_lang', 'cl');
-            $sql->innerJoin('cms_category_shop', 'cs', '`cl`.`id_cms_category` = `cs`.`id_cms_category`');
-            $sql->where('`link_rewrite` = \''.pSQL($rewrite).'\'');
-            $sql->where('`cl`.`id_lang` = '.(int) $idLang);
-            $sql->where('`cs`.`id_shop` = '.(int) $idShop);
-        }
-
-        $results = Db::getInstance()->executeS($sql);
-
-        if (!empty($results)) {
-            $baseLink = $link->getBaseLink().$link->getLangLink();
-            if (count($results) > 1 && !empty($url)) {
-                // Multiple rewrites available, full URL needs to be checked
-                foreach ($results as $result) {
-                    $cmsLink = $link->getCMSCategoryLink($result['id_cms_category']);
-                    if ($url === str_replace($baseLink, '', $cmsLink)) {
-                        return (int) $result['id_cms_category'];
-                    }
-                }
-            } else {
-                $cmsLink = $link->getCMSCategoryLink((int) $results[0]['id_cms_category']);
-                if ($url === str_replace($baseLink, '', $cmsLink)) {
-                    return (int) $results[0]['id_cms_category'];
-                }
-            }
-        }
-
-        return 0;
     }
 
     /**

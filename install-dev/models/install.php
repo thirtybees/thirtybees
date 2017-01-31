@@ -194,21 +194,6 @@ class InstallModelInstall extends InstallAbstractModel
             return false;
         }
 
-        $largePrefix = (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT @@global.`innodb_large_prefix`', false);
-        if ($largePrefix) {
-            Db::getInstance()->execute('SET @@global.`innodb_large_prefix` = \'ON\'');
-            $largePrefix = (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT @@global.`innodb_large_prefix`', false);
-        }
-        $fileFormat = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT @@global.`innodb_file_format`', false);
-        if (Tools::strtolower($fileFormat) !== 'barracuda') {
-            Db::getInstance()->execute('SET @@global.`innodb_file_format` = \'Barracuda\'');
-            $fileFormat = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT @@global.`innodb_file_format`', false);
-            if (Tools::strtolower($fileFormat) !== 'barracuda') {
-                $largePrefix = false;
-            }
-        }
-        InstallSession::getInstance()->largePrefix = $largePrefix;
-
         if ($clearDatabase) {
             $this->clearDatabase();
         }
