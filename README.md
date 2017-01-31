@@ -73,7 +73,35 @@ $ git clone https://github.com/thirtybees/ThirtyBees.git --recursive
 ```shell
 $ composer install
 ```
-- Then install the software as usual, using either the web interface (https://example.com/install-dev) or cli (/install-dev/index_cli.php) 
+- Then install the software as usual, using either a web browser (https://example.com/install-dev) 
+- Or install via command line 
+**``` php /install-dev/index_cli.php```**
+	- Arguments available:
+--step	all / database,fixtures,theme,modules,addons_modules	(Default: all)
+--language	language iso code	(Default: en)
+--allLanguages	install all available languages	(Default: 0)
+--timezone		(Default: Europe/Paris)
+--base_uri		(Default: /)
+--domain		(Default: localhost)
+--db_server		(Default: localhost)
+--db_user		(Default: root)
+--db_password		(Default: )
+--db_name		(Default: prestashop)
+--db_clear	Drop existing tables	(Default: 1)
+--db_create	Create the database if not exist	(Default: 0)
+--prefix		(Default: ps_)
+--engine	InnoDB/MyISAM	(Default: InnoDB)
+--name		(Default: PrestaShop)
+--activity		(Default: 0)
+--country		(Default: fr)
+--firstname		(Default: John)
+--lastname		(Default: Doe)
+--password		(Default: 0123456789)
+--email		(Default: pub@prestashop.com)
+--license	show PrestaShop license	(Default: 0)
+--newsletter	get news from PrestaShop	(Default: 1)
+--send_email	send an email to the administrator after installation	(Default: 1)
+
 
 ## Contributing
 See [CONTRIBUTING.md](CONTRIBUTING.md)
