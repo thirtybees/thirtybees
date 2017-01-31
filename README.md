@@ -77,7 +77,7 @@ $ composer install
 - Or install via command line 
 **``` php /install-dev/index_cli.php```**
 	- Arguments available:
---step	all / database,fixtures,theme,modules,addons_modules	(Default: all)
+<pre>--step	all / database,fixtures,theme,modules,addons_modules	(Default: all)
 --language	language iso code	(Default: en)
 --allLanguages	install all available languages	(Default: 0)
 --timezone		(Default: Europe/Paris)
@@ -100,7 +100,7 @@ $ composer install
 --email		(Default: pub@prestashop.com)
 --license	show PrestaShop license	(Default: 0)
 --newsletter	get news from PrestaShop	(Default: 1)
---send_email	send an email to the administrator after installation	(Default: 1)
+--send_email	send an email to the administrator after installation	(Default: 1)</pre>
 
 
 ## Contributing
