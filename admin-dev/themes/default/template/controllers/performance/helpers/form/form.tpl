@@ -254,7 +254,6 @@
 		{/if}
 	{/block}
 
-	<script type="text/javascript">
 	{block name="script"}
 
 	function showMemcached() {
