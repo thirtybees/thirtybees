@@ -254,10 +254,18 @@ class FrontControllerCore extends Controller
             // Needed hooks are called in the tpl files.
 
             $hook_header = Hook::exec('displayHeader');
+            $extra_favicons = '
+                <link rel="shortcut icon" sizes="57x57" href="'._PS_ROOT_DIR_.DIRECTORY_SEPARATOR.'img'.DIRECTORY_SEPARATOR.'favicon_57.png">
+                <link rel="shortcut icon" sizes="72x72" href="'._PS_ROOT_DIR_.DIRECTORY_SEPARATOR.'img'.DIRECTORY_SEPARATOR.'favicon_72.png">
+                <link rel="shortcut icon" sizes="114x114" href="'._PS_ROOT_DIR_.DIRECTORY_SEPARATOR.'img'.DIRECTORY_SEPARATOR.'favicon_114.png">
+                <link rel="shortcut icon" sizes="144x144" href="'._PS_ROOT_DIR_.DIRECTORY_SEPARATOR.'img'.DIRECTORY_SEPARATOR.'favicon_144.png">';
+                
+            $hook_header .= $extra_favicons;
 
             if (isset($this->php_self)) { // append some seo fields, canonical, hrefLang, rel prev/next
-                $hook_header = $this->getSeoFields();
+                $hook_header .= $this->getSeoFields();
             }
+
 
             // To be removed: append extra css and metas to the header hook
             $extra_code = Configuration::getMultiple(['PS_CUSTOMCODE_METAS', 'PS_CUSTOMCODE_CSS']);

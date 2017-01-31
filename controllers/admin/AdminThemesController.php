@@ -130,7 +130,6 @@ class AdminThemesControllerCore extends AdminController
         $lang = new Language($this->context->language->id);
         $isoLangUc = strtoupper($lang->iso_code);
 
-
         $this->fields_options = [
             'appearance' => [
                 'title' => $this->l('Your current theme'),
@@ -2697,9 +2696,8 @@ class AdminThemesControllerCore extends AdminController
     public function updateOptionPsFavicon()
     {
         $id_shop = Context::getContext()->shop->id;
-        $id_shop_default = Configuration::get('PS_SHOP_DEFAULT');
-        // Main Favicon
-        if ($id_shop == $id_shop_default) {
+
+        if ($id_shop == Configuration::get('PS_SHOP_DEFAULT')) {
             $this->uploadIco('PS_FAVICON', _PS_IMG_DIR_.'favicon.ico');
         }
         if ($this->uploadIco('PS_FAVICON', _PS_IMG_DIR_.'favicon-'.(int)$id_shop.'.ico')) {
@@ -2708,23 +2706,86 @@ class AdminThemesControllerCore extends AdminController
 
         Configuration::updateGlobalValue('PS_FAVICON', 'favicon.ico');    
 
-        // Additional Favicons
-        $favicon_sizes = [57, 72, 114, 144];
-        foreach ($favicon_sizes as $size) {
-            if ($id_shop == $id_shop_default) {
-                $this->uploadIco('PS_FAVICON_'.$size, _PS_IMG_DIR_.'favicon_'.$size.'.png');
-            }
-            if ($this->uploadIco('PS_FAVICON_'.$size, _PS_IMG_DIR_.'favicon_'.$size.'-'.(int)$id_shop.'.png')) {
-                Configuration::updateValue('PS_FAVICON_'.$size, 'favicon_'.$size.'-'.(int)$id_shop.'.png');
-            }
-
-
-            Configuration::updateGlobalValue('PS_FAVICON_'.$size, 'favicon_'.$size.'.png');    
-        }
         if(!$this->errors)
             $this->redirect_after = self::$currentIndex.'&token='.$this->token;
     }
 
+    /**
+     * Update PS_FAVICON_57
+     */
+    public function updateOptionPsFavicon_57()
+    {
+        $id_shop = Context::getContext()->shop->id;
+
+        if ($id_shop == Configuration::get('PS_SHOP_DEFAULT')) {
+            $this->uploadIco('PS_FAVICON_57', _PS_IMG_DIR_.'favicon_57.png');
+        }
+        if ($this->uploadIco('PS_FAVICON_57', _PS_IMG_DIR_.'favicon_57-'.(int)$id_shop.'.png')) {
+            Configuration::updateValue('PS_FAVICON_57', 'favicon_57-'.(int)$id_shop.'.png');
+        }
+
+        Configuration::updateGlobalValue('PS_FAVICON_57', 'favicon_57.png');    
+
+        if(!$this->errors)
+            $this->redirect_after = self::$currentIndex.'&token='.$this->token;
+    }
+    /**
+     * Update PS_FAVICON_72
+     */
+    public function updateOptionPsFavicon_72()
+    {
+        $id_shop = Context::getContext()->shop->id;
+
+        if ($id_shop == Configuration::get('PS_SHOP_DEFAULT')) {
+            $this->uploadIco('PS_FAVICON_72', _PS_IMG_DIR_.'favicon_72.png');
+        }
+        if ($this->uploadIco('PS_FAVICON_72', _PS_IMG_DIR_.'favicon_72-'.(int)$id_shop.'.png')) {
+            Configuration::updateValue('PS_FAVICON_72', 'favicon_72-'.(int)$id_shop.'.png');
+        }
+
+        Configuration::updateGlobalValue('PS_FAVICON_72', 'favicon_72.png');    
+
+        if(!$this->errors)
+            $this->redirect_after = self::$currentIndex.'&token='.$this->token;
+    }
+    /**
+     * Update PS_FAVICON_114
+     */
+    public function updateOptionPsFavicon_114()
+    {
+        $id_shop = Context::getContext()->shop->id;
+
+        if ($id_shop == Configuration::get('PS_SHOP_DEFAULT')) {
+            $this->uploadIco('PS_FAVICON_114', _PS_IMG_DIR_.'favicon_114.png');
+        }
+        if ($this->uploadIco('PS_FAVICON_114', _PS_IMG_DIR_.'favicon_114-'.(int)$id_shop.'.png')) {
+            Configuration::updateValue('PS_FAVICON_114', 'favicon_114-'.(int)$id_shop.'.png');
+        }
+
+        Configuration::updateGlobalValue('PS_FAVICON_114', 'favicon_114.png');    
+
+        if(!$this->errors)
+            $this->redirect_after = self::$currentIndex.'&token='.$this->token;
+    }
+    /**
+     * Update PS_FAVICON_144
+     */
+    public function updateOptionPsFavicon_144()
+    {
+        $id_shop = Context::getContext()->shop->id;
+
+        if ($id_shop == Configuration::get('PS_SHOP_DEFAULT')) {
+            $this->uploadIco('PS_FAVICON_144', _PS_IMG_DIR_.'favicon_144.png');
+        }
+        if ($this->uploadIco('PS_FAVICON_144', _PS_IMG_DIR_.'favicon_144-'.(int)$id_shop.'.png')) {
+            Configuration::updateValue('PS_FAVICON_144', 'favicon_144-'.(int)$id_shop.'.png');
+        }
+
+        Configuration::updateGlobalValue('PS_FAVICON_144', 'favicon_144.png');    
+
+        if(!$this->errors)
+            $this->redirect_after = self::$currentIndex.'&token='.$this->token;
+    }        
     /**
      * Update theme for current shop
      */
