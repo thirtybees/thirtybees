@@ -1,5 +1,5 @@
 SET SESSION sql_mode = '';
-SET NAMES 'utf8';
+SET NAMES 'utf8mb4';
 
 CREATE TABLE `PREFIX_access` (
   `id_profile` INT(11) UNSIGNED NOT NULL,
@@ -3380,3 +3380,16 @@ CREATE TABLE `PREFIX_redis_servers` (
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   DEFAULT COLLATE utf8mb4_unicode_ci;
+
+CREATE TABLE `PREFIX_url_rewrite` (
+  `id_url_rewrite` INT(11) UNSIGNED    NOT NULL AUTO_INCREMENT,
+  `entity`        TINYINT(2) UNSIGNED NOT NULL,
+  `id_lang`       INT(11) UNSIGNED    NOT NULL,
+  `id_shop`       INT(11) UNSIGNED    NOT NULL,
+  `rewrite`       VARCHAR(1000)       NOT NULL,
+  `redirect`      TINYINT(2) UNSIGNED NOT NULL,
+  PRIMARY KEY (`id_url_rewrite`)
+)
+  ENGINE = ENGINE_TYPE
+  DEFAULT CHARSET = utf8mb4
+  COLLATE utf8mb4_unicode_ci;
