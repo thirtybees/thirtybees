@@ -21,19 +21,26 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * @property Currency $object
+ * Class AdminCurrenciesControllerCore
+ *
+ * @since 1.0.0
  */
 class AdminCurrenciesControllerCore extends AdminController
 {
+    /**
+     * AdminCurrenciesControllerCore constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         $this->bootstrap = true;
@@ -42,39 +49,38 @@ class AdminCurrenciesControllerCore extends AdminController
         $this->lang = false;
 
         $this->fields_list = [
-            'id_currency' => ['title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'],
-            'name' => ['title' => $this->l('Currency')],
-            'iso_code' => ['title' => $this->l('ISO code'), 'align' => 'center', 'class' => 'fixed-width-xs'],
-            'iso_code_num' => ['title' => $this->l('ISO code number'), 'align' => 'center', 'class' => 'fixed-width-xs'],
-            'sign' => ['title' => $this->l('Symbol'), 'width' => 20, 'align' => 'center', 'orderby' => false, 'search' => false, 'class' => 'fixed-width-xs'],
+            'id_currency'     => ['title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'],
+            'name'            => ['title' => $this->l('Currency')],
+            'iso_code'        => ['title' => $this->l('ISO code'), 'align' => 'center', 'class' => 'fixed-width-xs'],
+            'iso_code_num'    => ['title' => $this->l('ISO code number'), 'align' => 'center', 'class' => 'fixed-width-xs'],
             'conversion_rate' => ['title' => $this->l('Exchange rate'), 'type' => 'float', 'align' => 'center', 'width' => 130, 'search' => false, 'filter_key' => 'currency_shop!conversion_rate'],
-            'active' => ['title' => $this->l('Enabled'), 'width' => 25, 'align' => 'center', 'active' => 'status', 'type' => 'bool', 'orderby' => false, 'class' => 'fixed-width-sm'],
+            'active'          => ['title' => $this->l('Enabled'), 'width' => 25, 'align' => 'center', 'active' => 'status', 'type' => 'bool', 'orderby' => false, 'class' => 'fixed-width-sm'],
         ];
 
         $this->bulk_actions = [
             'delete' => [
-                'text' => $this->l('Delete selected'),
+                'text'    => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
-                'icon' => 'icon-trash'
-            ]
+                'icon'    => 'icon-trash',
+            ],
         ];
 
         $this->fields_options = [
             'change' => [
-                'title' =>    $this->l('Currency rates'),
-                'image' => '../img/admin/exchangesrate.gif',
+                'title'       => $this->l('Currency rates'),
+                'image'       => '../img/admin/exchangesrate.gif',
                 'description' => $this->l('Use PrestaShop\'s webservice to update your currency\'s exchange rates. However, please use caution: rates are provided as-is.'),
-                'submit' => [
+                'submit'      => [
                     'title' => $this->l('Update currency rates'),
-                    'name' => 'SubmitExchangesRates'
-                ]
+                    'name'  => 'SubmitExchangesRates',
+                ],
             ],
-            'cron' => [
-                'title' =>    $this->l('Automatically update currency rates'),
+            'cron'   => [
+                'title' => $this->l('Automatically update currency rates'),
                 'image' => '../img/admin/tab-tools.gif',
-                'info' => '<div class="alert alert-block"><p>'.$this->l('Use PrestaShop\'s webservice to update your currency exchange rates. However, please use caution: rates are provided as-is.').'<br/>'.$this->l('You can place the following URL in your crontab file, or you can click it yourself regularly:').'</p>
+                'info'  => '<div class="alert alert-block"><p>'.$this->l('Use PrestaShop\'s webservice to update your currency exchange rates. However, please use caution: rates are provided as-is.').'<br/>'.$this->l('You can place the following URL in your crontab file, or you can click it yourself regularly:').'</p>
 					<p><strong><a href="'.Tools::getShopDomain(true, true).__PS_BASE_URI__.basename(_PS_ADMIN_DIR_).'/cron_currency_rates.php?secure_key='.md5(_COOKIE_KEY_.Configuration::get('PS_SHOP_NAME')).'" onclick="return !window.open($(this).attr(\'href\'));">'.Tools::getShopDomain(true, true).__PS_BASE_URI__.basename(_PS_ADMIN_DIR_).'/cron_currency_rates.php?secure_key='.md5(_COOKIE_KEY_.Configuration::get('PS_SHOP_NAME')).'</a></strong></p></div>',
-            ]
+            ],
         ];
 
         parent::__construct();
@@ -84,6 +90,11 @@ class AdminCurrenciesControllerCore extends AdminController
         $this->_group .= 'GROUP BY a.id_currency';
     }
 
+    /**
+     * @return false|string
+     *
+     * @since 1.0.0
+     */
     public function renderList()
     {
         $this->addRowAction('edit');
@@ -94,141 +105,115 @@ class AdminCurrenciesControllerCore extends AdminController
         return parent::renderList();
     }
 
+    /**
+     * @return string
+     *
+     * @since 1.0.0
+     */
     public function renderForm()
     {
         $this->fields_form = [
             'legend' => [
                 'title' => $this->l('Currencies'),
-                'icon' => 'icon-money'
+                'icon'  => 'icon-money',
             ],
-            'input' => [
+            'input'  => [
                 [
-                    'type' => 'text',
-                    'label' => $this->l('Currency name'),
-                    'name' => 'name',
-                    'size' => 30,
+                    'type'      => 'text',
+                    'label'     => $this->l('Currency name'),
+                    'name'      => 'name',
+                    'size'      => 30,
                     'maxlength' => 32,
-                    'required' => true,
-                    'hint' => $this->l('Only letters and the minus character are allowed.')
+                    'required'  => true,
+                    'hint'      => $this->l('Only letters and the minus character are allowed.'),
                 ],
                 [
-                    'type' => 'text',
-                    'label' => $this->l('ISO code'),
-                    'name' => 'iso_code',
+                    'type'      => 'text',
+                    'label'     => $this->l('ISO code'),
+                    'name'      => 'iso_code',
                     'maxlength' => 32,
-                    'required' => true,
-                    'hint' => $this->l('ISO code (e.g. USD for Dollars, EUR for Euros, etc.).')
+                    'required'  => true,
+                    'hint'      => $this->l('ISO code (e.g. USD for Dollars, EUR for Euros, etc.).'),
                 ],
                 [
-                    'type' => 'text',
-                    'label' => $this->l('Numeric ISO code'),
-                    'name' => 'iso_code_num',
+                    'type'      => 'text',
+                    'label'     => $this->l('Numeric ISO code'),
+                    'name'      => 'iso_code_num',
                     'maxlength' => 32,
-                    'required' => true,
-                    'hint' => $this->l('Numeric ISO code (e.g. 840 for Dollars, 978 for Euros, etc.).')
+                    'required'  => true,
+                    'hint'      => $this->l('Numeric ISO code (e.g. 840 for Dollars, 978 for Euros, etc.).'),
                 ],
                 [
-                    'type' => 'text',
-                    'label' => $this->l('Symbol'),
-                    'name' => 'sign',
-                    'maxlength' => 8,
-                    'required' => true,
-                    'hint' => $this->l('Will appear in front office (e.g. $, &euro;, etc.)')
+                    'type'      => 'hidden',
+                    'name'      => 'sign',
+                    'value'     => '',
                 ],
                 [
-                    'type' => 'text',
-                    'label' => $this->l('Exchange rate'),
-                    'name' => 'conversion_rate',
+                    'type'      => 'text',
+                    'label'     => $this->l('Exchange rate'),
+                    'name'      => 'conversion_rate',
                     'maxlength' => 11,
-                    'required' => true,
-                    'hint' => $this->l('Exchange rates are calculated from one unit of your shop\'s default currency. For example, if the default currency is euros and your chosen currency is dollars, type "1.20" (1&euro; = $1.20).')
+                    'required'  => true,
+                    'hint'      => $this->l('Exchange rates are calculated from one unit of your shop\'s default currency. For example, if the default currency is euros and your chosen currency is dollars, type "1.20" (1&euro; = $1.20).'),
                 ],
                 [
-                    'type' => 'select',
-                    'label' => $this->l('Currency format'),
-                    'name' => 'format',
-                    'maxlength' => 11,
-                    'required' => true,
-                    'hint' =>$this->l('Applies to all prices (e.g. $1,240.15).'),
-                    'options' => [
-                        'query' => [
-                            ['key' => 1, 'name' => 'X0,000.00 ('.$this->l('Such as with Dollars').')'],
-                            ['key' => 2, 'name' => '0 000,00X ('.$this->l('Such as with Euros').')'],
-                            ['key' => 3, 'name' => 'X0.000,00'],
-                            ['key' => 4, 'name' => '0,000.00X'],
-                            ['key' => 5, 'name' => '0\'000.00X'] // Added for the switzerland currency
-                        ],
-                        'name' => 'name',
-                        'id' => 'key'
-                    ]
+                    'type'      => 'hidden',
+                    'label'     => $this->l('Currency format'),
+                    'name'      => 'format',
+                    'value'     => 1,
                 ],
                 [
-                    'type' => 'switch',
-                    'label' => $this->l('Decimals'),
-                    'name' => 'decimals',
+                    'type'     => 'switch',
+                    'label'    => $this->l('Decimals'),
+                    'name'     => 'decimals',
                     'required' => false,
-                    'is_bool' => true,
-                    'hint' => $this->l('Display decimals in prices.'),
-                    'values' => [
+                    'is_bool'  => true,
+                    'hint'     => $this->l('Display decimals in prices.'),
+                    'values'   => [
                         [
-                            'id' => 'decimals_on',
+                            'id'    => 'decimals_on',
                             'value' => 1,
-                            'label' => $this->l('Enabled')
+                            'label' => $this->l('Enabled'),
                         ],
                         [
-                            'id' => 'decimals_off',
+                            'id'    => 'decimals_off',
                             'value' => 0,
-                            'label' => $this->l('Disabled')
-                        ]
+                            'label' => $this->l('Disabled'),
+                        ],
                     ],
                 ],
                 [
-                    'type' => 'switch',
-                    'label' => $this->l('Spacing'),
-                    'name' => 'blank',
-                    'required' => false,
-                    'is_bool' => true,
-                    'hint' => $this->l('Include a space between symbol and price (e.g. $1,240.15 -> $ 1,240.15).'),
-                    'values' => [
-                        [
-                            'id' => 'blank_on',
-                            'value' => 1,
-                            'label' => $this->l('Enabled')
-                        ],
-                        [
-                            'id' => 'blank_off',
-                            'value' => 0,
-                            'label' => $this->l('Disabled')
-                        ]
-                    ],
+                    'type'     => 'hidden',
+                    'name'     => 'blank',
+                    'value'    => 0,
                 ],
                 [
-                    'type' => 'switch',
-                    'label' => $this->l('Enable'),
-                    'name' => 'active',
+                    'type'     => 'switch',
+                    'label'    => $this->l('Enable'),
+                    'name'     => 'active',
                     'required' => false,
-                    'is_bool' => true,
-                    'values' => [
+                    'is_bool'  => true,
+                    'values'   => [
                         [
-                            'id' => 'active_on',
+                            'id'    => 'active_on',
                             'value' => 1,
-                            'label' => $this->l('Enabled')
+                            'label' => $this->l('Enabled'),
                         ],
                         [
-                            'id' => 'active_off',
+                            'id'    => 'active_off',
                             'value' => 0,
-                            'label' => $this->l('Disabled')
-                        ]
-                    ]
-                ]
-            ]
+                            'label' => $this->l('Disabled'),
+                        ],
+                    ],
+                ],
+            ],
         ];
 
         if (Shop::isFeatureActive()) {
             $this->fields_form['input'][] = [
-                'type' => 'shop',
+                'type'  => 'shop',
                 'label' => $this->l('Shop association'),
-                'name' => 'checkBoxShopAsso',
+                'name'  => 'checkBoxShopAsso',
             ];
         }
 
@@ -239,6 +224,28 @@ class AdminCurrenciesControllerCore extends AdminController
         return parent::renderForm();
     }
 
+    /**
+     * @return bool|false|ObjectModel
+     *
+     * @since 1.0.0
+     */
+    public function processDelete()
+    {
+        $object = $this->loadObject();
+        if (!$this->checkDeletion($object)) {
+            return false;
+        }
+
+        return parent::processDelete();
+    }
+
+    /**
+     * @param $object
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
     protected function checkDeletion($object)
     {
         if (Validate::isLoadedObject($object)) {
@@ -255,6 +262,28 @@ class AdminCurrenciesControllerCore extends AdminController
         return false;
     }
 
+    /**
+     * @return bool|false|ObjectModel
+     *
+     * @since 1.0.0
+     */
+    public function processStatus()
+    {
+        $object = $this->loadObject();
+        if (!$this->checkDisableStatus($object)) {
+            return false;
+        }
+
+        return parent::processStatus();
+    }
+
+    /**
+     * @param $object
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
     protected function checkDisableStatus($object)
     {
         if (Validate::isLoadedObject($object)) {
@@ -272,59 +301,9 @@ class AdminCurrenciesControllerCore extends AdminController
     }
 
     /**
-     * @see AdminController::processDelete()
-     */
-    public function processDelete()
-    {
-        $object = $this->loadObject();
-        if (!$this->checkDeletion($object)) {
-            return false;
-        }
-        return parent::processDelete();
-    }
-
-    protected function processBulkDelete()
-    {
-        if (is_array($this->boxes) && !empty($this->boxes)) {
-            foreach ($this->boxes as $id_currency) {
-                $object = new Currency((int)$id_currency);
-                if (!$this->checkDeletion($object)) {
-                    return false;
-                }
-            }
-        }
-
-        return parent::processBulkDelete();
-    }
-
-    /**
-     * @see AdminController::processStatus()
-     */
-    public function processStatus()
-    {
-        $object = $this->loadObject();
-        if (!$this->checkDisableStatus($object)) {
-            return false;
-        }
-
-        return parent::processStatus();
-    }
-
-    protected function processBulkDisableSelection()
-    {
-        if (is_array($this->boxes) && !empty($this->boxes)) {
-            foreach ($this->boxes as $id_currency) {
-                $object = new Currency((int)$id_currency);
-                if (!$this->checkDisableStatus($object)) {
-                    return false;
-                }
-            }
-        }
-        return parent::processBulkDisableSelection();
-    }
-
-    /**
      * Update currency exchange rates
+     *
+     * @since 1.0.0
      */
     public function processExchangeRates()
     {
@@ -334,7 +313,9 @@ class AdminCurrenciesControllerCore extends AdminController
     }
 
     /**
-     * @see AdminController::initProcess()
+     * @see   AdminController::initProcess()
+     *
+     * @since 1.0.0
      */
     public function initProcess()
     {
@@ -348,22 +329,63 @@ class AdminCurrenciesControllerCore extends AdminController
         if (Tools::isSubmit('submitAddcurrency') && !Tools::getValue('id_currency') && Currency::exists(Tools::getValue('iso_code'), Tools::getValue('iso_code_num'))) {
             $this->errors[] = Tools::displayError('This currency already exists.');
         }
-        if (Tools::isSubmit('submitAddcurrency') && (float)Tools::getValue('conversion_rate') <= 0) {
+        if (Tools::isSubmit('submitAddcurrency') && (float) Tools::getValue('conversion_rate') <= 0) {
             $this->errors[] = Tools::displayError('The currency conversion rate can not be equal to 0.');
         }
         parent::initProcess();
     }
 
+    /**
+     * @since 1.0.0
+     */
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_currency'] = [
                 'href' => self::$currentIndex.'&addcurrency&token='.$this->token,
                 'desc' => $this->l('Add new currency', null, null, false),
-                'icon' => 'process-icon-new'
+                'icon' => 'process-icon-new',
             ];
         }
 
         parent::initPageHeaderToolbar();
+    }
+
+    /**
+     * @return bool
+     *
+     * @since 1.0.0
+     */
+    protected function processBulkDelete()
+    {
+        if (is_array($this->boxes) && !empty($this->boxes)) {
+            foreach ($this->boxes as $idCurrency) {
+                $object = new Currency((int) $idCurrency);
+                if (!$this->checkDeletion($object)) {
+                    return false;
+                }
+            }
+        }
+
+        return parent::processBulkDelete();
+    }
+
+    /**
+     * @return bool
+     *
+     * @since 1.0.0
+     */
+    protected function processBulkDisableSelection()
+    {
+        if (is_array($this->boxes) && !empty($this->boxes)) {
+            foreach ($this->boxes as $idCurrency) {
+                $object = new Currency((int) $idCurrency);
+                if (!$this->checkDisableStatus($object)) {
+                    return false;
+                }
+            }
+        }
+
+        return parent::processBulkDisableSelection();
     }
 }
