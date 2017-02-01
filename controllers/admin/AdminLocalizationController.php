@@ -21,146 +21,159 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class AdminLocalizationControllerCore
+ *
+ * @since 1.0.0
+ */
 class AdminLocalizationControllerCore extends AdminController
 {
+    /**
+     * AdminLocalizationControllerCore constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         $this->bootstrap = true;
         parent::__construct();
 
         $this->fields_options = [
-            'general' => [
-                'title' =>    $this->l('Configuration'),
-                'fields' =>    [
-                    'PS_LANG_DEFAULT' => [
-                        'title' => $this->l('Default language'),
-                        'hint' => $this->l('The default language used in your shop.'),
-                        'cast' => 'intval',
-                        'type' => 'select',
+            'general'      => [
+                'title'  => $this->l('Configuration'),
+                'fields' => [
+                    'PS_LANG_DEFAULT'     => [
+                        'title'      => $this->l('Default language'),
+                        'hint'       => $this->l('The default language used in your shop.'),
+                        'cast'       => 'intval',
+                        'type'       => 'select',
                         'identifier' => 'id_lang',
-                        'list' => Language::getLanguages(false)
+                        'list'       => Language::getLanguages(false),
                     ],
-                    'PS_DETECT_LANG' => [
-                        'title' => $this->l('Set language from browser'),
-                        'desc' => $this->l('Set browser language as default language'),
+                    'PS_DETECT_LANG'      => [
+                        'title'      => $this->l('Set language from browser'),
+                        'desc'       => $this->l('Set browser language as default language'),
                         'validation' => 'isBool',
-                        'cast' => 'intval',
-                        'type' => 'bool',
-                        'default' => '1'
+                        'cast'       => 'intval',
+                        'type'       => 'bool',
+                        'default'    => '1',
                     ],
-                    'PS_COUNTRY_DEFAULT' => [
-                        'title' => $this->l('Default country'),
-                        'hint' => $this->l('The default country used in your shop.'),
-                        'cast' => 'intval',
-                        'type' => 'select',
-                        'class' => 'chosen',
+                    'PS_COUNTRY_DEFAULT'  => [
+                        'title'      => $this->l('Default country'),
+                        'hint'       => $this->l('The default country used in your shop.'),
+                        'cast'       => 'intval',
+                        'type'       => 'select',
+                        'class'      => 'chosen',
                         'identifier' => 'id_country',
-                        'list' => Country::getCountries($this->context->language->id)
+                        'list'       => Country::getCountries($this->context->language->id),
                     ],
-                    'PS_DETECT_COUNTRY' => [
-                        'title' => $this->l('Set default country from browser language'),
-                        'desc' => $this->l('Set country corresponding to browser language'),
+                    'PS_DETECT_COUNTRY'   => [
+                        'title'      => $this->l('Set default country from browser language'),
+                        'desc'       => $this->l('Set country corresponding to browser language'),
                         'validation' => 'isBool',
-                        'cast' => 'intval',
-                        'type' => 'bool',
-                        'default' => '1'
+                        'cast'       => 'intval',
+                        'type'       => 'bool',
+                        'default'    => '1',
                     ],
                     'PS_CURRENCY_DEFAULT' => [
-                        'title' => $this->l('Default currency'),
-                        'hint' =>
+                        'title'      => $this->l('Default currency'),
+                        'hint'       =>
                             $this->l('The default currency used in your shop.').' - '.$this->l('If you change the default currency, you will have to manually edit every product price.'),
-                        'cast' => 'intval',
-                        'type' => 'select',
+                        'cast'       => 'intval',
+                        'type'       => 'select',
                         'identifier' => 'id_currency',
-                        'list' => Currency::getCurrencies(false, true, true)
+                        'list'       => Currency::getCurrencies(false, true, true),
                     ],
                 ],
-                'submit' => ['title' => $this->l('Save')]
+                'submit' => ['title' => $this->l('Save')],
             ],
             'localization' => [
-                'title' =>    $this->l('Local units'),
-                'icon' =>    'icon-globe',
-                'fields' =>    [
-                    'PS_WEIGHT_UNIT' => [
-                        'title' => $this->l('Weight unit'),
-                        'hint' => $this->l('The default weight unit for your shop (e.g. "kg" for kilograms, "lbs" for pound-mass, etc.).'),
+                'title'  => $this->l('Local units'),
+                'icon'   => 'icon-globe',
+                'fields' => [
+                    'PS_WEIGHT_UNIT'    => [
+                        'title'      => $this->l('Weight unit'),
+                        'hint'       => $this->l('The default weight unit for your shop (e.g. "kg" for kilograms, "lbs" for pound-mass, etc.).'),
                         'validation' => 'isWeightUnit',
-                        'required' => true,
-                        'type' => 'text',
-                        'class' => 'fixed-width-sm'
+                        'required'   => true,
+                        'type'       => 'text',
+                        'class'      => 'fixed-width-sm',
                     ],
-                    'PS_DISTANCE_UNIT' => [
-                        'title' => $this->l('Distance unit'),
-                        'hint' => $this->l('The default distance unit for your shop (e.g. "km" for kilometer, "mi" for mile, etc.).'),
+                    'PS_DISTANCE_UNIT'  => [
+                        'title'      => $this->l('Distance unit'),
+                        'hint'       => $this->l('The default distance unit for your shop (e.g. "km" for kilometer, "mi" for mile, etc.).'),
                         'validation' => 'isDistanceUnit',
-                        'required' => true,
-                        'type' => 'text',
-                        'class' => 'fixed-width-sm'
+                        'required'   => true,
+                        'type'       => 'text',
+                        'class'      => 'fixed-width-sm',
                     ],
-                    'PS_VOLUME_UNIT' => [
-                        'title' => $this->l('Volume unit'),
-                        'hint' => $this->l('The default volume unit for your shop (e.g. "L" for liter, "gal" for gallon, etc.).'),
+                    'PS_VOLUME_UNIT'    => [
+                        'title'      => $this->l('Volume unit'),
+                        'hint'       => $this->l('The default volume unit for your shop (e.g. "L" for liter, "gal" for gallon, etc.).'),
                         'validation' => 'isWeightUnit',
-                        'required' => true,
-                        'type' => 'text',
-                        'class' => 'fixed-width-sm'
+                        'required'   => true,
+                        'type'       => 'text',
+                        'class'      => 'fixed-width-sm',
                     ],
                     'PS_DIMENSION_UNIT' => [
-                        'title' => $this->l('Dimension unit'),
-                        'hint' => $this->l('The default dimension unit for your shop (e.g. "cm" for centimeter, "in" for inch, etc.).'),
+                        'title'      => $this->l('Dimension unit'),
+                        'hint'       => $this->l('The default dimension unit for your shop (e.g. "cm" for centimeter, "in" for inch, etc.).'),
                         'validation' => 'isDistanceUnit',
-                        'required' => true,
-                        'type' => 'text',
-                        'class' => 'fixed-width-sm'
-                    ]
-                ],
-                'submit' => ['title' => $this->l('Save')]
-            ],
-            'options' => [
-                'title' =>    $this->l('Advanced'),
-                'fields' =>    [
-                    'PS_LOCALE_LANGUAGE' => [
-                        'title' => $this->l('Language identifier'),
-                        'hint' => $this->l('The ISO 639-1 identifier for the language of the country where your web server is located (en, fr, sp, ru, pl, nl, etc.).'),
-                        'validation' => 'isLanguageIsoCode',
-                        'type' => 'text',
-                        'visibility' => Shop::CONTEXT_ALL,
-                        'class' => 'fixed-width-sm'
+                        'required'   => true,
+                        'type'       => 'text',
+                        'class'      => 'fixed-width-sm',
                     ],
-                    'PS_LOCALE_COUNTRY' => [
-                        'title' => $this->l('Country identifier'),
-                        'hint' => $this->l('The ISO 3166-1 alpha-2 identifier for the country/region where your web server is located, in lowercase (us, gb, fr, sp, ru, pl, nl, etc.).'),
-                        'validation' => 'isLanguageIsoCode',
-                        'type' => 'text',
-                        'visibility' => Shop::CONTEXT_ALL,
-                        'class' => 'fixed-width-sm'
-                    ]
                 ],
-                'submit' => ['title' => $this->l('Save')]
-            ]
+                'submit' => ['title' => $this->l('Save')],
+            ],
+            'options'      => [
+                'title'  => $this->l('Advanced'),
+                'fields' => [
+                    'PS_LOCALE_LANGUAGE' => [
+                        'title'      => $this->l('Language identifier'),
+                        'hint'       => $this->l('The ISO 639-1 identifier for the language of the country where your web server is located (en, fr, sp, ru, pl, nl, etc.).'),
+                        'validation' => 'isLanguageIsoCode',
+                        'type'       => 'text',
+                        'visibility' => Shop::CONTEXT_ALL,
+                        'class'      => 'fixed-width-sm',
+                    ],
+                    'PS_LOCALE_COUNTRY'  => [
+                        'title'      => $this->l('Country identifier'),
+                        'hint'       => $this->l('The ISO 3166-1 alpha-2 identifier for the country/region where your web server is located, in lowercase (us, gb, fr, sp, ru, pl, nl, etc.).'),
+                        'validation' => 'isLanguageIsoCode',
+                        'type'       => 'text',
+                        'visibility' => Shop::CONTEXT_ALL,
+                        'class'      => 'fixed-width-sm',
+                    ],
+                ],
+                'submit' => ['title' => $this->l('Save')],
+            ],
         ];
 
         if (function_exists('date_default_timezone_set')) {
             $this->fields_options['general']['fields']['PS_TIMEZONE'] = [
-                'title' => $this->l('Time zone'),
+                'title'      => $this->l('Time zone'),
                 'validation' => 'isAnything',
-                'type' => 'select',
-                'class' => 'chosen',
-                'list' => Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('SELECT name FROM '._DB_PREFIX_.'timezone'),
+                'type'       => 'select',
+                'class'      => 'chosen',
+                'list'       => Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('SELECT `name` FROM `'._DB_PREFIX_.'timezone`'),
                 'identifier' => 'name',
-                'visibility' => Shop::CONTEXT_ALL
+                'visibility' => Shop::CONTEXT_ALL,
             ];
         }
     }
 
+    /**
+     * @since 1.0.0
+     */
     public function postProcess()
     {
         if (_PS_MODE_DEMO_) {
@@ -176,7 +189,7 @@ class AdminLocalizationControllerCore extends AdminController
         if (Tools::isSubmit('submitLocalizationPack')) {
             $guzzle = new \GuzzleHttp\Client();
 
-            $version = str_replace('.', '', _PS_VERSION_);
+            $version = str_replace('.', '', _TB_VERSION_);
             $version = substr($version, 0, 2);
 
             if (($isoLocalizationPack = Tools::getValue('iso_localization_pack')) && Validate::isFileName($isoLocalizationPack)) {
@@ -223,13 +236,54 @@ class AdminLocalizationControllerCore extends AdminController
         parent::postProcess();
     }
 
+    /**
+     * @param array $a
+     * @param array $b
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
     public function sortLocalizationsPack($a, $b)
     {
         return $a['name'] > $b['name'];
     }
 
     /**
-     * @return string|void
+     * @sinec 1.0.0
+     */
+    public function display()
+    {
+        $this->initContent();
+        parent::display();
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    public function initContent()
+    {
+        $this->initTabModuleList();
+        if (!$this->loadObject(true)) {
+            return;
+        }
+
+        $this->initToolbar();
+        $this->initPageHeaderToolbar();
+        $this->context->smarty->assign(
+            [
+                'localization_form'         => $this->renderForm(),
+                'localization_options'      => $this->renderOptions(),
+                'url_post'                  => self::$currentIndex.'&token='.$this->token,
+                'show_page_header_toolbar'  => $this->show_page_header_toolbar,
+                'page_header_toolbar_title' => $this->page_header_toolbar_title,
+                'page_header_toolbar_btn'   => $this->page_header_toolbar_btn,
+            ]
+        );
+    }
+
+    /**
+     * @return string|null
      *
      * @since 1.0.0
      */
@@ -282,140 +336,119 @@ class AdminLocalizationControllerCore extends AdminController
             }
         }
 
-        usort($localizationsPack, [$this, 'sortLocalizationsPack']);
+        if (is_array($localizationsPack)) {
+            usort($localizationsPack, [$this, 'sortLocalizationsPack']);
+        }
 
-        $selection_import = [
+        $selectionImport = [
             [
-                'id' => 'states',
-                'val' => 'states',
-                'name' => $this->l('States')
+                'id'   => 'states',
+                'val'  => 'states',
+                'name' => $this->l('States'),
             ],
             [
-                'id' => 'taxes',
-                'val' => 'taxes',
-                'name' => $this->l('Taxes')
+                'id'   => 'taxes',
+                'val'  => 'taxes',
+                'name' => $this->l('Taxes'),
             ],
             [
-                'id' => 'currencies',
-                'val' => 'currencies',
-                'name' => $this->l('Currencies')
+                'id'   => 'currencies',
+                'val'  => 'currencies',
+                'name' => $this->l('Currencies'),
             ],
             [
-                'id' => 'languages',
-                'val' => 'languages',
-                'name' => $this->l('Languages')
+                'id'   => 'languages',
+                'val'  => 'languages',
+                'name' => $this->l('Languages'),
             ],
             [
-                'id' => 'units',
-                'val' => 'units',
-                'name' => $this->l('Units (e.g. weight, volume, distance)')
+                'id'   => 'units',
+                'val'  => 'units',
+                'name' => $this->l('Units (e.g. weight, volume, distance)'),
             ],
             [
-                'id' => 'groups',
-                'val' => 'groups',
-                'name' => $this->l('Change the behavior of the taxes displayed to the groups')
-            ]
+                'id'   => 'groups',
+                'val'  => 'groups',
+                'name' => $this->l('Change the behavior of the taxes displayed to the groups'),
+            ],
         ];
 
         $this->fields_form = [
             'tinymce' => true,
-            'legend' => [
+            'legend'  => [
                 'title' => $this->l('Import a localization pack'),
-                'icon' => 'icon-globe'
+                'icon'  => 'icon-globe',
             ],
-            'input' => [
+            'input'   => [
                 [
-                    'type' => 'select',
-                    'class' => 'chosen',
-                    'label' => $this->l('Localization pack you want to import'),
-                    'name' => 'iso_localization_pack',
+                    'type'    => 'select',
+                    'class'   => 'chosen',
+                    'label'   => $this->l('Localization pack you want to import'),
+                    'name'    => 'iso_localization_pack',
                     'options' => [
                         'query' => $localizationsPack,
-                        'id' => 'iso_localization_pack',
-                        'name' => 'name'
-                    ]
+                        'id'    => 'iso_localization_pack',
+                        'name'  => 'name',
+                    ],
                 ],
                 [
-                    'type' => 'checkbox',
-                    'label' => $this->l('Content to import'),
-                    'name' => 'selection[]',
-                    'lang' => true,
+                    'type'   => 'checkbox',
+                    'label'  => $this->l('Content to import'),
+                    'name'   => 'selection[]',
+                    'lang'   => true,
                     'values' => [
-                        'query' => $selection_import,
-                        'id' => 'id',
-                        'name' => 'name'
-                    ]
+                        'query' => $selectionImport,
+                        'id'    => 'id',
+                        'name'  => 'name',
+                    ],
                 ],
                 [
-                    'type'     => 'radio',
-                    'label'  => $this->l('Download pack data'),
-                    'desc'     => $this->l('If set to yes then the localization pack will be downloaded from prestashop.com. Otherwise the local xml file found in the localization folder of your PrestaShop installation will be used.'),
-                    'name'     => 'download_updated_pack',
-                    'is_bool'=> true,
-                    'values' => [
+                    'type'    => 'radio',
+                    'label'   => $this->l('Download pack data'),
+                    'desc'    => $this->l('If set to yes then the localization pack will be downloaded from prestashop.com. Otherwise the local xml file found in the localization folder of your PrestaShop installation will be used.'),
+                    'name'    => 'download_updated_pack',
+                    'is_bool' => true,
+                    'values'  => [
                         [
                             'id'    => 'download_updated_pack_yes',
-                            'value'    => 1,
-                            'label' => $this->l('Yes')
+                            'value' => 1,
+                            'label' => $this->l('Yes'),
                         ],
                         [
                             'id'    => 'download_updated_pack_no',
-                            'value'    => 0,
-                            'label' => $this->l('No')
-                        ]
-                    ]
-                ]
+                            'value' => 0,
+                            'label' => $this->l('No'),
+                        ],
+                    ],
+                ],
             ],
-            'submit' => [
+            'submit'  => [
                 'title' => $this->l('Import'),
-                'icon' => 'process-icon-import',
-                'name' => 'submitLocalizationPack'
+                'icon'  => 'process-icon-import',
+                'name'  => 'submitLocalizationPack',
             ],
         ];
 
         $this->fields_value = [
-            'selection[]_states' => true,
-            'selection[]_taxes' => true,
+            'selection[]_states'     => true,
+            'selection[]_taxes'      => true,
             'selection[]_currencies' => true,
-            'selection[]_languages' => true,
-            'selection[]_units' => true,
-            'download_updated_pack' => 1
+            'selection[]_languages'  => true,
+            'selection[]_units'      => true,
+            'download_updated_pack'  => 1,
         ];
 
         $this->show_toolbar = true;
+
         return parent::renderForm();
     }
 
-    public function initContent()
-    {
-        $this->initTabModuleList();
-        if (!$this->loadObject(true)) {
-            return;
-        }
-
-        $this->initToolbar();
-        $this->initPageHeaderToolbar();
-        $this->context->smarty->assign(
-            [
-            'localization_form' => $this->renderForm(),
-            'localization_options' => $this->renderOptions(),
-            'url_post' => self::$currentIndex.'&token='.$this->token,
-            'show_page_header_toolbar' => $this->show_page_header_toolbar,
-            'page_header_toolbar_title' => $this->page_header_toolbar_title,
-            'page_header_toolbar_btn' => $this->page_header_toolbar_btn
-            ]
-        );
-    }
-
-    public function display()
-    {
-        $this->initContent();
-        parent::display();
-    }
-
+    /**
+     * @since 1.0.0
+     */
     public function beforeUpdateOptions()
     {
-        $lang = new Language((int)Tools::getValue('PS_LANG_DEFAULT'));
+        $lang = new Language((int) Tools::getValue('PS_LANG_DEFAULT'));
 
         if (!$lang->active) {
             $lang->active = 1;
@@ -423,6 +456,11 @@ class AdminLocalizationControllerCore extends AdminController
         }
     }
 
+    /**
+     * @param string $value
+     *
+     * @since 1.0.0
+     */
     public function updateOptionPsCurrencyDefault($value)
     {
         if ($value == Configuration::get('PS_CURRENCY_DEFAULT')) {
@@ -433,17 +471,17 @@ class AdminLocalizationControllerCore extends AdminController
         /* Set conversion rate of default currency to 1 */
         ObjectModel::updateMultishopTable('Currency', ['conversion_rate' => 1], 'a.id_currency');
 
-        $tmp_context = Shop::getContext();
-        if ($tmp_context == Shop::CONTEXT_GROUP) {
-            $tmp_shop = Shop::getContextShopGroupID();
+        $tmpContext = Shop::getContext();
+        if ($tmpContext == Shop::CONTEXT_GROUP) {
+            $tmpShop = Shop::getContextShopGroupID();
         } else {
-            $tmp_shop = (int)Shop::getContextShopID();
+            $tmpShop = (int) Shop::getContextShopID();
         }
 
-        foreach (Shop::getContextListShopID() as $id_shop) {
-            Shop::setContext(Shop::CONTEXT_SHOP, (int)$id_shop);
+        foreach (Shop::getContextListShopID() as $idShop) {
+            Shop::setContext(Shop::CONTEXT_SHOP, (int) $idShop);
             Currency::refreshCurrencies();
         }
-        Shop::setContext($tmp_context, $tmp_shop);
+        Shop::setContext($tmpContext, $tmpShop);
     }
 }
