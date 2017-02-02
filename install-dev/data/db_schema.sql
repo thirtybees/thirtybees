@@ -3375,7 +3375,7 @@ CREATE TABLE `PREFIX_redis_servers` (
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
-  c
+  COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_url_rewrite` (
   `id_url_rewrite` INT(11) UNSIGNED    NOT NULL AUTO_INCREMENT,
@@ -3391,10 +3391,10 @@ CREATE TABLE `PREFIX_url_rewrite` (
   DEFAULT CHARSET = utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
-CREATE TABLE tb_currency_module
+CREATE TABLE `PREFIX_currency_module`
 (
-  id_currency INT(11) UNSIGNED NOT NULL,
-  module      INT(11) UNSIGNED,
+  `id_currency` INT(11) UNSIGNED NOT NULL,
+  `module`      INT(11) UNSIGNED,
   CONSTRAINT `uc_id_currency` UNIQUE (`id_currency`)
 )
   ENGINE = ENGINE_TYPE
