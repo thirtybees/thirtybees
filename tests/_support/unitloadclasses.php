@@ -150,7 +150,7 @@ $kernel->loadFile(__DIR__.'/../../classes/Tab.php');
 $kernel->loadFile(__DIR__.'/../../classes/PrestaShopBackup.php');
 $kernel->loadFile(__DIR__.'/../../classes/Alias.php');
 $kernel->loadFile(__DIR__.'/../../classes/Group.php');
-$kernel->loadFile(__DIR__.'/../../classes/PaymentModule.php');
+$kernel->loadFile(__DIR__.'/../../classes/module/PaymentModule.php');
 $kernel->loadFile(__DIR__.'/../../classes/TranslatedConfiguration.php');
 $kernel->loadFile(__DIR__.'/../../classes/PrestaShopCollection.php');
 $kernel->loadFile(__DIR__.'/../../classes/FileUploader.php');
