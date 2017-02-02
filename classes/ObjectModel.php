@@ -677,7 +677,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         $this->clearCache();
 
         // Automatically fill dates
-        if (array_key_exists('date_upd', $this)) {
+        if (property_exists($this, 'date_upd')) {
             $this->date_upd = date('Y-m-d H:i:s');
             if (isset($this->update_fields) && is_array($this->update_fields) && count($this->update_fields)) {
                 $this->update_fields['date_upd'] = true;
@@ -685,7 +685,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         }
 
         // Automatically fill dates
-        if (array_key_exists('date_add', $this) && $this->date_add == null) {
+        if (property_exists($this, 'date_add') && $this->date_add == null) {
             $this->date_add = date('Y-m-d H:i:s');
             if (isset($this->update_fields) && is_array($this->update_fields) && count($this->update_fields)) {
                 $this->update_fields['date_add'] = true;
@@ -722,7 +722,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             foreach ($idShopList as $idShop) {
                 $fields['id_shop'] = (int) $idShop;
                 $allFields['id_shop'] = (int) $idShop;
-                $where = $this->def['primary'].' = '.(int)$this->id.' AND id_shop = '.(int) $idShop;
+                $where = $this->def['primary'].' = '.(int) $this->id.' AND id_shop = '.(int) $idShop;
 
                 // A little explanation of what we do here : we want to create multishop entry when update is called, but
                 // only if we are in a shop context (if we are in all context, we just want to update entries that alread exists)
@@ -754,9 +754,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                         }
                         foreach ($idShopList as $idShop) {
                             $field['id_shop'] = (int) $idShop;
-                            $where = pSQL($this->def['primary']).' = '.(int) $this->id
-                                        .' AND id_lang = '.(int) $field['id_lang']
-                                        .' AND id_shop = '.(int) $idShop;
+                            $where = pSQL($this->def['primary']).' = '.(int) $this->id.' AND id_lang = '.(int) $field['id_lang'].' AND id_shop = '.(int) $idShop;
 
                             if (Db::getInstance()->getValue('SELECT COUNT(*) FROM '.pSQL(_DB_PREFIX_.$this->def['table']).'_lang WHERE '.$where)) {
                                 $result &= Db::getInstance()->update($this->def['table'].'_lang', $field, $where);
@@ -766,8 +764,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                         }
                     } else {
                         // If this table is not linked to multishop system ...
-                        $where = pSQL($this->def['primary']).' = '.(int) $this->id
-                                    .' AND id_lang = '.(int) $field['id_lang'];
+                        $where = pSQL($this->def['primary']).' = '.(int) $this->id.' AND id_lang = '.(int) $field['id_lang'];
                         if (Db::getInstance()->getValue('SELECT COUNT(*) FROM '.pSQL(_DB_PREFIX_.$this->def['table']).'_lang WHERE '.$where)) {
                             $result &= Db::getInstance()->update($this->def['table'].'_lang', $field, $where);
                         } else {
@@ -809,13 +806,13 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                 $idShopList = $this->id_shop_list;
             }
 
-            $result &= Db::getInstance()->delete($this->def['table'].'_shop', '`'.$this->def['primary'].'`='.(int)$this->id.' AND id_shop IN ('.implode(', ', $idShopList).')');
+            $result &= Db::getInstance()->delete($this->def['table'].'_shop', '`'.$this->def['primary'].'`='.(int) $this->id.' AND id_shop IN ('.implode(', ', $idShopList).')');
         }
 
         // Database deletion
         $hasMultishopEntries = $this->hasMultishopEntries();
         if ($result && !$hasMultishopEntries) {
-            $result &= Db::getInstance()->delete($this->def['table'], '`'.bqSQL($this->def['primary']).'` = '.(int)$this->id);
+            $result &= Db::getInstance()->delete($this->def['table'], '`'.bqSQL($this->def['primary']).'` = '.(int) $this->id);
         }
 
         if (!$result) {
@@ -824,7 +821,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
         // Database deletion for multilingual fields related to the object
         if (!empty($this->def['multilang']) && !$hasMultishopEntries) {
-            $result &= Db::getInstance()->delete($this->def['table'].'_lang', '`'.bqSQL($this->def['primary']).'` = '.(int)$this->id);
+            $result &= Db::getInstance()->delete($this->def['table'].'_lang', '`'.bqSQL($this->def['primary']).'` = '.(int) $this->id);
         }
 
         // @hook actionObject*DeleteAfter
@@ -848,7 +845,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     {
         $result = true;
         foreach ($ids as $id) {
-            $this->id = (int)$id;
+            $this->id = (int) $id;
             $result = $result && $this->delete();
         }
 
@@ -867,7 +864,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     public function toggleStatus()
     {
         // Object must have a variable called 'active'
-        if (!array_key_exists('active', $this)) {
+        if (!property_exists($this, 'active')) {
             throw new PrestaShopException('property "active" is missing in object '.get_class($this));
         }
 
@@ -976,6 +973,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                 if ($die) {
                     throw new PrestaShopException($message);
                 }
+
                 return $errorReturn ? $message : false;
             }
         }
@@ -1024,6 +1022,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                     if ($die) {
                         throw new PrestaShopException($message);
                     }
+
                     return $errorReturn ? $message : false;
                 }
             }
@@ -1103,6 +1102,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                 if ($humanErrors) {
                     if (isset($data['lang']) && $data['lang']) {
                         $language = new Language((int) $idLang);
+
                         return sprintf(Tools::displayError('The field %1$s (%2$s) is too long (%3$d chars max, html chars including).'), $this->displayFieldName($field, get_class($this)), $language->name, $size['max']);
                     } else {
                         return sprintf(Tools::displayError('The %1$s field is too long (%2$d chars max).'), $this->displayFieldName($field, get_class($this)), $size['max']);
@@ -1169,6 +1169,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         }
 
         $key = $class.'_'.md5($field);
+
         return ((is_array($_FIELDS) && array_key_exists($key, $_FIELDS)) ? ($htmlentities ? htmlentities($_FIELDS[$key], ENT_QUOTES, 'utf-8') : $_FIELDS[$key]) : $field);
     }
 

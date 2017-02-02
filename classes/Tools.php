@@ -29,6 +29,10 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use CommerceGuys\Intl\Currency\CurrencyRepository;
+use CommerceGuys\Intl\NumberFormat\NumberFormatRepository;
+use CommerceGuys\Intl\Formatter\NumberFormatter;
+
 /**
  * Class ToolsCore
  *
@@ -797,15 +801,16 @@ class ToolsCore
 
         $price = Tools::ps_round($price, $currencyDecimals);
         $languageIso = $context->language->language_code;
-        if (Tools::strlen($languageIso) === 5) {
-            $languageIso = Tools::strtolower(Tools::substr($languageIso, 0, 2)).'_'.Tools::strtoupper(Tools::substr($languageIso, 3, 2));
-        } else {
-            $languageIso = 'en_US';
-        }
 
-        $numberFormatter = new NumberFormatter($languageIso, NumberFormatter::CURRENCY);
+        $currencyRepository = new CurrencyRepository();
+        $numberFormatRepository = new NumberFormatRepository();
 
-        return $numberFormatter->formatCurrency($price, $currencyIso);
+        $currency = $currencyRepository->get(Tools::strtoupper($currencyIso));
+        $numberFormat = $numberFormatRepository->get($languageIso);
+
+        $currencyFormatter = new NumberFormatter($numberFormat, NumberFormatter::CURRENCY);
+
+        return $currencyFormatter->formatCurrency($price, $currency);
     }
 
     /**

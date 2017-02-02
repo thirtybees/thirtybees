@@ -352,30 +352,7 @@ abstract class InstallControllerHttp
      */
     public function getPhone()
     {
-        if (InstallSession::getInstance()->supportPhone != null) {
-            return InstallSession::getInstance()->supportPhone;
-        }
-        if ($this->phone === null) {
-            $this->phone = $this->language->getInformation('phone', false);
-            $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
-
-            try {
-                $iframe = (string) $guzzle->get('http://api.prestashop.com/iframe/install.php?lang='.$this->language->getLanguageIso())->getBody();
-            } catch (Exception $e) {
-                $iframe = null;
-            }
-            if ($iframe) {
-                if (is_object($iframe)) {
-                    ddd($guzzle);
-                }
-                if (preg_match('/<img.+alt="([^"]+)".*>/Ui', $iframe, $matches) && isset($matches[1])) {
-                    $this->phone = $matches[1];
-                }
-            }
-        }
-        InstallSession::getInstance()->supportPhone = $this->phone;
-
-        return $this->phone;
+        return '';
     }
 
     /**

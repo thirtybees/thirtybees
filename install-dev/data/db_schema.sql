@@ -3394,7 +3394,7 @@ CREATE TABLE `PREFIX_url_rewrite` (
 CREATE TABLE `PREFIX_currency_module`
 (
   `id_currency` INT(11) UNSIGNED NOT NULL,
-  `module`      INT(11) UNSIGNED,
+  `id_module`   INT(11) UNSIGNED,
   CONSTRAINT `uc_id_currency` UNIQUE (`id_currency`)
 )
   ENGINE = ENGINE_TYPE

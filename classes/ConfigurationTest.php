@@ -98,9 +98,9 @@ class ConfigurationTestCore
             'Gd'         => false,
             'ConfigDir'  => 'config',
             'Files'      => false,
-            'MailsDir'  => 'mails',
+            'MailsDir'   => 'mails',
             'PdoMysql'   => false,
-            'Intl'       => false,
+            'Bcmath'     => false,
             'Xml'        => false,
             'Json'       => false,
             'Zip'        => false,
@@ -216,9 +216,9 @@ class ConfigurationTestCore
      *
      * @since 1.0.0
      */
-    public static function testIntl()
+    public static function testBcmath()
     {
-        return extension_loaded('intl') && class_exists('NumberFormatter');
+        return extension_loaded('bcmath') && function_exists('bcdiv');
     }
 
     /**
