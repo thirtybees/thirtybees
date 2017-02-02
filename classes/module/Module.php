@@ -1891,7 +1891,7 @@ abstract class ModuleCore
         return Hook::exec('displayPayment');
     }
 
-    public static function preCall($module_name)
+    public static function preCall($moduleName)
     {
         return true;
     }

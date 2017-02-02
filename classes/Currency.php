@@ -239,32 +239,35 @@ class CurrencyCore extends ObjectModel
     }
 
     /**
-     * @return array|mixed|string
+     * @return string|null
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function refreshCurrencies()
     {
-        // Parse
-        if (!$feed = Tools::simplexml_load_file(_PS_CURRENCY_FEED_URL_)) {
-            return Tools::displayError('Cannot parse feed.');
-        }
-
-        // Default feed currency (EUR)
-        $isoCodeSource = strval($feed->source['iso_code']);
-
         if (!$defaultCurrency = Currency::getDefaultCurrency()) {
             return Tools::displayError('No default currency');
         }
 
-        $currencies = Currency::getCurrencies(true, false, true);
-        foreach ($currencies as $currency) {
-            /** @var Currency $currency */
-            if ($currency->id != $defaultCurrency->id) {
-                $currency->refreshCurrency($feed->list, $isoCodeSource, $defaultCurrency);
+        $currencyRates = CurrencyRateModule::getCurrencyRateInfo();
+        foreach ($currencyRates as $currency => $module) {
+            /** @var CurrencyRateModule $module */
+            $currencyObj = new Currency(Currency::getIdByIsoCode($currency));
+            if (!Validate::isLoadedObject($currencyObj)) {
+                continue;
+            }
+            if ($currencyObj->id != $defaultCurrency->id && Validate::isLoadedObject($module)) {
+                /** @var Currency $currency */
+                $rate = $module->hookRate($defaultCurrency->iso_code, $currencyObj->iso_code);
+                if ($rate !== false) {
+                    $currencyObj->conversion_rate = $rate;
+                    $currencyObj->save();
+                }
             }
         }
+
+        return null;
     }
 
     /**
@@ -339,6 +342,8 @@ class CurrencyCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @deprecated 1.0.0
      */
     public function refreshCurrency($data, $isoCodeSource, $defaultCurrency)
     {
