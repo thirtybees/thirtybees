@@ -47,6 +47,7 @@ class AdminCurrenciesControllerCore extends AdminController
         $this->table = 'currency';
         $this->className = 'Currency';
         $this->lang = false;
+        $this->list_no_link = true;
 
         $this->fields_list = [
             'id_currency'     => ['title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'],
@@ -55,6 +56,7 @@ class AdminCurrenciesControllerCore extends AdminController
             'iso_code_num'    => ['title' => $this->l('ISO code number'), 'align' => 'center', 'class' => 'fixed-width-xs'],
             'conversion_rate' => ['title' => $this->l('Exchange rate'), 'type' => 'float', 'align' => 'center', 'width' => 130, 'search' => false, 'filter_key' => 'currency_shop!conversion_rate'],
             'active'          => ['title' => $this->l('Enabled'), 'width' => 25, 'align' => 'center', 'active' => 'status', 'type' => 'bool', 'orderby' => false, 'class' => 'fixed-width-sm'],
+            'module_name'     => ['title' => $this->l('Exchange rate service'), 'type' => 'fx_service', 'align' => 'center', 'class' => 'fixed-width-md', 'orderby' => false, 'search' => false ],
         ];
 
         $this->bulk_actions = [
@@ -85,8 +87,12 @@ class AdminCurrenciesControllerCore extends AdminController
 
         parent::__construct();
 
-        $this->_select .= 'currency_shop.conversion_rate conversion_rate';
+        CurrencyRateModule::scanMissingCurrencyRateModules();
+
+        $this->_select .= 'currency_shop.conversion_rate conversion_rate, m.`name` AS `module_name`';
         $this->_join .= Shop::addSqlAssociation('currency', 'a');
+        $this->_join .= ' LEFT JOIN `'._DB_PREFIX_.'currency_module` cm ON a.`id_currency` = cm.`id_currency`';
+        $this->_join .= ' LEFT JOIN `'._DB_PREFIX_.'module` m ON m.`id_module` = cm.`id_module`';
         $this->_group .= 'GROUP BY a.id_currency';
     }
 
@@ -144,9 +150,9 @@ class AdminCurrenciesControllerCore extends AdminController
                     'hint'      => $this->l('Numeric ISO code (e.g. 840 for Dollars, 978 for Euros, etc.).'),
                 ],
                 [
-                    'type'      => 'hidden',
-                    'name'      => 'sign',
-                    'value'     => '',
+                    'type'          => 'hidden',
+                    'name'          => 'sign',
+                    'default_value' => '$',
                 ],
                 [
                     'type'      => 'text',
@@ -157,10 +163,10 @@ class AdminCurrenciesControllerCore extends AdminController
                     'hint'      => $this->l('Exchange rates are calculated from one unit of your shop\'s default currency. For example, if the default currency is euros and your chosen currency is dollars, type "1.20" (1&euro; = $1.20).'),
                 ],
                 [
-                    'type'      => 'hidden',
-                    'label'     => $this->l('Currency format'),
-                    'name'      => 'format',
-                    'value'     => 1,
+                    'type'          => 'hidden',
+                    'label'         => $this->l('Currency format'),
+                    'name'          => 'format',
+                    'default_value' => 1,
                 ],
                 [
                     'type'     => 'switch',
@@ -387,5 +393,26 @@ class AdminCurrenciesControllerCore extends AdminController
         }
 
         return parent::processBulkDisableSelection();
+    }
+
+    /**
+     * Process update fx service ajax call
+     */
+    public function ajaxProcessUpdateFxService()
+    {
+        $idModule = (int) Tools::getValue('idModule');
+        $idCurrency = (int) Tools::getValue('idCurrency');
+
+        if ($idModule && $idCurrency) {
+            CurrencyRateModule::setModule($idCurrency, $idModule);
+
+            die(json_encode([
+                    'success' => true,
+            ]));
+        } else {
+            die(json_encode([
+                    'success' => false,
+            ]));
+        }
     }
 }

@@ -36,35 +36,39 @@
  */
 abstract class PaymentModuleCore extends Module
 {
+    // @codingStandardsIgnoreStart
     const DEBUG_MODE = false;
     /** @var int Current order's id */
     public $currentOrder;
     public $currencies = true;
     public $currencies_mode = 'checkbox';
+    // @codingStandardsIgnoreEnd
 
     /**
      * Allows specified payment modules to be used by a specific currency
      *
      * @since 1.4.5
      *
-     * @param int   $id_currency
-     * @param array $id_module_list
+     * @param int   $idCurrency
+     * @param array $idModuleList
      *
      * @return bool
+     *
+     * @since 1.0.0
      */
-    public static function addCurrencyPermissions($id_currency, array $id_module_list = [])
+    public static function addCurrencyPermissions($idCurrency, array $idModuleList = [])
     {
         $values = '';
-        if (count($id_module_list) == 0) {
+        if (count($idModuleList) == 0) {
             // fetch all installed module ids
             $modules = PaymentModuleCore::getInstalledPaymentModules();
             foreach ($modules as $module) {
-                $id_module_list[] = $module['id_module'];
+                $idModuleList[] = $module['id_module'];
             }
         }
 
-        foreach ($id_module_list as $id_module) {
-            $values .= '('.(int) $id_module.','.(int) $id_currency.'),';
+        foreach ($idModuleList as $idModule) {
+            $values .= '('.(int) $idModule.','.(int) $idCurrency.'),';
         }
 
         if (!empty($values)) {
@@ -84,13 +88,15 @@ abstract class PaymentModuleCore extends Module
      * @see   Module::getPaymentModules() if you need a list of module related to the user context
      *
      * @since 1.4.5
-     * @return array module informations
+     * @return array module information
+     *
+     * @since 1.0.0
      */
     public static function getInstalledPaymentModules()
     {
-        $hook_payment = 'Payment';
+        $hookPayment = 'Payment';
         if (Db::getInstance()->getValue('SELECT `id_hook` FROM `'._DB_PREFIX_.'hook` WHERE `name` = \'displayPayment\'')) {
-            $hook_payment = 'displayPayment';
+            $hookPayment = 'displayPayment';
         }
 
         return Db::getInstance()->executeS(
@@ -101,17 +107,24 @@ abstract class PaymentModuleCore extends Module
             .Shop::addSqlRestriction(false, 'hm').'
 		LEFT JOIN `'._DB_PREFIX_.'hook` h ON hm.`id_hook` = h.`id_hook`
 		INNER JOIN `'._DB_PREFIX_.'module_shop` ms ON (m.`id_module` = ms.`id_module` AND ms.id_shop='.(int) Context::getContext()->shop->id.')
-		WHERE h.`name` = \''.pSQL($hook_payment).'\''
+		WHERE h.`name` = \''.pSQL($hookPayment).'\''
         );
     }
 
-    public static function preCall($module_name)
+    /**
+     * @param string $moduleName
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
+    public static function preCall($moduleName)
     {
-        if (!parent::preCall($module_name)) {
+        if (!parent::preCall($moduleName)) {
             return false;
         }
 
-        if (($module_instance = Module::getInstanceByName($module_name))) {
+        if (($module_instance = Module::getInstanceByName($moduleName))) {
             /** @var PaymentModule $module_instance */
             if (!$module_instance->currencies || ($module_instance->currencies && count(Currency::checkPaymentCurrencies($module_instance->id)))) {
                 return true;

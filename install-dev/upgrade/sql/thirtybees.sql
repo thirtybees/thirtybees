@@ -42,3 +42,12 @@ CREATE TABLE `PREFIX_url_rewrite` (
   ENGINE = ENGINE_TYPE
   DEFAULT CHARSET = utf8mb4
   COLLATE utf8mb4_unicode_ci;
+
+CREATE TABLE `PREFIX_currency_module`
+(
+  `id_currency` INT(11) UNSIGNED NOT NULL,
+  `module`      INT(11) UNSIGNED
+)
+  ENGINE = ENGINE_TYPE
+  DEFAULT CHARSET = utf8mb4
+  COLLATE utf8mb4_unicode_ci;
