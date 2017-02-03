@@ -46,7 +46,7 @@ Native modules will be refactored to remove legacy code. Code that supports prev
 - PHP 5.5 - PHP 7.1
 - Apache, nginx or IIS
 - Windows, Linux or OS X
-- MySQL 5.5.14+ or MariaDB 5.5+
+- MySQL 5.5.3+ or MariaDB 5.5+
 - PHP extensions:
   - Required:
     - gd
