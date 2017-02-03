@@ -48,13 +48,6 @@
 					<div>{l s='Update all'}</div>
 				</a>
 			</li>
-			{else}
-			<li>
-				<a id="desc-module-check-and-update-all" class="toolbar_btn" href="{$currentIndex|escape:'html':'UTF-8'}&amp;token={$token|escape:'html':'UTF-8'}&amp;check=1" title="{l s='Check for update'}">
-					<i class="process-icon-refresh"></i>
-					<div>{l s='Check for update'}</div>
-				</a>
-			</li>
 			{/if}
 			{if $add_permission eq '1' && ($context_mode != Context::MODE_HOST)}
 			<li>

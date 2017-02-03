@@ -351,8 +351,8 @@ class InstallModelInstall extends InstallAbstractModel
     }
 
     /**
-     * @param $version
-     * @param $country
+     * @param string $version
+     * @param string $country
      *
      * @return bool
      *
@@ -363,28 +363,16 @@ class InstallModelInstall extends InstallAbstractModel
     {
         if (InstallModelInstall::$cacheLocalizationPackContent === null || array_key_exists($country, InstallModelInstall::$cacheLocalizationPackContent)) {
             $pathCacheFile = _PS_CACHE_DIR_.'sandbox'.DIRECTORY_SEPARATOR.$version.$country.'.xml';
-            if (is_file($pathCacheFile)) {
-                $localizationFileContent = file_get_contents($pathCacheFile);
-            } else {
-                $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
-                try {
-                    $localizationFileContent = (string) $guzzle->get('http://api.prestashop.com/localization/'.$version.'/'.$country.'.xml')->getBody();
-                } catch (Exception $e) {
-                    $localizationFileContent = '';
-                }
-                if (!@simplexml_load_string($localizationFileContent)) {
-                    $localizationFileContent = false;
-                }
-                if (!$localizationFileContent) {
-                    $localizationFile = _PS_ROOT_DIR_.'/localization/default.xml';
-                    if (file_exists(_PS_ROOT_DIR_.'/localization/'.$country.'.xml')) {
-                        $localizationFile = _PS_ROOT_DIR_.'/localization/'.$country.'.xml';
-                    }
 
-                    $localizationFileContent = file_get_contents($localizationFile);
-                }
-                file_put_contents($pathCacheFile, $localizationFileContent);
+            $localizationFile = _PS_ROOT_DIR_.'/localization/default.xml';
+            if (file_exists(_PS_ROOT_DIR_.'/localization/'.$country.'.xml')) {
+                $localizationFile = _PS_ROOT_DIR_.'/localization/'.$country.'.xml';
             }
+
+            $localizationFileContent = file_get_contents($localizationFile);
+
+            file_put_contents($pathCacheFile, $localizationFileContent);
+
             InstallModelInstall::$cacheLocalizationPackContent[$country] = $localizationFileContent;
         }
 

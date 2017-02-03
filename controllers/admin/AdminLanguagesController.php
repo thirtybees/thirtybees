@@ -140,119 +140,107 @@ class AdminLanguagesControllerCore extends AdminController
         $this->fields_form = [
             'legend' => [
                 'title' => $this->l('Languages'),
-                'icon' => 'icon-globe'
+                'icon'  => 'icon-globe',
             ],
-            'input' => [
+            'input'  => [
                 [
                     'type' => 'hidden',
-                    'name' => 'ps_version'
+                    'name' => 'ps_version',
                 ],
                 [
-                    'type' => 'text',
-                    'label' => $this->l('Name'),
-                    'name' => 'name',
+                    'type'      => 'text',
+                    'label'     => $this->l('Name'),
+                    'name'      => 'name',
                     'maxlength' => 32,
-                    'required' => true
+                    'required'  => true,
                 ],
                 [
-                    'type' => 'text',
-                    'label' => $this->l('ISO code'),
-                    'name' => 'iso_code',
-                    'required' => true,
+                    'type'      => 'text',
+                    'label'     => $this->l('ISO code'),
+                    'name'      => 'iso_code',
+                    'required'  => true,
                     'maxlength' => 2,
-                    'hint' => $this->l('Two-letter ISO code (e.g. FR, EN, DE).')
+                    'hint'      => $this->l('Two-letter ISO code (e.g. FR, EN, DE).'),
                 ],
                 [
-                    'type' => 'text',
-                    'label' => $this->l('Language code'),
-                    'name' => 'language_code',
-                    'required' => true,
+                    'type'      => 'text',
+                    'label'     => $this->l('Language code'),
+                    'name'      => 'language_code',
+                    'required'  => true,
                     'maxlength' => 5,
-                    'hint' => $this->l('IETF language tag (e.g. en-US, pt-BR).')
-                    /* TO DO - ajouter les liens dans le hint ? */
-                    /*'desc' => $this->l('IETF language tag (e.g. en-US, pt-BR).').' '.sprintf('<a href="http://en.wikipedia.org/wiki/IETF_language_tag" target="_blank">%s <img src="../img/admin/external_link.png" class="icon-top" /></a>', $this->l('IETF on Wikipedia'))*/
+                    'hint'      => $this->l('IETF language tag (e.g. en-US, pt-BR).'),
                 ],
                 [
-                    'type' => 'text',
-                    'label' => $this->l('Date format'),
-                    'name' => 'date_format_lite',
+                    'type'     => 'text',
+                    'label'    => $this->l('Date format'),
+                    'name'     => 'date_format_lite',
                     'required' => true,
-                    'hint' => sprintf($this->l('Short date format (e.g., %s).'), 'Y-m-d')
-                    /* TO DO - ajouter les liens dans le hint ? */
-                    /*'desc' => sprintf($this->l('Short date format (e.g., %s)'), '<a href="http://php.net/date" target="_blank">Y-m-d</a>')*/
+                    'hint'     => sprintf($this->l('Short date format (e.g., %s).'), 'Y-m-d'),
                 ],
                 [
-                    'type' => 'text',
-                    'label' => $this->l('Date format (full)'),
-                    'name' => 'date_format_full',
+                    'type'     => 'text',
+                    'label'    => $this->l('Date format (full)'),
+                    'name'     => 'date_format_full',
                     'required' => true,
-                    'hint' => sprintf($this->l('Full date format (e.g., %s).'), 'Y-m-d H:i:s')
-                    /* TO DO - ajouter les liens dans le hint ? */
-                    /*'desc' => sprintf($this->l('Full date format (e.g., %s)'), '<a href="http://php.net/date" target="_blank">Y-m-d H:i:s</a>')*/
+                    'hint'     => sprintf($this->l('Full date format (e.g., %s).'), 'Y-m-d H:i:s'),
                 ],
                 [
-                    'type' => 'file',
-                    'label' => $this->l('Flag'),
-                    'name' => 'flag',
+                    'type'     => 'file',
+                    'label'    => $this->l('Flag'),
+                    'name'     => 'flag',
                     'required' => true,
-                    'hint' => $this->l('Upload the country flag from your computer.')
+                    'hint'     => $this->l('Upload the country flag from your computer.'),
                 ],
                 [
-                    'type' => 'file',
+                    'type'  => 'file',
                     'label' => $this->l('"No-picture" image'),
-                    'name' => 'no_picture',
-                    'hint' => $this->l('Image is displayed when "no picture is found".')
+                    'name'  => 'no_picture',
+                    'hint'  => $this->l('Image is displayed when "no picture is found".'),
                 ],
                 [
-                    'type' => 'switch',
-                    'label' => $this->l('Is RTL language'),
-                    'name' => 'is_rtl',
+                    'type'     => 'switch',
+                    'label'    => $this->l('Is RTL language'),
+                    'name'     => 'is_rtl',
                     'required' => false,
-                    'is_bool' => true,
-                    'values' => [
+                    'is_bool'  => true,
+                    'values'   => [
                         [
-                            'id' => 'is_rtl_on',
+                            'id'    => 'is_rtl_on',
                             'value' => 1,
-                            'label' => $this->l('Enabled')
+                            'label' => $this->l('Enabled'),
                         ],
                         [
-                            'id' => 'active_off',
+                            'id'    => 'active_off',
                             'value' => 0,
-                            'label' => $this->l('Disabled')
-                        ]
+                            'label' => $this->l('Disabled'),
+                        ],
                     ],
-                    'hint' => [
+                    'hint'     => [
                         $this->l('Enable if this language is read from right to left.').' '.
-                        $this->l('(Experimental: your theme must be compliant with RTL languages).')
-                    ]
+                        $this->l('(Experimental: your theme must be compliant with RTL languages).'),
+                    ],
                 ],
                 [
-                    'type' => 'switch',
-                    'label' => $this->l('Status'),
-                    'name' => 'active',
+                    'type'     => 'switch',
+                    'label'    => $this->l('Status'),
+                    'name'     => 'active',
                     'required' => false,
-                    'is_bool' => true,
-                    'values' => [
+                    'is_bool'  => true,
+                    'values'   => [
                         [
-                            'id' => 'active_on',
+                            'id'    => 'active_on',
                             'value' => 1,
-                            'label' => $this->l('Enabled')
+                            'label' => $this->l('Enabled'),
                         ],
                         [
-                            'id' => 'active_off',
+                            'id'    => 'active_off',
                             'value' => 0,
-                            'label' => $this->l('Disabled')
-                        ]
+                            'label' => $this->l('Disabled'),
+                        ],
                     ],
-                    'hint' => $this->l('Activate this language.')
+                    'hint'     => $this->l('Activate this language.'),
                 ],
-                [
-                    'type' => 'special',
-                    'name' => 'resultCheckLangPack',
-                    'text' => $this->l('Check to see if a language pack is available for this ISO code.'),
-                    'img' => 'ajax-loader.gif'
-                ]
-            ]
+            ],
         ];
 
         if (Shop::isFeatureActive()) {
@@ -536,38 +524,7 @@ class AdminLanguagesControllerCore extends AdminController
 
     public function ajaxProcessCheckLangPack()
     {
-        $this->json = true;
-        if (!Tools::getValue('iso_lang') || !Validate::isLanguageIsoCode(Tools::getValue('iso_lang'))) {
-            $this->status = 'error';
-            $this->errors[] = $this->l('Iso code is not valid');
-            return;
-        }
-        if (!Tools::getValue('ps_version') || !Validate::isPrestaShopVersion(Tools::getValue('ps_version'))) {
-            $this->status = 'error';
-            $this->errors[] = $this->l('Technical Error: ps_version is not valid');
-            return;
-        }
-
-        // Get all iso code available
-        $guzzle = new \GuzzleHttp\Client();
-        try {
-            $langPacks = (string) $guzzle->get('http://www.prestashop.com/download/lang_packs/get_language_pack.php?version='.Tools::getValue('ps_version').'&iso_lang='.Tools::strtolower(Tools::getValue('iso_lang')))->getBody();
-        } catch (Exception $e) {
-            $langPacks = null;
-        }
-        if ($langPacks) {
-            $result = json_decode($langPacks);
-            if ($langPacks !== '' && $result && !isset($result->error)) {
-                $this->status = 'ok';
-                $this->content = $langPacks;
-            } else {
-                $this->status = 'error';
-                $this->errors[] = $this->l('Wrong ISO code, or the selected language pack is unavailable.');
-            }
-        } else {
-            $this->status = 'error';
-            $this->errors[] = $this->l('Technical Error: translation server unreachable.');
-        }
+        $this->errors[] = $this->l('Our apologies. Language packs aren\'t in the first few thirty bees releases.');
     }
 
     protected function checkEmployeeIdLang($current_id_lang)

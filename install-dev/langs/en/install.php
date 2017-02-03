@@ -1,13 +1,13 @@
 <?php
 return [
     'informations' => [
-        'documentation' => 'http://doc.prestashop.com/display/PS16/Installing+PrestaShop',
-        'documentation_upgrade' => 'http://docs.prestashop.com/display/PS16/Updating+PrestaShop',
-        'forum' => 'http://www.prestashop.com/forums/',
-        'blog' => 'http://www.prestashop.com/blog/',
-        'support' => 'https://www.prestashop.com/en/support',
-        'tutorial' => 'https://www.youtube.com/watch?v=psz4aIPZZuk',
-        'tailored_help' => 'http://addons.prestashop.com/en/388-support',
+        'documentation' => 'http://docs.thirtybees.com/',
+        'documentation_upgrade' => 'http://docs.thirtybees.com/',
+        'forum' => 'http://www.thirtybees.com/forums/',
+        'blog' => 'http://www.thirtbees.com/blog/',
+        'support' => 'http://www.thirtybees.com/forums/',
+        'tutorial' => 'http://docs.thirtybees.com/',
+        'tailored_help' => 'http://docs.thirtybees.com/',
     ],
     'translations' => [
         'An SQL error occurred for entity <i>%1$s</i>: <i>%2$s</i>' => 'An SQL error occurred for entity <i>%1$s</i>: <i>%2$s</i>',

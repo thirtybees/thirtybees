@@ -610,7 +610,7 @@ class CurrencyCore extends ObjectModel
             return false;
         }
 
-        return parent::update($autodate, $nullValues);
+        return parent::update($nullValues);
     }
 
     /**
@@ -628,17 +628,17 @@ class CurrencyCore extends ObjectModel
         if (!$side) {
             return $this->sign;
         }
-        $formatedStrings = [
+        $formattedStrings = [
             'left'  => $this->sign.' ',
             'right' => ' '.$this->sign,
         ];
 
         $formats = [
-            1 => ['left' => &$formatedStrings['left'], 'right' => ''],
-            2 => ['left' => '', 'right' => &$formatedStrings['right']],
-            3 => ['left' => &$formatedStrings['left'], 'right' => ''],
-            4 => ['left' => '', 'right' => &$formatedStrings['right']],
-            5 => ['left' => '', 'right' => &$formatedStrings['right']],
+            1 => ['left' => &$formattedStrings['left'], 'right' => ''],
+            2 => ['left' => '', 'right' => &$formattedStrings['right']],
+            3 => ['left' => &$formattedStrings['left'], 'right' => ''],
+            4 => ['left' => '', 'right' => &$formattedStrings['right']],
+            5 => ['left' => '', 'right' => &$formattedStrings['right']],
         ];
         if (isset($formats[$this->format][$side])) {
             return ($formats[$this->format][$side]);
