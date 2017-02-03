@@ -50,7 +50,7 @@ Native modules will be refactored to remove legacy code. Code that supports prev
 - PHP extensions:
   - Required:
     - gd
-    - intl
+    - bcmath
     - xml (SimpleXML, DOMDocument)
     - json
     - zip
