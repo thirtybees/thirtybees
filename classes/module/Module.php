@@ -260,7 +260,7 @@ abstract class ModuleCore
         }
 
         if (isset($this->ps_versions_compliancy) && !isset($this->ps_versions_compliancy['max'])) {
-            $this->ps_versions_compliancy['max'] = _TB_VERSION_;
+            $this->ps_versions_compliancy['max'] = _PS_VERSION_;
         }
 
         if (strlen($this->ps_versions_compliancy['min']) == 3) {
@@ -342,7 +342,7 @@ abstract class ModuleCore
 
         // Check PS version compliancy
         if (!$this->checkCompliancy()) {
-            $this->_errors[] = Tools::displayError('The version of your module is not compliant with your ThirtyBees version.');
+            $this->_errors[] = Tools::displayError('The version of your module is not compliant with your PrestaShop version.');
 
             return false;
         }
@@ -436,7 +436,7 @@ abstract class ModuleCore
      */
     public function checkCompliancy()
     {
-        if (version_compare(_TB_VERSION_, $this->ps_versions_compliancy['min'], '<') || version_compare(_TB_VERSION_, $this->ps_versions_compliancy['max'], '>')) {
+        if (version_compare(_PS_VERSION_, $this->ps_versions_compliancy['min'], '<') || version_compare(_PS_VERSION_, $this->ps_versions_compliancy['max'], '>')) {
             return false;
         } else {
             return true;
