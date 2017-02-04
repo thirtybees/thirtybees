@@ -2630,7 +2630,11 @@ class ToolsCore
     {
         $cache_id = 'Tools::simplexml_load_file'.$url;
         if (!Cache::isStored($cache_id)) {
-            $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
+            $guzzle = new \GuzzleHttp\Client([
+                'http_errors' => false,
+                'verify' => _PS_TOOL_DIR_.'cacert.pem',
+                'timeout' => 5,
+            ]);
             try {
                 $result = @simplexml_load_string((string) $guzzle->get($url)->getBody(), $class_name);
             } catch (Exception $e) {

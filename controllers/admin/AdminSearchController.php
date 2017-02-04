@@ -198,7 +198,11 @@ class AdminSearchControllerCore extends AdminController
         if (!is_numeric(trim($this->query)) && !Validate::isEmail($this->query)) {
             $isoLang = Tools::strtolower(Context::getContext()->language->iso_code);
             $isoCountry = Tools::strtolower(Country::getIsoById(Configuration::get('PS_COUNTRY_DEFAULT')));
-            $guzzle = new \GuzzleHttp\Client();
+            $guzzle = new \GuzzleHttp\Client([
+                'http_errors' => false,
+                'verify' => _PS_TOOL_DIR_.'cacert.pem',
+                'timeout' => 5,
+            ]);
             try {
                 $jsonContent = (string) $guzzle->get('https://api-addons.prestashop.com/'._PS_VERSION_.'/search/'.urlencode($this->query).'/'.$isoCountry.'/'.$isoLang.'/')->getBody();
             } catch (Exception $e) {

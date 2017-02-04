@@ -187,7 +187,11 @@ class AdminLocalizationControllerCore extends AdminController
         }
 
         if (Tools::isSubmit('submitLocalizationPack')) {
-            $guzzle = new \GuzzleHttp\Client();
+            $guzzle = new \GuzzleHttp\Client([
+                'http_errors' => false,
+                'verify' => _PS_TOOL_DIR_.'cacert.pem',
+                'timeout' => 5,
+            ]);
 
             $version = str_replace('.', '', _TB_VERSION_);
             $version = substr($version, 0, 2);

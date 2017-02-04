@@ -295,7 +295,11 @@ class EmployeeCore extends ObjectModel
     {
         if ($this->optin && !defined('TB_INSTALLATION_IN_PROGRESS')) {
             $language = new Language($this->id_lang);
-            $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
+            $guzzle = new \GuzzleHttp\Client([
+                'http_errors' => false,
+                'verify' => _PS_TOOL_DIR_.'cacert.pem',
+                'timeout' => 5,
+            ]);
             try {
                 $guzzle->get(
                     'http://www.prestashop.com/ajax/controller.php',

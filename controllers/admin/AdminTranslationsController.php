@@ -190,7 +190,11 @@ class AdminTranslationsControllerCore extends AdminController
         $token = Tools::getAdminToken('AdminLanguages'.(int) Tab::getIdFromClassName('AdminLanguages').(int) $this->context->employee->id);
         $fileName = $this->link_lang_pack.'?version='._PS_VERSION_;
 
-        $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
+        $guzzle = new \GuzzleHttp\Client([
+            'http_errors' => false,
+            'verify' => _PS_TOOL_DIR_.'cacert.pem',
+            'timeout' => 5,
+        ]);
         try {
             $langPacks = (string) $guzzle->get($fileName)->getBody();
         } catch (Exception $e) {
@@ -872,7 +876,11 @@ class AdminTranslationsControllerCore extends AdminController
     {
         $arr_import_lang = explode('|', Tools::getValue('params_import_language')); /* 0 = Language ISO code, 1 = PS version */
         if (Validate::isLangIsoCode($arr_import_lang[0])) {
-            $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
+            $guzzle = new \GuzzleHttp\Client([
+                'http_errors' => false,
+                'verify' => _PS_TOOL_DIR_.'cacert.pem',
+                'timeout' => 5,
+            ]);
             try {
                 $content = (string) $guzzle->get('http://www.prestashop.com/download/lang_packs/gzip/'.$arr_import_lang[1].'/'.Tools::strtolower($arr_import_lang[0]).'.gzip')->getBody();
             } catch (Exception $e) {
