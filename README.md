@@ -21,7 +21,7 @@ To launch version 1.0.0 of the thirty bees core around February 1st 2017. In thi
 * Enhanced Favicon / device icon support
 * Full page caching in the core, with the following caching mechanisms:
   * redis
-  * memcached(d)
+  * memcache(d)
   * APCu
   * file system
 
@@ -86,20 +86,20 @@ $ composer install
 --db_server		(Default: localhost)
 --db_user		(Default: root)
 --db_password		(Default: )
---db_name		(Default: prestashop)
+--db_name		(Default: thirtybees)
 --db_clear	Drop existing tables	(Default: 1)
 --db_create	Create the database if not exist	(Default: 0)
---prefix		(Default: ps_)
---engine	InnoDB/MyISAM	(Default: InnoDB)
---name		(Default: PrestaShop)
+--prefix		(Default: tb_)
+--engine	InnoDB	(Default: InnoDB)
+--name		(Default: thirty bees)
 --activity		(Default: 0)
 --country		(Default: fr)
 --firstname		(Default: John)
 --lastname		(Default: Doe)
 --password		(Default: 0123456789)
---email		(Default: pub@prestashop.com)
---license	show PrestaShop license	(Default: 0)
---newsletter	get news from PrestaShop	(Default: 1)
+--email		(Default: pub@thirtybees.com)
+--license	show thirty bees license	(Default: 0)
+--newsletter	get news from thirty bees	(Default: 1)
 --send_email	send an email to the administrator after installation	(Default: 1)</pre>
 
 
