@@ -156,12 +156,12 @@ class TranslateCore
             }
 
             $currentKey = strtolower('<{'.$name.'}'._THEME_NAME_.'>'.$source).'_'.$key;
-            $defaultKey = strtolower('<{'.$name.'}prestashop>'.$source).'_'.$key;
+            $defaultKey = strtolower('<{'.$name.'}thirtybees>'.$source).'_'.$key;
 
             if ('controller' == substr($source, -10, 10)) {
                 $file = substr($source, 0, -10);
                 $currentKeyFile = strtolower('<{'.$name.'}'._THEME_NAME_.'>'.$file).'_'.$key;
-                $defaultKeyFile = strtolower('<{'.$name.'}prestashop>'.$file).'_'.$key;
+                $defaultKeyFile = strtolower('<{'.$name.'}thirtybees>'.$file).'_'.$key;
             }
 
             if (isset($currentKeyFile) && !empty($_MODULES[$currentKeyFile])) {

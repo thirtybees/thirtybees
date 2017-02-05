@@ -410,90 +410,7 @@ class LanguageCore extends ObjectModel
      */
     public static function downloadAndInstallLanguagePack($iso, $version = null, $params = null, $install = true)
     {
-        if (!Validate::isLanguageIsoCode((string) $iso)) {
-            return false;
-        }
-
-        if ($version == null) {
-            $version = _PS_VERSION_;
-        }
-
-        $langPack = false;
-        $errors = [];
-        $file = _PS_TRANSLATIONS_DIR_.(string) $iso.'.gzip';
-
-        $guzzle = new GuzzleHttp\Client(['http_errors' => false]);
-        try {
-            $langPackLink = (string) $guzzle->get('http://www.prestashop.com/download/lang_packs/get_language_pack.php?version='.$version.'&iso_lang='.Tools::strtolower((string) $iso))->getBody();
-        } catch (Exception $e) {
-            $langPackLink = null;
-        }
-        if (!$langPackLink) {
-            $errors[] = Tools::displayError('Archive cannot be downloaded from prestashop.com.');
-        } elseif (!$langPack = json_decode($langPackLink)) {
-            $errors[] = Tools::displayError('Error occurred when language was checked according to your Prestashop version.');
-        } elseif (empty($langPack->error) && ($content = (string) $guzzle->get('http://translations.prestashop.com/download/lang_packs/gzip/'.$langPack->version.'/'.Tools::strtolower($langPack->iso_code.'.gzip'))->getBody())) {
-            if (!@file_put_contents($file, $content)) {
-                if (is_writable(dirname($file))) {
-                    @unlink($file);
-                    @file_put_contents($file, $content);
-                } elseif (!is_writable($file)) {
-                    $errors[] = Tools::displayError('Server does not have permissions for writing.').' ('.$file.')';
-                }
-            }
-        }
-
-        if (!file_exists($file)) {
-            $errors[] = Tools::displayError('No language pack is available for your version.');
-        } elseif ($install) {
-            $gz = new Archive_Tar($file, true);
-            $filesList = AdminTranslationsController::filterTranslationFiles(Language::getLanguagePackListContent((string) $iso, $gz));
-            $filesPaths = AdminTranslationsController::filesListToPaths($filesList);
-
-            $i = 0;
-            $tmpArray = [];
-
-            foreach ($filesPaths as $filesPath) {
-                $path = dirname($filesPath);
-                if (is_dir(_PS_TRANSLATIONS_DIR_.'../'.$path) && !is_writable(_PS_TRANSLATIONS_DIR_.'../'.$path) && !in_array($path, $tmpArray)) {
-                    $errors[] = (!$i++ ? Tools::displayError('The archive cannot be extracted.').' ' : '').Tools::displayError('The server does not have permissions for writing.').' '.sprintf(Tools::displayError('Please check rights for %s'), $path);
-                    $tmpArray[] = $path;
-                }
-            }
-
-            if (defined('_PS_HOST_MODE_')) {
-                $mailsFiles = [];
-                $otherFiles = [];
-
-                foreach ($filesList as $key => $data) {
-                    if (substr($data['filename'], 0, 5) == 'mails') {
-                        $mailsFiles[] = $data;
-                    } else {
-                        $otherFiles[] = $data;
-                    }
-                }
-
-                $filesList = $otherFiles;
-            }
-
-            if (!$gz->extractList(AdminTranslationsController::filesListToPaths($filesList), _PS_TRANSLATIONS_DIR_.'../')) {
-                $errors[] = sprintf(Tools::displayError('Cannot decompress the translation file for the following language: %s'), (string) $iso);
-            }
-
-            // Clear smarty modules cache
-            Tools::clearCache();
-
-            if (!Language::checkAndAddLanguage((string) $iso, $langPack, false, $params)) {
-                $errors[] = sprintf(Tools::displayError('An error occurred while creating the language: %s'), (string) $iso);
-            } else {
-                // Reset cache
-                Language::loadLanguages();
-                AdminTranslationsController::checkAndAddMailsFiles((string) $iso, $filesList);
-                AdminTranslationsController::addNewTabs((string) $iso, $filesList);
-            }
-        }
-
-        return count($errors) ? $errors : true;
+        return false;
     }
 
     public static function getLanguagePackListContent($iso, $tar)
@@ -576,23 +493,7 @@ class LanguageCore extends ObjectModel
             Configuration::updateGlobalValue('PS_ALLOW_ACCENTED_CHARS_URL', 1);
         }
 
-        $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
-        try {
-            $flag = (string) $guzzle->get('http://www.prestashop.com/download/lang_packs/flags/jpeg/'.$isoCode.'.jpg')->getBody();
-        } catch (Exception $e) {
-            $flag = null;
-        }
-        if ($flag != null && !preg_match('/<body>/', $flag)) {
-            $file = fopen(_PS_ROOT_DIR_.'/img/l/'.(int) $lang->id.'.jpg', 'w');
-            if ($file) {
-                fwrite($file, $flag);
-                fclose($file);
-            } else {
-                Language::_copyNoneFlag((int) $lang->id);
-            }
-        } else {
-            Language::_copyNoneFlag((int) $lang->id);
-        }
+        Language::_copyNoneFlag((int) $lang->id);
 
         $files_copy = [
             '/en.jpg',

@@ -228,7 +228,7 @@ class UpgraderCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function downloadLast($dest, $filename = 'prestashop.zip')
+    public function downloadLast($dest, $filename = 'thirtybees.zip')
     {
         if (empty($this->link)) {
             $this->checkPSVersion();

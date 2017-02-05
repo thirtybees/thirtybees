@@ -301,18 +301,7 @@ class EmployeeCore extends ObjectModel
                 'timeout' => 5,
             ]);
             try {
-                $guzzle->get(
-                    'http://www.prestashop.com/ajax/controller.php',
-                    [
-                        'query' => [
-                            'email'       => $this->email,
-                            'method'      => 'addMemberToNewsletter',
-                            'language'    => $language->iso_code,
-                            'visitorType' => 1,
-                            'source'      => 'backoffice',
-                        ],
-                    ]
-                );
+                //FIXME: insert mailchimp hook
             } catch (Exception $e) {
                 // Don't care
             }

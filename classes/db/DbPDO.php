@@ -121,7 +121,7 @@ class DbPDOCore extends Db
 
         // UTF-8 support
         if ($this->link->exec('SET NAMES \'utf8\'') === false) {
-            die(Tools::displayError('PrestaShop Fatal error: no utf-8 support. Please check your server configuration.'));
+            die(Tools::displayError('thirty bees Fatal error: no UTF-8 support. Please check your server configuration.'));
         }
 
         $this->link->exec('SET SESSION sql_mode = \'\'');

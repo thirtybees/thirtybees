@@ -374,7 +374,7 @@ class AdminControllerCore extends Controller
             29 => $this->l('Successful upgrade'),
             30 => $this->l('A partial refund was successfully created.'),
             31 => $this->l('The discount was successfully generated.'),
-            32 => $this->l('Successfully signed in to PrestaShop Addons'),
+            32 => $this->l('Successfully signed in'),
         ];
 
         if (!$this->identifier) {
@@ -4165,15 +4165,6 @@ class AdminControllerCore extends Controller
                 'check_url_fopen'             => (ini_get('allow_url_fopen') ? 'ok' : 'ko'),
                 'check_openssl'               => (extension_loaded('openssl') ? 'ok' : 'ko'),
                 'add_permission'              => 1,
-                'addons_register_link'        => 'https://addons.prestashop.com/'.$this->context->language->iso_code.'/login?'
-                    .'email='.urlencode($this->context->employee->email)
-                    .'&firstname='.urlencode($this->context->employee->firstname)
-                    .'&lastname='.urlencode($this->context->employee->lastname)
-                    .'&website='.urlencode($this->context->shop->getBaseURL())
-                    .'&utm_source=back-office&utm_medium=connect-to-addons'
-                    .'&utm_campaign=back-office-'.Tools::strtoupper($this->context->language->iso_code)
-                    .'&utm_content='.(defined('_PS_HOST_MODE_') ? 'cloud' : 'download').'#createnow',
-                'addons_forgot_password_link' => '//addons.prestashop.com/'.$this->context->language->iso_code.'/forgot-your-password',
             ]
         );
 
@@ -4531,8 +4522,8 @@ class AdminControllerCore extends Controller
 		<html>
 			<head>
 				<meta charset='UTF-8'>
-				<title>PrestaShop Help</title>
-				<link href='//help.prestashop.com/css/help.css' rel='stylesheet'>
+				<title>thirty bees Help</title>
+				<link href='//help.thirtybees.com/css/help.css' rel='stylesheet'>
 				<link href='//fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet'>
 				<script src='"._PS_JS_DIR_."jquery/jquery-1.11.0.min.js'></script>
 				<script src='"._PS_JS_DIR_."admin.js'></script>

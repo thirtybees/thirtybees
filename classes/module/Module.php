@@ -342,7 +342,7 @@ abstract class ModuleCore
 
         // Check PS version compliancy
         if (!$this->checkCompliancy()) {
-            $this->_errors[] = Tools::displayError('The version of your module is not compliant with your PrestaShop version.');
+            $this->_errors[] = Tools::displayError('The version of your module is not compliant with your thirty bees version.');
 
             return false;
         }

@@ -75,7 +75,7 @@ class WebserviceRequestCore
      *
      * @var string
      */
-    protected $_docUrl = 'http://doc.prestashop.com/display/PS16/Using+the+PrestaShop+Web+Service';
+    protected $_docUrl = 'http://example.com';
 
     /**
      * Set if the authentication key was checked
@@ -880,7 +880,7 @@ class WebserviceRequestCore
     protected function isActivated()
     {
         if (!Configuration::get('PS_WEBSERVICE')) {
-            $this->setError(503, 'The PrestaShop webservice is disabled. Please activate it in the PrestaShop Back Office', 22);
+            $this->setError(503, 'The thirty bees webservice is disabled. Please activate it in the thirty bees Back Office', 22);
 
             return false;
         }
@@ -1901,7 +1901,6 @@ class WebserviceRequestCore
 
         // write headers
         $this->objOutput->setHeaderParams('Access-Time', time())
-            ->setHeaderParams('X-Powered-By', 'PrestaShop Webservice')
             ->setHeaderParams('PSWS-Version', _PS_VERSION_)
             ->setHeaderParams('Execution-Time', round(microtime(true) - $this->_startTime, 3));
 
