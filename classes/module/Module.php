@@ -370,6 +370,18 @@ abstract class ModuleCore
             return false;
         }
 
+        // Invalidate opcache
+        if (function_exists('opcache_invalidate')) {
+            foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_PS_MODULE_DIR_.$this->name)) as $file) {
+                /** @var SplFileInfo $file */
+                if (substr($file->getFilename(), -4) !== '.php' || $file->isLink()) {
+                    continue;
+                }
+
+                opcache_invalidate($file->getPathname());
+            }
+        }
+
         // Install overrides
         try {
             $this->installOverrides();
@@ -3083,6 +3095,11 @@ abstract class ModuleCore
 
             file_put_contents($override_dest, preg_replace($pattern_escape_com, '', $module_file));
 
+            // Invalidate opcache
+            if (function_exists('opcache_invalidate')) {
+                opcache_invalidate($override_dest);
+            }
+
             // Re-generate the class index
             Tools::generateIndex();
         }
@@ -3235,6 +3252,10 @@ abstract class ModuleCore
             unlink($override_path);
         } else {
             file_put_contents($override_path, $code);
+
+            if (function_exists('opcache_invalidate')) {
+                opcache_invalidate($override_path);
+            }
         }
 
         // Re-generate the class index
