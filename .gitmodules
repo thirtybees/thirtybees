@@ -391,3 +391,6 @@
 [submodule "modules/fixerio"]
 	path = modules/fixerio
 	url = https://github.com/thirtybees/fixerio
+[submodule "modules/custompayments"]
+	path = modules/custompayments
+	url = https://github.com/thirtybees/custompayments.git
