@@ -397,3 +397,6 @@
 [submodule "modules/stripe"]
 	path = modules/stripe
 	url = https://github.com/thirtybees/stripe.git
+[submodule "modules/mailchimp"]
+	path = modules/mailchimp
+	url = https://github.com/thirtybees/mailchimp.git
