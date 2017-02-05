@@ -33,9 +33,9 @@ abstract class ObjectModel extends ObjectModelCore
 {
     public static $debug_list = array();
 
-    public function __construct($id = null, $id_lang = null, $id_shop = null)
+    public function __construct($id = null, $idLang = null, $id_shop = null)
     {
-        parent::__construct($id, $id_lang, $id_shop);
+        parent::__construct($id, $idLang, $id_shop);
 
         $classname = get_class($this);
         if (!isset(self::$debug_list[$classname])) {
