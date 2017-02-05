@@ -394,3 +394,6 @@
 [submodule "modules/custompayments"]
 	path = modules/custompayments
 	url = https://github.com/thirtybees/custompayments.git
+[submodule "modules/stripe"]
+	path = modules/stripe
+	url = https://github.com/thirtybees/stripe.git
