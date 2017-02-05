@@ -599,7 +599,7 @@ class AdminGroupsControllerCore extends AdminController
             '<b>'.$default->name[$this->context->language->id].'</b>'
         );
 
-        $this->displayInformation($this->l('PrestaShop has three default customer groups:'));
+        $this->displayInformation($this->l('thirty bees has three default customer groups:'));
         $this->displayInformation($unidentified_group_information);
         $this->displayInformation($guest_group_information);
         $this->displayInformation($default_group_information);

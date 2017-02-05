@@ -21,16 +21,18 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * @property Configuration $object
+ * Class AdminAdminPreferencesControllerCore
+ *
+ * @since 1.0.0
  */
 class AdminAdminPreferencesControllerCore extends AdminController
 {
@@ -43,130 +45,134 @@ class AdminAdminPreferencesControllerCore extends AdminController
         parent::__construct();
 
         // Upload quota
-        $max_upload = (int)ini_get('upload_max_filesize');
-        $max_post = (int)ini_get('post_max_size');
-        $upload_mb = min($max_upload, $max_post);
+        $maxUpload = (int) ini_get('upload_max_filesize');
+        $maxPost = (int) ini_get('post_max_size');
+        $upload_mb = min($maxUpload, $maxPost);
 
         // Options list
         $this->fields_options = [
-            'general' => [
-                'title' =>    $this->l('General'),
-                'icon' =>    'icon-cogs',
-                'fields' =>    [
-                    'PRESTASTORE_LIVE' => [
-                        'title' => $this->l('Automatically check for module updates'),
-                        'hint' => $this->l('New modules and updates are displayed on the modules page.'),
+            'general'       => [
+                'title'  => $this->l('General'),
+                'icon'   => 'icon-cogs',
+                'fields' => [
+                    'PRESTASTORE_LIVE'      => [
+                        'title'      => $this->l('Automatically check for module updates'),
+                        'hint'       => $this->l('New modules and updates are displayed on the modules page.'),
                         'validation' => 'isBool',
-                        'cast' => 'intval',
-                        'type' => 'bool',
-                        'visibility' => Shop::CONTEXT_ALL
+                        'cast'       => 'intval',
+                        'type'       => 'bool',
+                        'visibility' => Shop::CONTEXT_ALL,
                     ],
-                    'PS_COOKIE_CHECKIP' => [
-                        'title' => $this->l('Check the cookie\'s IP address'),
-                        'hint' => $this->l('Check the IP address of the cookie in order to prevent your cookie from being stolen.'),
+                    'PS_COOKIE_CHECKIP'     => [
+                        'title'      => $this->l('Check the cookie\'s IP address'),
+                        'hint'       => $this->l('Check the IP address of the cookie in order to prevent your cookie from being stolen.'),
                         'validation' => 'isBool',
-                        'cast' => 'intval',
-                        'type' => 'bool',
-                        'default' => '0',
-                        'visibility' => Shop::CONTEXT_ALL
+                        'cast'       => 'intval',
+                        'type'       => 'bool',
+                        'default'    => '0',
+                        'visibility' => Shop::CONTEXT_ALL,
                     ],
                     'PS_COOKIE_LIFETIME_FO' => [
-                        'title' => $this->l('Lifetime of front office cookies'),
-                        'hint' => $this->l('Set the amount of hours during which the front office cookies are valid. After that amount of time, the customer will have to log in again.'),
+                        'title'      => $this->l('Lifetime of front office cookies'),
+                        'hint'       => $this->l('Set the amount of hours during which the front office cookies are valid. After that amount of time, the customer will have to log in again.'),
                         'validation' => 'isInt',
-                        'cast' => 'intval',
-                        'type' => 'text',
-                        'suffix' => $this->l('hours'),
-                        'default' => '480',
-                        'visibility' => Shop::CONTEXT_ALL
+                        'cast'       => 'intval',
+                        'type'       => 'text',
+                        'suffix'     => $this->l('hours'),
+                        'default'    => '480',
+                        'visibility' => Shop::CONTEXT_ALL,
                     ],
                     'PS_COOKIE_LIFETIME_BO' => [
-                        'title' => $this->l('Lifetime of back office cookies'),
-                        'hint' => $this->l('Set the amount of hours during which the back office cookies are valid. After that amount of time, the PrestaShop user will have to log in again.'),
+                        'title'      => $this->l('Lifetime of back office cookies'),
+                        'hint'       => $this->l('Set the amount of hours during which the back office cookies are valid. After that amount of time, the thirty bees user will have to log in again.'),
                         'validation' => 'isInt',
-                        'cast' => 'intval',
-                        'type' => 'text',
-                        'suffix' => $this->l('hours'),
-                        'default' => '480',
-                        'visibility' => Shop::CONTEXT_ALL
+                        'cast'       => 'intval',
+                        'type'       => 'text',
+                        'suffix'     => $this->l('hours'),
+                        'default'    => '480',
+                        'visibility' => Shop::CONTEXT_ALL,
                     ],
                 ],
-                'submit' => ['title' => $this->l('Save')]
+                'submit' => ['title' => $this->l('Save')],
             ],
-            'upload' => [
-                'title' =>    $this->l('Upload quota'),
-                'icon' =>    'icon-cloud-upload',
+            'upload'        => [
+                'title'  => $this->l('Upload quota'),
+                'icon'   => 'icon-cloud-upload',
                 'fields' => [
-                    'PS_ATTACHMENT_MAXIMUM_SIZE' => [
-                        'title' => $this->l('Maximum size for attachment'),
-                        'hint' =>  sprintf($this->l('Set the maximum size allowed for attachment files (in megabytes). This value has to be lower or equal to the maximum file upload allotted by your server (currently: %s MB).'), $upload_mb),
+                    'PS_ATTACHMENT_MAXIMUM_SIZE'  => [
+                        'title'      => $this->l('Maximum size for attachment'),
+                        'hint'       => sprintf($this->l('Set the maximum size allowed for attachment files (in megabytes). This value has to be lower or equal to the maximum file upload allotted by your server (currently: %s MB).'), $upload_mb),
                         'validation' => 'isInt',
-                        'cast' => 'intval',
-                        'type' => 'text',
-                        'suffix' => $this->l('megabytes'),
-                        'default' => '2'
+                        'cast'       => 'intval',
+                        'type'       => 'text',
+                        'suffix'     => $this->l('megabytes'),
+                        'default'    => '2',
                     ],
-                    'PS_LIMIT_UPLOAD_FILE_VALUE' => [
-                        'title' => $this->l('Maximum size for a downloadable product'),
-                        'hint' => sprintf($this->l('Define the upload limit for a downloadable product (in megabytes). This value has to be lower or equal to the maximum file upload allotted by your server (currently: %s MB).'), $upload_mb),
+                    'PS_LIMIT_UPLOAD_FILE_VALUE'  => [
+                        'title'      => $this->l('Maximum size for a downloadable product'),
+                        'hint'       => sprintf($this->l('Define the upload limit for a downloadable product (in megabytes). This value has to be lower or equal to the maximum file upload allotted by your server (currently: %s MB).'), $upload_mb),
                         'validation' => 'isInt',
-                        'cast' => 'intval',
-                        'type' => 'text',
-                        'suffix' => $this->l('megabytes'),
-                        'default' => '1'
+                        'cast'       => 'intval',
+                        'type'       => 'text',
+                        'suffix'     => $this->l('megabytes'),
+                        'default'    => '1',
                     ],
                     'PS_LIMIT_UPLOAD_IMAGE_VALUE' => [
-                        'title' => $this->l('Maximum size for a product\'s image'),
-                        'hint' => sprintf($this->l('Define the upload limit for an image (in megabytes). This value has to be lower or equal to the maximum file upload allotted by your server (currently: %s MB).'), $upload_mb),
+                        'title'      => $this->l('Maximum size for a product\'s image'),
+                        'hint'       => sprintf($this->l('Define the upload limit for an image (in megabytes). This value has to be lower or equal to the maximum file upload allotted by your server (currently: %s MB).'), $upload_mb),
                         'validation' => 'isInt',
-                        'cast' => 'intval',
-                        'type' => 'text',
-                        'suffix' => $this->l('megabytes'),
-                        'default' => '1'
+                        'cast'       => 'intval',
+                        'type'       => 'text',
+                        'suffix'     => $this->l('megabytes'),
+                        'default'    => '1',
                     ],
                 ],
-                'submit' => ['title' => $this->l('Save')]
+                'submit' => ['title' => $this->l('Save')],
             ],
             'notifications' => [
-                'title' =>    $this->l('Notifications'),
-                'icon' =>    'icon-list-alt',
+                'title'       => $this->l('Notifications'),
+                'icon'        => 'icon-list-alt',
                 'description' => $this->l('Notifications are numbered bubbles displayed at the very top of your back office, right next to the shop\'s name. They display the number of new items since you last clicked on them.'),
-                'fields' =>    [
-                    'PS_SHOW_NEW_ORDERS' => [
-                        'title' => $this->l('Show notifications for new orders'),
-                        'hint' => $this->l('This will display notifications when new orders are made in your shop.'),
+                'fields'      => [
+                    'PS_SHOW_NEW_ORDERS'    => [
+                        'title'      => $this->l('Show notifications for new orders'),
+                        'hint'       => $this->l('This will display notifications when new orders are made in your shop.'),
                         'validation' => 'isBool',
-                        'cast' => 'intval',
-                        'type' => 'bool'
+                        'cast'       => 'intval',
+                        'type'       => 'bool',
                     ],
                     'PS_SHOW_NEW_CUSTOMERS' => [
-                        'title' => $this->l('Show notifications for new customers'),
-                        'hint' => $this->l('This will display notifications every time a new customer registers in your shop.'),
+                        'title'      => $this->l('Show notifications for new customers'),
+                        'hint'       => $this->l('This will display notifications every time a new customer registers in your shop.'),
                         'validation' => 'isBool',
-                        'cast' => 'intval',
-                        'type' => 'bool'
+                        'cast'       => 'intval',
+                        'type'       => 'bool',
                     ],
-                    'PS_SHOW_NEW_MESSAGES' => [
-                        'title' => $this->l('Show notifications for new messages'),
-                        'hint' => $this->l('This will display notifications when new messages are posted in your shop.'),
+                    'PS_SHOW_NEW_MESSAGES'  => [
+                        'title'      => $this->l('Show notifications for new messages'),
+                        'hint'       => $this->l('This will display notifications when new messages are posted in your shop.'),
                         'validation' => 'isBool',
-                        'cast' => 'intval',
-                        'type' => 'bool'
+                        'cast'       => 'intval',
+                        'type'       => 'bool',
                     ],
                 ],
-                'submit' => ['title' => $this->l('Save')]
+                'submit'      => ['title' => $this->l('Save')],
             ],
         ];
     }
 
+    /**
+     * @since 1.0.0
+     */
     public function postProcess()
     {
-        $upload_max_size = (int)str_replace('M', '', ini_get('upload_max_filesize'));
-        $post_max_size = (int)str_replace('M', '', ini_get('post_max_size'));
-        $max_size = $upload_max_size < $post_max_size ? $upload_max_size : $post_max_size;
+        $uploadMaxSize = (int) str_replace('M', '', ini_get('upload_max_filesize'));
+        $postMaxSize = (int) str_replace('M', '', ini_get('post_max_size'));
+        $maxSize = $uploadMaxSize < $postMaxSize ? $uploadMaxSize : $postMaxSize;
 
-        if (Tools::getValue('PS_LIMIT_UPLOAD_FILE_VALUE') > $max_size || Tools::getValue('PS_LIMIT_UPLOAD_IMAGE_VALUE') > $max_size) {
+        if (Tools::getValue('PS_LIMIT_UPLOAD_FILE_VALUE') > $maxSize || Tools::getValue('PS_LIMIT_UPLOAD_IMAGE_VALUE') > $maxSize) {
             $this->errors[] = Tools::displayError('The limit chosen is larger than the server\'s maximum upload limit. Please increase the limits of your server.');
+
             return;
         }
 
@@ -184,7 +190,7 @@ class AdminAdminPreferencesControllerCore extends AdminController
     /**
      * Update PS_ATTACHMENT_MAXIMUM_SIZE
      *
-     * @param $value
+     * @param mixed $value
      */
     public function updateOptionPsAttachementMaximumSize($value)
     {
@@ -192,10 +198,10 @@ class AdminAdminPreferencesControllerCore extends AdminController
             return;
         }
 
-        $upload_max_size = (int)str_replace('M', '', ini_get('upload_max_filesize'));
-        $post_max_size = (int)str_replace('M', '', ini_get('post_max_size'));
-        $max_size = $upload_max_size < $post_max_size ? $upload_max_size : $post_max_size;
-        $value = ($max_size < Tools::getValue('PS_ATTACHMENT_MAXIMUM_SIZE')) ? $max_size : Tools::getValue('PS_ATTACHMENT_MAXIMUM_SIZE');
+        $uploadMaxSize = (int) str_replace('M', '', ini_get('upload_max_filesize'));
+        $postMaxSize = (int) str_replace('M', '', ini_get('post_max_size'));
+        $maxSize = $uploadMaxSize < $postMaxSize ? $uploadMaxSize : $postMaxSize;
+        $value = ($maxSize < Tools::getValue('PS_ATTACHMENT_MAXIMUM_SIZE')) ? $maxSize : Tools::getValue('PS_ATTACHMENT_MAXIMUM_SIZE');
         Configuration::updateValue('PS_ATTACHMENT_MAXIMUM_SIZE', $value);
     }
 }

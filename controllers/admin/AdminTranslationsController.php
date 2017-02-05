@@ -36,7 +36,7 @@ class AdminTranslationsControllerCore extends AdminController
     const TEXTAREA_SIZED = 70;
 
     /** @var string : Link which list all pack of language */
-    protected $link_lang_pack = 'http://www.prestashop.com/download/lang_packs/get_each_language_pack.php';
+    protected $link_lang_pack = 'http://www.thirtybees.com/download/lang_packs/get_each_language_pack.php';
 
     /** @var int : number of sentence which can be translated */
     protected $total_expression = 0;
@@ -872,80 +872,7 @@ class AdminTranslationsControllerCore extends AdminController
 
     public function submitAddLang()
     {
-        $arr_import_lang = explode('|', Tools::getValue('params_import_language')); /* 0 = Language ISO code, 1 = PS version */
-        if (Validate::isLangIsoCode($arr_import_lang[0])) {
-            $guzzle = new \GuzzleHttp\Client([
-                'http_errors' => false,
-                'verify' => _PS_TOOL_DIR_.'cacert.pem',
-                'timeout' => 5,
-            ]);
-            try {
-                $content = (string) $guzzle->get('http://www.prestashop.com/download/lang_packs/gzip/'.$arr_import_lang[1].'/'.Tools::strtolower($arr_import_lang[0]).'.gzip')->getBody();
-            } catch (Exception $e) {
-                $content = null;
-            }
-            if ($content) {
-                $file = _PS_TRANSLATIONS_DIR_.$arr_import_lang[0].'.gzip';
-                if ((bool)@file_put_contents($file, $content)) {
-                    $gz = new Archive_Tar($file, true);
-                    if (_PS_MODE_DEV_) {
-                        $gz->setErrorHandling(PEAR_ERROR_TRIGGER, E_USER_WARNING);
-                    }
-                    $files_list = AdminTranslationsController::filterTranslationFiles($gz->listContent());
-
-                    if ($error = $gz->extractList(AdminTranslationsController::filesListToPaths($files_list), _PS_TRANSLATIONS_DIR_.'../')) {
-                        if (is_object($error) && !empty($error->message)) {
-                            $this->errors[] = Tools::displayError('The archive cannot be extracted.'). ' '.$error->message;
-                        } else {
-                            if (!Language::checkAndAddLanguage($arr_import_lang[0])) {
-                                $conf = 20;
-                            } else {
-                                // Reset cache
-                                Language::loadLanguages();
-                                // Clear smarty modules cache
-                                Tools::clearCache();
-
-                                AdminTranslationsController::checkAndAddMailsFiles($arr_import_lang[0], $files_list);
-                                if ($tab_errors = AdminTranslationsController::addNewTabs($arr_import_lang[0], $files_list)) {
-                                    $this->errors += $tab_errors;
-                                }
-                            }
-                            if (!unlink($file)) {
-                                $this->errors[] = sprintf(Tools::displayError('Cannot delete the archive %s.'), $file);
-                            }
-
-                            $this->redirect(false, (isset($conf) ? $conf : '15'));
-                        }
-                    } else {
-                        $this->errors[] = sprintf(Tools::displayError('Cannot decompress the translation file for the following language: %s'), $arr_import_lang[0]);
-                        $checks= [];
-                        foreach ($files_list as $f) {
-                            if (isset($f['filename'])) {
-                                if (is_file(_PS_ROOT_DIR_.DIRECTORY_SEPARATOR.$f['filename']) && !is_writable(_PS_ROOT_DIR_.DIRECTORY_SEPARATOR.$f['filename'])) {
-                                    $checks[] = dirname($f['filename']);
-                                } elseif (is_dir(_PS_ROOT_DIR_.DIRECTORY_SEPARATOR.$f['filename']) && !is_writable(_PS_ROOT_DIR_.DIRECTORY_SEPARATOR.dirname($f['filename']))) {
-                                    $checks[] = dirname($f['filename']);
-                                }
-                            }
-                        }
-
-                        $checks = array_unique($checks);
-                        foreach ($checks as $check) {
-                            $this->errors[] = sprintf(Tools::displayError('Please check rights for folder and files in %s'), $check);
-                        }
-                        if (!unlink($file)) {
-                            $this->errors[] = sprintf(Tools::displayError('Cannot delete the archive %s.'), $file);
-                        }
-                    }
-                } else {
-                    $this->errors[] = Tools::displayError('The server does not have permissions for writing.').' '.sprintf(Tools::displayError('Please check rights for %s'), dirname($file));
-                }
-            } else {
-                $this->errors[] = Tools::displayError('Language not found.');
-            }
-        } else {
-            $this->errors[] = Tools::displayError('Invalid parameter.');
-        }
+        $this->errors[] = Tools::displayError('Not available.');
     }
 
     /**
@@ -1009,7 +936,7 @@ class AdminTranslationsControllerCore extends AdminController
                         $pattern = '\'<{'.strtolower($module_name).'}'.strtolower($theme_name).'>'.strtolower($template_name).'_'.md5($key).'\'';
                     } else {
                         $post_key = md5(strtolower($module_name).'_'.strtolower($template_name).'_'.md5($key));
-                        $pattern = '\'<{'.strtolower($module_name).'}prestashop>'.strtolower($template_name).'_'.md5($key).'\'';
+                        $pattern = '\'<{'.strtolower($module_name).'}thirtybees>'.strtolower($template_name).'_'.md5($key).'\'';
                     }
 
                     if (array_key_exists($post_key, $_POST) && !in_array($pattern, $array_check_duplicate)) {
@@ -1101,7 +1028,7 @@ class AdminTranslationsControllerCore extends AdminController
                 foreach ($matches as $key) {
                     $md5_key = md5($key);
                     $module_key = '<{'.Tools::strtolower($module_name).'}'.strtolower($theme_name).'>'.Tools::strtolower($template_name).'_'.$md5_key;
-                    $default_key = '<{'.Tools::strtolower($module_name).'}prestashop>'.Tools::strtolower($template_name).'_'.$md5_key;
+                    $default_key = '<{'.Tools::strtolower($module_name).'}thirtybees>'.Tools::strtolower($template_name).'_'.$md5_key;
                     // to avoid duplicate entry
                     if (!in_array($module_key, $array_check_duplicate)) {
                         $array_check_duplicate[] = $module_key;
@@ -2185,10 +2112,7 @@ class AdminTranslationsControllerCore extends AdminController
 
         foreach ($files_by_directory['php'] as $dir => $files) {
             foreach ($files as $file) {
-                $exclude_files  = [
-                    'index.php', 'PrestaShopAutoload.php', 'StockManagerInterface.php',
-                    'TaxManagerInterface.php', 'WebserviceOutputInterface.php', 'WebserviceSpecificManagementInterface.php'
-                ];
+                $exclude_files  = ['index.php', 'PrestaShopAutoload.php', 'StockManagerInterface.php', 'TaxManagerInterface.php', 'WebserviceOutputInterface.php', 'WebserviceSpecificManagementInterface.php'];
 
                 if (!preg_match('/\.php$/', $file) || in_array($file, $exclude_files)) {
                     continue;

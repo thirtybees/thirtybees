@@ -518,7 +518,7 @@ class AdminPatternsControllerCore extends AdminController
                 'color_value' => 'red',
                 'blue' => 'Content in custom color in blue field',
                 'activeVisu_field' => 1,
-                'editable_text' => "PrestaShop",
+                'editable_text' => "thirty bees",
             ],
             [
                 'id' => 1,
@@ -529,7 +529,7 @@ class AdminPatternsControllerCore extends AdminController
                 'color_value' => 'blue',
                 'blue' => 'Content in custom color in blue field',
                 'activeVisu_field' => 0,
-                'editable_text' => "PrestaShop",
+                'editable_text' => "thirty bees",
             ],
             [
                 'id' => 2,
@@ -540,7 +540,7 @@ class AdminPatternsControllerCore extends AdminController
                 'color_value' => 'yellow',
                 'blue' => 'Content in custom color in blue field',
                 'activeVisu_field' => 1,
-                'editable_text' => "PrestaShop Lorem ipsum dolor sit amet, consectetur adipiscing elit. ",
+                'editable_text' => "thirty bees Lorem ipsum dolor sit amet, consectetur adipiscing elit. ",
             ],
             [
                 'id' => 9,
@@ -551,7 +551,7 @@ class AdminPatternsControllerCore extends AdminController
                 'color_value' => '#CCCC99',
                 'blue' => 'Content in custom color in blue field',
                 'activeVisu_field' => 1,
-                'editable_text' => "PrestaShop",
+                'editable_text' => "thirty bees",
             ],
         ];
 

@@ -409,7 +409,7 @@ class AdminLocalizationControllerCore extends AdminController
                 [
                     'type'    => 'radio',
                     'label'   => $this->l('Download pack data'),
-                    'desc'    => $this->l('If set to yes then the localization pack will be downloaded from prestashop.com. Otherwise the local xml file found in the localization folder of your PrestaShop installation will be used.'),
+                    'desc'    => $this->l('If set to yes then the localization pack will be downloaded from thirtybees.com. Otherwise the local xml file found in the localization folder of your thirty bees installation will be used.'),
                     'name'    => 'download_updated_pack',
                     'is_bool' => true,
                     'values'  => [

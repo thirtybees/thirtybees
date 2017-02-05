@@ -254,7 +254,7 @@ class AdminPerformanceControllerCore extends AdminController
             'input'  => [
                 [
                     'type'    => 'switch',
-                    'label'   => $this->l('Disable non PrestaShop modules'),
+                    'label'   => $this->l('Disable non thirty bees modules'),
                     'name'    => 'native_module',
                     'class'   => 't',
                     'is_bool' => true,
@@ -443,7 +443,7 @@ class AdminPerformanceControllerCore extends AdminController
                 'title' => $this->l('CCC (Combine, Compress and Cache)'),
                 'icon'  => 'icon-fullscreen',
             ],
-            'description' => $this->l('CCC allows you to reduce the loading time of your page. With these settings you will gain performance without even touching the code of your theme. Make sure, however, that your theme is compatible with PrestaShop 1.4+. Otherwise, CCC will cause problems.'),
+            'description' => $this->l('CCC allows you to reduce the loading time of your page. With these settings you will gain performance without even touching the code of your theme. Make sure, however, that your theme is compatible with thirty bees 1.0.x. Otherwise, CCC will cause problems.'),
             'input'       => [
                 [
                     'type' => 'hidden',

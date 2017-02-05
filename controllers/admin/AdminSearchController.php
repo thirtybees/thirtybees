@@ -194,29 +194,6 @@ class AdminSearchControllerCore extends AdminController
                 $this->_list['modules'][] = $module;
             }
         }
-
-        if (!is_numeric(trim($this->query)) && !Validate::isEmail($this->query)) {
-            $isoLang = Tools::strtolower(Context::getContext()->language->iso_code);
-            $isoCountry = Tools::strtolower(Country::getIsoById(Configuration::get('PS_COUNTRY_DEFAULT')));
-            $guzzle = new \GuzzleHttp\Client([
-                'http_errors' => false,
-                'verify' => _PS_TOOL_DIR_.'cacert.pem',
-                'timeout' => 5,
-            ]);
-            try {
-                $jsonContent = (string) $guzzle->get('https://api-addons.prestashop.com/'._PS_VERSION_.'/search/'.urlencode($this->query).'/'.$isoCountry.'/'.$isoLang.'/')->getBody();
-            } catch (Exception $e) {
-                $jsonContent = null;
-            }
-            if (($jsonContent)) {
-                $results = json_decode($jsonContent, true);
-                if (isset($results['id'])) {
-                    $this->_list['addons']  = [$results];
-                } else {
-                    $this->_list['addons']  =  $results;
-                }
-            }
-        }
     }
 
     /**
