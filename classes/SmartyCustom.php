@@ -377,10 +377,37 @@ class Smarty_Custom_Template extends Smarty_Internal_Template
     /** @var SmartyCustom|null */
     public $smarty = null;
 
+    /**
+     * @param null $template
+     * @param null $cacheId
+     * @param null $compileId
+     * @param null $parent
+     * @param bool $display
+     * @param bool $mergeTplVars
+     * @param bool $noOutputFilter
+     *
+     * @return string
+     * @throws SmartyException
+     *
+     * @since 1.0.0
+     */
     public function fetch($template = null, $cacheId = null, $compileId = null, $parent = null, $display = false, $mergeTplVars = true, $noOutputFilter = false)
     {
         if ($this->smarty->caching) {
-            $tpl = parent::fetch($template, $cacheId, $compileId, $parent, $display, $mergeTplVars, $noOutputFilter);
+            $count = 0;
+            $maxTries = 3;
+            while (true) {
+                try {
+                    $tpl = parent::fetch($template, $cacheId, $compileId, $parent, $display, $mergeTplVars, $noOutputFilter);
+                    break;
+                } catch (SmartyException $e) {
+                    // handle exception
+                    if (++$count === $maxTries) {
+                        throw $e;
+                    }
+                    usleep(1);
+                }
+            }
             if (property_exists($this, 'cached')) {
                 $filepath = str_replace($this->smarty->getCacheDir(), '', $this->cached->filepath);
                 if ($this->smarty->is_in_lazy_cache($this->template_resource, $this->cache_id, $this->compile_id) != $filepath) {
@@ -388,9 +415,25 @@ class Smarty_Custom_Template extends Smarty_Internal_Template
                 }
             }
 
-            return $tpl;
+            return isset($tpl) ? $tpl : '';
         } else {
-            return parent::fetch($template, $cacheId, $compileId, $parent, $display, $mergeTplVars, $noOutputFilter);
+            $count = 0;
+            $maxTries = 3;
+            while (true) {
+                try {
+                    $tpl = parent::fetch($template, $cacheId, $compileId, $parent, $display, $mergeTplVars, $noOutputFilter);
+                    break;
+                } catch (SmartyException $e) {
+                    // handle exception
+                    if (++$count === $maxTries) {
+                        throw $e;
+                    }
+                    usleep(1);
+                }
+            }
+
+            return isset($tpl) ? $tpl : '';
         }
+
     }
 }
