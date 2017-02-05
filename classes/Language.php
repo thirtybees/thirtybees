@@ -453,25 +453,6 @@ class LanguageCore extends ObjectModel
         $lang->language_code = $isoCode; // Rewritten afterwards if the language code is available
         $lang->active = true;
 
-        // If the language pack has not been provided, retrieve it from prestashop.com
-        if (!$langPack) {
-            try {
-                $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
-                $langPack = json_decode((string) $guzzle->get('http://www.prestashop.com/download/lang_packs/get_language_pack.php?version='._PS_VERSION_.'&iso_lang='.$isoCode)->getBody());
-            } catch (Exception $e) {
-                $langPack = null;
-            }
-        }
-
-        // If a language pack has been found or provided, prefill the language object with the value
-        if ($langPack) {
-            foreach (get_object_vars($langPack) as $key => $value) {
-                if ($key != 'iso_code' && isset(Language::$definition['fields'][$key])) {
-                    $lang->$key = $value;
-                }
-            }
-        }
-
         // Use the values given in parameters to override the data retrieved automatically
         if ($paramsLang !== null && is_array($paramsLang)) {
             foreach ($paramsLang as $key => $value) {
@@ -495,7 +476,7 @@ class LanguageCore extends ObjectModel
 
         Language::_copyNoneFlag((int) $lang->id);
 
-        $files_copy = [
+        $filesCopy = [
             '/en.jpg',
             '/en-default-'.ImageType::getFormatedName('thickbox').'.jpg',
             '/en-default-'.ImageType::getFormatedName('home').'.jpg',
@@ -506,7 +487,7 @@ class LanguageCore extends ObjectModel
         ];
 
         foreach ([_PS_CAT_IMG_DIR_, _PS_MANU_IMG_DIR_, _PS_PROD_IMG_DIR_, _PS_SUPP_IMG_DIR_] as $to) {
-            foreach ($files_copy as $file) {
+            foreach ($filesCopy as $file) {
                 @copy(_PS_ROOT_DIR_.'/img/l'.$file, $to.str_replace('/en', '/'.$isoCode, $file));
             }
         }

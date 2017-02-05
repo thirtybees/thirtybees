@@ -412,11 +412,7 @@ class InstallModelInstall extends InstallAbstractModel
                 'allow_accented_chars_url' => (string) $xml->allow_accented_chars_url,
             ];
 
-            if (InstallSession::getInstance()->safe_mode) {
-                Language::checkAndAddLanguage($iso, false, true, $paramsLang);
-            } else {
-                Language::downloadAndInstallLanguagePack($iso, _TB_INSTALL_VERSION_, $paramsLang);
-            }
+            Language::checkAndAddLanguage($iso, false, true, $paramsLang);
 
             Language::loadLanguages();
             Tools::clearCache();
