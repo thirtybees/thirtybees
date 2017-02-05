@@ -69,3 +69,4 @@ themes/community-theme-default/modules/*/mails/*
 robots.txt
 
 tests/_output/*
+c3.php
