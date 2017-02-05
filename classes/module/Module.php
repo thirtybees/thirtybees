@@ -370,6 +370,18 @@ abstract class ModuleCore
             return false;
         }
 
+        // Invalidate opcache
+        if (function_exists('opcache_invalidate')) {
+            foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_PS_MODULE_DIR_.$this->name)) as $file) {
+                /** @var SplFileInfo $file */
+                if (substr($file->getFilename(), -4) !== '.php' || $file->isLink()) {
+                    continue;
+                }
+
+                opcache_invalidate($file->getPathname());
+            }
+        }
+
         // Install overrides
         try {
             $this->installOverrides();
