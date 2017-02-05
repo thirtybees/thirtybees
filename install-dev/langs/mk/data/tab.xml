@@ -100,4 +100,5 @@
   <tab id="Supply_orders" name="Нарачки од добавувачи"/>
   <tab id="Configuration" name="Конфигурација"/>
   <tab id="CarrierWizard" name="Испорачател"/>
+  <tab id="Custom_Code" name="Custom Code"/>
 </entity_tab>

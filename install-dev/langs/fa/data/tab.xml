@@ -100,4 +100,5 @@
   <tab id="Supply_orders" name="تهیه سفارش‌ها"/>
   <tab id="Configuration" name="پیکربندی"/>
   <tab id="CarrierWizard" name="حامل"/>
+  <tab id="Custom_Code" name="Custom Code"/>
 </entity_tab>

@@ -100,4 +100,5 @@
   <tab id="Webservice" name="Webdienste"/>
   <tab id="Zones" name="Gebiete"/>
   <tab id="CarrierWizard" name="Versanddienst"/>
+  <tab id="Custom_Code" name="Custom Code"/>
 </entity_tab>

@@ -100,4 +100,5 @@
   <tab id="Supply_orders" name="Dobavnice"/>
   <tab id="Configuration" name="Nastavitve"/>
   <tab id="CarrierWizard" name="Dostavna služba"/>
+  <tab id="Custom_Code" name="Custom Code"/>
 </entity_tab>

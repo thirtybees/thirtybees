@@ -100,4 +100,5 @@
   <tab id="Supply_orders" name="Tiekėjų užsakymai"/>
   <tab id="Configuration" name="Konfigūracija"/>
   <tab id="CarrierWizard" name="Vežėjas"/>
+  <tab id="Custom_Code" name="Custom Code"/>
 </entity_tab>

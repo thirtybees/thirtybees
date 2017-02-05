@@ -100,4 +100,5 @@
   <tab id="Supply_orders" name="Supply order"/>
   <tab id="Configuration" name="Konfigurasi"/>
   <tab id="CarrierWizard" name="Kurir"/>
+  <tab id="Custom_Code" name="Custom Code"/>
 </entity_tab>

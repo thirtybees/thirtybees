@@ -99,4 +99,5 @@
   <tab id="Supply_orders" name="Pedidos de materiales"/>
   <tab id="Configuration" name="Configuración"/>
   <tab id="CarrierWizard" name="Transportista"/>
+  <tab id="Custom_Code" name="Custom Code"/>
 </entity_tab>

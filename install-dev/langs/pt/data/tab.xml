@@ -100,4 +100,5 @@
   <tab id="Webservice" name="Webservice"/>
   <tab id="Zones" name="Regiões"/>
   <tab id="CarrierWizard" name="Transportadoras"/>
+  <tab id="Custom_Code" name="Custom Code"/>
 </entity_tab>
