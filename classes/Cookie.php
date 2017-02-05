@@ -101,6 +101,8 @@ class CookieCore
             $this->_cipherTool = new Blowfish(str_pad('', 56, md5('ps'.__FILE__)), str_pad('', 56, md5('iv'.__FILE__)));
         } elseif (!Configuration::get('PS_CIPHER_ALGORITHM') || !defined('_RIJNDAEL_KEY_')) {
             $this->_cipherTool = new Blowfish(_COOKIE_KEY_, _COOKIE_IV_);
+        } elseif ((int) Configuration::get('PS_CIPHER_ALGORITHM') === 2 && defined('_PHP_ENCRYPTION_KEY_')) {
+            $this->_cipherTool = new PhpEncryption(_PHP_ENCRYPTION_KEY_);
         } else {
             $this->_cipherTool = new Rijndael(_RIJNDAEL_KEY_, _RIJNDAEL_IV_);
         }
@@ -110,14 +112,14 @@ class CookieCore
     }
 
     /**
-     * @param null $shared_urls
+     * @param null $sharedUrls
      *
      * @return bool|string
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    protected function getDomain($shared_urls = null)
+    protected function getDomain($sharedUrls = null)
     {
         $r = '!(?:(\w+)://)?(?:(\w+)\:(\w+)@)?([^/:]+)?(?:\:(\d*))?([^#?]+)?(?:\?([^#]+))?(?:#(.+$))?!i';
 
@@ -137,12 +139,12 @@ class CookieCore
         }
 
         $domain = false;
-        if ($shared_urls !== null) {
-            foreach ($shared_urls as $shared_url) {
-                if ($shared_url != $out[4]) {
+        if ($sharedUrls !== null) {
+            foreach ($sharedUrls as $sharedUrl) {
+                if ($sharedUrl != $out[4]) {
                     continue;
                 }
-                if (preg_match('/^(?:.*\.)?([^.]*(?:.{2,4})?\..{2,3})$/Ui', $shared_url, $res)) {
+                if (preg_match('/^(?:.*\.)?([^.]*(?:.{2,4})?\..{2,3})$/Ui', $sharedUrl, $res)) {
                     $domain = '.'.$res[1];
                     break;
                 }
@@ -171,8 +173,8 @@ class CookieCore
             /* Get cookie checksum */
             $tmpTab = explode('¤', $content);
             array_pop($tmpTab);
-            $content_for_checksum = implode('¤', $tmpTab).'¤';
-            $checksum = crc32($this->_salt.$content_for_checksum);
+            $contentForChecksum = implode('¤', $tmpTab).'¤';
+            $checksum = crc32($this->_salt.$contentForChecksum);
             //printf("\$checksum = %s<br />", $checksum);
 
             /* Unserialize cookie content */

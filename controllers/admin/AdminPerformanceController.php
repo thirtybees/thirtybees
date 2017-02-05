@@ -28,6 +28,9 @@
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
+use Defuse\Crypto\Exception\BadFormatException;
+use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
+use Defuse\Crypto\Key;
 
 /**
  * Class AdminPerformanceControllerCore
@@ -606,11 +609,15 @@ class AdminPerformanceControllerCore extends AdminController
         $phpdocLangs = ['en', 'zh', 'fr', 'de', 'ja', 'pl', 'ro', 'ru', 'fa', 'es', 'tr'];
         $phpLang = in_array($this->context->language->iso_code, $phpdocLangs) ? $this->context->language->iso_code : 'en';
 
-        $warningMcrypt = ' '.$this->l('(you must install the [a]Mcrypt extension[/a])');
+        $warningMcrypt = ' '.$this->l('(You must install the [a]Mcrypt extension[/a])');
         $warningMcrypt = str_replace('[a]', '<a href="http://www.php.net/manual/'.substr($phpLang, 0, 2).'/book.mcrypt.php" target="_blank">', $warningMcrypt);
         $warningMcrypt = str_replace('[/a]', '</a>', $warningMcrypt);
 
-        if (defined('_RIJNDAEL_KEY_') && defined('_RIJNDAEL_IV_')) {
+        $warningOpenssl = ' '.$this->l('(You must install the [a]openssl extension[/a])');
+        $warningOpenssl = str_replace('[a]', '<a href="http://www.php.net/manual/'.substr($phpLang, 0, 2).'/book.openssl.php" target="_blank">', $warningOpenssl);
+        $warningOpenssl = str_replace('[/a]', '</a>', $warningOpenssl);
+
+
             $this->fields_form[5]['form'] = [
 
                 'legend' => [
@@ -629,6 +636,11 @@ class AdminPerformanceControllerCore extends AdminController
                         'hint'   => $this->l('Mcrypt is faster than our custom BlowFish class, but requires the "mcrypt" PHP extension. If you change this configuration, all cookies will be reset.'),
                         'values' => [
                             [
+                                'id'    => 'PS_CIPHER_ALGORITHM_2',
+                                'value' => 2,
+                                'label' => $this->l('Use the PHP Encryption library with openssl extension (highest security).').(extension_loaded('openssl') ? '' : $warningOpenssl),
+                            ],
+                            [
                                 'id'    => 'PS_CIPHER_ALGORITHM_1',
                                 'value' => 1,
                                 'label' => $this->l('Use Rijndael with mcrypt lib.').(function_exists('mcrypt_encrypt') ? '' : $warningMcrypt),
@@ -645,7 +657,7 @@ class AdminPerformanceControllerCore extends AdminController
                     'title' => $this->l('Save'),
                 ],
             ];
-        }
+
 
         $this->fields_value['PS_CIPHER_ALGORITHM'] = Configuration::get('PS_CIPHER_ALGORITHM');
     }
@@ -1100,12 +1112,12 @@ class AdminPerformanceControllerCore extends AdminController
             }
         }
 
-        if ((bool) Tools::getValue('ciphering_up') && Configuration::get('PS_CIPHER_ALGORITHM') != (int) Tools::getValue('PS_CIPHER_ALGORITHM')) {
+        if ((bool) Tools::getValue('ciphering_up')) { // && Configuration::get('PS_CIPHER_ALGORITHM') != (int) Tools::getValue('PS_CIPHER_ALGORITHM')) {
             if ($this->tabAccess['edit'] === '1') {
                 $algo = (int) Tools::getValue('PS_CIPHER_ALGORITHM');
                 $prevSettings = file_get_contents(_PS_ROOT_DIR_.'/config/settings.inc.php');
                 $newSettings = $prevSettings;
-                if ($algo) {
+                if ($algo === 1) {
                     if (!function_exists('mcrypt_encrypt')) {
                         $this->errors[] = Tools::displayError('The "Mcrypt" PHP extension is not activated on this server.');
                     } else {
@@ -1126,6 +1138,30 @@ class AdminPerformanceControllerCore extends AdminController
                                 'define(\'_COOKIE_IV_\', \'\1\');'."\n".'define(\'_RIJNDAEL_IV_\', \''.$iv.'\');',
                                 $newSettings
                             );
+                        }
+                    }
+                } elseif ($algo === 2) {
+                    if (!extension_loaded('openssl')) {
+                        $this->errors[] = Tools::displayError('The "openssl" PHP extension is not activated on this server.');
+                    } else {
+                        $success = false;
+                        if (!strstr($newSettings, '_PHP_ENCRYPTION_KEY_')) {
+                            try {
+                                $secureKey = Key::createNewRandomKey();
+                                $key = $secureKey->saveToAsciiSafeString();
+
+                                $success = true;
+                            } catch (EnvironmentIsBrokenException $e) {
+                                $this->errors[] = sprintf(Tools::displayError('It looks like your system isn\'t configured for the higest security possible. The error was: %s'), $e->getMessage());
+                            } catch (BadFormatException $e) {
+                                $this->errors[] = sprintf(Tools::displayError('Unable to generate a secure key on your system. You might not be able to use the PHP encryption library. The error was: %s'), $e->getMessage());
+                            } catch (Exception $e) {
+                                sprintf(Tools::displayError('An error occurred while enabling the PHP Encryption library. The error was: %s'), $e->getMessage());
+                            }
+
+                            if ($success && isset($key)) {
+                                $newSettings .= "define('_PHP_ENCRYPTION_KEY_', '{$key}');\n";
+                            }
                         }
                     }
                 }
