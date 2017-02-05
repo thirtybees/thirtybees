@@ -29,8 +29,6 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-require_once(_PS_TOOL_DIR_.'smarty/Smarty.class.php');
-
 /**
  * Class Smarty_CacheResource_Mysql
  *
