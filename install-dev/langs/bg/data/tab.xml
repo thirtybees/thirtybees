@@ -100,4 +100,5 @@
   <tab id="Supply_orders" name="Заявки за доставка"/>
   <tab id="Configuration" name="Настройка"/>
   <tab id="CarrierWizard" name="Превозвач"/>
+  <tab id="Custom_Code" name="Custom Code"/>
 </entity_tab>

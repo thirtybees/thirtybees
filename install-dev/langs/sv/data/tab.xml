@@ -100,4 +100,5 @@
   <tab id="Supply_orders" name="Leverantörsordrar"/>
   <tab id="Configuration" name="Konfiguration"/>
   <tab id="CarrierWizard" name="Leverantör"/>
+  <tab id="Custom_Code" name="Custom Code"/>
 </entity_tab>

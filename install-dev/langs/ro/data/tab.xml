@@ -100,4 +100,5 @@
   <tab id="Supply_orders" name="Comenzi de aprovizionare"/>
   <tab id="Configuration" name="Configurație"/>
   <tab id="CarrierWizard" name="Curier"/>
+  <tab id="Custom_Code" name="Custom Code"/>
 </entity_tab>

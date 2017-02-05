@@ -100,4 +100,5 @@
   <tab id="Supply_orders" name="הזמנות אספקה"/>
   <tab id="Configuration" name="הגדרות"/>
   <tab id="CarrierWizard" name="מובילים"/>
+  <tab id="Custom_Code" name="Custom Code"/>
 </entity_tab>

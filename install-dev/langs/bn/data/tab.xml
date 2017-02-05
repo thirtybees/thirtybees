@@ -101,4 +101,5 @@
   <tab id='Stock_Coverage' name='স্টক কভারেজ'/>
   <tab id='Supply_orders' name='সরবরাহ আদেশ'/>
   <tab id='Configuration' name='মান নির্ধারণ'/>
+  <tab id="Custom_Code" name="Custom Code"/>
 </entity_tab>

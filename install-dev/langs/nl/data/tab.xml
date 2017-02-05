@@ -102,4 +102,5 @@
   <tab id="Supply_orders" name="Leveringsbestellingen"/>
   <tab id="Configuration" name="Configuratie"/>
   <tab id="CarrierWizard" name="Vervoerder"/>
+  <tab id="Custom_Code" name="Aangepaste Code"/>
 </entity_tab>
