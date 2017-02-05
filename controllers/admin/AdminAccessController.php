@@ -21,22 +21,31 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * @property Profile $object
+ * Class AdminAccessControllerCore
+ *
+ * @since 1.0.0
  */
 class AdminAccessControllerCore extends AdminController
 {
+    // @codingStandardsIgnoreStart
     /* @var array : Black list of id_tab that do not have access */
     public $accesses_black_list = [];
+    // @codingStandardsIgnoreEnd
 
+    /**
+     * AdminAccessControllerCore constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         $this->bootstrap = true;
@@ -54,12 +63,47 @@ class AdminAccessControllerCore extends AdminController
     }
 
     /**
-     * AdminController::renderForm() override
-     * @see AdminController::renderForm()
+     * @since 1.0.0
+     */
+    public function initContent()
+    {
+        $this->display = 'edit';
+        $this->initTabModuleList();
+        if (!$this->loadObject(true)) {
+            return;
+        }
+
+        $this->initPageHeaderToolbar();
+
+        $this->content .= $this->renderForm();
+        $this->context->smarty->assign(
+            [
+                'content'                   => $this->content,
+                'url_post'                  => self::$currentIndex.'&token='.$this->token,
+                'show_page_header_toolbar'  => $this->show_page_header_toolbar,
+                'page_header_toolbar_title' => $this->page_header_toolbar_title,
+                'page_header_toolbar_btn'   => $this->page_header_toolbar_btn,
+            ]
+        );
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    public function initPageHeaderToolbar()
+    {
+        parent::initPageHeaderToolbar();
+        unset($this->page_header_toolbar_btn['cancel']);
+    }
+
+    /**
+     * @return string
+     *
+     * @since 1.0.0
      */
     public function renderForm()
     {
-        $current_profile = (int)$this->getCurrentProfileId();
+        $currentProfile = (int) $this->getCurrentProfileId();
         $profiles = Profile::getProfiles($this->context->language->id);
         $tabs = Tab::getTabs($this->context->language->id);
         $accesses = [];
@@ -74,8 +118,8 @@ class AdminAccessControllerCore extends AdminController
                 unset($tabs[$key]);
             }
 
-            foreach ($this->accesses_black_list as $id_tab) {
-                if ($tab['id_tab'] == (int)$id_tab) {
+            foreach ($this->accesses_black_list as $idTab) {
+                if ($tab['id_tab'] == (int) $idTab) {
                     unset($tabs[$key]);
                 }
             }
@@ -83,14 +127,16 @@ class AdminAccessControllerCore extends AdminController
 
         $modules = [];
         foreach ($profiles as $profile) {
-            $modules[$profile['id_profile']] = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
+            $modules[$profile['id_profile']] = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                '
 				SELECT ma.`id_module`, m.`name`, ma.`view`, ma.`configure`, ma.`uninstall`
 				FROM '._DB_PREFIX_.'module_access ma
 				LEFT JOIN '._DB_PREFIX_.'module m
 					ON ma.id_module = m.id_module
-				WHERE id_profile = '.(int)$profile['id_profile'].'
+				WHERE id_profile = '.(int) $profile['id_profile'].'
 				ORDER BY m.name
-			');
+			'
+            );
             foreach ($modules[$profile['id_profile']] as $k => &$module) {
                 $m = Module::getInstanceById($module['id_module']);
                 // the following condition handles invalid modules
@@ -106,59 +152,47 @@ class AdminAccessControllerCore extends AdminController
 
         $this->fields_form = [''];
         $this->tpl_form_vars = [
-            'profiles' => $profiles,
-            'accesses' => $accesses,
-            'id_tab_parentmodule' => (int)Tab::getIdFromClassName('AdminParentModules'),
-            'id_tab_module' => (int)Tab::getIdFromClassName('AdminModules'),
-            'tabs' => $tabs,
-            'current_profile' => (int)$current_profile,
-            'admin_profile' => (int)_PS_ADMIN_PROFILE_,
-            'access_edit' => $this->tabAccess['edit'],
-            'perms' => ['view', 'add', 'edit', 'delete'],
-            'modules' => $modules,
-            'link' => $this->context->link
+            'profiles'            => $profiles,
+            'accesses'            => $accesses,
+            'id_tab_parentmodule' => (int) Tab::getIdFromClassName('AdminParentModules'),
+            'id_tab_module'       => (int) Tab::getIdFromClassName('AdminModules'),
+            'tabs'                => $tabs,
+            'current_profile'     => (int) $currentProfile,
+            'admin_profile'       => (int) _PS_ADMIN_PROFILE_,
+            'access_edit'         => $this->tabAccess['edit'],
+            'perms'               => ['view', 'add', 'edit', 'delete'],
+            'modules'             => $modules,
+            'link'                => $this->context->link,
         ];
 
         return parent::renderForm();
     }
 
     /**
-     * AdminController::initContent() override
-     * @see AdminController::initContent()
+     * Get the current profile id
+     *
+     * @return int the $_GET['profile'] if valid, else 1 (the first profile id)
+     *
+     * @since 1.0.0
      */
-    public function initContent()
+    public function getCurrentProfileId()
     {
-        $this->display = 'edit';
-        $this->initTabModuleList();
-        if (!$this->loadObject(true)) {
-            return;
-        }
-
-        $this->initPageHeaderToolbar();
-
-        $this->content .= $this->renderForm();
-        $this->context->smarty->assign(
-            [
-            'content' => $this->content,
-            'url_post' => self::$currentIndex.'&token='.$this->token,
-            'show_page_header_toolbar' => $this->show_page_header_toolbar,
-            'page_header_toolbar_title' => $this->page_header_toolbar_title,
-            'page_header_toolbar_btn' => $this->page_header_toolbar_btn
-            ]
-        );
+        return (isset($_GET['id_profile']) && !empty($_GET['id_profile']) && is_numeric($_GET['id_profile'])) ? (int) $_GET['id_profile'] : 1;
     }
 
+    /**
+     * @since 1.0.0
+     */
     public function initToolbarTitle()
     {
         $this->toolbar_title = array_unique($this->breadcrumbs);
     }
 
-    public function initPageHeaderToolbar()
-    {
-        parent::initPageHeaderToolbar();
-        unset($this->page_header_toolbar_btn['cancel']);
-    }
-
+    /**
+     * @throws PrestaShopException
+     *
+     * @since 1.0.0
+     */
     public function ajaxProcessUpdateAccess()
     {
         if (_PS_MODE_DEMO_) {
@@ -174,9 +208,9 @@ class AdminAccessControllerCore extends AdminController
                 throw new PrestaShopException('permission does not exist');
             }
 
-            $enabled = (int)Tools::getValue('enabled');
-            $id_tab = (int)Tools::getValue('id_tab');
-            $id_profile = (int)Tools::getValue('id_profile');
+            $enabled = (int) Tools::getValue('enabled');
+            $idTab = (int) Tools::getValue('id_tab');
+            $idProfile = (int) Tools::getValue('id_profile');
             $where = '`id_tab`';
             $join = '';
             if (Tools::isSubmit('addFromParent')) {
@@ -184,29 +218,29 @@ class AdminAccessControllerCore extends AdminController
                 $join = 'LEFT JOIN `'._DB_PREFIX_.'tab` t ON (t.`id_tab` = a.`id_tab`)';
             }
 
-            if ($id_tab == -1) {
+            if ($idTab == -1) {
                 if ($perm == 'all') {
                     $sql = '
 					UPDATE `'._DB_PREFIX_.'access` a
-					SET `view` = '.(int)$enabled.', `add` = '.(int)$enabled.', `edit` = '.(int)$enabled.', `delete` = '.(int)$enabled.'
-					WHERE `id_profile` = '.(int)$id_profile;
+					SET `view` = '.(int) $enabled.', `add` = '.(int) $enabled.', `edit` = '.(int) $enabled.', `delete` = '.(int) $enabled.'
+					WHERE `id_profile` = '.(int) $idProfile;
                 } else {
                     $sql = '
 					UPDATE `'._DB_PREFIX_.'access` a
-					SET `'.bqSQL($perm).'` = '.(int)$enabled.'
-					WHERE `id_profile` = '.(int)$id_profile;
+					SET `'.bqSQL($perm).'` = '.(int) $enabled.'
+					WHERE `id_profile` = '.(int) $idProfile;
                 }
             } else {
                 if ($perm == 'all') {
                     $sql = '
 					UPDATE `'._DB_PREFIX_.'access` a '.$join.'
-					SET `view` = '.(int)$enabled.', `add` = '.(int)$enabled.', `edit` = '.(int)$enabled.', `delete` = '.(int)$enabled.'
-					WHERE '.$where.' = '.(int)$id_tab.' AND `id_profile` = '.(int)$id_profile;
+					SET `view` = '.(int) $enabled.', `add` = '.(int) $enabled.', `edit` = '.(int) $enabled.', `delete` = '.(int) $enabled.'
+					WHERE '.$where.' = '.(int) $idTab.' AND `id_profile` = '.(int) $idProfile;
                 } else {
                     $sql = '
 					UPDATE `'._DB_PREFIX_.'access` a '.$join.'
-					SET `'.bqSQL($perm).'` = '.(int)$enabled.'
-					WHERE '.$where.' = '.(int)$id_tab.' AND `id_profile` = '.(int)$id_profile;
+					SET `'.bqSQL($perm).'` = '.(int) $enabled.'
+					WHERE '.$where.' = '.(int) $idTab.' AND `id_profile` = '.(int) $idProfile;
                 }
             }
 
@@ -216,6 +250,11 @@ class AdminAccessControllerCore extends AdminController
         }
     }
 
+    /**
+     * @throws PrestaShopException
+     *
+     * @since 1.0.0
+     */
     public function ajaxProcessUpdateModuleAccess()
     {
         if (_PS_MODE_DEMO_) {
@@ -227,25 +266,25 @@ class AdminAccessControllerCore extends AdminController
 
         if (Tools::isSubmit('changeModuleAccess')) {
             $perm = Tools::getValue('perm');
-            $enabled = (int)Tools::getValue('enabled');
-            $id_module = (int)Tools::getValue('id_module');
-            $id_profile = (int)Tools::getValue('id_profile');
+            $enabled = (int) Tools::getValue('enabled');
+            $idModule = (int) Tools::getValue('id_module');
+            $idProfile = (int) Tools::getValue('id_profile');
 
             if (!in_array($perm, ['view', 'configure', 'uninstall'])) {
                 throw new PrestaShopException('permission does not exist');
             }
 
-            if ($id_module == -1) {
+            if ($idModule == -1) {
                 $sql = '
 					UPDATE `'._DB_PREFIX_.'module_access`
-					SET `'.bqSQL($perm).'` = '.(int)$enabled.'
-					WHERE `id_profile` = '.(int)$id_profile;
+					SET `'.bqSQL($perm).'` = '.(int) $enabled.'
+					WHERE `id_profile` = '.(int) $idProfile;
             } else {
                 $sql = '
 					UPDATE `'._DB_PREFIX_.'module_access`
-					SET `'.bqSQL($perm).'` = '.(int)$enabled.'
-					WHERE `id_module` = '.(int)$id_module.'
-						AND `id_profile` = '.(int)$id_profile;
+					SET `'.bqSQL($perm).'` = '.(int) $enabled.'
+					WHERE `id_module` = '.(int) $idModule.'
+						AND `id_profile` = '.(int) $idProfile;
             }
 
             $res = Db::getInstance()->execute($sql) ? 'ok' : 'error';
@@ -255,16 +294,14 @@ class AdminAccessControllerCore extends AdminController
     }
 
     /**
-    * Get the current profile id
-    *
-    * @return int the $_GET['profile'] if valid, else 1 (the first profile id)
-    */
-    public function getCurrentProfileId()
-    {
-        return (isset($_GET['id_profile']) && !empty($_GET['id_profile']) && is_numeric($_GET['id_profile'])) ? (int)$_GET['id_profile'] : 1;
-    }
-
-    private function sortModuleByName($a, $b)
+     * @param $a
+     * @param $b
+     *
+     * @return int
+     *
+     * @since 1.0.0
+     */
+    protected function sortModuleByName($a, $b)
     {
         return strnatcmp($a['name'], $b['name']);
     }

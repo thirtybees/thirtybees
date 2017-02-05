@@ -47,7 +47,7 @@ class AdminAdminPreferencesControllerCore extends AdminController
         // Upload quota
         $maxUpload = (int) ini_get('upload_max_filesize');
         $maxPost = (int) ini_get('post_max_size');
-        $upload_mb = min($maxUpload, $maxPost);
+        $uploadMb = min($maxUpload, $maxPost);
 
         // Options list
         $this->fields_options = [
@@ -101,7 +101,7 @@ class AdminAdminPreferencesControllerCore extends AdminController
                 'fields' => [
                     'PS_ATTACHMENT_MAXIMUM_SIZE'  => [
                         'title'      => $this->l('Maximum size for attachment'),
-                        'hint'       => sprintf($this->l('Set the maximum size allowed for attachment files (in megabytes). This value has to be lower or equal to the maximum file upload allotted by your server (currently: %s MB).'), $upload_mb),
+                        'hint'       => sprintf($this->l('Set the maximum size allowed for attachment files (in megabytes). This value has to be lower or equal to the maximum file upload allotted by your server (currently: %s MB).'), $uploadMb),
                         'validation' => 'isInt',
                         'cast'       => 'intval',
                         'type'       => 'text',
@@ -110,7 +110,7 @@ class AdminAdminPreferencesControllerCore extends AdminController
                     ],
                     'PS_LIMIT_UPLOAD_FILE_VALUE'  => [
                         'title'      => $this->l('Maximum size for a downloadable product'),
-                        'hint'       => sprintf($this->l('Define the upload limit for a downloadable product (in megabytes). This value has to be lower or equal to the maximum file upload allotted by your server (currently: %s MB).'), $upload_mb),
+                        'hint'       => sprintf($this->l('Define the upload limit for a downloadable product (in megabytes). This value has to be lower or equal to the maximum file upload allotted by your server (currently: %s MB).'), $uploadMb),
                         'validation' => 'isInt',
                         'cast'       => 'intval',
                         'type'       => 'text',
@@ -119,7 +119,7 @@ class AdminAdminPreferencesControllerCore extends AdminController
                     ],
                     'PS_LIMIT_UPLOAD_IMAGE_VALUE' => [
                         'title'      => $this->l('Maximum size for a product\'s image'),
-                        'hint'       => sprintf($this->l('Define the upload limit for an image (in megabytes). This value has to be lower or equal to the maximum file upload allotted by your server (currently: %s MB).'), $upload_mb),
+                        'hint'       => sprintf($this->l('Define the upload limit for an image (in megabytes). This value has to be lower or equal to the maximum file upload allotted by your server (currently: %s MB).'), $uploadMb),
                         'validation' => 'isInt',
                         'cast'       => 'intval',
                         'type'       => 'text',
@@ -191,6 +191,8 @@ class AdminAdminPreferencesControllerCore extends AdminController
      * Update PS_ATTACHMENT_MAXIMUM_SIZE
      *
      * @param mixed $value
+     *
+     * @since 1.0.0
      */
     public function updateOptionPsAttachementMaximumSize($value)
     {

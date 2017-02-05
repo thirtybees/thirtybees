@@ -21,19 +21,26 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * @property Cart $object
+ * Class AdminCartsControllerCore
+ *
+ * @since 1.0.0
  */
 class AdminCartsControllerCore extends AdminController
 {
+    /**
+     * AdminCartsControllerCore constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         $this->bootstrap = true;
@@ -62,77 +69,115 @@ class AdminCartsControllerCore extends AdminController
         }
 
         $this->fields_list = [
-            'id_cart' => [
+            'id_cart'  => [
                 'title' => $this->l('ID'),
                 'align' => 'text-center',
-                'class' => 'fixed-width-xs'
+                'class' => 'fixed-width-xs',
             ],
-            'status' => [
-                'title' => $this->l('Order ID'),
-                'align' => 'text-center',
+            'status'   => [
+                'title'        => $this->l('Order ID'),
+                'align'        => 'text-center',
                 'badge_danger' => true,
-                'havingFilter' => true
+                'havingFilter' => true,
             ],
             'customer' => [
-                'title' => $this->l('Customer'),
-                'filter_key' => 'c!lastname'
+                'title'      => $this->l('Customer'),
+                'filter_key' => 'c!lastname',
             ],
-            'total' => [
-                'title' => $this->l('Total'),
-                'callback' => 'getOrderTotalUsingTaxCalculationMethod',
-                'orderby' => false,
-                'search' => false,
-                'align' => 'text-right',
-                'badge_success' => true
+            'total'    => [
+                'title'         => $this->l('Total'),
+                'callback'      => 'getOrderTotalUsingTaxCalculationMethod',
+                'orderby'       => false,
+                'search'        => false,
+                'align'         => 'text-right',
+                'badge_success' => true,
             ],
-            'carrier' => [
-                'title' => $this->l('Carrier'),
-                'align' => 'text-left',
-                'callback' => 'replaceZeroByShopName',
-                'filter_key' => 'ca!name'
+            'carrier'  => [
+                'title'      => $this->l('Carrier'),
+                'align'      => 'text-left',
+                'callback'   => 'replaceZeroByShopName',
+                'filter_key' => 'ca!name',
             ],
             'date_add' => [
-                'title' => $this->l('Date'),
-                'align' => 'text-left',
-                'type' => 'datetime',
-                'class' => 'fixed-width-lg',
-                'filter_key' => 'a!date_add'
+                'title'      => $this->l('Date'),
+                'align'      => 'text-left',
+                'type'       => 'datetime',
+                'class'      => 'fixed-width-lg',
+                'filter_key' => 'a!date_add',
             ],
             'id_guest' => [
-                'title' => $this->l('Online'),
-                'align' => 'text-center',
-                'type' => 'bool',
+                'title'        => $this->l('Online'),
+                'align'        => 'text-center',
+                'type'         => 'bool',
                 'havingFilter' => true,
-                'class' => 'fixed-width-xs',
-                'icon' => [0 => 'icon-', 1 => 'icon-user']
-            ]
+                'class'        => 'fixed-width-xs',
+                'icon'         => [0 => 'icon-', 1 => 'icon-user'],
+            ],
         ];
         $this->shopLinkType = 'shop';
 
         $this->bulk_actions = [
             'delete' => [
-                'text' => $this->l('Delete selected'),
+                'text'    => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
-                'icon' => 'icon-trash'
-            ]
+                'icon'    => 'icon-trash',
+            ],
         ];
 
         parent::__construct();
     }
 
+    /**
+     * @param int $idCart
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
+    public static function getOrderTotalUsingTaxCalculationMethod($idCart)
+    {
+        $context = Context::getContext();
+        $context->cart = new Cart($idCart);
+        $context->currency = new Currency((int) $context->cart->id_currency);
+        $context->customer = new Customer((int) $context->cart->id_customer);
+
+        return Cart::getTotalCart($idCart, true, Cart::BOTH_WITHOUT_SHIPPING);
+    }
+
+    /**
+     * @param $echo
+     * @param $tr
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
+    public static function replaceZeroByShopName($echo, $tr)
+    {
+        return ($echo == '0' ? Carrier::getCarrierNameFromShopName() : $echo);
+    }
+
+    /**
+     * @since 1.0.0
+     */
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['export_cart'] = [
                 'href' => self::$currentIndex.'&exportcart&token='.$this->token,
                 'desc' => $this->l('Export carts', null, null, false),
-                'icon' => 'process-icon-export'
+                'icon' => 'process-icon-export',
             ];
         }
 
         parent::initPageHeaderToolbar();
     }
 
+    /**
+     * @return mixed
+     *
+     * @since 1.0.0
+     */
     public function renderKpis()
     {
         $time = time();
@@ -153,7 +198,7 @@ class AdminCartsControllerCore extends AdminController
             $helper->data = ConfigurationKPI::get('CONVERSION_RATE_CHART');
         }
         $helper->source = $this->context->link->getAdminLink('AdminStats').'&ajax=1&action=getKpi&kpi=conversion_rate';
-        $helper->refresh = (bool)(ConfigurationKPI::get('CONVERSION_RATE_EXPIRE') < $time);
+        $helper->refresh = (bool) (ConfigurationKPI::get('CONVERSION_RATE_EXPIRE') < $time);
         $kpis[] = $helper->generate();
 
         $helper = new HelperKpi();
@@ -161,15 +206,15 @@ class AdminCartsControllerCore extends AdminController
         $helper->icon = 'icon-shopping-cart';
         $helper->color = 'color2';
         $helper->title = $this->l('Abandoned Carts', null, null, false);
-        $date_from = date(Context::getContext()->language->date_format_lite, strtotime('-2 day'));
-        $date_to = date(Context::getContext()->language->date_format_lite, strtotime('-1 day'));
-        $helper->subtitle = sprintf($this->l('From %s to %s', null, null, false), $date_from, $date_to);
+        $dateFrom = date(Context::getContext()->language->date_format_lite, strtotime('-2 day'));
+        $dateTo = date(Context::getContext()->language->date_format_lite, strtotime('-1 day'));
+        $helper->subtitle = sprintf($this->l('From %s to %s', null, null, false), $dateFrom, $dateTo);
         $helper->href = $this->context->link->getAdminLink('AdminCarts').'&action=filterOnlyAbandonedCarts';
         if (ConfigurationKPI::get('ABANDONED_CARTS') !== false) {
             $helper->value = ConfigurationKPI::get('ABANDONED_CARTS');
         }
         $helper->source = $this->context->link->getAdminLink('AdminStats').'&ajax=1&action=getKpi&kpi=abandoned_cart';
-        $helper->refresh = (bool)(ConfigurationKPI::get('ABANDONED_CARTS_EXPIRE') < $time);
+        $helper->refresh = (bool) (ConfigurationKPI::get('ABANDONED_CARTS_EXPIRE') < $time);
         $kpis[] = $helper->generate();
 
         $helper = new HelperKpi();
@@ -196,15 +241,20 @@ class AdminCartsControllerCore extends AdminController
             $helper->value = ConfigurationKPI::get('NETPROFIT_VISITOR');
         }
         $helper->source = $this->context->link->getAdminLink('AdminStats').'&ajax=1&action=getKpi&kpi=netprofit_visitor';
-        $helper->refresh = (bool)(ConfigurationKPI::get('NETPROFIT_VISITOR_EXPIRE') < $time);
+        $helper->refresh = (bool) (ConfigurationKPI::get('NETPROFIT_VISITOR_EXPIRE') < $time);
         $kpis[] = $helper->generate();
 
         $helper = new HelperKpiRow();
         $helper->kpis = $kpis;
+
         return $helper->generate();
     }
 
-
+    /**
+     * @return string
+     *
+     * @since 1.0.0
+     */
     public function renderView()
     {
         /** @var Cart $cart */
@@ -218,36 +268,36 @@ class AdminCartsControllerCore extends AdminController
         $this->context->customer = $customer;
         $this->toolbar_title = sprintf($this->l('Cart #%06d'), $this->context->cart->id);
         $products = $cart->getProducts();
-        $customized_datas = Product::getAllCustomizedDatas((int)$cart->id);
-        Product::addCustomizationPrice($products, $customized_datas);
+        $customizedDatas = Product::getAllCustomizedDatas((int) $cart->id);
+        Product::addCustomizationPrice($products, $customizedDatas);
         $summary = $cart->getSummaryDetails();
 
         /* Display order information */
-        $id_order = (int)Order::getOrderByCartId($cart->id);
-        $order = new Order($id_order);
+        $idOrder = (int) Order::getOrderByCartId($cart->id);
+        $order = new Order($idOrder);
         if (Validate::isLoadedObject($order)) {
-            $tax_calculation_method = $order->getTaxCalculationMethod();
-            $id_shop = (int)$order->id_shop;
+            $taxCalculationMethod = $order->getTaxCalculationMethod();
+            $idShop = (int) $order->id_shop;
         } else {
-            $id_shop = (int)$cart->id_shop;
-            $tax_calculation_method = Group::getPriceDisplayMethod(Group::getCurrent()->id);
+            $idShop = (int) $cart->id_shop;
+            $taxCalculationMethod = Group::getPriceDisplayMethod(Group::getCurrent()->id);
         }
 
-        if ($tax_calculation_method == PS_TAX_EXC) {
-            $total_products = $summary['total_products'];
-            $total_discounts = $summary['total_discounts_tax_exc'];
-            $total_wrapping = $summary['total_wrapping_tax_exc'];
-            $total_price = $summary['total_price_without_tax'];
-            $total_shipping = $summary['total_shipping_tax_exc'];
+        if ($taxCalculationMethod == PS_TAX_EXC) {
+            $totalProducts = $summary['total_products'];
+            $totalDiscounts = $summary['total_discounts_tax_exc'];
+            $totalWrapping = $summary['total_wrapping_tax_exc'];
+            $totalPrice = $summary['total_price_without_tax'];
+            $totalShipping = $summary['total_shipping_tax_exc'];
         } else {
-            $total_products = $summary['total_products_wt'];
-            $total_discounts = $summary['total_discounts'];
-            $total_wrapping = $summary['total_wrapping'];
-            $total_price = $summary['total_price'];
-            $total_shipping = $summary['total_shipping'];
+            $totalProducts = $summary['total_products_wt'];
+            $totalDiscounts = $summary['total_discounts'];
+            $totalWrapping = $summary['total_wrapping'];
+            $totalPrice = $summary['total_price'];
+            $totalShipping = $summary['total_shipping'];
         }
         foreach ($products as $k => &$product) {
-            if ($tax_calculation_method == PS_TAX_EXC) {
+            if ($taxCalculationMethod == PS_TAX_EXC) {
                 $product['product_price'] = $product['price'];
                 $product['product_total'] = $product['total'];
             } else {
@@ -255,17 +305,17 @@ class AdminCartsControllerCore extends AdminController
                 $product['product_total'] = $product['total_wt'];
             }
             $image = [];
-            if (isset($product['id_product_attribute']) && (int)$product['id_product_attribute']) {
-                $image = Db::getInstance()->getRow('SELECT id_image FROM '._DB_PREFIX_.'product_attribute_image WHERE id_product_attribute = '.(int)$product['id_product_attribute']);
+            if (isset($product['id_product_attribute']) && (int) $product['id_product_attribute']) {
+                $image = Db::getInstance()->getRow('SELECT id_image FROM '._DB_PREFIX_.'product_attribute_image WHERE id_product_attribute = '.(int) $product['id_product_attribute']);
             }
             if (!isset($image['id_image'])) {
-                $image = Db::getInstance()->getRow('SELECT id_image FROM '._DB_PREFIX_.'image WHERE id_product = '.(int)$product['id_product'].' AND cover = 1');
+                $image = Db::getInstance()->getRow('SELECT id_image FROM '._DB_PREFIX_.'image WHERE id_product = '.(int) $product['id_product'].' AND cover = 1');
             }
 
-            $product['qty_in_stock'] = StockAvailable::getQuantityAvailableByProduct($product['id_product'], isset($product['id_product_attribute']) ? $product['id_product_attribute'] : null, (int)$id_shop);
+            $product['qty_in_stock'] = StockAvailable::getQuantityAvailableByProduct($product['id_product'], isset($product['id_product_attribute']) ? $product['id_product_attribute'] : null, (int) $idShop);
 
-            $image_product = new Image($image['id_image']);
-            $product['image'] = (isset($image['id_image']) ? ImageManager::thumbnail(_PS_IMG_DIR_.'p/'.$image_product->getExistingImgPath().'.jpg', 'product_mini_'.(int)$product['id_product'].(isset($product['id_product_attribute']) ? '_'.(int)$product['id_product_attribute'] : '').'.jpg', 45, 'jpg') : '--');
+            $imageProduct = new Image($image['id_image']);
+            $product['image'] = (isset($image['id_image']) ? ImageManager::thumbnail(_PS_IMG_DIR_.'p/'.$imageProduct->getExistingImgPath().'.jpg', 'product_mini_'.(int) $product['id_product'].(isset($product['id_product_attribute']) ? '_'.(int) $product['id_product_attribute'] : '').'.jpg', 45, 'jpg') : '--');
         }
 
         $helper = new HelperKpi();
@@ -274,41 +324,44 @@ class AdminCartsControllerCore extends AdminController
         $helper->color = 'color1';
         $helper->title = $this->l('Total Cart', null, null, false);
         $helper->subtitle = sprintf($this->l('Cart #%06d', null, null, false), $cart->id);
-        $helper->value = Tools::displayPrice($total_price, $currency);
+        $helper->value = Tools::displayPrice($totalPrice, $currency);
         $kpi = $helper->generate();
 
         $this->tpl_view_vars = [
-            'kpi' => $kpi,
-            'products' => $products,
-            'discounts' => $cart->getCartRules(),
-            'order' => $order,
-            'cart' => $cart,
-            'currency' => $currency,
-            'customer' => $customer,
-            'customer_stats' => $customer->getStats(),
-            'total_products' => $total_products,
-            'total_discounts' => $total_discounts,
-            'total_wrapping' => $total_wrapping,
-            'total_price' => $total_price,
-            'total_shipping' => $total_shipping,
-            'customized_datas' => $customized_datas,
-            'tax_calculation_method' => $tax_calculation_method
+            'kpi'                    => $kpi,
+            'products'               => $products,
+            'discounts'              => $cart->getCartRules(),
+            'order'                  => $order,
+            'cart'                   => $cart,
+            'currency'               => $currency,
+            'customer'               => $customer,
+            'customer_stats'         => $customer->getStats(),
+            'total_products'         => $totalProducts,
+            'total_discounts'        => $totalDiscounts,
+            'total_wrapping'         => $totalWrapping,
+            'total_price'            => $totalPrice,
+            'total_shipping'         => $totalShipping,
+            'customized_datas'       => $customizedDatas,
+            'tax_calculation_method' => $taxCalculationMethod,
         ];
 
         return parent::renderView();
     }
 
+    /**
+     * @since 1.0.0
+     */
     public function ajaxPreProcess()
     {
         if ($this->tabAccess['edit'] === '1') {
-            $id_customer = (int)Tools::getValue('id_customer');
-            $customer = new Customer((int)$id_customer);
+            $idCustomer = (int) Tools::getValue('id_customer');
+            $customer = new Customer((int) $idCustomer);
             $this->context->customer = $customer;
-            $id_cart = (int)Tools::getValue('id_cart');
-            if (!$id_cart) {
-                $id_cart = $customer->getLastCart(false);
+            $idCart = (int) Tools::getValue('id_cart');
+            if (!$idCart) {
+                $idCart = $customer->getLastCart(false);
             }
-            $this->context->cart = new Cart((int)$id_cart);
+            $this->context->cart = new Cart((int) $idCart);
 
             if (!$this->context->cart->id) {
                 $this->context->cart->recyclable = 0;
@@ -316,7 +369,7 @@ class AdminCartsControllerCore extends AdminController
             }
 
             if (!$this->context->cart->id_customer) {
-                $this->context->cart->id_customer = $id_customer;
+                $this->context->cart->id_customer = $idCustomer;
             }
             if (Validate::isLoadedObject($this->context->cart) && $this->context->cart->OrderExists()) {
                 return;
@@ -325,343 +378,112 @@ class AdminCartsControllerCore extends AdminController
                 $this->context->cart->secure_key = $this->context->customer->secure_key;
             }
             if (!$this->context->cart->id_shop) {
-                $this->context->cart->id_shop = (int)$this->context->shop->id;
+                $this->context->cart->id_shop = (int) $this->context->shop->id;
             }
             if (!$this->context->cart->id_lang) {
-                $this->context->cart->id_lang = (($id_lang = (int)Tools::getValue('id_lang')) ? $id_lang : Configuration::get('PS_LANG_DEFAULT'));
+                $this->context->cart->id_lang = (($idLang = (int) Tools::getValue('id_lang')) ? $idLang : Configuration::get('PS_LANG_DEFAULT'));
             }
             if (!$this->context->cart->id_currency) {
-                $this->context->cart->id_currency = (($id_currency = (int)Tools::getValue('id_currency')) ? $id_currency : Configuration::get('PS_CURRENCY_DEFAULT'));
+                $this->context->cart->id_currency = (($idCurrency = (int) Tools::getValue('id_currency')) ? $idCurrency : Configuration::get('PS_CURRENCY_DEFAULT'));
             }
 
-            $addresses = $customer->getAddresses((int)$this->context->cart->id_lang);
-            $id_address_delivery = (int)Tools::getValue('id_address_delivery');
-            $id_address_invoice = (int)Tools::getValue('id_address_delivery');
+            $addresses = $customer->getAddresses((int) $this->context->cart->id_lang);
+            $idAddressDelivery = (int) Tools::getValue('id_address_delivery');
+            $idAddressInvoice = (int) Tools::getValue('id_address_delivery');
 
             if (!$this->context->cart->id_address_invoice && isset($addresses[0])) {
-                $this->context->cart->id_address_invoice = (int)$addresses[0]['id_address'];
-            } elseif ($id_address_invoice) {
-                $this->context->cart->id_address_invoice = (int)$id_address_invoice;
+                $this->context->cart->id_address_invoice = (int) $addresses[0]['id_address'];
+            } elseif ($idAddressInvoice) {
+                $this->context->cart->id_address_invoice = (int) $idAddressInvoice;
             }
             if (!$this->context->cart->id_address_delivery && isset($addresses[0])) {
                 $this->context->cart->id_address_delivery = $addresses[0]['id_address'];
-            } elseif ($id_address_delivery) {
-                $this->context->cart->id_address_delivery = (int)$id_address_delivery;
+            } elseif ($idAddressDelivery) {
+                $this->context->cart->id_address_delivery = (int) $idAddressDelivery;
             }
             $this->context->cart->setNoMultishipping();
             $this->context->cart->save();
-            $currency = new Currency((int)$this->context->cart->id_currency);
+            $currency = new Currency((int) $this->context->cart->id_currency);
             $this->context->currency = $currency;
         }
     }
 
+    /**
+     * @since 1.0.0
+     */
     public function ajaxProcessDeleteProduct()
     {
         if ($this->tabAccess['edit'] === '1') {
             $errors = [];
-            if ((!$id_product = (int)Tools::getValue('id_product')) || !Validate::isInt($id_product)) {
+            if ((!$idProduct = (int) Tools::getValue('id_product')) || !Validate::isInt($idProduct)) {
                 $errors[] = Tools::displayError('Invalid product');
             }
-            if (($id_product_attribute = (int)Tools::getValue('id_product_attribute')) && !Validate::isInt($id_product_attribute)) {
+            if (($idProductAttribute = (int) Tools::getValue('id_product_attribute')) && !Validate::isInt($idProductAttribute)) {
                 $errors[] = Tools::displayError('Invalid combination');
             }
             if (count($errors)) {
                 die(json_encode($errors));
             }
-            if ($this->context->cart->deleteProduct($id_product, $id_product_attribute, (int)Tools::getValue('id_customization'))) {
+            if ($this->context->cart->deleteProduct($idProduct, $idProductAttribute, (int) Tools::getValue('id_customization'))) {
                 echo json_encode($this->ajaxReturnVars());
             }
         }
     }
 
-    public function ajaxProcessUpdateCustomizationFields()
+    /**
+     * @return array
+     *
+     * @since 1.0.0
+     */
+    public function ajaxReturnVars()
     {
-        $errors = [];
-        if ($this->tabAccess['edit'] === '1') {
-            $errors = [];
-            if (Tools::getValue('only_display') != 1) {
-                if (!$this->context->cart->id || (!$id_product = (int)Tools::getValue('id_product'))) {
-                    return;
-                }
-                $product = new Product((int)$id_product);
-                if (!$customization_fields = $product->getCustomizationFieldIds()) {
-                    return;
-                }
-                foreach ($customization_fields as $customization_field) {
-                    $field_id = 'customization_'.$id_product.'_'.$customization_field['id_customization_field'];
-                    if ($customization_field['type'] == Product::CUSTOMIZE_TEXTFIELD) {
-                        if (!Tools::getValue($field_id)) {
-                            if ($customization_field['required']) {
-                                $errors[] = Tools::displayError('Please fill in all the required fields.');
-                            }
-                            continue;
-                        }
-                        if (!Validate::isMessage(Tools::getValue($field_id))) {
-                            $errors[] = Tools::displayError('Invalid message');
-                        }
-                        $this->context->cart->addTextFieldToProduct((int)$product->id, (int)$customization_field['id_customization_field'], Product::CUSTOMIZE_TEXTFIELD, Tools::getValue($field_id));
-                    } elseif ($customization_field['type'] == Product::CUSTOMIZE_FILE) {
-                        if (!isset($_FILES[$field_id]) || !isset($_FILES[$field_id]['tmp_name']) || empty($_FILES[$field_id]['tmp_name'])) {
-                            if ($customization_field['required']) {
-                                $errors[] = Tools::displayError('Please fill in all the required fields.');
-                            }
-                            continue;
-                        }
-                        if ($error = ImageManager::validateUpload($_FILES[$field_id], (int)Configuration::get('PS_PRODUCT_PICTURE_MAX_SIZE'))) {
-                            $errors[] = $error;
-                        }
-                        if (!($tmp_name = tempnam(_PS_TMP_IMG_DIR_, 'PS')) || !move_uploaded_file($_FILES[$field_id]['tmp_name'], $tmp_name)) {
-                            $errors[] = Tools::displayError('An error occurred during the image upload process.');
-                        }
-                        $file_name = md5(uniqid(rand(), true));
-                        if (!ImageManager::resize($tmp_name, _PS_UPLOAD_DIR_.$file_name)) {
-                            continue;
-                        } elseif (!ImageManager::resize($tmp_name, _PS_UPLOAD_DIR_.$file_name.'_small', (int)Configuration::get('PS_PRODUCT_PICTURE_WIDTH'), (int)Configuration::get('PS_PRODUCT_PICTURE_HEIGHT'))) {
-                            $errors[] = Tools::displayError('An error occurred during the image upload process.');
-                        } elseif (!chmod(_PS_UPLOAD_DIR_.$file_name, 0777) || !chmod(_PS_UPLOAD_DIR_.$file_name.'_small', 0777)) {
-                            $errors[] = Tools::displayError('An error occurred during the image upload process.');
-                        } else {
-                            $this->context->cart->addPictureToProduct((int)$product->id, (int)$customization_field['id_customization_field'], Product::CUSTOMIZE_FILE, $file_name);
-                        }
-                        unlink($tmp_name);
-                    }
+        $idCart = (int) $this->context->cart->id;
+        $messageContent = '';
+        if ($message = Message::getMessageByCartId((int) $this->context->cart->id)) {
+            $messageContent = $message['message'];
+        }
+        $cartRules = $this->context->cart->getCartRules(CartRule::FILTER_ACTION_SHIPPING);
+
+        $freeShipping = false;
+        if (count($cartRules)) {
+            foreach ($cartRules as $cart_rule) {
+                if ($cart_rule['id_cart_rule'] == CartRule::getIdByCode(CartRule::BO_ORDER_CODE_PREFIX.(int) $this->context->cart->id)) {
+                    $freeShipping = true;
+                    break;
                 }
             }
-            $this->setMedia();
-            $this->initFooter();
-            $this->context->smarty->assign(
-                [
-                    'customization_errors' => implode('<br />', $errors),
-                                                            'css_files' => $this->css_files
-                ]
-            );
-            return $this->smartyOutputContent('controllers/orders/form_customization_feedback.tpl');
         }
+
+        $addresses = $this->context->customer->getAddresses((int) $this->context->cart->id_lang);
+
+        foreach ($addresses as &$data) {
+            $address = new Address((int) $data['id_address']);
+            $data['formated_address'] = AddressFormat::generateAddress($address, [], "<br />");
+        }
+
+        return [
+            'summary'              => $this->getCartSummary(),
+            'delivery_option_list' => $this->getDeliveryOptionList(),
+            'cart'                 => $this->context->cart,
+            'currency'             => new Currency($this->context->cart->id_currency),
+            'addresses'            => $addresses,
+            'id_cart'              => $idCart,
+            'order_message'        => $messageContent,
+            'link_order'           => $this->context->link->getPageLink(
+                'order',
+                false,
+                (int) $this->context->cart->id_lang,
+                'step=3&recover_cart='.$idCart.'&token_cart='.md5(_COOKIE_KEY_.'recover_cart_'.$idCart)
+            ),
+            'free_shipping'        => (int) $freeShipping,
+        ];
     }
 
-    public function ajaxProcessUpdateQty()
-    {
-        if ($this->tabAccess['edit'] === '1') {
-            $errors = [];
-            if (!$this->context->cart->id) {
-                return;
-            }
-            if ($this->context->cart->OrderExists()) {
-                $errors[] = Tools::displayError('An order has already been placed with this cart.');
-            } elseif (!($id_product = (int)Tools::getValue('id_product')) || !($product = new Product((int)$id_product, true, $this->context->language->id))) {
-                $errors[] = Tools::displayError('Invalid product');
-            } elseif (!($qty = Tools::getValue('qty')) || $qty == 0) {
-                $errors[] = Tools::displayError('Invalid quantity');
-            }
-
-            // Don't try to use a product if not instanciated before due to errors
-            if (isset($product) && $product->id) {
-                if (($id_product_attribute = Tools::getValue('id_product_attribute')) != 0) {
-                    if (!Product::isAvailableWhenOutOfStock($product->out_of_stock) && !Attribute::checkAttributeQty((int)$id_product_attribute, (int)$qty)) {
-                        $errors[] = Tools::displayError('There is not enough product in stock.');
-                    }
-                } elseif (!$product->checkQty((int)$qty)) {
-                    $errors[] = Tools::displayError('There is not enough product in stock.');
-                }
-                if (!($id_customization = (int)Tools::getValue('id_customization', 0)) && !$product->hasAllRequiredCustomizableFields()) {
-                    $errors[] = Tools::displayError('Please fill in all the required fields.');
-                }
-                $this->context->cart->save();
-            } else {
-                $errors[] = Tools::displayError('This product cannot be added to the cart.');
-            }
-
-            if (!count($errors)) {
-                if ((int)$qty < 0) {
-                    $qty = str_replace('-', '', $qty);
-                    $operator = 'down';
-                } else {
-                    $operator = 'up';
-                }
-
-                if (!($qty_upd = $this->context->cart->updateQty($qty, $id_product, (int)$id_product_attribute, (int)$id_customization, $operator))) {
-                    $errors[] = Tools::displayError('You already have the maximum quantity available for this product.');
-                } elseif ($qty_upd < 0) {
-                    $minimal_qty = $id_product_attribute ? Attribute::getAttributeMinimalQty((int)$id_product_attribute) : $product->minimal_quantity;
-                    $errors[] = sprintf(Tools::displayError('You must add a minimum quantity of %d', false), $minimal_qty);
-                }
-            }
-
-            echo json_encode(array_merge($this->ajaxReturnVars(), ['errors' => $errors]));
-        }
-    }
-
-    public function ajaxProcessUpdateDeliveryOption()
-    {
-        if ($this->tabAccess['edit'] === '1') {
-            $delivery_option = Tools::getValue('delivery_option');
-            if ($delivery_option !== false) {
-                $this->context->cart->setDeliveryOption([$this->context->cart->id_address_delivery => $delivery_option]);
-            }
-            if (Validate::isBool(($recyclable = (int)Tools::getValue('recyclable')))) {
-                $this->context->cart->recyclable = $recyclable;
-            }
-            if (Validate::isBool(($gift = (int)Tools::getValue('gift')))) {
-                $this->context->cart->gift = $gift;
-            }
-            if (Validate::isMessage(($gift_message = pSQL(Tools::getValue('gift_message'))))) {
-                $this->context->cart->gift_message = $gift_message;
-            }
-            $this->context->cart->save();
-            echo json_encode($this->ajaxReturnVars());
-        }
-    }
-
-    public function ajaxProcessUpdateOrderMessage()
-    {
-        if ($this->tabAccess['edit'] === '1') {
-            $id_message = false;
-            if ($old_message = Message::getMessageByCartId((int)$this->context->cart->id)) {
-                $id_message = $old_message['id_message'];
-            }
-            $message = new Message((int)$id_message);
-            if ($message_content = Tools::getValue('message')) {
-                if (Validate::isMessage($message_content)) {
-                    $message->message = $message_content;
-                    $message->id_cart = (int)$this->context->cart->id;
-                    $message->id_customer = (int)$this->context->cart->id_customer;
-                    $message->save();
-                }
-            } elseif (Validate::isLoadedObject($message)) {
-                $message->delete();
-            }
-            echo json_encode($this->ajaxReturnVars());
-        }
-    }
-
-    public function ajaxProcessUpdateCurrency()
-    {
-        if ($this->tabAccess['edit'] === '1') {
-            $currency = new Currency((int)Tools::getValue('id_currency'));
-            if (Validate::isLoadedObject($currency) && !$currency->deleted && $currency->active) {
-                $this->context->cart->id_currency = (int)$currency->id;
-                $this->context->currency = $currency;
-                $this->context->cart->save();
-            }
-            echo json_encode($this->ajaxReturnVars());
-        }
-    }
-    public function ajaxProcessUpdateLang()
-    {
-        if ($this->tabAccess['edit'] === '1') {
-            $lang = new Language((int)Tools::getValue('id_lang'));
-            if (Validate::isLoadedObject($lang) && $lang->active) {
-                $this->context->cart->id_lang = (int)$lang->id;
-                $this->context->cart->save();
-            }
-            echo json_encode($this->ajaxReturnVars());
-        }
-    }
-
-    public function ajaxProcessDuplicateOrder()
-    {
-        if ($this->tabAccess['edit'] === '1') {
-            $errors = [];
-            if (!$id_order = Tools::getValue('id_order')) {
-                $errors[] = Tools::displayError('Invalid order');
-            }
-            $cart = Cart::getCartByOrderId($id_order);
-            $new_cart = $cart->duplicate();
-            if (!$new_cart || !Validate::isLoadedObject($new_cart['cart'])) {
-                $errors[] = Tools::displayError('The order cannot be renewed.');
-            } elseif (!$new_cart['success']) {
-                $errors[] = Tools::displayError('The order cannot be renewed.');
-            } else {
-                $this->context->cart = $new_cart['cart'];
-                echo json_encode($this->ajaxReturnVars());
-            }
-        }
-    }
-
-    public function ajaxProcessDeleteVoucher()
-    {
-        if ($this->tabAccess['edit'] === '1') {
-            if ($this->context->cart->removeCartRule((int)Tools::getValue('id_cart_rule'))) {
-                echo json_encode($this->ajaxReturnVars());
-            }
-        }
-    }
-
-    public function ajaxProcessupdateFreeShipping()
-    {
-        if ($this->tabAccess['edit'] === '1') {
-            if (!$id_cart_rule = CartRule::getIdByCode(CartRule::BO_ORDER_CODE_PREFIX.(int)$this->context->cart->id)) {
-                $cart_rule = new CartRule();
-                $cart_rule->code = CartRule::BO_ORDER_CODE_PREFIX.(int)$this->context->cart->id;
-                $cart_rule->name = [Configuration::get('PS_LANG_DEFAULT') => $this->l('Free Shipping', 'AdminTab', false, false)];
-                $cart_rule->id_customer = (int)$this->context->cart->id_customer;
-                $cart_rule->free_shipping = true;
-                $cart_rule->quantity = 1;
-                $cart_rule->quantity_per_user = 1;
-                $cart_rule->minimum_amount_currency = (int)$this->context->cart->id_currency;
-                $cart_rule->reduction_currency = (int)$this->context->cart->id_currency;
-                $cart_rule->date_from = date('Y-m-d H:i:s', time());
-                $cart_rule->date_to = date('Y-m-d H:i:s', time() + 24 * 36000);
-                $cart_rule->active = 1;
-                $cart_rule->add();
-            } else {
-                $cart_rule = new CartRule((int)$id_cart_rule);
-            }
-
-            $this->context->cart->removeCartRule((int)$cart_rule->id);
-            if (Tools::getValue('free_shipping')) {
-                $this->context->cart->addCartRule((int)$cart_rule->id);
-            }
-
-            echo json_encode($this->ajaxReturnVars());
-        }
-    }
-
-    public function ajaxProcessAddVoucher()
-    {
-        if ($this->tabAccess['edit'] === '1') {
-            $errors = [];
-            if (!($id_cart_rule = Tools::getValue('id_cart_rule')) || !$cart_rule = new CartRule((int)$id_cart_rule)) {
-                $errors[] = Tools::displayError('Invalid voucher.');
-            } elseif ($err = $cart_rule->checkValidity($this->context)) {
-                $errors[] = $err;
-            }
-            if (!count($errors)) {
-                if (!$this->context->cart->addCartRule((int)$cart_rule->id)) {
-                    $errors[] = Tools::displayError('Can\'t add the voucher.');
-                }
-            }
-            echo json_encode(array_merge($this->ajaxReturnVars(), ['errors' => $errors]));
-        }
-    }
-
-    public function ajaxProcessUpdateAddress()
-    {
-        if ($this->tabAccess['edit'] === '1') {
-            echo json_encode(['addresses' => $this->context->customer->getAddresses((int)$this->context->cart->id_lang)]);
-        }
-    }
-
-    public function ajaxProcessUpdateAddresses()
-    {
-        if ($this->tabAccess['edit'] === '1') {
-            if (($id_address_delivery = (int)Tools::getValue('id_address_delivery')) &&
-                ($address_delivery = new Address((int)$id_address_delivery)) &&
-                $address_delivery->id_customer == $this->context->cart->id_customer) {
-                $this->context->cart->id_address_delivery = (int)$address_delivery->id;
-            }
-
-            if (($id_address_invoice = (int)Tools::getValue('id_address_invoice')) &&
-                ($address_invoice = new Address((int)$id_address_invoice)) &&
-                $address_invoice->id_customer = $this->context->cart->id_customer) {
-                $this->context->cart->id_address_invoice = (int)$address_invoice->id;
-            }
-            $this->context->cart->save();
-
-            echo json_encode($this->ajaxReturnVars());
-        }
-    }
-
+    /**
+     * @return array
+     *
+     * @since 1.0.0
+     */
     protected function getCartSummary()
     {
         $summary = $this->context->cart->getSummaryDetails(null, true);
@@ -676,7 +498,7 @@ class AdminCartsControllerCore extends AdminController
                 if (!isset($product['attributes_small'])) {
                     $product['attributes_small'] = '';
                 }
-                $product['customized_datas'] = Product::getAllCustomizedDatas((int)$this->context->cart->id, null, true);
+                $product['customized_datas'] = Product::getAllCustomizedDatas((int) $this->context->cart->id, null, true);
             }
         }
         if (count($summary['discounts'])) {
@@ -694,25 +516,29 @@ class AdminCartsControllerCore extends AdminController
             }
         }
 
-
         return $summary;
     }
 
+    /**
+     * @return array
+     *
+     * @since 1.0.0
+     */
     protected function getDeliveryOptionList()
     {
-        $delivery_option_list_formated = [];
-        $delivery_option_list = $this->context->cart->getDeliveryOptionList();
+        $deliveryOptionListFormatted = [];
+        $deliveryOptionList = $this->context->cart->getDeliveryOptionList();
 
-        if (!count($delivery_option_list)) {
+        if (!count($deliveryOptionList)) {
             return [];
         }
 
-        $id_default_carrier = (int)Configuration::get('PS_CARRIER_DEFAULT');
-        foreach (current($delivery_option_list) as $key => $delivery_option) {
+        $idDefaultCarrier = (int) Configuration::get('PS_CARRIER_DEFAULT');
+        foreach (current($deliveryOptionList) as $key => $deliveryOption) {
             $name = '';
             $first = true;
-            $id_default_carrier_delivery = false;
-            foreach ($delivery_option['carrier_list'] as $carrier) {
+            $idDefaultCarrierDelivery = false;
+            foreach ($deliveryOption['carrier_list'] as $carrier) {
                 if (!$first) {
                     $name .= ', ';
                 } else {
@@ -721,41 +547,373 @@ class AdminCartsControllerCore extends AdminController
 
                 $name .= $carrier['instance']->name;
 
-                if ($delivery_option['unique_carrier']) {
+                if ($deliveryOption['unique_carrier']) {
                     $name .= ' - '.$carrier['instance']->delay[$this->context->employee->id_lang];
                 }
 
-                if (!$id_default_carrier_delivery) {
-                    $id_default_carrier_delivery = (int)$carrier['instance']->id;
+                if (!$idDefaultCarrierDelivery) {
+                    $idDefaultCarrierDelivery = (int) $carrier['instance']->id;
                 }
-                if ($carrier['instance']->id == $id_default_carrier) {
-                    $id_default_carrier_delivery = $id_default_carrier;
+                if ($carrier['instance']->id == $idDefaultCarrier) {
+                    $idDefaultCarrierDelivery = $idDefaultCarrier;
                 }
                 if (!$this->context->cart->id_carrier) {
-                    $this->context->cart->setDeliveryOption([$this->context->cart->id_address_delivery => (int)$carrier['instance']->id.',']);
+                    $this->context->cart->setDeliveryOption([$this->context->cart->id_address_delivery => (int) $carrier['instance']->id.',']);
                     $this->context->cart->save();
                 }
             }
-            $delivery_option_list_formated[] = ['name' => $name, 'key' => $key];
+            $deliveryOptionListFormatted[] = ['name' => $name, 'key' => $key];
         }
-        return $delivery_option_list_formated;
+
+        return $deliveryOptionListFormatted;
     }
 
+    /**
+     * @since 1.0.0
+     */
+    public function ajaxProcessUpdateCustomizationFields()
+    {
+        $errors = [];
+        if ($this->tabAccess['edit'] === '1') {
+            $errors = [];
+            if (Tools::getValue('only_display') != 1) {
+                if (!$this->context->cart->id || (!$idProduct = (int) Tools::getValue('id_product'))) {
+                    return;
+                }
+                $product = new Product((int) $idProduct);
+                if (!$customizationFields = $product->getCustomizationFieldIds()) {
+                    return;
+                }
+                foreach ($customizationFields as $customizationField) {
+                    $fieldId = 'customization_'.$idProduct.'_'.$customizationField['id_customization_field'];
+                    if ($customizationField['type'] == Product::CUSTOMIZE_TEXTFIELD) {
+                        if (!Tools::getValue($fieldId)) {
+                            if ($customizationField['required']) {
+                                $errors[] = Tools::displayError('Please fill in all the required fields.');
+                            }
+                            continue;
+                        }
+                        if (!Validate::isMessage(Tools::getValue($fieldId))) {
+                            $errors[] = Tools::displayError('Invalid message');
+                        }
+                        $this->context->cart->addTextFieldToProduct((int) $product->id, (int) $customizationField['id_customization_field'], Product::CUSTOMIZE_TEXTFIELD, Tools::getValue($fieldId));
+                    } elseif ($customizationField['type'] == Product::CUSTOMIZE_FILE) {
+                        if (!isset($_FILES[$fieldId]) || !isset($_FILES[$fieldId]['tmp_name']) || empty($_FILES[$fieldId]['tmp_name'])) {
+                            if ($customizationField['required']) {
+                                $errors[] = Tools::displayError('Please fill in all the required fields.');
+                            }
+                            continue;
+                        }
+                        if ($error = ImageManager::validateUpload($_FILES[$fieldId], (int) Configuration::get('PS_PRODUCT_PICTURE_MAX_SIZE'))) {
+                            $errors[] = $error;
+                        }
+                        if (!($tmpName = tempnam(_PS_TMP_IMG_DIR_, 'PS')) || !move_uploaded_file($_FILES[$fieldId]['tmp_name'], $tmpName)) {
+                            $errors[] = Tools::displayError('An error occurred during the image upload process.');
+                        }
+                        $fileName = md5(uniqid(rand(), true));
+                        if (!ImageManager::resize($tmpName, _PS_UPLOAD_DIR_.$fileName)) {
+                            continue;
+                        } elseif (!ImageManager::resize($tmpName, _PS_UPLOAD_DIR_.$fileName.'_small', (int) Configuration::get('PS_PRODUCT_PICTURE_WIDTH'), (int) Configuration::get('PS_PRODUCT_PICTURE_HEIGHT'))) {
+                            $errors[] = Tools::displayError('An error occurred during the image upload process.');
+                        } elseif (!chmod(_PS_UPLOAD_DIR_.$fileName, 0777) || !chmod(_PS_UPLOAD_DIR_.$fileName.'_small', 0777)) {
+                            $errors[] = Tools::displayError('An error occurred during the image upload process.');
+                        } else {
+                            $this->context->cart->addPictureToProduct((int) $product->id, (int) $customizationField['id_customization_field'], Product::CUSTOMIZE_FILE, $fileName);
+                        }
+                        unlink($tmpName);
+                    }
+                }
+            }
+            $this->setMedia();
+            $this->initFooter();
+            $this->context->smarty->assign(
+                [
+                    'customization_errors' => implode('<br />', $errors),
+                    'css_files'            => $this->css_files,
+                ]
+            );
+
+            return $this->smartyOutputContent('controllers/orders/form_customization_feedback.tpl');
+        }
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    public function ajaxProcessUpdateQty()
+    {
+        if ($this->tabAccess['edit'] === '1') {
+            $errors = [];
+            if (!$this->context->cart->id) {
+                return;
+            }
+            if ($this->context->cart->OrderExists()) {
+                $errors[] = Tools::displayError('An order has already been placed with this cart.');
+            } elseif (!($idProduct = (int) Tools::getValue('id_product')) || !($product = new Product((int) $idProduct, true, $this->context->language->id))) {
+                $errors[] = Tools::displayError('Invalid product');
+            } elseif (!($qty = Tools::getValue('qty')) || $qty == 0) {
+                $errors[] = Tools::displayError('Invalid quantity');
+            }
+
+            // Don't try to use a product if not instanciated before due to errors
+            if (isset($product) && $product->id) {
+                if (($idProductAttribute = Tools::getValue('id_product_attribute')) != 0) {
+                    if (!Product::isAvailableWhenOutOfStock($product->out_of_stock) && !Attribute::checkAttributeQty((int) $idProductAttribute, (int) $qty)) {
+                        $errors[] = Tools::displayError('There is not enough product in stock.');
+                    }
+                } elseif (!$product->checkQty((int) $qty)) {
+                    $errors[] = Tools::displayError('There is not enough product in stock.');
+                }
+                if (!($idCustomization = (int) Tools::getValue('id_customization', 0)) && !$product->hasAllRequiredCustomizableFields()) {
+                    $errors[] = Tools::displayError('Please fill in all the required fields.');
+                }
+                $this->context->cart->save();
+            } else {
+                $errors[] = Tools::displayError('This product cannot be added to the cart.');
+            }
+
+            if (!count($errors)) {
+                if ((int) $qty < 0) {
+                    $qty = str_replace('-', '', $qty);
+                    $operator = 'down';
+                } else {
+                    $operator = 'up';
+                }
+
+                if (!($qtyUpd = $this->context->cart->updateQty($qty, $idProduct, (int) $idProductAttribute, (int) $idCustomization, $operator))) {
+                    $errors[] = Tools::displayError('You already have the maximum quantity available for this product.');
+                } elseif ($qtyUpd < 0) {
+                    $minimal_qty = $idProductAttribute ? Attribute::getAttributeMinimalQty((int) $idProductAttribute) : $product->minimal_quantity;
+                    $errors[] = sprintf(Tools::displayError('You must add a minimum quantity of %d', false), $minimal_qty);
+                }
+            }
+
+            echo json_encode(array_merge($this->ajaxReturnVars(), ['errors' => $errors]));
+        }
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    public function ajaxProcessUpdateDeliveryOption()
+    {
+        if ($this->tabAccess['edit'] === '1') {
+            $deliveryOption = Tools::getValue('delivery_option');
+            if ($deliveryOption !== false) {
+                $this->context->cart->setDeliveryOption([$this->context->cart->id_address_delivery => $deliveryOption]);
+            }
+            if (Validate::isBool(($recyclable = (int) Tools::getValue('recyclable')))) {
+                $this->context->cart->recyclable = $recyclable;
+            }
+            if (Validate::isBool(($gift = (int) Tools::getValue('gift')))) {
+                $this->context->cart->gift = $gift;
+            }
+            if (Validate::isMessage(($giftMessage = pSQL(Tools::getValue('gift_message'))))) {
+                $this->context->cart->gift_message = $giftMessage;
+            }
+            $this->context->cart->save();
+            echo json_encode($this->ajaxReturnVars());
+        }
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    public function ajaxProcessUpdateOrderMessage()
+    {
+        if ($this->tabAccess['edit'] === '1') {
+            $idMessage = false;
+            if ($oldMessage = Message::getMessageByCartId((int) $this->context->cart->id)) {
+                $idMessage = $oldMessage['id_message'];
+            }
+            $message = new Message((int) $idMessage);
+            if ($messageContent = Tools::getValue('message')) {
+                if (Validate::isMessage($messageContent)) {
+                    $message->message = $messageContent;
+                    $message->id_cart = (int) $this->context->cart->id;
+                    $message->id_customer = (int) $this->context->cart->id_customer;
+                    $message->save();
+                }
+            } elseif (Validate::isLoadedObject($message)) {
+                $message->delete();
+            }
+            echo json_encode($this->ajaxReturnVars());
+        }
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    public function ajaxProcessUpdateCurrency()
+    {
+        if ($this->tabAccess['edit'] === '1') {
+            $currency = new Currency((int) Tools::getValue('id_currency'));
+            if (Validate::isLoadedObject($currency) && !$currency->deleted && $currency->active) {
+                $this->context->cart->id_currency = (int) $currency->id;
+                $this->context->currency = $currency;
+                $this->context->cart->save();
+            }
+            echo json_encode($this->ajaxReturnVars());
+        }
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    public function ajaxProcessUpdateLang()
+    {
+        if ($this->tabAccess['edit'] === '1') {
+            $lang = new Language((int) Tools::getValue('id_lang'));
+            if (Validate::isLoadedObject($lang) && $lang->active) {
+                $this->context->cart->id_lang = (int) $lang->id;
+                $this->context->cart->save();
+            }
+            echo json_encode($this->ajaxReturnVars());
+        }
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    public function ajaxProcessDuplicateOrder()
+    {
+        if ($this->tabAccess['edit'] === '1') {
+            $errors = [];
+            if (!$idOrder = Tools::getValue('id_order')) {
+                $errors[] = Tools::displayError('Invalid order');
+            }
+            $cart = Cart::getCartByOrderId($idOrder);
+            $newCart = $cart->duplicate();
+            if (!$newCart || !Validate::isLoadedObject($newCart['cart'])) {
+                $errors[] = Tools::displayError('The order cannot be renewed.');
+            } elseif (!$newCart['success']) {
+                $errors[] = Tools::displayError('The order cannot be renewed.');
+            } else {
+                $this->context->cart = $newCart['cart'];
+                echo json_encode($this->ajaxReturnVars());
+            }
+        }
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    public function ajaxProcessDeleteVoucher()
+    {
+        if ($this->tabAccess['edit'] === '1') {
+            if ($this->context->cart->removeCartRule((int) Tools::getValue('id_cart_rule'))) {
+                echo json_encode($this->ajaxReturnVars());
+            }
+        }
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    public function ajaxProcessupdateFreeShipping()
+    {
+        if ($this->tabAccess['edit'] === '1') {
+            if (!$idCartRule = CartRule::getIdByCode(CartRule::BO_ORDER_CODE_PREFIX.(int) $this->context->cart->id)) {
+                $cartRule = new CartRule();
+                $cartRule->code = CartRule::BO_ORDER_CODE_PREFIX.(int) $this->context->cart->id;
+                $cartRule->name = [Configuration::get('PS_LANG_DEFAULT') => $this->l('Free Shipping', 'AdminTab', false, false)];
+                $cartRule->id_customer = (int) $this->context->cart->id_customer;
+                $cartRule->free_shipping = true;
+                $cartRule->quantity = 1;
+                $cartRule->quantity_per_user = 1;
+                $cartRule->minimum_amount_currency = (int) $this->context->cart->id_currency;
+                $cartRule->reduction_currency = (int) $this->context->cart->id_currency;
+                $cartRule->date_from = date('Y-m-d H:i:s', time());
+                $cartRule->date_to = date('Y-m-d H:i:s', time() + 24 * 36000);
+                $cartRule->active = 1;
+                $cartRule->add();
+            } else {
+                $cartRule = new CartRule((int) $idCartRule);
+            }
+
+            $this->context->cart->removeCartRule((int) $cartRule->id);
+            if (Tools::getValue('free_shipping')) {
+                $this->context->cart->addCartRule((int) $cartRule->id);
+            }
+
+            echo json_encode($this->ajaxReturnVars());
+        }
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    public function ajaxProcessAddVoucher()
+    {
+        if ($this->tabAccess['edit'] === '1') {
+            $errors = [];
+            if (!($idCartRule = Tools::getValue('id_cart_rule')) || !$cart_rule = new CartRule((int) $idCartRule)) {
+                $errors[] = Tools::displayError('Invalid voucher.');
+            } elseif ($err = $cart_rule->checkValidity($this->context)) {
+                $errors[] = $err;
+            }
+            if (!count($errors)) {
+                if (!$this->context->cart->addCartRule((int) $cart_rule->id)) {
+                    $errors[] = Tools::displayError('Can\'t add the voucher.');
+                }
+            }
+            echo json_encode(array_merge($this->ajaxReturnVars(), ['errors' => $errors]));
+        }
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    public function ajaxProcessUpdateAddress()
+    {
+        if ($this->tabAccess['edit'] === '1') {
+            echo json_encode(['addresses' => $this->context->customer->getAddresses((int) $this->context->cart->id_lang)]);
+        }
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    public function ajaxProcessUpdateAddresses()
+    {
+        if ($this->tabAccess['edit'] === '1') {
+            if (($idAddressDelivery = (int) Tools::getValue('id_address_delivery')) &&
+                ($addressDelivery = new Address((int) $idAddressDelivery)) &&
+                $addressDelivery->id_customer == $this->context->cart->id_customer
+            ) {
+                $this->context->cart->id_address_delivery = (int) $addressDelivery->id;
+            }
+
+            if (($idAddressInvoice = (int) Tools::getValue('id_address_invoice')) &&
+                ($addressInvoice = new Address((int) $idAddressInvoice)) &&
+                $addressInvoice->id_customer = $this->context->cart->id_customer
+            ) {
+                $this->context->cart->id_address_invoice = (int) $addressInvoice->id;
+            }
+            $this->context->cart->save();
+
+            echo json_encode($this->ajaxReturnVars());
+        }
+    }
+
+    /**
+     * @since 1.0.0
+     */
     public function displayAjaxSearchCarts()
     {
-        $id_customer = (int)Tools::getValue('id_customer');
-        $carts = Cart::getCustomerCarts((int)$id_customer);
-        $orders = Order::getCustomerOrders((int)$id_customer);
-        $customer = new Customer((int)$id_customer);
+        $idCustomer = (int) Tools::getValue('id_customer');
+        $carts = Cart::getCustomerCarts((int) $idCustomer);
+        $orders = Order::getCustomerOrders((int) $idCustomer);
+        $customer = new Customer((int) $idCustomer);
 
         if (count($carts)) {
             foreach ($carts as $key => &$cart) {
-                $cart_obj = new Cart((int)$cart['id_cart']);
-                if ($cart['id_cart'] == $this->context->cart->id || !Validate::isLoadedObject($cart_obj) || $cart_obj->OrderExists()) {
+                $cartObj = new Cart((int) $cart['id_cart']);
+                if ($cart['id_cart'] == $this->context->cart->id || !Validate::isLoadedObject($cartObj) || $cartObj->OrderExists()) {
                     unset($carts[$key]);
                 }
-                $currency = new Currency((int)$cart['id_currency']);
-                $cart['total_price'] = Tools::displayPrice($cart_obj->getOrderTotal(), $currency);
+                $currency = new Currency((int) $cart['id_currency']);
+                $cart['total_price'] = Tools::displayPrice($cartObj->getOrderTotal(), $currency);
             }
         }
         if (count($orders)) {
@@ -764,125 +922,92 @@ class AdminCartsControllerCore extends AdminController
             }
         }
         if ($orders || $carts) {
-            $to_return = array_merge($this->ajaxReturnVars(),
-                                            [
-                                                'carts' => $carts,
-                                                     'orders' => $orders,
-                                                     'found' => true
-                                            ]
+            $toReturn = array_merge(
+                $this->ajaxReturnVars(),
+                [
+                    'carts'  => $carts,
+                    'orders' => $orders,
+                    'found'  => true,
+                ]
             );
         } else {
-            $to_return = array_merge($this->ajaxReturnVars(), ['found' => false]);
+            $toReturn = array_merge($this->ajaxReturnVars(), ['found' => false]);
         }
 
-        echo json_encode($to_return);
+        echo json_encode($toReturn);
     }
 
-    public function ajaxReturnVars()
-    {
-        $id_cart = (int)$this->context->cart->id;
-        $message_content = '';
-        if ($message = Message::getMessageByCartId((int)$this->context->cart->id)) {
-            $message_content = $message['message'];
-        }
-        $cart_rules = $this->context->cart->getCartRules(CartRule::FILTER_ACTION_SHIPPING);
-
-        $free_shipping = false;
-        if (count($cart_rules)) {
-            foreach ($cart_rules as $cart_rule) {
-                if ($cart_rule['id_cart_rule'] == CartRule::getIdByCode(CartRule::BO_ORDER_CODE_PREFIX.(int)$this->context->cart->id)) {
-                    $free_shipping = true;
-                    break;
-                }
-            }
-        }
-
-        $addresses = $this->context->customer->getAddresses((int)$this->context->cart->id_lang);
-
-        foreach ($addresses as &$data) {
-            $address = new Address((int)$data['id_address']);
-            $data['formated_address'] = AddressFormat::generateAddress($address, [], "<br />");
-        }
-
-        return [
-            'summary' => $this->getCartSummary(),
-            'delivery_option_list' => $this->getDeliveryOptionList(),
-            'cart' => $this->context->cart,
-            'currency' => new Currency($this->context->cart->id_currency),
-            'addresses' => $addresses,
-            'id_cart' => $id_cart,
-            'order_message' => $message_content,
-            'link_order' => $this->context->link->getPageLink(
-                'order', false,
-                (int)$this->context->cart->id_lang,
-                'step=3&recover_cart='.$id_cart.'&token_cart='.md5(_COOKIE_KEY_.'recover_cart_'.$id_cart)
-            ),
-            'free_shipping' => (int)$free_shipping
-        ];
-    }
-
+    /**
+     * @since 1.0.0
+     */
     public function initToolbar()
     {
         parent::initToolbar();
         unset($this->toolbar_btn['new']);
     }
 
+    /**
+     * @since 1.0.0
+     */
     public function displayAjaxGetSummary()
     {
         echo json_encode($this->ajaxReturnVars());
     }
 
+    /**
+     * @since 1.0.0
+     */
     public function ajaxProcessUpdateProductPrice()
     {
         if ($this->tabAccess['edit'] === '1') {
-            SpecificPrice::deleteByIdCart((int)$this->context->cart->id, (int)Tools::getValue('id_product'), (int)Tools::getValue('id_product_attribute'));
-            $specific_price = new SpecificPrice();
-            $specific_price->id_cart = (int)$this->context->cart->id;
-            $specific_price->id_shop = 0;
-            $specific_price->id_shop_group = 0;
-            $specific_price->id_currency = 0;
-            $specific_price->id_country = 0;
-            $specific_price->id_group = 0;
-            $specific_price->id_customer = (int)$this->context->customer->id;
-            $specific_price->id_product = (int)Tools::getValue('id_product');
-            $specific_price->id_product_attribute = (int)Tools::getValue('id_product_attribute');
-            $specific_price->price = (float)Tools::getValue('price');
-            $specific_price->from_quantity = 1;
-            $specific_price->reduction = 0;
-            $specific_price->reduction_type = 'amount';
-            $specific_price->from = '0000-00-00 00:00:00';
-            $specific_price->to = '0000-00-00 00:00:00';
-            $specific_price->add();
+            SpecificPrice::deleteByIdCart((int) $this->context->cart->id, (int) Tools::getValue('id_product'), (int) Tools::getValue('id_product_attribute'));
+            $specificPrice = new SpecificPrice();
+            $specificPrice->id_cart = (int) $this->context->cart->id;
+            $specificPrice->id_shop = 0;
+            $specificPrice->id_shop_group = 0;
+            $specificPrice->id_currency = 0;
+            $specificPrice->id_country = 0;
+            $specificPrice->id_group = 0;
+            $specificPrice->id_customer = (int) $this->context->customer->id;
+            $specificPrice->id_product = (int) Tools::getValue('id_product');
+            $specificPrice->id_product_attribute = (int) Tools::getValue('id_product_attribute');
+            $specificPrice->price = (float) Tools::getValue('price');
+            $specificPrice->from_quantity = 1;
+            $specificPrice->reduction = 0;
+            $specificPrice->reduction_type = 'amount';
+            $specificPrice->from = '0000-00-00 00:00:00';
+            $specificPrice->to = '0000-00-00 00:00:00';
+            $specificPrice->add();
             echo json_encode($this->ajaxReturnVars());
         }
     }
 
-    public static function getOrderTotalUsingTaxCalculationMethod($id_cart)
-    {
-        $context = Context::getContext();
-        $context->cart = new Cart($id_cart);
-        $context->currency = new Currency((int)$context->cart->id_currency);
-        $context->customer = new Customer((int)$context->cart->id_customer);
-        return Cart::getTotalCart($id_cart, true, Cart::BOTH_WITHOUT_SHIPPING);
-    }
-
-    public static function replaceZeroByShopName($echo, $tr)
-    {
-        return ($echo == '0' ? Carrier::getCarrierNameFromShopName() : $echo);
-    }
-
+    /**
+     * @param null $token
+     * @param      $id
+     * @param null $name
+     *
+     * @return string|void
+     *
+     * @since 1.0.0
+     */
     public function displayDeleteLink($token = null, $id, $name = null)
     {
         // don't display ordered carts
         foreach ($this->_list as $row) {
             if ($row['id_cart'] == $id && isset($row['id_order']) && is_numeric($row['id_order'])) {
-                return ;
+                return;
             }
         }
 
         return $this->helper->displayDeleteLink($token, $id, $name);
     }
 
+    /**
+     * @return bool|string
+     *
+     * @since 1.0.0
+     */
     public function renderList()
     {
         if (!($this->fields_list && is_array($this->fields_list))) {
@@ -895,6 +1020,7 @@ class AdminCartsControllerCore extends AdminController
         // Empty list is ok
         if (!is_array($this->_list)) {
             $this->displayWarning($this->l('Bad SQL query', 'Helper').'<br />'.htmlspecialchars($this->_list_error));
+
             return false;
         }
 
@@ -909,21 +1035,22 @@ class AdminCartsControllerCore extends AdminController
             }
         }
         $helper->is_cms = $this->is_cms;
-        $skip_list = [];
+        $skipList = [];
 
         foreach ($this->_list as $row) {
             if (isset($row['id_order']) && is_numeric($row['id_order'])) {
-                $skip_list[] = $row['id_cart'];
+                $skipList[] = $row['id_cart'];
             }
         }
 
         if (array_key_exists('delete', $helper->list_skip_actions)) {
-            $helper->list_skip_actions['delete'] = array_merge($helper->list_skip_actions['delete'], (array)$skip_list);
+            $helper->list_skip_actions['delete'] = array_merge($helper->list_skip_actions['delete'], (array) $skipList);
         } else {
-            $helper->list_skip_actions['delete'] = (array)$skip_list;
+            $helper->list_skip_actions['delete'] = (array) $skipList;
         }
 
         $list = $helper->generateList($this->_list, $this->fields_list);
+
         return $list;
     }
 }
