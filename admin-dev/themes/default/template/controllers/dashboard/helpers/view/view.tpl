@@ -96,9 +96,6 @@
 				<div class="dash_news_content"></div>
 				<div class="text-center"><h4><a href="http://www.thirtybees.com/blog/" onclick="return !window.open(this.href);">{l s='Find more news'}</a></h4></div>
 			</section>
-			<section id="dash_version" class="visible-lg">
-				<iframe style="overflow:hidden;border:none" src="{$new_version_url|escape:'html':'UTF-8'}" ></iframe>
-			</section>
 			<section class="dash_links panel">
 				<h3><i class="icon-link"></i> {l s="Useful links"}</h3>
 					<dl>
