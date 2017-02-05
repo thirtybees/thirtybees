@@ -2988,9 +2988,18 @@ abstract class ModuleCore
             } while (class_exists($classname.'OverrideOriginal_remove', false));
 
             // Make a reflection of the override class and the module override class
-            $override_file = file($override_path);
-            $override_file = array_diff($override_file, ["\n"]);
-            eval(preg_replace(['#^\s*<\?(?:php)?#', '#class\s+'.$classname.'\s+extends\s+([a-z0-9_]+)(\s+implements\s+([a-z0-9_]+))?#i'], [' ', 'class '.$classname.'OverrideOriginal'.$uniq], implode('', $override_file)));
+            $overrideFile = file($override_path);
+            if (empty($overrideFile)) {
+                // class_index was out of sync, so we just create a new override on the fly
+                $overrideFile = array(
+                    "<?php\n",
+                    "class {$classname} extends {$classname}Core\n",
+                    "{\n",
+                    "}\n",
+                );
+            }
+            $overrideFile = array_diff($overrideFile, ["\n"]);
+            eval(preg_replace(['#^\s*<\?(?:php)?#', '#class\s+'.$classname.'\s+extends\s+([a-z0-9_]+)(\s+implements\s+([a-z0-9_]+))?#i'], [' ', 'class '.$classname.'OverrideOriginal'.$uniq], implode('', $overrideFile)));
             $override_class = new ReflectionClass($classname.'OverrideOriginal'.$uniq);
 
             $module_file = file($path_override);
@@ -3002,7 +3011,7 @@ abstract class ModuleCore
             foreach ($module_class->getMethods() as $method) {
                 if ($override_class->hasMethod($method->getName())) {
                     $method_override = $override_class->getMethod($method->getName());
-                    if (preg_match('/module: (.*)/ism', $override_file[$method_override->getStartLine() - 5], $name) && preg_match('/date: (.*)/ism', $override_file[$method_override->getStartLine() - 4], $date) && preg_match('/version: ([0-9.]+)/ism', $override_file[$method_override->getStartLine() - 3], $version)) {
+                    if (preg_match('/module: (.*)/ism', $overrideFile[$method_override->getStartLine() - 5], $name) && preg_match('/date: (.*)/ism', $overrideFile[$method_override->getStartLine() - 4], $date) && preg_match('/version: ([0-9.]+)/ism', $overrideFile[$method_override->getStartLine() - 3], $version)) {
                         throw new Exception(sprintf(Tools::displayError('The method %1$s in the class %2$s is already overridden by the module %3$s version %4$s at %5$s.'), $method->getName(), $classname, $name[1], $version[1], $date[1]));
                     }
                     throw new Exception(sprintf(Tools::displayError('The method %1$s in the class %2$s is already overridden.'), $method->getName(), $classname));
@@ -3039,8 +3048,8 @@ abstract class ModuleCore
 
             // Insert the methods from module override in override
             $copy_from = array_slice($module_file, $module_class->getStartLine() + 1, $module_class->getEndLine() - $module_class->getStartLine() - 2);
-            array_splice($override_file, $override_class->getEndLine() - 1, 0, $copy_from);
-            $code = implode('', $override_file);
+            array_splice($overrideFile, $override_class->getEndLine() - 1, 0, $copy_from);
+            $code = implode('', $overrideFile);
 
             file_put_contents($override_path, preg_replace($pattern_escape_com, '', $code));
         } else {
