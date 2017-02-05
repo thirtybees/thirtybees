@@ -2530,27 +2530,10 @@ abstract class ModuleCore
      *
      * @return int Number of template cleared
      *
-     * @deprecated 2.0.0 Use Module::clearCache instead
-     */
-    protected function _clearCache($template, $cacheId = null, $compileId = null)
-    {
-        return self::clearCache($template, $cacheId, $compileId);
-    }
-
-
-    /**
-     * Clear template cache
-     *
-     * @param string $template Template name
-     * @param int null $cacheId
-     * @param int null $compileId
-     *
-     * @return int Number of template cleared
-     *
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
-    protected function clearCache($template, $cacheId = null, $compileId = null)
+    protected function _clearCache($template, $cacheId = null, $compileId = null)
     {
         static $ps_smarty_clear_cache = null;
         if ($ps_smarty_clear_cache === null) {
