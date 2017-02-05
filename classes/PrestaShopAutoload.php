@@ -128,6 +128,9 @@ class PrestaShopAutoload
                 unlink($filenameTmp);
             } else {
                 @chmod($filename, 0666);
+                if (function_exists('opcache_invalidate')) {
+                    opcache_invalidate($filenameTmp);
+                }
             }
         } // $filename_tmp couldn't be written. $filename should be there anyway (even if outdated), no need to die.
         else {
