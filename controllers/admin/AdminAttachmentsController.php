@@ -21,23 +21,32 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * @property Attachment $object
+ * Class AdminAttachmentsControllerCore
+ *
+ * @since 1.0.0
  */
 class AdminAttachmentsControllerCore extends AdminController
 {
-    public $bootstrap = true ;
+    // @codingStandardsIgnoreStart
+    public $bootstrap = true;
 
     protected $product_attachements = [];
+    // @codingStandardsIgnoreEnd
 
+    /**
+     * AdminAttachmentsControllerCore constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         $this->table = 'attachment';
@@ -56,36 +65,51 @@ class AdminAttachmentsControllerCore extends AdminController
             'id_attachment' => [
                 'title' => $this->l('ID'),
                 'align' => 'center',
-                'class' => 'fixed-width-xs'
+                'class' => 'fixed-width-xs',
             ],
-            'name' => [
-                'title' => $this->l('Name')
+            'name'          => [
+                'title' => $this->l('Name'),
             ],
-            'file' => [
-                'title' => $this->l('File')
+            'file'          => [
+                'title' => $this->l('File'),
             ],
-            'file_size' => [
-                'title' => $this->l('Size'),
-                'callback' => 'displayHumanReadableSize'
+            'file_size'     => [
+                'title'    => $this->l('Size'),
+                'callback' => 'displayHumanReadableSize',
             ],
-            'products' => [
-                'title' => $this->l('Associated with'),
-                'suffix' => $this->l('product(s)'),
+            'products'      => [
+                'title'      => $this->l('Associated with'),
+                'suffix'     => $this->l('product(s)'),
                 'filter_key' => 'virtual_product_attachment!products',
             ],
         ];
 
         $this->bulk_actions = [
             'delete' => [
-                'text' => $this->l('Delete selected'),
-                'icon' => 'icon-trash',
-                'confirm' => $this->l('Delete selected items?')
-            ]
+                'text'    => $this->l('Delete selected'),
+                'icon'    => 'icon-trash',
+                'confirm' => $this->l('Delete selected items?'),
+            ],
         ];
 
         parent::__construct();
     }
 
+    /**
+     * @param $size
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
+    public static function displayHumanReadableSize($size)
+    {
+        return Tools::formatBytes($size);
+    }
+
+    /**
+     * @since 1.0.0
+     */
     public function setMedia()
     {
         parent::setMedia();
@@ -94,33 +118,40 @@ class AdminAttachmentsControllerCore extends AdminController
         Media::addJsDefL('confirm_text', $this->l('This attachment is associated with the following products, do you really want to  delete it?', null, true, false));
     }
 
-    public static function displayHumanReadableSize($size)
-    {
-        return Tools::formatBytes($size);
-    }
-
+    /**
+     * @since 1.0.0
+     */
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_attachment'] = [
                 'href' => self::$currentIndex.'&addattachment&token='.$this->token,
                 'desc' => $this->l('Add new attachment', null, null, false),
-                'icon' => 'process-icon-new'
+                'icon' => 'process-icon-new',
             ];
         }
 
         parent::initPageHeaderToolbar();
     }
 
+    /**
+     * @since 1.0.0
+     */
     public function renderView()
     {
         if (($obj = $this->loadObject(true)) && Validate::isLoadedObject($obj)) {
             $link = $this->context->link->getPageLink('attachment', true, null, 'id_attachment='.$obj->id);
             Tools::redirectLink($link);
         }
+
         return $this->displayWarning($this->l('File not found'));
     }
 
+    /**
+     * @return string
+     *
+     * @since 1.0.0
+     */
     public function renderForm()
     {
         if (($obj = $this->loadObject(true)) && Validate::isLoadedObject($obj)) {
@@ -135,81 +166,97 @@ class AdminAttachmentsControllerCore extends AdminController
         $this->fields_form = [
             'legend' => [
                 'title' => $this->l('Attachment'),
-                'icon' => 'icon-paper-clip'
+                'icon'  => 'icon-paper-clip',
             ],
-            'input' => [
+            'input'  => [
                 [
-                    'type' => 'text',
-                    'label' => $this->l('Filename'),
-                    'name' => 'name',
+                    'type'     => 'text',
+                    'label'    => $this->l('Filename'),
+                    'name'     => 'name',
                     'required' => true,
-                    'lang' => true,
-                    'col' => 4
+                    'lang'     => true,
+                    'col'      => 4,
                 ],
                 [
-                    'type' => 'textarea',
+                    'type'  => 'textarea',
                     'label' => $this->l('Description'),
-                    'name' => 'description',
-                    'lang' => true,
-                    'col' => 6
+                    'name'  => 'description',
+                    'lang'  => true,
+                    'col'   => 6,
                 ],
                 [
-                    'type' => 'file',
-                    'file' => isset($link) ? $link : null,
-                    'size' => isset($size) ? $size : null,
-                    'label' => $this->l('File'),
-                    'name' => 'file',
+                    'type'     => 'file',
+                    'file'     => isset($link) ? $link : null,
+                    'size'     => isset($size) ? $size : null,
+                    'label'    => $this->l('File'),
+                    'name'     => 'file',
                     'required' => true,
-                    'col' => 6
+                    'col'      => 6,
                 ],
             ],
             'submit' => [
                 'title' => $this->l('Save'),
-            ]
+            ],
         ];
 
         return parent::renderForm();
     }
 
+    /**
+     * @param int  $idLang
+     * @param null $orderBy
+     * @param null $orderWay
+     * @param int  $start
+     * @param null $limit
+     * @param bool $idLangShop
+     *
+     * @since 1.0.0
+     */
     public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
-        parent::getList((int)$idLang, $orderBy, $orderWay, $start, $limit, $idLangShop);
+        parent::getList((int) $idLang, $orderBy, $orderWay, $start, $limit, $idLangShop);
 
         if (count($this->_list)) {
-            $this->product_attachements = Attachment::getProductAttached((int)$idLang, $this->_list);
+            $this->product_attachements = Attachment::getProductAttached((int) $idLang, $this->_list);
 
-            $list_product_list = [];
+            $listProductList = [];
             foreach ($this->_list as $list) {
-                $product_list = '';
+                $productList = '';
 
                 if (isset($this->product_attachements[$list['id_attachment']])) {
                     foreach ($this->product_attachements[$list['id_attachment']] as $product) {
-                        $product_list .= $product.', ';
+                        $productList .= $product.', ';
                     }
 
-                    $product_list = rtrim($product_list, ', ');
+                    $productList = rtrim($productList, ', ');
                 }
 
-                $list_product_list[$list['id_attachment']] = $product_list;
+                $listProductList[$list['id_attachment']] = $productList;
             }
 
             // Assign array in list_action_delete.tpl
             $this->tpl_delete_link_vars = [
-                'product_list' => $list_product_list,
-                'product_attachements' => $this->product_attachements
+                'product_list'         => $listProductList,
+                'product_attachements' => $this->product_attachements,
             ];
         }
     }
 
+    /**
+     * @return bool|null
+     *
+     * @since 1.0.0
+     */
     public function postProcess()
     {
         if (_PS_MODE_DEMO_) {
             $this->errors[] = Tools::displayError('This functionality has been disabled.');
-            return;
+
+            return null;
         }
 
         if (Tools::isSubmit('submitAdd'.$this->table)) {
-            $id = (int)Tools::getValue('id_attachment');
+            $id = (int) Tools::getValue('id_attachment');
             if ($id && $a = new Attachment($id)) {
                 $_POST['file'] = $a->file;
                 $_POST['mime'] = $a->mime;
@@ -237,14 +284,14 @@ class AdminAttachmentsControllerCore extends AdminController
                         $_POST['file'] = $uniqid;
                         $_POST['mime'] = $_FILES['file']['type'];
                     }
-                } elseif (array_key_exists('file', $_FILES) && (int)$_FILES['file']['error'] === 1) {
-                    $max_upload = (int)ini_get('upload_max_filesize');
-                    $max_post = (int)ini_get('post_max_size');
-                    $upload_mb = min($max_upload, $max_post);
+                } elseif (array_key_exists('file', $_FILES) && (int) $_FILES['file']['error'] === 1) {
+                    $maxUpload = (int) ini_get('upload_max_filesize');
+                    $maxPost = (int) ini_get('post_max_size');
+                    $uploadMb = min($maxUpload, $maxPost);
                     $this->errors[] = sprintf(
                         $this->l('The file %1$s exceeds the size allowed by the server. The limit is set to %2$d MB.'),
                         '<b>'.$_FILES['file']['name'].'</b> ',
-                        '<b>'.$upload_mb.'</b>'
+                        '<b>'.$uploadMb.'</b>'
                     );
                 } elseif (!isset($a) || (isset($a) && !file_exists(_PS_DOWNLOAD_DIR_.$a->file))) {
                     $this->errors[] = $this->l('Upload error. Please check your server configurations for the maximum upload size allowed.');
@@ -256,6 +303,7 @@ class AdminAttachmentsControllerCore extends AdminController
         if (!$return && isset($uniqid) && file_exists(_PS_DOWNLOAD_DIR_.$uniqid)) {
             unlink(_PS_DOWNLOAD_DIR_.$uniqid);
         }
+
         return $return;
     }
 }
