@@ -21,24 +21,33 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * @property CMSCategory $object
+ * Class AdminCmsCategoriesControllerCore
+ *
+ * @since 1.0.0
  */
 class AdminCmsCategoriesControllerCore extends AdminController
 {
-    /** @var object CMSCategory() instance for navigation*/
+    // @codingStandardsIgnoreStart
+    /** @var object CMSCategory() instance for navigation */
     protected $cms_category;
 
     protected $position_identifier = 'id_cms_category_to_move';
+    // @codingStandardsIgnoreEnd
 
+    /**
+     * AdminCmsCategoriesControllerCore constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         $this->bootstrap = true;
@@ -54,22 +63,22 @@ class AdminCmsCategoriesControllerCore extends AdminController
 
         $this->bulk_actions = [
             'delete' => [
-                'text' => $this->l('Delete selected'),
+                'text'    => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
-                'icon' => 'icon-trash'
-            ]
+                'icon'    => 'icon-trash',
+            ],
         ];
         $this->tpl_list_vars['icon'] = 'icon-folder-close';
         $this->tpl_list_vars['title'] = $this->l('Categories');
         $this->fields_list = [
-        'id_cms_category' => ['title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'],
-        'name' => ['title' => $this->l('Name'), 'width' => 'auto', 'callback' => 'hideCMSCategoryPosition', 'callback_object' => 'CMSCategory'],
-        'description' => ['title' => $this->l('Description'), 'maxlength' => 90, 'orderby' => false],
-        'position' => ['title' => $this->l('Position'),'filter_key' => 'position', 'align' => 'center', 'class' => 'fixed-width-sm', 'position' => 'position'],
-        'active' => [
-            'title' => $this->l('Displayed'), 'class' => 'fixed-width-sm', 'active' => 'status',
-            'align' => 'center','type' => 'bool', 'orderby' => false
-        ]
+            'id_cms_category' => ['title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'],
+            'name'            => ['title' => $this->l('Name'), 'width' => 'auto', 'callback' => 'hideCMSCategoryPosition', 'callback_object' => 'CMSCategory'],
+            'description'     => ['title' => $this->l('Description'), 'maxlength' => 90, 'orderby' => false],
+            'position'        => ['title' => $this->l('Position'), 'filter_key' => 'position', 'align' => 'center', 'class' => 'fixed-width-sm', 'position' => 'position'],
+            'active'          => [
+                'title' => $this->l('Displayed'), 'class' => 'fixed-width-sm', 'active' => 'status',
+                'align' => 'center', 'type' => 'bool', 'orderby' => false,
+            ],
         ];
 
         // The controller can't be call directly
@@ -80,69 +89,78 @@ class AdminCmsCategoriesControllerCore extends AdminController
         }
 
         $this->cms_category = AdminCmsContentController::getCurrentCMSCategory();
-        $this->_where = ' AND `id_parent` = '.(int)$this->cms_category->id;
+        $this->_where = ' AND `id_parent` = '.(int) $this->cms_category->id;
         $this->_select = 'position ';
 
         parent::__construct();
     }
 
+    /**
+     * @return false|string
+     *
+     * @since 1.0.0
+     */
     public function renderList()
     {
         $this->initToolbar();
         $this->_group = 'GROUP BY a.`id_cms_category`';
         if (isset($this->toolbar_btn['new'])) {
-            $this->toolbar_btn['new']['href'] .= '&id_parent='.(int)Tools::getValue('id_cms_category');
+            $this->toolbar_btn['new']['href'] .= '&id_parent='.(int) Tools::getValue('id_cms_category');
         }
+
         return parent::renderList();
     }
 
+    /**
+     * @return bool|CMSCategory|false|ObjectModel
+     *
+     * @since 1.0.0
+     */
     public function postProcess()
     {
         $this->tabAccess = Profile::getProfileAccess($this->context->employee->id_profile, $this->id);
         if (Tools::isSubmit('submitAdd'.$this->table)) {
             $this->action = 'save';
-            if ($id_cms_category = (int)Tools::getValue('id_cms_category')) {
-                $this->id_object = $id_cms_category;
-                if (!CMSCategory::checkBeforeMove($id_cms_category, (int)Tools::getValue('id_parent'))) {
+            if ($idCmsCategory = (int) Tools::getValue('id_cms_category')) {
+                $this->id_object = $idCmsCategory;
+                if (!CMSCategory::checkBeforeMove($idCmsCategory, (int) Tools::getValue('id_parent'))) {
                     $this->errors[] = Tools::displayError('The CMS Category cannot be moved here.');
+
                     return false;
                 }
             }
             $object = parent::postProcess();
-            $this->updateAssoShop((int)Tools::getValue('id_cms_category'));
+            $this->updateAssoShop((int) Tools::getValue('id_cms_category'));
             if ($object !== false) {
-                Tools::redirectAdmin(self::$currentIndex.'&conf=3&id_cms_category='.(int)$object->id.'&token='.Tools::getValue('token'));
+                Tools::redirectAdmin(self::$currentIndex.'&conf=3&id_cms_category='.(int) $object->id.'&token='.Tools::getValue('token'));
             }
+
             return $object;
-        }
-        /* Change object statuts (active, inactive) */
+        } /* Change object statuts (active, inactive) */
         elseif (Tools::isSubmit('statuscms_category') && Tools::getValue($this->identifier)) {
             if ($this->tabAccess['edit'] === '1') {
                 if (Validate::isLoadedObject($object = $this->loadObject())) {
                     if ($object->toggleStatus()) {
-                        $identifier = ((int)$object->id_parent ? '&id_cms_category='.(int)$object->id_parent : '');
+                        $identifier = ((int) $object->id_parent ? '&id_cms_category='.(int) $object->id_parent : '');
                         Tools::redirectAdmin(self::$currentIndex.'&conf=5'.$identifier.'&token='.Tools::getValue('token'));
                     } else {
                         $this->errors[] = Tools::displayError('An error occurred while updating the status.');
                     }
                 } else {
-                    $this->errors[] = Tools::displayError('An error occurred while updating the status for an object.')
-                        .' <b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
+                    $this->errors[] = Tools::displayError('An error occurred while updating the status for an object.').' <b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
                 }
             } else {
                 $this->errors[] = Tools::displayError('You do not have permission to edit this.');
             }
-        }
-        /* Delete object */
+        } /* Delete object */
         elseif (Tools::isSubmit('delete'.$this->table)) {
             if ($this->tabAccess['delete'] === '1') {
                 if (Validate::isLoadedObject($object = $this->loadObject()) && isset($this->fieldImageSettings)) {
                     // check if request at least one object with noZeroObject
                     if (isset($object->noZeroObject) && count($taxes = call_user_func([$this->className, $object->noZeroObject])) <= 1) {
-                        $this->errors[] = Tools::displayError('You need at least one object.')
-                            .' <b>'.$this->table.'</b><br />'.Tools::displayError('You cannot delete all of the items.');
+                        $this->errors[] = Tools::displayError('You need at least one object.').' <b>'.$this->table.'</b><br />'.Tools::displayError('You cannot delete all of the items.');
                     } else {
-                        $identifier = ((int)$object->id_parent ? '&'.$this->identifier.'='.(int)$object->id_parent : '');
+                        $identifier = ((int) $object->id_parent ? '&'.$this->identifier.'='.(int) $object->id_parent : '');
                         if ($this->deleted) {
                             $object->deleted = 1;
                             if ($object->update()) {
@@ -154,40 +172,37 @@ class AdminCmsCategoriesControllerCore extends AdminController
                         $this->errors[] = Tools::displayError('An error occurred during deletion.');
                     }
                 } else {
-                    $this->errors[] = Tools::displayError('An error occurred while deleting the object.')
-                        .' <b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
+                    $this->errors[] = Tools::displayError('An error occurred while deleting the object.').' <b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
                 }
             } else {
                 $this->errors[] = Tools::displayError('You do not have permission to delete this.');
             }
         } elseif (Tools::isSubmit('position')) {
-            $object = new CMSCategory((int)Tools::getValue($this->identifier, Tools::getValue('id_cms_category_to_move', 1)));
+            $object = new CMSCategory((int) Tools::getValue($this->identifier, Tools::getValue('id_cms_category_to_move', 1)));
             if ($this->tabAccess['edit'] !== '1') {
                 $this->errors[] = Tools::displayError('You do not have permission to edit this.');
             } elseif (!Validate::isLoadedObject($object)) {
-                $this->errors[] = Tools::displayError('An error occurred while updating the status for an object.')
-                    .' <b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
-            } elseif (!$object->updatePosition((int)Tools::getValue('way'), (int)Tools::getValue('position'))) {
+                $this->errors[] = Tools::displayError('An error occurred while updating the status for an object.').' <b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
+            } elseif (!$object->updatePosition((int) Tools::getValue('way'), (int) Tools::getValue('position'))) {
                 $this->errors[] = Tools::displayError('Failed to update the position.');
             } else {
-                $identifier = ((int)$object->id_parent ? '&'.$this->identifier.'='.(int)$object->id_parent : '');
+                $identifier = ((int) $object->id_parent ? '&'.$this->identifier.'='.(int) $object->id_parent : '');
                 $token = Tools::getAdminTokenLite('AdminCmsContent');
                 Tools::redirectAdmin(
                     self::$currentIndex.'&'.$this->table.'Orderby=position&'.$this->table.'Orderway=asc&conf=5'.$identifier.'&token='.$token
                 );
             }
-        }
-        /* Delete multiple objects */
+        } /* Delete multiple objects */
         elseif (Tools::getValue('submitDel'.$this->table) || Tools::getValue('submitBulkdelete'.$this->table)) {
             if ($this->tabAccess['delete'] === '1') {
                 if (Tools::isSubmit($this->table.'Box')) {
-                    $cms_category = new CMSCategory();
+                    $cmsCategory = new CMSCategory();
                     $result = true;
-                    $result = $cms_category->deleteSelection(Tools::getValue($this->table.'Box'));
+                    $result = $cmsCategory->deleteSelection(Tools::getValue($this->table.'Box'));
                     if ($result) {
-                        $cms_category->cleanPositions((int)Tools::getValue('id_cms_category'));
+                        $cmsCategory->cleanPositions((int) Tools::getValue('id_cms_category'));
                         $token = Tools::getAdminTokenLite('AdminCmsContent');
-                        Tools::redirectAdmin(self::$currentIndex.'&conf=2&token='.$token.'&id_cms_category='.(int)Tools::getValue('id_cms_category'));
+                        Tools::redirectAdmin(self::$currentIndex.'&conf=2&token='.$token.'&id_cms_category='.(int) Tools::getValue('id_cms_category'));
                     }
                     $this->errors[] = Tools::displayError('An error occurred while deleting this selection.');
                 } else {
@@ -200,113 +215,119 @@ class AdminCmsCategoriesControllerCore extends AdminController
         parent::postProcess();
     }
 
+    /**
+     * @return string|null
+     *
+     * @since 1.0.0
+     */
     public function renderForm()
     {
         $this->display = 'edit';
         $this->initToolbar();
         if (!$this->loadObject(true)) {
-            return;
+            return null;
         }
 
         $categories = CMSCategory::getCategories($this->context->language->id, false);
-        $html_categories = CMSCategory::recurseCMSCategory($categories, $categories[0][1], 1, $this->getFieldValue($this->object, 'id_parent'), 1);
+        $htmlCategories = CMSCategory::recurseCMSCategory($categories, $categories[0][1], 1, $this->getFieldValue($this->object, 'id_parent'), 1);
 
         $this->fields_form = [
             'legend' => [
                 'title' => $this->l('CMS Category'),
-                'icon' => 'icon-folder-close'
+                'icon'  => 'icon-folder-close',
             ],
-            'input' => [
+            'input'  => [
                 [
-                    'type' => 'text',
-                    'label' => $this->l('Name'),
-                    'name' => 'name',
-                    'class' => 'copyMeta2friendlyURL',
+                    'type'     => 'text',
+                    'label'    => $this->l('Name'),
+                    'name'     => 'name',
+                    'class'    => 'copyMeta2friendlyURL',
                     'required' => true,
-                    'lang' => true,
-                    'hint' => $this->l('Invalid characters:').' &lt;&gt;;=#{}'
+                    'lang'     => true,
+                    'hint'     => $this->l('Invalid characters:').' &lt;&gt;;=#{}',
                 ],
                 [
-                    'type' => 'switch',
-                    'label' => $this->l('Displayed'),
-                    'name' => 'active',
+                    'type'     => 'switch',
+                    'label'    => $this->l('Displayed'),
+                    'name'     => 'active',
                     'required' => false,
-                    'is_bool' => true,
-                    'values' => [
+                    'is_bool'  => true,
+                    'values'   => [
                         [
-                            'id' => 'active_on',
+                            'id'    => 'active_on',
                             'value' => 1,
-                            'label' => $this->l('Enabled')
+                            'label' => $this->l('Enabled'),
                         ],
                         [
-                            'id' => 'active_off',
+                            'id'    => 'active_off',
                             'value' => 0,
-                            'label' => $this->l('Disabled')
-                        ]
+                            'label' => $this->l('Disabled'),
+                        ],
                     ],
                 ],
                 // custom template
                 [
-                    'type' => 'select_category',
-                    'label' => $this->l('Parent CMS Category'),
-                    'name' => 'id_parent',
+                    'type'    => 'select_category',
+                    'label'   => $this->l('Parent CMS Category'),
+                    'name'    => 'id_parent',
                     'options' => [
-                        'html' => $html_categories,
+                        'html' => $htmlCategories,
                     ],
                 ],
                 [
-                    'type' => 'textarea',
+                    'type'  => 'textarea',
                     'label' => $this->l('Description'),
-                    'name' => 'description',
-                    'lang' => true,
-                    'rows' => 5,
-                    'cols' => 40,
-                    'hint' => $this->l('Invalid characters:').' &lt;&gt;;=#{}'
+                    'name'  => 'description',
+                    'lang'  => true,
+                    'rows'  => 5,
+                    'cols'  => 40,
+                    'hint'  => $this->l('Invalid characters:').' &lt;&gt;;=#{}',
                 ],
                 [
-                    'type' => 'text',
+                    'type'  => 'text',
                     'label' => $this->l('Meta title'),
-                    'name' => 'meta_title',
-                    'lang' => true,
-                    'hint' => $this->l('Invalid characters:').' &lt;&gt;;=#{}'
+                    'name'  => 'meta_title',
+                    'lang'  => true,
+                    'hint'  => $this->l('Invalid characters:').' &lt;&gt;;=#{}',
                 ],
                 [
-                    'type' => 'text',
+                    'type'  => 'text',
                     'label' => $this->l('Meta description'),
-                    'name' => 'meta_description',
-                    'lang' => true,
-                    'hint' => $this->l('Invalid characters:').' &lt;&gt;;=#{}'
+                    'name'  => 'meta_description',
+                    'lang'  => true,
+                    'hint'  => $this->l('Invalid characters:').' &lt;&gt;;=#{}',
                 ],
                 [
-                    'type' => 'text',
+                    'type'  => 'text',
                     'label' => $this->l('Meta keywords'),
-                    'name' => 'meta_keywords',
-                    'lang' => true,
-                    'hint' => $this->l('Invalid characters:').' &lt;&gt;;=#{}'
+                    'name'  => 'meta_keywords',
+                    'lang'  => true,
+                    'hint'  => $this->l('Invalid characters:').' &lt;&gt;;=#{}',
                 ],
                 [
-                    'type' => 'text',
-                    'label' => $this->l('Friendly URL'),
-                    'name' => 'link_rewrite',
+                    'type'     => 'text',
+                    'label'    => $this->l('Friendly URL'),
+                    'name'     => 'link_rewrite',
                     'required' => true,
-                    'lang' => true,
-                    'hint' => $this->l('Only letters and the minus (-) character are allowed.')
+                    'lang'     => true,
+                    'hint'     => $this->l('Only letters and the minus (-) character are allowed.'),
                 ],
             ],
             'submit' => [
                 'title' => $this->l('Save'),
-            ]
+            ],
         ];
 
         if (Shop::isFeatureActive()) {
             $this->fields_form['input'][] = [
-                'type' => 'shop',
+                'type'  => 'shop',
                 'label' => $this->l('Shop association'),
-                'name' => 'checkBoxShopAsso',
+                'name'  => 'checkBoxShopAsso',
             ];
         }
 
-        $this->tpl_form_vars['PS_ALLOW_ACCENTED_CHARS_URL'] = (int)Configuration::get('PS_ALLOW_ACCENTED_CHARS_URL');
+        $this->tpl_form_vars['PS_ALLOW_ACCENTED_CHARS_URL'] = (int) Configuration::get('PS_ALLOW_ACCENTED_CHARS_URL');
+
         return parent::renderForm();
     }
 }
