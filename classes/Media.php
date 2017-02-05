@@ -28,6 +28,7 @@
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
+use CssSplitter\Splitter;
 
 /**
  * Class MediaCore
@@ -119,7 +120,6 @@ class MediaCore
             // $html_content,
             // Media::getBackTrackLimit());
 
-            require_once(_PS_TOOL_DIR_.'minify_html/minify_html.class.php');
             $htmlContent = str_replace(chr(194).chr(160), '&nbsp;', $htmlContent);
             if (trim($minifiedContent = Minify_HTML::minify($htmlContent, ['cssMinifier', 'jsMinifier'])) != '') {
                 $htmlContent = $minifiedContent;
@@ -244,7 +244,6 @@ class MediaCore
     public static function packJS($jsContent)
     {
         if (!empty($jsContent)) {
-            require_once(_PS_TOOL_DIR_.'js_minify/jsmin.php');
             try {
                 $jsContent = JSMin::minify($jsContent);
             } catch (Exception $e) {
@@ -764,8 +763,7 @@ class MediaCore
         if (!is_dir($cachePath)) {
             mkdir($cachePath, 0777, true);
         }
-        require_once(_PS_ROOT_DIR_.'/tools/CssSplitter.php');
-        $splitter = new CssSplitter();
+        $splitter = new Splitter();
         $cssRuleLimit = 4095;
         foreach ($compiledCss as $css => $media) {
             $fileInfo = parse_url($css);

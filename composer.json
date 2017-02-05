@@ -4,7 +4,17 @@
         "swiftmailer/swiftmailer": "~5.4",
         "tecnickcom/tcpdf": "^6.2",
         "phpoffice/phpexcel": "^1.8",
-        "commerceguys/intl": "^0.7.4"
+        "commerceguys/intl": "^0.7.4",
+        "ezyang/htmlpurifier": "^4.8",
+        "jakeasmith/http_build_url": "^1.0",
+        "mrclay/minify": "^2.3",
+        "greenlion/php-sql-parser": "^4.1",
+        "geoip/geoip": "^1.17",
+        "smarty/smarty": "~3.1.31",
+        "pear/archive_tar": "^1.4",
+        "mobiledetect/mobiledetectlib": "^2.8",
+        "dlundgren/css-splitter": "^1.0",
+        "symfony/polyfill-mbstring": "^1.3"
     },
     "require-dev": {
         "satooshi/php-coveralls": "^1.0",

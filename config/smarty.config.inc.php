@@ -31,8 +31,6 @@
 
 define('_PS_SMARTY_DIR_', _PS_TOOL_DIR_.'smarty/');
 
-require_once(_PS_SMARTY_DIR_.'Smarty.class.php');
-
 global $smarty;
 $smarty = new SmartyCustom();
 $smarty->setCompileDir(_PS_CACHE_DIR_.'smarty/compile');
@@ -88,6 +86,7 @@ smartyRegisterFunction($smarty, 'function', 'addJsDef', ['Media', 'addJsDef']);
 smartyRegisterFunction($smarty, 'block', 'addJsDefL', ['Media', 'addJsDefL']);
 smartyRegisterFunction($smarty, 'modifier', 'boolval', ['Tools', 'boolval']);
 smartyRegisterFunction($smarty, 'modifier', 'cleanHtml', 'smartyCleanHtml');
+smartyRegisterFunction($smarty, 'function', 'implode', array('Tools', 'smartyImplode'));
 
 function smartyDieObject($params, &$smarty)
 {

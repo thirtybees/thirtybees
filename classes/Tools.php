@@ -32,6 +32,7 @@
 use CommerceGuys\Intl\Currency\CurrencyRepository;
 use CommerceGuys\Intl\NumberFormat\NumberFormatRepository;
 use CommerceGuys\Intl\Formatter\NumberFormatter;
+use PHPSQLParser\PHPSQLParser;
 
 /**
  * Class ToolsCore
@@ -2207,20 +2208,20 @@ class ToolsCore
 
                 if ($contentLength + $totalLength > $length) {
                     $left = $length - $totalLength;
-                    $entities_length = 0;
+                    $entitiesLength = 0;
 
                     if (preg_match_all('/&[0-9a-z]{2,8};|&#[0-9]{1,7};|&#x[0-9a-f]{1,6};/i', $tag[3], $entities, PREG_OFFSET_CAPTURE)) {
                         foreach ($entities[0] as $entity) {
-                            if ($entity[1] + 1 - $entities_length <= $left) {
+                            if ($entity[1] + 1 - $entitiesLength <= $left) {
                                 $left--;
-                                $entities_length += Tools::strlen($entity[0]);
+                                $entitiesLength += Tools::strlen($entity[0]);
                             } else {
                                 break;
                             }
                         }
                     }
 
-                    $truncate .= Tools::substr($tag[3], 0, $left + $entities_length);
+                    $truncate .= Tools::substr($tag[3], 0, $left + $entitiesLength);
                     break;
                 } else {
                     $truncate .= $tag[3];
@@ -2242,28 +2243,28 @@ class ToolsCore
         if (!$exact) {
             $spacepos = Tools::strrpos($truncate, ' ');
             if ($html) {
-                $truncate_check = Tools::substr($truncate, 0, $spacepos);
-                $last_open_tag = Tools::strrpos($truncate_check, '<');
-                $last_close_tag = Tools::strrpos($truncate_check, '>');
+                $truncateCheck = Tools::substr($truncate, 0, $spacepos);
+                $lastOpenTag = Tools::strrpos($truncateCheck, '<');
+                $lastCloseTag = Tools::strrpos($truncateCheck, '>');
 
-                if ($last_open_tag > $last_close_tag) {
-                    preg_match_all('/<[\w]+[^>]*>/s', $truncate, $last_tag_matches);
-                    $last_tag = array_pop($last_tag_matches[0]);
-                    $spacepos = Tools::strrpos($truncate, $last_tag) + Tools::strlen($last_tag);
+                if ($lastOpenTag > $lastCloseTag) {
+                    preg_match_all('/<[\w]+[^>]*>/s', $truncate, $lastTagMatches);
+                    $lastTag = array_pop($lastTagMatches[0]);
+                    $spacepos = Tools::strrpos($truncate, $lastTag) + Tools::strlen($lastTag);
                 }
 
                 $bits = Tools::substr($truncate, $spacepos);
-                preg_match_all('/<\/([a-z]+)>/', $bits, $dropped_tags, PREG_SET_ORDER);
+                preg_match_all('/<\/([a-z]+)>/', $bits, $droppedTags, PREG_SET_ORDER);
 
-                if (!empty($dropped_tags)) {
+                if (!empty($droppedTags)) {
                     if (!empty($openTags)) {
-                        foreach ($dropped_tags as $closing_tag) {
+                        foreach ($droppedTags as $closing_tag) {
                             if (!in_array($closing_tag[1], $openTags)) {
                                 array_unshift($openTags, $closing_tag[1]);
                             }
                         }
                     } else {
-                        foreach ($dropped_tags as $closing_tag) {
+                        foreach ($droppedTags as $closing_tag) {
                             $openTags[] = $closing_tag[1];
                         }
                     }
@@ -2822,7 +2823,6 @@ class ToolsCore
     public static function parserSQL($sql)
     {
         if (strlen($sql) > 0) {
-            require_once(_PS_TOOL_DIR_.'parser_sql/PHPSQLParser.php');
             $parser = new PHPSQLParser($sql);
 
             return $parser->parsed;
@@ -3362,14 +3362,7 @@ exit;
      */
     public static function jsonDecode($json, $assoc = false)
     {
-        if (function_exists('json_decode')) {
-            return json_decode($json, $assoc);
-        } else {
-            include_once(_PS_TOOL_DIR_.'json/json.php');
-            $pear_json = new Services_JSON(($assoc) ? SERVICES_JSON_LOOSE_TYPE : 0);
-
-            return $pear_json->decode($json);
-        }
+        return json_decode($json, $assoc);
     }
 
     /**
@@ -3383,14 +3376,7 @@ exit;
      */
     public static function jsonEncode($data)
     {
-        if (function_exists('json_encode')) {
-            return json_encode($data);
-        } else {
-            include_once(_PS_TOOL_DIR_.'json/json.php');
-            $pear_json = new Services_JSON();
-
-            return $pear_json->encode($data);
-        }
+        return json_encode($data);
     }
 
     /**
@@ -3575,16 +3561,9 @@ exit;
      */
     public static function ZipTest($fromFile)
     {
-        if (class_exists('ZipArchive', false)) {
-            $zip = new ZipArchive();
+        $zip = new ZipArchive();
 
-            return ($zip->open($fromFile, ZIPARCHIVE::CHECKCONS) === true);
-        } else {
-            require_once(_PS_ROOT_DIR_.'/tools/pclzip/pclzip.lib.php');
-            $zip = new PclZip($fromFile);
-
-            return ($zip->privCheckFormat() === true);
-        }
+        return ($zip->open($fromFile, ZIPARCHIVE::CHECKCONS) === true);
     }
 
     /**
@@ -3614,25 +3593,13 @@ exit;
         if (!file_exists($toDir)) {
             mkdir($toDir, 0777);
         }
-        if (class_exists('ZipArchive', false)) {
-            $zip = new ZipArchive();
-            if ($zip->open($fromFile) === true && $zip->extractTo($toDir) && $zip->close()) {
-                return true;
-            }
 
-            return false;
-        } else {
-            require_once(_PS_ROOT_DIR_.'/tools/pclzip/pclzip.lib.php');
-            $zip = new PclZip($fromFile);
-            $list = $zip->extract(PCLZIP_OPT_PATH, $toDir, PCLZIP_OPT_REPLACE_NEWER);
-            foreach ($list as $file) {
-                if ($file['status'] != 'ok' && $file['status'] != 'already_a_directory') {
-                    return false;
-                }
-            }
-
+        $zip = new ZipArchive();
+        if ($zip->open($fromFile) === true && $zip->extractTo($toDir) && $zip->close()) {
             return true;
         }
+
+        return false;
     }
 
     /**
@@ -4474,8 +4441,6 @@ exit;
      */
     public static function purifyHTML($html, $uri_unescape = null, $allow_style = false)
     {
-        require_once(_PS_TOOL_DIR_.'htmlpurifier/HTMLPurifier.standalone.php');
-
         static $use_html_purifier = null;
         static $purifier = null;
 
@@ -4656,6 +4621,35 @@ exit;
         }
 
         return $base;
+    }
+
+    /**
+     * Smarty {implode} plugin
+     *
+     * Type:     function<br>
+     * Name:     implode<br>
+     * Purpose:  implode Array
+     * Use: {implode value="" separator=""}
+     *
+     * @link http://www.smarty.net/manual/en/language.function.fetch.php {fetch}
+     *       (Smarty online manual)
+     *
+     * @param array                    $params   parameters
+     * @param Smarty_Internal_Template $template template object
+     * @return string|null if the assign parameter is passed, Smarty assigns the result to a template variable
+     */
+    public static function smartyImplode($params, $template)
+    {
+        if (!isset($params['value']))
+        {
+            trigger_error("[plugin] implode parameter 'value' cannot be empty", E_USER_NOTICE);
+            return;
+        }
+
+        if (empty($params['separator']))
+            $params['separator'] = ',';
+
+        return implode($params['value'], $params['separator']);
     }
 }
 

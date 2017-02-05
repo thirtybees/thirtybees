@@ -1956,10 +1956,6 @@ class AdminImportControllerCore extends AdminController
             $parsedUrl['query'] = http_build_query($queryParts);
         }
 
-        if (!function_exists('http_build_url')) {
-            require_once(_PS_TOOL_DIR_.'http_build_url/http_build_url.php');
-        }
-
         $url = http_build_url('', $parsedUrl);
 
         $origTmpfile = $tmpfile;

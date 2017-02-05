@@ -118,11 +118,6 @@
 	url = https://github.com/thirtybees/blockreinsurance.git
 	branch = master
 	ignore = dirty
-[submodule "modules/blockrss"]
-	path = modules/blockrss
-	url = https://github.com/thirtybees/blockrss.git
-	branch = master
-	ignore = dirty
 [submodule "modules/blocksearch"]
 	path = modules/blocksearch
 	url = https://github.com/thirtybees/blocksearch.git
