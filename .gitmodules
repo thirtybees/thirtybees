@@ -1,8 +1,3 @@
-[submodule "modules/bankwire"]
-	path = modules/bankwire
-	url = https://github.com/thirtybees/bankwire.git
-	branch = master
-	ignore = dirty
 [submodule "modules/blockbanner"]
 	path = modules/blockbanner
 	url = https://github.com/thirtybees/blockbanner.git
@@ -351,11 +346,6 @@
 [submodule "modules/vatnumber"]
 	path = modules/vatnumber
 	url = https://github.com/thirtybees/vatnumber.git
-	branch = master
-	ignore = dirty
-[submodule "modules/cheque"]
-	path = modules/cheque
-	url = https://github.com/thirtybees/cheque.git
 	branch = master
 	ignore = dirty
 [submodule "modules/sendtoafriend"]
