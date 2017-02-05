@@ -493,7 +493,6 @@ class AdminMetaControllerCore extends AdminController
         } elseif (Tools::isSubmit('submitGenerateRobots')) {
             $this->generateRobotsFile();
         } elseif (Tools::isSubmit('submitGenerateHtaccess')) {
-            ddd('kanker');
             Tools::generateHtaccess();
         }
 

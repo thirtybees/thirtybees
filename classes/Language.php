@@ -582,9 +582,6 @@ class LanguageCore extends ObjectModel
         } catch (Exception $e) {
             $flag = null;
         }
-        if (is_object($flag)) {
-            ddd($flag);
-        }
         if ($flag != null && !preg_match('/<body>/', $flag)) {
             $file = fopen(_PS_ROOT_DIR_.'/img/l/'.(int) $lang->id.'.jpg', 'w');
             if ($file) {

@@ -111,7 +111,6 @@
 											<div class="col-lg-9">
 										{/if}
 												{if $input.type == 'tags'}
-													{ddd($input.delimiters)}
 												{literal}
 														<script type="text/javascript">
 															$().ready(function () {
