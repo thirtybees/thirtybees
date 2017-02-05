@@ -650,7 +650,7 @@ class EmployeeCore extends ObjectModel
             return Tools::getAdminImageUrl('thirty-bees-avatar.png');
         }
 
-        return Tools::getShopProtocol().'profile.prestashop.com/'.urlencode($this->email).'.jpg';
+        return 'https://www.gravatar.com/avatar/'.md5(Tools::strtolower(trim($this->email))).'?s=200&d=mm';
     }
 
     /**

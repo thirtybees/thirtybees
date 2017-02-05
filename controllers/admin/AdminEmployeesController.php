@@ -261,8 +261,8 @@ class AdminEmployeesControllerCore extends AdminController
                 [
                     'type'         => 'html',
                     'name'         => 'employee_avatar',
-                    'html_content' => '<div id="employee-thumbnail"><a href="http://www.thirtybees.com/forums" target="_blank" style="background-image:url('.$obj->getImage().')"></a></div>
-					<div class="alert alert-info">'.sprintf($this->l('Your avatar in thirty bees 1.0.x is your profile picture on %1$s. To change your avatar, log in on thirtybees.com with your email %2$s and follow the on-screen instructions.'), '<a href="http://www.thirtybees.com/forums/index.php?app=core&amp;module=usercp" class="alert-link" target="_blank">thirtybees.com</a>', $obj->email).'</div>',
+                    'html_content' => '<div id="employee-thumbnail"><a href="https://www.gravatar.com" target="_blank" style="background-image:url('.$obj->getImage().')"></a></div>
+					<div class="alert alert-info">'.sprintf($this->l('Your avatar in thirty bees 1.0.x is your profile picture on %1$s. To change your avatar, log in on gravatar.com with your email %2$s and follow the on-screen instructions.'), '<a href="https://www.gravatar.com/" class="alert-link" target="_blank">gravatar.com</a>', $obj->email).'</div>',
                 ],
                 [
                     'type'         => 'text',
@@ -295,7 +295,7 @@ class AdminEmployeesControllerCore extends AdminController
             $this->fields_form['input'], [
                 [
                     'type'     => 'switch',
-                    'label'    => $this->l('Subscribe to PrestaShop newsletter'),
+                    'label'    => $this->l('Subscribe to thirty bees newsletter'),
                     'name'     => 'optin',
                     'required' => false,
                     'is_bool'  => true,
@@ -601,7 +601,6 @@ class AdminEmployeesControllerCore extends AdminController
 
     public function postProcess()
     {
-        /* PrestaShop demo mode */
         if ((Tools::isSubmit('submitBulkdeleteemployee') || Tools::isSubmit('submitBulkdisableSelectionemployee') || Tools::isSubmit('deleteemployee') || Tools::isSubmit('status') || Tools::isSubmit('statusemployee') || Tools::isSubmit('submitAddemployee')) && _PS_MODE_DEMO_) {
             $this->errors[] = Tools::displayError('This functionality has been disabled.');
 
