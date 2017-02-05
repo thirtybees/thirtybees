@@ -281,7 +281,7 @@ abstract class ControllerCore
                                 $hookContent = sprintf(Tools::displayError('Error while displaying module "%s"'), Module::getInstanceById($idModule)->displayName);
                             }
 
-                            $pattern = "/<!--\[hook $hookName\] $idModule-->.*?<!--\[hook $hookName\] $idModule-->/s";
+                            $pattern = "/<!--\[hook $hookName\] \[id\_module $idModule\]-->.*?<!--\[hook $hookName\] \[id\_module $idModule\]-->/s";
 
                             $hookContent = preg_replace('/\$(\d)/', '\\\$$1', $hookContent);
                             $count = 0;

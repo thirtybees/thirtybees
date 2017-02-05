@@ -320,7 +320,7 @@ class HookCore extends ObjectModel
                     $return[$m['module']] = $data;
                 } else {
                     if (isset($activehooks[$m['id_module']]) && in_array($hookName, $activehooks[$m['id_module']])) {
-                        $dataWrapped = '<!--[hook '.$hookName.'] '.$m['id_module'].'-->'.$data.'<!--[hook '.$hookName.'] '.$m['id_module'].'-->';
+                        $dataWrapped = '<!--[hook '.$hookName.'] [id_module '.$m['id_module'].']-->'.$data.'<!--[hook '.$hookName.'] [id_module '.$m['id_module'].']-->';
                     } else {
                         $dataWrapped = $data;
                     }
