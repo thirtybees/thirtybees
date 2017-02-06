@@ -36,6 +36,7 @@
  */
 class AdminMetaControllerCore extends AdminController
 {
+    // @codingStandardsIgnoreStart
     public $table = 'meta';
     public $className = 'Meta';
     public $lang = true;
@@ -43,6 +44,13 @@ class AdminMetaControllerCore extends AdminController
     /** @var ShopUrl */
     protected $url = false;
     protected $toolbar_scroll = false;
+    protected $ht_file = '';
+    protected $rb_file = '';
+    protected $rb_data = [];
+    protected $sm_file = '';
+    /** @var Meta $object */
+    protected $object;
+    // @codingStandardsIgnoreEnd
 
     /**
      * AdminMetaControllerCore constructor.
@@ -314,7 +322,6 @@ class AdminMetaControllerCore extends AdminController
         $keywords = [];
         foreach (Dispatcher::getInstance()->default_routes[$routeId]['keywords'] as $keyword => $data) {
             $keywords[] = ($keyword === 'rewrite') ? '<span class="red">'.$keyword.'*</span>' : $keyword;
-
         }
 
         $this->fields_options['routes']['fields']['PS_ROUTE_'.$routeId] = [
@@ -323,7 +330,6 @@ class AdminMetaControllerCore extends AdminController
             'validation' => 'isString',
             'type' => 'textLang',
             'size' => 70,
-            'defaultValue' => Dispatcher::getInstance()->default_routes[$routeId]['rule'],
         ];
     }
 
@@ -458,7 +464,7 @@ class AdminMetaControllerCore extends AdminController
             && (Tools::getValue('domain') != Configuration::get('PS_SHOP_DOMAIN') || Tools::getValue('domain_ssl') != Configuration::get('PS_SHOP_DOMAIN_SSL'))) {
             $this->errors[] = Tools::displayError('This functionality has been disabled.');
 
-            return;
+            return null;
         }
 
         if (Tools::isSubmit('submitAddmeta')) {
@@ -653,6 +659,8 @@ class AdminMetaControllerCore extends AdminController
     {
         if (Shop::isFeatureActive() && Shop::getContext() != Shop::CONTEXT_SHOP) {
             $this->displayInformation($this->l('You can only display the page list in a shop context.'));
+
+            return false;
         } else {
             return parent::renderList();
         }
@@ -901,6 +909,8 @@ class AdminMetaControllerCore extends AdminController
 
             return $options;
         }
+
+        return '';
     }
 
     /**
