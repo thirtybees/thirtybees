@@ -38,6 +38,7 @@
 	var need_to_validate = '{l s='Please validate the last range before create a new one.' js=1}';
 	var delete_range_confirm = '{l s='Are you sure to delete this range ?' js=1}';
 	var currency_sign = '{$currency_sign}';
+	var currency_iso_code = '{$currency_iso_code}';
 	var PS_WEIGHT_UNIT = '{$PS_WEIGHT_UNIT}';
 	var invalid_range = '{l s='This range is not valid' js=1}';
 	var overlapping_range = '{l s='Ranges are overlapping' js=1}';

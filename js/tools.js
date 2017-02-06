@@ -70,13 +70,22 @@ function formatCurrency(price, currencyFormat, currencySign, currencyBlank) {
 	var locale = document.documentElement.lang;
 	if (locale.length === 5) {
 		locale = locale.substring(0, 2).toLowerCase() + '-' + locale.substring(3, 5).toUpperCase();
-	} else if (typeof window.full_language_code !== 'undefined') {
+	} else if (typeof window.full_language_code !== 'undefined' && window.full_language_code.length === 5) {
 		locale = window.full_language_code.substring(0, 2).toLowerCase() + '-' + window.full_language_code.substring(3, 5).toUpperCase();
 	} else if (getBrowserLocale().length === 5) {
 		locale = getBrowserLocale().substring(0, 2).toLowerCase() + '-' + getBrowserLocale().substring(3, 5).toUpperCase();
 	}
 
-	return price.toLocaleString(locale, { style: 'currency', currency: 'EUR' });
+	var currency = 'EUR';
+	if (typeof window.currency_iso_code !== 'undefined' && window.currency_iso_code.length === 3) {
+		// Should be exposed in Back Office
+		currency = window.currency_iso_code;
+	} else if (typeof window.currency === 'object' && typeof window.currency.iso_code !== 'undefined' && window.currency.iso_code.length === 3) {
+		// Front Office
+		currency = window.currency.iso_code;
+	}
+
+	return price.toLocaleString(locale, {style: 'currency', currency: currency});
 }
 
 function ps_round_helper(value, mode) {
