@@ -278,12 +278,13 @@ class AdminControllerCore extends Controller
     protected $list_partners_modules = [];
     /** @var bool */
     protected $logged_on_addons = false;
-    // @codingStandardsIgnoreEnd
     /** @var bool if logged employee has access to AdminImport */
     protected $can_import = false;
     /** @var array */
     protected $translationsTab = [];
-
+    /** @var bool $isThirtybeesUp */
+    public static $isThirtybeesUp = true;
+    // @codingStandardsIgnoreEnd
     /**
      * AdminControllerCore constructor.
      *
@@ -3252,6 +3253,34 @@ class AdminControllerCore extends Controller
         }
 
         return false; //no module found on disk just return false;
+    }
+
+    /**
+     * @param string $fileToRefresh
+     * @param string $externalFile
+     *
+     * @return bool
+     */
+    public function refresh($fileToRefresh, $externalFile)
+    {
+        $guzzle = new GuzzleHttp\Client([
+            'timeout' => 5,
+            'verify' => _PS_TOOL_DIR_.'cacert.pem',
+        ]);
+
+        if (self::$isThirtybeesUp) {
+            try {
+                $content = (string) $guzzle->get($externalFile)->getBody();
+
+                return (bool) file_put_contents(_PS_ROOT_DIR_.$fileToRefresh, $content);
+            } catch (Exception $e) {
+                self::$isThirtybeesUp = false;
+
+                return false;
+            }
+        }
+
+        return false;
     }
 
     /**

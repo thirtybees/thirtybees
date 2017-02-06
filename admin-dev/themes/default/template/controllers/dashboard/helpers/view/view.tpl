@@ -57,10 +57,10 @@
 						<button type="button" name="submitDateYearPrev" class="btn btn-default submitDateYearPrev{if isset($preselect_date_range) && $preselect_date_range == 'prev-year'} active{/if}">
 							{l s='Year'}-1
 						</button>
-						<!--
-						<button type="submit" name="submitDateRealTime" class="hide btn btn-default submitDateRealTime {if $dashboard_use_push}active{/if}" value="{!$dashboard_use_push|intval}">
-							{l s='Real Time'}
-						</button> -->
+						{*<!--*}
+						{*<button type="submit" name="submitDateRealTime" class="hide btn btn-default submitDateRealTime {if $dashboard_use_push}active{/if}" value="{!$dashboard_use_push|intval}">*}
+							{*{l s='Real Time'}*}
+						{*</button> -->*}
 					</div>
 					<input type="hidden" name="datepickerFrom" id="datepickerFrom" value="{$date_from|escape}" class="form-control">
 					<input type="hidden" name="datepickerTo" id="datepickerTo" value="{$date_to|escape}" class="form-control">
@@ -94,7 +94,7 @@
 			<section class="dash_news panel">
 				<h3><i class="icon-rss"></i> {l s='thirty bees News'}</h3>
 				<div class="dash_news_content"></div>
-				<div class="text-center"><h4><a href="http://www.thirtybees.com/blog/" onclick="return !window.open(this.href);">{l s='Find more news'}</a></h4></div>
+				<div class="text-center"><h4><a href="http://www.thirtybees.com/feed/" onclick="return !window.open(this.href);">{l s='Find more news'}</a></h4></div>
 			</section>
 			<section class="dash_links panel">
 				<h3><i class="icon-link"></i> {l s="Useful links"}</h3>
