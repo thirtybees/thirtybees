@@ -267,8 +267,19 @@ class ShopCore extends ObjectModel
     public function add($autodate = true, $nullValues = false)
     {
         $res = parent::add($autodate, $nullValues);
-        // Regenerate URLs for shop
+        // Regenerate URLs for shop and insert defaults
         UrlRewrite::regenerateUrlRewrites(null, $this->id);
+        // Set default language routes
+        $langs = Language::getLanguages(false, $this->id, true);
+        // @codingStandardsIgnoreStart
+        Configuration::updateValue('PS_ROUTE_product_rule', array_map(function() {return '{categories:/}{rewrite}';}, $langs));
+        Configuration::updateValue('PS_ROUTE_category_rule', array_map(function() {return '{rewrite}';}, $langs));
+        Configuration::updateValue('PS_ROUTE_supplier_rule', array_map(function() {return '{rewrite}';}, $langs));
+        Configuration::updateValue('PS_ROUTE_manufacturer_rule', array_map(function() {return '{rewrite}';}, $langs));
+        Configuration::updateValue('PS_ROUTE_cms_rule', array_map(function() {return '{categories:/}{rewrite}';}, $langs));
+        Configuration::updateValue('PS_ROUTE_cms_category_rule', array_map(function() {return '{categories:/}{rewrite}';}, $langs));
+        // @codingStandardsIgnoreEnd
+
         Shop::cacheShops(true);
 
         return $res;
