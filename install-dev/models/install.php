@@ -409,6 +409,7 @@ class InstallModelInstall extends InstallAbstractModel
             $paramsLang = [
                 'name'                     => (string) $xml->name,
                 'iso_code'                 => substr((string) $xml->language_code, 0, 2),
+                'language_code'            => (string) $xml->language_code,
                 'allow_accented_chars_url' => (string) $xml->allow_accented_chars_url,
             ];
 
