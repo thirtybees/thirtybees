@@ -492,16 +492,6 @@ class LanguageCore extends ObjectModel
             }
         }
 
-        // Set default language routes
-        Configuration::updateValue('PS_ROUTE_product_rule', [$lang->id => '{categories:/}{rewrite}']);
-        Configuration::updateValue('PS_ROUTE_category_rule', [$lang->id => '{rewrite}']);
-        Configuration::updateValue('PS_ROUTE_supplier_rule', [$lang->id => '{rewrite}']);
-        Configuration::updateValue('PS_ROUTE_manufacturer_rule', [$lang->id => '{rewrite}']);
-        Configuration::updateValue('PS_ROUTE_cms_rule', [$lang->id => 'info/{categories:/}{rewrite}']);
-        Configuration::updateValue('PS_ROUTE_cms_category_rule', [$lang->id => 'info/{categories:/}{rewrite}']);
-
-        UrlRewrite::regenerateUrlRewrites($lang->id);
-
         return true;
     }
 
@@ -556,6 +546,16 @@ class LanguageCore extends ObjectModel
 
         // create empty files if they not exists
         $this->_generateFiles();
+
+        // Set default language routes
+        Configuration::updateValue('PS_ROUTE_product_rule', [$this->id => '{categories:/}{rewrite}']);
+        Configuration::updateValue('PS_ROUTE_category_rule', [$this->id => '{rewrite}']);
+        Configuration::updateValue('PS_ROUTE_supplier_rule', [$this->id => '{rewrite}']);
+        Configuration::updateValue('PS_ROUTE_manufacturer_rule', [$this->id => '{rewrite}']);
+        Configuration::updateValue('PS_ROUTE_cms_rule', [$this->id => 'info/{categories:/}{rewrite}']);
+        Configuration::updateValue('PS_ROUTE_cms_category_rule', [$this->id => 'info/{categories:/}{rewrite}']);
+
+        UrlRewrite::regenerateUrlRewrites($this->id);
 
         // @todo Since a lot of modules are not in right format with their primary keys name, just get true ...
         $this->loadUpdateSQL();
