@@ -492,6 +492,16 @@ class LanguageCore extends ObjectModel
             }
         }
 
+        // Set default language routes
+        Configuration::updateValue('PS_ROUTE_product_rule', [$lang->id => '{categories:/}{rewrite}']);
+        Configuration::updateValue('PS_ROUTE_category_rule', [$lang->id => '{rewrite}']);
+        Configuration::updateValue('PS_ROUTE_supplier_rule', [$lang->id => '{rewrite}']);
+        Configuration::updateValue('PS_ROUTE_manufacturer_rule', [$lang->id => '{rewrite}']);
+        Configuration::updateValue('PS_ROUTE_cms_rule', [$lang->id => 'info/{categories:/}{rewrite}']);
+        Configuration::updateValue('PS_ROUTE_cms_category_rule', [$lang->id => 'info/{categories:/}{rewrite}']);
+
+        UrlRewrite::regenerateUrlRewrites($lang->id);
+
         return true;
     }
 
