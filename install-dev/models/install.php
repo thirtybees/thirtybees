@@ -937,6 +937,10 @@ class InstallModelInstall extends InstallAbstractModel
         $this->xmlLoaderIds = $xmlLoader->getIds();
         unset($xmlLoader);
 
+        foreach (Language::getLanguages(false, false, true) as $idLang) {
+            UrlRewrite::regenerateUrlRewrites($idLang, 1);
+        }
+
         // Index products in search tables
         Search::indexation(true);
 
