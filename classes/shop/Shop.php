@@ -267,6 +267,8 @@ class ShopCore extends ObjectModel
     public function add($autodate = true, $nullValues = false)
     {
         $res = parent::add($autodate, $nullValues);
+        // Regenerate URLs for shop
+        UrlRewrite::regenerateUrlRewrites(null, $this->id);
         Shop::cacheShops(true);
 
         return $res;
