@@ -81,7 +81,7 @@ class UrlRewriteCore extends Objectmodel
      * @param int|null $idShop
      * @param array    $entities
      *
-     * @return bool
+     * @return void
      * @since 1.0.0
      *
      */
@@ -108,6 +108,10 @@ class UrlRewriteCore extends Objectmodel
             $idLangs = [$idLang];
         } else {
             $idLangs = Language::getLanguages(false, false, true);
+        }
+
+        if (empty($idLangs) || empty($idShops)) {
+            return;
         }
 
         foreach ($idShops as $idShop) {
@@ -160,9 +164,23 @@ class UrlRewriteCore extends Objectmodel
      */
     public static function createBaseUrl($route, $params)
     {
+        $regexp = preg_quote($route, '#');
+
+        $transformKeywords = array();
+        preg_match_all('#\\\{(([^{}]*)\\\:)?('.implode('|', array_keys($params)).')(\\\:([^{}]*))?\\\}#', $regexp, $m);
+        for ($i = 0, $total = count($m[0]); $i < $total; $i++) {
+            $prepend = $m[2][$i];
+            $keyword = $m[3][$i];
+            $append = $m[5][$i];
+            $transformKeywords[$keyword] = [
+                'prepend' => stripslashes($prepend),
+                'append'  => stripslashes($append),
+            ];
+        }
+
         // Build an url which match a route
         foreach ($params as $key => $value) {
-            $route = preg_replace('#\{([^{}]*:)?'.$key.'(:[^{}]*)?\}#', $value, $route);
+            $route = preg_replace('#\{([^{}]*:)?'.$key.'(:[^{}]*)?\}#', $transformKeywords[$key]['prepend'].$value.$transformKeywords[$key]['append'], $route);
         }
 
         return (string) preg_replace('#\{([^{}]*:)?[a-z0-9_]+?(:[^{}]*)?\}#', '', $route);
@@ -274,7 +292,7 @@ class UrlRewriteCore extends Objectmodel
         $filterCategories = [Configuration::get('PS_HOME_CATEGORY', null, null, $idShop), Configuration::get('PS_ROOT_CATEGORY', null, null, $idShop)];
 
         $sql = new DbQuery();
-        $sql->select('c.`id_category`, c.`id_parent`, cl.`link_rewrite`, cl.`meta_keywords`, cl.`meta_title`');
+        $sql->select('c.`id_category` AS `id`, c.`id_parent`, cl.`link_rewrite`, cl.`meta_keywords`, cl.`meta_title`');
         $sql->from('category', 'c');
         $sql->innerJoin('category_shop', 'cs', 'cs.`id_category` = c.`id_category`');
         $sql->innerJoin('category_lang', 'cl', 'cl.`id_category` = c.`id_category`');
@@ -282,18 +300,15 @@ class UrlRewriteCore extends Objectmodel
         $sql->where('cs.`id_shop` = '.(int) $idShop);
 
         $categoryInfo = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
-        $categories = [];
-        $count = count($categoryInfo);
-        for ($i = 0; $i < $count; $i++) {
-            $categories[$categoryInfo[$i]['id_category']] = $categoryInfo[$i];
-            if (in_array($categoryInfo[$i]['id_category'], $filterCategories)) {
-                $categories[$categoryInfo[$i]['id_category']]['link_rewrite'] = '';
+        foreach ($categoryInfo as &$category) {
+            if (in_array($category['id'], $filterCategories)) {
+                $categories['link_rewrite'] = '';
+            } else {
+                $category['rewrite'] = $category['link_rewrite'];
             }
-            $categories[$categoryInfo[$i]['id_category']]['rewrite'] = $categories[$categoryInfo[$i]['id_category']]['link_rewrite'];
-            unset($categoryInfo[$i]);
         }
 
-        return $categories;
+        return $categoryInfo;
     }
 
     /**
@@ -353,7 +368,7 @@ class UrlRewriteCore extends Objectmodel
 
 
         $sql = new DbQuery();
-        $select = 'p.`id_product` as `id`, pl.`link_rewrite` as `rewrite`';
+        $select = 'p.`id_product` AS `id`, pl.`link_rewrite` as `rewrite`';
         if ($usedKeys['category']) {
             $select .= ', cl.`link_rewrite` as `category`';
             $sql->leftJoin('category_lang', 'cl', 'p.`id_category_default` = cl.`id_category`');
@@ -439,9 +454,12 @@ class UrlRewriteCore extends Objectmodel
      */
     protected static function generateCategoryUrlRewrites($idLang, $idShop, $categories, &$newRoutes)
     {
-        $filterCategories = [Configuration::get('PS_HOME_CATEGORY', null, null, $idShop), Configuration::get('PS_ROOT_CATEGORY', null, null, $idShop)];
+        $filterCategories = [(int) Configuration::get('PS_HOME_CATEGORY', null, null, $idShop), (int) Configuration::get('PS_ROOT_CATEGORY', null, null, $idShop)];
         if (self::hasKeyword($newRoutes[$idShop][$idLang][self::ENTITY_CATEGORY], 'categories')) {
             foreach ($categories as &$category) {
+                if (in_array((int) $category['id'], $filterCategories)) {
+                    continue;
+                }
                 $categoryRewrite = '';
                 $idCategory = (int) $category['id_parent'];
                 $depth = 0;
@@ -464,9 +482,9 @@ class UrlRewriteCore extends Objectmodel
         $insert = [];
         foreach ($categories as $category) {
             $insert[] = [
-                'id_entity' => $category['id_category'],
+                'id_entity' => $category['id'],
                 'entity' => self::ENTITY_CATEGORY,
-                'rewrite' => self::createBaseUrl($newRoutes[$idShop][$idLang][self::ENTITY_CATEGORY], $category),
+                'rewrite' => in_array($category['id'], $filterCategories) ? '' : self::createBaseUrl($newRoutes[$idShop][$idLang][self::ENTITY_CATEGORY], $category),
                 'id_shop' => $idShop,
                 'id_lang' => $idLang,
                 'redirect' => self::CANONICAL,
