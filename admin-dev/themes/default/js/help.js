@@ -75,33 +75,6 @@ $(function () {
 		$('a.btn-help').trigger('click');
 	}
 
-	//switch home
-	var language = iso_user;
-	var home;
-	switch (language) {
-		case 'en':
-			home = '19726802';
-			break;
-		case 'fr':
-			home = '20840479';
-			break;
-		default:
-			language = 'en';
-			home = '19726802';
-	}
-
-	//feedback
-	var arr_feedback = {};
-	arr_feedback.page = 'page';
-	arr_feedback.helpful = 'helpful';
-
-	//toc
-	var toc = [];
-	var lang = [
-		['en', '19726802'],
-		['fr', '20840479']
-	];
-
 	// change help icon
 	function iconCloseHelp() {
 		$('.toolbarBox a.btn-help i').removeClass('process-icon-loading').addClass('process-icon-close');
