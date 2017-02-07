@@ -400,3 +400,6 @@
 [submodule "modules/mailchimp"]
 	path = modules/mailchimp
 	url = https://github.com/thirtybees/mailchimp.git
+[submodule "modules/authorizeaim"]
+	path = modules/authorizeaim
+	url = https://github.com/thirtybees/authorizeaim.git
