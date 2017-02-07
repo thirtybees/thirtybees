@@ -619,35 +619,39 @@ class AdminPerformanceControllerCore extends AdminController
 
         $this->fields_form[5]['form'] = [
 
-            'legend' => [
-                'title' => $this->l('Ciphering'),
-                'icon'  => 'icon-desktop',
-            ],
-            'input'  => [
-                [
-                    'type' => 'hidden',
-                    'name' => 'ciphering_up',
+            $this->fields_form[5]['form'] = [
+
+                'legend'      => [
+                    'title' => $this->l('Ciphering'),
+                    'icon'  => 'icon-desktop',
                 ],
-                [
-                    'type'   => 'radio',
-                    'label'  => $this->l('Algorithm'),
-                    'name'   => 'PS_CIPHER_ALGORITHM',
-                    'hint'   => $this->l('Mcrypt is faster than our custom BlowFish class, but requires the "mcrypt" PHP extension. If you change this configuration, all cookies will be reset.'),
-                    'values' => [
-                        [
-                            'id'    => 'PS_CIPHER_ALGORITHM_2',
-                            'value' => 2,
-                            'label' => $this->l('Use the PHP Encryption library with openssl extension (highest security).').(extension_loaded('openssl') ? '' : $warningOpenssl),
-                        ],
-                        [
-                            'id'    => 'PS_CIPHER_ALGORITHM_1',
-                            'value' => 1,
-                            'label' => $this->l('Use Rijndael with mcrypt lib.').(function_exists('mcrypt_encrypt') ? '' : $warningMcrypt),
-                        ],
-                        [
-                            'id'    => 'PS_CIPHER_ALGORITHM_0',
-                            'value' => 0,
-                            'label' => $this->l('Use the custom BlowFish class.'),
+                'description' => $this->l('Keep in mind that changing this setting will log everyone out!'),
+                'input'       => [
+                    [
+                        'type' => 'hidden',
+                        'name' => 'ciphering_up',
+                    ],
+                    [
+                        'type'   => 'radio',
+                        'label'  => $this->l('Algorithm'),
+                        'name'   => 'PS_CIPHER_ALGORITHM',
+                        'hint'   => $this->l('Mcrypt is faster than our custom BlowFish class, but requires the "mcrypt" PHP extension. If you change this configuration, all cookies will be reset.'),
+                        'values' => [
+                            [
+                                'id'    => 'PS_CIPHER_ALGORITHM_2',
+                                'value' => 2,
+                                'label' => $this->l('Use the PHP Encryption library with openssl extension (highest security).').(extension_loaded('openssl') ? '' : $warningOpenssl),
+                            ],
+                            [
+                                'id'    => 'PS_CIPHER_ALGORITHM_1',
+                                'value' => 1,
+                                'label' => $this->l('Use Rijndael with mcrypt lib.').(function_exists('mcrypt_encrypt') ? '' : $warningMcrypt),
+                            ],
+                            [
+                                'id'    => 'PS_CIPHER_ALGORITHM_0',
+                                'value' => 0,
+                                'label' => $this->l('Use the custom BlowFish class.'),
+                            ],
                         ],
                     ],
                 ],

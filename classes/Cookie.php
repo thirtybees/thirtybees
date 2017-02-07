@@ -99,12 +99,12 @@ class CookieCore
         $this->_salt = $this->_standalone ? str_pad('', 8, md5('ps'.__FILE__)) : _COOKIE_IV_;
         if ($this->_standalone) {
             $this->_cipherTool = new Blowfish(str_pad('', 56, md5('ps'.__FILE__)), str_pad('', 56, md5('iv'.__FILE__)));
-        } elseif (!Configuration::get('PS_CIPHER_ALGORITHM') || !defined('_RIJNDAEL_KEY_')) {
-            $this->_cipherTool = new Blowfish(_COOKIE_KEY_, _COOKIE_IV_);
+        } elseif ((int) Configuration::get('PS_CIPHER_ALGORITHM') === 1 && defined('_RIJNDAEL_KEY_')) {
+            $this->_cipherTool = new Rijndael(_RIJNDAEL_KEY_, _RIJNDAEL_IV_);
         } elseif ((int) Configuration::get('PS_CIPHER_ALGORITHM') === 2 && defined('_PHP_ENCRYPTION_KEY_')) {
             $this->_cipherTool = new PhpEncryption(_PHP_ENCRYPTION_KEY_);
         } else {
-            $this->_cipherTool = new Rijndael(_RIJNDAEL_KEY_, _RIJNDAEL_IV_);
+            $this->_cipherTool = new Blowfish(_COOKIE_KEY_, _COOKIE_IV_);
         }
         $this->_secure = (bool) $secure;
 
