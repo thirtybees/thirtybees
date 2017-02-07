@@ -620,11 +620,12 @@ class AdminPerformanceControllerCore extends AdminController
 
             $this->fields_form[5]['form'] = [
 
-                'legend' => [
+                'legend'      => [
                     'title' => $this->l('Ciphering'),
                     'icon'  => 'icon-desktop',
                 ],
-                'input'  => [
+                'description' => $this->l('Keep in mind that changing this setting will log everyone out!'),
+                'input'       => [
                     [
                         'type' => 'hidden',
                         'name' => 'ciphering_up',
