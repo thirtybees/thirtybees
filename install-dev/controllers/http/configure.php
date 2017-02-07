@@ -64,8 +64,30 @@ class InstallControllerHttpConfigure extends InstallControllerHttp
             $this->session->adminLastname = trim(Tools::getValue('adminLastname'));
             $this->session->adminEmail = trim(Tools::getValue('adminEmail'));
             $this->session->sendInformations = Tools::getValue('sendInformations');
-            if ($this->session->sendInformations) {
-                // FIXME: send newsletter info
+            $guzzle = new GuzzleHttp\Client([
+                'base_uri'    => 'https://api.thirtybees.com',
+                'timeout'     => 5,
+                'http_errors' => false,
+                'verify'      => __DIR__.'/../../../tools/cacert.pem',
+            ]);
+
+            try {
+                $guzzle->post(
+                    '/newsletter/',
+                    [
+                        'json' =>
+                            [
+                                'email'    => $this->session->adminEmail,
+                                'fname'    => $this->session->adminFirstname,
+                                'lname'    => $this->session->adminLastname,
+                                'activity' => (string) $this->session->shopActivity,
+                                'country'  => $this->session->shopCountry,
+                                'language' => $this->language->getLanguageIso(),
+                            ],
+                    ]
+                );
+            } catch (Exception $e) {
+                // Don't care
             }
 
             // If password fields are empty, but are already stored in session, do not fill them again
