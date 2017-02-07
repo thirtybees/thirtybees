@@ -617,6 +617,7 @@ class AdminPerformanceControllerCore extends AdminController
         $warningOpenssl = str_replace('[a]', '<a href="http://www.php.net/manual/'.substr($phpLang, 0, 2).'/book.openssl.php" target="_blank">', $warningOpenssl);
         $warningOpenssl = str_replace('[/a]', '</a>', $warningOpenssl);
 
+        $this->fields_form[5]['form'] = [
 
             $this->fields_form[5]['form'] = [
 
@@ -654,10 +655,11 @@ class AdminPerformanceControllerCore extends AdminController
                         ],
                     ],
                 ],
-                'submit' => [
-                    'title' => $this->l('Save'),
-                ],
-            ];
+            ],
+            'submit' => [
+                'title' => $this->l('Save'),
+            ],
+        ];
 
 
         $this->fields_value['PS_CIPHER_ALGORITHM'] = Configuration::get('PS_CIPHER_ALGORITHM');
@@ -1247,6 +1249,7 @@ class AdminPerformanceControllerCore extends AdminController
             Tools::clearXMLCache();
             Media::clearCache();
             Tools::generateIndex();
+            Cache::getInstance()->flush();
             if (function_exists('opcache_reset')) {
                 opcache_reset();
             }
