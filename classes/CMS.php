@@ -287,6 +287,10 @@ class CMSCore extends ObjectModel
      */
     public function update($nullValues = false)
     {
+        if ('TB_PAGECACHE_ENABLED') {
+            PageCache::invalidateEntity('cms', $this->id);
+        }
+
         if (parent::update($nullValues)) {
             return $this->cleanPositions($this->id_cms_category);
         }
@@ -331,6 +335,10 @@ class CMSCore extends ObjectModel
      */
     public function delete()
     {
+        if ('TB_PAGECACHE_ENABLED') {
+            PageCache::invalidateEntity('cms', $this->id);
+        }
+
         if (parent::delete()) {
             return $this->cleanPositions($this->id_cms_category);
         }

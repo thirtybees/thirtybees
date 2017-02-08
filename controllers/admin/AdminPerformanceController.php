@@ -1249,7 +1249,7 @@ class AdminPerformanceControllerCore extends AdminController
             Tools::clearXMLCache();
             Media::clearCache();
             Tools::generateIndex();
-            Cache::getInstance()->flush();
+            PageCache::flush();
             if (function_exists('opcache_reset')) {
                 opcache_reset();
             }

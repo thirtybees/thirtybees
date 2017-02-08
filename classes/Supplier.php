@@ -215,6 +215,27 @@ class SupplierCore extends ObjectModel
     }
 
     /**
+     *
+     */
+    public function update($nullValues = null)
+    {
+        if ('TB_PAGECACHE_ENABLED') {
+            PageCache::invalidateEntity('supplier', $this->id);
+        }
+
+        parent::update($nullValues);
+    }
+
+    public function delete()
+    {
+        if ('TB_PAGECACHE_ENABLED') {
+            PageCache::invalidateEntity('supplier', $this->id);
+        }
+
+        parent::delete();
+    }
+
+    /**
      * @param int $idSupplier
      *
      * @return mixed
@@ -493,20 +514,5 @@ class SupplierCore extends ObjectModel
         $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
 
         return $res;
-    }
-
-    /**
-     * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public function delete()
-    {
-        if (parent::delete()) {
-            CartRule::cleanProductRuleIntegrity('suppliers', $this->id);
-
-            return $this->deleteImage();
-        }
     }
 }

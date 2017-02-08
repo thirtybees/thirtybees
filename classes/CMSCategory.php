@@ -529,6 +529,10 @@ class CMSCategoryCore extends ObjectModel
      */
     public function update($nullValues = false)
     {
+        if ('TB_PAGECACHE_ENABLED') {
+            PageCache::invalidateEntity('cms_category', $this->id);
+        }
+
         $this->level_depth = $this->calcLevelDepth();
         foreach ($this->name as $k => $value) {
             if (preg_match('/^[1-9]\./', $value)) {
@@ -666,6 +670,10 @@ class CMSCategoryCore extends ObjectModel
     {
         if ($this->id == 1) {
             return false;
+        }
+
+        if ('TB_PAGECACHE_ENABLED') {
+            PageCache::invalidateEntity('cms', $this->id);
         }
 
         $this->clearCache();

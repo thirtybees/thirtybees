@@ -3847,6 +3847,10 @@ class ProductCore extends ObjectModel
          * - physical stock for this product
          * - supply order(s) for this product
          */
+        if ('TB_PAGECACHE_ENABLED') {
+            PageCache::invalidateEntity('product', $this->id);
+        }
+
         if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') && $this->advanced_stock_management) {
             $stockManager = StockManagerFactory::getManager();
             $physicalQuantity = $stockManager->getProductPhysicalQuantities($this->id, 0);
@@ -4903,6 +4907,10 @@ class ProductCore extends ObjectModel
      */
     public function update($nullValues = false)
     {
+        if ('TB_PAGECACHE_ENABLED') {
+            PageCache::invalidateEntity('product', $this->id);
+        }
+
         $return = parent::update($nullValues);
         $this->setGroupReduction();
 
