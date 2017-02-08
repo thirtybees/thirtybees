@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <entity_meta>
   <meta id="404" id_shop="1">
-    <title> Ошибка 404</title>
+    <title>Ошибка 404</title>
     <description>Эта страница не может быть найдена</description>
     <keywords>ошибка, 404,не найдена</keywords>
     <url_rewrite>page-not-found</url_rewrite>

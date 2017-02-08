@@ -1,21 +1,57 @@
 <?xml version='1.0'?>
 <entity_configuration>
   <configuration id='PS_INVOICE_PREFIX'>
-    <value>#ভিতরে </value>
+    <value>#ভিতরে</value>
   </configuration>
   <configuration id='PS_DELIVERY_PREFIX'>
-    <value>#ডি ই </value>
+    <value>#ডি ই</value>
   </configuration>
   <configuration id="PS_RETURN_PREFIX">
     <value>#RE</value>
   </configuration>
   <configuration id='PS_SEARCH_BLACKLIST'>
-    <value>একটি|এটি|থেকে|এবং|হতে   </value>
+    <value>একটি|এটি|থেকে|এবং|হতে</value>
   </configuration>
   <configuration id='PS_META_KEYWORDS'>
     <value>0</value>
   </configuration>
   <configuration id='PS_CUSTOMER_SERVICE_SIGNATURE'>
-    <value>প্রিয় গ্রাহক,                                        শুভেচ্ছা, গ্রাহক সেবা বিভাগ</value>
+    <value>প্রিয় গ্রাহক, শুভেচ্ছা, গ্রাহক সেবা বিভাগ</value>
+  </configuration>
+  <configuration id="PS_ROUTE_product_rule" name="PS_ROUTE_product_rule">
+    <value>{categories:/}{rewrite}</value>
+  </configuration>
+  <configuration id="PS_ROUTE_category_rule" name="PS_ROUTE_category_rule">
+    <value>{rewrite}</value>
+  </configuration>
+  <configuration id="PS_ROUTE_supplier_rule" name="PS_ROUTE_supplier_rule">
+    <value>{rewrite}</value>
+  </configuration>
+  <configuration id="PS_ROUTE_manufacturer_rule" name="PS_ROUTE_manufacturer_rule">
+    <value>{rewrite}</value>
+  </configuration>
+  <configuration id="PS_ROUTE_cms_rule" name="PS_ROUTE_cms_rule">
+    <value>info/{rewrite}</value>
+  </configuration>
+  <configuration id="PS_ROUTE_cms_category_rule" name="PS_ROUTE_cms_category_rule">
+    <value>info/{rewrite}</value>
+  </configuration>
+  <configuration id="PS_ROUTE_product_rule" name="PS_ROUTE_product_rule">
+    <value>{categories:/}{rewrite}</value>
+  </configuration>
+  <configuration id="PS_ROUTE_category_rule" name="PS_ROUTE_category_rule">
+    <value>{rewrite}</value>
+  </configuration>
+  <configuration id="PS_ROUTE_supplier_rule" name="PS_ROUTE_supplier_rule">
+    <value>{rewrite}</value>
+  </configuration>
+  <configuration id="PS_ROUTE_manufacturer_rule" name="PS_ROUTE_manufacturer_rule">
+    <value>{rewrite}</value>
+  </configuration>
+  <configuration id="PS_ROUTE_cms_rule" name="PS_ROUTE_cms_rule">
+    <value>info/{rewrite}</value>
+  </configuration>
+  <configuration id="PS_ROUTE_cms_category_rule" name="PS_ROUTE_cms_category_rule">
+    <value>info/{rewrite}</value>
   </configuration>
 </entity_configuration>

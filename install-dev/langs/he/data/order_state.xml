@@ -33,12 +33,12 @@
     <template>payment_error</template>
   </order_state>
   <order_state id="On_backorder_paid">
-     <name>בהמתנה למלאי (שולם)</name>
-     <template>outofstock</template>
+    <name>בהמתנה למלאי (שולם)</name>
+    <template>outofstock</template>
   </order_state>
   <order_state id="On_backorder_unpaid">
-     <name>בהמתנה למלאי (עוד לא שולם)</name>
-     <template>outofstock</template>
+    <name>בהמתנה למלאי (עוד לא שולם)</name>
+    <template>outofstock</template>
   </order_state>
   <order_state id="Awaiting_bank_wire_payment">
     <name>בהמתנה לתשלום באמצעות העברה בנקאית</name>
