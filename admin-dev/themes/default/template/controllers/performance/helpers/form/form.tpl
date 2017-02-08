@@ -62,14 +62,7 @@
 	{block name="other_input"}
 		{if $key == 'memcachedServers'}
 			<div id="memcachedServers">
-				<div class="form-group">
-					<div class="col-lg-9 col-lg-push-3">
-						<button id="addMemcachedServer" class="btn btn-default" type="button">
-							<i class="icon-plus-sign-alt"></i>&nbsp;{l s='Add server'}
-						</button>
-					</div>
-				</div>
-				<div id="formMemcachedServer" style="display:none;">
+				<div id="formMemcachedServer">
 					<div class="form-group">
 						<label class="control-label col-lg-3">{l s='IP Address'} </label>
 						<div class="col-lg-9">
@@ -261,6 +254,8 @@
 			$('#memcachedServers').css('display', $('#TB_CACHE_ENABLED_on').is(':checked') ? 'block' : 'none');
 			$('#ps_cache_fs_directory_depth').closest('.form-group').hide();
 			$('#redisServers').hide();
+			$('#memcachedServers').show();
+
 		}
 		else if ($('input[name="TB_CACHE_SYSTEM"]:radio:checked').val() == 'CacheFs') {
 			$('#memcachedServers').hide();
@@ -269,6 +264,7 @@
 		} else if ($('input[name="TB_CACHE_SYSTEM"]:radio:checked').val() == 'CacheRedis') {
 			$('#redisServers').css('display', $('#TB_CACHE_ENABLED_on').is(':checked') ? 'block' : 'none');
 			$('#ps_cache_fs_directory_depth').closest('.form-group').hide();
+			$('#redisServers').show();
 			$('#memcachedServers').hide();
 		} else {
 			$('#memcachedServers').hide();
@@ -406,7 +402,7 @@
 					success: function (data) {
 						if (data && $.isArray(data)) {
 							var color = data[0] != 0 ? 'green' : 'red';
-							$('#formMemcachedServerStatus').show();
+							{*$('#formMemcachedServerStatus').show();*}
 							$('input:text[name=memcachedIp]').css('background', color);
 							$('input:text[name=memcachedPort]').css('background', color);
 						}

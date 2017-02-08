@@ -219,7 +219,7 @@ class SupplierCore extends ObjectModel
      */
     public function update($nullValues = null)
     {
-        if ('TB_PAGECACHE_ENABLED') {
+        if ('TB_PAGE_CACHE_ENABLED') {
             PageCache::invalidateEntity('supplier', $this->id);
         }
 
@@ -228,7 +228,7 @@ class SupplierCore extends ObjectModel
 
     public function delete()
     {
-        if ('TB_PAGECACHE_ENABLED') {
+        if ('TB_PAGE_CACHE_ENABLED') {
             PageCache::invalidateEntity('supplier', $this->id);
         }
 

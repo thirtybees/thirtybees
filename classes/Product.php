@@ -3847,7 +3847,7 @@ class ProductCore extends ObjectModel
          * - physical stock for this product
          * - supply order(s) for this product
          */
-        if ('TB_PAGECACHE_ENABLED') {
+        if ('TB_PAGE_CACHE_ENABLED') {
             PageCache::invalidateEntity('product', $this->id);
         }
 
@@ -4907,7 +4907,7 @@ class ProductCore extends ObjectModel
      */
     public function update($nullValues = false)
     {
-        if ('TB_PAGECACHE_ENABLED') {
+        if ('TB_PAGE_CACHE_ENABLED') {
             PageCache::invalidateEntity('product', $this->id);
         }
 
