@@ -3851,6 +3851,8 @@ class ProductCore extends ObjectModel
             PageCache::invalidateEntity('product', $this->id);
         }
 
+        UrlRewrite::deleteUrlRewrite(UrlRewrite::ENTITY_PRODUCT, $this->id);
+
         if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') && $this->advanced_stock_management) {
             $stockManager = StockManagerFactory::getManager();
             $physicalQuantity = $stockManager->getProductPhysicalQuantities($this->id, 0);
@@ -4910,6 +4912,8 @@ class ProductCore extends ObjectModel
         if ('TB_PAGE_CACHE_ENABLED') {
             PageCache::invalidateEntity('product', $this->id);
         }
+
+        UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_PRODUCT, $this->id);
 
         $return = parent::update($nullValues);
         $this->setGroupReduction();
@@ -7400,6 +7404,8 @@ class ProductCore extends ObjectModel
         if (!parent::add($autodate, $nullValues)) {
             return false;
         }
+
+        UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_PRODUCT, $this->id);
 
         $idShopList = Shop::getContextListShopID();
         if ($this->getType() == Product::PTYPE_VIRTUAL) {

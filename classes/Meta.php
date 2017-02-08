@@ -527,6 +527,21 @@ class MetaCore extends ObjectModel
     }
 
     /**
+     * @param bool $autoDate
+     * @param bool $nullValues
+     *
+     * @since 1.0.0
+     */
+    public function add($autoDate = true, $nullValues = false)
+    {
+        parent::add($autoDate, $nullValues);
+
+        if (!defined('TB_INSTALLATION_IN_PROGRESS')) {
+            UrlRewrite::regenerateUrlRewrites(null, null, [UrlRewrite::ENTITY_PAGE]);
+        }
+    }
+
+    /**
      * @param bool $nullValues
      *
      * @return bool
@@ -538,6 +553,10 @@ class MetaCore extends ObjectModel
     {
         if (!parent::update($nullValues)) {
             return false;
+        }
+
+        if (!defined('TB_INSTALLATION_IN_PROGRESS')) {
+            UrlRewrite::regenerateUrlRewrites(null, null, [UrlRewrite::ENTITY_PAGE]);
         }
 
         return Tools::generateHtaccess();

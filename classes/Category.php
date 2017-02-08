@@ -1200,6 +1200,9 @@ class CategoryCore extends ObjectModel
         }
 
         $ret = parent::add($autodate, $nullValues);
+
+        UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_CATEGORY, $this->id);
+
         if (Tools::isSubmit('checkBoxShopAsso_category')) {
             foreach (Tools::getValue('checkBoxShopAsso_category') as $idShop => $value) {
                 $position = (int) Category::getLastPosition((int) $this->id_parent, $idShop);
@@ -1372,6 +1375,8 @@ class CategoryCore extends ObjectModel
         if ('TB_PAGE_CACHE_ENABLED') {
             PageCache::invalidateEntity('category', $this->id);
         }
+
+        UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_CATEGORY, $this->id);
 
         if ($this->is_root_category && $this->id_parent != (int) Configuration::get('PS_ROOT_CATEGORY')) {
             $this->is_root_category = 0;
@@ -1688,6 +1693,8 @@ class CategoryCore extends ObjectModel
         if ('TB_PAGE_CACHE_ENABLED') {
             PageCache::invalidateEntity('category', $this->id);
         }
+
+        UrlRewrite::deleteUrlRewrite(UrlRewrite::ENTITY_CATEGORY, $this->id);
 
         $this->clearCache();
 

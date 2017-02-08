@@ -214,14 +214,20 @@ class SupplierCore extends ObjectModel
         return $suppliers;
     }
 
-    /**
-     *
-     */
+    public function add($autoDate = true, $nullValues = false)
+    {
+        parent::add($autoDate, $nullValues);
+
+        UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_SUPPLIER, $this->id);
+    }
+
     public function update($nullValues = null)
     {
         if ('TB_PAGE_CACHE_ENABLED') {
             PageCache::invalidateEntity('supplier', $this->id);
         }
+
+        UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_SUPPLIER, $this->id);
 
         parent::update($nullValues);
     }
@@ -231,6 +237,8 @@ class SupplierCore extends ObjectModel
         if ('TB_PAGE_CACHE_ENABLED') {
             PageCache::invalidateEntity('supplier', $this->id);
         }
+
+        UrlRewrite::deleteUrlRewrite(UrlRewrite::ENTITY_SUPPLIER, $this->id);
 
         parent::delete();
     }
