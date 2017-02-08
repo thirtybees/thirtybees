@@ -501,6 +501,8 @@ class ManufacturerCore extends ObjectModel
             PageCache::invalidateEntity('manufacturer', $this->id);
         }
 
+        UrlRewrite::deleteUrlRewrite(UrlRewrite::ENTITY_MANUFACTURER, $this->id);
+
         if (parent::delete()) {
             CartRule::cleanProductRuleIntegrity('manufacturers', $this->id);
 
@@ -620,11 +622,20 @@ class ManufacturerCore extends ObjectModel
         return ($result1 && $result2);
     }
 
+    public function add($autoDate = true, $nullValues = false)
+    {
+        parent::add($autoDate, $nullValues);
+
+        UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_MANUFACTURER, $this->id);
+    }
+
     public function update($nullValues = null)
     {
         if ('TB_PAGECACHE_ENABLED') {
             PageCache::invalidateEntity('manufacturer', $this->id);
         }
+
+        UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_MANUFACTURER, $this->id);
 
         parent::update($nullValues);
     }

@@ -455,6 +455,8 @@ class CMSCategoryCore extends ObjectModel
         $ret = parent::add($autodate, $nullValues);
         $this->cleanPositions($this->id_parent);
 
+        UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_CMS_CATEGORY, $this->id);
+
         return $ret;
     }
 
@@ -532,6 +534,8 @@ class CMSCategoryCore extends ObjectModel
         if ('TB_PAGECACHE_ENABLED') {
             PageCache::invalidateEntity('cms_category', $this->id);
         }
+
+        UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_CMS_CATEGORY, $this->id);
 
         $this->level_depth = $this->calcLevelDepth();
         foreach ($this->name as $k => $value) {
@@ -675,6 +679,8 @@ class CMSCategoryCore extends ObjectModel
         if ('TB_PAGECACHE_ENABLED') {
             PageCache::invalidateEntity('cms', $this->id);
         }
+
+        UrlRewrite::deleteUrlRewrite(UrlRewrite::ENTITY_CMS_CATEGORY, $this->id);
 
         $this->clearCache();
 
