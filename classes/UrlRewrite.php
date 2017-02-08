@@ -156,6 +156,10 @@ class UrlRewriteCore extends Objectmodel
 
     public static function regenerateUrlRewrite($entityType, $idEntity = null, $idLang = null, $idShop = null)
     {
+        if (defined('TB_INSTALLATION_IN_PROGRESS')) {
+            return;
+        }
+
         if ($idShop) {
             $idShops = [$idShop];
         } else {
@@ -240,6 +244,10 @@ class UrlRewriteCore extends Objectmodel
 
         // Build an url which match a route
         foreach ($params as $key => $value) {
+            if (!array_key_exists($key, $transformKeywords)) {
+                continue;
+            }
+
             $route = preg_replace('#\{([^{}]*:)?'.$key.'(:[^{}]*)?\}#', $transformKeywords[$key]['prepend'].$value.$transformKeywords[$key]['append'], $route);
         }
 
@@ -761,6 +769,10 @@ class UrlRewriteCore extends Objectmodel
 
     protected static function generatePageUrlRewrites($idLang, $idShop)
     {
+        if (defined('TB_INSTALLATION_IN_PROGRESS')) {
+            return;
+        }
+
         $sql = new DbQuery();
         $sql->select('m.`id_meta` as `id`, m.`page`, ml.`url_rewrite`, ml.`id_lang`');
         $sql->from('meta', 'm');

@@ -536,7 +536,9 @@ class MetaCore extends ObjectModel
     {
         parent::add($autoDate, $nullValues);
 
-        UrlRewrite::regenerateUrlRewrites(null, null, [UrlRewrite::ENTITY_PAGE]);
+        if (!defined('TB_INSTALLATION_IN_PROGRESS')) {
+            UrlRewrite::regenerateUrlRewrites(null, null, [UrlRewrite::ENTITY_PAGE]);
+        }
     }
 
     /**
@@ -553,7 +555,9 @@ class MetaCore extends ObjectModel
             return false;
         }
 
-        UrlRewrite::regenerateUrlRewrites(null, null, [UrlRewrite::ENTITY_PAGE]);
+        if (!defined('TB_INSTALLATION_IN_PROGRESS')) {
+            UrlRewrite::regenerateUrlRewrites(null, null, [UrlRewrite::ENTITY_PAGE]);
+        }
 
         return Tools::generateHtaccess();
     }
