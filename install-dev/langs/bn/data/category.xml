@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
 <entity_category>
   <category id='Root' id_shop='1'>
-    <name>রুট </name>
+    <name>রুট</name>
     <description/>
     <link_rewrite>root</link_rewrite>
     <meta_title/>
@@ -9,7 +9,7 @@
     <meta_description/>
   </category>
   <category id='Home' id_shop='1'>
-    <name>হোম </name>
+    <name>হোম</name>
     <description/>
     <link_rewrite>home</link_rewrite>
     <meta_title/>

@@ -62,15 +62,15 @@
   </meta>
   <meta id="address" id_shop="1">
     <title>Endere&#231;o</title>
-	<description>Endere&#231;o</description>
-	<keywords>endere&#231;o</keywords>
+    <description>Endere&#231;o</description>
+    <keywords>endere&#231;o</keywords>
     <url_rewrite>endereco</url_rewrite>
   </meta>
   <meta id="addresses" id_shop="1">
-	<title>Endere&#231;os</title>
-	<description>Endere&#231;os</description>
-	<keywords>endere&#231;os</keywords>
-	<url_rewrite>enderecos</url_rewrite>
+    <title>Endere&#231;os</title>
+    <description>Endere&#231;os</description>
+    <keywords>endere&#231;os</keywords>
+    <url_rewrite>enderecos</url_rewrite>
   </meta>
   <meta id="authentication" id_shop="1">
     <title>Inicio de Sess&#227;o</title>

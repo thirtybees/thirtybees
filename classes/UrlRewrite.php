@@ -292,7 +292,7 @@ class UrlRewriteCore extends Objectmodel
         $filterCategories = [Configuration::get('PS_HOME_CATEGORY', null, null, $idShop), Configuration::get('PS_ROOT_CATEGORY', null, null, $idShop)];
 
         $sql = new DbQuery();
-        $sql->select('c.`id_category` AS `id`, c.`id_parent`, cl.`link_rewrite`, cl.`meta_keywords`, cl.`meta_title`');
+        $sql->select('c.`id_category` AS `id`, c.`id_parent`, cl.`link_rewrite` AS `rewrite`, cl.`meta_keywords`, cl.`meta_title`');
         $sql->from('category', 'c');
         $sql->innerJoin('category_shop', 'cs', 'cs.`id_category` = c.`id_category`');
         $sql->innerJoin('category_lang', 'cl', 'cl.`id_category` = c.`id_category`');
@@ -300,15 +300,15 @@ class UrlRewriteCore extends Objectmodel
         $sql->where('cs.`id_shop` = '.(int) $idShop);
 
         $categoryInfo = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        $categories = [];
         foreach ($categoryInfo as &$category) {
             if (in_array($category['id'], $filterCategories)) {
-                $categories['link_rewrite'] = '';
-            } else {
-                $category['rewrite'] = $category['link_rewrite'];
+                $category['rewrite'] = '';
             }
+            $categories[(int) $category['id']] = $category;
         }
 
-        return $categoryInfo;
+        return $categories;
     }
 
     /**
@@ -322,7 +322,7 @@ class UrlRewriteCore extends Objectmodel
     protected static function getCmsCategoryInfo($idLang, $idShop)
     {
         $sql = new DbQuery();
-        $sql->select('cc.`id_cms_category`, cc.`id_parent`, ccl.`link_rewrite`, ccl.`meta_keywords`, ccl.`meta_title`');
+        $sql->select('cc.`id_cms_category`, cc.`id_parent`, ccl.`link_rewrite` AS `rewrite`, ccl.`meta_keywords`, ccl.`meta_title`');
         $sql->from('cms_category', 'cc');
         $sql->innerJoin('cms_category_shop', 'ccs', 'ccs.`id_cms_category` = cc.`id_cms_category`');
         $sql->innerJoin('cms_category_lang', 'ccl', 'ccl.`id_cms_category` = cc.`id_cms_category`');
@@ -417,15 +417,14 @@ class UrlRewriteCore extends Objectmodel
                     $categoryRewrite = '';
                     $idCategory = (int) $productInfo['id_category_default'];
                     $depth = 0;
-                    while ($idCategory && $depth < self::MAX_CATEGORY_DEPTH && $categories[$idCategory]['link_rewrite']) {
-                        $categoryRewrite = '/'.$categories[$idCategory]['link_rewrite'].$categoryRewrite;
+                    while ($idCategory && $depth < self::MAX_CATEGORY_DEPTH && $categories[$idCategory]['rewrite']) {
+                        $categoryRewrite = '/'.$categories[$idCategory]['rewrite'].$categoryRewrite;
                         $idCategory = (int) $categories[$idCategory]['id_parent'];
                         $depth++;
                     }
-                    $productInfo['categories'] = ltrim($categoryRewrite.'/', '/');
+                    $productInfo['categories'] = trim($categoryRewrite, '/');
                 }
             }
-
         }
 
         $insert = [];
@@ -464,8 +463,8 @@ class UrlRewriteCore extends Objectmodel
                 $idCategory = (int) $category['id_parent'];
                 $depth = 0;
                 $path = [];
-                while ($idCategory && !in_array($idCategory, $filterCategories) && $depth < self::MAX_CATEGORY_DEPTH && $categories[$idCategory]['link_rewrite']) {
-                    $categoryRewrite = $categories[$idCategory]['link_rewrite'].'/'.$categoryRewrite;
+                while ($idCategory && !in_array($idCategory, $filterCategories) && $depth < self::MAX_CATEGORY_DEPTH && $categories[$idCategory]['rewrite']) {
+                    $categoryRewrite = $categories[$idCategory]['rewrite'].'/'.$categoryRewrite;
                     $idCategory = (int) $categories[$idCategory]['id_parent'];
                     $path[] = $idCategory;
                     $depth++;
@@ -586,8 +585,8 @@ class UrlRewriteCore extends Objectmodel
                 $categoryRewrite = '';
                 $idCategory = (int) $category['id_cms_category'];
                 $depth = 0;
-                while ($idCategory && $depth < self::MAX_CATEGORY_DEPTH && $categories[$idCategory]['link_rewrite']) {
-                    $categoryRewrite = '/'.$categories[$idCategory]['link_rewrite'].$categoryRewrite;
+                while ($idCategory && $depth < self::MAX_CATEGORY_DEPTH && $categories[$idCategory]['rewrite']) {
+                    $categoryRewrite = '/'.$categories[$idCategory]['rewrite'].$categoryRewrite;
                     $idCategory = (int) $categories[$idCategory]['id_parent'];
                     $depth++;
                 }
@@ -639,8 +638,8 @@ class UrlRewriteCore extends Objectmodel
                 $categoryRewrite = '';
                 $idCategory = (int) $category['id_cms_category'];
                 $depth = 0;
-                while ($idCategory && $depth < self::MAX_CATEGORY_DEPTH && $categories[$idCategory]['link_rewrite']) {
-                    $categoryRewrite = '/'.$categories[$idCategory]['link_rewrite'].$categoryRewrite;
+                while ($idCategory && $depth < self::MAX_CATEGORY_DEPTH && $categories[$idCategory]['rewrite']) {
+                    $categoryRewrite = '/'.$categories[$idCategory]['rewrite'].$categoryRewrite;
                     $idCategory = (int) $categories[$idCategory]['id_parent'];
                     $depth++;
                 }

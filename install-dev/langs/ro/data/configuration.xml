@@ -17,8 +17,27 @@
   </configuration>
   <configuration id="PS_CUSTOMER_SERVICE_SIGNATURE">
     <value>Stimate Client,&#xD;
-&#xD;
-Toate cele bune,&#xD;
-Echipa de asistenta pentru clienti</value>
+      &#xD;
+      Toate cele bune,&#xD;
+      Echipa de asistenta pentru clienti
+    </value>
+  </configuration>
+  <configuration id="PS_ROUTE_product_rule" name="PS_ROUTE_product_rule">
+    <value>{categories:/}{rewrite}</value>
+  </configuration>
+  <configuration id="PS_ROUTE_category_rule" name="PS_ROUTE_category_rule">
+    <value>{rewrite}</value>
+  </configuration>
+  <configuration id="PS_ROUTE_supplier_rule" name="PS_ROUTE_supplier_rule">
+    <value>{rewrite}</value>
+  </configuration>
+  <configuration id="PS_ROUTE_manufacturer_rule" name="PS_ROUTE_manufacturer_rule">
+    <value>{rewrite}</value>
+  </configuration>
+  <configuration id="PS_ROUTE_cms_rule" name="PS_ROUTE_cms_rule">
+    <value>info/{rewrite}</value>
+  </configuration>
+  <configuration id="PS_ROUTE_cms_category_rule" name="PS_ROUTE_cms_category_rule">
+    <value>info/{rewrite}</value>
   </configuration>
 </entity_configuration>
