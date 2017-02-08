@@ -497,7 +497,7 @@ class ManufacturerCore extends ObjectModel
             return false;
         }
 
-        if ('TB_PAGECACHE_ENABLED') {
+        if ('TB_PAGE_CACHE_ENABLED') {
             PageCache::invalidateEntity('manufacturer', $this->id);
         }
 
@@ -622,7 +622,7 @@ class ManufacturerCore extends ObjectModel
 
     public function update($nullValues = null)
     {
-        if ('TB_PAGECACHE_ENABLED') {
+        if ('TB_PAGE_CACHE_ENABLED') {
             PageCache::invalidateEntity('manufacturer', $this->id);
         }
 
