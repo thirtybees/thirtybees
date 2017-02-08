@@ -893,10 +893,12 @@ class MediaCore
      */
     public static function clearCache()
     {
-        foreach ([_PS_THEME_DIR_.'cache'] as $dir) {
-            if (file_exists($dir)) {
-                foreach (array_diff(scandir($dir), ['..', '.', 'index.php']) as $file) {
-                    Tools::deleteFile($dir.DIRECTORY_SEPARATOR.$file);
+        if (!Configuration::get('TB_KEEP_CCC_FILES')) {
+            foreach ([_PS_THEME_DIR_.'cache'] as $dir) {
+                if (file_exists($dir)) {
+                    foreach (array_diff(scandir($dir), ['..', '.', 'index.php']) as $file) {
+                        Tools::deleteFile($dir.DIRECTORY_SEPARATOR.$file);
+                    }
                 }
             }
         }
