@@ -125,15 +125,32 @@ class UrlRewriteCore extends Objectmodel
                     self::ENTITY_CMS          => Configuration::get('PS_ROUTE_cms_rule') ? Configuration::get('PS_ROUTE_cms_rule') : Dispatcher::getInstance()->routes[$idShop][$idLang]['cms_rule']['rule'],
                     self::ENTITY_CMS_CATEGORY => Configuration::get('PS_ROUTE_cms_category_rule') ? Configuration::get('PS_ROUTE_cms_category_rule') : Dispatcher::getInstance()->routes[$idShop][$idLang]['cms_category_rule']['rule'],
                 ];
-                $categoryInfo = self::getCategoryInfo($idLang, $idShop);
-                self::generateProductUrlRewrites($idLang, $idShop, $categoryInfo, $newRoutes);
-                self::generateCategoryUrlRewrites($idLang, $idShop, $categoryInfo, $newRoutes);
-                self::generateSupplierUrlRewrites($idLang, $idShop, $newRoutes);
-                self::generateManufacturerUrlRewrites($idLang, $idShop, $newRoutes);
-                $cmsCategoryInfo = self::getCmsCategoryInfo($idLang, $idShop);
-                self::generateCmsUrlRewrites($idLang, $idShop, $cmsCategoryInfo, $newRoutes);
-                self::generateCmsCategoryUrlRewrites($idLang, $idShop, $cmsCategoryInfo, $newRoutes);
-                self::generatePageUrlRewrites($idLang, $idShop);
+
+                if (in_array(self::ENTITY_PRODUCT, $entities)) {
+                    $categoryInfo = self::getCategoryInfo($idLang, $idShop);
+                    self::generateProductUrlRewrites($idLang, $idShop, $categoryInfo, $newRoutes);
+                }
+                if (in_array(self::ENTITY_CATEGORY, $entities)) {
+                    $categoryInfo = self::getCategoryInfo($idLang, $idShop);
+                    self::generateCategoryUrlRewrites($idLang, $idShop, $categoryInfo, $newRoutes);
+                }
+                if (in_array(self::ENTITY_SUPPLIER, $entities)) {
+                    self::generateSupplierUrlRewrites($idLang, $idShop, $newRoutes);
+                }
+                if (in_array(self::ENTITY_MANUFACTURER, $entities)) {
+                    self::generateManufacturerUrlRewrites($idLang, $idShop, $newRoutes);
+                }
+                if (in_array(self::ENTITY_CMS, $entities)) {
+                    $cmsCategoryInfo = self::getCmsCategoryInfo($idLang, $idShop);
+                    self::generateCmsUrlRewrites($idLang, $idShop, $cmsCategoryInfo, $newRoutes);
+                }
+                if (in_array(self::ENTITY_CMS_CATEGORY, $entities)) {
+                    $cmsCategoryInfo = self::getCmsCategoryInfo($idLang, $idShop);
+                    self::generateCmsCategoryUrlRewrites($idLang, $idShop, $cmsCategoryInfo, $newRoutes);
+                }
+                if (in_array(self::ENTITY_PRODUCT, $entities)) {
+                    self::generatePageUrlRewrites($idLang, $idShop);
+                }
             }
         }
     }
@@ -513,11 +530,11 @@ class UrlRewriteCore extends Objectmodel
         }
 
         $insert = [];
-        foreach ($productInfos as $productInfo) {
+        for ($i = 0; $i < count($productInfos); $i++) {
             $insert[] = [
-                'id_entity' => $productInfo['id'],
+                'id_entity' => $productInfos[$i]['id'],
                 'entity' => self::ENTITY_PRODUCT,
-                'rewrite' => self::createBaseUrl($newRoutes[$idShop][$idLang][self::ENTITY_PRODUCT], $productInfo),
+                'rewrite' => self::createBaseUrl($newRoutes[$idShop][$idLang][self::ENTITY_PRODUCT], $productInfos[$i]),
                 'id_shop' => $idShop,
                 'id_lang' => $idLang,
                 'redirect' => self::CANONICAL,
