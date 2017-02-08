@@ -750,8 +750,9 @@ class DispatcherCore
                                     break 2;
                             }
                         }
-                        if (preg_match($route['regexp'], $uri, $m)) {
+                        if (preg_match($route['regexp'], $uri, $m) && !in_array($route['controller'], ['product', 'category', 'supplier', 'manufacturer', 'cms', 'cms_category'])) {
                             foreach ($m as $k => $v) {
+                                // Skip the basic entities
                                 // We might have us an external module page here, so just set whatever we can
                                 if ($controller === 'pagenotfound' || !is_numeric($k)
                                     && $k !== 'rewrite'

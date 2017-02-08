@@ -4913,9 +4913,10 @@ class ProductCore extends ObjectModel
             PageCache::invalidateEntity('product', $this->id);
         }
 
+        $return = parent::update($nullValues);
+
         UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_PRODUCT, $this->id);
 
-        $return = parent::update($nullValues);
         $this->setGroupReduction();
 
         // Sync stock Reference, EAN13 and UPC
