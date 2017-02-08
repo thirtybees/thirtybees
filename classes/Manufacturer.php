@@ -497,6 +497,10 @@ class ManufacturerCore extends ObjectModel
             return false;
         }
 
+        if ('TB_PAGECACHE_ENABLED') {
+            PageCache::invalidateEntity('manufacturer', $this->id);
+        }
+
         if (parent::delete()) {
             CartRule::cleanProductRuleIntegrity('manufacturers', $this->id);
 
@@ -614,5 +618,14 @@ class ManufacturerCore extends ObjectModel
         }
 
         return ($result1 && $result2);
+    }
+
+    public function update($nullValues = null)
+    {
+        if ('TB_PAGECACHE_ENABLED') {
+            PageCache::invalidateEntity('manufacturer', $this->id);
+        }
+
+        parent::update($nullValues);
     }
 }

@@ -245,8 +245,9 @@ abstract class ControllerCore
                 $idCurrency = $currency->id;
                 $countryCheck = (bool) Configuration::get('TB_PAGE_CACHE_COUNTRY');
 
-                $key = 'pagecache_public_'.$idPage.$idCurrency.$idLanguage.($countryCheck ? $idCountry : '').$idShop;
+                $key = md5('pagecache_public_'.$idPage.$idCurrency.$idLanguage.($countryCheck ? $idCountry : '').$idShop);
                 $cache = Cache::getInstance();
+
                 if ($fromCache = $cache->get($key)) {
                     if (Configuration::Get('TB_PAGE_CACHE_DEBUG')) {
                         header('X-thirtybees-PageCache: HIT');

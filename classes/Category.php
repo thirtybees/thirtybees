@@ -1369,6 +1369,10 @@ class CategoryCore extends ObjectModel
             throw new PrestaShopException('a category cannot be its own parent');
         }
 
+        if ('TB_PAGECACHE_ENABLED') {
+            PageCache::invalidateEntity('category', $this->id);
+        }
+
         if ($this->is_root_category && $this->id_parent != (int) Configuration::get('PS_ROOT_CATEGORY')) {
             $this->is_root_category = 0;
         }
@@ -1679,6 +1683,10 @@ class CategoryCore extends ObjectModel
     {
         if ((int) $this->id === 0 || (int) $this->id === (int) Configuration::get('PS_ROOT_CATEGORY')) {
             return false;
+        }
+
+        if ('TB_PAGECACHE_ENABLED') {
+            PageCache::invalidateEntity('category', $this->id);
         }
 
         $this->clearCache();
@@ -2392,6 +2400,10 @@ class CategoryCore extends ObjectModel
     {
         if (!is_array($toDelete) || !$idCategory) {
             die(Tools::displayError());
+        }
+
+        if ('TB_PAGECACHE_ENABLED') {
+            PageCache::invalidateEntity('category', $this->id);
         }
 
         $result = Db::getInstance()->executeS(

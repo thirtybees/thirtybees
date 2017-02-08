@@ -3400,3 +3400,25 @@ CREATE TABLE `PREFIX_currency_module`
   ENGINE = ENGINE_TYPE
   DEFAULT CHARSET = utf8mb4
   COLLATE utf8mb4_unicode_ci;
+
+CREATE TABLE `PREFIX_page_cache` (
+  `cache_hash`    CHAR(32)         NOT NULL,
+  `id_currency`   INT(11) UNSIGNED,
+  `id_language`   INT(11) UNSIGNED,
+  `id_country`    INT(11) UNSIGNED,
+  `id_shop`       INT(11) UNSIGNED,
+  `entity_type`   VARCHAR(12)      NOT NULL,
+  `id_entity`     INT(11) UNSIGNED,
+  UNIQUE KEY `cache_combo` (`cache_hash`, `id_currency`, `id_language`, `id_country`, `id_shop`),
+  PRIMARY KEY (`cache_hash`),
+  INDEX (`cache_hash`),
+  INDEX (`id_currency`),
+  INDEX (`id_language`),
+  INDEX (`id_country`),
+  INDEX (`id_shop`),
+  INDEX (`entity_type`),
+  INDEX (`id_entity`)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE utf8mb4_unicode_ci;

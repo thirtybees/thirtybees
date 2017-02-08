@@ -775,9 +775,9 @@ class FrontControllerCore extends Controller
         }
 
         if (!Tools::isSubmit('no_cache') && !$isAjax && !$isLogged) {
-            $pageName = Dispatcher::getInstance()->getController();
+            $entityType = Dispatcher::getInstance()->getController();
             $cControllers = json_decode(Configuration::get('TB_PAGE_CACHE_CONTROLLERS'));
-            if (in_array($pageName, $cControllers) && !Tools::isSubmit('live_edit') && !Tools::isSubmit('live_configurator_token')) {
+            if (in_array($entityType, $cControllers) && !Tools::isSubmit('live_edit') && !Tools::isSubmit('live_configurator_token')) {
                 $idPage = md5($url);
                 $idLanguage = (int) $this->context->language->id;
                 if (Tools::getIsset($_SERVER['HTTP_USER_AGENT']) && preg_match('/TB_WARMUP_BOT/', $_SERVER['HTTP_USER_AGENT'])) {
@@ -788,16 +788,11 @@ class FrontControllerCore extends Controller
                     $idCountry = (int) $this->context->country->id;
                 }
                 $idShop = (int) $this->context->shop->id;
-                $entityTypeIds = ['id_product', 'id_category', 'id_manufacturer', 'id_cms', 'id_supplier'];
-                $post = $_POST;
-                foreach ($entityTypeIds as $entityTypeId) {
-                    if (array_key_exists($entityTypeId, $post)) {
-                        unset($post[$entityTypeId]);
-                    }
-                }
+                $idEntity = (int) Tools::getValue('id_'.$entityType);
+
                 $countryCheck = (bool) Configuration::get('TB_PAGE_CACHE_COUNTRY');
 
-                $key = 'pagecache_public_'.$idPage.$idCurrency.$idLanguage.($countryCheck ? $idCountry : '').$idShop;
+                $key = md5('pagecache_public_'.$idPage.$idCurrency.$idLanguage.($countryCheck ? $idCountry : '').$idShop);
 
                 $cache = Cache::getInstance();
                 if (Configuration::get('TB_PAGE_CACHE_GZIP')) {
@@ -807,6 +802,7 @@ class FrontControllerCore extends Controller
                 }
 
                 $cache->set($key, $content);
+                PageCache::cacheKey($key, $idCurrency, $idLanguage, $idCountry, $idShop, $entityType, $idEntity);
             }
         }
 
