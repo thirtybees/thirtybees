@@ -117,14 +117,7 @@ class UrlRewriteCore extends Objectmodel
         foreach ($idShops as $idShop) {
             $newRoutes[$idShop] = [];
             foreach ($idLangs as $idLang) {
-                $newRoutes[$idShop][$idLang] = [
-                    self::ENTITY_PRODUCT      => Configuration::get('PS_ROUTE_product_rule') ? Configuration::get('PS_ROUTE_product_rule') : Dispatcher::getInstance()->routes[$idShop][$idLang]['product_rule']['rule'],
-                    self::ENTITY_CATEGORY     => Configuration::get('PS_ROUTE_category_rule') ? Configuration::get('PS_ROUTE_category_rule') : Dispatcher::getInstance()->routes[$idShop][$idLang]['category_rule']['rule'],
-                    self::ENTITY_SUPPLIER     => Configuration::get('PS_ROUTE_supplier_rule') ? Configuration::get('PS_ROUTE_supplier_rule') : Dispatcher::getInstance()->routes[$idShop][$idLang]['supplier_rule']['rule'],
-                    self::ENTITY_MANUFACTURER => Configuration::get('PS_ROUTE_manufacturer_rule') ? Configuration::get('PS_ROUTE_manufacturer_rule') : Dispatcher::getInstance()->routes[$idShop][$idLang]['manufacturer_rule']['rule'],
-                    self::ENTITY_CMS          => Configuration::get('PS_ROUTE_cms_rule') ? Configuration::get('PS_ROUTE_cms_rule') : Dispatcher::getInstance()->routes[$idShop][$idLang]['cms_rule']['rule'],
-                    self::ENTITY_CMS_CATEGORY => Configuration::get('PS_ROUTE_cms_category_rule') ? Configuration::get('PS_ROUTE_cms_category_rule') : Dispatcher::getInstance()->routes[$idShop][$idLang]['cms_category_rule']['rule'],
-                ];
+                self::getRoutes($idLang, $idShop, $newRoutes);
 
                 if (in_array(self::ENTITY_PRODUCT, $entities)) {
                     $categoryInfo = self::getCategoryInfo($idLang, $idShop);
@@ -156,21 +149,13 @@ class UrlRewriteCore extends Objectmodel
     }
 
     /**
-     * Check if a keyword is written in a route rule
+     * @param int      $entityType
+     * @param int|null $idEntity
+     * @param int|null $idLang
+     * @param int|null $idShop
      *
-     * @param        $rule
-     * @param string $keyword
-     *
-     * @return bool
-     *
-     * @since    1.0.0
-     * @version  1.0.0 Initial version
+     * @since 1.0.0
      */
-    protected static function hasKeyword($rule, $keyword)
-    {
-        return preg_match('#\{([^{}]*:)?'.preg_quote($keyword, '#').'(:[^{}]*)?\}#', $rule);
-    }
-
     public static function regenerateUrlRewrite($entityType, $idEntity = null, $idLang = null, $idShop = null)
     {
         if (defined('TB_INSTALLATION_IN_PROGRESS')) {
@@ -196,14 +181,7 @@ class UrlRewriteCore extends Objectmodel
         foreach ($idShops as $idShop) {
             $newRoutes[$idShop] = [];
             foreach ($idLangs as $idLang) {
-                $newRoutes[$idShop][$idLang] = [
-                    self::ENTITY_PRODUCT      => Configuration::get('PS_ROUTE_product_rule') ? Configuration::get('PS_ROUTE_product_rule') : Dispatcher::getInstance()->routes[$idShop][$idLang]['product_rule']['rule'],
-                    self::ENTITY_CATEGORY     => Configuration::get('PS_ROUTE_category_rule') ? Configuration::get('PS_ROUTE_category_rule') : Dispatcher::getInstance()->routes[$idShop][$idLang]['category_rule']['rule'],
-                    self::ENTITY_SUPPLIER     => Configuration::get('PS_ROUTE_supplier_rule') ? Configuration::get('PS_ROUTE_supplier_rule') : Dispatcher::getInstance()->routes[$idShop][$idLang]['supplier_rule']['rule'],
-                    self::ENTITY_MANUFACTURER => Configuration::get('PS_ROUTE_manufacturer_rule') ? Configuration::get('PS_ROUTE_manufacturer_rule') : Dispatcher::getInstance()->routes[$idShop][$idLang]['manufacturer_rule']['rule'],
-                    self::ENTITY_CMS          => Configuration::get('PS_ROUTE_cms_rule') ? Configuration::get('PS_ROUTE_cms_rule') : Dispatcher::getInstance()->routes[$idShop][$idLang]['cms_rule']['rule'],
-                    self::ENTITY_CMS_CATEGORY => Configuration::get('PS_ROUTE_cms_category_rule') ? Configuration::get('PS_ROUTE_cms_category_rule') : Dispatcher::getInstance()->routes[$idShop][$idLang]['cms_category_rule']['rule'],
-                ];
+                self::getRoutes($idLang, $idShop, $newRoutes);
 
                 switch ($entityType) {
                     case self::ENTITY_PRODUCT:
@@ -274,17 +252,26 @@ class UrlRewriteCore extends Objectmodel
     /**
      * Delete URL rewrites
      *
-     * @param int $entityType
-     * @param int $idLang
-     * @param int $idShop
+     * @param int      $entityType
+     * @param int      $idLang
+     * @param int      $idShop
+     * @param int|null $idEntity
      *
      * @since 1.0.0
      */
-    public static function deleteUrlRewrites($entityType, $idLang, $idShop)
+    public static function deleteUrlRewrites($entityType, $idLang, $idShop, $idEntity = null)
     {
-        Db::getInstance()->delete(bqSQL(self::$definition['table']), '`entity` = '.(int) $entityType.' AND `id_lang` = '.(int) $idLang.' AND `id_shop` = '.(int) $idShop);
+        Db::getInstance()->delete(bqSQL(self::$definition['table']), '`entity` = '.(int) $entityType.' AND `id_lang` = '.(int) $idLang.' AND `id_shop` = '.(int) $idShop.($idEntity ? ' AND `id_entity` = '.(int) $idEntity : ''));
     }
 
+    /**
+     * @param int      $entityType
+     * @param int      $idEntity
+     * @param int|null $idLang
+     * @param int|null $idShop
+     *
+     * @since 1.0.0
+     */
     public static function deleteUrlRewrite($entityType, $idEntity, $idLang = null, $idShop = null)
     {
         $delete = '`entity` = '.(int) $entityType.' AND `id_entity` = '.(int) $idEntity;
@@ -446,11 +433,11 @@ class UrlRewriteCore extends Objectmodel
      * @param int      $idShop
      * @param array    $categories
      * @param array    $newRoutes
-     * @param int|null $idProduct
+     * @param int|null $idEntity
      *
      * @since 1.0.0
      */
-    protected static function generateProductUrlRewrites($idLang, $idShop, $categories, $newRoutes, $idProduct = null)
+    protected static function generateProductUrlRewrites($idLang, $idShop, $categories, $newRoutes, $idEntity = null)
     {
         $usedKeys = [
             'id'            => self::hasKeyword($newRoutes[$idShop][$idLang][self::ENTITY_PRODUCT], 'id'),
@@ -500,8 +487,8 @@ class UrlRewriteCore extends Objectmodel
         $sql->leftJoin('product_lang', 'pl', 'pl.`id_product` = p.`id_product`');
         $sql->where('pl.`id_lang` = '.(int) $idLang);
         $sql->where('pl.`id_shop` = '.(int) $idShop);
-        if ($idProduct) {
-            $sql->where('p.`id_product` = '.(int) $idProduct);
+        if ($idEntity) {
+            $sql->where('p.`id_product` = '.(int) $idEntity);
         }
 
         $productInfos = Db::getInstance()->executeS($sql);
@@ -541,7 +528,7 @@ class UrlRewriteCore extends Objectmodel
             ];
         }
 
-        self::deleteUrlRewrites(self::ENTITY_PRODUCT, $idLang, $idShop);
+        self::deleteUrlRewrites(self::ENTITY_PRODUCT, $idLang, $idShop, $idEntity);
         Db::getInstance()->insert(bqSQL(self::$definition['table']), $insert);
     }
 
@@ -597,7 +584,7 @@ class UrlRewriteCore extends Objectmodel
             ];
         }
 
-        self::deleteUrlRewrites(self::ENTITY_CATEGORY, $idLang, $idShop);
+        self::deleteUrlRewrites(self::ENTITY_CATEGORY, $idLang, $idShop, $idEntity);
         Db::getInstance()->insert(bqSQL(self::$definition['table']), $insert);
     }
 
@@ -637,7 +624,7 @@ class UrlRewriteCore extends Objectmodel
             ];
         }
 
-        self::deleteUrlRewrites(self::ENTITY_SUPPLIER, $idLang, $idShop);
+        self::deleteUrlRewrites(self::ENTITY_SUPPLIER, $idLang, $idShop, $idEntity);
         Db::getInstance()->insert(bqSQL(self::$definition['table']), $insert);
     }
 
@@ -679,7 +666,7 @@ class UrlRewriteCore extends Objectmodel
             ];
         }
 
-        self::deleteUrlRewrites(self::ENTITY_MANUFACTURER, $idLang, $idShop);
+        self::deleteUrlRewrites(self::ENTITY_MANUFACTURER, $idLang, $idShop, $idEntity);
         Db::getInstance()->insert(bqSQL(self::$definition['table']), $insert);
     }
 
@@ -735,7 +722,7 @@ class UrlRewriteCore extends Objectmodel
             ];
         }
 
-        self::deleteUrlRewrites(self::ENTITY_CMS, $idLang, $idShop);
+        self::deleteUrlRewrites(self::ENTITY_CMS, $idLang, $idShop, $idEntity);
         Db::getInstance()->insert(bqSQL(self::$definition['table']), $insert);
     }
 
@@ -779,8 +766,54 @@ class UrlRewriteCore extends Objectmodel
             ];
         }
 
-        self::deleteUrlRewrites(self::ENTITY_CMS_CATEGORY, $idLang, $idShop);
+        self::deleteUrlRewrites(self::ENTITY_CMS_CATEGORY, $idLang, $idShop, $idEntity);
         Db::getInstance()->insert(bqSQL(self::$definition['table']), $insert);
+    }
+
+    /**
+     * Fills the routes array with the current available routes
+     *
+     * @param int   $idLang
+     * @param int   $idShop
+     * @param array $routes
+     */
+    protected function getRoutes($idLang, $idShop, &$routes)
+    {
+        if (defined('TB_INSTALLATION_IN_PROGRESS')) {
+            $routes[$idShop][$idLang] = [
+                self::ENTITY_PRODUCT      => '{categories:/}{rewrite}',
+                self::ENTITY_CATEGORY     => '{categories:/}{rewrite}',
+                self::ENTITY_SUPPLIER     => '{rewrite}',
+                self::ENTITY_MANUFACTURER => '{rewrite}',
+                self::ENTITY_CMS          => 'info/{rewrite}',
+                self::ENTITY_CMS_CATEGORY => 'info/{rewrite}',
+            ];
+        }
+
+        $routes[$idShop][$idLang] = [
+            self::ENTITY_PRODUCT      => Configuration::get('PS_ROUTE_product_rule') ? Configuration::get('PS_ROUTE_product_rule') : Dispatcher::getInstance()->routes[$idShop][$idLang]['product_rule']['rule'],
+            self::ENTITY_CATEGORY     => Configuration::get('PS_ROUTE_category_rule') ? Configuration::get('PS_ROUTE_category_rule') : Dispatcher::getInstance()->routes[$idShop][$idLang]['category_rule']['rule'],
+            self::ENTITY_SUPPLIER     => Configuration::get('PS_ROUTE_supplier_rule') ? Configuration::get('PS_ROUTE_supplier_rule') : Dispatcher::getInstance()->routes[$idShop][$idLang]['supplier_rule']['rule'],
+            self::ENTITY_MANUFACTURER => Configuration::get('PS_ROUTE_manufacturer_rule') ? Configuration::get('PS_ROUTE_manufacturer_rule') : Dispatcher::getInstance()->routes[$idShop][$idLang]['manufacturer_rule']['rule'],
+            self::ENTITY_CMS          => Configuration::get('PS_ROUTE_cms_rule') ? Configuration::get('PS_ROUTE_cms_rule') : Dispatcher::getInstance()->routes[$idShop][$idLang]['cms_rule']['rule'],
+            self::ENTITY_CMS_CATEGORY => Configuration::get('PS_ROUTE_cms_category_rule') ? Configuration::get('PS_ROUTE_cms_category_rule') : Dispatcher::getInstance()->routes[$idShop][$idLang]['cms_category_rule']['rule'],
+        ];
+    }
+
+    /**
+     * Check if a keyword is written in a route rule
+     *
+     * @param        $rule
+     * @param string $keyword
+     *
+     * @return bool
+     *
+     * @since    1.0.0
+     * @version  1.0.0 Initial version
+     */
+    protected static function hasKeyword($rule, $keyword)
+    {
+        return preg_match('#\{([^{}]*:)?'.preg_quote($keyword, '#').'(:[^{}]*)?\}#', $rule);
     }
 
     protected static function generatePageUrlRewrites($idLang, $idShop)
