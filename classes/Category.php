@@ -1376,8 +1376,6 @@ class CategoryCore extends ObjectModel
             PageCache::invalidateEntity('category', $this->id);
         }
 
-        UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_CATEGORY, $this->id);
-
         if ($this->is_root_category && $this->id_parent != (int) Configuration::get('PS_ROOT_CATEGORY')) {
             $this->is_root_category = 0;
         }
@@ -1414,6 +1412,10 @@ class CategoryCore extends ObjectModel
             Category::regenerateEntireNtree();
             $this->recalculateLevelDepth($this->id);
         }
+        UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_CATEGORY, $this->id);
+        UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_PRODUCT);
+
+
         Hook::exec('actionCategoryUpdate', ['category' => $this]);
 
         return $ret;
