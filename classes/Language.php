@@ -170,24 +170,24 @@ class LanguageCore extends ObjectModel
     }
 
     /**
-     * @param $id_lang
+     * @param $idLang
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function getLanguage($id_lang)
+    public static function getLanguage($idLang)
     {
-        if (!array_key_exists((int) $id_lang, self::$_LANGUAGES)) {
+        if (!array_key_exists((int) $idLang, self::$_LANGUAGES)) {
             return false;
         }
 
-        return self::$_LANGUAGES[(int) ($id_lang)];
+        return self::$_LANGUAGES[(int) ($idLang)];
     }
 
     /**
-     * @param $isoCode
+     * @param string $isoCode
      *
      * @return false|null|string
      *
@@ -204,7 +204,7 @@ class LanguageCore extends ObjectModel
     }
 
     /**
-     * @param $code
+     * @param string $code
      *
      * @return bool|Language
      *
@@ -246,7 +246,7 @@ class LanguageCore extends ObjectModel
     /**
      * Return array (id_lang, iso_code)
      *
-     * @param string $iso_code Iso code
+     * @param string $isoCode Iso code
      *
      * @return array  Language (id_lang, iso_code)
      *
@@ -259,8 +259,8 @@ class LanguageCore extends ObjectModel
     }
 
     /**
-     * @param $from
-     * @param $to
+     * @param string $from
+     * @param string $to
      *
      * @return bool
      *
@@ -329,45 +329,45 @@ class LanguageCore extends ObjectModel
     }
 
     /**
-     * @param null $id_shop
+     * @param null $idShop
      *
      * @return mixed
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function countActiveLanguages($id_shop = null)
+    public static function countActiveLanguages($idShop = null)
     {
-        if (isset(Context::getContext()->shop) && is_object(Context::getContext()->shop) && $id_shop === null) {
-            $id_shop = (int) Context::getContext()->shop->id;
+        if (isset(Context::getContext()->shop) && is_object(Context::getContext()->shop) && $idShop === null) {
+            $idShop = (int) Context::getContext()->shop->id;
         }
 
-        if (!isset(self::$countActiveLanguages[$id_shop])) {
-            self::$countActiveLanguages[$id_shop] = Db::getInstance()->getValue(
+        if (!isset(self::$countActiveLanguages[$idShop])) {
+            self::$countActiveLanguages[$idShop] = Db::getInstance()->getValue(
                 '
 				SELECT COUNT(DISTINCT l.id_lang) FROM `'._DB_PREFIX_.'lang` l
-				JOIN '._DB_PREFIX_.'lang_shop lang_shop ON (lang_shop.id_lang = l.id_lang AND lang_shop.id_shop = '.(int) $id_shop.')
+				JOIN '._DB_PREFIX_.'lang_shop lang_shop ON (lang_shop.id_lang = l.id_lang AND lang_shop.id_shop = '.(int) $idShop.')
 				WHERE l.`active` = 1
 			'
             );
         }
 
-        return self::$countActiveLanguages[$id_shop];
+        return self::$countActiveLanguages[$idShop];
     }
 
     /**
-     * @param array $modules_list
+     * @param array $modulesList
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function updateModulesTranslations(Array $modules_list)
+    public static function updateModulesTranslations(Array $modulesList)
     {
         $languages = Language::getLanguages(false);
         foreach ($languages as $lang) {
             $gz = false;
-            $files_listing = [];
-            foreach ($modules_list as $module_name) {
+            $filesListing = [];
+            foreach ($modulesList as $moduleName) {
                 $filegz = _PS_TRANSLATIONS_DIR_.$lang['iso_code'].'.gzip';
 
                 clearstatcache();
@@ -378,21 +378,21 @@ class LanguageCore extends ObjectModel
                 }
 
                 $gz = new Archive_Tar($filegz, true);
-                $files_list = Language::getLanguagePackListContent($lang['iso_code'], $gz);
-                foreach ($files_list as $i => $file) {
-                    if (strpos($file['filename'], 'modules/'.$module_name.'/') !== 0) {
-                        unset($files_list[$i]);
+                $filesList = Language::getLanguagePackListContent($lang['iso_code'], $gz);
+                foreach ($filesList as $i => $file) {
+                    if (strpos($file['filename'], 'modules/'.$moduleName.'/') !== 0) {
+                        unset($filesList[$i]);
                     }
                 }
 
-                foreach ($files_list as $file) {
+                foreach ($filesList as $file) {
                     if (isset($file['filename']) && is_string($file['filename'])) {
-                        $files_listing[] = $file['filename'];
+                        $filesListing[] = $file['filename'];
                     }
                 }
             }
             if ($gz) {
-                $gz->extractList($files_listing, _PS_TRANSLATIONS_DIR_.'../', '');
+                $gz->extractList($filesListing, _PS_TRANSLATIONS_DIR_.'../', '');
             }
         }
     }
@@ -430,10 +430,10 @@ class LanguageCore extends ObjectModel
     }
 
     /**
-     * @param      $isoCode
-     * @param bool $langPack
-     * @param bool $onlyAdd
-     * @param null $paramsLang
+     * @param string $isoCode
+     * @param bool  $langPack
+     * @param bool  $onlyAdd
+     * @param null  $paramsLang
      *
      * @return bool
      *
@@ -514,11 +514,11 @@ class LanguageCore extends ObjectModel
 
         $key = 'Language::getIdByIso_'.$isoCode;
         if ($noCache || !Cache::isStored($key)) {
-            $id_lang = Db::getInstance()->getValue('SELECT `id_lang` FROM `'._DB_PREFIX_.'lang` WHERE `iso_code` = \''.pSQL(strtolower($isoCode)).'\'');
+            $idLang = Db::getInstance()->getValue('SELECT `id_lang` FROM `'._DB_PREFIX_.'lang` WHERE `iso_code` = \''.pSQL(strtolower($isoCode)).'\'');
 
-            Cache::store($key, $id_lang);
+            Cache::store($key, $idLang);
 
-            return $id_lang;
+            return $idLang;
         }
 
         return Cache::retrieve($key);
@@ -555,10 +555,10 @@ class LanguageCore extends ObjectModel
         Configuration::updateValue('PS_ROUTE_cms_rule', [$this->id => 'info/{categories:/}{rewrite}']);
         Configuration::updateValue('PS_ROUTE_cms_category_rule', [$this->id => 'info/{categories:/}{rewrite}']);
 
-        UrlRewrite::regenerateUrlRewrites($this->id);
-
         // @todo Since a lot of modules are not in right format with their primary keys name, just get true ...
         $this->loadUpdateSQL();
+
+        UrlRewrite::regenerateUrlRewrites($this->id);
 
         return true;
     }

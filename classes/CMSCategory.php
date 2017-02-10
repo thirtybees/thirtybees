@@ -536,6 +536,7 @@ class CMSCategoryCore extends ObjectModel
         }
 
         UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_CMS_CATEGORY, $this->id);
+        UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_CMS);
 
         $this->level_depth = $this->calcLevelDepth();
         foreach ($this->name as $k => $value) {

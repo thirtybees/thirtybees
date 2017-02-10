@@ -105,7 +105,7 @@ class UrlRewriteCore extends Objectmodel
         }
 
         if ($idLang) {
-            $idLangs = [$idLang];
+            $idLangs = [(int) $idLang];
         } else {
             $idLangs = Language::getLanguages(false, false, true);
         }
@@ -791,12 +791,12 @@ class UrlRewriteCore extends Objectmodel
         }
 
         $routes[$idShop][$idLang] = [
-            self::ENTITY_PRODUCT      => Configuration::get('PS_ROUTE_product_rule') ? Configuration::get('PS_ROUTE_product_rule') : Dispatcher::getInstance()->routes[$idShop][$idLang]['product_rule']['rule'],
-            self::ENTITY_CATEGORY     => Configuration::get('PS_ROUTE_category_rule') ? Configuration::get('PS_ROUTE_category_rule') : Dispatcher::getInstance()->routes[$idShop][$idLang]['category_rule']['rule'],
-            self::ENTITY_SUPPLIER     => Configuration::get('PS_ROUTE_supplier_rule') ? Configuration::get('PS_ROUTE_supplier_rule') : Dispatcher::getInstance()->routes[$idShop][$idLang]['supplier_rule']['rule'],
-            self::ENTITY_MANUFACTURER => Configuration::get('PS_ROUTE_manufacturer_rule') ? Configuration::get('PS_ROUTE_manufacturer_rule') : Dispatcher::getInstance()->routes[$idShop][$idLang]['manufacturer_rule']['rule'],
-            self::ENTITY_CMS          => Configuration::get('PS_ROUTE_cms_rule') ? Configuration::get('PS_ROUTE_cms_rule') : Dispatcher::getInstance()->routes[$idShop][$idLang]['cms_rule']['rule'],
-            self::ENTITY_CMS_CATEGORY => Configuration::get('PS_ROUTE_cms_category_rule') ? Configuration::get('PS_ROUTE_cms_category_rule') : Dispatcher::getInstance()->routes[$idShop][$idLang]['cms_category_rule']['rule'],
+            self::ENTITY_PRODUCT      => Configuration::get('PS_ROUTE_product_rule', $idLang, null, $idShop) ? Configuration::get('PS_ROUTE_product_rule', $idLang, null, $idShop) : Dispatcher::getInstance()->routes[$idShop][$idLang]['product_rule']['rule'],
+            self::ENTITY_CATEGORY     => Configuration::get('PS_ROUTE_category_rule', $idLang, null, $idShop) ? Configuration::get('PS_ROUTE_category_rule', $idLang, null, $idShop) : Dispatcher::getInstance()->routes[$idShop][$idLang]['category_rule']['rule'],
+            self::ENTITY_SUPPLIER     => Configuration::get('PS_ROUTE_supplier_rule', $idLang, null, $idShop) ? Configuration::get('PS_ROUTE_supplier_rule', $idLang, null, $idShop) : Dispatcher::getInstance()->routes[$idShop][$idLang]['supplier_rule']['rule'],
+            self::ENTITY_MANUFACTURER => Configuration::get('PS_ROUTE_manufacturer_rule', $idLang, null, $idShop) ? Configuration::get('PS_ROUTE_manufacturer_rule', $idLang, null, $idShop) : Dispatcher::getInstance()->routes[$idShop][$idLang]['manufacturer_rule']['rule'],
+            self::ENTITY_CMS          => Configuration::get('PS_ROUTE_cms_rule', $idLang, null, $idShop) ? Configuration::get('PS_ROUTE_cms_rule', $idLang, null, $idShop) : Dispatcher::getInstance()->routes[$idShop][$idLang]['cms_rule']['rule'],
+            self::ENTITY_CMS_CATEGORY => Configuration::get('PS_ROUTE_cms_category_rule', $idLang, null, $idShop) ? Configuration::get('PS_ROUTE_cms_category_rule', $idLang, null, $idShop) : Dispatcher::getInstance()->routes[$idShop][$idLang]['cms_category_rule']['rule'],
         ];
     }
 
