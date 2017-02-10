@@ -3359,7 +3359,7 @@ exit;
      * @param string $json
      * @param bool   $assoc (since 1.4.2.4) if true, convert to associativ array
      *
-     * @return array
+     * @return object|array
      *
      * @deprecated 1.0.0 Use json_decode instead
      */
@@ -3371,7 +3371,7 @@ exit;
     /**
      * Convert an array to json string
      *
-     * @param array $data
+     * @param object|array $data
      *
      * @return string json
      *
