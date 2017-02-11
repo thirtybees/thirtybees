@@ -29,12 +29,9 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-// Check compatibility
-if (version_compare(PHP_VERSION, '5.5.0', '<')) {
-    echo file_get_contents(dirname(__FILE__).'/theme/views/compat.phtml');
-    die();
+try {
+    require_once(_TB_INSTALL_PATH_.'classes'.DIRECTORY_SEPARATOR.'controllerHttp.php');
+    InstallControllerHttp::execute();
+} catch (PrestashopInstallerException $e) {
+    $e->displayMessage();
 }
-
-require_once dirname(__FILE__).DIRECTORY_SEPARATOR.'init.php';
-
-require_once dirname(__FILE__).'/trystart.php';
