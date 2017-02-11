@@ -1,0 +1,31 @@
+@import url(https://fonts.googleapis.com/css?family=Catamaran:400);
+body {
+	background-color: #1173aa;
+	color: #FFFFFF;
+}
+
+#main {
+	margin: 8% auto 0;
+	padding: 0 8%;
+	font-family: 'Catamaran', sans-serif;
+	font-size: 24pt;
+	font-weight: 400;
+	line-height: 1.3em;
+	max-width: 500px;
+}
+#main h1 {
+	margin: 0;
+	font-size: 110pt;
+	font-weight: 200;
+	line-height: 0.5em;
+}
+
+.description {
+	margin: 8% auto 0;
+	padding: 0 8%;
+	font-family: 'Catamaran', sans-serif;
+	font-size: 18pt;
+	font-weight: 400;
+	line-height: 1.3em;
+	max-width: 500px;
+}

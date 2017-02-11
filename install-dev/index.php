@@ -29,6 +29,12 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+// Check compatibility
+if (PHP_VERSION_ID < 50500) {
+    echo file_get_contents(dirname(__FILE__).'/theme/views/compat.phtml');
+    die();
+}
+
 require_once(dirname(__FILE__).DIRECTORY_SEPARATOR.'init.php');
 
 try {
