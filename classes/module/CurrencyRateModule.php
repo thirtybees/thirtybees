@@ -88,7 +88,8 @@ abstract class CurrencyRateModuleCore extends Module
     /**
      * Retrieve all currencies that have exchange rate modules available
      *
-     * @param bool $codesOnly Return codes only
+     * @param bool $registeredOnly Show currencies with registered services only
+     * @param bool $codesOnly      Return codes only
      *
      * @return array|false Array with currency iso code as key and module instance as value
      *
@@ -258,9 +259,10 @@ abstract class CurrencyRateModuleCore extends Module
     /**
      * Get providing modules
      *
-     * @param int $idCurrency To currency code
+     * @param int    $idCurrency To currency code
+     * @param string $selected   Selected module
      *
-     * @return false|array
+     * @return array|false
      */
     public static function getServices($idCurrency, $selected)
     {
@@ -295,28 +297,6 @@ abstract class CurrencyRateModuleCore extends Module
     }
 
     /**
-     * Scan the currencies this module supports
-     *
-     * @return bool Indicates whether the scan was successful
-     *
-     * @todo: to be implemented
-     */
-    protected function scanCurrencyRates()
-    {
-        return true;
-    }
-
-    protected static function getModuleForCurrency($idCurrency)
-    {
-        $sql = new DbQuery();
-        $sql->select('`id_module`');
-        $sql->from('currency_module');
-        $sql->where('`id_currency` = '.(int) $idCurrency);
-
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
-    }
-
-    /**
      * Set module
      *
      * @param int $idCurrency
@@ -341,5 +321,27 @@ abstract class CurrencyRateModuleCore extends Module
                 ]
             );
         }
+    }
+
+    /**
+     * Scan the currencies this module supports
+     *
+     * @return bool Indicates whether the scan was successful
+     *
+     * @todo: to be implemented
+     */
+    protected function scanCurrencyRates()
+    {
+        return true;
+    }
+
+    protected static function getModuleForCurrency($idCurrency)
+    {
+        $sql = new DbQuery();
+        $sql->select('`id_module`');
+        $sql->from('currency_module');
+        $sql->where('`id_currency` = '.(int) $idCurrency);
+
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
     }
 }
