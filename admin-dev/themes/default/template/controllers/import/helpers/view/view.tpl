@@ -134,11 +134,11 @@
 			<div class="panel-footer">
 				<button type="button" class="btn btn-default" onclick="window.history.back();">
 					<i class="process-icon-cancel text-danger"></i>
-					{l s='Cancel' d='Admin.Actions'}
+					{l s='Cancel'}
 				</button>
-				<button id="import" name="import" type="submit" onclick="return (validateImportation(new Array({$res})));"  class="btn btn-default pull-right">
+				<button id="import" name="import" type="submit" onclick="return (validateImportation([{$res}]));"  class="btn btn-default pull-right">
 					<i class="process-icon-ok text-success"></i>
-					{l s='Import' d='Admin.Actions'}
+					{l s='Import'}
 				</button>
 			</div>
 		</form>
