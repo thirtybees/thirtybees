@@ -80,9 +80,13 @@ abstract class CurrencyRateModuleCore extends Module
      */
     public function install()
     {
-        $this->scanCurrencyRates();
+        if (!parent::install()) {
+            return false;
+        }
 
-        return parent::install();
+        self::scanMissingCurrencyRateModules();
+
+        return true;
     }
 
     /**
@@ -106,6 +110,7 @@ abstract class CurrencyRateModuleCore extends Module
             $sql->select('c.`id_currency`, cm.`id_module`');
             $sql->from('currency', 'c');
             $sql->leftJoin('currency_module', 'cm', 'cm.`id_currency` = c.`id_currency`');
+            $sql->where('c.`deleted` = 0');
         }
 
         $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
@@ -245,7 +250,7 @@ abstract class CurrencyRateModuleCore extends Module
             $providingModules = [];
         }
         foreach ($modules as $moduleName => $supportedCurrencies) {
-            if (in_array($to, $supportedCurrencies) && in_array($from, $supportedCurrencies)) {
+            if (in_array(Tools::strtoupper($to), $supportedCurrencies) && in_array($from, $supportedCurrencies)) {
                 if ($justOne) {
                     return $moduleName;
                 }
@@ -296,6 +301,16 @@ abstract class CurrencyRateModuleCore extends Module
         return $serviceModules;
     }
 
+    protected static function getModuleForCurrency($idCurrency)
+    {
+        $sql = new DbQuery();
+        $sql->select('`id_module`');
+        $sql->from('currency_module');
+        $sql->where('`id_currency` = '.(int) $idCurrency);
+
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+    }
+
     /**
      * Set module
      *
@@ -321,27 +336,5 @@ abstract class CurrencyRateModuleCore extends Module
                 ]
             );
         }
-    }
-
-    /**
-     * Scan the currencies this module supports
-     *
-     * @return bool Indicates whether the scan was successful
-     *
-     * @todo: to be implemented
-     */
-    protected function scanCurrencyRates()
-    {
-        return true;
-    }
-
-    protected static function getModuleForCurrency($idCurrency)
-    {
-        $sql = new DbQuery();
-        $sql->select('`id_module`');
-        $sql->from('currency_module');
-        $sql->where('`id_currency` = '.(int) $idCurrency);
-
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
     }
 }

@@ -457,6 +457,7 @@ class CurrencyCore extends ObjectModel
 
         parent::add($autodate, $nullValues);
 
+        CurrencyRateModule::scanMissingCurrencyRateModules($this->iso_code);
 
         return true;
     }
@@ -598,6 +599,8 @@ class CurrencyCore extends ObjectModel
         $this->deleted = 1;
 
         $res = (bool) Db::getInstance()->delete('module_currency', '`id_currency` = '.(int) $this->id);
+
+        Db::getInstance()->delete('currency_module', '`id_currency` = '.(int) $this->id);
 
         return $res && $this->update();
     }
