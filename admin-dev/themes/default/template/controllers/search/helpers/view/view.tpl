@@ -146,52 +146,18 @@ $(function() {
 		{$orders}
 	</div>
 	{/if}
-
-	{if isset($addons) && $addons}
-	<div class="panel">
-		<h3>
-			{if $addons|@count == 1}
-				{l s='1 addon'}
-			{else}
-				{l s='%d addons' sprintf=$addons|@count}
-			{/if}
-		</h3>
-		<table class="table">
-			<tbody>
-			{foreach $addons key=key item=addon}
-				<tr>
-					<td><a href="{$addon.href|escape:'html':'UTF-8'}&amp;utm_source=back-office&amp;utm_medium=search&amp;utm_campaign=back-office-{$lang_iso|upper}&amp;utm_content={if $host_mode}cloud{else}download{/if}" class="_blank"><strong><i class="icon-external-link-sign"></i> {$addon.title|escape:'html':'UTF-8'}</strong></a></td>
-					<td><a href="{$addon.href|escape:'html':'UTF-8'}&amp;utm_source=back-office&amp;utm_medium=search&amp;utm_campaign=back-office-{$lang_iso|upper}&amp;utm_content={if $host_mode}cloud{else}download{/if}" class="_blank">{if is_string($addon.description)}{$addon.description|truncate:256:'...'|escape:'html':'UTF-8'}{/if}</a></td>
-				</tr>
-			{/foreach}
-		</tbody>
-			<tfoot>
-				<tr>
-					<td colspan="2" class="text-center"><a href="http://addons.prestashop.com/search.php?search_query={$query|urlencode}&amp;utm_source=back-office&amp;utm_medium=search&amp;utm_campaign=back-office-{$lang_iso|upper}&amp;utm_content={if $host_mode}cloud{else}download{/if}" class="_blank"><strong>{l s='Show more results...'}</strong></a></td>
-				</tr>
-			</tfoot>
-		</table>
-	</div>
-	{/if}
-
 {/if}
 <div class="row">
+	{*<div class="col-lg-4">*}
+		{*<div class="panel">*}
+			{*<h3>{l s='Search docs.thirtybees.com'}</h3>*}
+			{*<a href="http://docs.thirtybees.com/dosearchsite.action?spaceSearch=true&amp;queryString={$query}&amp;utm_source=back-office&amp;utm_medium=search&amp;utm_campaign=back-office-{$lang_iso|upper}&amp;utm_content={if $host_mode}cloud{else}download{/if}" class="btn btn-default _blank">{l s='Go to the documentation'}</a>*}
+		{*</div>*}
+	{*</div>*}
 	<div class="col-lg-4">
 		<div class="panel">
-			<h3>{l s='Search doc.prestashop.com'}</h3>
-			<a href="http://doc.prestashop.com/dosearchsite.action?spaceSearch=true&amp;queryString={$query}&amp;utm_source=back-office&amp;utm_medium=search&amp;utm_campaign=back-office-{$lang_iso|upper}&amp;utm_content={if $host_mode}cloud{else}download{/if}" class="btn btn-default _blank">{l s='Go to the documentation'}</a>
-		</div>
-	</div>
-	<div class="col-lg-4">
-		<div class="panel">
-			<h3>{l s='Search addons.prestashop.com'}</h3>
-			<a href="http://addons.prestashop.com/search.php?search_query={$query}&amp;utm_source=back-office&amp;utm_medium=search&amp;utm_campaign=back-office-{$lang_iso|upper}&amp;utm_content={if $host_mode}cloud{else}download{/if}" class="btn btn-default _blank">{l s='Go to Addons'}</a>
-		</div>
-	</div>
-	<div class="col-lg-4">
-		<div class="panel">
-			<h3>{l s='Search prestashop.com forum'}</h3>
-			<a href="https://www.google.fr/search?q=site%3Aprestashop.com%2Fforums%2F+{$query}" class="btn btn-default _blank">{l s='Go to the Forum'}</a>
+			<h3>{l s='Search thirty bees forum'}</h3>
+			<a href="https://www.google.com/search?q=site%3Athirtybees.com%2Fforums%2F+{$query}" class="btn btn-default _blank">{l s='Go to the Forum'}</a>
 		</div>
 	</div>
 </div>

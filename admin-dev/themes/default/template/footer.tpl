@@ -36,16 +36,16 @@
 
 	<div class="col-sm-2 hidden-xs">
 		<div class="social-networks">
-			<a class="link-social link-twitter _blank" href="https://twitter.com/thirty bees" title="Twitter">
+			<a class="link-social link-twitter _blank" href="https://twitter.com/thirtybees" title="Twitter">
 				<i class="icon-twitter"></i>
 			</a>
-			<a class="link-social link-facebook _blank" href="https://www.facebook.com/prestashop" title="Facebook">
+			<a class="link-social link-facebook _blank" href="https://www.facebook.com/thirtybees" title="Facebook">
 				<i class="icon-facebook"></i>
 			</a>
-			<a class="link-social link-github _blank" href="https://www.thirtybees.com/github" title="Github">
+			<a class="link-social link-github _blank" href="https://github.com/thirtybees" title="Github">
 				<i class="icon-github"></i>
 			</a>
-			<a class="link-social link-google _blank" href="https://plus.google.com/+prestashop/" title="Google">
+			<a class="link-social link-google _blank" href="https://plus.google.com/+thirtybees/" title="Google">
 				<i class="icon-google-plus"></i>
 			</a>
 		</div>
@@ -66,16 +66,6 @@
 				<i class="icon-comments"></i>
 				{l s='Forum'}
 			</a>
-			{*/&nbsp;*}
-			{*<a href="http://apps.thirtybees.com/?utm_source=back-office&amp;utm_medium=footer&amp;utm_campaign=back-office-{$lang_iso|upper}&amp;utm_content=download" class="footer_link _blank">*}
-				{*<i class="icon-puzzle-piece"></i>*}
-				{*{l s='Addons'}*}
-			{*</a>*}
-			{*/&nbsp;*}
-			{*<a href="http://www.thirtybees.com/training/?utm_source=back-office&amp;utm_medium=footer&amp;utm_campaign=back-office-{$lang_iso|upper}&amp;utm_content=download" class="footer_link _blank">*}
-				{*<i class="icon-book"></i>*}
-				{*{l s='Training'}*}
-			{*</a>*}
 		</div>
 	</div>
 

@@ -38,10 +38,6 @@
 		{l s='If you are unsure about this, you should contact the Customer Service of %s to ask them to make the module compatible with your country.' sprintf=$module_name}<br />
 		{l s='Moreover, we recommend that you use an equivalent module: compatible modules for your country are listed in the "Modules" tab of your back office.'}
 	</p>
-	<p>
-		{l s='If you are unsure about this module, you can look for similar modules on the official marketplace.'}
-		<a class="_blank" href="http://addons.prestashop.com/">{l s='Click here to browse thirty bees Addons.'}</a>
-	</p>
 </div>
 
 <div class="modal-footer">

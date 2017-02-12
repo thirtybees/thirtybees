@@ -38,8 +38,8 @@
 			</h3>
 			<div class="alert alert-info">
 				<ul class="list-unstyled">
-					<li>{l s='You can read information on import at:'}
-						<a href="http://doc.prestashop.com/display/PS16/CSV+Import+Parameters" class="_blank">http://doc.prestashop.com/display/PS16/CSV+Import+Parameters</a>
+					<li>{l s='You can read information about importing at:'}
+						<a href="https://docs.thirtybees.com" class="_blank">https://docs.thirtybees.com</a>
 					</li>
 					<li>{l s='Read more about the CSV format at:'}
 						<a href="http://en.wikipedia.org/wiki/Comma-separated_values" class="_blank">http://en.wikipedia.org/wiki/Comma-separated_values</a>
