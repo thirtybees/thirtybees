@@ -7,10 +7,10 @@
     <language iso_code="el"/>
   </languages>
   <taxes>
-    <tax id="1" name="ΦΠΑ GR 23%" rate="23" eu-tax-group="virtual"/>
-    <tax id="2" name="ΦΠΑ GR 13%" rate="13"/>
+    <tax id="1" name="ΦΠΑ GR 24%" rate="24" eu-tax-group="virtual"/>
+    <tax id="2" name="ΦΠΑ GR 24%" rate="24"/>
     <tax id="3" name="ΦΠΑ GR 6.5%" rate="6.5"/>
-    <tax id="4" name="ΦΠΑ GR 16%" rate="16"/>
+    <tax id="4" name="ΦΠΑ GR 24%" rate="24"/>
     <tax id="5" name="ΦΠΑ GR 8%" rate="8"/>
     <tax id="6" name="ΦΠΑ GR 4%" rate="4"/>
     <tax id="7" name="USt. AT 20%" rate="20" auto-generated="1" from-eu-tax-group="virtual"/>
