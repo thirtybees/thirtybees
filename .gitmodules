@@ -398,9 +398,6 @@
 [submodule "modules/authorizeaim"]
 	path = modules/authorizeaim
 	url = https://github.com/thirtybees/authorizeaim.git
-[submodule "modules/beesblog"]
-	path = modules/beesblog
-	url = https://github.com/thirtybees/beesblog.git
 [submodule "modules/themeconfigurator"]
 	path = modules/themeconfigurator
 	url = https://github.com/thirtybees/themeconfigurator.git
