@@ -408,4 +408,4 @@
 	url = https://github.com/thirtybees/beesblog.git
 [submodule "modules/themeconfigurator"]
 	path = modules/themeconfigurator
-	url = git@github.com:thirtybees/themeconfigurator.git
+	url = https://github.com/thirtybees/themeconfigurator.git
