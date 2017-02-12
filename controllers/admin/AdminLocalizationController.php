@@ -187,33 +187,10 @@ class AdminLocalizationControllerCore extends AdminController
         }
 
         if (Tools::isSubmit('submitLocalizationPack')) {
-            $guzzle = new \GuzzleHttp\Client([
-                'http_errors' => false,
-                'verify' => _PS_TOOL_DIR_.'cacert.pem',
-                'timeout' => 5,
-            ]);
-
-            $version = str_replace('.', '', _TB_VERSION_);
-            $version = substr($version, 0, 2);
-
             if (($isoLocalizationPack = Tools::getValue('iso_localization_pack')) && Validate::isFileName($isoLocalizationPack)) {
-                if (Tools::getValue('download_updated_pack') == '1' || defined('_PS_HOST_MODE_')) {
-                    try {
-                        $pack = (string) $guzzle->get(_PS_API_URL_.'/localization/'.$version.'/'.$isoLocalizationPack.'.xml')->getBody();
-                    } catch (Exception $e) {
-                        $pack = false;
-                    }
-                } else {
-                    $pack = false;
-                }
+                $path = _PS_ROOT_DIR_.'/localization/'.$isoLocalizationPack.'.xml';
 
-                if (defined('_PS_HOST_MODE_')) {
-                    $path = _PS_CORE_DIR_.'/localization/'.$isoLocalizationPack.'.xml';
-                } else {
-                    $path = _PS_ROOT_DIR_.'/localization/'.$isoLocalizationPack.'.xml';
-                }
-
-                if (!$pack && !($pack = @file_get_contents($path))) {
+                if (!($pack = @file_get_contents($path))) {
                     $this->errors[] = Tools::displayError('Cannot load the localization pack.');
                 }
 
@@ -296,19 +273,16 @@ class AdminLocalizationControllerCore extends AdminController
         $localizationsPack = false;
         $this->tpl_option_vars['options_content'] = $this->renderOptions();
 
-        $xmlLocalization = Tools::simplexml_load_file(_PS_API_URL_.'/rss/localization.xml');
-        if (!$xmlLocalization) {
-            $localizationFile = _PS_ROOT_DIR_.'/localization/localization.xml';
-            if (file_exists($localizationFile)) {
-                $xmlLocalization = @simplexml_load_file($localizationFile);
-            }
+        $localizationFile = _PS_ROOT_DIR_.'/localization/localization.xml';
+        if (file_exists($localizationFile)) {
+            $xmlLocalization = @simplexml_load_file($localizationFile);
         }
 
         // Array to hold the list of country ISOs that have a localization pack hosted on prestashop.com
         $remoteIsos = [];
 
         $i = 0;
-        if ($xmlLocalization) {
+        if (isset($xmlLocalization) && $xmlLocalization) {
             foreach ($xmlLocalization->pack as $key => $pack) {
                 $remoteIsos[(string) $pack->iso] = true;
                 $localizationsPack[$i]['iso_localization_pack'] = (string) $pack->iso;
@@ -318,7 +292,7 @@ class AdminLocalizationControllerCore extends AdminController
         }
 
         if (!$localizationsPack) {
-            return $this->displayWarning($this->l('Cannot connect to '._PS_API_URL_));
+            return $this->displayWarning($this->l('Cannot connect'));
         }
 
         // Add local localization .xml files to the list if they are not already there
