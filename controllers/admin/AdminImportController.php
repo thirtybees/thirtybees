@@ -29,17 +29,6 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-@ini_set('max_execution_time', 0);
-
-/** Used for validatefields diying without user friendly error or not */
-define('UNFRIENDLY_ERROR', false);
-
-/** this value set the number of columns visible on each page */
-define('MAX_COLUMNS', 6);
-
-/** correct Mac error on eof */
-@ini_set('auto_detect_line_endings', '1');
-
 /**
  * Class AdminImportControllerCore
  *
@@ -47,6 +36,10 @@ define('MAX_COLUMNS', 6);
  */
 class AdminImportControllerCore extends AdminController
 {
+    const MAX_COLUMNS = 6;
+
+    const UNFRIENDLY_ERROR = false;
+
     // @codingStandardsIgnoreStart
     public static $columnMask;
     public static $defaultValues = [];
@@ -90,6 +83,11 @@ class AdminImportControllerCore extends AdminController
      */
     public function __construct()
     {
+        @ini_set('max_execution_time', 0);
+
+        /** correct Mac error on eof */
+        @ini_set('auto_detect_line_endings', '1');
+
         $this->bootstrap = true;
 
         parent::__construct();
@@ -573,15 +571,768 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param $field
+     * @since 1.0.0
+     */
+    public function setMedia()
+    {
+        $backOfficeTheme = ((Validate::isLoadedObject($this->context->employee)
+            && $this->context->employee->bo_theme) ? $this->context->employee->bo_theme : 'default');
+
+        if (!file_exists(_PS_BO_ALL_THEMES_DIR_.$backOfficeTheme.DIRECTORY_SEPARATOR.'template')) {
+            $backOfficeTheme = 'default';
+        }
+
+        // We need to set parent media first, so that jQuery is loaded before the dependant plugins
+        parent::setMedia();
+
+        $this->addJs(__PS_BASE_URI__.$this->admin_webpath.'/themes/'.$backOfficeTheme.'/js/jquery.iframe-transport.js');
+        $this->addJs(__PS_BASE_URI__.$this->admin_webpath.'/themes/'.$backOfficeTheme.'/js/jquery.fileupload.js');
+        $this->addJs(__PS_BASE_URI__.$this->admin_webpath.'/themes/'.$backOfficeTheme.'/js/jquery.fileupload-process.js');
+        $this->addJs(__PS_BASE_URI__.$this->admin_webpath.'/themes/'.$backOfficeTheme.'/js/jquery.fileupload-validate.js');
+        $this->addJs(__PS_BASE_URI__.'js/vendor/spin.js');
+        $this->addJs(__PS_BASE_URI__.'js/vendor/ladda.js');
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    public function ajaxProcessuploadCsv()
+    {
+        $filenamePrefix = date('YmdHis').'-';
+
+        if (isset($_FILES['file']) && !empty($_FILES['file']['error'])) {
+            switch ($_FILES['file']['error']) {
+                case UPLOAD_ERR_INI_SIZE:
+                    $_FILES['file']['error'] = $this->l('The uploaded file exceeds the upload_max_filesize directive in php.ini. If your server configuration allows it, you may add a directive in your .htaccess.');
+                    break;
+                case UPLOAD_ERR_FORM_SIZE:
+                    $_FILES['file']['error'] = $this->l('The uploaded file exceeds the post_max_size directive in php.ini. If your server configuration allows it, you may add a directive in your .htaccess, for example:').'<br/><a href="'.$this->context->link->getAdminLink('AdminMeta').'" ><code>php_value post_max_size 20M</code> '.$this->l('(click to open "Generators" page)').'</a>';
+                    break;
+                case UPLOAD_ERR_PARTIAL:
+                    $_FILES['file']['error'] = $this->l('The uploaded file was only partially uploaded.');
+                    break;
+                case UPLOAD_ERR_NO_FILE:
+                    $_FILES['file']['error'] = $this->l('No file was uploaded.');
+                    break;
+            }
+        } elseif (!preg_match('#([^\.]*?)\.(csv|xls[xt]?|o[dt]s)$#is', $_FILES['file']['name'])) {
+            $_FILES['file']['error'] = $this->l('The extension of your file should be .csv.');
+        } elseif (!@filemtime($_FILES['file']['tmp_name']) ||
+            !@move_uploaded_file($_FILES['file']['tmp_name'], self::getPath().$filenamePrefix.str_replace("\0", '', $_FILES['file']['name']))
+        ) {
+            $_FILES['file']['error'] = $this->l('An error occurred while uploading / copying the file.');
+        } else {
+            @chmod(self::getPath().$filenamePrefix.$_FILES['file']['name'], 0664);
+            $_FILES['file']['filename'] = $filenamePrefix.str_replace('\0', '', $_FILES['file']['name']);
+        }
+
+        die(json_encode($_FILES));
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    public function initToolbar()
+    {
+        switch ($this->display) {
+            case 'import':
+                // Default cancel button - like old back link
+                $back = Tools::safeOutput(Tools::getValue('back', ''));
+                if (empty($back)) {
+                    $back = self::$currentIndex.'&token='.$this->token;
+                }
+
+                $this->toolbar_btn['cancel'] = [
+                    'href' => $back,
+                    'desc' => $this->l('Cancel'),
+                ];
+                // Default save button - action dynamically handled in javascript
+                $this->toolbar_btn['save-import'] = [
+                    'href' => '#',
+                    'desc' => $this->l('Import .CSV data'),
+                ];
+                break;
+        }
+    }
+
+    /**
+     * @param string $file
      *
-     * @return bool
+     * @return string
      *
      * @since 1.0.0
      */
-    protected static function getBoolean($field)
+    public static function getPath($file = '')
     {
-        return (bool) $field;
+        return (defined('_PS_HOST_MODE_') ? _PS_ROOT_DIR_ : _PS_ADMIN_DIR_).DIRECTORY_SEPARATOR.'import'.DIRECTORY_SEPARATOR.$file;
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    public function clearSmartyCache()
+    {
+        Tools::enableCache();
+        Tools::clearCache($this->context->smarty);
+        Tools::restoreCacheSettings();
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    public function init()
+    {
+        parent::init();
+        if (Tools::isSubmit('submitImportFile')) {
+            $this->display = 'import';
+        }
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    public function initContent()
+    {
+        $this->initTabModuleList();
+        $this->initToolbar();
+        $this->initPageHeaderToolbar();
+        if ($this->display == 'import') {
+            if (Tools::getValue('csv')) {
+                $this->content .= $this->renderView();
+            } else {
+                $this->errors[] = $this->l('To proceed, please upload a file first.');
+                $this->content .= $this->renderForm();
+            }
+        } else {
+            $this->content .= $this->renderForm();
+        }
+
+        $this->context->smarty->assign(
+            [
+                'content' => $this->content,
+                'url_post' => self::$currentIndex.'&token='.$this->token,
+                'show_page_header_toolbar' => $this->show_page_header_toolbar,
+                'page_header_toolbar_title' => $this->page_header_toolbar_title,
+                'page_header_toolbar_btn' => $this->page_header_toolbar_btn,
+            ]
+        );
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    public static function setLocale()
+    {
+        $isoLang = trim(Tools::getValue('iso_lang'));
+        setlocale(LC_COLLATE, strtolower($isoLang).'_'.strtoupper($isoLang).'.UTF-8');
+        setlocale(LC_CTYPE, strtolower($isoLang).'_'.strtoupper($isoLang).'.UTF-8');
+    }
+
+    /**
+     * @return string
+     */
+    public function renderView()
+    {
+        $this->addJS(_PS_JS_DIR_.'admin/import.js');
+
+        $handle = $this->openCsvFile();
+        $nbColumn = $this->getNbrColumn($handle, $this->separator);
+        $nbTable = ceil($nbColumn / self::MAX_COLUMNS);
+
+        $res = [];
+        foreach ($this->required_fields as $elem) {
+            $res[] = '\''.$elem.'\'';
+        }
+
+        $data = [];
+        for ($i = 0; $i < $nbTable; $i++) {
+            $data[$i] = $this->generateContentTable($i, $nbColumn, $handle, $this->separator);
+        }
+
+        $this->context->cookie->entitySelected = (int) Tools::getValue('entity');
+        $this->context->cookie->isoLangSelected = urlencode(Tools::getValue('iso_lang'));
+        $this->context->cookie->separatorSelected = urlencode($this->separator);
+        $this->context->cookie->multipleValueSeparatorSelected = urlencode($this->multiple_value_separator);
+        $this->context->cookie->csv_selected = urlencode(Tools::getValue('csv'));
+
+        $this->tpl_view_vars = [
+            'import_matchs'    => Db::getInstance()->executeS('SELECT * FROM '._DB_PREFIX_.'import_match', true, false),
+            'fields_value'     => [
+                'csv'                      => Tools::getValue('csv'),
+                'entity'                   => (int) Tools::getValue('entity'),
+                'iso_lang'                 => Tools::getValue('iso_lang'),
+                'truncate'                 => Tools::getValue('truncate'),
+                'forceIDs'                 => Tools::getValue('forceIDs'),
+                'regenerate'               => Tools::getValue('regenerate'),
+                'sendemail'                => Tools::getValue('sendemail'),
+                'match_ref'                => Tools::getValue('match_ref'),
+                'separator'                => $this->separator,
+                'multiple_value_separator' => $this->multiple_value_separator,
+            ],
+            'nb_table'         => $nbTable,
+            'nb_column'        => $nbColumn,
+            'res'              => implode(',', $res),
+            'max_columns'      => self::MAX_COLUMNS,
+            'no_pre_select'    => ['price_tin', 'feature'],
+            'available_fields' => $this->available_fields,
+            'data'             => $data,
+        ];
+
+        return parent::renderView();
+    }
+
+    /**
+     * @param $array
+     *
+     * @return array|string
+     *
+     * @since 1.0.0
+     */
+    public function utf8EncodeArray($array)
+    {
+        return (is_array($array) ? array_map('utf8_encode', $array) : utf8_encode($array));
+    }
+
+    /**
+     * @return string
+     *
+     * @since 1.0.0
+     */
+    public function renderForm()
+    {
+        if (!is_dir(self::getPath())) {
+            return !($this->errors[] = $this->l('The import directory doesn\'t exist. Please check your file path.'));
+        }
+
+        if (!is_writable(self::getPath())) {
+            $this->displayWarning($this->l('The import directory must be writable (CHMOD 755 / 777).'));
+        }
+
+        $filesToImport = scandir(self::getPath());
+        uasort($filesToImport, ['self', 'usortFiles']);
+        foreach ($filesToImport as $k => &$filename) {
+            //exclude .  ..  .svn and index.php and all hidden files
+            if (preg_match('/^\..*|index\.php/i', $filename) || is_dir(self::getPath().$filename)) {
+                unset($filesToImport[$k]);
+            }
+        }
+        unset($filename);
+
+        $this->fields_form = [''];
+
+        $this->toolbar_scroll = false;
+        $this->toolbar_btn = [];
+
+        // adds fancybox
+        $this->addJqueryPlugin(['fancybox']);
+
+        $entitySelected = 0;
+        if (isset($this->entities[$this->l(ucfirst(Tools::getValue('import_type')))])) {
+            $entitySelected = $this->entities[$this->l(ucfirst(Tools::getValue('import_type')))];
+            $this->context->cookie->entity_selected = (int) $entitySelected;
+        } elseif (isset($this->context->cookie->entity_selected)) {
+            $entitySelected = (int) $this->context->cookie->entity_selected;
+        }
+
+        $csvSelected = '';
+        if (isset($this->context->cookie->csv_selected) &&
+            @filemtime(
+                self::getPath(
+                    urldecode($this->context->cookie->csv_selected)
+                )
+            )
+        ) {
+            $csvSelected = urldecode($this->context->cookie->csv_selected);
+        } else {
+            $this->context->cookie->csv_selected = $csvSelected;
+        }
+
+        $idLangSelected = '';
+        if (isset($this->context->cookie->iso_lang_selected) && $this->context->cookie->iso_lang_selected) {
+            $idLangSelected = (int) Language::getIdByIso(urldecode($this->context->cookie->iso_lang_selected));
+        }
+
+        $separatorSelected = $this->separator;
+        if (isset($this->context->cookie->separator_selected) && $this->context->cookie->separator_selected) {
+            $separatorSelected = urldecode($this->context->cookie->separator_selected);
+        }
+
+        $multipleValueSeparatorSelected = $this->multiple_value_separator;
+        if (isset($this->context->cookie->multiple_value_separator_selected) && $this->context->cookie->multiple_value_separator_selected) {
+            $multipleValueSeparatorSelected = urldecode($this->context->cookie->multiple_value_separator_selected);
+        }
+
+        //get post max size
+        $postMaxSize = ini_get('post_max_size');
+        $bytes = (int) trim($postMaxSize);
+        $last = strtolower($postMaxSize[strlen($postMaxSize) - 1]);
+
+        switch ($last) {
+            case 'g':
+                $bytes *= 1024;
+            // no break to fall-through
+            case 'm':
+                $bytes *= 1024;
+            // no break to fall-through
+            case 'k':
+                $bytes *= 1024;
+                break;
+        }
+
+        if (!isset($bytes) || $bytes == '') {
+            $bytes = 20971520;
+        } // 20Mb
+
+        $this->tpl_form_vars = [
+            'post_max_size'                     => (int) $bytes,
+            'module_confirmation'               => Tools::isSubmit('import') && (isset($this->warnings) && !count($this->warnings)),
+            'path_import'                       => self::getPath(),
+            'entities'                          => $this->entities,
+            'entity_selected'                   => $entitySelected,
+            'csv_selected'                      => $csvSelected,
+            'separator_selected'                => $separatorSelected,
+            'multiple_value_separator_selected' => $multipleValueSeparatorSelected,
+            'files_to_import'                   => $filesToImport,
+            'languages'                         => Language::getLanguages(false),
+            'id_language'                       => ($idLangSelected) ? $idLangSelected : $this->context->language->id,
+            'available_fields'                  => $this->getAvailableFields(),
+            'truncateAuthorized'                => (Shop::isFeatureActive() && $this->context->employee->isSuperAdmin()) || !Shop::isFeatureActive(),
+            'PS_ADVANCED_STOCK_MANAGEMENT'      => Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT'),
+        ];
+
+        return parent::renderForm();
+    }
+
+    /**
+     * @param bool $inArray
+     *
+     * @return array|string
+     */
+    public function getAvailableFields($inArray = false)
+    {
+        $i = 0;
+        $fields = [];
+        $keys = array_keys($this->available_fields);
+        array_shift($keys);
+        foreach ($this->available_fields as $k => $field) {
+            if ($k === 'no') {
+                continue;
+            }
+            if ($k === 'price_tin') { // Special case for Product : either one or the other. Not both.
+                $fields[$i - 1] = '<div>'.$this->available_fields[$keys[$i - 1]]['label'].'<br/>&nbsp;&nbsp;<i>'.$this->l('or').'</i>&nbsp;&nbsp; '.$field['label'].'</div>';
+            } else {
+                if (isset($field['help'])) {
+                    $html = '&nbsp;<a href="#" class="help-tooltip" data-toggle="tooltip" title="'.$field['help'].'"><i class="icon-info-sign"></i></a>';
+                } else {
+                    $html = '';
+                }
+                $fields[] = '<div>'.$field['label'].$html.'</div>';
+            }
+            ++$i;
+        }
+        if ($inArray) {
+            return $fields;
+        } else {
+            return implode("\n\r", $fields);
+        }
+    }
+
+    /**
+     * @param      $defaultLanguageId
+     * @param      $categoryName
+     * @param null $idParentCategory
+     */
+    public function productImportCreateCat($defaultLanguageId, $categoryName, $idParentCategory = null)
+    {
+        $categoryToCreate = new Category();
+        $shopIsFeatureActive = Shop::isFeatureActive();
+        if (!$shopIsFeatureActive) {
+            $categoryToCreate->id_shop_default = 1;
+        } else {
+            $categoryToCreate->id_shop_default = (int) Context::getContext()->shop->id;
+        }
+        $categoryToCreate->name = self::createMultiLangField(trim($categoryName));
+        $categoryToCreate->active = 1;
+        $categoryToCreate->id_parent = (int) $idParentCategory ? (int) $idParentCategory : (int) Configuration::get('PS_HOME_CATEGORY'); // Default parent is home for unknown category to create
+        $categoryLinkRewrite = Tools::link_rewrite($categoryToCreate->name[$defaultLanguageId]);
+        $categoryToCreate->link_rewrite = self::createMultiLangField($categoryLinkRewrite);
+
+        if (($fieldError = $categoryToCreate->validateFields(self::UNFRIENDLY_ERROR, true)) !== true ||
+            ($langFieldError = $categoryToCreate->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) !== true ||
+            !$categoryToCreate->add()
+        ) {
+            $this->errors[] = sprintf(
+                $this->l('%1$s (ID: %2$s) cannot be saved'),
+                $categoryToCreate->name[$defaultLanguageId],
+                (isset($categoryToCreate->id) && !empty($categoryToCreate->id)) ? $categoryToCreate->id : 'null'
+            );
+            if ($fieldError !== true || isset($langFieldError) && $langFieldError !== true) {
+                $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').Db::getInstance()->getMsgError();
+            }
+        }
+    }
+
+    /**
+     * @param bool $offset
+     * @param bool $limit
+     * @param null $results
+     * @param bool $validateOnly
+     * @param int  $moreStep
+     */
+    public function importByGroups($offset = false, $limit = false, &$results = null, $validateOnly = false, $moreStep = 0)
+    {
+        // Check if the CSV file exist
+        if (Tools::getValue('csv')) {
+            $shopIsFeatureActive = Shop::isFeatureActive();
+            // If i am a superadmin, i can truncate table (ONLY IF OFFSET == 0 or false and NOT FOR VALIDATION MODE!)
+            if (!$offset && !$moreStep && !$validateOnly && (($shopIsFeatureActive && $this->context->employee->isSuperAdmin()) || !$shopIsFeatureActive) && Tools::getValue('truncate')) {
+                $this->truncateTables((int) Tools::getValue('entity'));
+            }
+            $importType = false;
+            $doneCount = 0;
+            // Sometime, import will use registers to memorize data across all elements to import (for trees, or else).
+            // Since import is splitted in multiple ajax calls, we must keep these data across all steps of the full import.
+            $crossStepsVariables = [];
+            if ($crossStepsVars = Tools::getValue('crossStepsVars')) {
+                $crossStepsVars = json_decode($crossStepsVars, true);
+                if (sizeof($crossStepsVars) > 0) {
+                    $crossStepsVariables = $crossStepsVars;
+                }
+            }
+            Db::getInstance()->disableCache();
+            switch ((int) Tools::getValue('entity')) {
+                case $this->entities[$importType = $this->l('Categories')]:
+                    $doneCount += $this->categoryImport($offset, $limit, $crossStepsVariables, $validateOnly);
+                    $this->clearSmartyCache();
+                    break;
+                case $this->entities[$importType = $this->l('Products')]:
+                    if (!defined('PS_MASS_PRODUCT_CREATION')) {
+                        define('PS_MASS_PRODUCT_CREATION', true);
+                    }
+                    $moreStepLabels = [$this->l('Linking Accessories...')];
+                    $doneCount += $this->productImport($offset, $limit, $crossStepsVariables, $validateOnly, $moreStep);
+                    $this->clearSmartyCache();
+                    break;
+                case $this->entities[$importType = $this->l('Customers')]:
+                    $doneCount += $this->customerImport($offset, $limit, $validateOnly);
+                    break;
+                case $this->entities[$importType = $this->l('Addresses')]:
+                    $doneCount += $this->addressImport($offset, $limit, $validateOnly);
+                    break;
+                case $this->entities[$importType = $this->l('Combinations')]:
+                    $doneCount += $this->attributeImport($offset, $limit, $crossStepsVariables, $validateOnly);
+                    $this->clearSmartyCache();
+                    break;
+                case $this->entities[$importType = $this->l('Brands')]:
+                    $doneCount += $this->manufacturerImport($offset, $limit, $validateOnly);
+                    $this->clearSmartyCache();
+                    break;
+                case $this->entities[$importType = $this->l('Suppliers')]:
+                    $doneCount += $this->supplierImport($offset, $limit, $validateOnly);
+                    $this->clearSmartyCache();
+                    break;
+                case $this->entities[$importType = $this->l('Alias')]:
+                    $doneCount += $this->aliasImport($offset, $limit, $validateOnly);
+                    break;
+                case $this->entities[$importType = $this->l('Store contacts')]:
+                    $doneCount += $this->storeContactImport($offset, $limit, $validateOnly);
+                    $this->clearSmartyCache();
+                    break;
+            }
+
+            if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
+                switch ((int) Tools::getValue('entity')) {
+                    case $this->entities[$importType = $this->l('Supply Orders')]:
+                        if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
+                            $doneCount += $this->supplyOrdersImport($offset, $limit, $validateOnly);
+                        }
+                        break;
+                    case $this->entities[$importType = $this->l('Supply Order Details')]:
+                        if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
+                            $doneCount += $this->supplyOrdersDetailsImport($offset, $limit, $crossStepsVariables, $validateOnly);
+                        }
+                        break;
+                }
+            }
+
+            if ($results !== null) {
+                $results['isFinished'] = ($doneCount < $limit);
+                $results['doneCount'] = $offset + $doneCount;
+                if ($offset === 0) {
+                    // compute total count only once, because it takes time
+                    $handle = $this->openCsvFile(0);
+                    if ($handle) {
+                        $count = 0;
+                        while (fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) {
+                            $count++;
+                        }
+                        $results['totalCount'] = $count;
+                    }
+                    $this->closeCsvFile($handle);
+                }
+                if (!isset($moreStepLabels)) {
+                    $moreStepLabels = [];
+                }
+                if (!$results['isFinished'] || (!$validateOnly && ($moreStep < count($moreStepLabels)))) {
+                    // Since we'll have to POST this array from ajax for the next call, we should care about it size.
+                    $nextPostSize = mb_strlen(json_encode($crossStepsVariables));
+                    $results['crossStepsVariables'] = $crossStepsVariables;
+                    $results['nextPostSize'] = $nextPostSize + (1024 * 64); // 64KB more for the rest of the POST query.
+                    $results['postSizeLimit'] = Tools::getMaxUploadSize();
+                }
+                if ($results['isFinished'] && !$validateOnly && ($moreStep < count($moreStepLabels))) {
+                    $results['oneMoreStep'] = $moreStep + 1;
+                    $results['moreStepLabel'] = $moreStepLabels[$moreStep];
+                }
+            }
+
+            if ($importType !== false) {
+                $logMessage = sprintf($this->l('%s import'), $importType);
+                if ($offset !== false && $limit !== false) {
+                    $logMessage .= ' '.sprintf($this->l('(from %s to %s)'), $offset, $limit);
+                }
+                if (Tools::getValue('truncate')) {
+                    $logMessage .= ' '.$this->l('with truncate');
+                }
+                Logger::addLog($logMessage, 1, null, $importType, null, true, (int) $this->context->employee->id);
+            }
+
+            Db::getInstance()->enableCache();
+        } else {
+            $this->errors[] = $this->l('To proceed, please upload a file first.');
+        }
+    }
+
+    /**
+     * @param $row
+     *
+     * @return array
+     *
+     * @since 1.0.0
+     */
+    public static function getMaskedRow($row)
+    {
+        $res = [];
+        if (is_array(self::$columnMask)) {
+            foreach (self::$columnMask as $type => $nb) {
+                $res[$type] = isset($row[$nb]) ? trim($row[$nb]) : null;
+            }
+        }
+
+        return $res;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function postProcess()
+    {
+        /* PrestaShop demo mode */
+        if (_PS_MODE_DEMO_) {
+            $this->errors[] = $this->l('This functionality has been disabled.');
+
+            return null;
+        }
+
+        if (Tools::isSubmit('import')) {
+            $this->importByGroups();
+        } elseif ($filename = Tools::getValue('csvfilename')) {
+            $filename = urldecode($filename);
+            $file = self::getPath(basename($filename));
+            if (realpath(dirname($file)) != realpath(self::getPath())) {
+                exit();
+            }
+            if (!empty($filename)) {
+                $bName = basename($filename);
+                if (Tools::getValue('delete') && file_exists($file)) {
+                    @unlink($file);
+                } elseif (file_exists($file)) {
+                    $bName = explode('.', $bName);
+                    $bName = strtolower($bName[count($bName) - 1]);
+                    $mimeTypes = ['csv' => 'text/csv'];
+
+                    if (isset($mimeTypes[$bName])) {
+                        $mimeType = $mimeTypes[$bName];
+                    } else {
+                        $mimeType = 'application/octet-stream';
+                    }
+
+                    if (ob_get_level() && ob_get_length() > 0) {
+                        ob_end_clean();
+                    }
+
+                    header('Content-Transfer-Encoding: binary');
+                    header('Content-Type: '.$mimeType);
+                    header('Content-Length: '.filesize($file));
+                    header('Content-Disposition: attachment; filename="'.$filename.'"');
+                    $fp = fopen($file, 'rb');
+                    while (is_resource($fp) && !feof($fp)) {
+                        echo fgets($fp, 16384);
+                    }
+                    exit;
+                }
+            }
+        }
+        Db::getInstance()->enableCache();
+
+        return parent::postProcess();
+    }
+
+    /**
+     * @param bool $offset
+     * @param bool $limit
+     * @param bool $crossStepsVariables
+     * @param bool $validateOnly
+     *
+     * @return bool|int
+     *
+     * @since 1.0.0
+     */
+    public function categoryImport($offset = false, $limit = false, &$crossStepsVariables = false, $validateOnly = false)
+    {
+        $this->receiveTab();
+        $handle = $this->openCsvFile($offset);
+        if (!$handle) {
+            return false;
+        }
+
+        $idDefaultLanguage = (int) Configuration::get('PS_LANG_DEFAULT');
+        $idLang = Language::getIdByIso(Tools::getValue('iso_lang'));
+        if (!Validate::isUnsignedId($idLang)) {
+            $idLang = $idDefaultLanguage;
+        }
+        self::setLocale();
+
+        $forceIds = Tools::getValue('forceIDs');
+        $regenerate = Tools::getValue('regenerate');
+        $shopIsFeatureActive = Shop::isFeatureActive();
+
+        $catMoved = [];
+        if (is_array($crossStepsVariables) && array_key_exists('cat_moved', $crossStepsVariables)) {
+            $catMoved = $crossStepsVariables['cat_moved'];
+        }
+
+        $lineCount = 0;
+        for ($currentLine = 0; ($line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
+            $lineCount++;
+            if ($this->convert) {
+                $line = $this->utf8EncodeArray($line);
+            }
+
+            if (count($line) == 1 && $line[0] == null) {
+                $this->warnings[] = $this->l('There is an empty row in the file that won\'t be imported.');
+                continue;
+            }
+
+            $info = self::getMaskedRow($line);
+
+            $this->categoryImportOne(
+                $info,
+                $idDefaultLanguage,
+                $idLang,
+                $forceIds,
+                $regenerate,
+                $shopIsFeatureActive,
+                $catMoved, // by ref
+                $validateOnly
+            );
+        }
+
+        if (!$validateOnly) {
+            /* Import has finished, we can regenerate the categories nested tree */
+            Category::regenerateEntireNtree();
+        }
+        $this->closeCsvFile($handle);
+
+        if ($crossStepsVariables !== false) {
+            $crossStepsVariables['cat_moved'] = $catMoved;
+        }
+
+        return $lineCount;
+    }
+
+    /**
+     * @param bool $offset
+     * @param bool $limit
+     * @param bool $crossStepsVariables
+     * @param bool $validateOnly
+     * @param int  $moreStep
+     *
+     * @return int
+     *
+     * @since 1.0.0
+     */
+    public function productImport($offset = false, $limit = false, &$crossStepsVariables = false, $validateOnly = false, $moreStep = 0)
+    {
+        if ($moreStep == 1) {
+            return $this->productImportAccessories($offset, $limit, $crossStepsVariables);
+        }
+        $this->receiveTab();
+        $handle = $this->openCsvFile($offset);
+        if (!$handle) {
+            return false;
+        }
+
+        $idDefaultLanguage = (int) Configuration::get('PS_LANG_DEFAULT');
+        $idLang = Language::getIdByIso(Tools::getValue('iso_lang'));
+        if (!Validate::isUnsignedId($idLang)) {
+            $idLang = $idDefaultLanguage;
+        }
+        self::setLocale();
+        $shopIds = Shop::getCompleteListOfShopsID();
+
+        $forceIds = Tools::getValue('forceIDs');
+        $matchRef = Tools::getValue('match_ref');
+        $regenerate = Tools::getValue('regenerate');
+        $shopIsFeatureActive = Shop::isFeatureActive();
+        if (!$validateOnly) {
+            Module::setBatchMode(true);
+        }
+
+        $accessories = [];
+        if (is_array($crossStepsVariables) && array_key_exists('accessories', $crossStepsVariables)) {
+            $accessories = $crossStepsVariables['accessories'];
+        }
+
+        $lineCount = 0;
+        for ($currentLine = 0; ($line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
+            $lineCount++;
+            if ($this->convert) {
+                $line = $this->utf8EncodeArray($line);
+            }
+
+            if (count($line) == 1 && $line[0] == null) {
+                $this->warnings[] = $this->l('There is an empty row in the file that won\'t be imported.');
+                continue;
+            }
+
+            $info = self::getMaskedRow($line);
+
+            $this->productImportOne(
+                $info,
+                $idDefaultLanguage,
+                $idLang,
+                $forceIds,
+                $regenerate,
+                $shopIsFeatureActive,
+                $shopIds,
+                $matchRef,
+                $accessories, // by ref
+                $validateOnly
+            );
+        }
+        $this->closeCsvFile($handle);
+        if (!$validateOnly) {
+            Module::processDeferedFuncCall();
+            Module::processDeferedClearCache();
+            Tag::updateTagCount();
+        }
+
+        if ($crossStepsVariables !== false) {
+            $crossStepsVariables['accessories'] = $accessories;
+        }
+
+        return $lineCount;
     }
 
     /**
@@ -644,194 +1395,15 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @since 1.0.0
-     */
-    public function setMedia()
-    {
-        $backOfficeTheme = ((Validate::isLoadedObject($this->context->employee)
-            && $this->context->employee->bo_theme) ? $this->context->employee->bo_theme : 'default');
-
-        if (!file_exists(_PS_BO_ALL_THEMES_DIR_.$backOfficeTheme.DIRECTORY_SEPARATOR.'template')) {
-            $backOfficeTheme = 'default';
-        }
-
-        // We need to set parent media first, so that jQuery is loaded before the dependant plugins
-        parent::setMedia();
-
-        $this->addJs(__PS_BASE_URI__.$this->admin_webpath.'/themes/'.$backOfficeTheme.'/js/jquery.iframe-transport.js');
-        $this->addJs(__PS_BASE_URI__.$this->admin_webpath.'/themes/'.$backOfficeTheme.'/js/jquery.fileupload.js');
-        $this->addJs(__PS_BASE_URI__.$this->admin_webpath.'/themes/'.$backOfficeTheme.'/js/jquery.fileupload-process.js');
-        $this->addJs(__PS_BASE_URI__.$this->admin_webpath.'/themes/'.$backOfficeTheme.'/js/jquery.fileupload-validate.js');
-        $this->addJs(__PS_BASE_URI__.'js/vendor/spin.js');
-        $this->addJs(__PS_BASE_URI__.'js/vendor/ladda.js');
-    }
-
-    /**
-     * @since 1.0.0
-     */
-    public function ajaxProcessuploadCsv()
-    {
-        $filenamePrefix = date('YmdHis').'-';
-
-        if (isset($_FILES['file']) && !empty($_FILES['file']['error'])) {
-            switch ($_FILES['file']['error']) {
-                case UPLOAD_ERR_INI_SIZE:
-                    $_FILES['file']['error'] = $this->l('The uploaded file exceeds the upload_max_filesize directive in php.ini. If your server configuration allows it, you may add a directive in your .htaccess.');
-                    break;
-                case UPLOAD_ERR_FORM_SIZE:
-                    $_FILES['file']['error'] = $this->l('The uploaded file exceeds the post_max_size directive in php.ini. If your server configuration allows it, you may add a directive in your .htaccess, for example:').'<br/><a href="'.$this->context->link->getAdminLink('AdminMeta').'" ><code>php_value post_max_size 20M</code> '.$this->l('(click to open "Generators" page)').'</a>';
-                    break;
-                case UPLOAD_ERR_PARTIAL:
-                    $_FILES['file']['error'] = $this->l('The uploaded file was only partially uploaded.');
-                    break;
-                case UPLOAD_ERR_NO_FILE:
-                    $_FILES['file']['error'] = $this->l('No file was uploaded.');
-                    break;
-            }
-        } elseif (!preg_match('#([^\.]*?)\.(csv|xls[xt]?|o[dt]s)$#is', $_FILES['file']['name'])) {
-            $_FILES['file']['error'] = $this->l('The extension of your file should be .csv.');
-        } elseif (!@filemtime($_FILES['file']['tmp_name']) ||
-            !@move_uploaded_file($_FILES['file']['tmp_name'], self::getPath().$filenamePrefix.str_replace("\0", '', $_FILES['file']['name']))
-        ) {
-            $_FILES['file']['error'] = $this->l('An error occurred while uploading / copying the file.');
-        } else {
-            @chmod(self::getPath().$filenamePrefix.$_FILES['file']['name'], 0664);
-            $_FILES['file']['filename'] = $filenamePrefix.str_replace('\0', '', $_FILES['file']['name']);
-        }
-
-        die(json_encode($_FILES));
-    }
-
-    /**
-     * @param string $file
+     * @param $field
      *
-     * @return string
+     * @return bool
      *
      * @since 1.0.0
      */
-    public static function getPath($file = '')
+    protected static function getBoolean($field)
     {
-        return (defined('_PS_HOST_MODE_') ? _PS_ROOT_DIR_ : _PS_ADMIN_DIR_).DIRECTORY_SEPARATOR.'import'.DIRECTORY_SEPARATOR.$file;
-    }
-
-    /**
-     * @since 1.0.0
-     */
-    public function initToolbar()
-    {
-        switch ($this->display) {
-            case 'import':
-                // Default cancel button - like old back link
-                $back = Tools::safeOutput(Tools::getValue('back', ''));
-                if (empty($back)) {
-                    $back = self::$currentIndex.'&token='.$this->token;
-                }
-
-                $this->toolbar_btn['cancel'] = [
-                    'href' => $back,
-                    'desc' => $this->l('Cancel'),
-                ];
-                // Default save button - action dynamically handled in javascript
-                $this->toolbar_btn['save-import'] = [
-                    'href' => '#',
-                    'desc' => $this->l('Import .CSV data'),
-                ];
-                break;
-        }
-    }
-
-    /**
-     * @since 1.0.0
-     */
-    public function init()
-    {
-        parent::init();
-        if (Tools::isSubmit('submitImportFile')) {
-            $this->display = 'import';
-        }
-    }
-
-    /**
-     * @since 1.0.0
-     */
-    public function initContent()
-    {
-        $this->initTabModuleList();
-        $this->initToolbar();
-        $this->initPageHeaderToolbar();
-        if ($this->display == 'import') {
-            if (Tools::getValue('csv')) {
-                $this->content .= $this->renderView();
-            } else {
-                $this->errors[] = $this->l('To proceed, please upload a file first.');
-                $this->content .= $this->renderForm();
-            }
-        } else {
-            $this->content .= $this->renderForm();
-        }
-
-        $this->context->smarty->assign(
-            [
-                'content' => $this->content,
-                'url_post' => self::$currentIndex.'&token='.$this->token,
-                'show_page_header_toolbar' => $this->show_page_header_toolbar,
-                'page_header_toolbar_title' => $this->page_header_toolbar_title,
-                'page_header_toolbar_btn' => $this->page_header_toolbar_btn,
-            ]
-        );
-    }
-
-    /**
-     * @return string
-     */
-    public function renderView()
-    {
-        $this->addJS(_PS_JS_DIR_.'admin/import.js');
-
-        $handle = $this->openCsvFile();
-        $nbColumn = $this->getNbrColumn($handle, $this->separator);
-        $nbTable = ceil($nbColumn / MAX_COLUMNS);
-
-        $res = [];
-        foreach ($this->required_fields as $elem) {
-            $res[] = '\''.$elem.'\'';
-        }
-
-        $data = [];
-        for ($i = 0; $i < $nbTable; $i++) {
-            $data[$i] = $this->generateContentTable($i, $nbColumn, $handle, $this->separator);
-        }
-
-        $this->context->cookie->entitySelected = (int) Tools::getValue('entity');
-        $this->context->cookie->isoLangSelected = urlencode(Tools::getValue('iso_lang'));
-        $this->context->cookie->separatorSelected = urlencode($this->separator);
-        $this->context->cookie->multipleValueSeparatorSelected = urlencode($this->multiple_value_separator);
-        $this->context->cookie->csv_selected = urlencode(Tools::getValue('csv'));
-
-        $this->tpl_view_vars = [
-            'import_matchs'    => Db::getInstance()->executeS('SELECT * FROM '._DB_PREFIX_.'import_match', true, false),
-            'fields_value'     => [
-                'csv'                      => Tools::getValue('csv'),
-                'entity'                   => (int) Tools::getValue('entity'),
-                'iso_lang'                 => Tools::getValue('iso_lang'),
-                'truncate'                 => Tools::getValue('truncate'),
-                'forceIDs'                 => Tools::getValue('forceIDs'),
-                'regenerate'               => Tools::getValue('regenerate'),
-                'sendemail'                => Tools::getValue('sendemail'),
-                'match_ref'                => Tools::getValue('match_ref'),
-                'separator'                => $this->separator,
-                'multiple_value_separator' => $this->multiple_value_separator,
-            ],
-            'nb_table'         => $nbTable,
-            'nb_column'        => $nbColumn,
-            'res'              => implode(',', $res),
-            'max_columns'      => MAX_COLUMNS,
-            'no_pre_select'    => ['price_tin', 'feature'],
-            'available_fields' => $this->available_fields,
-            'data'             => $data,
-        ];
-
-        return parent::renderView();
+        return (bool) $field;
     }
 
     /**
@@ -970,7 +1542,7 @@ class AdminImportControllerCore extends AdminController
         $html = '<table id="table'.$currentTable.'" style="display: none;" class="table table-bordered"><thead><tr>';
         // Header
         for ($i = 0; $i < $nbColumn; $i++) {
-            if (MAX_COLUMNS * (int) $currentTable <= $i && (int) $i < MAX_COLUMNS * ((int) $currentTable + 1)) {
+            if (self::MAX_COLUMNS * (int) $currentTable <= $i && (int) $i < self::MAX_COLUMNS * ((int) $currentTable + 1)) {
                 $html .= '<th>
 							<select id="type_value['.$i.']"
 								name="type_value['.$i.']"
@@ -990,7 +1562,7 @@ class AdminImportControllerCore extends AdminController
             }
             $html .= '<tr id="table_'.$currentTable.'_line_'.$currentLine.'">';
             foreach ($line as $nbC => $column) {
-                if ((MAX_COLUMNS * (int) $currentTable <= $nbC) && ((int) $nbC < MAX_COLUMNS * ((int) $currentTable + 1))) {
+                if ((self::MAX_COLUMNS * (int) $currentTable <= $nbC) && ((int) $nbC < self::MAX_COLUMNS * ((int) $currentTable + 1))) {
                     $html .= '<td>'.htmlentities(Tools::substr($column, 0, 200), ENT_QUOTES, 'UTF-8').'</td>';
                 }
             }
@@ -1015,220 +1587,20 @@ class AdminImportControllerCore extends AdminController
         $noPreSelect = ['price_tin', 'feature'];
 
         $options = '';
-        foreach ($this->available_fields as $k => $field) {
-            $options .= '<option value="'.$k.'"';
-            if ($k === 'price_tin') {
+
+        foreach ($this->available_fields as $key => $field) {
+            $options .= '<option value="'.$key.'"';
+            if ($key === 'price_tin') {
                 ++$nbC;
             }
-            if ($i === ($nbC + 1) && (!in_array($k, $noPreSelect))) {
+            if ($i === ($nbC + 1) && (!in_array($key, $noPreSelect))) {
                 $options .= ' selected="selected"';
             }
-            $options .= '>'.$field['label'].'</option>';
+            $options .= '>'.$i.'. '.$field['label'].'</option>';
             ++$i;
         }
 
         return $options;
-    }
-
-    /**
-     * @since 1.0.0
-     */
-    public static function setLocale()
-    {
-        $isoLang = trim(Tools::getValue('iso_lang'));
-        setlocale(LC_COLLATE, strtolower($isoLang).'_'.strtoupper($isoLang).'.UTF-8');
-        setlocale(LC_CTYPE, strtolower($isoLang).'_'.strtoupper($isoLang).'.UTF-8');
-    }
-
-    /**
-     * @param $array
-     *
-     * @return array|string
-     *
-     * @since 1.0.0
-     */
-    public function utf8EncodeArray($array)
-    {
-        return (is_array($array) ? array_map('utf8_encode', $array) : utf8_encode($array));
-    }
-
-    /**
-     * @return string
-     *
-     * @since 1.0.0
-     */
-    public function renderForm()
-    {
-        if (!is_dir(self::getPath())) {
-            return !($this->errors[] = $this->l('The import directory doesn\'t exist. Please check your file path.'));
-        }
-
-        if (!is_writable(self::getPath())) {
-            $this->displayWarning($this->l('The import directory must be writable (CHMOD 755 / 777).'));
-        }
-
-        $filesToImport = scandir(self::getPath());
-        uasort($filesToImport, ['self', 'usortFiles']);
-        foreach ($filesToImport as $k => &$filename) {
-            //exclude .  ..  .svn and index.php and all hidden files
-            if (preg_match('/^\..*|index\.php/i', $filename) || is_dir(self::getPath().$filename)) {
-                unset($filesToImport[$k]);
-            }
-        }
-        unset($filename);
-
-        $this->fields_form = [''];
-
-        $this->toolbar_scroll = false;
-        $this->toolbar_btn = [];
-
-        // adds fancybox
-        $this->addJqueryPlugin(['fancybox']);
-
-        $entitySelected = 0;
-        if (isset($this->entities[$this->l(Tools::ucfirst(Tools::getValue('import_type')))])) {
-            $entitySelected = $this->entities[$this->l(Tools::ucfirst(Tools::getValue('import_type')))];
-            $this->context->cookie->entity_selected = (int) $entitySelected;
-        } elseif (isset($this->context->cookie->entity_selected)) {
-            $entitySelected = (int) $this->context->cookie->entity_selected;
-        }
-
-        $csvSelected = '';
-        if (isset($this->context->cookie->csv_selected) &&
-            @filemtime(
-                self::getPath(
-                    urldecode($this->context->cookie->csv_selected)
-                )
-            )
-        ) {
-            $csvSelected = urldecode($this->context->cookie->csv_selected);
-        } else {
-            $this->context->cookie->csv_selected = $csvSelected;
-        }
-
-        $idLangSelected = '';
-        if (isset($this->context->cookie->iso_lang_selected) && $this->context->cookie->iso_lang_selected) {
-            $idLangSelected = (int) Language::getIdByIso(urldecode($this->context->cookie->iso_lang_selected));
-        }
-
-        $separatorSelected = $this->separator;
-        if (isset($this->context->cookie->separator_selected) && $this->context->cookie->separator_selected) {
-            $separatorSelected = urldecode($this->context->cookie->separator_selected);
-        }
-
-        $multipleValueSeparatorSelected = $this->multiple_value_separator;
-        if (isset($this->context->cookie->multiple_value_separator_selected) && $this->context->cookie->multiple_value_separator_selected) {
-            $multipleValueSeparatorSelected = urldecode($this->context->cookie->multiple_value_separator_selected);
-        }
-
-        //get post max size
-        $postMaxSize = ini_get('post_max_size');
-        $bytes = (int) trim($postMaxSize);
-        $last = strtolower($postMaxSize[strlen($postMaxSize) - 1]);
-
-        switch ($last) {
-            case 'g':
-                $bytes *= 1024;
-            // no break to fall-through
-            case 'm':
-                $bytes *= 1024;
-            // no break to fall-through
-            case 'k':
-                $bytes *= 1024;
-                break;
-        }
-
-        if (!isset($bytes) || $bytes == '') {
-            $bytes = 20971520;
-        } // 20Mb
-
-        $this->tpl_form_vars = [
-            'post_max_size'                     => (int) $bytes,
-            'module_confirmation'               => Tools::isSubmit('import') && (isset($this->warnings) && !count($this->warnings)),
-            'path_import'                       => self::getPath(),
-            'entities'                          => $this->entities,
-            'entity_selected'                   => $entitySelected,
-            'csv_selected'                      => $csvSelected,
-            'separator_selected'                => $separatorSelected,
-            'multiple_value_separator_selected' => $multipleValueSeparatorSelected,
-            'files_to_import'                   => $filesToImport,
-            'languages'                         => Language::getLanguages(false),
-            'id_language'                       => ($idLangSelected) ? $idLangSelected : $this->context->language->id,
-            'available_fields'                  => $this->getAvailableFields(),
-            'truncateAuthorized'                => (Shop::isFeatureActive() && $this->context->employee->isSuperAdmin()) || !Shop::isFeatureActive(),
-            'PS_ADVANCED_STOCK_MANAGEMENT'      => Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT'),
-        ];
-
-        return parent::renderForm();
-    }
-
-    /**
-     * @param bool $inArray
-     *
-     * @return array|string
-     */
-    public function getAvailableFields($inArray = false)
-    {
-        $i = 0;
-        $fields = [];
-        $keys = array_keys($this->available_fields);
-        array_shift($keys);
-        foreach ($this->available_fields as $k => $field) {
-            if ($k === 'no') {
-                continue;
-            }
-            if ($k === 'price_tin') { // Special case for Product : either one or the other. Not both.
-                $fields[$i - 1] = '<div>'.$this->available_fields[$keys[$i - 1]]['label'].'<br/>&nbsp;&nbsp;<i>'.$this->l('or').'</i>&nbsp;&nbsp; '.$field['label'].'</div>';
-            } else {
-                if (isset($field['help'])) {
-                    $html = '&nbsp;<a href="#" class="help-tooltip" data-toggle="tooltip" title="'.$field['help'].'"><i class="icon-info-sign"></i></a>';
-                } else {
-                    $html = '';
-                }
-                $fields[] = '<div>'.$field['label'].$html.'</div>';
-            }
-            ++$i;
-        }
-        if ($inArray) {
-            return $fields;
-        } else {
-            return implode("\n\r", $fields);
-        }
-    }
-
-    /**
-     * @param      $defaultLanguageId
-     * @param      $categoryName
-     * @param null $idParentCategory
-     */
-    public function productImportCreateCat($defaultLanguageId, $categoryName, $idParentCategory = null)
-    {
-        $categoryToCreate = new Category();
-        $shopIsFeatureActive = Shop::isFeatureActive();
-        if (!$shopIsFeatureActive) {
-            $categoryToCreate->id_shop_default = 1;
-        } else {
-            $categoryToCreate->id_shop_default = (int) Context::getContext()->shop->id;
-        }
-        $categoryToCreate->name = self::createMultiLangField(trim($categoryName));
-        $categoryToCreate->active = 1;
-        $categoryToCreate->id_parent = (int) $idParentCategory ? (int) $idParentCategory : (int) Configuration::get('PS_HOME_CATEGORY'); // Default parent is home for unknown category to create
-        $categoryLinkRewrite = Tools::link_rewrite($categoryToCreate->name[$defaultLanguageId]);
-        $categoryToCreate->link_rewrite = self::createMultiLangField($categoryLinkRewrite);
-
-        if (($fieldError = $categoryToCreate->validateFields(UNFRIENDLY_ERROR, true)) !== true ||
-            ($langFieldError = $categoryToCreate->validateFieldsLang(UNFRIENDLY_ERROR, true)) !== true ||
-            !$categoryToCreate->add()
-        ) {
-            $this->errors[] = sprintf(
-                $this->l('%1$s (ID: %2$s) cannot be saved'),
-                $categoryToCreate->name[$defaultLanguageId],
-                (isset($categoryToCreate->id) && !empty($categoryToCreate->id)) ? $categoryToCreate->id : 'null'
-            );
-            if ($fieldError !== true || isset($langFieldError) && $langFieldError !== true) {
-                $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').Db::getInstance()->getMsgError();
-            }
-        }
     }
 
     /**
@@ -1246,190 +1618,6 @@ class AdminImportControllerCore extends AdminController
         }
 
         return $res;
-    }
-
-    /**
-     * @return bool|null
-     */
-    public function postProcess()
-    {
-        /* PrestaShop demo mode */
-        if (_PS_MODE_DEMO_) {
-            $this->errors[] = $this->l('This functionality has been disabled.');
-
-            return null;
-        }
-
-        if (Tools::isSubmit('import')) {
-            $this->importByGroups();
-        } elseif ($filename = Tools::getValue('csvfilename')) {
-            $filename = urldecode($filename);
-            $file = self::getPath(basename($filename));
-            if (realpath(dirname($file)) != realpath(self::getPath())) {
-                exit();
-            }
-            if (!empty($filename)) {
-                $bName = basename($filename);
-                if (Tools::getValue('delete') && file_exists($file)) {
-                    @unlink($file);
-                } elseif (file_exists($file)) {
-                    $bName = explode('.', $bName);
-                    $bName = strtolower($bName[count($bName) - 1]);
-                    $mimeTypes = ['csv' => 'text/csv'];
-
-                    if (isset($mimeTypes[$bName])) {
-                        $mimeType = $mimeTypes[$bName];
-                    } else {
-                        $mimeType = 'application/octet-stream';
-                    }
-
-                    if (ob_get_level() && ob_get_length() > 0) {
-                        ob_end_clean();
-                    }
-
-                    header('Content-Transfer-Encoding: binary');
-                    header('Content-Type: '.$mimeType);
-                    header('Content-Length: '.filesize($file));
-                    header('Content-Disposition: attachment; filename="'.$filename.'"');
-                    $fp = fopen($file, 'rb');
-                    while (is_resource($fp) && !feof($fp)) {
-                        echo fgets($fp, 16384);
-                    }
-                    exit;
-                }
-            }
-        }
-        Db::getInstance()->enableCache();
-
-        return parent::postProcess();
-    }
-
-    /**
-     * @param bool $offset
-     * @param bool $limit
-     * @param null $results
-     * @param bool $validateOnly
-     * @param int  $moreStep
-     */
-    public function importByGroups($offset = false, $limit = false, &$results = null, $validateOnly = false, $moreStep = 0)
-    {
-        // Check if the CSV file exist
-        if (Tools::getValue('csv')) {
-            $shopIsFeatureActive = Shop::isFeatureActive();
-            // If i am a superadmin, i can truncate table (ONLY IF OFFSET == 0 or false and NOT FOR VALIDATION MODE!)
-            if (!$offset && !$moreStep && !$validateOnly && (($shopIsFeatureActive && $this->context->employee->isSuperAdmin()) || !$shopIsFeatureActive) && Tools::getValue('truncate')) {
-                $this->truncateTables((int) Tools::getValue('entity'));
-            }
-            $importType = false;
-            $doneCount = 0;
-            // Sometime, import will use registers to memorize data across all elements to import (for trees, or else).
-            // Since import is splitted in multiple ajax calls, we must keep these data across all steps of the full import.
-            $crossStepsVariables = [];
-            if ($crossStepsVars = Tools::getValue('crossStepsVars')) {
-                $crossStepsVars = json_decode($crossStepsVars, true);
-                if (sizeof($crossStepsVars) > 0) {
-                    $crossStepsVariables = $crossStepsVars;
-                }
-            }
-            Db::getInstance()->disableCache();
-            switch ((int) Tools::getValue('entity')) {
-                case $this->entities[$importType = $this->l('Categories')]:
-                    $doneCount += $this->categoryImport($offset, $limit, $crossStepsVariables, $validateOnly);
-                    $this->clearSmartyCache();
-                    break;
-                case $this->entities[$importType = $this->l('Products')]:
-                    if (!defined('PS_MASS_PRODUCT_CREATION')) {
-                        define('PS_MASS_PRODUCT_CREATION', true);
-                    }
-                    $moreStepLabels = [$this->l('Linking Accessories...')];
-                    $doneCount += $this->productImport($offset, $limit, $crossStepsVariables, $validateOnly, $moreStep);
-                    $this->clearSmartyCache();
-                    break;
-                case $this->entities[$importType = $this->l('Customers')]:
-                    $doneCount += $this->customerImport($offset, $limit, $validateOnly);
-                    break;
-                case $this->entities[$importType = $this->l('Addresses')]:
-                    $doneCount += $this->addressImport($offset, $limit, $validateOnly);
-                    break;
-                case $this->entities[$importType = $this->l('Combinations')]:
-                    $doneCount += $this->attributeImport($offset, $limit, $crossStepsVariables, $validateOnly);
-                    $this->clearSmartyCache();
-                    break;
-                case $this->entities[$importType = $this->l('Brands')]:
-                    $doneCount += $this->manufacturerImport($offset, $limit, $validateOnly);
-                    $this->clearSmartyCache();
-                    break;
-                case $this->entities[$importType = $this->l('Suppliers')]:
-                    $doneCount += $this->supplierImport($offset, $limit, $validateOnly);
-                    $this->clearSmartyCache();
-                    break;
-                case $this->entities[$importType = $this->l('Alias')]:
-                    $doneCount += $this->aliasImport($offset, $limit, $validateOnly);
-                    break;
-                case $this->entities[$importType = $this->l('Store contacts')]:
-                    $doneCount += $this->storeContactImport($offset, $limit, $validateOnly);
-                    $this->clearSmartyCache();
-                    break;
-            }
-
-            if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
-                switch ((int) Tools::getValue('entity')) {
-                    case $this->entities[$importType = $this->l('Supply Orders')]:
-                        if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
-                            $doneCount += $this->supplyOrdersImport($offset, $limit, $validateOnly);
-                        }
-                        break;
-                    case $this->entities[$importType = $this->l('Supply Order Details')]:
-                        if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
-                            $doneCount += $this->supplyOrdersDetailsImport($offset, $limit, $crossStepsVariables, $validateOnly);
-                        }
-                        break;
-                }
-            }
-
-            if ($results !== null) {
-                $results['isFinished'] = ($doneCount < $limit);
-                $results['doneCount'] = $offset + $doneCount;
-                if ($offset === 0) {
-                    // compute total count only once, because it takes time
-                    $handle = $this->openCsvFile(0);
-                    if ($handle) {
-                        $count = 0;
-                        while (fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) {
-                            $count++;
-                        }
-                        $results['totalCount'] = $count;
-                    }
-                    $this->closeCsvFile($handle);
-                }
-                if (!$results['isFinished'] || (!$validateOnly && ($moreStep < count($moreStepLabels)))) {
-                    // Since we'll have to POST this array from ajax for the next call, we should care about it size.
-                    $nextPostSize = mb_strlen(json_encode($crossStepsVariables));
-                    $results['crossStepsVariables'] = $crossStepsVariables;
-                    $results['nextPostSize'] = $nextPostSize + (1024 * 64); // 64KB more for the rest of the POST query.
-                    $results['postSizeLimit'] = Tools::getMaxUploadSize();
-                }
-                if ($results['isFinished'] && !$validateOnly && ($moreStep < count($moreStepLabels))) {
-                    $results['oneMoreStep'] = $moreStep + 1;
-                    $results['moreStepLabel'] = $moreStepLabels[$moreStep];
-                }
-            }
-
-            if ($importType !== false) {
-                $logMessage = sprintf($this->l('%s import'), $importType);
-                if ($offset !== false && $limit !== false) {
-                    $logMessage .= ' '.sprintf($this->l('(from %s to %s)'), $offset, $limit);
-                }
-                if (Tools::getValue('truncate')) {
-                    $logMessage .= ' '.$this->l('with truncate');
-                }
-                Logger::addLog($logMessage, 1, null, $importType, null, true, (int) $this->context->employee->id);
-            }
-
-            Db::getInstance()->enableCache();
-        } else {
-            $this->errors[] = $this->l('To proceed, please upload a file first.');
-        }
     }
 
     /**
@@ -1556,79 +1744,6 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param bool $offset
-     * @param bool $limit
-     * @param bool $crossStepsVariables
-     * @param bool $validateOnly
-     *
-     * @return bool|int
-     *
-     * @since 1.0.0
-     */
-    public function categoryImport($offset = false, $limit = false, &$crossStepsVariables = false, $validateOnly = false)
-    {
-        $this->receiveTab();
-        $handle = $this->openCsvFile($offset);
-        if (!$handle) {
-            return false;
-        }
-
-        $idDefaultLanguage = (int) Configuration::get('PS_LANG_DEFAULT');
-        $idLang = Language::getIdByIso(Tools::getValue('iso_lang'));
-        if (!Validate::isUnsignedId($idLang)) {
-            $idLang = $idDefaultLanguage;
-        }
-        self::setLocale();
-
-        $forceIds = Tools::getValue('forceIDs');
-        $regenerate = Tools::getValue('regenerate');
-        $shopIsFeatureActive = Shop::isFeatureActive();
-
-        $catMoved = [];
-        if ($crossStepsVariables !== false && array_key_exists('cat_moved', $crossStepsVariables)) {
-            $catMoved = $crossStepsVariables['cat_moved'];
-        }
-
-        $lineCount = 0;
-        for ($currentLine = 0; ($line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
-            $lineCount++;
-            if ($this->convert) {
-                $line = $this->utf8EncodeArray($line);
-            }
-
-            if (count($line) == 1 && $line[0] == null) {
-                $this->warnings[] = $this->l('There is an empty row in the file that won\'t be imported.');
-                continue;
-            }
-
-            $info = self::getMaskedRow($line);
-
-            $this->categoryImportOne(
-                $info,
-                $idDefaultLanguage,
-                $idLang,
-                $forceIds,
-                $regenerate,
-                $shopIsFeatureActive,
-                $catMoved, // by ref
-                $validateOnly
-            );
-        }
-
-        if (!$validateOnly) {
-            /* Import has finished, we can regenerate the categories nested tree */
-            Category::regenerateEntireNtree();
-        }
-        $this->closeCsvFile($handle);
-
-        if ($crossStepsVariables !== false) {
-            $crossStepsVariables['cat_moved'] = $catMoved;
-        }
-
-        return $lineCount;
-    }
-
-    /**
      * @since 1.0.0
      */
     protected function receiveTab()
@@ -1639,25 +1754,6 @@ class AdminImportControllerCore extends AdminController
                 self::$columnMask[$type] = $nb;
             }
         }
-    }
-
-    /**
-     * @param $row
-     *
-     * @return array
-     *
-     * @since 1.0.0
-     */
-    public static function getMaskedRow($row)
-    {
-        $res = [];
-        if (is_array(self::$columnMask)) {
-            foreach (self::$columnMask as $type => $nb) {
-                $res[$type] = isset($row[$nb]) ? trim($row[$nb]) : null;
-            }
-        }
-
-        return $res;
     }
 
     /**
@@ -1729,8 +1825,8 @@ class AdminImportControllerCore extends AdminController
                 $categoryToCreate->link_rewrite = self::createMultiLangField($categoryLinkRewrite);
                 $categoryToCreate->id_parent = Configuration::get('PS_HOME_CATEGORY'); // Default parent is home for unknown category to create
 
-                if (($fieldError = $categoryToCreate->validateFields(UNFRIENDLY_ERROR, true)) === true &&
-                    ($langFieldError = $categoryToCreate->validateFieldsLang(UNFRIENDLY_ERROR, true)) === true &&
+                if (($fieldError = $categoryToCreate->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
+                    ($langFieldError = $categoryToCreate->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true &&
                     !$validateOnly && // Do not move the position of this test. Only ->add() should not be triggered is !validateOnly. Previous tests should be always run.
                     $categoryToCreate->add()
                 ) {
@@ -1781,8 +1877,8 @@ class AdminImportControllerCore extends AdminController
             );
         }
         $res = false;
-        if (($fieldError = $category->validateFields(UNFRIENDLY_ERROR, true)) === true &&
-            ($langFieldError = $category->validateFieldsLang(UNFRIENDLY_ERROR, true)) === true && empty($this->errors)
+        if (($fieldError = $category->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
+            ($langFieldError = $category->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true && empty($this->errors)
         ) {
             $categoryAlreadyCreated = Category::searchByNameAndParentCategoryId(
                 $idLang,
@@ -1972,13 +2068,13 @@ class AdminImportControllerCore extends AdminController
             $srcWidth = $srcHeight = 0;
             $error = 0;
             ImageManager::resize($tmpfile, $path.'.jpg', null, null, 'jpg', false, $error, $tgtWidth, $tgtHeight, 5, $srcWidth, $srcHeight);
-            $images_types = ImageType::getImagesTypes($entity, true);
+            $imagesTypes = ImageType::getImagesTypes($entity, true);
 
             if ($regenerate) {
                 $previousPath = null;
                 $pathInfos = [];
                 $pathInfos[] = [$tgtWidth, $tgtHeight, $path.'.jpg'];
-                foreach ($images_types as $imageType) {
+                foreach ($imagesTypes as $imageType) {
                     $tmpfile = self::get_best_path($imageType['width'], $imageType['height'], $pathInfos);
 
                     if (ImageManager::resize(
@@ -2055,100 +2151,6 @@ class AdminImportControllerCore extends AdminController
     protected function closeCsvFile($handle)
     {
         fclose($handle);
-    }
-
-    /**
-     * @since 1.0.0
-     */
-    public function clearSmartyCache()
-    {
-        Tools::enableCache();
-        Tools::clearCache($this->context->smarty);
-        Tools::restoreCacheSettings();
-    }
-
-    /**
-     * @param bool $offset
-     * @param bool $limit
-     * @param bool $crossStepsVariables
-     * @param bool $validateOnly
-     * @param int  $moreStep
-     *
-     * @return int
-     *
-     * @since 1.0.0
-     */
-    public function productImport($offset = false, $limit = false, &$crossStepsVariables = false, $validateOnly = false, $moreStep = 0)
-    {
-        if ($moreStep == 1) {
-            return $this->productImportAccessories($offset, $limit, $crossStepsVariables);
-        }
-        $this->receiveTab();
-        $handle = $this->openCsvFile($offset);
-        if (!$handle) {
-            return false;
-        }
-
-        $idDefaultLanguage = (int) Configuration::get('PS_LANG_DEFAULT');
-        $idLang = Language::getIdByIso(Tools::getValue('iso_lang'));
-        if (!Validate::isUnsignedId($idLang)) {
-            $idLang = $idDefaultLanguage;
-        }
-        self::setLocale();
-        $shopIds = Shop::getCompleteListOfShopsID();
-
-        $forceIds = Tools::getValue('forceIDs');
-        $matchRef = Tools::getValue('match_ref');
-        $regenerate = Tools::getValue('regenerate');
-        $shopIsFeatureActive = Shop::isFeatureActive();
-        if (!$validateOnly) {
-            Module::setBatchMode(true);
-        }
-
-        $accessories = [];
-        if ($crossStepsVariables !== false && array_key_exists('accessories', $crossStepsVariables)) {
-            $accessories = $crossStepsVariables['accessories'];
-        }
-
-        $lineCount = 0;
-        for ($currentLine = 0; ($line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
-            $lineCount++;
-            if ($this->convert) {
-                $line = $this->utf8EncodeArray($line);
-            }
-
-            if (count($line) == 1 && $line[0] == null) {
-                $this->warnings[] = $this->l('There is an empty row in the file that won\'t be imported.');
-                continue;
-            }
-
-            $info = self::getMaskedRow($line);
-
-            $this->productImportOne(
-                $info,
-                $idDefaultLanguage,
-                $idLang,
-                $forceIds,
-                $regenerate,
-                $shopIsFeatureActive,
-                $shopIds,
-                $matchRef,
-                $accessories, // by ref
-                $validateOnly
-            );
-        }
-        $this->closeCsvFile($handle);
-        if (!$validateOnly) {
-            Module::processDeferedFuncCall();
-            Module::processDeferedClearCache();
-            Tag::updateTagCount();
-        }
-
-        if ($crossStepsVariables !== false) {
-            $crossStepsVariables['accessories'] = $accessories;
-        }
-
-        return $lineCount;
     }
 
     /**
@@ -2301,7 +2303,7 @@ class AdminImportControllerCore extends AdminController
                 );
             }
         }
-        if (isset($product->manufacturer) && is_numeric($product->manufacturer) && Manufacturer::manufacturerExists((int) $product->manufacturer)) {
+        if (isset($product->manufacturer) && is_numeric($product->manufacturer) && Manufacturer::manufacturerExists((int) $product->id_manufacturer)) {
             $product->id_manufacturer = (int) $product->manufacturer;
         } elseif (isset($product->manufacturer) && is_string($product->manufacturer) && !empty($product->manufacturer)) {
             if ($manufacturer = Manufacturer::getIdByName($product->manufacturer)) {
@@ -2310,8 +2312,8 @@ class AdminImportControllerCore extends AdminController
                 $manufacturer = new Manufacturer();
                 $manufacturer->name = $product->manufacturer;
                 $manufacturer->active = true;
-                if (($fieldError = $manufacturer->validateFields(UNFRIENDLY_ERROR, true)) === true &&
-                    ($langFieldError = $manufacturer->validateFieldsLang(UNFRIENDLY_ERROR, true)) === true &&
+                if (($fieldError = $manufacturer->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
+                    ($langFieldError = $manufacturer->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true &&
                     !$validateOnly && // Do not move this condition: previous tests should be played always, but next ->add() test should not be played in validateOnly mode
                     $manufacturer->add()
                 ) {
@@ -2342,8 +2344,8 @@ class AdminImportControllerCore extends AdminController
                 $supplier->name = $product->supplier;
                 $supplier->active = true;
 
-                if (($fieldError = $supplier->validateFields(UNFRIENDLY_ERROR, true)) === true &&
-                    ($langFieldError = $supplier->validateFieldsLang(UNFRIENDLY_ERROR, true)) === true &&
+                if (($fieldError = $supplier->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
+                    ($langFieldError = $supplier->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true &&
                     !$validateOnly &&  // Do not move this condition: previous tests should be played always, but next ->add() test should not be played in validateOnly mode
                     $supplier->add()
                 ) {
@@ -2394,8 +2396,8 @@ class AdminImportControllerCore extends AdminController
                         $categoryToCreate->id_parent = Configuration::get('PS_HOME_CATEGORY'); // Default parent is home for unknown category to create
                         $categoryLinkRewrite = Tools::link_rewrite($categoryToCreate->name[$idDefaultLanguage]);
                         $categoryToCreate->link_rewrite = self::createMultiLangField($categoryLinkRewrite);
-                        if (($fieldError = $categoryToCreate->validateFields(UNFRIENDLY_ERROR, true)) === true &&
-                            ($langFieldError = $categoryToCreate->validateFieldsLang(UNFRIENDLY_ERROR, true)) === true &&
+                        if (($fieldError = $categoryToCreate->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
+                            ($langFieldError = $categoryToCreate->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true &&
                             !$validateOnly &&  // Do not move this condition: previous tests should be played always, but next ->add() test should not be played in validateOnly mode
                             $categoryToCreate->add()
                         ) {
@@ -2494,8 +2496,8 @@ class AdminImportControllerCore extends AdminController
         }
 
         $res = false;
-        $fieldError = $product->validateFields(UNFRIENDLY_ERROR, true);
-        $langFieldError = $product->validateFieldsLang(UNFRIENDLY_ERROR, true);
+        $fieldError = $product->validateFields(self::UNFRIENDLY_ERROR, true);
+        $langFieldError = $product->validateFieldsLang(self::UNFRIENDLY_ERROR, true);
         if ($fieldError === true && $langFieldError === true) {
             // check quantity
             if ($product->quantity == null) {
@@ -2631,8 +2633,8 @@ class AdminImportControllerCore extends AdminController
             }
 
             if ((isset($info['reduction_price']) && $info['reduction_price'] > 0) || (isset($info['reduction_percent']) && $info['reduction_percent'] > 0)) {
-                foreach ($idShopList as $id_shop) {
-                    $specificPrice = SpecificPrice::getSpecificPrice($product->id, $id_shop, 0, 0, 0, 1, 0, 0, 0, 0);
+                foreach ($idShopList as $idShop) {
+                    $specificPrice = SpecificPrice::getSpecificPrice($product->id, $idShop, 0, 0, 0, 1, 0, 0, 0, 0);
 
                     if (is_array($specificPrice) && isset($specificPrice['id_specific_price'])) {
                         $specificPrice = new SpecificPrice((int) $specificPrice['id_specific_price']);
@@ -2641,7 +2643,7 @@ class AdminImportControllerCore extends AdminController
                     }
                     $specificPrice->id_product = (int) $product->id;
                     $specificPrice->id_specific_price_rule = 0;
-                    $specificPrice->id_shop = $id_shop;
+                    $specificPrice->id_shop = $idShop;
                     $specificPrice->id_currency = 0;
                     $specificPrice->id_country = 0;
                     $specificPrice->id_group = 0;
@@ -2736,8 +2738,8 @@ class AdminImportControllerCore extends AdminController
                             $image->legend = self::createMultiLangField($alt);
                         }
                         // file_exists doesn't work with HTTP protocol
-                        if (($fieldError = $image->validateFields(UNFRIENDLY_ERROR, true)) === true &&
-                            ($langFieldError = $image->validateFieldsLang(UNFRIENDLY_ERROR, true)) === true && $image->add()
+                        if (($fieldError = $image->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
+                            ($langFieldError = $image->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true && $image->add()
                         ) {
                             // associate image to selected shops
                             $image->associateTo($shops);
@@ -3056,7 +3058,7 @@ class AdminImportControllerCore extends AdminController
         array_walk($info, ['self', 'fillInfo'], $customer);
 
         if ($customer->passwd) {
-            $customer->passwd = $this->get('hashing')->hash($customer->passwd, _COOKIE_KEY_);
+            $customer->passwd = Tools::hash($customer->passwd);
         }
 
         $idShopList = explode($this->multiple_value_separator, $customer->id_shop);
@@ -3107,8 +3109,8 @@ class AdminImportControllerCore extends AdminController
         }
 
         $res = false;
-        if (($fieldError = $customer->validateFields(UNFRIENDLY_ERROR, true)) === true &&
-            ($langFieldError = $customer->validateFieldsLang(UNFRIENDLY_ERROR, true)) === true
+        if (($fieldError = $customer->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
+            ($langFieldError = $customer->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true
         ) {
             $res = true;
             foreach ($customersShop as $idShop => $idGroup) {
@@ -3117,7 +3119,7 @@ class AdminImportControllerCore extends AdminController
                     foreach ($idGroup as $key => $id) {
                         $customer->id_shop = (int) $key;
                         $customer->id_shop_group = (int) $id;
-                        if ($customerExist && ((int) $currentIdShopGroup == (int) $id || in_array($currentIdShop, ShopGroup::getShopsFromGroup($id)))) {
+                        if ($customerExist && (isset($currentIdShopGroup) && (int) $currentIdShopGroup == (int) $id || isset($currentIdShop) && in_array($currentIdShop, ShopGroup::getShopsFromGroup($id)))) {
                             $customer->id = (int) $currentIdCustomer;
                             $res &= ($validateOnly || $customer->update());
                         } else {
@@ -3137,7 +3139,7 @@ class AdminImportControllerCore extends AdminController
                 } else {
                     $customer->id_shop = $idShop;
                     $customer->id_shop_group = $idGroup;
-                    if ($customerExist && (int) $idShop == (int) $currentIdShop) {
+                    if ($customerExist && isset($currentIdShop) && isset($currentIdCustomer) && (int) $idShop == (int) $currentIdShop) {
                         $customer->id = (int) $currentIdCustomer;
                         $res &= ($validateOnly || $customer->update());
                     } else {
@@ -3187,6 +3189,13 @@ class AdminImportControllerCore extends AdminController
         }
     }
 
+    /**
+     * @param int|bool $offset
+     * @param int|bool $limit
+     * @param bool $validateOnly
+     *
+     * @return bool|int
+     */
     public function addressImport($offset = false, $limit = false, $validateOnly = false)
     {
         $this->receiveTab();
@@ -3201,7 +3210,7 @@ class AdminImportControllerCore extends AdminController
         $forceIds = Tools::getValue('forceIDs');
 
         $lineCount = 0;
-        for ($current_line = 0; ($line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) && (!$limit || $current_line < $limit); $current_line++) {
+        for ($currentLine = 0; ($line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
             if ($this->convert) {
                 $line = $this->utf8EncodeArray($line);
@@ -3262,9 +3271,9 @@ class AdminImportControllerCore extends AdminController
                 $country->id_zone = 0; // Default zone for country to create
                 $country->iso_code = Tools::strtoupper(Tools::substr($address->country, 0, 2)); // Default iso for country to create
                 $country->contains_states = 0; // Default value for country to create
-                $langFieldError = $country->validateFieldsLang(UNFRIENDLY_ERROR, true);
-                if (($fieldError = $country->validateFields(UNFRIENDLY_ERROR, true)) === true &&
-                    ($langFieldError = $country->validateFieldsLang(UNFRIENDLY_ERROR, true)) === true &&
+                $langFieldError = $country->validateFieldsLang(self::UNFRIENDLY_ERROR, true);
+                if (($fieldError = $country->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
+                    ($langFieldError = $country->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true &&
                     !$validateOnly && // Do not move this condition: previous tests should be played always, but next ->add() test should not be played in validateOnly mode
                     $country->add()
                 ) {
@@ -3297,8 +3306,8 @@ class AdminImportControllerCore extends AdminController
                 $state->id_zone = 0; // Default zone for state to create
                 $state->iso_code = Tools::strtoupper(Tools::substr($address->state, 0, 2)); // Default iso for state to create
                 $state->tax_behavior = 0;
-                if (($fieldError = $state->validateFields(UNFRIENDLY_ERROR, true)) === true &&
-                    ($langFieldError = $state->validateFieldsLang(UNFRIENDLY_ERROR, true)) === true &&
+                if (($fieldError = $state->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
+                    ($langFieldError = $state->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true &&
                     !$validateOnly && // Do not move this condition: previous tests should be played always, but next ->add() test should not be played in validateOnly mode
                     $state->add()
                 ) {
@@ -3370,7 +3379,7 @@ class AdminImportControllerCore extends AdminController
             $address->id_customer = 0;
         }
 
-        if (isset($address->manufacturer) && is_numeric($address->manufacturer) && Manufacturer::manufacturerExists((int) $address->manufacturer)) {
+        if (isset($address->manufacturer) && is_numeric($address->manufacturer) && Manufacturer::manufacturerExists((int) $address->id_manufacturer)) {
             $address->id_manufacturer = (int) $address->manufacturer;
         } elseif (isset($address->manufacturer) && is_string($address->manufacturer) && !empty($address->manufacturer)) {
             if ($manufacturerId = Manufacturer::getIdByName($address->manufacturer)) {
@@ -3378,23 +3387,23 @@ class AdminImportControllerCore extends AdminController
             } else {
                 $manufacturer = new Manufacturer();
                 $manufacturer->name = $address->manufacturer;
-                if (($fieldError = $manufacturer->validateFields(UNFRIENDLY_ERROR, true)) === true &&
-                    ($langFieldError = $manufacturer->validateFieldsLang(UNFRIENDLY_ERROR, true)) === true &&
+                if (($fieldError = $manufacturer->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
+                    ($langFieldError = $manufacturer->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true &&
                     !$validateOnly && // Do not move this condition: previous tests should be played always, but next ->add() test should not be played in validateOnly mode
                     $manufacturer->add()
                 ) {
                     $address->id_manufacturer = (int) $manufacturer->id;
                 } else {
                     if (!$validateOnly) {
-                        $this->errors[] = Db::getInstance()->getMsgError().' '.sprintf(
+                        $this->errors[] = Db::getInstance()->getMsgError().' '.
+                            sprintf(
                                 $this->l('%1$s (ID: %2$s) cannot be saved'),
                                 $manufacturer->name,
                                 (isset($manufacturer->id) && !empty($manufacturer->id)) ? $manufacturer->id : 'null'
                             );
                     }
                     if ($fieldError !== true || isset($langFieldError) && $langFieldError !== true) {
-                        $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').
-                            Db::getInstance()->getMsgError();
+                        $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').Db::getInstance()->getMsgError();
                     }
                 }
             }
@@ -3408,8 +3417,8 @@ class AdminImportControllerCore extends AdminController
             } else {
                 $supplier = new Supplier();
                 $supplier->name = $address->supplier;
-                if (($fieldError = $supplier->validateFields(UNFRIENDLY_ERROR, true)) === true &&
-                    ($langFieldError = $supplier->validateFieldsLang(UNFRIENDLY_ERROR, true)) === true &&
+                if (($fieldError = $supplier->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
+                    ($langFieldError = $supplier->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true &&
                     !$validateOnly && // Do not move this condition: previous tests should be played always, but next ->add() test should not be played in validateOnly mode
                     $supplier->add()
                 ) {
@@ -3431,8 +3440,8 @@ class AdminImportControllerCore extends AdminController
         }
 
         $res = false;
-        if (($fieldError = $address->validateFields(UNFRIENDLY_ERROR, true)) === true &&
-            ($langFieldError = $address->validateFieldsLang(UNFRIENDLY_ERROR, true)) === true
+        if (($fieldError = $address->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
+            ($langFieldError = $address->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true
         ) {
             $address->force_id = (bool) $forceIds;
 
@@ -3464,8 +3473,7 @@ class AdminImportControllerCore extends AdminController
                 );
             }
             if ($fieldError !== true || isset($langFieldError) && $langFieldError !== true) {
-                $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').
-                    Db::getInstance()->getMsgError();
+                $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').Db::getInstance()->getMsgError();
             }
         }
     }
@@ -3485,7 +3493,7 @@ class AdminImportControllerCore extends AdminController
         $defaultLanguage = Configuration::get('PS_LANG_DEFAULT');
 
         $groups = [];
-        if ($crossStepsVariables !== false && array_key_exists('groups', $crossStepsVariables)) {
+        if (is_array($crossStepsVariables) && array_key_exists('groups', $crossStepsVariables)) {
             $groups = $crossStepsVariables['groups'];
         }
         foreach (AttributeGroup::getAttributesGroups($defaultLanguage) as $group) {
@@ -3493,7 +3501,7 @@ class AdminImportControllerCore extends AdminController
         }
 
         $attributes = [];
-        if ($crossStepsVariables !== false && array_key_exists('attributes', $crossStepsVariables)) {
+        if (is_array($crossStepsVariables) && array_key_exists('attributes', $crossStepsVariables)) {
             $attributes = $crossStepsVariables['attributes'];
         }
         foreach (Attribute::getAttributes($defaultLanguage) as $attribute) {
@@ -3625,8 +3633,8 @@ class AdminImportControllerCore extends AdminController
                         }
                     }
 
-                    $fieldError = $image->validateFields(UNFRIENDLY_ERROR, true);
-                    $langFieldError = $image->validateFieldsLang(UNFRIENDLY_ERROR, true);
+                    $fieldError = $image->validateFields(self::UNFRIENDLY_ERROR, true);
+                    $langFieldError = $image->validateFieldsLang(self::UNFRIENDLY_ERROR, true);
 
                     if ($fieldError === true &&
                         $langFieldError === true &&
@@ -3716,8 +3724,8 @@ class AdminImportControllerCore extends AdminController
                     $obj->public_name[$defaultLanguage] = $group;
                     $obj->position = (!$position) ? AttributeGroup::getHigherPosition() + 1 : $position;
 
-                    if (($fieldError = $obj->validateFields(UNFRIENDLY_ERROR, true)) === true &&
-                        ($langFieldError = $obj->validateFieldsLang(UNFRIENDLY_ERROR, true)) === true
+                    if (($fieldError = $obj->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
+                        ($langFieldError = $obj->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true
                     ) {
                         // here, cannot avoid attributeGroup insertion to avoid an error during validation step.
                         //if (!$validateOnly) {
@@ -3771,8 +3779,8 @@ class AdminImportControllerCore extends AdminController
                         $obj->name[$defaultLanguage] = str_replace('\n', '', str_replace('\r', '', $attribute));
                         $obj->position = (!$position && isset($groups[$group])) ? Attribute::getHigherPosition($groups[$group]) + 1 : $position;
 
-                        if (($fieldError = $obj->validateFields(UNFRIENDLY_ERROR, true)) === true &&
-                            ($langFieldError = $obj->validateFieldsLang(UNFRIENDLY_ERROR, true)) === true
+                        if (($fieldError = $obj->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
+                            ($langFieldError = $obj->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true
                         ) {
                             if (!$validateOnly) {
                                 $obj->add();
@@ -4111,8 +4119,8 @@ class AdminImportControllerCore extends AdminController
         array_walk($info, ['self', 'fillInfo'], $manufacturer);
 
         $res = false;
-        if (($fieldError = $manufacturer->validateFields(UNFRIENDLY_ERROR, true)) === true &&
-            ($langFieldError = $manufacturer->validateFieldsLang(UNFRIENDLY_ERROR, true)) === true
+        if (($fieldError = $manufacturer->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
+            ($langFieldError = $manufacturer->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true
         ) {
             if ($manufacturer->id && $manufacturer->manufacturerExists($manufacturer->id)) {
                 $res = ($validateOnly || $manufacturer->update());
@@ -4192,7 +4200,7 @@ class AdminImportControllerCore extends AdminController
         $forceIds = Tools::getValue('forceIDs');
 
         $lineCount = 0;
-        for ($current_line = 0; ($line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) && (!$limit || $current_line < $limit); $current_line++) {
+        for ($currentLine = 0; ($line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
             if ($this->convert) {
                 $line = $this->utf8EncodeArray($line);
@@ -4246,8 +4254,8 @@ class AdminImportControllerCore extends AdminController
         }
 
         self::arrayWalk($info, ['self', 'fillInfo'], $supplier);
-        if (($fieldError = $supplier->validateFields(UNFRIENDLY_ERROR, true)) === true &&
-            ($langFieldError = $supplier->validateFieldsLang(UNFRIENDLY_ERROR, true)) === true
+        if (($fieldError = $supplier->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
+            ($langFieldError = $supplier->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true
         ) {
             $res = false;
             if ($supplier->id && $supplier->supplierExists($supplier->id)) {
@@ -4370,8 +4378,8 @@ class AdminImportControllerCore extends AdminController
         array_walk($info, ['self', 'fillInfo'], $alias);
 
         $res = false;
-        if (($field_error = $alias->validateFields(UNFRIENDLY_ERROR, true)) === true &&
-            ($lang_field_error = $alias->validateFieldsLang(UNFRIENDLY_ERROR, true)) === true
+        if (($field_error = $alias->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
+            ($lang_field_error = $alias->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true
         ) {
             if ($alias->id && $alias->aliasExists($alias->id)) {
                 $res = ($validateOnly || $alias->update());
@@ -4479,8 +4487,8 @@ class AdminImportControllerCore extends AdminController
                 $store->id_country = (int) $store->country;
             }
         } elseif (isset($store->country) && is_string($store->country) && !empty($store->country)) {
-            if ($id_country = Country::getIdByName(null, $store->country)) {
-                $store->id_country = (int) $id_country;
+            if ($idCountry = Country::getIdByName(null, $store->country)) {
+                $store->id_country = (int) $idCountry;
             } else {
                 $country = new Country();
                 $country->active = 1;
@@ -4488,21 +4496,20 @@ class AdminImportControllerCore extends AdminController
                 $country->id_zone = 0; // Default zone for country to create
                 $country->iso_code = Tools::strtoupper(Tools::substr($store->country, 0, 2)); // Default iso for country to create
                 $country->contains_states = 0; // Default value for country to create
-                $lang_field_error = $country->validateFieldsLang(UNFRIENDLY_ERROR, true);
-                if (($field_error = $country->validateFields(UNFRIENDLY_ERROR, true)) === true &&
-                    ($lang_field_error = $country->validateFieldsLang(UNFRIENDLY_ERROR, true)) === true &&
+                $langFieldError = $country->validateFieldsLang(self::UNFRIENDLY_ERROR, true);
+                if (($fieldError = $country->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
+                    ($langFieldError = $country->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true &&
                     !$validateOnly && // Do not move this condition: previous tests should be played always, but next ->add() test should not be played in validateOnly mode
                     $country->add()
                 ) {
                     $store->id_country = (int) $country->id;
                 } else {
                     if (!$validateOnly) {
-                        $default_language_id = (int) Configuration::get('PS_LANG_DEFAULT');
-                        $this->errors[] = sprintf($this->l('%s cannot be saved'), $country->name[$default_language_id]);
+                        $defaultLanguageId = (int) Configuration::get('PS_LANG_DEFAULT');
+                        $this->errors[] = sprintf($this->l('%s cannot be saved'), $country->name[$defaultLanguageId]);
                     }
-                    if ($field_error !== true || isset($lang_field_error) && $lang_field_error !== true) {
-                        $this->errors[] = ($field_error !== true ? $field_error : '').(isset($lang_field_error) && $lang_field_error !== true ? $lang_field_error : '').
-                            Db::getInstance()->getMsgError();
+                    if ($fieldError !== true || isset($langFieldError) && $langFieldError !== true) {
+                        $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').Db::getInstance()->getMsgError();
                     }
                 }
             }
@@ -4513,8 +4520,8 @@ class AdminImportControllerCore extends AdminController
                 $store->id_state = (int) $store->state;
             }
         } elseif (isset($store->state) && is_string($store->state) && !empty($store->state)) {
-            if ($id_state = State::getIdByName($store->state)) {
-                $store->id_state = (int) $id_state;
+            if ($idState = State::getIdByName($store->state)) {
+                $store->id_state = (int) $idState;
             } else {
                 $state = new State();
                 $state->active = 1;
@@ -4523,8 +4530,8 @@ class AdminImportControllerCore extends AdminController
                 $state->id_zone = 0; // Default zone for state to create
                 $state->iso_code = Tools::strtoupper(Tools::substr($store->state, 0, 2)); // Default iso for state to create
                 $state->tax_behavior = 0;
-                if (($field_error = $state->validateFields(UNFRIENDLY_ERROR, true)) === true &&
-                    ($lang_field_error = $state->validateFieldsLang(UNFRIENDLY_ERROR, true)) === true &&
+                if (($fieldError = $state->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
+                    ($langFieldError = $state->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true &&
                     !$validateOnly && // Do not move this condition: previous tests should be played always, but next ->add() test should not be played in validateOnly mode
                     $state->add()
                 ) {
@@ -4533,17 +4540,16 @@ class AdminImportControllerCore extends AdminController
                     if (!$validateOnly) {
                         $this->errors[] = sprintf($this->l('%s cannot be saved'), $state->name);
                     }
-                    if ($field_error !== true || isset($lang_field_error) && $lang_field_error !== true) {
-                        $this->errors[] = ($field_error !== true ? $field_error : '').(isset($lang_field_error) && $lang_field_error !== true ? $lang_field_error : '').
-                            Db::getInstance()->getMsgError();
+                    if ($fieldError !== true || isset($langFieldError) && $langFieldError !== true) {
+                        $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').Db::getInstance()->getMsgError();
                     }
                 }
             }
         }
 
         $res = false;
-        if (($field_error = $store->validateFields(UNFRIENDLY_ERROR, true)) === true &&
-            ($lang_field_error = $store->validateFieldsLang(UNFRIENDLY_ERROR, true)) === true
+        if (($fieldError = $store->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
+            ($langFieldError = $store->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true
         ) {
             if ($store->id && $store->storeExists($store->id)) {
                 $res = $validateOnly ? $validateOnly : $store->update();
@@ -4562,7 +4568,7 @@ class AdminImportControllerCore extends AdminController
             }
         } else {
             $this->errors[] = $this->l('Store is invalid').' ('.$store->name.')';
-            $this->errors[] = ($field_error !== true ? $field_error : '').(isset($lang_field_error) && $lang_field_error !== true ? $lang_field_error : '');
+            $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '');
         }
     }
 
@@ -4586,12 +4592,12 @@ class AdminImportControllerCore extends AdminController
 
         self::setLocale();
 
-        $force_ids = Tools::getValue('forceIDs');
+        $forceIds = Tools::getValue('forceIDs');
 
         // main loop, for each supply orders to import
-        $line_count = 0;
-        for ($current_line = 0; ($line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) && (!$limit || $current_line < $limit); ++$current_line) {
-            $line_count++;
+        $lineCount = 0;
+        for ($currentLine = 0; ($line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); ++$currentLine) {
+            $lineCount++;
             if ($this->convert) {
                 $line = $this->utf8EncodeArray($line);
             }
@@ -4599,15 +4605,15 @@ class AdminImportControllerCore extends AdminController
 
             $this->supplyOrdersImportOne(
                 $info,
-                $force_ids,
-                $current_line,
+                $forceIds,
+                $currentLine,
                 $validateOnly
             );
         }
         // closes
         $this->closeCsvFile($handle);
 
-        return $line_count;
+        return $lineCount;
     }
 
     /**
@@ -4623,76 +4629,76 @@ class AdminImportControllerCore extends AdminController
 
         // if an id is set, instanciates a supply order with this id if possible
         if (array_key_exists('id', $info) && (int) $info['id'] && SupplyOrder::exists((int) $info['id'])) {
-            $supply_order = new SupplyOrder((int) $info['id']);
+            $supplyOrder = new SupplyOrder((int) $info['id']);
         } elseif (array_key_exists('reference', $info) && $info['reference'] && SupplyOrder::exists(pSQL($info['reference']))) {
-            $supply_order = SupplyOrder::getSupplyOrderByReference(pSQL($info['reference']));
+            $supplyOrder = SupplyOrder::getSupplyOrderByReference(pSQL($info['reference']));
         } else { // new supply order
-            $supply_order = new SupplyOrder();
+            $supplyOrder = new SupplyOrder();
         }
 
         // gets parameters
-        $id_supplier = (int) $info['id_supplier'];
-        $id_lang = (int) $info['id_lang'];
-        $id_warehouse = (int) $info['id_warehouse'];
-        $id_currency = (int) $info['id_currency'];
+        $idSupplier = (int) $info['id_supplier'];
+        $idLang = (int) $info['id_lang'];
+        $idWarehouse = (int) $info['id_warehouse'];
+        $idCurrency = (int) $info['id_currency'];
         $reference = pSQL($info['reference']);
-        $date_delivery_expected = pSQL($info['date_delivery_expected']);
-        $discount_rate = (float) $info['discount_rate'];
+        $dateDeliveryExpected = pSQL($info['date_delivery_expected']);
+        $discountRate = (float) $info['discount_rate'];
 
         $error = '';
         // checks parameters
-        if (!Supplier::supplierExists($id_supplier)) {
-            $error = sprintf($this->l('Supplier ID (%d) is not valid (at line %d).'), $id_supplier, $currentLine + 1);
+        if (!Supplier::supplierExists($idSupplier)) {
+            $error = sprintf($this->l('Supplier ID (%d) is not valid (at line %d).'), $idSupplier, $currentLine + 1);
         }
-        if (!Language::getLanguage($id_lang)) {
-            $error = sprintf($this->l('Lang ID (%d) is not valid (at line %d).'), $id_lang, $currentLine + 1);
+        if (!Language::getLanguage($idLang)) {
+            $error = sprintf($this->l('Lang ID (%d) is not valid (at line %d).'), $idLang, $currentLine + 1);
         }
-        if (!Warehouse::exists($id_warehouse)) {
-            $error = sprintf($this->l('Warehouse ID (%d) is not valid (at line %d).'), $id_warehouse, $currentLine + 1);
+        if (!Warehouse::exists($idWarehouse)) {
+            $error = sprintf($this->l('Warehouse ID (%d) is not valid (at line %d).'), $idWarehouse, $currentLine + 1);
         }
-        if (!Currency::getCurrency($id_currency)) {
-            $error = sprintf($this->l('Currency ID (%d) is not valid (at line %d).'), $id_currency, $currentLine + 1);
+        if (!Currency::getCurrency($idCurrency)) {
+            $error = sprintf($this->l('Currency ID (%d) is not valid (at line %d).'), $idCurrency, $currentLine + 1);
         }
-        if (empty($supply_order->reference) && SupplyOrder::exists($reference)) {
+        if (empty($supplyOrder->reference) && SupplyOrder::exists($reference)) {
             $error = sprintf($this->l('Reference (%s) already exists (at line %d).'), $reference, $currentLine + 1);
         }
-        if (!empty($supply_order->reference) && ($supply_order->reference != $reference && SupplyOrder::exists($reference))) {
+        if (!empty($supplyOrder->reference) && ($supplyOrder->reference != $reference && SupplyOrder::exists($reference))) {
             $error = sprintf($this->l('Reference (%s) already exists (at line %d).'), $reference, $currentLine + 1);
         }
-        if (!Validate::isDateFormat($date_delivery_expected)) {
-            $error = sprintf($this->l('Date format (%s) is not valid (at line %d). It should be: %s.'), $date_delivery_expected, $currentLine + 1, $this->l('YYYY-MM-DD'));
-        } elseif (new DateTime($date_delivery_expected) <= new DateTime('yesterday')) {
-            $error = sprintf($this->l('Date (%s) cannot be in the past (at line %d). Format: %s.'), $date_delivery_expected, $currentLine + 1, $this->l('YYYY-MM-DD'));
+        if (!Validate::isDateFormat($dateDeliveryExpected)) {
+            $error = sprintf($this->l('Date format (%s) is not valid (at line %d). It should be: %s.'), $dateDeliveryExpected, $currentLine + 1, $this->l('YYYY-MM-DD'));
+        } elseif (new DateTime($dateDeliveryExpected) <= new DateTime('yesterday')) {
+            $error = sprintf($this->l('Date (%s) cannot be in the past (at line %d). Format: %s.'), $dateDeliveryExpected, $currentLine + 1, $this->l('YYYY-MM-DD'));
         }
-        if ($discount_rate < 0 || $discount_rate > 100) {
-            $error = sprintf($this->l('Discount rate (%d) is not valid (at line %d). %s.'), $discount_rate, $currentLine + 1, $this->l('Format: Between 0 and 100'));
+        if ($discountRate < 0 || $discountRate > 100) {
+            $error = sprintf($this->l('Discount rate (%d) is not valid (at line %d). %s.'), $discountRate, $currentLine + 1, $this->l('Format: Between 0 and 100'));
         }
-        if ($supply_order->id > 0 && !$supply_order->isEditable()) {
-            $error = sprintf($this->l('Supply Order (%d) is not editable (at line %d).'), $supply_order->id, $currentLine + 1);
+        if ($supplyOrder->id > 0 && !$supplyOrder->isEditable()) {
+            $error = sprintf($this->l('Supply Order (%d) is not editable (at line %d).'), $supplyOrder->id, $currentLine + 1);
         }
 
         // if no errors, sets supply order
         if (empty($error)) {
             // adds parameters
             $info['id_ref_currency'] = (int) Currency::getDefaultCurrency()->id;
-            $info['supplier_name'] = pSQL(Supplier::getNameById($id_supplier));
-            if ($supply_order->id > 0) {
-                $info['id_supply_order_state'] = (int) $supply_order->id_supply_order_state;
-                $info['id'] = (int) $supply_order->id;
+            $info['supplier_name'] = pSQL(Supplier::getNameById($idSupplier));
+            if ($supplyOrder->id > 0) {
+                $info['id_supply_order_state'] = (int) $supplyOrder->id_supply_order_state;
+                $info['id'] = (int) $supplyOrder->id;
             } else {
                 $info['id_supply_order_state'] = 1;
             }
 
             // sets parameters
-            array_walk($info, ['self', 'fillInfo'], $supply_order);
+            array_walk($info, ['self', 'fillInfo'], $supplyOrder);
 
             $res = false;
 
-            if ((int) $supply_order->id && ($supply_order->exists((int) $supply_order->id) || $supply_order->exists($supply_order->reference))) {
-                $res = ($validateOnly || $supply_order->update());
+            if ((int) $supplyOrder->id && ($supplyOrder->exists((int) $supplyOrder->id) || $supplyOrder->exists($supplyOrder->reference))) {
+                $res = ($validateOnly || $supplyOrder->update());
             } else {
-                $supply_order->force_id = (bool) $forceIds;
-                $res = ($validateOnly || $supply_order->add());
+                $supplyOrder->force_id = (bool) $forceIds;
+                $res = ($validateOnly || $supplyOrder->add());
             }
 
             // errors
@@ -4727,19 +4733,19 @@ class AdminImportControllerCore extends AdminController
 
         $products = [];
         $reset = true;
-        if ($crossStepsVariables !== false && array_key_exists('products', $crossStepsVariables)) {
+        if (is_array($crossStepsVariables) && array_key_exists('products', $crossStepsVariables)) {
             $products = $crossStepsVariables['products'];
         }
-        if ($crossStepsVariables !== false && array_key_exists('reset', $crossStepsVariables)) {
+        if (is_array($crossStepsVariables) && array_key_exists('reset', $crossStepsVariables)) {
             $reset = $crossStepsVariables['reset'];
         }
 
         $force_ids = Tools::getValue('forceIDs');
 
         // main loop, for each supply orders details to import
-        $line_count = 0;
-        for ($current_line = 0; ($line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) && (!$limit || $current_line < $limit); ++$current_line) {
-            $line_count++;
+        $lineCount = 0;
+        for ($currentLine = 0; ($line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); ++$currentLine) {
+            $lineCount++;
             if ($this->convert) {
                 $line = $this->utf8EncodeArray($line);
             }
@@ -4750,7 +4756,7 @@ class AdminImportControllerCore extends AdminController
                 $products, // by ref
                 $reset, // by ref
                 $force_ids,
-                $current_line,
+                $currentLine,
                 $validateOnly
             );
         }
@@ -4762,83 +4768,83 @@ class AdminImportControllerCore extends AdminController
             $crossStepsVariables['reset'] = $reset;
         }
 
-        return $line_count;
+        return $lineCount;
     }
 
     /**
      * @param      $info
      * @param      $products
      * @param      $reset
-     * @param      $force_ids
-     * @param      $current_line
+     * @param      $forceIds
+     * @param      $currentLine
      * @param bool $validateOnly
      *
      * @since 1.0.0
      */
-    protected function supplyOrdersDetailsImportOne($info, &$products, &$reset, $force_ids, $current_line, $validateOnly = false)
+    protected function supplyOrdersDetailsImportOne($info, &$products, &$reset, $forceIds, $currentLine, $validateOnly = false)
     {
         // sets default values if needed
         self::setDefaultValues($info);
 
         // gets the supply order
         if (array_key_exists('supply_order_reference', $info) && pSQL($info['supply_order_reference']) && SupplyOrder::exists(pSQL($info['supply_order_reference']))) {
-            $supply_order = SupplyOrder::getSupplyOrderByReference(pSQL($info['supply_order_reference']));
+            $supplyOrder = SupplyOrder::getSupplyOrderByReference(pSQL($info['supply_order_reference']));
         } else {
-            $this->errors[] = sprintf($this->l('Supply Order (%s) could not be loaded (at line %d).'), $info['supply_order_reference'], $current_line + 1);
+            $this->errors[] = sprintf($this->l('Supply Order (%s) could not be loaded (at line %d).'), $info['supply_order_reference'], $currentLine + 1);
         }
 
         if (empty($this->errors)) {
             // sets parameters
-            $id_product = (int) $info['id_product'];
+            $idProduct = (int) $info['id_product'];
             if (!$info['id_product_attribute']) {
                 $info['id_product_attribute'] = 0;
             }
-            $id_product_attribute = (int) $info['id_product_attribute'];
-            $unit_price_te = (float) $info['unit_price_te'];
-            $quantity_expected = (int) $info['quantity_expected'];
-            $discount_rate = (float) $info['discount_rate'];
-            $tax_rate = (float) $info['tax_rate'];
+            $idProductAttribute = (int) $info['id_product_attribute'];
+            $unitPriceTe = (float) $info['unit_price_te'];
+            $quantityExpected = (int) $info['quantity_expected'];
+            $discountRate = (float) $info['discount_rate'];
+            $taxRate = (float) $info['tax_rate'];
 
             // checks if one product/attribute is there only once
-            if (isset($products[$id_product][$id_product_attribute])) {
+            if (isset($products[$idProduct][$idProductAttribute])) {
                 $this->errors[] = sprintf(
                     $this->l('Product/Attribute (%d/%d) cannot be added twice (at line %d).'),
-                    $id_product,
-                    $id_product_attribute,
-                    $current_line + 1
+                    $idProduct,
+                    $idProductAttribute,
+                    $currentLine + 1
                 );
             } else {
-                $products[$id_product][$id_product_attribute] = $quantity_expected;
+                $products[$idProduct][$idProductAttribute] = $quantityExpected;
             }
 
             // checks parameters
-            if (false === ($supplier_reference = ProductSupplier::getProductSupplierReference($id_product, $id_product_attribute, $supply_order->id_supplier))) {
+            if (false === ($supplierReference = ProductSupplier::getProductSupplierReference($idProduct, $idProductAttribute, $supplyOrder->id_supplier))) {
                 $this->errors[] = sprintf(
                     $this->l('Product (%d/%d) is not available for this order (at line %d).'),
-                    $id_product,
-                    $id_product_attribute,
-                    $current_line + 1
+                    $idProduct,
+                    $idProductAttribute,
+                    $currentLine + 1
                 );
             }
-            if ($unit_price_te < 0) {
-                $this->errors[] = sprintf($this->l('Unit Price (tax excl.) (%d) is not valid (at line %d).'), $unit_price_te, $current_line + 1);
+            if ($unitPriceTe < 0) {
+                $this->errors[] = sprintf($this->l('Unit Price (tax excl.) (%d) is not valid (at line %d).'), $unitPriceTe, $currentLine + 1);
             }
-            if ($quantity_expected < 0) {
-                $this->errors[] = sprintf($this->l('Quantity Expected (%d) is not valid (at line %d).'), $quantity_expected, $current_line + 1);
+            if ($quantityExpected < 0) {
+                $this->errors[] = sprintf($this->l('Quantity Expected (%d) is not valid (at line %d).'), $quantityExpected, $currentLine + 1);
             }
-            if ($discount_rate < 0 || $discount_rate > 100) {
+            if ($discountRate < 0 || $discountRate > 100) {
                 $this->errors[] = sprintf(
                     $this->l('Discount rate (%d) is not valid (at line %d). %s.'),
-                    $discount_rate,
-                    $current_line + 1,
+                    $discountRate,
+                    $currentLine + 1,
                     $this->l('Format: Between 0 and 100')
                 );
             }
-            if ($tax_rate < 0 || $tax_rate > 100) {
+            if ($taxRate < 0 || $taxRate > 100) {
                 $this->errors[] = sprintf(
                     $this->l('Quantity Expected (%d) is not valid (at line %d).'),
-                    $tax_rate,
-                    $current_line + 1,
+                    $taxRate,
+                    $currentLine + 1,
                     $this->l('Format: Between 0 and 100')
                 );
             }
@@ -4847,21 +4853,21 @@ class AdminImportControllerCore extends AdminController
             if (empty($this->errors)) {
                 // resets order if needed
                 if (!$validateOnly && $reset) {
-                    $supply_order->resetProducts();
+                    $supplyOrder->resetProducts();
                     $reset = false;
                 }
 
                 // creates new product
-                $supply_order_detail = new SupplyOrderDetail();
-                array_walk($info, ['self', 'fillInfo'], $supply_order_detail);
+                $supplyOrderDetail = new SupplyOrderDetail();
+                array_walk($info, ['self', 'fillInfo'], $supplyOrderDetail);
 
                 // sets parameters
-                $supply_order_detail->id_supply_order = $supply_order->id;
-                $currency = new Currency($supply_order->id_ref_currency);
-                $supply_order_detail->id_currency = $currency->id;
-                $supply_order_detail->exchange_rate = $currency->conversion_rate;
-                $supply_order_detail->supplier_reference = $supplier_reference;
-                $supply_order_detail->name = Product::getProductName($id_product, $id_product_attribute, $supply_order->id_lang);
+                $supplyOrderDetail->id_supply_order = $supplyOrder->id;
+                $currency = new Currency($supplyOrder->id_ref_currency);
+                $supplyOrderDetail->id_currency = $currency->id;
+                $supplyOrderDetail->exchange_rate = $currency->conversion_rate;
+                $supplyOrderDetail->supplier_reference = $supplierReference;
+                $supplyOrderDetail->name = Product::getProductName($idProduct, $idProductAttribute, $supplyOrder->id_lang);
 
                 // gets ean13 / ref / upc
                 $query = new DbQuery();
@@ -4873,51 +4879,70 @@ class AdminImportControllerCore extends AdminController
 				'
                 );
                 $query->from('product', 'p');
-                $query->leftJoin('product_attribute', 'pa', 'pa.id_product = p.id_product AND id_product_attribute = '.(int) $id_product_attribute);
-                $query->where('p.id_product = '.(int) $id_product);
+                $query->leftJoin('product_attribute', 'pa', 'pa.id_product = p.id_product AND id_product_attribute = '.(int) $idProductAttribute);
+                $query->where('p.id_product = '.(int) $idProduct);
                 $query->where('p.is_virtual = 0 AND p.cache_is_pack = 0');
                 $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
-                $product_infos = $res['0'];
+                $productInfos = $res['0'];
 
-                $supply_order_detail->reference = $product_infos['reference'];
-                $supply_order_detail->ean13 = $product_infos['ean13'];
-                $supply_order_detail->upc = $product_infos['upc'];
-                $supply_order_detail->force_id = (bool) $force_ids;
+                $supplyOrderDetail->reference = $productInfos['reference'];
+                $supplyOrderDetail->ean13 = $productInfos['ean13'];
+                $supplyOrderDetail->upc = $productInfos['upc'];
+                $supplyOrderDetail->force_id = (bool) $forceIds;
                 if (!$validateOnly) {
-                    $supply_order_detail->add();
-                    $supply_order->update();
+                    $supplyOrderDetail->add();
+                    $supplyOrder->update();
                 }
-                unset($supply_order_detail);
+                unset($supplyOrderDetail);
             }
         }
     }
 
+    /**
+     * @since 1.0.0
+     */
     public function ajaxProcessSaveImportMatchs()
     {
-        if ($this->access('edit')) {
+        if ($this->tabAccess['edit'] === '1') {
             $match = implode('|', Tools::getValue('type_value'));
-            Db::getInstance()->execute(
-                'INSERT IGNORE INTO  `'._DB_PREFIX_.'import_match` (
-										`id_import_match` ,
-										`name` ,
-										`match`,
-										`skip`
-										)
-										VALUES (
-										NULL ,
-										\''.pSQL(Tools::getValue('newImportMatchs')).'\',
-										\''.pSQL($match).'\',
-										\''.pSQL(Tools::getValue('skip')).'\'
-										)', false
+            Db::getInstance()->insert(
+                'import_match',
+                [
+                    'name' => pSQL(Tools::getValue('newImportMatchs')),
+                    'match' => pSQL($match),
+                    'skip' => pSQL(Tools::getValue('skip')),
+                ],
+                false,
+                Db::INSERT_IGNORE
             );
 
             die('{"id" : "'.Db::getInstance()->Insert_ID().'"}');
         }
     }
 
+    /**
+     * @param $a
+     * @param $b
+     *
+     * @return int
+     *
+     * @since 1.0.0
+     */
+    protected function sortLabels($a, $b)
+    {
+        if ($a['label'] == $b['label']) {
+            return 0;
+        }
+
+        return ($a['label'] < $b['label']) ? -1 : 1;
+    }
+
+    /**
+     * @since 1.0.0
+     */
     public function ajaxProcessLoadImportMatchs()
     {
-        if ($this->access('edit')) {
+        if ($this->tabAccess['edit'] === '1') {
             $return = Db::getInstance()->executeS(
                 'SELECT * FROM `'._DB_PREFIX_.'import_match` WHERE `id_import_match` = '
                 .(int) Tools::getValue('idImportMatchs'), true, false
@@ -4929,9 +4954,12 @@ class AdminImportControllerCore extends AdminController
         }
     }
 
+    /**
+     * @since 1.0.0
+     */
     public function ajaxProcessDeleteImportMatchs()
     {
-        if ($this->access('edit')) {
+        if ($this->tabAccess['edit'] === '1') {
             Db::getInstance()->execute(
                 'DELETE FROM `'._DB_PREFIX_.'import_match` WHERE `id_import_match` = '
                 .(int) Tools::getValue('idImportMatchs'), false
@@ -4940,6 +4968,9 @@ class AdminImportControllerCore extends AdminController
         }
     }
 
+    /**
+     * @since 1.0.0
+     */
     public function ajaxProcessImport()
     {
         $offset = (int) Tools::getValue('offset');
@@ -5005,15 +5036,18 @@ class AdminImportControllerCore extends AdminController
         die(json_encode($results));
     }
 
+    /**
+     * @since 1.0.0
+     */
     public function initModal()
     {
         parent::initModal();
-        $modal_content = $this->context->smarty->fetch('controllers/import/modal_import_progress.tpl');
+        $modalContent = $this->context->smarty->fetch('controllers/import/modal_import_progress.tpl');
         $this->modals[] = [
             'modal_id'      => 'importProgress',
             'modal_class'   => 'modal-md',
             'modal_title'   => $this->l('Importing...'),
-            'modal_content' => $modal_content,
+            'modal_content' => $modalContent,
         ];
     }
 }

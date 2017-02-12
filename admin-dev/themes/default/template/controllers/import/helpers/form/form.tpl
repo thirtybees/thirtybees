@@ -34,7 +34,7 @@
 		<div class="panel">
 			<h3>
 				<i class="icon-upload"></i>
-				{l s='Import' d='Admin.Actions'}
+				{l s='Import'}
 			</h3>
 			<div class="alert alert-info">
 				<ul class="list-unstyled">
@@ -123,7 +123,7 @@
 											<li>
 												<a class="csv-delete-link" href="#">
 													<i class="icon-trash"></i>
-													{l s='Delete' d='Admin.Actions'}
+													{l s='Delete'}
 												</a>
 											</li>
 										</ul>
@@ -155,7 +155,7 @@
 												<li>
 													<a href="{$current|escape:'html':'UTF-8'}&amp;token={$token|escape:'html':'UTF-8'}&amp;csvfilename={$filename|@urlencode}&amp;delete=1">
 														<i class="icon-trash"></i>
-														{l s='Delete' d='Admin.Actions'}
+														{l s='Delete'}
 													</a>
 												</li>
 											</ul>
@@ -220,8 +220,8 @@
 						<label class="switch-light prestashop-switch fixed-width-lg">
 							<input id="truncate" name="truncate" type="checkbox"/>
 							<span>
-								<span>{l s='Yes' d='Admin.Global'}</span>
-								<span>{l s='No' d='Admin.Global'}</span>
+								<span>{l s='Yes'}</span>
+								<span>{l s='No'}</span>
 							</span>
 							<a class="slide-button btn"></a>
 						</label>
@@ -237,8 +237,8 @@
 						<label class="switch-light prestashop-switch fixed-width-lg">
 							<input id="match_ref" name="match_ref" type="checkbox" />
 							<span>
-								<span>{l s='Yes' d='Admin.Global'}</span>
-								<span>{l s='No' d='Admin.Global'}</span>
+								<span>{l s='Yes'}</span>
+								<span>{l s='No'}</span>
 							</span>
 							<a class="slide-button btn"></a>
 						</label>
@@ -250,8 +250,8 @@
 						<label class="switch-light prestashop-switch fixed-width-lg">
 							<input id="regenerate" name="regenerate" type="checkbox" />
 							<span>
-								<span>{l s='Yes' d='Admin.Global'}</span>
-								<span>{l s='No' d='Admin.Global'}</span>
+								<span>{l s='Yes'}</span>
+								<span>{l s='No'}</span>
 							</span>
 							<a class="slide-button btn"></a>
 						</label>
@@ -267,8 +267,8 @@
 						<label class="switch-light prestashop-switch fixed-width-lg">
 							<input  id="forceIDs" name="forceIDs" type="checkbox"/>
 							<span>
-								<span>{l s='Yes' d='Admin.Global'}</span>
-								<span>{l s='No' d='Admin.Global'}</span>
+								<span>{l s='Yes'}</span>
+								<span>{l s='No'}</span>
 							</span>
 							<a class="slide-button btn"></a>
 						</label>
@@ -283,8 +283,8 @@
 						<label class="switch-light prestashop-switch fixed-width-lg">
 							<input id="sendemail" name="sendemail" type="checkbox" checked="checked" />
 							<span>
-								<span>{l s='Yes' d='Admin.Global'}</span>
-								<span>{l s='No' d='Admin.Global'}</span>
+								<span>{l s='Yes'}</span>
+								<span>{l s='No'}</span>
 							</span>
 							<a class="slide-button btn"></a>
 						</label>
@@ -360,13 +360,17 @@
 <script type="text/javascript">
 
 	function humanizeSize(bytes) {
-		if (typeof bytes !== 'number')
-			return '';
-		if (bytes >= 1000000000)
-			return (bytes / 1000000000).toFixed(2) + ' GB';
-		if (bytes >= 1000000)
-			return (bytes / 1000000).toFixed(2) + ' MB';
-		return (bytes / 1000).toFixed(2) + ' KB';
+	  if (typeof bytes !== 'number') {
+          return '';
+        }
+        if (bytes >= 1000000000) {
+          return (bytes / 1000000000).toFixed(2) + ' GB';
+        }
+		if (bytes >= 1000000) {
+          return (bytes / 1000000).toFixed(2) + ' MB';
+        }
+
+        return (bytes / 1000).toFixed(2) + ' KB';
 	}
 	// when user select a .csv
 	function csv_select(filename) {
