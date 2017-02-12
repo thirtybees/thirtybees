@@ -451,7 +451,15 @@ class CurrencyCore extends ObjectModel
             return false;
         }
 
-        return Currency::exists($this->iso_code, $this->iso_code_num) ? false : parent::add($autodate, $nullValues);
+        if (self::exists($this->iso_code, $this->iso_code_num)) {
+            return false;
+        }
+
+        parent::add($autodate, $nullValues);
+
+        CurrencyRateModule::scanMissingCurrencyRateModules($this->iso_code);
+
+        return true;
     }
 
     /**
@@ -591,6 +599,8 @@ class CurrencyCore extends ObjectModel
         $this->deleted = 1;
 
         $res = (bool) Db::getInstance()->delete('module_currency', '`id_currency` = '.(int) $this->id);
+
+        Db::getInstance()->delete('currency_module', '`id_currency` = '.(int) $this->id);
 
         return $res && $this->update();
     }

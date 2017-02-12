@@ -80,15 +80,20 @@ abstract class CurrencyRateModuleCore extends Module
      */
     public function install()
     {
-        $this->scanCurrencyRates();
+        if (!parent::install()) {
+            return false;
+        }
 
-        return parent::install();
+        self::scanMissingCurrencyRateModules();
+
+        return true;
     }
 
     /**
      * Retrieve all currencies that have exchange rate modules available
      *
-     * @param bool $codesOnly Return codes only
+     * @param bool $registeredOnly Show currencies with registered services only
+     * @param bool $codesOnly      Return codes only
      *
      * @return array|false Array with currency iso code as key and module instance as value
      *
@@ -105,6 +110,7 @@ abstract class CurrencyRateModuleCore extends Module
             $sql->select('c.`id_currency`, cm.`id_module`');
             $sql->from('currency', 'c');
             $sql->leftJoin('currency_module', 'cm', 'cm.`id_currency` = c.`id_currency`');
+            $sql->where('c.`deleted` = 0');
         }
 
         $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
@@ -244,7 +250,7 @@ abstract class CurrencyRateModuleCore extends Module
             $providingModules = [];
         }
         foreach ($modules as $moduleName => $supportedCurrencies) {
-            if (in_array($to, $supportedCurrencies) && in_array($from, $supportedCurrencies)) {
+            if (in_array(Tools::strtoupper($to), $supportedCurrencies) && in_array($from, $supportedCurrencies)) {
                 if ($justOne) {
                     return $moduleName;
                 }
@@ -258,9 +264,10 @@ abstract class CurrencyRateModuleCore extends Module
     /**
      * Get providing modules
      *
-     * @param int $idCurrency To currency code
+     * @param int    $idCurrency To currency code
+     * @param string $selected   Selected module
      *
-     * @return false|array
+     * @return array|false
      */
     public static function getServices($idCurrency, $selected)
     {
@@ -292,18 +299,6 @@ abstract class CurrencyRateModuleCore extends Module
         }
 
         return $serviceModules;
-    }
-
-    /**
-     * Scan the currencies this module supports
-     *
-     * @return bool Indicates whether the scan was successful
-     *
-     * @todo: to be implemented
-     */
-    protected function scanCurrencyRates()
-    {
-        return true;
     }
 
     protected static function getModuleForCurrency($idCurrency)
