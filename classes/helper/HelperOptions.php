@@ -204,7 +204,10 @@ class HelperOptionsCore extends Helper
                         } elseif ($field['type'] == 'selectLang') {
                             $value = Configuration::get($key, $language['id_lang']);
                         }
-                        $field['languages'][$language['id_lang']] = $value;
+                        $field['languages'][$language['id_lang']] = isset($value) ? $value : '';
+                        if (!is_array($field['value'])) {
+                            $field['value'] = [];
+                        }
                         $field['value'][$language['id_lang']] = $this->getOptionValue($key.'_'.strtoupper($language['iso_code']), $field);
                     }
                 }

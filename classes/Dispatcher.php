@@ -42,7 +42,6 @@ class DispatcherCore
     const FC_FRONT = 1;
     const FC_ADMIN = 2;
     const FC_MODULE = 3;
-    const FC_AJAX = 4;
 
     // @codingStandardsIgnoreStart
     /**
@@ -336,9 +335,6 @@ class DispatcherCore
         } elseif (Tools::getValue('fc') == 'module') {
             $this->front_controller = self::FC_MODULE;
             $this->controller_not_found = 'pagenotfound';
-        } elseif (Tools::getValue('fc') == 'ajax') {
-            $this->front_controller = self::FC_AJAX;
-            $this->controller_not_found = 'pagenotfound';
         } else {
             $this->front_controller = self::FC_FRONT;
             $this->controller_not_found = 'pagenotfound';
@@ -542,18 +538,6 @@ class DispatcherCore
                 }
                 $controllerClass = $controllers[strtolower($this->controller)];
                 $paramsHookActionDispatcher = ['controller_type' => self::FC_FRONT, 'controller_class' => $controllerClass, 'is_module' => 0];
-                break;
-
-            // Dispatch ajax controller
-            case self::FC_AJAX:
-                $controllers = Dispatcher::getControllers([_PS_AJAX_CONTROLLER_DIR_, _PS_OVERRIDE_DIR_.'controllers/ajax/']);
-
-                if (!isset($controllers[strtolower($this->controller)])) {
-                    header('Content-Type: text/plain');
-                    die('0');
-                }
-                $controllerClass = $controllers[strtolower($this->controller)];
-                $paramsHookActionDispatcher = ['controller_type' => self::FC_AJAX, 'controller_class' => $controllerClass, 'is_module' => 0];
                 break;
 
             // Dispatch module controller for front office and ajax

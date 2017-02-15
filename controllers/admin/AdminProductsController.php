@@ -3395,12 +3395,11 @@ class AdminProductsControllerCore extends AdminController
         $data = $this->createTemplate($this->tpl_form);
 
         $context = Context::getContext();
-        $rewritten_links = [];
+        $rewrittenLinks = [];
         foreach ($this->_languages as $language) {
-            $category = Category::getLinkRewrite((int)$product->id_category_default, (int)$language['id_lang']);
-            $rewritten_links[(int)$language['id_lang']] = explode(
+            $rewrittenLinks[(int)$language['id_lang']] = explode(
                 '[REWRITE]',
-                $context->link->getProductLink($product, '[REWRITE]', $category, null, (int)$language['id_lang'])
+                rtrim($context->link->getCategoryLink($product->id_category_default, null, (int) $language['id_lang']), '/').'/'
             );
         }
 
@@ -3412,7 +3411,7 @@ class AdminProductsControllerCore extends AdminController
             'ps_ssl_enabled' => Configuration::get('PS_SSL_ENABLED'),
             'curent_shop_url' => $this->context->shop->getBaseURL(),
             'default_form_language' => $this->default_form_language,
-            'rewritten_links' => $rewritten_links
+            'rewritten_links' => $rewrittenLinks
             ]
         );
 
@@ -5135,7 +5134,7 @@ class AdminProductsControllerCore extends AdminController
                 $result = Db::getInstance()->executeS('
 					SELECT DISTINCT pl.`name`, p.`id_product`, pl.`id_shop`
 					FROM `'._DB_PREFIX_.'product` p
-					LEFT JOIN `'._DB_PREFIX_.'product_shop` ps ON (ps.id_product = p.id_product AND ps.id_shop ='.(int)Context::getContext()->shop->id.')
+					LEFT JOIN `'._DB_PREFIX_.'product_shop` ps ON (ps.id_product = p.id_product AND ps.id_shop ='.(int) Context::getContext()->shop->id.')
 					LEFT JOIN `'._DB_PREFIX_.'product_lang` pl
 						ON (pl.`id_product` = p.`id_product` AND pl.`id_lang` = '.(int)$id_lang.')
 					WHERE pl.`name` LIKE "%'.pSQL($search).'%" AND ps.id_product IS NULL

@@ -12,5 +12,5 @@ customer account by clicking "My account"
 [{my_account_url}] on our shop. 
 
 {shop_name} [{shop_url}] powered by
-PrestaShop(tm) [http://www.prestashop.com/] 
+thirty bees(tm) [https://thirtybees.com/]
 

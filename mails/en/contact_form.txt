@@ -16,5 +16,5 @@ ATTACHED FILE: {attached_file}
 We will answer as soon as possible. 
 
 {shop_name} [{shop_url}] powered by
-PrestaShop(tm) [http://www.prestashop.com/] 
+thirty bees(tm) [https://thirtybees.com/]
 

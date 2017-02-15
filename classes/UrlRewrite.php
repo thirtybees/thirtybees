@@ -777,7 +777,7 @@ class UrlRewriteCore extends Objectmodel
      * @param int   $idShop
      * @param array $routes
      */
-    protected function getRoutes($idLang, $idShop, &$routes)
+    protected static function getRoutes($idLang, $idShop, &$routes)
     {
         if (defined('TB_INSTALLATION_IN_PROGRESS')) {
             $routes[$idShop][$idLang] = [
