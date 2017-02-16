@@ -164,7 +164,7 @@ abstract class CacheCore
             $sql = new DbQuery();
             $sql->select('`value`');
             $sql->from('configuration');
-            $sql->where('`name` = \'TB_PAGE_CACHE_SYSTEM\'');
+            $sql->where('`name` = \'TB_CACHE_SYSTEM\'');
             $cachingSystem = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql, false);
             if ($cachingSystem) {
                 self::$instance = new $cachingSystem();
