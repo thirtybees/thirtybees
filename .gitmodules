@@ -401,3 +401,6 @@
 [submodule "modules/themeconfigurator"]
 	path = modules/themeconfigurator
 	url = https://github.com/thirtybees/themeconfigurator.git
+[submodule "modules/tbupdater"]
+	path = modules/tbupdater
+	url = https://github.com/modules/tbupdater.git
