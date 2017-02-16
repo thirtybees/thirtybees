@@ -13,6 +13,6 @@ rm .gitmodules
 rm .scrutinizer.yml
 rm .travis.yml
 rm build.sh
-node ./generatemd5list.js
+node ./tools/generatemd5list.js
 
 exit 0
