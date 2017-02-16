@@ -249,7 +249,7 @@ abstract class ControllerCore
                 $cache = Cache::getInstance();
 
                 if ($fromCache = $cache->get($key)) {
-                    if (Configuration::Get('TB_PAGE_CACHE_DEBUG')) {
+                    if (Configuration::get('TB_PAGE_CACHE_DEBUG')) {
                         header('X-thirtybees-PageCache: HIT');
                     }
                     $cached = true;

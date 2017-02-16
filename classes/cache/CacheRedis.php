@@ -104,7 +104,7 @@ class CacheRedisCore extends CacheCore
                         }
                     } else {
                         $ping = array_values($this->redis->ping());
-                        if(!empty($ping) && $ping[0] === '+PONG') {
+                        if (!empty($ping) && $ping[0] === '+PONG') {
                             // We're connected if a connection without +AUTH receives a +PONG
                             $this->is_connected = true;
                         }
@@ -122,13 +122,20 @@ class CacheRedisCore extends CacheCore
                     if (!empty($this->_servers[0]['auth'])) {
                         if (!($this->redis->auth($this->_servers[0]['auth']))) {
                             return;
+                        } else {
+                            $this->is_connected = true;
                         }
-                    }
-                    $this->redis->select($this->_servers[0]['db']);
-                    try {
-                        $this->redis->select($this->_servers[0]['db']);
-                    } catch (Exception $e) {
-                        $this->is_connected = false;
+                    } else {
+                        try {
+                            $this->redis->select($this->_servers[0]['db']);
+                            $ping = array_values($this->redis->ping());
+                            if (!empty($ping) && $ping[0] === '+PONG') {
+                                // We're connected if a connection without +AUTH receives a +PONG
+                                $this->is_connected = true;
+                            }
+                        } catch (Exception $e) {
+                            $this->is_connected = false;
+                        }
                     }
                 }
             }
@@ -280,7 +287,6 @@ class CacheRedisCore extends CacheCore
      */
     protected function _set($key, $value, $ttl = 0)
     {
-
         if (!$this->is_connected) {
             return false;
         }
