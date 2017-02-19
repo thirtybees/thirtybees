@@ -33,11 +33,15 @@
  * Class LinkCore
  *
  * @since 1.0.0
+ *
+ * Backwards compatible properties and methods (accessed via magic methods):
+ * @property array|null $category_disable_rewrite
  */
 class LinkCore
 {
     // @codingStandardsIgnoreStart
     public static $cache = ['page' => []];
+    /** @var array|null $categoryDisableRewrite */
     protected static $categoryDisableRewrite = null;
     public $protocol_link;
     public $protocol_content;
@@ -75,6 +79,20 @@ class LinkCore
         }
 
         $this->ssl_enable = Configuration::get('PS_SSL_ENABLED');
+    }
+
+    /**
+     * @param mixed $property
+     *
+     * @return mixed
+     */
+    public function __get($property)
+    {
+        if (in_array($property, [
+            'category_disable_rewrite',
+        ])) {
+            return $this->$property;
+        }
     }
 
     /**
