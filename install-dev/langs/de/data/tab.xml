@@ -28,14 +28,14 @@
   <tab id="DB_Backup" name="DB-Sicherung"/>
   <tab id="Delivery_Slips" name="Lieferscheine"/>
   <tab id="E-mail" name="E-Mail"/>
-  <tab id="Employees" name="Benutzerrechte"/>
+  <tab id="Employees" name="Benutzer"/>
   <tab id="Features" name="Artikelvarianten"/>
   <tab id="General" name="Allgemein"/>
   <tab id="Geolocation" name="Geotargeting"/>
   <tab id="Groups" name="Gruppen"/>
   <tab id="Dashboard" name="Dashboard"/>
   <tab id="Images" name="Bilder"/>
-  <tab id="Instant_Stock_Status" name="aktueller Lagerstand"/>
+  <tab id="Instant_Stock_Status" name="Aktueller Lagerbestand"/>
   <tab id="Invoices" name="Rechnungen"/>
   <tab id="Languages" name="Sprachen"/>
   <tab id="Localization" name="Lokalisierung"/>
