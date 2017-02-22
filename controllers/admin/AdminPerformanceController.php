@@ -750,7 +750,7 @@ class AdminPerformanceControllerCore extends AdminController
                         ],
                         [
                             'id'    => 'CacheApc',
-                            'value' => 'CacheApc',
+                            'value' => 'CacheApcu',
                             'label' => $this->l('APC').(extension_loaded('apcu')? '' : $warningApc),
                         ],
                         [
