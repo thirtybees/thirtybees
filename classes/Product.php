@@ -214,6 +214,10 @@ class ProductCore extends ObjectModel
     public $pack_stock_type = 3;
     // @codingStandardsIgnoreEnd
 
+    public $packItems;
+
+    public $productDownload;
+
     public static $definition = [
         'table'          => 'product',
         'primary'        => 'id_product',
