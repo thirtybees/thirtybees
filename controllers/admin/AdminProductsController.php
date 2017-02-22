@@ -3449,19 +3449,21 @@ class AdminProductsControllerCore extends AdminController
                 }
             }
         } else {
-            $i = 0;
-            foreach ($product->packItems as $pack_item) {
-                $pack_items[$i]['id'] = $pack_item->id;
-                $pack_items[$i]['pack_quantity'] = $pack_item->pack_quantity;
-                $pack_items[$i]['name']    = $pack_item->name;
-                $pack_items[$i]['reference'] = $pack_item->reference;
-                $pack_items[$i]['id_product_attribute'] = isset($pack_item->id_pack_product_attribute) && $pack_item->id_pack_product_attribute ? $pack_item->id_pack_product_attribute : 0;
-                $cover = $pack_item->id_pack_product_attribute ? Product::getCombinationImageById($pack_item->id_pack_product_attribute, Context::getContext()->language->id) : Product::getCover($pack_item->id);
-                $pack_items[$i]['image'] = Context::getContext()->link->getImageLink($pack_item->link_rewrite, $cover['id_image'], 'home_default');
-                // @todo: don't rely on 'home_default'
-                //$path_to_image = _PS_IMG_DIR_.'p/'.Image::getImgFolderStatic($cover['id_image']).(int)$cover['id_image'].'.jpg';
-                //$pack_items[$i]['image'] = ImageManager::thumbnail($path_to_image, 'pack_mini_'.$pack_item->id.'_'.$this->context->shop->id.'.jpg', 120);
-                $i++;
+            if (is_array($product->packItems)) {
+                $i = 0;
+                foreach ($product->packItems as $pack_item) {
+                    $pack_items[$i]['id'] = $pack_item->id;
+                    $pack_items[$i]['pack_quantity'] = $pack_item->pack_quantity;
+                    $pack_items[$i]['name'] = $pack_item->name;
+                    $pack_items[$i]['reference'] = $pack_item->reference;
+                    $pack_items[$i]['id_product_attribute'] = isset($pack_item->id_pack_product_attribute) && $pack_item->id_pack_product_attribute ? $pack_item->id_pack_product_attribute : 0;
+                    $cover = $pack_item->id_pack_product_attribute ? Product::getCombinationImageById($pack_item->id_pack_product_attribute, Context::getContext()->language->id) : Product::getCover($pack_item->id);
+                    $pack_items[$i]['image'] = Context::getContext()->link->getImageLink($pack_item->link_rewrite, $cover['id_image'], 'home_default');
+                    // @todo: don't rely on 'home_default'
+                    //$path_to_image = _PS_IMG_DIR_.'p/'.Image::getImgFolderStatic($cover['id_image']).(int)$cover['id_image'].'.jpg';
+                    //$pack_items[$i]['image'] = ImageManager::thumbnail($path_to_image, 'pack_mini_'.$pack_item->id.'_'.$this->context->shop->id.'.jpg', 120);
+                    $i++;
+                }
             }
         }
         return $pack_items;
@@ -3514,11 +3516,11 @@ class AdminProductsControllerCore extends AdminController
         /*
         * Form for adding a virtual product like software, mp3, etc...
         */
-        $product_download = new ProductDownload();
-        if ($id_product_download = $product_download->getIdFromIdProduct($this->getFieldValue($product, 'id'))) {
-            $product_download = new ProductDownload($id_product_download);
+        $productDownload = new ProductDownload();
+        if ($idProductDownload = $productDownload->getIdFromIdProduct($this->getFieldValue($product, 'id'))) {
+            $productDownload = new ProductDownload($idProductDownload);
         }
-        $product->{'productDownload'} = $product_download;
+        $product->productDownload = $productDownload;
 
         if ($product->productDownload->id && empty($product->productDownload->display_filename)) {
             $this->errors[] = Tools::displayError('A file name is required in order to associate a file');
@@ -3527,7 +3529,7 @@ class AdminProductsControllerCore extends AdminController
 
         // @todo handle is_virtual with the value of the product
         $exists_file = realpath(_PS_DOWNLOAD_DIR_).'/'.$product->productDownload->filename;
-        $data->assign('product_downloaded', $product->productDownload->id);
+        $data->assign('product_download', $product->productDownload->id);
 
         if (!file_exists($exists_file)
             && !empty($product->productDownload->display_filename)
@@ -3538,8 +3540,8 @@ class AdminProductsControllerCore extends AdminController
             $msg = '';
         }
 
-        $virtual_product_file_uploader = new HelperUploader('virtual_product_file_uploader');
-        $virtual_product_file_uploader->setMultiple(false)->setUrl(
+        $virtualProductFileUploader = new HelperUploader('virtual_product_file_uploader');
+        $virtualProductFileUploader->setMultiple(false)->setUrl(
             Context::getContext()->link->getAdminLink('AdminProducts').'&ajax=1&id_product='.(int)$product->id
             .'&action=AddVirtualProductFile')->setPostMaxSize(Tools::getOctets(ini_get('upload_max_filesize')))
             ->setTemplate('virtual_product.tpl');
@@ -3553,7 +3555,18 @@ class AdminProductsControllerCore extends AdminController
         );
 
         $product->productDownload->nb_downloadable = ($product->productDownload->id > 0) ? $product->productDownload->nb_downloadable : htmlentities(Tools::getValue('virtual_product_nb_downloable'), ENT_COMPAT, 'UTF-8');
-        $product->productDownload->date_expiration = ($product->productDownload->id > 0) ? ((!empty($product->productDownload->date_expiration) && $product->productDownload->date_expiration != '0000-00-00 00:00:00') ? date('Y-m-d', strtotime($product->productDownload->date_expiration)) : '') : htmlentities(Tools::getValue('virtual_product_expiration_date'), ENT_COMPAT, 'UTF-8');
+
+        if (isset($product->productDownload) && $product->productDownload->id) {
+            if (!empty($product->productDownload->date_expiration) && $product->productDownload->date_expiration != '0000-00-00 00:00:00') {
+                $product->productDownload->date_expiration = date('Y-m-d', strtotime($product->productDownload->date_expiration));
+            } else {
+                $product->productDownload->date_expiration = '';
+            }
+        }
+        else {
+            $product->productDownload->date_expiration = htmlentities((string) Tools::getValue('virtual_product_expiration_date'), ENT_COMPAT, 'UTF-8');
+        }
+
         $product->productDownload->nb_days_accessible = ($product->productDownload->id > 0) ? $product->productDownload->nb_days_accessible : htmlentities(Tools::getValue('virtual_product_nb_days'), ENT_COMPAT, 'UTF-8');
         $product->productDownload->is_shareable = $product->productDownload->id > 0 && $product->productDownload->is_shareable;
 
@@ -3568,7 +3581,7 @@ class AdminProductsControllerCore extends AdminController
             'currency' => $currency,
             'link' => $this->context->link,
             'is_file' => $product->productDownload->checkFile(),
-            'virtual_product_file_uploader' => $virtual_product_file_uploader->render()
+            'virtual_product_file_uploader' => $virtualProductFileUploader->render()
             ]
         );
         $data->assign($this->tpl_form_vars);
@@ -5034,8 +5047,10 @@ class AdminProductsControllerCore extends AdminController
         if (Tools::getValue('inputPackItems')) {
             $input_pack_items = Tools::getValue('inputPackItems');
         } else {
-            foreach ($product->packItems as $pack_item) {
-                $input_pack_items .= $pack_item->pack_quantity.'x'.$pack_item->id.'-';
+            if (is_array($product->packItems)) {
+                foreach ($product->packItems as $pack_item) {
+                    $input_pack_items .= $pack_item->pack_quantity.'x'.$pack_item->id.'-';
+                }
             }
         }
         $this->tpl_form_vars['input_pack_items'] = $input_pack_items;
@@ -5044,8 +5059,10 @@ class AdminProductsControllerCore extends AdminController
         if (Tools::getValue('namePackItems')) {
             $input_namepack_items = Tools::getValue('namePackItems');
         } else {
-            foreach ($product->packItems as $pack_item) {
-                $input_namepack_items .= $pack_item->pack_quantity.' x '.$pack_item->name.'¤';
+            if (is_array($product->packItems)) {
+                foreach ($product->packItems as $pack_item) {
+                    $input_namepack_items .= $pack_item->pack_quantity.' x '.$pack_item->name.'¤';
+                }
             }
         }
         $this->tpl_form_vars['input_namepack_items'] = $input_namepack_items;

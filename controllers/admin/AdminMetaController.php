@@ -79,6 +79,8 @@ class AdminMetaControllerCore extends AdminController
             ],
         ];
 
+        UrlRewrite::regenerateUrlRewrites();
+
         $this->fields_list = [
             'id_meta'     => ['title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'],
             'page'        => ['title' => $this->l('Page')],

@@ -296,8 +296,10 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     public function __set($property, $value)
     {
         // Property to camelCase for backwards compatibility
-        $property = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $property))));
-        if (property_exists($this, $property)) {
+        $snakeCaseProperty = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $property))));
+        if (property_exists($this, $snakeCaseProperty)) {
+            $this->$snakeCaseProperty = $value;
+        } else {
             $this->$property = $value;
         }
     }
