@@ -275,7 +275,7 @@ abstract class ControllerCore
             if (is_array($hookInfo)) {
                 foreach ($hookInfo as $idModule => $hookArray) {
                     if (is_array($hookArray)) {
-                        foreach ($hookArray as $hookName) {
+                        foreach ($hookArray as $hookName => $value) {
                             try {
                                 $hookContent = Hook::execWithoutCache($hookName, [], $idModule, false, true, false, null);
                             } catch (Exception $e) {
