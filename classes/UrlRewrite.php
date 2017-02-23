@@ -854,7 +854,7 @@ class UrlRewriteCore extends Objectmodel
                 ];
             }
 
-            self::deleteUrlRewrites(self::ENTITY_PAGE, $idLang, $idShop);
+            // self::deleteUrlRewrites(self::ENTITY_PAGE, $idLang, $idShop);
             Db::getInstance()->insert(bqSQL(self::$definition['table']), $insert);
         }
     }
