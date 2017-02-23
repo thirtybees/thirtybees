@@ -64,6 +64,7 @@ class UrlRewriteCore extends Objectmodel
             'id_entity' => ['type' => self::TYPE_INT, 'required' => true, 'validate' => 'isUnsignedInt '],
             'rewrite'   => ['type' => self::TYPE_STRING, 'lang' => true, 'required' => true, 'validate' => 'isString', 'size' => 2048],
             'redirect'  => ['type' => self::TYPE_INT, 'lang' => true, 'required' => true, 'validate' => 'isUnsignedInt'],
+            'date_upd'  => ['type' => self::TYPE_DATE, 'shop' => true, 'validate' => 'isDate'],
         ],
     ];
     /** @var int $entity */
@@ -74,6 +75,9 @@ class UrlRewriteCore extends Objectmodel
     public $rewrite;
     /** @var int $redirect */
     public $redirect;
+    /** @var int $date_upd */
+    public $date_upd;
+
     // @codingStandardsIgnoreEnd
 
     /**
@@ -297,7 +301,8 @@ class UrlRewriteCore extends Objectmodel
      * @since 1.0.0
      */
     public static function lookup($rewrite, $idLang, $idShop, $redirect = null, $entityType = null)
-    {
+    {   
+
         $sql = new DbQuery();
         $sql->select('`id_entity`, `entity`, `rewrite`, `redirect`');
         $sql->from(bqSQL(self::$definition['table']));
@@ -319,6 +324,7 @@ class UrlRewriteCore extends Objectmodel
         }
 
         $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+
         if (!empty($results)) {
             return $results;
         }
@@ -355,6 +361,7 @@ class UrlRewriteCore extends Objectmodel
                 $sql->where('`redirect` = '.(int) $redirect);
             }
         }
+        $sql->orderby('date_upd DESC');
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
         if ($result) {
@@ -525,10 +532,11 @@ class UrlRewriteCore extends Objectmodel
                 'id_shop' => $idShop,
                 'id_lang' => $idLang,
                 'redirect' => self::CANONICAL,
+                'date_upd' => date('y-m-d H:i:s')
             ];
         }
 
-        self::deleteUrlRewrites(self::ENTITY_PRODUCT, $idLang, $idShop, $idEntity);
+        // self::deleteUrlRewrites(self::ENTITY_PRODUCT, $idLang, $idShop, $idEntity);
         Db::getInstance()->insert(bqSQL(self::$definition['table']), $insert);
     }
 
@@ -581,10 +589,11 @@ class UrlRewriteCore extends Objectmodel
                 'id_shop' => $idShop,
                 'id_lang' => $idLang,
                 'redirect' => self::CANONICAL,
+                'date_upd' => date('y-m-d H:i:s')
             ];
         }
 
-        self::deleteUrlRewrites(self::ENTITY_CATEGORY, $idLang, $idShop, $idEntity);
+        // self::deleteUrlRewrites(self::ENTITY_CATEGORY, $idLang, $idShop, $idEntity);
         Db::getInstance()->insert(bqSQL(self::$definition['table']), $insert);
     }
 
@@ -621,10 +630,11 @@ class UrlRewriteCore extends Objectmodel
                 'id_shop' => $idShop,
                 'id_lang' => $idLang,
                 'redirect' => self::CANONICAL,
+                'date_upd' => date('y-m-d H:i:s')
             ];
         }
 
-        self::deleteUrlRewrites(self::ENTITY_SUPPLIER, $idLang, $idShop, $idEntity);
+        // self::deleteUrlRewrites(self::ENTITY_SUPPLIER, $idLang, $idShop, $idEntity);
         Db::getInstance()->insert(bqSQL(self::$definition['table']), $insert);
     }
 
@@ -663,10 +673,11 @@ class UrlRewriteCore extends Objectmodel
                 'id_shop' => $idShop,
                 'id_lang' => $idLang,
                 'redirect' => self::CANONICAL,
+                'date_upd' => date('y-m-d H:i:s')
             ];
         }
 
-        self::deleteUrlRewrites(self::ENTITY_MANUFACTURER, $idLang, $idShop, $idEntity);
+        // self::deleteUrlRewrites(self::ENTITY_MANUFACTURER, $idLang, $idShop, $idEntity);
         Db::getInstance()->insert(bqSQL(self::$definition['table']), $insert);
     }
 
@@ -719,10 +730,11 @@ class UrlRewriteCore extends Objectmodel
                 'id_shop' => $idShop,
                 'id_lang' => $idLang,
                 'redirect' => self::CANONICAL,
+                'date_upd' => date('y-m-d H:i:s')
             ];
         }
 
-        self::deleteUrlRewrites(self::ENTITY_CMS, $idLang, $idShop, $idEntity);
+        // self::deleteUrlRewrites(self::ENTITY_CMS, $idLang, $idShop, $idEntity);
         Db::getInstance()->insert(bqSQL(self::$definition['table']), $insert);
     }
 
@@ -736,6 +748,7 @@ class UrlRewriteCore extends Objectmodel
      */
     protected static function generateCmsCategoryUrlRewrites($idLang, $idShop, $categories, &$newRoutes, $idEntity = null)
     {
+
         if (self::hasKeyword($newRoutes[$idShop][$idLang][self::ENTITY_CMS_CATEGORY], 'cms_categories')) {
             foreach ($categories as $key => &$category) {
                 if ($idEntity && $category['id_cms_category'] != $idEntity) {
@@ -763,10 +776,11 @@ class UrlRewriteCore extends Objectmodel
                 'rewrite' => self::createBaseUrl($newRoutes[$idShop][$idLang][self::ENTITY_CMS_CATEGORY], $category),
                 'id_lang' => $idLang,
                 'redirect' => self::CANONICAL,
+                'date_upd' => date('y-m-d H:i:s')
             ];
         }
 
-        self::deleteUrlRewrites(self::ENTITY_CMS_CATEGORY, $idLang, $idShop, $idEntity);
+        // self::deleteUrlRewrites(self::ENTITY_CMS_CATEGORY, $idLang, $idShop, $idEntity);
         Db::getInstance()->insert(bqSQL(self::$definition['table']), $insert);
     }
 
