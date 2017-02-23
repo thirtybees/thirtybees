@@ -535,8 +535,7 @@ class CMSCategoryCore extends ObjectModel
             PageCache::invalidateEntity('cms_category', $this->id);
         }
 
-        UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_CMS_CATEGORY, $this->id);
-        UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_CMS);
+
 
         $this->level_depth = $this->calcLevelDepth();
         foreach ($this->name as $k => $value) {
@@ -544,8 +543,12 @@ class CMSCategoryCore extends ObjectModel
                 $this->name[$k] = '0'.$value;
             }
         }
+        $return = parent::update($nullValues);
+        
+        UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_CMS_CATEGORY, $this->id);
+        UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_CMS);
 
-        return parent::update($nullValues);
+        return $return;
     }
 
     /**

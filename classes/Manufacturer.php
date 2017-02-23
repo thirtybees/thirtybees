@@ -635,8 +635,11 @@ class ManufacturerCore extends ObjectModel
             PageCache::invalidateEntity('manufacturer', $this->id);
         }
 
+        $return = parent::update($nullValues);
+
         UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_MANUFACTURER, $this->id);
 
-        parent::update($nullValues);
+        return $return;
+
     }
 }

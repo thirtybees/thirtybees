@@ -297,9 +297,10 @@ class CMSCore extends ObjectModel
             PageCache::invalidateEntity('cms', $this->id);
         }
 
-        UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_CMS, $this->id);
+        
 
         if (parent::update($nullValues)) {
+            UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_CMS, $this->id);
             return $this->cleanPositions($this->id_cms_category);
         }
 
