@@ -725,7 +725,7 @@ class DispatcherCore
                                     break 2;
                                 case UrlRewrite::ENTITY_CMS_CATEGORY:
                                     $_GET['id_cms_category'] = (int) $entity[0]['id_entity'];
-                                    $controller = 'cms_category';
+                                    $controller = 'cms';
                                     break 2;
                                 case UrlRewrite::ENTITY_PAGE:
                                     $meta = new Meta($entity[0]['id_entity']);
