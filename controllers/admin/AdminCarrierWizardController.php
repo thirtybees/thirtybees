@@ -116,6 +116,7 @@ class AdminCarrierWizardControllerCore extends AdminController
 
         $this->tpl_view_vars = [
             'currency_sign'     => $currency->sign,
+            'currency_iso_code' => $currency->iso_code,
             'PS_WEIGHT_UNIT'    => Configuration::get('PS_WEIGHT_UNIT'),
             'enableAllSteps'    => Validate::isLoadedObject($carrier),
             'wizard_steps'      => $this->wizard_steps,
