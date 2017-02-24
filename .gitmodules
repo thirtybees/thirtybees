@@ -404,3 +404,6 @@
 [submodule "modules/tbupdater"]
 	path = modules/tbupdater
 	url = https://github.com/thirtybees/tbupdater.git
+[submodule "modules/cronjobs"]
+	path = modules/cronjobs
+	url = https://github.com/thirtybees/cronjobs
