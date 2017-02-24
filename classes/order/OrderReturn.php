@@ -198,7 +198,7 @@ class OrderReturnCore extends ObjectModel
 		SELECT *
 		FROM `'._DB_PREFIX_.'order_return`
 		WHERE `id_customer` = '.(int)$customerId.
-        ($order_id ? ' AND `id_order` = '.(int)$order_id : '').
+        ($orderId ? ' AND `id_order` = '.(int)$orderId : '').
         ($noDenied ? ' AND `state` != 4' : '').'
 		ORDER BY `date_add` DESC');
         foreach ($data as $k => $or) {
