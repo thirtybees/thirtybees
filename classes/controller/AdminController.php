@@ -40,7 +40,7 @@ class AdminControllerCore extends Controller
     /** @var string */
     public static $currentIndex;
     /** @var array Cache for translations */
-    public static $cache_lang = [];
+    public static $cacheLang = [];
     /** @var string */
     public $path;
     /** @var string */
@@ -830,14 +830,14 @@ class AdminControllerCore extends Controller
     }
 
     /**
-     * @param string $text_delimiter
+     * @param string $textDelimiter
      *
      * @throws PrestaShopException
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function processExport($text_delimiter = '"')
+    public function processExport($textDelimiter = '"')
     {
         // clean buffer
         if (ob_get_level() && ob_get_length() > 0) {
@@ -892,7 +892,7 @@ class AdminControllerCore extends Controller
                 'export_precontent' => "",
                 'export_headers'    => $headers,
                 'export_content'    => $content,
-                'text_delimiter'    => $text_delimiter,
+                'text_delimiter'    => $textDelimiter,
             ]
         );
 
@@ -1211,7 +1211,7 @@ class AdminControllerCore extends Controller
     /**
      * Call the right method for creating or updating object
      *
-     * @return ObjectModel|false|void
+     * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version

@@ -609,8 +609,8 @@ class AdminGroupsControllerCore extends AdminController
     public function displayEditLink($token = null, $id, $name = null)
     {
         $tpl = $this->createTemplate('helpers/list/list_action_edit.tpl');
-        if (!array_key_exists('Edit', self::$cache_lang)) {
-            self::$cache_lang['Edit'] = $this->l('Edit', 'Helper');
+        if (!array_key_exists('Edit', self::$cacheLang)) {
+            self::$cacheLang['Edit'] = $this->l('Edit', 'Helper');
         }
 
         $href = self::$currentIndex.'&'.$this->identifier.'='.$id.'&update'.$this->table.'&token='.($token != null ? $token : $this->token);
@@ -621,9 +621,9 @@ class AdminGroupsControllerCore extends AdminController
 
         $tpl->assign(
             [
-            'href' => $href,
-            'action' => self::$cache_lang['Edit'],
-            'id' => $id
+                'href' => $href,
+                'action' => self::$cacheLang['Edit'],
+                'id' => $id
             ]
         );
 

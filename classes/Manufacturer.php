@@ -425,7 +425,7 @@ class ManufacturerCore extends ObjectModel
     /**
      * Specify if a manufacturer already in base
      *
-     * @param $idManufacturer Manufacturer id
+     * @param int $idManufacturer Manufacturer id
      *
      * @return bool
      *
