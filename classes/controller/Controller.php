@@ -210,16 +210,16 @@ abstract class ControllerCore
      *
      * @since 1.0.1
      */
-    public function &__get($property)
-    {
-        // Property to camelCase for backwards compatibility
-        $camelCaseProperty = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $property))));
-        if (property_exists($this, $camelCaseProperty)) {
-            return $this->$camelCaseProperty;
-        }
-
-        return $this->$property;
-    }
+//    public function &__get($property)
+//    {
+//        // Property to camelCase for backwards compatibility
+//        $camelCaseProperty = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $property))));
+//        if (property_exists($this, $camelCaseProperty)) {
+//            return $this->$camelCaseProperty;
+//        }
+//
+//        return $this->$property;
+//    }
 
     /**
      * thirty bees' new coding style dictates that camelCase should be used
@@ -236,9 +236,19 @@ abstract class ControllerCore
      */
     public function __set($property, $value)
     {
+        $blacklist = [
+            '_select',
+            '_join',
+            '_where',
+            '_group',
+            '_having',
+            '_conf',
+            '_lang',
+        ];
+
         // Property to camelCase for backwards compatibility
         $snakeCaseProperty = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $property))));
-        if (property_exists($this, $snakeCaseProperty)) {
+        if (!in_array($property, $blacklist) && property_exists($this, $snakeCaseProperty)) {
             $this->$snakeCaseProperty = $value;
         } else {
             $this->$property = $value;
