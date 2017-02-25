@@ -199,6 +199,51 @@ abstract class ControllerCore
     }
 
     /**
+     * thirty bees' new coding style dictates that camelCase should be used
+     * rather than snake_case
+     * These magic methods provide backwards compatibility for modules/themes/whatevers
+     * that still access properties via their snake_case names
+     *
+     * @param string $property Property name
+     *
+     * @return mixed
+     *
+     * @since 1.0.1
+     */
+    public function __get($property)
+    {
+        // Property to camelCase for backwards compatibility
+        $property = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $property))));
+        if (property_exists($this, $property)) {
+            return $this->$property;
+        }
+    }
+
+    /**
+     * thirty bees' new coding style dictates that camelCase should be used
+     * rather than snake_case
+     * These magic methods provide backwards compatibility for modules/themes/whatevers
+     * that still access properties via their snake_case names
+     *
+     * @param string $property
+     * @param mixed  $value
+     *
+     * @return void
+     *
+     * @since 1.0.1
+     */
+    public function __set($property, $value)
+    {
+        // Property to camelCase for backwards compatibility
+        $snakeCaseProperty = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $property))));
+        if (property_exists($this, $snakeCaseProperty)) {
+            $this->$snakeCaseProperty = $value;
+        } else {
+            $this->$property = $value;
+        }
+    }
+
+    /**
      * Starts the controller process (this method should not be overridden!)
      *
      * @since 1.0.0
