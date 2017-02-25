@@ -1077,7 +1077,7 @@ class DispatcherCore
      *
      * @since 1.0.0
      */
-    protected function createRegExp($rule, array $keywords)
+    protected function createRegExp($rule, $keywords)
     {
         $regexp = preg_quote($rule, '#');
         if (!empty($keywords)) {
