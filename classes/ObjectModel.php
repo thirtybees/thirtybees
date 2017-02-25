@@ -271,13 +271,15 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @since 1.0.1
      */
-    public function __get($property)
+    public function &__get($property)
     {
         // Property to camelCase for backwards compatibility
-        $property = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $property))));
-        if (property_exists($this, $property)) {
-            return $this->$property;
+        $camelCaseProperty = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $property))));
+        if (property_exists($this, $camelCaseProperty)) {
+            return $this->$camelCaseProperty;
         }
+
+        return $this->$property;
     }
 
     /**
