@@ -1200,12 +1200,17 @@ class AdminModulesControllerCore extends AdminController
         ];
     }
 
+    /**
+     * @return void
+     */
     public function initContent()
     {
         if (Tools::isSubmit('addnewmodule') && $this->context->mode == Context::MODE_HOST) {
             $this->display = 'add';
             $this->context->smarty->assign(['iso_code' => $this->context->language->iso_code]);
-            return parent::initContent();
+            parent::initContent();
+
+            return;
         }
 
         $this->meta_title = 'Modules';
@@ -1214,7 +1219,7 @@ class AdminModulesControllerCore extends AdminController
         if (Tools::getValue('configure') != '') {
             $this->context->smarty->assign(['maintenance_mode' => !(bool)Configuration::Get('PS_SHOP_ENABLE')]);
 
-            return true;
+            return;
         }
 
         $this->initToolbar();

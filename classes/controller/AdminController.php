@@ -2366,6 +2366,8 @@ class AdminControllerCore extends Controller
     /**
      * Assign smarty variables for all default views, list and form, then call other init functions
      *
+     * @return void
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
