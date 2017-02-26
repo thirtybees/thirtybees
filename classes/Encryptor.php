@@ -69,12 +69,15 @@ class EncryptorCore
     {
         $this->content = [];
 
-        if ((int) Configuration::get('PS_CIPHER_ALGORITHM') === 1 && defined('_RIJNDAEL_KEY_')) {
-            $this->cipherTool = new Rijndael(_RIJNDAEL_KEY_, _RIJNDAEL_IV_);
-        } elseif ((int) Configuration::get('PS_CIPHER_ALGORITHM') === 2 && defined('_PHP_ENCRYPTION_KEY_')) {
-            $this->cipherTool = new PhpEncryption(_PHP_ENCRYPTION_KEY_);
-        } else {
-            $this->cipherTool = new Blowfish(_COOKIE_KEY_, _COOKIE_IV_);
+        // Get cipher tool from cookie first
+        if (!$this->cipherTool = Context::getContext()->cookie->getCipherTool()) {
+            if ((int) Configuration::get('PS_CIPHER_ALGORITHM') === 1 && defined('_RIJNDAEL_KEY_')) {
+                $this->cipherTool = new Rijndael(_RIJNDAEL_KEY_, _RIJNDAEL_IV_);
+            } elseif ((int) Configuration::get('PS_CIPHER_ALGORITHM') === 2 && defined('_PHP_ENCRYPTION_KEY_')) {
+                $this->cipherTool = new PhpEncryption(_PHP_ENCRYPTION_KEY_);
+            } else {
+                $this->cipherTool = new Blowfish(_COOKIE_KEY_, _COOKIE_IV_);
+            }
         }
     }
 
