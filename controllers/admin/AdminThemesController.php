@@ -1879,7 +1879,7 @@ class AdminThemesControllerCore extends AdminController
         $this->context->smarty->assign(
             [
                 'import_theme'        => true,
-                'logged_on_addons'    => $this->logged_on_addons,
+                'logged_on_addons'    => false,
                 'iso_code'            => $this->context->language->iso_code,
                 'add_new_theme_href'  => self::$currentIndex.'&addtheme&token='.$this->token,
                 'add_new_theme_label' => $this->l('Create a new theme'),
@@ -1978,26 +1978,7 @@ class AdminThemesControllerCore extends AdminController
      */
     public function ajaxProcessGetAddonsThemes()
     {
-        $parentDomain = Tools::getHttpHost(true).substr($_SERVER['REQUEST_URI'], 0, -1 * strlen(basename($_SERVER['REQUEST_URI'])));
-        $isoLang = $this->context->language->iso_code;
-        $isoCurrency = $this->context->currency->iso_code;
-        $isoCountry = $this->context->country->iso_code;
-        $activity = Configuration::get('PS_SHOP_ACTIVITY');
-        $addonsUrl = 'http://addons.prestashop.com/iframe/search-1.6.php?psVersion='._PS_VERSION_.'&onlyThemes=1&isoLang='.$isoLang.'&isoCurrency='.$isoCurrency.'&isoCountry='.$isoCountry.'&activity='.(int) $activity.'&parentUrl='.$parentDomain;
-        $guzzle = new \GuzzleHttp\Client(
-            [
-                'http_errors' => false,
-                'verify'      => _PS_TOOL_DIR_.'cacert.pem',
-                'timeout'     => 5,
-            ]
-        );
-
-        try {
-            $content = $guzzle->get($addonsUrl);
-        } catch (Exception $e) {
-            $content = null;
-        }
-        die($content);
+        exit;
     }
 
     public function renderChooseThemeModule()
@@ -3026,10 +3007,6 @@ class AdminThemesControllerCore extends AdminController
     {
         parent::setMedia();
         $this->addJS(_PS_JS_DIR_.'admin/themes.js');
-
-        if ($this->context->mode == Context::MODE_HOST && Tools::getValue('action') == 'importtheme') {
-            $this->addJS(_PS_JS_DIR_.'admin/addons.js');
-        }
     }
 
     protected function processUpdateOptions()
