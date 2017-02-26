@@ -832,6 +832,8 @@ class AdminControllerCore extends Controller
     /**
      * @param string $textDelimiter
      *
+     * @return void
+     *
      * @throws PrestaShopException
      *
      * @since   1.0.0

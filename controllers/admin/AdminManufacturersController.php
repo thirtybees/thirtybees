@@ -31,8 +31,6 @@
 
 /**
  * @property Manufacturer $object
- *
- * @since 1.0.0
  */
 class AdminManufacturersControllerCore extends AdminController
 {
@@ -112,11 +110,6 @@ class AdminManufacturersControllerCore extends AdminController
         parent::__construct();
     }
 
-    /**
-     * Set media
-     *
-     * @since 1.0.0
-     */
     public function setMedia()
     {
         parent::setMedia();
@@ -125,8 +118,6 @@ class AdminManufacturersControllerCore extends AdminController
     }
 
     /**
-     * Process export
-     *
      * @param string $textDelimiter
      *
      * @return void
@@ -139,8 +130,6 @@ class AdminManufacturersControllerCore extends AdminController
         }
 
         parent::processExport($textDelimiter);
-
-        return;
     }
 
     /**
@@ -169,8 +158,6 @@ class AdminManufacturersControllerCore extends AdminController
 
     /**
      * Init content
-     *
-     * @since 1.0.0
      */
     public function initContent()
     {
@@ -179,7 +166,7 @@ class AdminManufacturersControllerCore extends AdminController
         $this->initToolbar();
         $this->initPageHeaderToolbar();
         if ($this->display == 'editaddresses' || $this->display == 'addaddress') {
-            $this->renderFormAddress();
+            $this->content .= $this->renderFormAddress();
         } elseif ($this->display == 'edit' || $this->display == 'add') {
             if (!$this->loadObject(true)) {
                 return;
@@ -192,7 +179,7 @@ class AdminManufacturersControllerCore extends AdminController
             }
             $this->content .= $this->renderView();
         } elseif (!$this->ajax) {
-            $this->content .= $this->renderList();
+            $this->renderList();
             $this->content .= $this->renderOptions();
         }
 
@@ -250,7 +237,7 @@ class AdminManufacturersControllerCore extends AdminController
     }
 
     /**
-     * Initialize toolbar in page header
+     * Init page header
      */
     public function initPageHeaderToolbar()
     {
@@ -284,9 +271,7 @@ class AdminManufacturersControllerCore extends AdminController
     }
 
     /**
-     * @return void
-     *
-     * @since 1.0.0
+     * Render address form
      */
     public function renderFormAddress()
     {
@@ -493,9 +478,6 @@ class AdminManufacturersControllerCore extends AdminController
         $this->content .= $helper->generateForm($this->fields_form);
     }
 
-    /**
-     * @return string|void
-     */
     public function renderForm()
     {
         if (!($manufacturer = $this->loadObject(true))) {
@@ -652,20 +634,16 @@ class AdminManufacturersControllerCore extends AdminController
             );
         }
 
-        parent::renderForm();
-
-        return;
+        return parent::renderForm();
     }
 
     /**
-     * @return string|void
-     *
-     * @since 1.0.0
+     * @return string
      */
     public function renderView()
     {
         if (!($manufacturer = $this->loadObject())) {
-            return;
+            return '';
         }
 
         /** @var Manufacturer $manufacturer */
@@ -681,12 +659,12 @@ class AdminManufacturersControllerCore extends AdminController
         $addresses = $manufacturer->getAddresses($this->context->language->id);
 
         $products = $manufacturer->getProductsLite($this->context->language->id);
-        $totalProduct = count($products);
-        for ($i = 0; $i < $totalProduct; $i++) {
-            $newProduct = new Product($products[$i]['id_product'], false, $this->context->language->id);
-            $newProduct->loadStockData();
+        $totalProducts = count($products);
+        for ($i = 0; $i < $totalProducts; $i++) {
+            $products[$i] = new Product($products[$i]['id_product'], false, $this->context->language->id);
+            $products[$i]->loadStockData();
             /* Build attributes combinations */
-            $combinations = $newProduct->getAttributeCombinations($this->context->language->id);
+            $combinations = $products[$i]->getAttributeCombinations($this->context->language->id);
             foreach ($combinations as $k => $combination) {
                 $combArray[$combination['id_product_attribute']]['reference'] = $combination['reference'];
                 $combArray[$combination['id_product_attribute']]['ean13'] = $combination['ean13'];
@@ -707,11 +685,9 @@ class AdminManufacturersControllerCore extends AdminController
                     }
                     $combArray[$key]['attributes'] = rtrim($list, ', ');
                 }
-                $newProduct->combination = isset($combArray) ? $combArray : '';
+                $products[$i]->combination = isset($combArray) ? $combArray : '';
                 unset($combArray);
             }
-
-            $products[$i] = $newProduct;
         }
 
         $this->tpl_view_vars = [
@@ -722,13 +698,13 @@ class AdminManufacturersControllerCore extends AdminController
             'shopContext'      => Shop::getContext(),
         ];
 
-        parent::renderView();
-
-        return;
+        return parent::renderView();
     }
 
     /**
      * Render list
+     *
+     * @return void
      *
      * @since 1.0.0
      */
@@ -739,7 +715,9 @@ class AdminManufacturersControllerCore extends AdminController
     }
 
     /**
-     * Initialize manufacturer list
+     * Init manufacturer list
+     *
+     * @return void
      *
      * @since 1.0.0
      */
@@ -765,7 +743,9 @@ class AdminManufacturersControllerCore extends AdminController
     }
 
     /**
-     * Initialize list of manufacturer addresses
+     * Init manufacturer address list
+     *
+     * @return void
      *
      * @since 1.0.0
      */
@@ -826,59 +806,8 @@ class AdminManufacturersControllerCore extends AdminController
     }
 
     /**
-     * AdminController::init() override
+     * Get address field list
      *
-     * @see AdminController::init()
-     *
-     * @since 1.0.0
-     */
-    public function init()
-    {
-        parent::init();
-
-        if (Tools::isSubmit('editaddresses')) {
-            $this->display = 'editaddresses';
-        } elseif (Tools::isSubmit('updateaddress')) {
-            $this->display = 'editaddresses';
-        } elseif (Tools::isSubmit('addaddress')) {
-            $this->display = 'addaddress';
-        } elseif (Tools::isSubmit('submitAddaddress')) {
-            $this->action = 'save';
-        } elseif (Tools::isSubmit('deleteaddress')) {
-            $this->action = 'delete';
-        }
-    }
-
-    /**
-     * Initialize process
-     *
-     * @since 1.0.0
-     */
-    public function initProcess()
-    {
-        if (Tools::isSubmit('submitAddaddress') || Tools::isSubmit('deleteaddress') || Tools::isSubmit('submitBulkdeleteaddress') || Tools::isSubmit('exportaddress')) {
-            $this->table = 'address';
-            $this->className = 'Address';
-            $this->identifier = 'id_address';
-            $this->deleted = true;
-            $this->fields_list = $this->getAddressFieldsList();
-        }
-        parent::initProcess();
-    }
-
-    /**
-     * @return bool
-     */
-    public function processSave()
-    {
-        if (Tools::isSubmit('submitAddaddress')) {
-            $this->display = 'editaddresses';
-        }
-
-        return parent::processSave();
-    }
-
-    /**
      * @return array
      *
      * @since 1.0.0
@@ -926,9 +855,68 @@ class AdminManufacturersControllerCore extends AdminController
     }
 
     /**
+     * AdminController::init() override
+     *
+     * @see AdminController::init()
+     */
+    public function init()
+    {
+        parent::init();
+
+        if (Tools::isSubmit('editaddresses')) {
+            $this->display = 'editaddresses';
+        } elseif (Tools::isSubmit('updateaddress')) {
+            $this->display = 'editaddresses';
+        } elseif (Tools::isSubmit('addaddress')) {
+            $this->display = 'addaddress';
+        } elseif (Tools::isSubmit('submitAddaddress')) {
+            $this->action = 'save';
+        } elseif (Tools::isSubmit('deleteaddress')) {
+            $this->action = 'delete';
+        }
+    }
+
+    /**
+     * Init process
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
+    public function initProcess()
+    {
+        if (Tools::isSubmit('submitAddaddress') || Tools::isSubmit('deleteaddress') || Tools::isSubmit('submitBulkdeleteaddress') || Tools::isSubmit('exportaddress')) {
+            $this->table = 'address';
+            $this->className = 'Address';
+            $this->identifier = 'id_address';
+            $this->deleted = true;
+            $this->fields_list = $this->getAddressFieldsList();
+        }
+        parent::initProcess();
+    }
+
+    /**
+     * Process save
+     *
+     * @return bool Indicates whether save was successful
+     *
+     * @since 1.0.0
+     */
+    public function processSave()
+    {
+        if (Tools::isSubmit('submitAddaddress')) {
+            $this->display = 'editaddresses';
+        }
+
+        return parent::processSave();
+    }
+
+    /**
      * After image upload
      *
-     * @return bool
+     * @return bool Indicates whether post processing was successful
+     *
+     * @since 1.0.0
      */
     protected function afterImageUpload()
     {
@@ -974,11 +962,6 @@ class AdminManufacturersControllerCore extends AdminController
         return $res;
     }
 
-    /**
-     * @param ObjectModel $object
-     *
-     * @return bool
-     */
     protected function beforeDelete($object)
     {
         return true;
