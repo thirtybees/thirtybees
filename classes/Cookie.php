@@ -52,7 +52,7 @@ class CookieCore
     /** @var array Path for setcookie() */
     protected $_path;
 
-    /** @var array cipher tool instance */
+    /** @var Blowfish|Rijndael|PhpEncryption cipher tool instance */
     protected $_cipherTool;
 
     protected $_modified = false;
@@ -521,5 +521,17 @@ class CookieCore
     public function exists()
     {
         return isset($_COOKIE[$this->_name]);
+    }
+
+    /**
+     * Get the cipher tool instance used by this cookie instance
+     *
+     * @return Blowfish|Rijndael|PhpEncryption
+     *
+     * @since 1.0.1
+     */
+    public function getCipherTool()
+    {
+        return $this->_cipherTool;
     }
 }

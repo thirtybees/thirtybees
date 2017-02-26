@@ -44,7 +44,9 @@ class PrestaShopExceptionCore extends Exception
      */
     public function displayMessage()
     {
+        // FIXME 1.0.1: Improve the error page
         header('HTTP/1.1 500 Internal Server Error');
+
         if (_PS_MODE_DEV_ || defined('_PS_ADMIN_DIR_') || getenv('CI')) {
             // Display error message
             echo '<style>
@@ -91,12 +93,39 @@ class PrestaShopExceptionCore extends Exception
             echo '</ul>';
             echo '</div>';
         } else {
-            // If not in mode dev, display an error page
-            if (file_exists(_PS_ROOT_DIR_.'/error500.html')) {
-                echo file_get_contents(_PS_ROOT_DIR_.'/error500.html');
+            header('Content-Type: text/plain; charset=UTF-8');
+            // Display error message
+            $markdown = '';
+            $markdown .= '## '.get_class($this).'  ';
+            $markdown .= $this->getExtendedMessageMarkdown();
+
+            $this->displayFileDebug($this->getFile(), $this->getLine(), null, true);
+
+            // Display debug backtrace
+            foreach ($this->getTrace() as $id => $trace) {
+                $relativeFile = (isset($trace['file'])) ? ltrim(str_replace([_PS_ROOT_DIR_, '\\'], ['', '/'], $trace['file']), '/') : '';
+                $currentLine = (isset($trace['line'])) ? $trace['line'] : '';
+                if (defined('_PS_ADMIN_DIR_')) {
+                    $relativeFile = str_replace(basename(_PS_ADMIN_DIR_).DIRECTORY_SEPARATOR, 'admin'.DIRECTORY_SEPARATOR, $relativeFile);
+                }
+                $markdown .=  '- ';
+                $markdown .=  '**'.((isset($trace['class'])) ? $trace['class'] : '').((isset($trace['type'])) ? $trace['type'] : '').$trace['function'].'**';
+                $markdown .=  " - [line `".$currentLine.'` - `'.$relativeFile."`]  \n";
+
+                if (isset($trace['args']) && count($trace['args'])) {
+                    $markdown .=  " - [".count($trace['args'])." Arguments]  \n";
+                }
+
+                if ($relativeFile) {
+                    $markdown .= $this->displayFileDebug($trace['file'], $trace['line'], $id, true);
+                }
+                if (isset($trace['args']) && count($trace['args'])) {
+                    $markdown .= $this->displayArgsDebug($trace['args'], $id, true);
+                }
             }
+            echo Encryptor::getInstance()->encrypt($markdown);
         }
-        // Log the error in the disk
+        // Log the error to the disk
         $this->logError();
         exit;
     }
@@ -104,14 +133,21 @@ class PrestaShopExceptionCore extends Exception
     /**
      * Display lines around current line
      *
+     * Markdown is returned instead of being printed
+     * (HTML is printed because old backwards stuff blabla)
+     *
      * @param string $file
-     * @param int $line
+     * @param int    $line
      * @param string $id
+     * @param bool   $markdown
+     *
+     * @return string
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
+     * @version 1.0.1 Add markdown support - return string
      */
-    protected function displayFileDebug($file, $line, $id = null)
+    protected function displayFileDebug($file, $line, $id = null, $markdown = false)
     {
         $lines = file($file);
         $offset = $line - 6;
@@ -123,36 +159,68 @@ class PrestaShopExceptionCore extends Exception
         $lines = array_slice($lines, $offset, $total);
         ++$offset;
 
-        echo '<div class="psTrace" id="psTrace_'.$id.'" '.((is_null($id) ? 'style="display: block"' : '')).'><pre>';
-        foreach ($lines as $k => $l) {
-            $string = ($offset + $k).'. '.htmlspecialchars($l);
-            if ($offset + $k == $line) {
-                echo '<span class="selected">'.$string.'</span>';
-            } else {
-                echo $string;
+        $ret = '';
+
+        if ($markdown) {
+            $ret .= "```php  \n";
+            foreach ($lines as $k => $l) {
+                $ret .= ($offset + $k).'. '.(($offset + $k == $line) ? '=>' : '  ').' '.$l;
+                // ($offset + $k == $line)
             }
+            $ret .= "```  \n";
+        } else {
+            echo '<div class="psTrace" id="psTrace_'.$id.'" '.((is_null($id) ? 'style="display: block"' : '')).'><pre>';
+            foreach ($lines as $k => $l) {
+                $string = ($offset + $k).'. '.htmlspecialchars($l);
+                if ($offset + $k == $line) {
+                    echo '<span class="selected">'.$string.'</span>';
+                } else {
+                    echo $string;
+                }
+            }
+            echo '</pre></div>';
         }
-        echo '</pre></div>';
+
+        return $ret;
     }
 
     /**
      * Display arguments list of traced function
+     * Markdown is returned instead of being printed
+     * (HTML is printed because old backwards stuff blabla)
      *
-     * @param array $args List of arguments
+     * @param array  $args List of arguments
      * @param string $id ID of argument
+     * @param bool   $markdown
+     *
+     * @return string
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
+     * @version 1.0.1 Add markdown support - return string
      */
-    protected function displayArgsDebug($args, $id)
+    protected function displayArgsDebug($args, $id, $markdown = false)
     {
-        echo '<div class="psArgs" id="psArgs_'.$id.'"><pre>';
-        foreach ($args as $arg => $value) {
-            echo '<b>Argument ['.Tools::safeOutput($arg)."]</b>\n";
-            echo Tools::safeOutput(print_r($value, true));
-            echo "\n";
+        $ret = '';
+        if ($markdown) {
+            $ret .= '```';
+            foreach ($args as $arg => $value) {
+                $ret .= 'Argument ['.Tools::safeOutput($arg)."]  \n";
+                $ret .= Tools::safeOutput(print_r($value, true));
+                $ret .= "\n";
+            }
+            $ret .= "```  \n";
+        } else {
+            echo '<div class="psArgs" id="psArgs_'.$id.'"><pre>';
+            foreach ($args as $arg => $value) {
+                echo '<b>Argument ['.Tools::safeOutput($arg)."]</b>\n";
+                echo Tools::safeOutput(print_r($value, true));
+                echo "\n";
+            }
+            echo '</pre>';
         }
-        echo '</pre>';
+
+        return $ret;
     }
 
     /**
@@ -191,6 +259,25 @@ class PrestaShopExceptionCore extends Exception
         if (!$html) {
             $format = strip_tags(str_replace('<br />', ' ', $format));
         }
+
+        return sprintf(
+            $format,
+            $this->getMessage(),
+            $this->getLine(),
+            ltrim(str_replace([_PS_ROOT_DIR_, '\\'], ['', '/'], $this->getFile()), '/')
+        );
+    }
+
+    /**
+     * Return the content of the Exception
+     * @return string content of the exception.
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
+    protected function getExtendedMessageMarkdown()
+    {
+        $format = "\n**%s**  \n *at line* **%d** *in file* `%s`  \n";
 
         return sprintf(
             $format,
