@@ -407,3 +407,6 @@
 [submodule "modules/cronjobs"]
 	path = modules/cronjobs
 	url = https://github.com/thirtybees/cronjobs
+[submodule "modules/beesblog"]
+	path = modules/beesblog
+	url = https://github.com/thirtybees/beesblog.git
