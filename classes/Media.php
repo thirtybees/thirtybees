@@ -74,8 +74,6 @@ class MediaCore
         'effects.slide'     => ['fileName' => 'jquery.effects.slide.min.js', 'dependencies' => ['effects.core'], 'theme' => false],
         'effects.transfer'  => ['fileName' => 'jquery.effects.transfer.min.js', 'dependencies' => ['effects.core'], 'theme' => false],
     ];
-    // @codingStandardsIgnoreEnd
-
     /**
      * @var string pattern used in replaceByAbsoluteURL
      */
@@ -101,6 +99,7 @@ class MediaCore
      */
     protected static $current_css_file;
     protected static $pattern_keepinline = 'data-keepinline';
+    // @codingStandardsIgnoreEnd
 
     /**
      * @param $htmlContent
@@ -753,9 +752,12 @@ class MediaCore
         $protocolLink = Tools::getCurrentUrlProtocolPrefix();
         //return cached css
         if (!$refresh) {
-            foreach (array_diff(scandir($cachePath), ['..', '.']) as $file) {
-                $cssUrl = str_replace(_PS_ROOT_DIR_, '', $protocolLink.Tools::getMediaServer('').$cachePath.DIRECTORY_SEPARATOR.$file);
-                $splittedCss[$cssUrl] = 'all';
+            $files = scandir($cachePath);
+            if (is_array($files)) {
+                foreach (array_diff($files, ['..', '.']) as $file) {
+                    $cssUrl = str_replace(_PS_ROOT_DIR_, '', $protocolLink.Tools::getMediaServer('').$cachePath.DIRECTORY_SEPARATOR.$file);
+                    $splittedCss[$cssUrl] = 'all';
+                }
             }
 
             return ['lteIE9' => $splittedCss];
@@ -862,9 +864,7 @@ class MediaCore
             }
 
             if (!empty($compressedJsFilesNotFound)) {
-                $content = '/* WARNING ! file(s) not found : "'.
-                    implode(',', $compressedJsFilesNotFound).
-                    '" */'."\n".$content;
+                $content = '/* WARNING ! file(s) not found : "'.implode(',', $compressedJsFilesNotFound).'" */'."\n".$content;
             }
 
             file_put_contents($compressedJsPath, $content);
@@ -1065,6 +1065,8 @@ class MediaCore
 
         if (isset($matches[0])) {
             $original = trim($matches[0]);
+        } else {
+            $original = '';
         }
 
         if (isset($matches[2])) {
@@ -1079,8 +1081,8 @@ class MediaCore
         preg_match('/src\s*=\s*["\']?([^"\']*)[^>]/ims', $original, $results);
         if (array_key_exists(1, $results)) {
             if (substr($results[1], 0, 2) == '//') {
-                $protocol_link = Tools::getCurrentUrlProtocolPrefix();
-                $results[1] = $protocol_link.ltrim($results[1], '/');
+                $protocolLink = Tools::getCurrentUrlProtocolPrefix();
+                $results[1] = $protocolLink.ltrim($results[1], '/');
             }
 
             if (in_array($results[1], Context::getContext()->controller->js_files) || in_array($results[1], Media::$inline_script_src)) {
