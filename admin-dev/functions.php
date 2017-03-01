@@ -110,9 +110,10 @@ function rewriteSettingsFile($base_urls = null, $theme = null, $array_db = null)
         $defines['_RIJNDAEL_IV_'] = addslashes(_RIJNDAEL_IV_);
     }
     $defines['_PS_VERSION_'] = addslashes(_PS_VERSION_);
+    $defines['_TB_VERSION_'] = addslashes(_TB_VERSION_);
     $content = "<?php\n\n";
     foreach ($defines as $k => $value) {
-        if ($k == '_PS_VERSION_') {
+        if (in_array($k, array('_PS_VERSION_', '_TB_VERSION_'))) {
             $content .= 'if (!defined(\''.$k.'\'))'."\n\t";
         }
 
