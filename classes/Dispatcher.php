@@ -437,8 +437,8 @@ class DispatcherCore
             /* Load routes from meta table */
             $sql = 'SELECT m.page, ml.url_rewrite, ml.id_lang
 					FROM `'._DB_PREFIX_.'meta` m
-					LEFT JOIN `'._DB_PREFIX_.'meta_lang` ml
-					ON (m.id_meta = ml.id_meta'.Shop::addSqlRestrictionOnLang('ml', $idShop).')
+					LEFT JOIN `'._DB_PREFIX_.'meta_lang` ml ON (m.id_meta = ml.id_meta'.Shop::addSqlRestrictionOnLang('ml', $idShop).')
+					INNER JOIN `'._DB_PREFIX_.'lang` l ON (l.id_lang = ml.id_lang AND l.`active` = 1)
 					ORDER BY LENGTH(ml.url_rewrite) DESC';
             if ($results = Db::getInstance()->executeS($sql)) {
                 foreach ($results as $row) {
@@ -729,7 +729,6 @@ class DispatcherCore
                                     break 2;
                                 case UrlRewrite::ENTITY_PAGE:
                                     $meta = new Meta($entity[0]['id_entity']);
-//                                    ddd($entity[0]['id_entity']);
                                     $controller = $meta->page;
                                     break 2;
                             }
