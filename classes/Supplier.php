@@ -259,7 +259,7 @@ class SupplierCore extends ObjectModel
 
         UrlRewrite::deleteUrlRewrite(UrlRewrite::ENTITY_SUPPLIER, $this->id);
 
-        parent::delete();
+        return parent::delete();
     }
 
     /**
