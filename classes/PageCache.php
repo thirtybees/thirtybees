@@ -34,7 +34,7 @@
  *
  * @since 1.0.0
  */
-class PageCache
+class PageCacheCore
 {
     /**
      * Register cache key and set its metadata
