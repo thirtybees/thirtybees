@@ -733,7 +733,11 @@ class DispatcherCore
                                     break 2;
                             }
                         }
-                        if (preg_match($route['regexp'], $uri, $m) && !in_array($route['controller'], ['product', 'category', 'supplier', 'manufacturer', 'cms', 'cms_category'])) {
+                        if (preg_match($route['regexp'], $uri, $m)
+                            &&
+                            (!in_array($route['controller'], ['product', 'category', 'supplier', 'manufacturer', 'cms', 'cms_category'])
+                            || isset($route['params']['fc']) && isset($route['params']['module']))
+                        ) {
                             foreach ($m as $k => $v) {
                                 // Skip the basic entities
                                 // We might have us an external module page here, so just set whatever we can
