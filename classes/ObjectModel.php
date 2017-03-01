@@ -582,7 +582,8 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         if (Shop::checkIdShopDefault($this->def['table'])) {
             $this->id_shop_default = (in_array(Configuration::get('PS_SHOP_DEFAULT'), $idShopList) == true) ? Configuration::get('PS_SHOP_DEFAULT') : min($idShopList);
         }
-        if (!$result = Db::getInstance()->insert($this->def['table'], $this->getFields(), $nullValues)) {
+        $fields = $this->getFields();
+        if (!$result = Db::getInstance()->insert($this->def['table'], $fields, $nullValues)) {
             return false;
         }
 
@@ -2242,6 +2243,10 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
             // Lang field
             $sql .= '`id_lang` INT(11) DEFAULT NULL,';
+
+            if (isset($definition['multilang_shop']) && $definition['multilang_shop']) {
+                $sql .= '`id_shop` INT(11) DEFAULT NULL,';
+            }
 
             // Primary key
             $sql .= 'PRIMARY KEY (`'.bqSQL($definition['primary']).'`, `id_lang`)';
