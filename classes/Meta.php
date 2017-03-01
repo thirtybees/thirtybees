@@ -530,15 +530,19 @@ class MetaCore extends ObjectModel
      * @param bool $autoDate
      * @param bool $nullValues
      *
+     * @return bool Indicates whether adding succeeded
+     *
      * @since 1.0.0
      */
     public function add($autoDate = true, $nullValues = false)
     {
-        parent::add($autoDate, $nullValues);
+        $result = parent::add($autoDate, $nullValues);
 
         if (!defined('TB_INSTALLATION_IN_PROGRESS')) {
             UrlRewrite::regenerateUrlRewrites(null, null, [UrlRewrite::ENTITY_PAGE]);
         }
+
+        return $result;
     }
 
     /**

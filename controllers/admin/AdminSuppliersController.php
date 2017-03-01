@@ -441,88 +441,120 @@ class AdminSuppliersControllerCore extends AdminController
         return parent::renderView();
     }
 
-    /**
-     * Post process
-     *
-     * @return bool
-     *
-     * @since 1.0.0
-     */
-    public function postProcess()
+    public function processAdd()
     {
-        // checks access
-        if (Tools::isSubmit('submitAdd'.$this->table) && !($this->tabAccess['add'] === '1')) {
-            $this->errors[] = Tools::displayError('You do not have permission to add suppliers.');
-
-            return parent::postProcess();
+        if (Tools::isSubmit('id_supplier')) {
+            return false;
         }
 
-        if (Tools::isSubmit('submitAdd'.$this->table)) {
-            if (Tools::isSubmit('id_supplier') && !($obj = $this->loadObject(true))) {
-                return false;
+        $address = new Address();
+        $address->alias = Tools::getValue('name', null);
+        $address->lastname = 'supplier'; // skip problem with numeric characters in supplier name
+        $address->firstname = 'supplier'; // skip problem with numeric characters in supplier name
+        $address->address1 = Tools::getValue('address', null);
+        $address->address2 = Tools::getValue('address2', null);
+        $address->postcode = Tools::getValue('postcode', null);
+        $address->phone = Tools::getValue('phone', null);
+        $address->phone_mobile = Tools::getValue('phone_mobile', null);
+        $address->id_country = Tools::getValue('id_country', null);
+        $address->id_state = Tools::getValue('id_state', null);
+        $address->city = Tools::getValue('city', null);
+
+        $validation = $address->validateController();
+
+        // checks address validity
+        if (count($validation) > 0) {
+            foreach ($validation as $item) {
+                $this->errors[] = $item;
             }
-
-            // updates/creates address if it does not exist
-            if (Tools::isSubmit('id_address') && (int) Tools::getValue('id_address') > 0) {
-                $address = new Address((int) Tools::getValue('id_address'));
-            } // updates address
-            else {
-                $address = new Address();
-            } // creates address
-
-            $address->alias = Tools::getValue('name', null);
-            $address->lastname = 'supplier'; // skip problem with numeric characters in supplier name
-            $address->firstname = 'supplier'; // skip problem with numeric characters in supplier name
-            $address->address1 = Tools::getValue('address', null);
-            $address->address2 = Tools::getValue('address2', null);
-            $address->postcode = Tools::getValue('postcode', null);
-            $address->phone = Tools::getValue('phone', null);
-            $address->phone_mobile = Tools::getValue('phone_mobile', null);
-            $address->id_country = Tools::getValue('id_country', null);
-            $address->id_state = Tools::getValue('id_state', null);
-            $address->city = Tools::getValue('city', null);
-
-            $validation = $address->validateController();
-
-            // checks address validity
-            if (count($validation) > 0) {
-                foreach ($validation as $item) {
-                    $this->errors[] = $item;
-                }
-                $this->errors[] = Tools::displayError('The address is not correct. Please make sure all of the required fields are completed.');
-            } else {
-                if (Tools::isSubmit('id_address') && Tools::getValue('id_address') > 0) {
-                    $address->update();
-                } else {
-                    $address->save();
-                    $_POST['id_address'] = $address->id;
-                }
-            }
-
-            return true;
-        } elseif (Tools::isSubmit('delete'.$this->table)) {
-            if (!($obj = $this->loadObject(true))) {
-                return false;
-            } elseif (SupplyOrder::supplierHasPendingOrders($obj->id)) {
-                $this->errors[] = $this->l('It is not possible to delete a supplier if there are pending supplier orders.');
-            } else {
-                //delete all product_supplier linked to this supplier
-                Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'product_supplier` WHERE `id_supplier`='.(int) $obj->id);
-
-                $idAddress = Address::getAddressIdBySupplierId($obj->id);
-                $address = new Address($idAddress);
-                if (Validate::isLoadedObject($address)) {
-                    $address->deleted = 1;
-                    $address->save();
-                }
-
-                return true;
-            }
+            $this->errors[] = Tools::displayError('The address is not correct. Please make sure all of the required fields are completed.');
         } else {
-            return parent::postProcess();
+            if (Tools::isSubmit('id_address') && Tools::getValue('id_address') > 0) {
+                $address->update();
+            } else {
+                $address->save();
+                $_POST['id_address'] = $address->id;
+            }
         }
 
-        return true;
+        if (Validate::isLoadedObject($address)) {
+            return parent::processAdd();
+        }
+
+        return false;
+    }
+
+    public function processUpdate()
+    {
+        if (Tools::isSubmit('id_supplier') && !($obj = $this->loadObject(true))) {
+            return false;
+        }
+
+        // updates/creates address if it does not exist
+        if (Tools::isSubmit('id_address') && (int) Tools::getValue('id_address') > 0) {
+            $address = new Address((int) Tools::getValue('id_address'));
+        } // updates address
+        else {
+            return false;
+        }
+
+        $address->alias = Tools::getValue('name', null);
+        $address->lastname = 'supplier'; // skip problem with numeric characters in supplier name
+        $address->firstname = 'supplier'; // skip problem with numeric characters in supplier name
+        $address->address1 = Tools::getValue('address', null);
+        $address->address2 = Tools::getValue('address2', null);
+        $address->postcode = Tools::getValue('postcode', null);
+        $address->phone = Tools::getValue('phone', null);
+        $address->phone_mobile = Tools::getValue('phone_mobile', null);
+        $address->id_country = Tools::getValue('id_country', null);
+        $address->id_state = Tools::getValue('id_state', null);
+        $address->city = Tools::getValue('city', null);
+
+        $validation = $address->validateController();
+
+        // checks address validity
+        if (count($validation) > 0) {
+            foreach ($validation as $item) {
+                $this->errors[] = $item;
+            }
+            $this->errors[] = Tools::displayError('The address is not correct. Please make sure all of the required fields are completed.');
+        } else {
+            if (Tools::isSubmit('id_address') && Tools::getValue('id_address') > 0) {
+                $address->update();
+            } else {
+                $address->save();
+                $_POST['id_address'] = $address->id;
+            }
+        }
+
+        if (Validate::isLoadedObject($address)) {
+            return parent::processUpdate();
+        }
+
+        return false;
+    }
+
+    protected function postProcessDelete()
+    {
+        if (!($obj = $this->loadObject(true))) {
+            return false;
+        } elseif (SupplyOrder::supplierHasPendingOrders($obj->id)) {
+            $this->errors[] = $this->l('It is not possible to delete a supplier if there are pending supplier orders.');
+        } else {
+            //delete all product_supplier linked to this supplier
+            Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'product_supplier` WHERE `id_supplier` = '.(int) $obj->id);
+
+            $idAddress = Address::getAddressIdBySupplierId($obj->id);
+            $address = new Address($idAddress);
+            if (Validate::isLoadedObject($address)) {
+                $address->deleted = 1;
+                $address->save();
+            }
+
+            return parent::processDelete();
+        }
+
+        return false;
     }
 
     protected function afterImageUpload()
