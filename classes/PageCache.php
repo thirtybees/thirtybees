@@ -157,6 +157,9 @@ class PageCache
         }
 
         $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        if (!is_array($results)) {
+            return [];
+        }
 
         return array_column($results, 'cache_hash');
     }
