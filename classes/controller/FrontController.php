@@ -255,10 +255,10 @@ class FrontControllerCore extends Controller
 
             $hook_header = Hook::exec('displayHeader');
             $extra_favicons = '
-                <link rel="shortcut icon" sizes="57x57" href="'._PS_ROOT_DIR_.DIRECTORY_SEPARATOR.'img'.DIRECTORY_SEPARATOR.'favicon_57.png">
-                <link rel="shortcut icon" sizes="72x72" href="'._PS_ROOT_DIR_.DIRECTORY_SEPARATOR.'img'.DIRECTORY_SEPARATOR.'favicon_72.png">
-                <link rel="shortcut icon" sizes="114x114" href="'._PS_ROOT_DIR_.DIRECTORY_SEPARATOR.'img'.DIRECTORY_SEPARATOR.'favicon_114.png">
-                <link rel="shortcut icon" sizes="144x144" href="'._PS_ROOT_DIR_.DIRECTORY_SEPARATOR.'img'.DIRECTORY_SEPARATOR.'favicon_144.png">';
+                <link rel="shortcut icon" sizes="57x57" href="'.$this->context->link->getMediaLink(_PS_IMG_.'favicon_57.png').'">
+                <link rel="shortcut icon" sizes="72x72" href="'.$this->context->link->getMediaLink(_PS_IMG_.'favicon_72.png').'">
+                <link rel="shortcut icon" sizes="114x114" href="'.$this->context->link->getMediaLink(_PS_IMG_.'favicon_114.png').'">
+                <link rel="shortcut icon" sizes="144x144" href="'.$this->context->link->getMediaLink(_PS_IMG_.'favicon_144.png').'">';
                 
             $hook_header .= $extra_favicons;
 
