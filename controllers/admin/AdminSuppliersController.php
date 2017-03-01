@@ -21,21 +21,31 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * @property Supplier $object
+ * Class AdminSuppliersControllerCore
+ *
+ * @since 1.0.0
  */
 class AdminSuppliersControllerCore extends AdminController
 {
-    public $bootstrap = true ;
+    public $bootstrap = true;
 
+    /** @var Supplier $object */
+    public $object;
+
+    /**
+     * AdminSuppliersControllerCore constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         $this->table = 'supplier';
@@ -51,10 +61,10 @@ class AdminSuppliersControllerCore extends AdminController
 
         $this->bulk_actions = [
             'delete' => [
-                'text' => $this->l('Delete selected'),
-                'icon' => 'icon-trash',
-                'confirm' => $this->l('Delete selected items?')
-            ]
+                'text'    => $this->l('Delete selected'),
+                'icon'    => 'icon-trash',
+                'confirm' => $this->l('Delete selected items?'),
+            ],
         ];
 
         $this->_select = 'COUNT(DISTINCT ps.`id_product`) AS products';
@@ -65,15 +75,22 @@ class AdminSuppliersControllerCore extends AdminController
 
         $this->fields_list = [
             'id_supplier' => ['title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'],
-            'logo' => ['title' => $this->l('Logo'), 'align' => 'center', 'image' => 'su', 'orderby' => false, 'search' => false],
-            'name' => ['title' => $this->l('Name')],
-            'products' => ['title' => $this->l('Number of products'), 'align' => 'right', 'filter_type' => 'int', 'tmpTableFilter' => true],
-            'active' => ['title' => $this->l('Enabled'), 'align' => 'center', 'active' => 'status', 'type' => 'bool', 'orderby' => false, 'class' => 'fixed-width-xs']
+            'logo'        => ['title' => $this->l('Logo'), 'align' => 'center', 'image' => 'su', 'orderby' => false, 'search' => false],
+            'name'        => ['title' => $this->l('Name')],
+            'products'    => ['title' => $this->l('Number of products'), 'align' => 'right', 'filter_type' => 'int', 'tmpTableFilter' => true],
+            'active'      => ['title' => $this->l('Enabled'), 'align' => 'center', 'active' => 'status', 'type' => 'bool', 'orderby' => false, 'class' => 'fixed-width-xs'],
         ];
 
         parent::__construct();
     }
 
+    /**
+     * Set media
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function setMedia()
     {
         parent::setMedia();
@@ -81,252 +98,261 @@ class AdminSuppliersControllerCore extends AdminController
         $this->addJqueryPlugin('tagify');
     }
 
+    /**
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_supplier'] = [
                 'href' => self::$currentIndex.'&addsupplier&token='.$this->token,
                 'desc' => $this->l('Add new supplier', null, null, false),
-                'icon' => 'process-icon-new'
+                'icon' => 'process-icon-new',
             ];
         }
 
         parent::initPageHeaderToolbar();
     }
 
+    /**
+     * Render form
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
     public function renderForm()
     {
         // loads current warehouse
         if (!($obj = $this->loadObject(true))) {
-            return;
+            return '';
         }
 
         $image = _PS_SUPP_IMG_DIR_.$obj->id.'.jpg';
-        $image_url = ImageManager::thumbnail($image, $this->table.'_'.(int)$obj->id.'.'.$this->imageType, 350,
-            $this->imageType, true, true);
-        $image_size = file_exists($image) ? filesize($image) / 1000 : false;
+        $imageUrl = ImageManager::thumbnail($image, $this->table.'_'.(int) $obj->id.'.'.$this->imageType, 350, $this->imageType, true, true);
+        $imageSize = file_exists($image) ? filesize($image) / 1000 : false;
 
-        $tmp_addr = new Address();
-        $res = $tmp_addr->getFieldsRequiredDatabase();
-        $required_fields = [];
+        $tmpAddr = new Address();
+        $res = $tmpAddr->getFieldsRequiredDatabase();
+        $requiredFields = [];
         foreach ($res as $row) {
-            $required_fields[(int)$row['id_required_field']] = $row['field_name'];
+            $requiredFields[(int) $row['id_required_field']] = $row['field_name'];
         }
 
         $this->fields_form = [
             'legend' => [
                 'title' => $this->l('Suppliers'),
-                'icon' => 'icon-truck'
+                'icon'  => 'icon-truck',
             ],
-            'input' => [
+            'input'  => [
                 [
                     'type' => 'hidden',
                     'name' => 'id_address',
                 ],
                 [
-                    'type' => 'text',
-                    'label' => $this->l('Name'),
-                    'name' => 'name',
+                    'type'     => 'text',
+                    'label'    => $this->l('Name'),
+                    'name'     => 'name',
                     'required' => true,
-                    'col' => 4,
-                    'hint' => $this->l('Invalid characters:').' &lt;&gt;;=#{}',
+                    'col'      => 4,
+                    'hint'     => $this->l('Invalid characters:').' &lt;&gt;;=#{}',
                 ],
-                (in_array('company', $required_fields) ?
+                (in_array('company', $requiredFields) ?
                     [
-                        'type' => 'text',
-                        'label' => $this->l('Company'),
-                        'name' => 'company',
-                        'display' => in_array('company', $required_fields),
-                        'required' => in_array('company', $required_fields),
+                        'type'      => 'text',
+                        'label'     => $this->l('Company'),
+                        'name'      => 'company',
+                        'display'   => in_array('company', $requiredFields),
+                        'required'  => in_array('company', $requiredFields),
                         'maxlength' => 16,
-                        'col' => 4,
-                        'hint' => $this->l('Company name for this supplier')
+                        'col'       => 4,
+                        'hint'      => $this->l('Company name for this supplier'),
                     ]
                     : null
                 ),
                 [
-                    'type' => 'textarea',
-                    'label' => $this->l('Description'),
-                    'name' => 'description',
-                    'lang' => true,
-                    'hint' => [
+                    'type'         => 'textarea',
+                    'label'        => $this->l('Description'),
+                    'name'         => 'description',
+                    'lang'         => true,
+                    'hint'         => [
                         $this->l('Invalid characters:').' &lt;&gt;;=#{}',
-                        $this->l('Will appear in the list of suppliers.')
+                        $this->l('Will appear in the list of suppliers.'),
                     ],
                     'autoload_rte' => 'rte' //Enable TinyMCE editor for short description
                 ],
                 [
-                    'type' => 'text',
-                    'label' => $this->l('Phone'),
-                    'name' => 'phone',
-                    'required' => in_array('phone', $required_fields),
+                    'type'      => 'text',
+                    'label'     => $this->l('Phone'),
+                    'name'      => 'phone',
+                    'required'  => in_array('phone', $requiredFields),
                     'maxlength' => 16,
-                    'col' => 4,
-                    'hint' => $this->l('Phone number for this supplier')
+                    'col'       => 4,
+                    'hint'      => $this->l('Phone number for this supplier'),
                 ],
                 [
-                    'type' => 'text',
-                    'label' => $this->l('Mobile phone'),
-                    'name' => 'phone_mobile',
-                    'required' => in_array('phone_mobile', $required_fields),
+                    'type'      => 'text',
+                    'label'     => $this->l('Mobile phone'),
+                    'name'      => 'phone_mobile',
+                    'required'  => in_array('phone_mobile', $requiredFields),
                     'maxlength' => 16,
-                    'col' => 4,
-                    'hint' => $this->l('Mobile phone number for this supplier.')
+                    'col'       => 4,
+                    'hint'      => $this->l('Mobile phone number for this supplier.'),
                 ],
                 [
-                    'type' => 'text',
-                    'label' => $this->l('Address'),
-                    'name' => 'address',
+                    'type'      => 'text',
+                    'label'     => $this->l('Address'),
+                    'name'      => 'address',
                     'maxlength' => 128,
-                    'col' => 6,
-                    'required' => true
+                    'col'       => 6,
+                    'required'  => true,
                 ],
                 [
-                    'type' => 'text',
-                    'label' => $this->l('Address').' (2)',
-                    'name' => 'address2',
-                    'required' => in_array('address2', $required_fields),
-                    'col' => 6,
+                    'type'      => 'text',
+                    'label'     => $this->l('Address').' (2)',
+                    'name'      => 'address2',
+                    'required'  => in_array('address2', $requiredFields),
+                    'col'       => 6,
                     'maxlength' => 128,
                 ],
                 [
-                    'type' => 'text',
-                    'label' => $this->l('Zip/postal code'),
-                    'name' => 'postcode',
-                    'required' => in_array('postcode', $required_fields),
+                    'type'      => 'text',
+                    'label'     => $this->l('Zip/postal code'),
+                    'name'      => 'postcode',
+                    'required'  => in_array('postcode', $requiredFields),
                     'maxlength' => 12,
-                    'col' => 2,
+                    'col'       => 2,
                 ],
                 [
-                    'type' => 'text',
-                    'label' => $this->l('City'),
-                    'name' => 'city',
+                    'type'      => 'text',
+                    'label'     => $this->l('City'),
+                    'name'      => 'city',
                     'maxlength' => 32,
-                    'col' => 4,
-                    'required' => true,
+                    'col'       => 4,
+                    'required'  => true,
                 ],
                 [
-                    'type' => 'select',
-                    'label' => $this->l('Country'),
-                    'name' => 'id_country',
-                    'required' => true,
-                    'col' => 4,
-                    'default_value' => (int)$this->context->country->id,
-                    'options' => [
+                    'type'          => 'select',
+                    'label'         => $this->l('Country'),
+                    'name'          => 'id_country',
+                    'required'      => true,
+                    'col'           => 4,
+                    'default_value' => (int) $this->context->country->id,
+                    'options'       => [
                         'query' => Country::getCountries($this->context->language->id, false),
-                        'id' => 'id_country',
-                        'name' => 'name',
+                        'id'    => 'id_country',
+                        'name'  => 'name',
                     ],
                 ],
                 [
-                    'type' => 'select',
-                    'label' => $this->l('State'),
-                    'name' => 'id_state',
-                    'col' => 4,
+                    'type'    => 'select',
+                    'label'   => $this->l('State'),
+                    'name'    => 'id_state',
+                    'col'     => 4,
                     'options' => [
-                        'id' => 'id_state',
+                        'id'    => 'id_state',
                         'query' => [],
-                        'name' => 'name'
-                    ]
+                        'name'  => 'name',
+                    ],
                 ],
                 [
-                    'type' => 'file',
-                    'label' => $this->l('Logo'),
-                    'name' => 'logo',
+                    'type'          => 'file',
+                    'label'         => $this->l('Logo'),
+                    'name'          => 'logo',
                     'display_image' => true,
-                    'image' => $image_url ? $image_url : false,
-                    'size' => $image_size,
-                    'hint' => $this->l('Upload a supplier logo from your computer.')
+                    'image'         => $imageUrl ? $imageUrl : false,
+                    'size'          => $imageSize,
+                    'hint'          => $this->l('Upload a supplier logo from your computer.'),
                 ],
                 [
-                    'type' => 'text',
+                    'type'  => 'text',
                     'label' => $this->l('Meta title'),
-                    'name' => 'meta_title',
-                    'lang' => true,
-                    'col' => 4,
-                    'hint' => $this->l('Forbidden characters:').' &lt;&gt;;=#{}'
+                    'name'  => 'meta_title',
+                    'lang'  => true,
+                    'col'   => 4,
+                    'hint'  => $this->l('Forbidden characters:').' &lt;&gt;;=#{}',
                 ],
                 [
-                    'type' => 'text',
+                    'type'  => 'text',
                     'label' => $this->l('Meta description'),
-                    'name' => 'meta_description',
-                    'lang' => true,
-                    'col' => 6,
-                    'hint' => $this->l('Forbidden characters:').' &lt;&gt;;=#{}'
+                    'name'  => 'meta_description',
+                    'lang'  => true,
+                    'col'   => 6,
+                    'hint'  => $this->l('Forbidden characters:').' &lt;&gt;;=#{}',
                 ],
                 [
-                    'type' => 'tags',
+                    'type'  => 'tags',
                     'label' => $this->l('Meta keywords'),
-                    'name' => 'meta_keywords',
-                    'lang' => true,
-                    'col' => 6,
-                    'hint' => [
+                    'name'  => 'meta_keywords',
+                    'lang'  => true,
+                    'col'   => 6,
+                    'hint'  => [
                         $this->l('To add "tags" click in the field, write something and then press "Enter".'),
-                        $this->l('Forbidden characters:').' &lt;&gt;;=#{}'
-                    ]
+                        $this->l('Forbidden characters:').' &lt;&gt;;=#{}',
+                    ],
                 ],
                 [
-                    'type' => 'switch',
-                    'label' => $this->l('Enable'),
-                    'name' => 'active',
+                    'type'     => 'switch',
+                    'label'    => $this->l('Enable'),
+                    'name'     => 'active',
                     'required' => false,
-                    'class' => 't',
-                    'is_bool' => true,
-                    'values' => [
+                    'class'    => 't',
+                    'is_bool'  => true,
+                    'values'   => [
                         [
-                            'id' => 'active_on',
+                            'id'    => 'active_on',
                             'value' => 1,
-                            'label' => $this->l('Enabled')
+                            'label' => $this->l('Enabled'),
                         ],
                         [
-                            'id' => 'active_off',
+                            'id'    => 'active_off',
                             'value' => 0,
-                            'label' => $this->l('Disabled')
-                        ]
-                    ]
-                ]
+                            'label' => $this->l('Disabled'),
+                        ],
+                    ],
+                ],
             ],
             'submit' => [
                 'title' => $this->l('Save'),
-            ]
+            ],
         ];
 
         // loads current address for this supplier - if possible
         $address = null;
         if (isset($obj->id)) {
-            $id_address = Address::getAddressIdBySupplierId($obj->id);
-
-            if ($id_address > 0) {
-                $address = new Address((int)$id_address);
+            $idAddress = Address::getAddressIdBySupplierId($obj->id);
+            if ($idAddress > 0) {
+                $address = new Address((int) $idAddress);
             }
         }
 
         // force specific fields values (address)
         if ($address != null) {
             $this->fields_value = [
-                'id_address' => $address->id,
-                'phone' => $address->phone,
+                'id_address'   => $address->id,
+                'phone'        => $address->phone,
                 'phone_mobile' => $address->phone_mobile,
-                'address' => $address->address1,
-                'address2' => $address->address2,
-                'postcode' => $address->postcode,
-                'city' => $address->city,
-                'id_country' => $address->id_country,
-                'id_state' => $address->id_state,
+                'address'      => $address->address1,
+                'address2'     => $address->address2,
+                'postcode'     => $address->postcode,
+                'city'         => $address->city,
+                'id_country'   => $address->id_country,
+                'id_state'     => $address->id_state,
             ];
         } else {
             $this->fields_value = [
                 'id_address' => 0,
-                'id_country' => Configuration::get('PS_COUNTRY_DEFAULT')
+                'id_country' => Configuration::get('PS_COUNTRY_DEFAULT'),
             ];
         }
 
-
         if (Shop::isFeatureActive()) {
             $this->fields_form['input'][] = [
-                'type' => 'shop',
+                'type'  => 'shop',
                 'label' => $this->l('Shop association'),
-                'name' => 'checkBoxShopAsso',
+                'name'  => 'checkBoxShopAsso',
             ];
         }
 
@@ -335,6 +361,7 @@ class AdminSuppliersControllerCore extends AdminController
 
     /**
      * AdminController::initToolbar() override
+     *
      * @see AdminController::initToolbar()
      *
      */
@@ -346,120 +373,98 @@ class AdminSuppliersControllerCore extends AdminController
         if (empty($this->display) && $this->can_import) {
             $this->toolbar_btn['import'] = [
                 'href' => $this->context->link->getAdminLink('AdminImport', true).'&import_type=suppliers',
-                'desc' => $this->l('Import')
+                'desc' => $this->l('Import'),
             ];
         }
     }
 
+    /**
+     * Render view
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
     public function renderView()
     {
         $this->initTabModuleList();
         $this->toolbar_title = $this->object->name;
         $products = $this->object->getProductsLite($this->context->language->id);
-        $total_product = count($products);
+        $totalProduct = count($products);
 
-        for ($i = 0; $i < $total_product; $i++) {
-            $products[$i] = new Product($products[$i]['id_product'], false, $this->context->language->id);
-            $products[$i]->loadStockData();
+        for ($i = 0; $i < $totalProduct; $i++) {
+            $newProduct = new Product($products[$i]['id_product'], false, $this->context->language->id);
+            $newProduct->loadStockData();
             // Build attributes combinations
-            $combinations = $products[$i]->getAttributeCombinations($this->context->language->id);
+            $combinations = $newProduct->getAttributeCombinations($this->context->language->id);
             foreach ($combinations as $k => $combination) {
-                $comb_infos = Supplier::getProductInformationsBySupplier($this->object->id,
-                                                                         $products[$i]->id,
-                                                                         $combination['id_product_attribute']);
-                $comb_array[$combination['id_product_attribute']]['product_supplier_reference'] = $comb_infos['product_supplier_reference'];
-                $comb_array[$combination['id_product_attribute']]['product_supplier_price_te'] = Tools::displayPrice($comb_infos['product_supplier_price_te'], new Currency($comb_infos['id_currency']));
-                $comb_array[$combination['id_product_attribute']]['reference'] = $combination['reference'];
-                $comb_array[$combination['id_product_attribute']]['ean13'] = $combination['ean13'];
-                $comb_array[$combination['id_product_attribute']]['upc'] = $combination['upc'];
-                $comb_array[$combination['id_product_attribute']]['quantity'] = $combination['quantity'];
-                $comb_array[$combination['id_product_attribute']]['attributes'][] = [
+                $combInfos = Supplier::getProductInformationsBySupplier($this->object->id, $newProduct->id, $combination['id_product_attribute']);
+                $combArray[$combination['id_product_attribute']]['product_supplier_reference'] = $combInfos['product_supplier_reference'];
+                $combArray[$combination['id_product_attribute']]['product_supplier_price_te'] = Tools::displayPrice($combInfos['product_supplier_price_te'], new Currency($combInfos['id_currency']));
+                $combArray[$combination['id_product_attribute']]['reference'] = $combination['reference'];
+                $combArray[$combination['id_product_attribute']]['ean13'] = $combination['ean13'];
+                $combArray[$combination['id_product_attribute']]['upc'] = $combination['upc'];
+                $combArray[$combination['id_product_attribute']]['quantity'] = $combination['quantity'];
+                $combArray[$combination['id_product_attribute']]['attributes'][] = [
                     $combination['group_name'],
                     $combination['attribute_name'],
-                    $combination['id_attribute']
+                    $combination['id_attribute'],
                 ];
             }
 
-            if (isset($comb_array)) {
-                foreach ($comb_array as $key => $product_attribute) {
+            if (isset($combArray)) {
+                foreach ($combArray as $key => $productAttribute) {
                     $list = '';
-                    foreach ($product_attribute['attributes'] as $attribute) {
+                    foreach ($productAttribute['attributes'] as $attribute) {
                         $list .= $attribute[0].' - '.$attribute[1].', ';
                     }
-                    $comb_array[$key]['attributes'] = rtrim($list, ', ');
+                    $combArray[$key]['attributes'] = rtrim($list, ', ');
                 }
-                isset($comb_array) ? $products[$i]->combination = $comb_array : '';
-                unset($comb_array);
+                $newProduct->combination = isset($combArray) ? $combArray : '';
+                unset($combArray);
             } else {
-                $product_infos = Supplier::getProductInformationsBySupplier($this->object->id,
-                                                                            $products[$i]->id,
-                                                                            0);
-                $products[$i]->product_supplier_reference = $product_infos['product_supplier_reference'];
-                $products[$i]->product_supplier_price_te = Tools::displayPrice($product_infos['product_supplier_price_te'], new Currency($product_infos['id_currency']));
+                $productInfos = Supplier::getProductInformationsBySupplier($this->object->id, $products[$i]->id, 0);
+                $newProduct->product_supplier_reference = $productInfos['product_supplier_reference'];
+                $newProduct->product_supplier_price_te = Tools::displayPrice($productInfos['product_supplier_price_te'], new Currency($productInfos['id_currency']));
             }
+
+            $products[$i] = $newProduct;
         }
 
         $this->tpl_view_vars = [
-            'supplier' => $this->object,
-            'products' => $products,
+            'supplier'         => $this->object,
+            'products'         => $products,
             'stock_management' => Configuration::get('PS_STOCK_MANAGEMENT'),
-            'shopContext' => Shop::getContext(),
+            'shopContext'      => Shop::getContext(),
         ];
 
         return parent::renderView();
     }
 
-    protected function afterImageUpload()
-    {
-        $return = true;
-        $generate_hight_dpi_images = (bool)Configuration::get('PS_HIGHT_DPI');
-
-        /* Generate image with differents size */
-        if (($id_supplier = (int)Tools::getValue('id_supplier')) &&
-             isset($_FILES) && count($_FILES) && file_exists(_PS_SUPP_IMG_DIR_.$id_supplier.'.jpg')) {
-            $images_types = ImageType::getImagesTypes('suppliers');
-            foreach ($images_types as $k => $image_type) {
-                $file = _PS_SUPP_IMG_DIR_.$id_supplier.'.jpg';
-                if (!ImageManager::resize($file, _PS_SUPP_IMG_DIR_.$id_supplier.'-'.stripslashes($image_type['name']).'.jpg', (int)$image_type['width'], (int)$image_type['height'])) {
-                    $return = false;
-                }
-
-                if ($generate_hight_dpi_images) {
-                    if (!ImageManager::resize($file, _PS_SUPP_IMG_DIR_.$id_supplier.'-'.stripslashes($image_type['name']).'2x.jpg', (int)$image_type['width']*2, (int)$image_type['height']*2)) {
-                        $return = false;
-                    }
-                }
-            }
-
-            $current_logo_file = _PS_TMP_IMG_DIR_.'supplier_mini_'.$id_supplier.'_'.$this->context->shop->id.'.jpg';
-
-            if (file_exists($current_logo_file)) {
-                unlink($current_logo_file);
-            }
-        }
-        return $return;
-    }
-
     /**
-     * AdminController::postProcess() override
-     * @see AdminController::postProcess()
+     * Post process
+     *
+     * @return bool
+     *
+     * @since 1.0.0
      */
     public function postProcess()
     {
         // checks access
         if (Tools::isSubmit('submitAdd'.$this->table) && !($this->tabAccess['add'] === '1')) {
             $this->errors[] = Tools::displayError('You do not have permission to add suppliers.');
+
             return parent::postProcess();
         }
 
         if (Tools::isSubmit('submitAdd'.$this->table)) {
             if (Tools::isSubmit('id_supplier') && !($obj = $this->loadObject(true))) {
-                return;
+                return false;
             }
 
             // updates/creates address if it does not exist
-            if (Tools::isSubmit('id_address') && (int)Tools::getValue('id_address') > 0) {
-                $address = new Address((int)Tools::getValue('id_address'));
+            if (Tools::isSubmit('id_address') && (int) Tools::getValue('id_address') > 0) {
+                $address = new Address((int) Tools::getValue('id_address'));
             } // updates address
             else {
                 $address = new Address();
@@ -493,27 +498,64 @@ class AdminSuppliersControllerCore extends AdminController
                     $_POST['id_address'] = $address->id;
                 }
             }
-            return parent::postProcess();
+
+            return true;
         } elseif (Tools::isSubmit('delete'.$this->table)) {
             if (!($obj = $this->loadObject(true))) {
-                return;
+                return false;
             } elseif (SupplyOrder::supplierHasPendingOrders($obj->id)) {
                 $this->errors[] = $this->l('It is not possible to delete a supplier if there are pending supplier orders.');
             } else {
                 //delete all product_supplier linked to this supplier
-                Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'product_supplier` WHERE `id_supplier`='.(int)$obj->id);
+                Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'product_supplier` WHERE `id_supplier`='.(int) $obj->id);
 
-                $id_address = Address::getAddressIdBySupplierId($obj->id);
-                $address = new Address($id_address);
+                $idAddress = Address::getAddressIdBySupplierId($obj->id);
+                $address = new Address($idAddress);
                 if (Validate::isLoadedObject($address)) {
                     $address->deleted = 1;
                     $address->save();
                 }
-                return parent::postProcess();
+
+                return true;
             }
         } else {
             return parent::postProcess();
         }
+
+        return true;
+    }
+
+    protected function afterImageUpload()
+    {
+        $return = true;
+        $generateHiDpiImages = (bool) Configuration::get('PS_HIGHT_DPI');
+
+        /* Generate image with differents size */
+        if (($idSupplier = (int) Tools::getValue('id_supplier')) &&
+            isset($_FILES) && count($_FILES) && file_exists(_PS_SUPP_IMG_DIR_.$idSupplier.'.jpg')
+        ) {
+            $imagesTypes = ImageType::getImagesTypes('suppliers');
+            foreach ($imagesTypes as $k => $imageType) {
+                $file = _PS_SUPP_IMG_DIR_.$idSupplier.'.jpg';
+                if (!ImageManager::resize($file, _PS_SUPP_IMG_DIR_.$idSupplier.'-'.stripslashes($imageType['name']).'.jpg', (int) $imageType['width'], (int) $imageType['height'])) {
+                    $return = false;
+                }
+
+                if ($generateHiDpiImages) {
+                    if (!ImageManager::resize($file, _PS_SUPP_IMG_DIR_.$idSupplier.'-'.stripslashes($imageType['name']).'2x.jpg', (int) $imageType['width'] * 2, (int) $imageType['height'] * 2)) {
+                        $return = false;
+                    }
+                }
+            }
+
+            $currentLogoFile = _PS_TMP_IMG_DIR_.'supplier_mini_'.$idSupplier.'_'.$this->context->shop->id.'.jpg';
+
+            if (file_exists($currentLogoFile)) {
+                unlink($currentLogoFile);
+            }
+        }
+
+        return $return;
     }
 
     /**
@@ -525,8 +567,8 @@ class AdminSuppliersControllerCore extends AdminController
      */
     protected function afterAdd($object)
     {
-        $id_address = (int)$_POST['id_address'];
-        $address = new Address($id_address);
+        $idAddress = (int) $_POST['id_address'];
+        $address = new Address($idAddress);
         if (Validate::isLoadedObject($address)) {
             $address->id_supplier = $object->id;
             $address->save();
@@ -544,14 +586,15 @@ class AdminSuppliersControllerCore extends AdminController
      */
     protected function afterUpdate($object)
     {
-        $id_address = (int)$_POST['id_address'];
-        $address = new Address($id_address);
+        $idAddress = (int) $_POST['id_address'];
+        $address = new Address($idAddress);
         if (Validate::isLoadedObject($address)) {
             if ($address->id_supplier != $object->id) {
                 $address->id_supplier = $object->id;
                 $address->save();
             }
         }
+
         return true;
     }
 }
