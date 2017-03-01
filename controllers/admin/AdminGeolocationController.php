@@ -21,16 +21,26 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class AdminGeolocationControllerCore
+ *
+ * @since 1.0.0
+ */
 class AdminGeolocationControllerCore extends AdminController
 {
+    /**
+     * AdminGeolocationControllerCore constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         parent::__construct();
@@ -38,67 +48,68 @@ class AdminGeolocationControllerCore extends AdminController
         $this->bootstrap = true;
         $this->fields_options = [
             'geolocationConfiguration' => [
-                'title' =>    $this->l('Geolocation by IP address'),
-                'icon' =>    'icon-map-marker',
-                'fields' =>    [
+                'title'  => $this->l('Geolocation by IP address'),
+                'icon'   => 'icon-map-marker',
+                'fields' => [
                     'PS_GEOLOCATION_ENABLED' => [
-                        'title' => $this->l('Geolocation by IP address'),
-                        'hint' => $this->l('This option allows you, among other things, to restrict access to your shop for certain countries. See below.'),
+                        'title'      => $this->l('Geolocation by IP address'),
+                        'hint'       => $this->l('This option allows you, among other things, to restrict access to your shop for certain countries. See below.'),
                         'validation' => 'isUnsignedId',
-                        'cast' => 'intval',
-                        'type' => 'bool'
+                        'cast'       => 'intval',
+                        'type'       => 'bool',
                     ],
                 ],
-                'submit' => ['title' => $this->l('Save')]
+                'submit' => ['title' => $this->l('Save')],
             ],
-            'geolocationCountries' => [
-                'title' =>    $this->l('Options'),
-                'icon' =>    'icon-map-marker',
+            'geolocationCountries'     => [
+                'title'       => $this->l('Options'),
+                'icon'        => 'icon-map-marker',
                 'description' => $this->l('The following features are only available if you enable the Geolocation by IP address feature.'),
-                'fields' =>    [
-                    'PS_GEOLOCATION_BEHAVIOR' => [
-                        'title' => $this->l('Geolocation behavior for restricted countries'),
-                        'type' => 'select',
+                'fields'      => [
+                    'PS_GEOLOCATION_BEHAVIOR'    => [
+                        'title'      => $this->l('Geolocation behavior for restricted countries'),
+                        'type'       => 'select',
                         'identifier' => 'key',
-                        'list' => [
+                        'list'       => [
                             ['key' => _PS_GEOLOCATION_NO_CATALOG_, 'name' => $this->l('Visitors cannot see your catalog.')],
-                                        ['key' => _PS_GEOLOCATION_NO_ORDER_, 'name' => $this->l('Visitors can see your catalog but cannot place an order.')]
+                            ['key' => _PS_GEOLOCATION_NO_ORDER_, 'name' => $this->l('Visitors can see your catalog but cannot place an order.')],
                         ],
                     ],
                     'PS_GEOLOCATION_NA_BEHAVIOR' => [
-                        'title' => $this->l('Geolocation behavior for other countries'),
-                        'type' => 'select',
+                        'title'      => $this->l('Geolocation behavior for other countries'),
+                        'type'       => 'select',
                         'identifier' => 'key',
-                        'list' => [
+                        'list'       => [
                             ['key' => '-1', 'name' => $this->l('All features are available')],
-                                        ['key' => _PS_GEOLOCATION_NO_CATALOG_, 'name' => $this->l('Visitors cannot see your catalog.')],
-                                        ['key' => _PS_GEOLOCATION_NO_ORDER_, 'name' => $this->l('Visitors can see your catalog but cannot place an order.')]
-                        ]
+                            ['key' => _PS_GEOLOCATION_NO_CATALOG_, 'name' => $this->l('Visitors cannot see your catalog.')],
+                            ['key' => _PS_GEOLOCATION_NO_ORDER_, 'name' => $this->l('Visitors can see your catalog but cannot place an order.')],
+                        ],
                     ],
                 ],
-                'submit' => ['title' => $this->l('Save')]
+                'submit'      => ['title' => $this->l('Save')],
             ],
-            'geolocationWhitelist' => [
-                'title' =>    $this->l('IP address whitelist'),
-                'icon' =>    'icon-sitemap',
+            'geolocationWhitelist'     => [
+                'title'       => $this->l('IP address whitelist'),
+                'icon'        => 'icon-sitemap',
                 'description' => $this->l('You can add IP addresses that will always be allowed to access your shop (e.g. Google bots\' IP).'),
-                'fields' =>    [
+                'fields'      => [
                     'PS_GEOLOCATION_WHITELIST' => ['title' => $this->l('Whitelisted IP addresses'), 'type' => 'textarea_newlines', 'cols' => 15, 'rows' => 30],
                 ],
-                'submit' => ['title' => $this->l('Save')]
+                'submit'      => ['title' => $this->l('Save')],
             ],
         ];
     }
 
     /**
-     * @see AdminController::processUpdateOptions()
+     * Process update options
+     *
+     * @since 1.0.0
      */
     public function processUpdateOptions()
     {
         if ($this->isGeoLiteCityAvailable()) {
-            Configuration::updateValue('PS_GEOLOCATION_ENABLED', (int)Tools::getValue('PS_GEOLOCATION_ENABLED'));
-        }
-        // stop processing if geolocation is set to yes but geolite pack is not available
+            Configuration::updateValue('PS_GEOLOCATION_ENABLED', (int) Tools::getValue('PS_GEOLOCATION_ENABLED'));
+        } // stop processing if geolocation is set to yes but geolite pack is not available
         elseif (Tools::getValue('PS_GEOLOCATION_ENABLED')) {
             $this->errors[] = Tools::displayError('The geolocation database is unavailable.');
         }
@@ -109,9 +120,9 @@ class AdminGeolocationControllerCore extends AdminController
             } else {
                 Configuration::updateValue(
                     'PS_GEOLOCATION_BEHAVIOR',
-                    (!(int)Tools::getValue('PS_GEOLOCATION_BEHAVIOR') ? _PS_GEOLOCATION_NO_CATALOG_ : _PS_GEOLOCATION_NO_ORDER_)
+                    (!(int) Tools::getValue('PS_GEOLOCATION_BEHAVIOR') ? _PS_GEOLOCATION_NO_CATALOG_ : _PS_GEOLOCATION_NO_ORDER_)
                 );
-                Configuration::updateValue('PS_GEOLOCATION_NA_BEHAVIOR', (int)Tools::getValue('PS_GEOLOCATION_NA_BEHAVIOR'));
+                Configuration::updateValue('PS_GEOLOCATION_NA_BEHAVIOR', (int) Tools::getValue('PS_GEOLOCATION_NA_BEHAVIOR'));
                 Configuration::updateValue('PS_ALLOWED_COUNTRIES', implode(';', Tools::getValue('countries')));
             }
 
@@ -128,35 +139,13 @@ class AdminGeolocationControllerCore extends AdminController
         return parent::processUpdateOptions();
     }
 
-    public function renderOptions()
-    {
-        // This field is not declared in class constructor because we want it to be manually post processed
-        $this->fields_options['geolocationCountries']['fields']['countries'] = [
-                                'title' => $this->l('Select the countries from which your store is accessible'),
-                                'type' => 'checkbox_table',
-                                'identifier' => 'iso_code',
-                                'list' => Country::getCountries($this->context->language->id),
-                                'auto_value' => false
-        ];
-
-        $this->tpl_option_vars = ['allowed_countries' => explode(';', Configuration::get('PS_ALLOWED_COUNTRIES'))];
-
-        return parent::renderOptions();
-    }
-
-    public function initContent()
-    {
-        $this->display = 'options';
-        if (!$this->isGeoLiteCityAvailable()) {
-            $this->displayWarning($this->l('In order to use Geolocation, please download').'
-				<a href="http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz">'.$this->l('this file').'</a> '.
-                $this->l('and extract it (using Winrar or Gzip) into the /tools/geoip/ directory.'));
-            Configuration::updateValue('PS_GEOLOCATION_ENABLED', 0);
-        }
-
-        parent::initContent();
-    }
-
+    /**
+     * Check if geolite city file is available
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
     protected function isGeoLiteCityAvailable()
     {
         if (@filemtime(_PS_GEOIP_DIR_._PS_GEOIP_CITY_FILE_)) {
@@ -164,5 +153,48 @@ class AdminGeolocationControllerCore extends AdminController
         }
 
         return false;
+    }
+
+    /**
+     * Render options
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
+    public function renderOptions()
+    {
+        // This field is not declared in class constructor because we want it to be manually post processed
+        $this->fields_options['geolocationCountries']['fields']['countries'] = [
+            'title'      => $this->l('Select the countries from which your store is accessible'),
+            'type'       => 'checkbox_table',
+            'identifier' => 'iso_code',
+            'list'       => Country::getCountries($this->context->language->id),
+            'auto_value' => false,
+        ];
+
+        $this->tpl_option_vars = ['allowed_countries' => explode(';', Configuration::get('PS_ALLOWED_COUNTRIES'))];
+
+        return parent::renderOptions();
+    }
+
+    /**
+     * Initialize content
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
+    public function initContent()
+    {
+        $this->display = 'options';
+        if (!$this->isGeoLiteCityAvailable()) {
+            $this->displayWarning(
+                $this->l('In order to use Geolocation, please download').'<a href="http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz">'.$this->l('this file').'</a> '.$this->l('and extract it (using Winrar or Gzip) into the /tools/geoip/ directory.')
+            );
+            Configuration::updateValue('PS_GEOLOCATION_ENABLED', 0);
+        }
+
+        parent::initContent();
     }
 }

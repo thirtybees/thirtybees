@@ -21,19 +21,26 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * @property Contact $object
+ * Class AdminContactsControllerCore
+ *
+ * @since 1.0.0
  */
 class AdminContactsControllerCore extends AdminController
 {
+    /**
+     * AdminContactsControllerCore constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         $this->bootstrap = true;
@@ -44,94 +51,108 @@ class AdminContactsControllerCore extends AdminController
         $this->addRowAction('delete');
         $this->bulk_actions = [
             'delete' => [
-                'text' => $this->l('Delete selected'),
+                'text'    => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
-                'icon' => 'icon-trash'
-            ]
+                'icon'    => 'icon-trash',
+            ],
         ];
 
         $this->fields_list = [
-            'id_contact' => ['title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'],
-            'name' => ['title' => $this->l('Title')],
-            'email' => ['title' => $this->l('Email address')],
+            'id_contact'  => ['title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'],
+            'name'        => ['title' => $this->l('Title')],
+            'email'       => ['title' => $this->l('Email address')],
             'description' => ['title' => $this->l('Description')],
         ];
 
         parent::__construct();
     }
 
+    /**
+     * Render form
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
     public function renderForm()
     {
         $this->fields_form = [
             'legend' => [
                 'title' => $this->l('Contacts'),
-                'icon' => 'icon-envelope-alt'
+                'icon'  => 'icon-envelope-alt',
             ],
-            'input' => [
+            'input'  => [
                 [
-                    'type' => 'text',
-                    'label' => $this->l('Title'),
-                    'name' => 'name',
+                    'type'     => 'text',
+                    'label'    => $this->l('Title'),
+                    'name'     => 'name',
                     'required' => true,
-                    'lang' => true,
-                    'col' => 4,
-                    'hint' => $this->l('Contact name (e.g. Customer Support).'),
+                    'lang'     => true,
+                    'col'      => 4,
+                    'hint'     => $this->l('Contact name (e.g. Customer Support).'),
                 ],
                 [
-                    'type' => 'text',
-                    'label' => $this->l('Email address'),
-                    'name' => 'email',
+                    'type'     => 'text',
+                    'label'    => $this->l('Email address'),
+                    'name'     => 'email',
                     'required' => false,
-                    'col' => 4,
-                    'hint' => $this->l('Emails will be sent to this address.'),
+                    'col'      => 4,
+                    'hint'     => $this->l('Emails will be sent to this address.'),
                 ],
                 [
-                    'type' => 'switch',
-                    'label' => $this->l('Save messages?'),
-                    'name' => 'customer_service',
+                    'type'     => 'switch',
+                    'label'    => $this->l('Save messages?'),
+                    'name'     => 'customer_service',
                     'required' => false,
-                    'class' => 't',
-                    'is_bool' => true,
-                    'hint' => $this->l('If enabled, all messages will be saved in the "Customer Service" page under the "Customer" menu.'),
-                    'values' => [
+                    'class'    => 't',
+                    'is_bool'  => true,
+                    'hint'     => $this->l('If enabled, all messages will be saved in the "Customer Service" page under the "Customer" menu.'),
+                    'values'   => [
                         [
-                            'id' => 'customer_service_on',
+                            'id'    => 'customer_service_on',
                             'value' => 1,
-                            'label' => $this->l('Enabled')
+                            'label' => $this->l('Enabled'),
                         ],
                         [
-                            'id' => 'customer_service_off',
+                            'id'    => 'customer_service_off',
                             'value' => 0,
-                            'label' => $this->l('Disabled')
-                        ]
+                            'label' => $this->l('Disabled'),
+                        ],
                     ],
                 ],
                 [
-                    'type' => 'textarea',
-                    'label' => $this->l('Description'),
-                    'name' => 'description',
+                    'type'     => 'textarea',
+                    'label'    => $this->l('Description'),
+                    'name'     => 'description',
                     'required' => false,
-                    'lang' => true,
-                    'col' => 6,
-                    'hint' => $this->l('Further information regarding this contact.'),
+                    'lang'     => true,
+                    'col'      => 6,
+                    'hint'     => $this->l('Further information regarding this contact.'),
                 ],
             ],
             'submit' => [
                 'title' => $this->l('Save'),
-            ]
+            ],
         ];
-        
+
         if (Shop::isFeatureActive()) {
             $this->fields_form['input'][] = [
-                'type' => 'shop',
+                'type'  => 'shop',
                 'label' => $this->l('Shop association'),
-                'name' => 'checkBoxShopAsso',
+                'name'  => 'checkBoxShopAsso',
             ];
         }
 
         return parent::renderForm();
     }
 
+    /**
+     * Initialize page header toolbar
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function initPageHeaderToolbar()
     {
         $this->initToolbar();
@@ -139,7 +160,7 @@ class AdminContactsControllerCore extends AdminController
             $this->page_header_toolbar_btn['new_contact'] = [
                 'href' => self::$currentIndex.'&addcontact&token='.$this->token,
                 'desc' => $this->l('Add new contact', null, null, false),
-                'icon' => 'process-icon-new'
+                'icon' => 'process-icon-new',
             ];
         }
 

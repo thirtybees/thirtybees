@@ -1232,7 +1232,7 @@ class AdminControllerCore extends Controller
     /**
      * Object update
      *
-     * @return ObjectModel|false|void
+     * @return ObjectModel|false
      * @throws PrestaShopException
      *
      * @since   1.0.0
@@ -1278,10 +1278,9 @@ class AdminControllerCore extends Controller
                     }
 
                     if (!isset($result) || !$result) {
-                        $this->errors[] = Tools::displayError('An error occurred while updating an object.').
-                            ' <b>'.$this->table.'</b> ('.Db::getInstance()->getMsgError().')';
+                        $this->errors[] = Tools::displayError('An error occurred while updating an object.').' <b>'.$this->table.'</b> ('.Db::getInstance()->getMsgError().')';
                     } elseif ($this->postImage($object->id) && !count($this->errors) && $this->_redirect) {
-                        $parent_id = (int) Tools::getValue('id_parent', 1);
+                        $parentId = (int) Tools::getValue('id_parent', 1);
                         // Specific back redirect
                         if ($back = Tools::getValue('back')) {
                             $this->redirect_after = urldecode($back).'&conf=4';
@@ -1298,18 +1297,17 @@ class AdminControllerCore extends Controller
                         }
                         // Save and back to parent
                         if (Tools::isSubmit('submitAdd'.$this->table.'AndBackToParent')) {
-                            $this->redirect_after = self::$currentIndex.'&'.$this->identifier.'='.$parent_id.'&conf=4&token='.$this->token;
+                            $this->redirect_after = self::$currentIndex.'&'.$this->identifier.'='.$parentId.'&conf=4&token='.$this->token;
                         }
 
                         // Default behavior (save and back)
                         if (empty($this->redirect_after) && $this->redirect_after !== false) {
-                            $this->redirect_after = self::$currentIndex.($parent_id ? '&'.$this->identifier.'='.$object->id : '').'&conf=4&token='.$this->token;
+                            $this->redirect_after = self::$currentIndex.($parentId ? '&'.$this->identifier.'='.$object->id : '').'&conf=4&token='.$this->token;
                         }
                     }
                     Logger::addLog(sprintf($this->l('%s modification', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int) $object->id, true, (int) $this->context->employee->id);
                 } else {
-                    $this->errors[] = Tools::displayError('An error occurred while updating an object.').
-                        ' <b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
+                    $this->errors[] = Tools::displayError('An error occurred while updating an object.').' <b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
                 }
             }
         }
@@ -1325,7 +1323,7 @@ class AdminControllerCore extends Controller
             return $object;
         }
 
-        return;
+        return false;
     }
 
     /**
