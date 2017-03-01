@@ -495,7 +495,7 @@ class AdminSuppliersControllerCore extends AdminController
             $address = new Address((int) Tools::getValue('id_address'));
         } // updates address
         else {
-            return false;
+            $address = new Address();
         }
 
         $address->alias = Tools::getValue('name', null);
