@@ -752,7 +752,7 @@ class MediaCore
         $protocolLink = Tools::getCurrentUrlProtocolPrefix();
         //return cached css
         if (!$refresh) {
-            $files = scandir($cachePath);
+            $files = @scandir($cachePath);
             if (is_array($files)) {
                 foreach (array_diff($files, ['..', '.']) as $file) {
                     $cssUrl = str_replace(_PS_ROOT_DIR_, '', $protocolLink.Tools::getMediaServer('').$cachePath.DIRECTORY_SEPARATOR.$file);
