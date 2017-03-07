@@ -1624,17 +1624,6 @@ class ToolsCore
     }
 
     /**
-     * Truncate strings
-     *
-     * @param string $str
-     * @param int    $max_length Max length
-     * @param string $suffix     Suffix optional
-     *
-     * @return string $str truncated
-     */
-    /* CAUTION : Use it only on module hookEvents.
-    ** For other purposes use the smarty function instead */
-    /**
      * getHttpHost return the <b>current</b> host used, with the protocol (http or https) if $http is true
      * This function should not be used to choose http or https domain name.
      * Use Tools::getShopDomain() or Tools::getShopDomainSsl instead
