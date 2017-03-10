@@ -389,8 +389,8 @@ class AdminAddressesControllerCore extends AdminController
                 }
             }
 
-            $out[$adrType.'AdrFields'] = ${$adrType.'AdrFields'};
-            $out[$adrType.'AllFields'] = ${$adrType.'AllFields'};
+            $out[$adrType.'_adr_fields'] = ${$adrType.'AdrFields'};
+            $out[$adrType.'_all_fields'] = ${$adrType.'AllFields'};
         }
 
         return $out;
