@@ -37,6 +37,7 @@ composer.lock
 
 /config/settings.inc.php
 /config/settings.old.php
+/config/shop.inc.php
 /config/xml/*
 /!config/xml/themes/default.xml
 

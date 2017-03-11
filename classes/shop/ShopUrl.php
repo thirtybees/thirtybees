@@ -29,6 +29,11 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+// This file might not exist. For example, at install time it doesn't.
+// Accordingly, we also have to check for the existence of $shopUrlConfig
+// on every read access.
+@include_once(_PS_ROOT_DIR_.'/config/shop.inc.php');
+
 /**
  * Class ShopUrlCore
  *
@@ -55,6 +60,7 @@ class ShopUrlCore extends ObjectModel
     public static $definition = [
         'table'   => 'shop_url',
         'primary' => 'id_shop_url',
+        'path'    => '/config/shop.inc.php', // Has to match include() above.
         'fields'  => [
             'active'       => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                          ],
             'main'         => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                          ],
@@ -71,6 +77,92 @@ class ShopUrlCore extends ObjectModel
             'id_shop' => ['xlink_resource' => 'shops'],
         ],
     ];
+
+    /**
+     * This shall help with the transition from using a database table to
+     * using an PHP array written to a file. It copies DB content to
+     * the global configuration array.
+     *
+     * This method can go away as soon as this class is no longer inherited
+     * from ObjectModel. By then we have to have some other means to write
+     * the array, of course.
+     */
+    public function update($null_values = false)
+    {
+        global $shopUrlConfig;
+
+        $result = parent::update($null_values);
+
+        // Make sure each shop in the database is also in $shopUrlConfig.
+        // This task can be removed as soon as shop changes are stored in
+        // $shopUrlConfig by calling code.
+        $sql = 'SELECT id_shop_url, id_shop, domain, domain_ssl, physical_uri, virtual_uri, main, active
+                FROM '._DB_PREFIX_.'shop_url';
+        $sqlResult = Db::getInstance()->executeS($sql);
+
+        $shopUrlConfig = array();
+        foreach ($sqlResult as $url) {
+            $shopUrlConfig[$url['id_shop_url']] = $url;
+            unset($shopUrlConfig[$url['id_shop_url']]['id_shop_url']);
+        }
+
+        static::writeStorage();
+
+        return $result;
+    }
+
+    /**
+     * Do the opposite of update(): forward $shopUrlConfig to the DB. Also
+     * expected to be temporary, only.
+     */
+    public static function push()
+    {
+        global $shopUrlConfig;
+
+        if (is_array($shopUrlConfig)) {
+            // To make sure we also drop records no longer existing, we drop the
+            // entire table and write a fresh one. Performance is no issue here.
+            Db::getInstance()->delete('shop_url');
+
+            foreach ($shopUrlConfig as $key => $url) {
+                $url['id_shop_url'] = $key;
+
+                Db::getInstance()->insert('shop_url', $url);
+            }
+        }
+    }
+
+    /**
+     * Write storage to the file. That's $shopUrlConfig here.
+     *
+     * @return int|bool Number of bytes written or false-equivalent on failure.
+     *
+     * @since   1.1.0
+     * @version 1.1.0 Initial version
+     */
+    public static function writeStorage()
+    {
+        global $shopUrlConfig; // Assume it exists.
+
+        $result = file_put_contents(_PS_ROOT_DIR_.static::$definition['path'],
+            "<?php\n\n".
+            'global $shopUrlConfig;'."\n\n".
+            '$shopUrlConfig = '.
+              var_export($shopUrlConfig, true).
+            ';'."\n");
+
+        // Clear most citizens in cache-mess-city. Else the include_once()
+        // above may well read an old version on the next page load.
+        Tools::clearSmartyCache();
+        Tools::clearXMLCache();
+        Cache::getInstance()->flush();
+        PageCache::flush();
+        if (function_exists('opcache_reset')) {
+            opcache_reset();
+        }
+
+        return $result;
+    }
 
     /**
      * @see     ObjectModel::getFields()
