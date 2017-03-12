@@ -1,6 +1,5 @@
 <?php
 
-
 class ConfigurationTestTest extends \Codeception\Test\Unit
 {
     /**
@@ -8,43 +7,32 @@ class ConfigurationTestTest extends \Codeception\Test\Unit
      */
     protected $tester;
 
-    protected function _before()
-    {
-    }
-
-    protected function _after()
-    {
-    }
-
     public function testGetDefaultTests()
     {
         $expected = [
-            'Upload'                  => false,
+            'Bcmath'                  => false,
             'CacheDir'                => 'cache',
-            'LogDir'                  => 'log',
+            'ConfigDir'               => 'config',
+            'CustomizableProductsDir' => 'upload',
+            'Files'                   => false,
+            'Gd'                      => false,
             'ImgDir'                  => 'img',
+            'Json'                    => false,
+            'LogDir'                  => 'log',
+            'MailsDir'                => 'mails',
+            'MaxExecutionTime'        => false,
             'ModuleDir'               => 'modules',
+            'PdoMysql'                => false,
+            'PhpVersion'              => false,
+            'System'                  => ['fopen', 'fclose', 'fread', 'fwrite', 'rename', 'file_exists', 'unlink', 'rmdir', 'mkdir', 'getcwd', 'chdir', 'chmod'],
             'ThemeLangDir'            => 'themes/'._THEME_NAME_.'/lang/',
             'ThemePdfLangDir'         => 'themes/'._THEME_NAME_.'/pdf/lang/',
             'ThemeCacheDir'           => 'themes/'._THEME_NAME_.'/cache/',
             'TranslationsDir'         => 'translations',
-            'CustomizableProductsDir' => 'upload',
+            'Upload'                  => false,
             'VirtualProductsDir'      => 'download',
-            'System'        => [
-                'fopen', 'fclose', 'fread', 'fwrite',
-                'rename', 'file_exists', 'unlink', 'rmdir', 'mkdir',
-                'getcwd', 'chdir', 'chmod',
-            ],
-            'PhpVersion' => false,
-            'Gd'         => false,
-            'ConfigDir'  => 'config',
-            'Files'      => false,
-            'MailsDir'   => 'mails',
-            'PdoMysql'   => false,
-            'Bcmath'     => false,
-            'Xml'        => false,
-            'Json'       => false,
-            'Zip'        => false,
+            'Xml'                     => false,
+            'Zip'                     => false,
         ];
 
         $this->assertEquals($expected, ConfigurationTest::getDefaultTests());
@@ -55,8 +43,8 @@ class ConfigurationTestTest extends \Codeception\Test\Unit
         $expected = [
             'NewPhpVersion'   => false,
             'RegisterGlobals' => false,
-            'Gz'               => false,
-            'Mbstring'         => false,
+            'Gz'              => false,
+            'Mbstring'        => false,
             'Tlsv12'          => false,
         ];
 
@@ -76,34 +64,28 @@ class ConfigurationTestTest extends \Codeception\Test\Unit
     public function checkProvider()
     {
         return [
-            ['Upload', false],
+            ['Bcmath', false],
             ['CacheDir', 'cache'],
+            ['ConfigDir', 'config'],
+            ['CustomizableProductsDir', 'upload'],
+            ['Files', false],
+            ['Gd', false],
+            ['Json', false],
             ['LogDir', 'log'],
             ['ImgDir', 'img'],
+            ['MailsDir', 'mails'],
+            ['MaxExecutionTime', false],
             ['ModuleDir', 'modules'],
+            ['PdoMysql', false],
+            ['PhpVersion', false],
+            ['System', ['fopen', 'fclose', 'fread', 'fwrite', 'rename', 'file_exists', 'unlink', 'rmdir', 'mkdir', 'getcwd', 'chdir', 'chmod']],
             ['ThemeLangDir', 'themes/'._THEME_NAME_.'/lang/'],
             ['ThemePdfLangDir', 'themes/'._THEME_NAME_.'/pdf/lang/'],
             ['ThemeCacheDir', 'themes/'._THEME_NAME_.'/cache/'],
             ['TranslationsDir', 'translations'],
-            ['CustomizableProductsDir', 'upload'],
+            ['Upload', false],
             ['VirtualProductsDir', 'download'],
-            [
-                'System',
-                [
-                    'fopen', 'fclose', 'fread', 'fwrite',
-                    'rename', 'file_exists', 'unlink', 'rmdir', 'mkdir',
-                    'getcwd', 'chdir', 'chmod',
-                ],
-            ],
-            ['ConfigDir', 'config'],
-            ['MailsDir', 'mails'],
-            ['PhpVersion', false],
-            ['Gd', false],
-            ['Files', false],
-            ['PdoMysql', false],
-            ['Bcmath', false],
             ['Xml', false],
-            ['Json', false],
             ['Zip', false],
         ];
     }
@@ -117,5 +99,13 @@ class ConfigurationTestTest extends \Codeception\Test\Unit
     public function testTestsShouldBeOk($test, $args)
     {
         $this->assertTrue((bool) call_user_func(['ConfigurationTest', 'test'.$test], $args ? $args : null));
+    }
+
+    protected function _before()
+    {
+    }
+
+    protected function _after()
+    {
     }
 }
