@@ -342,7 +342,7 @@ class ConfigurationTestCore
      * @since   1.0.1
      * @version 1.0.1 Initial version
      */
-    public static function textMaxExecutionTime()
+    public static function testMaxExecutionTime()
     {
         return ini_get('max_execution_time') <= 0 || ini_get('max_execution_time') >= 30;
     }
