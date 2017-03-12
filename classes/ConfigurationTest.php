@@ -98,7 +98,7 @@ class ConfigurationTestCore
             'ConfigDir'               => 'config',
             'Files'                   => false,
             'MailsDir'                => 'mails',
-            'MaxExecutionTime'        => 'mails',
+            'MaxExecutionTime'        => false,
             'PdoMysql'                => false,
             'Bcmath'                  => false,
             'Xml'                     => false,
