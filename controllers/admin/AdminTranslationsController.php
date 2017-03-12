@@ -936,7 +936,7 @@ class AdminTranslationsControllerCore extends AdminController
                         $pattern = '\'<{'.strtolower($module_name).'}'.strtolower($theme_name).'>'.strtolower($template_name).'_'.md5($key).'\'';
                     } else {
                         $post_key = md5(strtolower($module_name).'_'.strtolower($template_name).'_'.md5($key));
-                        $pattern = '\'<{'.strtolower($module_name).'}thirtybees>'.strtolower($template_name).'_'.md5($key).'\'';
+                        $pattern = '\'<{'.strtolower($module_name).'}(thirtybees|prestashop)>'.strtolower($template_name).'_'.md5($key).'\'';
                     }
 
                     if (array_key_exists($post_key, $_POST) && !in_array($pattern, $array_check_duplicate)) {
@@ -1023,27 +1023,30 @@ class AdminTranslationsControllerCore extends AdminController
                 $matches = $this->userParseFile($content, $this->type_selected, $type_file, $module_name);
 
                 // Write each translation on its module file
-                $template_name = substr(basename($file), 0, -4);
+                $templateName = substr(basename($file), 0, -4);
 
                 foreach ($matches as $key) {
-                    $md5_key = md5($key);
-                    $module_key = '<{'.Tools::strtolower($module_name).'}'.strtolower($theme_name).'>'.Tools::strtolower($template_name).'_'.$md5_key;
-                    $default_key = '<{'.Tools::strtolower($module_name).'}thirtybees>'.Tools::strtolower($template_name).'_'.$md5_key;
+                    $md5Key = md5($key);
+                    $moduleKey = '<{'.Tools::strtolower($module_name).'}'.strtolower($theme_name).'>'.Tools::strtolower($templateName).'_'.$md5Key;
+                    $defaultKey = '<{'.Tools::strtolower($module_name).'}thirtybees>'.Tools::strtolower($templateName).'_'.$md5Key;
+                    $prestaShopKey = '<{'.Tools::strtolower($module_name).'}prestashop>'.Tools::strtolower($templateName).'_'.$md5Key;
                     // to avoid duplicate entry
-                    if (!in_array($module_key, $array_check_duplicate)) {
-                        $array_check_duplicate[] = $module_key;
-                        if (!isset($this->modules_translations[$theme_name][$module_name][$template_name][$key]['trad'])) {
+                    if (!in_array($moduleKey, $array_check_duplicate)) {
+                        $array_check_duplicate[] = $moduleKey;
+                        if (!isset($this->modules_translations[$theme_name][$module_name][$templateName][$key]['trad'])) {
                             $this->total_expression++;
                         }
-                        if ($theme_name && array_key_exists($module_key, $GLOBALS[$name_var])) {
-                            $this->modules_translations[$theme_name][$module_name][$template_name][$key]['trad'] = html_entity_decode($GLOBALS[$name_var][$module_key], ENT_COMPAT, 'UTF-8');
-                        } elseif (array_key_exists($default_key, $GLOBALS[$name_var])) {
-                            $this->modules_translations[$theme_name][$module_name][$template_name][$key]['trad'] = html_entity_decode($GLOBALS[$name_var][$default_key], ENT_COMPAT, 'UTF-8');
+                        if ($theme_name && array_key_exists($moduleKey, $GLOBALS[$name_var])) {
+                            $this->modules_translations[$theme_name][$module_name][$templateName][$key]['trad'] = html_entity_decode($GLOBALS[$name_var][$moduleKey], ENT_COMPAT, 'UTF-8');
+                        } elseif (array_key_exists($defaultKey, $GLOBALS[$name_var])) {
+                            $this->modules_translations[$theme_name][$module_name][$templateName][$key]['trad'] = html_entity_decode($GLOBALS[$name_var][$defaultKey], ENT_COMPAT, 'UTF-8');
+                        } elseif (array_key_exists($prestaShopKey, $GLOBALS[$name_var])) {
+                            $this->modules_translations[$theme_name][$module_name][$templateName][$key]['trad'] = html_entity_decode($GLOBALS[$name_var][$defaultKey], ENT_COMPAT, 'UTF-8');
                         } else {
-                            $this->modules_translations[$theme_name][$module_name][$template_name][$key]['trad'] = '';
+                            $this->modules_translations[$theme_name][$module_name][$templateName][$key]['trad'] = '';
                             $this->missing_translations++;
                         }
-                        $this->modules_translations[$theme_name][$module_name][$template_name][$key]['use_sprintf'] = $this->checkIfKeyUseSprintf($key);
+                        $this->modules_translations[$theme_name][$module_name][$templateName][$key]['use_sprintf'] = $this->checkIfKeyUseSprintf($key);
                     }
                 }
             }
