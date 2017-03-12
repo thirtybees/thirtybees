@@ -64,7 +64,7 @@ class PrestaShopExceptionCore extends Exception
             echo '<h2>['.get_class($this).']</h2>';
             echo $this->getExtendedMessage();
 
-            $this->displayFileDebug($this->getFile(), $this->getLine());
+            echo $this->displayFileDebug($this->getFile(), $this->getLine());
 
             // Display debug backtrace
             echo '<ul>';
@@ -99,7 +99,7 @@ class PrestaShopExceptionCore extends Exception
             $markdown .= '## '.get_class($this).'  ';
             $markdown .= $this->getExtendedMessageMarkdown();
 
-            $this->displayFileDebug($this->getFile(), $this->getLine(), null, true);
+            $markdown .= $this->displayFileDebug($this->getFile(), $this->getLine(), null, true);
 
             // Display debug backtrace
             foreach ($this->getTrace() as $id => $trace) {
@@ -165,7 +165,6 @@ class PrestaShopExceptionCore extends Exception
             $ret .= "```php  \n";
             foreach ($lines as $k => $l) {
                 $ret .= ($offset + $k).'. '.(($offset + $k == $line) ? '=>' : '  ').' '.$l;
-                // ($offset + $k == $line)
             }
             $ret .= "```  \n";
         } else {
