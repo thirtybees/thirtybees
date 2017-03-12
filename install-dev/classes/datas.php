@@ -45,6 +45,7 @@ class Datas
             'help'     => 'language iso code',
         ],
         'allLanguages'     => [
+            'name'     => 'all_languages',
             'default'  => '0',
             'validate' => 'isInt',
             'alias'    => 'l',
