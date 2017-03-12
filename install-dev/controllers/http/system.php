@@ -21,11 +21,11 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
@@ -94,15 +94,16 @@ class InstallControllerHttpSystem extends InstallControllerHttp
                     'title'   => $this->l('Required PHP parameters'),
                     'success' => 1,
                     'checks'  => [
-                        'PhpVersion'    => $this->l('PHP 5.5.0 or later is not enabled'),
-                        'Upload'        => $this->l('Cannot upload files'),
-                        'System'        => $this->l('Cannot create new files and folders'),
-                        'Gd'            => $this->l('GD library is not installed'),
-                        'PdoMysql'      => $this->l('PDO MySQL extension is not loaded'),
-                        'Xml'           => $this->l('The PHP xml extension is not enabled'),
-                        'Json'          => $this->l('The PHP json extension is not enabled'),
-                        'Bcmath'        => $this->l('The PHP bcmath extension is not enabled'),
-                        'Zip'           => $this->l('The PHP zip extension/functionality is not enabled'),
+                        'Bcmath'           => $this->l('The PHP bcmath extension is not enabled'),
+                        'Gd'               => $this->l('GD library is not installed'),
+                        'Json'             => $this->l('The PHP json extension is not enabled'),
+                        'PdoMysql'         => $this->l('PDO MySQL extension is not loaded'),
+                        'PhpVersion'       => $this->l('PHP 5.5.0 or later is not enabled'),
+                        'MaxExecutionTime' => $this->l('Max execution time is lower than 30'),
+                        'System'           => $this->l('Cannot create new files and folders'),
+                        'Upload'           => $this->l('Cannot upload files'),
+                        'Xml'              => $this->l('The PHP xml extension is not enabled'),
+                        'Zip'              => $this->l('The PHP zip extension/functionality is not enabled'),
                     ],
                 ],
                 [
@@ -116,16 +117,16 @@ class InstallControllerHttpSystem extends InstallControllerHttp
                     'title'   => $this->l('Permissions on files and folders'),
                     'success' => 1,
                     'checks'  => [
-                        'ConfigDir'                => $this->l('Recursive write permissions for %1$s user on %2$s', $user, '~/config/'),
-                        'CacheDir'                 => $this->l('Recursive write permissions for %1$s user on %2$s', $user, '~/cache/'),
-                        'LogDir'                   => $this->l('Recursive write permissions for %1$s user on %2$s', $user, '~/log/'),
-                        'ImgDir'                   => $this->l('Recursive write permissions for %1$s user on %2$s', $user, '~/img/'),
-                        'MailsDir'                 => $this->l('Recursive write permissions for %1$s user on %2$s', $user, '~/mails/'),
-                        'ModuleDir'                => $this->l('Recursive write permissions for %1$s user on %2$s', $user, '~/modules/'),
+                        'ConfigDir'               => $this->l('Recursive write permissions for %1$s user on %2$s', $user, '~/config/'),
+                        'CacheDir'                => $this->l('Recursive write permissions for %1$s user on %2$s', $user, '~/cache/'),
+                        'LogDir'                  => $this->l('Recursive write permissions for %1$s user on %2$s', $user, '~/log/'),
+                        'ImgDir'                  => $this->l('Recursive write permissions for %1$s user on %2$s', $user, '~/img/'),
+                        'MailsDir'                => $this->l('Recursive write permissions for %1$s user on %2$s', $user, '~/mails/'),
+                        'ModuleDir'               => $this->l('Recursive write permissions for %1$s user on %2$s', $user, '~/modules/'),
                         'ThemeLangDir'            => $this->l('Recursive write permissions for %1$s user on %2$s', $user, '~/themes/community-theme-default/lang/'),
-                        'ThemePdfLangDir'        => $this->l('Recursive write permissions for %1$s user on %2$s', $user, '~/themes/community-theme-default/pdf/lang/'),
+                        'ThemePdfLangDir'         => $this->l('Recursive write permissions for %1$s user on %2$s', $user, '~/themes/community-theme-default/pdf/lang/'),
                         'ThemeCacheDir'           => $this->l('Recursive write permissions for %1$s user on %2$s', $user, '~/themes/community-theme-default/cache/'),
-                        'TranslationsDir'          => $this->l('Recursive write permissions for %1$s user on %2$s', $user, '~/translations/'),
+                        'TranslationsDir'         => $this->l('Recursive write permissions for %1$s user on %2$s', $user, '~/translations/'),
                         'CustomizableProductsDir' => $this->l('Recursive write permissions for %1$s user on %2$s', $user, '~/upload/'),
                         'VirtualProductsDir'      => $this->l('Recursive write permissions for %1$s user on %2$s', $user, '~/download/'),
                     ],
@@ -138,8 +139,8 @@ class InstallControllerHttpSystem extends InstallControllerHttp
                     'checks'  => [
                         'NewPhpVersion'   => sprintf($this->l('You are using PHP %s version. The next minor version of thirty bees (1.1.0) will require PHP 5.6. To make sure you’re ready for the future, we recommend you to upgrade to PHP 5.6 now!'), phpversion()),
                         'RegisterGlobals' => $this->l('PHP register_globals option is enabled'),
-                        'Gz'               => $this->l('GZIP compression is not activated'),
-                        'Mbstring'         => $this->l('Mbstring extension is not enabled'),
+                        'Gz'              => $this->l('GZIP compression is not activated'),
+                        'Mbstring'        => $this->l('Mbstring extension is not enabled'),
                         'Tlsv12'          => $this->l('Could not make a secure connection with PayPal. Your store might not be able to process payments.'),
                     ],
                 ],

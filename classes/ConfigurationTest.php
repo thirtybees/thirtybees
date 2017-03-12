@@ -88,21 +88,22 @@ class ConfigurationTestCore
             'TranslationsDir'         => 'translations',
             'CustomizableProductsDir' => 'upload',
             'VirtualProductsDir'      => 'download',
-            'System'        => [
+            'System'                  => [
                 'fopen', 'fclose', 'fread', 'fwrite',
                 'rename', 'file_exists', 'unlink', 'rmdir', 'mkdir',
                 'getcwd', 'chdir', 'chmod',
             ],
-            'PhpVersion' => false,
-            'Gd'         => false,
-            'ConfigDir'  => 'config',
-            'Files'      => false,
-            'MailsDir'   => 'mails',
-            'PdoMysql'   => false,
-            'Bcmath'     => false,
-            'Xml'        => false,
-            'Json'       => false,
-            'Zip'        => false,
+            'PhpVersion'              => false,
+            'Gd'                      => false,
+            'ConfigDir'               => 'config',
+            'Files'                   => false,
+            'MailsDir'                => 'mails',
+            'MaxExecutionTime'        => 'mails',
+            'PdoMysql'                => false,
+            'Bcmath'                  => false,
+            'Xml'                     => false,
+            'Json'                    => false,
+            'Zip'                     => false,
         ];
 
         return $tests;
@@ -122,8 +123,8 @@ class ConfigurationTestCore
         return [
             'NewPhpVersion'   => false,
             'RegisterGlobals' => false,
-            'Gz'               => false,
-            'Mbstring'         => false,
+            'Gz'              => false,
+            'Mbstring'        => false,
             'Tlsv12'          => false,
         ];
     }
@@ -174,7 +175,7 @@ class ConfigurationTestCore
      */
     public static function testPhpVersion()
     {
-        return PHP_VERSION_ID >= 50500;
+        return version_compare(PHP_VERSION, '5.5.0', '>=');
     }
 
     /**
@@ -185,7 +186,7 @@ class ConfigurationTestCore
      */
     public static function testNewPhpVersion()
     {
-        return PHP_VERSION_ID >= 50600;
+        return version_compare(PHP_VERSION, '5.6.0', '>=');
     }
 
     /**
@@ -333,6 +334,17 @@ class ConfigurationTestCore
     public static function testGd()
     {
         return function_exists('imagecreatetruecolor');
+    }
+
+    /**
+     * @return bool
+     *
+     * @since   1.0.1
+     * @version 1.0.1 Initial version
+     */
+    public static function textMaxExecutionTime()
+    {
+        return ini_get('max_execution_time') >= 30;
     }
 
     /**
