@@ -9,7 +9,7 @@ Here are your login details:
 
 E-MAIL ADDRESS: {email}
 
-PASSWORD: {passwd} 		 
+PASSWORD: ******
 
 Important Security Tips:
 
