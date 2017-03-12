@@ -33,6 +33,8 @@
  * Class CacheMemcacheCore
  *
  * @since 1.0.0
+ *
+ * @deprecated 1.1.0 Will be converted into a caching module following the PSR-6 standard: http://www.php-fig.org/psr/psr-6/
  */
 class CacheMemcacheCore extends Cache
 {
