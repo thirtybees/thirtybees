@@ -1602,34 +1602,20 @@ class AdminSupplyOrdersControllerCore extends AdminController
         // gets products
         $query = new DbQuery();
         $query->select(
-            '
-			ps.id_product,
-			ps.id_product_attribute,
-			ps.product_supplier_reference as supplier_reference,
-			ps.product_supplier_price_te as unit_price_te,
-			ps.id_currency,
-			IFNULL(pa.reference, IFNULL(p.reference, \'\')) as reference,
-			IFNULL(pa.ean13, IFNULL(p.ean13, \'\')) as ean13,
-			IFNULL(pa.upc, IFNULL(p.upc, \'\')) as upc'
+            'ps.`id_product`,
+			 ps.`id_product_attribute`,
+			 ps.`product_supplier_reference` as `supplier_reference`,
+			 ps.`product_supplier_price_te` as `unit_price_te`,
+			 ps.`id_currency`,
+			 IFNULL(pa.`reference`, IFNULL(p.`reference`, \'\')) as `reference`,
+			 IFNULL(pa.`ean13`, IFNULL(p.`ean13`, \'\')) as `ean13`,
+			 IFNULL(pa.`upc`, IFNULL(p.`upc`, \'\')) as `upc`'
         );
         $query->from('product_supplier', 'ps');
-        $query->innerJoin(
-            'warehouse_product_location',
-            'wpl', '
-			wpl.id_product = ps.id_product
-			AND wpl.id_product_attribute = ps.id_product_attribute
-			AND wpl.id_warehouse = '.(int) $supplyOrder->id_warehouse.'
-		'
-        );
-        $query->leftJoin('product', 'p', 'p.id_product = ps.id_product');
-        $query->leftJoin(
-            'product_attribute',
-            'pa', '
-			pa.id_product_attribute = ps.id_product_attribute
-			AND p.id_product = ps.id_product
-		'
-        );
-        $query->where('ps.id_supplier = '.(int) $supplyOrder->id_supplier);
+        $query->innerJoin('warehouse_product_location', 'wpl', 'wpl.`id_product` = ps.`id_product` AND wpl.`id_product_attribute` = ps.`id_product_attribute` AND wpl.`id_warehouse` = '.(int) $supplyOrder->id_warehouse.'');
+        $query->leftJoin('product', 'p', 'p.`id_product` = ps.`id_product`');
+        $query->leftJoin('product_attribute', 'pa', 'pa.`id_product_attribute` = ps.`id_product_attribute` AND p.`id_product` = ps.`id_product`');
+        $query->where('ps.`id_supplier` = '.(int) $supplyOrder->id_supplier);
 
         // gets items
         $items = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
