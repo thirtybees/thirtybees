@@ -58,10 +58,10 @@ You can find the latest version of the roadmap here: https://thirtybees.com/road
     - json
     - zip
     - mysql (PDO only)
+    - mbstring
   - Recommended:
     - imap
     - curl
-    - mbstring
     - opcache
     - apcu/redis/memcache(d)
 
