@@ -30,10 +30,13 @@
  */
 
 /**
- * @property Employee $object
+ * Class AdminEmployeesControllerCore
+ *
+ * @since 1.0.0
  */
 class AdminEmployeesControllerCore extends AdminController
 {
+    // @codingStandardsIgnoreStart
     /** @var array profiles list */
     protected $profiles_array = [];
 
@@ -43,8 +46,15 @@ class AdminEmployeesControllerCore extends AdminController
     /** @var array tabs list */
     protected $tabs_list = [];
 
+    /** @var bool $restrict_edition */
     protected $restrict_edition = false;
+    // @codingStandardsIgnoreEnd
 
+    /**
+     * AdminEmployeesControllerCore constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         $this->bootstrap = true;
@@ -68,14 +78,14 @@ class AdminEmployeesControllerCore extends AdminController
         check if there are more than one superAdmin
         if it's the case then we can delete a superAdmin
         */
-        $super_admin = Employee::countProfile(_PS_ADMIN_PROFILE_, true);
-        if ($super_admin == 1) {
-            $super_admin_array = Employee::getEmployeesByProfile(_PS_ADMIN_PROFILE_, true);
-            $super_admin_id = [];
-            foreach ($super_admin_array as $key => $val) {
-                $super_admin_id[] = $val['id_employee'];
+        $superAdmin = Employee::countProfile(_PS_ADMIN_PROFILE_, true);
+        if ($superAdmin == 1) {
+            $superAdminArray = Employee::getEmployeesByProfile(_PS_ADMIN_PROFILE_, true);
+            $superAdminId = [];
+            foreach ($superAdminArray as $key => $val) {
+                $superAdminId[] = $val['id_employee'];
             }
-            $this->addRowActionSkipList('delete', $super_admin_id);
+            $this->addRowActionSkipList('delete', $superAdminId);
         }
 
         $profiles = Profile::getProfiles($this->context->language->id);
@@ -147,14 +157,14 @@ class AdminEmployeesControllerCore extends AdminController
             }
         }
 
-        $home_tab = Tab::getInstanceFromClassName('AdminDashboard', $this->context->language->id);
-        $this->tabs_list[$home_tab->id] = [
-            'name'     => $home_tab->name,
-            'id_tab'   => $home_tab->id,
+        $homeTab = Tab::getInstanceFromClassName('AdminDashboard', $this->context->language->id);
+        $this->tabs_list[$homeTab->id] = [
+            'name'     => $homeTab->name,
+            'id_tab'   => $homeTab->id,
             'children' => [
                 [
-                    'id_tab' => $home_tab->id,
-                    'name'   => $home_tab->name,
+                    'id_tab' => $homeTab->id,
+                    'name'   => $homeTab->name,
                 ],
             ],
         ];
@@ -178,6 +188,11 @@ class AdminEmployeesControllerCore extends AdminController
         }
     }
 
+    /**
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function setMedia()
     {
         parent::setMedia();
@@ -186,6 +201,11 @@ class AdminEmployeesControllerCore extends AdminController
         $this->addJS(_PS_JS_DIR_.'jquery/plugins/validate/localization/messages_'.$this->context->language->iso_code.'.js');
     }
 
+    /**
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function initPageHeaderToolbar()
     {
         parent::initPageHeaderToolbar();
@@ -212,6 +232,11 @@ class AdminEmployeesControllerCore extends AdminController
         }
     }
 
+    /**
+     * @return string
+     *
+     * @since 1.0.0
+     */
     public function renderList()
     {
         $this->_select = 'pl.`name` AS profile';
@@ -223,14 +248,19 @@ class AdminEmployeesControllerCore extends AdminController
         return parent::renderList();
     }
 
+    /**
+     * @return string
+     *
+     * @since 1.0.0
+     */
     public function renderForm()
     {
         /** @var Employee $obj */
         if (!($obj = $this->loadObject(true))) {
-            return;
+            return '';
         }
 
-        $available_profiles = Profile::getProfiles($this->context->language->id);
+        $availableProfiles = Profile::getProfiles($this->context->language->id);
 
         if ($obj->id_profile == _PS_ADMIN_PROFILE_ && $this->context->employee->id_profile != _PS_ADMIN_PROFILE_) {
             $this->errors[] = Tools::displayError('You cannot edit the SuperAdmin profile.');
@@ -389,9 +419,9 @@ class AdminEmployeesControllerCore extends AdminController
 
             // if employee is not SuperAdmin (id_profile = 1), don't make it possible to select the admin profile
             if ($this->context->employee->id_profile != _PS_ADMIN_PROFILE_) {
-                foreach ($available_profiles as $i => $profile) {
-                    if ($available_profiles[$i]['id_profile'] == _PS_ADMIN_PROFILE_) {
-                        unset($available_profiles[$i]);
+                foreach ($availableProfiles as $i => $profile) {
+                    if ($availableProfiles[$i]['id_profile'] == _PS_ADMIN_PROFILE_) {
+                        unset($availableProfiles[$i]);
                         break;
                     }
                 }
@@ -402,7 +432,7 @@ class AdminEmployeesControllerCore extends AdminController
                 'name'     => 'id_profile',
                 'required' => true,
                 'options'  => [
-                    'query'   => $available_profiles,
+                    'query'   => $availableProfiles,
                     'id'      => 'id_profile',
                     'name'    => 'name',
                     'default' => [
@@ -437,6 +467,13 @@ class AdminEmployeesControllerCore extends AdminController
         return parent::renderForm();
     }
 
+    /**
+     * Process delete
+     *
+     * @return bool|false|ObjectModel
+     *
+     * @since 1.0.0
+     */
     public function processDelete()
     {
         if (!$this->canModifyEmployee()) {
@@ -446,6 +483,11 @@ class AdminEmployeesControllerCore extends AdminController
         return parent::processDelete();
     }
 
+    /**
+     * @return bool
+     *
+     * @since 1.0.0
+     */
     protected function canModifyEmployee()
     {
         if ($this->restrict_edition) {
@@ -472,6 +514,11 @@ class AdminEmployeesControllerCore extends AdminController
         return true;
     }
 
+    /**
+     * @return bool
+     *
+     * @since 1.0.0
+     */
     public function processStatus()
     {
         if (!$this->canModifyEmployee()) {
@@ -481,14 +528,19 @@ class AdminEmployeesControllerCore extends AdminController
         parent::processStatus();
     }
 
+    /**
+     * @return bool
+     *
+     * @since 1.0.0
+     */
     public function processSave()
     {
         $employee = new Employee((int) Tools::getValue('id_employee'));
 
         // If the employee is editing its own account
         if ($this->restrict_edition) {
-            $current_password = trim(Tools::getValue('old_passwd'));
-            if (Tools::getValue('passwd') && (empty($current_password) || !Validate::isPasswdAdmin($current_password) || !$employee->getByEmail($employee->email, $current_password))) {
+            $currentPassword = trim(Tools::getValue('old_passwd'));
+            if (Tools::getValue('passwd') && (empty($currentPassword) || !Validate::isPasswdAdmin($currentPassword) || !$employee->getByEmail($employee->email, $currentPassword))) {
                 $this->errors[] = Tools::displayError('Your current password is invalid.');
             } elseif (Tools::getValue('passwd') && (!Tools::getValue('passwd2') || Tools::getValue('passwd') !== Tools::getValue('passwd2'))) {
                 $this->errors[] = Tools::displayError('The confirmation password does not match.');
@@ -559,15 +611,15 @@ class AdminEmployeesControllerCore extends AdminController
         }
 
         if (Tools::getValue('bo_theme_css')) {
-            $bo_theme = explode('|', Tools::getValue('bo_theme_css'));
-            $_POST['bo_theme'] = $bo_theme[0];
-            if (!in_array($bo_theme[0], scandir(_PS_ADMIN_DIR_.DIRECTORY_SEPARATOR.'themes'))) {
+            $boTheme = explode('|', Tools::getValue('bo_theme_css'));
+            $_POST['bo_theme'] = $boTheme[0];
+            if (!in_array($boTheme[0], scandir(_PS_ADMIN_DIR_.DIRECTORY_SEPARATOR.'themes'))) {
                 $this->errors[] = Tools::displayError('Invalid theme');
 
                 return false;
             }
-            if (isset($bo_theme[1])) {
-                $_POST['bo_css'] = $bo_theme[1];
+            if (isset($boTheme[1])) {
+                $_POST['bo_css'] = $boTheme[1];
             }
         }
 
@@ -585,6 +637,13 @@ class AdminEmployeesControllerCore extends AdminController
         return parent::processSave();
     }
 
+    /**
+     * @param bool $className
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
     public function validateRules($className = false)
     {
         $employee = new Employee((int) Tools::getValue('id_employee'));
@@ -599,35 +658,52 @@ class AdminEmployeesControllerCore extends AdminController
         return parent::validateRules($className);
     }
 
+    /**
+     * @return bool
+     *
+     * @since 1.0.0
+     */
     public function postProcess()
     {
         if ((Tools::isSubmit('submitBulkdeleteemployee') || Tools::isSubmit('submitBulkdisableSelectionemployee') || Tools::isSubmit('deleteemployee') || Tools::isSubmit('status') || Tools::isSubmit('statusemployee') || Tools::isSubmit('submitAddemployee')) && _PS_MODE_DEMO_) {
             $this->errors[] = Tools::displayError('This functionality has been disabled.');
 
-            return;
+            return false;
         }
 
         return parent::postProcess();
     }
 
+    /**
+     * Initialize content
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function initContent()
     {
         if ($this->context->employee->id == Tools::getValue('id_employee')) {
             $this->display = 'edit';
         }
 
-        return parent::initContent();
+        parent::initContent();
     }
 
+    /**
+     * Ajax process get tab by id profile
+     *
+     * @since 1.0.0
+     */
     public function ajaxProcessGetTabByIdProfile()
     {
-        $id_profile = Tools::getValue('id_profile');
-        $tabs = Tab::getTabByIdProfile(0, $id_profile);
+        $idProfile = Tools::getValue('id_profile');
+        $tabs = Tab::getTabByIdProfile(0, $idProfile);
         $this->tabs_list = [];
         foreach ($tabs as $tab) {
             if (Tab::checkTabRights($tab['id_tab'])) {
                 $this->tabs_list[$tab['id_tab']] = $tab;
-                foreach (Tab::getTabByIdProfile($tab['id_tab'], $id_profile) as $children) {
+                foreach (Tab::getTabByIdProfile($tab['id_tab'], $idProfile) as $children) {
                     if (Tab::checkTabRights($children['id_tab'])) {
                         $this->tabs_list[$tab['id_tab']]['children'][] = $children;
                     }
@@ -637,6 +713,13 @@ class AdminEmployeesControllerCore extends AdminController
         die(json_encode($this->tabs_list));
     }
 
+    /**
+     * Child validation
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
     protected function _childValidation()
     {
         if (!($obj = $this->loadObject(true))) {
@@ -655,11 +738,18 @@ class AdminEmployeesControllerCore extends AdminController
         }
     }
 
+    /**
+     * Process bulk delete
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
     protected function processBulkDelete()
     {
         if (is_array($this->boxes) && !empty($this->boxes)) {
-            foreach ($this->boxes as $id_employee) {
-                if ((int) $this->context->employee->id == (int) $id_employee) {
+            foreach ($this->boxes as $idEmployee) {
+                if ((int) $this->context->employee->id == (int) $idEmployee) {
                     $this->restrict_edition = true;
 
                     return $this->canModifyEmployee();
@@ -674,6 +764,8 @@ class AdminEmployeesControllerCore extends AdminController
      * @param Employee $object
      *
      * @return bool
+     *
+     * @since 1.0.0
      */
     protected function afterUpdate($object)
     {
@@ -697,6 +789,13 @@ class AdminEmployeesControllerCore extends AdminController
         return $res;
     }
 
+    /**
+     * Ajax process form language
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     protected function ajaxProcessFormLanguage()
     {
         $this->context->cookie->employee_form_lang = (int) Tools::getValue('form_language_id');
@@ -706,6 +805,13 @@ class AdminEmployeesControllerCore extends AdminController
         die('Form language updated.');
     }
 
+    /**
+     * Ajax process toggle menu
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     protected function ajaxProcessToggleMenu()
     {
         $this->context->cookie->collapse_menu = (int) Tools::getValue('collapse');
