@@ -588,8 +588,8 @@ class StockManagerCore implements StockManagerInterface
      *
      * @return int
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @since 1.0.0
+     * @since 1.0.1 Add `usable` to `$productStockCriteria`
      */
     public function getPhysicalProductQuantities($productStockCriteria)
     {
@@ -598,7 +598,8 @@ class StockManagerCore implements StockManagerInterface
         return (int) $this->getProductPhysicalQuantities(
             $productStockCriteria['product_id'],
             $productStockCriteria['product_attribute_id'],
-            $productStockCriteria['warehouse_id']
+            $productStockCriteria['warehouse_id'],
+            isset($productStockCriteria['usable']) ?: false
         );
     }
 
@@ -784,7 +785,7 @@ class StockManagerCore implements StockManagerInterface
         }
 
         // Gets {physical OR usable}_qty
-        $qty = $this->getProductPhysicalQuantities($idProduct, $idProductAttribute, $idsWarehouse, $usable);
+        $qty = $this->getPhysicalProductQuantities(['product_id' => $idProduct, 'product_attribute_id' => $idProductAttribute, 'warehouse_id' => $idsWarehouse, 'usable' => $usable]);
 
         //real qty = actual qty in stock - current client orders + current supply orders
         return ($qty - $clientOrdersQty + $supplyOrdersQty);
@@ -806,7 +807,7 @@ class StockManagerCore implements StockManagerInterface
         $usableTo = true
     ) {
         // Checks if this transfer is possible
-        if ($this->getProductPhysicalQuantities($idProduct, $idProductAttribute, [$idWarehouseFrom], $usableFrom) < $quantity) {
+        if ($this->getPhysicalProductQuantities(['product_id' => $idProduct, 'product_attribute_id' => $idProductAttribute, 'warehouse_id' => [$idWarehouseFrom], 'usable' => $usableFrom]) < $quantity) {
             return false;
         }
 
