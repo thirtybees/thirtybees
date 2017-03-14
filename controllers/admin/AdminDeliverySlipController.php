@@ -21,16 +21,26 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class AdminDeliverySlipControllerCore
+ *
+ * @since 1.0.0
+ */
 class AdminDeliverySlipControllerCore extends AdminController
 {
+    /**
+     * AdminDeliverySlipControllerCore constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         $this->bootstrap = true;
@@ -40,73 +50,39 @@ class AdminDeliverySlipControllerCore extends AdminController
 
         $this->fields_options = [
             'general' => [
-                'title' =>    $this->l('Delivery slip options'),
-                'fields' =>    [
-                    'PS_DELIVERY_PREFIX' => [
+                'title'  => $this->l('Delivery slip options'),
+                'fields' => [
+                    'PS_DELIVERY_PREFIX'  => [
                         'title' => $this->l('Delivery prefix'),
-                        'desc' => $this->l('Prefix used for delivery slips.'),
-                        'type' => 'textLang'
+                        'desc'  => $this->l('Prefix used for delivery slips.'),
+                        'type'  => 'textLang',
                     ],
-                    'PS_DELIVERY_NUMBER' => [
+                    'PS_DELIVERY_NUMBER'  => [
                         'title' => $this->l('Delivery number'),
-                        'desc' => $this->l('The next delivery slip will begin with this number and then increase with each additional slip.'),
-                        'cast' => 'intval',
-                        'type' => 'text'
+                        'desc'  => $this->l('The next delivery slip will begin with this number and then increase with each additional slip.'),
+                        'cast'  => 'intval',
+                        'type'  => 'text',
                     ],
                     'PS_PDF_IMG_DELIVERY' => [
-                        'title' => $this->l('Enable product image'),
-                        'hint' => $this->l('Adds an image before product name on Delivery-slip'),
+                        'title'      => $this->l('Enable product image'),
+                        'hint'       => $this->l('Adds an image before product name on Delivery-slip'),
                         'validation' => 'isBool',
-                        'cast' => 'intval',
-                        'type' => 'bool'
+                        'cast'       => 'intval',
+                        'type'       => 'bool',
                     ],
                 ],
-                'submit' => ['title' => $this->l('Save')]
-            ]
+                'submit' => ['title' => $this->l('Save')],
+            ],
         ];
 
         parent::__construct();
     }
 
-    public function renderForm()
-    {
-        $this->fields_form = [
-            'legend' => [
-                'title' => $this->l('Print PDF delivery slips'),
-                'icon' => 'icon-print'
-            ],
-            'input' => [
-                [
-                    'type' => 'date',
-                    'label' => $this->l('From'),
-                    'name' => 'date_from',
-                    'maxlength' => 10,
-                    'required' => true,
-                    'hint' => $this->l('Format: 2011-12-31 (inclusive).')
-                ],
-                [
-                    'type' => 'date',
-                    'label' => $this->l('To'),
-                    'name' => 'date_to',
-                    'maxlength' => 10,
-                    'required' => true,
-                    'hint' => $this->l('Format: 2012-12-31 (inclusive).')
-                ]
-            ],
-            'submit' => [
-                'title' => $this->l('Generate PDF file'),
-                'icon' => 'process-icon-download-alt'
-            ]
-        ];
-
-        $this->fields_value = [
-            'date_from' => date('Y-m-d'),
-            'date_to' => date('Y-m-d')
-        ];
-
-        return parent::renderForm();
-    }
-
+    /**
+     * Post processing
+     *
+     * @since 1.0.0
+     */
     public function postProcess()
     {
         if (Tools::isSubmit('submitAdddelivery')) {
@@ -128,6 +104,11 @@ class AdminDeliverySlipControllerCore extends AdminController
         }
     }
 
+    /**
+     * Initialize content
+     *
+     * @since 1.0.0
+     */
     public function initContent()
     {
         $this->initTabModuleList();
@@ -137,12 +118,58 @@ class AdminDeliverySlipControllerCore extends AdminController
         $this->content .= $this->renderOptions();
         $this->context->smarty->assign(
             [
-            'content' => $this->content,
-            'url_post' => self::$currentIndex.'&token='.$this->token,
-            'show_page_header_toolbar' => $this->show_page_header_toolbar,
-            'page_header_toolbar_title' => $this->page_header_toolbar_title,
-            'page_header_toolbar_btn' => $this->page_header_toolbar_btn
+                'content'                   => $this->content,
+                'url_post'                  => self::$currentIndex.'&token='.$this->token,
+                'show_page_header_toolbar'  => $this->show_page_header_toolbar,
+                'page_header_toolbar_title' => $this->page_header_toolbar_title,
+                'page_header_toolbar_btn'   => $this->page_header_toolbar_btn,
             ]
         );
+    }
+
+    /**
+     * Render form
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
+    public function renderForm()
+    {
+        $this->fields_form = [
+            'legend' => [
+                'title' => $this->l('Print PDF delivery slips'),
+                'icon'  => 'icon-print',
+            ],
+            'input'  => [
+                [
+                    'type'      => 'date',
+                    'label'     => $this->l('From'),
+                    'name'      => 'date_from',
+                    'maxlength' => 10,
+                    'required'  => true,
+                    'hint'      => $this->l('Format: 2011-12-31 (inclusive).'),
+                ],
+                [
+                    'type'      => 'date',
+                    'label'     => $this->l('To'),
+                    'name'      => 'date_to',
+                    'maxlength' => 10,
+                    'required'  => true,
+                    'hint'      => $this->l('Format: 2012-12-31 (inclusive).'),
+                ],
+            ],
+            'submit' => [
+                'title' => $this->l('Generate PDF file'),
+                'icon'  => 'process-icon-download-alt',
+            ],
+        ];
+
+        $this->fields_value = [
+            'date_from' => date('Y-m-d'),
+            'date_to'   => date('Y-m-d'),
+        ];
+
+        return parent::renderForm();
     }
 }
