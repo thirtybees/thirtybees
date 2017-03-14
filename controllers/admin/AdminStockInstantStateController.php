@@ -453,6 +453,7 @@ class AdminStockInstantStateControllerCore extends AdminController
 
             for ($i = 0; $i < $nbItems; $i++) {
                 $item = &$this->_list[$i];
+                /** @var StockManager $manager */
                 $manager = StockManagerFactory::getManager();
 
                 // gets quantities and valuation
