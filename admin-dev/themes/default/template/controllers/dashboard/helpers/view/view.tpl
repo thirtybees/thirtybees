@@ -94,7 +94,7 @@
 			<section class="dash_news panel">
 				<h3><i class="icon-rss"></i> {l s='thirty bees News'}</h3>
 				<div class="dash_news_content"></div>
-				<div class="text-center"><h4><a href="http://www.thirtybees.com/feed/" onclick="return !window.open(this.href);">{l s='Find more news'}</a></h4></div>
+				<div class="text-center"><h4><a href="https://thirtybees.com/blog/" onclick="return !window.open(this.href);">{l s='Find more news'}</a></h4></div>
 			</section>
 			<section class="dash_links panel">
 				<h3><i class="icon-link"></i> {l s="Useful links"}</h3>
