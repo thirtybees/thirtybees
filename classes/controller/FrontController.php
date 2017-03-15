@@ -695,6 +695,121 @@ class FrontControllerCore extends Controller
      *
      * @version 1.0.0 Initial version
      */
+    // protected function smartyOutputContent($content)
+    // {
+    //     if (!Configuration::get('TB_PAGE_CACHE_ENABLED')) {
+    //         parent::smartyOutputContent($content);
+
+    //         return;
+    //     }
+
+    //     $html = '';
+    //     $jsTag = 'js_def';
+    //     $this->context->smarty->assign($jsTag, $jsTag);
+
+    //     if (is_array($content)) {
+    //         foreach ($content as $tpl) {
+    //             $html .= $this->context->smarty->fetch($tpl);
+    //         }
+    //     } else {
+    //         $html = $this->context->smarty->fetch($content);
+    //     }
+
+    //     $html = trim($html);
+
+    //     if (in_array($this->controller_type, ['front', 'modulefront']) && !empty($html) && $this->getLayout()) {
+    //         $liveEditContent = '';
+
+    //         $domAvailable = extension_loaded('dom') ? true : false;
+    //         $defer = (bool) Configuration::get('PS_JS_DEFER');
+
+    //         if ($defer && $domAvailable) {
+    //             $html = Media::deferInlineScripts($html);
+    //         }
+    //         $html = trim(str_replace(['</body>', '</html>'], '', $html))."\n";
+
+    //         $this->context->smarty->assign([$jsTag => Media::getJsDef(), 'js_files' => $defer ? array_unique($this->js_files) : [], 'js_inline' => ($defer && $domAvailable) ? Media::getInlineScript() : []]);
+
+    //         $javascript = $this->context->smarty->fetch(_PS_ALL_THEMES_DIR_.'javascript.tpl');
+    //         // $template = ($defer ? $html.$javascript : preg_replace('/(?<!\$)'.$js_tag.'/', $javascript, $html)).$live_edit_content.((!Tools::getIsset($this->ajax) || ! $this->ajax) ? '</body></html>' : '');
+
+    //         if ($defer && (!Tools::getIsset($this->ajax) || !$this->ajax)) {
+    //             $templ = $html.$javascript;
+    //         } else {
+    //             $templ = preg_replace('/(?<!\$)'.$jsTag.'/', $javascript, $html);
+    //         }
+
+    //         $templ .= $liveEditContent.((!Tools::getIsset($this->ajax) || !$this->ajax) ? '</body></html>' : '');
+
+    //         // $templ = ($defer ? $html . $javascript : str_replace($js_tag, $javascript, $html)) . $live_edit_content . ((!Tools::getIsset($this->ajax) || !$this->ajax) ? '</body></html>' : '');
+    //     } else {
+    //         $templ = $html;
+    //     }
+
+
+    //     //merge two arrays 1- static params to be removed and 2 - dynamic ones from the config.
+    //     $ignoreParams1 = ['refresh_cache', 'no_cache'];
+    //     $ignoreParams = Configuration::get('TB_PAGE_CACHE_IGNOREPARAMS');
+    //     $ignoreParams = explode(',', $ignoreParams);
+    //     $ignoreParams = array_merge($ignoreParams, $ignoreParams1);
+
+    //     list($uri, $queries) = array_pad(explode('?', $_SERVER['REQUEST_URI']), 2, '');
+    //     parse_str($queries, $query);
+    //     foreach ($ignoreParams as $ignoreParam) {
+    //         $ignoreParam = trim($ignoreParam);
+    //         unset($query[$ignoreParam]);
+    //     }
+
+    //     $protocol = (Configuration::get('PS_SSL_ENABLED')) ? 'https://' : 'http://';
+
+
+    //     $queryString = http_build_query($query);
+    //     if ($queryString == '') {
+    //         $url = $protocol.$_SERVER['HTTP_HOST'].$uri;
+    //     } else {
+    //         $url = $protocol.$_SERVER['HTTP_HOST'].$uri.'?'.$queryString;
+    //     }
+
+    //     // Todo check the logged thing
+    //     $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && Tools::strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+    //     $isLogged = Tools::getIsset($this->context->customer) ? $this->context->customer->isLogged() && Configuration::get('TB_PAGE_CACHE_SKIPLOGIN') : false;
+
+    //     if (!Tools::isSubmit('no_cache') && !$isAjax && !$isLogged) {
+    //         $entityType = Dispatcher::getInstance()->getController();
+    //         $cControllers = json_decode(Configuration::get('TB_PAGE_CACHE_CONTROLLERS'));
+    //         if (in_array($entityType, $cControllers) && !Tools::isSubmit('live_edit') && !Tools::isSubmit('live_configurator_token')) {
+    //             $idPage = md5($url);
+    //             $idLanguage = (int) $this->context->language->id;
+    //             if (Tools::getIsset($_SERVER['HTTP_USER_AGENT']) && preg_match('/TB_WARMUP_BOT/', $_SERVER['HTTP_USER_AGENT'])) {
+    //                 $idCurrency = Configuration::get('TB_PAGE_CACHE_WARMUP_CURRENCY');
+    //                 $idCountry = Configuration::get('TB_PAGE_CACHE_WARMUP_COUNTRY');
+    //             } else {
+    //                 $idCurrency = (int) $this->context->currency->id;
+    //                 $idCountry = (int) $this->context->country->id;
+    //             }
+    //             $idShop = (int) $this->context->shop->id;
+    //             $idEntity = (int) Tools::getValue('id_'.$entityType);
+
+    //             $countryCheck = (bool) Configuration::get('TB_PAGE_CACHE_COUNTRY');
+
+    //             $key = md5('pagecache_public_'.$idPage.$idCurrency.$idLanguage.($countryCheck ? $idCountry : '').$idShop);
+
+    //             $cache = Cache::getInstance();
+    //             if (Configuration::get('TB_PAGE_CACHE_GZIP')) {
+    //                 $content = gzdeflate($templ);
+    //             } else {
+    //                 $content = $templ;
+    //             }
+
+    //             $cache->set($key, $content);
+    //             PageCache::cacheKey($key, $idCurrency, $idLanguage, $idCountry, $idShop, $entityType, $idEntity);
+    //         }
+    //     }
+
+    //     echo $templ;
+    // }
+
+
     protected function smartyOutputContent($content)
     {
         if (!Configuration::get('TB_PAGE_CACHE_ENABLED')) {
@@ -734,80 +849,77 @@ class FrontControllerCore extends Controller
             // $template = ($defer ? $html.$javascript : preg_replace('/(?<!\$)'.$js_tag.'/', $javascript, $html)).$live_edit_content.((!Tools::getIsset($this->ajax) || ! $this->ajax) ? '</body></html>' : '');
 
             if ($defer && (!Tools::getIsset($this->ajax) || !$this->ajax)) {
-                $template = $html.$javascript;
+                $templ = $html.$javascript;
             } else {
-                $template = preg_replace('/(?<!\$)'.$jsTag.'/', $javascript, $html);
+                $templ = preg_replace('/(?<!\$)'.$jsTag.'/', $javascript, $html);
             }
 
-            $template .= $liveEditContent.((!Tools::getIsset($this->ajax) || !$this->ajax) ? '</body></html>' : '');
+            $templ .= $liveEditContent.((!Tools::getIsset($this->ajax) || !$this->ajax) ? '</body></html>' : '');
 
-            // $template = ($defer ? $html . $javascript : str_replace($js_tag, $javascript, $html)) . $live_edit_content . ((!Tools::getIsset($this->ajax) || !$this->ajax) ? '</body></html>' : '');
+            // $templ = ($defer ? $html . $javascript : str_replace($js_tag, $javascript, $html)) . $live_edit_content . ((!Tools::getIsset($this->ajax) || !$this->ajax) ? '</body></html>' : '');
         } else {
-            $template = $html;
+            $templ = $html;
         }
 
-        $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && Tools::strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
-        $isLogged = Tools::getIsset($this->context->customer) ? $this->context->customer->isLogged() && Configuration::get('TB_PAGE_CACHE_SKIPLOGIN') : false;
 
-        if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
-            $proto = 'https'.':'.'/'.'/';
-        } else {
-            $proto = 'http'.':'.'/'.'/';
-        }
         //merge two arrays 1- static params to be removed and 2 - dynamic ones from the config.
-        $ignoreParams1 = ['refresh_cache', 'no_cache'];
-        $ignoreParams = Configuration::get('TB_PAGE_CACHE_IGNOREPARAMS');
-        $ignoreParams = explode(',', $ignoreParams);
-        $ignoreParams = array_merge($ignoreParams, $ignoreParams1);
+        $paramsToIgnore = ['refresh_cache', 'no_cache'];
+        $paramsToIgnoreSaved = Configuration::get('TB_PAGE_CACHE_IGNOREPARAMS');
 
-        list($uri, $queries) = array_pad(explode('?', $_SERVER['REQUEST_URI']), 2, '');
-        parse_str($queries, $query);
-        foreach ($ignoreParams as $ignoreParam) {
-            $ignoreParam = trim($ignoreParam);
-            unset($query[$ignoreParam]);
+        if($paramsToIgnoreSaved)
+            $paramsToIgnoreSaved = explode(',', $paramsToIgnoreSaved);
+        if(is_array($paramsToIgnoreSaved))
+            $paramsToIgnore = array_merge($paramsToIgnore, $paramsToIgnoreSaved);
+        
+        $url = explode('?', $_SERVER['REQUEST_URI']);
+        $uri = $url[0];
+        $queryString = $url[1];
+        parse_str($queryString, $queryStringParams);
+
+        foreach ($paramsToIgnore as $param) {
+            if(isset($queryStringParams[$param]))
+                unset($queryStringParams[$param]);
         }
 
-        $queryString = http_build_query($query);
+        $protocol = Configuration::get('PS_SSL_ENABLED') ? 'https://' : 'http://';
+
+        $newQueryString = http_build_query($queryStringParams);
+
         if ($queryString == '') {
-            $url = $proto.$_SERVER['HTTP_HOST'].$uri;
+            $newUrl = $protocol.$_SERVER['HTTP_HOST'].$uri;
         } else {
-            $url = $proto.$_SERVER['HTTP_HOST'].$uri.'?'.$queryString;
+            $newUrl = $protocol.$_SERVER['HTTP_HOST'].$uri.'?'.$newQueryString;
         }
 
-        if (!Tools::isSubmit('no_cache') && !$isAjax && !$isLogged) {
+        $ajaxCalling = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && Tools::strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+
+        if (!Tools::getValue('no_cache') && !$ajaxCalling)
+        {
             $entityType = Dispatcher::getInstance()->getController();
-            $cControllers = json_decode(Configuration::get('TB_PAGE_CACHE_CONTROLLERS'));
-            if (in_array($entityType, $cControllers) && !Tools::isSubmit('live_edit') && !Tools::isSubmit('live_configurator_token')) {
-                $idPage = md5($url);
-                $idLanguage = (int) $this->context->language->id;
-                if (Tools::getIsset($_SERVER['HTTP_USER_AGENT']) && preg_match('/TB_WARMUP_BOT/', $_SERVER['HTTP_USER_AGENT'])) {
-                    $idCurrency = Configuration::get('TB_PAGE_CACHE_WARMUP_CURRENCY');
-                    $idCountry = Configuration::get('TB_PAGE_CACHE_WARMUP_COUNTRY');
-                } else {
-                    $idCurrency = (int) $this->context->currency->id;
-                    $idCountry = (int) $this->context->country->id;
-                }
-                $idShop = (int) $this->context->shop->id;
+            $cachedControllers = json_decode(Configuration::get('TB_PAGE_CACHE_CONTROLLERS'));
+            if(in_array($entityType, $cachedControllers) && !Tools::isSubmit('live_edit') && !Tools::isSubmit('live_configurator_token'))
+            {
+                $idPage = Tools::encrypt($newUrl);
+                $idCurrency = (int) $this->context->currency->id;
+                $idLang = (int) $this->context->language->id;
+                $idCountry = (int) $this->context->country->id;
+                $idShop = (int) $this->context->shop->id;                
+                
+                $pageKey = Tools::encrypt('pagecache_public_'.$idPage.$idCurrency.$idLang.$idCountry.$idShop);
+
                 $idEntity = (int) Tools::getValue('id_'.$entityType);
 
-                $countryCheck = (bool) Configuration::get('TB_PAGE_CACHE_COUNTRY');
-
-                $key = md5('pagecache_public_'.$idPage.$idCurrency.$idLanguage.($countryCheck ? $idCountry : '').$idShop);
-
                 $cache = Cache::getInstance();
-                if (Configuration::get('TB_PAGE_CACHE_GZIP')) {
-                    $content = gzdeflate($template);
-                } else {
-                    $content = $template;
-                }
+                $cache->set($pageKey, $templ);
 
-                $cache->set($key, $content);
-                PageCache::cacheKey($key, $idCurrency, $idLanguage, $idCountry, $idShop, $entityType, $idEntity);
+                PageCache::cacheKey($pageKey, $idCurrency, $idLang, $idCountry, $idShop, $entityType, $idEntity);
+
             }
         }
 
-        echo $template;
-    }
+        echo $templ;
+
+    }    
 
     /**
      * Compiles and outputs page footer section.
