@@ -128,15 +128,93 @@ class AdminShopUrlControllerCore extends AdminController
         $this->addRowAction('edit');
         $this->addRowAction('delete');
 
-        $this->_select = 's.name AS shop_name, CONCAT(\'http://\', a.domain, a.physical_uri, a.virtual_uri) AS url';
-        $this->_join = 'LEFT JOIN `'._DB_PREFIX_.'shop` s ON (s.id_shop = a.id_shop)';
-
-        if ($idShop = (int) Tools::getValue('id_shop')) {
-            $this->_where = 'AND a.id_shop = '.$idShop;
-        }
-        $this->_use_found_rows = false;
-
         return parent::renderList();
+    }
+
+    /**
+     * @param int         $idLang
+     * @param string|null $orderBy
+     * @param string|null $orderWay
+     * @param int         $start
+     * @param int|null    $limit
+     * @param int|bool    $idLangShop
+     *
+     * @return void
+     *
+     * @since 1.1.0
+     */
+    public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
+    {
+        global $shopUrlConfig;
+
+        $this->dispatchFieldsListingModifierEvent();
+
+        // Start ordering section. Copied from AdminController:getList().
+        // @TODO: such stuff should be available as a seperate method in AdminController.
+        $prefix = str_replace(['admin', 'controller'], '', Tools::strtolower(get_class($this)));
+        if ($this->context->cookie->{$prefix.$this->list_id.'Orderby'}) {
+            $orderBy = $this->context->cookie->{$prefix.$this->list_id.'Orderby'};
+        } elseif ($this->_orderBy) {
+            $orderBy = $this->_orderBy;
+        } else {
+            $orderBy = $this->_defaultOrderBy;
+        }
+
+        if ($this->context->cookie->{$prefix.$this->list_id.'Orderway'}) {
+            $orderWay = $this->context->cookie->{$prefix.$this->list_id.'Orderway'};
+        } elseif ($this->_orderWay) {
+            $orderWay = $this->_orderWay;
+        } else {
+            $orderWay = $this->_defaultOrderWay;
+        }
+
+        if (!isset($this->fields_list[$orderBy]['order_key']) && isset($this->fields_list[$orderBy]['filter_key'])) {
+            $this->fields_list[$orderBy]['order_key'] = $this->fields_list[$orderBy]['filter_key'];
+        }
+        // End ordering section.
+
+        // Get a model copy.
+        $this->_list = $shopUrlConfig;
+
+        // While we can get the main list from the model (ShopUrl) we need a
+        // DB query anyways, because shop names aren't stored in the model.
+        $sql = 'SELECT id_shop, name
+                FROM '._DB_PREFIX_.'shop';
+        $sqlResult = Db::getInstance()->executeS($sql);
+
+        $idShop = Tools::getValue('id_shop');
+        foreach ($this->_list as $idShopUrl => &$row) {
+            // Remove foreign shops.
+            if ($idShop && $row['id_shop'] != $idShop) {
+                unset($this->_list[$idShopUrl]);
+                continue;
+            }
+
+            // Add computed fields.
+            $row['id_shop_url'] = $idShopUrl;
+            $row['url'] = 'http://'.$row['domain'].$row['physical_uri'].$row['virtual_uri'];
+            $row['shop_name'] = '???'; // fallback
+            foreach ($sqlResult as $shop) {
+                if ($shop['id_shop'] == $row['id_shop']) {
+                    $row['shop_name'] = $shop['name'];
+                    break;
+                }
+            }
+        }
+        unset($row);
+        $this->_listTotal = count($this->_list);
+
+        // Sorting/Ordering.
+        $this->_orderBy = $orderBy;
+        $this->_orderWay = strtoupper($orderWay);
+        usort($this->_list, array('self', 'compareByArrayValues'));
+
+        Hook::exec(
+            'action'.$this->controller_name.'ListingResultsModifier', [
+                'list'       => &$this->_list,
+                'list_total' => &$this->_listTotal,
+            ]
+        );
     }
 
     /**
