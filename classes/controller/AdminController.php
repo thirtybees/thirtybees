@@ -36,6 +36,11 @@
  */
 class AdminControllerCore extends Controller
 {
+    const LEVEL_VIEW = 1;
+    const LEVEL_EDIT = 2;
+    const LEVEL_ADD = 3;
+    const LEVEL_DELETE = 4;
+
     // @codingStandardsIgnoreStart
     /** @var string */
     public static $currentIndex;
@@ -721,6 +726,26 @@ class AdminControllerCore extends Controller
     {
         if (!isset($this->list_id)) {
             $this->list_id = $this->table;
+        }
+    }
+
+    /**
+     * Return the type of authorization on permissions page and option.
+     *
+     * @return int(integer)
+     */
+    public function authorizationLevel()
+    {
+        if ($this->tabAccess['delete']) {
+            return AdminController::LEVEL_DELETE;
+        } elseif ($this->tabAccess['add']) {
+            return AdminController::LEVEL_ADD;
+        } elseif ($this->tabAccess['edit']) {
+            return AdminController::LEVEL_EDIT;
+        } elseif ($this->tabAccess['view']) {
+            return AdminController::LEVEL_VIEW;
+        } else {
+            return 0;
         }
     }
 
