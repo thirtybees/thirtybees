@@ -4659,4 +4659,50 @@ class AdminControllerCore extends Controller
 
         return $result;
     }
+
+    /**
+     * Compare by values of a key inside a pair of arrays. Try hard to sort
+     * numbers as numbers and strings as strings.
+     *
+     * Can be used for usort(). The key is given in $this->_orderBy. Sort
+     * direction is in $this->_orderWay as 'ASC' or 'DESC', uppercase.
+     *
+     * @param array $a
+     * @param array $b
+     *
+     * @return -1, 0, 1
+     *
+     * @since   1.1.0
+     * @version 1.1.0 Initial version
+     */
+    protected function compareByArrayValues($a, $b)
+    {
+        $a = $a[$this->_orderBy];
+        $b = $b[$this->_orderBy];
+
+        // Depending on the origin of the arrays, numbers can be either actual
+        // numbers or strings with digits inside. Sometimes even mixed. Let's
+        // try our best to compare them properly, e.g. 2 > '1'.
+
+        if ((is_string($a) && (int)$a === 0) ||
+            (is_string($b) && (int)$b === 0)) {
+            // String comparison.
+            if ($this->_orderWay === 'ASC') {
+                return strcmp($b, $a);
+            } else {
+                return strcmp($a, $b);
+            }
+        }
+
+        // Number comparison.
+        if ($a == $b) {  // Intentionally not '===' here.
+            return 0;
+        }
+        if ($this->_orderWay === 'ASC') {
+            return ($a < $b) ? 1 : -1;
+        } else {
+            return ($a > $b) ? 1 : -1;
+        }
+    }
+
 }
