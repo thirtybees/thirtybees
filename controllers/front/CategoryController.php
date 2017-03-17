@@ -21,33 +21,40 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class CategoryControllerCore
+ *
+ * @since 1.0.0
+ */
 class CategoryControllerCore extends FrontController
 {
+    // @codingStandardsIgnoreStart
     /** string Internal controller name */
     public $php_self = 'category';
-
-    /** @var Category Current category object */
-    protected $category;
-
     /** @var bool If set to false, customer cannot view the current category. */
     public $customer_access = true;
-
+    /** @var Category Current category object */
+    protected $category;
     /** @var int Number of products in the current page. */
     protected $nbProducts;
-
     /** @var array Products to be displayed in the current page . */
     protected $cat_products;
+    // @codingStandardsIgnoreEnd
 
     /**
-     * Sets default medias for this controller
+     * Sets default media for this controller
+     *
+     * @return void
+     *
+     * @since 1.0.0
      */
     public function setMedia()
     {
@@ -57,9 +64,9 @@ class CategoryControllerCore extends FrontController
             //TODO : check why cluetip css is include without js file
             $this->addCSS(
                 [
-                _THEME_CSS_DIR_.'scenes.css'       => 'all',
-                _THEME_CSS_DIR_.'category.css'     => 'all',
-                _THEME_CSS_DIR_.'product_list.css' => 'all',
+                    _THEME_CSS_DIR_.'scenes.css'       => 'all',
+                    _THEME_CSS_DIR_.'category.css'     => 'all',
+                    _THEME_CSS_DIR_.'product_list.css' => 'all',
                 ]
             );
         }
@@ -76,9 +83,11 @@ class CategoryControllerCore extends FrontController
     /**
      * Redirects to canonical or "Not Found" URL
      *
-     * @param string $canonical_url
+     * @param string $canonicalUrl
+     *
+     * @since 1.0.0
      */
-    public function canonicalRedirection($canonical_url = '')
+    public function canonicalRedirection($canonicalUrl = '')
     {
         if (Tools::getValue('live_edit')) {
             return;
@@ -97,19 +106,21 @@ class CategoryControllerCore extends FrontController
     /**
      * Initializes controller
      *
-     * @see FrontController::init()
+     * @see   FrontController::init()
      * @throws PrestaShopException
+     *
+     * @since 1.0.0
      */
     public function init()
     {
         // Get category ID
-        $id_category = (int)Tools::getValue('id_category');
-        if (!$id_category || !Validate::isUnsignedId($id_category)) {
+        $idCategory = (int) Tools::getValue('id_category');
+        if (!$idCategory || !Validate::isUnsignedId($idCategory)) {
             $this->errors[] = Tools::displayError('Missing category ID');
         }
 
         // Instantiate category
-        $this->category = new Category($id_category, $this->context->language->id);
+        $this->category = new Category($idCategory, $this->context->language->id);
 
         parent::init();
 
@@ -130,6 +141,8 @@ class CategoryControllerCore extends FrontController
 
     /**
      * Initializes page content variables
+     *
+     * @since 1.0.0
      */
     public function initContent()
     {
@@ -142,7 +155,7 @@ class CategoryControllerCore extends FrontController
         }
 
         if (isset($this->context->cookie->id_compare)) {
-            $this->context->smarty->assign('compareProducts', CompareProduct::getCompareProducts((int)$this->context->cookie->id_compare));
+            $this->context->smarty->assign('compareProducts', CompareProduct::getCompareProducts((int) $this->context->cookie->id_compare));
         }
 
         // Product sort must be called before assignProductList()
@@ -154,22 +167,22 @@ class CategoryControllerCore extends FrontController
 
         $this->context->smarty->assign(
             [
-            'category'             => $this->category,
-            'description_short'    => Tools::truncateString($this->category->description, 350),
-            'products'             => (isset($this->cat_products) && $this->cat_products) ? $this->cat_products : null,
-            'id_category'          => (int)$this->category->id,
-            'id_category_parent'   => (int)$this->category->id_parent,
-            'return_category_name' => Tools::safeOutput($this->category->name),
-            'path'                 => Tools::getPath($this->category->id),
-            'add_prod_display'     => Configuration::get('PS_ATTRIBUTE_CATEGORY_DISPLAY'),
-            'categorySize'         => Image::getSize(ImageType::getFormatedName('category')),
-            'mediumSize'           => Image::getSize(ImageType::getFormatedName('medium')),
-            'thumbSceneSize'       => Image::getSize(ImageType::getFormatedName('m_scene')),
-            'homeSize'             => Image::getSize(ImageType::getFormatedName('home')),
-            'allow_oosp'           => (int)Configuration::get('PS_ORDER_OUT_OF_STOCK'),
-            'comparator_max_item'  => (int)Configuration::get('PS_COMPARATOR_MAX_ITEM'),
-            'suppliers'            => Supplier::getSuppliers(),
-            'body_classes'         => [$this->php_self.'-'.$this->category->id, $this->php_self.'-'.$this->category->link_rewrite]
+                'category'             => $this->category,
+                'description_short'    => Tools::truncateString($this->category->description, 350),
+                'products'             => (isset($this->cat_products) && $this->cat_products) ? $this->cat_products : null,
+                'id_category'          => (int) $this->category->id,
+                'id_category_parent'   => (int) $this->category->id_parent,
+                'return_category_name' => Tools::safeOutput($this->category->name),
+                'path'                 => Tools::getPath($this->category->id),
+                'add_prod_display'     => Configuration::get('PS_ATTRIBUTE_CATEGORY_DISPLAY'),
+                'categorySize'         => Image::getSize(ImageType::getFormatedName('category')),
+                'mediumSize'           => Image::getSize(ImageType::getFormatedName('medium')),
+                'thumbSceneSize'       => Image::getSize(ImageType::getFormatedName('m_scene')),
+                'homeSize'             => Image::getSize(ImageType::getFormatedName('home')),
+                'allow_oosp'           => (int) Configuration::get('PS_ORDER_OUT_OF_STOCK'),
+                'comparator_max_item'  => (int) Configuration::get('PS_COMPARATOR_MAX_ITEM'),
+                'suppliers'            => Supplier::getSuppliers(),
+                'body_classes'         => [$this->php_self.'-'.$this->category->id, $this->php_self.'-'.$this->category->link_rewrite],
             ]
         );
     }
@@ -184,19 +197,19 @@ class CategoryControllerCore extends FrontController
         $this->context->smarty->assign('scenes', $scenes);
 
         // Scenes images formats
-        if ($scenes && ($scene_image_types = ImageType::getImagesTypes('scenes'))) {
-            foreach ($scene_image_types as $scene_image_type) {
-                if ($scene_image_type['name'] == ImageType::getFormatedName('m_scene')) {
-                    $thumb_scene_image_type = $scene_image_type;
-                } elseif ($scene_image_type['name'] == ImageType::getFormatedName('scene')) {
-                    $large_scene_image_type = $scene_image_type;
+        if ($scenes && ($sceneImageTypes = ImageType::getImagesTypes('scenes'))) {
+            foreach ($sceneImageTypes as $sceneImageType) {
+                if ($sceneImageType['name'] == ImageType::getFormatedName('m_scene')) {
+                    $thumbSceneImageType = $sceneImageType;
+                } elseif ($sceneImageType['name'] == ImageType::getFormatedName('scene')) {
+                    $largeSceneImageType = $sceneImageType;
                 }
             }
 
             $this->context->smarty->assign(
                 [
-                'thumbSceneImageType' => isset($thumb_scene_image_type) ? $thumb_scene_image_type : null,
-                'largeSceneImageType' => isset($large_scene_image_type) ? $large_scene_image_type : null,
+                    'thumbSceneImageType' => isset($thumbSceneImageType) ? $thumbSceneImageType : null,
+                    'largeSceneImageType' => isset($largeSceneImageType) ? $largeSceneImageType : null,
                 ]
             );
         }
@@ -204,15 +217,19 @@ class CategoryControllerCore extends FrontController
 
     /**
      * Assigns subcategory templates variables
+     *
+     * @return void
+     *
+     * @since 1.0.0
      */
     protected function assignSubcategories()
     {
-        if ($sub_categories = $this->category->getSubCategories($this->context->language->id)) {
+        if ($subCategories = $this->category->getSubCategories($this->context->language->id)) {
             $this->context->smarty->assign(
                 [
-                'subcategories'          => $sub_categories,
-                'subcategories_nb_total' => count($sub_categories),
-                'subcategories_nb_half'  => ceil(count($sub_categories) / 2)
+                    'subcategories'          => $subCategories,
+                    'subcategories_nb_total' => count($subCategories),
+                    'subcategories_nb_half'  => ceil(count($subCategories) / 2),
                 ]
             );
         }
@@ -220,36 +237,43 @@ class CategoryControllerCore extends FrontController
 
     /**
      * Assigns product list template variables
+     *
+     * @return void
+     *
+     * @since 1.0.0
      */
     public function assignProductList()
     {
-        $hook_executed = false;
-        Hook::exec('actionProductListOverride', [
-            'nbProducts'   => &$this->nbProducts,
-            'catProducts'  => &$this->cat_products,
-            'hookExecuted' => &$hook_executed,
-        ]
+        $hookExecuted = false;
+        Hook::exec(
+            'actionProductListOverride',
+            [
+                'nbProducts'   => &$this->nbProducts,
+                'catProducts'  => &$this->cat_products,
+                'hookExecuted' => &$hookExecuted,
+            ]
         );
 
         // The hook was not executed, standard working
-        if (!$hook_executed) {
+        if (!$hookExecuted) {
             $this->context->smarty->assign('categoryNameComplement', '');
             $this->nbProducts = $this->category->getProducts(null, null, null, $this->orderBy, $this->orderWay, true);
-            $this->pagination((int)$this->nbProducts); // Pagination must be call after "getProducts"
-            $this->cat_products = $this->category->getProducts($this->context->language->id, (int)$this->p, (int)$this->n, $this->orderBy, $this->orderWay);
-        }
-        // Hook executed, use the override
+            $this->pagination((int) $this->nbProducts); // Pagination must be call after "getProducts"
+            $this->cat_products = $this->category->getProducts($this->context->language->id, (int) $this->p, (int) $this->n, $this->orderBy, $this->orderWay);
+        } // Hook executed, use the override
         else {
             // Pagination must be call after "getProducts"
             $this->pagination($this->nbProducts);
         }
-        
+
         $this->addColorsToProductList($this->cat_products);
 
-        Hook::exec('actionProductListModifier', [
-            'nb_products'  => &$this->nbProducts,
-            'cat_products' => &$this->cat_products,
-        ]
+        Hook::exec(
+            'actionProductListModifier',
+            [
+                'nb_products'  => &$this->nbProducts,
+                'cat_products' => &$this->cat_products,
+            ]
         );
 
         foreach ($this->cat_products as &$product) {
@@ -257,7 +281,7 @@ class CategoryControllerCore extends FrontController
                 $product['minimal_quantity'] = $product['product_attribute_minimal_quantity'];
             }
         }
-        
+
         $this->context->smarty->assign('nb_products', $this->nbProducts);
     }
 
@@ -265,6 +289,8 @@ class CategoryControllerCore extends FrontController
      * Returns an instance of the current category
      *
      * @return Category
+     *
+     * @since 1.0.0
      */
     public function getCategory()
     {
