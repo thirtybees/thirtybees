@@ -55,7 +55,7 @@ class AdminCartsControllerCore extends AdminController
         $this->_orderWay = 'DESC';
 
         $this->_select = 'CONCAT(LEFT(c.`firstname`, 1), \'. \', c.`lastname`) `customer`, a.id_cart total, ca.name carrier,
-		IF (IFNULL(o.id_order, \''.$this->l('Non ordered').'\') = \''.$this->l('Non ordered').'\', IF(TIME_TO_SEC(TIMEDIFF(\''.pSQL(date('Y-m-d H:i:00', time())).'\', a.`date_add`)) > 86400, \''.$this->l('Abandoned cart').'\', \''.$this->l('Non ordered').'\'), o.id_order) AS status, IF(o.id_order, 1, 0) badge_success, IF(o.id_order, 0, 1) badge_danger, IF(co.id_guest, 1, 0) id_guest';
+		IF (IFNULL(o.id_order, \''.$this->l('Non ordered').'\') = \''.$this->l('Non ordered').'\', IF(TIME_TO_SEC(TIMEDIFF(\''.pSQL(date('Y-m-d H:i:00', time())).'\', a.`date_add`)) > 86400, \''.$this->l('Abandoned cart').'\', \''.$this->l('Non ordered').'\'), o.id_order) AS status, a.`date_upd`, IF(o.id_order, 1, 0) badge_success, IF(o.id_order, 0, 1) badge_danger, IF(co.id_guest, 1, 0) id_guest';
         $this->_join = 'LEFT JOIN '._DB_PREFIX_.'customer c ON (c.id_customer = a.id_customer)
 		LEFT JOIN '._DB_PREFIX_.'currency cu ON (cu.id_currency = a.id_currency)
 		LEFT JOIN '._DB_PREFIX_.'carrier ca ON (ca.id_carrier = a.id_carrier)
@@ -99,11 +99,18 @@ class AdminCartsControllerCore extends AdminController
                 'filter_key' => 'ca!name',
             ],
             'date_add' => [
-                'title'      => $this->l('Date'),
+                'title'      => $this->l('Date created'),
                 'align'      => 'text-left',
                 'type'       => 'datetime',
                 'class'      => 'fixed-width-lg',
                 'filter_key' => 'a!date_add',
+            ],
+            'date_upd' => [
+                'title'      => $this->l('Date modified'),
+                'align'      => 'text-left',
+                'type'       => 'datetime',
+                'class'      => 'fixed-width-lg',
+                'filter_key' => 'a!date_upd',
             ],
             'id_guest' => [
                 'title'        => $this->l('Online'),
