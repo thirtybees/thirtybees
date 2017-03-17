@@ -534,7 +534,7 @@ class MailCore extends ObjectModel
     }
 
     /**
-     * @param $idMail Mail ID
+     * @param int $idMail Mail ID
      *
      * @return bool Whether removal succeeded
      *
