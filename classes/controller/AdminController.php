@@ -935,6 +935,7 @@ class AdminControllerCore extends Controller
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @version 1.1.0 Seperated ordering computation out to ::computeListOrdering.
      */
     public function getList(
         $idLang,
@@ -963,26 +964,8 @@ class AdminControllerCore extends Controller
         if (!Validate::isTableOrIdentifier($this->table)) {
             throw new PrestaShopException(sprintf('Table name %s is invalid:', $this->table));
         }
-        $prefix = str_replace(['admin', 'controller'], '', Tools::strtolower(get_class($this)));
-        if (empty($orderBy)) {
-            if ($this->context->cookie->{$prefix.$this->list_id.'Orderby'}) {
-                $orderBy = $this->context->cookie->{$prefix.$this->list_id.'Orderby'};
-            } elseif ($this->_orderBy) {
-                $orderBy = $this->_orderBy;
-            } else {
-                $orderBy = $this->_defaultOrderBy;
-            }
-        }
 
-        if (empty($orderWay)) {
-            if ($this->context->cookie->{$prefix.$this->list_id.'Orderway'}) {
-                $orderWay = $this->context->cookie->{$prefix.$this->list_id.'Orderway'};
-            } elseif ($this->_orderWay) {
-                $orderWay = $this->_orderWay;
-            } else {
-                $orderWay = $this->_defaultOrderWay;
-            }
-        }
+        $this->computeListOrdering($orderBy, $orderWay);
 
         $limit = (int) Tools::getValue($this->list_id.'_pagination', $limit);
         if (in_array($limit, $this->_pagination) && $limit != $this->_default_pagination) {
@@ -992,13 +975,14 @@ class AdminControllerCore extends Controller
         }
 
         /* Check params validity */
-        if (!Validate::isOrderBy($orderBy) || !Validate::isOrderWay($orderWay)
-            || !is_numeric($start) || !is_numeric($limit)
+        if (!is_numeric($start) || !is_numeric($limit)
             || !Validate::isUnsignedId($idLang)
         ) {
             throw new PrestaShopException('get list params is not valid');
         }
 
+        /* Get SQL clause for ordering. */
+        $orderBy = $this->_orderBy;
         if (!isset($this->fields_list[$orderBy]['order_key']) && isset($this->fields_list[$orderBy]['filter_key'])) {
             $this->fields_list[$orderBy]['order_key'] = $this->fields_list[$orderBy]['filter_key'];
         }
@@ -1024,7 +1008,6 @@ class AdminControllerCore extends Controller
 
         /* Cache */
         $this->_lang = (int) $idLang;
-        $this->_orderBy = $orderBy;
 
         if (preg_match('/[.!]/', $orderBy)) {
             $orderBySplit = preg_split('/[.!]/', $orderBy);
@@ -1032,8 +1015,6 @@ class AdminControllerCore extends Controller
         } elseif ($orderBy) {
             $orderBy = '`'.bqSQL($orderBy).'`';
         }
-
-        $this->_orderWay = Tools::strtoupper($orderWay);
 
         /* SQL table : orders, but class name is Order */
         $sqlTable = $this->table == 'order' ? 'orders' : $this->table;
@@ -1123,7 +1104,7 @@ class AdminControllerCore extends Controller
                 (isset($this->_filter) ? $this->_filter : '').$whereShop.'
 			'.(isset($this->_group) ? $this->_group.' ' : '').'
 			'.$havingClause;
-            $sqlOrderBy = ' ORDER BY '.((str_replace('`', '', $orderBy) == $this->identifier) ? 'a.' : '').$orderBy.' '.pSQL($orderWay).
+            $sqlOrderBy = ' ORDER BY '.((str_replace('`', '', $orderBy) == $this->identifier) ? 'a.' : '').$orderBy.' '.pSQL($this->_orderWay).
                 ($this->_tmpTableFilter ? ') tmpTable WHERE 1'.$this->_tmpTableFilter : '');
             $sqlLimit = ' '.(($useLimit === true) ? ' LIMIT '.(int) $start.', '.(int) $limit : '');
 
@@ -1164,6 +1145,51 @@ class AdminControllerCore extends Controller
                 'list_total' => &$this->_listTotal,
             ]
         );
+    }
+
+    /**
+     * Compute ordering of a list and set the appropriate class properties
+     * for later usage.
+     *
+     * @param string|null $orderBy  ORDER BY clause
+     * @param string|null $orderWay Order way (ASC, DESC)
+     *
+     * @throws \PrestaShopExceptionCore
+     *
+     * @since   1.1.0
+     * @version 1.1.0 Initial version, seperated out from ::getList().
+     */
+    protected function computeListOrdering($orderBy = null, $orderWay = null)
+    {
+        $prefix = str_replace(['admin', 'controller'], '', Tools::strtolower(get_class($this)));
+
+        if (empty($orderBy)) {
+            if ($this->context->cookie->{$prefix.$this->list_id.'Orderby'}) {
+                $orderBy = $this->context->cookie->{$prefix.$this->list_id.'Orderby'};
+            } elseif ($this->_orderBy) {
+                $orderBy = $this->_orderBy;
+            } else {
+                $orderBy = $this->_defaultOrderBy;
+            }
+        }
+
+        if (empty($orderWay)) {
+            if ($this->context->cookie->{$prefix.$this->list_id.'Orderway'}) {
+                $orderWay = $this->context->cookie->{$prefix.$this->list_id.'Orderway'};
+            } elseif ($this->_orderWay) {
+                $orderWay = $this->_orderWay;
+            } else {
+                $orderWay = $this->_defaultOrderWay;
+            }
+        }
+
+        /* Check params validity */
+        if (!Validate::isOrderBy($orderBy) || !Validate::isOrderWay($orderWay)) {
+            throw new PrestaShopException('List ordering parameters not valid.');
+        }
+
+        $this->_orderBy = $orderBy;
+        $this->_orderWay = Tools::strtoupper($orderWay);
     }
 
     /**
