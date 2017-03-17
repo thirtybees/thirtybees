@@ -21,24 +21,39 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class IdentityControllerCore
+ *
+ * @since 1.0.0
+ */
 class IdentityControllerCore extends FrontController
 {
+    // @codingStandardsIgnoreStart
+    /** @var bool $auth */
     public $auth = true;
+    /** @var string $php_self */
     public $php_self = 'identity';
+    /** @var string $authRedirection */
     public $authRedirection = 'identity';
+    /** @var bool $ssl */
     public $ssl = true;
-
     /** @var Customer */
     protected $customer;
+    // @codingStandardsIgnoreEnd
 
+    /**
+     * Initialize controller
+     *
+     * @since 1.0.0
+     */
     public function init()
     {
         parent::init();
@@ -47,25 +62,24 @@ class IdentityControllerCore extends FrontController
 
     /**
      * Start forms process
+     *
      * @see FrontController::postProcess()
+     *
+     * @since 1.0.0
      */
     public function postProcess()
     {
-        $origin_newsletter = (bool)$this->customer->newsletter;
+        $originNewsletter = (bool) $this->customer->newsletter;
 
         if (Tools::isSubmit('submitIdentity')) {
             $email = trim(Tools::getValue('email'));
 
             if (Tools::getValue('months') != '' && Tools::getValue('days') != '' && Tools::getValue('years') != '') {
-                $this->customer->birthday = (int)Tools::getValue('years').'-'.(int)Tools::getValue('months').'-'.(int)Tools::getValue('days');
+                $this->customer->birthday = (int) Tools::getValue('years').'-'.(int) Tools::getValue('months').'-'.(int) Tools::getValue('days');
             } elseif (Tools::getValue('months') == '' && Tools::getValue('days') == '' && Tools::getValue('years') == '') {
                 $this->customer->birthday = null;
             } else {
                 $this->errors[] = Tools::displayError('Invalid date of birth.');
-            }
-
-            if (Tools::getIsset('old_passwd')) {
-                $old_passwd = trim(Tools::getValue('old_passwd'));
             }
 
             if (!Validate::isEmail($email)) {
@@ -77,14 +91,14 @@ class IdentityControllerCore extends FrontController
             } elseif (Tools::getValue('passwd') != Tools::getValue('confirmation')) {
                 $this->errors[] = Tools::displayError('The password and confirmation do not match.');
             } else {
-                $prev_id_default_group = $this->customer->id_default_group;
+                $prevIdDefaultGroup = $this->customer->id_default_group;
 
                 // Merge all errors of this file and of the Object Model
                 $this->errors = array_merge($this->errors, $this->customer->validateController());
             }
 
             if (!count($this->errors)) {
-                $this->customer->id_default_group = (int)$prev_id_default_group;
+                $this->customer->id_default_group = isset($prevIdDefaultGroup) ? (int) $prevIdDefaultGroup : 3;
                 $this->customer->firstname = Tools::ucwords($this->customer->firstname);
 
                 if (Configuration::get('PS_B2B_ENABLE')) {
@@ -94,11 +108,11 @@ class IdentityControllerCore extends FrontController
 
                 if (!Tools::getIsset('newsletter')) {
                     $this->customer->newsletter = 0;
-                } elseif (!$origin_newsletter && Tools::getIsset('newsletter')) {
-                    if ($module_newsletter = Module::getInstanceByName('blocknewsletter')) {
-                        /** @var Blocknewsletter $module_newsletter */
-                        if ($module_newsletter->active) {
-                            $module_newsletter->confirmSubscription($this->customer->email);
+                } elseif (!$originNewsletter && Tools::getIsset('newsletter')) {
+                    if ($moduleNewsletter = Module::getInstanceByName('blocknewsletter')) {
+                        /** @var Blocknewsletter $moduleNewsletter */
+                        if ($moduleNewsletter->active) {
+                            $moduleNewsletter->confirmSubscription($this->customer->email);
                         }
                     }
                 }
@@ -123,9 +137,13 @@ class IdentityControllerCore extends FrontController
 
         return $this->customer;
     }
+
     /**
      * Assign template vars related to page content
+     *
      * @see FrontController::initContent()
+     *
+     * @since 1.0.0
      */
     public function initContent()
     {
@@ -140,33 +158,40 @@ class IdentityControllerCore extends FrontController
         /* Generate years, months and days */
         $this->context->smarty->assign(
             [
-                'years' => Tools::dateYears(),
-                'sl_year' => $birthday[0],
-                'months' => Tools::dateMonths(),
+                'years'    => Tools::dateYears(),
+                'sl_year'  => $birthday[0],
+                'months'   => Tools::dateMonths(),
                 'sl_month' => $birthday[1],
-                'days' => Tools::dateDays(),
-                'sl_day' => $birthday[2],
-                'errors' => $this->errors,
-                'genders' => Gender::getGenders(),
+                'days'     => Tools::dateDays(),
+                'sl_day'   => $birthday[2],
+                'errors'   => $this->errors,
+                'genders'  => Gender::getGenders(),
             ]
         );
 
         // Call a hook to display more information
         $this->context->smarty->assign(
             [
-            'HOOK_CUSTOMER_IDENTITY_FORM' => Hook::exec('displayCustomerIdentityForm'),
+                'HOOK_CUSTOMER_IDENTITY_FORM' => Hook::exec('displayCustomerIdentityForm'),
             ]
         );
 
         $newsletter = Configuration::get('PS_CUSTOMER_NWSL') || (Module::isInstalled('blocknewsletter') && Module::getInstanceByName('blocknewsletter')->active);
         $this->context->smarty->assign('newsletter', $newsletter);
-        $this->context->smarty->assign('optin', (bool)Configuration::get('PS_CUSTOMER_OPTIN'));
+        $this->context->smarty->assign('optin', (bool) Configuration::get('PS_CUSTOMER_OPTIN'));
 
         $this->context->smarty->assign('field_required', $this->context->customer->validateFieldsRequiredDatabase());
 
         $this->setTemplate(_PS_THEME_DIR_.'identity.tpl');
     }
 
+    /**
+     * Set media
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function setMedia()
     {
         parent::setMedia();
