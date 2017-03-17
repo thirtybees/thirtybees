@@ -37,14 +37,15 @@
 class AuthControllerCore extends FrontController
 {
     // @codingStandardsIgnoreStart
+    /** @var bool $ssl */
     public $ssl = true;
+    /** @var string $php_self */
     public $php_self = 'authentication';
+    /** @var bool $auth */
     public $auth = false;
-
-    /**
-     * @var bool create_account
-     */
+    /** @var bool create_account */
     protected $create_account;
+    /** @var int $id_country */
     protected $id_country;
     // @codingStandardsIgnoreEnd
 
@@ -405,10 +406,11 @@ class AuthControllerCore extends FrontController
      */
     protected function processCustomerNewsletter(&$customer)
     {
-        $blocknewsletter = Module::isInstalled('blocknewsletter') && $moduleNewsletter = Module::getInstanceByName('blocknewsletter');
+        $blocknewsletter = Module::isInstalled('blocknewsletter');
+        $moduleNewsletter = Module::getInstanceByName('blocknewsletter');
         if ($blocknewsletter && $moduleNewsletter->active && !Tools::getValue('newsletter')) {
             require_once _PS_MODULE_DIR_.'blocknewsletter/blocknewsletter.php';
-            if (is_callable([$moduleNewsletter, 'isNewsletterRegistered']) && $moduleNewsletter->isNewsletterRegistered(Tools::getValue('email')) == Blocknewsletter::GUEST_REGISTERED) {
+            if (method_exists($moduleNewsletter, 'isNewsletterRegistered') && $moduleNewsletter->isNewsletterRegistered(Tools::getValue('email')) == Blocknewsletter::GUEST_REGISTERED) {
                 /* Force newsletter registration as customer as already registred as guest */
                 $_POST['newsletter'] = true;
             }
@@ -611,7 +613,7 @@ class AuthControllerCore extends FrontController
                     }
                 }
                 $containsState = isset($country) && is_object($country) ? (int) $country->contains_states: 0;
-                $idState = isset($address) && is_object($address) ? (int) $address->id_state: 0;
+                $idState = isset($address) && is_object($address) ? (int) $address->id_state : 0;
                 if ((Tools::isSubmit('submitAccount') || Tools::isSubmit('submitGuestAccount')) && $containsState && !$idState) {
                     $this->errors[] = Tools::displayError('This country requires you to choose a State.');
                 }
