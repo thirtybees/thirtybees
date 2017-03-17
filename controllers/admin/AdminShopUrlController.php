@@ -150,30 +150,6 @@ class AdminShopUrlControllerCore extends AdminController
 
         $this->dispatchFieldsListingModifierEvent();
 
-        // Start ordering section. Copied from AdminController:getList().
-        // @TODO: such stuff should be available as a seperate method in AdminController.
-        $prefix = str_replace(['admin', 'controller'], '', Tools::strtolower(get_class($this)));
-        if ($this->context->cookie->{$prefix.$this->list_id.'Orderby'}) {
-            $orderBy = $this->context->cookie->{$prefix.$this->list_id.'Orderby'};
-        } elseif ($this->_orderBy) {
-            $orderBy = $this->_orderBy;
-        } else {
-            $orderBy = $this->_defaultOrderBy;
-        }
-
-        if ($this->context->cookie->{$prefix.$this->list_id.'Orderway'}) {
-            $orderWay = $this->context->cookie->{$prefix.$this->list_id.'Orderway'};
-        } elseif ($this->_orderWay) {
-            $orderWay = $this->_orderWay;
-        } else {
-            $orderWay = $this->_defaultOrderWay;
-        }
-
-        if (!isset($this->fields_list[$orderBy]['order_key']) && isset($this->fields_list[$orderBy]['filter_key'])) {
-            $this->fields_list[$orderBy]['order_key'] = $this->fields_list[$orderBy]['filter_key'];
-        }
-        // End ordering section.
-
         // Get a model copy.
         $this->_list = ${$storageName};
 
@@ -206,8 +182,7 @@ class AdminShopUrlControllerCore extends AdminController
         $this->_listTotal = count($this->_list);
 
         // Sorting/Ordering.
-        $this->_orderBy = $orderBy;
-        $this->_orderWay = strtoupper($orderWay);
+        $this->computeListOrdering();
         usort($this->_list, array('self', 'compareByArrayValues'));
 
         Hook::exec(
