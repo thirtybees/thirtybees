@@ -1048,7 +1048,7 @@ class CustomerCore extends ObjectModel
     /**
      * Check if customer password is the right one
      *
-     * @param string $hashedPassword Password
+     * @param string $plaintextOrHashedPassword Password
      *
      * @return bool result
      *
@@ -1058,12 +1058,46 @@ class CustomerCore extends ObjectModel
      * @todo: adapt validation for hashed password
      * @todo: find out why both hashed and plaintext password are passed
      */
-    public static function checkPassword($idCustomer, $hashedPassword)
+    public static function checkPassword($idCustomer, $plaintextOrHashedPassword)
     {
         if (!Validate::isUnsignedId($idCustomer)) {
             die(Tools::displayError());
         }
 
+        if (Validate::isMd5($plaintextOrHashedPassword) || Tools::substr($plaintextOrHashedPassword, 0, 4) === '$2y$') {
+            $hashedPassword = $plaintextOrHashedPassword;
+
+            return self::checkPasswordInDatabase($idCustomer, $hashedPassword);
+        } else {
+            $hashedPassword = Tools::encrypt($plaintextOrHashedPassword);
+
+            if (self::checkPasswordInDatabase($idCustomer, $hashedPassword)) {
+                return true;
+            }
+
+            $sql = new DbQuery();
+            $sql->select('`passwd`');
+            $sql->from(bqSQL(self::$definition['table']));
+            $sql->where('`id_customer` = '.(int) $idCustomer);
+
+            $hashedPassword = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+
+            return password_verify($plaintextOrHashedPassword, $hashedPassword);
+        }
+    }
+
+    /**
+     * Check password validity via DB
+     *
+     * @param $idCustomer
+     * @param $hashedPassword
+     *
+     * @return bool
+     *
+     * @since 1.0.1
+     */
+    protected static function checkPasswordInDatabase($idCustomer, $hashedPassword)
+    {
         $cacheId = 'Customer::checkPassword'.(int) $idCustomer.'-'.$hashedPassword;
         if (!Cache::isStored($cacheId)) {
             $sql = new DbQuery();
