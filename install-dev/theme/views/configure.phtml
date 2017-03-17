@@ -34,7 +34,6 @@ var default_iso = '<?php echo $this->session->shopCountry ?>';
 		<p class="userInfos aligned"><?php echo $this->l('Help us learn more about your store so we can offer you optimal guidance and the best features for your business!') ?></p>
 	</div>
 
-	<?php if (_PS_MODE_DEV_): ?>
 	<!-- Install type (with fixtures or not) -->
 	<div class="field clearfix">
 		<label class="aligned"><?php echo $this->l('Install demo products') ?></label>
@@ -50,9 +49,6 @@ var default_iso = '<?php echo $this->session->shopCountry ?>';
 		</div>
 		<p class="userInfos aligned"><?php echo $this->l('Demo products are a good way to learn how to use thirty bees. You should install them if you are not familiar with it.') ?></p>
 	</div>
-	<?php else: ?>
-		<input value="full" name="dbMode" type="hidden" />
-	<?php endif; ?>
 
 	<!-- Country list -->
 	<div class="field clearfix">
