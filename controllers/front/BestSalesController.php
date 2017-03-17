@@ -21,26 +21,41 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class BestSalesControllerCore
+ *
+ * @since 1.0.0
+ */
 class BestSalesControllerCore extends FrontController
 {
+    // @codingStandardsIgnoreStart
+    /** @var string $php_self */
     public $php_self = 'best-sales';
+    // @codingStandardsIgnoreEnd
 
+    /**
+     * Initialize content
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function initContent()
     {
         if (Configuration::get('PS_DISPLAY_BEST_SELLERS')) {
             parent::initContent();
 
             $this->productSort();
-            $nb_products = (int)ProductSale::getNbSales();
-            $this->pagination($nb_products);
+            $nbProducts = (int) ProductSale::getNbSales();
+            $this->pagination($nbProducts);
 
             if (!Tools::getValue('orderby')) {
                 $this->orderBy = 'sales';
@@ -51,11 +66,11 @@ class BestSalesControllerCore extends FrontController
 
             $this->context->smarty->assign(
                 [
-                'products' => $products,
-                'add_prod_display' => Configuration::get('PS_ATTRIBUTE_CATEGORY_DISPLAY'),
-                'nbProducts' => $nb_products,
-                'homeSize' => Image::getSize(ImageType::getFormatedName('home')),
-                'comparator_max_item' => Configuration::get('PS_COMPARATOR_MAX_ITEM')
+                    'products'            => $products,
+                    'add_prod_display'    => Configuration::get('PS_ATTRIBUTE_CATEGORY_DISPLAY'),
+                    'nbProducts'          => $nbProducts,
+                    'homeSize'            => Image::getSize(ImageType::getFormatedName('home')),
+                    'comparator_max_item' => Configuration::get('PS_COMPARATOR_MAX_ITEM'),
                 ]
             );
 
@@ -65,6 +80,13 @@ class BestSalesControllerCore extends FrontController
         }
     }
 
+    /**
+     * Set media
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function setMedia()
     {
         parent::setMedia();
