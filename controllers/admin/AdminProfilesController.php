@@ -21,19 +21,26 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * @property Profile $object
+ * Class AdminProfilesControllerCore
+ *
+ * @since 1.0.0
  */
 class AdminProfilesControllerCore extends AdminController
 {
+    /**
+     * AdminProfilesControllerCore constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         $this->bootstrap = true;
@@ -48,76 +55,91 @@ class AdminProfilesControllerCore extends AdminController
 
         $this->bulk_actions = [
             'delete' => [
-                'text' => $this->l('Delete selected'),
+                'text'    => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
-                'icon' => 'icon-trash'
-            ]
+                'icon'    => 'icon-trash',
+            ],
         ];
 
         $this->fields_list = [
             'id_profile' => [
-                        'title' => $this->l('ID'),
-                        'align' => 'center',
-                        'class' => 'fixed-width-xs'
+                'title' => $this->l('ID'),
+                'align' => 'center',
+                'class' => 'fixed-width-xs',
             ],
-            'name' => ['title' => $this->l('Name')]
+            'name'       => ['title' => $this->l('Name')],
         ];
-            
+
         $this->identifier = 'id_profile';
 
         $this->fields_form = [
             'legend' => [
                 'title' => $this->l('Profile'),
-                'icon' => 'icon-group'
+                'icon'  => 'icon-group',
             ],
-            'input' => [
+            'input'  => [
                 [
-                    'type' => 'text',
-                    'label' => $this->l('Name'),
-                    'name' => 'name',
+                    'type'     => 'text',
+                    'label'    => $this->l('Name'),
+                    'name'     => 'name',
                     'required' => true,
-                    'lang' => true,
-                ]
+                    'lang'     => true,
+                ],
             ],
             'submit' => [
                 'title' => $this->l('Save'),
-            ]
+            ],
         ];
 
-        $list_profile = [];
-        foreach (Profile::getProfiles($this->context->language->id) as $profil) {
-            $list_profile[] = ['value' => $profil['id_profile'], 'name' => $profil['name']];
+        $listProfile = [];
+        foreach (Profile::getProfiles($this->context->language->id) as $profile) {
+            $listProfile[] = ['value' => $profile['id_profile'], 'name' => $profile['name']];
         }
 
         parent::__construct();
     }
 
+    /**
+     * Post processing
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function postProcess()
     {
         /* PrestaShop demo mode */
         if (_PS_MODE_DEMO_) {
             $this->errors[] = Tools::displayError('This functionality has been disabled.');
+
             return;
         }
         /* PrestaShop demo mode*/
 
-        if (isset($_GET['delete'.$this->table]) && $_GET[$this->identifier] == (int)(_PS_ADMIN_PROFILE_)) {
+        if (isset($_GET['delete'.$this->table]) && $_GET[$this->identifier] == (int) (_PS_ADMIN_PROFILE_)) {
             $this->errors[] = $this->l('For security reasons, you cannot delete the Administrator\'s profile.');
         } else {
             parent::postProcess();
         }
     }
 
+    /**
+     * Initialize page header toolbar
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_profile'] = [
                 'href' => self::$currentIndex.'&addprofile&token='.$this->token,
                 'desc' => $this->l('Add new profile', null, null, false),
-                'icon' => 'process-icon-new'
+                'icon' => 'process-icon-new',
             ];
         }
-        
+
         parent::initPageHeaderToolbar();
     }
 }
