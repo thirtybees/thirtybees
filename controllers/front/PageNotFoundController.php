@@ -21,23 +21,38 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class PageNotFoundControllerCore
+ *
+ * @since 1.0.0
+ */
 class PageNotFoundControllerCore extends FrontController
 {
+    // @codingStandardsIgnoreSta
+    /** @var string $php_self */
     public $php_self = 'pagenotfound';
+    /** @var string $page_name */
     public $page_name = 'pagenotfound';
+    /** @var bool $ssl */
     public $ssl = true;
+    // @codingStandardsIgnoreEnd
 
     /**
      * Assign template vars related to page content
-     * @see FrontController::initContent()
+     *
+     * @see   FrontController::initContent()
+     *
+     * @return void
+     *
+     * @since 1.0.0
      */
     public function initContent()
     {
@@ -58,15 +73,15 @@ class PageNotFoundControllerCore extends FrontController
                     header('Location: '.$this->context->link->getImageLink('', $matches[1], $matches[2]), true, 302);
                     exit;
                 } else {
-                    $image_type = ImageType::getByNameNType($matches[2], 'products');
-                    if ($image_type && count($image_type)) {
+                    $imageType = ImageType::getByNameNType($matches[2], 'products');
+                    if ($imageType && count($imageType)) {
                         $root = _PS_PROD_IMG_DIR_;
                         $folder = Image::getImgFolderStatic($matches[1]);
                         $file = $matches[1];
                         $ext = '.'.$matches[3];
 
                         if (file_exists($root.$folder.$file.$ext)) {
-                            if (ImageManager::resize($root.$folder.$file.$ext, $root.$folder.$file.'-'.$matches[2].$ext, (int)$image_type['width'], (int)$image_type['height'])) {
+                            if (ImageManager::resize($root.$folder.$file.$ext, $root.$folder.$file.'-'.$matches[2].$ext, (int) $imageType['width'], (int) $imageType['height'])) {
                                 header('HTTP/1.1 200 Found');
                                 header('Status: 200 Found');
                                 header('Content-Type: image/jpg');
@@ -77,14 +92,14 @@ class PageNotFoundControllerCore extends FrontController
                     }
                 }
             } elseif (preg_match('#/c/([0-9]+)\-([_a-zA-Z]*)\.(png|jpe?g|gif)$#', $_SERVER['REDIRECT_URL'], $matches)) {
-                $image_type = ImageType::getByNameNType($matches[2], 'categories');
-                if ($image_type && count($image_type)) {
+                $imageType = ImageType::getByNameNType($matches[2], 'categories');
+                if ($imageType && count($imageType)) {
                     $root = _PS_CAT_IMG_DIR_;
                     $file = $matches[1];
                     $ext = '.'.$matches[3];
 
                     if (file_exists($root.$file.$ext)) {
-                        if (ImageManager::resize($root.$file.$ext, $root.$file.'-'.$matches[2].$ext, (int)$image_type['width'], (int)$image_type['height'])) {
+                        if (ImageManager::resize($root.$file.$ext, $root.$file.'-'.$matches[2].$ext, (int) $imageType['width'], (int) $imageType['height'])) {
                             header('HTTP/1.1 200 Found');
                             header('Status: 200 Found');
                             header('Content-Type: image/jpg');
@@ -108,11 +123,23 @@ class PageNotFoundControllerCore extends FrontController
         $this->setTemplate(_PS_THEME_DIR_.'404.tpl');
     }
 
+    /**
+     * Canonical redirection
+     *
+     * @param string $canonicalUrl
+     *
+     * @deprecated 1.0.1
+     */
     protected function canonicalRedirection($canonicalUrl = '')
     {
         // 404 - no need to redirect to the canonical url
     }
 
+    /**
+     * SSL redirection
+     *
+     * @deprecated 1.0.1
+     */
     protected function sslRedirection()
     {
         // 404 - no need to redirect
