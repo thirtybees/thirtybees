@@ -114,6 +114,30 @@ abstract class ObjectFileModelCore extends ObjectModel
     }
 
     /**
+     * Gets one or all record(s).
+     *
+     * @param bool $id Record to get. All records if null.
+     *
+     * @return array Array with record or array with all record arrays.
+     *
+     * @since   1.1.0
+     * @version 1.1.0 Initial version
+     */
+    public static function get($id = null)
+    {
+        $storageName = static::$definition['storage'];
+        global ${$storageName};
+
+        if (!is_array(${$storageName})) {
+            return [];
+        } elseif ($id) {
+            return ${$storageName}[$id];
+        } else {
+            return ${$storageName};
+        }
+    }
+
+    /**
      * Writes the whole objects array as-is to it's file. Should be executed
      * after any permanent change to that array.
      *
