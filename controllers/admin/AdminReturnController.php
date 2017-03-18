@@ -21,19 +21,26 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * @property OrderReturn $object
+ * Class AdminReturnControllerCore
+ *
+ * @since 1.0.0
  */
 class AdminReturnControllerCore extends AdminController
 {
+    /**
+     * AdminReturnControllerCore constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         $this->bootstrap = true;
@@ -43,40 +50,40 @@ class AdminReturnControllerCore extends AdminController
         $this->colorOnBackground = true;
         $this->_select = 'ors.color, orsl.`name`, o.`id_shop`';
         $this->_join = 'LEFT JOIN '._DB_PREFIX_.'order_return_state ors ON (ors.`id_order_return_state` = a.`state`)';
-        $this->_join .= 'LEFT JOIN '._DB_PREFIX_.'order_return_state_lang orsl ON (orsl.`id_order_return_state` = a.`state` AND orsl.`id_lang` = '.(int)$this->context->language->id.')';
+        $this->_join .= 'LEFT JOIN '._DB_PREFIX_.'order_return_state_lang orsl ON (orsl.`id_order_return_state` = a.`state` AND orsl.`id_lang` = '.(int) $this->context->language->id.')';
         $this->_join .= ' LEFT JOIN '._DB_PREFIX_.'orders o ON (o.`id_order` = a.`id_order`)';
 
         $this->fields_list = [
             'id_order_return' => ['title' => $this->l('ID'), 'align' => 'center', 'width' => 25],
-            'id_order' => ['title' => $this->l('Order ID'), 'width' => 100, 'align' => 'center', 'filter_key'=>'a!id_order'],
-            'name' => ['title' => $this->l('Status'),'color' => 'color', 'width' => 'auto', 'align' => 'left'],
-            'date_add' => ['title' => $this->l('Date issued'), 'width' => 150, 'type' => 'date', 'align' => 'right', 'filter_key'=>'a!date_add'],
+            'id_order'        => ['title' => $this->l('Order ID'), 'width' => 100, 'align' => 'center', 'filter_key' => 'a!id_order'],
+            'name'            => ['title' => $this->l('Status'), 'color' => 'color', 'width' => 'auto', 'align' => 'left'],
+            'date_add'        => ['title' => $this->l('Date issued'), 'width' => 150, 'type' => 'date', 'align' => 'right', 'filter_key' => 'a!date_add'],
         ];
 
         $this->fields_options = [
             'general' => [
-                'title' =>    $this->l('Merchandise return (RMA) options'),
-                'fields' =>    [
-                    'PS_ORDER_RETURN' => [
+                'title'  => $this->l('Merchandise return (RMA) options'),
+                'fields' => [
+                    'PS_ORDER_RETURN'         => [
                         'title' => $this->l('Enable returns'),
-                        'desc' => $this->l('Would you like to allow merchandise returns in your shop?'),
-                        'cast' => 'intval', 'type' => 'bool'
+                        'desc'  => $this->l('Would you like to allow merchandise returns in your shop?'),
+                        'cast'  => 'intval', 'type' => 'bool',
                     ],
                     'PS_ORDER_RETURN_NB_DAYS' => [
                         'title' => $this->l('Time limit of validity'),
-                        'desc' => $this->l('How many days after the delivery date does the customer have to return a product?'),
-                        'cast' => 'intval',
-                        'type' => 'text',
-                        'size' => '2'
+                        'desc'  => $this->l('How many days after the delivery date does the customer have to return a product?'),
+                        'cast'  => 'intval',
+                        'type'  => 'text',
+                        'size'  => '2',
                     ],
-                    'PS_RETURN_PREFIX' => [
+                    'PS_RETURN_PREFIX'        => [
                         'title' => $this->l('Returns prefix'),
-                        'desc' => $this->l('Prefix used for return name (e.g. RE00001).'),
-                        'size' => 6,
-                        'type' => 'textLang'
+                        'desc'  => $this->l('Prefix used for return name (e.g. RE00001).'),
+                        'size'  => 6,
+                        'type'  => 'textLang',
                     ],
                 ],
-                'submit' => ['title' => $this->l('Save')]
+                'submit' => ['title' => $this->l('Save')],
             ],
         ];
 
@@ -86,83 +93,90 @@ class AdminReturnControllerCore extends AdminController
         $this->_use_found_rows = false;
     }
 
+    /**
+     * Render form
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
     public function renderForm()
     {
         $this->fields_form = [
             'legend' => [
                 'title' => $this->l('Return Merchandise Authorization (RMA)'),
-                'image' => '../img/admin/return.gif'
+                'image' => '../img/admin/return.gif',
             ],
-            'input' => [
+            'input'  => [
                 [
                     'type' => 'hidden',
-                    'name' => 'id_order'
+                    'name' => 'id_order',
                 ],
                 [
                     'type' => 'hidden',
-                    'name' => 'id_customer'
+                    'name' => 'id_customer',
                 ],
                 [
-                    'type' => 'text_customer',
-                    'label' => $this->l('Customer'),
-                    'name' => '',
-                    'size' => '',
+                    'type'     => 'text_customer',
+                    'label'    => $this->l('Customer'),
+                    'name'     => '',
+                    'size'     => '',
                     'required' => false,
                 ],
                 [
-                    'type' => 'text_order',
-                    'label' => $this->l('Order'),
-                    'name' => '',
-                    'size' => '',
+                    'type'     => 'text_order',
+                    'label'    => $this->l('Order'),
+                    'name'     => '',
+                    'size'     => '',
                     'required' => false,
                 ],
                 [
-                    'type' => 'free',
-                    'label' => $this->l('Customer explanation'),
-                    'name' => 'question',
-                    'size' => '',
+                    'type'     => 'free',
+                    'label'    => $this->l('Customer explanation'),
+                    'name'     => 'question',
+                    'size'     => '',
                     'required' => false,
                 ],
                 [
-                    'type' => 'select',
-                    'label' => $this->l('Status'),
-                    'name' => 'state',
+                    'type'     => 'select',
+                    'label'    => $this->l('Status'),
+                    'name'     => 'state',
                     'required' => false,
-                    'options' => [
+                    'options'  => [
                         'query' => OrderReturnState::getOrderReturnStates($this->context->language->id),
-                        'id' => 'id_order_return_state',
-                        'name' => 'name'
+                        'id'    => 'id_order_return_state',
+                        'name'  => 'name',
                     ],
-                    'desc' => $this->l('Merchandise return (RMA) status.')
+                    'desc'     => $this->l('Merchandise return (RMA) status.'),
                 ],
                 [
-                    'type' => 'list_products',
-                    'label' => $this->l('Products'),
-                    'name' => '',
-                    'size' => '',
+                    'type'     => 'list_products',
+                    'label'    => $this->l('Products'),
+                    'name'     => '',
+                    'size'     => '',
                     'required' => false,
-                    'desc' => $this->l('List of products in return package.')
+                    'desc'     => $this->l('List of products in return package.'),
                 ],
                 [
-                    'type' => 'pdf_order_return',
-                    'label' => $this->l('Return slip'),
-                    'name' => '',
-                    'size' => '',
+                    'type'     => 'pdf_order_return',
+                    'label'    => $this->l('Return slip'),
+                    'name'     => '',
+                    'size'     => '',
                     'required' => false,
-                    'desc' => $this->l('The link is only available after validation and before the parcel gets delivered.')
+                    'desc'     => $this->l('The link is only available after validation and before the parcel gets delivered.'),
                 ],
             ],
             'submit' => [
                 'title' => $this->l('Save'),
-            ]
+            ],
         ];
 
         $order = new Order($this->object->id_order);
-        $quantity_displayed = [];
+        $quantityDisplayed = [];
         // Customized products */
-        if ($returned_customizations = OrderReturn::getReturnedCustomizedProducts((int)($this->object->id_order))) {
-            foreach ($returned_customizations as $returned_customization) {
-                $quantity_displayed[(int)$returned_customization['id_order_detail']] = isset($quantity_displayed[(int)$returned_customization['id_order_detail']]) ? $quantity_displayed[(int)$returned_customization['id_order_detail']] + (int)$returned_customization['product_quantity'] : (int)$returned_customization['product_quantity'];
+        if ($returnedCustomizations = OrderReturn::getReturnedCustomizedProducts((int) ($this->object->id_order))) {
+            foreach ($returnedCustomizations as $returnedCustomization) {
+                $quantityDisplayed[(int) $returnedCustomization['id_order_detail']] = isset($quantityDisplayed[(int) $returnedCustomization['id_order_detail']]) ? $quantityDisplayed[(int) $returnedCustomization['id_order_detail']] + (int) $returnedCustomization['product_quantity'] : (int) $returnedCustomization['product_quantity'];
             }
         }
 
@@ -173,22 +187,29 @@ class AdminReturnControllerCore extends AdminController
         $this->object->question = '<span class="normal-text">'.nl2br($this->object->question).'</span>';
 
         $this->tpl_form_vars = [
-            'customer' => new Customer($this->object->id_customer),
-            'url_customer' => 'index.php?tab=AdminCustomers&id_customer='.(int)$this->object->id_customer.'&viewcustomer&token='.Tools::getAdminToken('AdminCustomers'.(int)(Tab::getIdFromClassName('AdminCustomers')).(int)$this->context->employee->id),
-            'text_order' => sprintf($this->l('Order #%1$d from %2$s'), $order->id, Tools::displayDate($order->date_upd)),
-            'url_order' => 'index.php?tab=AdminOrders&id_order='.(int)$order->id.'&vieworder&token='.Tools::getAdminToken('AdminOrders'.(int)Tab::getIdFromClassName('AdminOrders').(int)$this->context->employee->id),
-            'picture_folder' => _THEME_PROD_PIC_DIR_,
-            'returnedCustomizations' => $returned_customizations,
-            'customizedDatas' => Product::getAllCustomizedDatas((int)($order->id_cart)),
-            'products' => $products,
-            'quantityDisplayed' => $quantity_displayed,
-            'id_order_return' => $this->object->id,
-            'state_order_return' => $this->object->state,
+            'customer'               => new Customer($this->object->id_customer),
+            'url_customer'           => 'index.php?tab=AdminCustomers&id_customer='.(int) $this->object->id_customer.'&viewcustomer&token='.Tools::getAdminToken('AdminCustomers'.(int) (Tab::getIdFromClassName('AdminCustomers')).(int) $this->context->employee->id),
+            'text_order'             => sprintf($this->l('Order #%1$d from %2$s'), $order->id, Tools::displayDate($order->date_upd)),
+            'url_order'              => 'index.php?tab=AdminOrders&id_order='.(int) $order->id.'&vieworder&token='.Tools::getAdminToken('AdminOrders'.(int) Tab::getIdFromClassName('AdminOrders').(int) $this->context->employee->id),
+            'picture_folder'         => _THEME_PROD_PIC_DIR_,
+            'returnedCustomizations' => $returnedCustomizations,
+            'customizedDatas'        => Product::getAllCustomizedDatas((int) ($order->id_cart)),
+            'products'               => $products,
+            'quantityDisplayed'      => $quantityDisplayed,
+            'id_order_return'        => $this->object->id,
+            'state_order_return'     => $this->object->state,
         ];
 
         return parent::renderForm();
     }
 
+    /**
+     * Initialize toolbar
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function initToolbar()
     {
         // If display list, we don't want the "add" button
@@ -196,9 +217,9 @@ class AdminReturnControllerCore extends AdminController
             return;
         } elseif ($this->display != 'options') {
             $this->toolbar_btn['save-and-stay'] = [
-                'short' => 'SaveAndStay',
-                'href' => '#',
-                'desc' => $this->l('Save and stay'),
+                'short'      => 'SaveAndStay',
+                'href'       => '#',
+                'desc'       => $this->l('Save and stay'),
                 'force_desc' => true,
             ];
         }
@@ -206,19 +227,26 @@ class AdminReturnControllerCore extends AdminController
         parent::initToolbar();
     }
 
+    /**
+     * Post processing
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function postProcess()
     {
         $this->context = Context::getContext();
         if (Tools::isSubmit('deleteorder_return_detail')) {
             if ($this->tabAccess['delete'] === '1') {
-                if (($id_order_detail = (int)(Tools::getValue('id_order_detail'))) && Validate::isUnsignedId($id_order_detail)) {
-                    if (($id_order_return = (int)(Tools::getValue('id_order_return'))) && Validate::isUnsignedId($id_order_return)) {
-                        $orderReturn = new OrderReturn($id_order_return);
+                if (($idOrderDetail = (int) (Tools::getValue('id_order_detail'))) && Validate::isUnsignedId($idOrderDetail)) {
+                    if (($idOrderReturn = (int) (Tools::getValue('id_order_return'))) && Validate::isUnsignedId($idOrderReturn)) {
+                        $orderReturn = new OrderReturn($idOrderReturn);
                         if (!Validate::isLoadedObject($orderReturn)) {
                             die(Tools::displayError());
                         }
-                        if ((int)($orderReturn->countProduct()) > 1) {
-                            if (OrderReturn::deleteOrderReturnDetail($id_order_return, $id_order_detail, (int)(Tools::getValue('id_customization', 0)))) {
+                        if ((int) ($orderReturn->countProduct()) > 1) {
+                            if (OrderReturn::deleteOrderReturnDetail($idOrderReturn, $idOrderDetail, (int) (Tools::getValue('id_customization', 0)))) {
                                 Tools::redirectAdmin(self::$currentIndex.'&conf=4token='.$this->token);
                             } else {
                                 $this->errors[] = Tools::displayError('An error occurred while deleting the details of your order return.');
@@ -237,25 +265,37 @@ class AdminReturnControllerCore extends AdminController
             }
         } elseif (Tools::isSubmit('submitAddorder_return') || Tools::isSubmit('submitAddorder_returnAndStay')) {
             if ($this->tabAccess['edit'] === '1') {
-                if (($id_order_return = (int)(Tools::getValue('id_order_return'))) && Validate::isUnsignedId($id_order_return)) {
-                    $orderReturn = new OrderReturn($id_order_return);
+                if (($idOrderReturn = (int) (Tools::getValue('id_order_return'))) && Validate::isUnsignedId($idOrderReturn)) {
+                    $orderReturn = new OrderReturn($idOrderReturn);
                     $order = new Order($orderReturn->id_order);
                     $customer = new Customer($orderReturn->id_customer);
-                    $orderReturn->state = (int)(Tools::getValue('state'));
+                    $orderReturn->state = (int) (Tools::getValue('state'));
                     if ($orderReturn->save()) {
                         $orderReturnState = new OrderReturnState($orderReturn->state);
                         $vars = [
-                        '{lastname}' => $customer->lastname,
-                        '{firstname}' => $customer->firstname,
-                        '{id_order_return}' => $id_order_return,
-                        '{state_order_return}' => (isset($orderReturnState->name[(int)$order->id_lang]) ? $orderReturnState->name[(int)$order->id_lang] : $orderReturnState->name[(int)Configuration::get('PS_LANG_DEFAULT')])
+                            '{lastname}'           => $customer->lastname,
+                            '{firstname}'          => $customer->firstname,
+                            '{id_order_return}'    => $idOrderReturn,
+                            '{state_order_return}' => (isset($orderReturnState->name[(int) $order->id_lang]) ? $orderReturnState->name[(int) $order->id_lang] : $orderReturnState->name[(int) Configuration::get('PS_LANG_DEFAULT')]),
                         ];
-                        Mail::Send((int)$order->id_lang, 'order_return_state', Mail::l('Your order return status has changed', $order->id_lang),
-                            $vars, $customer->email, $customer->firstname.' '.$customer->lastname, null, null, null,
-                            null, _PS_MAIL_DIR_, true, (int)$order->id_shop);
+                        Mail::Send(
+                            (int) $order->id_lang,
+                            'order_return_state',
+                            Mail::l('Your order return status has changed', $order->id_lang),
+                            $vars,
+                            $customer->email,
+                            $customer->firstname.' '.$customer->lastname,
+                            null,
+                            null,
+                            null,
+                            null,
+                            _PS_MAIL_DIR_,
+                            true,
+                            (int) $order->id_shop
+                        );
 
                         if (Tools::isSubmit('submitAddorder_returnAndStay')) {
-                            Tools::redirectAdmin(self::$currentIndex.'&conf=4&token='.$this->token.'&updateorder_return&id_order_return='.(int)$id_order_return);
+                            Tools::redirectAdmin(self::$currentIndex.'&conf=4&token='.$this->token.'&updateorder_return&id_order_return='.(int) $idOrderReturn);
                         } else {
                             Tools::redirectAdmin(self::$currentIndex.'&conf=4&token='.$this->token);
                         }
