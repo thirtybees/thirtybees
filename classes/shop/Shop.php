@@ -226,39 +226,47 @@ class ShopCore extends ObjectModel
      */
     public function setUrl()
     {
-        $cacheId = 'Shop::setUrl_'.(int) $this->id;
-        if (!Cache::isStored($cacheId)) {
-            $row = Db::getInstance()->getRow(
-                '
-			SELECT su.physical_uri, su.virtual_uri, su.domain, su.domain_ssl, t.id_theme, t.name, t.directory
+        static $row = NULL; // Trivial caching.
+
+        if (!$row) {
+            $query = '
+                SELECT t.id_theme, t.name, t.directory
 			FROM '._DB_PREFIX_.'shop s
-			LEFT JOIN '._DB_PREFIX_.'shop_url su ON (s.id_shop = su.id_shop)
 			LEFT JOIN '._DB_PREFIX_.'theme t ON (t.id_theme = s.id_theme)
 			WHERE s.id_shop = '.(int) $this->id.'
-			AND s.active = 1 AND s.deleted = 0 AND su.main = 1'
-            );
-            Cache::store($cacheId, $row);
-        } else {
-            $row = Cache::retrieve($cacheId);
+                AND s.active = 1 AND s.deleted = 0
+            ';
+            $row = Db::getInstance()->getRow($query);
         }
         if (!$row) {
+            return false;
+        }
+
+        // Find matching shop URL.
+        foreach (ShopUrl::get() as $url) {
+            if ($url['id_shop'] == $this->id && $url['main']) {
+                break;
+            }
+            unset($url);
+        }
+        if (!isset($url)) {
             return false;
         }
 
         $this->theme_id = $row['id_theme'];
         $this->theme_name = $row['name'];
         $this->theme_directory = $row['directory'];
-        $this->physical_uri = $row['physical_uri'];
-        $this->virtual_uri = $row['virtual_uri'];
-        if ($row['domain'] === '*automatic*') {
+        $this->physical_uri = $url['physical_uri'];
+        $this->virtual_uri = $url['virtual_uri'];
+        if ($url['domain'] === '*automatic*') {
             $this->domain = $_SERVER['HTTP_HOST'];
         } else {
-            $this->domain = $row['domain'];
+            $this->domain = $url['domain'];
         }
-        if ($row['domain_ssl'] === '*automatic*') {
+        if ($url['domain_ssl'] === '*automatic*') {
             $this->domain_ssl = $_SERVER['HTTP_HOST'];
         } else {
-            $this->domain_ssl = $row['domain'];
+            $this->domain_ssl = $url['domain'];
         }
 
         return true;
