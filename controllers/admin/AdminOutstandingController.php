@@ -21,19 +21,26 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * @property OrderInvoice $object
+ * Class AdminOutstandingControllerCore
+ *
+ * @since 1.0.0
  */
-class AdminOutstandingControllerCore  extends AdminController
+class AdminOutstandingControllerCore extends AdminController
 {
+    /**
+     * AdminOutstandingControllerCore constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         $this->bootstrap = true;
@@ -52,7 +59,7 @@ class AdminOutstandingControllerCore  extends AdminController
         $this->_join = 'LEFT JOIN `'._DB_PREFIX_.'orders` o ON (o.`id_order` = a.`id_order`)
 		LEFT JOIN `'._DB_PREFIX_.'customer` c ON (c.`id_customer` = o.`id_customer`)
 		LEFT JOIN `'._DB_PREFIX_.'risk` r ON (r.`id_risk` = c.`id_risk`)
-		LEFT JOIN `'._DB_PREFIX_.'risk_lang` rl ON (r.`id_risk` = rl.`id_risk` AND rl.`id_lang` = '.(int)$this->context->language->id.')';
+		LEFT JOIN `'._DB_PREFIX_.'risk_lang` rl ON (r.`id_risk` = rl.`id_risk` AND rl.`id_lang` = '.(int) $this->context->language->id.')';
         $this->_where = 'AND number > 0';
         $this->_use_found_rows = false;
 
@@ -63,55 +70,55 @@ class AdminOutstandingControllerCore  extends AdminController
         }
 
         $this->fields_list = [
-            'number' => [
-                'title' => $this->l('Invoice')
+            'number'                   => [
+                'title' => $this->l('Invoice'),
             ],
-            'date_add' => [
-                'title' => $this->l('Date'),
-                'type' => 'date',
-                'align' => 'right',
-                'filter_key' => 'a!date_add'
+            'date_add'                 => [
+                'title'      => $this->l('Date'),
+                'type'       => 'date',
+                'align'      => 'right',
+                'filter_key' => 'a!date_add',
             ],
-            'customer' => [
-                'title' => $this->l('Customer'),
-                'filter_key' => 'customer',
-                'tmpTableFilter' => true
+            'customer'                 => [
+                'title'          => $this->l('Customer'),
+                'filter_key'     => 'customer',
+                'tmpTableFilter' => true,
             ],
-            'company' => [
+            'company'                  => [
                 'title' => $this->l('Company'),
-                'align' => 'center'
-            ],
-            'risk' => [
-                'title' => $this->l('Risk'),
                 'align' => 'center',
-                'orderby' => false,
-                'type' => 'select',
-                'color' => 'color',
-                'list' => $risks,
-                'filter_key' => 'r!id_risk',
-                'filter_type' => 'int'
+            ],
+            'risk'                     => [
+                'title'       => $this->l('Risk'),
+                'align'       => 'center',
+                'orderby'     => false,
+                'type'        => 'select',
+                'color'       => 'color',
+                'list'        => $risks,
+                'filter_key'  => 'r!id_risk',
+                'filter_type' => 'int',
             ],
             'outstanding_allow_amount' => [
-                'title' => $this->l('Outstanding Allowance'),
-                'align' => 'center',
+                'title'  => $this->l('Outstanding Allowance'),
+                'align'  => 'center',
                 'prefix' => '<b>',
                 'suffix' => '</b>',
-                'type' => 'price'
+                'type'   => 'price',
             ],
-            'outstanding' => [
-                'title' => $this->l('Current Outstanding'),
-                'align' => 'center',
+            'outstanding'              => [
+                'title'    => $this->l('Current Outstanding'),
+                'align'    => 'center',
                 'callback' => 'printOutstandingCalculation',
-                'orderby' => false,
-                'search' => false
+                'orderby'  => false,
+                'search'   => false,
             ],
-            'id_invoice' => [
-                'title' => $this->l('Invoice'),
-                'align' => 'center',
+            'id_invoice'               => [
+                'title'    => $this->l('Invoice'),
+                'align'    => 'center',
                 'callback' => 'printPDFIcons',
-                'orderby' => false,
-                'search' => false
-            ]
+                'orderby'  => false,
+                'search'   => false,
+            ],
         ];
 
         parent::__construct();
@@ -119,6 +126,7 @@ class AdminOutstandingControllerCore  extends AdminController
 
     /**
      * Toolbar initialisation
+     *
      * @return bool Force true (Hide New button)
      */
     public function initToolbar()
@@ -128,33 +136,46 @@ class AdminOutstandingControllerCore  extends AdminController
 
     /**
      * Column callback for print PDF incon
-     * @param $id_invoice integer Invoice ID
-     * @param $tr array Row data
+     *
+     * @param int   $idInvoice Invoice ID
+     * @param array $tr        Row data
+     *
      * @return string HTML content
      */
-    public function printPDFIcons($id_invoice, $tr)
+    public function printPDFIcons($idInvoice, $tr)
     {
         $this->context->smarty->assign(
             [
-            'id_invoice' => $id_invoice
+                'id_invoice' => $idInvoice,
             ]
         );
 
         return $this->createTemplate('_print_pdf_icon.tpl')->fetch();
     }
 
-    public function printOutstandingCalculation($id_invoice, $tr)
+    /**
+     * Print outstanding calculation
+     *
+     * @param int   $idInvoice
+     * @param array $tr
+     *
+     * @return string
+     * @throws PrestaShopException
+     *
+     * @since 1.0.0
+     */
+    public function printOutstandingCalculation($idInvoice, $tr)
     {
-        $order_invoice = new OrderInvoice($id_invoice);
-        if (!Validate::isLoadedObject($order_invoice)) {
+        $orderInvoice = new OrderInvoice($idInvoice);
+        if (!Validate::isLoadedObject($orderInvoice)) {
             throw new PrestaShopException('object OrderInvoice cannot be loaded');
         }
-        $order = new Order($order_invoice->id_order);
+        $order = new Order($orderInvoice->id_order);
         if (!Validate::isLoadedObject($order)) {
             throw new PrestaShopException('object Order cannot be loaded');
         }
-        $customer = new Customer((int)$order->id_customer);
-        if (!Validate::isLoadedObject($order_invoice)) {
+        $customer = new Customer((int) $order->id_customer);
+        if (!Validate::isLoadedObject($orderInvoice)) {
             throw new PrestaShopException('object Customer cannot be loaded');
         }
 
@@ -163,15 +184,20 @@ class AdminOutstandingControllerCore  extends AdminController
 
     /**
      * View render
+     *
      * @throws PrestaShopException Invalid objects
+     *
+     * @return string
+     *
+     * @since 1.0.0
      */
     public function renderView()
     {
-        $order_invoice = new OrderInvoice((int)Tools::getValue('id_order_invoice'));
-        if (!Validate::isLoadedObject($order_invoice)) {
+        $orderInvoice = new OrderInvoice((int) Tools::getValue('id_order_invoice'));
+        if (!Validate::isLoadedObject($orderInvoice)) {
             throw new PrestaShopException('object OrderInvoice cannot be loaded');
         }
-        $order = new Order($order_invoice->id_order);
+        $order = new Order($orderInvoice->id_order);
         if (!Validate::isLoadedObject($order)) {
             throw new PrestaShopException('object Order cannot be loaded');
         }
@@ -180,5 +206,7 @@ class AdminOutstandingControllerCore  extends AdminController
         $link .= '&vieworder&id_order='.$order->id;
         $this->redirect_after = $link;
         $this->redirect();
+
+        return '';
     }
 }
