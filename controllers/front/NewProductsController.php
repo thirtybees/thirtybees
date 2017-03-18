@@ -21,18 +21,33 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class NewProductsControllerCore
+ *
+ * @since 1.0.0
+ */
 class NewProductsControllerCore extends FrontController
 {
+    // @codingStandardsIgnoreStart
+    /** @var string $php_self */
     public $php_self = 'new-products';
+    // @codingStandardsIgnoreEnd
 
+    /**
+     * Set media
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function setMedia()
     {
         parent::setMedia();
@@ -41,7 +56,12 @@ class NewProductsControllerCore extends FrontController
 
     /**
      * Assign template vars related to page content
-     * @see FrontController::initContent()
+     *
+     * @see   FrontController::initContent()
+     *
+     * @return void
+     *
+     * @since 1.0.0
      */
     public function initContent()
     {
@@ -55,25 +75,25 @@ class NewProductsControllerCore extends FrontController
             $this->orderWay = 'DESC';
         }
 
-        $nb_products = (int)Product::getNewProducts(
+        $nbProducts = (int) Product::getNewProducts(
             $this->context->language->id,
-            (isset($this->p) ? (int)$this->p - 1 : null),
-            (isset($this->n) ? (int)$this->n : null),
+            (isset($this->p) ? (int) $this->p - 1 : null),
+            (isset($this->n) ? (int) $this->n : null),
             true
         );
 
-        $this->pagination($nb_products);
+        $this->pagination($nbProducts);
 
-        $products = Product::getNewProducts($this->context->language->id, (int)$this->p - 1, (int)$this->n, false, $this->orderBy, $this->orderWay);
+        $products = Product::getNewProducts($this->context->language->id, (int) $this->p - 1, (int) $this->n, false, $this->orderBy, $this->orderWay);
         $this->addColorsToProductList($products);
 
         $this->context->smarty->assign(
             [
-            'products' => $products,
-            'add_prod_display' => Configuration::get('PS_ATTRIBUTE_CATEGORY_DISPLAY'),
-            'nbProducts' => (int)$nb_products,
-            'homeSize' => Image::getSize(ImageType::getFormatedName('home')),
-            'comparator_max_item' => Configuration::get('PS_COMPARATOR_MAX_ITEM')
+                'products'            => $products,
+                'add_prod_display'    => Configuration::get('PS_ATTRIBUTE_CATEGORY_DISPLAY'),
+                'nbProducts'          => (int) $nbProducts,
+                'homeSize'            => Image::getSize(ImageType::getFormatedName('home')),
+                'comparator_max_item' => Configuration::get('PS_COMPARATOR_MAX_ITEM'),
             ]
         );
 
