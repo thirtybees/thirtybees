@@ -21,43 +21,60 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class OrderFollowControllerCore
+ *
+ * @since 1.0.0
+ */
 class OrderFollowControllerCore extends FrontController
 {
+    // @codingStandardsIgnoreStart
+    /** @var bool $auth */
     public $auth = true;
+    /** @var string $php_self */
     public $php_self = 'order-follow';
+    /** @var string $authRedirection */
     public $authRedirection = 'order-follow';
+    /** @var bool $ssl */
     public $ssl = true;
+    // @codingStandardsIgnoreEnd
 
     /**
      * Start forms process
+     *
      * @see FrontController::postProcess()
      */
     public function postProcess()
     {
         if (Tools::isSubmit('submitReturnMerchandise')) {
             $customizationQtyInput = Tools::getValue('customization_qty_input');
-            $order_qte_input = Tools::getValue('order_qte_input');
+            $orderQteInput = Tools::getValue('order_qte_input');
             $customizationIds = Tools::getValue('customization_ids');
 
-            if (!$id_order = (int)Tools::getValue('id_order')) {
+            if (!$idOrder = (int) Tools::getValue('id_order')) {
                 Tools::redirect('index.php?controller=history');
             }
-            if (!$order_qte_input && !$customizationQtyInput && !$customizationIds) {
+            if (!$orderQteInput && !$customizationQtyInput && !$customizationIds) {
                 Tools::redirect('index.php?controller=order-follow&errorDetail1');
             }
-            if (!$customizationIds && !$ids_order_detail = Tools::getValue('ids_order_detail')) {
+            if (!$customizationIds && !$idsOrderDetail = Tools::getValue('ids_order_detail')) {
                 Tools::redirect('index.php?controller=order-follow&errorDetail2');
             }
+            if (!isset($idsOrderDetail)) {
+                Tools::redirect('index.php?controller=order-follow&errorDetail2');
 
-            $order = new Order((int)$id_order);
+                return;
+            }
+
+            $order = new Order((int) $idOrder);
             if (!$order->isReturnable()) {
                 Tools::redirect('index.php?controller=order-follow&errorNotReturnable');
             }
@@ -65,27 +82,28 @@ class OrderFollowControllerCore extends FrontController
                 die(Tools::displayError());
             }
             $orderReturn = new OrderReturn();
-            $orderReturn->id_customer = (int)$this->context->customer->id;
-            $orderReturn->id_order = $id_order;
+            $orderReturn->id_customer = (int) $this->context->customer->id;
+            $orderReturn->id_order = $idOrder;
             $orderReturn->question = htmlspecialchars(Tools::getValue('returnText'));
             if (empty($orderReturn->question)) {
-                Tools::redirect('index.php?controller=order-follow&errorMsg&'.
-                    http_build_query(
+                Tools::redirect(
+                    'index.php?controller=order-follow&errorMsg&'.http_build_query(
                         [
-                        'ids_order_detail' => $ids_order_detail,
-                        'order_qte_input' => $order_qte_input,
-                        'id_order' => Tools::getValue('id_order'),
+                            'ids_order_detail' => $idsOrderDetail,
+                            'order_qte_input'  => $orderQteInput,
+                            'id_order'         => Tools::getValue('id_order'),
                         ]
-                    ));
+                    )
+                );
             }
 
-            if (!$orderReturn->checkEnoughProduct($ids_order_detail, $order_qte_input, $customizationIds, $customizationQtyInput)) {
+            if (!$orderReturn->checkEnoughProduct($idsOrderDetail, $orderQteInput, $customizationIds, $customizationQtyInput)) {
                 Tools::redirect('index.php?controller=order-follow&errorQuantity');
             }
 
             $orderReturn->state = 1;
             $orderReturn->add();
-            $orderReturn->addReturnDetail($ids_order_detail, $order_qte_input, $customizationIds, $customizationQtyInput);
+            $orderReturn->addReturnDetail($idsOrderDetail, $orderQteInput, $customizationIds, $customizationQtyInput);
             Hook::exec('actionOrderReturn', ['orderReturn' => $orderReturn]);
             Tools::redirect('index.php?controller=order-follow');
         }
@@ -93,7 +111,12 @@ class OrderFollowControllerCore extends FrontController
 
     /**
      * Assign template vars related to page content
+     *
      * @see FrontController::initContent()
+     *
+     * @return void
+     *
+     * @since 1.0.0
      */
     public function initContent()
     {
@@ -105,10 +128,10 @@ class OrderFollowControllerCore extends FrontController
         } elseif (Tools::isSubmit('errorMsg')) {
             $this->context->smarty->assign(
                 [
-                    'errorMsg' => true,
+                    'errorMsg'         => true,
                     'ids_order_detail' => Tools::getValue('ids_order_detail', []),
-                    'order_qte_input' => Tools::getValue('order_qte_input', []),
-                    'id_order' => (int)Tools::getValue('id_order'),
+                    'order_qte_input'  => Tools::getValue('order_qte_input', []),
+                    'id_order'         => (int) Tools::getValue('id_order'),
                 ]
             );
         } elseif (Tools::isSubmit('errorDetail1')) {
@@ -124,6 +147,13 @@ class OrderFollowControllerCore extends FrontController
         $this->setTemplate(_PS_THEME_DIR_.'order-follow.tpl');
     }
 
+    /**
+     * Set media
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function setMedia()
     {
         parent::setMedia();
@@ -131,8 +161,8 @@ class OrderFollowControllerCore extends FrontController
         $this->addJqueryPlugin('scrollTo');
         $this->addJS(
             [
-            _THEME_JS_DIR_.'history.js',
-            _THEME_JS_DIR_.'tools.js'
+                _THEME_JS_DIR_.'history.js',
+                _THEME_JS_DIR_.'tools.js',
             ] // retro compat themes 1.5
         );
         $this->addjqueryPlugin('footable');
