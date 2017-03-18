@@ -21,23 +21,38 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class SearchControllerCore
+ *
+ * @since 1.0.0
+ */
 class SearchControllerCore extends FrontController
 {
+    // @codingStandardsIgnoreStart
+    /** @var string $php_self */
     public $php_self = 'search';
+    /** @var string $instant_search */
     public $instant_search;
+    /** @var string $ajax_search */
     public $ajax_search;
+    // @codingStandardsIgnoreEnd
 
     /**
      * Initialize search controller
-     * @see FrontController::init()
+     *
+     * @see   FrontController::init()
+     *
+     * @return void
+     *
+     * @since 1.0.0
      */
     public function init()
     {
@@ -55,14 +70,19 @@ class SearchControllerCore extends FrontController
 
     /**
      * Assign template vars related to page content
-     * @see FrontController::initContent()
+     *
+     * @see   FrontController::initContent()
+     *
+     * @return void
+     *
+     * @since 1.0.0
      */
     public function initContent()
     {
-        $original_query = Tools::getValue('q');
-        $query = Tools::replaceAccentedChars(urldecode($original_query));
+        $originalQuery = Tools::getValue('q');
+        $query = Tools::replaceAccentedChars(urldecode($originalQuery));
         if ($this->ajax_search) {
-            $searchResults = Search::find((int)(Tools::getValue('id_lang')), $query, 1, 10, 'position', 'desc', true);
+            $searchResults = Search::find((int) (Tools::getValue('id_lang')), $query, 1, 10, 'position', 'desc', true);
             if (is_array($searchResults)) {
                 foreach ($searchResults as &$product) {
                     $product['product_link'] = $this->context->link->getProductLink($product['id_product'], $product['prewrite'], $product['crewrite']);
@@ -74,13 +94,13 @@ class SearchControllerCore extends FrontController
 
         //Only controller content initialization when the user use the normal search
         parent::initContent();
-        
-        $product_per_page = isset($this->context->cookie->nb_item_per_page) ? (int)$this->context->cookie->nb_item_per_page : Configuration::get('PS_PRODUCTS_PER_PAGE');
+
+        $productPerPage = isset($this->context->cookie->nb_item_per_page) ? (int) $this->context->cookie->nb_item_per_page : Configuration::get('PS_PRODUCTS_PER_PAGE');
 
         if ($this->instant_search && !is_array($query)) {
             $this->productSort();
-            $this->n = abs((int)(Tools::getValue('n', $product_per_page)));
-            $this->p = abs((int)(Tools::getValue('p', 1)));
+            $this->n = abs((int) (Tools::getValue('n', $productPerPage)));
+            $this->p = abs((int) (Tools::getValue('p', 1)));
             $search = Search::find($this->context->language->id, $query, 1, 10, 'position', 'desc');
             Hook::exec('actionSearch', ['expr' => $query, 'total' => $search['total']]);
             $nbProducts = $search['total'];
@@ -90,24 +110,24 @@ class SearchControllerCore extends FrontController
 
             $this->context->smarty->assign(
                 [
-                'products' => $search['result'], // DEPRECATED (since to 1.4), not use this: conflict with block_cart module
-                'search_products' => $search['result'],
-                'nbProducts' => $search['total'],
-                'search_query' => $original_query,
-                'instant_search' => $this->instant_search,
-                'homeSize' => Image::getSize(ImageType::getFormatedName('home'))
+                    'products'        => $search['result'], // DEPRECATED (since to 1.4), not use this: conflict with block_cart module
+                    'search_products' => $search['result'],
+                    'nbProducts'      => $search['total'],
+                    'search_query'    => $originalQuery,
+                    'instant_search'  => $this->instant_search,
+                    'homeSize'        => Image::getSize(ImageType::getFormatedName('home')),
                 ]
             );
         } elseif (($query = Tools::getValue('search_query', Tools::getValue('ref'))) && !is_array($query)) {
             $this->productSort();
-            $this->n = abs((int)(Tools::getValue('n', $product_per_page)));
-            $this->p = abs((int)(Tools::getValue('p', 1)));
-            $original_query = $query;
+            $this->n = abs((int) (Tools::getValue('n', $productPerPage)));
+            $this->p = abs((int) (Tools::getValue('p', 1)));
+            $originalQuery = $query;
             $query = Tools::replaceAccentedChars(urldecode($query));
             $search = Search::find($this->context->language->id, $query, $this->p, $this->n, $this->orderBy, $this->orderWay);
             if (is_array($search['result'])) {
                 foreach ($search['result'] as &$product) {
-                    $product['link'] .= (strpos($product['link'], '?') === false ? '?' : '&').'search_query='.urlencode($query).'&results='.(int)$search['total'];
+                    $product['link'] .= (strpos($product['link'], '?') === false ? '?' : '&').'search_query='.urlencode($query).'&results='.(int) $search['total'];
                 }
             }
 
@@ -119,15 +139,15 @@ class SearchControllerCore extends FrontController
 
             $this->context->smarty->assign(
                 [
-                'products' => $search['result'], // DEPRECATED (since to 1.4), not use this: conflict with block_cart module
-                'search_products' => $search['result'],
-                'nbProducts' => $search['total'],
-                'search_query' => $original_query,
-                'homeSize' => Image::getSize(ImageType::getFormatedName('home'))
+                    'products'        => $search['result'], // DEPRECATED (since to 1.4), not use this: conflict with block_cart module
+                    'search_products' => $search['result'],
+                    'nbProducts'      => $search['total'],
+                    'search_query'    => $originalQuery,
+                    'homeSize'        => Image::getSize(ImageType::getFormatedName('home')),
                 ]
             );
         } elseif (($tag = urldecode(Tools::getValue('tag'))) && !is_array($tag)) {
-            $nbProducts = (int)(Search::searchTag($this->context->language->id, $tag, true));
+            $nbProducts = (int) (Search::searchTag($this->context->language->id, $tag, true));
             $this->pagination($nbProducts);
             $result = Search::searchTag($this->context->language->id, $tag, false, $this->p, $this->n, $this->orderBy, $this->orderWay);
             Hook::exec('actionSearch', ['expr' => $tag, 'total' => count($result)]);
@@ -136,20 +156,20 @@ class SearchControllerCore extends FrontController
 
             $this->context->smarty->assign(
                 [
-                'search_tag' => $tag,
-                'products' => $result, // DEPRECATED (since to 1.4), not use this: conflict with block_cart module
-                'search_products' => $result,
-                'nbProducts' => $nbProducts,
-                'homeSize' => Image::getSize(ImageType::getFormatedName('home'))
+                    'search_tag'      => $tag,
+                    'products'        => $result, // DEPRECATED (since to 1.4), not use this: conflict with block_cart module
+                    'search_products' => $result,
+                    'nbProducts'      => $nbProducts,
+                    'homeSize'        => Image::getSize(ImageType::getFormatedName('home')),
                 ]
             );
         } else {
             $this->context->smarty->assign(
                 [
-                'products' => [],
-                'search_products' => [],
-                'pages_nb' => 1,
-                'nbProducts' => 0
+                    'products'        => [],
+                    'search_products' => [],
+                    'pages_nb'        => 1,
+                    'nbProducts'      => 0,
                 ]
             );
         }
@@ -158,6 +178,15 @@ class SearchControllerCore extends FrontController
         $this->setTemplate(_PS_THEME_DIR_.'search.tpl');
     }
 
+    /**
+     * Display header
+     *
+     * @param bool $display
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function displayHeader($display = true)
     {
         if (!$this->instant_search && !$this->ajax_search) {
@@ -167,6 +196,15 @@ class SearchControllerCore extends FrontController
         }
     }
 
+    /**
+     * Display footer
+     *
+     * @param bool $display
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function displayFooter($display = true)
     {
         if (!$this->instant_search && !$this->ajax_search) {
@@ -174,6 +212,13 @@ class SearchControllerCore extends FrontController
         }
     }
 
+    /**
+     * Set Media
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function setMedia()
     {
         parent::setMedia();
