@@ -21,47 +21,56 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class SupplierControllerCore
+ *
+ * @since 1.0.0
+ */
 class SupplierControllerCore extends FrontController
 {
+    // @codingStandardsIgnoreStart
+    /** @var string $php_self */
     public $php_self = 'supplier';
-
-    /** @var Supplier */
+    /** @var Supplier $supplier */
     protected $supplier;
+    // @codingStandardsIgnoreEnd
 
+    /**
+     * Set media
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function setMedia()
     {
         parent::setMedia();
         $this->addCSS(_THEME_CSS_DIR_.'product_list.css');
     }
 
-    public function canonicalRedirection($canonicalURL = '')
-    {
-        if (Tools::getValue('live_edit')) {
-            return;
-        }
-        if (Validate::isLoadedObject($this->supplier)) {
-            parent::canonicalRedirection($this->context->link->getSupplierLink($this->supplier));
-        }
-    }
-
     /**
      * Initialize supplier controller
-     * @see FrontController::init()
+     *
+     * @see   FrontController::init()
+     *
+     * @return void
+     *
+     * @since 1.0.0
      */
     public function init()
     {
         parent::init();
 
-        if ($id_supplier = (int)Tools::getValue('id_supplier')) {
-            $this->supplier = new Supplier($id_supplier, $this->context->language->id);
+        if ($idSupplier = (int) Tools::getValue('id_supplier')) {
+            $this->supplier = new Supplier($idSupplier, $this->context->language->id);
 
             if (!Validate::isLoadedObject($this->supplier) || !$this->supplier->active) {
                 header('HTTP/1.1 404 Not Found');
@@ -74,8 +83,30 @@ class SupplierControllerCore extends FrontController
     }
 
     /**
+     * Canonical redirection
+     *
+     * @param string $canonicalURL
+     *
+     * @since 1.0.0
+     */
+    public function canonicalRedirection($canonicalURL = '')
+    {
+        if (Tools::getValue('live_edit')) {
+            return;
+        }
+        if (Validate::isLoadedObject($this->supplier)) {
+            parent::canonicalRedirection($this->context->link->getSupplierLink($this->supplier));
+        }
+    }
+
+    /**
      * Assign template vars related to page content
-     * @see FrontController::initContent()
+     *
+     * @see   FrontController::initContent()
+     *
+     * @return void
+     *
+     * @since 1.0.0
      */
     public function initContent()
     {
@@ -92,29 +123,45 @@ class SupplierControllerCore extends FrontController
     }
 
     /**
+     * Get instance of current supplier
+     *
+     * @return Supplier
+     *
+     * @since 1.0.0
+     */
+    public function getSupplier()
+    {
+        return $this->supplier;
+    }
+
+    /**
      * Assign template vars if displaying one supplier
+     *
+     * @return void
+     *
+     * @since 1.0.0
      */
     protected function assignOne()
     {
         if (Configuration::get('PS_DISPLAY_SUPPLIERS')) {
             $this->supplier->description = Tools::nl2br(trim($this->supplier->description));
             $nbProducts = $this->supplier->getProducts($this->supplier->id, null, null, null, $this->orderBy, $this->orderWay, true);
-            $this->pagination((int)$nbProducts);
+            $this->pagination((int) $nbProducts);
 
-            $products = $this->supplier->getProducts($this->supplier->id, $this->context->cookie->id_lang, (int)$this->p, (int)$this->n, $this->orderBy, $this->orderWay);
+            $products = $this->supplier->getProducts($this->supplier->id, $this->context->cookie->id_lang, (int) $this->p, (int) $this->n, $this->orderBy, $this->orderWay);
             $this->addColorsToProductList($products);
 
             $this->context->smarty->assign(
                 [
-                    'nb_products' => $nbProducts,
-                    'products' => $products,
-                    'path' => ($this->supplier->active ? Tools::safeOutput($this->supplier->name) : ''),
-                    'supplier' => $this->supplier,
+                    'nb_products'         => $nbProducts,
+                    'products'            => $products,
+                    'path'                => ($this->supplier->active ? Tools::safeOutput($this->supplier->name) : ''),
+                    'supplier'            => $this->supplier,
                     'comparator_max_item' => Configuration::get('PS_COMPARATOR_MAX_ITEM'),
-                    'body_classes' => [
+                    'body_classes'        => [
                         $this->php_self.'-'.$this->supplier->id,
-                        $this->php_self.'-'.$this->supplier->link_rewrite
-                    ]
+                        $this->php_self.'-'.$this->supplier->link_rewrite,
+                    ],
                 ]
             );
         } else {
@@ -124,6 +171,10 @@ class SupplierControllerCore extends FrontController
 
     /**
      * Assign template vars if displaying the supplier list
+     *
+     * @return void
+     *
+     * @since 1.0.0
      */
     protected function assignAll()
     {
@@ -139,23 +190,15 @@ class SupplierControllerCore extends FrontController
 
             $this->context->smarty->assign(
                 [
-                'pages_nb' => ceil($nbProducts / (int)$this->n),
-                'nbSuppliers' => $nbProducts,
-                'mediumSize' => Image::getSize(ImageType::getFormatedName('medium')),
-                'suppliers_list' => $suppliers,
-                'add_prod_display' => Configuration::get('PS_ATTRIBUTE_CATEGORY_DISPLAY'),
+                    'pages_nb'         => ceil($nbProducts / (int) $this->n),
+                    'nbSuppliers'      => $nbProducts,
+                    'mediumSize'       => Image::getSize(ImageType::getFormatedName('medium')),
+                    'suppliers_list'   => $suppliers,
+                    'add_prod_display' => Configuration::get('PS_ATTRIBUTE_CATEGORY_DISPLAY'),
                 ]
             );
         } else {
             Tools::redirect('index.php?controller=404');
         }
-    }
-    
-    /**
-    * Get instance of current supplier
-    */
-    public function getSupplier()
-    {
-        return $this->supplier;
     }
 }
