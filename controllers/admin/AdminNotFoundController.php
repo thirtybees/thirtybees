@@ -29,29 +29,66 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class AdminNotFoundControllerCore
+ *
+ * @since 1.0.0
+ */
 class AdminNotFoundControllerCore extends AdminController
 {
+    /**
+     * AdminNotFoundControllerCore constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         $this->bootstrap = true;
+
         parent::__construct();
     }
 
+    /**
+     * Check accesss
+     *
+     * Always returns true to make it always available
+     *
+     * @return true
+     *
+     * @since 1.0.0
+     */
     public function checkAccess()
     {
         return true;
     }
 
-    public function viewAccess()
+    /**
+     * Has view access
+     *
+     * Always returns true to make it always available
+     *
+     * @param bool $disable
+     *
+     * @return true
+     */
+    public function viewAccess($disable = false)
     {
         return true;
     }
 
+    /**
+     * Initialize content
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function initContent()
     {
         $this->errors[] = Tools::displayError('Controller not found');
-        $tpl_vars['controller'] = Tools::getvalue('controllerUri', Tools::getvalue('controller'));
-        $this->context->smarty->assign($tpl_vars);
+        $tplVars['controller'] = Tools::getvalue('controllerUri', Tools::getvalue('controller'));
+        $this->context->smarty->assign($tplVars);
+
         parent::initContent();
     }
 }
