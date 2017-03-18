@@ -21,21 +21,39 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class MyAccountControllerCore
+ *
+ * @since 1.0.0
+ */
 class MyAccountControllerCore extends FrontController
 {
+    // @codingStandardsIgnoreStart
+    /** @var bool $auth */
     public $auth = true;
+    /** @var string $php_self */
     public $php_self = 'my-account';
+    /** @var string $authRedirection */
     public $authRedirection = 'my-account';
+    /** @var bool $ssl */
     public $ssl = true;
+    // @codingStandardsIgnoreEnd
 
+    /**
+     * Set media
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function setMedia()
     {
         parent::setMedia();
@@ -44,18 +62,23 @@ class MyAccountControllerCore extends FrontController
 
     /**
      * Assign template vars related to page content
-     * @see FrontController::initContent()
+     *
+     * @see   FrontController::initContent()
+     *
+     * @return void
+     *
+     * @since 1.0.0
      */
     public function initContent()
     {
         parent::initContent();
 
-        $has_address = $this->context->customer->getAddresses($this->context->language->id);
+        $hasAddress = $this->context->customer->getAddresses($this->context->language->id);
         $this->context->smarty->assign(
             [
-            'has_customer_an_address' => empty($has_address),
-            'voucherAllowed' => (int)CartRule::isFeatureActive(),
-            'returnAllowed' => (int)Configuration::get('PS_ORDER_RETURN')
+                'has_customer_an_address' => empty($hasAddress),
+                'voucherAllowed'          => (int) CartRule::isFeatureActive(),
+                'returnAllowed'           => (int) Configuration::get('PS_ORDER_RETURN'),
             ]
         );
         $this->context->smarty->assign('HOOK_CUSTOMER_ACCOUNT', Hook::exec('displayCustomerAccount'));
