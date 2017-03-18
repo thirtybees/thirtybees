@@ -36,7 +36,10 @@
  */
 class AdminPaymentControllerCore extends AdminController
 {
+    // @codingStandardsIgnoreStart
+    /** @var array $payment_modules */
     public $payment_modules = [];
+    // @codingStandardsIgnoreEnd
 
     /**
      * AdminPaymentControllerCore constructor.
