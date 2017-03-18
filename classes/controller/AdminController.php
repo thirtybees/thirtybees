@@ -213,12 +213,12 @@ class AdminControllerCore extends Controller
      *
      * Usage:
      *
-     * array(
-     *      'actionName' => array(
-     *      'text' => $this->l('Message displayed on the submit button (mandatory)'),
-     *      'confirm' => $this->l('If set, this confirmation message will pop-up (optional)')),
-     *      'anotherAction' => array(...)
-     * );
+     * [
+     *      'actionName'    => [
+     *      'text'          => $this->l('Message displayed on the submit button (mandatory)'),
+     *      'confirm'       => $this->l('If set, this confirmation message will pop-up (optional)')),
+     *      'anotherAction' => [...]
+     * ];
      *
      * If your action is named 'actionName', you need to have a method named bulkactionName() that will be executed when the button is clicked.
      *
