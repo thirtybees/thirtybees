@@ -21,19 +21,26 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * @property OrderMessage $object
+ * Class AdminOrderMessageControllerCore
+ *
+ * @since 1.0.0
  */
 class AdminOrderMessageControllerCore extends AdminController
 {
+    /**
+     * AdminOrderMessageControllerCore constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         $this->bootstrap = true;
@@ -52,63 +59,70 @@ class AdminOrderMessageControllerCore extends AdminController
 
         $this->bulk_actions = [
             'delete' => [
-                'text' => $this->l('Delete selected'),
+                'text'    => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
-                'icon' => 'icon-trash'
-            ]
+                'icon'    => 'icon-trash',
+            ],
         ];
 
         $this->fields_list = [
             'id_order_message' => [
                 'title' => $this->l('ID'),
-                'align' => 'center'
+                'align' => 'center',
             ],
-            'name' => [
-                'title' => $this->l('Name')
+            'name'             => [
+                'title' => $this->l('Name'),
             ],
-            'message' => [
-                'title' => $this->l('Message'),
-                'maxlength' => 300
-            ]
+            'message'          => [
+                'title'     => $this->l('Message'),
+                'maxlength' => 300,
+            ],
         ];
 
         $this->fields_form = [
             'legend' => [
                 'title' => $this->l('Order messages'),
-                'icon' => 'icon-mail'
+                'icon'  => 'icon-mail',
             ],
-            'input' => [
+            'input'  => [
                 [
-                    'type' => 'text',
-                    'lang' => true,
-                    'label' => $this->l('Name'),
-                    'name' => 'name',
-                    'size' => 53,
-                    'required' => true
+                    'type'     => 'text',
+                    'lang'     => true,
+                    'label'    => $this->l('Name'),
+                    'name'     => 'name',
+                    'size'     => 53,
+                    'required' => true,
                 ],
                 [
-                    'type' => 'textarea',
-                    'lang' => true,
-                    'label' => $this->l('Message'),
-                    'name' => 'message',
-                    'required' => true
-                ]
+                    'type'     => 'textarea',
+                    'lang'     => true,
+                    'label'    => $this->l('Message'),
+                    'name'     => 'message',
+                    'required' => true,
+                ],
             ],
             'submit' => [
                 'title' => $this->l('Save'),
-            ]
+            ],
         ];
 
         parent::__construct();
     }
 
+    /**
+     * Initialize page header toolbar
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_order_message'] = [
                 'href' => self::$currentIndex.'&addorder_message&token='.$this->token,
                 'desc' => $this->l('Add new order message'),
-                'icon' => 'process-icon-new'
+                'icon' => 'process-icon-new',
             ];
         }
 
