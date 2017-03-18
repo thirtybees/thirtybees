@@ -29,15 +29,31 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class PdfOrderSlipControllerCore
+ *
+ * @since 1.0.0
+ */
 class PdfOrderSlipControllerCore extends FrontController
 {
+    // @codingStandardsIgnoreStart
+    /** @var string $php_self */
     public $php_self = 'pdf-order-slip';
+    /** @var bool $display_header */
     protected $display_header = false;
+    /** @var bool $display_footer */
     protected $display_footer = false;
-
+    /** @var OrderSlip $order_slip */
     protected $order_slip;
+    // @codingStandardsIgnoreEnd
 
-
+    /**
+     * Post processing
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function postProcess()
     {
         if (!$this->context->customer->isLogged()) {
@@ -55,6 +71,13 @@ class PdfOrderSlipControllerCore extends FrontController
         }
     }
 
+    /**
+     * Display
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function display()
     {
         $pdf = new PDF($this->order_slip, PDF::TEMPLATE_ORDER_SLIP, $this->context->smarty);
