@@ -63,7 +63,7 @@ class IdentityControllerCore extends FrontController
     /**
      * Start forms process
      *
-     * @see FrontController::postProcess()
+     * @return Customer
      *
      * @since 1.0.0
      */
