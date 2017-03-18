@@ -145,12 +145,10 @@ class AdminShopUrlControllerCore extends AdminController
      */
     public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
-        global $shopUrlConfig;
-
         $this->dispatchFieldsListingModifierEvent();
 
         // Get a model copy.
-        $this->_list = $shopUrlConfig;
+        $this->_list = $this->className::get();
 
         // While we can get the main list from the model (ShopUrl) we need a
         // DB query anyways, because shop names aren't stored in the model.
