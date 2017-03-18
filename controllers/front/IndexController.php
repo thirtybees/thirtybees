@@ -21,21 +21,32 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class IndexControllerCore
+ *
+ * @since 1.0.0
+ */
 class IndexControllerCore extends FrontController
 {
+    // @codingStandardsIgnoreStart
+    /** @var string $php_self */
     public $php_self = 'index';
+    // @codingStandardsIgnoreEnd
 
     /**
-     * Assign template vars related to page content
-     * @see FrontController::initContent()
+     * Initialize content
+     *
+     * @return void
+     *
+     * @since 1.0.0
      */
     public function initContent()
     {
@@ -44,9 +55,9 @@ class IndexControllerCore extends FrontController
 
         $this->context->smarty->assign(
             [
-                'HOOK_HOME' => Hook::exec('displayHome'),
-            'HOOK_HOME_TAB' => Hook::exec('displayHomeTab'),
-            'HOOK_HOME_TAB_CONTENT' => Hook::exec('displayHomeTabContent')
+                'HOOK_HOME'             => Hook::exec('displayHome'),
+                'HOOK_HOME_TAB'         => Hook::exec('displayHomeTab'),
+                'HOOK_HOME_TAB_CONTENT' => Hook::exec('displayHomeTabContent'),
             ]
         );
         $this->setTemplate(_PS_THEME_DIR_.'index.tpl');
