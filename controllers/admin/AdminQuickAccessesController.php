@@ -21,19 +21,26 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * @property QuickAccess $object
+ * Class AdminQuickAccessesControllerCore
+ *
+ * @since 1.0.0
  */
 class AdminQuickAccessesControllerCore extends AdminController
 {
+    /**
+     * AdminQuickAccessesControllerCore constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         $this->bootstrap = true;
@@ -52,96 +59,110 @@ class AdminQuickAccessesControllerCore extends AdminController
 
         $this->bulk_actions = [
             'delete' => [
-                'text' => $this->l('Delete selected'),
+                'text'    => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
-                'icon' => 'icon-trash'
-            ]
+                'icon'    => 'icon-trash',
+            ],
         ];
 
         $this->fields_list = [
             'id_quick_access' => [
                 'title' => $this->l('ID'),
                 'align' => 'center',
-                'class' => 'fixed-width-xs'
+                'class' => 'fixed-width-xs',
             ],
-            'name' => [
-                'title' => $this->l('Name')
+            'name'            => [
+                'title' => $this->l('Name'),
             ],
-            'link' => [
-                'title' => $this->l('Link')
+            'link'            => [
+                'title' => $this->l('Link'),
             ],
-            'new_window' => [
-                'title' => $this->l('New window'),
-                'align' => 'center',
-                'type' => 'bool',
+            'new_window'      => [
+                'title'  => $this->l('New window'),
+                'align'  => 'center',
+                'type'   => 'bool',
                 'active' => 'new_window',
-                'class' => 'fixed-width-sm'
-            ]
+                'class'  => 'fixed-width-sm',
+            ],
         ];
 
         $this->fields_form = [
             'legend' => [
                 'title' => $this->l('Quick Access menu'),
-                'icon' => 'icon-align-justify'
+                'icon'  => 'icon-align-justify',
             ],
-            'input' => [
+            'input'  => [
                 [
-                    'type' => 'text',
-                    'label' => $this->l('Name'),
-                    'name' => 'name',
-                    'lang' => true,
+                    'type'      => 'text',
+                    'label'     => $this->l('Name'),
+                    'name'      => 'name',
+                    'lang'      => true,
                     'maxlength' => 32,
-                    'required' => true,
-                    'hint' => $this->l('Forbidden characters:').' &lt;&gt;;=#{}'
+                    'required'  => true,
+                    'hint'      => $this->l('Forbidden characters:').' &lt;&gt;;=#{}',
                 ],
                 [
-                    'type' => 'text',
-                    'label' => $this->l('URL'),
-                    'name' => 'link',
+                    'type'      => 'text',
+                    'label'     => $this->l('URL'),
+                    'name'      => 'link',
                     'maxlength' => 128,
-                    'required' => true,
-                    'hint' => $this->l('If it\'s a URL that comes from your Back Office, you MUST remove the security token.')
+                    'required'  => true,
+                    'hint'      => $this->l('If it\'s a URL that comes from your Back Office, you MUST remove the security token.'),
                 ],
                 [
-                    'type' => 'switch',
-                    'label' => $this->l('Open in new window'),
-                    'name' => 'new_window',
+                    'type'     => 'switch',
+                    'label'    => $this->l('Open in new window'),
+                    'name'     => 'new_window',
                     'required' => false,
-                    'values' => [
+                    'values'   => [
                         [
-                            'id' => 'new_window_on',
+                            'id'    => 'new_window_on',
                             'value' => 1,
-                            'label' => '<img src="../img/admin/enabled.gif" alt="'.$this->l('Enabled').'" title="'.$this->l('Enabled').'" />'
+                            'label' => '<img src="../img/admin/enabled.gif" alt="'.$this->l('Enabled').'" title="'.$this->l('Enabled').'" />',
                         ],
                         [
-                            'id' => 'new_window_off',
+                            'id'    => 'new_window_off',
                             'value' => 0,
-                            'label' => '<img src="../img/admin/disabled.gif" alt="'.$this->l('Disabled').'" title="'.$this->l('Disabled').'" />'
-                        ]
-                    ]
-                ]
+                            'label' => '<img src="../img/admin/disabled.gif" alt="'.$this->l('Disabled').'" title="'.$this->l('Disabled').'" />',
+                        ],
+                    ],
+                ],
             ],
             'submit' => [
                 'title' => $this->l('Save'),
-            ]
+            ],
         ];
 
         parent::__construct();
     }
 
+    /**
+     * Initialize page header toolbar
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_quick_access'] = [
                 'href' => self::$currentIndex.'&addquick_access&token='.$this->token,
                 'desc' => $this->l('Add new quick access', null, null, false),
-                'icon' => 'process-icon-new'
+                'icon' => 'process-icon-new',
             ];
         }
 
         parent::initPageHeaderToolbar();
     }
 
+    /**
+     * Initialize processing
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function initProcess()
     {
         if ((isset($_GET['new_window'.$this->table]) || isset($_GET['new_window'])) && Tools::getValue($this->identifier)) {
@@ -155,21 +176,56 @@ class AdminQuickAccessesControllerCore extends AdminController
         parent::initProcess();
     }
 
-    public function getQuickAccessesList()
-    {
-        $links = QuickAccess::getQuickAccesses($this->context->language->id);
-        return json_encode(array_map([$this, 'getLinkToken'], $links));
-    }
-
+    /**
+     * Get link token
+     *
+     * @param array $item
+     *
+     * @return mixed
+     *
+     * @since 1.0.0
+     */
     public function getLinkToken($item)
     {
         $url = parse_url($item['link']);
         parse_str($url['query'], $query);
         $controller = $query['controller'];
         $item['token'] = Tools::getAdminTokenLite($controller);
+
         return $item;
     }
 
+    /**
+     * Ajax process get URL
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
+    public function ajaxProcessGetUrl()
+    {
+        if (Tools::strtolower(Tools::getValue('method')) === 'add') {
+            $params['new_window'] = 0;
+            $params['name_'.(int) Configuration::get('PS_LANG_DEFAULT')] = Tools::getValue('name');
+            $params['link'] = 'index.php?'.Tools::getValue('url');
+            $params['submitAddquick_access'] = 1;
+            unset($_POST['name']);
+            $_POST = array_merge($_POST, $params);
+            die($this->addQuickLink());
+        } elseif (Tools::strtolower(Tools::getValue('method')) === 'remove') {
+            $params['deletequick_access'] = 1;
+            $_POST = array_merge($_POST, $params);
+            die($this->processDelete());
+        }
+    }
+
+    /**
+     * Add quick link
+     *
+     * @return bool|string
+     *
+     * @since 1.0.0
+     */
     public function addQuickLink()
     {
         if (!isset($this->className) || empty($this->className)) {
@@ -189,10 +245,9 @@ class AdminQuickAccessesControllerCore extends AdminController
             if (method_exists($this->object, 'add') && !$this->object->add()) {
                 $this->errors[] = Tools::displayError('An error occurred while creating an object.').
                     ' <b>'.$this->table.' ('.Db::getInstance()->getMsgError().')</b>';
-            }
-            /* voluntary do affectation here */
+            } /* voluntary do affectation here */
             elseif (($_POST[$this->identifier] = $this->object->id) && $this->postImage($this->object->id) && !count($this->errors) && $this->_redirect) {
-                PrestaShopLogger::addLog(sprintf($this->l('%s addition', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int)$this->object->id, true, (int)$this->context->employee->id);
+                Logger::addLog(sprintf($this->l('%s addition', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int) $this->object->id, true, (int) $this->context->employee->id);
                 $this->afterAdd($this->object);
             }
         }
@@ -201,34 +256,48 @@ class AdminQuickAccessesControllerCore extends AdminController
         if (!empty($this->errors)) {
             $this->errors['has_errors'] = true;
             $this->ajaxDie(json_encode($this->errors));
+
             return false;
         }
+
         return $this->getQuickAccessesList();
     }
 
+    /**
+     * Get quick access list
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
+    public function getQuickAccessesList()
+    {
+        $links = QuickAccess::getQuickAccesses($this->context->language->id);
+
+        return json_encode(array_map([$this, 'getLinkToken'], $links));
+    }
+
+    /**
+     * Process delete
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
     public function processDelete()
     {
         parent::processDelete();
+
         return $this->getQuickAccessesList();
     }
 
-    public function ajaxProcessGetUrl()
-    {
-        if (Tools::strtolower(Tools::getValue('method')) === 'add') {
-            $params['new_window'] = 0;
-            $params['name_'.(int)Configuration::get('PS_LANG_DEFAULT')] = Tools::getValue('name');
-            $params['link'] = 'index.php?'.Tools::getValue('url');
-            $params['submitAddquick_access'] = 1;
-            unset($_POST['name']);
-            $_POST = array_merge($_POST, $params);
-            die($this->addQuickLink());
-        } elseif (Tools::strtolower(Tools::getValue('method')) === 'remove') {
-            $params['deletequick_access'] = 1;
-            $_POST = array_merge($_POST, $params);
-            die($this->processDelete());
-        }
-    }
-
+    /**
+     * Process new window
+     *
+     * @return false|ObjectModel|QuickAccess
+     *
+     * @since 1.0.0
+     */
     public function processNewWindow()
     {
         if (Validate::isLoadedObject($object = $this->loadObject())) {
@@ -239,9 +308,7 @@ class AdminQuickAccessesControllerCore extends AdminController
                 $this->errors[] = Tools::displayError('An error occurred while updating new window property.');
             }
         } else {
-            $this->errors[] = Tools::displayError('An error occurred while updating the new window property for this object.').
-                ' <b>'.$this->table.'</b> '.
-                Tools::displayError('(cannot load object)');
+            $this->errors[] = Tools::displayError('An error occurred while updating the new window property for this object.').' <b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
         }
 
         return $object;
