@@ -21,21 +21,31 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * @property Scene $object
+ * Class AdminScenesControllerCore
+ *
+ * @since 1.0.0
  */
 class AdminScenesControllerCore extends AdminController
 {
+    // @codingStandardsIgnoreStart
+    /** @var bool $bootstrap */
     public $bootstrap = true;
+    // @codingStandardsIgnoreEnd
 
+    /**
+     * AdminScenesControllerCore constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         $this->table = 'scene';
@@ -47,75 +57,46 @@ class AdminScenesControllerCore extends AdminController
         $this->identifier = 'id_scene';
         $this->fieldImageSettings = [
             ['name' => 'image', 'dir' => 'scenes'],
-            ['name' => 'thumb', 'dir' => 'scenes/thumbs']
+            ['name' => 'thumb', 'dir' => 'scenes/thumbs'],
         ];
 
         $this->fields_list = [
             'id_scene' => [
                 'title' => $this->l('ID'),
                 'align' => 'center',
-                'class' => 'fixed-width-xs'
-            ],
-            'name' => [
-                'title' => $this->l('Image Maps'),
-                'filter_key' => 'b!name'
-            ],
-            'active' => [
-                'title' => $this->l('Activated'),
-                'align' => 'center',
                 'class' => 'fixed-width-xs',
-                'active' => 'status',
-                'type' => 'bool',
-                'orderby' => false
-            ]
+            ],
+            'name'     => [
+                'title'      => $this->l('Image Maps'),
+                'filter_key' => 'b!name',
+            ],
+            'active'   => [
+                'title'   => $this->l('Activated'),
+                'align'   => 'center',
+                'class'   => 'fixed-width-xs',
+                'active'  => 'status',
+                'type'    => 'bool',
+                'orderby' => false,
+            ],
         ];
 
         parent::__construct();
     }
 
-    protected function afterImageUpload()
-    {
-        /* Generate image with differents size */
-        if (!($obj = $this->loadObject(true))) {
-            return;
-        }
-
-        if ($obj->id && (isset($_FILES['image']) || isset($_FILES['thumb']))) {
-            $base_img_path = _PS_SCENE_IMG_DIR_.$obj->id.'.jpg';
-            $images_types = ImageType::getImagesTypes('scenes');
-
-            foreach ($images_types as $k => $image_type) {
-                if ($image_type['name'] == 'm_scene_default') {
-                    if (isset($_FILES['thumb']) && !$_FILES['thumb']['error']) {
-                        $base_thumb_path = _PS_SCENE_THUMB_IMG_DIR_.$obj->id.'.jpg';
-                    } else {
-                        $base_thumb_path = $base_img_path;
-                    }
-                    ImageManager::resize(
-                        $base_thumb_path,
-                        _PS_SCENE_THUMB_IMG_DIR_.$obj->id.'-'.stripslashes($image_type['name']).'.jpg',
-                        (int)$image_type['width'],
-                        (int)$image_type['height']);
-                } elseif (isset($_FILES['image']) && isset($_FILES['image']['tmp_name']) && !$_FILES['image']['error']) {
-                    ImageManager::resize(
-                        $base_img_path,
-                        _PS_SCENE_IMG_DIR_.$obj->id.'-'.stripslashes($image_type['name']).'.jpg',
-                        (int)$image_type['width'],
-                        (int)$image_type['height']);
-                }
-            }
-        }
-
-        return true;
-    }
-
+    /**
+     * Render form
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
     public function renderForm()
     {
         $this->initFieldsForm();
 
         /** @var Scene $obj */
         if (!($obj = $this->loadObject(true))) {
-            return;
+            return '';
         }
 
         $this->tpl_form_vars['products'] = $obj->getProducts(true, $this->context->language->id, false, $this->context);
@@ -123,53 +104,31 @@ class AdminScenesControllerCore extends AdminController
         return parent::renderForm();
     }
 
-    public function initPageHeaderToolbar()
-    {
-        if (empty($this->display)) {
-            $this->page_header_toolbar_btn['new_scene'] = [
-                'href' => self::$currentIndex.'&addscene&token='.$this->token,
-                'desc' => $this->l('Add new image map', null, null, false),
-                'icon' => 'process-icon-new'
-            ];
-        }
-
-        parent::initPageHeaderToolbar();
-    }
-
-    public function initToolbar()
-    {
-        parent::initToolbar();
-
-        if (in_array($this->display, ['add', 'edit'])) {
-            $this->toolbar_btn = array_merge(
-                [
-                    'save-and-stay' => [
-                'short' => 'SaveAndStay',
-                'href' => '#',
-                'desc' => $this->l('Save and stay'),
-                    ]
-                ], $this->toolbar_btn);
-        }
-    }
-
+    /**
+     * Init fields form
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function initFieldsForm()
     {
         $obj = $this->loadObject(true);
-        $scene_image_types = ImageType::getImagesTypes('scenes');
-        $large_scene_image_type = null;
-        $thumb_scene_image_type = null;
-        foreach ($scene_image_types as $scene_image_type) {
-            if ($scene_image_type['name'] == 'scene_default') {
-                $large_scene_image_type = $scene_image_type;
+        $sceneImageTypes = ImageType::getImagesTypes('scenes');
+        $largeSceneImageType = null;
+        $thumbSceneImageType = null;
+        foreach ($sceneImageTypes as $sceneImageType) {
+            if ($sceneImageType['name'] == 'scene_default') {
+                $largeSceneImageType = $sceneImageType;
             }
-            if ($scene_image_type['name'] == 'm_scene_default') {
-                $thumb_scene_image_type = $scene_image_type;
+            if ($sceneImageType['name'] == 'm_scene_default') {
+                $thumbSceneImageType = $sceneImageType;
             }
         }
-        $fields_form = [
-            'legend' => [
+        $fieldsForm = [
+            'legend'      => [
                 'title' => $this->l('Image Maps'),
-                'icon' => 'icon-picture',
+                'icon'  => 'icon-picture',
             ],
             'description' => '
 				<h4>'.$this->l('How to map products in the image:').'</h4>
@@ -182,63 +141,65 @@ class AdminScenesControllerCore extends AdminController
 					'.$this->l('Click the appropriate product and then click OK. Repeat these steps for each mapping zone you wish to create.').'<br/>
 					'.$this->l('When you have finished mapping zones, click "Save Image Map."').'
 				</p>',
-            'input' => [
+            'input'       => [
                 [
-                    'type' => 'text',
-                    'label' => $this->l('Image map name'),
-                    'name' => 'name',
-                    'lang' => true,
+                    'type'     => 'text',
+                    'label'    => $this->l('Image map name'),
+                    'name'     => 'name',
+                    'lang'     => true,
                     'required' => true,
-                    'hint' => $this->l('Invalid characters:').' <>;=#{}'
+                    'hint'     => $this->l('Invalid characters:').' <>;=#{}',
                 ],
                 [
-                    'type' => 'switch',
-                    'label' => $this->l('Status'),
-                    'name' => 'active',
+                    'type'     => 'switch',
+                    'label'    => $this->l('Status'),
+                    'name'     => 'active',
                     'required' => false,
-                    'class' => 't',
-                    'is_bool' => true,
-                    'values' => [
+                    'class'    => 't',
+                    'is_bool'  => true,
+                    'values'   => [
                         [
-                            'id' => 'active_on',
+                            'id'    => 'active_on',
                             'value' => 1,
-                            'label' => $this->l('Enabled')
+                            'label' => $this->l('Enabled'),
                         ],
                         [
-                            'id' => 'active_off',
+                            'id'    => 'active_off',
                             'value' => 0,
-                            'label' => $this->l('Disabled')
-                        ]
-                    ]
+                            'label' => $this->l('Disabled'),
+                        ],
+                    ],
                 ],
             ],
-            'submit' => [
-                'title' => $this->l('Save')
+            'submit'      => [
+                'title' => $this->l('Save'),
             ],
         ];
-        $this->fields_form = $fields_form;
+        $this->fields_form = $fieldsForm;
 
-        $image_to_map_desc = '';
-        $image_to_map_desc .= '<div class="help-block">'.$this->l('Format:').' JPG, GIF, PNG. '.$this->l('File size:').' '
-                .(Tools::getMaxUploadSize() / 1024).''.$this->l('Kb max.').' '
-                .sprintf($this->l('If an image is too large, it will be reduced to %1$d x %2$dpx (width x height).'),
-                $large_scene_image_type['width'], $large_scene_image_type['height'])
-                .$this->l('If an image is deemed too small, a white background will be added in order to achieve the correct image size.').'<br />'.
-                $this->l('Note: To change image dimensions, please change the \'large_scene\' image type settings to the desired size (in Back Office > Preferences > Images).')
-                .'</div>';
+        $imageToMapDesc = '';
+        $imageToMapDesc .= '<div class="help-block">'.$this->l('Format:').' JPG, GIF, PNG. '.$this->l('File size:').' '
+            .(Tools::getMaxUploadSize() / 1024).''.$this->l('Kb max.').' '
+            .sprintf(
+                $this->l('If an image is too large, it will be reduced to %1$d x %2$dpx (width x height).'),
+                $largeSceneImageType['width'], $largeSceneImageType['height']
+            )
+            .$this->l('If an image is deemed too small, a white background will be added in order to achieve the correct image size.').'<br />'.
+            $this->l('Note: To change image dimensions, please change the \'large_scene\' image type settings to the desired size (in Back Office > Preferences > Images).')
+            .'</div>';
 
         if ($obj->id && file_exists(_PS_SCENE_IMG_DIR_.$obj->id.'-scene_default.jpg')) {
             $this->addJqueryPlugin('autocomplete');
             $this->addJqueryPlugin('imgareaselect');
             $this->addJs(_PS_JS_DIR_.'admin/scenes.js');
-            $image_to_map_desc .= '<div class="panel panel-default"><span class="thumbnail row-margin-bottom"><img id="large_scene_image" alt="" src="'.
-                _THEME_SCENE_DIR_.$obj->id.'-scene_default.jpg?rand='.(int)rand().'" /></span>';
+            $imageToMapDesc .= '<div class="panel panel-default"><span class="thumbnail row-margin-bottom"><img id="large_scene_image" alt="" src="'.
+                _THEME_SCENE_DIR_.$obj->id.'-scene_default.jpg?rand='.(int) rand().'" /></span>';
 
-            $image_to_map_desc .= '
+            $imageToMapDesc .= '
 				<div id="ajax_choose_product" class="row" style="display:none;">
 					<div class="col-lg-12">
 					<p class="alert alert-info">'
-                    .$this->l('Begin typing the first few letters of the product name, then select the product you are looking for from the drop-down list:').'
+                .$this->l('Begin typing the first few letters of the product name, then select the product you are looking for from the drop-down list:').'
 					</p>
 					<div class="input-group row-margin-bottom">
 						<span class="input-group-addon">
@@ -253,72 +214,126 @@ class AdminScenesControllerCore extends AdminController
 				';
 
             if ($obj->id && file_exists(_PS_SCENE_IMG_DIR_.'thumbs/'.$obj->id.'-m_scene_default.jpg')) {
-                $image_to_map_desc .= '</div><hr/><img class="thumbnail" id="large_scene_image" style="clear:both;border:1px solid black;" alt="" src="'._THEME_SCENE_DIR_.'thumbs/'.$obj->id.'-m_scene_default.jpg?rand='.(int)rand().'" />';
+                $imageToMapDesc .= '</div><hr/><img class="thumbnail" id="large_scene_image" style="clear:both;border:1px solid black;" alt="" src="'._THEME_SCENE_DIR_.'thumbs/'.$obj->id.'-m_scene_default.jpg?rand='.(int) rand().'" />';
             }
 
-            $img_alt_desc = '';
-            $img_alt_desc .= $this->l('If you want to use a thumbnail other than one generated from simply reducing the mapped image, please upload it here.')
+            $imgAltDesc = '';
+            $imgAltDesc .= $this->l('If you want to use a thumbnail other than one generated from simply reducing the mapped image, please upload it here.')
                 .'<br />'.$this->l('Format:').' JPG, GIF, PNG. '
                 .$this->l('File size:').' '.(Tools::getMaxUploadSize() / 1024).''.$this->l('Kb max.').' '
-                .sprintf($this->l('Automatically resized to %1$d x %2$dpx (width x height).'),
-                $thumb_scene_image_type['width'], $thumb_scene_image_type['height']).'.<br />'
+                .sprintf(
+                    $this->l('Automatically resized to %1$d x %2$dpx (width x height).'),
+                    $thumbSceneImageType['width'], $thumbSceneImageType['height']
+                ).'.<br />'
                 .$this->l('Note: To change image dimensions, please change the \'m_scene_default\' image type settings to the desired size (in Back Office > Preferences > Images).');
 
-            $input_img_alt = [
-                'type' => 'file',
+            $inputImgAlt = [
+                'type'  => 'file',
                 'label' => $this->l('Alternative thumbnail'),
-                'name' => 'thumb',
-                'desc' => $img_alt_desc
+                'name'  => 'thumb',
+                'desc'  => $imgAltDesc,
             ];
 
-            $selected_cat = [];
+            $selectedCat = [];
             if (Tools::isSubmit('categories')) {
                 foreach (Tools::getValue('categories') as $row) {
-                    $selected_cat[] = $row;
+                    $selectedCat[] = $row;
                 }
             } elseif ($obj->id) {
                 foreach (Scene::getIndexedCategories($obj->id) as $row) {
-                    $selected_cat[] = $row['id_category'];
+                    $selectedCat[] = $row['id_category'];
                 }
             }
 
             $this->fields_form['input'][] = [
-                    'type'  => 'categories',
-                    'label' => $this->l('Categories'),
-                    'name'  => 'categories',
-                    'tree'  => [
-                        'id'                  => 'categories-tree',
-                        'title'               => 'Categories',
-                        'selected_categories' => $selected_cat,
-                        'use_search'          => true,
-                        'use_checkbox'        => true
-                    ]
+                'type'  => 'categories',
+                'label' => $this->l('Categories'),
+                'name'  => 'categories',
+                'tree'  => [
+                    'id'                  => 'categories-tree',
+                    'title'               => 'Categories',
+                    'selected_categories' => $selectedCat,
+                    'use_search'          => true,
+                    'use_checkbox'        => true,
+                ],
             ];
         } else {
-            $image_to_map_desc .= '<span>'.$this->l('Please add a picture to continue mapping the image.').'</span>';
+            $imageToMapDesc .= '<span>'.$this->l('Please add a picture to continue mapping the image.').'</span>';
         }
 
         if (Shop::isFeatureActive()) {
             $this->fields_form['input'][] = [
-                'type' => 'shop',
+                'type'  => 'shop',
                 'label' => $this->l('Shop association'),
-                'name' => 'checkBoxShopAsso',
+                'name'  => 'checkBoxShopAsso',
             ];
         }
 
         $this->fields_form['input'][] = [
-            'type' => 'file',
-            'label' => $this->l('Image to be mapped'),
-            'name' => 'image',
+            'type'          => 'file',
+            'label'         => $this->l('Image to be mapped'),
+            'name'          => 'image',
             'display_image' => true,
-            'desc' => $image_to_map_desc,
+            'desc'          => $imageToMapDesc,
         ];
 
-        if (isset($input_img_alt)) {
-            $this->fields_form['input'][] = $input_img_alt;
+        if (isset($inputImgAlt)) {
+            $this->fields_form['input'][] = $inputImgAlt;
         }
     }
 
+    /**
+     * Initialize page header toolbar
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
+    public function initPageHeaderToolbar()
+    {
+        if (empty($this->display)) {
+            $this->page_header_toolbar_btn['new_scene'] = [
+                'href' => self::$currentIndex.'&addscene&token='.$this->token,
+                'desc' => $this->l('Add new image map', null, null, false),
+                'icon' => 'process-icon-new',
+            ];
+        }
+
+        parent::initPageHeaderToolbar();
+    }
+
+    /**
+     * Initialize toolbar
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
+    public function initToolbar()
+    {
+        parent::initToolbar();
+
+        if (in_array($this->display, ['add', 'edit'])) {
+            $this->toolbar_btn = array_merge(
+                [
+                    'save-and-stay' => [
+                        'short' => 'SaveAndStay',
+                        'href'  => '#',
+                        'desc'  => $this->l('Save and stay'),
+                    ],
+                ],
+                $this->toolbar_btn
+            );
+        }
+    }
+
+    /**
+     * Post processing
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
     public function postProcess()
     {
         if (Tools::isSubmit('save_image_map')) {
@@ -338,5 +353,50 @@ class AdminScenesControllerCore extends AdminController
             }
         }
         parent::postProcess();
+    }
+
+    /**
+     * After image upload
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
+    protected function afterImageUpload()
+    {
+        /* Generate image with differents size */
+        if (!($obj = $this->loadObject(true))) {
+            return false;
+        }
+
+        if ($obj->id && (isset($_FILES['image']) || isset($_FILES['thumb']))) {
+            $baseImgPath = _PS_SCENE_IMG_DIR_.$obj->id.'.jpg';
+            $imagesTypes = ImageType::getImagesTypes('scenes');
+
+            foreach ($imagesTypes as $k => $imageType) {
+                if ($imageType['name'] == 'm_scene_default') {
+                    if (isset($_FILES['thumb']) && !$_FILES['thumb']['error']) {
+                        $baseThumbPath = _PS_SCENE_THUMB_IMG_DIR_.$obj->id.'.jpg';
+                    } else {
+                        $baseThumbPath = $baseImgPath;
+                    }
+                    ImageManager::resize(
+                        $baseThumbPath,
+                        _PS_SCENE_THUMB_IMG_DIR_.$obj->id.'-'.stripslashes($imageType['name']).'.jpg',
+                        (int) $imageType['width'],
+                        (int) $imageType['height']
+                    );
+                } elseif (isset($_FILES['image']) && isset($_FILES['image']['tmp_name']) && !$_FILES['image']['error']) {
+                    ImageManager::resize(
+                        $baseImgPath,
+                        _PS_SCENE_IMG_DIR_.$obj->id.'-'.stripslashes($imageType['name']).'.jpg',
+                        (int) $imageType['width'],
+                        (int) $imageType['height']
+                    );
+                }
+            }
+        }
+
+        return true;
     }
 }
