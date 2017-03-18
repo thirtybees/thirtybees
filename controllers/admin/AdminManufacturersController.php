@@ -30,13 +30,18 @@
  */
 
 /**
- * @property Manufacturer $object
+ * Class AdminManufacturersControllerCore
+ *
+ * @since 1.0.0
  */
 class AdminManufacturersControllerCore extends AdminController
 {
+    // @codingStandardsIgnoreStart
+    /** @var bool $bootstrap */
     public $bootstrap = true;
     /** @var array countries list */
     protected $countries_array = [];
+    // @codingStandardsIgnoreEnd
 
     /**
      * AdminManufacturersControllerCore constructor.
@@ -110,6 +115,13 @@ class AdminManufacturersControllerCore extends AdminController
         parent::__construct();
     }
 
+    /**
+     * Set media
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function setMedia()
     {
         parent::setMedia();
@@ -121,6 +133,8 @@ class AdminManufacturersControllerCore extends AdminController
      * @param string $textDelimiter
      *
      * @return void
+     *
+     * @since 1.0.0
      */
     public function processExport($textDelimiter = '"')
     {
@@ -139,6 +153,8 @@ class AdminManufacturersControllerCore extends AdminController
      * @param int    $id    the identifier to add to the link
      *
      * @return string
+     *
+     * @since 1.0.0
      */
     public function displayEditaddressesLink($token = null, $id)
     {
@@ -157,7 +173,11 @@ class AdminManufacturersControllerCore extends AdminController
     }
 
     /**
-     * Init content
+     * Initialize content
+     *
+     * @return void
+     *
+     * @since 1.0.0
      */
     public function initContent()
     {
@@ -199,6 +219,9 @@ class AdminManufacturersControllerCore extends AdminController
      *
      * @see AdminController::initToolbar()
      *
+     * @return void
+     *
+     * @since 1.0.0
      */
     public function initToolbar()
     {
@@ -238,6 +261,10 @@ class AdminManufacturersControllerCore extends AdminController
 
     /**
      * Init page header
+     *
+     * @return void
+     *
+     * @since 1.0.0
      */
     public function initPageHeaderToolbar()
     {
@@ -272,6 +299,10 @@ class AdminManufacturersControllerCore extends AdminController
 
     /**
      * Render address form
+     *
+     * @return void
+     *
+     * @since 1.0.0
      */
     public function renderFormAddress()
     {
@@ -478,10 +509,17 @@ class AdminManufacturersControllerCore extends AdminController
         $this->content .= $helper->generateForm($this->fields_form);
     }
 
+    /**
+     * Render form
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
     public function renderForm()
     {
         if (!($manufacturer = $this->loadObject(true))) {
-            return;
+            return '';
         }
 
         $image = _PS_MANU_IMG_DIR_.$manufacturer->id.'.jpg';
@@ -593,7 +631,7 @@ class AdminManufacturersControllerCore extends AdminController
         ];
 
         if (!($manufacturer = $this->loadObject(true))) {
-            return;
+            return '';
         }
 
         if (Shop::isFeatureActive()) {
@@ -638,7 +676,11 @@ class AdminManufacturersControllerCore extends AdminController
     }
 
     /**
+     * Render view
+     *
      * @return string
+     *
+     * @since 1.0.0
      */
     public function renderView()
     {
@@ -858,6 +900,10 @@ class AdminManufacturersControllerCore extends AdminController
      * AdminController::init() override
      *
      * @see AdminController::init()
+     *
+     * @return void
+     *
+     * @since 1.0.0
      */
     public function init()
     {
@@ -962,6 +1008,15 @@ class AdminManufacturersControllerCore extends AdminController
         return $res;
     }
 
+    /**
+     * Before delete
+     *
+     * @param ObjectModel $object
+     *
+     * @return true
+     *
+     * @since 1.0.0
+     */
     protected function beforeDelete($object)
     {
         return true;
