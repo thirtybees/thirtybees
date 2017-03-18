@@ -21,19 +21,26 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * @property SearchEngine $object
+ * Class AdminSearchEnginesControllerCore
+ *
+ * @since 1.0.0
  */
 class AdminSearchEnginesControllerCore extends AdminController
 {
+    /**
+     * AdminSearchEnginesControllerCore constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         $this->bootstrap = true;
@@ -52,58 +59,63 @@ class AdminSearchEnginesControllerCore extends AdminController
 
         $this->bulk_actions = [
             'delete' => [
-                'text' => $this->l('Delete selected'),
+                'text'    => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
-                'icon' => 'icon-trash'
-            ]
+                'icon'    => 'icon-trash',
+            ],
         ];
 
         $this->fields_list = [
             'id_search_engine' => ['title' => $this->l('ID'), 'width' => 25],
-            'server' => ['title' => $this->l('Server')],
-            'getvar' => ['title' => $this->l('GET variable'), 'width' => 100]
+            'server'           => ['title' => $this->l('Server')],
+            'getvar'           => ['title' => $this->l('GET variable'), 'width' => 100],
         ];
 
         $this->fields_form = [
             'legend' => [
-                'title' => $this->l('Referrer')
+                'title' => $this->l('Referrer'),
             ],
-            'input' => [
+            'input'  => [
                 [
-                    'type' => 'text',
-                    'label' => $this->l('Server'),
-                    'name' => 'server',
-                    'size' => 20,
-                    'required' => true
+                    'type'     => 'text',
+                    'label'    => $this->l('Server'),
+                    'name'     => 'server',
+                    'size'     => 20,
+                    'required' => true,
                 ],
                 [
-                    'type' => 'text',
-                    'label' => $this->l('$_GET variable'),
-                    'name' => 'getvar',
-                    'size' => 40,
-                    'required' => true
-                ]
+                    'type'     => 'text',
+                    'label'    => $this->l('$_GET variable'),
+                    'name'     => 'getvar',
+                    'size'     => 40,
+                    'required' => true,
+                ],
             ],
             'submit' => [
                 'title' => $this->l('Save'),
-            ]
+            ],
         ];
 
         parent::__construct();
     }
 
+    /**
+     * Initialize page header toolbar
+     *
+     * @since 1.0.0
+     */
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_search_engine'] = [
                 'href' => self::$currentIndex.'&addsearch_engine&token='.$this->token,
                 'desc' => $this->l('Add new search engine', null, null, false),
-                'icon' => 'process-icon-new'
+                'icon' => 'process-icon-new',
             ];
         }
 
         $this->identifier_name = 'server';
-        
+
         parent::initPageHeaderToolbar();
     }
 }
