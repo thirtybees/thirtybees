@@ -21,19 +21,26 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * @property ShopGroup $object
+ * Class AdminShopGroupControllerCore
+ *
+ * @since 1.0.0
  */
 class AdminShopGroupControllerCore extends AdminController
 {
+    /**
+     * AdminShopGroupControllerCore constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         $this->bootstrap = true;
@@ -59,9 +66,9 @@ class AdminShopGroupControllerCore extends AdminController
                 'align' => 'center',
                 'class' => 'fixed-width-xs',
             ],
-            'name' => [
-                'title' => $this->l('Shop group'),
-                'width' => 'auto',
+            'name'          => [
+                'title'      => $this->l('Shop group'),
+                'width'      => 'auto',
                 'filter_key' => 'a!name',
             ],
             /*'active' => array(
@@ -77,29 +84,43 @@ class AdminShopGroupControllerCore extends AdminController
 
         $this->fields_options = [
             'general' => [
-                'title' =>    $this->l('Multistore options'),
-                'fields' =>    [
+                'title'  => $this->l('Multistore options'),
+                'fields' => [
                     'PS_SHOP_DEFAULT' => [
-                        'title' => $this->l('Default shop'),
-                        'cast' => 'intval',
-                        'type' => 'select',
+                        'title'      => $this->l('Default shop'),
+                        'cast'       => 'intval',
+                        'type'       => 'select',
                         'identifier' => 'id_shop',
-                        'list' => Shop::getShops(),
-                        'visibility' => Shop::CONTEXT_ALL
-                    ]
+                        'list'       => Shop::getShops(),
+                        'visibility' => Shop::CONTEXT_ALL,
+                    ],
                 ],
-                'submit' => ['title' => $this->l('Save')]
-            ]
+                'submit' => ['title' => $this->l('Save')],
+            ],
         ];
 
         parent::__construct();
     }
 
+    /**
+     * @param bool $disable
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
     public function viewAccess($disable = false)
     {
         return Configuration::get('PS_MULTISHOP_FEATURE_ACTIVE');
     }
 
+    /**
+     * Initialize content
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function initContent()
     {
         parent::initContent();
@@ -107,12 +128,12 @@ class AdminShopGroupControllerCore extends AdminController
         $this->addJqueryPlugin('cooki-plugin');
         $data = Shop::getTree();
 
-        foreach ($data as $key_group => &$group) {
-            foreach ($group['shops'] as $key_shop => &$shop) {
-                $current_shop = new Shop($shop['id_shop']);
-                $urls = $current_shop->getUrls();
+        foreach ($data as $keyGroup => &$group) {
+            foreach ($group['shops'] as $keyShop => &$shop) {
+                $currentShop = new Shop($shop['id_shop']);
+                $urls = $currentShop->getUrls();
 
-                foreach ($urls as $key_url => &$url) {
+                foreach ($urls as $keyUrl => &$url) {
                     $title = $url['domain'].$url['physical_uri'].$url['virtual_uri'];
                     if (strlen($title) > 23) {
                         $title = substr($title, 0, 23).'...';
@@ -124,27 +145,29 @@ class AdminShopGroupControllerCore extends AdminController
             }
         }
 
-        $shops_tree = new HelperTreeShops('shops-tree', $this->l('Multistore tree'));
-        $shops_tree->setNodeFolderTemplate('shop_tree_node_folder.tpl')->setNodeItemTemplate('shop_tree_node_item.tpl')
+        $shopsTree = new HelperTreeShops('shops-tree', $this->l('Multistore tree'));
+        $shopsTree->setNodeFolderTemplate('shop_tree_node_folder.tpl')->setNodeItemTemplate('shop_tree_node_item.tpl')
             ->setHeaderTemplate('shop_tree_header.tpl')->setActions(
                 [
-                new TreeToolbarLink(
-                    'Collapse All',
-                    '#',
-                    '$(\'#'.$shops_tree->getId().'\').tree(\'collapseAll\'); return false;',
-                    'icon-collapse-alt'),
-                new TreeToolbarLink(
-                    'Expand All',
-                    '#',
-                    '$(\'#'.$shops_tree->getId().'\').tree(\'expandAll\'); return false;',
-                    'icon-expand-alt')
+                    new TreeToolbarLink(
+                        'Collapse All',
+                        '#',
+                        '$(\'#'.$shopsTree->getId().'\').tree(\'collapseAll\'); return false;',
+                        'icon-collapse-alt'
+                    ),
+                    new TreeToolbarLink(
+                        'Expand All',
+                        '#',
+                        '$(\'#'.$shopsTree->getId().'\').tree(\'expandAll\'); return false;',
+                        'icon-expand-alt'
+                    ),
                 ]
             )
             ->setAttribute('url_shop_group', $this->context->link->getAdminLink('AdminShopGroup'))
             ->setAttribute('url_shop', $this->context->link->getAdminLink('AdminShop'))
             ->setAttribute('url_shop_url', $this->context->link->getAdminLink('AdminShopUrl'))
             ->setData($data);
-        $shops_tree = $shops_tree->render(null, false, false);
+        $shopsTree = $shopsTree->render(null, false, false);
 
         if ($this->display == 'edit') {
             $this->toolbar_title[] = $this->object->name;
@@ -152,14 +175,21 @@ class AdminShopGroupControllerCore extends AdminController
 
         $this->context->smarty->assign(
             [
-            'toolbar_scroll' => 1,
-            'toolbar_btn' => $this->toolbar_btn,
-            'title' => $this->toolbar_title,
-            'shops_tree' => $shops_tree
+                'toolbar_scroll' => 1,
+                'toolbar_btn'    => $this->toolbar_btn,
+                'title'          => $this->toolbar_title,
+                'shops_tree'     => $shopsTree,
             ]
         );
     }
 
+    /**
+     * Initialize page header toolbar
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function initPageHeaderToolbar()
     {
         parent::initPageHeaderToolbar();
@@ -167,17 +197,24 @@ class AdminShopGroupControllerCore extends AdminController
         if ($this->display != 'add' && $this->display != 'edit') {
             $this->page_header_toolbar_btn['new'] = [
                 'desc' => $this->l('Add a new shop group'),
-                'href' => self::$currentIndex.'&add'.$this->table.'&token='.$this->token
+                'href' => self::$currentIndex.'&add'.$this->table.'&token='.$this->token,
             ];
             $this->page_header_toolbar_btn['new_2'] = [
-                'desc' => $this->l('Add a new shop'),
-                'href' => $this->context->link->getAdminLink('AdminShop').'&addshop',
+                'desc'     => $this->l('Add a new shop'),
+                'href'     => $this->context->link->getAdminLink('AdminShop').'&addshop',
                 'imgclass' => 'new_2',
-                'icon' => 'process-icon-new'
+                'icon'     => 'process-icon-new',
             ];
         }
     }
 
+    /**
+     * Initialize toolbar
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function initToolbar()
     {
         parent::initToolbar();
@@ -190,148 +227,177 @@ class AdminShopGroupControllerCore extends AdminController
         }
     }
 
+    /**
+     * Render form
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
     public function renderForm()
     {
         $this->fields_form = [
-            'legend' => [
+            'legend'      => [
                 'title' => $this->l('Shop group'),
-                'icon' => 'icon-shopping-cart'
+                'icon'  => 'icon-shopping-cart',
             ],
             'description' => $this->l('Warning: Enabling the "share customers" and "share orders" options is not recommended. Once activated and orders are created, you will not be able to disable these options. If you need these options, we recommend using several categories rather than several shops.'),
-            'input' => [
+            'input'       => [
                 [
-                    'type' => 'text',
-                    'label' => $this->l('Shop group name'),
-                    'name' => 'name',
-                    'required' => true
+                    'type'     => 'text',
+                    'label'    => $this->l('Shop group name'),
+                    'name'     => 'name',
+                    'required' => true,
                 ],
                 [
-                    'type' => 'switch',
-                    'label' => $this->l('Share customers'),
-                    'name' => 'share_customer',
+                    'type'     => 'switch',
+                    'label'    => $this->l('Share customers'),
+                    'name'     => 'share_customer',
                     'required' => true,
-                    'class' => 't',
-                    'is_bool' => true,
+                    'class'    => 't',
+                    'is_bool'  => true,
                     'disabled' => ($this->id_object && $this->display == 'edit' && ShopGroup::hasDependency($this->id_object, 'customer')) ? true : false,
-                    'values' => [
+                    'values'   => [
                         [
-                            'id' => 'share_customer_on',
-                            'value' => 1
+                            'id'    => 'share_customer_on',
+                            'value' => 1,
                         ],
                         [
-                            'id' => 'share_customer_off',
-                            'value' => 0
-                        ]
+                            'id'    => 'share_customer_off',
+                            'value' => 0,
+                        ],
                     ],
-                    'desc' => $this->l('Once this option is enabled, the shops in this group will share customers. If a customer registers in any one of these shops, the account will automatically be available in the others shops of this group.').'<br/>'.$this->l('Warning: you will not be able to disable this option once you have registered customers.'),
+                    'desc'     => $this->l('Once this option is enabled, the shops in this group will share customers. If a customer registers in any one of these shops, the account will automatically be available in the others shops of this group.').'<br/>'.$this->l('Warning: you will not be able to disable this option once you have registered customers.'),
                 ],
                 [
-                    'type' => 'switch',
-                    'label' => $this->l('Share available quantities to sell'),
-                    'name' => 'share_stock',
+                    'type'     => 'switch',
+                    'label'    => $this->l('Share available quantities to sell'),
+                    'name'     => 'share_stock',
                     'required' => true,
-                    'class' => 't',
-                    'is_bool' => true,
-                    'values' => [
+                    'class'    => 't',
+                    'is_bool'  => true,
+                    'values'   => [
                         [
-                            'id' => 'share_stock_on',
-                            'value' => 1
+                            'id'    => 'share_stock_on',
+                            'value' => 1,
                         ],
                         [
-                            'id' => 'share_stock_off',
-                            'value' => 0
-                        ]
+                            'id'    => 'share_stock_off',
+                            'value' => 0,
+                        ],
                     ],
-                    'desc' => $this->l('Share available quantities between shops of this group. When changing this option, all available products quantities will be reset to 0.'),
+                    'desc'     => $this->l('Share available quantities between shops of this group. When changing this option, all available products quantities will be reset to 0.'),
                 ],
                 [
-                    'type' => 'switch',
-                    'label' => $this->l('Share orders'),
-                    'name' => 'share_order',
+                    'type'     => 'switch',
+                    'label'    => $this->l('Share orders'),
+                    'name'     => 'share_order',
                     'required' => true,
-                    'class' => 't',
-                    'is_bool' => true,
+                    'class'    => 't',
+                    'is_bool'  => true,
                     'disabled' => ($this->id_object && $this->display == 'edit' && ShopGroup::hasDependency($this->id_object, 'order')) ? true : false,
-                    'values' => [
+                    'values'   => [
                         [
-                            'id' => 'share_order_on',
-                            'value' => 1
+                            'id'    => 'share_order_on',
+                            'value' => 1,
                         ],
                         [
-                            'id' => 'share_order_off',
-                            'value' => 0
-                        ]
+                            'id'    => 'share_order_off',
+                            'value' => 0,
+                        ],
                     ],
-                    'desc' => $this->l('Once this option is enabled (which is only possible if customers and available quantities are shared among shops), the customer\'s cart will be shared by all shops in this group. This way, any purchase started in one shop will be able to be completed in another shop from the same group.').'<br/>'.$this->l('Warning: You will not be able to disable this option once you\'ve started to accept orders.')
+                    'desc'     => $this->l('Once this option is enabled (which is only possible if customers and available quantities are shared among shops), the customer\'s cart will be shared by all shops in this group. This way, any purchase started in one shop will be able to be completed in another shop from the same group.').'<br/>'.$this->l('Warning: You will not be able to disable this option once you\'ve started to accept orders.'),
                 ],
                 [
-                    'type' => 'switch',
-                    'label' => $this->l('Status'),
-                    'name' => 'active',
+                    'type'     => 'switch',
+                    'label'    => $this->l('Status'),
+                    'name'     => 'active',
                     'required' => true,
-                    'class' => 't',
-                    'is_bool' => true,
-                    'values' => [
+                    'class'    => 't',
+                    'is_bool'  => true,
+                    'values'   => [
                         [
-                            'id' => 'active_on',
-                            'value' => 1
+                            'id'    => 'active_on',
+                            'value' => 1,
                         ],
                         [
-                            'id' => 'active_off',
-                            'value' => 0
-                        ]
+                            'id'    => 'active_off',
+                            'value' => 0,
+                        ],
                     ],
-                    'desc' => $this->l('Enable or disable this shop group?')
-                ]
+                    'desc'     => $this->l('Enable or disable this shop group?'),
+                ],
             ],
-            'submit' => [
+            'submit'      => [
                 'title' => $this->l('Save'),
-            ]
+            ],
         ];
 
         if (!($obj = $this->loadObject(true))) {
-            return;
+            return '';
         }
 
         if (Shop::getTotalShops() > 1 && $obj->id) {
             $disabled = [
                 'share_customer' => true,
-                'share_stock' => true,
-                'share_order' => true,
-                'active' => false
+                'share_stock'    => true,
+                'share_order'    => true,
+                'active'         => false,
             ];
         } else {
             $disabled = false;
         }
 
-        $default_shop = new Shop(Configuration::get('PS_SHOP_DEFAULT'));
+        $defaultShop = new Shop(Configuration::get('PS_SHOP_DEFAULT'));
         $this->tpl_form_vars = [
-            'disabled' => $disabled,
-            'checked' => (Tools::getValue('addshop_group') !== false) ? true : false,
-            'defaultGroup' => $default_shop->id_shop_group,
+            'disabled'     => $disabled,
+            'checked'      => (Tools::getValue('addshop_group') !== false) ? true : false,
+            'defaultGroup' => $defaultShop->id_shop_group,
         ];
 
         $this->fields_value = [
-            'active' => true
+            'active' => true,
         ];
+
         return parent::renderForm();
     }
 
+    /**
+     * Get list
+     *
+     * @param int         $idLang
+     * @param string|null $orderBy
+     * @param string|null $orderWay
+     * @param int         $start
+     * @param int|null    $limit
+     * @param int|bool    $idLangShop
+     *
+     * @since 1.0.0
+     *
+     * @return void
+     */
     public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
         parent::getList($idLang, $orderBy, $orderWay, $start, $limit, $idLangShop);
-        $shop_group_delete_list = [];
+        $shopGroupDeleteList = [];
 
         // test store authorized to remove
-        foreach ($this->_list as $shop_group) {
-            $shops = Shop::getShops(true, $shop_group['id_shop_group']);
+        foreach ($this->_list as $shopGroup) {
+            $shops = Shop::getShops(true, $shopGroup['id_shop_group']);
             if (!empty($shops)) {
-                $shop_group_delete_list[] = $shop_group['id_shop_group'];
+                $shopGroupDeleteList[] = $shopGroup['id_shop_group'];
             }
         }
-        $this->addRowActionSkipList('delete', $shop_group_delete_list);
+        $this->addRowActionSkipList('delete', $shopGroupDeleteList);
     }
 
+    /**
+     * Post processing
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
     public function postProcess()
     {
         if (Tools::isSubmit('delete'.$this->table) || Tools::isSubmit('status') || Tools::isSubmit('status'.$this->table)) {
@@ -348,21 +414,17 @@ class AdminShopGroupControllerCore extends AdminController
                 return false;
             }
         }
+
         return parent::postProcess();
     }
 
-    protected function afterAdd($new_shop_group)
-    {
-        //Reset available quantitites
-        StockAvailable::resetProductFromStockAvailableByShopGroup($new_shop_group);
-    }
-
-    protected function afterUpdate($new_shop_group)
-    {
-        //Reset available quantitites
-        StockAvailable::resetProductFromStockAvailableByShopGroup($new_shop_group);
-    }
-
+    /**
+     * Render options
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
     public function renderOptions()
     {
         if ($this->fields_options && is_array($this->fields_options)) {
@@ -376,5 +438,35 @@ class AdminShopGroupControllerCore extends AdminController
 
             return $options;
         }
+    }
+
+    /**
+     * After add
+     *
+     * @param ShopGroup $newShopGroup
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
+    protected function afterAdd($newShopGroup)
+    {
+        //Reset available quantitites
+        StockAvailable::resetProductFromStockAvailableByShopGroup($newShopGroup);
+    }
+
+    /**
+     * After update
+     *
+     * @param ShopGroup $newShopGroup
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
+    protected function afterUpdate($newShopGroup)
+    {
+        //Reset available quantitites
+        StockAvailable::resetProductFromStockAvailableByShopGroup($newShopGroup);
     }
 }
