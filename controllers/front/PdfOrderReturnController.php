@@ -21,25 +21,42 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class PdfOrderReturnControllerCore
+ *
+ * @since 1.0.0
+ */
 class PdfOrderReturnControllerCore extends FrontController
 {
+    // @codingStandardsIgnoreStart
+    /** @var string $php_self */
     public $php_self = 'pdf-order-return';
+    /** @var bool $display_header */
     protected $display_header = false;
+    /** @var bool $display_footer */
     protected $display_footer = false;
+    // @codingStandardsIgnoreEnd
 
+    /**
+     * Post processing
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function postProcess()
     {
-        $from_admin = (Tools::getValue('adtoken') == Tools::getAdminToken('AdminReturn'.(int)Tab::getIdFromClassName('AdminReturn').(int)Tools::getValue('id_employee')));
+        $fromAdmin = (Tools::getValue('adtoken') == Tools::getAdminToken('AdminReturn'.(int) Tab::getIdFromClassName('AdminReturn').(int) Tools::getValue('id_employee')));
 
-        if (!$from_admin && !$this->context->customer->isLogged()) {
+        if (!$fromAdmin && !$this->context->customer->isLogged()) {
             Tools::redirect('index.php?controller=authentication&back=order-follow');
         }
 
@@ -49,13 +66,20 @@ class PdfOrderReturnControllerCore extends FrontController
 
         if (!isset($this->orderReturn) || !Validate::isLoadedObject($this->orderReturn)) {
             die(Tools::displayError('Order return not found.'));
-        } elseif (!$from_admin && $this->orderReturn->id_customer != $this->context->customer->id) {
+        } elseif (!$fromAdmin && $this->orderReturn->id_customer != $this->context->customer->id) {
             die(Tools::displayError('Order return not found.'));
         } elseif ($this->orderReturn->state < 2) {
             die(Tools::displayError('Order return not confirmed.'));
         }
     }
 
+    /**
+     * Display
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function display()
     {
         $pdf = new PDF($this->orderReturn, PDF::TEMPLATE_ORDER_RETURN, $this->context->smarty);
