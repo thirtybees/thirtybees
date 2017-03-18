@@ -21,38 +21,56 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class PdfInvoiceControllerCore
+ *
+ * @since 1.0.0
+ */
 class PdfInvoiceControllerCore extends FrontController
 {
+    // @codingStandardsIgnoreStart
+    /** @var string $php_self */
     public $php_self = 'pdf-invoice';
-    protected $display_header = false;
-    protected $display_footer = false;
-
+    /** @var bool $content_only */
     public $content_only = true;
-
-    protected $template;
+    /** @var string $filename */
     public $filename;
+    /** @var bool $display_header */
+    protected $display_header = false;
+    /** @var bool $display_footer */
+    protected $display_footer = false;
+    /** @var string $template */
+    protected $template;
+    // @codingStandardsIgnoreEnd
 
+    /**
+     * Post processing
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function postProcess()
     {
         if (!$this->context->customer->isLogged() && !Tools::getValue('secure_key')) {
             Tools::redirect('index.php?controller=authentication&back=pdf-invoice');
         }
 
-        if (!(int)Configuration::get('PS_INVOICE')) {
+        if (!(int) Configuration::get('PS_INVOICE')) {
             die(Tools::displayError('Invoices are disabled in this shop.'));
         }
 
-        $id_order = (int)Tools::getValue('id_order');
-        if (Validate::isUnsignedId($id_order)) {
-            $order = new Order((int)$id_order);
+        $idOrder = (int) Tools::getValue('id_order');
+        if (Validate::isUnsignedId($idOrder)) {
+            $order = new Order((int) $idOrder);
         }
 
         if (!isset($order) || !Validate::isLoadedObject($order)) {
@@ -70,12 +88,19 @@ class PdfInvoiceControllerCore extends FrontController
         $this->order = $order;
     }
 
+    /**
+     * Display
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function display()
     {
-        $order_invoice_list = $this->order->getInvoicesCollection();
-        Hook::exec('actionPDFInvoiceRender', ['order_invoice_list' => $order_invoice_list]);
+        $orderInvoiceList = $this->order->getInvoicesCollection();
+        Hook::exec('actionPDFInvoiceRender', ['order_invoice_list' => $orderInvoiceList]);
 
-        $pdf = new PDF($order_invoice_list, PDF::TEMPLATE_INVOICE, $this->context->smarty);
+        $pdf = new PDF($orderInvoiceList, PDF::TEMPLATE_INVOICE, $this->context->smarty);
         $pdf->render();
     }
 }
