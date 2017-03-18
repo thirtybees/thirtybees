@@ -21,22 +21,36 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class PasswordControllerCore
+ *
+ * @since 1.0.0
+ */
 class PasswordControllerCore extends FrontController
 {
+    // @codingStandardsIgnoreStart
+    /** @var string $php_self */
     public $php_self = 'password';
+    /** @var bool $auth */
     public $auth = false;
+    // @codingStandardsIgnoreEnd
 
     /**
      * Start forms process
+     *
      * @see FrontController::postProcess()
+     *
+     * @return void
+     *
+     * @since 1.0.0
      */
     public function postProcess()
     {
@@ -50,24 +64,24 @@ class PasswordControllerCore extends FrontController
                     $this->errors[] = Tools::displayError('There is no account registered for this email address.');
                 } elseif (!$customer->active) {
                     $this->errors[] = Tools::displayError('You cannot regenerate the password for this account.');
-                } elseif ((strtotime($customer->last_passwd_gen.'+'.($min_time = (int)Configuration::get('PS_PASSWD_TIME_FRONT')).' minutes') - time()) > 0) {
-                    $this->errors[] = sprintf(Tools::displayError('You can regenerate your password only every %d minute(s)'), (int)$min_time);
+                } elseif ((strtotime($customer->last_passwd_gen.'+'.($minTime = (int) Configuration::get('PS_PASSWD_TIME_FRONT')).' minutes') - time()) > 0) {
+                    $this->errors[] = sprintf(Tools::displayError('You can regenerate your password only every %d minute(s)'), (int) $minTime);
                 } else {
-                    $mail_params = [
-                        '{email}' => $customer->email,
-                        '{lastname}' => $customer->lastname,
+                    $mailParams = [
+                        '{email}'     => $customer->email,
+                        '{lastname}'  => $customer->lastname,
                         '{firstname}' => $customer->firstname,
-                        '{url}' => $this->context->link->getPageLink('password', true, null, 'token='.$customer->secure_key.'&id_customer='.(int)$customer->id)
+                        '{url}'       => $this->context->link->getPageLink('password', true, null, 'token='.$customer->secure_key.'&id_customer='.(int) $customer->id),
                     ];
-                    if (Mail::Send($this->context->language->id, 'password_query', Mail::l('Password query confirmation'), $mail_params, $customer->email, $customer->firstname.' '.$customer->lastname)) {
+                    if (Mail::Send($this->context->language->id, 'password_query', Mail::l('Password query confirmation'), $mailParams, $customer->email, $customer->firstname.' '.$customer->lastname)) {
                         $this->context->smarty->assign(['confirmation' => 2, 'customer_email' => $customer->email]);
                     } else {
                         $this->errors[] = Tools::displayError('An error occurred while sending the email.');
                     }
                 }
             }
-        } elseif (($token = Tools::getValue('token')) && ($id_customer = (int)Tools::getValue('id_customer'))) {
-            $email = Db::getInstance()->getValue('SELECT `email` FROM '._DB_PREFIX_.'customer c WHERE c.`secure_key` = \''.pSQL($token).'\' AND c.id_customer = '.(int)$id_customer);
+        } elseif (($token = Tools::getValue('token')) && ($idCustomer = (int) Tools::getValue('id_customer'))) {
+            $email = Db::getInstance()->getValue('SELECT `email` FROM '._DB_PREFIX_.'customer c WHERE c.`secure_key` = \''.pSQL($token).'\' AND c.id_customer = '.(int) $idCustomer);
             if ($email) {
                 $customer = new Customer();
                 $customer->getByemail($email);
@@ -75,20 +89,20 @@ class PasswordControllerCore extends FrontController
                     $this->errors[] = Tools::displayError('Customer account not found');
                 } elseif (!$customer->active) {
                     $this->errors[] = Tools::displayError('You cannot regenerate the password for this account.');
-                } elseif ((strtotime($customer->last_passwd_gen.'+'.(int)Configuration::get('PS_PASSWD_TIME_FRONT').' minutes') - time()) > 0) {
+                } elseif ((strtotime($customer->last_passwd_gen.'+'.(int) Configuration::get('PS_PASSWD_TIME_FRONT').' minutes') - time()) > 0) {
                     Tools::redirect('index.php?controller=authentication&error_regen_pwd');
                 } else {
                     $customer->passwd = Tools::hash($password = Tools::passwdGen(MIN_PASSWD_LENGTH, 'RANDOM'));
                     $customer->last_passwd_gen = date('Y-m-d H:i:s', time());
                     if ($customer->update()) {
                         Hook::exec('actionPasswordRenew', ['customer' => $customer, 'password' => $password]);
-                        $mail_params = [
-                            '{email}' => $customer->email,
-                            '{lastname}' => $customer->lastname,
+                        $mailParams = [
+                            '{email}'     => $customer->email,
+                            '{lastname}'  => $customer->lastname,
                             '{firstname}' => $customer->firstname,
-                            '{passwd}' => $password
+                            '{passwd}'    => $password,
                         ];
-                        if (Mail::Send($this->context->language->id, 'password', Mail::l('Your new password'), $mail_params, $customer->email, $customer->firstname.' '.$customer->lastname)) {
+                        if (Mail::Send($this->context->language->id, 'password', Mail::l('Your new password'), $mailParams, $customer->email, $customer->firstname.' '.$customer->lastname)) {
                             $this->context->smarty->assign(['confirmation' => 1, 'customer_email' => $customer->email]);
                         } else {
                             $this->errors[] = Tools::displayError('An error occurred while sending the email.');
@@ -107,7 +121,12 @@ class PasswordControllerCore extends FrontController
 
     /**
      * Assign template vars related to page content
+     *
      * @see FrontController::initContent()
+     *
+     * @return void
+     *
+     * @since 1.0.0
      */
     public function initContent()
     {
