@@ -37,8 +37,8 @@
 class AdminImportControllerCore extends AdminController
 {
     const MAX_COLUMNS = 6;
-
     const UNFRIENDLY_ERROR = false;
+    const MAX_LINE_SIZE = 0;
 
     // @codingStandardsIgnoreStart
     public static $columnMask;
@@ -76,10 +76,10 @@ class AdminImportControllerCore extends AdminController
     public $multiple_value_separator;
     // @codingStandardsIgnoreEnd
 
-    const MAX_LINE_SIZE = 0;
-
     /**
      * AdminImportControllerCore constructor.
+     *
+     * @since 1.0.0
      */
     public function __construct()
     {
@@ -571,6 +571,67 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
+     * @param string $field
+     *
+     * @return float
+     *
+     * @since 1.0.0
+     */
+    protected static function getPrice($field)
+    {
+        $field = ((float) str_replace(',', '.', $field));
+        $field = ((float) str_replace('%', '', $field));
+
+        return $field;
+    }
+
+    /**
+     * @param string      $infos
+     * @param string      $key
+     * @param ObjectModel $entity
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
+    protected static function fillInfo($infos, $key, &$entity)
+    {
+        $infos = trim($infos);
+        if (isset(self::$validators[$key][1]) && self::$validators[$key][1] == 'createMultiLangField' && Tools::getValue('iso_lang')) {
+            $idLang = Language::getIdByIso(Tools::getValue('iso_lang'));
+            $tmp = call_user_func(self::$validators[$key], $infos);
+            foreach ($tmp as $idLangTmp => $value) {
+                if (empty($entity->{$key}[$idLangTmp]) || $idLangTmp == $idLang) {
+                    $entity->{$key}[$idLangTmp] = $value;
+                }
+            }
+        } elseif (!empty($infos) || $infos == '0') { // ($infos == '0') => if you want to disable a product by using "0" in active because empty('0') return true
+            $entity->{$key} = isset(self::$validators[$key]) ? call_user_func(self::$validators[$key], $infos) : $infos;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param $a
+     * @param $b
+     *
+     * @return int
+     *
+     * @since 1.0.0
+     */
+    protected static function usortFiles($a, $b)
+    {
+        if ($a == $b) {
+            return 0;
+        }
+
+        return ($b < $a) ? 1 : -1;
+    }
+
+    /**
+     * @return void
+     *
      * @since 1.0.0
      */
     public function setMedia()
@@ -594,6 +655,8 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
+     * @return void
+     *
      * @since 1.0.0
      */
     public function ajaxProcessuploadCsv()
@@ -630,6 +693,65 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
+     * @param string $file
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
+    public static function getPath($file = '')
+    {
+        return (defined('_PS_HOST_MODE_') ? _PS_ROOT_DIR_ : _PS_ADMIN_DIR_).DIRECTORY_SEPARATOR.'import'.DIRECTORY_SEPARATOR.$file;
+    }
+
+    /**
+     * @return void
+     *
+     * @since 1.0.0
+     */
+    public function init()
+    {
+        parent::init();
+        if (Tools::isSubmit('submitImportFile')) {
+            $this->display = 'import';
+        }
+    }
+
+    /**
+     * @return void
+     *
+     * @since 1.0.0
+     */
+    public function initContent()
+    {
+        $this->initTabModuleList();
+        $this->initToolbar();
+        $this->initPageHeaderToolbar();
+        if ($this->display == 'import') {
+            if (Tools::getValue('csv')) {
+                $this->content .= $this->renderView();
+            } else {
+                $this->errors[] = $this->l('To proceed, please upload a file first.');
+                $this->content .= $this->renderForm();
+            }
+        } else {
+            $this->content .= $this->renderForm();
+        }
+
+        $this->context->smarty->assign(
+            [
+                'content'                   => $this->content,
+                'url_post'                  => self::$currentIndex.'&token='.$this->token,
+                'show_page_header_toolbar'  => $this->show_page_header_toolbar,
+                'page_header_toolbar_title' => $this->page_header_toolbar_title,
+                'page_header_toolbar_btn'   => $this->page_header_toolbar_btn,
+            ]
+        );
+    }
+
+    /**
+     * @return void
+     *
      * @since 1.0.0
      */
     public function initToolbar()
@@ -656,80 +778,9 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param string $file
-     *
      * @return string
      *
      * @since 1.0.0
-     */
-    public static function getPath($file = '')
-    {
-        return (defined('_PS_HOST_MODE_') ? _PS_ROOT_DIR_ : _PS_ADMIN_DIR_).DIRECTORY_SEPARATOR.'import'.DIRECTORY_SEPARATOR.$file;
-    }
-
-    /**
-     * @since 1.0.0
-     */
-    public function clearSmartyCache()
-    {
-        Tools::enableCache();
-        Tools::clearCache($this->context->smarty);
-        Tools::restoreCacheSettings();
-    }
-
-    /**
-     * @since 1.0.0
-     */
-    public function init()
-    {
-        parent::init();
-        if (Tools::isSubmit('submitImportFile')) {
-            $this->display = 'import';
-        }
-    }
-
-    /**
-     * @since 1.0.0
-     */
-    public function initContent()
-    {
-        $this->initTabModuleList();
-        $this->initToolbar();
-        $this->initPageHeaderToolbar();
-        if ($this->display == 'import') {
-            if (Tools::getValue('csv')) {
-                $this->content .= $this->renderView();
-            } else {
-                $this->errors[] = $this->l('To proceed, please upload a file first.');
-                $this->content .= $this->renderForm();
-            }
-        } else {
-            $this->content .= $this->renderForm();
-        }
-
-        $this->context->smarty->assign(
-            [
-                'content' => $this->content,
-                'url_post' => self::$currentIndex.'&token='.$this->token,
-                'show_page_header_toolbar' => $this->show_page_header_toolbar,
-                'page_header_toolbar_title' => $this->page_header_toolbar_title,
-                'page_header_toolbar_btn' => $this->page_header_toolbar_btn,
-            ]
-        );
-    }
-
-    /**
-     * @since 1.0.0
-     */
-    public static function setLocale()
-    {
-        $isoLang = trim(Tools::getValue('iso_lang'));
-        setlocale(LC_COLLATE, strtolower($isoLang).'_'.strtoupper($isoLang).'.UTF-8');
-        setlocale(LC_CTYPE, strtolower($isoLang).'_'.strtoupper($isoLang).'.UTF-8');
-    }
-
-    /**
-     * @return string
      */
     public function renderView()
     {
@@ -782,7 +833,218 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param $array
+     * @param int|bool $offset
+     *
+     * @return bool|null|resource
+     *
+     * @since 1.0.0
+     */
+    protected function openCsvFile($offset = false)
+    {
+        $file = $this->excelToCsvFile(Tools::getValue('csv'));
+        $handle = false;
+        if (is_file($file) && is_readable($file)) {
+            if (!mb_check_encoding(file_get_contents($file), 'UTF-8')) {
+                $this->convert = true;
+            }
+            $handle = fopen($file, 'r');
+        }
+
+        if (!$handle) {
+            $this->errors[] = $this->l('Cannot read the .CSV file');
+
+            return null; // error case
+        }
+
+        self::rewindBomAware($handle);
+
+        $toSkip = (int) Tools::getValue('skip');
+        if ($offset && $offset > 0) {
+            $toSkip += $offset;
+        }
+        for ($i = 0; $i < $toSkip; ++$i) {
+            $line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator);
+            if ($line === false) {
+                return false; // reached end of file
+            }
+        }
+
+        return $handle;
+    }
+
+    /**
+     * @param string $filename
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
+    protected function excelToCsvFile($filename)
+    {
+        if (preg_match('#(.*?)\.(csv)#is', $filename)) {
+            $destFile = self::getPath(strval(preg_replace('/\.{2,}/', '.', $filename)));
+        } else {
+            $csvFolder = self::getPath();
+            $excelFolder = $csvFolder.'csvfromexcel/';
+            $info = pathinfo($filename);
+            $csvName = basename($filename, '.'.$info['extension']).'.csv';
+            $destFile = $excelFolder.$csvName;
+
+            if (!is_dir($excelFolder)) {
+                mkdir($excelFolder);
+            }
+
+            if (!is_file($destFile)) {
+                $readerExcel = PHPExcel_IOFactory::createReaderForFile($csvFolder.$filename);
+                /** @var PHPExcel_Reader_IReader */
+                if (method_exists($readerExcel, 'setReadDataOnly')) {
+                    $readerExcel->setReadDataOnly(true);
+                }
+                $excelFile = $readerExcel->load($csvFolder.$filename);
+
+                $csvWriter = PHPExcel_IOFactory::createWriter($excelFile, 'CSV');
+
+                if (method_exists($csvWriter, 'setSheetIndex')) {
+                    $csvWriter->setSheetIndex(0);
+                }
+                if (method_exists($csvWriter, 'setDelimiter')) {
+                    $csvWriter->setDelimiter(';');
+                }
+                $csvWriter->save($destFile);
+            }
+        }
+
+        return $destFile;
+    }
+
+    /**
+     * @param $handle
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
+    protected static function rewindBomAware($handle)
+    {
+        // A rewind wrapper that skips BOM signature wrongly
+        if (!is_resource($handle)) {
+            return false;
+        }
+        rewind($handle);
+        if (($bom = fread($handle, 3)) != "\xEF\xBB\xBF") {
+            rewind($handle);
+        }
+
+        return true;
+    }
+
+    /**
+     * @param $handle
+     * @param $glue
+     *
+     * @return bool|int
+     */
+    protected function getNbrColumn($handle, $glue)
+    {
+        if (!is_resource($handle)) {
+            return false;
+        }
+        $tmp = fgetcsv($handle, self::MAX_LINE_SIZE, $glue);
+        self::rewindBomAware($handle);
+
+        return count($tmp);
+    }
+
+    /**
+     * @param $currentTable
+     * @param $nbColumn
+     * @param $handle
+     * @param $glue
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
+    protected function generateContentTable($currentTable, $nbColumn, $handle, $glue)
+    {
+        $html = '<table id="table'.$currentTable.'" style="display: none;" class="table table-bordered"><thead><tr>';
+        // Header
+        for ($i = 0; $i < $nbColumn; $i++) {
+            if (self::MAX_COLUMNS * (int) $currentTable <= $i && (int) $i < self::MAX_COLUMNS * ((int) $currentTable + 1)) {
+                $html .= '<th>
+							<select id="type_value['.$i.']"
+								name="type_value['.$i.']"
+								class="type_value">
+								'.$this->getTypeValuesOptions($i).'
+							</select>
+						</th>';
+            }
+        }
+        $html .= '</tr></thead><tbody>';
+
+        self::setLocale();
+        for ($currentLine = 0; $currentLine < 10 && $line = fgetcsv($handle, self::MAX_LINE_SIZE, $glue); $currentLine++) {
+            /* UTF-8 conversion */
+            if ($this->convert) {
+                $line = $this->utf8EncodeArray($line);
+            }
+            $html .= '<tr id="table_'.$currentTable.'_line_'.$currentLine.'">';
+            foreach ($line as $nbC => $column) {
+                if ((self::MAX_COLUMNS * (int) $currentTable <= $nbC) && ((int) $nbC < self::MAX_COLUMNS * ((int) $currentTable + 1))) {
+                    $html .= '<td>'.htmlentities(Tools::substr($column, 0, 200), ENT_QUOTES, 'UTF-8').'</td>';
+                }
+            }
+            $html .= '</tr>';
+        }
+        $html .= '</tbody></table>';
+        self::rewindBomAware($handle);
+
+        return $html;
+    }
+
+    /**
+     * @param $nbC
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
+    protected function getTypeValuesOptions($nbC)
+    {
+        $i = 0;
+        $noPreSelect = ['price_tin', 'feature'];
+
+        $options = '';
+
+        foreach ($this->available_fields as $key => $field) {
+            $options .= '<option value="'.$key.'"';
+            if ($key === 'price_tin') {
+                ++$nbC;
+            }
+            if ($i === ($nbC + 1) && (!in_array($key, $noPreSelect))) {
+                $options .= ' selected="selected"';
+            }
+            $options .= '>'.$i.'. '.$field['label'].'</option>';
+            ++$i;
+        }
+
+        return $options;
+    }
+
+    /**
+     * @return void
+     *
+     * @since 1.0.0
+     */
+    public static function setLocale()
+    {
+        $isoLang = trim(Tools::getValue('iso_lang'));
+        setlocale(LC_COLLATE, strtolower($isoLang).'_'.strtoupper($isoLang).'.UTF-8');
+        setlocale(LC_CTYPE, strtolower($isoLang).'_'.strtoupper($isoLang).'.UTF-8');
+    }
+
+    /**
+     * @param array $array
      *
      * @return array|string
      *
@@ -938,9 +1200,13 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param      $defaultLanguageId
-     * @param      $categoryName
-     * @param null $idParentCategory
+     * @param int       $defaultLanguageId
+     * @param string    $categoryName
+     * @param int| null $idParentCategory
+     *
+     * @return void
+     *
+     * @since 1.0.0
      */
     public function productImportCreateCat($defaultLanguageId, $categoryName, $idParentCategory = null)
     {
@@ -973,11 +1239,88 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param bool $offset
-     * @param bool $limit
-     * @param null $results
-     * @param bool $validateOnly
-     * @param int  $moreStep
+     * @param $field
+     *
+     * @return array
+     *
+     * @since 1.0.0
+     */
+    protected static function createMultiLangField($field)
+    {
+        $res = [];
+        foreach (Language::getIDs(false) as $idLang) {
+            $res[$idLang] = $field;
+        }
+
+        return $res;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function postProcess()
+    {
+        /* PrestaShop demo mode */
+        if (_PS_MODE_DEMO_) {
+            $this->errors[] = $this->l('This functionality has been disabled.');
+
+            return null;
+        }
+
+        if (Tools::isSubmit('import')) {
+            $this->importByGroups();
+        } elseif ($filename = Tools::getValue('csvfilename')) {
+            $filename = urldecode($filename);
+            $file = self::getPath(basename($filename));
+            if (realpath(dirname($file)) != realpath(self::getPath())) {
+                exit();
+            }
+            if (!empty($filename)) {
+                $bName = basename($filename);
+                if (Tools::getValue('delete') && file_exists($file)) {
+                    @unlink($file);
+                } elseif (file_exists($file)) {
+                    $bName = explode('.', $bName);
+                    $bName = strtolower($bName[count($bName) - 1]);
+                    $mimeTypes = ['csv' => 'text/csv'];
+
+                    if (isset($mimeTypes[$bName])) {
+                        $mimeType = $mimeTypes[$bName];
+                    } else {
+                        $mimeType = 'application/octet-stream';
+                    }
+
+                    if (ob_get_level() && ob_get_length() > 0) {
+                        ob_end_clean();
+                    }
+
+                    header('Content-Transfer-Encoding: binary');
+                    header('Content-Type: '.$mimeType);
+                    header('Content-Length: '.filesize($file));
+                    header('Content-Disposition: attachment; filename="'.$filename.'"');
+                    $fp = fopen($file, 'rb');
+                    while (is_resource($fp) && !feof($fp)) {
+                        echo fgets($fp, 16384);
+                    }
+                    exit;
+                }
+            }
+        }
+        Db::getInstance()->enableCache();
+
+        return parent::postProcess();
+    }
+
+    /**
+     * @param int|bool   $offset
+     * @param int|bool   $limit
+     * @param array|null $results
+     * @param bool       $validateOnly
+     * @param int        $moreStep
+     *
+     * @return void
+     *
+     * @since 1.0.0
      */
     public function importByGroups($offset = false, $limit = false, &$results = null, $validateOnly = false, $moreStep = 0)
     {
@@ -988,7 +1331,6 @@ class AdminImportControllerCore extends AdminController
             if (!$offset && !$moreStep && !$validateOnly && (($shopIsFeatureActive && $this->context->employee->isSuperAdmin()) || !$shopIsFeatureActive) && Tools::getValue('truncate')) {
                 $this->truncateTables((int) Tools::getValue('entity'));
             }
-            $importType = false;
             $doneCount = 0;
             // Sometime, import will use registers to memorize data across all elements to import (for trees, or else).
             // Since import is splitted in multiple ajax calls, we must keep these data across all steps of the full import.
@@ -1104,524 +1446,7 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param $row
-     *
-     * @return array
-     *
-     * @since 1.0.0
-     */
-    public static function getMaskedRow($row)
-    {
-        $res = [];
-        if (is_array(self::$columnMask)) {
-            foreach (self::$columnMask as $type => $nb) {
-                $res[$type] = isset($row[$nb]) ? trim($row[$nb]) : null;
-            }
-        }
-
-        return $res;
-    }
-
-    /**
-     * @return bool|null
-     */
-    public function postProcess()
-    {
-        /* PrestaShop demo mode */
-        if (_PS_MODE_DEMO_) {
-            $this->errors[] = $this->l('This functionality has been disabled.');
-
-            return null;
-        }
-
-        if (Tools::isSubmit('import')) {
-            $this->importByGroups();
-        } elseif ($filename = Tools::getValue('csvfilename')) {
-            $filename = urldecode($filename);
-            $file = self::getPath(basename($filename));
-            if (realpath(dirname($file)) != realpath(self::getPath())) {
-                exit();
-            }
-            if (!empty($filename)) {
-                $bName = basename($filename);
-                if (Tools::getValue('delete') && file_exists($file)) {
-                    @unlink($file);
-                } elseif (file_exists($file)) {
-                    $bName = explode('.', $bName);
-                    $bName = strtolower($bName[count($bName) - 1]);
-                    $mimeTypes = ['csv' => 'text/csv'];
-
-                    if (isset($mimeTypes[$bName])) {
-                        $mimeType = $mimeTypes[$bName];
-                    } else {
-                        $mimeType = 'application/octet-stream';
-                    }
-
-                    if (ob_get_level() && ob_get_length() > 0) {
-                        ob_end_clean();
-                    }
-
-                    header('Content-Transfer-Encoding: binary');
-                    header('Content-Type: '.$mimeType);
-                    header('Content-Length: '.filesize($file));
-                    header('Content-Disposition: attachment; filename="'.$filename.'"');
-                    $fp = fopen($file, 'rb');
-                    while (is_resource($fp) && !feof($fp)) {
-                        echo fgets($fp, 16384);
-                    }
-                    exit;
-                }
-            }
-        }
-        Db::getInstance()->enableCache();
-
-        return parent::postProcess();
-    }
-
-    /**
-     * @param bool $offset
-     * @param bool $limit
-     * @param bool $crossStepsVariables
-     * @param bool $validateOnly
-     *
-     * @return bool|int
-     *
-     * @since 1.0.0
-     */
-    public function categoryImport($offset = false, $limit = false, &$crossStepsVariables = false, $validateOnly = false)
-    {
-        $this->receiveTab();
-        $handle = $this->openCsvFile($offset);
-        if (!$handle) {
-            return false;
-        }
-
-        $idDefaultLanguage = (int) Configuration::get('PS_LANG_DEFAULT');
-        $idLang = Language::getIdByIso(Tools::getValue('iso_lang'));
-        if (!Validate::isUnsignedId($idLang)) {
-            $idLang = $idDefaultLanguage;
-        }
-        self::setLocale();
-
-        $forceIds = Tools::getValue('forceIDs');
-        $regenerate = Tools::getValue('regenerate');
-        $shopIsFeatureActive = Shop::isFeatureActive();
-
-        $catMoved = [];
-        if (is_array($crossStepsVariables) && array_key_exists('cat_moved', $crossStepsVariables)) {
-            $catMoved = $crossStepsVariables['cat_moved'];
-        }
-
-        $lineCount = 0;
-        for ($currentLine = 0; ($line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
-            $lineCount++;
-            if ($this->convert) {
-                $line = $this->utf8EncodeArray($line);
-            }
-
-            if (count($line) == 1 && $line[0] == null) {
-                $this->warnings[] = $this->l('There is an empty row in the file that won\'t be imported.');
-                continue;
-            }
-
-            $info = self::getMaskedRow($line);
-
-            $this->categoryImportOne(
-                $info,
-                $idDefaultLanguage,
-                $idLang,
-                $forceIds,
-                $regenerate,
-                $shopIsFeatureActive,
-                $catMoved, // by ref
-                $validateOnly
-            );
-        }
-
-        if (!$validateOnly) {
-            /* Import has finished, we can regenerate the categories nested tree */
-            Category::regenerateEntireNtree();
-        }
-        $this->closeCsvFile($handle);
-
-        if ($crossStepsVariables !== false) {
-            $crossStepsVariables['cat_moved'] = $catMoved;
-        }
-
-        return $lineCount;
-    }
-
-    /**
-     * @param bool $offset
-     * @param bool $limit
-     * @param bool $crossStepsVariables
-     * @param bool $validateOnly
-     * @param int  $moreStep
-     *
-     * @return int
-     *
-     * @since 1.0.0
-     */
-    public function productImport($offset = false, $limit = false, &$crossStepsVariables = false, $validateOnly = false, $moreStep = 0)
-    {
-        if ($moreStep == 1) {
-            return $this->productImportAccessories($offset, $limit, $crossStepsVariables);
-        }
-        $this->receiveTab();
-        $handle = $this->openCsvFile($offset);
-        if (!$handle) {
-            return false;
-        }
-
-        $idDefaultLanguage = (int) Configuration::get('PS_LANG_DEFAULT');
-        $idLang = Language::getIdByIso(Tools::getValue('iso_lang'));
-        if (!Validate::isUnsignedId($idLang)) {
-            $idLang = $idDefaultLanguage;
-        }
-        self::setLocale();
-        $shopIds = Shop::getCompleteListOfShopsID();
-
-        $forceIds = Tools::getValue('forceIDs');
-        $matchRef = Tools::getValue('match_ref');
-        $regenerate = Tools::getValue('regenerate');
-        $shopIsFeatureActive = Shop::isFeatureActive();
-        if (!$validateOnly) {
-            Module::setBatchMode(true);
-        }
-
-        $accessories = [];
-        if (is_array($crossStepsVariables) && array_key_exists('accessories', $crossStepsVariables)) {
-            $accessories = $crossStepsVariables['accessories'];
-        }
-
-        $lineCount = 0;
-        for ($currentLine = 0; ($line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
-            $lineCount++;
-            if ($this->convert) {
-                $line = $this->utf8EncodeArray($line);
-            }
-
-            if (count($line) == 1 && $line[0] == null) {
-                $this->warnings[] = $this->l('There is an empty row in the file that won\'t be imported.');
-                continue;
-            }
-
-            $info = self::getMaskedRow($line);
-
-            $this->productImportOne(
-                $info,
-                $idDefaultLanguage,
-                $idLang,
-                $forceIds,
-                $regenerate,
-                $shopIsFeatureActive,
-                $shopIds,
-                $matchRef,
-                $accessories, // by ref
-                $validateOnly
-            );
-        }
-        $this->closeCsvFile($handle);
-        if (!$validateOnly) {
-            Module::processDeferedFuncCall();
-            Module::processDeferedClearCache();
-            Tag::updateTagCount();
-        }
-
-        if ($crossStepsVariables !== false) {
-            $crossStepsVariables['accessories'] = $accessories;
-        }
-
-        return $lineCount;
-    }
-
-    /**
-     * @param $field
-     *
-     * @return float
-     *
-     * @since 1.0.0
-     */
-    protected static function getPrice($field)
-    {
-        $field = ((float) str_replace(',', '.', $field));
-        $field = ((float) str_replace('%', '', $field));
-
-        return $field;
-    }
-
-    /**
-     * @param $infos
-     * @param $key
-     * @param $entity
-     *
-     * @return bool
-     *
-     * @since 1.0.0
-     */
-    protected static function fillInfo($infos, $key, &$entity)
-    {
-        $infos = trim($infos);
-        if (isset(self::$validators[$key][1]) && self::$validators[$key][1] == 'createMultiLangField' && Tools::getValue('iso_lang')) {
-            $idLang = Language::getIdByIso(Tools::getValue('iso_lang'));
-            $tmp = call_user_func(self::$validators[$key], $infos);
-            foreach ($tmp as $idLangTmp => $value) {
-                if (empty($entity->{$key}[$idLangTmp]) || $idLangTmp == $idLang) {
-                    $entity->{$key}[$idLangTmp] = $value;
-                }
-            }
-        } elseif (!empty($infos) || $infos == '0') { // ($infos == '0') => if you want to disable a product by using "0" in active because empty('0') return true
-            $entity->{$key} = isset(self::$validators[$key]) ? call_user_func(self::$validators[$key], $infos) : $infos;
-        }
-
-        return true;
-    }
-
-    /**
-     * @param $a
-     * @param $b
-     *
-     * @return int
-     *
-     * @since 1.0.0
-     */
-    protected static function usortFiles($a, $b)
-    {
-        if ($a == $b) {
-            return 0;
-        }
-
-        return ($b < $a) ? 1 : -1;
-    }
-
-    /**
-     * @param $field
-     *
-     * @return bool
-     *
-     * @since 1.0.0
-     */
-    protected static function getBoolean($field)
-    {
-        return (bool) $field;
-    }
-
-    /**
-     * @param bool $offset
-     *
-     * @return bool|null|resource
-     *
-     * @since 1.0.0
-     */
-    protected function openCsvFile($offset = false)
-    {
-        $file = $this->excelToCsvFile(Tools::getValue('csv'));
-        $handle = false;
-        if (is_file($file) && is_readable($file)) {
-            if (!mb_check_encoding(file_get_contents($file), 'UTF-8')) {
-                $this->convert = true;
-            }
-            $handle = fopen($file, 'r');
-        }
-
-        if (!$handle) {
-            $this->errors[] = $this->l('Cannot read the .CSV file');
-
-            return null; // error case
-        }
-
-        self::rewindBomAware($handle);
-
-        $toSkip = (int) Tools::getValue('skip');
-        if ($offset && $offset > 0) {
-            $toSkip += $offset;
-        }
-        for ($i = 0; $i < $toSkip; ++$i) {
-            $line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator);
-            if ($line === false) {
-                return false; // reached end of file
-            }
-        }
-
-        return $handle;
-    }
-
-    /**
-     * @param $filename
-     *
-     * @return string
-     *
-     * @since 1.0.0
-     */
-    protected function excelToCsvFile($filename)
-    {
-        if (preg_match('#(.*?)\.(csv)#is', $filename)) {
-            $destFile = self::getPath(strval(preg_replace('/\.{2,}/', '.', $filename)));
-        } else {
-            $csvFolder = self::getPath();
-            $excelFolder = $csvFolder.'csvfromexcel/';
-            $info = pathinfo($filename);
-            $csvName = basename($filename, '.'.$info['extension']).'.csv';
-            $destFile = $excelFolder.$csvName;
-
-            if (!is_dir($excelFolder)) {
-                mkdir($excelFolder);
-            }
-
-            if (!is_file($destFile)) {
-                $readerExcel = PHPExcel_IOFactory::createReaderForFile($csvFolder.$filename);
-                /** @var PHPExcel_Reader_IReader */
-                if (method_exists($readerExcel, 'setReadDataOnly')) {
-                    $readerExcel->setReadDataOnly(true);
-                }
-                $excelFile = $readerExcel->load($csvFolder.$filename);
-
-                $csvWriter = PHPExcel_IOFactory::createWriter($excelFile, 'CSV');
-
-                if (method_exists($csvWriter, 'setSheetIndex')) {
-                    $csvWriter->setSheetIndex(0);
-                }
-                if (method_exists($csvWriter, 'setDelimiter')) {
-                    $csvWriter->setDelimiter(';');
-                }
-                $csvWriter->save($destFile);
-            }
-        }
-
-        return $destFile;
-    }
-
-    /**
-     * @param $handle
-     *
-     * @return bool
-     *
-     * @since 1.0.0
-     */
-    protected static function rewindBomAware($handle)
-    {
-        // A rewind wrapper that skips BOM signature wrongly
-        if (!is_resource($handle)) {
-            return false;
-        }
-        rewind($handle);
-        if (($bom = fread($handle, 3)) != "\xEF\xBB\xBF") {
-            rewind($handle);
-        }
-    }
-
-    /**
-     * @param $handle
-     * @param $glue
-     *
-     * @return bool|int
-     */
-    protected function getNbrColumn($handle, $glue)
-    {
-        if (!is_resource($handle)) {
-            return false;
-        }
-        $tmp = fgetcsv($handle, self::MAX_LINE_SIZE, $glue);
-        self::rewindBomAware($handle);
-
-        return count($tmp);
-    }
-
-    /**
-     * @param $currentTable
-     * @param $nbColumn
-     * @param $handle
-     * @param $glue
-     *
-     * @return string
-     *
-     * @since 1.0.0
-     */
-    protected function generateContentTable($currentTable, $nbColumn, $handle, $glue)
-    {
-        $html = '<table id="table'.$currentTable.'" style="display: none;" class="table table-bordered"><thead><tr>';
-        // Header
-        for ($i = 0; $i < $nbColumn; $i++) {
-            if (self::MAX_COLUMNS * (int) $currentTable <= $i && (int) $i < self::MAX_COLUMNS * ((int) $currentTable + 1)) {
-                $html .= '<th>
-							<select id="type_value['.$i.']"
-								name="type_value['.$i.']"
-								class="type_value">
-								'.$this->getTypeValuesOptions($i).'
-							</select>
-						</th>';
-            }
-        }
-        $html .= '</tr></thead><tbody>';
-
-        self::setLocale();
-        for ($currentLine = 0; $currentLine < 10 && $line = fgetcsv($handle, self::MAX_LINE_SIZE, $glue); $currentLine++) {
-            /* UTF-8 conversion */
-            if ($this->convert) {
-                $line = $this->utf8EncodeArray($line);
-            }
-            $html .= '<tr id="table_'.$currentTable.'_line_'.$currentLine.'">';
-            foreach ($line as $nbC => $column) {
-                if ((self::MAX_COLUMNS * (int) $currentTable <= $nbC) && ((int) $nbC < self::MAX_COLUMNS * ((int) $currentTable + 1))) {
-                    $html .= '<td>'.htmlentities(Tools::substr($column, 0, 200), ENT_QUOTES, 'UTF-8').'</td>';
-                }
-            }
-            $html .= '</tr>';
-        }
-        $html .= '</tbody></table>';
-        self::rewindBomAware($handle);
-
-        return $html;
-    }
-
-    /**
-     * @param $nbC
-     *
-     * @return string
-     *
-     * @since 1.0.0
-     */
-    protected function getTypeValuesOptions($nbC)
-    {
-        $i = 0;
-        $noPreSelect = ['price_tin', 'feature'];
-
-        $options = '';
-
-        foreach ($this->available_fields as $key => $field) {
-            $options .= '<option value="'.$key.'"';
-            if ($key === 'price_tin') {
-                ++$nbC;
-            }
-            if ($i === ($nbC + 1) && (!in_array($key, $noPreSelect))) {
-                $options .= ' selected="selected"';
-            }
-            $options .= '>'.$i.'. '.$field['label'].'</option>';
-            ++$i;
-        }
-
-        return $options;
-    }
-
-    /**
-     * @param $field
-     *
-     * @return array
-     *
-     * @since 1.0.0
-     */
-    protected static function createMultiLangField($field)
-    {
-        $res = [];
-        foreach (Language::getIDs(false) as $idLang) {
-            $res[$idLang] = $field;
-        }
-
-        return $res;
-    }
-
-    /**
-     * @param $case
+     * @param int $case
      *
      * @return bool
      *
@@ -1744,6 +1569,81 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
+     * @param int|bool   $offset
+     * @param int|bool   $limit
+     * @param array|bool $crossStepsVariables
+     * @param bool       $validateOnly
+     *
+     * @return bool|int
+     *
+     * @since 1.0.0
+     */
+    public function categoryImport($offset = false, $limit = false, &$crossStepsVariables = false, $validateOnly = false)
+    {
+        $this->receiveTab();
+        $handle = $this->openCsvFile($offset);
+        if (!$handle) {
+            return false;
+        }
+
+        $idDefaultLanguage = (int) Configuration::get('PS_LANG_DEFAULT');
+        $idLang = Language::getIdByIso(Tools::getValue('iso_lang'));
+        if (!Validate::isUnsignedId($idLang)) {
+            $idLang = $idDefaultLanguage;
+        }
+        self::setLocale();
+
+        $forceIds = Tools::getValue('forceIDs');
+        $regenerate = Tools::getValue('regenerate');
+        $shopIsFeatureActive = Shop::isFeatureActive();
+
+        $catMoved = [];
+        if (is_array($crossStepsVariables) && array_key_exists('cat_moved', $crossStepsVariables)) {
+            $catMoved = $crossStepsVariables['cat_moved'];
+        }
+
+        $lineCount = 0;
+        for ($currentLine = 0; ($line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
+            $lineCount++;
+            if ($this->convert) {
+                $line = $this->utf8EncodeArray($line);
+            }
+
+            if (count($line) == 1 && $line[0] == null) {
+                $this->warnings[] = $this->l('There is an empty row in the file that won\'t be imported.');
+                continue;
+            }
+
+            $info = self::getMaskedRow($line);
+
+            $this->categoryImportOne(
+                $info,
+                $idDefaultLanguage,
+                $idLang,
+                $forceIds,
+                $regenerate,
+                $shopIsFeatureActive,
+                $catMoved, // by ref
+                $validateOnly
+            );
+        }
+
+        if (!$validateOnly) {
+            /* Import has finished, we can regenerate the categories nested tree */
+            Category::regenerateEntireNtree();
+        }
+        $this->closeCsvFile($handle);
+
+        if ($crossStepsVariables !== false) {
+            $crossStepsVariables['cat_moved'] = $catMoved;
+        }
+
+        return $lineCount;
+    }
+
+    /**
+     * @return void
+     *
      * @since 1.0.0
      */
     protected function receiveTab()
@@ -1754,6 +1654,25 @@ class AdminImportControllerCore extends AdminController
                 self::$columnMask[$type] = $nb;
             }
         }
+    }
+
+    /**
+     * @param array $row
+     *
+     * @return array
+     *
+     * @since 1.0.0
+     */
+    public static function getMaskedRow($row)
+    {
+        $res = [];
+        if (is_array(self::$columnMask)) {
+            foreach (self::$columnMask as $type => $nb) {
+                $res[$type] = isset($row[$nb]) ? trim($row[$nb]) : null;
+            }
+        }
+
+        return $res;
     }
 
     /**
@@ -1868,12 +1787,11 @@ class AdminImportControllerCore extends AdminController
         }
 
         if (!$validLink) {
-            $this->informations[] = $this->l(
-                'Rewrite link for %1$s (ID %2$s): re-written as %3$s.', [
-                '%1$s' => $bak,
-                '%2$s' => (isset($info['id']) && !empty($info['id'])) ? $info['id'] : 'null',
-                '%3$s' => $category->link_rewrite[$idDefaultLanguage],
-            ], 'Admin.Advparameters.Notification'
+            $this->informations[] = sprintf(
+                $this->l('Rewrite link for %1$s (ID %2$s): re-written as %3$s.'),
+                $bak,
+                (isset($info['id']) && !empty($info['id'])) ? $info['id'] : 'null',
+                $category->link_rewrite[$idDefaultLanguage]
             );
         }
         $res = false;
@@ -1955,10 +1873,9 @@ class AdminImportControllerCore extends AdminController
         } else {
             // Associate category to shop
             if ($shopIsFeatureActive) {
-                Db::getInstance()->execute(
-                    '
-					DELETE FROM '._DB_PREFIX_.'category_shop
-					WHERE id_category = '.(int) $category->id
+                Db::getInstance()->delete(
+                    'category_shop',
+                    '`id_category` = '.(int) $category->id
                 );
 
                 if (!$shopIsFeatureActive) {
@@ -1982,7 +1899,11 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param $info
+     * @param array $info
+     *
+     * @return void
+     *
+     * @since 1.0.0
      */
     protected static function setDefaultValues(&$info)
     {
@@ -2146,11 +2067,109 @@ class AdminImportControllerCore extends AdminController
     /**
      * @param $handle
      *
+     * @return void
+     *
      * @since 1.0.0
      */
     protected function closeCsvFile($handle)
     {
         fclose($handle);
+    }
+
+    /**
+     * @return void
+     *
+     * @since 1.0.0
+     */
+    public function clearSmartyCache()
+    {
+        Tools::enableCache();
+        Tools::clearCache($this->context->smarty);
+        Tools::restoreCacheSettings();
+    }
+
+    /**
+     * @param bool $offset
+     * @param bool $limit
+     * @param bool $crossStepsVariables
+     * @param bool $validateOnly
+     * @param int  $moreStep
+     *
+     * @return int
+     *
+     * @since 1.0.0
+     */
+    public function productImport($offset = false, $limit = false, &$crossStepsVariables = false, $validateOnly = false, $moreStep = 0)
+    {
+        if ($moreStep == 1) {
+            return $this->productImportAccessories($offset, $limit, $crossStepsVariables);
+        }
+        $this->receiveTab();
+        $handle = $this->openCsvFile($offset);
+        if (!$handle) {
+            return false;
+        }
+
+        $idDefaultLanguage = (int) Configuration::get('PS_LANG_DEFAULT');
+        $idLang = Language::getIdByIso(Tools::getValue('iso_lang'));
+        if (!Validate::isUnsignedId($idLang)) {
+            $idLang = $idDefaultLanguage;
+        }
+        self::setLocale();
+        $shopIds = Shop::getCompleteListOfShopsID();
+
+        $forceIds = Tools::getValue('forceIDs');
+        $matchRef = Tools::getValue('match_ref');
+        $regenerate = Tools::getValue('regenerate');
+        $shopIsFeatureActive = Shop::isFeatureActive();
+        if (!$validateOnly) {
+            Module::setBatchMode(true);
+        }
+
+        $accessories = [];
+        if (is_array($crossStepsVariables) && array_key_exists('accessories', $crossStepsVariables)) {
+            $accessories = $crossStepsVariables['accessories'];
+        }
+
+        $lineCount = 0;
+        for ($currentLine = 0; ($line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
+            $lineCount++;
+            if ($this->convert) {
+                $line = $this->utf8EncodeArray($line);
+            }
+
+            if (count($line) == 1 && $line[0] == null) {
+                $this->warnings[] = $this->l('There is an empty row in the file that won\'t be imported.');
+                continue;
+            }
+
+            $info = self::getMaskedRow($line);
+
+            $this->productImportOne(
+                $info,
+                $idDefaultLanguage,
+                $idLang,
+                $forceIds,
+                $regenerate,
+                $shopIsFeatureActive,
+                $shopIds,
+                $matchRef,
+                $accessories, // by ref
+                $validateOnly
+            );
+        }
+        $this->closeCsvFile($handle);
+        if (!$validateOnly) {
+            Module::processDeferedFuncCall();
+            Module::processDeferedClearCache();
+            Tag::updateTagCount();
+        }
+
+        if ($crossStepsVariables !== false) {
+            $crossStepsVariables['accessories'] = $accessories;
+        }
+
+        return $lineCount;
     }
 
     /**
@@ -2186,9 +2205,9 @@ class AdminImportControllerCore extends AdminController
 
             if (count($links) > 0) { // We delete and relink only if there is accessories to link...
                 // Bulk jobs: for performances, we need to do a minimum amount of SQL queries. No product inflation.
-                $uniqueIds = Product::getExistingIdsFromIdsOrRefs($links);
-                Db::getInstance()->delete('accessory', 'id_product_1 = '.(int) $productId);
-                Product::changeAccessoriesForProduct($uniqueIds, $productId);
+                $uniqueIds = self::getExistingIdsFromIdsOrRefs($links);
+                Db::getInstance()->delete('accessory', '`id_product_1` = '.(int) $productId);
+                self::changeAccessoriesForProduct($uniqueIds, $productId);
             }
             $lineCount++;
 
@@ -2223,6 +2242,8 @@ class AdminImportControllerCore extends AdminController
      * @param      $accessories
      * @param bool $validateOnly
      *
+     * @return void
+     *
      * @since 1.0.0
      */
     protected function productImportOne($info, $idDefaultLanguage, $idLang, $forceIds, $regenerate, $shopIsFeatureActive, $shopIds, $matchRef, &$accessories, $validateOnly = false)
@@ -2236,7 +2257,8 @@ class AdminImportControllerCore extends AdminController
 					FROM `'._DB_PREFIX_.'product` p
 					'.Shop::addSqlAssociation('product', 'p').'
 					WHERE p.`reference` = "'.pSQL($info['reference']).'"
-				', false
+				',
+                false
             );
             if (isset($datas['id_product']) && $datas['id_product']) {
                 $product = new Product((int) $datas['id_product']);
@@ -2893,7 +2915,9 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param $entity
+     * @param ObjectModel $entity
+     *
+     * @return void
      *
      * @since 1.0.0
      */
@@ -2908,9 +2932,11 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param        $productName
-     * @param null   $productId
-     * @param string $message
+     * @param string   $productName
+     * @param int|null $productId
+     * @param string   $message
+     *
+     * @return void
      *
      * @since 1.0.0
      */
@@ -2981,6 +3007,8 @@ class AdminImportControllerCore extends AdminController
      * @param      $shopIsFeatureActive
      * @param      $forceIds
      * @param bool $validateOnly
+     *
+     * @return void
      *
      * @since 1.0.0
      */
@@ -3192,9 +3220,11 @@ class AdminImportControllerCore extends AdminController
     /**
      * @param int|bool $offset
      * @param int|bool $limit
-     * @param bool $validateOnly
+     * @param bool     $validateOnly
      *
-     * @return bool|int
+     * @return false|int
+     *
+     * @since 1.0.0
      */
     public function addressImport($offset = false, $limit = false, $validateOnly = false)
     {
@@ -3238,6 +3268,8 @@ class AdminImportControllerCore extends AdminController
      * @param      $info
      * @param      $forceIds
      * @param bool $validateOnly
+     *
+     * @return void
      *
      * @since 1.0.0
      */
@@ -3284,8 +3316,7 @@ class AdminImportControllerCore extends AdminController
                         $this->errors[] = sprintf($this->l('%s cannot be saved'), $country->name[$defaultLanguageId]);
                     }
                     if ($fieldError !== true || isset($langFieldError) && $langFieldError !== true) {
-                        $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').
-                            Db::getInstance()->getMsgError();
+                        $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').Db::getInstance()->getMsgError();
                     }
                 }
             }
@@ -3329,15 +3360,12 @@ class AdminImportControllerCore extends AdminController
                 $customerList = Customer::getCustomersByEmail($address->customer_email);
 
                 if (count($customerList) == 0) {
-                    $this->errors[] = $this->l(
-                        '%1$s does not exist in database %2$s (ID: %3$s), and therefore cannot be %4$s',
-                        [
-                            Db::getInstance()->getMsgError(),
-                            $address->customer_email,
-                            (isset($info['id']) && !empty($info['id'])) ? $info['id'] : 'null',
-                            ($validateOnly ? 'validated' : 'saved'),
-                        ],
-                        'Admin.Advparameters.Notification'
+                    $this->errors[] = sprintf($this->l(
+                        '%1$s does not exist in database %2$s (ID: %3$s), and therefore cannot be %4$s'),
+                        Db::getInstance()->getMsgError(),
+                        $address->customer_email,
+                        (isset($info['id']) && !empty($info['id'])) ? $info['id'] : 'null',
+                        ($validateOnly ? 'validated' : 'saved')
                     );
                 }
             } else {
@@ -3353,15 +3381,12 @@ class AdminImportControllerCore extends AdminController
                 $customerList = Customer::getCustomersByEmail($customer->email);
 
                 if (count($customerList) == 0) {
-                    $this->errors[] = $this->l(
-                        '%1$s does not exist in database %2$s (ID: %3$s), and therefore cannot be %4$s',
-                        [
-                            Db::getInstance()->getMsgError(),
-                            $customer->email,
-                            (int) $address->id_customer,
-                            ($validateOnly ? 'validated' : 'saved'),
-                        ],
-                        'Admin.Advparameters.Notification'
+                    $this->errors[] = sprintf(
+                        $this->l('%1$s does not exist in database %2$s (ID: %3$s), and therefore cannot be %4$s'),
+                        Db::getInstance()->getMsgError(),
+                        $customer->email,
+                        (int) $address->id_customer,
+                        ($validateOnly ? 'validated' : 'saved')
                     );
                 }
             } else {
@@ -3395,12 +3420,11 @@ class AdminImportControllerCore extends AdminController
                     $address->id_manufacturer = (int) $manufacturer->id;
                 } else {
                     if (!$validateOnly) {
-                        $this->errors[] = Db::getInstance()->getMsgError().' '.
-                            sprintf(
-                                $this->l('%1$s (ID: %2$s) cannot be saved'),
-                                $manufacturer->name,
-                                (isset($manufacturer->id) && !empty($manufacturer->id)) ? $manufacturer->id : 'null'
-                            );
+                        $this->errors[] = Db::getInstance()->getMsgError().' '.sprintf(
+                            $this->l('%1$s (ID: %2$s) cannot be saved'),
+                            $manufacturer->name,
+                            (isset($manufacturer->id) && !empty($manufacturer->id)) ? $manufacturer->id : 'null'
+                        );
                     }
                     if ($fieldError !== true || isset($langFieldError) && $langFieldError !== true) {
                         $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').Db::getInstance()->getMsgError();
@@ -3426,14 +3450,13 @@ class AdminImportControllerCore extends AdminController
                 } else {
                     if (!$validateOnly) {
                         $this->errors[] = Db::getInstance()->getMsgError().' '.sprintf(
-                                $this->l('%1$s (ID: %2$s) cannot be saved'),
-                                $supplier->name,
-                                (isset($supplier->id) && !empty($supplier->id)) ? $supplier->id : 'null'
-                            );
+                            $this->l('%1$s (ID: %2$s) cannot be saved'),
+                            $supplier->name,
+                            (isset($supplier->id) && !empty($supplier->id)) ? $supplier->id : 'null'
+                        );
                     }
                     if ($fieldError !== true || isset($langFieldError) && $langFieldError !== true) {
-                        $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').
-                            Db::getInstance()->getMsgError();
+                        $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').Db::getInstance()->getMsgError();
                     }
                 }
             }
@@ -3564,6 +3587,8 @@ class AdminImportControllerCore extends AdminController
      * @param      $shopIsFeatureActive
      * @param bool $validateOnly
      *
+     * @return void
+     *
      * @since 1.0.0
      */
     protected function attributeImportOne($info, $defaultLanguage, &$groups, &$attributes, $regenerate, $shopIsFeatureActive, $validateOnly = false)
@@ -3599,7 +3624,8 @@ class AdminImportControllerCore extends AdminController
 				FROM `'._DB_PREFIX_.'product` p
 				'.Shop::addSqlAssociation('product', 'p').'
 				WHERE p.`reference` = "'.pSQL($info['product_reference']).'"
-			', false
+			    ',
+                false
             );
             if (isset($datas['id_product']) && $datas['id_product']) {
                 $product = new Product((int) $datas['id_product'], false, $defaultLanguage);
@@ -3897,10 +3923,9 @@ class AdminImportControllerCore extends AdminController
             if (!$validateOnly) {
                 // now adds the attributes in the attribute_combination table
                 if ($idProductAttributeUpdate) {
-                    Db::getInstance()->execute(
-                        '
-						DELETE FROM '._DB_PREFIX_.'product_attribute_combination
-						WHERE id_product_attribute = '.(int) $idProductAttribute
+                    Db::getInstance()->delete(
+                        'product_attribute_combination',
+                        '`id_product_attribute` = '.(int) $idProductAttribute
                     );
                 }
 
@@ -4016,7 +4041,6 @@ class AdminImportControllerCore extends AdminController
             $separator = ',';
         }
 
-        $tab = '';
         $uniqidPath = false;
 
         // try data:// protocole. If failed, old school file on filesystem.
@@ -4101,6 +4125,10 @@ class AdminImportControllerCore extends AdminController
      * @param      $regenerate
      * @param      $forceIds
      * @param bool $validateOnly
+     *
+     * @return void
+     *
+     * @since 1.0.0
      */
     protected function manufacturerImportOne($info, $shopIsFeatureActive, $regenerate, $forceIds, $validateOnly = false)
     {
@@ -4165,10 +4193,10 @@ class AdminImportControllerCore extends AdminController
         if (!$res) {
             if (!$validateOnly) {
                 $this->errors[] = Db::getInstance()->getMsgError().' '.sprintf(
-                        $this->l('%1$s (ID: %2$s) cannot be saved'),
-                        (isset($info['name']) && !empty($info['name'])) ? Tools::safeOutput($info['name']) : 'No Name',
-                        (isset($info['id']) && !empty($info['id'])) ? Tools::safeOutput($info['id']) : 'No ID'
-                    );
+                    $this->l('%1$s (ID: %2$s) cannot be saved'),
+                    (isset($info['name']) && !empty($info['name'])) ? Tools::safeOutput($info['name']) : 'No Name',
+                    (isset($info['id']) && !empty($info['id'])) ? Tools::safeOutput($info['id']) : 'No ID'
+                );
             }
             if ($fieldError !== true || isset($langFieldError) && $langFieldError !== true) {
                 $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').Db::getInstance()->getMsgError();
@@ -4253,7 +4281,7 @@ class AdminImportControllerCore extends AdminController
             }
         }
 
-        self::arrayWalk($info, ['self', 'fillInfo'], $supplier);
+        array_walk($info, ['self', 'fillInfo'], $supplier);
         if (($fieldError = $supplier->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
             ($langFieldError = $supplier->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true
         ) {
@@ -4275,10 +4303,10 @@ class AdminImportControllerCore extends AdminController
 
             if (!$res) {
                 $this->errors[] = Db::getInstance()->getMsgError().' '.sprintf(
-                        $this->l('%1$s (ID: %2$s) cannot be saved'),
-                        (isset($info['name']) && !empty($info['name'])) ? Tools::safeOutput($info['name']) : 'No Name',
-                        (isset($info['id']) && !empty($info['id'])) ? Tools::safeOutput($info['id']) : 'No ID'
-                    );
+                    $this->l('%1$s (ID: %2$s) cannot be saved'),
+                    (isset($info['name']) && !empty($info['name'])) ? Tools::safeOutput($info['name']) : 'No Name',
+                    (isset($info['id']) && !empty($info['id'])) ? Tools::safeOutput($info['id']) : 'No ID'
+                );
             } elseif (!$validateOnly) {
                 // Associate supplier to group shop
                 if ($shopIsFeatureActive && $supplier->shop) {
@@ -4313,7 +4341,7 @@ class AdminImportControllerCore extends AdminController
      * @param bool $limit
      * @param bool $validateOnly
      *
-     * @return bool|int
+     * @return int
      *
      * @since 1.0.0
      */
@@ -4322,7 +4350,7 @@ class AdminImportControllerCore extends AdminController
         $this->receiveTab();
         $handle = $this->openCsvFile($offset);
         if (!$handle) {
-            return false;
+            return 0;
         }
 
         self::setLocale();
@@ -4378,8 +4406,8 @@ class AdminImportControllerCore extends AdminController
         array_walk($info, ['self', 'fillInfo'], $alias);
 
         $res = false;
-        if (($field_error = $alias->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
-            ($lang_field_error = $alias->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true
+        if (($fieldError = $alias->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
+            ($langFieldError = $alias->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true
         ) {
             if ($alias->id && $alias->aliasExists($alias->id)) {
                 $res = ($validateOnly || $alias->update());
@@ -4391,14 +4419,14 @@ class AdminImportControllerCore extends AdminController
 
             if (!$res) {
                 $this->errors[] = Db::getInstance()->getMsgError().' '.sprintf(
-                        $this->l('%1$s (ID: %2$s) cannot be saved'),
-                        $info['name'],
-                        (isset($info['id']) ? $info['id'] : 'null')
-                    );
+                    $this->l('%1$s (ID: %2$s) cannot be saved'),
+                    $info['name'],
+                    (isset($info['id']) ? $info['id'] : 'null')
+                );
             }
         } else {
             $this->errors[] = $this->l('Alias is invalid').' ('.$alias->name.')';
-            $this->errors[] = ($field_error !== true ? $field_error : '').(isset($lang_field_error) && $lang_field_error !== true ? $lang_field_error : '');
+            $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '');
         }
     }
 
@@ -4407,7 +4435,7 @@ class AdminImportControllerCore extends AdminController
      * @param bool $limit
      * @param bool $validateOnly
      *
-     * @return bool
+     * @return int
      *
      * @since 1.0.0
      */
@@ -4416,7 +4444,7 @@ class AdminImportControllerCore extends AdminController
         $this->receiveTab();
         $handle = $this->openCsvFile($offset);
         if (!$handle) {
-            return false;
+            return 0;
         }
 
         $forceIds = Tools::getValue('forceIDs');
@@ -4445,14 +4473,18 @@ class AdminImportControllerCore extends AdminController
             );
         }
         $this->closeCsvFile($handle);
+        
+        return $lineCount;
     }
 
     /**
-     * @param      $info
-     * @param      $shopIsFeatureActive
-     * @param      $regenerate
-     * @param      $forceIds
-     * @param bool $validateOnly
+     * @param array $info
+     * @param bool  $shopIsFeatureActive
+     * @param bool  $regenerate
+     * @param bool  $forceIds
+     * @param bool  $validateOnly
+     *
+     * @return void
      *
      * @since 1.0.0
      */
@@ -4551,7 +4583,7 @@ class AdminImportControllerCore extends AdminController
         if (($fieldError = $store->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
             ($langFieldError = $store->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true
         ) {
-            if ($store->id && $store->storeExists($store->id)) {
+            if ($store->id && self::storeExists($store->id)) {
                 $res = $validateOnly ? $validateOnly : $store->update();
             }
             $store->force_id = (bool) $forceIds;
@@ -4561,10 +4593,10 @@ class AdminImportControllerCore extends AdminController
 
             if (!$res) {
                 $this->errors[] = Db::getInstance()->getMsgError().' '.sprintf(
-                        $this->l('%1$s (ID: %2$s) cannot be saved'),
-                        $info['name'],
-                        (isset($info['id']) ? $info['id'] : 'null')
-                    );
+                    $this->l('%1$s (ID: %2$s) cannot be saved'),
+                    $info['name'],
+                    (isset($info['id']) ? $info['id'] : 'null')
+                );
             }
         } else {
             $this->errors[] = $this->l('Store is invalid').' ('.$store->name.')';
@@ -4740,7 +4772,7 @@ class AdminImportControllerCore extends AdminController
             $reset = $crossStepsVariables['reset'];
         }
 
-        $force_ids = Tools::getValue('forceIDs');
+        $forceIds = Tools::getValue('forceIDs');
 
         // main loop, for each supply orders details to import
         $lineCount = 0;
@@ -4755,7 +4787,7 @@ class AdminImportControllerCore extends AdminController
                 $info,
                 $products, // by ref
                 $reset, // by ref
-                $force_ids,
+                $forceIds,
                 $currentLine,
                 $validateOnly
             );
@@ -4899,6 +4931,8 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
+     * @return void
+     *
      * @since 1.0.0
      */
     public function ajaxProcessSaveImportMatchs()
@@ -4908,9 +4942,9 @@ class AdminImportControllerCore extends AdminController
             Db::getInstance()->insert(
                 'import_match',
                 [
-                    'name' => pSQL(Tools::getValue('newImportMatchs')),
+                    'name'  => pSQL(Tools::getValue('newImportMatchs')),
                     'match' => pSQL($match),
-                    'skip' => pSQL(Tools::getValue('skip')),
+                    'skip'  => pSQL(Tools::getValue('skip')),
                 ],
                 false,
                 Db::INSERT_IGNORE
@@ -4921,54 +4955,44 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param $a
-     * @param $b
+     * @return void
      *
-     * @return int
-     *
-     * @since 1.0.0
-     */
-    protected function sortLabels($a, $b)
-    {
-        if ($a['label'] == $b['label']) {
-            return 0;
-        }
-
-        return ($a['label'] < $b['label']) ? -1 : 1;
-    }
-
-    /**
      * @since 1.0.0
      */
     public function ajaxProcessLoadImportMatchs()
     {
         if ($this->tabAccess['edit'] === '1') {
             $return = Db::getInstance()->executeS(
-                'SELECT * FROM `'._DB_PREFIX_.'import_match` WHERE `id_import_match` = '
-                .(int) Tools::getValue('idImportMatchs'), true, false
+                'SELECT * FROM `'._DB_PREFIX_.'import_match` WHERE `id_import_match` = '.(int) Tools::getValue('idImportMatchs'),
+                true,
+                false
             );
             die(
-                '{"id" : "'.$return[0]['id_import_match'].'", "matchs" : "'.$return[0]['match'].'", "skip" : "'
-                .$return[0]['skip'].'"}'
+                '{"id" : "'.$return[0]['id_import_match'].'", "matchs" : "'.$return[0]['match'].'", "skip" : "'.$return[0]['skip'].'"}'
             );
         }
     }
 
     /**
+     * @return void
+     *
      * @since 1.0.0
      */
     public function ajaxProcessDeleteImportMatchs()
     {
         if ($this->tabAccess['edit'] === '1') {
-            Db::getInstance()->execute(
-                'DELETE FROM `'._DB_PREFIX_.'import_match` WHERE `id_import_match` = '
-                .(int) Tools::getValue('idImportMatchs'), false
+            Db::getInstance()->delete(
+                'import_match',
+                '`id_import_match` = '.(int) Tools::getValue('idImportMatchs'),
+                false
             );
             die;
         }
     }
 
     /**
+     * @return void
+     *
      * @since 1.0.0
      */
     public function ajaxProcessImport()
@@ -5037,6 +5061,8 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
+     * @return void
+     *
      * @since 1.0.0
      */
     public function initModal()
@@ -5049,5 +5075,109 @@ class AdminImportControllerCore extends AdminController
             'modal_title'   => $this->l('Importing...'),
             'modal_content' => $modalContent,
         ];
+    }
+
+    /**
+     * @param $a
+     * @param $b
+     *
+     * @return int
+     *
+     * @since 1.0.0
+     */
+    protected function sortLabels($a, $b)
+    {
+        if ($a['label'] == $b['label']) {
+            return 0;
+        }
+
+        return ($a['label'] < $b['label']) ? -1 : 1;
+    }
+
+    /**
+     * This method checks if a store exists
+     *
+     * @param int $idStore Store ID
+     *
+     * @return bool
+     *
+     * @since 1.0.1
+     */
+    protected static function storeExists($idStore)
+    {
+        $sql = new DbQuery();
+        $sql->select('`id_store`');
+        $sql->from('store');
+        $sql->where('`id_store` = '.(int) $idStore);
+
+        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+    }
+
+    /**
+     * Gets a list of IDs from a list of IDs/Refs. The result will avoid duplicates, and checks if given IDs/Refs exists in DB.
+     * Useful when a product list should be checked before a bulk operation on them (Only 1 query => performances).
+     *
+     * @return false|array The IDs list, whithout duplicate and only existing ones.
+     *
+     * @since 1.0.1
+     */
+    protected static function getExistingIdsFromIdsOrRefs($idsOrRefs)
+    {
+        // separate IDs and Refs
+        $ids = array();
+        $refs = array();
+        $whereStatements = array();
+        foreach ((is_array($idsOrRefs) ? $idsOrRefs : array($idsOrRefs)) as $idOrRef) {
+            if (is_numeric($idOrRef)) {
+                $ids[] = (int) $idOrRef;
+            } elseif (is_string($idOrRef)) {
+                $refs[] = '\''.pSQL($idOrRef).'\'';
+            }
+        }
+        // construct WHERE statement with OR combination
+        if (count($ids) > 0) {
+            $whereStatements[] = ' p.id_product IN ('.implode(',', $ids).') ';
+        }
+        if (count($refs) > 0) {
+            $whereStatements[] = ' p.reference IN ('.implode(',', $refs).') ';
+        }
+        if (!count($whereStatements)) {
+            return false;
+        }
+        $results = Db::getInstance()->executeS('
+            SELECT DISTINCT `id_product`
+            FROM `'._DB_PREFIX_.'product` p
+            WHERE '.implode(' OR ', $whereStatements)
+        );
+        // simplify array since there is 1 useless dimension.
+        // FIXME : find a better way to avoid this, directly in SQL?
+        foreach ($results as $k => $v) {
+            $results[$k] = (int) $v['id_product'];
+        }
+
+        return $results;
+    }
+
+    /**
+     * Link accessories with product. No need to inflate a full Product (better performances).
+     *
+     * @param array $accessoriesId Accessories ids
+     * @param int   $productId     The product ID to link accessories on.
+     *
+     * @return void
+     *
+     * @since 1.0.1
+     */
+    protected static function changeAccessoriesForProduct($accessoriesId, $productId)
+    {
+        foreach ($accessoriesId as $idProduct2) {
+            Db::getInstance()->insert(
+                'accessory',
+                [
+                    'id_product_1' => (int) $productId,
+                    'id_product_2' => (int) $idProduct2,
+                ]
+            );
+        }
     }
 }
