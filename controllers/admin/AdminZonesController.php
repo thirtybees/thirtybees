@@ -21,21 +21,31 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * @property Zone $object
+ * Class AdminZonesControllerCore
+ *
+ * @since 1.0.0
  */
 class AdminZonesControllerCore extends AdminController
 {
+    // @codingStandardsIgnoreStart
+    /** @var string $asso_type */
     public $asso_type = 'shop';
+    // @codingStandardsIgnoreEnd
 
+    /**
+     * AdminZonesControllerCore constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         $this->bootstrap = true;
@@ -47,44 +57,56 @@ class AdminZonesControllerCore extends AdminController
             'id_zone' => [
                 'title' => $this->l('ID'),
                 'align' => 'center',
-                'class' => 'fixed-width-xs'
+                'class' => 'fixed-width-xs',
             ],
-            'name' => [
+            'name'    => [
                 'title' => $this->l('Zone'),
             ],
-            'active' => [
-                'title' => $this->l('Enabled'),
-                'align' => 'center',
-                'active' => 'status',
-                'type' => 'bool',
+            'active'  => [
+                'title'   => $this->l('Enabled'),
+                'align'   => 'center',
+                'active'  => 'status',
+                'type'    => 'bool',
                 'orderby' => false,
-                'class' => 'fixed-width-sm'
-            ]
+                'class'   => 'fixed-width-sm',
+            ],
         ];
         $this->bulk_actions = [
             'delete' => [
-                'text' => $this->l('Delete selected'),
+                'text'    => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
-                'icon' => 'icon-trash'
-            ]
+                'icon'    => 'icon-trash',
+            ],
         ];
 
         parent::__construct();
     }
 
+    /**
+     * Initialize page header toolbar
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_zone'] = [
                 'href' => self::$currentIndex.'&addzone&token='.$this->token,
                 'desc' => $this->l('Add new zone', null, null, false),
-                'icon' => 'process-icon-new'
+                'icon' => 'process-icon-new',
             ];
         }
 
         parent::initPageHeaderToolbar();
     }
 
+    /**
+     * @return false|string
+     *
+     * @since 1.0.0
+     */
     public function renderList()
     {
         $this->addRowAction('edit');
@@ -93,49 +115,54 @@ class AdminZonesControllerCore extends AdminController
         return parent::renderList();
     }
 
+    /**
+     * @return string
+     *
+     * @since 1.0.0
+     */
     public function renderForm()
     {
         $this->fields_form = [
             'legend' => [
                 'title' => $this->l('Zones'),
-                'icon' => 'icon-globe'
+                'icon'  => 'icon-globe',
             ],
-            'input' => [
+            'input'  => [
                 [
-                    'type' => 'text',
-                    'label' => $this->l('Name'),
-                    'name' => 'name',
+                    'type'     => 'text',
+                    'label'    => $this->l('Name'),
+                    'name'     => 'name',
                     'required' => true,
-                    'hint' => $this->l('Zone name (e.g. Africa, West Coast, Neighboring Countries).'),
+                    'hint'     => $this->l('Zone name (e.g. Africa, West Coast, Neighboring Countries).'),
                 ],
                 [
-                    'type' => 'switch',
-                    'label' => $this->l('Active'),
-                    'name' => 'active',
+                    'type'     => 'switch',
+                    'label'    => $this->l('Active'),
+                    'name'     => 'active',
                     'required' => false,
-                    'is_bool' => true,
-                    'values' => [
+                    'is_bool'  => true,
+                    'values'   => [
                         [
-                            'id' => 'active_on',
+                            'id'    => 'active_on',
                             'value' => 1,
-                            'label' => $this->l('Enabled')
+                            'label' => $this->l('Enabled'),
                         ],
                         [
-                            'id' => 'active_off',
+                            'id'    => 'active_off',
                             'value' => 0,
-                            'label' => $this->l('Disabled')
-                        ]
+                            'label' => $this->l('Disabled'),
+                        ],
                     ],
-                    'hint' => $this->l('Allow or disallow shipping to this zone.')
-                ]
-            ]
+                    'hint'     => $this->l('Allow or disallow shipping to this zone.'),
+                ],
+            ],
         ];
 
         if (Shop::isFeatureActive()) {
             $this->fields_form['input'][] = [
-                'type' => 'shop',
+                'type'  => 'shop',
                 'label' => $this->l('Shop association'),
-                'name' => 'checkBoxShopAsso',
+                'name'  => 'checkBoxShopAsso',
             ];
         }
 
