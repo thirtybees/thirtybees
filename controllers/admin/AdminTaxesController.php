@@ -21,19 +21,26 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * @property Tax $object
+ * Class AdminTaxesControllerCore
+ *
+ * @since 1.0.0
  */
 class AdminTaxesControllerCore extends AdminController
 {
+    /**
+     * AdminTaxesControllerCore constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         $this->bootstrap = true;
@@ -45,75 +52,75 @@ class AdminTaxesControllerCore extends AdminController
 
         $this->bulk_actions = [
             'delete' => [
-                'text' => $this->l('Delete selected'),
+                'text'    => $this->l('Delete selected'),
                 'confirm' => $this->l('Delete selected items?'),
-                'icon' => 'icon-trash'
-            ]
+                'icon'    => 'icon-trash',
+            ],
         ];
 
         $this->fields_list = [
             'id_tax' => ['title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'],
-            'name' => ['title' => $this->l('Name'), 'width' => 'auto'],
-            'rate' => ['title' => $this->l('Rate'), 'align' => 'center', 'suffix' => '%' , 'class' => 'fixed-width-md'],
-            'active' => ['title' => $this->l('Enabled'), 'width' => 25, 'align' => 'center', 'active' => 'status', 'type' => 'bool', 'orderby' => false, 'class' => 'fixed-width-sm', 'remove_onclick' => true]
+            'name'   => ['title' => $this->l('Name'), 'width' => 'auto'],
+            'rate'   => ['title' => $this->l('Rate'), 'align' => 'center', 'suffix' => '%', 'class' => 'fixed-width-md'],
+            'active' => ['title' => $this->l('Enabled'), 'width' => 25, 'align' => 'center', 'active' => 'status', 'type' => 'bool', 'orderby' => false, 'class' => 'fixed-width-sm', 'remove_onclick' => true],
         ];
 
-        $ecotax_desc = '';
+        $ecotaxDesc = '';
         if (Configuration::get('PS_USE_ECOTAX')) {
-            $ecotax_desc = $this->l('If you disable the ecotax, the ecotax for all your products will be set to 0.');
+            $ecotaxDesc = $this->l('If you disable the ecotax, the ecotax for all your products will be set to 0.');
         }
 
         $this->fields_options = [
             'general' => [
-                'title' =>    $this->l('Tax options'),
-                'fields' =>    [
-                    'PS_TAX' => [
+                'title'  => $this->l('Tax options'),
+                'fields' => [
+                    'PS_TAX'              => [
                         'title' => $this->l('Enable tax'),
-                        'desc' => $this->l('Select whether or not to include tax on purchases.'),
-                        'cast' => 'intval', 'type' => 'bool'
+                        'desc'  => $this->l('Select whether or not to include tax on purchases.'),
+                        'cast'  => 'intval', 'type' => 'bool',
                     ],
-                    'PS_TAX_DISPLAY' => [
+                    'PS_TAX_DISPLAY'      => [
                         'title' => $this->l('Display tax in the shopping cart'),
-                        'desc' => $this->l('Select whether or not to display tax on a distinct line in the cart.'),
-                        'cast' => 'intval',
-                        'type' => 'bool'
+                        'desc'  => $this->l('Select whether or not to display tax on a distinct line in the cart.'),
+                        'cast'  => 'intval',
+                        'type'  => 'bool',
                     ],
                     'PS_TAX_ADDRESS_TYPE' => [
-                        'title' => $this->l('Based on'),
-                        'cast' => 'pSQL',
-                        'type' => 'select',
-                        'list' => [
+                        'title'      => $this->l('Based on'),
+                        'cast'       => 'pSQL',
+                        'type'       => 'select',
+                        'list'       => [
                             [
                                 'name' => $this->l('Invoice address'),
-                                'id' => 'id_address_invoice'
+                                'id'   => 'id_address_invoice',
                             ],
                             [
                                 'name' => $this->l('Delivery address'),
-                                'id' => 'id_address_delivery'
-                            ]
+                                'id'   => 'id_address_delivery',
+                            ],
                         ],
-                        'identifier' => 'id'
+                        'identifier' => 'id',
                     ],
-                    'PS_USE_ECOTAX' => [
-                        'title' => $this->l('Use ecotax'),
-                        'desc' => $ecotax_desc,
+                    'PS_USE_ECOTAX'       => [
+                        'title'      => $this->l('Use ecotax'),
+                        'desc'       => $ecotaxDesc,
                         'validation' => 'isBool',
-                        'cast' => 'intval',
-                        'type' => 'bool'
+                        'cast'       => 'intval',
+                        'type'       => 'bool',
                     ],
                 ],
-                'submit' => ['title' => $this->l('Save')]
+                'submit' => ['title' => $this->l('Save')],
             ],
         ];
 
         if (Configuration::get('PS_USE_ECOTAX') || Tools::getValue('PS_USE_ECOTAX')) {
             $this->fields_options['general']['fields']['PS_ECOTAX_TAX_RULES_GROUP_ID'] = [
-                'title' => $this->l('Ecotax'),
-                'hint' => $this->l('Define the ecotax (e.g. French ecotax: 19.6%).'),
-                'cast' => 'intval',
-                'type' => 'select',
+                'title'      => $this->l('Ecotax'),
+                'hint'       => $this->l('Define the ecotax (e.g. French ecotax: 19.6%).'),
+                'cast'       => 'intval',
+                'type'       => 'select',
                 'identifier' => 'id_tax_rules_group',
-                'list' => TaxRulesGroup::getTaxRulesGroupsForOptions()
+                'list'       => TaxRulesGroup::getTaxRulesGroupsForOptions(),
             ];
         }
 
@@ -122,13 +129,20 @@ class AdminTaxesControllerCore extends AdminController
         $this->_where .= ' AND a.deleted = 0';
     }
 
+    /**
+     * Initialize page header toolbar
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_tax'] = [
                 'href' => self::$currentIndex.'&addtax&token='.$this->token,
                 'desc' => $this->l('Add new tax', null, null, false),
-                'icon' => 'process-icon-new'
+                'icon' => 'process-icon-new',
             ];
         }
 
@@ -144,6 +158,8 @@ class AdminTaxesControllerCore extends AdminController
      * @return string
      * @throws Exception
      * @throws SmartyException
+     *
+     * @since 1.0.0
      */
     public function displayDeleteLink($token = null, $id)
     {
@@ -161,9 +177,9 @@ class AdminTaxesControllerCore extends AdminController
 
         $this->context->smarty->assign(
             [
-                'href' => self::$currentIndex.'&'.$this->identifier.'='.$id.'&delete'.$this->table.'&token='.($token != null ? $token : $this->token),
+                'href'    => self::$currentIndex.'&'.$this->identifier.'='.$id.'&delete'.$this->table.'&token='.($token != null ? $token : $this->token),
                 'confirm' => (isset($confirm) ? '\r'.$confirm : self::$cacheLang['DeleteItem'].$id.' ? '),
-                'action' => self::$cacheLang['Delete'],
+                'action'  => self::$cacheLang['Delete'],
             ]
         );
 
@@ -174,89 +190,106 @@ class AdminTaxesControllerCore extends AdminController
      * Fetch the template for action enable
      *
      * @param string $token
-     * @param int $id
-     * @param int $value state enabled or not
-     * @param string $active status
-     * @param int $id_category
-     * @param int $id_product
+     * @param int    $id
+     * @param int    $value      state enabled or not
+     * @param string $active     status
+     * @param int    $idCategory
+     * @param int    $idProduct
+     *
+     * @return string
+     *
+     * @since 1.0.0
      */
-    public function displayEnableLink($token, $id, $value, $active, $id_category = null, $id_product = null)
+    public function displayEnableLink($token, $id, $value, $active, $idCategory = null, $idProduct = null)
     {
         if ($value && TaxRule::isTaxInUse($id)) {
             $confirm = $this->l('This tax is currently in use as a tax rule. If you continue, this tax will be removed from the tax rule. Are you sure you\'d like to continue?', null, true, false);
         }
-        $tpl_enable = $this->context->smarty->createTemplate('helpers/list/list_action_enable.tpl');
-        $tpl_enable->assign(
+        $tplEnable = $this->context->smarty->createTemplate('helpers/list/list_action_enable.tpl');
+        $tplEnable->assign(
             [
-            'enabled' => (bool)$value,
-            'url_enable' => self::$currentIndex.'&'.$this->identifier.'='.(int)$id.'&'.$active.$this->table.
-                ((int)$id_category && (int)$id_product ? '&id_category='.(int)$id_category : '').'&token='.($token != null ? $token : $this->token),
-            'confirm' => isset($confirm) ? $confirm : null,
+                'enabled'    => (bool) $value,
+                'url_enable' => self::$currentIndex.'&'.$this->identifier.'='.(int) $id.'&'.$active.$this->table.((int) $idCategory && (int) $idProduct ? '&id_category='.(int) $idCategory : '').'&token='.($token != null ? $token : $this->token),
+                'confirm'    => isset($confirm) ? $confirm : null,
             ]
         );
 
-        return $tpl_enable->fetch();
+        return $tplEnable->fetch();
     }
 
+    /**
+     * Render form
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
     public function renderForm()
     {
         $this->fields_form = [
             'legend' => [
                 'title' => $this->l('Taxes'),
-                'icon' => 'icon-money'
+                'icon'  => 'icon-money',
             ],
-            'input' => [
+            'input'  => [
                 [
-                    'type' => 'text',
-                    'label' => $this->l('Name'),
-                    'name' => 'name',
+                    'type'     => 'text',
+                    'label'    => $this->l('Name'),
+                    'name'     => 'name',
                     'required' => true,
-                    'lang' => true,
-                    'hint' => $this->l('Tax name to display in carts and on invoices (e.g. "VAT").').' - '.$this->l('Invalid characters').' <>;=#{}'
+                    'lang'     => true,
+                    'hint'     => $this->l('Tax name to display in carts and on invoices (e.g. "VAT").').' - '.$this->l('Invalid characters').' <>;=#{}',
                 ],
                 [
-                    'type' => 'text',
-                    'label' => $this->l('Rate'),
-                    'name' => 'rate',
+                    'type'      => 'text',
+                    'label'     => $this->l('Rate'),
+                    'name'      => 'rate',
                     'maxlength' => 6,
-                    'required' => true,
-                    'hint' => $this->l('Format: XX.XX or XX.XXX (e.g. 19.60 or 13.925)').' - '.$this->l('Invalid characters').' <>;=#{}'
+                    'required'  => true,
+                    'hint'      => $this->l('Format: XX.XX or XX.XXX (e.g. 19.60 or 13.925)').' - '.$this->l('Invalid characters').' <>;=#{}',
                 ],
                 [
-                    'type' => 'switch',
-                    'label' => $this->l('Enable'),
-                    'name' => 'active',
+                    'type'     => 'switch',
+                    'label'    => $this->l('Enable'),
+                    'name'     => 'active',
                     'required' => false,
-                    'is_bool' => true,
-                    'values' => [
+                    'is_bool'  => true,
+                    'values'   => [
                         [
-                            'id' => 'active_on',
+                            'id'    => 'active_on',
                             'value' => 1,
-                            'label' => $this->l('Enabled')
+                            'label' => $this->l('Enabled'),
                         ],
                         [
-                            'id' => 'active_off',
+                            'id'    => 'active_off',
                             'value' => 0,
-                            'label' => $this->l('Disabled')
-                        ]
-                    ]
-                ]
+                            'label' => $this->l('Disabled'),
+                        ],
+                    ],
+                ],
             ],
             'submit' => [
-                'title' => $this->l('Save')
-            ]
+                'title' => $this->l('Save'),
+            ],
         ];
 
         return parent::renderForm();
     }
 
+    /**
+     * Post processing
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function postProcess()
     {
         if ($this->action == 'save') {
             /* Checking fields validity */
             $this->validateRules();
             if (!count($this->errors)) {
-                $id = (int)(Tools::getValue('id_'.$this->table));
+                $id = (int) (Tools::getValue('id_'.$this->table));
 
                 /* Object update */
                 if (isset($id) && !empty($id)) {
@@ -274,9 +307,7 @@ class AdminTaxesControllerCore extends AdminController
                     } else {
                         $this->errors[] = Tools::displayError('An error occurred while updating an object.').' <b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
                     }
-                }
-
-                /* Object creation */
+                } /* Object creation */
                 else {
                     /** @var Tax $object */
                     $object = new $this->className();
@@ -293,17 +324,22 @@ class AdminTaxesControllerCore extends AdminController
         }
     }
 
+    /**
+     * @param mixed $value
+     *
+     * @since 1.0.0
+     */
     public function updateOptionPsUseEcotax($value)
     {
-        $old_value = (int)Configuration::get('PS_USE_ECOTAX');
+        $oldValue = (int) Configuration::get('PS_USE_ECOTAX');
 
-        if ($old_value != $value) {
+        if ($oldValue != $value) {
             // Reset ecotax
             if ($value == 0) {
                 Product::resetEcoTax();
             }
 
-            Configuration::updateValue('PS_USE_ECOTAX', (int)$value);
+            Configuration::updateValue('PS_USE_ECOTAX', (int) $value);
         }
     }
 }
