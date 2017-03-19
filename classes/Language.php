@@ -439,16 +439,14 @@ class LanguageCore extends ObjectModel
             $errors[] = Tools::displayError('Error occurred when language was checked according to your thirty bees version.');
         } elseif (isset($langPack->name)) {
             try {
-                $content = (string) $guzzle->get("{$iso}.gzip")->getBody();
+                $guzzle->get("{$iso}.gzip", ['sink' => $file]);
+                $success = true;
             } catch (Exception $e) {
-                $content = false;
+                $success = false;
             }
 
-            if ($content && !@file_put_contents($file, $content)) {
-                if (is_writable(dirname($file))) {
-                    @unlink($file);
-                    @file_put_contents($file, $content);
-                } elseif (!is_writable($file)) {
+            if ($success && !@file_exists($file)) {
+                if (!is_writable($file)) {
                     $errors[] = Tools::displayError('Server does not have permissions for writing.').' ('.$file.')';
                 }
             }
