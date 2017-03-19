@@ -21,16 +21,28 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class AdminStatsTabControllerCore
+ *
+ * @since 1.0.0
+ */
 abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCore
 {
+    /**
+     * Initialize
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function init()
     {
         parent::init();
@@ -39,6 +51,13 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
         $this->display = 'view';
     }
 
+    /**
+     * Initialize content
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function initContent()
     {
         if ($this->ajax) {
@@ -56,43 +75,128 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
             }
             $this->content .= $this->renderView();
         }
-        
+
         $this->content .= $this->displayMenu();
         $this->content .= $this->displayCalendar();
         $this->content .= $this->displayStats();
 
-
         $this->context->smarty->assign(
             [
-            'content' => $this->content,
-            'url_post' => self::$currentIndex.'&token='.$this->token,
-            'show_page_header_toolbar' => $this->show_page_header_toolbar,
-            'page_header_toolbar_title' => $this->page_header_toolbar_title,
-            'page_header_toolbar_btn' => $this->page_header_toolbar_btn
+                'content'                   => $this->content,
+                'url_post'                  => self::$currentIndex.'&token='.$this->token,
+                'show_page_header_toolbar'  => $this->show_page_header_toolbar,
+                'page_header_toolbar_title' => $this->page_header_toolbar_title,
+                'page_header_toolbar_btn'   => $this->page_header_toolbar_btn,
             ]
         );
     }
 
+    /**
+     * Initialize page header toolbar
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function initPageHeaderToolbar()
     {
         parent::initPageHeaderToolbar();
         unset($this->page_header_toolbar_btn['back']);
     }
 
+    /**
+     * Display menu
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
+    public function displayMenu()
+    {
+        $tpl = $this->createTemplate('menu.tpl');
+
+        $modules = $this->getModules();
+        $moduleInstance = [];
+        foreach ($modules as $m => $module) {
+            if ($moduleInstance[$module['name']] = Module::getInstanceByName($module['name'])) {
+                $modules[$m]['displayName'] = $moduleInstance[$module['name']]->displayName;
+            } else {
+                unset($moduleInstance[$module['name']]);
+                unset($modules[$m]);
+            }
+        }
+
+        uasort($modules, [$this, 'checkModulesNames']);
+
+        $tpl->assign(
+            [
+                'current'             => self::$currentIndex,
+                'current_module_name' => Tools::getValue('module', 'statsforecast'),
+                'token'               => $this->token,
+                'modules'             => $modules,
+                'module_instance'     => $moduleInstance,
+            ]
+        );
+
+        return $tpl->fetch();
+    }
+
+    /**
+     * Get modules
+     *
+     * @return array|false|mysqli_result|null|PDOStatement|resource
+     *
+     * @since 1.0.0
+     */
+    protected function getModules()
+    {
+        $sql = 'SELECT h.`name` AS hook, m.`name`
+				FROM `'._DB_PREFIX_.'module` m
+				LEFT JOIN `'._DB_PREFIX_.'hook_module` hm ON hm.`id_module` = m.`id_module`
+				LEFT JOIN `'._DB_PREFIX_.'hook` h ON hm.`id_hook` = h.`id_hook`
+				WHERE h.`name` = \'displayAdminStatsModules\'
+					AND m.`active` = 1
+				GROUP BY hm.id_module
+				ORDER BY hm.`position`';
+
+        return Db::getInstance()->executeS($sql);
+    }
+
+    /**
+     * @return string
+     *
+     * @deprecated 1.0.0
+     */
     public function displayCalendar()
     {
         return AdminStatsTabController::displayCalendarForm(
             [
-            'Calendar' => $this->l('Calendar', 'AdminStatsTab'),
-            'Day' => $this->l('Day', 'AdminStatsTab'),
-            'Month' => $this->l('Month', 'AdminStatsTab'),
-            'Year' => $this->l('Year', 'AdminStatsTab'),
-            'From' => $this->l('From:', 'AdminStatsTab'),
-            'To' => $this->l('To:', 'AdminStatsTab'),
-            'Save' => $this->l('Save', 'AdminStatsTab')
-            ], $this->token);
+                'Calendar' => $this->l('Calendar', 'AdminStatsTab'),
+                'Day'      => $this->l('Day', 'AdminStatsTab'),
+                'Month'    => $this->l('Month', 'AdminStatsTab'),
+                'Year'     => $this->l('Year', 'AdminStatsTab'),
+                'From'     => $this->l('From:', 'AdminStatsTab'),
+                'To'       => $this->l('To:', 'AdminStatsTab'),
+                'Save'     => $this->l('Save', 'AdminStatsTab'),
+            ],
+            $this->token
+        );
     }
 
+    /**
+     * Display calendar form
+     *
+     * @param      $translations
+     * @param      $token
+     * @param null $action
+     * @param null $table
+     * @param null $identifier
+     * @param null $id
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
     public static function displayCalendarForm($translations, $token, $action = null, $table = null, $identifier = null, $id = null)
     {
         $context = Context::getContext();
@@ -105,143 +209,96 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
             $identifier = 'module';
             $id = Tools::getValue('module');
         }
-        
+
         $action = Context::getContext()->link->getAdminLink('AdminStats');
         $action .= ($action && $table ? '&'.Tools::safeOutput($action) : '');
-        $action .= ($identifier && $id ? '&'.Tools::safeOutput($identifier).'='.(int)$id : '');
+        $action .= ($identifier && $id ? '&'.Tools::safeOutput($identifier).'='.(int) $id : '');
         $module = Tools::getValue('module');
         $action .= ($module ? '&module='.Tools::safeOutput($module) : '');
-        $action .= (($id_product = Tools::getValue('id_product')) ? '&id_product='.Tools::safeOutput($id_product) : '');
+        $action .= (($idProduct = Tools::getValue('id_product')) ? '&id_product='.Tools::safeOutput($idProduct) : '');
         $tpl->assign(
             [
-            'current' => self::$currentIndex,
-            'token' => $token,
-            'action' => $action,
-            'table' => $table,
-            'identifier' => $identifier,
-            'id' => $id,
-            'translations' => $translations,
-            'datepickerFrom' => Tools::getValue('datepickerFrom', $context->employee->stats_date_from),
-            'datepickerTo' => Tools::getValue('datepickerTo', $context->employee->stats_date_to)
+                'current'        => self::$currentIndex,
+                'token'          => $token,
+                'action'         => $action,
+                'table'          => $table,
+                'identifier'     => $identifier,
+                'id'             => $id,
+                'translations'   => $translations,
+                'datepickerFrom' => Tools::getValue('datepickerFrom', $context->employee->stats_date_from),
+                'datepickerTo'   => Tools::getValue('datepickerTo', $context->employee->stats_date_to),
             ]
         );
 
         return $tpl->fetch();
     }
 
-    /* Not used anymore, but still work */
-    protected function displayEngines()
-    {
-        $tpl = $this->createTemplate('engines.tpl');
-
-        $autoclean_period = [
-            'never' =>    $this->l('Never', 'AdminStatsTab'),
-            'week' =>    $this->l('Week', 'AdminStatsTab'),
-            'month' =>    $this->l('Month', 'AdminStatsTab'),
-            'year' =>    $this->l('Year', 'AdminStatsTab')
-        ];
-
-        $tpl->assign(
-            [
-            'current' => self::$currentIndex,
-            'token' => $this->token,
-            'graph_engine' => Configuration::get('PS_STATS_RENDER'),
-            'grid_engine' => Configuration::get('PS_STATS_GRID_RENDER'),
-            'auto_clean' => Configuration::get('PS_STATS_OLD_CONNECT_AUTO_CLEAN'),
-            'array_graph_engines' => ModuleGraphEngine::getGraphEngines(),
-            'array_grid_engines' => ModuleGridEngine::getGridEngines(),
-            'array_auto_clean' => $autoclean_period,
-            ]
-        );
-
-        return $tpl->fetch();
-    }
-
-    public function displayMenu()
-    {
-        $tpl = $this->createTemplate('menu.tpl');
-
-        $modules = $this->getModules();
-        $module_instance = [];
-        foreach ($modules as $m => $module) {
-            if ($module_instance[$module['name']] = Module::getInstanceByName($module['name'])) {
-                $modules[$m]['displayName'] = $module_instance[$module['name']]->displayName;
-            } else {
-                unset($module_instance[$module['name']]);
-                unset($modules[$m]);
-            }
-        }
-
-        uasort($modules, [$this, 'checkModulesNames']);
-
-        $tpl->assign(
-            [
-            'current' => self::$currentIndex,
-            'current_module_name' => Tools::getValue('module', 'statsforecast'),
-            'token' => $this->token,
-            'modules' => $modules,
-            'module_instance' => $module_instance
-            ]
-        );
-
-        return $tpl->fetch();
-    }
-    
-    public function checkModulesNames($a, $b)
-    {
-        return (bool)($a['displayName'] > $b['displayName']);
-    }
-
-    protected function getModules()
-    {
-        $sql = 'SELECT h.`name` AS hook, m.`name`
-				FROM `'._DB_PREFIX_.'module` m
-				LEFT JOIN `'._DB_PREFIX_.'hook_module` hm ON hm.`id_module` = m.`id_module`
-				LEFT JOIN `'._DB_PREFIX_.'hook` h ON hm.`id_hook` = h.`id_hook`
-				WHERE h.`name` = \'displayAdminStatsModules\'
-					AND m.`active` = 1
-				GROUP BY hm.id_module
-				ORDER BY hm.`position`';
-        return Db::getInstance()->executeS($sql);
-    }
-
+    /**
+     * Display stats
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
     public function displayStats()
     {
         $tpl = $this->createTemplate('stats.tpl');
 
-        if ((!($module_name = Tools::getValue('module')) || !Validate::isModuleName($module_name)) && ($module_instance = Module::getInstanceByName('statsforecast')) && $module_instance->active) {
-            $module_name = 'statsforecast';
+        if ((!($moduleName = Tools::getValue('module')) || !Validate::isModuleName($moduleName)) && ($moduleInstance = Module::getInstanceByName('statsforecast')) && $moduleInstance->active) {
+            $moduleName = 'statsforecast';
         }
 
-        if ($module_name) {
-            $_GET['module'] = $module_name;
+        if ($moduleName) {
+            $_GET['module'] = $moduleName;
 
-            if (!isset($module_instance)) {
-                $module_instance = Module::getInstanceByName($module_name);
+            if (!isset($moduleInstance)) {
+                $moduleInstance = Module::getInstanceByName($moduleName);
             }
-                
-            if ($module_instance && $module_instance->active) {
-                $hook = Hook::exec('displayAdminStatsModules', null, $module_instance->id);
+
+            if ($moduleInstance && $moduleInstance->active) {
+                $hook = Hook::exec('displayAdminStatsModules', null, $moduleInstance->id);
             }
         }
 
         $tpl->assign(
             [
-            'module_name' => $module_name,
-            'module_instance' => isset($module_instance) ? $module_instance : null,
-            'hook' => isset($hook) ? $hook : null
+                'module_name'     => $moduleName,
+                'module_instance' => isset($moduleInstance) ? $moduleInstance : null,
+                'hook'            => isset($hook) ? $hook : null,
             ]
         );
 
         return $tpl->fetch();
     }
 
+    /**
+     * Compare module names
+     *
+     * @param $a
+     * @param $b
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
+    public function checkModulesNames($a, $b)
+    {
+        return (bool) ($a['displayName'] > $b['displayName']);
+    }
+
+    /**
+     * Post processing
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function postProcess()
     {
         $this->context = Context::getContext();
-        
+
         $this->processDateRange();
-        
+
         if (Tools::getValue('submitSettings')) {
             if ($this->tabAccess['edit'] === '1') {
                 self::$currentIndex .= '&module='.Tools::getValue('module');
@@ -253,7 +310,14 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
             }
         }
     }
-    
+
+    /**
+     * Process date range
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function processDateRange()
     {
         if (Tools::isSubmit('submitDatePicker')) {
@@ -297,38 +361,91 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
             }
         }
     }
-    
+
+    /**
+     * Ajax process set dashboard date range
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function ajaxProcessSetDashboardDateRange()
     {
         $this->processDateRange();
-        
+
         if ($this->isXmlHttpRequest()) {
             if (is_array($this->errors) && count($this->errors)) {
-                die(json_encode(
+                die(
+                json_encode(
                     [
-                    'has_errors' => true,
-                    'errors' => [$this->errors],
-                    'date_from' => $this->context->employee->stats_date_from,
-                    'date_to' => $this->context->employee->stats_date_to
+                        'has_errors' => true,
+                        'errors'     => [$this->errors],
+                        'date_from'  => $this->context->employee->stats_date_from,
+                        'date_to'    => $this->context->employee->stats_date_to,
                     ]
-                ));
+                )
+                );
             } else {
-                die(json_encode(
+                die(
+                json_encode(
                     [
-                    'has_errors' => false,
-                    'date_from' => $this->context->employee->stats_date_from,
-                    'date_to' => $this->context->employee->stats_date_to
+                        'has_errors' => false,
+                        'date_from'  => $this->context->employee->stats_date_from,
+                        'date_to'    => $this->context->employee->stats_date_to,
                     ]
-                    ));
+                )
+                );
             }
         }
     }
 
+    /**
+     * Display engines
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
+    protected function displayEngines()
+    {
+        $tpl = $this->createTemplate('engines.tpl');
+
+        $autocleanPeriod = [
+            'never' => $this->l('Never', 'AdminStatsTab'),
+            'week'  => $this->l('Week', 'AdminStatsTab'),
+            'month' => $this->l('Month', 'AdminStatsTab'),
+            'year'  => $this->l('Year', 'AdminStatsTab'),
+        ];
+
+        $tpl->assign(
+            [
+                'current'             => self::$currentIndex,
+                'token'               => $this->token,
+                'graph_engine'        => Configuration::get('PS_STATS_RENDER'),
+                'grid_engine'         => Configuration::get('PS_STATS_GRID_RENDER'),
+                'auto_clean'          => Configuration::get('PS_STATS_OLD_CONNECT_AUTO_CLEAN'),
+                'array_graph_engines' => ModuleGraphEngine::getGraphEngines(),
+                'array_grid_engines'  => ModuleGridEngine::getGridEngines(),
+                'array_auto_clean'    => $autocleanPeriod,
+            ]
+        );
+
+        return $tpl->fetch();
+    }
+
+    /**
+     * Get date
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
     protected function getDate()
     {
         $year = isset($this->context->cookie->stats_year) ? $this->context->cookie->stats_year : date('Y');
         $month = isset($this->context->cookie->stats_month) ? sprintf('%02d', $this->context->cookie->stats_month) : '%';
         $day = isset($this->context->cookie->stats_day) ? sprintf('%02d', $this->context->cookie->stats_day) : '%';
+
         return $year.'-'.$month.'-'.$day;
     }
 }
