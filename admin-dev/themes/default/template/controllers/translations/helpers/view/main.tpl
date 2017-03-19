@@ -128,49 +128,48 @@
 			</div>
 		</div>
 	</form>
-	{*<form action="{$url_submit|escape:'html':'UTF-8'}" method="post" enctype="multipart/form-data" class="form-horizontal">*}
-		{*<div class="panel">*}
-			{*<h3>*}
-				{*<i class="icon-download"></i>*}
-				{*{l s='Add / Update a language'}*}
-			{*</h3>*}
-			{*<div id="submitAddLangContent" class="form-group">*}
-				{*<p class="alert alert-info">*}
-					{*{l s='You can add or update a language directly from the thirty bees website here.'}<br/>*}
-					{*{l s='If you choose to update an existing language pack, all of your previous customizations in the theme named "community-theme-default" will be lost. This includes front office expressions and default email templates.'}*}
-				{*</p>*}
-				{*{if $packs_to_update || $packs_to_install}*}
-					{*<label class="control-label col-lg-3" for="params_import_language">{l s='Please select the language you want to add or update'}</label>*}
-					{*<div class="col-lg-9">*}
-						{*<div class="row">*}
-							{*<div class="col-lg-6">*}
-								{*<select id="params_import_language" name="params_import_language" class="chosen">*}
-								{*<optgroup label="{l s='Update a language'}">*}
-									{*{foreach $packs_to_update as $lang_pack}*}
-										{*<option value="{$lang_pack['iso_code']}|{$lang_pack['version']}">{$lang_pack['name']}</option>*}
-									{*{/foreach}*}
-								{*</optgroup>*}
-								{*<optgroup label="{l s='Add a language'}">*}
-									{*{foreach $packs_to_install as $lang_pack}*}
-										{*<option value="{$lang_pack['iso_code']}|{$lang_pack['version']}">{$lang_pack['name']}</option>*}
-									{*{/foreach}*}
-								{*</optgroup>*}
-							{*</select>*}
-							{*</div>*}
-						{*</div>*}
-					{*</div>*}
-
-				{*{else}*}
-					{*<p class="text-danger">{l s='Cannot connect to the thirty bees website to get the language list.'}</p>*}
-				{*{/if}*}
-			{*</div>*}
-			{*<div class="panel-footer">*}
-				{*<button type="submit" name="submitAddLanguage" class="btn btn-default pull-right">*}
-					{*<i class="process-icon-cogs"></i> {l s='Add or update a language'}*}
-				{*</button>*}
-			{*</div>*}
-		{*</div>*}
-	{*</form>*}
+	<form action="{$url_submit|escape:'html':'UTF-8'}" method="post" enctype="multipart/form-data" class="form-horizontal">
+		<div class="panel">
+			<h3>
+				<i class="icon-download"></i>
+				{l s='Add / Update a language'}
+			</h3>
+			<div id="submitAddLangContent" class="form-group">
+				<p class="alert alert-info">
+					{l s='You can add or update a language directly from the thirty bees website here.'}<br/>
+					{l s='If you choose to update an existing language pack, all of your previous customizations in the theme named "community-theme-default" will be lost. This includes front office expressions and default email templates.'}
+				</p>
+				{if $packs_to_update || $packs_to_install}
+					<label class="control-label col-lg-3" for="params_import_language">{l s='Please select the language you want to add or update'}</label>
+					<div class="col-lg-9">
+						<div class="row">
+							<div class="col-lg-6">
+								<select id="params_import_language" name="params_import_language" class="chosen">
+								<optgroup label="{l s='Update a language'}">
+									{foreach $packs_to_update as $lang_pack}
+										<option value="{$lang_pack['iso_code']}|{$lang_pack['version']}">{$lang_pack['name']}</option>
+									{/foreach}
+								</optgroup>
+								<optgroup label="{l s='Add a language'}">
+									{foreach $packs_to_install as $lang_pack}
+										<option value="{$lang_pack['iso_code']}|{$lang_pack['version']}">{$lang_pack['name']}</option>
+									{/foreach}
+								</optgroup>
+							</select>
+							</div>
+						</div>
+					</div>
+				{else}
+					<p class="text-danger">{l s='Cannot connect to the thirty bees website to get the language list.'}</p>
+				{/if}
+			</div>
+			<div class="panel-footer">
+				<button type="submit" name="submitAddLanguage" class="btn btn-default pull-right">
+					<i class="process-icon-cogs"></i> {l s='Add or update a language'}
+				</button>
+			</div>
+		</div>
+	</form>
 	<form action="{$url_submit|escape:'html':'UTF-8'}" method="post" enctype="multipart/form-data" class="form-horizontal">
 		<div class="panel">
 			<h3>

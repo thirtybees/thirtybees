@@ -44,7 +44,7 @@ class AdminTranslationsControllerCore extends AdminController
     /** @var array $ignore_folder List of folder which must be ignored */
     protected static $ignore_folder = ['.', '..', '.svn', '.git', '.htaccess', 'index.php'];
     /** @var string $link_lang_pack Link which list all pack of language */
-    protected $link_lang_pack = 'http://www.thirtybees.com/download/lang_packs/get_each_language_pack.php';
+    protected $link_lang_pack = 'https://translations.thirtybees.com/packs/';
     /** @var int $total_expression number of sentence which can be translated */
     protected $total_expression = 0;
     /** @var int $missing_translations number of sentence which aren't translated */
@@ -226,22 +226,21 @@ class AdminTranslationsControllerCore extends AdminController
         $packsToInstall = [];
         $packsToUpdate = [];
         $token = Tools::getAdminToken('AdminLanguages'.(int) Tab::getIdFromClassName('AdminLanguages').(int) $this->context->employee->id);
-        $fileName = $this->link_lang_pack.'?version='._PS_VERSION_;
+        // TODO: Filter beta RC etc.
+        $version = _TB_VERSION_;
+        $fileName = "{$this->link_lang_pack}/{$version}/index.json";
 
-        $guzzle = new \GuzzleHttp\Client(
-            [
-                'http_errors' => false,
-                'verify'      => _PS_TOOL_DIR_.'cacert.pem',
-                'timeout'     => 5,
-            ]
-        );
+        $guzzle = new \GuzzleHttp\Client([
+            'http_errors' => false,
+            'verify'      => _PS_TOOL_DIR_.'cacert.pem',
+            'timeout'     => 5,
+        ]);
         try {
             $langPacks = (string) $guzzle->get($fileName)->getBody();
         } catch (Exception $e) {
             $langPacks = null;
         }
         if ($langPacks) {
-            // Notice : for php < 5.2 compatibility, json_decode. The second parameter to true will set us
             if ($langPacks != '' && $langPacks = json_decode($langPacks, true)) {
                 foreach ($langPacks as $key => $langPack) {
                     if (!Language::isInstalled($langPack['iso_code'])) {
@@ -351,8 +350,8 @@ class AdminTranslationsControllerCore extends AdminController
 
             return;
         }
-        /* PrestaShop demo mode */
 
+        /* PrestaShop demo mode */
         try {
             if (Tools::isSubmit('submitCopyLang')) {
                 if ($this->tabAccess['add'] === '1') {
@@ -1205,7 +1204,71 @@ class AdminTranslationsControllerCore extends AdminController
      */
     public function submitAddLang()
     {
-        $this->errors[] = Tools::displayError('Not available.');
+        $arrImportLang = explode('|', Tools::getValue('params_import_language')); /* 0 = Language ISO code, 1 = PS version */
+        if (Validate::isLangIsoCode($arrImportLang[0])) {
+            $guzzle = new \GuzzleHttp\Client([
+                'base_uri' => $this->link_lang_pack,
+                'timeout'  => 20,
+                'verify'   => _PS_TOOL_DIR_.'cacert.pem',
+            ]);
+
+            // TODO: Filter beta rc etc.
+            $file = _PS_TRANSLATIONS_DIR_.$arrImportLang[0].'.gzip';
+            try {
+                $guzzle->get("{$arrImportLang[1]}/{$arrImportLang[0]}.gzip", ['sink' => $file]);
+            } catch (Exception $e) {
+            }
+
+            if (file_exists($file)) {
+                $gz = new Archive_Tar($file, true);
+                $filesList = AdminTranslationsController::filterTranslationFiles($gz->listContent());
+                if ($error = $gz->extractList(AdminTranslationsController::filesListToPaths($filesList), _PS_TRANSLATIONS_DIR_.'../')) {
+                    if (is_object($error) && !empty($error->message)) {
+                        $this->errors[] = Tools::displayError('The archive cannot be extracted.').' '.$error->message;
+                    } else {
+                        if (!Language::checkAndAddLanguage($arrImportLang[0])) {
+                            $conf = 20;
+                        } else {
+                            // Reset cache
+                            Language::loadLanguages();
+                            // Clear smarty modules cache
+                            Tools::clearCache();
+                            AdminTranslationsController::checkAndAddMailsFiles($arrImportLang[0], $filesList);
+                            if ($tabErrors = AdminTranslationsController::addNewTabs($arrImportLang[0], $filesList)) {
+                                $this->errors += $tabErrors;
+                            }
+                        }
+                        if (!unlink($file)) {
+                            $this->errors[] = sprintf(Tools::displayError('Cannot delete the archive %s.'), $file);
+                        }
+                        $this->redirect(false, (isset($conf) ? $conf : '15'));
+                    }
+                } else {
+                    $this->errors[] = sprintf(Tools::displayError('Cannot decompress the translation file for the following language: %s'), $arrImportLang[0]);
+                    $checks = [];
+                    foreach ($filesList as $f) {
+                        if (isset($f['filename'])) {
+                            if (is_file(_PS_ROOT_DIR_.DIRECTORY_SEPARATOR.$f['filename']) && !is_writable(_PS_ROOT_DIR_.DIRECTORY_SEPARATOR.$f['filename'])) {
+                                $checks[] = dirname($f['filename']);
+                            } elseif (is_dir(_PS_ROOT_DIR_.DIRECTORY_SEPARATOR.$f['filename']) && !is_writable(_PS_ROOT_DIR_.DIRECTORY_SEPARATOR.dirname($f['filename']))) {
+                                $checks[] = dirname($f['filename']);
+                            }
+                        }
+                    }
+                    $checks = array_unique($checks);
+                    foreach ($checks as $check) {
+                        $this->errors[] = sprintf(Tools::displayError('Please check rights for folder and files in %s'), $check);
+                    }
+                    if (!unlink($file)) {
+                        $this->errors[] = sprintf(Tools::displayError('Cannot delete the archive %s.'), $file);
+                    }
+                }
+            } else {
+                $this->errors[] = Tools::displayError('The server does not have permissions for writing.').' '.sprintf(Tools::displayError('Please check rights for %s'), dirname($file));
+            }
+        } else {
+            $this->errors[] = Tools::displayError('Invalid parameter.');
+        }
     }
 
     /**
@@ -1304,7 +1367,7 @@ class AdminTranslationsControllerCore extends AdminController
      * and mails files.
      *
      * @return void
-     *
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function submitTranslationsMails()
@@ -1390,8 +1453,8 @@ class AdminTranslationsControllerCore extends AdminController
         $arraySubjects = [];
         if (($subjects = Tools::getValue('subject')) && is_array($subjects)) {
             $arraySubjects['core_and_modules'] = ['translations' => [], 'path' => $arrMailPath['core_mail'].'lang.php'];
-            foreach ($subjects as $subject_translation) {
-                $arraySubjects['core_and_modules']['translations'] = array_merge($arraySubjects['core_and_modules']['translations'], $subject_translation);
+            foreach ($subjects as $subjectTranslation) {
+                $arraySubjects['core_and_modules']['translations'] = array_merge($arraySubjects['core_and_modules']['translations'], $subjectTranslation);
             }
         }
         if (!empty($arraySubjects)) {
@@ -2366,10 +2429,10 @@ class AdminTranslationsControllerCore extends AdminController
                             $this->errors[] = sprintf($this->l('There is an error in template, an empty string has been found. Please edit: "%s"'), $filePath);
                             $newLang[$englishString] = '';
                         } else {
-                            $trans_key = $prefixKey.md5($englishString);
+                            $transKey = $prefixKey.md5($englishString);
 
-                            if (isset($GLOBALS[$nameVar][$trans_key])) {
-                                $newLang[$englishString]['trad'] = html_entity_decode($GLOBALS[$nameVar][$trans_key], ENT_COMPAT, 'UTF-8');
+                            if (isset($GLOBALS[$nameVar][$transKey])) {
+                                $newLang[$englishString]['trad'] = html_entity_decode($GLOBALS[$nameVar][$transKey], ENT_COMPAT, 'UTF-8');
                             } else {
                                 if (!isset($newLang[$englishString]['trad'])) {
                                     $newLang[$englishString]['trad'] = '';
@@ -2789,7 +2852,7 @@ class AdminTranslationsControllerCore extends AdminController
      * @param string $dir
      * @param string $groupName
      *
-     * @return array : list of mails
+     * @return false|array list of mails
      *
      * @since 1.0.0
      */
@@ -2844,7 +2907,9 @@ class AdminTranslationsControllerCore extends AdminController
         } else {
             $this->warnings[] = sprintf(
                 Tools::displayError('A mail directory exists for the "%1$s" language, but not for the default language (%3$s) in %2$s'),
-                $this->lang_selected->iso_code, str_replace(_PS_ROOT_DIR_, '', dirname($dir)), $defaultLanguage
+                $this->lang_selected->iso_code,
+                str_replace(_PS_ROOT_DIR_, '', dirname($dir)),
+                $defaultLanguage
             );
         }
 
@@ -3034,7 +3099,7 @@ class AdminTranslationsControllerCore extends AdminController
      * @param array       $content       With english and language needed contents
      * @param string      $lang          ISO code of the needed language
      * @param string      $url           for         The html page and displaying an outline
-     * @param string      $mail_name     Name of the file to translate (same for txt and html files)
+     * @param string      $mailName      Name of the file to translate (same for txt and html files)
      * @param string      $groupName     Group name allow to distinguish each block of mail.
      * @param string|bool $nameForModule Is not false define add a name for distinguish mails module
      *
@@ -3042,7 +3107,7 @@ class AdminTranslationsControllerCore extends AdminController
      *
      * @since 1.0.0
      */
-    protected function displayMailBlockHtml($content, $lang, $url, $mail_name, $groupName, $nameForModule = false)
+    protected function displayMailBlockHtml($content, $lang, $url, $mailName, $groupName, $nameForModule = false)
     {
         $title = [];
         $this->cleanMailContent($content, $lang, $title);
@@ -3053,7 +3118,7 @@ class AdminTranslationsControllerCore extends AdminController
                         <div class="form-group">
                             <label class="control-label col-lg-3">'.$this->l('HTML "title" tag').'</label>
                             <div class="col-lg-9">
-                                <input class="form-control" type="text" name="title_'.$groupName.'_'.$mail_name.'" value="'.(isset($title[$lang]) ? $title[$lang] : '').'" />
+                                <input class="form-control" type="text" name="title_'.$groupName.'_'.$mailName.'" value="'.(isset($title[$lang]) ? $title[$lang] : '').'" />
                                 <p class="help-block">'.(isset($title['en']) ? $title['en'] : '').'</p>
                             </div>
                         </div>
