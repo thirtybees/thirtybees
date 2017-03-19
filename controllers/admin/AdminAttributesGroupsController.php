@@ -330,7 +330,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
     }
 
     /**
-     * @return string|void
+     * @return string
      *
      * @since 1.0.0
      */
@@ -445,7 +445,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
 
         // Create object Attribute
         if (!$obj = new Attribute((int) Tools::getValue($this->identifier))) {
-            return;
+            return '';
         }
 
         $strAttributesGroups = '';
@@ -481,7 +481,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
     }
 
     /**
-     * @return false|string|void
+     * @return string
      *
      * @since 1.0.0
      */
@@ -505,7 +505,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
             if (!Validate::isLoadedObject($obj = new AttributeGroup((int) $id))) {
                 $this->errors[] = Tools::displayError('An error occurred while updating the status for an object.').' <b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
 
-                return;
+                return '';
             }
 
             $this->attribute_name = $obj->name;
@@ -547,6 +547,8 @@ class AdminAttributesGroupsControllerCore extends AdminController
 
             return parent::renderList();
         }
+
+        return '';
     }
 
     /**
@@ -805,13 +807,15 @@ class AdminAttributesGroupsControllerCore extends AdminController
             foreach (Language::getLanguages(false) as $language) {
                 if ($object->isAttribute(
                     (int) Tools::getValue('id_attribute_group'),
-                    Tools::getValue('name_'.$language['id_lang']), $language['id_lang']
+                    Tools::getValue('name_'.$language['id_lang']),
+                    $language['id_lang']
                 )
                 ) {
                     $this->errors['name_'.$language['id_lang']] =
                         sprintf(
                             Tools::displayError('The attribute value "%1$s" already exist for %2$s language'),
-                            Tools::getValue('name_'.$language['id_lang']), $language['name']
+                            Tools::getValue('name_'.$language['id_lang']),
+                            $language['name']
                         );
                 }
             }
@@ -839,7 +843,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
     }
 
     /**
-     * @return false|ObjectModel|void
+     * @return false|ObjectModel
      *
      * @since 1.0.0
      */
