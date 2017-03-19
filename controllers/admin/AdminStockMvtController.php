@@ -21,20 +21,26 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * @since 1.5.0
- * @property StockMvt $object
+ * Class AdminStockMvtControllerCore
+ *
+ * @since 1.0.0
  */
 class AdminStockMvtControllerCore extends AdminController
 {
+    /**
+     * AdminStockMvtControllerCore constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         $this->bootstrap = true;
@@ -50,88 +56,95 @@ class AdminStockMvtControllerCore extends AdminController
 
         $this->fields_list = [
             'product_reference' => [
-                'title' => $this->l('Reference'),
-                'havingFilter' => true
+                'title'        => $this->l('Reference'),
+                'havingFilter' => true,
             ],
-            'product_ean13' => [
-                'title' => $this->l('EAN 13'),
-                'havingFilter' => true
+            'product_ean13'     => [
+                'title'        => $this->l('EAN 13'),
+                'havingFilter' => true,
             ],
-            'product_upc' => [
-                'title' => $this->l('UPC'),
-                'havingFilter' => true
+            'product_upc'       => [
+                'title'        => $this->l('UPC'),
+                'havingFilter' => true,
             ],
-            'product_name' => [
-                'title' => $this->l('Name'),
-                'havingFilter' => true
+            'product_name'      => [
+                'title'        => $this->l('Name'),
+                'havingFilter' => true,
             ],
-            'warehouse_name' => [
-                'title' => $this->l('Warehouse'),
+            'warehouse_name'    => [
+                'title'        => $this->l('Warehouse'),
                 'havingFilter' => false,
-                'orderby' => true,
-                'search' => false,
+                'orderby'      => true,
+                'search'       => false,
             ],
-            'sign' => [
-                'title' => $this->l('Sign'),
-                'align' => 'center',
-                'type' => 'select',
+            'sign'              => [
+                'title'      => $this->l('Sign'),
+                'align'      => 'center',
+                'type'       => 'select',
                 'filter_key' => 'a!sign',
-                'list' => [
-                    '1' => $this->l('Increase'),
+                'list'       => [
+                    '1'  => $this->l('Increase'),
                     '-1' => $this->l('Decrease'),
                 ],
-                'icon' => [
+                'icon'       => [
                     -1 => [
                         'src' => 'remove_stock.png',
                         'alt' => $this->l('Increase'),
                     ],
-                    1 => [
+                    1  => [
                         'src' => 'add_stock.png',
                         'alt' => $this->l('Decrease'),
-                    ]
+                    ],
                 ],
-                'class' => 'fixed-width-xs'
+                'class'      => 'fixed-width-xs',
             ],
             'physical_quantity' => [
-                'title' => $this->l('Quantity'),
-                'align' => 'center',
+                'title'      => $this->l('Quantity'),
+                'align'      => 'center',
                 'filter_key' => 'a!physical_quantity',
-                'class' => 'fixed-width-sm'
+                'class'      => 'fixed-width-sm',
             ],
-            'price_te' => [
-                'title' => $this->l('Price (tax excl.)'),
-                'type' => 'price',
-                'currency' => true,
-                'filter_key' => 'a!price_te'
+            'price_te'          => [
+                'title'      => $this->l('Price (tax excl.)'),
+                'type'       => 'price',
+                'currency'   => true,
+                'filter_key' => 'a!price_te',
             ],
-            'reason' => [
-                'title' => $this->l('Label'),
-                'havingFilter' => true
+            'reason'            => [
+                'title'        => $this->l('Label'),
+                'havingFilter' => true,
             ],
-            'employee' => [
-                'title' => $this->l('Employee'),
-                'havingFilter' => true
+            'employee'          => [
+                'title'        => $this->l('Employee'),
+                'havingFilter' => true,
             ],
-            'date_add' => [
-                'title' => $this->l('Date'),
-                'type' => 'datetime',
-                'filter_key' => 'a!date_add'
+            'date_add'          => [
+                'title'      => $this->l('Date'),
+                'type'       => 'datetime',
+                'filter_key' => 'a!date_add',
             ],
         ];
 
         parent::__construct();
     }
 
+    /**
+     * Initialize page header toolbar
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function initPageHeaderToolbar()
     {
         $this->page_header_toolbar_title = $this->l('Stock movement');
 
-        if (Tools::isSubmit('id_warehouse') && (int)Tools::getValue('id_warehouse') != -1) {
+        if (Tools::isSubmit('id_warehouse') && (int) Tools::getValue('id_warehouse') != -1) {
             $this->page_header_toolbar_btn['export-stock-mvt-csv'] = [
-                'short' => $this->l('Export this list as CSV', null, null, false),
-                'href' => $this->context->link->getAdminLink('AdminStockMvt').'&csv&id_warehouse='.(int)$this->getCurrentWarehouseId(),
-                'desc' => $this->l('Export (CSV)', null, null, false),
-                'imgclass' => 'export'
+                'short'    => $this->l('Export this list as CSV', null, null, false),
+                'href'     => $this->context->link->getAdminLink('AdminStockMvt').'&csv&id_warehouse='.(int) $this->getCurrentWarehouseId(),
+                'desc'     => $this->l('Export (CSV)', null, null, false),
+                'imgclass' => 'export',
             ];
         }
 
@@ -139,8 +152,34 @@ class AdminStockMvtControllerCore extends AdminController
     }
 
     /**
+     * Gets the current warehouse for this controller
+     *
+     * @return int warehouse_id
+     *
+     * @since 1.0.0
+     */
+    protected function getCurrentWarehouseId()
+    {
+        static $warehouse = 0;
+
+        if ($warehouse == 0) {
+            $warehouse = -1;
+            if ((int) Tools::getValue('id_warehouse')) {
+                $warehouse = (int) Tools::getValue('id_warehouse');
+            }
+        }
+
+        return $warehouse;
+    }
+
+    /**
      * AdminController::renderList() override
+     *
      * @see AdminController::renderList()
+     *
+     * @return string
+     *
+     * @since 1.0.0
      */
     public function renderList()
     {
@@ -162,27 +201,27 @@ class AdminStockMvtControllerCore extends AdminController
         $this->_join = 'INNER JOIN '._DB_PREFIX_.'stock stock ON a.id_stock = stock.id_stock
 							LEFT JOIN `'._DB_PREFIX_.'product_lang` pl ON (
 								stock.id_product = pl.id_product
-								AND pl.id_lang = '.(int)$this->context->language->id.Shop::addSqlRestrictionOnLang('pl').'
+								AND pl.id_lang = '.(int) $this->context->language->id.Shop::addSqlRestrictionOnLang('pl').'
 							)
 							LEFT JOIN `'._DB_PREFIX_.'stock_mvt_reason_lang` mrl ON (
 								a.id_stock_mvt_reason = mrl.id_stock_mvt_reason
-								AND mrl.id_lang = '.(int)$this->context->language->id.'
+								AND mrl.id_lang = '.(int) $this->context->language->id.'
 							)
 							LEFT JOIN `'._DB_PREFIX_.'warehouse` w ON (w.id_warehouse = stock.id_warehouse)
 							LEFT JOIN `'._DB_PREFIX_.'product_attribute_combination` pac ON (pac.id_product_attribute = stock.id_product_attribute)
 							LEFT JOIN `'._DB_PREFIX_.'attribute_lang` al ON (
 								al.id_attribute = pac.id_attribute
 								AND pac.id_product_attribute <> 0
-								AND al.id_lang = '.(int)$this->context->language->id.'
+								AND al.id_lang = '.(int) $this->context->language->id.'
 							)';
         // overrides group
         $this->_group = 'GROUP BY a.id_stock_mvt';
 
         // overrides where depending on the warehouse
-        $id_warehouse = (int)$this->getCurrentWarehouseId();
-        if ($id_warehouse > 0) {
-            $this->_where = ' AND w.id_warehouse = '.$id_warehouse;
-            self::$currentIndex .= '&id_warehouse='.$id_warehouse;
+        $idWarehouse = (int) $this->getCurrentWarehouseId();
+        if ($idWarehouse > 0) {
+            $this->_where = ' AND w.id_warehouse = '.$idWarehouse;
+            self::$currentIndex .= '&id_warehouse='.$idWarehouse;
         }
 
         $this->_orderBy = 'a.date_add';
@@ -216,28 +255,75 @@ class AdminStockMvtControllerCore extends AdminController
     }
 
     /**
-     * Gets the current warehouse for this controller
+     * @see AdminController::initToolbar();
      *
-     * @return int warehouse_id
+     * @return void
+     *
+     * @since 1.0.0
      */
-    protected function getCurrentWarehouseId()
+    public function initToolbar()
     {
-        static $warehouse = 0;
-
-        if ($warehouse == 0) {
-            $warehouse = -1;
-            if ((int)Tools::getValue('id_warehouse')) {
-                $warehouse = (int)Tools::getValue('id_warehouse');
-            }
+        if (Tools::isSubmit('id_warehouse') && (int) Tools::getValue('id_warehouse') != -1) {
+            $this->toolbar_btn['export-stock-mvt-csv'] = [
+                'short'    => 'Export this list as CSV',
+                'href'     => $this->context->link->getAdminLink('AdminStockMvt').'&amp;csv&amp;id_warehouse='.(int) $this->getCurrentWarehouseId(),
+                'desc'     => $this->l('Export (CSV)'),
+                'imgclass' => 'export',
+            ];
         }
 
-        return $warehouse;
+        parent::initToolbar();
+        unset($this->toolbar_btn['new']);
+    }
+
+    /**
+     * Exports CSV
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
+    public function renderCSV()
+    {
+        if (!$this->_list) {
+            return;
+        }
+
+        // header
+        if (Tools::getValue('id_warehouse') != -1) {
+            $filename = $this->l('stock_mvt').'_'.Warehouse::getWarehouseNameById((int) Tools::getValue('id_warehouse')).'.csv';
+        } else {
+            $filename = $this->l('stock_mvt').'.csv';
+        }
+        header('Content-type: text/csv');
+        header('Cache-Control: no-store, no-cache');
+        header('Content-disposition: attachment; filename="'.$filename);
+
+        // puts keys
+        $keys = [
+            'id_order', 'id_supply_order', 'emloyee_firstname', 'employee_lastname', 'physical_quantity',
+            'date_add', 'sign', 'price_te', 'product_name', 'label', 'product_reference', 'product_ean13', 'product_upc',
+        ];
+        echo sprintf("%s\n", implode(';', $keys));
+
+        // puts rows
+        foreach ($this->_list as $row) {
+            $rowCsv = [
+                $row['id_order'], $row['id_supply_order'], $row['employee_firstname'],
+                $row['employee_lastname'], $row['physical_quantity'], $row['date_add'],
+                $row['sign'], $row['price_te'], $row['product_name'],
+                $row['reason'], $row['product_reference'], $row['product_ean13'], $row['product_upc'],
+            ];
+
+            // puts one row
+            echo sprintf("%s\n", implode(';', array_map(['CSVCore', 'wrap'], $rowCsv)));
+        }
     }
 
     /**
      * AdminController::getList() override
      *
-*@see AdminController::getList()
+     * @see AdminController::getList()
      *
      * @param int         $idLang
      * @param string|null $orderBy
@@ -247,6 +333,10 @@ class AdminStockMvtControllerCore extends AdminController
      * @param int|bool    $idLangShop
      *
      * @throws PrestaShopException
+     *
+     * @return void
+     *
+     * @since 1.0.0
      */
     public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
@@ -259,9 +349,9 @@ class AdminStockMvtControllerCore extends AdminController
         //If there is a field product_name in the list, check if this field is null and display standard message
         foreach ($this->fields_list as $key => $value) {
             if ($key == 'product_name') {
-                $nb_items = count($this->_list);
+                $nbItems = count($this->_list);
 
-                for ($i = 0; $i < $nb_items; ++$i) {
+                for ($i = 0; $i < $nbItems; ++$i) {
                     $item = &$this->_list[$i];
 
                     if (empty($item['product_name'])) {
@@ -273,78 +363,35 @@ class AdminStockMvtControllerCore extends AdminController
     }
 
     /**
-     * @see AdminController::initToolbar();
+     * Initialize content
+     *
+     * @return void
+     *
+     * @since 1.0.0
      */
-    public function initToolbar()
-    {
-        if (Tools::isSubmit('id_warehouse') && (int)Tools::getValue('id_warehouse') != -1) {
-            $this->toolbar_btn['export-stock-mvt-csv'] = [
-                'short' => 'Export this list as CSV',
-                'href' => $this->context->link->getAdminLink('AdminStockMvt').'&amp;csv&amp;id_warehouse='.(int)$this->getCurrentWarehouseId(),
-                'desc' => $this->l('Export (CSV)'),
-                'imgclass' => 'export'
-            ];
-        }
-
-        parent::initToolbar();
-        unset($this->toolbar_btn['new']);
-    }
-
-    /**
-     * Exports CSV
-     */
-    public function renderCSV()
-    {
-        if (!$this->_list) {
-            return;
-        }
-
-        // header
-        if (Tools::getValue('id_warehouse') != -1) {
-            $filename = $this->l('stock_mvt').'_'.Warehouse::getWarehouseNameById((int)Tools::getValue('id_warehouse')).'.csv';
-        } else {
-            $filename = $this->l('stock_mvt').'.csv';
-        }
-        header('Content-type: text/csv');
-        header('Cache-Control: no-store, no-cache');
-        header('Content-disposition: attachment; filename="'.$filename);
-
-        // puts keys
-        $keys = [
-            'id_order', 'id_supply_order', 'emloyee_firstname', 'employee_lastname', 'physical_quantity',
-                      'date_add', 'sign', 'price_te', 'product_name', 'label', 'product_reference', 'product_ean13', 'product_upc'
-        ];
-        echo sprintf("%s\n", implode(';', $keys));
-
-
-        // puts rows
-        foreach ($this->_list as $row) {
-            $row_csv = [
-                $row['id_order'], $row['id_supply_order'], $row['employee_firstname'],
-                             $row['employee_lastname'], $row['physical_quantity'], $row['date_add'],
-                             $row['sign'], $row['price_te'], $row['product_name'],
-                             $row['reason'], $row['product_reference'], $row['product_ean13'], $row['product_upc']
-            ];
-
-            // puts one row
-            echo sprintf("%s\n", implode(';', array_map(['CSVCore', 'wrap'], $row_csv)));
-        }
-    }
-    
     public function initContent()
     {
         if (!Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
             $this->warnings[md5('PS_ADVANCED_STOCK_MANAGEMENT')] = $this->l('You need to activate advanced stock management before using this feature.');
-            return false;
+
+            return;
         }
         parent::initContent();
     }
-    
+
+    /**
+     * Initialize processing
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function initProcess()
     {
         if (!Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
             $this->warnings[md5('PS_ADVANCED_STOCK_MANAGEMENT')] = $this->l('You need to activate advanced stock management before using this feature.');
-            return false;
+
+            return;
         }
         parent::initProcess();
     }
