@@ -483,7 +483,7 @@ class LanguageCore extends ObjectModel
             }
             // Clear smarty modules cache
             Tools::clearCache();
-            if (!Language::checkAndAddLanguage((string) $iso, $langPack, false, $params)) {
+            if (!self::checkAndAddLanguage((string) $iso, $langPack, false, $params)) {
                 $errors[] = sprintf(Tools::displayError('An error occurred while creating the language: %s'), (string) $iso);
             } else {
                 // Reset cache
@@ -535,6 +535,33 @@ class LanguageCore extends ObjectModel
         $lang->iso_code = Tools::strtolower($isoCode);
         $lang->language_code = $isoCode; // Rewritten afterwards if the language code is available
         $lang->active = true;
+
+        // If the language pack has not been provided, retrieve it from translations.thirtybees.com
+        if (!$langPack) {
+            // TODO: filter rc beta etc.
+            $version = _TB_VERSION_;
+            $guzzle = new GuzzleHttp\Client([
+                'base_uri' => "https://translations.thirtybees.com/packs/{$version}/",
+                'timeout'  => 20,
+                'verify'   => _PS_TOOL_DIR_.'cacert.pem',
+            ]);
+
+            try {
+                $lowerIso = Tools::strtolower($isoCode);
+                $langPack = json_decode((string) $guzzle->get("{$lowerIso}.json")->getBody());
+            } catch (Exception $e) {
+                $langPack = false;
+            }
+        }
+
+        // If a language pack has been found or provided, prefill the language object with the value
+        if ($langPack) {
+            foreach (get_object_vars($langPack) as $key => $value) {
+                if ($key != 'iso_code' && isset(Language::$definition['fields'][$key])) {
+                    $lang->$key = $value;
+                }
+            }
+        }
 
         // Use the values given in parameters to override the data retrieved automatically
         if ($paramsLang !== null && is_array($paramsLang)) {
