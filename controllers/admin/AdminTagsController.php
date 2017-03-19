@@ -21,72 +21,96 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * @property Tag $object
+ * Class AdminTagsControllerCore
+ *
+ * @since 1.0.0
  */
 class AdminTagsControllerCore extends AdminController
 {
+    // @codingStandardsIgnoreStart
+    /** @var bool $bootstrap */
     public $bootstrap = true;
+    // @codingStandardsIgnoreEnd
 
+    /**
+     * AdminTagsControllerCore constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         $this->table = 'tag';
         $this->className = 'Tag';
 
         $this->fields_list = [
-            'id_tag' => [
+            'id_tag'   => [
                 'title' => $this->l('ID'),
                 'align' => 'center',
-                'class' => 'fixed-width-xs'
+                'class' => 'fixed-width-xs',
             ],
-            'lang' => [
-                'title' => $this->l('Language'),
-                'filter_key' => 'l!name'
+            'lang'     => [
+                'title'      => $this->l('Language'),
+                'filter_key' => 'l!name',
             ],
-            'name' => [
-                'title' => $this->l('Name'),
-                'filter_key' => 'a!name'
+            'name'     => [
+                'title'      => $this->l('Name'),
+                'filter_key' => 'a!name',
             ],
             'products' => [
-                'title' => $this->l('Products'),
-                'align' => 'center',
-                'class' => 'fixed-width-xs',
-                'havingFilter' => true
-            ]
+                'title'        => $this->l('Products'),
+                'align'        => 'center',
+                'class'        => 'fixed-width-xs',
+                'havingFilter' => true,
+            ],
         ];
 
         $this->bulk_actions = [
             'delete' => [
-                'text' => $this->l('Delete selected'),
-                'icon' => 'icon-trash',
-                'confirm' => $this->l('Delete selected items?')
-            ]
+                'text'    => $this->l('Delete selected'),
+                'icon'    => 'icon-trash',
+                'confirm' => $this->l('Delete selected items?'),
+            ],
         ];
 
         parent::__construct();
     }
 
+    /**
+     * Initialize page header toolbar
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_tag'] = [
                 'href' => self::$currentIndex.'&addtag&token='.$this->token,
                 'desc' => $this->l('Add new tag', null, null, false),
-                'icon' => 'process-icon-new'
+                'icon' => 'process-icon-new',
             ];
         }
 
         parent::initPageHeaderToolbar();
     }
 
+    /**
+     * Render list
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
     public function renderList()
     {
         $this->addRowAction('edit');
@@ -103,22 +127,29 @@ class AdminTagsControllerCore extends AdminController
         return parent::renderList();
     }
 
+    /**
+     * Post processing
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
     public function postProcess()
     {
         if ($this->tabAccess['edit'] === '1' && Tools::getValue('submitAdd'.$this->table)) {
-            if (($id = (int)Tools::getValue($this->identifier)) && ($obj = new $this->className($id)) && Validate::isLoadedObject($obj)) {
+            if (($id = (int) Tools::getValue($this->identifier)) && ($obj = new $this->className($id)) && Validate::isLoadedObject($obj)) {
                 /** @var Tag $obj */
-                $previous_products = $obj->getProducts();
-                $removed_products = [];
+                $previousProducts = $obj->getProducts();
+                $removedProducts = [];
 
-                foreach ($previous_products as $product) {
+                foreach ($previousProducts as $product) {
                     if (!in_array($product['id_product'], $_POST['products'])) {
-                        $removed_products[] = $product['id_product'];
+                        $removedProducts[] = $product['id_product'];
                     }
                 }
 
                 if (Configuration::get('PS_SEARCH_INDEXATION')) {
-                    Search::removeProductsSearchIndex($removed_products);
+                    Search::removeProductsSearchIndex($removedProducts);
                 }
 
                 $obj->setProducts($_POST['products']);
@@ -128,44 +159,51 @@ class AdminTagsControllerCore extends AdminController
         return parent::postProcess();
     }
 
+    /**
+     * Render form
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
     public function renderForm()
     {
         /** @var Tag $obj */
         if (!($obj = $this->loadObject(true))) {
-            return;
+            return '';
         }
 
         $this->fields_form = [
-            'legend' => [
+            'legend'  => [
                 'title' => $this->l('Tag'),
-                'icon' => 'icon-tag'
+                'icon'  => 'icon-tag',
             ],
-            'input' => [
+            'input'   => [
                 [
-                    'type' => 'text',
-                    'label' => $this->l('Name'),
-                    'name' => 'name',
-                    'required' => true
+                    'type'     => 'text',
+                    'label'    => $this->l('Name'),
+                    'name'     => 'name',
+                    'required' => true,
                 ],
                 [
-                    'type' => 'select',
-                    'label' => $this->l('Language'),
-                    'name' => 'id_lang',
+                    'type'     => 'select',
+                    'label'    => $this->l('Language'),
+                    'name'     => 'id_lang',
                     'required' => true,
-                    'options' => [
+                    'options'  => [
                         'query' => Language::getLanguages(false),
-                        'id' => 'id_lang',
-                        'name' => 'name'
-                    ]
+                        'id'    => 'id_lang',
+                        'name'  => 'name',
+                    ],
                 ],
             ],
             'selects' => [
-                'products' => $obj->getProducts(true),
-                'products_unselected' => $obj->getProducts(false)
+                'products'            => $obj->getProducts(true),
+                'products_unselected' => $obj->getProducts(false),
             ],
-            'submit' => [
+            'submit'  => [
                 'title' => $this->l('Save'),
-            ]
+            ],
         ];
 
         return parent::renderForm();
