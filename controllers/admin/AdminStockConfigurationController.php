@@ -21,22 +21,25 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * @since 1.5.0
- * @property StockMvtReason $object
+ * Class AdminStockConfigurationControllerCore
+ *
+ * @since 1.0.0
  */
 class AdminStockConfigurationControllerCore extends AdminController
 {
-    /*
-     * By default, we use StockMvtReason as the table / className
+    /**
+     * AdminStockConfigurationControllerCore constructor.
+     *
+     * @since 1.0.0
      */
     public function __construct()
     {
@@ -50,94 +53,108 @@ class AdminStockConfigurationControllerCore extends AdminController
         // defines fields
         $this->fields_list = [
             'id_stock_mvt_reason' => [
-                'title' => $this->l('ID'),
-                'align' => 'center',
-                'class' => 'fixed-width-xs',
+                'title'  => $this->l('ID'),
+                'align'  => 'center',
+                'class'  => 'fixed-width-xs',
                 'search' => false,
             ],
-            'sign' => [
-                'title' => $this->l('Action'),
-                'align' => 'center',
-                'type' => 'select',
+            'sign'                => [
+                'title'      => $this->l('Action'),
+                'align'      => 'center',
+                'type'       => 'select',
                 'filter_key' => 'a!sign',
-                'list' => [
-                    '1' => $this->l('Increase'),
+                'list'       => [
+                    '1'  => $this->l('Increase'),
                     '-1' => $this->l('Decrease'),
                 ],
-                'icon' => [
+                'icon'       => [
                     -1 => 'remove_stock.png',
-                    1 => 'add_stock.png'
+                    1  => 'add_stock.png',
                 ],
-                'orderby' => false,
-                'class' => 'fixed-width-sm',
-                'search' => false,
+                'orderby'    => false,
+                'class'      => 'fixed-width-sm',
+                'search'     => false,
             ],
-            'name' => [
-                'title' => $this->l('Name'),
+            'name'                => [
+                'title'      => $this->l('Name'),
                 'filter_key' => 'b!name',
-                'search' => false,
+                'search'     => false,
             ],
         ];
 
         // loads labels (incremenation)
-        $reasons_inc = StockMvtReason::getStockMvtReasonsWithFilter($this->context->language->id,
-                                                                    [Configuration::get('PS_STOCK_MVT_TRANSFER_TO')], 1);
+        $reasonsInc = StockMvtReason::getStockMvtReasonsWithFilter(
+            $this->context->language->id,
+            [Configuration::get('PS_STOCK_MVT_TRANSFER_TO')],
+            1
+        );
         // loads labaels (decremenation)
-        $reasons_dec = StockMvtReason::getStockMvtReasonsWithFilter($this->context->language->id,
-                                                                    [Configuration::get('PS_STOCK_MVT_TRANSFER_FROM')], -1);
+        $reasonsDec = StockMvtReason::getStockMvtReasonsWithFilter(
+            $this->context->language->id,
+            [Configuration::get('PS_STOCK_MVT_TRANSFER_FROM')],
+            -1
+        );
 
         // defines options for StockMvt
         $this->fields_options = [
             'general' => [
-                'title' =>    $this->l('Options'),
-                'fields' =>    [
+                'title'  => $this->l('Options'),
+                'fields' => [
                     'PS_STOCK_MVT_INC_REASON_DEFAULT' => [
-                        'title' => $this->l('Default label for increasing stock'),
-                        'cast' => 'intval',
-                        'type' => 'select',
-                        'list' => $reasons_inc,
+                        'title'      => $this->l('Default label for increasing stock'),
+                        'cast'       => 'intval',
+                        'type'       => 'select',
+                        'list'       => $reasonsInc,
                         'identifier' => 'id_stock_mvt_reason',
-                        'visibility' => Shop::CONTEXT_ALL
+                        'visibility' => Shop::CONTEXT_ALL,
                     ],
                     'PS_STOCK_MVT_DEC_REASON_DEFAULT' => [
-                        'title' => $this->l('Default label for decreasing stock'),
-                        'cast' => 'intval',
-                        'type' => 'select',
-                        'list' => $reasons_dec,
+                        'title'      => $this->l('Default label for decreasing stock'),
+                        'cast'       => 'intval',
+                        'type'       => 'select',
+                        'list'       => $reasonsDec,
                         'identifier' => 'id_stock_mvt_reason',
-                        'visibility' => Shop::CONTEXT_ALL
+                        'visibility' => Shop::CONTEXT_ALL,
                     ],
-                    'PS_STOCK_CUSTOMER_ORDER_REASON' => [
-                        'title' => $this->l('Default label for decreasing stock when a customer order is shipped'),
-                        'cast' => 'intval',
-                        'type' => 'select',
-                        'list' => $reasons_dec,
+                    'PS_STOCK_CUSTOMER_ORDER_REASON'  => [
+                        'title'      => $this->l('Default label for decreasing stock when a customer order is shipped'),
+                        'cast'       => 'intval',
+                        'type'       => 'select',
+                        'list'       => $reasonsDec,
                         'identifier' => 'id_stock_mvt_reason',
-                        'visibility' => Shop::CONTEXT_ALL
+                        'visibility' => Shop::CONTEXT_ALL,
                     ],
-                    'PS_STOCK_MVT_SUPPLY_ORDER' => [
-                        'title' => $this->l('Default label for increasing stock when a supply order is received'),
-                        'cast' => 'intval',
-                        'type' => 'select',
-                        'list' => $reasons_inc,
+                    'PS_STOCK_MVT_SUPPLY_ORDER'       => [
+                        'title'      => $this->l('Default label for increasing stock when a supply order is received'),
+                        'cast'       => 'intval',
+                        'type'       => 'select',
+                        'list'       => $reasonsInc,
                         'identifier' => 'id_stock_mvt_reason',
-                        'visibility' => Shop::CONTEXT_ALL
+                        'visibility' => Shop::CONTEXT_ALL,
                     ],
                 ],
                 'submit' => ['title' => $this->l('Save')],
-            ]
+            ],
         ];
 
         parent::__construct();
     }
 
+    /**
+     * Initialize
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function init()
     {
         // if we are managing the second list (i.e. supply order status)
         if (Tools::isSubmit('submitAddsupply_order_state') ||
             Tools::isSubmit('addsupply_order_state') ||
             Tools::isSubmit('updatesupply_order_state') ||
-            Tools::isSubmit('deletesupply_order_state')) {
+            Tools::isSubmit('deletesupply_order_state')
+        ) {
             $this->table = 'supply_order_state';
             $this->className = 'SupplyOrderState';
             $this->identifier = 'id_supply_order_state';
@@ -148,7 +165,12 @@ class AdminStockConfigurationControllerCore extends AdminController
 
     /**
      * AdminController::renderForm() override
+     *
      * @see AdminController::renderForm()
+     *
+     * @return string
+     *
+     * @since 1.0.0
      */
     public function renderForm()
     {
@@ -156,157 +178,158 @@ class AdminStockConfigurationControllerCore extends AdminController
         if (Tools::isSubmit('addstock_mvt_reason') ||
             Tools::isSubmit('updatestock_mvt_reason') ||
             Tools::isSubmit('submitAddstock_mvt_reason') ||
-            Tools::isSubmit('submitUpdatestock_mvt_reason')) {
+            Tools::isSubmit('submitUpdatestock_mvt_reason')
+        ) {
             $this->toolbar_title = $this->l('Stock: Add stock movement label');
 
             $this->fields_form = [
                 'legend' => [
                     'title' => $this->l('Stock Movement label'),
-                    'icon' => 'icon-pencil'
+                    'icon'  => 'icon-pencil',
                 ],
-                'input' => [
+                'input'  => [
                     [
-                        'type' => 'text',
-                        'lang' => true,
-                        'label' => $this->l('Name'),
-                        'name' => 'name',
-                        'required' => true
+                        'type'     => 'text',
+                        'lang'     => true,
+                        'label'    => $this->l('Name'),
+                        'name'     => 'name',
+                        'required' => true,
                     ],
                     [
-                        'type' => 'select',
-                        'label' => $this->l('Action'),
-                        'name' => 'sign',
+                        'type'     => 'select',
+                        'label'    => $this->l('Action'),
+                        'name'     => 'sign',
                         'required' => true,
-                        'options' => [
+                        'options'  => [
                             'query' => [
                                 [
-                                    'id' => '1',
-                                    'name' => $this->l('Increase stock')
+                                    'id'   => '1',
+                                    'name' => $this->l('Increase stock'),
                                 ],
                                 [
-                                    'id' => '-1',
-                                    'name' => $this->l('Decrease stock')
+                                    'id'   => '-1',
+                                    'name' => $this->l('Decrease stock'),
                                 ],
                             ],
-                            'id' => 'id',
-                            'name' => 'name'
+                            'id'    => 'id',
+                            'name'  => 'name',
                         ],
-                        'desc' => $this->l('Does this label indicate a stock increase or a stock decrease?')
+                        'desc'     => $this->l('Does this label indicate a stock increase or a stock decrease?'),
                     ],
                 ],
                 'submit' => [
-                    'title' => $this->l('Save')
-                ]
+                    'title' => $this->l('Save'),
+                ],
             ];
-        }
-        // else, if we are managing Supply Order Status
+        } // else, if we are managing Supply Order Status
         elseif (Tools::isSubmit('addsupply_order_state') ||
-                 Tools::isSubmit('updatesupply_order_state') ||
-                 Tools::isSubmit('submitAddsupply_order_state') ||
-                 Tools::isSubmit('submitUpdatesupply_order_state')) {
+            Tools::isSubmit('updatesupply_order_state') ||
+            Tools::isSubmit('submitAddsupply_order_state') ||
+            Tools::isSubmit('submitUpdatesupply_order_state')
+        ) {
             $this->fields_form = [
-                    'legend' => [
-                        'title' => $this->l('Supply Order Status'),
-                        'icon' => 'icon-pencil'
+                'legend' => [
+                    'title' => $this->l('Supply Order Status'),
+                    'icon'  => 'icon-pencil',
+                ],
+                'input'  => [
+                    [
+                        'type'     => 'text',
+                        'lang'     => true,
+                        'label'    => $this->l('Status'),
+                        'name'     => 'name',
+                        'required' => true,
                     ],
-                    'input' => [
-                        [
-                            'type' => 'text',
-                            'lang' => true,
-                            'label' => $this->l('Status'),
-                            'name' => 'name',
-                            'required' => true
-                        ],
-                        [
-                            'type' => 'color',
-                            'label' => $this->l('Color'),
-                            'name' => 'color',
-                            'hint' => $this->l('Status will be highlighted in this color. HTML colors only.'),
-                        ],
-                        [
-                            'type' => 'switch',
-                            'label' => $this->l('Editable'),
-                            'name' => 'editable',
-                            'required' => true,
-                            'is_bool' => true,
-                            'values' => [
-                                [
-                                    'id' => 'active_on',
-                                    'value' => 1,
-                                    'label' => $this->l('Yes')
-                                ],
-                                [
-                                    'id' => 'active_off',
-                                    'value' => 0,
-                                    'label' => $this->l('No')
-                                ]
-                            ],
-                            'hint' => $this->l('Is it is possible to edit the order? Keep in mind that an editable order cannot be sent to the supplier.')
-                        ],
-                        [
-                            'type' => 'switch',
-                            'label' => $this->l('Delivery note'),
-                            'name' => 'delivery_note',
-                            'required' => true,
-                            'is_bool' => true,
-                            'values' => [
-                                [
-                                    'id' => 'active_on',
-                                    'value' => 1,
-                                    'label' => $this->l('Yes')
-                                ],
-                                [
-                                    'id' => 'active_off',
-                                    'value' => 0,
-                                    'label' => $this->l('No')
-                                ]
-                            ],
-                            'hint' => $this->l('Is it possible to generate a delivery note for the order?')
-                        ],
-                        [
-                            'type' => 'switch',
-                            'label' => $this->l('Delivery status'),
-                            'name' => 'receipt_state',
-                            'required' => true,
-                            'is_bool' => true,
-                            'values' => [
-                                [
-                                    'id' => 'active_on',
-                                    'value' => 1,
-                                    'label' => $this->l('Yes')
-                                ],
-                                [
-                                    'id' => 'active_off',
-                                    'value' => 0,
-                                    'label' => $this->l('No')
-                                ]
-                            ],
-                            'hint' => $this->l('Indicates whether the supplies have been either partially or completely received. This will allow you to know if ordered products have to be added to the corresponding warehouse.'),
-                        ],
-                        [
-                            'type' => 'switch',
-                            'label' => $this->l('Awaiting delivery'),
-                            'name' => 'pending_receipt',
-                            'required' => true,
-                            'is_bool' => true,
-                            'values' => [
-                                [
-                                    'id' => 'active_on',
-                                    'value' => 1,
-                                    'label' => $this->l('Yes')
-                                ],
-                                [
-                                    'id' => 'active_off',
-                                    'value' => 0,
-                                    'label' => $this->l('No')
-                                ]
-                            ],
-                            'hint' => $this->l('Indicates that you are awaiting delivery of supplies.')
-                        ],
+                    [
+                        'type'  => 'color',
+                        'label' => $this->l('Color'),
+                        'name'  => 'color',
+                        'hint'  => $this->l('Status will be highlighted in this color. HTML colors only.'),
                     ],
-                    'submit' => [
-                        'title' => $this->l('Save')
-                    ]
+                    [
+                        'type'     => 'switch',
+                        'label'    => $this->l('Editable'),
+                        'name'     => 'editable',
+                        'required' => true,
+                        'is_bool'  => true,
+                        'values'   => [
+                            [
+                                'id'    => 'active_on',
+                                'value' => 1,
+                                'label' => $this->l('Yes'),
+                            ],
+                            [
+                                'id'    => 'active_off',
+                                'value' => 0,
+                                'label' => $this->l('No'),
+                            ],
+                        ],
+                        'hint'     => $this->l('Is it is possible to edit the order? Keep in mind that an editable order cannot be sent to the supplier.'),
+                    ],
+                    [
+                        'type'     => 'switch',
+                        'label'    => $this->l('Delivery note'),
+                        'name'     => 'delivery_note',
+                        'required' => true,
+                        'is_bool'  => true,
+                        'values'   => [
+                            [
+                                'id'    => 'active_on',
+                                'value' => 1,
+                                'label' => $this->l('Yes'),
+                            ],
+                            [
+                                'id'    => 'active_off',
+                                'value' => 0,
+                                'label' => $this->l('No'),
+                            ],
+                        ],
+                        'hint'     => $this->l('Is it possible to generate a delivery note for the order?'),
+                    ],
+                    [
+                        'type'     => 'switch',
+                        'label'    => $this->l('Delivery status'),
+                        'name'     => 'receipt_state',
+                        'required' => true,
+                        'is_bool'  => true,
+                        'values'   => [
+                            [
+                                'id'    => 'active_on',
+                                'value' => 1,
+                                'label' => $this->l('Yes'),
+                            ],
+                            [
+                                'id'    => 'active_off',
+                                'value' => 0,
+                                'label' => $this->l('No'),
+                            ],
+                        ],
+                        'hint'     => $this->l('Indicates whether the supplies have been either partially or completely received. This will allow you to know if ordered products have to be added to the corresponding warehouse.'),
+                    ],
+                    [
+                        'type'     => 'switch',
+                        'label'    => $this->l('Awaiting delivery'),
+                        'name'     => 'pending_receipt',
+                        'required' => true,
+                        'is_bool'  => true,
+                        'values'   => [
+                            [
+                                'id'    => 'active_on',
+                                'value' => 1,
+                                'label' => $this->l('Yes'),
+                            ],
+                            [
+                                'id'    => 'active_off',
+                                'value' => 0,
+                                'label' => $this->l('No'),
+                            ],
+                        ],
+                        'hint'     => $this->l('Indicates that you are awaiting delivery of supplies.'),
+                    ],
+                ],
+                'submit' => [
+                    'title' => $this->l('Save'),
+                ],
             ];
 
             if (Tools::isSubmit('addsupply_order_state')) {
@@ -314,46 +337,46 @@ class AdminStockConfigurationControllerCore extends AdminController
             } else {
                 $this->toolbar_title = $this->l('Stock: Update supply order status');
 
-                $id_supply_order_state = Tools::getValue('id_supply_order_state', 0);
+                $idSupplyOrderState = Tools::getValue('id_supply_order_state', 0);
 
-                    // only some fields are editable for initial states
-                    if (in_array($id_supply_order_state, [1, 2, 3, 4, 5, 6])) {
-                        $this->fields_form = [
-                            'legend' => [
-                                'title' => $this->l('Supply order status'),
-                                'icon' => 'icon-pencil'
+                // only some fields are editable for initial states
+                if (in_array($idSupplyOrderState, [1, 2, 3, 4, 5, 6])) {
+                    $this->fields_form = [
+                        'legend' => [
+                            'title' => $this->l('Supply order status'),
+                            'icon'  => 'icon-pencil',
+                        ],
+                        'input'  => [
+                            [
+                                'type'     => 'text',
+                                'lang'     => true,
+                                'label'    => $this->l('Status'),
+                                'name'     => 'name',
+                                'required' => true,
                             ],
-                            'input' => [
-                                [
-                                    'type' => 'text',
-                                    'lang' => true,
-                                    'label' => $this->l('Status'),
-                                    'name' => 'name',
-                                    'required' => true
-                                ],
-                                [
-                                    'type' => 'color',
-                                    'label' => $this->l('Color'),
-                                    'name' => 'color',
-                                    'desc' => $this->l('Status will be highlighted in this color. HTML colors only.'),
-                                ],
+                            [
+                                'type'  => 'color',
+                                'label' => $this->l('Color'),
+                                'name'  => 'color',
+                                'desc'  => $this->l('Status will be highlighted in this color. HTML colors only.'),
                             ],
-                            'submit' => [
-                                'title' => $this->l('Save')
-                            ]
-                        ];
-                    }
+                        ],
+                        'submit' => [
+                            'title' => $this->l('Save'),
+                        ],
+                    ];
+                }
 
-                if (!($obj = new SupplyOrderState((int)$id_supply_order_state))) {
-                    return;
+                if (!($obj = new SupplyOrderState((int) $idSupplyOrderState))) {
+                    return '';
                 }
 
                 $this->fields_value = [
-                        'color' => $obj->color,
-                        'editable' => $obj->editable,
-                        'delivery_note' => $obj->delivery_note,
-                        'receipt_state' => $obj->receipt_state,
-                        'pending_receipt' => $obj->pending_receipt,
+                    'color'           => $obj->color,
+                    'editable'        => $obj->editable,
+                    'delivery_note'   => $obj->delivery_note,
+                    'receipt_state'   => $obj->receipt_state,
+                    'pending_receipt' => $obj->pending_receipt,
                 ];
                 foreach ($this->getLanguages() as $language) {
                     $this->fields_value['name'][$language['id_lang']] = $this->getFieldValue($obj, 'name', $language['id_lang']);
@@ -366,7 +389,12 @@ class AdminStockConfigurationControllerCore extends AdminController
 
     /**
      * AdminController::renderList() override
+     *
      * @see AdminController::renderList()
+     *
+     * @return string
+     *
+     * @since 1.0.0
      */
     public function renderList()
     {
@@ -384,7 +412,7 @@ class AdminStockConfigurationControllerCore extends AdminController
          * First list
          * Stock Mvt Labels/Reasons
          */
-        $first_list = null;
+        $firstList = null;
         $this->list_no_link = true;
         $this->addRowAction('edit');
         $this->addRowAction('delete');
@@ -393,29 +421,33 @@ class AdminStockConfigurationControllerCore extends AdminController
         $this->_use_found_rows = false;
 
         $this->toolbar_title = $this->l('Stock: Stock movement labels');
-        $first_list = parent::renderList();
+        $firstList = parent::renderList();
 
         /**
          * Second list
          * Supply Order Status/State
          */
-        $second_list = null;
+        $secondList = null;
         unset($this->_select, $this->_where, $this->_join, $this->_group, $this->_filterHaving, $this->_filter, $this->list_skip_actions['delete'], $this->list_skip_actions['edit'], $this->list_id);
 
         // generates the actual second list
-        $second_list = $this->initSupplyOrderStatusList();
+        $secondList = $this->initSupplyOrderStatusList();
 
         // resets default table and className for options list management
         $this->table = 'stock_mvt_reason';
         $this->className = 'StockMvtReason';
 
         // returns the final list
-        return $second_list.$first_list;
+        return $secondList.$firstList;
     }
 
-    /*
+    /**
      * Help function for AdminStockConfigurationController::renderList()
      * @see AdminStockConfigurationController::renderList()
+     *
+     * @return string
+     *
+     * @since 1.0.0
      */
     public function initSupplyOrderStatusList()
     {
@@ -431,60 +463,60 @@ class AdminStockConfigurationControllerCore extends AdminController
         $this->initToolbar();
 
         $this->fields_list = [
-            'name' => [
-                'title' => $this->l('Name'),
-                'color' => 'color',
+            'name'            => [
+                'title'  => $this->l('Name'),
+                'color'  => 'color',
                 'search' => false,
             ],
-            'editable' => [
-                'title' => $this->l('Supply order can be edited?'),
-                'align' => 'center',
-                'active' => 'editable',
-                'type' => 'bool',
+            'editable'        => [
+                'title'   => $this->l('Supply order can be edited?'),
+                'align'   => 'center',
+                'active'  => 'editable',
+                'type'    => 'bool',
                 'orderby' => false,
-                'class' => 'fixed-width-sm',
-                'ajax' => true,
-                'search' => false,
+                'class'   => 'fixed-width-sm',
+                'ajax'    => true,
+                'search'  => false,
             ],
-            'delivery_note' => [
-                'title' => $this->l('Delivery note is available?'),
-                'align' => 'center',
-                'active' => 'deliveryNote',
-                'type' => 'bool',
+            'delivery_note'   => [
+                'title'   => $this->l('Delivery note is available?'),
+                'align'   => 'center',
+                'active'  => 'deliveryNote',
+                'type'    => 'bool',
                 'orderby' => false,
-                'class' => 'fixed-width-sm',
-                'ajax' => true,
-                'search' => false,
+                'class'   => 'fixed-width-sm',
+                'ajax'    => true,
+                'search'  => false,
             ],
             'pending_receipt' => [
-                'title' => $this->l('Delivery is expected?'),
-                'align' => 'center',
-                'active' => 'pendingReceipt',
-                'type' => 'bool',
+                'title'   => $this->l('Delivery is expected?'),
+                'align'   => 'center',
+                'active'  => 'pendingReceipt',
+                'type'    => 'bool',
                 'orderby' => false,
-                'class' => 'fixed-width-sm',
-                'ajax' => true,
-                'search' => false,
+                'class'   => 'fixed-width-sm',
+                'ajax'    => true,
+                'search'  => false,
             ],
-            'receipt_state' => [
-                'title' => $this->l('Stock has been delivered?'),
-                'align' => 'center',
-                'active' => 'receiptState',
-                'type' => 'bool',
+            'receipt_state'   => [
+                'title'   => $this->l('Stock has been delivered?'),
+                'align'   => 'center',
+                'active'  => 'receiptState',
+                'type'    => 'bool',
                 'orderby' => false,
-                'class' => 'fixed-width-sm',
-                'ajax' => true,
-                'search' => false,
+                'class'   => 'fixed-width-sm',
+                'ajax'    => true,
+                'search'  => false,
             ],
-            'enclosed' => [
-                'title' => $this->l('Order is closed?'),
-                'align' => 'center',
-                'active' => 'enclosed',
-                'type' => 'bool',
+            'enclosed'        => [
+                'title'   => $this->l('Order is closed?'),
+                'align'   => 'center',
+                'active'  => 'enclosed',
+                'type'    => 'bool',
                 'orderby' => false,
-                'class' => 'fixed-width-sm',
-                'ajax' => true,
-                'search' => false,
+                'class'   => 'fixed-width-sm',
+                'ajax'    => true,
+                'search'  => false,
             ],
         ];
 
@@ -493,14 +525,20 @@ class AdminStockConfigurationControllerCore extends AdminController
 
     /**
      * AdminController::postProcess() override
+     *
      * @see AdminController::postProcess()
+     *
+     * @return bool
+     *
+     * @since 1.0.0
      */
     public function postProcess()
     {
         // SupplyOrderState
         if (Tools::isSubmit('submitAddsupply_order_state') ||
             Tools::isSubmit('deletesupply_order_state') ||
-            Tools::isSubmit('submitUpdatesupply_order_state')) {
+            Tools::isSubmit('submitUpdatesupply_order_state')
+        ) {
             if (Tools::isSubmit('deletesupply_order_state')) {
                 $this->action = 'delete';
             } else {
@@ -510,8 +548,7 @@ class AdminStockConfigurationControllerCore extends AdminController
             $this->className = 'SupplyOrderState';
             $this->identifier = 'id_supply_order_state';
             $this->_defaultOrderBy = 'id_supply_order_state';
-        }
-        // StockMvtReason
+        } // StockMvtReason
         elseif (Tools::isSubmit('delete'.$this->table)) {
             $this->deleted = true;
         }
@@ -522,7 +559,7 @@ class AdminStockConfigurationControllerCore extends AdminController
     /**
      * AdminController::getList() override
      *
-*@see AdminController::getList()
+     * @see AdminController::getList()
      *
      * @param int         $idLang
      * @param string|null $orderBy
@@ -532,6 +569,10 @@ class AdminStockConfigurationControllerCore extends AdminController
      * @param int|bool    $idLangShop
      *
      * @throws PrestaShopException
+     *
+     * @return void
+     *
+     * @since 1.0.0
      */
     public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
@@ -540,9 +581,9 @@ class AdminStockConfigurationControllerCore extends AdminController
         //If there is a field product_name in the list, check if this field is null and display standard message
         foreach ($this->fields_list as $key => $value) {
             if ($key == 'product_name') {
-                $nb_items = count($this->_list);
+                $nbItems = count($this->_list);
 
-                for ($i = 0; $i < $nb_items; ++$i) {
+                for ($i = 0; $i < $nbItems; ++$i) {
                     $item = &$this->_list[$i];
 
                     if (empty($item['product_name'])) {
@@ -552,30 +593,52 @@ class AdminStockConfigurationControllerCore extends AdminController
             }
         }
     }
-    
+
+    /**
+     * Initialize content
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function initContent()
     {
         if (!Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
             $this->warnings[md5('PS_ADVANCED_STOCK_MANAGEMENT')] = $this->l('You need to activate the Advanced Stock Management feature before you can use this feature.');
-            return false;
+
+            return;
         }
+
         parent::initContent();
     }
-    
+
+    /**
+     * Initialize processing
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function initProcess()
     {
         if (!Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
             $this->warnings[md5('PS_ADVANCED_STOCK_MANAGEMENT')] = $this->l('You need to activate the Advanced Stock Management feature before you can use this feature.');
-            return false;
+
+            false;
         }
         parent::initProcess();
     }
 
+    /**
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function ajaxProcessEditableSupplyOrderState()
     {
-        $id_supply_order_state = (int)Tools::getValue('id_supply_order_state');
+        $idSupplyOrderState = (int) Tools::getValue('id_supply_order_state');
 
-        $sql = 'UPDATE '._DB_PREFIX_.'supply_order_state SET `editable` = NOT `editable` WHERE id_supply_order_state='.$id_supply_order_state;
+        $sql = 'UPDATE '._DB_PREFIX_.'supply_order_state SET `editable` = NOT `editable` WHERE id_supply_order_state='.$idSupplyOrderState;
         $result = Db::getInstance()->execute($sql);
 
         if ($result) {
@@ -585,11 +648,18 @@ class AdminStockConfigurationControllerCore extends AdminController
         }
     }
 
+    /**
+     * Ajax process delivery note supply order state
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function ajaxProcessDeliveryNoteSupplyOrderState()
     {
-        $id_supply_order_state = (int)Tools::getValue('id_supply_order_state');
+        $idSupplyOrderState = (int) Tools::getValue('id_supply_order_state');
 
-        $sql = 'UPDATE '._DB_PREFIX_.'supply_order_state SET `delivery_note` = NOT `delivery_note` WHERE id_supply_order_state='.$id_supply_order_state;
+        $sql = 'UPDATE '._DB_PREFIX_.'supply_order_state SET `delivery_note` = NOT `delivery_note` WHERE id_supply_order_state='.$idSupplyOrderState;
         $result = Db::getInstance()->execute($sql);
 
         if ($result) {
@@ -599,11 +669,18 @@ class AdminStockConfigurationControllerCore extends AdminController
         }
     }
 
+    /**
+     * Ajax process pending receipt supply order state
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function ajaxProcessPendingReceiptSupplyOrderState()
     {
-        $id_supply_order_state = (int)Tools::getValue('id_supply_order_state');
+        $idSupplyOrderState = (int) Tools::getValue('id_supply_order_state');
 
-        $sql = 'UPDATE '._DB_PREFIX_.'supply_order_state SET `pending_receipt` = NOT `pending_receipt` WHERE id_supply_order_state='.$id_supply_order_state;
+        $sql = 'UPDATE '._DB_PREFIX_.'supply_order_state SET `pending_receipt` = NOT `pending_receipt` WHERE id_supply_order_state='.$idSupplyOrderState;
         $result = Db::getInstance()->execute($sql);
 
         if ($result) {
@@ -613,11 +690,18 @@ class AdminStockConfigurationControllerCore extends AdminController
         }
     }
 
+    /**
+     * Ajax process receipt state supply order state
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function ajaxProcessReceiptStateSupplyOrderState()
     {
-        $id_supply_order_state = (int)Tools::getValue('id_supply_order_state');
+        $idSupplyOrderState = (int) Tools::getValue('id_supply_order_state');
 
-        $sql = 'UPDATE '._DB_PREFIX_.'supply_order_state SET `receipt_state` = NOT `receipt_state` WHERE id_supply_order_state='.$id_supply_order_state;
+        $sql = 'UPDATE '._DB_PREFIX_.'supply_order_state SET `receipt_state` = NOT `receipt_state` WHERE id_supply_order_state='.$idSupplyOrderState;
         $result = Db::getInstance()->execute($sql);
 
         if ($result) {
@@ -627,11 +711,18 @@ class AdminStockConfigurationControllerCore extends AdminController
         }
     }
 
+    /**
+     * Ajax process enclosed supply order state
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function ajaxProcessEnclosedSupplyOrderState()
     {
-        $id_supply_order_state = (int)Tools::getValue('id_supply_order_state');
+        $idSupplyOrderState = (int) Tools::getValue('id_supply_order_state');
 
-        $sql = 'UPDATE '._DB_PREFIX_.'supply_order_state SET `enclosed`= NOT `enclosed` WHERE id_supply_order_state='.$id_supply_order_state;
+        $sql = 'UPDATE '._DB_PREFIX_.'supply_order_state SET `enclosed`= NOT `enclosed` WHERE id_supply_order_state='.$idSupplyOrderState;
         $result = Db::getInstance()->execute($sql);
 
         if ($result) {
