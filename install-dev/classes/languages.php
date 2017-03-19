@@ -70,12 +70,12 @@ class InstallLanguages
         ];
 
         // Load other languages
-//        foreach (scandir(_PS_INSTALL_LANGS_PATH_) as $lang) {
-//            if ($lang[0] != '.' && is_dir(_PS_INSTALL_LANGS_PATH_.$lang) && $lang != self::DEFAULT_ISO && file_exists(_PS_INSTALL_LANGS_PATH_.$lang.'/install.php')) {
-//                $this->languages[$lang] = new InstallLanguage($lang);
-//            }
-//        }
-//        uasort($this->languages, ['InstallLanguages', 'psUsortLanguages']);
+        foreach (scandir(_PS_INSTALL_LANGS_PATH_) as $lang) {
+            if ($lang[0] != '.' && is_dir(_PS_INSTALL_LANGS_PATH_.$lang) && $lang != self::DEFAULT_ISO && file_exists(_PS_INSTALL_LANGS_PATH_.$lang.'/install.php')) {
+                $this->languages[$lang] = new InstallLanguage($lang);
+            }
+        }
+        uasort($this->languages, ['InstallLanguages', 'psUsortLanguages']);
     }
 
     /**

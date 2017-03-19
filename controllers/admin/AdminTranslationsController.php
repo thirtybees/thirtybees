@@ -1149,8 +1149,8 @@ class AdminTranslationsControllerCore extends AdminController
     /**
      * Add new translations tabs by code ISO
      *
-     * @param array $isoCode
-     * @param array $files
+     * @param string $isoCode
+     * @param array  $files
      *
      * @return array
      *

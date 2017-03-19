@@ -398,10 +398,10 @@ class LanguageCore extends ObjectModel
     }
 
     /**
-     * @param      $iso
-     * @param null $version
-     * @param null $params
-     * @param bool $install
+     * @param string      $iso
+     * @param string|null $version
+     * @param array|null  $params
+     * @param bool        $install
      *
      * @return array|bool
      *
@@ -410,7 +410,92 @@ class LanguageCore extends ObjectModel
      */
     public static function downloadAndInstallLanguagePack($iso, $version = null, $params = null, $install = true)
     {
-        return false;
+        if (!Validate::isLanguageIsoCode((string) $iso)) {
+            return false;
+        }
+        // TODO: filter beta RC versions etc.
+        if ($version == null) {
+            $version = _TB_VERSION_;
+        }
+
+        $langPack = false;
+        $errors = array();
+        $file = _PS_TRANSLATIONS_DIR_.(string) $iso.'.gzip';
+        $guzzle = new GuzzleHttp\Client([
+            'base_uri' => "https://translations.thirtybees.com/packs/{$version}/",
+            'timeout'  => 20,
+            'verify'   => _PS_TOOL_DIR_.'cacert.pem',
+        ]);
+
+        try {
+            $langPackLink = (string) $guzzle->get("{$iso}.json")->getBody();
+        } catch (Exception $e) {
+            $langPackLink = false;
+        }
+
+        if (!$langPackLink) {
+            $errors[] = Tools::displayError('Archive cannot be downloaded from thirtybees.com.');
+        } elseif (!$langPack = json_decode($langPackLink)) {
+            $errors[] = Tools::displayError('Error occurred when language was checked according to your thirty bees version.');
+        } elseif (isset($langPack->name)) {
+            try {
+                $content = (string) $guzzle->get("{$iso}.gzip")->getBody();
+            } catch (Exception $e) {
+                $content = false;
+            }
+
+            if ($content && !@file_put_contents($file, $content)) {
+                if (is_writable(dirname($file))) {
+                    @unlink($file);
+                    @file_put_contents($file, $content);
+                } elseif (!is_writable($file)) {
+                    $errors[] = Tools::displayError('Server does not have permissions for writing.').' ('.$file.')';
+                }
+            }
+        }
+        if (!file_exists($file)) {
+            $errors[] = Tools::displayError('No language pack is available for your version.');
+        } elseif ($install) {
+            $gz = new Archive_Tar($file, true);
+            $fileList = AdminTranslationsController::filterTranslationFiles(Language::getLanguagePackListContent((string) $iso, $gz));
+            $filePaths = AdminTranslationsController::filesListToPaths($fileList);
+            $i = 0;
+            $tmpArray = array();
+            foreach ($filePaths as $filePath) {
+                $path = dirname($filePath);
+                if (is_dir(_PS_TRANSLATIONS_DIR_.'../'.$path) && !is_writable(_PS_TRANSLATIONS_DIR_.'../'.$path) && !in_array($path, $tmpArray)) {
+                    $errors[] = (!$i++? Tools::displayError('The archive cannot be extracted.').' ' : '').Tools::displayError('The server does not have permissions for writing.').' '.sprintf(Tools::displayError('Please check rights for %s'), $path);
+                    $tmpArray[] = $path;
+                }
+            }
+            if (defined('_PS_HOST_MODE_')) {
+                $mailsFiles = array();
+                $otherFiles = array();
+                foreach ($fileList as $key => $data) {
+                    if (substr($data['filename'], 0, 5) == 'mails') {
+                        $mailsFiles[] = $data;
+                    } else {
+                        $otherFiles[] = $data;
+                    }
+                }
+                $fileList = $otherFiles;
+            }
+            if (!$gz->extractList(AdminTranslationsController::filesListToPaths($fileList), _PS_TRANSLATIONS_DIR_.'../')) {
+                $errors[] = sprintf(Tools::displayError('Cannot decompress the translation file for the following language: %s'), (string) $iso);
+            }
+            // Clear smarty modules cache
+            Tools::clearCache();
+            if (!Language::checkAndAddLanguage((string) $iso, $langPack, false, $params)) {
+                $errors[] = sprintf(Tools::displayError('An error occurred while creating the language: %s'), (string) $iso);
+            } else {
+                // Reset cache
+                Language::loadLanguages();
+                AdminTranslationsController::checkAndAddMailsFiles((string) $iso, $fileList);
+                AdminTranslationsController::addNewTabs((string) $iso, $fileList);
+            }
+        }
+
+        return count($errors) ? $errors : true;
     }
 
     public static function getLanguagePackListContent($iso, $tar)
