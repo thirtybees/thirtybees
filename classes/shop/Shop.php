@@ -347,7 +347,7 @@ class ShopCore extends ObjectModel
         $res &= Db::getInstance()->delete('stock_available', '`id_shop` = '.(int) $this->id);
 
         // Remove urls
-        $res &= Db::getInstance()->delete('shop_url', '`id_shop` = '.(int) $this->id);
+        ShopUrl::deleteShopUrls($this->id);
 
         // Remove currency restrictions
         $res &= Db::getInstance()->delete('module_currency', '`id_shop` = '.(int) $this->id);
