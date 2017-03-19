@@ -1713,10 +1713,9 @@ class AdminImportControllerCore extends AdminController
         if (isset($category->parent) && is_numeric($category->parent)) {
             // Validation for parenting itself
             if ($validateOnly && ($category->parent == $category->id) || (isset($info['id']) && $category->parent == (int) $info['id'])) {
-                $this->errors[] = $this->l(
-                    'The category ID must be unique. It can\'t be the same as the one for the parent category (ID: %1$s).',
-                    [(isset($info['id']) && !empty($info['id'])) ? $info['id'] : 'null'],
-                    'Admin.Advparameters.Notification'
+                $this->errors[] = sprintf($this->l(
+                    'The category ID must be unique. It can\'t be the same as the one for the parent category (ID: %1$s).'),
+                    [(isset($info['id']) && !empty($info['id'])) ? $info['id'] : 'null']
                 );
 
                 return;
@@ -1857,14 +1856,11 @@ class AdminImportControllerCore extends AdminController
         }
         // If both failed, mysql error
         if (!$res) {
-            $this->errors[] = $this->l(
-                '%1$s (ID: %2$s) cannot be %3$s',
-                [
+            $this->errors[] = sprintf(
+                $this->l('%1$s (ID: %2$s) cannot be %3$s'),
                     (isset($info['name']) && !empty($info['name'])) ? Tools::safeOutput($info['name']) : 'No Name',
                     (isset($info['id']) && !empty($info['id'])) ? Tools::safeOutput($info['id']) : 'No ID',
-                    ($validateOnly ? 'validated' : 'saved'),
-                ],
-                'Admin.Advparameters.Notification'
+                    ($validateOnly ? 'validated' : 'saved')
             );
             $errorTmp = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').Db::getInstance()->getMsgError();
             if ($errorTmp != '') {
@@ -2472,12 +2468,11 @@ class AdminImportControllerCore extends AdminController
         }
 
         if (!$validLink) {
-            $this->informations[] = $this->l(
-                'Rewrite link for %1$s (ID %2$s): re-written as %3$s.', [
-                '%1$s' => $product->name[$idLang],
-                '%2$s' => (isset($info['id']) && !empty($info['id'])) ? $info['id'] : 'null',
-                '%3$s' => $linkRewrite,
-            ], 'Admin.Advparameters.Notification'
+            $this->informations[] = sprintf(
+                $this->l('Rewrite link for %1$s (ID %2$s): re-written as %3$s.'),
+                $product->name[$idLang],
+                (isset($info['id']) && !empty($info['id'])) ? $info['id'] : 'null',
+                $linkRewrite
             );
         }
 
@@ -2724,10 +2719,9 @@ class AdminImportControllerCore extends AdminController
                             $this->addProductWarning(
                                 Tools::safeOutput($info['name']),
                                 (int) $product->id,
-                                $this->l(
-                                    'Invalid tag(s) (%s)',
-                                    [$str],
-                                    'Admin.Notifications.Error'
+                                sprintf(
+                                    $this->l('Invalid tag(s) (%s)'),
+                                    $str
                                 )
                             );
                             break;
@@ -3204,14 +3198,10 @@ class AdminImportControllerCore extends AdminController
         }
 
         if (!$res) {
-            $this->errors[] = $this->l(
-                '%1$s (ID: %2$s) cannot be %3$s',
-                [
-                    $info['email'],
-                    (isset($info['id']) && !empty($info['id'])) ? $info['id'] : 'null',
-                    ($validateOnly ? 'validated' : 'saved'),
-                ],
-                'Admin.Advparameters.Notification'
+            $this->errors[] = sprintf($this->l('%1$s (ID: %2$s) cannot be %3$s'),
+                $info['email'],
+                (isset($info['id']) && !empty($info['id'])) ? $info['id'] : 'null',
+                ($validateOnly ? 'validated' : 'saved')
             );
             $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').Db::getInstance()->getMsgError();
         }
@@ -3360,8 +3350,8 @@ class AdminImportControllerCore extends AdminController
                 $customerList = Customer::getCustomersByEmail($address->customer_email);
 
                 if (count($customerList) == 0) {
-                    $this->errors[] = sprintf($this->l(
-                        '%1$s does not exist in database %2$s (ID: %3$s), and therefore cannot be %4$s'),
+                    $this->errors[] = sprintf(
+                        $this->l('%1$s does not exist in database %2$s (ID: %3$s), and therefore cannot be %4$s'),
                         Db::getInstance()->getMsgError(),
                         $address->customer_email,
                         (isset($info['id']) && !empty($info['id'])) ? $info['id'] : 'null',
@@ -3390,13 +3380,10 @@ class AdminImportControllerCore extends AdminController
                     );
                 }
             } else {
-                $this->errors[] = $this->l(
-                    'The customer ID #%d does not exist in the database, and therefore cannot be %2$s',
-                    [
-                        $address->id_customer,
-                        ($validateOnly ? 'validated' : 'saved'),
-                    ],
-                    'Admin.Advparameters.Notification'
+                $this->errors[] = sprintf(
+                    $this->l('The customer ID #%d does not exist in the database, and therefore cannot be %2$s'),
+                    $address->id_customer,
+                    ($validateOnly ? 'validated' : 'saved')
                 );
             }
         } else {
