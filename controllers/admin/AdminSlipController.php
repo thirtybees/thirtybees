@@ -21,19 +21,26 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 /**
- * @property OrderSlip $object
+ * Class AdminSlipControllerCore
+ *
+ * @since 1.0.0
  */
 class AdminSlipControllerCore extends AdminController
 {
+    /**
+     * AdminSlipControllerCore constructor.
+     *
+     * @since 1.0.0
+     */
     public function __construct()
     {
         $this->bootstrap = true;
@@ -48,26 +55,26 @@ class AdminSlipControllerCore extends AdminController
             'id_order_slip' => [
                 'title' => $this->l('ID'),
                 'align' => 'center',
-                'class' => 'fixed-width-xs'
+                'class' => 'fixed-width-xs',
             ],
-            'id_order' => [
+            'id_order'      => [
                 'title' => $this->l('Order ID'),
                 'align' => 'left',
-                'class' => 'fixed-width-md'
+                'class' => 'fixed-width-md',
             ],
-            'date_add' => [
+            'date_add'      => [
                 'title' => $this->l('Date issued'),
-                'type' => 'date',
-                'align' => 'right'
+                'type'  => 'date',
+                'align' => 'right',
             ],
-            'id_pdf' => [
-                'title' => $this->l('PDF'),
-                'align' => 'center',
-                'callback' => 'printPDFIcons',
-                'orderby' => false,
-                'search' => false,
-                'remove_onclick' => true
-            ]
+            'id_pdf'        => [
+                'title'          => $this->l('PDF'),
+                'align'          => 'center',
+                'callback'       => 'printPDFIcons',
+                'orderby'        => false,
+                'search'         => false,
+                'remove_onclick' => true,
+            ],
         ];
 
         $this->_select = 'a.id_order_slip AS id_pdf';
@@ -75,17 +82,17 @@ class AdminSlipControllerCore extends AdminController
 
         $this->fields_options = [
             'general' => [
-                'title' =>    $this->l('Credit slip options'),
-                'fields' =>    [
+                'title'  => $this->l('Credit slip options'),
+                'fields' => [
                     'PS_CREDIT_SLIP_PREFIX' => [
                         'title' => $this->l('Credit slip prefix'),
-                        'desc' => $this->l('Prefix used for credit slips.'),
-                        'size' => 6,
-                        'type' => 'textLang'
-                    ]
+                        'desc'  => $this->l('Prefix used for credit slips.'),
+                        'size'  => 6,
+                        'type'  => 'textLang',
+                    ],
                 ],
-                'submit' => ['title' => $this->l('Save')]
-            ]
+                'submit' => ['title' => $this->l('Save')],
+            ],
         ];
 
         parent::__construct();
@@ -93,58 +100,13 @@ class AdminSlipControllerCore extends AdminController
         $this->_where = Shop::addSqlRestriction(false, 'o');
     }
 
-    public function initPageHeaderToolbar()
-    {
-        $this->page_header_toolbar_btn['generate_pdf'] = [
-            'href' => self::$currentIndex.'&token='.$this->token,
-            'desc' => $this->l('Generate PDF', null, null, false),
-            'icon' => 'process-icon-save-date'
-        ];
-
-        parent::initPageHeaderToolbar();
-    }
-
-    public function renderForm()
-    {
-        $this->fields_form = [
-            'legend' => [
-                'title' => $this->l('Print a PDF'),
-                'icon' => 'icon-print'
-            ],
-            'input' => [
-                [
-                    'type' => 'date',
-                    'label' => $this->l('From'),
-                    'name' => 'date_from',
-                    'maxlength' => 10,
-                    'required' => true,
-                    'hint' => $this->l('Format: 2011-12-31 (inclusive).')
-                ],
-                [
-                    'type' => 'date',
-                    'label' => $this->l('To'),
-                    'name' => 'date_to',
-                    'maxlength' => 10,
-                    'required' => true,
-                    'hint' => $this->l('Format: 2012-12-31 (inclusive).')
-                ]
-            ],
-            'submit' => [
-                'title' => $this->l('Generate PDF file'),
-                'id' => 'submitPrint',
-                'icon' => 'process-icon-download-alt'
-            ]
-        ];
-
-        $this->fields_value = [
-            'date_from' => date('Y-m-d'),
-            'date_to' => date('Y-m-d')
-        ];
-
-        $this->show_toolbar = false;
-        return parent::renderForm();
-    }
-
+    /**
+     * Post processing
+     *
+     * @return bool
+     *
+     * @since 1.0.0
+     */
     public function postProcess()
     {
         if (Tools::getValue('submitAddorder_slip')) {
@@ -155,8 +117,8 @@ class AdminSlipControllerCore extends AdminController
                 $this->errors[] = $this->l('Invalid "To" date');
             }
             if (!count($this->errors)) {
-                $order_slips = OrderSlip::getSlipsIdByDate(Tools::getValue('date_from'), Tools::getValue('date_to'));
-                if (count($order_slips)) {
+                $orderSlips = OrderSlip::getSlipsIdByDate(Tools::getValue('date_from'), Tools::getValue('date_to'));
+                if (count($orderSlips)) {
                     Tools::redirectAdmin($this->context->link->getAdminLink('AdminPdf').'&submitAction=generateOrderSlipsPDF&date_from='.urlencode(Tools::getValue('date_from')).'&date_to='.urlencode(Tools::getValue('date_to')));
                 }
                 $this->errors[] = $this->l('No order slips were found for this period.');
@@ -164,8 +126,17 @@ class AdminSlipControllerCore extends AdminController
         } else {
             return parent::postProcess();
         }
+
+        return false;
     }
 
+    /**
+     * Initialize content
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function initContent()
     {
         $this->initTabModuleList();
@@ -177,36 +148,118 @@ class AdminSlipControllerCore extends AdminController
 
         $this->context->smarty->assign(
             [
-            'content' => $this->content,
-            'url_post' => self::$currentIndex.'&token='.$this->token,
-            'show_page_header_toolbar' => $this->show_page_header_toolbar,
-            'page_header_toolbar_title' => $this->page_header_toolbar_title,
-            'page_header_toolbar_btn' => $this->page_header_toolbar_btn
+                'content'                   => $this->content,
+                'url_post'                  => self::$currentIndex.'&token='.$this->token,
+                'show_page_header_toolbar'  => $this->show_page_header_toolbar,
+                'page_header_toolbar_title' => $this->page_header_toolbar_title,
+                'page_header_toolbar_btn'   => $this->page_header_toolbar_btn,
             ]
         );
     }
 
+    /**
+     * Initialize toolbar
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
     public function initToolbar()
     {
         $this->toolbar_btn['save-date'] = [
             'href' => '#',
-            'desc' => $this->l('Generate PDF file')
+            'desc' => $this->l('Generate PDF file'),
         ];
     }
-    
-    public function printPDFIcons($id_order_slip, $tr)
+
+    /**
+     * Initialize page header toolbar
+     *
+     * @return void
+     *
+     * @since 1.0.0
+     */
+    public function initPageHeaderToolbar()
     {
-        $order_slip = new OrderSlip((int)$id_order_slip);
-        if (!Validate::isLoadedObject($order_slip)) {
+        $this->page_header_toolbar_btn['generate_pdf'] = [
+            'href' => self::$currentIndex.'&token='.$this->token,
+            'desc' => $this->l('Generate PDF', null, null, false),
+            'icon' => 'process-icon-save-date',
+        ];
+
+        parent::initPageHeaderToolbar();
+    }
+
+    /**
+     * Render form
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
+    public function renderForm()
+    {
+        $this->fields_form = [
+            'legend' => [
+                'title' => $this->l('Print a PDF'),
+                'icon'  => 'icon-print',
+            ],
+            'input'  => [
+                [
+                    'type'      => 'date',
+                    'label'     => $this->l('From'),
+                    'name'      => 'date_from',
+                    'maxlength' => 10,
+                    'required'  => true,
+                    'hint'      => $this->l('Format: 2011-12-31 (inclusive).'),
+                ],
+                [
+                    'type'      => 'date',
+                    'label'     => $this->l('To'),
+                    'name'      => 'date_to',
+                    'maxlength' => 10,
+                    'required'  => true,
+                    'hint'      => $this->l('Format: 2012-12-31 (inclusive).'),
+                ],
+            ],
+            'submit' => [
+                'title' => $this->l('Generate PDF file'),
+                'id'    => 'submitPrint',
+                'icon'  => 'process-icon-download-alt',
+            ],
+        ];
+
+        $this->fields_value = [
+            'date_from' => date('Y-m-d'),
+            'date_to'   => date('Y-m-d'),
+        ];
+
+        $this->show_toolbar = false;
+
+        return parent::renderForm();
+    }
+
+    /**
+     * Print PDF icons
+     *
+     * @param int   $idOrderSlip
+     * @param array $tr
+     *
+     * @return string
+     *
+     * @since 1.0.0
+     */
+    public function printPDFIcons($idOrderSlip, $tr)
+    {
+        $orderSlip = new OrderSlip((int) $idOrderSlip);
+        if (!Validate::isLoadedObject($orderSlip)) {
             return '';
         }
 
-        $this->context->smarty->assign(
-            [
-            'order_slip' => $order_slip,
-            'tr' => $tr
-            ]
-        );
+        $this->context->smarty->assign([
+            'order_slip' => $orderSlip,
+            'tr'         => $tr,
+        ]);
 
         return $this->createTemplate('_print_pdf_icon.tpl')->fetch();
     }
