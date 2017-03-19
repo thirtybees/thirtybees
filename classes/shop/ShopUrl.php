@@ -93,6 +93,32 @@ class ShopUrlCore extends ObjectFileModel
     }
 
     /**
+     * Deletes all URLs of a shop.
+     *
+     * @param string $idShop
+     *
+     * @since   1.1.0
+     * @version 1.1.0 Initial version
+     */
+    public static function deleteShopUrls($idShop)
+    {
+        global $shopUrlConfig;
+
+        if (is_array($shopUrlConfig)) {
+            foreach ($shopUrlConfig as $key => $url) {
+                if ($url['id_shop'] == $idShop) {
+                    unset($shopUrlConfig[$key]);
+                }
+            }
+        }
+
+        (new ShopUrl)->write();
+        // Remove later. Comment out to see wether the code here actually works,
+        // or wether DB gets written by some other means we no longer want.
+        ShopUrl::push();
+    }
+
+    /**
      * @see     ObjectModel::getFields()
      * @return array
      *
