@@ -163,12 +163,12 @@ class AdminTaxesControllerCore extends AdminController
      */
     public function displayDeleteLink($token = null, $id)
     {
-        if (!array_key_exists('Delete', self::$cacheLang)) {
-            self::$cacheLang['Delete'] = $this->l('Delete');
+        if (!array_key_exists('Delete', self::$cache_lang)) {
+            self::$cache_lang['Delete'] = $this->l('Delete');
         }
 
-        if (!array_key_exists('DeleteItem', self::$cacheLang)) {
-            self::$cacheLang['DeleteItem'] = $this->l('Delete item #', __CLASS__, true, false);
+        if (!array_key_exists('DeleteItem', self::$cache_lang)) {
+            self::$cache_lang['DeleteItem'] = $this->l('Delete item #', __CLASS__, true, false);
         }
 
         if (TaxRule::isTaxInUse($id)) {
@@ -178,8 +178,8 @@ class AdminTaxesControllerCore extends AdminController
         $this->context->smarty->assign(
             [
                 'href'    => self::$currentIndex.'&'.$this->identifier.'='.$id.'&delete'.$this->table.'&token='.($token != null ? $token : $this->token),
-                'confirm' => (isset($confirm) ? '\r'.$confirm : self::$cacheLang['DeleteItem'].$id.' ? '),
-                'action'  => self::$cacheLang['Delete'],
+                'confirm' => (isset($confirm) ? '\r'.$confirm : self::$cache_lang['DeleteItem'].$id.' ? '),
+                'action'  => self::$cache_lang['Delete'],
             ]
         );
 

@@ -751,14 +751,14 @@ class AdminShopControllerCore extends AdminController
     {
         if ($this->tabAccess['edit'] == 1) {
             $tpl = $this->createTemplate('helpers/list/list_action_edit.tpl');
-            if (!array_key_exists('Edit', self::$cacheLang)) {
-                self::$cacheLang['Edit'] = $this->l('Edit', 'Helper');
+            if (!array_key_exists('Edit', self::$cache_lang)) {
+                self::$cache_lang['Edit'] = $this->l('Edit', 'Helper');
             }
 
             $tpl->assign(
                 [
                     'href'   => $this->context->link->getAdminLink('AdminShop').'&shop_id='.(int) $id.'&update'.$this->table,
-                    'action' => self::$cacheLang['Edit'],
+                    'action' => self::$cache_lang['Edit'],
                     'id'     => $id,
                 ]
             );

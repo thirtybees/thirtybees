@@ -745,14 +745,14 @@ class AdminCarriersControllerCore extends AdminController
     {
         if ($this->tabAccess['edit'] == 1) {
             $tpl = $this->createTemplate('helpers/list/list_action_edit.tpl');
-            if (!array_key_exists('Edit', self::$cacheLang)) {
-                self::$cacheLang['Edit'] = $this->l('Edit', 'Helper');
+            if (!array_key_exists('Edit', self::$cache_lang)) {
+                self::$cache_lang['Edit'] = $this->l('Edit', 'Helper');
             }
 
             $tpl->assign(
                 [
                     'href'   => $this->context->link->getAdminLink('AdminCarrierWizard').'&id_carrier='.(int) $id,
-                    'action' => self::$cacheLang['Edit'],
+                    'action' => self::$cache_lang['Edit'],
                     'id'     => $id,
                 ]
             );
@@ -777,30 +777,30 @@ class AdminCarriersControllerCore extends AdminController
         if ($this->tabAccess['delete'] == 1) {
             $tpl = $this->createTemplate('helpers/list/list_action_delete.tpl');
 
-            if (!array_key_exists('Delete', self::$cacheLang)) {
-                self::$cacheLang['Delete'] = $this->l('Delete', 'Helper');
+            if (!array_key_exists('Delete', self::$cache_lang)) {
+                self::$cache_lang['Delete'] = $this->l('Delete', 'Helper');
             }
 
-            if (!array_key_exists('DeleteItem', self::$cacheLang)) {
-                self::$cacheLang['DeleteItem'] = $this->l('Delete selected item?', 'Helper');
+            if (!array_key_exists('DeleteItem', self::$cache_lang)) {
+                self::$cache_lang['DeleteItem'] = $this->l('Delete selected item?', 'Helper');
             }
 
-            if (!array_key_exists('Name', self::$cacheLang)) {
-                self::$cacheLang['Name'] = $this->l('Name:', 'Helper');
+            if (!array_key_exists('Name', self::$cache_lang)) {
+                self::$cache_lang['Name'] = $this->l('Name:', 'Helper');
             }
 
             if (!is_null($name)) {
-                $name = '\n\n'.self::$cacheLang['Name'].' '.$name;
+                $name = '\n\n'.self::$cache_lang['Name'].' '.$name;
             }
 
             $data = [
                 $this->identifier => $id,
                 'href'            => $this->context->link->getAdminLink('AdminCarriers').'&id_carrier='.(int) $id.'&deletecarrier=1',
-                'action'          => self::$cacheLang['Delete'],
+                'action'          => self::$cache_lang['Delete'],
             ];
 
             if ($this->specificConfirmDelete !== false) {
-                $data['confirm'] = !is_null($this->specificConfirmDelete) ? '\r'.$this->specificConfirmDelete : addcslashes(Tools::htmlentitiesDecodeUTF8(self::$cacheLang['DeleteItem'].$name), '\'');
+                $data['confirm'] = !is_null($this->specificConfirmDelete) ? '\r'.$this->specificConfirmDelete : addcslashes(Tools::htmlentitiesDecodeUTF8(self::$cache_lang['DeleteItem'].$name), '\'');
             }
 
             $tpl->assign(array_merge($this->tpl_delete_link_vars, $data));

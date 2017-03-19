@@ -1861,14 +1861,14 @@ class AdminSupplyOrdersControllerCore extends AdminController
      */
     public function displayUpdateReceiptLink($token = null, $id)
     {
-        if (!array_key_exists('Receipt', self::$cacheLang)) {
-            self::$cacheLang['Receipt'] = $this->l('Update ongoing receipt of products');
+        if (!array_key_exists('Receipt', self::$cache_lang)) {
+            self::$cache_lang['Receipt'] = $this->l('Update ongoing receipt of products');
         }
 
         $this->context->smarty->assign(
             [
                 'href'   => self::$currentIndex.'&'.$this->identifier.'='.$id.'&update_receipt&token='.($token != null ? $token : $this->token),
-                'action' => self::$cacheLang['Receipt'],
+                'action' => self::$cache_lang['Receipt'],
             ]
         );
 
@@ -1887,14 +1887,14 @@ class AdminSupplyOrdersControllerCore extends AdminController
      */
     public function displayChangestateLink($token = null, $id)
     {
-        if (!array_key_exists('State', self::$cacheLang)) {
-            self::$cacheLang['State'] = $this->l('Change status');
+        if (!array_key_exists('State', self::$cache_lang)) {
+            self::$cache_lang['State'] = $this->l('Change status');
         }
 
         $this->context->smarty->assign(
             [
                 'href'   => self::$currentIndex.'&'.$this->identifier.'='.$id.'&changestate&token='.($token != null ? $token : $this->token),
-                'action' => self::$cacheLang['State'],
+                'action' => self::$cache_lang['State'],
             ]
         );
 
@@ -1913,19 +1913,19 @@ class AdminSupplyOrdersControllerCore extends AdminController
      */
     public function displayCreateSupplyOrderLink($token = null, $id)
     {
-        if (!array_key_exists('CreateSupplyOrder', self::$cacheLang)) {
-            self::$cacheLang['CreateSupplyOrder'] = $this->l('Use this template to create a supply order');
+        if (!array_key_exists('CreateSupplyOrder', self::$cache_lang)) {
+            self::$cache_lang['CreateSupplyOrder'] = $this->l('Use this template to create a supply order');
         }
 
-        if (!array_key_exists('CreateSupplyOrderConfirm', self::$cacheLang)) {
-            self::$cacheLang['CreateSupplyOrderConfirm'] = $this->l('Are you sure you want to use this template?');
+        if (!array_key_exists('CreateSupplyOrderConfirm', self::$cache_lang)) {
+            self::$cache_lang['CreateSupplyOrderConfirm'] = $this->l('Are you sure you want to use this template?');
         }
 
         $this->context->smarty->assign(
             [
                 'href'    => self::$currentIndex.'&'.$this->identifier.'='.$id.'&create_supply_order&token='.($token != null ? $token : $this->token),
-                'confirm' => self::$cacheLang['CreateSupplyOrderConfirm'],
-                'action'  => self::$cacheLang['CreateSupplyOrder'],
+                'confirm' => self::$cache_lang['CreateSupplyOrderConfirm'],
+                'action'  => self::$cache_lang['CreateSupplyOrder'],
             ]
         );
 

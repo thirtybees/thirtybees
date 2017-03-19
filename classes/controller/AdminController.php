@@ -45,7 +45,7 @@ class AdminControllerCore extends Controller
     /** @var string */
     public static $currentIndex;
     /** @var array Cache for translations */
-    public static $cacheLang = [];
+    public static $cache_lang = [];
     /** @var string */
     public $path;
     /** @var string */

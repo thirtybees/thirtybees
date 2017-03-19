@@ -5713,14 +5713,14 @@ class AdminProductsControllerCore extends AdminController
     public function displayPreviewLink($token = null, $id, $name = null)
     {
         $tpl = $this->createTemplate('helpers/list/list_action_preview.tpl');
-        if (!array_key_exists('Bad SQL query', self::$cacheLang)) {
-            self::$cacheLang['Preview'] = $this->l('Preview', 'Helper');
+        if (!array_key_exists('Bad SQL query', self::$cache_lang)) {
+            self::$cache_lang['Preview'] = $this->l('Preview', 'Helper');
         }
 
         $tpl->assign(
             [
                 'href'   => $this->getPreviewUrl(new Product((int) $id)),
-                'action' => self::$cacheLang['Preview'],
+                'action' => self::$cache_lang['Preview'],
             ]
         );
 
