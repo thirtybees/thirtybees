@@ -856,9 +856,6 @@
     <configuration id="TB_PAGE_CACHE_IGNOREPARAMS" name="TB_PAGE_CACHE_IGNOREPARAMS">
       <value>gclid,utm_content,utm_keyword,utm_medium,utm_source,utm_term</value>
     </configuration>
-    <configuration id="TB_PAGE_CACHE_IGNOREPARAMS" name="TB_PAGE_CACHE_IGNOREPARAMS">
-      <value>gclid,utm_content,utm_keyword,utm_medium,utm_source,utm_term</value>
-    </configuration>
     <configuration id="PS_ROUTE_product_rule" name="PS_ROUTE_product_rule">
       <value>{categories:/}{rewrite}</value>
     </configuration>
