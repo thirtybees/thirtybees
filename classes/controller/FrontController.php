@@ -44,25 +44,25 @@ class FrontControllerCore extends Controller
      */
     public static $initialized = false;
     /**
-     * @deprecated Deprecated shortcuts as of 1.5.0.1 - Use $context->smarty instead
+     * @deprecated Deprecated shortcuts as of 1.1.0 - Use $context->smarty instead
      *
      * @var Smarty $smarty
      */
     protected static $smarty;
     /**
-     * @deprecated Deprecated shortcuts as of 1.5.0.1 - Use $context->cookie instead
+     * @deprecated Deprecated shortcuts as of 1.1.0 - Use $context->cookie instead
      *
      * @var Cookie $cookie
      */
     protected static $cookie;
     /**
-     * @deprecated Deprecated shortcuts as of 1.5.0.1 - Use $context->link instead
+     * @deprecated Deprecated shortcuts as of 1.1.0 - Use $context->link instead
      *
      * @var Link $link
      */
     protected static $link;
     /**
-     * @deprecated Deprecated shortcuts as of 1.5.0.1 - Use $context->cart instead
+     * @deprecated Deprecated shortcuts as of 1.1.0 - Use $context->cart instead
      *
      * @var Cart $cart
      */
