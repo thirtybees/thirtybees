@@ -681,6 +681,10 @@ class CustomerCore extends ObjectModel
                 return false;
             }
         }
+        
+        if (!$result) {
+	        return false;
+        }
 
         $this->id = $result['id_customer'];
         foreach ($result as $key => $value) {
