@@ -29,11 +29,22 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+// Checks
 // Check compatibility
+$errors = array();
 if (version_compare(PHP_VERSION, '5.5.0', '<')) {
-    echo file_get_contents(dirname(__FILE__).'/theme/views/compat.phtml');
+    $errors[] = 'Make sure your PHP version is at least 5.5.';
+}
+// Check geoip module
+if (extension_loaded('geoip')) {
+    $errors[] = 'The <code>geoip</code> PHP extension is loaded. This causes conflicts with thirty bees. We recommend to disable the PHP extension.';
+}
+
+if (!empty($errors)) {
+    include(dirname(__FILE__).'/theme/views/errors.phtml');
     die();
 }
+
 
 require_once dirname(__FILE__).DIRECTORY_SEPARATOR.'init.php';
 
