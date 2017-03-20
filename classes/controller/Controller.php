@@ -521,7 +521,7 @@ abstract class ControllerCore
     /**
      * Adds a new stylesheet(s) to the page header.
      *
-     * @param string|array $cssUri Path to CSS file, or list of css files like this : array(array(uri => media_type), ...)
+     * @param string|array $cssUri       Path to CSS file, or list of css files like this : array(array(uri => media_type), ...)
      * @param string       $cssMediaType
      * @param int|null     $offset
      * @param bool         $checkPath
@@ -548,7 +548,7 @@ abstract class ControllerCore
                 if ($checkPath) {
                     $cssPath = Media::getCSSPath($media, $cssMediaType);
                 } else {
-                    $cssPath = [$media => $cssMediaType];
+                    $cssPath = [$media => is_string($cssMediaType) ? $cssMediaType : 'all'];
                 }
             }
 
