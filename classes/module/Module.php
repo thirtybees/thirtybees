@@ -3079,7 +3079,7 @@ abstract class ModuleCore
     /**
      * Check employee permission for module
      *
-     * @param array  $variable (action)
+     * @param string $variable (action)
      * @param object $employee
      *
      * @return bool if module can be transplanted on hook
@@ -3096,10 +3096,12 @@ abstract class ModuleCore
      * Check employee permission for module (static method)
      *
      * @param int    $idModule
-     * @param array  $variable (action)
+     * @param string $variable (action)
      * @param object $employee
      *
      * @return bool if module can be transplanted on hook
+     *
+     * @throws PrestaShopException
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
