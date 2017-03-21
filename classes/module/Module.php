@@ -114,7 +114,7 @@ abstract class ModuleCore
     /** @var string Fill it if the module is installed but not yet set up */
     public $warning;
     /** @var int $enable_device */
-    public $enable_device = Context::DEVICE_COMPUTER | Context::DEVICE_TABLET | Context::DEVICE_MOBILE;
+    public $enable_device = 7;
     /** @var array to store the limited country */
     public $limited_countries = [];
     /** @var array names of the controllers */
