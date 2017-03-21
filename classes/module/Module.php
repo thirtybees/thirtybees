@@ -75,8 +75,11 @@ abstract class ModuleCore
     public $registered_version;
     /** @var array filled with known compliant PrestaShop versions */
     public $ps_versions_compliancy = [];
-    /** @var array filled with known compliant thirty bees versions */
-    public $tb_versions_compliancy = [];
+    /**
+     * @var string Filled with known compliant thirty bees versions
+     *             This string contains a SemVer 1.0.0 range
+     */
+    public $tb_versions_compliancy = '';
     /** @var array filled with modules needed for install */
     public $dependencies = [];
     /** @var string Unique name */
