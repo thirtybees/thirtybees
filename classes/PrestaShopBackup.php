@@ -85,8 +85,9 @@ class PrestaShopBackupCore
         $backupDir = PrestaShopBackup::getBackupPath($filename);
         if (!empty($this->customBackupDir)) {
             $backupDir = str_replace(
-                (defined('_PS_HOST_MODE_') ? _PS_ROOT_DIR_ : _PS_ADMIN_DIR_).self::$backupDir,
-                (defined('_PS_HOST_MODE_') ? _PS_ROOT_DIR_ : _PS_ADMIN_DIR_).$this->customBackupDir, $backupDir
+                _PS_ADMIN_DIR_.self::$backupDir,
+                _PS_ADMIN_DIR_.$this->customBackupDir,
+                $backupDir
             );
 
             if (strrpos($backupDir, DIRECTORY_SEPARATOR)) {
@@ -109,7 +110,7 @@ class PrestaShopBackupCore
      */
     public static function getBackupPath($filename = '')
     {
-        $backupdir = realpath((defined('_PS_HOST_MODE_') ? _PS_ROOT_DIR_ : _PS_ADMIN_DIR_).self::$backupDir);
+        $backupdir = realpath(_PS_ADMIN_DIR_.self::$backupDir);
 
         if ($backupdir === false) {
             die(Tools::displayError('"Backup" directory does not exist.'));
@@ -141,7 +142,7 @@ class PrestaShopBackupCore
      */
     public static function backupExist($filename)
     {
-        $backupdir = realpath((defined('_PS_HOST_MODE_') ? _PS_ROOT_DIR_ : _PS_ADMIN_DIR_).self::$backupDir);
+        $backupdir = realpath(_PS_ADMIN_DIR_.self::$backupDir);
 
         if ($backupdir === false) {
             die(Tools::displayError('"Backup" directory does not exist.'));
@@ -165,7 +166,7 @@ class PrestaShopBackupCore
     public function setCustomBackupPath($dir)
     {
         $customDir = DIRECTORY_SEPARATOR.trim($dir, '/').DIRECTORY_SEPARATOR;
-        if (is_dir((defined('_PS_HOST_MODE_') ? _PS_ROOT_DIR_ : _PS_ADMIN_DIR_).$customDir)) {
+        if (is_dir(_PS_ADMIN_DIR_.$customDir)) {
             $this->customBackupDir = $customDir;
         } else {
             return false;
