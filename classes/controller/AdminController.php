@@ -3816,16 +3816,6 @@ class AdminControllerCore extends Controller
             $this->addJS(_PS_JS_DIR_.'admin/notifications.js');
         }
 
-        if (defined('_PS_HOST_MODE_') && _PS_HOST_MODE_) {
-            $this->addJS('https://cdn.statuspage.io/se-v2.js');
-
-            Media::addJsDefL('status_operational', $this->l('Operational', null, true, false));
-            Media::addJsDefL('status_degraded_performance', $this->l('Degraded Performance', null, true, false));
-            Media::addJsDefL('status_partial_outage', $this->l('Partial Outage', null, true, false));
-            Media::addJsDefL('status_major_outage', $this->l('Major Outage', null, true, false));
-            Media::addJsDef(['host_cluster' => defined('_PS_HOST_CLUSTER_') ? _PS_HOST_CLUSTER_ : 'fr1']);
-        }
-
         // Execute Hook AdminController SetMedia
         Hook::exec('actionAdminControllerSetMedia');
     }
