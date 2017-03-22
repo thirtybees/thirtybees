@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <localizationPack name="Costa Rica" version="1.0">
   <currencies>
-    <currency name="Colón" iso_code="CRC" iso_code_num="188" sign="₡" blank="1" conversion_rate="560" format="1" decimals="1" />
+    <currency name="Colón"
+              iso_code="CRC"
+              iso_code_num="188"
+              sign="₡"
+              blank="1"
+              conversion_rate="560"
+              format="1"
+              decimals="1" />
   </currencies>
   <languages>
-    <language iso_code="es" />
+    <language name="Español (Spanish)"
+              iso_code="es"
+              language_code="es-es"
+              date_format_lite="d/m/Y"
+              date_format_full="d/m/Y H:i:s"
+              is_rtl="0"/>
   </languages>
   <taxes>
     <tax id="1" name="I.V. 13%" rate="13" />
@@ -20,12 +32,12 @@
     <unit type="long_distance" value="km" />
   </units>
   <states>
-    <state name="San Jose" iso_code="CR-SJ" zone="Central America/Antilla" country="CR"/>
-    <state name="Alajuela" iso_code="CR-A" zone="Central America/Antilla" country="CR"/>
-    <state name="Cartago" iso_code="CR-C" zone="Central America/Antilla" country="CR"/>
-    <state name="Heredia" iso_code="CR-H" zone="Central America/Antilla" country="CR"/>
-    <state name="Guanacaste" iso_code="CR-G" zone="Central America/Antilla" country="CR"/>
-    <state name="Puntarenas" iso_code="CR-P" zone="Central America/Antilla" country="CR"/>
-    <state name="Limon" iso_code="CR-L" zone="Central America/Antilla" country="CR"/>
+    <state name="San Jose" iso_code="CR-SJ" zone="Central America/Antilla" country="CR" />
+    <state name="Alajuela" iso_code="CR-A" zone="Central America/Antilla" country="CR" />
+    <state name="Cartago" iso_code="CR-C" zone="Central America/Antilla" country="CR" />
+    <state name="Heredia" iso_code="CR-H" zone="Central America/Antilla" country="CR" />
+    <state name="Guanacaste" iso_code="CR-G" zone="Central America/Antilla" country="CR" />
+    <state name="Puntarenas" iso_code="CR-P" zone="Central America/Antilla" country="CR" />
+    <state name="Limon" iso_code="CR-L" zone="Central America/Antilla" country="CR" />
   </states>
 </localizationPack>

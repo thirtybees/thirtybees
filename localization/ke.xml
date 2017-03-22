@@ -1,26 +1,38 @@
 <?xml version="1.0"?>
 <localizationPack name="Kenya">
   <currencies>
-    <currency name="Kenyan shilling" iso_code="KES" iso_code_num="404" sign="KSh" blank="1" conversion_rate="1.000000" format="1" decimals="0"/>
+    <currency name="Kenyan shilling"
+              iso_code="KES"
+              iso_code_num="404"
+              sign="KSh"
+              blank="1"
+              conversion_rate="1.000000"
+              format="1"
+              decimals="0" />
   </currencies>
   <languages>
-    <language iso_code="en"/>
+    <language name="English (United States)"
+              iso_code="en"
+              language_code="en-us"
+              date_format_lite="m/d/Y"
+              date_format_full="m/d/Y H:i:s"
+              is_rtl="0" />
   </languages>
   <taxes>
     <taxRulesGroup name="Kenya VAT 16%">
-      <taxRule iso_code_country="ke" behavior="0" id_tax="76"/>
+      <taxRule iso_code_country="ke" behavior="0" id_tax="76" />
     </taxRulesGroup>
     <taxRulesGroup name="Kenya VAT 0%">
-      <taxRule iso_code_country="ke" behavior="0" id_tax="78"/>
+      <taxRule iso_code_country="ke" behavior="0" id_tax="78" />
     </taxRulesGroup>
-    <tax id="76" name="Kenya VAT 16%" rate="16.000"/>
-    <tax id="78" name="Kenya VAT 0%" rate="0.000"/>
+    <tax id="76" name="Kenya VAT 16%" rate="16.000" />
+    <tax id="78" name="Kenya VAT 0%" rate="0.000" />
   </taxes>
   <units>
-    <unit type="weight" value="kg"/>
-    <unit type="volume" value="L"/>
-    <unit type="short_distance" value="cm"/>
-    <unit type="base_distance" value="m"/>
-    <unit type="long_distance" value="km"/>
+    <unit type="weight" value="kg" />
+    <unit type="volume" value="L" />
+    <unit type="short_distance" value="cm" />
+    <unit type="base_distance" value="m" />
+    <unit type="long_distance" value="km" />
   </units>
 </localizationPack>

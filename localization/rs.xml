@@ -1,17 +1,28 @@
 <?xml version="1.0"?>
 <localizationPack name="Serbia">
   <currencies>
-    <currency name="Dinar" iso_code="RSD" iso_code_num="941" sign="RSD" blank="1" conversion_rate="115.680000" format="2" decimals="1"/>
+    <currency name="Dinar"
+              iso_code="RSD"
+              iso_code_num="941"
+              sign="RSD"
+              blank="1"
+              conversion_rate="115.680000"
+              format="2"
+              decimals="1" />
   </currencies>
   <languages>
-    <language iso_code="sr"/>
+    <language name="српски (Serbian)"
+              iso_code="sr"
+              date_format_lite="d. m. Y."
+              date_format_full="d. m. Y. H:i:s"
+              is_rtl="0" />
   </languages>
-  <taxes/>
+  <taxes />
   <units>
-    <unit type="weight" value="kg"/>
-    <unit type="volume" value="L"/>
-    <unit type="short_distance" value="cm"/>
-    <unit type="base_distance" value="m"/>
-    <unit type="long_distance" value="km"/>
+    <unit type="weight" value="kg" />
+    <unit type="volume" value="L" />
+    <unit type="short_distance" value="cm" />
+    <unit type="base_distance" value="m" />
+    <unit type="long_distance" value="km" />
   </units>
 </localizationPack>

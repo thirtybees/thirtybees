@@ -1,23 +1,40 @@
 <?xml version="1.0"?>
 <localizationPack name="Tunisia">
   <currencies>
-    <currency name="Tunisian Dinar" iso_code="TND" iso_code_num="788" sign="DT" blank="0" conversion_rate="1.000000" format="2" decimals="1"/>
+    <currency name="Tunisian Dinar"
+              iso_code="TND"
+              iso_code_num="788"
+              sign="DT"
+              blank="0"
+              conversion_rate="1.000000"
+              format="2"
+              decimals="1" />
   </currencies>
   <languages>
-    <language iso_code="ar"/>
-    <language iso_code="fr"/>
+    <language name="اللغة العربية (Arabic)"
+              iso_code="ar"
+              language_code="ar-sa"
+              date_format_lite="Y-m-d"
+              date_format_full="Y-m-d H:i:s"
+              is_rtl="1" />
+    <language name="Français (French)"
+              iso_code="fr"
+              language_code="fr-fr"
+              date_format_lite="d/m/Y"
+              date_format_full="d/m/Y H:i:s"
+              is_rtl="0" />
   </languages>
   <taxes>
     <taxRulesGroup name="TVA Tunisie">
-      <taxRule iso_code_country="tn" behavior="0" id_tax="55"/>
+      <taxRule iso_code_country="tn" behavior="0" id_tax="55" />
     </taxRulesGroup>
-    <tax id="55" name="TVA" rate="18.000"/>
+    <tax id="55" name="TVA" rate="18.000" />
   </taxes>
   <units>
-    <unit type="weight" value="kg"/>
-    <unit type="volume" value="L"/>
-    <unit type="short_distance" value="cm"/>
-    <unit type="base_distance" value="m"/>
-    <unit type="long_distance" value="km"/>
+    <unit type="weight" value="kg" />
+    <unit type="volume" value="L" />
+    <unit type="short_distance" value="cm" />
+    <unit type="base_distance" value="m" />
+    <unit type="long_distance" value="km" />
   </units>
 </localizationPack>

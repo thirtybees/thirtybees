@@ -1,18 +1,35 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <localizationPack name="United Arab Emirates">
   <currencies>
-    <currency name="United Arab Emirates dirham" iso_code="AED" iso_code_num="784" sign="AED" blank="1" conversion_rate="1.000000" format="1" decimals="0"/>
+    <currency name="United Arab Emirates dirham"
+              iso_code="AED"
+              iso_code_num="784"
+              sign="AED"
+              blank="1"
+              conversion_rate="1.000000"
+              format="1"
+              decimals="0" />
   </currencies>
   <languages>
-    <language iso_code="en"/>
-    <language iso_code="ar"/>
+    <language name="English (United States)"
+              iso_code="en"
+              language_code="en-us"
+              date_format_lite="m/d/Y"
+              date_format_full="m/d/Y H:i:s"
+              is_rtl="0" />
+    <language name="اللغة العربية (Arabic)"
+              iso_code="ar"
+              language_code="ar-sa"
+              date_format_lite="Y-m-d"
+              date_format_full="Y-m-d H:i:s"
+              is_rtl="1" />
   </languages>
-  <taxes/>
+  <taxes />
   <units>
-    <unit type="weight" value="kg"/>
-    <unit type="volume" value="L"/>
-    <unit type="short_distance" value="cm"/>
-    <unit type="base_distance" value="m"/>
-    <unit type="long_distance" value="km"/>
+    <unit type="weight" value="kg" />
+    <unit type="volume" value="L" />
+    <unit type="short_distance" value="cm" />
+    <unit type="base_distance" value="m" />
+    <unit type="long_distance" value="km" />
   </units>
 </localizationPack>

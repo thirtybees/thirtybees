@@ -1,16 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <localizationPack name="Saudi Arabia" version="1.0">
-	<currencies>
-		<currency name="Riyal" iso_code="SAR" iso_code_num="682" sign="﷼" blank="1" conversion_rate="5.10682" format="2" decimals="1" />
-	</currencies>
-	<languages>
-		<language iso_code="ar" />
-	</languages>
-	<units>
-		<unit type="weight" value="kg" />
-		<unit type="volume" value="L" />
-		<unit type="short_distance" value="in" />
-		<unit type="base_distance" value="ft" />
-		<unit type="long_distance" value="mi" />
-	</units>
+  <currencies>
+    <currency name="Riyal"
+              iso_code="SAR"
+              iso_code_num="682"
+              sign="﷼"
+              blank="1"
+              conversion_rate="5.10682"
+              format="2"
+              decimals="1" />
+  </currencies>
+  <languages>
+    <language name="اللغة العربية (Arabic)"
+              iso_code="ar"
+              language_code="ar-sa"
+              date_format_lite="Y-m-d"
+              date_format_full="Y-m-d H:i:s"
+              is_rtl="1" />
+  </languages>
+  <units>
+    <unit type="weight" value="kg" />
+    <unit type="volume" value="L" />
+    <unit type="short_distance" value="in" />
+    <unit type="base_distance" value="ft" />
+    <unit type="long_distance" value="mi" />
+  </units>
 </localizationPack>

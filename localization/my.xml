@@ -1,24 +1,36 @@
 <?xml version="1.0"?>
 <localizationPack name="Malaysia">
   <currencies>
-    <currency name="Ringgit" iso_code="MYR" iso_code_num="458" sign="RM" blank="0" conversion_rate="1.000000" format="1" decimals="1"/>
+    <currency name="Ringgit"
+              iso_code="MYR"
+              iso_code_num="458"
+              sign="RM"
+              blank="0"
+              conversion_rate="1.000000"
+              format="1"
+              decimals="1" />
   </currencies>
   <languages>
-    <language iso_code="ms"/>
+    <language name="Bahasa melayu (Malay)"
+              iso_code="ms"
+              language_code="ms-my"
+              date_format_lite="d MMMM yyyy"
+              date_format_full="d MMMM yyyy h:mm:ss"
+              is_rtl="0" />
   </languages>
   <taxes>
     <taxRulesGroup name="Malaysia Sales Tax Standard Rate">
-      <taxRule iso_code_country="my" behavior="0" id_tax="60"/>
+      <taxRule iso_code_country="my" behavior="0" id_tax="60" />
     </taxRulesGroup>
     <taxRulesGroup name="Malaysia Sales Tax Reduced Rate">
-      <taxRule iso_code_country="my" behavior="0" id_tax="61"/>
+      <taxRule iso_code_country="my" behavior="0" id_tax="61" />
     </taxRulesGroup>
     <taxRulesGroup name="Malaysia Service Tax">
-      <taxRule iso_code_country="my" behavior="0" id_tax="62"/>
+      <taxRule iso_code_country="my" behavior="0" id_tax="62" />
     </taxRulesGroup>
-    <tax id="60" name="Malaysia Sales Tax Standard Rate" rate="10.000"/>
-    <tax id="61" name="Malaysia Sales Tax Reduced Rate" rate="5.000"/>
-    <tax id="62" name="Malaysia Service Tax" rate="6.000"/>
+    <tax id="60" name="Malaysia Sales Tax Standard Rate" rate="10.000" />
+    <tax id="61" name="Malaysia Sales Tax Reduced Rate" rate="5.000" />
+    <tax id="62" name="Malaysia Service Tax" rate="6.000" />
   </taxes>
   <states>
     <state name="W.P Kuala Lumpur" iso_code="MY-14" country="MY" zone="Asia" tax_behavior="0" />
@@ -39,10 +51,10 @@
     <state name="Terengganu" iso_code="MY-11" country="MY" zone="Asia" tax_behavior="0" />
   </states>
   <units>
-    <unit type="weight" value="kg"/>
-    <unit type="volume" value="L"/>
-    <unit type="short_distance" value="cm"/>
-    <unit type="base_distance" value="m"/>
-    <unit type="long_distance" value="km"/>
+    <unit type="weight" value="kg" />
+    <unit type="volume" value="L" />
+    <unit type="short_distance" value="cm" />
+    <unit type="base_distance" value="m" />
+    <unit type="long_distance" value="km" />
   </units>
 </localizationPack>
