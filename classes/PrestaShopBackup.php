@@ -45,8 +45,9 @@ class PrestaShopBackupCore
     public $error;
     /** @var string custom backup directory. */
     public $customBackupDir = null;
-
+    /** @var bool|string $psBackupAll */
     public $psBackupAll = true;
+    /** @var bool|string $psBackupDropTable */
     public $psBackupDropTable = true;
     // @codingStandardsIgnoreEnd
 
@@ -82,7 +83,7 @@ class PrestaShopBackupCore
      */
     public function getRealBackupPath($filename = null)
     {
-        $backupDir = PrestaShopBackup::getBackupPath($filename);
+        $backupDir = self::getBackupPath($filename);
         if (!empty($this->customBackupDir)) {
             $backupDir = str_replace(
                 _PS_ADMIN_DIR_.self::$backupDir,
@@ -199,7 +200,7 @@ class PrestaShopBackupCore
     public function deleteSelection($list)
     {
         foreach ($list as $file) {
-            $backup = new PrestaShopBackup($file);
+            $backup = new self($file);
             if (!$backup->delete()) {
                 $this->error = $backup->error;
 
@@ -222,8 +223,11 @@ class PrestaShopBackupCore
     {
         if (!$this->psBackupAll) {
             $ignoreInsertTable = [
-                _DB_PREFIX_.'connections', _DB_PREFIX_.'connections_page', _DB_PREFIX_
-                .'connections_source', _DB_PREFIX_.'guest', _DB_PREFIX_.'statssearch',
+                _DB_PREFIX_.'connections',
+                _DB_PREFIX_.'connections_page',
+                _DB_PREFIX_.'connections_source',
+                _DB_PREFIX_.'guest',
+                _DB_PREFIX_.'statssearch',
             ];
         } else {
             $ignoreInsertTable = [];
