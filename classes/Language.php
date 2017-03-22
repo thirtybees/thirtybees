@@ -466,18 +466,6 @@ class LanguageCore extends ObjectModel
                     $tmpArray[] = $path;
                 }
             }
-            if (defined('_PS_HOST_MODE_')) {
-                $mailsFiles = array();
-                $otherFiles = array();
-                foreach ($fileList as $key => $data) {
-                    if (substr($data['filename'], 0, 5) == 'mails') {
-                        $mailsFiles[] = $data;
-                    } else {
-                        $otherFiles[] = $data;
-                    }
-                }
-                $fileList = $otherFiles;
-            }
             if (!$gz->extractList(AdminTranslationsController::filesListToPaths($fileList), _PS_TRANSLATIONS_DIR_.'../')) {
                 $errors[] = sprintf(Tools::displayError('Cannot decompress the translation file for the following language: %s'), (string) $iso);
             }
