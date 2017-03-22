@@ -79,7 +79,7 @@ abstract class ModuleCore
      * @var string Filled with known compliant thirty bees versions
      *             This string contains a SemVer 1.0.0 range
      */
-    public $tb_versions_compliancy = '';
+    public $tb_versions_compliancy = '*';
     /** @var array filled with modules needed for install */
     public $dependencies = [];
     /** @var string Unique name */
