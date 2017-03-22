@@ -319,7 +319,7 @@ class MediaCore
 
         $return = [];
 
-        if (@filemtime($fileUri) || (defined('_PS_HOST_MODE_') && @filemtime($fileUriHostMode))) {
+        if (@filemtime($fileUri)) {
             $return[] = Media::getJSPath($file);
         } else {
             $return[] = Media::getJSPath(
@@ -384,13 +384,7 @@ class MediaCore
             $fileUriHostMode = _PS_CORE_DIR_.Tools::str_replace_once(__PS_BASE_URI__, DIRECTORY_SEPARATOR, Tools::str_replace_once(_PS_CORE_DIR_, '', $mediaUri));
 
             if (!@filemtime($fileUri) || @filesize($fileUri) === 0) {
-                if (!defined('_PS_HOST_MODE_')) {
-                    return false;
-                } elseif (!@filemtime($fileUriHostMode) || @filesize($fileUriHostMode) === 0) {
-                    return false;
-                } else {
-                    $mediaUri = $mediaUriHostMode;
-                }
+                return false;
             }
 
             $mediaUri = str_replace('//', '/', $mediaUri);
@@ -444,7 +438,7 @@ class MediaCore
                 }
             }
         }
-        if (@filemtime($fileUri) || (defined('_PS_HOST_MODE_') && @filemtime($fileUriHostMode))) {
+        if (@filemtime($fileUri)) {
             if (!empty($uiTmp)) {
                 foreach ($uiTmp as $ui) {
                     if (!empty($ui['js'])) {
@@ -519,9 +513,9 @@ class MediaCore
         $fileUri = _PS_ROOT_DIR_.Tools::str_replace_once(__PS_BASE_URI__, DIRECTORY_SEPARATOR, $urlData['path']);
         $fileUriHostMode = _PS_CORE_DIR_.Tools::str_replace_once(__PS_BASE_URI__, DIRECTORY_SEPARATOR, $urlData['path']);
 
-        if (@file_exists($fileUri.$file) || (defined('_PS_HOST_MODE_') && @file_exists($fileUriHostMode.$file))) {
+        if (@file_exists($fileUri.$file)) {
             $pluginPath['js'] = Media::getJSPath($folder.$file);
-        } elseif (@file_exists($fileUri.$name.'/'.$file) || (defined('_PS_HOST_MODE_') && @file_exists($fileUriHostMode.$name.'/'.$file))) {
+        } elseif (@file_exists($fileUri.$name.'/'.$file)) {
             $pluginPath['js'] = Media::getJSPath($folder.$name.'/'.$file);
         } else {
             return false;
@@ -551,9 +545,9 @@ class MediaCore
         $fileUri = _PS_ROOT_DIR_.Tools::str_replace_once(__PS_BASE_URI__, DIRECTORY_SEPARATOR, $urlData['path']);
         $fileUriHostMode = _PS_CORE_DIR_.Tools::str_replace_once(__PS_BASE_URI__, DIRECTORY_SEPARATOR, $urlData['path']);
 
-        if (@file_exists($fileUri.$file) || (defined('_PS_HOST_MODE_') && @file_exists($fileUriHostMode.$file))) {
+        if (@file_exists($fileUri.$file)) {
             return Media::getCSSPath($folder.$file);
-        } elseif (@file_exists($fileUri.$name.'/'.$file) || (defined('_PS_HOST_MODE_') && @file_exists($fileUriHostMode.$name.'/'.$file))) {
+        } elseif (@file_exists($fileUri.$name.'/'.$file)) {
             return Media::getCSSPath($folder.$name.'/'.$file);
         } else {
             return false;
