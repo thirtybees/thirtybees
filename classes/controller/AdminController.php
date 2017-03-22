@@ -419,13 +419,7 @@ class AdminControllerCore extends Controller
         }
 
         // Set context mode
-        if (defined('_PS_HOST_MODE_') && _PS_HOST_MODE_) {
-            if (isset($this->context->cookie->is_contributor) && (int) $this->context->cookie->is_contributor === 1) {
-                $this->context->mode = Context::MODE_HOST_CONTRIB;
-            } else {
-                $this->context->mode = Context::MODE_HOST;
-            }
-        } elseif (isset($this->context->cookie->is_contributor) && (int) $this->context->cookie->is_contributor === 1) {
+        if (isset($this->context->cookie->is_contributor) && (int) $this->context->cookie->is_contributor === 1) {
             $this->context->mode = Context::MODE_STD_CONTRIB;
         } else {
             $this->context->mode = Context::MODE_STD;
@@ -3798,7 +3792,7 @@ class AdminControllerCore extends Controller
         $this->addjQueryPlugin('growl', null, false);
         $this->addJqueryUI(['ui.slider', 'ui.datepicker']);
 
-        Media::addJsDef(['host_mode' => (defined('_PS_HOST_MODE_') && _PS_HOST_MODE_)]);
+        Media::addJsDef(['host_mode' => false]);
 
         $this->addJS(
             [
@@ -3909,7 +3903,7 @@ class AdminControllerCore extends Controller
                 'table'            => $this->table,
                 'current'          => self::$currentIndex,
                 'token'            => $this->token,
-                'host_mode'        => defined('_PS_HOST_MODE_') ? 1 : 0,
+                'host_mode'        => 0,
                 'stock_management' => (int) Configuration::get('PS_STOCK_MANAGEMENT'),
             ]
         );
