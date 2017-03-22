@@ -112,8 +112,8 @@ class PrestaShopAutoload
         if ($this->_include_override_path) {
             $classes = array_merge(
                 $classes,
-                $this->getClassesFromDir('override/classes/', defined('_PS_HOST_MODE_')),
-                $this->getClassesFromDir('override/controllers/', defined('_PS_HOST_MODE_'))
+                $this->getClassesFromDir('override/classes/', false),
+                $this->getClassesFromDir('override/controllers/', false)
             );
         }
 
