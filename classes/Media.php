@@ -543,7 +543,6 @@ class MediaCore
         $file = 'jquery.'.$name.'.css';
         $urlData = parse_url($folder);
         $fileUri = _PS_ROOT_DIR_.Tools::str_replace_once(__PS_BASE_URI__, DIRECTORY_SEPARATOR, $urlData['path']);
-        $fileUriHostMode = _PS_CORE_DIR_.Tools::str_replace_once(__PS_BASE_URI__, DIRECTORY_SEPARATOR, $urlData['path']);
 
         if (@file_exists($fileUri.$file)) {
             return Media::getCSSPath($folder.$file);
