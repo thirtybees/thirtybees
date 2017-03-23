@@ -29,17 +29,12 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-// This file might not exist. For example, at install time it doesn't.
-// Accordingly, we also have to check for the existence of $shopUrlConfig
-// on every read access.
-@include_once(_PS_ROOT_DIR_.'/config/shop.inc.php');
-
 /**
  * Class ShopUrlCore
  *
  * @since 1.0.0
  */
-class ShopUrlCore extends ObjectModel
+class ShopUrlCore extends ObjectFileModel
 {
     // @codingStandardsIgnoreStart
     public $id_shop;
@@ -60,7 +55,8 @@ class ShopUrlCore extends ObjectModel
     public static $definition = [
         'table'   => 'shop_url',
         'primary' => 'id_shop_url',
-        'path'    => '/config/shop.inc.php', // Has to match include() above.
+        // Has to match one of the include()'s in ObjectFileModel.
+        'path'    => '/config/shop.inc.php',
         'storage' => 'shopUrlConfig',
         'fields'  => [
             'active'       => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                          ],
@@ -134,39 +130,6 @@ class ShopUrlCore extends ObjectModel
                 Db::getInstance()->insert('shop_url', $url);
             }
         }
-    }
-
-    /**
-     * Write storage to the file. That's $shopUrlConfig here.
-     *
-     * @return int|bool Number of bytes written or false-equivalent on failure.
-     *
-     * @since   1.1.0
-     * @version 1.1.0 Initial version
-     */
-    public static function writeStorage()
-    {
-        $storageName = static::$definition['storage'];
-        global ${$storageName}; // Assume it exists.
-
-        $result = file_put_contents(_PS_ROOT_DIR_.static::$definition['path'],
-            "<?php\n\n".
-            'global $'.$storageName.';'."\n\n".
-            '$'.$storageName.' = '.
-              var_export(${$storageName}, true).
-            ';'."\n");
-
-        // Clear most citizens in cache-mess-city. Else the include_once()
-        // above may well read an old version on the next page load.
-        Tools::clearSmartyCache();
-        Tools::clearXMLCache();
-        Cache::getInstance()->flush();
-        PageCache::flush();
-        if (function_exists('opcache_reset')) {
-            opcache_reset();
-        }
-
-        return $result;
     }
 
     /**
