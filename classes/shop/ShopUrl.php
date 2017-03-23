@@ -29,14 +29,12 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-include_once(_PS_ROOT_DIR_.'/config/shop.inc.php');
-
 /**
  * Class ShopUrlCore
  *
  * @since 1.0.0
  */
-class ShopUrlCore extends ObjectModel
+class ShopUrlCore extends ObjectFileModel
 {
     // @codingStandardsIgnoreStart
     public $id_shop;
@@ -103,7 +101,7 @@ class ShopUrlCore extends ObjectModel
             unset($shopUrlConfig[$url['id_shop_url']]['id_shop_url']);
         }
 
-        (new ShopUrl)->saveShopUrlConfig();
+        $this->write();
 
         return $result;
     }
@@ -125,22 +123,6 @@ class ShopUrlCore extends ObjectModel
 
             Db::getInstance()->insert('shop_url', $url);
         }
-    }
-
-    /**
-     * @return int|bool Number of bytes written or false-equivalent on failure.
-     *
-     * @since   1.1.0
-     * @version 1.1.0 Initial version
-     */
-    public function saveShopUrlConfig()
-    {
-        global $shopUrlConfig;
-
-        return file_put_contents(_PS_ROOT_DIR_.$this->def['path'],
-            "<?php\n\n".
-            'global $shopUrlConfig;'."\n\n".
-            '$shopUrlConfig = '.var_export($shopUrlConfig, true).';'."\n");
     }
 
     /**
