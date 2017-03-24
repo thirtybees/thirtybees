@@ -217,4 +217,39 @@ abstract class ObjectFileModelCore extends ObjectModel
 
         return $result;
     }
+
+    /**
+     * Deletes current object from the file based storage.
+     *
+     * @return bool True if delete was successful
+     * @throws PrestaShopException
+     *
+     * @since   1.1.0
+     * @version 1.1.0 Initial version
+     */
+    public function delete()
+    {
+        $storageName = static::$definition['storage'];
+        global ${$storageName};
+
+        // @hook actionObject*DeleteBefore
+        Hook::exec('actionObjectDeleteBefore', ['object' => $this]);
+        Hook::exec('actionObject'.get_class($this).'DeleteBefore', ['object' => $this]);
+
+        /* Associations, multilingual fields not yet implemented. */
+
+        if (is_array(${$storageName})) {
+            unset(${$storageName}[$this->id]);
+        }
+        $result = static::writeStorage();
+        // Remove later. Comment out to see wether the code here actually works,
+        // or wether DB gets written by some other means we no longer want.
+        ShopUrl::push();
+
+        // @hook actionObject*DeleteAfter
+        Hook::exec('actionObjectDeleteAfter', ['object' => $this]);
+        Hook::exec('actionObject'.get_class($this).'DeleteAfter', ['object' => $this]);
+
+        return $result;
+    }
 }
