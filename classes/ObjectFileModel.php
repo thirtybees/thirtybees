@@ -218,6 +218,68 @@ abstract class ObjectFileModelCore extends ObjectModel
         return $result;
     }
 
+     /**
+      * Updates the current object in the file based storage.
+      *
+      * @param bool $nullValues Ignored, for compatibility with ObjectModel.
+      *
+      * @return bool
+      * @throws PrestaShopException
+      */
+    public function update($nullValues = false)
+    {
+        $storageName = static::$definition['storage'];
+        global ${$storageName};
+
+        $result = true;
+
+        // @hook actionObject*UpdateBefore
+        Hook::exec('actionObjectUpdateBefore', ['object' => $this]);
+        Hook::exec('actionObject'.get_class($this).'UpdateBefore', ['object' => $this]);
+
+        // Automatically fill dates
+        if (property_exists($this, 'date_upd')) {
+            $this->date_upd = date('Y-m-d H:i:s');
+            if (isset($this->update_fields) && is_array($this->update_fields) && count($this->update_fields)) {
+                $this->update_fields['date_upd'] = true;
+            }
+        }
+
+        // Automatically fill dates
+        if (property_exists($this, 'date_add') && $this->date_add == null) {
+            $this->date_add = date('Y-m-d H:i:s');
+            if (isset($this->update_fields) && is_array($this->update_fields) && count($this->update_fields)) {
+                $this->update_fields['date_add'] = true;
+            }
+        }
+
+        $idShopList = Shop::getContextListShopID();
+        if (count($this->id_shop_list) > 0) {
+            $idShopList = $this->id_shop_list;
+        }
+
+        if (Shop::checkIdShopDefault($this->def['table']) && !$this->id_shop_default) {
+            $this->id_shop_default = (in_array(Configuration::get('PS_SHOP_DEFAULT'), $idShopList) == true) ? Configuration::get('PS_SHOP_DEFAULT') : min($idShopList);
+        }
+
+        // Array update.
+        $fields = $this->getFields();
+        unset($fields[$this->def['primary']]); // Set by getFields(), but not needed.
+        ${$storageName}[$this->id] = $fields;
+        $result = static::writeStorage();
+        // Remove later. Comment out to see wether the code here actually works,
+        // or wether DB gets written by some other means we no longer want.
+        ShopUrl::push();
+
+        /* Associations, multilingual fields not yet implemented. */
+
+        // @hook actionObject*UpdateAfter
+        Hook::exec('actionObjectUpdateAfter', ['object' => $this]);
+        Hook::exec('actionObject'.get_class($this).'UpdateAfter', ['object' => $this]);
+
+        return $result;
+    }
+
     /**
      * Deletes current object from the file based storage.
      *

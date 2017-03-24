@@ -76,41 +76,6 @@ class ShopUrlCore extends ObjectFileModel
     ];
 
     /**
-     * This shall help with the transition from using a database table to
-     * using an PHP array written to a file. It copies DB content to
-     * the global configuration array.
-     *
-     * This method can go away as soon as this class is no longer inherited
-     * from ObjectModel. By then we have to have some other means to write
-     * the array, of course.
-     */
-    public function update($null_values = false)
-    {
-        $storageName = static::$definition['storage'];
-        global ${$storageName};
-
-        $result = parent::update($null_values);
-
-        // Make sure each shop in the database is also in $shopUrlConfig.
-        // This task can be removed as soon as shop changes are stored in
-        // $shopUrlConfig by calling code.
-        $sql = 'SELECT id_shop_url, id_shop, domain, domain_ssl, physical_uri, virtual_uri, main, active
-                FROM '._DB_PREFIX_.'shop_url';
-        $sqlResult = Db::getInstance()->executeS($sql);
-
-        $storage = &${$storageName};
-        $storage = array();
-        foreach ($sqlResult as $url) {
-            $storage[$url['id_shop_url']] = $url;
-            unset($storage[$url['id_shop_url']]['id_shop_url']);
-        }
-
-        static::writeStorage();
-
-        return $result;
-    }
-
-    /**
      * Do the opposite of update(): forward $shopUrlConfig to the DB. Also
      * expected to be temporary, only.
      */
