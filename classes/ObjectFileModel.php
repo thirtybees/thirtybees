@@ -146,4 +146,75 @@ abstract class ObjectFileModelCore extends ObjectModel
 
         return $result;
     }
+
+    /**
+     * Adds current object to the file based storage.
+     *
+     * @param bool $autoDate
+     * @param bool $nullValues Ignored, for compatibility with ObjectModel.
+     *
+     * @return bool Insertion result
+     * @throws PrestaShopException
+     *
+     * @since   1.1.0
+     * @version 1.1.0 Initial version
+     */
+    public function add($autoDate = true, $nullValues = false)
+    {
+        $storageName = static::$definition['storage'];
+        global ${$storageName};
+
+        if (isset($this->id) && !$this->force_id) {
+            unset($this->id);
+        }
+
+        // @hook actionObject*AddBefore
+        Hook::exec('actionObjectAddBefore', ['object' => $this]);
+        Hook::exec('actionObject'.get_class($this).'AddBefore', ['object' => $this]);
+
+        // Automatically fill dates
+        if ($autoDate && property_exists($this, 'date_add')) {
+            $this->date_add = date('Y-m-d H:i:s');
+        }
+        if ($autoDate && property_exists($this, 'date_upd')) {
+            $this->date_upd = date('Y-m-d H:i:s');
+        }
+
+        if (Shop::isTableAssociated($this->def['table'])) {
+            $idShopList = Shop::getContextListShopID();
+            if (count($this->id_shop_list) > 0) {
+                $idShopList = $this->id_shop_list;
+            }
+        }
+
+        if (Shop::checkIdShopDefault($this->def['table'])) {
+            $this->id_shop_default = (in_array(Configuration::get('PS_SHOP_DEFAULT'), $idShopList) == true) ? Configuration::get('PS_SHOP_DEFAULT') : min($idShopList);
+        }
+        $fields = $this->getFields();
+
+        // Find the smallest insertion point. count($array) is unreliable,
+        // because there can be gaps after previous deletions.
+        $newId = 1;
+        while (is_array(${$storageName}) &&
+               array_key_exists($newId, ${$storageName})) {
+            $newId++;
+        }
+
+        // Array insertion.
+        ${$storageName}[$newId] = $fields;
+        $result = static::writeStorage();
+        // Remove later. Comment out to see wether the code here actually works,
+        // or wether DB gets written by some other means we no longer want.
+        ShopUrl::push();
+
+        $this->id = $newId;
+
+        /* Associations, multilingual fields not yet implemented. */
+
+        // @hook actionObject*AddAfter
+        Hook::exec('actionObjectAddAfter', ['object' => $this]);
+        Hook::exec('actionObject'.get_class($this).'AddAfter', ['object' => $this]);
+
+        return $result;
+    }
 }
