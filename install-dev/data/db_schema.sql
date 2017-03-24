@@ -3385,6 +3385,7 @@ CREATE TABLE `PREFIX_url_rewrite` (
   `id_shop`        INT(11) UNSIGNED    NOT NULL,
   `rewrite`        VARCHAR(1000)       NOT NULL,
   `redirect`       TINYINT(2) UNSIGNED NOT NULL,
+  `date_upd`       DATETIME()          NOT NULL,
   PRIMARY KEY (`id_url_rewrite`)
 )
   ENGINE = ENGINE_TYPE
