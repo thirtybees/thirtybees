@@ -22,11 +22,11 @@
               language_code="he-il"
               date_format_lite="Y-m-d"
               date_format_full="Y-m-d H:i:s"
-              is_rtl="0" />
+              is_rtl="1" />
   </languages>
   <taxes>
-    <tax id="1" name="Ma'am IL 18%" rate="18" />
-    <taxRulesGroup name="IL Standard Rate (18%)">
+    <tax id="1" name="Ma'am IL 17%" rate="17" />
+    <taxRulesGroup name="IL Standard Rate (17%)">
       <taxRule iso_code_country="il" id_tax="1" />
     </taxRulesGroup>
   </taxes>
