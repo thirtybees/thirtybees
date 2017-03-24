@@ -930,15 +930,11 @@ class ShopCore extends ObjectModel
             return false;
         }
 
-        $query = new DbQuery();
-        $query->select('domain');
-        $query->from('shop_url');
-        $query->where('main = 1');
-        $query->where('active = 1');
-        $query .= $this->addSqlRestriction(Shop::SHARE_ORDER);
         $domains = [];
-        foreach (Db::getInstance()->executeS($query) as $row) {
-            $domains[] = $row['domain'];
+        foreach (ShopUrl::get() as $url) {
+            if ($url['main'] && $url['active']) {
+                $domains[] = $url['domain'];
+            }
         }
 
         return $domains;
