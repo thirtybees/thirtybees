@@ -267,45 +267,48 @@ abstract class ControllerCore
         if (Configuration::get('TB_PAGE_CACHE_ENABLED')) {
             $pageName = Dispatcher::getInstance()->getController();
             $cacheableControllers = json_decode(Configuration::get('TB_PAGE_CACHE_CONTROLLERS'));
-            $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && Tools::strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
-            $isLogged = Tools::getIsset($this->context->customer) ? $this->context->customer->isLogged() && Configuration::get('TB_PAGE_CACHE_SKIPLOGIN') : false;
+            $ajaxCalling = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && Tools::strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
 
-            if (in_array($pageName, $cacheableControllers) && !Tools::isSubmit('refresh_cache') && !Tools::isSubmit('live_edit') && !Tools::isSubmit('live_configurator_token') && !Tools::isSubmit('no_cache') && count($_POST) == 0 && !$isAjax && !$isLogged) {
-                if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
-                    $proto = 'https'.':'.'/'.'/';
-                } else {
-                    $proto = 'http'.':'.'/'.'/';
+            if(in_array($pageName, $cacheableControllers) && !Tools::isSubmit('live_edit') && !Tools::isSubmit('live_configurator_token') && !$ajaxCalling)
+            {
+                $protocol = Configuration::get('PS_SSL_ENABLED') ? 'https://' : 'http://';
+                $paramsToIgnore = ['refresh_cache', 'no_cache'];
+                $paramsToIgnoreSaved = Configuration::get('TB_PAGE_CACHE_IGNOREPARAMS');
+
+                if($paramsToIgnoreSaved)
+                    $paramsToIgnoreSaved = explode(',', $paramsToIgnoreSaved);
+                if(is_array($paramsToIgnoreSaved))
+                    $paramsToIgnore = array_merge($paramsToIgnore, $paramsToIgnoreSaved);
+                
+                $url = explode('?', $_SERVER['REQUEST_URI']);
+                $uri = $url[0];
+                $queryString = isset($url[1]) ? $url[1] : '';
+                parse_str($queryString, $queryStringParams);
+
+                foreach ($paramsToIgnore as $param) {
+                    if(isset($queryStringParams[$param]))
+                        unset($queryStringParams[$param]);
                 }
 
-                //remove ignored url vars
-                list($urlpart, $qspart) = array_pad(explode('?', $_SERVER['REQUEST_URI']), 2, '');
-                parse_str($qspart, $query);
-                $ignoreParams = Configuration::get('TB_PAGE_CACHE_IGNOREPARAMS');
-                $ignoreParams = explode(',', $ignoreParams);
-                foreach ($ignoreParams as $ignoreParam) {
-                    $ignoreParam = trim($ignoreParam);
-                    unset($query[$ignoreParam]);
-                }
+                $newQueryString = http_build_query($queryStringParams);
 
-                $queryString = http_build_query($query);
                 if ($queryString == '') {
-                    $url = $proto.$_SERVER['HTTP_HOST'].$urlpart;
+                    $newUrl = $protocol.$_SERVER['HTTP_HOST'].$uri;
                 } else {
-                    $url = $proto.$_SERVER['HTTP_HOST'].$urlpart.'?'.$queryString;
+                    $newUrl = $protocol.$_SERVER['HTTP_HOST'].$uri.'?'.$newQueryString;
                 }
 
-                $idPage = md5($url);
-                $idLanguage = (int) $this->context->language->id;
-                $idCountry = (int) $this->context->country->id;
-                $idShop = (int) $this->context->shop->id;
+                $idPage = Tools::encrypt($newUrl);
                 $currency = Tools::setCurrency($this->context->cookie);
                 $idCurrency = $currency->id;
-                $countryCheck = (bool) Configuration::get('TB_PAGE_CACHE_COUNTRY');
-
-                $key = md5('pagecache_public_'.$idPage.$idCurrency.$idLanguage.($countryCheck ? $idCountry : '').$idShop);
+                $idLang = (int) $this->context->language->id;
+                $idCountry = (int) $this->context->country->id;
+                $idShop = (int) $this->context->shop->id;                
+                
+                $pageKey = Tools::encrypt('pagecache_public_'.$idPage.$idCurrency.$idLang.$idCountry.$idShop);
                 $cache = Cache::getInstance();
 
-                if ($fromCache = $cache->get($key)) {
+                if ($fromCache = $cache->get($pageKey)) {
                     if (Configuration::get('TB_PAGE_CACHE_DEBUG')) {
                         header('X-thirtybees-PageCache: HIT');
                     }
@@ -317,18 +320,16 @@ abstract class ControllerCore
                     }
                 }
             }
-        }
 
-        if ($cached) {
+           
+        } // End check if pagecache is enabled
+
+        if($cached)
+        {
             $this->init();
-
             $this->context->cookie->write();
-
-            if (Configuration::get('TB_PAGE_CACHE_GZIP') || !strstr($content, 'body')) {
-                $content = gzinflate($content);
-            }
-
             $hookInfo = json_decode(Configuration::get('TB_PAGE_CACHE_HOOKS'), true);
+
             if (is_array($hookInfo)) {
                 foreach ($hookInfo as $idModule => $hookArray) {
                     if (is_array($hookArray)) {
@@ -351,7 +352,7 @@ abstract class ControllerCore
                         }
                     }
                 }
-            }
+            } 
 
             if (Configuration::get('PS_TOKEN_ENABLE')) {
                 $newToken = Tools::getToken(false);
@@ -366,8 +367,8 @@ abstract class ControllerCore
                     $content = preg_replace('/static_token[ ]?=[ ]?\'[a-f0-9]{32}/', 'static_token = \''.$newToken, $content);
                 }
             }
-
             echo $content;
+
         } else {
             $this->init();
             if ($this->checkAccess()) {
@@ -411,8 +412,9 @@ abstract class ControllerCore
                 if (isset($this->layout)) {
                     $this->smartyOutputContent($this->layout);
                 }
-            }
+            }            
         }
+
     }
 
     /**
@@ -775,6 +777,7 @@ abstract class ControllerCore
      */
     protected function smartyOutputContent($content)
     {
+
         $this->context->cookie->write();
         $html = '';
         $jsTag = 'js_def';

@@ -873,7 +873,7 @@ class FrontControllerCore extends Controller
         
         $url = explode('?', $_SERVER['REQUEST_URI']);
         $uri = $url[0];
-        $queryString = $url[1];
+        $queryString = isset($url[1]) ? $url[1] : '';
         parse_str($queryString, $queryStringParams);
 
         foreach ($paramsToIgnore as $param) {
