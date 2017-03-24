@@ -36,7 +36,10 @@
  */
 class HelperOptionsCore extends Helper
 {
+    /** @var bool $required */
     public $required = false;
+    /** @var int $id */
+    public $id;
 
     /**
      * HelperOptionsCore constructor.
