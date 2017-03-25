@@ -411,47 +411,52 @@ class ShopCore extends ObjectModel
     {
         // Find current shop from URL
         if (!($idShop = Tools::getValue('id_shop')) || defined('_PS_ADMIN_DIR_')) {
-            $foundUri = '';
-            $isMainUri = false;
             $host = Tools::getHttpHost();
             $requestUri = rawurldecode($_SERVER['REQUEST_URI']);
 
-            $sql = 'SELECT s.id_shop, CONCAT(su.physical_uri, su.virtual_uri) AS uri, su.domain, su.main
-					FROM '._DB_PREFIX_.'shop_url su
-					LEFT JOIN '._DB_PREFIX_.'shop s ON (s.id_shop = su.id_shop)
-					WHERE (su.domain = \''.pSQL($host).'\' OR su.domain_ssl = \''.pSQL($host).'\')
-						AND s.active = 1
-						AND s.deleted = 0
-					ORDER BY LENGTH(CONCAT(su.physical_uri, su.virtual_uri)) DESC';
-
+            $allUrls = ShopUrl::getStorage();
+            $sql = 'SELECT id_shop
+                    FROM '._DB_PREFIX_.'shop
+                    WHERE active = 1 AND deleted = 0';
             $result = Db::getInstance()->executeS($sql);
 
-            $through = false;
+            // Search for a shop matching this host.
+            $idShop = false;
+            $isMainUri = false;
+            $foundUri = false;
+            foreach ($allUrls as $url) {
+                if ($host === $url['domain'] || $host === $url['domain_ssl']) {
+                    $uri = $url['physical_uri'].$url['virtual_uri'];
             foreach ($result as $row) {
-                // An URL matching current shop was found
-                if (preg_match('#^'.preg_quote($row['uri'], '#').'#i', $requestUri)) {
-                    $through = true;
+                        if ($row['id_shop'] == $url['id_shop'] &&
+                            preg_match('#^'.preg_quote($uri, '#').'#i', $requestUri)) {
+
                     $idShop = $row['id_shop'];
-                    $foundUri = $row['uri'];
-                    if ($row['main']) {
+                            $foundUri = $uri;
+                            if ($url['main']) {
                         $isMainUri = true;
                     }
                     break;
                 }
             }
+                    if ($idShop) {
+                        break;
+                    }
+                }
+            }
 
             // If an URL was found but is not the main URL, redirect to main URL
-            if ($through && $idShop && !$isMainUri) {
-                foreach ($result as $row) {
-                    if ($row['id_shop'] == $idShop && $row['main']) {
+            if ($idShop && !$isMainUri) {
+                foreach ($allUrls as $url) {
+                    if ($url['id_shop'] == $idShop && $url['main']) {
                         $requestUri = substr($requestUri, strlen($foundUri));
-                        $url = str_replace('//', '/', $row['domain'].$row['uri'].$requestUri);
+                        $uri = str_replace('//', '/', $url['domain'].$foundUri.$requestUri);
                         $redirectType = Configuration::get('PS_CANONICAL_REDIRECT');
                         $redirectCode = ($redirectType == 1 ? '302' : '301');
                         $redirectHeader = ($redirectType == 1 ? 'Found' : 'Moved Permanently');
                         header('HTTP/1.0 '.$redirectCode.' '.$redirectHeader);
                         header('Cache-Control: no-cache');
-                        header('Location: http://'.$url);
+                        header('Location: http://'.$uri);
                         exit;
                     }
                 }
