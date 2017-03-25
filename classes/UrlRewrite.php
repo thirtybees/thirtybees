@@ -506,7 +506,7 @@ class UrlRewriteCore extends Objectmodel
                     $categoryRewrite = '';
                     $idCategory = (int) $productInfo['id_category_default'];
                     $depth = 0;
-                    while ($idCategory && $depth < self::MAX_CATEGORY_DEPTH && $categories[$idCategory]['rewrite']) {
+                    while ($idCategory && $idCategory < sizeof($categories) && $depth < self::MAX_CATEGORY_DEPTH && $categories[$idCategory]['rewrite']) {
                         $categoryRewrite = '/'.$categories[$idCategory]['rewrite'].$categoryRewrite;
                         $idCategory = (int) $categories[$idCategory]['id_parent'];
                         $depth++;
