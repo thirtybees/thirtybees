@@ -503,20 +503,17 @@ class ShopCore extends ObjectModel
                 // Keeping $idShop at false means with redirection.
                 $idDefaultShop = Configuration::get('PS_SHOP_DEFAULT');
 
-                // Get this directly from the database to see '*automatic*'.
-                $sql = 'SELECT domain, domain_ssl
-                        FROM '._DB_PREFIX_.'shop_url
-                        WHERE id_shop = \''.pSQL($idDefaultShop).'\'';
-
-                $result = Db::getInstance()->executeS($sql);
-
-                if (Configuration::get('PS_SSL_ENABLED')) {
-                    if ($result[0]['domain_ssl'] === '*automatic*') {
-                        $idShop = $idDefaultShop;
-                    }
-                } else {
-                    if ($result[0]['domain'] === '*automatic*') {
-                        $idShop = $idDefaultShop;
+                foreach (ShopUrl::get() as $url) {
+                    if ($url['id_shop'] == $idDefaultShop && $url['main']) {
+                        if (Configuration::get('PS_SSL_ENABLED')) {
+                            if ($url['domain_ssl'] === '*automatic*') {
+                                $idShop = $idDefaultShop;
+                            }
+                        } else {
+                            if ($url['domain'] === '*automatic*') {
+                                $idShop = $idDefaultShop;
+                            }
+                        }
                     }
                 }
             }
