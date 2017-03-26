@@ -227,12 +227,15 @@ class ShopUrlCore extends ObjectFileModel
     }
 
     /**
+     * Test wether a combination of domain, physical URI and virtual URI
+     * exists already.
+     *
      * @param $domain
      * @param $domainSsl
      * @param $physicalUri
      * @param $virtualUri
      *
-     * @return false|null|string
+     * @return bool True = URL exists already, false = URL doesn't exit yet.
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -252,14 +255,18 @@ class ShopUrlCore extends ObjectFileModel
             $virtualUri = preg_replace('#/+#', '/', trim($virtualUri, '/')).'/';
         }
 
-        $sql = 'SELECT id_shop_url
-				FROM '._DB_PREFIX_.'shop_url
-				WHERE physical_uri = \''.pSQL($physicalUri).'\'
-					AND virtual_uri = \''.pSQL($virtualUri).'\'
-					AND (domain = \''.pSQL($domain).'\' '.(($domainSsl) ? ' OR domain_ssl = \''.pSQL($domainSsl).'\'' : '').')'
-            .($this->id ? ' AND id_shop_url != '.(int) $this->id : '');
+        $exists = false;
+        foreach (static::getStorage() as $url) {
+            if ($url['physical_uri'] === $physicalUri &&
+                $url['virtual_uri'] === $virtualUri &&
+                ($url['domain'] === $domain || $url['domain_ssl'] === $domainSsl)) {
 
-        return Db::getInstance()->getValue($sql);
+                $exists = true;
+                break;
+            }
+        }
+
+        return $exists;
     }
 
     /**
