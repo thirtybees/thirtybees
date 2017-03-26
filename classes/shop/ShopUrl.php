@@ -176,20 +176,27 @@ class ShopUrlCore extends ObjectFileModel
     }
 
     /**
-     * Get list of shop urls
+     * Get list of shop urls. For getting just the data, use ShopUrl::get().
      *
-     * @param bool $idShop
+     * @param bool|int $idShop
      *
-     * @return PrestaShopCollection Collection of ShopUrl
+     * @return array Array of ShopUrl objects.
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @version 1.1.0 Return array instead of a PrestaShopCollection.
      */
     public static function getShopUrls($idShop = false)
     {
-        $urls = new PrestaShopCollection('ShopUrl');
-        if ($idShop) {
-            $urls->where('id_shop', '=', $idShop);
+        global $shopUrlConfig;
+
+        $urls = [];
+        if (is_array($shopUrlConfig)) {
+            foreach ($shopUrlConfig as $id => $url) {
+                if (!$idShop || $url['id_shop'] == $idShop) {
+                    $urls[] = new ShopUrl($id);
+                }
+            }
         }
 
         return $urls;
