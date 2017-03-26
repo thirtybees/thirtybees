@@ -289,27 +289,33 @@ class ShopUrlCore extends ObjectFileModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function cacheMainDomainForShop($idShop)
+    public static function cacheMainDomainForShop($idShop = null)
     {
-        if (!isset(static::$main_domain_ssl[(int) $idShop]) || !isset(static::$main_domain[(int) $idShop])) {
-            $row = Db::getInstance()->getRow(
-                '
-			SELECT domain, domain_ssl
-			FROM '._DB_PREFIX_.'shop_url
-			WHERE main = 1
-			AND id_shop = '.($idShop !== null ? (int) $idShop : (int) Context::getContext()->shop->id)
-            );
+        global $shopUrlConfig;
 
-            // Adjust automatic values.
-            if ($row['domain'] === '*automatic*') {
-                static::$main_domain[(int)$idShop] = $_SERVER['HTTP_HOST'];
-            } else {
-                static::$main_domain[(int)$idShop] = $row['domain'];
+        if (is_array($shopUrlConfig) &&
+            (!isset(static::$main_domain_ssl[(int) $idShop]) ||
+             !isset(static::$main_domain[(int) $idShop]))) {
+            $idShopNotNull = $idShop;
+            if ($idShopNotNull === null) {
+                $idShopNotNull = Context::getContext()->shop->id;
             }
-            if ($row['domain_ssl'] === '*automatic*') {
-                static::$main_domain_ssl[(int)$idShop] = $_SERVER['HTTP_HOST'];
-            } else {
-                static::$main_domain_ssl[(int)$idShop] = $row['domain_ssl'];
+
+            foreach ($shopUrlConfig as $url) {
+                if ($url['id_shop'] == $idShopNotNull && $url['main']) {
+                    // Adjust automatic values.
+                    if ($url['domain'] === '*automatic*') {
+                        static::$main_domain[(int)$idShop] = $_SERVER['HTTP_HOST'];
+                    } else {
+                        static::$main_domain[(int)$idShop] = $url['domain'];
+                    }
+                    if ($url['domain_ssl'] === '*automatic*') {
+                        static::$main_domain_ssl[(int)$idShop] = $_SERVER['HTTP_HOST'];
+                    } else {
+                        static::$main_domain_ssl[(int)$idShop] = $url['domain_ssl'];
+                    }
+                    break;
+                }
             }
         }
     }
