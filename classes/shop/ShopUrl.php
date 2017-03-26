@@ -210,21 +210,28 @@ class ShopUrlCore extends ObjectFileModel
      */
     public function setMain()
     {
-        $res = Db::getInstance()->update('shop_url', ['main' => 0], 'id_shop = '.(int) $this->id_shop);
-        $res &= Db::getInstance()->update('shop_url', ['main' => 1], 'id_shop_url = '.(int) $this->id);
+        global $shopUrlConfig;
+
+        $res = false;
+        if (is_array($shopUrlConfig)) {
+            foreach ($shopUrlConfig as $id => &$url) {
+                if ($url['id_shop'] == $this->id_shop) {
+                    if ($id == $this->id) {
+                        $url['main'] = 1;
+                        $res = true;
+                    } else {
+                        $url['main'] = 0;
+                    }
+                }
+            }
+            unset($url);
+        }
         $this->main = true;
 
-        // Reset main URL for all shops to prevent problems
-        $sql = 'SELECT s1.id_shop_url FROM '._DB_PREFIX_.'shop_url s1
-				WHERE (
-					SELECT COUNT(*) FROM '._DB_PREFIX_.'shop_url s2
-					WHERE s2.main = 1
-					AND s2.id_shop = s1.id_shop
-				) = 0
-				GROUP BY s1.id_shop';
-        foreach (Db::getInstance()->executeS($sql) as $row) {
-            Db::getInstance()->update('shop_url', ['main' => 1], 'id_shop_url = '.$row['id_shop_url']);
-        }
+        $this->write();
+        // Remove later. Comment out to see wether the code here actually works,
+        // or wether DB gets written by some other means we no longer want.
+        ShopUrl::push();
 
         return $res;
     }
