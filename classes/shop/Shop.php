@@ -680,12 +680,18 @@ class ShopCore extends ObjectModel
      */
     public function getUrls()
     {
-        $sql = 'SELECT *
-				FROM '._DB_PREFIX_.'shop_url
-				WHERE active = 1
-					AND id_shop = '.(int) $this->id;
+        $result = ShopUrl::getStorage();
+        foreach ($result as $id => &$url) {
+            // Remove the ones we don't need.
+            if ($url['id_shop'] != $this->id || !$url['active']) {
+                unset($result[$id]);
+            } else {
+                $url['id_shop_url'] = $id;
+            }
+        }
+        unset($url);
 
-        return Db::getInstance()->executeS($sql);
+        return $result;
     }
 
     /**
