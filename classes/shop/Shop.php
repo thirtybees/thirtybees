@@ -826,12 +826,10 @@ class ShopCore extends ObjectModel
             $where .= 'AND es.id_employee = '.(int) $employee->id;
         }
 
-        $sql = 'SELECT gs.*, s.*, gs.name AS group_name, s.name AS shop_name, s.active, su.domain, su.domain_ssl, su.physical_uri, su.virtual_uri
+        $sql = 'SELECT gs.*, s.*, gs.name AS group_name, s.name AS shop_name, s.active
 				FROM '._DB_PREFIX_.'shop_group gs
 				LEFT JOIN '._DB_PREFIX_.'shop s
 					ON s.id_shop_group = gs.id_shop_group
-				LEFT JOIN '._DB_PREFIX_.'shop_url su
-					ON s.id_shop = su.id_shop AND su.main = 1
 				'.$from.'
 				WHERE s.deleted = 0
 					AND gs.deleted = 0
@@ -851,17 +849,30 @@ class ShopCore extends ObjectModel
                     ];
                 }
 
-                static::$shops[$row['id_shop_group']]['shops'][$row['id_shop']] = [
+                // Find matching main URL.
+                foreach (ShopUrl::getStorage() as $url) {
+                    if ($url['id_shop'] == $row['id_shop'] && $url['main']) {
+                        break;
+                    }
+                    unset($url);
+                }
+
+                $dest = &static::$shops[$row['id_shop_group']]['shops'][$row['id_shop']];
+                $dest = [
                     'id_shop'       => $row['id_shop'],
                     'id_shop_group' => $row['id_shop_group'],
                     'name'          => $row['shop_name'],
                     'id_theme'      => $row['id_theme'],
                     'id_category'   => $row['id_category'],
-                    'domain'        => $row['domain'],
-                    'domain_ssl'    => $row['domain_ssl'],
-                    'uri'           => $row['physical_uri'].$row['virtual_uri'],
                     'active'        => $row['active'],
                 ];
+                if (isset($url)) {
+                    $dest += [
+                        'domain'     => $url['domain'],
+                        'domain_ssl' => $url['domain_ssl'],
+                        'uri'        => $url['physical_uri'].$url['virtual_uri'],
+                    ];
+                }
             }
         }
     }
