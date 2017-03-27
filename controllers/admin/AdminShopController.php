@@ -830,12 +830,27 @@ class AdminShopControllerCore extends AdminController
     public function ajaxProcessTree()
     {
         $tree = [];
-        $sql = 'SELECT g.id_shop_group, g.name as group_name, s.id_shop, s.name as shop_name, u.id_shop_url, u.domain, u.physical_uri, u.virtual_uri
+        $sql = 'SELECT g.id_shop_group, g.name as group_name, s.id_shop, s.name as shop_name
 				FROM '._DB_PREFIX_.'shop_group g
 				LEFT JOIN  '._DB_PREFIX_.'shop s ON g.id_shop_group = s.id_shop_group
-				LEFT JOIN  '._DB_PREFIX_.'shop_url u ON u.id_shop = s.id_shop
-				ORDER BY g.name, s.name, u.domain';
-        $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+				ORDER BY g.name, s.name';
+        $shopResults = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+
+        // Add URLs and duplicate shops with mutliple URLs.
+        $results = [];
+        $allUrls = ShopUrl::getStorage();
+        foreach ($shopResults as $shop) {
+            foreach ($allUrls as $id => $url) {
+                if ($shop['id_shop'] == $url['id_shop']) {
+                    $shop['id_shop_url'] = $id;
+                    $shop['domain'] = $url['domain'];
+                    $shop['physical_uri'] = $url['physical_uri'];
+                    $shop['virtual_uri'] = $url['virtual_uri'];
+                    $results[] = $shop;
+                }
+            }
+        }
+
         foreach ($results as $row) {
             $idShopGroup = $row['id_shop_group'];
             $idShop = $row['id_shop'];
