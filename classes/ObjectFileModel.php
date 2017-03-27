@@ -228,9 +228,6 @@ abstract class ObjectFileModelCore extends ObjectModel
         // Array insertion.
         $shopUrlConfig[$newId] = $fields;
         $result = $this->write();
-        // Remove later. Comment out to see wether the code here actually works,
-        // or wether DB gets written by some other means we no longer want.
-        ShopUrl::push();
 
         $this->id = $newId;
 
@@ -291,9 +288,6 @@ abstract class ObjectFileModelCore extends ObjectModel
         unset($fields[$this->def['primary']]); // Set by getFields(), but not needed.
         $shopUrlConfig[$this->id] = $fields;
         $result = static::write();
-        // Remove later. Comment out to see wether the code here actually works,
-        // or wether DB gets written by some other means we no longer want.
-        ShopUrl::push();
 
         /* Associations, multilingual fields not yet implemented. */
 
@@ -327,9 +321,6 @@ abstract class ObjectFileModelCore extends ObjectModel
             unset($shopUrlConfig[$this->id]);
         }
         $result = $this->write();
-        // Remove later. Comment out to see wether the code here actually works,
-        // or wether DB gets written by some other means we no longer want.
-        ShopUrl::push();
 
         // @hook actionObject*DeleteAfter
         Hook::exec('actionObjectDeleteAfter', ['object' => $this]);
