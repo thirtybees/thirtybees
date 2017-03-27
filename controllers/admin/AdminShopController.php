@@ -243,14 +243,12 @@ class AdminShopControllerCore extends AdminController
         $this->addRowAction('edit');
         $this->addRowAction('delete');
 
-        $this->_select = 'gs.name shop_group_name, cl.name category_name, CONCAT(\'http://\', su.domain, su.physical_uri, su.virtual_uri) AS url';
+        $this->_select = 'gs.name shop_group_name, cl.name category_name';
         $this->_join = '
 			LEFT JOIN `'._DB_PREFIX_.'shop_group` gs
 				ON (a.id_shop_group = gs.id_shop_group)
 			LEFT JOIN `'._DB_PREFIX_.'category_lang` cl
 				ON (a.id_category = cl.id_category AND cl.id_lang='.(int) $this->context->language->id.')
-			LEFT JOIN '._DB_PREFIX_.'shop_url su
-				ON a.id_shop = su.id_shop AND su.main = 1
 		';
         $this->_group = 'GROUP BY a.id_shop';
 
@@ -362,15 +360,28 @@ class AdminShopControllerCore extends AdminController
         }
 
         parent::getList($idLang, $orderBy, $orderWay, $start, $limit, $idLangShop);
-        $shopDeleteList = [];
 
         // don't allow to remove shop which have dependencies (customers / orders / ... )
+        $shopDeleteList = [];
         foreach ($this->_list as &$shop) {
             if (Shop::hasDependency($shop['id_shop'])) {
                 $shopDeleteList[] = $shop['id_shop'];
             }
         }
         $this->context->smarty->assign('shops_having_dependencies', $shopDeleteList);
+
+        // Add URLs.
+        $allUrls = ShopUrl::get();
+        foreach ($this->_list as &$shop) {
+            foreach ($allUrls as $url) {
+                if ($shop['id_shop'] == $url['id_shop'] && $url['main']) {
+                    $shop['url']  = 'http://'. $url['domain'];
+                    $shop['url'] .= $url['physical_uri'].$url['virtual_uri'];
+                    break;
+                }
+            }
+        }
+        unset($shop);
     }
 
     /**
