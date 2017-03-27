@@ -237,9 +237,6 @@ abstract class ObjectFileModelCore extends ObjectModel
         // Array insertion.
         $storage[$newId] = $fields;
         $result = static::writeStorage($storage);
-        // Remove later. Comment out to see wether the code here actually works,
-        // or wether DB gets written by some other means we no longer want.
-        ShopUrl::push($storage);
 
         $this->id = $newId;
 
@@ -297,9 +294,6 @@ abstract class ObjectFileModelCore extends ObjectModel
         $storage = static::getStorage();
         $storage[$this->id] = $fields;
         $result = static::writeStorage($storage);
-        // Remove later. Comment out to see wether the code here actually works,
-        // or wether DB gets written by some other means we no longer want.
-        ShopUrl::push($storage);
 
         /* Associations, multilingual fields not yet implemented. */
 
@@ -330,9 +324,6 @@ abstract class ObjectFileModelCore extends ObjectModel
         $storage = static::getStorage();
         unset($storage[$this->id]);
         $result = static::writeStorage($storage);
-        // Remove later. Comment out to see wether the code here actually works,
-        // or wether DB gets written by some other means we no longer want.
-        ShopUrl::push($storage);
 
         // @hook actionObject*DeleteAfter
         Hook::exec('actionObjectDeleteAfter', ['object' => $this]);

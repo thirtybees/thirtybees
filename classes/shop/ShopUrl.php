@@ -53,7 +53,15 @@ class ShopUrlCore extends ObjectFileModel
      * @see ObjectModel::$definition
      */
     public static $definition = [
-        'table'   => 'shop_url',
+        // Note: 'table' and 'primary' aren't really needed for file based
+        // storage. However, parent and related classes sometimes rely on the
+        // assumption of database based storage and also use these properties
+        // as kind of an identifier, so these properties are kept.
+        //
+        // For file based storage, we choose 'table' to be the variable name
+        // written to the file. 'primary' is replaced by the index of the table
+        // in that file.
+        'table'   => 'shopUrlConfig',
         'primary' => 'id_shop_url',
         'path'    => '/config/shop.inc.php',
         'fields'  => [
@@ -74,23 +82,6 @@ class ShopUrlCore extends ObjectFileModel
     ];
 
     /**
-     * Do the opposite of update(): forward $shopUrlConfig to the DB. Also
-     * expected to be temporary, only.
-     */
-    public static function push($storage)
-    {
-        // To make sure we also drop records no longer existing, we drop the
-        // entire table and write a fresh one. Performance is no issue here.
-        Db::getInstance()->delete('shop_url');
-
-        foreach ($storage as $key => $url) {
-            $url['id_shop_url'] = $key;
-
-            Db::getInstance()->insert('shop_url', $url);
-        }
-    }
-
-    /**
      * Deletes all URLs of a shop.
      *
      * @param string $idShop
@@ -109,9 +100,6 @@ class ShopUrlCore extends ObjectFileModel
         }
 
         static::writeStorage($storage);
-        // Remove later. Comment out to see wether the code here actually works,
-        // or wether DB gets written by some other means we no longer want.
-        ShopUrl::push($storage);
     }
 
     /**
@@ -219,9 +207,6 @@ class ShopUrlCore extends ObjectFileModel
         $this->main = true;
 
         static::writeStorage($storage);
-        // Remove later. Comment out to see wether the code here actually works,
-        // or wether DB gets written by some other means we no longer want.
-        ShopUrl::push($storage);
 
         return $res;
     }
