@@ -294,12 +294,12 @@ class ProductCore extends ObjectModel
             'available_later'           => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'IsGenericName', 'size' => 255],
         ],
         'associations'   => [
-            'manufacturer'     => ['type' => static::HAS_ONE],
-            'supplier'         => ['type' => static::HAS_ONE],
-            'default_category' => ['type' => static::HAS_ONE, 'field' => 'id_category_default', 'object' => 'Category'],
-            'tax_rules_group'  => ['type' => static::HAS_ONE],
-            'categories'       => ['type' => static::HAS_MANY, 'field' => 'id_category', 'object' => 'Category', 'association' => 'category_product'],
-            'stock_availables' => ['type' => static::HAS_MANY, 'field' => 'id_stock_available', 'object' => 'StockAvailable', 'association' => 'stock_availables'],
+            'manufacturer'     => ['type' => self::HAS_ONE],
+            'supplier'         => ['type' => self::HAS_ONE],
+            'default_category' => ['type' => self::HAS_ONE, 'field' => 'id_category_default', 'object' => 'Category'],
+            'tax_rules_group'  => ['type' => self::HAS_ONE],
+            'categories'       => ['type' => self::HAS_MANY, 'field' => 'id_category', 'object' => 'Category', 'association' => 'category_product'],
+            'stock_availables' => ['type' => self::HAS_MANY, 'field' => 'id_stock_available', 'object' => 'StockAvailable', 'association' => 'stock_availables'],
         ],
     ];
 
