@@ -52,11 +52,11 @@ class EncryptorCore
      */
     public static function getInstance()
     {
-        if (!self::$instance) {
-            self::$instance = new Encryptor();
+        if (!static::$instance) {
+            static::$instance = new Encryptor();
         }
 
-        return self::$instance;
+        return static::$instance;
     }
 
     /**

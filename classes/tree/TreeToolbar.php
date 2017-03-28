@@ -172,7 +172,7 @@ class TreeToolbarCore implements ITreeToolbarCore
     public function getTemplate()
     {
         if (!isset($this->_template)) {
-            $this->setTemplate(self::DEFAULT_TEMPLATE);
+            $this->setTemplate(static::DEFAULT_TEMPLATE);
         }
 
         return $this->_template;
@@ -203,7 +203,7 @@ class TreeToolbarCore implements ITreeToolbarCore
     {
         if (!isset($this->_template_directory)) {
             $this->_template_directory = $this->_normalizeDirectory(
-                self::DEFAULT_TEMPLATE_DIRECTORY
+                static::DEFAULT_TEMPLATE_DIRECTORY
             );
         }
 

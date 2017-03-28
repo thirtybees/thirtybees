@@ -73,7 +73,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
         $res = [];
         $first = array_pop($list);
         foreach ($first as $attribute) {
-            $tab = self::createCombinations($list);
+            $tab = static::createCombinations($list);
             foreach ($tab as $toAdd) {
                 $res[] = is_array($toAdd) ? array_merge($toAdd, [$attribute]) : [$toAdd, $attribute];
             }
@@ -159,8 +159,8 @@ class AdminAttributeGeneratorControllerCore extends AdminController
         } else {
             $tab = array_values(Tools::getValue('options'));
             if (count($tab) && Validate::isLoadedObject($this->product)) {
-                self::setAttributesImpacts($this->product->id, $tab);
-                $this->combinations = array_values(self::createCombinations($tab));
+                static::setAttributesImpacts($this->product->id, $tab);
+                $this->combinations = array_values(static::createCombinations($tab));
                 $values = array_values(array_map([$this, 'addAttribute'], $this->combinations));
 
                 // @since 1.5.0
@@ -258,7 +258,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
                 'combinations_size'         => count($this->combinations),
                 'product_name'              => $this->product->name[$this->context->language->id],
                 'product_reference'         => $this->product->reference,
-                'url_generator'             => self::$currentIndex.'&id_product='.(int) Tools::getValue('id_product').'&attributegenerator&token='.Tools::getValue('token'),
+                'url_generator'             => static::$currentIndex.'&id_product='.(int) Tools::getValue('id_product').'&attributegenerator&token='.Tools::getValue('token'),
                 'attribute_groups'          => $attributeGroups,
                 'attribute_js'              => $attributeJs,
                 'toolbar_btn'               => $this->toolbar_btn,

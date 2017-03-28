@@ -147,7 +147,7 @@ class AdminQuickAccessesControllerCore extends AdminController
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_quick_access'] = [
-                'href' => self::$currentIndex.'&addquick_access&token='.$this->token,
+                'href' => static::$currentIndex.'&addquick_access&token='.$this->token,
                 'desc' => $this->l('Add new quick access', null, null, false),
                 'icon' => 'process-icon-new',
             ];
@@ -303,7 +303,7 @@ class AdminQuickAccessesControllerCore extends AdminController
         if (Validate::isLoadedObject($object = $this->loadObject())) {
             /** @var QuickAccess $object */
             if ($object->toggleNewWindow()) {
-                $this->redirect_after = self::$currentIndex.'&conf=5&token='.$this->token;
+                $this->redirect_after = static::$currentIndex.'&conf=5&token='.$this->token;
             } else {
                 $this->errors[] = Tools::displayError('An error occurred while updating new window property.');
             }

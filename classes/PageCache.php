@@ -86,7 +86,7 @@ class PageCacheCore
             // Refresh the homepage
             $keysToInvalidate = array_merge(
                 $keysToInvalidate,
-                self::getKeysToInvalidate('index')
+                static::getKeysToInvalidate('index')
             );
 
             Db::getInstance()->delete(
@@ -105,7 +105,7 @@ class PageCacheCore
                         );
                         $keysToInvalidate = array_merge(
                             $keysToInvalidate,
-                            self::getKeysToInvalidate('category', $idCategory)
+                            static::getKeysToInvalidate('category', $idCategory)
                         );
                     }
                 }
@@ -117,14 +117,14 @@ class PageCacheCore
                 );
                 $keysToInvalidate = array_merge(
                     $keysToInvalidate,
-                    self::getKeysToInvalidate('category')
+                    static::getKeysToInvalidate('category')
                 );
             }
         }
 
         $keysToInvalidate = array_merge(
             $keysToInvalidate,
-            self::getKeysToInvalidate($entityType, $idEntity)
+            static::getKeysToInvalidate($entityType, $idEntity)
         );
         Db::getInstance()->delete(
             'page_cache',

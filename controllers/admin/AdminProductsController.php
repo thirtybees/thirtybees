@@ -591,7 +591,7 @@ class AdminProductsControllerCore extends AdminController
             if (!$productDownload->deleteFile((int) $idProductDownload)) {
                 $this->errors[] = Tools::displayError('Cannot delete file');
             } else {
-                $this->redirect_after = self::$currentIndex.'&id_product='.(int) Tools::getValue('id_product').'&updateproduct&key_tab=VirtualProduct&conf=1&token='.$this->token;
+                $this->redirect_after = static::$currentIndex.'&id_product='.(int) Tools::getValue('id_product').'&updateproduct&key_tab=VirtualProduct&conf=1&token='.$this->token;
             }
         }
 
@@ -777,7 +777,7 @@ class AdminProductsControllerCore extends AdminController
                     if (in_array($product->visibility, ['both', 'search']) && Configuration::get('PS_SEARCH_INDEXATION')) {
                         Search::indexation(false, $product->id);
                     }
-                    $this->redirect_after = self::$currentIndex.(Tools::getIsset('id_category') ? '&id_category='.(int) Tools::getValue('id_category') : '').'&conf=19&token='.$this->token;
+                    $this->redirect_after = static::$currentIndex.(Tools::getIsset('id_category') ? '&id_category='.(int) Tools::getValue('id_category') : '').'&conf=19&token='.$this->token;
                 }
             } else {
                 $this->errors[] = Tools::displayError('An error occurred while creating an object.');
@@ -818,7 +818,7 @@ class AdminProductsControllerCore extends AdminController
                         $idCategory = (int) Tools::getValue('id_category');
                         $categoryUrl = empty($idCategory) ? '' : '&id_category='.(int) $idCategory;
                         Logger::addLog(sprintf($this->l('%s deletion', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int) $object->id, true, (int) $this->context->employee->id);
-                        $this->redirect_after = self::$currentIndex.'&conf=1&token='.$this->token.$categoryUrl;
+                        $this->redirect_after = static::$currentIndex.'&conf=1&token='.$this->token.$categoryUrl;
                     } else {
                         $this->errors[] = Tools::displayError('An error occurred during deletion.');
                     }
@@ -889,12 +889,12 @@ class AdminProductsControllerCore extends AdminController
                     $productId = (int) Tools::getValue('id_product');
                     @unlink(_PS_TMP_IMG_DIR_.'product_'.$productId.'.jpg');
                     @unlink(_PS_TMP_IMG_DIR_.'product_mini_'.$productId.'_'.$this->context->shop->id.'.jpg');
-                    $this->redirect_after = self::$currentIndex.'&id_product='.$image->id_product.'&id_category='.(Tools::getIsset('id_category') ? '&id_category='.(int) Tools::getValue('id_category') : '').'&action=Images&addproduct'.'&token='.$this->token;
+                    $this->redirect_after = static::$currentIndex.'&id_product='.$image->id_product.'&id_category='.(Tools::getIsset('id_category') ? '&id_category='.(int) Tools::getValue('id_category') : '').'&action=Images&addproduct'.'&token='.$this->token;
                 }
             } elseif (Tools::getIsset('imgPosition') && Tools::getIsset('imgDirection')) {
                 /* Choose product image position */
                 $image->updatePosition(Tools::getValue('imgDirection'), Tools::getValue('imgPosition'));
-                $this->redirect_after = self::$currentIndex.'&id_product='.$image->id_product.'&id_category='.(Tools::getIsset('id_category') ? '&id_category='.(int) Tools::getValue('id_category') : '').'&add'.$this->table.'&action=Images&token='.$this->token;
+                $this->redirect_after = static::$currentIndex.'&id_product='.$image->id_product.'&id_category='.(Tools::getIsset('id_category') ? '&id_category='.(int) Tools::getValue('id_category') : '').'&add'.$this->table.'&action=Images&token='.$this->token;
             }
         } else {
             $this->errors[] = Tools::displayError('The image could not be found. ');
@@ -946,7 +946,7 @@ class AdminProductsControllerCore extends AdminController
             }
         }
         if (!count($this->errors)) {
-            $this->redirect_after = self::$currentIndex.'&id_product='.(int) (Tools::getValue('id_product')).(Tools::getIsset('id_category') ? '&id_category='.(int) Tools::getValue('id_category') : '').'&update'.$this->table.'&action=Prices&token='.$this->token;
+            $this->redirect_after = static::$currentIndex.'&id_product='.(int) (Tools::getValue('id_product')).(Tools::getIsset('id_category') ? '&id_category='.(int) Tools::getValue('id_category') : '').'&update'.$this->table.'&action=Prices&token='.$this->token;
         }
     }
 
@@ -1068,7 +1068,7 @@ class AdminProductsControllerCore extends AdminController
             if (Validate::isLoadedObject($category)) {
                 Hook::exec('actionCategoryUpdate', ['category' => $category]);
             }
-            $this->redirect_after = self::$currentIndex.'&'.$this->table.'Orderby=position&'.$this->table.'Orderway=asc&action=Customization&conf=5'.(($idCategory = (Tools::getIsset('id_category') ? (int) Tools::getValue('id_category') : '')) ? ('&id_category='.$idCategory) : '').'&token='.Tools::getAdminTokenLite('AdminProducts');
+            $this->redirect_after = static::$currentIndex.'&'.$this->table.'Orderby=position&'.$this->table.'Orderway=asc&action=Customization&conf=5'.(($idCategory = (Tools::getIsset('id_category') ? (int) Tools::getValue('id_category') : '')) ? ('&id_category='.$idCategory) : '').'&token='.Tools::getAdminTokenLite('AdminProducts');
         }
     }
 
@@ -1838,10 +1838,10 @@ class AdminProductsControllerCore extends AdminController
 
                 // Save and stay on same form
                 if ($this->display == 'edit') {
-                    $this->redirect_after = self::$currentIndex.'&id_product='.(int) $this->object->id.(Tools::getIsset('id_category') ? '&id_category='.(int) Tools::getValue('id_category') : '').'&updateproduct&conf=3&key_tab='.Tools::safeOutput(Tools::getValue('key_tab')).'&token='.$this->token;
+                    $this->redirect_after = static::$currentIndex.'&id_product='.(int) $this->object->id.(Tools::getIsset('id_category') ? '&id_category='.(int) Tools::getValue('id_category') : '').'&updateproduct&conf=3&key_tab='.Tools::safeOutput(Tools::getValue('key_tab')).'&token='.$this->token;
                 } else {
                     // Default behavior (save and back)
-                    $this->redirect_after = self::$currentIndex.(Tools::getIsset('id_category') ? '&id_category='.(int) Tools::getValue('id_category') : '').'&conf=3&token='.$this->token;
+                    $this->redirect_after = static::$currentIndex.(Tools::getIsset('id_category') ? '&id_category='.(int) Tools::getValue('id_category') : '').'&conf=3&token='.$this->token;
                 }
             } else {
                 $this->object->delete();
@@ -2432,12 +2432,12 @@ class AdminProductsControllerCore extends AdminController
                             // Save and stay on same form
                             if ($this->display == 'edit') {
                                 $this->confirmations[] = $this->l('Update successful');
-                                $this->redirect_after = self::$currentIndex.'&id_product='.(int) $this->object->id
+                                $this->redirect_after = static::$currentIndex.'&id_product='.(int) $this->object->id
                                     .(Tools::getIsset('id_category') ? '&id_category='.(int) Tools::getValue('id_category') : '')
                                     .'&updateproduct&conf=4&key_tab='.Tools::safeOutput(Tools::getValue('key_tab')).($page > 1 ? '&page='.(int) $page : '').'&token='.$this->token;
                             } else {
                                 // Default behavior (save and back)
-                                $this->redirect_after = self::$currentIndex.(Tools::getIsset('id_category') ? '&id_category='.(int) Tools::getValue('id_category') : '').'&conf=4'.($page > 1 ? '&submitFilterproduct='.(int) $page : '').'&token='.$this->token;
+                                $this->redirect_after = static::$currentIndex.(Tools::getIsset('id_category') ? '&id_category='.(int) Tools::getValue('id_category') : '').'&conf=4'.($page > 1 ? '&submitFilterproduct='.(int) $page : '').'&token='.$this->token;
                             }
                         }
                     } // if errors : stay on edit page
@@ -3140,7 +3140,7 @@ class AdminProductsControllerCore extends AdminController
             }
         } else {
             if ($idCategory = (int) $this->id_current_category) {
-                self::$currentIndex .= '&id_category='.(int) $this->id_current_category;
+                static::$currentIndex .= '&id_category='.(int) $this->id_current_category;
             }
 
             // If products from all categories are displayed, we don't want to use sorting by position
@@ -3159,14 +3159,14 @@ class AdminProductsControllerCore extends AdminController
             // Generate category selection tree
             $tree = new HelperTreeCategories('categories-tree', $this->l('Filter by category'));
             $tree->setAttribute('is_category_filter', (bool) $this->id_current_category)
-                ->setAttribute('base_url', preg_replace('#&id_category=[0-9]*#', '', self::$currentIndex).'&token='.$this->token)
+                ->setAttribute('base_url', preg_replace('#&id_category=[0-9]*#', '', static::$currentIndex).'&token='.$this->token)
                 ->setInputName('id-category')
                 ->setRootCategory(Category::getRootCategory()->id)
                 ->setSelectedCategories([(int) $idCategory]);
             $this->tpl_list_vars['category_tree'] = $tree->render();
 
             // used to build the new url when changing category
-            $this->tpl_list_vars['base_url'] = preg_replace('#&id_category=[0-9]*#', '', self::$currentIndex).'&token='.$this->token;
+            $this->tpl_list_vars['base_url'] = preg_replace('#&id_category=[0-9]*#', '', static::$currentIndex).'&token='.$this->token;
         }
         // @todo module free
         $this->tpl_form_vars['vat_number'] = file_exists(_PS_MODULE_DIR_.'vatnumber/ajax.php');
@@ -3284,7 +3284,7 @@ class AdminProductsControllerCore extends AdminController
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_product'] = [
-                'href' => self::$currentIndex.'&addproduct&token='.$this->token,
+                'href' => static::$currentIndex.'&addproduct&token='.$this->token,
                 'desc' => $this->l('Add new product', null, null, false),
                 'icon' => 'process-icon-new',
             ];
@@ -3418,7 +3418,7 @@ class AdminProductsControllerCore extends AdminController
 
         $this->tpl_form_vars['id_lang_default'] = Configuration::get('PS_LANG_DEFAULT');
 
-        $this->tpl_form_vars['currentIndex'] = self::$currentIndex;
+        $this->tpl_form_vars['currentIndex'] = static::$currentIndex;
         $this->tpl_form_vars['display_multishop_checkboxes'] = (Shop::isFeatureActive() && Shop::getContext() != Shop::CONTEXT_SHOP && $this->display == 'edit');
         $this->fields_form = [''];
 
@@ -3928,7 +3928,7 @@ class AdminProductsControllerCore extends AdminController
 						<td>'.$impact.'</td>
 						<td>'.$period.'</td>
 						<td>'.$specificPrice['from_quantity'].'</th>
-						<td>'.((!$rule->id && $canDeleteSpecificPrices) ? '<a class="btn btn-default" name="delete_link" href="'.self::$currentIndex.'&id_product='.(int) Tools::getValue('id_product').'&action=deleteSpecificPrice&id_specific_price='.(int) ($specificPrice['id_specific_price']).'&token='.Tools::getValue('token').'"><i class="icon-trash"></i></a>' : '').'</td>
+						<td>'.((!$rule->id && $canDeleteSpecificPrices) ? '<a class="btn btn-default" name="delete_link" href="'.static::$currentIndex.'&id_product='.(int) Tools::getValue('id_product').'&action=deleteSpecificPrice&id_specific_price='.(int) ($specificPrice['id_specific_price']).'&token='.Tools::getValue('token').'"><i class="icon-trash"></i></a>' : '').'</td>
 					</tr>';
                     $i++;
                     unset($customerFullName);
@@ -4659,7 +4659,7 @@ class AdminProductsControllerCore extends AdminController
      */
     public function ajaxProcessAddProductImage()
     {
-        self::$currentIndex = 'index.php?tab=AdminProducts';
+        static::$currentIndex = 'index.php?tab=AdminProducts';
         $product = new Product((int) Tools::getValue('id_product'));
         $legends = Tools::getValue('legend');
 
@@ -5059,7 +5059,7 @@ class AdminProductsControllerCore extends AdminController
         $helper->identifier = 'id_product_attribute';
         $helper->table_id = 'combinations-list';
         $helper->token = $this->token;
-        $helper->currentIndex = self::$currentIndex;
+        $helper->currentIndex = static::$currentIndex;
         $helper->no_link = true;
         $helper->simple_header = true;
         $helper->show_toolbar = false;
@@ -5715,14 +5715,14 @@ class AdminProductsControllerCore extends AdminController
     public function displayPreviewLink($token = null, $id, $name = null)
     {
         $tpl = $this->createTemplate('helpers/list/list_action_preview.tpl');
-        if (!array_key_exists('Bad SQL query', self::$cache_lang)) {
-            self::$cache_lang['Preview'] = $this->l('Preview', 'Helper');
+        if (!array_key_exists('Bad SQL query', static::$cache_lang)) {
+            static::$cache_lang['Preview'] = $this->l('Preview', 'Helper');
         }
 
         $tpl->assign(
             [
                 'href'   => $this->getPreviewUrl(new Product((int) $id)),
-                'action' => self::$cache_lang['Preview'],
+                'action' => static::$cache_lang['Preview'],
             ]
         );
 
@@ -5783,7 +5783,7 @@ class AdminProductsControllerCore extends AdminController
                     if ($success) {
                         $id_category = (int) Tools::getValue('id_category');
                         $category_url = empty($id_category) ? '' : '&id_category='.(int) $id_category;
-                        $this->redirect_after = self::$currentIndex.'&conf=2&token='.$this->token.$category_url;
+                        $this->redirect_after = static::$currentIndex.'&conf=2&token='.$this->token.$category_url;
                     } else {
                         $this->errors[] = Tools::displayError('An error occurred while deleting this selection.');
                     }

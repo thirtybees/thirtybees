@@ -169,7 +169,7 @@ class EmployeeCore extends ObjectModel
     {
         $sql = new DbQuery();
         $sql->select('`id_employee`, `firstname`, `lastname`');
-        $sql->from(bqSQL(self::$definition['table']));
+        $sql->from(bqSQL(static::$definition['table']));
         if ($activeOnly) {
             $sql->where('`active` = 1');
         }
@@ -213,7 +213,7 @@ class EmployeeCore extends ObjectModel
     {
         $sql = new DbQuery();
         $sql->select('*');
-        $sql->from(bqSQL(self::$definition['table']));
+        $sql->from(bqSQL(static::$definition['table']));
         $sql->where('`id_profile` = '.(int) $idProfile);
         if ($activeOnly) {
             $sql->where('`active` = 1');
@@ -406,7 +406,7 @@ class EmployeeCore extends ObjectModel
             if ($result) {
                 $newHash = Tools::hash($plainTextPassword);
                 Db::getInstance()->update(
-                    bqSQL(self::$definition['table']),
+                    bqSQL(static::$definition['table']),
                     [
                         'passwd' => pSQL($newHash),
                     ],
@@ -469,7 +469,7 @@ class EmployeeCore extends ObjectModel
     {
         $sql = new DbQuery();
         $sql->select('COUNT(*)');
-        $sql->from(bqSQL(self::$definition['table']));
+        $sql->from(bqSQL(static::$definition['table']));
         $sql->where('`id_profile` = '.(int) $idProfile);
         if ($activeOnly) {
             $sql->where('`active` = 1');

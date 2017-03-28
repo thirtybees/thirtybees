@@ -89,13 +89,13 @@ class UrlRewriteCore extends Objectmodel
         $idLang = null,
         $idShop = null,
         array $entities = [
-            self::ENTITY_PRODUCT,
-            self::ENTITY_CATEGORY,
-            self::ENTITY_SUPPLIER,
-            self::ENTITY_MANUFACTURER,
-            self::ENTITY_CMS,
-            self::ENTITY_CMS_CATEGORY,
-            self::ENTITY_PAGE,
+            static::ENTITY_PRODUCT,
+            static::ENTITY_CATEGORY,
+            static::ENTITY_SUPPLIER,
+            static::ENTITY_MANUFACTURER,
+            static::ENTITY_CMS,
+            static::ENTITY_CMS_CATEGORY,
+            static::ENTITY_PAGE,
         ]
     ) {
         if ($idShop) {
@@ -117,32 +117,32 @@ class UrlRewriteCore extends Objectmodel
         foreach ($idShops as $idShop) {
             $newRoutes[$idShop] = [];
             foreach ($idLangs as $idLang) {
-                self::getRoutes($idLang, $idShop, $newRoutes);
+                static::getRoutes($idLang, $idShop, $newRoutes);
 
-                if (in_array(self::ENTITY_PRODUCT, $entities)) {
-                    $categoryInfo = self::getCategoryInfo($idLang, $idShop);
-                    self::generateProductUrlRewrites($idLang, $idShop, $categoryInfo, $newRoutes);
+                if (in_array(static::ENTITY_PRODUCT, $entities)) {
+                    $categoryInfo = static::getCategoryInfo($idLang, $idShop);
+                    static::generateProductUrlRewrites($idLang, $idShop, $categoryInfo, $newRoutes);
                 }
-                if (in_array(self::ENTITY_CATEGORY, $entities)) {
-                    $categoryInfo = self::getCategoryInfo($idLang, $idShop);
-                    self::generateCategoryUrlRewrites($idLang, $idShop, $categoryInfo, $newRoutes);
+                if (in_array(static::ENTITY_CATEGORY, $entities)) {
+                    $categoryInfo = static::getCategoryInfo($idLang, $idShop);
+                    static::generateCategoryUrlRewrites($idLang, $idShop, $categoryInfo, $newRoutes);
                 }
-                if (in_array(self::ENTITY_SUPPLIER, $entities)) {
-                    self::generateSupplierUrlRewrites($idLang, $idShop, $newRoutes);
+                if (in_array(static::ENTITY_SUPPLIER, $entities)) {
+                    static::generateSupplierUrlRewrites($idLang, $idShop, $newRoutes);
                 }
-                if (in_array(self::ENTITY_MANUFACTURER, $entities)) {
-                    self::generateManufacturerUrlRewrites($idLang, $idShop, $newRoutes);
+                if (in_array(static::ENTITY_MANUFACTURER, $entities)) {
+                    static::generateManufacturerUrlRewrites($idLang, $idShop, $newRoutes);
                 }
-                if (in_array(self::ENTITY_CMS, $entities)) {
-                    $cmsCategoryInfo = self::getCmsCategoryInfo($idLang, $idShop);
-                    self::generateCmsUrlRewrites($idLang, $idShop, $cmsCategoryInfo, $newRoutes);
+                if (in_array(static::ENTITY_CMS, $entities)) {
+                    $cmsCategoryInfo = static::getCmsCategoryInfo($idLang, $idShop);
+                    static::generateCmsUrlRewrites($idLang, $idShop, $cmsCategoryInfo, $newRoutes);
                 }
-                if (in_array(self::ENTITY_CMS_CATEGORY, $entities)) {
-                    $cmsCategoryInfo = self::getCmsCategoryInfo($idLang, $idShop);
-                    self::generateCmsCategoryUrlRewrites($idLang, $idShop, $cmsCategoryInfo, $newRoutes);
+                if (in_array(static::ENTITY_CMS_CATEGORY, $entities)) {
+                    $cmsCategoryInfo = static::getCmsCategoryInfo($idLang, $idShop);
+                    static::generateCmsCategoryUrlRewrites($idLang, $idShop, $cmsCategoryInfo, $newRoutes);
                 }
-                if (in_array(self::ENTITY_PRODUCT, $entities)) {
-                    self::generatePageUrlRewrites($idLang, $idShop);
+                if (in_array(static::ENTITY_PRODUCT, $entities)) {
+                    static::generatePageUrlRewrites($idLang, $idShop);
                 }
             }
         }
@@ -181,30 +181,30 @@ class UrlRewriteCore extends Objectmodel
         foreach ($idShops as $idShop) {
             $newRoutes[$idShop] = [];
             foreach ($idLangs as $idLang) {
-                self::getRoutes($idLang, $idShop, $newRoutes);
+                static::getRoutes($idLang, $idShop, $newRoutes);
 
                 switch ($entityType) {
-                    case self::ENTITY_PRODUCT:
-                        $categoryInfo = self::getCategoryInfo($idLang, $idShop);
-                        self::generateProductUrlRewrites($idLang, $idShop, $categoryInfo, $newRoutes, $idEntity);
+                    case static::ENTITY_PRODUCT:
+                        $categoryInfo = static::getCategoryInfo($idLang, $idShop);
+                        static::generateProductUrlRewrites($idLang, $idShop, $categoryInfo, $newRoutes, $idEntity);
                         break;
-                    case self::ENTITY_CATEGORY:
-                        $categoryInfo = self::getCategoryInfo($idLang, $idShop);
-                        self::generateCategoryUrlRewrites($idLang, $idShop, $categoryInfo, $newRoutes, $idEntity);
+                    case static::ENTITY_CATEGORY:
+                        $categoryInfo = static::getCategoryInfo($idLang, $idShop);
+                        static::generateCategoryUrlRewrites($idLang, $idShop, $categoryInfo, $newRoutes, $idEntity);
                         break;
-                    case self::ENTITY_SUPPLIER:
-                        self::generateSupplierUrlRewrites($idLang, $idShop, $newRoutes, $idEntity);
+                    case static::ENTITY_SUPPLIER:
+                        static::generateSupplierUrlRewrites($idLang, $idShop, $newRoutes, $idEntity);
                         break;
-                    case self::ENTITY_MANUFACTURER:
-                        self::generateManufacturerUrlRewrites($idLang, $idShop, $newRoutes, $idEntity);
+                    case static::ENTITY_MANUFACTURER:
+                        static::generateManufacturerUrlRewrites($idLang, $idShop, $newRoutes, $idEntity);
                         break;
-                    case self::ENTITY_CMS:
-                        $cmsCategoryInfo = self::getCmsCategoryInfo($idLang, $idShop);
-                        self::generateCmsUrlRewrites($idLang, $idShop, $cmsCategoryInfo, $newRoutes, $idEntity);
+                    case static::ENTITY_CMS:
+                        $cmsCategoryInfo = static::getCmsCategoryInfo($idLang, $idShop);
+                        static::generateCmsUrlRewrites($idLang, $idShop, $cmsCategoryInfo, $newRoutes, $idEntity);
                         break;
-                    case self::ENTITY_CMS_CATEGORY:
-                        $cmsCategoryInfo = self::getCmsCategoryInfo($idLang, $idShop);
-                        self::generateCmsCategoryUrlRewrites($idLang, $idShop, $cmsCategoryInfo, $newRoutes, $idEntity);
+                    case static::ENTITY_CMS_CATEGORY:
+                        $cmsCategoryInfo = static::getCmsCategoryInfo($idLang, $idShop);
+                        static::generateCmsCategoryUrlRewrites($idLang, $idShop, $cmsCategoryInfo, $newRoutes, $idEntity);
                         break;
                     default:
                         continue;
@@ -261,7 +261,7 @@ class UrlRewriteCore extends Objectmodel
      */
     public static function deleteUrlRewrites($entityType, $idLang, $idShop, $idEntity = null)
     {
-        Db::getInstance()->delete(bqSQL(self::$definition['table']), '`entity` = '.(int) $entityType.' AND `id_lang` = '.(int) $idLang.' AND `id_shop` = '.(int) $idShop.($idEntity ? ' AND `id_entity` = '.(int) $idEntity : ''));
+        Db::getInstance()->delete(bqSQL(static::$definition['table']), '`entity` = '.(int) $entityType.' AND `id_lang` = '.(int) $idLang.' AND `id_shop` = '.(int) $idShop.($idEntity ? ' AND `id_entity` = '.(int) $idEntity : ''));
     }
 
     /**
@@ -282,7 +282,7 @@ class UrlRewriteCore extends Objectmodel
             $delete .= ' AND `id_shop` = '.(int) $idShop;
         }
 
-        Db::getInstance()->delete(bqSQL(self::$definition['table']), $delete);
+        Db::getInstance()->delete(bqSQL(static::$definition['table']), $delete);
     }
 
     /**
@@ -300,7 +300,7 @@ class UrlRewriteCore extends Objectmodel
     {
         $sql = new DbQuery();
         $sql->select('`id_entity`, `entity`, `rewrite`, `redirect`');
-        $sql->from(bqSQL(self::$definition['table']));
+        $sql->from(bqSQL(static::$definition['table']));
         $sql->where('`id_lang` = '.(int) $idLang);
         $sql->where('`id_shop` = '.(int) $idShop);
         $sql->where('`rewrite` = \''.pSQL($rewrite).'\'');
@@ -340,7 +340,7 @@ class UrlRewriteCore extends Objectmodel
     {
         $sql = new DbQuery();
         $sql->select('`rewrite`');
-        $sql->from(bqSQL(self::$definition['table']));
+        $sql->from(bqSQL(static::$definition['table']));
         $sql->where('`id_entity` = '.(int) $idEntity);
         $sql->where('`entity` = '.(int) $entityType);
         $sql->where('`id_lang` = '.(int) $idLang);
@@ -440,16 +440,16 @@ class UrlRewriteCore extends Objectmodel
     protected static function generateProductUrlRewrites($idLang, $idShop, $categories, $newRoutes, $idEntity = null)
     {
         $usedKeys = [
-            'id'            => self::hasKeyword($newRoutes[$idShop][$idLang][self::ENTITY_PRODUCT], 'id'),
+            'id'            => static::hasKeyword($newRoutes[$idShop][$idLang][static::ENTITY_PRODUCT], 'id'),
             'rewrite'       => true,
-            'ean13'         => self::hasKeyword($newRoutes[$idShop][$idLang][self::ENTITY_PRODUCT], 'ean13'),
-            'category'      => self::hasKeyword($newRoutes[$idShop][$idLang][self::ENTITY_PRODUCT], 'category'),
-            'categories'    => self::hasKeyword($newRoutes[$idShop][$idLang][self::ENTITY_PRODUCT], 'categories'),
-            'reference'     => self::hasKeyword($newRoutes[$idShop][$idLang][self::ENTITY_PRODUCT], 'reference'),
-            'meta_keywords' => self::hasKeyword($newRoutes[$idShop][$idLang][self::ENTITY_PRODUCT], 'meta_keywords'),
-            'meta_title'    => self::hasKeyword($newRoutes[$idShop][$idLang][self::ENTITY_PRODUCT], 'meta_title'),
-            'manufacturer'  => self::hasKeyword($newRoutes[$idShop][$idLang][self::ENTITY_PRODUCT], 'manufacturer'),
-            'supplier'      => self::hasKeyword($newRoutes[$idShop][$idLang][self::ENTITY_PRODUCT], 'supplier'),
+            'ean13'         => static::hasKeyword($newRoutes[$idShop][$idLang][static::ENTITY_PRODUCT], 'ean13'),
+            'category'      => static::hasKeyword($newRoutes[$idShop][$idLang][static::ENTITY_PRODUCT], 'category'),
+            'categories'    => static::hasKeyword($newRoutes[$idShop][$idLang][static::ENTITY_PRODUCT], 'categories'),
+            'reference'     => static::hasKeyword($newRoutes[$idShop][$idLang][static::ENTITY_PRODUCT], 'reference'),
+            'meta_keywords' => static::hasKeyword($newRoutes[$idShop][$idLang][static::ENTITY_PRODUCT], 'meta_keywords'),
+            'meta_title'    => static::hasKeyword($newRoutes[$idShop][$idLang][static::ENTITY_PRODUCT], 'meta_title'),
+            'manufacturer'  => static::hasKeyword($newRoutes[$idShop][$idLang][static::ENTITY_PRODUCT], 'manufacturer'),
+            'supplier'      => static::hasKeyword($newRoutes[$idShop][$idLang][static::ENTITY_PRODUCT], 'supplier'),
         ];
 
 
@@ -506,7 +506,7 @@ class UrlRewriteCore extends Objectmodel
                     $categoryRewrite = '';
                     $idCategory = (int) $productInfo['id_category_default'];
                     $depth = 0;
-                    while ($idCategory && $depth < self::MAX_CATEGORY_DEPTH && $categories[$idCategory]['rewrite']) {
+                    while ($idCategory && $depth < static::MAX_CATEGORY_DEPTH && $categories[$idCategory]['rewrite']) {
                         $categoryRewrite = '/'.$categories[$idCategory]['rewrite'].$categoryRewrite;
                         $idCategory = (int) $categories[$idCategory]['id_parent'];
                         $depth++;
@@ -520,16 +520,16 @@ class UrlRewriteCore extends Objectmodel
         for ($i = 0; $i < count($productInfos); $i++) {
             $insert[] = [
                 'id_entity' => $productInfos[$i]['id'],
-                'entity' => self::ENTITY_PRODUCT,
-                'rewrite' => self::createBaseUrl($newRoutes[$idShop][$idLang][self::ENTITY_PRODUCT], $productInfos[$i]),
+                'entity' => static::ENTITY_PRODUCT,
+                'rewrite' => static::createBaseUrl($newRoutes[$idShop][$idLang][static::ENTITY_PRODUCT], $productInfos[$i]),
                 'id_shop' => $idShop,
                 'id_lang' => $idLang,
-                'redirect' => self::CANONICAL,
+                'redirect' => static::CANONICAL,
             ];
         }
 
-        self::deleteUrlRewrites(self::ENTITY_PRODUCT, $idLang, $idShop, $idEntity);
-        Db::getInstance()->insert(bqSQL(self::$definition['table']), $insert);
+        static::deleteUrlRewrites(static::ENTITY_PRODUCT, $idLang, $idShop, $idEntity);
+        Db::getInstance()->insert(bqSQL(static::$definition['table']), $insert);
     }
 
     /**
@@ -544,7 +544,7 @@ class UrlRewriteCore extends Objectmodel
     protected static function generateCategoryUrlRewrites($idLang, $idShop, $categories, &$newRoutes, $idEntity = null)
     {
         $filterCategories = [(int) Configuration::get('PS_HOME_CATEGORY', null, null, $idShop), (int) Configuration::get('PS_ROOT_CATEGORY', null, null, $idShop)];
-        if (self::hasKeyword($newRoutes[$idShop][$idLang][self::ENTITY_CATEGORY], 'categories')) {
+        if (static::hasKeyword($newRoutes[$idShop][$idLang][static::ENTITY_CATEGORY], 'categories')) {
             foreach ($categories as $key => &$category) {
                 if ($idEntity && $idEntity !== $category['id']) {
                     unset($categories[$key]);
@@ -557,7 +557,7 @@ class UrlRewriteCore extends Objectmodel
                 $idCategory = (int) $category['id_parent'];
                 $depth = 0;
                 $path = [];
-                while ($idCategory && !in_array($idCategory, $filterCategories) && $depth < self::MAX_CATEGORY_DEPTH && $categories[$idCategory]['rewrite']) {
+                while ($idCategory && !in_array($idCategory, $filterCategories) && $depth < static::MAX_CATEGORY_DEPTH && $categories[$idCategory]['rewrite']) {
                     $categoryRewrite = $categories[$idCategory]['rewrite'].'/'.$categoryRewrite;
                     $idCategory = (int) $categories[$idCategory]['id_parent'];
                     $path[] = $idCategory;
@@ -576,16 +576,16 @@ class UrlRewriteCore extends Objectmodel
         foreach ($categories as $category) {
             $insert[] = [
                 'id_entity' => $category['id'],
-                'entity' => self::ENTITY_CATEGORY,
-                'rewrite' => in_array($category['id'], $filterCategories) ? '' : self::createBaseUrl($newRoutes[$idShop][$idLang][self::ENTITY_CATEGORY], $category),
+                'entity' => static::ENTITY_CATEGORY,
+                'rewrite' => in_array($category['id'], $filterCategories) ? '' : static::createBaseUrl($newRoutes[$idShop][$idLang][static::ENTITY_CATEGORY], $category),
                 'id_shop' => $idShop,
                 'id_lang' => $idLang,
-                'redirect' => self::CANONICAL,
+                'redirect' => static::CANONICAL,
             ];
         }
 
-        self::deleteUrlRewrites(self::ENTITY_CATEGORY, $idLang, $idShop, $idEntity);
-        Db::getInstance()->insert(bqSQL(self::$definition['table']), $insert);
+        static::deleteUrlRewrites(static::ENTITY_CATEGORY, $idLang, $idShop, $idEntity);
+        Db::getInstance()->insert(bqSQL(static::$definition['table']), $insert);
     }
 
     /**
@@ -616,16 +616,16 @@ class UrlRewriteCore extends Objectmodel
             $supplier['rewrite'] = Tools::link_rewrite($supplier['rewrite']);
             $insert[] = [
                 'id_entity' => $supplier['id'],
-                'entity' => self::ENTITY_SUPPLIER,
-                'rewrite' => self::createBaseUrl($newRoutes[$idShop][$idLang][self::ENTITY_SUPPLIER], $supplier),
+                'entity' => static::ENTITY_SUPPLIER,
+                'rewrite' => static::createBaseUrl($newRoutes[$idShop][$idLang][static::ENTITY_SUPPLIER], $supplier),
                 'id_shop' => $idShop,
                 'id_lang' => $idLang,
-                'redirect' => self::CANONICAL,
+                'redirect' => static::CANONICAL,
             ];
         }
 
-        self::deleteUrlRewrites(self::ENTITY_SUPPLIER, $idLang, $idShop, $idEntity);
-        Db::getInstance()->insert(bqSQL(self::$definition['table']), $insert);
+        static::deleteUrlRewrites(static::ENTITY_SUPPLIER, $idLang, $idShop, $idEntity);
+        Db::getInstance()->insert(bqSQL(static::$definition['table']), $insert);
     }
 
     /**
@@ -658,16 +658,16 @@ class UrlRewriteCore extends Objectmodel
             $manufacturer['rewrite'] = Tools::link_rewrite($manufacturer['rewrite']);
             $insert[] = [
                 'id_entity' => $manufacturer['id'],
-                'entity' => self::ENTITY_MANUFACTURER,
-                'rewrite' => self::createBaseUrl($newRoutes[$idShop][$idLang][self::ENTITY_MANUFACTURER], $manufacturer),
+                'entity' => static::ENTITY_MANUFACTURER,
+                'rewrite' => static::createBaseUrl($newRoutes[$idShop][$idLang][static::ENTITY_MANUFACTURER], $manufacturer),
                 'id_shop' => $idShop,
                 'id_lang' => $idLang,
-                'redirect' => self::CANONICAL,
+                'redirect' => static::CANONICAL,
             ];
         }
 
-        self::deleteUrlRewrites(self::ENTITY_MANUFACTURER, $idLang, $idShop, $idEntity);
-        Db::getInstance()->insert(bqSQL(self::$definition['table']), $insert);
+        static::deleteUrlRewrites(static::ENTITY_MANUFACTURER, $idLang, $idShop, $idEntity);
+        Db::getInstance()->insert(bqSQL(static::$definition['table']), $insert);
     }
 
     /**
@@ -680,12 +680,12 @@ class UrlRewriteCore extends Objectmodel
      */
     protected static function generateCmsUrlRewrites($idLang, $idShop, $categories, &$newRoutes, $idEntity = null)
     {
-        if (self::hasKeyword($newRoutes[$idShop][$idLang][self::ENTITY_CMS], 'categories')) {
+        if (static::hasKeyword($newRoutes[$idShop][$idLang][static::ENTITY_CMS], 'categories')) {
             foreach ($categories as &$category) {
                 $categoryRewrite = '';
                 $idCategory = (int) $category['id_cms_category'];
                 $depth = 0;
-                while ($idCategory && $depth < self::MAX_CATEGORY_DEPTH && $categories[$idCategory]['rewrite']) {
+                while ($idCategory && $depth < static::MAX_CATEGORY_DEPTH && $categories[$idCategory]['rewrite']) {
                     $categoryRewrite = '/'.$categories[$idCategory]['rewrite'].$categoryRewrite;
                     $idCategory = (int) $categories[$idCategory]['id_parent'];
                     $depth++;
@@ -714,16 +714,16 @@ class UrlRewriteCore extends Objectmodel
         foreach ($cmses as &$cms) {
             $insert[] = [
                 'id_entity' => $cms['id'],
-                'entity' => self::ENTITY_CMS,
-                'rewrite' => self::createBaseUrl($newRoutes[$idShop][$idLang][self::ENTITY_CMS], $cms),
+                'entity' => static::ENTITY_CMS,
+                'rewrite' => static::createBaseUrl($newRoutes[$idShop][$idLang][static::ENTITY_CMS], $cms),
                 'id_shop' => $idShop,
                 'id_lang' => $idLang,
-                'redirect' => self::CANONICAL,
+                'redirect' => static::CANONICAL,
             ];
         }
 
-        self::deleteUrlRewrites(self::ENTITY_CMS, $idLang, $idShop, $idEntity);
-        Db::getInstance()->insert(bqSQL(self::$definition['table']), $insert);
+        static::deleteUrlRewrites(static::ENTITY_CMS, $idLang, $idShop, $idEntity);
+        Db::getInstance()->insert(bqSQL(static::$definition['table']), $insert);
     }
 
     /**
@@ -736,7 +736,7 @@ class UrlRewriteCore extends Objectmodel
      */
     protected static function generateCmsCategoryUrlRewrites($idLang, $idShop, $categories, &$newRoutes, $idEntity = null)
     {
-        if (self::hasKeyword($newRoutes[$idShop][$idLang][self::ENTITY_CMS_CATEGORY], 'cms_categories')) {
+        if (static::hasKeyword($newRoutes[$idShop][$idLang][static::ENTITY_CMS_CATEGORY], 'cms_categories')) {
             foreach ($categories as $key => &$category) {
                 if ($idEntity && $category['id_cms_category'] != $idEntity) {
                     unset($categories[$key]);
@@ -745,7 +745,7 @@ class UrlRewriteCore extends Objectmodel
                 $categoryRewrite = '';
                 $idCategory = (int) $category['id_cms_category'];
                 $depth = 0;
-                while ($idCategory && $depth < self::MAX_CATEGORY_DEPTH && $categories[$idCategory]['rewrite']) {
+                while ($idCategory && $depth < static::MAX_CATEGORY_DEPTH && $categories[$idCategory]['rewrite']) {
                     $categoryRewrite = '/'.$categories[$idCategory]['rewrite'].$categoryRewrite;
                     $idCategory = (int) $categories[$idCategory]['id_parent'];
                     $depth++;
@@ -758,16 +758,16 @@ class UrlRewriteCore extends Objectmodel
         foreach ($categories as $category) {
             $insert[] = [
                 'id_entity' => $category['id_cms_category'],
-                'entity' => self::ENTITY_CMS_CATEGORY,
+                'entity' => static::ENTITY_CMS_CATEGORY,
                 'id_shop' => $idShop,
-                'rewrite' => self::createBaseUrl($newRoutes[$idShop][$idLang][self::ENTITY_CMS_CATEGORY], $category),
+                'rewrite' => static::createBaseUrl($newRoutes[$idShop][$idLang][static::ENTITY_CMS_CATEGORY], $category),
                 'id_lang' => $idLang,
-                'redirect' => self::CANONICAL,
+                'redirect' => static::CANONICAL,
             ];
         }
 
-        self::deleteUrlRewrites(self::ENTITY_CMS_CATEGORY, $idLang, $idShop, $idEntity);
-        Db::getInstance()->insert(bqSQL(self::$definition['table']), $insert);
+        static::deleteUrlRewrites(static::ENTITY_CMS_CATEGORY, $idLang, $idShop, $idEntity);
+        Db::getInstance()->insert(bqSQL(static::$definition['table']), $insert);
     }
 
     /**
@@ -781,22 +781,22 @@ class UrlRewriteCore extends Objectmodel
     {
         if (defined('TB_INSTALLATION_IN_PROGRESS')) {
             $routes[$idShop][$idLang] = [
-                self::ENTITY_PRODUCT      => '{categories:/}{rewrite}',
-                self::ENTITY_CATEGORY     => '{categories:/}{rewrite}',
-                self::ENTITY_SUPPLIER     => '{rewrite}',
-                self::ENTITY_MANUFACTURER => '{rewrite}',
-                self::ENTITY_CMS          => 'info/{rewrite}',
-                self::ENTITY_CMS_CATEGORY => 'info/{rewrite}',
+                static::ENTITY_PRODUCT      => '{categories:/}{rewrite}',
+                static::ENTITY_CATEGORY     => '{categories:/}{rewrite}',
+                static::ENTITY_SUPPLIER     => '{rewrite}',
+                static::ENTITY_MANUFACTURER => '{rewrite}',
+                static::ENTITY_CMS          => 'info/{rewrite}',
+                static::ENTITY_CMS_CATEGORY => 'info/{rewrite}',
             ];
         }
 
         $routes[$idShop][$idLang] = [
-            self::ENTITY_PRODUCT      => Configuration::get('PS_ROUTE_product_rule', $idLang, null, $idShop) ? Configuration::get('PS_ROUTE_product_rule', $idLang, null, $idShop) : Dispatcher::getInstance()->routes[$idShop][$idLang]['product_rule']['rule'],
-            self::ENTITY_CATEGORY     => Configuration::get('PS_ROUTE_category_rule', $idLang, null, $idShop) ? Configuration::get('PS_ROUTE_category_rule', $idLang, null, $idShop) : Dispatcher::getInstance()->routes[$idShop][$idLang]['category_rule']['rule'],
-            self::ENTITY_SUPPLIER     => Configuration::get('PS_ROUTE_supplier_rule', $idLang, null, $idShop) ? Configuration::get('PS_ROUTE_supplier_rule', $idLang, null, $idShop) : Dispatcher::getInstance()->routes[$idShop][$idLang]['supplier_rule']['rule'],
-            self::ENTITY_MANUFACTURER => Configuration::get('PS_ROUTE_manufacturer_rule', $idLang, null, $idShop) ? Configuration::get('PS_ROUTE_manufacturer_rule', $idLang, null, $idShop) : Dispatcher::getInstance()->routes[$idShop][$idLang]['manufacturer_rule']['rule'],
-            self::ENTITY_CMS          => Configuration::get('PS_ROUTE_cms_rule', $idLang, null, $idShop) ? Configuration::get('PS_ROUTE_cms_rule', $idLang, null, $idShop) : Dispatcher::getInstance()->routes[$idShop][$idLang]['cms_rule']['rule'],
-            self::ENTITY_CMS_CATEGORY => Configuration::get('PS_ROUTE_cms_category_rule', $idLang, null, $idShop) ? Configuration::get('PS_ROUTE_cms_category_rule', $idLang, null, $idShop) : Dispatcher::getInstance()->routes[$idShop][$idLang]['cms_category_rule']['rule'],
+            static::ENTITY_PRODUCT      => Configuration::get('PS_ROUTE_product_rule', $idLang, null, $idShop) ? Configuration::get('PS_ROUTE_product_rule', $idLang, null, $idShop) : Dispatcher::getInstance()->routes[$idShop][$idLang]['product_rule']['rule'],
+            static::ENTITY_CATEGORY     => Configuration::get('PS_ROUTE_category_rule', $idLang, null, $idShop) ? Configuration::get('PS_ROUTE_category_rule', $idLang, null, $idShop) : Dispatcher::getInstance()->routes[$idShop][$idLang]['category_rule']['rule'],
+            static::ENTITY_SUPPLIER     => Configuration::get('PS_ROUTE_supplier_rule', $idLang, null, $idShop) ? Configuration::get('PS_ROUTE_supplier_rule', $idLang, null, $idShop) : Dispatcher::getInstance()->routes[$idShop][$idLang]['supplier_rule']['rule'],
+            static::ENTITY_MANUFACTURER => Configuration::get('PS_ROUTE_manufacturer_rule', $idLang, null, $idShop) ? Configuration::get('PS_ROUTE_manufacturer_rule', $idLang, null, $idShop) : Dispatcher::getInstance()->routes[$idShop][$idLang]['manufacturer_rule']['rule'],
+            static::ENTITY_CMS          => Configuration::get('PS_ROUTE_cms_rule', $idLang, null, $idShop) ? Configuration::get('PS_ROUTE_cms_rule', $idLang, null, $idShop) : Dispatcher::getInstance()->routes[$idShop][$idLang]['cms_rule']['rule'],
+            static::ENTITY_CMS_CATEGORY => Configuration::get('PS_ROUTE_cms_category_rule', $idLang, null, $idShop) ? Configuration::get('PS_ROUTE_cms_category_rule', $idLang, null, $idShop) : Dispatcher::getInstance()->routes[$idShop][$idLang]['cms_category_rule']['rule'],
         ];
     }
 
@@ -832,16 +832,16 @@ class UrlRewriteCore extends Objectmodel
             foreach ($results as $result) {
                 $insert[] = [
                     'id_entity' => (int) $result['id'],
-                    'entity'    => self::ENTITY_PAGE,
+                    'entity'    => static::ENTITY_PAGE,
                     'id_shop'   => (int) $idShop,
                     'rewrite'   => pSQL($result['url_rewrite']),
                     'id_lang'   => (int) $idLang,
-                    'redirect'  => self::CANONICAL,
+                    'redirect'  => static::CANONICAL,
                 ];
             }
 
-            self::deleteUrlRewrites(self::ENTITY_PAGE, $idLang, $idShop);
-            Db::getInstance()->insert(bqSQL(self::$definition['table']), $insert);
+            static::deleteUrlRewrites(static::ENTITY_PAGE, $idLang, $idShop);
+            Db::getInstance()->insert(bqSQL(static::$definition['table']), $insert);
         }
     }
 }

@@ -233,8 +233,8 @@ class ManufacturerCore extends ObjectModel
      */
     public static function getNameById($idManufacturer)
     {
-        if (!isset(self::$cacheName[$idManufacturer])) {
-            self::$cacheName[$idManufacturer] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        if (!isset(static::$cacheName[$idManufacturer])) {
+            static::$cacheName[$idManufacturer] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 '
 				SELECT `name`
 				FROM `'._DB_PREFIX_.'manufacturer`
@@ -243,7 +243,7 @@ class ManufacturerCore extends ObjectModel
             );
         }
 
-        return self::$cacheName[$idManufacturer];
+        return static::$cacheName[$idManufacturer];
     }
 
     /**

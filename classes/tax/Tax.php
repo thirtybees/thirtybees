@@ -303,12 +303,12 @@ class TaxCore extends ObjectModel
     {
         Tools::displayAsDeprecated();
 
-        if (!isset(self::$_product_tax_via_rules[$idProduct.'-'.$idCountry.'-'.$idState.'-'.$zipcode])) {
+        if (!isset(static::$_product_tax_via_rules[$idProduct.'-'.$idCountry.'-'.$idState.'-'.$zipcode])) {
             $taxRate = TaxRulesGroup::getTaxesRate((int) Product::getIdTaxRulesGroupByIdProduct((int) $idProduct), (int) $idCountry, (int) $idState, $zipcode);
-            self::$_product_tax_via_rules[$idProduct.'-'.$idCountry.'-'.$zipcode] = $taxRate;
+            static::$_product_tax_via_rules[$idProduct.'-'.$idCountry.'-'.$zipcode] = $taxRate;
         }
 
-        return self::$_product_tax_via_rules[$idProduct.'-'.$idCountry.'-'.$zipcode];
+        return static::$_product_tax_via_rules[$idProduct.'-'.$idCountry.'-'.$zipcode];
     }
 
     /**

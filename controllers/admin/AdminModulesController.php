@@ -490,9 +490,9 @@ class AdminModulesControllerCore extends AdminController
         $tplVars = [
             'token'                     => $this->token,
             'upgrade_available'         => $upgradeAvailable,
-            'currentIndex'              => self::$currentIndex,
-            'dirNameCurrentIndex'       => dirname(self::$currentIndex),
-            'ajaxCurrentIndex'          => str_replace('index', 'ajax-tab', self::$currentIndex),
+            'currentIndex'              => static::$currentIndex,
+            'dirNameCurrentIndex'       => dirname(static::$currentIndex),
+            'ajaxCurrentIndex'          => str_replace('index', 'ajax-tab', static::$currentIndex),
             'autocompleteList'          => rtrim($autocompleteList, ' ,').'];',
             'showTypeModules'           => $this->filter_configuration['PS_SHOW_TYPE_MODULES_'.(int) $this->id_employee],
             'showCountryModules'        => $this->filter_configuration['PS_SHOW_COUNTRY_MODULES_'.(int) $this->id_employee],
@@ -996,7 +996,7 @@ class AdminModulesControllerCore extends AdminController
     public function postProcessFilterModules()
     {
         $this->setFilterModules(Tools::getValue('module_type'), Tools::getValue('country_module_value'), Tools::getValue('module_install'), Tools::getValue('module_status'));
-        Tools::redirectAdmin(self::$currentIndex.'&token='.$this->token);
+        Tools::redirectAdmin(static::$currentIndex.'&token='.$this->token);
     }
 
     /**
@@ -1009,7 +1009,7 @@ class AdminModulesControllerCore extends AdminController
     public function postProcessResetFilterModules()
     {
         $this->resetFilterModules();
-        Tools::redirectAdmin(self::$currentIndex.'&token='.$this->token);
+        Tools::redirectAdmin(static::$currentIndex.'&token='.$this->token);
     }
 
     /**
@@ -1039,7 +1039,7 @@ class AdminModulesControllerCore extends AdminController
     {
         // Save configuration and redirect employee
         Configuration::updateValue('PS_SHOW_CAT_MODULES_'.(int) $this->id_employee, Tools::getValue('filterCategory'));
-        Tools::redirectAdmin(self::$currentIndex.'&token='.$this->token);
+        Tools::redirectAdmin(static::$currentIndex.'&token='.$this->token);
     }
 
     /**
@@ -1053,7 +1053,7 @@ class AdminModulesControllerCore extends AdminController
     {
         // Save configuration and redirect employee
         Configuration::updateValue('PS_SHOW_CAT_MODULES_'.(int) $this->id_employee, '');
-        Tools::redirectAdmin(self::$currentIndex.'&token='.$this->token);
+        Tools::redirectAdmin(static::$currentIndex.'&token='.$this->token);
     }
 
     /**
@@ -1073,14 +1073,14 @@ class AdminModulesControllerCore extends AdminController
                 } else {
                     if (Tools::getValue('keep_data') == '1' && method_exists($module, 'reset')) {
                         if ($module->reset()) {
-                            Tools::redirectAdmin(self::$currentIndex.'&conf=21&token='.$this->token.'&tab_module='.$module->tab.'&module_name='.$module->name.'&anchor='.ucfirst($module->name));
+                            Tools::redirectAdmin(static::$currentIndex.'&conf=21&token='.$this->token.'&tab_module='.$module->tab.'&module_name='.$module->name.'&anchor='.ucfirst($module->name));
                         } else {
                             $this->errors[] = Tools::displayError('Cannot reset this module.');
                         }
                     } else {
                         if ($module->uninstall()) {
                             if ($module->install()) {
-                                Tools::redirectAdmin(self::$currentIndex.'&conf=21&token='.$this->token.'&tab_module='.$module->tab.'&module_name='.$module->name.'&anchor='.ucfirst($module->name));
+                                Tools::redirectAdmin(static::$currentIndex.'&conf=21&token='.$this->token.'&tab_module='.$module->tab.'&module_name='.$module->name.'&anchor='.ucfirst($module->name));
                             } else {
                                 $this->errors[] = Tools::displayError('Cannot install this module.');
                             }
@@ -1208,7 +1208,7 @@ class AdminModulesControllerCore extends AdminController
         $this->recursiveDeleteOnDisk($tmpFolder);
 
         if ($success && $redirect && isset($folder)) {
-            Tools::redirectAdmin(self::$currentIndex.'&conf=8&anchor='.ucfirst($folder).'&token='.$this->token);
+            Tools::redirectAdmin(static::$currentIndex.'&conf=8&anchor='.ucfirst($folder).'&token='.$this->token);
         }
 
         return $success;
@@ -1387,7 +1387,7 @@ class AdminModulesControllerCore extends AdminController
                     } else {
                         $this->recursiveDeleteOnDisk($moduleDir);
                         if (!file_exists($moduleDir)) {
-                            Tools::redirectAdmin(self::$currentIndex.'&conf=22&token='.$this->token.'&tab_module='.Tools::getValue('tab_module').'&module_name='.Tools::getValue('module_name'));
+                            Tools::redirectAdmin(static::$currentIndex.'&conf=22&token='.$this->token.'&tab_module='.Tools::getValue('tab_module').'&module_name='.Tools::getValue('module_name'));
                         } else {
                             $this->errors[] = Tools::displayError('Sorry, the module cannot be deleted. Please check if you have the right permissions on this folder.');
                         }
@@ -1526,7 +1526,7 @@ class AdminModulesControllerCore extends AdminController
                             $echo = $module->{$method}();
                             // After a successful install of a single module that has a configuration method, to the configuration page
                             if ($key == 'install' && $echo === true && strpos(Tools::getValue('install'), '|') === false && method_exists($module, 'getContent')) {
-                                Tools::redirectAdmin(self::$currentIndex.'&token='.$this->token.'&configure='.$module->name.'&conf=12');
+                                Tools::redirectAdmin(static::$currentIndex.'&token='.$this->token.'&configure='.$module->name.'&conf=12');
                             }
                         }
                         // If the method called is "configure" (getContent method), we show the html code of configure page
@@ -1535,7 +1535,7 @@ class AdminModulesControllerCore extends AdminController
                             if (isset($module->multishop_context)) {
                                 $this->multishop_context = $module->multishop_context;
                             }
-                            $backLink = self::$currentIndex.'&token='.$this->token.'&tab_module='.$module->tab.'&module_name='.$module->name;
+                            $backLink = static::$currentIndex.'&token='.$this->token.'&tab_module='.$module->tab.'&module_name='.$module->name;
                             $hookLink = 'index.php?tab=AdminModulesPositions&token='.Tools::getAdminTokenLite('AdminModulesPositions').'&show_modules='.(int) $module->id;
                             $tradLink = 'index.php?tab=AdminTranslations&token='.Tools::getAdminTokenLite('AdminTranslations').'&type=modules&lang=';
                             $disableLink = $this->context->link->getAdminLink('AdminModules').'&module_name='.$module->name.'&enable=0&tab_module='.$module->tab;
@@ -1636,7 +1636,7 @@ class AdminModulesControllerCore extends AdminController
                 Tools::redirectAdmin('index.php?controller=adminmodules&configure='.Tools::getValue('module_name').'&token='.Tools::getValue('token').'&module_name='.Tools::getValue('module_name').$params);
             }
             if (isset($module)) {
-                Tools::redirectAdmin(self::$currentIndex.'&conf='.$return.'&token='.$this->token.'&tab_module='.$module->tab.'&module_name='.$module->name.'&anchor='.ucfirst($module->name).(isset($modulesListSave) ? '&modules_list='.$modulesListSave : '').$params);
+                Tools::redirectAdmin(static::$currentIndex.'&conf='.$return.'&token='.$this->token.'&tab_module='.$module->tab.'&module_name='.$module->name.'&anchor='.ucfirst($module->name).(isset($modulesListSave) ? '&modules_list='.$modulesListSave : '').$params);
             }
         }
         if (Tools::getValue('update') || Tools::getValue('updateAll') || Tools::getValue('checkAndUpdate')) {
@@ -1652,7 +1652,7 @@ class AdminModulesControllerCore extends AdminController
             }
 
             if (isset($module)) {
-                Tools::redirectAdmin(self::$currentIndex.'&token='.$this->token.$updated.'&tab_module='.$module->tab.'&module_name='.$module->name.'&anchor='.ucfirst($module->name).(isset($modulesListSave) ? '&modules_list='.$modulesListSave : ''));
+                Tools::redirectAdmin(static::$currentIndex.'&token='.$this->token.$updated.'&tab_module='.$module->tab.'&module_name='.$module->name.'&anchor='.ucfirst($module->name).(isset($modulesListSave) ? '&modules_list='.$modulesListSave : ''));
             }
         }
     }

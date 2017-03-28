@@ -162,20 +162,20 @@ abstract class CacheCore
      */
     public static function getInstance()
     {
-        if (!self::$instance) {
+        if (!static::$instance) {
             $sql = new DbQuery();
             $sql->select('`value`');
             $sql->from('configuration');
             $sql->where('`name` = \'TB_CACHE_SYSTEM\'');
             $cachingSystem = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql, false);
             if ($cachingSystem) {
-                self::$instance = new $cachingSystem();
+                static::$instance = new $cachingSystem();
             } else {
-                self::$instance = new CacheFs();
+                static::$instance = new CacheFs();
             }
         }
 
-        return self::$instance;
+        return static::$instance;
     }
 
     /**
@@ -188,7 +188,7 @@ abstract class CacheCore
      */
     public static function setInstanceForTesting($testInstance)
     {
-        self::$instance = $testInstance;
+        static::$instance = $testInstance;
     }
 
     /**
@@ -199,7 +199,7 @@ abstract class CacheCore
      */
     public static function deleteTestingInstance()
     {
-        self::$instance = null;
+        static::$instance = null;
     }
 
     /**
@@ -334,7 +334,7 @@ abstract class CacheCore
         }
 
         if (is_null($this->sql_tables_cached)) {
-            $this->sql_tables_cached = $this->get(Tools::encryptIV(self::SQL_TABLES_NAME));
+            $this->sql_tables_cached = $this->get(Tools::encryptIV(static::SQL_TABLES_NAME));
             if (!is_array($this->sql_tables_cached)) {
                 $this->sql_tables_cached = [];
             }
@@ -355,7 +355,7 @@ abstract class CacheCore
                 }
             }
         }
-        $this->set(Tools::encryptIV(self::SQL_TABLES_NAME), $this->sql_tables_cached);
+        $this->set(Tools::encryptIV(static::SQL_TABLES_NAME), $this->sql_tables_cached);
     }
 
     /**
@@ -407,7 +407,7 @@ abstract class CacheCore
     public function deleteQuery($query)
     {
         if (is_null($this->sql_tables_cached)) {
-            $this->sql_tables_cached = $this->get(Tools::encryptIV(self::SQL_TABLES_NAME));
+            $this->sql_tables_cached = $this->get(Tools::encryptIV(static::SQL_TABLES_NAME));
             if (!is_array($this->sql_tables_cached)) {
                 $this->sql_tables_cached = [];
             }
@@ -424,7 +424,7 @@ abstract class CacheCore
                 }
             }
         }
-        $this->set(Tools::encryptIV(self::SQL_TABLES_NAME), $this->sql_tables_cached);
+        $this->set(Tools::encryptIV(static::SQL_TABLES_NAME), $this->sql_tables_cached);
     }
 
     /**

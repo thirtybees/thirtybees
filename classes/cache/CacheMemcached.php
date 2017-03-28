@@ -90,7 +90,7 @@ class CacheMemcachedCore extends Cache
             return;
         }
 
-        $servers = self::getMemcachedServers();
+        $servers = static::getMemcachedServers();
         if (!$servers) {
             return;
         }

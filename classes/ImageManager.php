@@ -176,7 +176,7 @@ class ImageManagerCore
         }
 
         if (!file_exists($srcFile) || !filesize($srcFile)) {
-            return !($error = self::ERROR_FILE_NOT_EXIST);
+            return !($error = static::ERROR_FILE_NOT_EXIST);
         }
 
         list($tmpWidth, $tmpHeight, $type) = getimagesize($srcFile);
@@ -227,7 +227,7 @@ class ImageManagerCore
         }
 
         if (!$srcWidth) {
-            return !($error = self::ERROR_FILE_WIDTH);
+            return !($error = static::ERROR_FILE_WIDTH);
         }
         if (!$dstWidth) {
             $dstWidth = $srcWidth;
@@ -256,7 +256,7 @@ class ImageManagerCore
         }
 
         if (!ImageManager::checkImageMemoryLimit($srcFile)) {
-            return !($error = self::ERROR_MEMORY_LIMIT);
+            return !($error = static::ERROR_MEMORY_LIMIT);
         }
 
         $tgtWidth = $dstWidth;

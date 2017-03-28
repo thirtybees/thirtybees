@@ -193,7 +193,7 @@ class AdminReferrersControllerCore extends AdminController
 
         $tpl->assign(
             [
-                'current'        => self::$currentIndex,
+                'current'        => static::$currentIndex,
                 'token'          => $token,
                 'action'         => $action,
                 'table'          => $table,
@@ -232,7 +232,7 @@ class AdminReferrersControllerCore extends AdminController
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_referrer'] = [
-                'href' => self::$currentIndex.'&addreferrer&token='.$this->token,
+                'href' => static::$currentIndex.'&addreferrer&token='.$this->token,
                 'desc' => $this->l('Add new referrer', null, null, false),
                 'icon' => 'process-icon-new',
             ];
@@ -298,7 +298,7 @@ class AdminReferrersControllerCore extends AdminController
      */
     public function displayCalendar($action = null, $table = null, $identifier = null, $id = null)
     {
-        return self::displayCalendarForm(
+        return static::displayCalendarForm(
             [
                 'Calendar' => $this->l('Calendar'),
                 'Day'      => $this->l('Today'),
@@ -334,7 +334,7 @@ class AdminReferrersControllerCore extends AdminController
             $tpl->assign(
                 [
                     'statsdata_name' => $statsdataName,
-                    'current'        => self::$currentIndex,
+                    'current'        => static::$currentIndex,
                     'token'          => $this->token,
                     'tracking_dt'    => (int) Tools::getValue('tracking_dt', Configuration::get('TRACKING_DIRECT_TRAFFIC')),
                 ]
@@ -559,7 +559,7 @@ class AdminReferrersControllerCore extends AdminController
         if (Tools::isSubmit('submitSettings')) {
             if ($this->tabAccess['edit'] === '1') {
                 if (Configuration::updateValue('TRACKING_DIRECT_TRAFFIC', (int) Tools::getValue('tracking_dt'))) {
-                    Tools::redirectAdmin(self::$currentIndex.'&conf=4&token='.Tools::getValue('token'));
+                    Tools::redirectAdmin(static::$currentIndex.'&conf=4&token='.Tools::getValue('token'));
                 }
             }
         }

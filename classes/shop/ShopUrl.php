@@ -220,7 +220,7 @@ class ShopUrlCore extends ObjectModel
      */
     public static function cacheMainDomainForShop($idShop)
     {
-        if (!isset(self::$main_domain_ssl[(int) $idShop]) || !isset(self::$main_domain[(int) $idShop])) {
+        if (!isset(static::$main_domain_ssl[(int) $idShop]) || !isset(static::$main_domain[(int) $idShop])) {
             $row = Db::getInstance()->getRow(
                 '
 			SELECT domain, domain_ssl
@@ -228,8 +228,8 @@ class ShopUrlCore extends ObjectModel
 			WHERE main = 1
 			AND id_shop = '.($idShop !== null ? (int) $idShop : (int) Context::getContext()->shop->id)
             );
-            self::$main_domain[(int) $idShop] = $row['domain'];
-            self::$main_domain_ssl[(int) $idShop] = $row['domain_ssl'];
+            static::$main_domain[(int) $idShop] = $row['domain'];
+            static::$main_domain_ssl[(int) $idShop] = $row['domain_ssl'];
         }
     }
 
@@ -239,8 +239,8 @@ class ShopUrlCore extends ObjectModel
      */
     public static function resetMainDomainCache()
     {
-        self::$main_domain = [];
-        self::$main_domain_ssl = [];
+        static::$main_domain = [];
+        static::$main_domain_ssl = [];
     }
 
     /**
@@ -255,7 +255,7 @@ class ShopUrlCore extends ObjectModel
     {
         ShopUrl::cacheMainDomainForShop($idShop);
 
-        return self::$main_domain[(int) $idShop];
+        return static::$main_domain[(int) $idShop];
     }
 
     /**
@@ -270,6 +270,6 @@ class ShopUrlCore extends ObjectModel
     {
         ShopUrl::cacheMainDomainForShop($idShop);
 
-        return self::$main_domain_ssl[(int) $idShop];
+        return static::$main_domain_ssl[(int) $idShop];
     }
 }

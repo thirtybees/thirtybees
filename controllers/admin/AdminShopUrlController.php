@@ -305,7 +305,7 @@ class AdminShopUrlControllerCore extends AdminController
             return '';
         }
 
-        self::$currentIndex = self::$currentIndex.($obj->id ? '&shop_id='.(int) $obj->id_shop : '');
+        static::$currentIndex = static::$currentIndex.($obj->id ? '&shop_id='.(int) $obj->id_shop : '');
 
         $currentShop = Shop::initialize();
 
@@ -477,7 +477,7 @@ class AdminShopUrlControllerCore extends AdminController
                     if ($object->main) {
                         $this->errors[] = Tools::displayError('You cannot disable the Main URL.');
                     } elseif ($object->toggleStatus()) {
-                        Tools::redirectAdmin(self::$currentIndex.'&conf=5&token='.$token);
+                        Tools::redirectAdmin(static::$currentIndex.'&conf=5&token='.$token);
                     } else {
                         $this->errors[] = Tools::displayError('An error occurred while updating the status.');
                     }
@@ -493,7 +493,7 @@ class AdminShopUrlControllerCore extends AdminController
                     /** @var ShopUrl $object */
                     if (!$object->main) {
                         $result = $object->setMain();
-                        Tools::redirectAdmin(self::$currentIndex.'&conf=4&token='.$token);
+                        Tools::redirectAdmin(static::$currentIndex.'&conf=4&token='.$token);
                     } else {
                         $this->errors[] = Tools::displayError('You cannot change a main URL to a non-main URL. You have to set another URL as your Main URL for the selected shop.');
                     }
@@ -608,30 +608,30 @@ class AdminShopUrlControllerCore extends AdminController
     {
         $tpl = $this->createTemplate('helpers/list/list_action_delete.tpl');
 
-        if (!array_key_exists('Delete', self::$cache_lang)) {
-            self::$cache_lang['Delete'] = $this->l('Delete', 'Helper');
+        if (!array_key_exists('Delete', static::$cache_lang)) {
+            static::$cache_lang['Delete'] = $this->l('Delete', 'Helper');
         }
 
-        if (!array_key_exists('DeleteItem', self::$cache_lang)) {
-            self::$cache_lang['DeleteItem'] = $this->l('Delete selected item?', 'Helper');
+        if (!array_key_exists('DeleteItem', static::$cache_lang)) {
+            static::$cache_lang['DeleteItem'] = $this->l('Delete selected item?', 'Helper');
         }
 
-        if (!array_key_exists('Name', self::$cache_lang)) {
-            self::$cache_lang['Name'] = $this->l('Name:', 'Helper');
+        if (!array_key_exists('Name', static::$cache_lang)) {
+            static::$cache_lang['Name'] = $this->l('Name:', 'Helper');
         }
 
         if (!is_null($name)) {
-            $name = '\n\n'.self::$cache_lang['Name'].' '.$name;
+            $name = '\n\n'.static::$cache_lang['Name'].' '.$name;
         }
 
         $data = [
             $this->identifier => $id,
-            'href'            => self::$currentIndex.'&'.$this->identifier.'='.$id.'&delete'.$this->table.'&shop_id='.(int) $this->id_shop.'&token='.($token != null ? $token : $this->token),
-            'action'          => self::$cache_lang['Delete'],
+            'href'            => static::$currentIndex.'&'.$this->identifier.'='.$id.'&delete'.$this->table.'&shop_id='.(int) $this->id_shop.'&token='.($token != null ? $token : $this->token),
+            'action'          => static::$cache_lang['Delete'],
         ];
 
         if ($this->specificConfirmDelete !== false) {
-            $data['confirm'] = !is_null($this->specificConfirmDelete) ? '\r'.$this->specificConfirmDelete : self::$cache_lang['DeleteItem'].$name;
+            $data['confirm'] = !is_null($this->specificConfirmDelete) ? '\r'.$this->specificConfirmDelete : static::$cache_lang['DeleteItem'].$name;
         }
 
         $tpl->assign(array_merge($this->tpl_delete_link_vars, $data));

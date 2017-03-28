@@ -325,11 +325,11 @@ class CurrencyCore extends ObjectModel
      */
     public static function getCurrencyInstance($id)
     {
-        if (!isset(self::$currencies[$id])) {
-            self::$currencies[(int) ($id)] = new Currency($id);
+        if (!isset(static::$currencies[$id])) {
+            static::$currencies[(int) ($id)] = new Currency($id);
         }
 
-        return self::$currencies[(int) ($id)];
+        return static::$currencies[(int) ($id)];
     }
 
     /**
@@ -423,8 +423,8 @@ class CurrencyCore extends ObjectModel
             $idShop = (int) Context::getContext()->shop->id;
         }
 
-        if (!isset(self::$countActiveCurrencies[$idShop])) {
-            self::$countActiveCurrencies[$idShop] = Db::getInstance()->getValue(
+        if (!isset(static::$countActiveCurrencies[$idShop])) {
+            static::$countActiveCurrencies[$idShop] = Db::getInstance()->getValue(
                 '
 				SELECT COUNT(DISTINCT c.id_currency) FROM `'._DB_PREFIX_.'currency` c
 				LEFT JOIN '._DB_PREFIX_.'currency_shop cs ON (cs.id_currency = c.id_currency AND cs.id_shop = '.(int) $idShop.')
@@ -433,7 +433,7 @@ class CurrencyCore extends ObjectModel
             );
         }
 
-        return self::$countActiveCurrencies[$idShop];
+        return static::$countActiveCurrencies[$idShop];
     }
 
     /**
@@ -451,7 +451,7 @@ class CurrencyCore extends ObjectModel
             return false;
         }
 
-        if (self::exists($this->iso_code, $this->iso_code_num)) {
+        if (static::exists($this->iso_code, $this->iso_code_num)) {
             return false;
         }
 

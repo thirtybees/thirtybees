@@ -197,7 +197,7 @@ class CustomerCore extends ObjectModel
     {
         $sql = new DbQuery();
         $sql->select('`id_customer`, `email`, `firstname`, `lastname`');
-        $sql->from(bqSQL(self::$definition['table']));
+        $sql->from(bqSQL(static::$definition['table']));
         $sql->where('1 '.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER));
         if ($onlyActive) {
             $sql->where('`active` = 1');
@@ -221,7 +221,7 @@ class CustomerCore extends ObjectModel
     {
         $sql = new DbQuery();
         $sql->select('*');
-        $sql->from(bqSQL(self::$definition['table']));
+        $sql->from(bqSQL(static::$definition['table']));
         $sql->where('`email` = \''.pSQL($email).'\' '.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER));
 
         return Db::getInstance()->executeS($sql);
@@ -244,7 +244,7 @@ class CustomerCore extends ObjectModel
         if (!Cache::isStored($cacheId)) {
             $sql = new DbQuery();
             $sql->select('`id_customer`');
-            $sql->from(bqSQL(self::$definition['table']));
+            $sql->from(bqSQL(static::$definition['table']));
             $sql->where('`id_customer` = '.(int) $idCustomer);
             $sql->where('`active` = 1');
             $sql->where('`deleted` = 0');
@@ -281,7 +281,7 @@ class CustomerCore extends ObjectModel
 
         $sql = new DbQuery();
         $sql->select('`id_customer`');
-        $sql->from(bqSQL(self::$definition['table']));
+        $sql->from(bqSQL(static::$definition['table']));
         $sql->where('`email` = \''.pSQL($email).'\' '.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER));
         $sql->where('`is_guest` = 0');
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
@@ -300,8 +300,8 @@ class CustomerCore extends ObjectModel
     public static function customerHasAddress($idCustomer, $idAddress)
     {
         $key = (int) $idCustomer.'-'.(int) $idAddress;
-        if (!array_key_exists($key, self::$_customerHasAddress)) {
-            self::$_customerHasAddress[$key] = (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        if (!array_key_exists($key, static::$_customerHasAddress)) {
+            static::$_customerHasAddress[$key] = (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 '
 			SELECT `id_address`
 			FROM `'._DB_PREFIX_.'address`
@@ -311,7 +311,7 @@ class CustomerCore extends ObjectModel
             );
         }
 
-        return self::$_customerHasAddress[$key];
+        return static::$_customerHasAddress[$key];
     }
 
     /**
@@ -324,8 +324,8 @@ class CustomerCore extends ObjectModel
     public static function resetAddressCache($idCustomer, $idAddress)
     {
         $key = (int) $idCustomer.'-'.(int) $idAddress;
-        if (array_key_exists($key, self::$_customerHasAddress)) {
-            unset(self::$_customerHasAddress[$key]);
+        if (array_key_exists($key, static::$_customerHasAddress)) {
+            unset(static::$_customerHasAddress[$key]);
         }
     }
 
@@ -417,8 +417,8 @@ class CustomerCore extends ObjectModel
             return $psCustomerGroup;
         }
 
-        if (!isset(self::$_defaultGroupId[(int) $idCustomer])) {
-            self::$_defaultGroupId[(int) $idCustomer] = Db::getInstance()->getValue(
+        if (!isset(static::$_defaultGroupId[(int) $idCustomer])) {
+            static::$_defaultGroupId[(int) $idCustomer] = Db::getInstance()->getValue(
                 '
 				SELECT `id_default_group`
 				FROM `'._DB_PREFIX_.'customer`
@@ -426,7 +426,7 @@ class CustomerCore extends ObjectModel
             );
         }
 
-        return self::$_defaultGroupId[(int) $idCustomer];
+        return static::$_defaultGroupId[(int) $idCustomer];
     }
 
     /**
@@ -643,7 +643,7 @@ class CustomerCore extends ObjectModel
 
         $sql = new DbQuery();
         $sql->select('*');
-        $sql->from(bqSQL(self::$definition['table']));
+        $sql->from(bqSQL(static::$definition['table']));
         $sql->where('`email` = \''.pSQL($email).'\' '.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER));
         $sql->where('`deleted` = 0');
         if ($ignoreGuest) {
@@ -657,7 +657,7 @@ class CustomerCore extends ObjectModel
 
             $sql = new DbQuery();
             $sql->select('*');
-            $sql->from(bqSQL(self::$definition['table']));
+            $sql->from(bqSQL(static::$definition['table']));
             $sql->where('`email` = \''.pSQL($email).'\' '.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER));
             if ($plainTextPassword) {
                 $sql->where('`passwd` = \''.md5(_COOKIE_KEY_.$plainTextPassword).'\'');
@@ -670,7 +670,7 @@ class CustomerCore extends ObjectModel
             if ($result) {
                 $newHash = Tools::hash($plainTextPassword);
                 Db::getInstance()->update(
-                    bqSQL(self::$definition['table']),
+                    bqSQL(static::$definition['table']),
                     [
                         'passwd' => pSQL($newHash),
                     ],
@@ -848,11 +848,11 @@ class CustomerCore extends ObjectModel
         }
 
         if ($idCustomer == 0) {
-            self::$_customer_groups[$idCustomer] = [(int) Configuration::get('PS_UNIDENTIFIED_GROUP')];
+            static::$_customer_groups[$idCustomer] = [(int) Configuration::get('PS_UNIDENTIFIED_GROUP')];
         }
 
-        if (!isset(self::$_customer_groups[$idCustomer])) {
-            self::$_customer_groups[$idCustomer] = [];
+        if (!isset(static::$_customer_groups[$idCustomer])) {
+            static::$_customer_groups[$idCustomer] = [];
             $result = Db::getInstance()->executeS(
                 '
 			SELECT cg.`id_group`
@@ -860,11 +860,11 @@ class CustomerCore extends ObjectModel
 			WHERE cg.`id_customer` = '.(int) $idCustomer
             );
             foreach ($result as $group) {
-                self::$_customer_groups[$idCustomer][] = (int) $group['id_group'];
+                static::$_customer_groups[$idCustomer][] = (int) $group['id_group'];
             }
         }
 
-        return self::$_customer_groups[$idCustomer];
+        return static::$_customer_groups[$idCustomer];
     }
 
     /**
@@ -1071,17 +1071,17 @@ class CustomerCore extends ObjectModel
         if (Validate::isMd5($plaintextOrHashedPassword) || Tools::substr($plaintextOrHashedPassword, 0, 4) === '$2y$') {
             $hashedPassword = $plaintextOrHashedPassword;
 
-            return self::checkPasswordInDatabase($idCustomer, $hashedPassword);
+            return static::checkPasswordInDatabase($idCustomer, $hashedPassword);
         } else {
             $hashedPassword = Tools::encrypt($plaintextOrHashedPassword);
 
-            if (self::checkPasswordInDatabase($idCustomer, $hashedPassword)) {
+            if (static::checkPasswordInDatabase($idCustomer, $hashedPassword)) {
                 return true;
             }
 
             $sql = new DbQuery();
             $sql->select('`passwd`');
-            $sql->from(bqSQL(self::$definition['table']));
+            $sql->from(bqSQL(static::$definition['table']));
             $sql->where('`id_customer` = '.(int) $idCustomer);
 
             $hashedPassword = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
@@ -1106,7 +1106,7 @@ class CustomerCore extends ObjectModel
         if (!Cache::isStored($cacheId)) {
             $sql = new DbQuery();
             $sql->select('`id_customer`');
-            $sql->from(bqSQL(self::$definition['table']));
+            $sql->from(bqSQL(static::$definition['table']));
             $sql->where('`id_customer` = '.(int) $idCustomer);
             $sql->where('`passwd` = \''.pSQL($hashedPassword).'\'');
             $result = (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);

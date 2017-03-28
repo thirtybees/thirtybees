@@ -100,7 +100,7 @@ class AdminTaxRulesGroupControllerCore extends AdminController
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_tax_rules_group'] = [
-                'href' => self::$currentIndex.'&addtax_rules_group&token='.$this->token,
+                'href' => static::$currentIndex.'&addtax_rules_group&token='.$this->token,
                 'desc' => $this->l('Add new tax rules group', null, null, false),
                 'icon' => 'process-icon-new',
             ];
@@ -332,7 +332,7 @@ class AdminTaxRulesGroupControllerCore extends AdminController
         $this->getlanguages();
         $helper = new HelperForm();
         $helper->override_folder = $this->tpl_folder;
-        $helper->currentIndex = self::$currentIndex;
+        $helper->currentIndex = static::$currentIndex;
         $helper->token = $this->token;
         $helper->table = 'tax_rule';
         $helper->identifier = 'id_tax_rule';
@@ -344,7 +344,7 @@ class AdminTaxRulesGroupControllerCore extends AdminController
         $helper->allow_employee_form_lang = $this->allow_employee_form_lang;
         $helper->fields_value = $this->getFieldsValue($this->object);
         $helper->toolbar_btn['save_new_rule'] = [
-            'href'  => self::$currentIndex.'&amp;id_tax_rules_group='.$obj->id.'&amp;action=create_rule&amp;token='.$this->token,
+            'href'  => static::$currentIndex.'&amp;id_tax_rules_group='.$obj->id.'&amp;action=create_rule&amp;token='.$this->token,
             'desc'  => 'Save tax rule',
             'class' => 'process-icon-save',
         ];
@@ -551,7 +551,7 @@ class AdminTaxRulesGroupControllerCore extends AdminController
 
         if (count($this->errors) == 0) {
             Tools::redirectAdmin(
-                self::$currentIndex.'&'.$this->identifier.'='.(int) $taxRulesGroup->id.'&conf=4&update'.$this->table.'&token='.$this->token
+                static::$currentIndex.'&'.$this->identifier.'='.(int) $taxRulesGroup->id.'&conf=4&update'.$this->table.'&token='.$this->token
             );
         } else {
             $this->display = 'edit';
@@ -625,7 +625,7 @@ class AdminTaxRulesGroupControllerCore extends AdminController
         }
 
         Tools::redirectAdmin(
-            self::$currentIndex.'&'.$this->identifier.'='.(int) $taxRulesGroup->id.'&conf=4&update'.$this->table.'&token='.$this->token
+            static::$currentIndex.'&'.$this->identifier.'='.(int) $taxRulesGroup->id.'&conf=4&update'.$this->table.'&token='.$this->token
         );
     }
 

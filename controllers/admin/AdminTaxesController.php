@@ -140,7 +140,7 @@ class AdminTaxesControllerCore extends AdminController
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_tax'] = [
-                'href' => self::$currentIndex.'&addtax&token='.$this->token,
+                'href' => static::$currentIndex.'&addtax&token='.$this->token,
                 'desc' => $this->l('Add new tax', null, null, false),
                 'icon' => 'process-icon-new',
             ];
@@ -163,12 +163,12 @@ class AdminTaxesControllerCore extends AdminController
      */
     public function displayDeleteLink($token = null, $id)
     {
-        if (!array_key_exists('Delete', self::$cache_lang)) {
-            self::$cache_lang['Delete'] = $this->l('Delete');
+        if (!array_key_exists('Delete', static::$cache_lang)) {
+            static::$cache_lang['Delete'] = $this->l('Delete');
         }
 
-        if (!array_key_exists('DeleteItem', self::$cache_lang)) {
-            self::$cache_lang['DeleteItem'] = $this->l('Delete item #', __CLASS__, true, false);
+        if (!array_key_exists('DeleteItem', static::$cache_lang)) {
+            static::$cache_lang['DeleteItem'] = $this->l('Delete item #', __CLASS__, true, false);
         }
 
         if (TaxRule::isTaxInUse($id)) {
@@ -177,9 +177,9 @@ class AdminTaxesControllerCore extends AdminController
 
         $this->context->smarty->assign(
             [
-                'href'    => self::$currentIndex.'&'.$this->identifier.'='.$id.'&delete'.$this->table.'&token='.($token != null ? $token : $this->token),
-                'confirm' => (isset($confirm) ? '\r'.$confirm : self::$cache_lang['DeleteItem'].$id.' ? '),
-                'action'  => self::$cache_lang['Delete'],
+                'href'    => static::$currentIndex.'&'.$this->identifier.'='.$id.'&delete'.$this->table.'&token='.($token != null ? $token : $this->token),
+                'confirm' => (isset($confirm) ? '\r'.$confirm : static::$cache_lang['DeleteItem'].$id.' ? '),
+                'action'  => static::$cache_lang['Delete'],
             ]
         );
 
@@ -209,7 +209,7 @@ class AdminTaxesControllerCore extends AdminController
         $tplEnable->assign(
             [
                 'enabled'    => (bool) $value,
-                'url_enable' => self::$currentIndex.'&'.$this->identifier.'='.(int) $id.'&'.$active.$this->table.((int) $idCategory && (int) $idProduct ? '&id_category='.(int) $idCategory : '').'&token='.($token != null ? $token : $this->token),
+                'url_enable' => static::$currentIndex.'&'.$this->identifier.'='.(int) $id.'&'.$active.$this->table.((int) $idCategory && (int) $idProduct ? '&id_category='.(int) $idCategory : '').'&token='.($token != null ? $token : $this->token),
                 'confirm'    => isset($confirm) ? $confirm : null,
             ]
         );
@@ -302,7 +302,7 @@ class AdminTaxesControllerCore extends AdminController
                         if (!$result) {
                             $this->errors[] = Tools::displayError('An error occurred while updating an object.').' <b>'.$this->table.'</b>';
                         } elseif ($this->postImage($object->id)) {
-                            Tools::redirectAdmin(self::$currentIndex.'&id_'.$this->table.'='.$object->id.'&conf=4'.'&token='.$this->token);
+                            Tools::redirectAdmin(static::$currentIndex.'&id_'.$this->table.'='.$object->id.'&conf=4'.'&token='.$this->token);
                         }
                     } else {
                         $this->errors[] = Tools::displayError('An error occurred while updating an object.').' <b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
@@ -315,7 +315,7 @@ class AdminTaxesControllerCore extends AdminController
                     if (!$object->add()) {
                         $this->errors[] = Tools::displayError('An error occurred while creating an object.').' <b>'.$this->table.'</b>';
                     } elseif (($_POST['id_'.$this->table] = $object->id /* voluntary */) && $this->postImage($object->id) && $this->_redirect) {
-                        Tools::redirectAdmin(self::$currentIndex.'&id_'.$this->table.'='.$object->id.'&conf=3'.'&token='.$this->token);
+                        Tools::redirectAdmin(static::$currentIndex.'&id_'.$this->table.'='.$object->id.'&conf=3'.'&token='.$this->token);
                     }
                 }
             }

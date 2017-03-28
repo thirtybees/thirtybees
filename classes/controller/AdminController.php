@@ -482,16 +482,16 @@ class AdminControllerCore extends Controller
             $this->context->cookie->shopContext = Tools::getValue('setShopContext');
             $url = parse_url($_SERVER['REQUEST_URI']);
             $query = (isset($url['query'])) ? $url['query'] : '';
-            parse_str($query, $parse_query);
-            unset($parse_query['setShopContext'], $parse_query['conf']);
-            $this->redirect_after = $url['path'].'?'.http_build_query($parse_query, '', '&');
+            parse_str($query, $parseQuery);
+            unset($parseQuery['setShopContext'], $parseQuery['conf']);
+            $this->redirect_after = $url['path'].'?'.http_build_query($parseQuery, '', '&');
         } elseif (!Shop::isFeatureActive()) {
             $this->context->cookie->shopContext = 's-'.(int) Configuration::get('PS_SHOP_DEFAULT');
         } elseif (Shop::getTotalShops(false, null) < 2) {
             $this->context->cookie->shopContext = 's-'.(int) $this->context->employee->getDefaultShopID();
         }
 
-        $shop_id = '';
+        $idShop = '';
         Shop::setContext(Shop::CONTEXT_ALL);
         if ($this->context->cookie->shopContext) {
             $split = explode('-', $this->context->cookie->shopContext);
@@ -500,15 +500,15 @@ class AdminControllerCore extends Controller
                     if ($this->context->employee->hasAuthOnShopGroup((int) $split[1])) {
                         Shop::setContext(Shop::CONTEXT_GROUP, (int) $split[1]);
                     } else {
-                        $shop_id = (int) $this->context->employee->getDefaultShopID();
-                        Shop::setContext(Shop::CONTEXT_SHOP, $shop_id);
+                        $idShop = (int) $this->context->employee->getDefaultShopID();
+                        Shop::setContext(Shop::CONTEXT_SHOP, $idShop);
                     }
                 } elseif (Shop::getShop($split[1]) && $this->context->employee->hasAuthOnShop($split[1])) {
-                    $shop_id = (int) $split[1];
-                    Shop::setContext(Shop::CONTEXT_SHOP, $shop_id);
+                    $idShop = (int) $split[1];
+                    Shop::setContext(Shop::CONTEXT_SHOP, $idShop);
                 } else {
-                    $shop_id = (int) $this->context->employee->getDefaultShopID();
-                    Shop::setContext(Shop::CONTEXT_SHOP, $shop_id);
+                    $idShop = (int) $this->context->employee->getDefaultShopID();
+                    Shop::setContext(Shop::CONTEXT_SHOP, $idShop);
                 }
             }
         }
@@ -524,10 +524,10 @@ class AdminControllerCore extends Controller
         }
 
         // Replace existing shop if necessary
-        if (!$shop_id) {
+        if (!$idShop) {
             $this->context->shop = new Shop((int) Configuration::get('PS_SHOP_DEFAULT'));
-        } elseif ($this->context->shop->id != $shop_id) {
-            $this->context->shop = new Shop((int) $shop_id);
+        } elseif ($this->context->shop->id != $idShop) {
+            $this->context->shop = new Shop((int) $idShop);
         }
 
         if ($this->context->shop->id_theme != $this->context->theme->id) {
@@ -577,7 +577,7 @@ class AdminControllerCore extends Controller
                 }
 
                 if (isset($_POST) && count($_POST) && (int) Tools::getValue('submitFilter'.$this->list_id) || Tools::isSubmit('submitReset'.$this->list_id)) {
-                    $this->setRedirectAfter(self::$currentIndex.'&token='.$this->token.(Tools::isSubmit('submitFilter'.$this->list_id) ? '&submitFilter'.$this->list_id.'='.(int) Tools::getValue('submitFilter'.$this->list_id) : ''));
+                    $this->setRedirectAfter(static::$currentIndex.'&token='.$this->token.(Tools::isSubmit('submitFilter'.$this->list_id) ? '&submitFilter'.$this->list_id.'='.(int) Tools::getValue('submitFilter'.$this->list_id) : ''));
                 }
 
                 // If the method named after the action exists, call "before" hooks, then call action method, then call "after" hooks
@@ -793,7 +793,7 @@ class AdminControllerCore extends Controller
     {
         if (Validate::isLoadedObject($object = $this->loadObject())) {
             if (($object->deleteImage())) {
-                $redirect = self::$currentIndex.'&add'.$this->table.'&'.$this->identifier.'='.Tools::getValue($this->identifier).'&conf=7&token='.$this->token;
+                $redirect = static::$currentIndex.'&add'.$this->table.'&'.$this->identifier.'='.Tools::getValue($this->identifier).'&conf=7&token='.$this->token;
                 if (!$this->ajax) {
                     $this->redirect_after = $redirect;
                 } else {
@@ -1049,8 +1049,8 @@ class AdminControllerCore extends Controller
 
         if ($this->multishop_context && Shop::isTableAssociated($this->table) && !empty($this->className)) {
             if (Shop::getContext() != Shop::CONTEXT_ALL || !$this->context->employee->isSuperAdmin()) {
-                $test_join = !preg_match('#`?'.preg_quote(_DB_PREFIX_.$this->table.'_shop').'`? *sa#', $this->_join);
-                if (Shop::isFeatureActive() && $test_join && Shop::isTableAssociated($this->table)) {
+                $testJoin = !preg_match('#`?'.preg_quote(_DB_PREFIX_.$this->table.'_shop').'`? *sa#', $this->_join);
+                if (Shop::isFeatureActive() && $testJoin && Shop::isTableAssociated($this->table)) {
                     $this->_where .= ' AND EXISTS (
 						SELECT 1
 						FROM `'._DB_PREFIX_.$this->table.'_shop` sa
@@ -1212,10 +1212,10 @@ class AdminControllerCore extends Controller
 
                     $object->deleted = 1;
                     if ($res = $object->update()) {
-                        $this->redirect_after = self::$currentIndex.'&conf=1&token='.$this->token;
+                        $this->redirect_after = static::$currentIndex.'&conf=1&token='.$this->token;
                     }
                 } elseif ($res = $object->delete()) {
-                    $this->redirect_after = self::$currentIndex.'&conf=1&token='.$this->token;
+                    $this->redirect_after = static::$currentIndex.'&conf=1&token='.$this->token;
                 }
                 $this->errors[] = Tools::displayError('An error occurred during deletion.');
                 if ($res) {
@@ -1307,21 +1307,21 @@ class AdminControllerCore extends Controller
                         // Specific scene feature
                         // @todo change stay_here submit name (not clear for redirect to scene ... )
                         if (Tools::getValue('stay_here') == 'on' || Tools::getValue('stay_here') == 'true' || Tools::getValue('stay_here') == '1') {
-                            $this->redirect_after = self::$currentIndex.'&'.$this->identifier.'='.$object->id.'&conf=4&updatescene&token='.$this->token;
+                            $this->redirect_after = static::$currentIndex.'&'.$this->identifier.'='.$object->id.'&conf=4&updatescene&token='.$this->token;
                         }
                         // Save and stay on same form
                         // @todo on the to following if, we may prefer to avoid override redirect_after previous value
                         if (Tools::isSubmit('submitAdd'.$this->table.'AndStay')) {
-                            $this->redirect_after = self::$currentIndex.'&'.$this->identifier.'='.$object->id.'&conf=4&update'.$this->table.'&token='.$this->token;
+                            $this->redirect_after = static::$currentIndex.'&'.$this->identifier.'='.$object->id.'&conf=4&update'.$this->table.'&token='.$this->token;
                         }
                         // Save and back to parent
                         if (Tools::isSubmit('submitAdd'.$this->table.'AndBackToParent')) {
-                            $this->redirect_after = self::$currentIndex.'&'.$this->identifier.'='.$parentId.'&conf=4&token='.$this->token;
+                            $this->redirect_after = static::$currentIndex.'&'.$this->identifier.'='.$parentId.'&conf=4&token='.$this->token;
                         }
 
                         // Default behavior (save and back)
                         if (empty($this->redirect_after) && $this->redirect_after !== false) {
-                            $this->redirect_after = self::$currentIndex.($parentId ? '&'.$this->identifier.'='.$object->id : '').'&conf=4&token='.$this->token;
+                            $this->redirect_after = static::$currentIndex.($parentId ? '&'.$this->identifier.'='.$object->id : '').'&conf=4&token='.$this->token;
                         }
                     }
                     Logger::addLog(sprintf($this->l('%s modification', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int) $object->id, true, (int) $this->context->employee->id);
@@ -1731,8 +1731,7 @@ class AdminControllerCore extends Controller
             $this->copyFromPost($this->object, $this->table);
             $this->beforeAdd($this->object);
             if (method_exists($this->object, 'add') && !$this->object->add()) {
-                $this->errors[] = Tools::displayError('An error occurred while creating an object.').
-                    ' <b>'.$this->table.' ('.Db::getInstance()->getMsgError().')</b>';
+                $this->errors[] = Tools::displayError('An error occurred while creating an object.').' <strong>'.$this->table.' ('.Db::getInstance()->getMsgError().')</strong>';
             } elseif (($_POST[$this->identifier] = $this->object->id /* voluntary do affectation here */) && $this->postImage($this->object->id) && !count($this->errors) && $this->_redirect) {
                 Logger::addLog(sprintf($this->l('%s addition', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int) $this->object->id, true, (int) $this->context->employee->id);
                 $parentId = (int) Tools::getValue('id_parent', 1);
@@ -1740,15 +1739,15 @@ class AdminControllerCore extends Controller
                 $this->updateAssoShop($this->object->id);
                 // Save and stay on same form
                 if (empty($this->redirect_after) && $this->redirect_after !== false && Tools::isSubmit('submitAdd'.$this->table.'AndStay')) {
-                    $this->redirect_after = self::$currentIndex.'&'.$this->identifier.'='.$this->object->id.'&conf=3&update'.$this->table.'&token='.$this->token;
+                    $this->redirect_after = static::$currentIndex.'&'.$this->identifier.'='.$this->object->id.'&conf=3&update'.$this->table.'&token='.$this->token;
                 }
                 // Save and back to parent
                 if (empty($this->redirect_after) && $this->redirect_after !== false && Tools::isSubmit('submitAdd'.$this->table.'AndBackToParent')) {
-                    $this->redirect_after = self::$currentIndex.'&'.$this->identifier.'='.$parentId.'&conf=3&token='.$this->token;
+                    $this->redirect_after = static::$currentIndex.'&'.$this->identifier.'='.$parentId.'&conf=3&token='.$this->token;
                 }
                 // Default behavior (save and back)
                 if (empty($this->redirect_after) && $this->redirect_after !== false) {
-                    $this->redirect_after = self::$currentIndex.($parentId ? '&'.$this->identifier.'='.$this->object->id : '').'&conf=3&token='.$this->token;
+                    $this->redirect_after = static::$currentIndex.($parentId ? '&'.$this->identifier.'='.$this->object->id : '').'&conf=3&token='.$this->token;
                 }
             }
         }
@@ -1812,7 +1811,7 @@ class AdminControllerCore extends Controller
         if (!$object->addFieldsRequiredDatabase($fields)) {
             $this->errors[] = Tools::displayError('An error occurred when attempting to update the required fields.');
         } else {
-            $this->redirect_after = self::$currentIndex.'&conf=4&token='.$this->token;
+            $this->redirect_after = static::$currentIndex.'&conf=4&token='.$this->token;
         }
 
         return $object;
@@ -1847,7 +1846,7 @@ class AdminControllerCore extends Controller
                 ) {
                     $this->redirect_after = preg_replace('/[\?|&]conf=([^&]*)/i', '', (string) $_SERVER['HTTP_REFERER']);
                 } else {
-                    $this->redirect_after = self::$currentIndex.'&token='.$this->token;
+                    $this->redirect_after = static::$currentIndex.'&token='.$this->token;
                 }
 
                 $idCategory = (($idCategory = (int) Tools::getValue('id_category')) && Tools::getValue('id_product')) ? '&id_category='.$idCategory : '';
@@ -1881,7 +1880,7 @@ class AdminControllerCore extends Controller
             $this->errors[] = Tools::displayError('Failed to update the position.');
         } else {
             $idIdentifierStr = ($idIdentifier = (int) Tools::getValue($this->identifier)) ? '&'.$this->identifier.'='.$idIdentifier : '';
-            $redirect = self::$currentIndex.'&'.$this->table.'Orderby=position&'.$this->table.'Orderway=asc&conf=5'.$idIdentifierStr.'&token='.$this->token;
+            $redirect = static::$currentIndex.'&'.$this->table.'Orderby=position&'.$this->table.'Orderway=asc&conf=5'.$idIdentifierStr.'&token='.$this->token;
             $this->redirect_after = $redirect;
         }
 
@@ -2328,7 +2327,7 @@ class AdminControllerCore extends Controller
                 'install_dir_exists'        => file_exists(_PS_ADMIN_DIR_.'/../install'),
                 'pic_dir'                   => _THEME_PROD_PIC_DIR_,
                 'controller_name'           => htmlentities(Tools::getValue('controller')),
-                'currentIndex'              => self::$currentIndex,
+                'currentIndex'              => static::$currentIndex,
                 'bootstrap'                 => $this->bootstrap,
                 'default_language'          => (int) Configuration::get('PS_LANG_DEFAULT'),
                 'display_addons_connection' => Tab::checkTabRights(Tab::getIdFromClassName('AdminModulesController')),
@@ -2434,7 +2433,7 @@ class AdminControllerCore extends Controller
                 'maintenance_mode'          => !(bool) Configuration::get('PS_SHOP_ENABLE'),
                 'content'                   => $this->content,
                 'lite_display'              => $this->lite_display,
-                'url_post'                  => self::$currentIndex.'&token='.$this->token,
+                'url_post'                  => static::$currentIndex.'&token='.$this->token,
                 'show_page_header_toolbar'  => $this->show_page_header_toolbar,
                 'page_header_toolbar_title' => $this->page_header_toolbar_title,
                 'title'                     => $this->page_header_toolbar_title,
@@ -2494,7 +2493,7 @@ class AdminControllerCore extends Controller
                 ];
                 $back = Tools::safeOutput(Tools::getValue('back', ''));
                 if (empty($back)) {
-                    $back = self::$currentIndex.'&token='.$this->token;
+                    $back = static::$currentIndex.'&token='.$this->token;
                 }
                 if (!Validate::isCleanHtml($back)) {
                     die(Tools::displayError());
@@ -2510,7 +2509,7 @@ class AdminControllerCore extends Controller
                 // Default cancel button - like old back link
                 $back = Tools::safeOutput(Tools::getValue('back', ''));
                 if (empty($back)) {
-                    $back = self::$currentIndex.'&token='.$this->token;
+                    $back = static::$currentIndex.'&token='.$this->token;
                 }
                 if (!Validate::isCleanHtml($back)) {
                     die(Tools::displayError());
@@ -2530,12 +2529,12 @@ class AdminControllerCore extends Controller
                 break;
             default: // list
                 $this->toolbar_btn['new'] = [
-                    'href' => self::$currentIndex.'&add'.$this->table.'&token='.$this->token,
+                    'href' => static::$currentIndex.'&add'.$this->table.'&token='.$this->token,
                     'desc' => $this->l('Add new'),
                 ];
                 if ($this->allow_export) {
                     $this->toolbar_btn['export'] = [
-                        'href' => self::$currentIndex.'&export'.$this->table.'&token='.$this->token,
+                        'href' => static::$currentIndex.'&export'.$this->table.'&token='.$this->token,
                         'desc' => $this->l('Export'),
                     ];
                 }
@@ -2661,7 +2660,7 @@ class AdminControllerCore extends Controller
                 // Default cancel button - like old back link
                 $back = Tools::safeOutput(Tools::getValue('back', ''));
                 if (empty($back)) {
-                    $back = self::$currentIndex.'&token='.$this->token;
+                    $back = static::$currentIndex.'&token='.$this->token;
                 }
                 if (!Validate::isCleanHtml($back)) {
                     die(Tools::displayError());
@@ -2864,7 +2863,7 @@ class AdminControllerCore extends Controller
 
             $back = Tools::safeOutput(Tools::getValue('back', ''));
             if (empty($back)) {
-                $back = self::$currentIndex.'&token='.$this->token;
+                $back = static::$currentIndex.'&token='.$this->token;
             }
             if (!Validate::isCleanHtml($back)) {
                 die(Tools::displayError());
@@ -2876,7 +2875,7 @@ class AdminControllerCore extends Controller
                 if (Tools::getValue('back')) {
                     $helper->tpl_vars['back'] = Tools::safeOutput(Tools::getValue('back'));
                 } else {
-                    $helper->tpl_vars['back'] = Tools::safeOutput(Tools::getValue(self::$currentIndex.'&token='.$this->token));
+                    $helper->tpl_vars['back'] = Tools::safeOutput(Tools::getValue(static::$currentIndex.'&token='.$this->token));
                 }
             }
             $form = $helper->generateForm($this->fields_form);
@@ -2990,7 +2989,7 @@ class AdminControllerCore extends Controller
         $helper->actions = $this->actions;
         $helper->simple_header = $this->list_simple_header;
         $helper->bulk_actions = $this->bulk_actions;
-        $helper->currentIndex = self::$currentIndex;
+        $helper->currentIndex = static::$currentIndex;
         $helper->className = $this->className;
         $helper->table = $this->table;
         $helper->name_controller = Tools::getValue('controller');
@@ -3289,13 +3288,13 @@ class AdminControllerCore extends Controller
             'verify' => _PS_TOOL_DIR_.'cacert.pem',
         ]);
 
-        if (self::$isThirtybeesUp) {
+        if (static::$isThirtybeesUp) {
             try {
                 $content = (string) $guzzle->get($externalFile)->getBody();
 
                 return (bool) file_put_contents(_PS_ROOT_DIR_.$fileToRefresh, $content);
             } catch (Exception $e) {
-                self::$isThirtybeesUp = false;
+                static::$isThirtybeesUp = false;
 
                 return false;
             }
@@ -3699,7 +3698,7 @@ class AdminControllerCore extends Controller
         }
 
         $helper = new Helper();
-        $helper->currentIndex = self::$currentIndex;
+        $helper->currentIndex = static::$currentIndex;
         $helper->token = $this->token;
         $helper->override_folder = $this->override_folder;
 
@@ -3823,8 +3822,7 @@ class AdminControllerCore extends Controller
     /**
      * Init context and dependencies, handles POST and GET
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @since 1.0.0
      */
     public function init()
     {
@@ -3873,7 +3871,7 @@ class AdminControllerCore extends Controller
         if ($back = Tools::getValue('back')) {
             $current_index .= '&back='.urlencode($back);
         }
-        self::$currentIndex = $current_index;
+        static::$currentIndex = $current_index;
         $currentIndex = $current_index;
 
         if ((int) Tools::getValue('liteDisplaying')) {
@@ -3891,7 +3889,7 @@ class AdminControllerCore extends Controller
         $this->context->smarty->assign(
             [
                 'table'            => $this->table,
-                'current'          => self::$currentIndex,
+                'current'          => static::$currentIndex,
                 'token'            => $this->token,
                 'host_mode'        => 0,
                 'stock_management' => (int) Configuration::get('PS_STOCK_MANAGEMENT'),
@@ -4536,7 +4534,7 @@ class AdminControllerCore extends Controller
                     }
                 }
                 if ($result) {
-                    $this->redirect_after = self::$currentIndex.'&conf=2&token='.$this->token;
+                    $this->redirect_after = static::$currentIndex.'&conf=2&token='.$this->token;
                 }
                 $this->errors[] = Tools::displayError('An error occurred while deleting this selection.');
             }
@@ -4652,7 +4650,7 @@ class AdminControllerCore extends Controller
             $result = $object->affectZoneToSelection(Tools::getValue($this->table.'Box'), Tools::getValue('zone_to_affect'));
 
             if ($result) {
-                $this->redirect_after = self::$currentIndex.'&conf=28&token='.$this->token;
+                $this->redirect_after = static::$currentIndex.'&conf=28&token='.$this->token;
             }
             $this->errors[] = Tools::displayError('An error occurred while assigning a zone to the selection.');
         } else {

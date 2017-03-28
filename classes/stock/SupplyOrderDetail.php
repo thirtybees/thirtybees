@@ -295,10 +295,10 @@ class SupplyOrderDetailCore extends ObjectModel
         /* required fields */
         $fieldsRequired = $this->fieldsRequired;
 
-        if (isset(self::$fieldsRequiredDatabase[get_class($this)])) {
+        if (isset(static::$fieldsRequiredDatabase[get_class($this)])) {
             $fieldsRequired = array_merge(
                 $this->fieldsRequired,
-                self::$fieldsRequiredDatabase[get_class($this)]
+                static::$fieldsRequiredDatabase[get_class($this)]
             );
         }
 

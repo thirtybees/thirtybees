@@ -146,7 +146,7 @@ class AdminFeaturesControllerCore extends AdminController
             ];
 
             $this->_where = sprintf('AND `id_feature` = %d', (int)$id);
-            self::$currentIndex = self::$currentIndex.'&id_feature='.(int)$id.'&viewfeature';
+            static::$currentIndex = static::$currentIndex.'&id_feature='.(int)$id.'&viewfeature';
             $this->processFilter();
             return parent::renderList();
         }
@@ -196,13 +196,13 @@ class AdminFeaturesControllerCore extends AdminController
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_feature'] = [
-                'href' => self::$currentIndex.'&addfeature&token='.$this->token,
+                'href' => static::$currentIndex.'&addfeature&token='.$this->token,
                 'desc' => $this->l('Add new feature', null, null, false),
                 'icon' => 'process-icon-new'
             ];
 
             $this->page_header_toolbar_btn['new_feature_value'] = [
-                'href' => self::$currentIndex.'&addfeature_value&id_feature='.(int)Tools::getValue('id_feature').'&token='.$this->token,
+                'href' => static::$currentIndex.'&addfeature_value&id_feature='.(int)Tools::getValue('id_feature').'&token='.$this->token,
                 'desc' => $this->l('Add new feature value', null, null, false),
                 'icon' => 'process-icon-new'
             ];
@@ -210,7 +210,7 @@ class AdminFeaturesControllerCore extends AdminController
 
         if ($this->display == 'view') {
             $this->page_header_toolbar_btn['new_feature_value'] = [
-                'href' => self::$currentIndex.'&addfeature_value&id_feature='.(int)Tools::getValue('id_feature').'&token='.$this->token,
+                'href' => static::$currentIndex.'&addfeature_value&id_feature='.(int)Tools::getValue('id_feature').'&token='.$this->token,
                 'desc' => $this->l('Add new feature value', null, null, false),
                 'icon' => 'process-icon-new'
             ];
@@ -246,7 +246,7 @@ class AdminFeaturesControllerCore extends AdminController
                 // Default cancel button - like old back link
                 $back = Tools::safeOutput(Tools::getValue('back', ''));
                 if (empty($back)) {
-                    $back = self::$currentIndex.'&token='.$this->token;
+                    $back = static::$currentIndex.'&token='.$this->token;
                 }
 
                 $this->toolbar_btn['back'] = [
@@ -256,11 +256,11 @@ class AdminFeaturesControllerCore extends AdminController
             break;
             case 'view':
                 $this->toolbar_btn['newAttributes'] = [
-                    'href' => self::$currentIndex.'&addfeature_value&id_feature='.(int)Tools::getValue('id_feature').'&token='.$this->token,
+                    'href' => static::$currentIndex.'&addfeature_value&id_feature='.(int)Tools::getValue('id_feature').'&token='.$this->token,
                     'desc' => $this->l('Add new feature values')
                 ];
                 $this->toolbar_btn['back'] = [
-                    'href' => self::$currentIndex.'&token='.$this->token,
+                    'href' => static::$currentIndex.'&token='.$this->token,
                     'desc' => $this->l('Back to the list')
                 ];
                 break;
@@ -379,14 +379,14 @@ class AdminFeaturesControllerCore extends AdminController
 
         $back = Tools::safeOutput(Tools::getValue('back', ''));
         if (empty($back)) {
-            $back = self::$currentIndex.'&token='.$this->token;
+            $back = static::$currentIndex.'&token='.$this->token;
         }
         if (!Validate::isCleanHtml($back)) {
             die(Tools::displayError());
         }
 
         $helper->back_url = $back;
-        $helper->currentIndex = self::$currentIndex;
+        $helper->currentIndex = static::$currentIndex;
         $helper->token = $this->token;
         $helper->table = $this->table;
         $helper->identifier = $this->identifier;
@@ -444,7 +444,7 @@ class AdminFeaturesControllerCore extends AdminController
         $this->context->smarty->assign(
             [
             'content' => $this->content,
-            'url_post' => self::$currentIndex.'&token='.$this->token,
+            'url_post' => static::$currentIndex.'&token='.$this->token,
             'show_page_header_toolbar' => $this->show_page_header_toolbar,
             'page_header_toolbar_title' => $this->page_header_toolbar_title,
             'page_header_toolbar_btn' => $this->page_header_toolbar_btn
@@ -513,9 +513,9 @@ class AdminFeaturesControllerCore extends AdminController
 
         if (Tools::isSubmit('submitAdd'.$this->table.'AndStay') && !count($this->errors)) {
             if ($this->table == 'feature_value' && ($this->display == 'edit' || $this->display == 'add')) {
-                $this->redirect_after = self::$currentIndex.'&addfeature_value&id_feature='.(int)Tools::getValue('id_feature').'&token='.$this->token;
+                $this->redirect_after = static::$currentIndex.'&addfeature_value&id_feature='.(int)Tools::getValue('id_feature').'&token='.$this->token;
             } else {
-                $this->redirect_after = self::$currentIndex.'&'.$this->identifier.'=&conf=3&update'.$this->table.'&token='.$this->token;
+                $this->redirect_after = static::$currentIndex.'&'.$this->identifier.'=&conf=3&update'.$this->table.'&token='.$this->token;
             }
         } elseif (Tools::isSubmit('submitAdd'.$this->table.'AndStay') && count($this->errors)) {
             $this->display = 'editFeatureValue';
@@ -533,7 +533,7 @@ class AdminFeaturesControllerCore extends AdminController
         $object = parent::processUpdate();
 
         if (Tools::isSubmit('submitAdd'.$this->table.'AndStay') && !count($this->errors)) {
-            $this->redirect_after = self::$currentIndex.'&'.$this->identifier.'=&conf=3&update'.$this->table.'&token='.$this->token;
+            $this->redirect_after = static::$currentIndex.'&'.$this->identifier.'=&conf=3&update'.$this->table.'&token='.$this->token;
         }
 
         return $object;

@@ -152,7 +152,7 @@ class AdminCartRulesControllerCore extends AdminController
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_cart_rule'] = [
-                'href' => self::$currentIndex.'&addcart_rule&token='.$this->token,
+                'href' => static::$currentIndex.'&addcart_rule&token='.$this->token,
                 'desc' => $this->l('Add new cart rule', null, null, false),
                 'icon' => 'process-icon-new',
             ];
@@ -632,7 +632,7 @@ class AdminCartRulesControllerCore extends AdminController
                 'product_rule_groups'           => $productRuleGroups,
                 'product_rule_groups_counter'   => count($productRuleGroups),
                 'attribute_groups'              => $attributeGroups,
-                'currentIndex'                  => self::$currentIndex,
+                'currentIndex'                  => static::$currentIndex,
                 'currentToken'                  => $this->token,
                 'currentObject'                 => $currentObject,
                 'currentTab'                    => $this,

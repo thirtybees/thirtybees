@@ -197,7 +197,7 @@ class AdminShopGroupControllerCore extends AdminController
         if ($this->display != 'add' && $this->display != 'edit') {
             $this->page_header_toolbar_btn['new'] = [
                 'desc' => $this->l('Add a new shop group'),
-                'href' => self::$currentIndex.'&add'.$this->table.'&token='.$this->token,
+                'href' => static::$currentIndex.'&add'.$this->table.'&token='.$this->token,
             ];
             $this->page_header_toolbar_btn['new_2'] = [
                 'desc'     => $this->l('Add a new shop'),
@@ -222,7 +222,7 @@ class AdminShopGroupControllerCore extends AdminController
         if ($this->display != 'add' && $this->display != 'edit') {
             $this->toolbar_btn['new'] = [
                 'desc' => $this->l('Add a new shop group'),
-                'href' => self::$currentIndex.'&add'.$this->table.'&token='.$this->token,
+                'href' => static::$currentIndex.'&add'.$this->table.'&token='.$this->token,
             ];
         }
     }

@@ -88,7 +88,7 @@ class GroupCore extends ObjectModel
     {
         parent::__construct($id, $idLang, $idShop);
         if ($this->id && !isset(Group::$group_price_display_method[$this->id])) {
-            self::$group_price_display_method[$this->id] = $this->price_display_method;
+            static::$group_price_display_method[$this->id] = $this->price_display_method;
         }
     }
 
@@ -128,12 +128,12 @@ class GroupCore extends ObjectModel
      */
     public static function getReduction($idCustomer = null)
     {
-        if (!isset(self::$cache_reduction['customer'][(int) $idCustomer])) {
+        if (!isset(static::$cache_reduction['customer'][(int) $idCustomer])) {
             $idGroup = $idCustomer ? Customer::getDefaultGroupId((int) $idCustomer) : (int) Group::getCurrent()->id;
-            self::$cache_reduction['customer'][(int) $idCustomer] = Group::getReductionByIdGroup($idGroup);
+            static::$cache_reduction['customer'][(int) $idCustomer] = Group::getReductionByIdGroup($idGroup);
         }
 
-        return self::$cache_reduction['customer'][(int) $idCustomer];
+        return static::$cache_reduction['customer'][(int) $idCustomer];
     }
 
     /**
@@ -190,8 +190,8 @@ class GroupCore extends ObjectModel
      */
     public static function getReductionByIdGroup($idGroup)
     {
-        if (!isset(self::$cache_reduction['group'][$idGroup])) {
-            self::$cache_reduction['group'][$idGroup] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        if (!isset(static::$cache_reduction['group'][$idGroup])) {
+            static::$cache_reduction['group'][$idGroup] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 '
 			SELECT `reduction`
 			FROM `'._DB_PREFIX_.'group`
@@ -199,7 +199,7 @@ class GroupCore extends ObjectModel
             );
         }
 
-        return self::$cache_reduction['group'][$idGroup];
+        return static::$cache_reduction['group'][$idGroup];
     }
 
     /**
@@ -224,7 +224,7 @@ class GroupCore extends ObjectModel
     public static function getPriceDisplayMethod($idGroup)
     {
         if (!isset(Group::$group_price_display_method[$idGroup])) {
-            self::$group_price_display_method[$idGroup] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            static::$group_price_display_method[$idGroup] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 '
 			SELECT `price_display_method`
 			FROM `'._DB_PREFIX_.'group`
@@ -232,7 +232,7 @@ class GroupCore extends ObjectModel
             );
         }
 
-        return self::$group_price_display_method[$idGroup];
+        return static::$group_price_display_method[$idGroup];
     }
 
     /**

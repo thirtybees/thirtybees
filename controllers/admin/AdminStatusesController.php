@@ -90,12 +90,12 @@ class AdminStatusesControllerCore extends AdminController
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_order_state'] = [
-                'href' => self::$currentIndex.'&addorder_state&token='.$this->token,
+                'href' => static::$currentIndex.'&addorder_state&token='.$this->token,
                 'desc' => $this->l('Add new order status', null, null, false),
                 'icon' => 'process-icon-new',
             ];
             $this->page_header_toolbar_btn['new_order_return_state'] = [
-                'href' => self::$currentIndex.'&addorder_return_state&token='.$this->token,
+                'href' => static::$currentIndex.'&addorder_return_state&token='.$this->token,
                 'desc' => $this->l('Add new order return status', null, null, false),
                 'icon' => 'process-icon-new',
             ];
@@ -293,7 +293,7 @@ class AdminStatusesControllerCore extends AdminController
             if (!$orderReturnState->save()) {
                 $this->errors[] = Tools::displayError('An error has occurred: Can\'t save the current order\'s return status.');
             } else {
-                Tools::redirectAdmin(self::$currentIndex.'&conf=4&token='.$this->token);
+                Tools::redirectAdmin(static::$currentIndex.'&conf=4&token='.$this->token);
             }
         }
 
@@ -313,7 +313,7 @@ class AdminStatusesControllerCore extends AdminController
             if (!$orderReturnState->delete()) {
                 $this->errors[] = Tools::displayError('An error has occurred: Can\'t delete the current order\'s return status.');
             } else {
-                Tools::redirectAdmin(self::$currentIndex.'&conf=1&token='.$this->token);
+                Tools::redirectAdmin(static::$currentIndex.'&conf=1&token='.$this->token);
             }
         }
 
@@ -617,7 +617,7 @@ class AdminStatusesControllerCore extends AdminController
 
         $back = Tools::safeOutput(Tools::getValue('back', ''));
         if (empty($back)) {
-            $back = self::$currentIndex.'&token='.$this->token;
+            $back = static::$currentIndex.'&token='.$this->token;
         }
         if (!Validate::isCleanHtml($back)) {
             die(Tools::displayError());
@@ -678,7 +678,7 @@ class AdminStatusesControllerCore extends AdminController
         //$this->initToolbar();
         $this->getlanguages();
         $helper = new HelperForm();
-        $helper->currentIndex = self::$currentIndex;
+        $helper->currentIndex = static::$currentIndex;
         $helper->token = $this->token;
         $helper->table = 'order_return_state';
         $helper->identifier = 'id_order_return_state';

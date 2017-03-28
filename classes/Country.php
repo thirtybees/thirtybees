@@ -166,8 +166,8 @@ class CountryCore extends ObjectModel
             die(Tools::displayError());
         }
 
-        if (isset(self::$_idZones[$idCountry])) {
-            return (int) self::$_idZones[$idCountry];
+        if (isset(static::$_idZones[$idCountry])) {
+            return (int) static::$_idZones[$idCountry];
         }
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
@@ -178,7 +178,7 @@ class CountryCore extends ObjectModel
         );
 
         if (isset($result['id_zone'])) {
-            self::$_idZones[$idCountry] = (int) $result['id_zone'];
+            static::$_idZones[$idCountry] = (int) $result['id_zone'];
 
             return (int) $result['id_zone'];
         }
@@ -478,7 +478,7 @@ class CountryCore extends ObjectModel
      */
     public function add($autodate = true, $nullValues = false)
     {
-        $return = parent::add($autodate, $nullValues) && self::addModuleRestrictions([], [['id_country' => $this->id]], []);
+        $return = parent::add($autodate, $nullValues) && static::addModuleRestrictions([], [['id_country' => $this->id]], []);
 
         return $return;
     }

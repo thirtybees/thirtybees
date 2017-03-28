@@ -274,7 +274,7 @@ class CarrierCore extends ObjectModel
         $sql->leftJoin(bqSQL($rangeTable), 'r', 'r.`id_'.bqSQL($rangeTable).'` = d.`id_'.bqSQL($rangeTable).'`');
         $sql->where('d.`id_carrier` = '.(int) $idCarrier);
         $sql->where('d.`id_'.bqSQL($rangeTable).'` IS NOT NULL');
-        $sql->where('d.`id_'.bqSQL($rangeTable).'` != 0 '.self::sqlDeliveryRangeShop($rangeTable));
+        $sql->where('d.`id_'.bqSQL($rangeTable).'` != 0 '.static::sqlDeliveryRangeShop($rangeTable));
         $sql->orderBy('r.`delimiter1`');
 
         return Db::getInstance()->executeS($sql);
@@ -655,9 +655,9 @@ class CarrierCore extends ObjectModel
         }
 
         if (is_array($groups) && !empty($groups)) {
-            $result = Carrier::getCarriers($idLang, true, false, (int) $idZone, $groups, self::PS_CARRIERS_AND_CARRIER_MODULES_NEED_RANGE);
+            $result = Carrier::getCarriers($idLang, true, false, (int) $idZone, $groups, static::PS_CARRIERS_AND_CARRIER_MODULES_NEED_RANGE);
         } else {
-            $result = Carrier::getCarriers($idLang, true, false, (int) $idZone, [Configuration::get('PS_UNIDENTIFIED_GROUP')], self::PS_CARRIERS_AND_CARRIER_MODULES_NEED_RANGE);
+            $result = Carrier::getCarriers($idLang, true, false, (int) $idZone, [Configuration::get('PS_UNIDENTIFIED_GROUP')], static::PS_CARRIERS_AND_CARRIER_MODULES_NEED_RANGE);
         }
         $resultsArray = [];
 
@@ -749,7 +749,7 @@ class CarrierCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function getCarriers($idLang, $active = false, $delete = false, $idZone = false, $idsGroup = null, $modules_filters = self::PS_CARRIERS_ONLY)
+    public static function getCarriers($idLang, $active = false, $delete = false, $idZone = false, $idsGroup = null, $modules_filters = static::PS_CARRIERS_ONLY)
     {
         // Filter by groups and no groups => return empty array
         if ($idsGroup && (!is_array($idsGroup) || !count($idsGroup))) {
@@ -903,7 +903,7 @@ class CarrierCore extends ObjectModel
     {
         $idCarrier = (int) $idCarrier;
         $cacheKey = $idCarrier.'_'.$totalWeight.'_'.$idZone;
-        if (!isset(self::$price_by_weight2[$cacheKey])) {
+        if (!isset(static::$price_by_weight2[$cacheKey])) {
             $sql = 'SELECT d.`price`
 					FROM `'._DB_PREFIX_.'delivery` d
 					LEFT JOIN `'._DB_PREFIX_.'range_weight` w ON d.`id_range_weight` = w.`id_range_weight`
@@ -914,15 +914,15 @@ class CarrierCore extends ObjectModel
 						'.Carrier::sqlDeliveryRangeShop('range_weight').'
 					ORDER BY w.`delimiter1` ASC';
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
-            self::$price_by_weight2[$cacheKey] = (isset($result['price']));
+            static::$price_by_weight2[$cacheKey] = (isset($result['price']));
         }
 
         $priceByWeight = Hook::exec('actionDeliveryPriceByWeight', ['id_carrier' => $idCarrier, 'total_weight' => $totalWeight, 'id_zone' => $idZone]);
         if (is_numeric($priceByWeight)) {
-            self::$price_by_weight2[$cacheKey] = $priceByWeight;
+            static::$price_by_weight2[$cacheKey] = $priceByWeight;
         }
 
-        return self::$price_by_weight2[$cacheKey];
+        return static::$price_by_weight2[$cacheKey];
     }
 
     /**
@@ -939,7 +939,7 @@ class CarrierCore extends ObjectModel
     {
         $idCarrier = (int) $idCarrier;
         $cacheKey = $idCarrier.'_'.$orderTotal.'_'.$idZone.'_'.$idCurrency;
-        if (!isset(self::$price_by_price2[$cacheKey])) {
+        if (!isset(static::$price_by_price2[$cacheKey])) {
             if (!empty($idCurrency)) {
                 $orderTotal = Tools::convertPrice($orderTotal, $idCurrency, false);
             }
@@ -954,15 +954,15 @@ class CarrierCore extends ObjectModel
 						'.Carrier::sqlDeliveryRangeShop('range_price').'
 					ORDER BY r.`delimiter1` ASC';
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
-            self::$price_by_price2[$cacheKey] = (isset($result['price']));
+            static::$price_by_price2[$cacheKey] = (isset($result['price']));
         }
 
         $priceByPrice = Hook::exec('actionDeliveryPriceByPrice', ['id_carrier' => $idCarrier, 'order_total' => $orderTotal, 'id_zone' => $idZone]);
         if (is_numeric($priceByPrice)) {
-            self::$price_by_price2[$cacheKey] = $priceByPrice;
+            static::$price_by_price2[$cacheKey] = $priceByPrice;
         }
 
-        return self::$price_by_price2[$cacheKey];
+        return static::$price_by_price2[$cacheKey];
     }
 
     /**
@@ -1160,7 +1160,7 @@ class CarrierCore extends ObjectModel
     {
         $idCarrier = (int) $this->id;
         $cacheKey = $idCarrier.'_'.$totalWeight.'_'.$idZone;
-        if (!isset(self::$price_by_weight[$cacheKey])) {
+        if (!isset(static::$price_by_weight[$cacheKey])) {
             $sql = 'SELECT d.`price`
 					FROM `'._DB_PREFIX_.'delivery` d
 					LEFT JOIN `'._DB_PREFIX_.'range_weight` w ON (d.`id_range_weight` = w.`id_range_weight`)
@@ -1172,18 +1172,18 @@ class CarrierCore extends ObjectModel
 					ORDER BY w.`delimiter1` ASC';
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
             if (!isset($result['price'])) {
-                self::$price_by_weight[$cacheKey] = $this->getMaxDeliveryPriceByWeight($idZone);
+                static::$price_by_weight[$cacheKey] = $this->getMaxDeliveryPriceByWeight($idZone);
             } else {
-                self::$price_by_weight[$cacheKey] = $result['price'];
+                static::$price_by_weight[$cacheKey] = $result['price'];
             }
         }
 
         $priceByWeight = Hook::exec('actionDeliveryPriceByWeight', ['id_carrier' => $idCarrier, 'total_weight' => $totalWeight, 'id_zone' => $idZone]);
         if (is_numeric($priceByWeight)) {
-            self::$price_by_weight[$cacheKey] = $priceByWeight;
+            static::$price_by_weight[$cacheKey] = $priceByWeight;
         }
 
-        return self::$price_by_weight[$cacheKey];
+        return static::$price_by_weight[$cacheKey];
     }
 
     /**
@@ -1202,7 +1202,7 @@ class CarrierCore extends ObjectModel
     {
         $idCarrier = (int) $this->id;
         $cacheKey = $this->id.'_'.$orderTotal.'_'.$idZone.'_'.$idCurrency;
-        if (!isset(self::$price_by_price[$cacheKey])) {
+        if (!isset(static::$price_by_price[$cacheKey])) {
             if (!empty($idCurrency)) {
                 $orderTotal = Tools::convertPrice($orderTotal, $idCurrency, false);
             }
@@ -1218,18 +1218,18 @@ class CarrierCore extends ObjectModel
 					ORDER BY r.`delimiter1` ASC';
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
             if (!isset($result['price'])) {
-                self::$price_by_price[$cacheKey] = $this->getMaxDeliveryPriceByPrice($idZone);
+                static::$price_by_price[$cacheKey] = $this->getMaxDeliveryPriceByPrice($idZone);
             } else {
-                self::$price_by_price[$cacheKey] = $result['price'];
+                static::$price_by_price[$cacheKey] = $result['price'];
             }
         }
 
         $priceByPrice = Hook::exec('actionDeliveryPriceByPrice', ['id_carrier' => $idCarrier, 'order_total' => $orderTotal, 'id_zone' => $idZone]);
         if (is_numeric($priceByPrice)) {
-            self::$price_by_price[$cacheKey] = $priceByPrice;
+            static::$price_by_price[$cacheKey] = $priceByPrice;
         }
 
-        return self::$price_by_price[$cacheKey];
+        return static::$price_by_price[$cacheKey];
     }
 
     /**

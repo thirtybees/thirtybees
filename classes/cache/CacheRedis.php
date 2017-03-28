@@ -84,7 +84,7 @@ class CacheRedisCore extends CacheCore
     public function connect()
     {
         $this->is_connected = false;
-        $this->_servers = self::getRedisServers();
+        $this->_servers = static::getRedisServers();
         if (!$this->_servers) {
             return;
         } else {

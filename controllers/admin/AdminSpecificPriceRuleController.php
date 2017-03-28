@@ -159,7 +159,7 @@ class AdminSpecificPriceRuleControllerCore extends AdminController
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_specific_price_rule'] = [
-                'href' => self::$currentIndex.'&addspecific_price_rule&token='.$this->token,
+                'href' => static::$currentIndex.'&addspecific_price_rule&token='.$this->token,
                 'desc' => $this->l('Add new catalog price rule', null, null, false),
                 'icon' => 'process-icon-new',
             ];

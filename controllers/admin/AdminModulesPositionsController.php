@@ -87,7 +87,7 @@ class AdminModulesPositionsControllerCore extends AdminController
                 $module = Module::getInstanceById($idModule);
                 if (Validate::isLoadedObject($module)) {
                     $module->updatePosition($idHook, (int) Tools::getValue('direction'));
-                    Tools::redirectAdmin(self::$currentIndex.($this->display_key ? '&show_modules='.$this->display_key : '').'&token='.$this->token);
+                    Tools::redirectAdmin(static::$currentIndex.($this->display_key ? '&show_modules='.$this->display_key : '').'&token='.$this->token);
                 } else {
                     $this->errors[] = Tools::displayError('This module cannot be loaded.');
                 }
@@ -133,7 +133,7 @@ class AdminModulesPositionsControllerCore extends AdminController
                         }
                     }
                     if (!$this->errors) {
-                        Tools::redirectAdmin(self::$currentIndex.'&conf=16'.($this->display_key ? '&show_modules='.$this->display_key : '').'&token='.$this->token);
+                        Tools::redirectAdmin(static::$currentIndex.'&conf=16'.($this->display_key ? '&show_modules='.$this->display_key : '').'&token='.$this->token);
                     }
                 }
             } else {
@@ -174,7 +174,7 @@ class AdminModulesPositionsControllerCore extends AdminController
                         }
 
                         if (!$this->errors) {
-                            Tools::redirectAdmin(self::$currentIndex.'&conf=16'.($this->display_key ? '&show_modules='.$this->display_key : '').'&token='.$this->token);
+                            Tools::redirectAdmin(static::$currentIndex.'&conf=16'.($this->display_key ? '&show_modules='.$this->display_key : '').'&token='.$this->token);
                         }
                     } else {
                         $exceptions = explode(',', str_replace(' ', '', $exceptions));
@@ -191,7 +191,7 @@ class AdminModulesPositionsControllerCore extends AdminController
                         if (!$module->editExceptions($idHook, $exceptions, Shop::getContextListShopID())) {
                             $this->errors[] = Tools::displayError('An error occurred while transplanting the module to its hook.');
                         } else {
-                            Tools::redirectAdmin(self::$currentIndex.'&conf=16'.($this->display_key ? '&show_modules='.$this->display_key : '').'&token='.$this->token);
+                            Tools::redirectAdmin(static::$currentIndex.'&conf=16'.($this->display_key ? '&show_modules='.$this->display_key : '').'&token='.$this->token);
                         }
                     }
                 }
@@ -215,7 +215,7 @@ class AdminModulesPositionsControllerCore extends AdminController
                     ) {
                         $this->errors[] = Tools::displayError('An error occurred while deleting the module from its hook.');
                     } else {
-                        Tools::redirectAdmin(self::$currentIndex.'&conf=17'.($this->display_key ? '&show_modules='.$this->display_key : '').'&token='.$this->token);
+                        Tools::redirectAdmin(static::$currentIndex.'&conf=17'.($this->display_key ? '&show_modules='.$this->display_key : '').'&token='.$this->token);
                     }
                 }
             } else {
@@ -242,7 +242,7 @@ class AdminModulesPositionsControllerCore extends AdminController
                     }
                 }
                 if (!count($this->errors)) {
-                    Tools::redirectAdmin(self::$currentIndex.'&conf=17'.($this->display_key ? '&show_modules='.$this->display_key : '').'&token='.$this->token);
+                    Tools::redirectAdmin(static::$currentIndex.'&conf=17'.($this->display_key ? '&show_modules='.$this->display_key : '').'&token='.$this->token);
                 }
             }
         } else {
@@ -291,7 +291,7 @@ class AdminModulesPositionsControllerCore extends AdminController
     public function initPageHeaderToolbar()
     {
         $this->page_header_toolbar_btn['save'] = [
-            'href' => self::$currentIndex.'&addToHook'.($this->display_key ? '&show_modules='.$this->display_key : '').'&token='.$this->token,
+            'href' => static::$currentIndex.'&addToHook'.($this->display_key ? '&show_modules='.$this->display_key : '').'&token='.$this->token,
             'desc' => $this->l('Transplant a module', null, null, false),
             'icon' => 'process-icon-anchor',
         ];
@@ -319,7 +319,7 @@ class AdminModulesPositionsControllerCore extends AdminController
         if (Tools::isSubmit('editGraft')) {
             // Check auth for this page
             if (!$idModule || !$idHook) {
-                Tools::redirectAdmin(self::$currentIndex.'&token='.$this->token);
+                Tools::redirectAdmin(static::$currentIndex.'&token='.$this->token);
             }
 
             $sql = 'SELECT id_module
@@ -328,7 +328,7 @@ class AdminModulesPositionsControllerCore extends AdminController
 						AND id_hook = '.$idHook.'
 						AND id_shop IN('.implode(', ', Shop::getContextListShopID()).')';
             if (!Db::getInstance()->getValue($sql)) {
-                Tools::redirectAdmin(self::$currentIndex.'&token='.$this->token);
+                Tools::redirectAdmin(static::$currentIndex.'&token='.$this->token);
             }
 
             $slModule = Module::getInstanceById($idModule);
@@ -371,7 +371,7 @@ class AdminModulesPositionsControllerCore extends AdminController
         $tpl = $this->createTemplate('form.tpl');
         $tpl->assign(
             [
-                'url_submit'          => self::$currentIndex.'&token='.$this->token,
+                'url_submit'          => static::$currentIndex.'&token='.$this->token,
                 'edit_graft'          => Tools::isSubmit('editGraft'),
                 'id_module'           => (int) Tools::getValue('id_module'),
                 'id_hook'             => (int) Tools::getValue('id_hook'),
@@ -498,7 +498,7 @@ class AdminModulesPositionsControllerCore extends AdminController
         $this->addJqueryPlugin('tablednd');
 
         $this->toolbar_btn['save'] = [
-            'href' => self::$currentIndex.'&addToHook'.($this->display_key ? '&show_modules='.$this->display_key : '').'&token='.$this->token,
+            'href' => static::$currentIndex.'&addToHook'.($this->display_key ? '&show_modules='.$this->display_key : '').'&token='.$this->token,
             'desc' => $this->l('Transplant a module'),
         ];
 
@@ -517,14 +517,14 @@ class AdminModulesPositionsControllerCore extends AdminController
                 'title'              => $this->toolbar_title,
                 'toolbar_scroll'     => 'false',
                 'token'              => $this->token,
-                'url_show_modules'   => self::$currentIndex.'&token='.$this->token.'&show_modules=',
+                'url_show_modules'   => static::$currentIndex.'&token='.$this->token.'&show_modules=',
                 'modules'            => $moduleInstances,
-                'url_show_invisible' => self::$currentIndex.'&token='.$this->token.'&show_modules='.(int) Tools::getValue('show_modules').'&hook_position=',
+                'url_show_invisible' => static::$currentIndex.'&token='.$this->token.'&show_modules='.(int) Tools::getValue('show_modules').'&hook_position=',
                 'live_edit'          => Shop::isFeatureActive() && Shop::getContext() != Shop::CONTEXT_SHOP,
                 'url_live_edit'      => $this->getLiveEditUrl($liveEditParams),
                 'display_key'        => $this->display_key,
                 'hooks'              => $hooks,
-                'url_submit'         => self::$currentIndex.'&token='.$this->token,
+                'url_submit'         => static::$currentIndex.'&token='.$this->token,
                 'can_move'           => (Shop::isFeatureActive() && Shop::getContext() != Shop::CONTEXT_SHOP) ? false : true,
             ]
         );

@@ -55,8 +55,8 @@ class AdminCmsContentControllerCore extends AdminController
         $this->bootstrap = true;
         /* Get current category */
         $idCmsCategory = (int) Tools::getValue('id_cms_category', Tools::getValue('id_cms_category_parent', 1));
-        self::$category = new CMSCategory($idCmsCategory);
-        if (!Validate::isLoadedObject(self::$category)) {
+        static::$category = new CMSCategory($idCmsCategory);
+        if (!Validate::isLoadedObject(static::$category)) {
             die('Category cannot be loaded');
         }
 
@@ -86,7 +86,7 @@ class AdminCmsContentControllerCore extends AdminController
      */
     public static function getCurrentCMSCategory()
     {
-        return self::$category;
+        return static::$category;
     }
 
     /**
@@ -137,10 +137,10 @@ class AdminCmsContentControllerCore extends AdminController
             // CMS categories breadcrumb
             $cmsTabs = ['cms_category', 'cms'];
             // Cleaning links
-            $catBarIndex = self::$currentIndex;
+            $catBarIndex = static::$currentIndex;
             foreach ($cmsTabs as $tab) {
                 if (Tools::getValue($tab.'Orderby') && Tools::getValue($tab.'Orderway')) {
-                    $catBarIndex = preg_replace('/&'.$tab.'Orderby=([a-z _]*)&'.$tab.'Orderway=([a-z]*)/i', '', self::$currentIndex);
+                    $catBarIndex = preg_replace('/&'.$tab.'Orderby=([a-z _]*)&'.$tab.'Orderway=([a-z]*)/i', '', static::$currentIndex);
                 }
             }
             $this->context->smarty->assign(
@@ -202,12 +202,12 @@ class AdminCmsContentControllerCore extends AdminController
 
         if ($this->display == 'list') {
             $this->page_header_toolbar_btn['new_cms_category'] = [
-                'href' => self::$currentIndex.'&addcms_category&token='.$this->token,
+                'href' => static::$currentIndex.'&addcms_category&token='.$this->token,
                 'desc' => $this->l('Add new CMS category', null, null, false),
                 'icon' => 'process-icon-new',
             ];
             $this->page_header_toolbar_btn['new_cms_page'] = [
-                'href' => self::$currentIndex.'&addcms&id_cms_category='.(int) $idCmsCategory.'&token='.$this->token,
+                'href' => static::$currentIndex.'&addcms&id_cms_category='.(int) $idCmsCategory.'&token='.$this->token,
                 'desc' => $this->l('Add new CMS page', null, null, false),
                 'icon' => 'process-icon-new',
             ];

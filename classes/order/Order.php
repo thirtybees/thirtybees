@@ -583,7 +583,7 @@ class OrderCore extends ObjectModel
             }
         }
 
-        if (!isset(self::$_historyCache[$this->id.'_'.$idOrderState.'_'.$filters]) || $noHidden) {
+        if (!isset(static::$_historyCache[$this->id.'_'.$idOrderState.'_'.$filters]) || $noHidden) {
             $idLang = $idLang ? (int) $idLang : 'o.`id_lang`';
             $result = Db::getInstance()->executeS('
 			SELECT os.*, oh.*, e.`firstname` as employee_firstname, e.`lastname` as employee_lastname, osl.`name` as ostate_name
@@ -603,10 +603,10 @@ class OrderCore extends ObjectModel
             if ($noHidden) {
                 return $result;
             }
-            self::$_historyCache[$this->id.'_'.$idOrderState.'_'.$filters] = $result;
+            static::$_historyCache[$this->id.'_'.$idOrderState.'_'.$filters] = $result;
         }
 
-        return self::$_historyCache[$this->id.'_'.$idOrderState.'_'.$filters];
+        return static::$_historyCache[$this->id.'_'.$idOrderState.'_'.$filters];
     }
 
     /**

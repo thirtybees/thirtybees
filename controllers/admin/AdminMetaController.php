@@ -288,7 +288,7 @@ class AdminMetaControllerCore extends AdminController
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_meta'] = [
-                'href' => self::$currentIndex.'&addmeta&token='.$this->token,
+                'href' => static::$currentIndex.'&addmeta&token='.$this->token,
                 'desc' => $this->l('Add a new page', null, null, false),
                 'icon' => 'process-icon-new',
             ];
@@ -641,7 +641,7 @@ class AdminMetaControllerCore extends AdminController
 
             fclose($writeFd);
 
-            $this->redirect_after = self::$currentIndex.'&conf=4&token='.$this->token;
+            $this->redirect_after = static::$currentIndex.'&conf=4&token='.$this->token;
         }
     }
 

@@ -132,7 +132,7 @@ class AdminCmsCategoriesControllerCore extends AdminController
             $object = parent::postProcess();
             $this->updateAssoShop((int) Tools::getValue('id_cms_category'));
             if ($object !== false) {
-                Tools::redirectAdmin(self::$currentIndex.'&conf=3&id_cms_category='.(int) $object->id.'&token='.Tools::getValue('token'));
+                Tools::redirectAdmin(static::$currentIndex.'&conf=3&id_cms_category='.(int) $object->id.'&token='.Tools::getValue('token'));
             }
 
             return $object;
@@ -142,7 +142,7 @@ class AdminCmsCategoriesControllerCore extends AdminController
                 if (Validate::isLoadedObject($object = $this->loadObject())) {
                     if ($object->toggleStatus()) {
                         $identifier = ((int) $object->id_parent ? '&id_cms_category='.(int) $object->id_parent : '');
-                        Tools::redirectAdmin(self::$currentIndex.'&conf=5'.$identifier.'&token='.Tools::getValue('token'));
+                        Tools::redirectAdmin(static::$currentIndex.'&conf=5'.$identifier.'&token='.Tools::getValue('token'));
                     } else {
                         $this->errors[] = Tools::displayError('An error occurred while updating the status.');
                     }
@@ -164,10 +164,10 @@ class AdminCmsCategoriesControllerCore extends AdminController
                         if ($this->deleted) {
                             $object->deleted = 1;
                             if ($object->update()) {
-                                Tools::redirectAdmin(self::$currentIndex.'&conf=1&token='.Tools::getValue('token').$identifier);
+                                Tools::redirectAdmin(static::$currentIndex.'&conf=1&token='.Tools::getValue('token').$identifier);
                             }
                         } elseif ($object->delete()) {
-                            Tools::redirectAdmin(self::$currentIndex.'&conf=1&token='.Tools::getValue('token').$identifier);
+                            Tools::redirectAdmin(static::$currentIndex.'&conf=1&token='.Tools::getValue('token').$identifier);
                         }
                         $this->errors[] = Tools::displayError('An error occurred during deletion.');
                     }
@@ -189,7 +189,7 @@ class AdminCmsCategoriesControllerCore extends AdminController
                 $identifier = ((int) $object->id_parent ? '&'.$this->identifier.'='.(int) $object->id_parent : '');
                 $token = Tools::getAdminTokenLite('AdminCmsContent');
                 Tools::redirectAdmin(
-                    self::$currentIndex.'&'.$this->table.'Orderby=position&'.$this->table.'Orderway=asc&conf=5'.$identifier.'&token='.$token
+                    static::$currentIndex.'&'.$this->table.'Orderby=position&'.$this->table.'Orderway=asc&conf=5'.$identifier.'&token='.$token
                 );
             }
         } /* Delete multiple objects */
@@ -202,7 +202,7 @@ class AdminCmsCategoriesControllerCore extends AdminController
                     if ($result) {
                         $cmsCategory->cleanPositions((int) Tools::getValue('id_cms_category'));
                         $token = Tools::getAdminTokenLite('AdminCmsContent');
-                        Tools::redirectAdmin(self::$currentIndex.'&conf=2&token='.$token.'&id_cms_category='.(int) Tools::getValue('id_cms_category'));
+                        Tools::redirectAdmin(static::$currentIndex.'&conf=2&token='.$token.'&id_cms_category='.(int) Tools::getValue('id_cms_category'));
                     }
                     $this->errors[] = Tools::displayError('An error occurred while deleting this selection.');
                 } else {

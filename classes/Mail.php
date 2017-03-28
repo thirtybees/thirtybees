@@ -218,14 +218,14 @@ class MailCore extends ObjectModel
                     $toName = $toName[$key];
                 }
 
-                $toName = (($toName == null || $toName == $addr) ? '' : self::mimeEncode($toName));
+                $toName = (($toName == null || $toName == $addr) ? '' : static::mimeEncode($toName));
                 $message->addTo($addr, $toName);
             }
             $toPlugin = $to[0];
         } else {
             /* Simple recipient, one address */
             $toPlugin = $to;
-            $toName = (($toName == null || $toName == $to) ? '' : self::mimeEncode($toName));
+            $toName = (($toName == null || $toName == $to) ? '' : static::mimeEncode($toName));
             $message->addTo($to, $toName);
         }
         if (isset($bcc)) {
@@ -452,7 +452,7 @@ class MailCore extends ObjectModel
      */
     public static function mimeEncode($string, $charset = 'UTF-8', $newline = "\r\n")
     {
-        if (!self::isMultibyte($string) && Tools::strlen($string) < 75) {
+        if (!static::isMultibyte($string) && Tools::strlen($string) < 75) {
             return $string;
         }
 

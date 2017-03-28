@@ -237,7 +237,7 @@ class AdminPaymentControllerCore extends AdminController
             }
         }
 
-        Tools::redirectAdmin(self::$currentIndex.'&conf=4'.'&token='.$this->token);
+        Tools::redirectAdmin(static::$currentIndex.'&conf=4'.'&token='.$this->token);
     }
 
     /**
@@ -369,7 +369,7 @@ class AdminPaymentControllerCore extends AdminController
             'lists'                => $lists,
             'ps_base_uri'          => __PS_BASE_URI__,
             'payment_modules'      => $this->payment_modules,
-            'url_submit'           => self::$currentIndex.'&token='.$this->token,
+            'url_submit'           => static::$currentIndex.'&token='.$this->token,
             'shop_context'         => $shopContext,
         ];
 

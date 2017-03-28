@@ -717,7 +717,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
                         $ct->update();
                     }
                     Tools::redirectAdmin(
-                        self::$currentIndex.'&id_customer_thread='.(int) $idCustomerThread.'&viewcustomer_thread&token='.Tools::getValue('token')
+                        static::$currentIndex.'&id_customer_thread='.(int) $idCustomerThread.'&viewcustomer_thread&token='.Tools::getValue('token')
                     );
                 } else {
                     $this->errors[] = Tools::displayError('An error occurred. Your message was not sent. Please contact your system administrator.');
@@ -776,7 +776,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
             [
                 'thread_url'        => Tools::getAdminUrl(basename(_PS_ADMIN_DIR_).'/'.$this->context->link->getAdminLink('AdminCustomerThreads').'&amp;id_customer_thread='.(int) $message['id_customer_thread'].'&amp;viewcustomer_thread=1'),
                 'link'              => Context::getContext()->link,
-                'current'           => self::$currentIndex,
+                'current'           => static::$currentIndex,
                 'token'             => $this->token,
                 'message'           => $message,
                 'id_order_product'  => isset($idOrderProduct) ? $idOrderProduct : null,
@@ -802,7 +802,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
     public function initContent()
     {
         if (isset($_GET['filename']) && file_exists(_PS_UPLOAD_DIR_.$_GET['filename']) && Validate::isFileName($_GET['filename'])) {
-            self::openUploadedFile();
+            static::openUploadedFile();
         }
 
         parent::initContent();
@@ -918,21 +918,21 @@ class AdminCustomerThreadsControllerCore extends AdminController
 
         if ($nextThread) {
             $nextThread = [
-                'href' => self::$currentIndex.'&id_customer_thread='.(int) $nextThread.'&viewcustomer_thread&token='.$this->token,
+                'href' => static::$currentIndex.'&id_customer_thread='.(int) $nextThread.'&viewcustomer_thread&token='.$this->token,
                 'name' => $this->l('Reply to the next unanswered message in this thread'),
             ];
         }
 
         if ($thread->status != 'closed') {
             $actions['closed'] = [
-                'href'  => self::$currentIndex.'&viewcustomer_thread&setstatus=2&id_customer_thread='.(int) Tools::getValue('id_customer_thread').'&viewmsg&token='.$this->token,
+                'href'  => static::$currentIndex.'&viewcustomer_thread&setstatus=2&id_customer_thread='.(int) Tools::getValue('id_customer_thread').'&viewmsg&token='.$this->token,
                 'label' => $this->l('Mark as "handled"'),
                 'name'  => 'setstatus',
                 'value' => 2,
             ];
         } else {
             $actions['open'] = [
-                'href'  => self::$currentIndex.'&viewcustomer_thread&setstatus=1&id_customer_thread='.(int) Tools::getValue('id_customer_thread').'&viewmsg&token='.$this->token,
+                'href'  => static::$currentIndex.'&viewcustomer_thread&setstatus=1&id_customer_thread='.(int) Tools::getValue('id_customer_thread').'&viewmsg&token='.$this->token,
                 'label' => $this->l('Re-open'),
                 'name'  => 'setstatus',
                 'value' => 1,
@@ -941,14 +941,14 @@ class AdminCustomerThreadsControllerCore extends AdminController
 
         if ($thread->status != 'pending1') {
             $actions['pending1'] = [
-                'href'  => self::$currentIndex.'&viewcustomer_thread&setstatus=3&id_customer_thread='.(int) Tools::getValue('id_customer_thread').'&viewmsg&token='.$this->token,
+                'href'  => static::$currentIndex.'&viewcustomer_thread&setstatus=3&id_customer_thread='.(int) Tools::getValue('id_customer_thread').'&viewmsg&token='.$this->token,
                 'label' => $this->l('Mark as "pending 1" (will be answered later)'),
                 'name'  => 'setstatus',
                 'value' => 3,
             ];
         } else {
             $actions['pending1'] = [
-                'href'  => self::$currentIndex.'&viewcustomer_thread&setstatus=1&id_customer_thread='.(int) Tools::getValue('id_customer_thread').'&viewmsg&token='.$this->token,
+                'href'  => static::$currentIndex.'&viewcustomer_thread&setstatus=1&id_customer_thread='.(int) Tools::getValue('id_customer_thread').'&viewmsg&token='.$this->token,
                 'label' => $this->l('Disable pending status'),
                 'name'  => 'setstatus',
                 'value' => 1,
@@ -957,14 +957,14 @@ class AdminCustomerThreadsControllerCore extends AdminController
 
         if ($thread->status != 'pending2') {
             $actions['pending2'] = [
-                'href'  => self::$currentIndex.'&viewcustomer_thread&setstatus=4&id_customer_thread='.(int) Tools::getValue('id_customer_thread').'&viewmsg&token='.$this->token,
+                'href'  => static::$currentIndex.'&viewcustomer_thread&setstatus=4&id_customer_thread='.(int) Tools::getValue('id_customer_thread').'&viewmsg&token='.$this->token,
                 'label' => $this->l('Mark as "pending 2" (will be answered later)'),
                 'name'  => 'setstatus',
                 'value' => 4,
             ];
         } else {
             $actions['pending2'] = [
-                'href'  => self::$currentIndex.'&viewcustomer_thread&setstatus=1&id_customer_thread='.(int) Tools::getValue('id_customer_thread').'&viewmsg&token='.$this->token,
+                'href'  => static::$currentIndex.'&viewcustomer_thread&setstatus=1&id_customer_thread='.(int) Tools::getValue('id_customer_thread').'&viewmsg&token='.$this->token,
                 'label' => $this->l('Disable pending status'),
                 'name'  => 'setstatus',
                 'value' => 1,

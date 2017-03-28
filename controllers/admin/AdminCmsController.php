@@ -314,12 +314,12 @@ class AdminCmsControllerCore extends AdminController
     public function renderList()
     {
         $this->_group = 'GROUP BY a.`id_cms`';
-        //self::$currentIndex = self::$currentIndex.'&cms';
+        //static::$currentIndex = static::$currentIndex.'&cms';
         $this->position_group_identifier = (int) $this->id_cms_category;
 
         $this->toolbar_title = $this->l('Pages in this category');
         $this->toolbar_btn['new'] = [
-            'href' => self::$currentIndex.'&add'.$this->table.'&id_cms_category='.(int) $this->id_cms_category.'&token='.$this->token,
+            'href' => static::$currentIndex.'&add'.$this->table.'&id_cms_category='.(int) $this->id_cms_category.'&token='.$this->token,
             'desc' => $this->l('Add new'),
         ];
 
@@ -338,7 +338,7 @@ class AdminCmsControllerCore extends AdminController
         if (Tools::isSubmit('viewcms') && ($idCms = (int) Tools::getValue('id_cms'))) {
             parent::postProcess();
             if (($cms = new CMS($idCms, $this->context->language->id)) && Validate::isLoadedObject($cms)) {
-                Tools::redirectAdmin(self::$currentIndex.'&id_cms='.$idCms.'&conf=4&updatecms&token='.Tools::getAdminTokenLite('AdminCmsContent').'&url_preview=1');
+                Tools::redirectAdmin(static::$currentIndex.'&id_cms='.$idCms.'&conf=4&updatecms&token='.Tools::getAdminTokenLite('AdminCmsContent').'&url_preview=1');
             }
         } elseif (Tools::isSubmit('deletecms')) {
             if (Tools::getValue('id_cms') == Configuration::get('PS_CONDITIONS_CMS_ID')) {
@@ -350,7 +350,7 @@ class AdminCmsControllerCore extends AdminController
             if (!$cms->delete()) {
                 $this->errors[] = Tools::displayError('An error occurred while deleting the object.').' <b>'.$this->table.' ('.Db::getInstance()->getMsgError().')</b>';
             } else {
-                Tools::redirectAdmin(self::$currentIndex.'&id_cms_category='.$cms->id_cms_category.'&conf=1&token='.Tools::getAdminTokenLite('AdminCmsContent'));
+                Tools::redirectAdmin(static::$currentIndex.'&id_cms_category='.$cms->id_cms_category.'&conf=1&token='.Tools::getAdminTokenLite('AdminCmsContent'));
             }
         } elseif (Tools::getValue('submitDel'.$this->table)) {
             if ($this->tabAccess['delete'] === '1') {
@@ -360,7 +360,7 @@ class AdminCmsControllerCore extends AdminController
                     if ($result) {
                         $cms->cleanPositions((int) Tools::getValue('id_cms_category'));
                         $token = Tools::getAdminTokenLite('AdminCmsContent');
-                        Tools::redirectAdmin(self::$currentIndex.'&conf=2&token='.$token.'&id_cms_category='.(int) Tools::getValue('id_cms_category'));
+                        Tools::redirectAdmin(static::$currentIndex.'&conf=2&token='.$token.'&id_cms_category='.(int) Tools::getValue('id_cms_category'));
                     }
                     $this->errors[] = Tools::displayError('An error occurred while deleting this selection.');
                 } else {
@@ -392,11 +392,11 @@ class AdminCmsControllerCore extends AdminController
                 }
             }
             if (Tools::isSubmit('view'.$this->table)) {
-                Tools::redirectAdmin(self::$currentIndex.'&id_cms='.$cms->id.'&conf=4&updatecms&token='.Tools::getAdminTokenLite('AdminCmsContent').'&url_preview=1');
+                Tools::redirectAdmin(static::$currentIndex.'&id_cms='.$cms->id.'&conf=4&updatecms&token='.Tools::getAdminTokenLite('AdminCmsContent').'&url_preview=1');
             } elseif (Tools::isSubmit('submitAdd'.$this->table.'AndStay')) {
-                Tools::redirectAdmin(self::$currentIndex.'&'.$this->identifier.'='.$cms->id.'&conf=4&update'.$this->table.'&token='.Tools::getAdminTokenLite('AdminCmsContent'));
+                Tools::redirectAdmin(static::$currentIndex.'&'.$this->identifier.'='.$cms->id.'&conf=4&update'.$this->table.'&token='.Tools::getAdminTokenLite('AdminCmsContent'));
             } else {
-                Tools::redirectAdmin(self::$currentIndex.'&id_cms_category='.$cms->id_cms_category.'&conf=4&token='.Tools::getAdminTokenLite('AdminCmsContent'));
+                Tools::redirectAdmin(static::$currentIndex.'&id_cms_category='.$cms->id_cms_category.'&conf=4&token='.Tools::getAdminTokenLite('AdminCmsContent'));
             }
         } elseif (Tools::isSubmit('way') && Tools::isSubmit('id_cms') && (Tools::isSubmit('position'))) {
             /** @var CMS $object */
@@ -407,14 +407,14 @@ class AdminCmsControllerCore extends AdminController
             } elseif (!$object->updatePosition((int) Tools::getValue('way'), (int) Tools::getValue('position'))) {
                 $this->errors[] = Tools::displayError('Failed to update the position.');
             } else {
-                Tools::redirectAdmin(self::$currentIndex.'&'.$this->table.'Orderby=position&'.$this->table.'Orderway=asc&conf=4&id_cms_category='.(int) $object->id_cms_category.'&token='.Tools::getAdminTokenLite('AdminCmsContent'));
+                Tools::redirectAdmin(static::$currentIndex.'&'.$this->table.'Orderby=position&'.$this->table.'Orderway=asc&conf=4&id_cms_category='.(int) $object->id_cms_category.'&token='.Tools::getAdminTokenLite('AdminCmsContent'));
             }
         } elseif (Tools::isSubmit('statuscms') && Tools::isSubmit($this->identifier)) {
             if ($this->tabAccess['edit'] === '1') {
                 if (Validate::isLoadedObject($object = $this->loadObject())) {
                     /** @var CMS $object */
                     if ($object->toggleStatus()) {
-                        Tools::redirectAdmin(self::$currentIndex.'&conf=5&id_cms_category='.(int) $object->id_cms_category.'&token='.Tools::getValue('token'));
+                        Tools::redirectAdmin(static::$currentIndex.'&conf=5&id_cms_category='.(int) $object->id_cms_category.'&token='.Tools::getValue('token'));
                     } else {
                         $this->errors[] = Tools::displayError('An error occurred while updating the status.');
                     }
@@ -434,7 +434,7 @@ class AdminCmsControllerCore extends AdminController
                     if (!$res = parent::postProcess()) {
                         return $res;
                     }
-                    Tools::redirectAdmin(self::$currentIndex.'&conf=2&token='.Tools::getAdminTokenLite('AdminCmsContent').'&id_cms_category='.$idCmsCategory);
+                    Tools::redirectAdmin(static::$currentIndex.'&conf=2&token='.Tools::getAdminTokenLite('AdminCmsContent').'&id_cms_category='.$idCmsCategory);
                 }
             } else {
                 $this->errors[] = Tools::displayError('You do not have permission to delete this.');

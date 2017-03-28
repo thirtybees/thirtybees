@@ -347,7 +347,7 @@ abstract class PaymentModuleCore extends Module
         $secureKey = false,
         Shop $shop = null
     ) {
-        if (self::DEBUG_MODE) {
+        if (static::DEBUG_MODE) {
             Logger::addLog('PaymentModule::validateOrder - Function called', 1, null, 'Cart', (int) $idCart, true);
         }
 
@@ -517,7 +517,7 @@ abstract class PaymentModuleCore extends Module
                     $order->invoice_date = '0000-00-00 00:00:00';
                     $order->delivery_date = '0000-00-00 00:00:00';
 
-                    if (self::DEBUG_MODE) {
+                    if (static::DEBUG_MODE) {
                         Logger::addLog('PaymentModule::validateOrder - Order is about to be added', 1, null, 'Cart', (int) $idCart, true);
                     }
 
@@ -539,7 +539,7 @@ abstract class PaymentModuleCore extends Module
 
                     $orderList[] = $order;
 
-                    if (self::DEBUG_MODE) {
+                    if (static::DEBUG_MODE) {
                         Logger::addLog('PaymentModule::validateOrder - OrderDetail is about to be added', 1, null, 'Cart', (int) $idCart, true);
                     }
 
@@ -548,7 +548,7 @@ abstract class PaymentModuleCore extends Module
                     $orderDetail->createList($order, $this->context->cart, $idOrderState, $order->product_list, 0, true, $packageList[$idAddress][$idPackage]['id_warehouse']);
                     $orderDetailList[] = $orderDetail;
 
-                    if (self::DEBUG_MODE) {
+                    if (static::DEBUG_MODE) {
                         Logger::addLog('PaymentModule::validateOrder - OrderCarrier is about to be added', 1, null, 'Cart', (int) $idCart, true);
                     }
 
@@ -575,7 +575,7 @@ abstract class PaymentModuleCore extends Module
                 throw new PrestaShopException('The order address country is not active.');
             }
 
-            if (self::DEBUG_MODE) {
+            if (static::DEBUG_MODE) {
                 Logger::addLog('PaymentModule::validateOrder - Payment is about to be added', 1, null, 'Cart', (int) $idCart, true);
             }
 
@@ -616,7 +616,7 @@ abstract class PaymentModuleCore extends Module
                         $msg = new Message();
                         $message = strip_tags($message, '<br>');
                         if (Validate::isCleanHtml($message)) {
-                            if (self::DEBUG_MODE) {
+                            if (static::DEBUG_MODE) {
                                 Logger::addLog('PaymentModule::validateOrder - Message is about to be added', 1, null, 'Cart', (int) $idCart, true);
                             }
                             $msg->message = $message;
@@ -843,7 +843,7 @@ abstract class PaymentModuleCore extends Module
                         }
                     }
 
-                    if (self::DEBUG_MODE) {
+                    if (static::DEBUG_MODE) {
                         Logger::addLog('PaymentModule::validateOrder - Hook validateOrder is about to be called', 1, null, 'Cart', (int) $idCart, true);
                     }
 
@@ -864,7 +864,7 @@ abstract class PaymentModuleCore extends Module
                         }
                     }
 
-                    if (self::DEBUG_MODE) {
+                    if (static::DEBUG_MODE) {
                         Logger::addLog('PaymentModule::validateOrder - Order Status is about to be added', 1, null, 'Cart', (int) $idCart, true);
                     }
 
@@ -967,7 +967,7 @@ abstract class PaymentModuleCore extends Module
                             $fileAttachment = null;
                         }
 
-                        if (self::DEBUG_MODE) {
+                        if (static::DEBUG_MODE) {
                             Logger::addLog('PaymentModule::validateOrder - Mail is about to be sent', 1, null, 'Cart', (int) $idCart, true);
                         }
 
@@ -1015,7 +1015,7 @@ abstract class PaymentModuleCore extends Module
                 $this->currentOrder = (int) $order->id;
             }
 
-            if (self::DEBUG_MODE) {
+            if (static::DEBUG_MODE) {
                 Logger::addLog('PaymentModule::validateOrder - End of validateOrder', 1, null, 'Cart', (int) $idCart, true);
             }
 

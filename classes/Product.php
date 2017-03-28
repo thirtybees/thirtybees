@@ -294,12 +294,12 @@ class ProductCore extends ObjectModel
             'available_later'           => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'IsGenericName', 'size' => 255],
         ],
         'associations'   => [
-            'manufacturer'     => ['type' => self::HAS_ONE],
-            'supplier'         => ['type' => self::HAS_ONE],
-            'default_category' => ['type' => self::HAS_ONE, 'field' => 'id_category_default', 'object' => 'Category'],
-            'tax_rules_group'  => ['type' => self::HAS_ONE],
-            'categories'       => ['type' => self::HAS_MANY, 'field' => 'id_category', 'object' => 'Category', 'association' => 'category_product'],
-            'stock_availables' => ['type' => self::HAS_MANY, 'field' => 'id_stock_available', 'object' => 'StockAvailable', 'association' => 'stock_availables'],
+            'manufacturer'     => ['type' => static::HAS_ONE],
+            'supplier'         => ['type' => static::HAS_ONE],
+            'default_category' => ['type' => static::HAS_ONE, 'field' => 'id_category_default', 'object' => 'Category'],
+            'tax_rules_group'  => ['type' => static::HAS_ONE],
+            'categories'       => ['type' => static::HAS_MANY, 'field' => 'id_category', 'object' => 'Category', 'association' => 'category_product'],
+            'stock_availables' => ['type' => static::HAS_MANY, 'field' => 'id_stock_available', 'object' => 'StockAvailable', 'association' => 'stock_availables'],
         ],
     ];
 
@@ -791,18 +791,18 @@ class ProductCore extends ObjectModel
             $realQuantity
         );
 
-        if (isset(self::$_prices[$cacheId])) {
+        if (isset(static::$_prices[$cacheId])) {
             /* Affect reference before returning cache */
             if (isset($specificPrice['price']) && $specificPrice['price'] > 0) {
-                $specificPrice['price'] = self::$_prices[$cacheId];
+                $specificPrice['price'] = static::$_prices[$cacheId];
             }
 
-            return self::$_prices[$cacheId];
+            return static::$_prices[$cacheId];
         }
 
         // fetch price & attribute price
         $cacheId2 = $idProduct.'-'.$idShop;
-        if (!isset(self::$_pricesLevel2[$cacheId2])) {
+        if (!isset(static::$_pricesLevel2[$cacheId2])) {
             $sql = new DbQuery();
             $sql->select('product_shop.`price`, product_shop.`ecotax`');
             $sql->from('product', 'p');
@@ -824,20 +824,20 @@ class ProductCore extends ObjectModel
                         'ecotax'          => $row['ecotax'],
                         'attribute_price' => (isset($row['attribute_price']) ? $row['attribute_price'] : null),
                     ];
-                    self::$_pricesLevel2[$cacheId2][(int) $row['id_product_attribute']] = $arrayTmp;
+                    static::$_pricesLevel2[$cacheId2][(int) $row['id_product_attribute']] = $arrayTmp;
 
                     if (isset($row['default_on']) && $row['default_on'] == 1) {
-                        self::$_pricesLevel2[$cacheId2][0] = $arrayTmp;
+                        static::$_pricesLevel2[$cacheId2][0] = $arrayTmp;
                     }
                 }
             }
         }
 
-        if (!isset(self::$_pricesLevel2[$cacheId2][(int) $idProductAttribute])) {
+        if (!isset(static::$_pricesLevel2[$cacheId2][(int) $idProductAttribute])) {
             return;
         }
 
-        $result = self::$_pricesLevel2[$cacheId2][(int) $idProductAttribute];
+        $result = static::$_pricesLevel2[$cacheId2][(int) $idProductAttribute];
 
         if (!$specificPrice || $specificPrice['price'] < 0) {
             $price = (float) $result['price'];
@@ -948,9 +948,9 @@ class ProductCore extends ObjectModel
             $price = 0;
         }
 
-        self::$_prices[$cacheId] = $price;
+        static::$_prices[$cacheId] = $price;
 
-        return self::$_prices[$cacheId];
+        return static::$_prices[$cacheId];
     }
 
     /**
@@ -1145,11 +1145,11 @@ class ProductCore extends ObjectModel
      */
     public static function getTaxCalculationMethod($idCustomer = null)
     {
-        if (self::$_taxCalculationMethod === null || $idCustomer !== null) {
+        if (static::$_taxCalculationMethod === null || $idCustomer !== null) {
             Product::initPricesComputation($idCustomer);
         }
 
-        return (int) self::$_taxCalculationMethod;
+        return (int) static::$_taxCalculationMethod;
     }
 
     /**
@@ -1165,7 +1165,7 @@ class ProductCore extends ObjectModel
             if (!Validate::isLoadedObject($customer)) {
                 die(Tools::displayError());
             }
-            self::$_taxCalculationMethod = Group::getPriceDisplayMethod((int) $customer->id_default_group);
+            static::$_taxCalculationMethod = Group::getPriceDisplayMethod((int) $customer->id_default_group);
             $curCart = Context::getContext()->cart;
             $idAddress = 0;
             if (Validate::isLoadedObject($curCart)) {
@@ -1173,15 +1173,15 @@ class ProductCore extends ObjectModel
             }
             $addressInfos = Address::getCountryAndState($idAddress);
 
-            if (self::$_taxCalculationMethod != PS_TAX_EXC
+            if (static::$_taxCalculationMethod != PS_TAX_EXC
                 && !empty($addressInfos['vat_number'])
                 && $addressInfos['id_country'] != Configuration::get('VATNUMBER_COUNTRY')
                 && Configuration::get('VATNUMBER_MANAGEMENT')
             ) {
-                self::$_taxCalculationMethod = PS_TAX_EXC;
+                static::$_taxCalculationMethod = PS_TAX_EXC;
             }
         } else {
-            self::$_taxCalculationMethod = Group::getPriceDisplayMethod(Group::getCurrent()->id);
+            static::$_taxCalculationMethod = Group::getPriceDisplayMethod(Group::getCurrent()->id);
         }
     }
 
@@ -1567,7 +1567,7 @@ class ProductCore extends ObjectModel
 
         $productImplode = [];
         foreach ($productIds as $idProduct) {
-            if ((int) $idProduct && !array_key_exists($idProduct.'-'.$idLang, self::$_cacheFeatures)) {
+            if ((int) $idProduct && !array_key_exists($idProduct.'-'.$idLang, static::$_cacheFeatures)) {
                 $productImplode[] = (int) $idProduct;
             }
         }
@@ -1588,11 +1588,11 @@ class ProductCore extends ObjectModel
         );
 
         foreach ($result as $row) {
-            if (!array_key_exists($row['id_product'].'-'.$idLang, self::$_frontFeaturesCache)) {
-                self::$_frontFeaturesCache[$row['id_product'].'-'.$idLang] = [];
+            if (!array_key_exists($row['id_product'].'-'.$idLang, static::$_frontFeaturesCache)) {
+                static::$_frontFeaturesCache[$row['id_product'].'-'.$idLang] = [];
             }
-            if (!isset(self::$_frontFeaturesCache[$row['id_product'].'-'.$idLang][$row['id_feature']])) {
-                self::$_frontFeaturesCache[$row['id_product'].'-'.$idLang][$row['id_feature']] = $row;
+            if (!isset(static::$_frontFeaturesCache[$row['id_product'].'-'.$idLang][$row['id_feature']])) {
+                static::$_frontFeaturesCache[$row['id_product'].'-'.$idLang][$row['id_feature']] = $row;
             }
         }
     }
@@ -1664,8 +1664,8 @@ class ProductCore extends ObjectModel
             $cacheKey .= '-pack'.$row['id_product_pack'];
         }
 
-        if (isset(self::$producPropertiesCache[$cacheKey])) {
-            return array_merge($row, self::$producPropertiesCache[$cacheKey]);
+        if (isset(static::$producPropertiesCache[$cacheKey])) {
+            return array_merge($row, static::$producPropertiesCache[$cacheKey]);
         }
 
         // Datas
@@ -1681,10 +1681,10 @@ class ProductCore extends ObjectModel
             (int) $row['id_product'],
             false,
             $idProductAttribute,
-            (self::$_taxCalculationMethod == PS_TAX_EXC ? 2 : 6)
+            (static::$_taxCalculationMethod == PS_TAX_EXC ? 2 : 6)
         );
 
-        if (self::$_taxCalculationMethod == PS_TAX_EXC) {
+        if (static::$_taxCalculationMethod == PS_TAX_EXC) {
             $row['price_tax_exc'] = Tools::ps_round($row['price_tax_exc'], 2);
             $row['price'] = Product::getPriceStatic(
                 (int) $row['id_product'],
@@ -1782,9 +1782,9 @@ class ProductCore extends ObjectModel
         }
 
         $row = Product::getTaxesInformations($row, $context);
-        self::$producPropertiesCache[$cacheKey] = $row;
+        static::$producPropertiesCache[$cacheKey] = $row;
 
-        return self::$producPropertiesCache[$cacheKey];
+        return static::$producPropertiesCache[$cacheKey];
     }
 
     /**
@@ -1883,8 +1883,8 @@ class ProductCore extends ObjectModel
         if (!Feature::isFeatureActive()) {
             return [];
         }
-        if (!array_key_exists($idProduct.'-'.$idLang, self::$_frontFeaturesCache)) {
-            self::$_frontFeaturesCache[$idProduct.'-'.$idLang] = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        if (!array_key_exists($idProduct.'-'.$idLang, static::$_frontFeaturesCache)) {
+            static::$_frontFeaturesCache[$idProduct.'-'.$idLang] = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                 '
 				SELECT name, value, pf.id_feature
 				FROM '._DB_PREFIX_.'feature_product pf
@@ -1897,7 +1897,7 @@ class ProductCore extends ObjectModel
             );
         }
 
-        return self::$_frontFeaturesCache[$idProduct.'-'.$idLang];
+        return static::$_frontFeaturesCache[$idProduct.'-'.$idLang];
     }
 
     /**
@@ -2526,7 +2526,7 @@ class ProductCore extends ObjectModel
 
         $productImplode = [];
         foreach ($productIds as $idProduct) {
-            if ((int) $idProduct && !array_key_exists($idProduct, self::$_cacheFeatures)) {
+            if ((int) $idProduct && !array_key_exists($idProduct, static::$_cacheFeatures)) {
                 $productImplode[] = (int) $idProduct;
             }
         }
@@ -2541,10 +2541,10 @@ class ProductCore extends ObjectModel
 		WHERE `id_product` IN ('.implode($productImplode, ',').')'
         );
         foreach ($result as $row) {
-            if (!array_key_exists($row['id_product'], self::$_cacheFeatures)) {
-                self::$_cacheFeatures[$row['id_product']] = [];
+            if (!array_key_exists($row['id_product'], static::$_cacheFeatures)) {
+                static::$_cacheFeatures[$row['id_product']] = [];
             }
-            self::$_cacheFeatures[$row['id_product']][] = $row;
+            static::$_cacheFeatures[$row['id_product']][] = $row;
         }
     }
 
@@ -2700,7 +2700,7 @@ class ProductCore extends ObjectModel
             }
         }
 
-        $impacts = self::getAttributesImpacts($idProductOld);
+        $impacts = static::getAttributesImpacts($idProductOld);
 
         if (is_array($impacts) && count($impacts)) {
             $impactSql = 'INSERT INTO `'._DB_PREFIX_.'attribute_impact` (`id_product`, `id_attribute`, `weight`, `price`) VALUES ';
@@ -3286,14 +3286,14 @@ class ProductCore extends ObjectModel
         $sql = rtrim($sql, ',').')';
 
         $hash = md5($sql);
-        if (!isset(self::$_incat[$hash])) {
+        if (!isset(static::$_incat[$hash])) {
             if (!Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql)) {
                 return false;
             }
-            self::$_incat[$hash] = (Db::getInstance(_PS_USE_SQL_SLAVE_)->NumRows() > 0 ? true : false);
+            static::$_incat[$hash] = (Db::getInstance(_PS_USE_SQL_SLAVE_)->NumRows() > 0 ? true : false);
         }
 
-        return self::$_incat[$hash];
+        return static::$_incat[$hash];
     }
 
     /**
@@ -3581,8 +3581,8 @@ class ProductCore extends ObjectModel
      */
     public static function flushPriceCache()
     {
-        self::$_prices = [];
-        self::$_pricesLevel2 = [];
+        static::$_prices = [];
+        static::$_pricesLevel2 = [];
     }
 
     /**
@@ -6419,7 +6419,7 @@ class ProductCore extends ObjectModel
      */
     public function checkAccess($idCustomer)
     {
-        return self::checkAccessStatic((int) $this->id, (int) $idCustomer);
+        return static::checkAccessStatic((int) $this->id, (int) $idCustomer);
     }
 
     /**
@@ -6591,7 +6591,7 @@ class ProductCore extends ObjectModel
      */
     public function getFeatures()
     {
-        return self::getFeaturesStatic((int) $this->id);
+        return static::getFeaturesStatic((int) $this->id);
     }
 
     /**
@@ -6607,8 +6607,8 @@ class ProductCore extends ObjectModel
         if (!Feature::isFeatureActive()) {
             return [];
         }
-        if (!array_key_exists($idProduct, self::$_cacheFeatures)) {
-            self::$_cacheFeatures[$idProduct] = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        if (!array_key_exists($idProduct, static::$_cacheFeatures)) {
+            static::$_cacheFeatures[$idProduct] = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                 '
 				SELECT fp.id_feature, fp.id_product, fp.id_feature_value, custom
 				FROM `'._DB_PREFIX_.'feature_product` fp
@@ -6617,7 +6617,7 @@ class ProductCore extends ObjectModel
             );
         }
 
-        return self::$_cacheFeatures[$idProduct];
+        return static::$_cacheFeatures[$idProduct];
     }
 
     /**
@@ -7249,7 +7249,7 @@ class ProductCore extends ObjectModel
      */
     public function getAnchor($idProductAttribute, $withId = false)
     {
-        $attributes = self::getAttributesParams($this->id, $idProductAttribute);
+        $attributes = static::getAttributesParams($this->id, $idProductAttribute);
         $anchor = '#';
         $sep = Configuration::get('PS_ATTRIBUTE_ANCHOR_SEPARATOR');
         foreach ($attributes as &$a) {

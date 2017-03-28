@@ -120,7 +120,7 @@ class AdminTabsControllerCore extends AdminController
             ];
         } elseif (empty($this->display)) {
             $this->page_header_toolbar_btn['new_menu'] = [
-                'href' => self::$currentIndex.'&addtab&token='.$this->token,
+                'href' => static::$currentIndex.'&addtab&token='.$this->token,
                 'desc' => $this->l('Add new menu', null, null, false),
                 'icon' => 'process-icon-new',
             ];
@@ -296,7 +296,7 @@ class AdminTabsControllerCore extends AdminController
             $this->_orderBy = 'position';
             $this->_use_found_rows = false;
 
-            self::$currentIndex = self::$currentIndex.'&details'.$this->table;
+            static::$currentIndex = static::$currentIndex.'&details'.$this->table;
             $this->processFilter();
 
             return parent::renderList();
@@ -324,7 +324,7 @@ class AdminTabsControllerCore extends AdminController
 
         if (($idTab = (int) Tools::getValue('id_tab')) && ($direction = Tools::getValue('move')) && Validate::isLoadedObject($tab = new Tab($idTab))) {
             if ($tab->move($direction)) {
-                Tools::redirectAdmin(self::$currentIndex.'&token='.$this->token);
+                Tools::redirectAdmin(static::$currentIndex.'&token='.$this->token);
             }
         } elseif (Tools::getValue('position') && !Tools::isSubmit('submitAdd'.$this->table)) {
             if ($this->tabAccess['edit'] !== '1') {
@@ -336,12 +336,12 @@ class AdminTabsControllerCore extends AdminController
             if (!$object->updatePosition((int) Tools::getValue('way'), (int) Tools::getValue('position'))) {
                 $this->errors[] = Tools::displayError('Failed to update the position.');
             } else {
-                Tools::redirectAdmin(self::$currentIndex.'&conf=5&token='.Tools::getAdminTokenLite('AdminTabs'));
+                Tools::redirectAdmin(static::$currentIndex.'&conf=5&token='.Tools::getAdminTokenLite('AdminTabs'));
             }
         } elseif (Tools::isSubmit('submitAdd'.$this->table) && Tools::getValue('id_tab') === Tools::getValue('id_parent')) {
             $this->errors[] = Tools::displayError('You can\'t put this menu inside itself. ');
         } elseif (Tools::isSubmit('submitAdd'.$this->table) && $idParent = (int) Tools::getValue('id_parent')) {
-            $this->redirect_after = self::$currentIndex.'&id_'.$this->table.'='.$idParent.'&details'.$this->table.'&conf=4&token='.$this->token;
+            $this->redirect_after = static::$currentIndex.'&id_'.$this->table.'='.$idParent.'&details'.$this->table.'&conf=4&token='.$this->token;
         } elseif (isset($_GET['details'.$this->table]) && is_array($this->bulk_actions)) {
             $submitBulkActions = array_merge(
                 [

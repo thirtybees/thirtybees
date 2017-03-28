@@ -120,7 +120,7 @@ class AdminOrderMessageControllerCore extends AdminController
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_order_message'] = [
-                'href' => self::$currentIndex.'&addorder_message&token='.$this->token,
+                'href' => static::$currentIndex.'&addorder_message&token='.$this->token,
                 'desc' => $this->l('Add new order message'),
                 'icon' => 'process-icon-new',
             ];

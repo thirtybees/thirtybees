@@ -151,7 +151,7 @@ class OrderInvoiceCore extends ObjectModel
     {
         $order = new Order($this->id_order);
 
-        $this->shop_address = self::getCurrentFormattedShopAddress($order->id_shop);
+        $this->shop_address = static::getCurrentFormattedShopAddress($order->id_shop);
 
         return parent::add();
     }
@@ -728,7 +728,7 @@ class OrderInvoiceCore extends ObjectModel
     public static function getCarrier($idOrderInvoice)
     {
         $carrier = false;
-        if ($idCarrier = self::getCarrierId($idOrderInvoice)) {
+        if ($idCarrier = static::getCarrierId($idOrderInvoice)) {
             $carrier = new Carrier((int) $idCarrier);
         }
 
@@ -867,9 +867,9 @@ class OrderInvoiceCore extends ObjectModel
         $row = Db::getInstance()->getRow($query);
 
         switch ($mod) {
-            case self::TAX_EXCL:
+            case static::TAX_EXCL:
                 return $row['total_paid_tax_excl'];
-            case self::TAX_INCL:
+            case static::TAX_INCL:
                 return $row['total_paid_tax_incl'];
             default:
                 return $row;
@@ -1045,7 +1045,7 @@ class OrderInvoiceCore extends ObjectModel
         $shopIds = Shop::getShops(false, null, true);
         $db = Db::getInstance();
         foreach ($shopIds as $idShop) {
-            $address = self::getCurrentFormattedShopAddress($idShop);
+            $address = static::getCurrentFormattedShopAddress($idShop);
             $escapedAddress = $db->escape($address, true, true);
 
             $db->execute('UPDATE `'._DB_PREFIX_.'order_invoice` INNER JOIN `'._DB_PREFIX_.'orders` USING (`id_order`)

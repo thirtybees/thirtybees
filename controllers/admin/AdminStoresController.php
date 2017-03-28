@@ -308,7 +308,7 @@ class AdminStoresControllerCore extends AdminController
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_store'] = [
-                'href' => self::$currentIndex.'&addstore&token='.$this->token,
+                'href' => static::$currentIndex.'&addstore&token='.$this->token,
                 'desc' => $this->l('Add new store', null, null, false),
                 'icon' => 'process-icon-new',
             ];

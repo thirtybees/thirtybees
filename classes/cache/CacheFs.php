@@ -47,7 +47,7 @@ class CacheFsCore extends Cache
     {
         $this->depth = (int) Db::getInstance()->getValue('SELECT value FROM '._DB_PREFIX_.'configuration WHERE name= \'PS_CACHEFS_DIRECTORY_DEPTH\'', false);
 
-        $keysFilename = $this->getFilename(self::KEYS_NAME);
+        $keysFilename = $this->getFilename(static::KEYS_NAME);
         if (@filemtime($keysFilename)) {
             $this->keys = unserialize(file_get_contents($keysFilename));
         }
@@ -116,7 +116,7 @@ class CacheFsCore extends Cache
      */
     protected function _writeKeys()
     {
-        @file_put_contents($this->getFilename(self::KEYS_NAME), serialize($this->keys));
+        @file_put_contents($this->getFilename(static::KEYS_NAME), serialize($this->keys));
     }
 
     /**

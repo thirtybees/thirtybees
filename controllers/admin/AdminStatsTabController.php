@@ -83,7 +83,7 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
         $this->context->smarty->assign(
             [
                 'content'                   => $this->content,
-                'url_post'                  => self::$currentIndex.'&token='.$this->token,
+                'url_post'                  => static::$currentIndex.'&token='.$this->token,
                 'show_page_header_toolbar'  => $this->show_page_header_toolbar,
                 'page_header_toolbar_title' => $this->page_header_toolbar_title,
                 'page_header_toolbar_btn'   => $this->page_header_toolbar_btn,
@@ -130,7 +130,7 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
 
         $tpl->assign(
             [
-                'current'             => self::$currentIndex,
+                'current'             => static::$currentIndex,
                 'current_module_name' => Tools::getValue('module', 'statsforecast'),
                 'token'               => $this->token,
                 'modules'             => $modules,
@@ -218,7 +218,7 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
         $action .= (($idProduct = Tools::getValue('id_product')) ? '&id_product='.Tools::safeOutput($idProduct) : '');
         $tpl->assign(
             [
-                'current'        => self::$currentIndex,
+                'current'        => static::$currentIndex,
                 'token'          => $token,
                 'action'         => $action,
                 'table'          => $table,
@@ -301,7 +301,7 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
 
         if (Tools::getValue('submitSettings')) {
             if ($this->tabAccess['edit'] === '1') {
-                self::$currentIndex .= '&module='.Tools::getValue('module');
+                static::$currentIndex .= '&module='.Tools::getValue('module');
                 Configuration::updateValue('PS_STATS_RENDER', Tools::getValue('PS_STATS_RENDER', Configuration::get('PS_STATS_RENDER')));
                 Configuration::updateValue('PS_STATS_GRID_RENDER', Tools::getValue('PS_STATS_GRID_RENDER', Configuration::get('PS_STATS_GRID_RENDER')));
                 Configuration::updateValue('PS_STATS_OLD_CONNECT_AUTO_CLEAN', Tools::getValue('PS_STATS_OLD_CONNECT_AUTO_CLEAN', Configuration::get('PS_STATS_OLD_CONNECT_AUTO_CLEAN')));
@@ -419,7 +419,7 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
 
         $tpl->assign(
             [
-                'current'             => self::$currentIndex,
+                'current'             => static::$currentIndex,
                 'token'               => $this->token,
                 'graph_engine'        => Configuration::get('PS_STATS_RENDER'),
                 'grid_engine'         => Configuration::get('PS_STATS_GRID_RENDER'),

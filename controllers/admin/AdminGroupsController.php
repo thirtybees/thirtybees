@@ -167,7 +167,7 @@ class AdminGroupsControllerCore extends AdminController
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_group'] = [
-                'href' => self::$currentIndex.'&addgroup&token='.$this->token,
+                'href' => static::$currentIndex.'&addgroup&token='.$this->token,
                 'desc' => $this->l('Add new group', null, null, false),
                 'icon' => 'process-icon-new'
             ];
@@ -247,7 +247,7 @@ class AdminGroupsControllerCore extends AdminController
         $this->_join = 'LEFT JOIN `'._DB_PREFIX_.'customer` c ON (a.`id_customer` = c.`id_customer`)';
         $this->_where = 'AND a.`id_group` = '.(int)$group->id.' AND c.`deleted` != 1';
         $this->_where .= Shop::addSqlRestriction(Shop::SHARE_CUSTOMER, 'c');
-        self::$currentIndex = self::$currentIndex.'&id_group='.(int)$group->id.'&viewgroup';
+        static::$currentIndex = static::$currentIndex.'&id_group='.(int)$group->id.'&viewgroup';
 
         $this->processFilter();
         return parent::renderList();
@@ -487,7 +487,7 @@ class AdminGroupsControllerCore extends AdminController
             $result['hasError'] = true;
         } else {
             $result['id_category'] = (int)$id_category;
-            $result['catPath'] = getPath(self::$currentIndex.'?tab=AdminCategories', (int)$id_category);
+            $result['catPath'] = getPath(static::$currentIndex.'?tab=AdminCategories', (int)$id_category);
             $result['discount'] = $category_reduction;
             $result['hasError'] = false;
         }
@@ -559,7 +559,7 @@ class AdminGroupsControllerCore extends AdminController
             $this->errors[] = Tools::displayError('An error occurred while updating this group.');
         }
         Tools::clearSmartyCache();
-        Tools::redirectAdmin(self::$currentIndex.'&token='.$this->token);
+        Tools::redirectAdmin(static::$currentIndex.'&token='.$this->token);
     }
 
     /**
@@ -609,11 +609,11 @@ class AdminGroupsControllerCore extends AdminController
     public function displayEditLink($token = null, $id, $name = null)
     {
         $tpl = $this->createTemplate('helpers/list/list_action_edit.tpl');
-        if (!array_key_exists('Edit', self::$cache_lang)) {
-            self::$cache_lang['Edit'] = $this->l('Edit', 'Helper');
+        if (!array_key_exists('Edit', static::$cache_lang)) {
+            static::$cache_lang['Edit'] = $this->l('Edit', 'Helper');
         }
 
-        $href = self::$currentIndex.'&'.$this->identifier.'='.$id.'&update'.$this->table.'&token='.($token != null ? $token : $this->token);
+        $href = static::$currentIndex.'&'.$this->identifier.'='.$id.'&update'.$this->table.'&token='.($token != null ? $token : $this->token);
 
         if ($this->display == 'view') {
             $href = Context::getContext()->link->getAdminLink('AdminCustomers').'&id_customer='.(int)$id.'&updatecustomer&back='.urlencode($href);
@@ -622,7 +622,7 @@ class AdminGroupsControllerCore extends AdminController
         $tpl->assign(
             [
                 'href' => $href,
-                'action' => self::$cache_lang['Edit'],
+                'action' => static::$cache_lang['Edit'],
                 'id' => $id
             ]
         );

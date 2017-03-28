@@ -174,7 +174,7 @@ class PDFGeneratorCore extends TCPDF
         if (array_key_exists($isoLang, $this->font_by_lang)) {
             $this->font = $this->font_by_lang[$isoLang];
         } else {
-            $this->font = self::DEFAULT_FONT;
+            $this->font = static::DEFAULT_FONT;
         }
 
         $this->setHeaderFont([$this->font, '', PDF_FONT_SIZE_MAIN, '', false]);
@@ -203,7 +203,7 @@ class PDFGeneratorCore extends TCPDF
     public function Footer()
     {
         $this->writeHTML($this->footer);
-        $this->FontFamily = self::DEFAULT_FONT;
+        $this->FontFamily = static::DEFAULT_FONT;
         $this->writeHTML($this->pagination);
     }
 

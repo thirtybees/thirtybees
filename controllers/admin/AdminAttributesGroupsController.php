@@ -149,10 +149,10 @@ class AdminAttributesGroupsControllerCore extends AdminController
         $this->context->smarty->assign(
             [
                 'table'                     => $this->table,
-                'current'                   => self::$currentIndex,
+                'current'                   => static::$currentIndex,
                 'token'                     => $this->token,
                 'content'                   => $this->content,
-                'url_post'                  => self::$currentIndex.'&token='.$this->token,
+                'url_post'                  => static::$currentIndex.'&token='.$this->token,
                 'show_page_header_toolbar'  => $this->show_page_header_toolbar,
                 'page_header_toolbar_title' => $this->page_header_toolbar_title,
                 'page_header_toolbar_btn'   => $this->page_header_toolbar_btn,
@@ -186,25 +186,25 @@ class AdminAttributesGroupsControllerCore extends AdminController
                 }
 
                 $this->toolbar_btn['back'] = [
-                    'href' => self::$currentIndex.'&token='.$this->token,
+                    'href' => static::$currentIndex.'&token='.$this->token,
                     'desc' => $this->l('Back to list', null, null, false),
                 ];
                 break;
             case 'view':
                 $this->toolbar_btn['newAttributes'] = [
-                    'href'  => self::$currentIndex.'&updateattribute&id_attribute_group='.(int) Tools::getValue('id_attribute_group').'&token='.$this->token,
+                    'href'  => static::$currentIndex.'&updateattribute&id_attribute_group='.(int) Tools::getValue('id_attribute_group').'&token='.$this->token,
                     'desc'  => $this->l('Add New Values', null, null, false),
                     'class' => 'toolbar-new',
                 ];
 
                 $this->toolbar_btn['back'] = [
-                    'href' => self::$currentIndex.'&token='.$this->token,
+                    'href' => static::$currentIndex.'&token='.$this->token,
                     'desc' => $this->l('Back to list', null, null, false),
                 ];
                 break;
             default: // list
                 $this->toolbar_btn['new'] = [
-                    'href' => self::$currentIndex.'&add'.$this->table.'&token='.$this->token,
+                    'href' => static::$currentIndex.'&add'.$this->table.'&token='.$this->token,
                     'desc' => $this->l('Add New Attributes', null, null, false),
                 ];
                 if ($this->can_import) {
@@ -223,12 +223,12 @@ class AdminAttributesGroupsControllerCore extends AdminController
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_attribute_group'] = [
-                'href' => self::$currentIndex.'&addattribute_group&token='.$this->token,
+                'href' => static::$currentIndex.'&addattribute_group&token='.$this->token,
                 'desc' => $this->l('Add new attribute', null, null, false),
                 'icon' => 'process-icon-new',
             ];
             $this->page_header_toolbar_btn['new_value'] = [
-                'href' => self::$currentIndex.'&updateattribute&id_attribute_group='.(int) Tools::getValue('id_attribute_group').'&token='.$this->token,
+                'href' => static::$currentIndex.'&updateattribute&id_attribute_group='.(int) Tools::getValue('id_attribute_group').'&token='.$this->token,
                 'desc' => $this->l('Add new value', null, null, false),
                 'icon' => 'process-icon-new',
             ];
@@ -236,7 +236,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
 
         if ($this->display == 'view') {
             $this->page_header_toolbar_btn['new_value'] = [
-                'href' => self::$currentIndex.'&updateattribute&id_attribute_group='.(int) Tools::getValue('id_attribute_group').'&token='.$this->token,
+                'href' => static::$currentIndex.'&updateattribute&id_attribute_group='.(int) Tools::getValue('id_attribute_group').'&token='.$this->token,
                 'desc' => $this->l('Add new value', null, null, false),
                 'icon' => 'process-icon-new',
             ];
@@ -498,7 +498,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
 
             $this->context->smarty->assign(
                 [
-                    'current' => self::$currentIndex.'&id_attribute_group='.(int) $id.'&viewattribute_group',
+                    'current' => static::$currentIndex.'&id_attribute_group='.(int) $id.'&viewattribute_group',
                 ]
             );
 
@@ -542,7 +542,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
             $this->_where = 'AND a.`id_attribute_group` = '.(int) $id;
             $this->_orderBy = 'position';
 
-            self::$currentIndex = self::$currentIndex.'&id_attribute_group='.(int) $id.'&viewattribute_group';
+            static::$currentIndex = static::$currentIndex.'&id_attribute_group='.(int) $id.'&viewattribute_group';
             $this->processFilter();
 
             return parent::renderList();
@@ -654,7 +654,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
     {
         if (Tools::getIsset('viewattribute_group')) {
             $object = new Attribute((int) Tools::getValue('id_attribute'));
-            self::$currentIndex = self::$currentIndex.'&viewattribute_group';
+            static::$currentIndex = static::$currentIndex.'&viewattribute_group';
         } else {
             $object = new AttributeGroup((int) Tools::getValue('id_attribute_group'));
         }
@@ -665,7 +665,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
             $this->errors[] = Tools::displayError('Failed to update the position.');
         } else {
             $idIdentifierStr = ($idIdentifier = (int) Tools::getValue($this->identifier)) ? '&'.$this->identifier.'='.$idIdentifier : '';
-            $redirect = self::$currentIndex.'&'.$this->table.'Orderby=position&'.$this->table.'Orderway=asc&conf=5'.$idIdentifierStr.'&token='.$this->token;
+            $redirect = static::$currentIndex.'&'.$this->table.'Orderby=position&'.$this->table.'Orderway=asc&conf=5'.$idIdentifierStr.'&token='.$this->token;
             $this->redirect_after = $redirect;
         }
 
@@ -698,13 +698,13 @@ class AdminAttributesGroupsControllerCore extends AdminController
                 if (!$object->updatePosition((int) Tools::getValue('way'), (int) Tools::getValue('position'))) {
                     $this->errors[] = Tools::displayError('Failed to update the position.');
                 } else {
-                    Tools::redirectAdmin(self::$currentIndex.'&conf=5&token='.Tools::getAdminTokenLite('AdminAttributesGroups').'#details_details_'.$object->id_attribute_group);
+                    Tools::redirectAdmin(static::$currentIndex.'&conf=5&token='.Tools::getAdminTokenLite('AdminAttributesGroups').'#details_details_'.$object->id_attribute_group);
                 }
             } elseif (Tools::isSubmit('deleteattribute') && Tools::getValue('id_attribute')) {
                 if (!$object->delete()) {
                     $this->errors[] = Tools::displayError('Failed to delete the attribute.');
                 } else {
-                    Tools::redirectAdmin(self::$currentIndex.'&conf=1&token='.Tools::getAdminTokenLite('AdminAttributesGroups'));
+                    Tools::redirectAdmin(static::$currentIndex.'&conf=1&token='.Tools::getAdminTokenLite('AdminAttributesGroups'));
                 }
             } elseif (Tools::isSubmit('submitAddattribute')) {
                 Hook::exec('actionObjectAttributeAddBefore');
@@ -736,7 +736,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
                         $object = new $this->className();
                         if ($object->deleteSelection($_POST[$this->list_id.'Box'])) {
                             AttributeGroup::cleanPositions();
-                            Tools::redirectAdmin(self::$currentIndex.'&conf=2'.'&token='.$this->token);
+                            Tools::redirectAdmin(static::$currentIndex.'&conf=2'.'&token='.$this->token);
                         }
                         $this->errors[] = Tools::displayError('An error occurred while deleting this selection.');
                     } else {
@@ -829,9 +829,9 @@ class AdminAttributesGroupsControllerCore extends AdminController
 
         if (Tools::isSubmit('submitAdd'.$this->table.'AndStay') && !count($this->errors)) {
             if ($this->display == 'add') {
-                $this->redirect_after = self::$currentIndex.'&'.$this->identifier.'=&conf=3&update'.$this->table.'&token='.$this->token;
+                $this->redirect_after = static::$currentIndex.'&'.$this->identifier.'=&conf=3&update'.$this->table.'&token='.$this->token;
             } else {
-                $this->redirect_after = self::$currentIndex.'&id_attribute_group='.(int) Tools::getValue('id_attribute_group').'&conf=3&update'.$this->table.'&token='.$this->token;
+                $this->redirect_after = static::$currentIndex.'&id_attribute_group='.(int) Tools::getValue('id_attribute_group').'&conf=3&update'.$this->table.'&token='.$this->token;
             }
         }
 
@@ -853,9 +853,9 @@ class AdminAttributesGroupsControllerCore extends AdminController
 
         if (Tools::isSubmit('submitAdd'.$this->table.'AndStay') && !count($this->errors)) {
             if ($this->display == 'add') {
-                $this->redirect_after = self::$currentIndex.'&'.$this->identifier.'=&conf=3&update'.$this->table.'&token='.$this->token;
+                $this->redirect_after = static::$currentIndex.'&'.$this->identifier.'=&conf=3&update'.$this->table.'&token='.$this->token;
             } else {
-                $this->redirect_after = self::$currentIndex.'&'.$this->identifier.'=&id_attribute_group='.(int) Tools::getValue('id_attribute_group').'&conf=3&update'.$this->table.'&token='.$this->token;
+                $this->redirect_after = static::$currentIndex.'&'.$this->identifier.'=&id_attribute_group='.(int) Tools::getValue('id_attribute_group').'&conf=3&update'.$this->table.'&token='.$this->token;
             }
         }
 

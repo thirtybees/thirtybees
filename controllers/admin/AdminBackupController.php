@@ -173,7 +173,7 @@ class AdminBackupControllerCore extends AdminController
             case 'edit':
             case 'view':
                 $this->toolbar_btn['cancel'] = [
-                    'href' => self::$currentIndex.'&token='.$this->token,
+                    'href' => static::$currentIndex.'&token='.$this->token,
                     'desc' => $this->l('Cancel'),
                 ];
                 break;

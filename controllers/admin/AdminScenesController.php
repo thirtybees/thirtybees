@@ -293,7 +293,7 @@ class AdminScenesControllerCore extends AdminController
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_scene'] = [
-                'href' => self::$currentIndex.'&addscene&token='.$this->token,
+                'href' => static::$currentIndex.'&addscene&token='.$this->token,
                 'desc' => $this->l('Add new image map', null, null, false),
                 'icon' => 'process-icon-new',
             ];

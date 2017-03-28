@@ -125,7 +125,7 @@ class AdminAttachmentsControllerCore extends AdminController
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_attachment'] = [
-                'href' => self::$currentIndex.'&addattachment&token='.$this->token,
+                'href' => static::$currentIndex.'&addattachment&token='.$this->token,
                 'desc' => $this->l('Add new attachment', null, null, false),
                 'icon' => 'process-icon-new',
             ];

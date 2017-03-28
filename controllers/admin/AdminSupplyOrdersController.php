@@ -190,7 +190,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
                 if (!isset($this->no_back) || $this->no_back == false) {
                     $back = Tools::safeOutput(Tools::getValue('back', ''));
                     if (empty($back)) {
-                        $back = self::$currentIndex.'&token='.$this->token;
+                        $back = static::$currentIndex.'&token='.$this->token;
                     }
 
                     $this->toolbar_btn['cancel'] = [
@@ -453,12 +453,12 @@ class AdminSupplyOrdersControllerCore extends AdminController
 
         if ($this->getCurrentWarehouse() != -1) {
             $this->_where .= ' AND a.id_warehouse = '.$this->getCurrentWarehouse();
-            self::$currentIndex .= '&id_warehouse='.(int) $this->getCurrentWarehouse();
+            static::$currentIndex .= '&id_warehouse='.(int) $this->getCurrentWarehouse();
         }
 
         if ($this->getFilterStatus() != 0) {
             $this->_where .= ' AND st.enclosed != 1';
-            self::$currentIndex .= '&filter_status=on';
+            static::$currentIndex .= '&filter_status=on';
         }
 
         $this->list_id = 'orders';
@@ -524,7 +524,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
         $this->initToolbar();
         unset($this->toolbar_btn['new']);
         $this->toolbar_btn['new'] = [
-            'href'     => self::$currentIndex.'&add'.$this->table.'&mod=template&token='.$this->token,
+            'href'     => static::$currentIndex.'&add'.$this->table.'&mod=template&token='.$this->token,
             'desc'     => $this->l('Add new template'),
             'imgclass' => 'new_1',
             'class'    => 'process-icon-new',
@@ -788,7 +788,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
         // sets up the helper
         $helper = new HelperForm();
         $helper->submit_action = 'submitChangestate';
-        $helper->currentIndex = self::$currentIndex;
+        $helper->currentIndex = static::$currentIndex;
         $helper->toolbar_btn = $this->toolbar_btn;
         $helper->toolbar_scroll = false;
         $helper->token = $this->token;
@@ -812,7 +812,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
         $this->context->smarty->assign(
             [
                 'content'                   => $content,
-                'url_post'                  => self::$currentIndex.'&token='.$this->token,
+                'url_post'                  => static::$currentIndex.'&token='.$this->token,
                 'show_page_header_toolbar'  => $this->show_page_header_toolbar,
                 'page_header_toolbar_title' => $this->page_header_toolbar_title,
                 'page_header_toolbar_btn'   => $this->page_header_toolbar_btn,
@@ -835,12 +835,12 @@ class AdminSupplyOrdersControllerCore extends AdminController
             ];
         } elseif (empty($this->display)) {
             $this->page_header_toolbar_btn['new_supply_order'] = [
-                'href' => self::$currentIndex.'&addsupply_order&token='.$this->token,
+                'href' => static::$currentIndex.'&addsupply_order&token='.$this->token,
                 'desc' => $this->l('Add new supply order', null, null, false),
                 'icon' => 'process-icon-new',
             ];
             $this->page_header_toolbar_btn['new_supply_order_template'] = [
-                'href' => self::$currentIndex.'&addsupply_order&mod=template&token='.$this->token,
+                'href' => static::$currentIndex.'&addsupply_order&mod=template&token='.$this->token,
                 'desc' => $this->l('Add new supply order template', null, null, false),
                 'icon' => 'process-icon-new',
             ];
@@ -1002,7 +1002,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
             'display_product_history' => 1,
         ];
 
-        $helper->currentIndex = self::$currentIndex.$action;
+        $helper->currentIndex = static::$currentIndex.$action;
 
         // display these global order informations
         $this->displayInformation($this->l('This interface allows you to update the quantities of this ongoing order.').'<br />');
@@ -1065,7 +1065,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
             unset($this->toolbar_btn['new']);
             if ($this->tabAccess['add'] === '1') {
                 $this->toolbar_btn['new'] = [
-                    'href' => self::$currentIndex.'&add'.$this->table.'&token='.$this->token,
+                    'href' => static::$currentIndex.'&add'.$this->table.'&token='.$this->token,
                     'desc' => $this->l('Add New'),
                 ];
             }
@@ -1405,7 +1405,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
                                     }
 
                                     $token = Tools::getValue('token') ? Tools::getValue('token') : $this->token;
-                                    $redirect = self::$currentIndex.'&token='.$token;
+                                    $redirect = static::$currentIndex.'&token='.$token;
                                     $this->redirect_after = $redirect.'&conf=5';
                                 }
                             }
@@ -1805,7 +1805,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
         if (!count($this->errors)) {
             // display confirm message
             $token = Tools::getValue('token') ? Tools::getValue('token') : $this->token;
-            $redirect = self::$currentIndex.'&token='.$token;
+            $redirect = static::$currentIndex.'&token='.$token;
             $this->redirect_after = $redirect.'&conf=4';
         }
     }
@@ -1845,7 +1845,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
 
         // redirect when done
         $token = Tools::getValue('token') ? Tools::getValue('token') : $this->token;
-        $redirect = self::$currentIndex.'&token='.$token;
+        $redirect = static::$currentIndex.'&token='.$token;
         $this->redirect_after = $redirect.'&conf=19';
     }
 
@@ -1861,14 +1861,14 @@ class AdminSupplyOrdersControllerCore extends AdminController
      */
     public function displayUpdateReceiptLink($token = null, $id)
     {
-        if (!array_key_exists('Receipt', self::$cache_lang)) {
-            self::$cache_lang['Receipt'] = $this->l('Update ongoing receipt of products');
+        if (!array_key_exists('Receipt', static::$cache_lang)) {
+            static::$cache_lang['Receipt'] = $this->l('Update ongoing receipt of products');
         }
 
         $this->context->smarty->assign(
             [
-                'href'   => self::$currentIndex.'&'.$this->identifier.'='.$id.'&update_receipt&token='.($token != null ? $token : $this->token),
-                'action' => self::$cache_lang['Receipt'],
+                'href'   => static::$currentIndex.'&'.$this->identifier.'='.$id.'&update_receipt&token='.($token != null ? $token : $this->token),
+                'action' => static::$cache_lang['Receipt'],
             ]
         );
 
@@ -1887,14 +1887,14 @@ class AdminSupplyOrdersControllerCore extends AdminController
      */
     public function displayChangestateLink($token = null, $id)
     {
-        if (!array_key_exists('State', self::$cache_lang)) {
-            self::$cache_lang['State'] = $this->l('Change status');
+        if (!array_key_exists('State', static::$cache_lang)) {
+            static::$cache_lang['State'] = $this->l('Change status');
         }
 
         $this->context->smarty->assign(
             [
-                'href'   => self::$currentIndex.'&'.$this->identifier.'='.$id.'&changestate&token='.($token != null ? $token : $this->token),
-                'action' => self::$cache_lang['State'],
+                'href'   => static::$currentIndex.'&'.$this->identifier.'='.$id.'&changestate&token='.($token != null ? $token : $this->token),
+                'action' => static::$cache_lang['State'],
             ]
         );
 
@@ -1913,19 +1913,19 @@ class AdminSupplyOrdersControllerCore extends AdminController
      */
     public function displayCreateSupplyOrderLink($token = null, $id)
     {
-        if (!array_key_exists('CreateSupplyOrder', self::$cache_lang)) {
-            self::$cache_lang['CreateSupplyOrder'] = $this->l('Use this template to create a supply order');
+        if (!array_key_exists('CreateSupplyOrder', static::$cache_lang)) {
+            static::$cache_lang['CreateSupplyOrder'] = $this->l('Use this template to create a supply order');
         }
 
-        if (!array_key_exists('CreateSupplyOrderConfirm', self::$cache_lang)) {
-            self::$cache_lang['CreateSupplyOrderConfirm'] = $this->l('Are you sure you want to use this template?');
+        if (!array_key_exists('CreateSupplyOrderConfirm', static::$cache_lang)) {
+            static::$cache_lang['CreateSupplyOrderConfirm'] = $this->l('Are you sure you want to use this template?');
         }
 
         $this->context->smarty->assign(
             [
-                'href'    => self::$currentIndex.'&'.$this->identifier.'='.$id.'&create_supply_order&token='.($token != null ? $token : $this->token),
-                'confirm' => self::$cache_lang['CreateSupplyOrderConfirm'],
-                'action'  => self::$cache_lang['CreateSupplyOrder'],
+                'href'    => static::$currentIndex.'&'.$this->identifier.'='.$id.'&create_supply_order&token='.($token != null ? $token : $this->token),
+                'confirm' => static::$cache_lang['CreateSupplyOrderConfirm'],
+                'action'  => static::$cache_lang['CreateSupplyOrder'],
             ]
         );
 

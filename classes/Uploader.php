@@ -365,7 +365,7 @@ class UploaderCore
     public function getMaxSize()
     {
         if (!isset($this->_max_size) || empty($this->_max_size)) {
-            $this->setMaxSize(self::DEFAULT_MAX_SIZE);
+            $this->setMaxSize(static::DEFAULT_MAX_SIZE);
         }
 
         return $this->_max_size;

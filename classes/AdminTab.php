@@ -283,7 +283,7 @@ abstract class AdminTabCore
             if ($this->tabAccess['add'] === '1') {
                 $this->displayForm();
                 if ($this->tabAccess['view']) {
-                    echo '<br /><br /><a href="'.((Tools::getValue('back')) ? Tools::getValue('back') : self::$currentIndex.'&token='.$this->token).'"><img src="../img/admin/arrow2.gif" /> '.((Tools::getValue('back')) ? $this->l('Back') : $this->l('Back to list')).'</a><br />';
+                    echo '<br /><br /><a href="'.((Tools::getValue('back')) ? Tools::getValue('back') : static::$currentIndex.'&token='.$this->token).'"><img src="../img/admin/arrow2.gif" /> '.((Tools::getValue('back')) ? $this->l('Back') : $this->l('Back to list')).'</a><br />';
                 }
             } else {
                 echo $this->l('You do not have permission to add here');
@@ -292,7 +292,7 @@ abstract class AdminTabCore
             if ($this->tabAccess['edit'] === '1' || ($this->table == 'employee' && $this->context->employee->id == Tools::getValue('id_employee'))) {
                 $this->displayForm();
                 if ($this->tabAccess['view']) {
-                    echo '<br /><br /><a href="'.((Tools::getValue('back')) ? Tools::getValue('back') : self::$currentIndex.'&token='.$this->token).'"><img src="../img/admin/arrow2.gif" /> '.((Tools::getValue('back')) ? $this->l('Back') : $this->l('Back to list')).'</a><br />';
+                    echo '<br /><br /><a href="'.((Tools::getValue('back')) ? Tools::getValue('back') : static::$currentIndex.'&token='.$this->token).'"><img src="../img/admin/arrow2.gif" /> '.((Tools::getValue('back')) ? $this->l('Back') : $this->l('Back to list')).'</a><br />';
                 }
             } else {
                 echo $this->l('You do not have permission to edit here');
@@ -602,7 +602,7 @@ abstract class AdminTabCore
 
     protected function displayAddButton()
     {
-        echo '<br /><a href="'.self::$currentIndex.'&add'.$this->table.'&token='.$this->token.'"><img src="../img/admin/add.gif" border="0" /> '.$this->l('Add new').'</a><br /><br />';
+        echo '<br /><a href="'.static::$currentIndex.'&add'.$this->table.'&token='.$this->token.'"><img src="../img/admin/add.gif" border="0" /> '.$this->l('Add new').'</a><br /><br />';
     }
 
     /**
@@ -681,7 +681,7 @@ abstract class AdminTabCore
         }
 
         echo '<a name="'.$this->table.'">&nbsp;</a>';
-        echo '<form method="post" action="'.self::$currentIndex;
+        echo '<form method="post" action="'.static::$currentIndex;
         if (Tools::getIsset($this->identifier)) {
             echo '&'.$this->identifier.'='.(int) (Tools::getValue($this->identifier));
         }
@@ -758,11 +758,11 @@ abstract class AdminTabCore
             if (!isset($params['orderby']) || $params['orderby']) {
                 // Cleaning links
                 if (Tools::getValue($this->table.'Orderby') && Tools::getValue($this->table.'Orderway')) {
-                    self::$currentIndex = preg_replace('/&'.$this->table.'Orderby=([a-z _]*)&'.$this->table.'Orderway=([a-z]*)/i', '', self::$currentIndex);
+                    static::$currentIndex = preg_replace('/&'.$this->table.'Orderby=([a-z _]*)&'.$this->table.'Orderway=([a-z]*)/i', '', static::$currentIndex);
                 }
                 echo '	<br />
-						<a href="'.self::$currentIndex.'&'.$this->identifier.'='.$idCat.'&'.$this->table.'Orderby='.urlencode($key).'&'.$this->table.'Orderway=desc&token='.$token.'"><img border="0" src="../img/admin/down'.((isset($this->_orderBy) && ($key == $this->_orderBy) && ($this->_orderWay == 'DESC')) ? '_d' : '').'.gif" /></a>
-						<a href="'.self::$currentIndex.'&'.$this->identifier.'='.$idCat.'&'.$this->table.'Orderby='.urlencode($key).'&'.$this->table.'Orderway=asc&token='.$token.'"><img border="0" src="../img/admin/up'.((isset($this->_orderBy) && ($key == $this->_orderBy) && ($this->_orderWay == 'ASC')) ? '_d' : '').'.gif" /></a>';
+						<a href="'.static::$currentIndex.'&'.$this->identifier.'='.$idCat.'&'.$this->table.'Orderby='.urlencode($key).'&'.$this->table.'Orderway=desc&token='.$token.'"><img border="0" src="../img/admin/down'.((isset($this->_orderBy) && ($key == $this->_orderBy) && ($this->_orderWay == 'DESC')) ? '_d' : '').'.gif" /></a>
+						<a href="'.static::$currentIndex.'&'.$this->identifier.'='.$idCat.'&'.$this->table.'Orderby='.urlencode($key).'&'.$this->table.'Orderway=asc&token='.$token.'"><img border="0" src="../img/admin/up'.((isset($this->_orderBy) && ($key == $this->_orderBy) && ($this->_orderWay == 'ASC')) ? '_d' : '').'.gif" /></a>';
             }
             echo '	</th>';
         }
@@ -903,7 +903,7 @@ abstract class AdminTabCore
                     echo '
 					<td '.(isset($params['position']) ? ' id="td_'.(isset($idCategory) && $idCategory ? $idCategory : 0).'_'.$id.'"' : '').' class="'.((!isset($this->noLink) || !$this->noLink) ? 'pointer' : '').((isset($params['position']) && $this->_orderBy == 'position') ? ' dragHandle' : '').(isset($params['align']) ? ' '.$params['align'] : '').'" ';
                     if (!isset($params['position']) && (!isset($this->noLink) || !$this->noLink)) {
-                        echo ' onclick="document.location = \''.self::$currentIndex.'&'.$this->identifier.'='.$id.($this->view ? '&view' : '&update').$this->table.'&token='.($token != null ? $token : $this->token).'\'">'.(isset($params['prefix']) ? $params['prefix'] : '');
+                        echo ' onclick="document.location = \''.static::$currentIndex.'&'.$this->identifier.'='.$id.($this->view ? '&view' : '&update').$this->table.'&token='.($token != null ? $token : $this->token).'\'">'.(isset($params['prefix']) ? $params['prefix'] : '');
                     } else {
                         echo '>';
                     }
@@ -914,13 +914,13 @@ abstract class AdminTabCore
 						alt="'.($tr[$key] ? $this->l('Enabled') : $this->l('Disabled')).'" title="'.($tr[$key] ? $this->l('Enabled') : $this->l('Disabled')).'" />';
                     } elseif (isset($params['position'])) {
                         if ($this->_orderBy == 'position' && $this->_orderWay != 'DESC') {
-                            echo '<a'.(!($tr[$key] != $positions[count($positions) - 1]) ? ' style="display: none;"' : '').' href="'.self::$currentIndex.
+                            echo '<a'.(!($tr[$key] != $positions[count($positions) - 1]) ? ' style="display: none;"' : '').' href="'.static::$currentIndex.
                                 '&'.$keyToGet.'='.(int) ($idCategory).'&'.$this->identifiersDnd[$this->identifier].'='.$id.'
 									&way=1&position='.(int) ($tr['position'] + 1).'&token='.($token != null ? $token : $this->token).'">
 									<img src="../img/admin/'.($this->_orderWay == 'ASC' ? 'down' : 'up').'.gif"
 									alt="'.$this->l('Down').'" title="'.$this->l('Down').'" /></a>';
 
-                            echo '<a'.(!($tr[$key] != $positions[0]) ? ' style="display: none;"' : '').' href="'.self::$currentIndex.
+                            echo '<a'.(!($tr[$key] != $positions[0]) ? ' style="display: none;"' : '').' href="'.static::$currentIndex.
                                 '&'.$keyToGet.'='.(int) ($idCategory).'&'.$this->identifiersDnd[$this->identifier].'='.$id.'
 									&way=0&position='.(int) ($tr['position'] - 1).'&token='.($token != null ? $token : $this->token).'">
 									<img src="../img/admin/'.($this->_orderWay == 'ASC' ? 'up' : 'down').'.gif"
@@ -1007,7 +1007,7 @@ abstract class AdminTabCore
     protected function _displayEnableLink($token, $id, $value, $active, $idCategory = null, $idProduct = null)
     {
         $href = Tools::safeOutput(
-            self::$currentIndex.'&'.$this->identifier.'='.(int) $id.'&'.$active.$this->table.
+            static::$currentIndex.'&'.$this->identifier.'='.(int) $id.'&'.$active.$this->table.
             ((int) $idCategory && (int) $idProduct ? '&id_category='.(int) $idCategory : '').'&token='.($token != null ? $token : $this->token)
         );
 
@@ -1025,7 +1025,7 @@ abstract class AdminTabCore
     protected function _displayViewLink($token = null, $id)
     {
         $_cacheLang['View'] = $this->l('View');
-        $href = Tools::safeOutput(self::$currentIndex.'&'.$this->identifier.'='.(int) $id.'&view'.$this->table.'&token='.($token != null ? $token : $this->token));
+        $href = Tools::safeOutput(static::$currentIndex.'&'.$this->identifier.'='.(int) $id.'&view'.$this->table.'&token='.($token != null ? $token : $this->token));
 
         echo '<a href="'.$href.'">
 			<img src="../img/admin/details.gif" alt="'.$_cacheLang['View'].'" title="'.$_cacheLang['View'].'" /></a>';
@@ -1040,7 +1040,7 @@ abstract class AdminTabCore
     protected function _displayEditLink($token = null, $id)
     {
         $_cacheLang['Edit'] = $this->l('Edit');
-        $href = Tools::safeOutput(self::$currentIndex.'&'.$this->identifier.'='.(int) $id.'&update'.$this->table.'&token='.($token != null ? $token : $this->token));
+        $href = Tools::safeOutput(static::$currentIndex.'&'.$this->identifier.'='.(int) $id.'&update'.$this->table.'&token='.($token != null ? $token : $this->token));
 
         echo '<a href="'.$href.'">
     		<img src="../img/admin/edit.gif" alt="" title="'.$_cacheLang['Edit'].'" /></a>';
@@ -1056,7 +1056,7 @@ abstract class AdminTabCore
     {
         $_cacheLang['Delete'] = $this->l('Delete');
         $_cacheLang['DeleteItem'] = $this->l('Delete item #', __CLASS__, true, false);
-        $href = Tools::safeOutput(self::$currentIndex.'&'.$this->identifier.'='.(int) $id.'&delete'.$this->table.'&token='.($token != null ? $token : $this->token));
+        $href = Tools::safeOutput(static::$currentIndex.'&'.$this->identifier.'='.(int) $id.'&delete'.$this->table.'&token='.($token != null ? $token : $this->token));
 
         echo '<a href="'.$href.'" onclick="return confirm(\''.$_cacheLang['DeleteItem'].(int) $id.' ?'.
             (!is_null($this->specificConfirmDelete) ? '\r'.$this->specificConfirmDelete : '').'\');">
@@ -1073,7 +1073,7 @@ abstract class AdminTabCore
     {
         $_cacheLang['Duplicate'] = $this->l('Duplicate');
         $_cacheLang['Copy images too?'] = $this->l('This will copy the images too. If you wish to proceed, click "OK". If not, click "Cancel".', __CLASS__, true, false);
-        $duplicate = Tools::safeOutput(self::$currentIndex.'&'.$this->identifier.'='.$id.'&duplicate'.$this->table.'&token='.($token != null ? $token : $this->token));
+        $duplicate = Tools::safeOutput(static::$currentIndex.'&'.$this->identifier.'='.$id.'&duplicate'.$this->table.'&token='.($token != null ? $token : $this->token));
 
         echo '<a class="pointer" onclick="if (confirm(\''.$_cacheLang['Copy images too?'].'\')) document.location = \''.$duplicate.'\'; else document.location = \''.$duplicate.'&noimage=1\';">
     		<img src="../img/admin/duplicate.png" alt="'.$_cacheLang['Duplicate'].'" title="'.$_cacheLang['Duplicate'].'" /></a>';
@@ -1129,7 +1129,7 @@ abstract class AdminTabCore
 			id_language = Number('.$this->context->language->id.');
 		</script>';
 
-        $action = Tools::safeOutput(self::$currentIndex.'&submitOptions'.$this->table.'=1&token='.$this->token);
+        $action = Tools::safeOutput(static::$currentIndex.'&submitOptions'.$this->table.'=1&token='.$this->token);
 
         echo '<form action="'.$action.'" method="post" enctype="multipart/form-data">';
         foreach ($this->optionsList as $category => $categoryData) {
@@ -1276,7 +1276,7 @@ abstract class AdminTabCore
 		<p><a href="#" onclick="if ($(\'.requiredFieldsParameters:visible\').length == 0) $(\'.requiredFieldsParameters\').slideDown(\'slow\'); else $(\'.requiredFieldsParameters\').slideUp(\'slow\'); return false;"><img src="../img/admin/duplicate.gif" alt="" /> '.$this->l('Set required fields for this section').'</a></p>
 		<fieldset style="display:none" class="width1 requiredFieldsParameters">
 		<legend>'.$this->l('Required Fields').'</legend>
-		<form name="updateFields" action="'.self::$currentIndex.'&submitFields'.$this->table.'=1&token='.$this->token.'" method="post">
+		<form name="updateFields" action="'.static::$currentIndex.'&submitFields'.$this->table.'=1&token='.$this->token.'" method="post">
 		<p><b>'.$this->l('Select the fields you would like to be required for this section.').'<br />
 		<table cellspacing="0" cellpadding="0" class="table width1 clear">
 		<tr>
@@ -1387,7 +1387,7 @@ abstract class AdminTabCore
             if (Validate::isLoadedObject($object = $this->loadObject())) {
                 /** @var ObjectModel $object */
                 if (($object->deleteImage())) {
-                    Tools::redirectAdmin(self::$currentIndex.'&add'.$this->table.'&'.$this->identifier.'='.Tools::getValue($this->identifier).'&conf=7&token='.$token);
+                    Tools::redirectAdmin(static::$currentIndex.'&add'.$this->table.'&'.$this->identifier.'='.Tools::getValue($this->identifier).'&conf=7&token='.$token);
                 }
             }
             $this->_errors[] = Tools::displayError('An error occurred during image deletion (cannot load object).');
@@ -1407,13 +1407,13 @@ abstract class AdminTabCore
                                 $object->cleanPositions();
                             }
                             if ($object->update()) {
-                                Tools::redirectAdmin(self::$currentIndex.'&conf=1&token='.$token);
+                                Tools::redirectAdmin(static::$currentIndex.'&conf=1&token='.$token);
                             }
                         } elseif ($object->delete()) {
                             if (method_exists($object, 'cleanPositions')) {
                                 $object->cleanPositions();
                             }
-                            Tools::redirectAdmin(self::$currentIndex.'&conf=1&token='.$token);
+                            Tools::redirectAdmin(static::$currentIndex.'&conf=1&token='.$token);
                         }
                         $this->_errors[] = Tools::displayError('An error occurred during deletion.');
                     }
@@ -1429,7 +1429,7 @@ abstract class AdminTabCore
                 if (Validate::isLoadedObject($object = $this->loadObject())) {
                     /** @var ObjectModel $object */
                     if ($object->toggleStatus()) {
-                        Tools::redirectAdmin(self::$currentIndex.'&conf=5'.((($idCategory = (int) (Tools::getValue('id_category'))) && Tools::getValue('id_product')) ? '&id_category='.$idCategory : '').'&token='.$token);
+                        Tools::redirectAdmin(static::$currentIndex.'&conf=5'.((($idCategory = (int) (Tools::getValue('id_category'))) && Tools::getValue('id_product')) ? '&id_category='.$idCategory : '').'&token='.$token);
                     } else {
                         $this->_errors[] = Tools::displayError('An error occurred while updating status.');
                     }
@@ -1449,7 +1449,7 @@ abstract class AdminTabCore
             } elseif (!$object->updatePosition((int) (Tools::getValue('way')), (int) (Tools::getValue('position')))) {
                 $this->_errors[] = Tools::displayError('Failed to update the position.');
             } else {
-                Tools::redirectAdmin(self::$currentIndex.'&'.$this->table.'Orderby=position&'.$this->table.'Orderway=asc&conf=5'.(($id_identifier = (int) (Tools::getValue($this->identifier))) ? ('&'.$this->identifier.'='.$id_identifier) : '').'&token='.$token);
+                Tools::redirectAdmin(static::$currentIndex.'&'.$this->table.'Orderby=position&'.$this->table.'Orderway=asc&conf=5'.(($id_identifier = (int) (Tools::getValue($this->identifier))) ? ('&'.$this->identifier.'='.$id_identifier) : '').'&token='.$token);
             }
         } /* Delete multiple objects */
         elseif (Tools::getValue('submitDel'.$this->table)) {
@@ -1476,7 +1476,7 @@ abstract class AdminTabCore
                         }
 
                         if ($result) {
-                            Tools::redirectAdmin(self::$currentIndex.'&conf=2&token='.$token);
+                            Tools::redirectAdmin(static::$currentIndex.'&conf=2&token='.$token);
                         }
                         $this->_errors[] = Tools::displayError('An error occurred while deleting selection.');
                     }
@@ -1543,18 +1543,18 @@ abstract class AdminTabCore
                                 }
                                 // Specific scene feature
                                 if (Tools::getValue('stay_here') == 'on' || Tools::getValue('stay_here') == 'true' || Tools::getValue('stay_here') == '1') {
-                                    Tools::redirectAdmin(self::$currentIndex.'&'.$this->identifier.'='.$object->id.'&conf=4&updatescene&token='.$token);
+                                    Tools::redirectAdmin(static::$currentIndex.'&'.$this->identifier.'='.$object->id.'&conf=4&updatescene&token='.$token);
                                 }
                                 // Save and stay on same form
                                 if (Tools::isSubmit('submitAdd'.$this->table.'AndStay')) {
-                                    Tools::redirectAdmin(self::$currentIndex.'&'.$this->identifier.'='.$object->id.'&conf=4&update'.$this->table.'&token='.$token);
+                                    Tools::redirectAdmin(static::$currentIndex.'&'.$this->identifier.'='.$object->id.'&conf=4&update'.$this->table.'&token='.$token);
                                 }
                                 // Save and back to parent
                                 if (Tools::isSubmit('submitAdd'.$this->table.'AndBackToParent')) {
-                                    Tools::redirectAdmin(self::$currentIndex.'&'.$this->identifier.'='.$parentId.'&conf=4&token='.$token);
+                                    Tools::redirectAdmin(static::$currentIndex.'&'.$this->identifier.'='.$parentId.'&conf=4&token='.$token);
                                 }
                                 // Default behavior (save and back)
-                                Tools::redirectAdmin(self::$currentIndex.($parentId ? '&'.$this->identifier.'='.$object->id : '').'&conf=4&token='.$token);
+                                Tools::redirectAdmin(static::$currentIndex.($parentId ? '&'.$this->identifier.'='.$object->id : '').'&conf=4&token='.$token);
                             }
                         } else {
                             $this->_errors[] = Tools::displayError('An error occurred while updating object.').' <b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
@@ -1591,14 +1591,14 @@ abstract class AdminTabCore
                             }
                             // Save and stay on same form
                             if (Tools::isSubmit('submitAdd'.$this->table.'AndStay')) {
-                                Tools::redirectAdmin(self::$currentIndex.'&'.$this->identifier.'='.$object->id.'&conf=3&update'.$this->table.'&token='.$token);
+                                Tools::redirectAdmin(static::$currentIndex.'&'.$this->identifier.'='.$object->id.'&conf=3&update'.$this->table.'&token='.$token);
                             }
                             // Save and back to parent
                             if (Tools::isSubmit('submitAdd'.$this->table.'AndBackToParent')) {
-                                Tools::redirectAdmin(self::$currentIndex.'&'.$this->identifier.'='.$parentId.'&conf=3&token='.$token);
+                                Tools::redirectAdmin(static::$currentIndex.'&'.$this->identifier.'='.$parentId.'&conf=3&token='.$token);
                             }
                             // Default behavior (save and back)
-                            Tools::redirectAdmin(self::$currentIndex.($parentId ? '&'.$this->identifier.'='.$object->id : '').'&conf=3&token='.$token);
+                            Tools::redirectAdmin(static::$currentIndex.($parentId ? '&'.$this->identifier.'='.$object->id : '').'&conf=3&token='.$token);
                         }
                     } else {
                         $this->_errors[] = Tools::displayError('You do not have permission to add here.');
@@ -1699,7 +1699,7 @@ abstract class AdminTabCore
             if (!$object->addFieldsRequiredDatabase($fields)) {
                 $this->_errors[] = Tools::displayError('Error in updating required fields');
             } else {
-                Tools::redirectAdmin(self::$currentIndex.'&conf=4&token='.$token);
+                Tools::redirectAdmin(static::$currentIndex.'&conf=4&token='.$token);
             }
         }
     }
@@ -1951,7 +1951,7 @@ abstract class AdminTabCore
             return;
         }
 
-        if (!$assos = self::getAssoShop($this->table, $idObject)) {
+        if (!$assos = static::getAssoShop($this->table, $idObject)) {
             return;
         }
 
@@ -2151,7 +2151,7 @@ abstract class AdminTabCore
             }
 
             if (count($this->_errors) <= 0) {
-                Tools::redirectAdmin(self::$currentIndex.'&conf=6&token='.$token);
+                Tools::redirectAdmin(static::$currentIndex.'&conf=6&token='.$token);
             }
         } else {
             $this->_errors[] = Tools::displayError('You do not have permission to edit here.');
@@ -2250,7 +2250,7 @@ abstract class AdminTabCore
 			<div id="image" >
 				'.ImageManager::thumbnail($image, $this->table.'_'.(int) ($id).'.'.$this->imageType, $size, $this->imageType, $disableCache).'
 				<p align="center">'.$this->l('File size').' '.(filesize($image) / 1000).'kb</p>
-				<a href="'.self::$currentIndex.'&'.$this->identifier.'='.(int) ($id).'&token='.$token.($idImage ? '&id_image='.(int) ($idImage) : '').'&deleteImage=1">
+				<a href="'.static::$currentIndex.'&'.$this->identifier.'='.(int) ($id).'&token='.$token.($idImage ? '&id_image='.(int) ($idImage) : '').'&deleteImage=1">
 				<img src="../img/admin/delete.gif" alt="'.$this->l('Delete').'" /> '.$this->l('Delete').'</a>
 			</div>';
         }

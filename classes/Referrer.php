@@ -104,7 +104,7 @@ class ReferrerCore extends ObjectModel
         $sql = 'INSERT INTO '._DB_PREFIX_.'referrer_cache (id_referrer, id_connections_source) (
 					SELECT id_referrer, id_connections_source
 					FROM '._DB_PREFIX_.'referrer r
-					LEFT JOIN '._DB_PREFIX_.'connections_source cs ON ('.self::$_join.')
+					LEFT JOIN '._DB_PREFIX_.'connections_source cs ON ('.static::$_join.')
 					WHERE id_connections_source = '.(int) $idConnectionsSource.'
 				)';
         Db::getInstance()->execute($sql);
@@ -124,7 +124,7 @@ class ReferrerCore extends ObjectModel
 				FROM '._DB_PREFIX_.'guest g
 				LEFT JOIN '._DB_PREFIX_.'connections c ON c.id_guest = g.id_guest
 				LEFT JOIN '._DB_PREFIX_.'connections_source cs ON c.id_connections = cs.id_connections
-				LEFT JOIN '._DB_PREFIX_.'referrer r ON ('.self::$_join.')
+				LEFT JOIN '._DB_PREFIX_.'referrer r ON ('.static::$_join.')
 				LEFT JOIN '._DB_PREFIX_.'shop s ON s.id_shop = c.id_shop
 				WHERE g.id_customer = '.(int) $idCustomer.'
 					AND r.name IS NOT NULL
@@ -399,7 +399,7 @@ class ReferrerCore extends ObjectModel
 			INSERT INTO '._DB_PREFIX_.'referrer_cache (id_referrer, id_connections_source) (
 				SELECT id_referrer, id_connections_source
 				FROM '._DB_PREFIX_.'referrer r
-				LEFT JOIN '._DB_PREFIX_.'connections_source cs ON ('.self::$_join.')
+				LEFT JOIN '._DB_PREFIX_.'connections_source cs ON ('.static::$_join.')
 			)'
             );
         } else {
@@ -410,7 +410,7 @@ class ReferrerCore extends ObjectModel
 				INSERT INTO '._DB_PREFIX_.'referrer_cache (id_referrer, id_connections_source) (
 					SELECT id_referrer, id_connections_source
 					FROM '._DB_PREFIX_.'referrer r
-					LEFT JOIN '._DB_PREFIX_.'connections_source cs ON ('.self::$_join.')
+					LEFT JOIN '._DB_PREFIX_.'connections_source cs ON ('.static::$_join.')
 					WHERE id_referrer = '.(int) $row['id_referrer'].'
 					AND id_connections_source IS NOT NULL
 				)'

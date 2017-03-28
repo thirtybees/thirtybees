@@ -158,14 +158,14 @@ class AdminManufacturersControllerCore extends AdminController
      */
     public function displayEditaddressesLink($token = null, $id)
     {
-        if (!array_key_exists('editaddresses', self::$cache_lang)) {
-            self::$cache_lang['editaddresses'] = $this->l('Edit');
+        if (!array_key_exists('editaddresses', static::$cache_lang)) {
+            static::$cache_lang['editaddresses'] = $this->l('Edit');
         }
 
         $this->context->smarty->assign(
             [
-                'href'   => self::$currentIndex.'&'.$this->identifier.'='.$id.'&editaddresses&token='.($token != null ? $token : $this->token),
-                'action' => self::$cache_lang['editaddresses'],
+                'href'   => static::$currentIndex.'&'.$this->identifier.'='.$id.'&editaddresses&token='.($token != null ? $token : $this->token),
+                'action' => static::$cache_lang['editaddresses'],
             ]
         );
 
@@ -206,7 +206,7 @@ class AdminManufacturersControllerCore extends AdminController
         $this->context->smarty->assign(
             [
                 'content'                   => $this->content,
-                'url_post'                  => self::$currentIndex.'&token='.$this->token,
+                'url_post'                  => static::$currentIndex.'&token='.$this->token,
                 'show_page_header_toolbar'  => $this->show_page_header_toolbar,
                 'page_header_toolbar_title' => $this->page_header_toolbar_title,
                 'page_header_toolbar_btn'   => $this->page_header_toolbar_btn,
@@ -237,7 +237,7 @@ class AdminManufacturersControllerCore extends AdminController
                 if (!isset($this->no_back) || $this->no_back == false) {
                     $back = Tools::safeOutput(Tools::getValue('back', ''));
                     if (empty($back)) {
-                        $back = self::$currentIndex.'&token='.$this->token;
+                        $back = static::$currentIndex.'&token='.$this->token;
                     }
 
                     $this->toolbar_btn['cancel'] = [
@@ -270,12 +270,12 @@ class AdminManufacturersControllerCore extends AdminController
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_manufacturer'] = [
-                'href' => self::$currentIndex.'&addmanufacturer&token='.$this->token,
+                'href' => static::$currentIndex.'&addmanufacturer&token='.$this->token,
                 'desc' => $this->l('Add new manufacturer', null, null, false),
                 'icon' => 'process-icon-new',
             ];
             $this->page_header_toolbar_btn['new_manufacturer_address'] = [
-                'href' => self::$currentIndex.'&addaddress&token='.$this->token,
+                'href' => static::$currentIndex.'&addaddress&token='.$this->token,
                 'desc' => $this->l('Add new manufacturer address', null, null, false),
                 'icon' => 'process-icon-new',
             ];
@@ -284,7 +284,7 @@ class AdminManufacturersControllerCore extends AdminController
             if (!isset($this->no_back) || $this->no_back == false) {
                 $back = Tools::safeOutput(Tools::getValue('back', ''));
                 if (empty($back)) {
-                    $back = self::$currentIndex.'&token='.$this->token;
+                    $back = static::$currentIndex.'&token='.$this->token;
                 }
 
                 $this->page_header_toolbar_btn['cancel'] = [
@@ -487,14 +487,14 @@ class AdminManufacturersControllerCore extends AdminController
 
         $back = Tools::safeOutput(Tools::getValue('back', ''));
         if (empty($back)) {
-            $back = self::$currentIndex.'&token='.$this->token;
+            $back = static::$currentIndex.'&token='.$this->token;
         }
         if (!Validate::isCleanHtml($back)) {
             die(Tools::displayError());
         }
 
         $helper->back_url = $back;
-        $helper->currentIndex = self::$currentIndex;
+        $helper->currentIndex = static::$currentIndex;
         $helper->token = $this->token;
         $helper->table = $this->table;
         $helper->identifier = $this->identifier;

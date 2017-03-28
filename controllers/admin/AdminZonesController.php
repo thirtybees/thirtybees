@@ -93,7 +93,7 @@ class AdminZonesControllerCore extends AdminController
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_zone'] = [
-                'href' => self::$currentIndex.'&addzone&token='.$this->token,
+                'href' => static::$currentIndex.'&addzone&token='.$this->token,
                 'desc' => $this->l('Add new zone', null, null, false),
                 'icon' => 'process-icon-new',
             ];

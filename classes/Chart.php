@@ -60,7 +60,7 @@ class ChartCore
      */
     public function __construct()
     {
-        ++self::$poolId;
+        ++static::$poolId;
     }
 
     /**
@@ -71,8 +71,8 @@ class ChartCore
      */
     public static function init()
     {
-        if (!self::$poolId) {
-            ++self::$poolId;
+        if (!static::$poolId) {
+            ++static::$poolId;
 
             return true;
         }
@@ -183,10 +183,10 @@ class ChartCore
 
         if (count($jsCurves)) {
             return '
-			<div id="flot'.self::$poolId.'" style="width:'.$this->width.'px;height:'.$this->height.'px"></div>
+			<div id="flot'.static::$poolId.'" style="width:'.$this->width.'px;height:'.$this->height.'px"></div>
 			<script type="text/javascript">
 				$(function () {
-					$.plot($(\'#flot'.self::$poolId.'\'), ['.implode(',', $jsCurves).'], {'.$options.'});
+					$.plot($(\'#flot'.static::$poolId.'\'), ['.implode(',', $jsCurves).'], {'.$options.'});
 				});
 			</script>';
         }

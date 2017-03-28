@@ -209,7 +209,7 @@ class HelperCalendarCore extends Helper
     public function getCompareOption()
     {
         if (!isset($this->_compare_date_option)) {
-            $this->_compare_date_option = self::DEFAULT_COMPARE_OPTION;
+            $this->_compare_date_option = static::DEFAULT_COMPARE_OPTION;
         }
 
         return $this->_compare_date_option;
@@ -244,7 +244,7 @@ class HelperCalendarCore extends Helper
     public function getDateFormat()
     {
         if (!isset($this->_date_format)) {
-            $this->_date_format = self::DEFAULT_DATE_FORMAT;
+            $this->_date_format = static::DEFAULT_DATE_FORMAT;
         }
 
         return $this->_date_format;

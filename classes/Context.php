@@ -106,7 +106,7 @@ class ContextCore
      */
     public static function setInstanceForTesting($test_instance)
     {
-        self::$instance = $test_instance;
+        static::$instance = $test_instance;
     }
 
     /**
@@ -117,7 +117,7 @@ class ContextCore
      */
     public static function deleteTestingInstance()
     {
-        self::$instance = null;
+        static::$instance = null;
     }
 
     /**
@@ -205,11 +205,11 @@ class ContextCore
      */
     public static function getContext()
     {
-        if (!isset(self::$instance)) {
-            self::$instance = new Context();
+        if (!isset(static::$instance)) {
+            static::$instance = new Context();
         }
 
-        return self::$instance;
+        return static::$instance;
     }
 
     /**

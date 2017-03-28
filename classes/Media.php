@@ -426,10 +426,10 @@ class MediaCore
                 $uiPath['css'] = array_merge($uiPath['css'], $compCss);
             }
         }
-        if ($checkDependencies && array_key_exists($component, self::$jquery_ui_dependencies)) {
-            foreach (self::$jquery_ui_dependencies[$component]['dependencies'] as $dependency) {
+        if ($checkDependencies && array_key_exists($component, static::$jquery_ui_dependencies)) {
+            foreach (static::$jquery_ui_dependencies[$component]['dependencies'] as $dependency) {
                 $uiTmp[] = Media::getJqueryUIPath($dependency, $theme, false);
-                if (self::$jquery_ui_dependencies[$dependency]['theme']) {
+                if (static::$jquery_ui_dependencies[$dependency]['theme']) {
                     $depCss = Media::getCSSPath($folder.'themes/'.$theme.'/jquery.'.$dependency.'.css');
                 }
 
@@ -679,7 +679,7 @@ class MediaCore
         if (!preg_match('/(?i)msie [1-9]/', $userAgent)) {
             return $compiledCss;
         }
-        $splitted_css = self::ieCssSplitter($compiledCss, $cachePath.'ie9', $cssSplitNeedRefresh);
+        $splitted_css = static::ieCssSplitter($compiledCss, $cachePath.'ie9', $cssSplitNeedRefresh);
 
         return array_merge($splitted_css, $compiledCss);
     }

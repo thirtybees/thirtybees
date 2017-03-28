@@ -168,7 +168,7 @@ class AdminImportControllerCore extends AdminController
                     ],
                 ];
 
-                self::$defaultValues = [
+                static::$defaultValues = [
                     'reference'                 => '',
                     'supplier_reference'        => '',
                     'ean13'                     => '',
@@ -209,7 +209,7 @@ class AdminImportControllerCore extends AdminController
                     ],
                 ];
 
-                self::$defaultValues = [
+                static::$defaultValues = [
                     'active'       => '1',
                     'parent'       => Configuration::get('PS_HOME_CATEGORY'),
                     'link_rewrite' => '',
@@ -217,7 +217,7 @@ class AdminImportControllerCore extends AdminController
                 break;
 
             case $this->entities[$this->l('Products')]:
-                self::$validators['image'] = [
+                static::$validators['image'] = [
                     'self',
                     'split',
                 ];
@@ -309,7 +309,7 @@ class AdminImportControllerCore extends AdminController
                     'accessories'               => ['label' => $this->l('Accessories (x,y,z...)')],
                 ];
 
-                self::$defaultValues = [
+                static::$defaultValues = [
                     'id_category'               => [(int) Configuration::get('PS_HOME_CATEGORY')],
                     'id_category_default'       => null,
                     'active'                    => '1',
@@ -365,7 +365,7 @@ class AdminImportControllerCore extends AdminController
                     ],
                 ];
 
-                self::$defaultValues = [
+                static::$defaultValues = [
                     'active'  => '1',
                     'id_shop' => Configuration::get('PS_SHOP_DEFAULT'),
                 ];
@@ -409,7 +409,7 @@ class AdminImportControllerCore extends AdminController
                     'dni'            => ['label' => $this->l('Identification number')],
                 ];
 
-                self::$defaultValues = [
+                static::$defaultValues = [
                     'alias'    => 'Alias',
                     'postcode' => 'X',
                 ];
@@ -417,7 +417,7 @@ class AdminImportControllerCore extends AdminController
             case $this->entities[$this->l('Brands')]:
             case $this->entities[$this->l('Suppliers')]:
                 //Overwrite validators AS name is not MultiLangField
-                self::$validators = [
+                static::$validators = [
                     'description'       => ['self', 'createMultiLangField'],
                     'short_description' => ['self', 'createMultiLangField'],
                     'meta_title'        => ['self', 'createMultiLangField'],
@@ -442,7 +442,7 @@ class AdminImportControllerCore extends AdminController
                     ],
                 ];
 
-                self::$defaultValues = [
+                static::$defaultValues = [
                     'shop' => Shop::getGroupFromShop(Configuration::get('PS_SHOP_DEFAULT')),
                 ];
                 break;
@@ -459,13 +459,13 @@ class AdminImportControllerCore extends AdminController
                     'search' => ['label' => $this->l('Search').'*'],
                     'active' => ['label' => $this->l('Active')],
                 ];
-                self::$defaultValues = [
+                static::$defaultValues = [
                     'active' => '1',
                 ];
                 break;
             case $this->entities[$this->l('Store contacts')]:
-                unset(self::$validators['name']);
-                self::$validators = [
+                unset(static::$validators['name']);
+                static::$validators = [
                     'hours' => ['self', 'split'],
                 ];
                 $this->required_fields = [
@@ -499,7 +499,7 @@ class AdminImportControllerCore extends AdminController
                         'help'  => $this->l('Ignore this field if you don\'t use the Multistore tool. If you leave this field empty, the default shop will be used.'),
                     ],
                 ];
-                self::$defaultValues = [
+                static::$defaultValues = [
                     'active' => '1',
                 ];
                 break;
@@ -530,7 +530,7 @@ class AdminImportControllerCore extends AdminController
                         'is_template'            => ['label' => $this->l('Template')],
                     ];
                     // default values
-                    self::$defaultValues = [
+                    static::$defaultValues = [
                         'id_lang'       => (int) Configuration::get('PS_LANG_DEFAULT'),
                         'id_currency'   => Currency::getDefaultCurrency()->id,
                         'discount_rate' => '0',
@@ -557,7 +557,7 @@ class AdminImportControllerCore extends AdminController
                         'tax_rate'               => ['label' => $this->l('Tax Rate')],
                     ];
                     // default values
-                    self::$defaultValues = [
+                    static::$defaultValues = [
                         'discount_rate' => '0',
                         'tax_rate'      => '0',
                     ];
@@ -597,16 +597,16 @@ class AdminImportControllerCore extends AdminController
     protected static function fillInfo($infos, $key, &$entity)
     {
         $infos = trim($infos);
-        if (isset(self::$validators[$key][1]) && self::$validators[$key][1] == 'createMultiLangField' && Tools::getValue('iso_lang')) {
+        if (isset(static::$validators[$key][1]) && static::$validators[$key][1] == 'createMultiLangField' && Tools::getValue('iso_lang')) {
             $idLang = Language::getIdByIso(Tools::getValue('iso_lang'));
-            $tmp = call_user_func(self::$validators[$key], $infos);
+            $tmp = call_user_func(static::$validators[$key], $infos);
             foreach ($tmp as $idLangTmp => $value) {
                 if (empty($entity->{$key}[$idLangTmp]) || $idLangTmp == $idLang) {
                     $entity->{$key}[$idLangTmp] = $value;
                 }
             }
         } elseif (!empty($infos) || $infos == '0') { // ($infos == '0') => if you want to disable a product by using "0" in active because empty('0') return true
-            $entity->{$key} = isset(self::$validators[$key]) ? call_user_func(self::$validators[$key], $infos) : $infos;
+            $entity->{$key} = isset(static::$validators[$key]) ? call_user_func(static::$validators[$key], $infos) : $infos;
         }
 
         return true;
@@ -681,11 +681,11 @@ class AdminImportControllerCore extends AdminController
         } elseif (!preg_match('#([^\.]*?)\.(csv|xls[xt]?|o[dt]s)$#is', $_FILES['file']['name'])) {
             $_FILES['file']['error'] = $this->l('The extension of your file should be .csv.');
         } elseif (!@filemtime($_FILES['file']['tmp_name']) ||
-            !@move_uploaded_file($_FILES['file']['tmp_name'], self::getPath().$filenamePrefix.str_replace("\0", '', $_FILES['file']['name']))
+            !@move_uploaded_file($_FILES['file']['tmp_name'], static::getPath().$filenamePrefix.str_replace("\0", '', $_FILES['file']['name']))
         ) {
             $_FILES['file']['error'] = $this->l('An error occurred while uploading / copying the file.');
         } else {
-            @chmod(self::getPath().$filenamePrefix.$_FILES['file']['name'], 0664);
+            @chmod(static::getPath().$filenamePrefix.$_FILES['file']['name'], 0664);
             $_FILES['file']['filename'] = $filenamePrefix.str_replace('\0', '', $_FILES['file']['name']);
         }
 
@@ -741,7 +741,7 @@ class AdminImportControllerCore extends AdminController
         $this->context->smarty->assign(
             [
                 'content'                   => $this->content,
-                'url_post'                  => self::$currentIndex.'&token='.$this->token,
+                'url_post'                  => static::$currentIndex.'&token='.$this->token,
                 'show_page_header_toolbar'  => $this->show_page_header_toolbar,
                 'page_header_toolbar_title' => $this->page_header_toolbar_title,
                 'page_header_toolbar_btn'   => $this->page_header_toolbar_btn,
@@ -761,7 +761,7 @@ class AdminImportControllerCore extends AdminController
                 // Default cancel button - like old back link
                 $back = Tools::safeOutput(Tools::getValue('back', ''));
                 if (empty($back)) {
-                    $back = self::$currentIndex.'&token='.$this->token;
+                    $back = static::$currentIndex.'&token='.$this->token;
                 }
 
                 $this->toolbar_btn['cancel'] = [
@@ -788,7 +788,7 @@ class AdminImportControllerCore extends AdminController
 
         $handle = $this->openCsvFile();
         $nbColumn = $this->getNbrColumn($handle, $this->separator);
-        $nbTable = ceil($nbColumn / self::MAX_COLUMNS);
+        $nbTable = ceil($nbColumn / static::MAX_COLUMNS);
 
         $res = [];
         foreach ($this->required_fields as $elem) {
@@ -823,7 +823,7 @@ class AdminImportControllerCore extends AdminController
             'nb_table'         => $nbTable,
             'nb_column'        => $nbColumn,
             'res'              => implode(',', $res),
-            'max_columns'      => self::MAX_COLUMNS,
+            'max_columns'      => static::MAX_COLUMNS,
             'no_pre_select'    => ['price_tin', 'feature'],
             'available_fields' => $this->available_fields,
             'data'             => $data,
@@ -856,14 +856,14 @@ class AdminImportControllerCore extends AdminController
             return null; // error case
         }
 
-        self::rewindBomAware($handle);
+        static::rewindBomAware($handle);
 
         $toSkip = (int) Tools::getValue('skip');
         if ($offset && $offset > 0) {
             $toSkip += $offset;
         }
         for ($i = 0; $i < $toSkip; ++$i) {
-            $line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator);
+            $line = fgetcsv($handle, static::MAX_LINE_SIZE, $this->separator);
             if ($line === false) {
                 return false; // reached end of file
             }
@@ -882,9 +882,9 @@ class AdminImportControllerCore extends AdminController
     protected function excelToCsvFile($filename)
     {
         if (preg_match('#(.*?)\.(csv)#is', $filename)) {
-            $destFile = self::getPath(strval(preg_replace('/\.{2,}/', '.', $filename)));
+            $destFile = static::getPath(strval(preg_replace('/\.{2,}/', '.', $filename)));
         } else {
-            $csvFolder = self::getPath();
+            $csvFolder = static::getPath();
             $excelFolder = $csvFolder.'csvfromexcel/';
             $info = pathinfo($filename);
             $csvName = basename($filename, '.'.$info['extension']).'.csv';
@@ -949,8 +949,8 @@ class AdminImportControllerCore extends AdminController
         if (!is_resource($handle)) {
             return false;
         }
-        $tmp = fgetcsv($handle, self::MAX_LINE_SIZE, $glue);
-        self::rewindBomAware($handle);
+        $tmp = fgetcsv($handle, static::MAX_LINE_SIZE, $glue);
+        static::rewindBomAware($handle);
 
         return count($tmp);
     }
@@ -970,7 +970,7 @@ class AdminImportControllerCore extends AdminController
         $html = '<table id="table'.$currentTable.'" style="display: none;" class="table table-bordered"><thead><tr>';
         // Header
         for ($i = 0; $i < $nbColumn; $i++) {
-            if (self::MAX_COLUMNS * (int) $currentTable <= $i && (int) $i < self::MAX_COLUMNS * ((int) $currentTable + 1)) {
+            if (static::MAX_COLUMNS * (int) $currentTable <= $i && (int) $i < static::MAX_COLUMNS * ((int) $currentTable + 1)) {
                 $html .= '<th>
 							<select id="type_value['.$i.']"
 								name="type_value['.$i.']"
@@ -982,22 +982,22 @@ class AdminImportControllerCore extends AdminController
         }
         $html .= '</tr></thead><tbody>';
 
-        self::setLocale();
-        for ($currentLine = 0; $currentLine < 10 && $line = fgetcsv($handle, self::MAX_LINE_SIZE, $glue); $currentLine++) {
+        static::setLocale();
+        for ($currentLine = 0; $currentLine < 10 && $line = fgetcsv($handle, static::MAX_LINE_SIZE, $glue); $currentLine++) {
             /* UTF-8 conversion */
             if ($this->convert) {
                 $line = $this->utf8EncodeArray($line);
             }
             $html .= '<tr id="table_'.$currentTable.'_line_'.$currentLine.'">';
             foreach ($line as $nbC => $column) {
-                if ((self::MAX_COLUMNS * (int) $currentTable <= $nbC) && ((int) $nbC < self::MAX_COLUMNS * ((int) $currentTable + 1))) {
+                if ((static::MAX_COLUMNS * (int) $currentTable <= $nbC) && ((int) $nbC < static::MAX_COLUMNS * ((int) $currentTable + 1))) {
                     $html .= '<td>'.htmlentities(Tools::substr($column, 0, 200), ENT_QUOTES, 'UTF-8').'</td>';
                 }
             }
             $html .= '</tr>';
         }
         $html .= '</tbody></table>';
-        self::rewindBomAware($handle);
+        static::rewindBomAware($handle);
 
         return $html;
     }
@@ -1062,19 +1062,19 @@ class AdminImportControllerCore extends AdminController
      */
     public function renderForm()
     {
-        if (!is_dir(self::getPath())) {
+        if (!is_dir(static::getPath())) {
             return !($this->errors[] = $this->l('The import directory doesn\'t exist. Please check your file path.'));
         }
 
-        if (!is_writable(self::getPath())) {
+        if (!is_writable(static::getPath())) {
             $this->displayWarning($this->l('The import directory must be writable (CHMOD 755 / 777).'));
         }
 
-        $filesToImport = scandir(self::getPath());
+        $filesToImport = scandir(static::getPath());
         uasort($filesToImport, ['self', 'usortFiles']);
         foreach ($filesToImport as $k => &$filename) {
             //exclude .  ..  .svn and index.php and all hidden files
-            if (preg_match('/^\..*|index\.php/i', $filename) || is_dir(self::getPath().$filename)) {
+            if (preg_match('/^\..*|index\.php/i', $filename) || is_dir(static::getPath().$filename)) {
                 unset($filesToImport[$k]);
             }
         }
@@ -1099,7 +1099,7 @@ class AdminImportControllerCore extends AdminController
         $csvSelected = '';
         if (isset($this->context->cookie->csv_selected) &&
             @filemtime(
-                self::getPath(
+                static::getPath(
                     urldecode($this->context->cookie->csv_selected)
                 )
             )
@@ -1148,7 +1148,7 @@ class AdminImportControllerCore extends AdminController
         $this->tpl_form_vars = [
             'post_max_size'                     => (int) $bytes,
             'module_confirmation'               => Tools::isSubmit('import') && (isset($this->warnings) && !count($this->warnings)),
-            'path_import'                       => self::getPath(),
+            'path_import'                       => static::getPath(),
             'entities'                          => $this->entities,
             'entity_selected'                   => $entitySelected,
             'csv_selected'                      => $csvSelected,
@@ -1217,14 +1217,14 @@ class AdminImportControllerCore extends AdminController
         } else {
             $categoryToCreate->id_shop_default = (int) Context::getContext()->shop->id;
         }
-        $categoryToCreate->name = self::createMultiLangField(trim($categoryName));
+        $categoryToCreate->name = static::createMultiLangField(trim($categoryName));
         $categoryToCreate->active = 1;
         $categoryToCreate->id_parent = (int) $idParentCategory ? (int) $idParentCategory : (int) Configuration::get('PS_HOME_CATEGORY'); // Default parent is home for unknown category to create
         $categoryLinkRewrite = Tools::link_rewrite($categoryToCreate->name[$defaultLanguageId]);
-        $categoryToCreate->link_rewrite = self::createMultiLangField($categoryLinkRewrite);
+        $categoryToCreate->link_rewrite = static::createMultiLangField($categoryLinkRewrite);
 
-        if (($fieldError = $categoryToCreate->validateFields(self::UNFRIENDLY_ERROR, true)) !== true ||
-            ($langFieldError = $categoryToCreate->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) !== true ||
+        if (($fieldError = $categoryToCreate->validateFields(static::UNFRIENDLY_ERROR, true)) !== true ||
+            ($langFieldError = $categoryToCreate->validateFieldsLang(static::UNFRIENDLY_ERROR, true)) !== true ||
             !$categoryToCreate->add()
         ) {
             $this->errors[] = sprintf(
@@ -1271,8 +1271,8 @@ class AdminImportControllerCore extends AdminController
             $this->importByGroups();
         } elseif ($filename = Tools::getValue('csvfilename')) {
             $filename = urldecode($filename);
-            $file = self::getPath(basename($filename));
-            if (realpath(dirname($file)) != realpath(self::getPath())) {
+            $file = static::getPath(basename($filename));
+            if (realpath(dirname($file)) != realpath(static::getPath())) {
                 exit();
             }
             if (!empty($filename)) {
@@ -1405,7 +1405,7 @@ class AdminImportControllerCore extends AdminController
                     $handle = $this->openCsvFile(0);
                     if ($handle) {
                         $count = 0;
-                        while (fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) {
+                        while (fgetcsv($handle, static::MAX_LINE_SIZE, $this->separator)) {
                             $count++;
                         }
                         $results['totalCount'] = $count;
@@ -1591,7 +1591,7 @@ class AdminImportControllerCore extends AdminController
         if (!Validate::isUnsignedId($idLang)) {
             $idLang = $idDefaultLanguage;
         }
-        self::setLocale();
+        static::setLocale();
 
         $forceIds = Tools::getValue('forceIDs');
         $regenerate = Tools::getValue('regenerate');
@@ -1603,7 +1603,7 @@ class AdminImportControllerCore extends AdminController
         }
 
         $lineCount = 0;
-        for ($currentLine = 0; ($line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
+        for ($currentLine = 0; ($line = fgetcsv($handle, static::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
             if ($this->convert) {
                 $line = $this->utf8EncodeArray($line);
@@ -1614,7 +1614,7 @@ class AdminImportControllerCore extends AdminController
                 continue;
             }
 
-            $info = self::getMaskedRow($line);
+            $info = static::getMaskedRow($line);
 
             $this->categoryImportOne(
                 $info,
@@ -1651,7 +1651,7 @@ class AdminImportControllerCore extends AdminController
         $typeValue = Tools::getValue('type_value') ? Tools::getValue('type_value') : [];
         foreach ($typeValue as $nb => $type) {
             if ($type != 'no') {
-                self::$columnMask[$type] = $nb;
+                static::$columnMask[$type] = $nb;
             }
         }
     }
@@ -1666,8 +1666,8 @@ class AdminImportControllerCore extends AdminController
     public static function getMaskedRow($row)
     {
         $res = [];
-        if (is_array(self::$columnMask)) {
-            foreach (self::$columnMask as $type => $nb) {
+        if (is_array(static::$columnMask)) {
+            foreach (static::$columnMask as $type => $nb) {
                 $res[$type] = isset($row[$nb]) ? trim($row[$nb]) : null;
             }
         }
@@ -1695,7 +1695,7 @@ class AdminImportControllerCore extends AdminController
 
             return;
         }
-        self::setDefaultValues($info);
+        static::setDefaultValues($info);
 
         if ($forceIds && isset($info['id']) && (int) $info['id']) {
             $category = new Category((int) $info['id']);
@@ -1737,14 +1737,14 @@ class AdminImportControllerCore extends AdminController
                 $category->level_depth = (int) $categoryParent['level_depth'] + 1;
             } else {
                 $categoryToCreate = new Category();
-                $categoryToCreate->name = self::createMultiLangField($category->parent);
+                $categoryToCreate->name = static::createMultiLangField($category->parent);
                 $categoryToCreate->active = 1;
                 $categoryLinkRewrite = Tools::link_rewrite($categoryToCreate->name[$idLang]);
-                $categoryToCreate->link_rewrite = self::createMultiLangField($categoryLinkRewrite);
+                $categoryToCreate->link_rewrite = static::createMultiLangField($categoryLinkRewrite);
                 $categoryToCreate->id_parent = Configuration::get('PS_HOME_CATEGORY'); // Default parent is home for unknown category to create
 
-                if (($fieldError = $categoryToCreate->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
-                    ($langFieldError = $categoryToCreate->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true &&
+                if (($fieldError = $categoryToCreate->validateFields(static::UNFRIENDLY_ERROR, true)) === true &&
+                    ($langFieldError = $categoryToCreate->validateFieldsLang(static::UNFRIENDLY_ERROR, true)) === true &&
                     !$validateOnly && // Do not move the position of this test. Only ->add() should not be triggered is !validateOnly. Previous tests should be always run.
                     $categoryToCreate->add()
                 ) {
@@ -1782,7 +1782,7 @@ class AdminImportControllerCore extends AdminController
                 $category->link_rewrite = 'friendly-url-autogeneration-failed';
                 $this->warnings[] = sprintf($this->l('URL rewriting failed to auto-generate a friendly URL for: %s'), $category->name[$idDefaultLanguage]);
             }
-            $category->link_rewrite = self::createMultiLangField($category->link_rewrite);
+            $category->link_rewrite = static::createMultiLangField($category->link_rewrite);
         }
 
         if (!$validLink) {
@@ -1794,8 +1794,8 @@ class AdminImportControllerCore extends AdminController
             );
         }
         $res = false;
-        if (($fieldError = $category->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
-            ($langFieldError = $category->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true && empty($this->errors)
+        if (($fieldError = $category->validateFields(static::UNFRIENDLY_ERROR, true)) === true &&
+            ($langFieldError = $category->validateFieldsLang(static::UNFRIENDLY_ERROR, true)) === true && empty($this->errors)
         ) {
             $categoryAlreadyCreated = Category::searchByNameAndParentCategoryId(
                 $idLang,
@@ -1850,7 +1850,7 @@ class AdminImportControllerCore extends AdminController
 
         //copying images of categories
         if (isset($category->image) && !empty($category->image)) {
-            if (!(self::copyImg($category->id, null, $category->image, 'categories', !$regenerate))) {
+            if (!(static::copyImg($category->id, null, $category->image, 'categories', !$regenerate))) {
                 $this->warnings[] = $category->image.' '.$this->l('cannot be copied.');
             }
         }
@@ -1903,7 +1903,7 @@ class AdminImportControllerCore extends AdminController
      */
     protected static function setDefaultValues(&$info)
     {
-        foreach (self::$defaultValues as $k => $v) {
+        foreach (static::$defaultValues as $k => $v) {
             if (!isset($info[$k]) || $info[$k] == '') {
                 $info[$k] = $v;
             }
@@ -1992,7 +1992,7 @@ class AdminImportControllerCore extends AdminController
                 $pathInfos = [];
                 $pathInfos[] = [$tgtWidth, $tgtHeight, $path.'.jpg'];
                 foreach ($imagesTypes as $imageType) {
-                    $tmpfile = self::get_best_path($imageType['width'], $imageType['height'], $pathInfos);
+                    $tmpfile = static::get_best_path($imageType['width'], $imageType['height'], $pathInfos);
 
                     if (ImageManager::resize(
                         $tmpfile,
@@ -2111,7 +2111,7 @@ class AdminImportControllerCore extends AdminController
         if (!Validate::isUnsignedId($idLang)) {
             $idLang = $idDefaultLanguage;
         }
-        self::setLocale();
+        static::setLocale();
         $shopIds = Shop::getCompleteListOfShopsID();
 
         $forceIds = Tools::getValue('forceIDs');
@@ -2128,7 +2128,7 @@ class AdminImportControllerCore extends AdminController
         }
 
         $lineCount = 0;
-        for ($currentLine = 0; ($line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
+        for ($currentLine = 0; ($line = fgetcsv($handle, static::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
             if ($this->convert) {
                 $line = $this->utf8EncodeArray($line);
@@ -2139,7 +2139,7 @@ class AdminImportControllerCore extends AdminController
                 continue;
             }
 
-            $info = self::getMaskedRow($line);
+            $info = static::getMaskedRow($line);
 
             $this->productImportOne(
                 $info,
@@ -2186,7 +2186,7 @@ class AdminImportControllerCore extends AdminController
         $accessories = $crossStepsVariables['accessories'];
 
         if ($offset == 0) {
-            //             self::setLocale();
+            //             static::setLocale();
             Module::setBatchMode(true);
         }
 
@@ -2201,9 +2201,9 @@ class AdminImportControllerCore extends AdminController
 
             if (count($links) > 0) { // We delete and relink only if there is accessories to link...
                 // Bulk jobs: for performances, we need to do a minimum amount of SQL queries. No product inflation.
-                $uniqueIds = self::getExistingIdsFromIdsOrRefs($links);
+                $uniqueIds = static::getExistingIdsFromIdsOrRefs($links);
                 Db::getInstance()->delete('accessory', '`id_product_1` = '.(int) $productId);
-                self::changeAccessoriesForProduct($uniqueIds, $productId);
+                static::changeAccessoriesForProduct($uniqueIds, $productId);
             }
             $lineCount++;
 
@@ -2282,7 +2282,7 @@ class AdminImportControllerCore extends AdminController
             }
         }
 
-        self::setEntityDefaultValues($product);
+        static::setEntityDefaultValues($product);
         array_walk($info, ['self', 'fillInfo'], $product);
 
         if (!$shopIsFeatureActive) {
@@ -2330,8 +2330,8 @@ class AdminImportControllerCore extends AdminController
                 $manufacturer = new Manufacturer();
                 $manufacturer->name = $product->manufacturer;
                 $manufacturer->active = true;
-                if (($fieldError = $manufacturer->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
-                    ($langFieldError = $manufacturer->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true &&
+                if (($fieldError = $manufacturer->validateFields(static::UNFRIENDLY_ERROR, true)) === true &&
+                    ($langFieldError = $manufacturer->validateFieldsLang(static::UNFRIENDLY_ERROR, true)) === true &&
                     !$validateOnly && // Do not move this condition: previous tests should be played always, but next ->add() test should not be played in validateOnly mode
                     $manufacturer->add()
                 ) {
@@ -2362,8 +2362,8 @@ class AdminImportControllerCore extends AdminController
                 $supplier->name = $product->supplier;
                 $supplier->active = true;
 
-                if (($fieldError = $supplier->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
-                    ($langFieldError = $supplier->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true &&
+                if (($fieldError = $supplier->validateFields(static::UNFRIENDLY_ERROR, true)) === true &&
+                    ($langFieldError = $supplier->validateFieldsLang(static::UNFRIENDLY_ERROR, true)) === true &&
                     !$validateOnly &&  // Do not move this condition: previous tests should be played always, but next ->add() test should not be played in validateOnly mode
                     $supplier->add()
                 ) {
@@ -2409,13 +2409,13 @@ class AdminImportControllerCore extends AdminController
                     } else {
                         $categoryToCreate = new Category();
                         $categoryToCreate->id = (int) $value;
-                        $categoryToCreate->name = self::createMultiLangField($value);
+                        $categoryToCreate->name = static::createMultiLangField($value);
                         $categoryToCreate->active = 1;
                         $categoryToCreate->id_parent = Configuration::get('PS_HOME_CATEGORY'); // Default parent is home for unknown category to create
                         $categoryLinkRewrite = Tools::link_rewrite($categoryToCreate->name[$idDefaultLanguage]);
-                        $categoryToCreate->link_rewrite = self::createMultiLangField($categoryLinkRewrite);
-                        if (($fieldError = $categoryToCreate->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
-                            ($langFieldError = $categoryToCreate->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true &&
+                        $categoryToCreate->link_rewrite = static::createMultiLangField($categoryLinkRewrite);
+                        if (($fieldError = $categoryToCreate->validateFields(static::UNFRIENDLY_ERROR, true)) === true &&
+                            ($langFieldError = $categoryToCreate->validateFieldsLang(static::UNFRIENDLY_ERROR, true)) === true &&
                             !$validateOnly &&  // Do not move this condition: previous tests should be played always, but next ->add() test should not be played in validateOnly mode
                             $categoryToCreate->add()
                         ) {
@@ -2477,7 +2477,7 @@ class AdminImportControllerCore extends AdminController
         }
 
         if (!$validLink || !(is_array($product->link_rewrite) && count($product->link_rewrite))) {
-            $product->link_rewrite = self::createMultiLangField($linkRewrite);
+            $product->link_rewrite = static::createMultiLangField($linkRewrite);
         } else {
             $product->link_rewrite[(int) $idLang] = $linkRewrite;
         }
@@ -2513,8 +2513,8 @@ class AdminImportControllerCore extends AdminController
         }
 
         $res = false;
-        $fieldError = $product->validateFields(self::UNFRIENDLY_ERROR, true);
-        $langFieldError = $product->validateFieldsLang(self::UNFRIENDLY_ERROR, true);
+        $fieldError = $product->validateFields(static::UNFRIENDLY_ERROR, true);
+        $langFieldError = $product->validateFieldsLang(static::UNFRIENDLY_ERROR, true);
         if ($fieldError === true && $langFieldError === true) {
             // check quantity
             if ($product->quantity == null) {
@@ -2698,7 +2698,7 @@ class AdminImportControllerCore extends AdminController
                 // Delete tags for this id product, for no duplicating error
                 Tag::deleteTagsForProduct($product->id);
                 if (!is_array($product->tags) && !empty($product->tags)) {
-                    $product->tags = self::createMultiLangField($product->tags);
+                    $product->tags = static::createMultiLangField($product->tags);
                     foreach ($product->tags as $key => $tags) {
                         $isTagAdded = Tag::addTags($key, $product->id, $tags, $this->multiple_value_separator);
                         if (!$isTagAdded) {
@@ -2751,15 +2751,15 @@ class AdminImportControllerCore extends AdminController
                         $image->cover = (!$key && !$productHasImages) ? true : false;
                         $alt = $product->image_alt[$key];
                         if (strlen($alt) > 0) {
-                            $image->legend = self::createMultiLangField($alt);
+                            $image->legend = static::createMultiLangField($alt);
                         }
                         // file_exists doesn't work with HTTP protocol
-                        if (($fieldError = $image->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
-                            ($langFieldError = $image->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true && $image->add()
+                        if (($fieldError = $image->validateFields(static::UNFRIENDLY_ERROR, true)) === true &&
+                            ($langFieldError = $image->validateFieldsLang(static::UNFRIENDLY_ERROR, true)) === true && $image->add()
                         ) {
                             // associate image to selected shops
                             $image->associateTo($shops);
-                            if (!self::copyImg($product->id, $image->id, $url, 'products', !$regenerate)) {
+                            if (!static::copyImg($product->id, $image->id, $url, 'products', !$regenerate)) {
                                 $image->delete();
                                 $this->warnings[] = sprintf($this->l('Error copying image: %s'), $url);
                             }
@@ -2918,7 +2918,7 @@ class AdminImportControllerCore extends AdminController
     protected static function setEntityDefaultValues(&$entity)
     {
         $members = get_object_vars($entity);
-        foreach (self::$defaultValues as $k => $v) {
+        foreach (static::$defaultValues as $k => $v) {
             if ((array_key_exists($k, $members) && $entity->$k === null) || !array_key_exists($k, $members)) {
                 $entity->$k = $v;
             }
@@ -2961,13 +2961,13 @@ class AdminImportControllerCore extends AdminController
         if (!Validate::isUnsignedId($idLang)) {
             $idLang = $defaultLanguageId;
         }
-        self::setLocale();
+        static::setLocale();
 
         $shopIsFeatureActive = Shop::isFeatureActive();
         $forceIds = Tools::getValue('forceIDs');
 
         $lineCount = 0;
-        for ($currentLine = 0; ($line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
+        for ($currentLine = 0; ($line = fgetcsv($handle, static::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
             if ($this->convert) {
                 $line = $this->utf8EncodeArray($line);
@@ -2978,7 +2978,7 @@ class AdminImportControllerCore extends AdminController
                 continue;
             }
 
-            $info = self::getMaskedRow($line);
+            $info = static::getMaskedRow($line);
 
             $this->customerImportOne(
                 $info,
@@ -3008,7 +3008,7 @@ class AdminImportControllerCore extends AdminController
      */
     protected function customerImportOne($info, $defaultLanguageId, $idLang, $shopIsFeatureActive, $forceIds, $validateOnly = false)
     {
-        self::setDefaultValues($info);
+        static::setDefaultValues($info);
 
         if ($forceIds && isset($info['id']) && (int) $info['id']) {
             $customer = new Customer((int) $info['id']);
@@ -3131,8 +3131,8 @@ class AdminImportControllerCore extends AdminController
         }
 
         $res = false;
-        if (($fieldError = $customer->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
-            ($langFieldError = $customer->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true
+        if (($fieldError = $customer->validateFields(static::UNFRIENDLY_ERROR, true)) === true &&
+            ($langFieldError = $customer->validateFieldsLang(static::UNFRIENDLY_ERROR, true)) === true
         ) {
             $res = true;
             foreach ($customersShop as $idShop => $idGroup) {
@@ -3225,12 +3225,12 @@ class AdminImportControllerCore extends AdminController
             return false;
         }
 
-        self::setLocale();
+        static::setLocale();
 
         $forceIds = Tools::getValue('forceIDs');
 
         $lineCount = 0;
-        for ($currentLine = 0; ($line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
+        for ($currentLine = 0; ($line = fgetcsv($handle, static::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
             if ($this->convert) {
                 $line = $this->utf8EncodeArray($line);
@@ -3241,7 +3241,7 @@ class AdminImportControllerCore extends AdminController
                 continue;
             }
 
-            $info = self::getMaskedRow($line);
+            $info = static::getMaskedRow($line);
 
             $this->addressImportOne(
                 $info,
@@ -3265,7 +3265,7 @@ class AdminImportControllerCore extends AdminController
      */
     protected function addressImportOne($info, $forceIds, $validateOnly = false)
     {
-        self::setDefaultValues($info);
+        static::setDefaultValues($info);
 
         if ($forceIds && isset($info['id']) && (int) $info['id']) {
             $address = new Address((int) $info['id']);
@@ -3289,13 +3289,13 @@ class AdminImportControllerCore extends AdminController
             } else {
                 $country = new Country();
                 $country->active = 1;
-                $country->name = self::createMultiLangField($address->country);
+                $country->name = static::createMultiLangField($address->country);
                 $country->id_zone = 0; // Default zone for country to create
                 $country->iso_code = Tools::strtoupper(Tools::substr($address->country, 0, 2)); // Default iso for country to create
                 $country->contains_states = 0; // Default value for country to create
-                $langFieldError = $country->validateFieldsLang(self::UNFRIENDLY_ERROR, true);
-                if (($fieldError = $country->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
-                    ($langFieldError = $country->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true &&
+                $langFieldError = $country->validateFieldsLang(static::UNFRIENDLY_ERROR, true);
+                if (($fieldError = $country->validateFields(static::UNFRIENDLY_ERROR, true)) === true &&
+                    ($langFieldError = $country->validateFieldsLang(static::UNFRIENDLY_ERROR, true)) === true &&
                     !$validateOnly && // Do not move this condition: previous tests should be played always, but next ->add() test should not be played in validateOnly mode
                     $country->add()
                 ) {
@@ -3327,8 +3327,8 @@ class AdminImportControllerCore extends AdminController
                 $state->id_zone = 0; // Default zone for state to create
                 $state->iso_code = Tools::strtoupper(Tools::substr($address->state, 0, 2)); // Default iso for state to create
                 $state->tax_behavior = 0;
-                if (($fieldError = $state->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
-                    ($langFieldError = $state->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true &&
+                if (($fieldError = $state->validateFields(static::UNFRIENDLY_ERROR, true)) === true &&
+                    ($langFieldError = $state->validateFieldsLang(static::UNFRIENDLY_ERROR, true)) === true &&
                     !$validateOnly && // Do not move this condition: previous tests should be played always, but next ->add() test should not be played in validateOnly mode
                     $state->add()
                 ) {
@@ -3399,8 +3399,8 @@ class AdminImportControllerCore extends AdminController
             } else {
                 $manufacturer = new Manufacturer();
                 $manufacturer->name = $address->manufacturer;
-                if (($fieldError = $manufacturer->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
-                    ($langFieldError = $manufacturer->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true &&
+                if (($fieldError = $manufacturer->validateFields(static::UNFRIENDLY_ERROR, true)) === true &&
+                    ($langFieldError = $manufacturer->validateFieldsLang(static::UNFRIENDLY_ERROR, true)) === true &&
                     !$validateOnly && // Do not move this condition: previous tests should be played always, but next ->add() test should not be played in validateOnly mode
                     $manufacturer->add()
                 ) {
@@ -3428,8 +3428,8 @@ class AdminImportControllerCore extends AdminController
             } else {
                 $supplier = new Supplier();
                 $supplier->name = $address->supplier;
-                if (($fieldError = $supplier->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
-                    ($langFieldError = $supplier->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true &&
+                if (($fieldError = $supplier->validateFields(static::UNFRIENDLY_ERROR, true)) === true &&
+                    ($langFieldError = $supplier->validateFieldsLang(static::UNFRIENDLY_ERROR, true)) === true &&
                     !$validateOnly && // Do not move this condition: previous tests should be played always, but next ->add() test should not be played in validateOnly mode
                     $supplier->add()
                 ) {
@@ -3450,8 +3450,8 @@ class AdminImportControllerCore extends AdminController
         }
 
         $res = false;
-        if (($fieldError = $address->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
-            ($langFieldError = $address->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true
+        if (($fieldError = $address->validateFields(static::UNFRIENDLY_ERROR, true)) === true &&
+            ($langFieldError = $address->validateFieldsLang(static::UNFRIENDLY_ERROR, true)) === true
         ) {
             $address->force_id = (bool) $forceIds;
 
@@ -3524,13 +3524,13 @@ class AdminImportControllerCore extends AdminController
             return false;
         }
 
-        self::setLocale();
+        static::setLocale();
 
         $regenerate = Tools::getValue('regenerate');
         $shopIsFeatureActive = Shop::isFeatureActive();
 
         $lineCount = 0;
-        for ($currentLine = 0; ($line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
+        for ($currentLine = 0; ($line = fgetcsv($handle, static::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
 
             if ($this->convert) {
@@ -3542,7 +3542,7 @@ class AdminImportControllerCore extends AdminController
                 continue;
             }
 
-            $info = self::getMaskedRow($line);
+            $info = static::getMaskedRow($line);
             $info = array_map('trim', $info);
 
             $this->attributeImportOne(
@@ -3580,7 +3580,7 @@ class AdminImportControllerCore extends AdminController
      */
     protected function attributeImportOne($info, $defaultLanguage, &$groups, &$attributes, $regenerate, $shopIsFeatureActive, $validateOnly = false)
     {
-        self::setDefaultValues($info);
+        static::setDefaultValues($info);
 
         if (!$shopIsFeatureActive) {
             $info['shop'] = 1;
@@ -3639,15 +3639,15 @@ class AdminImportControllerCore extends AdminController
                     $image->cover = (!$productHasImages) ? true : false;
 
                     if (isset($info['image_alt'])) {
-                        $alt = self::split($info['image_alt']);
+                        $alt = static::split($info['image_alt']);
                         if (isset($alt[$key]) && strlen($alt[$key]) > 0) {
-                            $alt = self::createMultiLangField($alt[$key]);
+                            $alt = static::createMultiLangField($alt[$key]);
                             $image->legend = $alt;
                         }
                     }
 
-                    $fieldError = $image->validateFields(self::UNFRIENDLY_ERROR, true);
-                    $langFieldError = $image->validateFieldsLang(self::UNFRIENDLY_ERROR, true);
+                    $fieldError = $image->validateFields(static::UNFRIENDLY_ERROR, true);
+                    $langFieldError = $image->validateFieldsLang(static::UNFRIENDLY_ERROR, true);
 
                     if ($fieldError === true &&
                         $langFieldError === true &&
@@ -3656,7 +3656,7 @@ class AdminImportControllerCore extends AdminController
                     ) {
                         $image->associateTo($idShopList);
 // FIXME: 2s/image !
-                        if (!self::copyImg($product->id, $image->id, $url, 'products', !$regenerate)) {
+                        if (!static::copyImg($product->id, $image->id, $url, 'products', !$regenerate)) {
                             $this->warnings[] = sprintf($this->l('Error copying image: %s'), $url);
                             $image->delete();
                         } else {
@@ -3737,8 +3737,8 @@ class AdminImportControllerCore extends AdminController
                     $obj->public_name[$defaultLanguage] = $group;
                     $obj->position = (!$position) ? AttributeGroup::getHigherPosition() + 1 : $position;
 
-                    if (($fieldError = $obj->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
-                        ($langFieldError = $obj->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true
+                    if (($fieldError = $obj->validateFields(static::UNFRIENDLY_ERROR, true)) === true &&
+                        ($langFieldError = $obj->validateFieldsLang(static::UNFRIENDLY_ERROR, true)) === true
                     ) {
                         // here, cannot avoid attributeGroup insertion to avoid an error during validation step.
                         //if (!$validateOnly) {
@@ -3792,8 +3792,8 @@ class AdminImportControllerCore extends AdminController
                         $obj->name[$defaultLanguage] = str_replace('\n', '', str_replace('\r', '', $attribute));
                         $obj->position = (!$position && isset($groups[$group])) ? Attribute::getHigherPosition($groups[$group]) + 1 : $position;
 
-                        if (($fieldError = $obj->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
-                            ($langFieldError = $obj->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true
+                        if (($fieldError = $obj->validateFields(static::UNFRIENDLY_ERROR, true)) === true &&
+                            ($langFieldError = $obj->validateFieldsLang(static::UNFRIENDLY_ERROR, true)) === true
                         ) {
                             if (!$validateOnly) {
                                 $obj->add();
@@ -4043,7 +4043,7 @@ class AdminImportControllerCore extends AdminController
             return [];
         }
 
-        $tab = fgetcsv($fd, self::MAX_LINE_SIZE, $separator);
+        $tab = fgetcsv($fd, static::MAX_LINE_SIZE, $separator);
         fclose($fd);
         if ($uniqidPath !== false && file_exists($uniqidPath)) {
             @unlink($uniqidPath);
@@ -4073,14 +4073,14 @@ class AdminImportControllerCore extends AdminController
             return false;
         }
 
-        self::setLocale();
+        static::setLocale();
 
         $shopIsFeatureActive = Shop::isFeatureActive();
         $regenerate = Tools::getValue('regenerate');
         $forceIds = Tools::getValue('forceIDs');
 
         $lineCount = 0;
-        for ($currentLine = 0; ($line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
+        for ($currentLine = 0; ($line = fgetcsv($handle, static::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
             if ($this->convert) {
                 $line = $this->utf8EncodeArray($line);
@@ -4091,7 +4091,7 @@ class AdminImportControllerCore extends AdminController
                 continue;
             }
 
-            $info = self::getMaskedRow($line);
+            $info = static::getMaskedRow($line);
 
             $this->manufacturerImportOne(
                 $info,
@@ -4119,7 +4119,7 @@ class AdminImportControllerCore extends AdminController
      */
     protected function manufacturerImportOne($info, $shopIsFeatureActive, $regenerate, $forceIds, $validateOnly = false)
     {
-        self::setDefaultValues($info);
+        static::setDefaultValues($info);
 
         if ($forceIds && isset($info['id']) && (int) $info['id']) {
             $manufacturer = new Manufacturer((int) $info['id']);
@@ -4134,8 +4134,8 @@ class AdminImportControllerCore extends AdminController
         array_walk($info, ['self', 'fillInfo'], $manufacturer);
 
         $res = false;
-        if (($fieldError = $manufacturer->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
-            ($langFieldError = $manufacturer->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true
+        if (($fieldError = $manufacturer->validateFields(static::UNFRIENDLY_ERROR, true)) === true &&
+            ($langFieldError = $manufacturer->validateFieldsLang(static::UNFRIENDLY_ERROR, true)) === true
         ) {
             if ($manufacturer->id && $manufacturer->manufacturerExists($manufacturer->id)) {
                 $res = ($validateOnly || $manufacturer->update());
@@ -4147,7 +4147,7 @@ class AdminImportControllerCore extends AdminController
 
             //copying images of manufacturer
             if (!$validateOnly && isset($manufacturer->image) && !empty($manufacturer->image)) {
-                if (!self::copyImg($manufacturer->id, null, $manufacturer->image, 'manufacturers', !$regenerate)) {
+                if (!static::copyImg($manufacturer->id, null, $manufacturer->image, 'manufacturers', !$regenerate)) {
                     $this->warnings[] = $manufacturer->image.' '.$this->l('cannot be copied.');
                 }
             }
@@ -4208,14 +4208,14 @@ class AdminImportControllerCore extends AdminController
             return false;
         }
 
-        self::setLocale();
+        static::setLocale();
 
         $shopIsFeatureActive = Shop::isFeatureActive();
         $regenerate = Tools::getValue('regenerate');
         $forceIds = Tools::getValue('forceIDs');
 
         $lineCount = 0;
-        for ($currentLine = 0; ($line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
+        for ($currentLine = 0; ($line = fgetcsv($handle, static::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
             if ($this->convert) {
                 $line = $this->utf8EncodeArray($line);
@@ -4226,7 +4226,7 @@ class AdminImportControllerCore extends AdminController
                 continue;
             }
 
-            $info = self::getMaskedRow($line);
+            $info = static::getMaskedRow($line);
 
             if ($offset > 0) {
                 $this->toto = true;
@@ -4256,7 +4256,7 @@ class AdminImportControllerCore extends AdminController
      */
     protected function supplierImportOne($info, $shopIsFeatureActive, $regenerate, $forceIds, $validateOnly = false)
     {
-        self::setDefaultValues($info);
+        static::setDefaultValues($info);
 
         if ($forceIds && isset($info['id']) && (int) $info['id']) {
             $supplier = new Supplier((int) $info['id']);
@@ -4269,8 +4269,8 @@ class AdminImportControllerCore extends AdminController
         }
 
         array_walk($info, ['self', 'fillInfo'], $supplier);
-        if (($fieldError = $supplier->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
-            ($langFieldError = $supplier->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true
+        if (($fieldError = $supplier->validateFields(static::UNFRIENDLY_ERROR, true)) === true &&
+            ($langFieldError = $supplier->validateFieldsLang(static::UNFRIENDLY_ERROR, true)) === true
         ) {
             $res = false;
             if ($supplier->id && $supplier->supplierExists($supplier->id)) {
@@ -4283,7 +4283,7 @@ class AdminImportControllerCore extends AdminController
 
             //copying images of suppliers
             if (!$validateOnly && isset($supplier->image) && !empty($supplier->image)) {
-                if (!self::copyImg($supplier->id, null, $supplier->image, 'suppliers', !$regenerate)) {
+                if (!static::copyImg($supplier->id, null, $supplier->image, 'suppliers', !$regenerate)) {
                     $this->warnings[] = $supplier->image.' '.$this->l('cannot be copied.');
                 }
             }
@@ -4340,12 +4340,12 @@ class AdminImportControllerCore extends AdminController
             return 0;
         }
 
-        self::setLocale();
+        static::setLocale();
 
         $forceIds = Tools::getValue('forceIDs');
 
         $lineCount = 0;
-        for ($currentLine = 0; ($line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
+        for ($currentLine = 0; ($line = fgetcsv($handle, static::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
             if ($this->convert) {
                 $line = $this->utf8EncodeArray($line);
@@ -4356,7 +4356,7 @@ class AdminImportControllerCore extends AdminController
                 continue;
             }
 
-            $info = self::getMaskedRow($line);
+            $info = static::getMaskedRow($line);
 
             $this->aliasImportOne(
                 $info,
@@ -4378,7 +4378,7 @@ class AdminImportControllerCore extends AdminController
      */
     protected function aliasImportOne($info, $forceIds, $validateOnly = false)
     {
-        self::setDefaultValues($info);
+        static::setDefaultValues($info);
 
         if ($forceIds && isset($info['id']) && (int) $info['id']) {
             $alias = new Alias((int) $info['id']);
@@ -4393,8 +4393,8 @@ class AdminImportControllerCore extends AdminController
         array_walk($info, ['self', 'fillInfo'], $alias);
 
         $res = false;
-        if (($fieldError = $alias->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
-            ($langFieldError = $alias->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true
+        if (($fieldError = $alias->validateFields(static::UNFRIENDLY_ERROR, true)) === true &&
+            ($langFieldError = $alias->validateFieldsLang(static::UNFRIENDLY_ERROR, true)) === true
         ) {
             if ($alias->id && $alias->aliasExists($alias->id)) {
                 $res = ($validateOnly || $alias->update());
@@ -4438,7 +4438,7 @@ class AdminImportControllerCore extends AdminController
         $regenerate = Tools::getValue('regenerate');
 
         $lineCount = 0;
-        for ($currentLine = 0; ($line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
+        for ($currentLine = 0; ($line = fgetcsv($handle, static::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); $currentLine++) {
             $lineCount++;
             if ($this->convert) {
                 $line = $this->utf8EncodeArray($line);
@@ -4449,7 +4449,7 @@ class AdminImportControllerCore extends AdminController
                 continue;
             }
 
-            $info = self::getMaskedRow($line);
+            $info = static::getMaskedRow($line);
 
             $this->storeContactImportOne(
                 $info,
@@ -4477,7 +4477,7 @@ class AdminImportControllerCore extends AdminController
      */
     public function storeContactImportOne($info, $shopIsFeatureActive, $regenerate, $forceIds, $validateOnly = false)
     {
-        self::setDefaultValues($info);
+        static::setDefaultValues($info);
 
         if ($forceIds && isset($info['id']) && (int) $info['id']) {
             $store = new Store((int) $info['id']);
@@ -4492,7 +4492,7 @@ class AdminImportControllerCore extends AdminController
         array_walk($info, ['self', 'fillInfo'], $store);
 
         if (isset($store->image) && !empty($store->image)) {
-            if (!(self::copyImg($store->id, null, $store->image, 'stores', !$regenerate))) {
+            if (!(static::copyImg($store->id, null, $store->image, 'stores', !$regenerate))) {
                 $this->warnings[] = $store->image.' '.$this->l('cannot be copied.');
             }
         }
@@ -4511,13 +4511,13 @@ class AdminImportControllerCore extends AdminController
             } else {
                 $country = new Country();
                 $country->active = 1;
-                $country->name = self::createMultiLangField($store->country);
+                $country->name = static::createMultiLangField($store->country);
                 $country->id_zone = 0; // Default zone for country to create
                 $country->iso_code = Tools::strtoupper(Tools::substr($store->country, 0, 2)); // Default iso for country to create
                 $country->contains_states = 0; // Default value for country to create
-                $langFieldError = $country->validateFieldsLang(self::UNFRIENDLY_ERROR, true);
-                if (($fieldError = $country->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
-                    ($langFieldError = $country->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true &&
+                $langFieldError = $country->validateFieldsLang(static::UNFRIENDLY_ERROR, true);
+                if (($fieldError = $country->validateFields(static::UNFRIENDLY_ERROR, true)) === true &&
+                    ($langFieldError = $country->validateFieldsLang(static::UNFRIENDLY_ERROR, true)) === true &&
                     !$validateOnly && // Do not move this condition: previous tests should be played always, but next ->add() test should not be played in validateOnly mode
                     $country->add()
                 ) {
@@ -4549,8 +4549,8 @@ class AdminImportControllerCore extends AdminController
                 $state->id_zone = 0; // Default zone for state to create
                 $state->iso_code = Tools::strtoupper(Tools::substr($store->state, 0, 2)); // Default iso for state to create
                 $state->tax_behavior = 0;
-                if (($fieldError = $state->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
-                    ($langFieldError = $state->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true &&
+                if (($fieldError = $state->validateFields(static::UNFRIENDLY_ERROR, true)) === true &&
+                    ($langFieldError = $state->validateFieldsLang(static::UNFRIENDLY_ERROR, true)) === true &&
                     !$validateOnly && // Do not move this condition: previous tests should be played always, but next ->add() test should not be played in validateOnly mode
                     $state->add()
                 ) {
@@ -4567,10 +4567,10 @@ class AdminImportControllerCore extends AdminController
         }
 
         $res = false;
-        if (($fieldError = $store->validateFields(self::UNFRIENDLY_ERROR, true)) === true &&
-            ($langFieldError = $store->validateFieldsLang(self::UNFRIENDLY_ERROR, true)) === true
+        if (($fieldError = $store->validateFields(static::UNFRIENDLY_ERROR, true)) === true &&
+            ($langFieldError = $store->validateFieldsLang(static::UNFRIENDLY_ERROR, true)) === true
         ) {
-            if ($store->id && self::storeExists($store->id)) {
+            if ($store->id && static::storeExists($store->id)) {
                 $res = $validateOnly ? $validateOnly : $store->update();
             }
             $store->force_id = (bool) $forceIds;
@@ -4609,18 +4609,18 @@ class AdminImportControllerCore extends AdminController
             return false;
         }
 
-        self::setLocale();
+        static::setLocale();
 
         $forceIds = Tools::getValue('forceIDs');
 
         // main loop, for each supply orders to import
         $lineCount = 0;
-        for ($currentLine = 0; ($line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); ++$currentLine) {
+        for ($currentLine = 0; ($line = fgetcsv($handle, static::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); ++$currentLine) {
             $lineCount++;
             if ($this->convert) {
                 $line = $this->utf8EncodeArray($line);
             }
-            $info = self::getMaskedRow($line);
+            $info = static::getMaskedRow($line);
 
             $this->supplyOrdersImportOne(
                 $info,
@@ -4644,7 +4644,7 @@ class AdminImportControllerCore extends AdminController
     protected function supplyOrdersImportOne($info, $forceIds, $currentLine, $validateOnly = false)
     {
         // sets default values if needed
-        self::setDefaultValues($info);
+        static::setDefaultValues($info);
 
         // if an id is set, instanciates a supply order with this id if possible
         if (array_key_exists('id', $info) && (int) $info['id'] && SupplyOrder::exists((int) $info['id'])) {
@@ -4748,7 +4748,7 @@ class AdminImportControllerCore extends AdminController
             return false;
         }
 
-        self::setLocale();
+        static::setLocale();
 
         $products = [];
         $reset = true;
@@ -4763,12 +4763,12 @@ class AdminImportControllerCore extends AdminController
 
         // main loop, for each supply orders details to import
         $lineCount = 0;
-        for ($currentLine = 0; ($line = fgetcsv($handle, self::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); ++$currentLine) {
+        for ($currentLine = 0; ($line = fgetcsv($handle, static::MAX_LINE_SIZE, $this->separator)) && (!$limit || $currentLine < $limit); ++$currentLine) {
             $lineCount++;
             if ($this->convert) {
                 $line = $this->utf8EncodeArray($line);
             }
-            $info = self::getMaskedRow($line);
+            $info = static::getMaskedRow($line);
 
             $this->supplyOrdersDetailsImportOne(
                 $info,
@@ -4803,7 +4803,7 @@ class AdminImportControllerCore extends AdminController
     protected function supplyOrdersDetailsImportOne($info, &$products, &$reset, $forceIds, $currentLine, $validateOnly = false)
     {
         // sets default values if needed
-        self::setDefaultValues($info);
+        static::setDefaultValues($info);
 
         // gets the supply order
         if (array_key_exists('supply_order_reference', $info) && pSQL($info['supply_order_reference']) && SupplyOrder::exists(pSQL($info['supply_order_reference']))) {

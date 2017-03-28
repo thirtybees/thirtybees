@@ -185,7 +185,7 @@ class AdminCategoriesControllerCore extends AdminController
         }
         // shop restriction : if category is not available for current shop, we redirect to the list from default category
         if (Validate::isLoadedObject($this->_category) && !$this->_category->isAssociatedToShop() && Shop::getContext() == Shop::CONTEXT_SHOP) {
-            $this->redirect_after = self::$currentIndex.'&id_category='.(int) $this->context->shop->getCategory().'&token='.$this->token;
+            $this->redirect_after = static::$currentIndex.'&id_category='.(int) $this->context->shop->getCategory().'&token='.$this->token;
             $this->redirect();
         }
     }
@@ -200,14 +200,14 @@ class AdminCategoriesControllerCore extends AdminController
         if ($this->display != 'edit' && $this->display != 'add') {
             if (Configuration::get('PS_MULTISHOP_FEATURE_ACTIVE')) {
                 $this->page_header_toolbar_btn['new-url'] = [
-                    'href' => self::$currentIndex.'&add'.$this->table.'root&token='.$this->token,
+                    'href' => static::$currentIndex.'&add'.$this->table.'root&token='.$this->token,
                     'desc' => $this->l('Add new root category', null, null, false),
                 ];
             }
 
             $idCategory = (Tools::isSubmit('id_category')) ? '&id_parent='.(int) Tools::getValue('id_category') : '';
             $this->page_header_toolbar_btn['new_category'] = [
-                'href' => self::$currentIndex.'&addcategory&token='.$this->token.$idCategory,
+                'href' => static::$currentIndex.'&addcategory&token='.$this->token.$idCategory,
                 'desc' => $this->l('Add new category', null, null, false),
                 'icon' => 'process-icon-new',
             ];
@@ -286,7 +286,7 @@ class AdminCategoriesControllerCore extends AdminController
     {
         if (empty($this->display)) {
             $this->toolbar_btn['new'] = [
-                'href' => self::$currentIndex.'&add'.$this->table.'&token='.$this->token,
+                'href' => static::$currentIndex.'&add'.$this->table.'&token='.$this->token,
                 'desc' => $this->l('Add New'),
             ];
 
@@ -302,20 +302,20 @@ class AdminCategoriesControllerCore extends AdminController
             && ($this->display == 'view' || empty($this->display))
         ) {
             $this->toolbar_btn['edit'] = [
-                'href' => self::$currentIndex.'&update'.$this->table.'&id_category='.(int) $this->_category->id.'&token='.$this->token,
+                'href' => static::$currentIndex.'&update'.$this->table.'&id_category='.(int) $this->_category->id.'&token='.$this->token,
                 'desc' => $this->l('Edit'),
             ];
         }
         if (Tools::getValue('id_category') && !Tools::isSubmit('updatecategory')) {
             $this->toolbar_btn['edit'] = [
-                'href' => self::$currentIndex.'&update'.$this->table.'&id_category='.(int) Tools::getValue('id_category').'&token='.$this->token,
+                'href' => static::$currentIndex.'&update'.$this->table.'&id_category='.(int) Tools::getValue('id_category').'&token='.$this->token,
                 'desc' => $this->l('Edit'),
             ];
         }
 
         if ($this->display == 'view') {
             $this->toolbar_btn['new'] = [
-                'href' => self::$currentIndex.'&add'.$this->table.'&id_parent='.(int) Tools::getValue('id_category').'&token='.$this->token,
+                'href' => static::$currentIndex.'&add'.$this->table.'&id_parent='.(int) Tools::getValue('id_category').'&token='.$this->token,
                 'desc' => $this->l('Add New'),
             ];
         }
@@ -327,14 +327,14 @@ class AdminCategoriesControllerCore extends AdminController
         if (empty($this->display)) {
             $idCategory = (Tools::isSubmit('id_category')) ? '&id_parent='.(int) Tools::getValue('id_category') : '';
             $this->toolbar_btn['new'] = [
-                'href' => self::$currentIndex.'&add'.$this->table.'&token='.$this->token.$idCategory,
+                'href' => static::$currentIndex.'&add'.$this->table.'&token='.$this->token.$idCategory,
                 'desc' => $this->l('Add New'),
             ];
 
             if (Tools::isSubmit('id_category')) {
                 $back = Tools::safeOutput(Tools::getValue('back', ''));
                 if (empty($back)) {
-                    $back = self::$currentIndex.'&token='.$this->token;
+                    $back = static::$currentIndex.'&token='.$this->token;
                 }
                 $this->toolbar_btn['back'] = [
                     'href' => $back,
@@ -418,7 +418,7 @@ class AdminCategoriesControllerCore extends AdminController
 
         if ($this->action == 'delete' || $this->action == 'bulkdelete') {
             if (Tools::getIsset('cancel')) {
-                Tools::redirectAdmin(self::$currentIndex.'&token='.Tools::getAdminTokenLite('AdminCategories'));
+                Tools::redirectAdmin(static::$currentIndex.'&token='.Tools::getAdminTokenLite('AdminCategories'));
             } elseif (Tools::getValue('deleteMode') == 'link' || Tools::getValue('deleteMode') == 'linkanddisable' || Tools::getValue('deleteMode') == 'delete') {
                 $this->delete_mode = Tools::getValue('deleteMode');
             } else {
@@ -630,7 +630,7 @@ class AdminCategoriesControllerCore extends AdminController
                     'display_image' => true,
                     'image'         => $imageUrl ? $imageUrl : false,
                     'size'          => $imageSize,
-                    'delete_url'    => self::$currentIndex.'&'.$this->identifier.'='.$this->_category->id.'&token='.$this->token.'&deleteImage=1',
+                    'delete_url'    => static::$currentIndex.'&'.$this->identifier.'='.$this->_category->id.'&token='.$this->token.'&deleteImage=1',
                     'hint'          => $this->l('This is the main image for your category, displayed in the category page. The category description will overlap this image and appear in its top-left corner.'),
                     'format'        => $format['category'],
                 ],
@@ -784,7 +784,7 @@ class AdminCategoriesControllerCore extends AdminController
             $this->processForceDeleteImage();
             $this->processForceDeleteThumb();
             if (Tools::isSubmit('forcedeleteImage')) {
-                Tools::redirectAdmin(self::$currentIndex.'&token='.Tools::getAdminTokenLite('AdminCategories').'&conf=7');
+                Tools::redirectAdmin(static::$currentIndex.'&token='.Tools::getAdminTokenLite('AdminCategories').'&conf=7');
             }
         }
 
@@ -867,7 +867,7 @@ class AdminCategoriesControllerCore extends AdminController
 
         //if we create a you root category you have to associate to a shop before to add sub categories in. So we redirect to AdminCategories listing
         if ($object && Tools::getValue('is_root_category')) {
-            Tools::redirectAdmin(self::$currentIndex.'&id_category='.(int) Configuration::get('PS_ROOT_CATEGORY').'&token='.Tools::getAdminTokenLite('AdminCategories').'&conf=3');
+            Tools::redirectAdmin(static::$currentIndex.'&id_category='.(int) Configuration::get('PS_ROOT_CATEGORY').'&token='.Tools::getAdminTokenLite('AdminCategories').'&conf=3');
         }
 
         return $object;
@@ -912,7 +912,7 @@ class AdminCategoriesControllerCore extends AdminController
             $this->errors[] = Tools::displayError('Failed to update the position.');
         } else {
             $object->regenerateEntireNtree();
-            Tools::redirectAdmin(self::$currentIndex.'&'.$this->table.'Orderby=position&'.$this->table.'Orderway=asc&conf=5'.(($id_category = (int) Tools::getValue($this->identifier, Tools::getValue('id_category_parent', 1))) ? ('&'.$this->identifier.'='.$id_category) : '').'&token='.Tools::getAdminTokenLite('AdminCategories'));
+            Tools::redirectAdmin(static::$currentIndex.'&'.$this->table.'Orderby=position&'.$this->table.'Orderway=asc&conf=5'.(($id_category = (int) Tools::getValue($this->identifier, Tools::getValue('id_category_parent', 1))) ? ('&'.$this->identifier.'='.$id_category) : '').'&token='.Tools::getAdminTokenLite('AdminCategories'));
         }
     }
 

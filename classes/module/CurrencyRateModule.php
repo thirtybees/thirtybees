@@ -84,7 +84,7 @@ abstract class CurrencyRateModuleCore extends Module
             return false;
         }
 
-        self::scanMissingCurrencyRateModules();
+        static::scanMissingCurrencyRateModules();
 
         return true;
     }
@@ -162,7 +162,7 @@ abstract class CurrencyRateModuleCore extends Module
             $baseCurrency = $defaultCurrency->iso_code;
         }
 
-        $registeredModules = self::getCurrencyRateInfo();
+        $registeredModules = static::getCurrencyRateInfo();
         foreach ($registeredModules as $currencyCode => &$module) {
             if (!Validate::isLoadedObject($module)) {
                 $idCurrency = Currency::getIdByIsoCode($currencyCode);
@@ -171,12 +171,12 @@ abstract class CurrencyRateModuleCore extends Module
                     continue;
                 }
 
-                $availableModuleName = self::providesExchangeRate($currency->iso_code, $baseCurrency, true);
+                $availableModuleName = static::providesExchangeRate($currency->iso_code, $baseCurrency, true);
                 if ($availableModuleName) {
                     $availableModule = Module::getInstanceByName($availableModuleName);
                     if (Validate::isLoadedObject($availableModule)) {
                         $module['id_module'] = $availableModule->id;
-                        self::setModule($currency->id, $availableModule->id);
+                        static::setModule($currency->id, $availableModule->id);
                     }
                 }
             }
@@ -217,7 +217,7 @@ abstract class CurrencyRateModuleCore extends Module
     public static function getCurrencyRateModules()
     {
         $modules = [];
-        $installedModules = self::getInstalledCurrencyRateModules();
+        $installedModules = static::getInstalledCurrencyRateModules();
         foreach ($installedModules as $moduleInfo) {
             /** @var CurrencyRateModule $module */
             $module = Module::getInstanceById($moduleInfo['id_module']);
@@ -243,7 +243,7 @@ abstract class CurrencyRateModuleCore extends Module
             $from = Tools::strtoupper($fromCurrency->iso_code);
         }
 
-        $modules = self::getCurrencyRateModules();
+        $modules = static::getCurrencyRateModules();
         if ($justOne) {
             $providingModules = '';
         } else {
@@ -281,7 +281,7 @@ abstract class CurrencyRateModuleCore extends Module
             return false;
         }
 
-        $availableServices = self::providesExchangeRate($currency->iso_code, $defaultCurrency->iso_code, false);
+        $availableServices = static::providesExchangeRate($currency->iso_code, $defaultCurrency->iso_code, false);
 
         $serviceModules = [];
         foreach ($availableServices as $service) {

@@ -130,16 +130,16 @@ class ProfileCore extends ObjectModel
             return false;
         }
 
-        if (!isset(self::$_cache_accesses[$idProfile])) {
-            self::$_cache_accesses[$idProfile] = [];
+        if (!isset(static::$_cache_accesses[$idProfile])) {
+            static::$_cache_accesses[$idProfile] = [];
         }
 
-        if (!isset(self::$_cache_accesses[$idProfile][$type])) {
-            self::$_cache_accesses[$idProfile][$type] = [];
+        if (!isset(static::$_cache_accesses[$idProfile][$type])) {
+            static::$_cache_accesses[$idProfile][$type] = [];
             // Super admin profile has full auth
             if ($idProfile == _PS_ADMIN_PROFILE_) {
                 foreach (Tab::getTabs(Context::getContext()->language->id) as $tab) {
-                    self::$_cache_accesses[$idProfile][$type][$tab[$type]] = [
+                    static::$_cache_accesses[$idProfile][$type][$tab[$type]] = [
                         'id_profile' => _PS_ADMIN_PROFILE_,
                         'id_tab'     => $tab['id_tab'],
                         'class_name' => $tab['class_name'],
@@ -159,12 +159,12 @@ class ProfileCore extends ObjectModel
                 );
 
                 foreach ($result as $row) {
-                    self::$_cache_accesses[$idProfile][$type][$row[$type]] = $row;
+                    static::$_cache_accesses[$idProfile][$type][$row[$type]] = $row;
                 }
             }
         }
 
-        return self::$_cache_accesses[$idProfile][$type];
+        return static::$_cache_accesses[$idProfile][$type];
     }
 
     /**

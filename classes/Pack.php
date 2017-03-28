@@ -51,11 +51,11 @@ class PackCore extends Product
             return false;
         }
 
-        if (!array_key_exists($id_product, self::$cacheIsPack)) {
+        if (!array_key_exists($id_product, static::$cacheIsPack)) {
             $result = Db::getInstance()->getValue('SELECT COUNT(*) FROM `'._DB_PREFIX_.'pack` WHERE id_product_pack = '.(int)$id_product);
-            self::$cacheIsPack[$id_product] = ($result > 0);
+            static::$cacheIsPack[$id_product] = ($result > 0);
         }
-        return self::$cacheIsPack[$id_product];
+        return static::$cacheIsPack[$id_product];
     }
 
     /**
@@ -76,26 +76,26 @@ class PackCore extends Product
         }
         if ($id_product_attribute === false) {
             $cache_key = $id_product.'-0';
-            if (!array_key_exists($cache_key, self::$cacheIsPacked)) {
+            if (!array_key_exists($cache_key, static::$cacheIsPacked)) {
                 $result = Db::getInstance()->getValue('SELECT COUNT(*) FROM `'._DB_PREFIX_.'pack` WHERE id_product_item = '.(int)$id_product);
-                self::$cacheIsPacked[$cache_key] = ($result > 0);
+                static::$cacheIsPacked[$cache_key] = ($result > 0);
             }
-            return self::$cacheIsPacked[$cache_key];
+            return static::$cacheIsPacked[$cache_key];
         } else {
             $cache_key = $id_product.'-'.$id_product_attribute;
-            if (!array_key_exists($cache_key, self::$cacheIsPacked)) {
+            if (!array_key_exists($cache_key, static::$cacheIsPacked)) {
                 $result = Db::getInstance()->getValue('SELECT COUNT(*) FROM `'._DB_PREFIX_.'pack` WHERE id_product_item = '.((int)$id_product).' AND
 					id_product_attribute_item = '.((int)$id_product_attribute));
-                self::$cacheIsPacked[$cache_key] = ($result > 0);
+                static::$cacheIsPacked[$cache_key] = ($result > 0);
             }
-            return self::$cacheIsPacked[$cache_key];
+            return static::$cacheIsPacked[$cache_key];
         }
     }
 
     public static function noPackPrice($id_product)
     {
         $sum = 0;
-        $price_display_method = !self::$_taxCalculationMethod;
+        $price_display_method = !static::$_taxCalculationMethod;
         $items = Pack::getItems($id_product, Configuration::get('PS_LANG_DEFAULT'));
         foreach ($items as $item) {
             /** @var Product $item */
@@ -121,8 +121,8 @@ class PackCore extends Product
             return [];
         }
 
-        if (array_key_exists($id_product, self::$cachePackItems)) {
-            return self::$cachePackItems[$id_product];
+        if (array_key_exists($id_product, static::$cachePackItems)) {
+            return static::$cachePackItems[$id_product];
         }
         $result = Db::getInstance()->executeS('SELECT id_product_item, id_product_attribute_item, quantity FROM `'._DB_PREFIX_.'pack` where id_product_pack = '.(int)$id_product);
         $array_result = [];
@@ -151,8 +151,8 @@ class PackCore extends Product
             }
             $array_result[] = $p;
         }
-        self::$cachePackItems[$id_product] = $array_result;
-        return self::$cachePackItems[$id_product];
+        static::$cachePackItems[$id_product] = $array_result;
+        return static::$cachePackItems[$id_product];
     }
 
     public static function isInStock($id_product)

@@ -262,7 +262,7 @@ class HookCore extends ObjectModel
      *
      * @throws PrestaShopException
      *
-     * @return string/array modules output
+     * @return string|array modules output
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -277,7 +277,7 @@ class HookCore extends ObjectModel
         $idShop = null
     ) {
         if (!Configuration::get('TB_PAGE_CACHE_ENABLED')) {
-            return self::execWithoutCache($hookName, $hookArgs, $idModule, $arrayReturn, $checkExceptions, $usePush, $idShop);
+            return static::execWithoutCache($hookName, $hookArgs, $idModule, $arrayReturn, $checkExceptions, $usePush, $idShop);
         }
 
         $activehooks = json_decode(Configuration::get('TB_PAGE_CACHE_HOOKS'), true);
@@ -293,10 +293,10 @@ class HookCore extends ObjectModel
         }
 
         if (!$found) {
-            return self::execWithoutCache($hookName, $hookArgs, $idModule, $arrayReturn, $checkExceptions, $usePush, $idShop);
+            return static::execWithoutCache($hookName, $hookArgs, $idModule, $arrayReturn, $checkExceptions, $usePush, $idShop);
         }
 
-        if (!$moduleList = self::getHookModuleExecList($hookName)) {
+        if (!$moduleList = static::getHookModuleExecList($hookName)) {
             return '';
         }
 
@@ -309,7 +309,7 @@ class HookCore extends ObjectModel
         if (!$idModule) {
             foreach ($moduleList as $m) {
                 try {
-                    $data = self::execWithoutCache($hookName, $hookArgs, $m['id_module'], $arrayReturn, $checkExceptions, $usePush, $idShop);
+                    $data = static::execWithoutCache($hookName, $hookArgs, $m['id_module'], $arrayReturn, $checkExceptions, $usePush, $idShop);
                 } catch (Exception $e) {
                     $data = sprintf(Tools::displayError('Error while displaying module "%s"'), Module::getInstanceById($m['id_module'])->displayName);
                 }
@@ -334,7 +334,7 @@ class HookCore extends ObjectModel
             }
         } else {
             try {
-                $return = self::execWithoutCache($hookName, $hookArgs, $idModule, $arrayReturn, $checkExceptions, $usePush, $idShop);
+                $return = static::execWithoutCache($hookName, $hookArgs, $idModule, $arrayReturn, $checkExceptions, $usePush, $idShop);
             } catch (Exception $e) {
                 $return = sprintf(Tools::displayError('Error while displaying module "%s"'), Module::getInstanceById($idModule)->displayName);
             }
@@ -505,7 +505,7 @@ class HookCore extends ObjectModel
                     )
                 ) {
                     $liveEdit = true;
-                    $output .= self::wrapLiveEdit($display, $moduleInstance, $array['id_hook']);
+                    $output .= static::wrapLiveEdit($display, $moduleInstance, $array['id_hook']);
                 } elseif ($arrayReturn) {
                     $output[$moduleInstance->name] = $display;
                 } else {
@@ -624,7 +624,7 @@ class HookCore extends ObjectModel
             if ($hookName != 'displayPayment' && $hookName != 'displayPaymentEU' && $hookName != 'displayBackOfficeHeader') {
                 Cache::store($cacheId, $list);
                 // @todo remove this in 1.6, we keep it in 1.5 for backward compatibility
-                self::$_hook_modules_cache_exec = $list;
+                static::$_hook_modules_cache_exec = $list;
             }
         } else {
             $list = Cache::retrieve($cacheId);
@@ -962,11 +962,11 @@ class HookCore extends ObjectModel
     {
         Tools::displayAsDeprecated('Use Hook::getHookModuleList() instead');
 
-        if (!is_null(self::$_hook_modules_cache)) {
+        if (!is_null(static::$_hook_modules_cache)) {
             return false;
         }
 
-        self::$_hook_modules_cache = Hook::getHookModuleList();
+        static::$_hook_modules_cache = Hook::getHookModuleList();
 
         return true;
     }

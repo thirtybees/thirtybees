@@ -214,10 +214,10 @@ class AdminStockCoverControllerCore extends AdminController
         $this->_group = 'GROUP BY a.id_product';
         $this->_where = 'AND a.advanced_stock_management = 1';
 
-        self::$currentIndex .= '&coverage_period='.(int) $this->getCurrentCoveragePeriod().'&warn_days='.(int) $this->getCurrentWarning();
+        static::$currentIndex .= '&coverage_period='.(int) $this->getCurrentCoveragePeriod().'&warn_days='.(int) $this->getCurrentWarning();
         if ($this->getCurrentCoverageWarehouse() != -1) {
             $this->_where .= ' AND s.id_warehouse = '.(int) $this->getCurrentCoverageWarehouse();
-            self::$currentIndex .= '&id_warehouse='.(int) $this->getCurrentCoverageWarehouse();
+            static::$currentIndex .= '&id_warehouse='.(int) $this->getCurrentCoverageWarehouse();
         }
 
         // Hack for multi shop ..

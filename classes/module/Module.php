@@ -198,10 +198,10 @@ abstract class ModuleCore
         // @codingStandardsIgnoreStart
         if ($this->name != null) {
             // If cache is not generated, we generate it
-            if (self::$modules_cache == null && !is_array(self::$modules_cache)) {
+            if (static::$modules_cache == null && !is_array(static::$modules_cache)) {
                 $idShop = (Validate::isLoadedObject($this->context->shop) ? $this->context->shop->id : Configuration::get('PS_SHOP_DEFAULT'));
 
-                self::$modules_cache = [];
+                static::$modules_cache = [];
                 // Join clause is done to check if the module is activated in current shop context
                 $result = Db::getInstance()->executeS(
                     '
@@ -215,17 +215,17 @@ abstract class ModuleCore
 				FROM `'._DB_PREFIX_.'module` m'
                 );
                 foreach ($result as $row) {
-                    self::$modules_cache[$row['name']] = $row;
-                    self::$modules_cache[$row['name']]['active'] = ($row['mshop'] > 0) ? 1 : 0;
+                    static::$modules_cache[$row['name']] = $row;
+                    static::$modules_cache[$row['name']]['active'] = ($row['mshop'] > 0) ? 1 : 0;
                 }
             }
 
             // We load configuration from the cache
-            if (isset(self::$modules_cache[$this->name])) {
-                if (isset(self::$modules_cache[$this->name]['id_module'])) {
-                    $this->id = self::$modules_cache[$this->name]['id_module'];
+            if (isset(static::$modules_cache[$this->name])) {
+                if (isset(static::$modules_cache[$this->name]['id_module'])) {
+                    $this->id = static::$modules_cache[$this->name]['id_module'];
                 }
-                foreach (self::$modules_cache[$this->name] as $key => $value) {
+                foreach (static::$modules_cache[$this->name] as $key => $value) {
                     if (property_exists($this, $key)) {
                         $this->{$key} = $value;
                     }
@@ -233,7 +233,7 @@ abstract class ModuleCore
                 $this->_path = __PS_BASE_URI__.'modules/'.$this->name.'/';
             }
             if (!$this->context->controller instanceof Controller) {
-                self::$modules_cache = null;
+                static::$modules_cache = null;
             }
             $this->local_path = _PS_MODULE_DIR_.$this->name.'/';
         }
@@ -249,7 +249,7 @@ abstract class ModuleCore
     public static function getBatchMode()
     {
         // @codingStandardsIgnoreStart
-        return self::$_batch_mode;
+        return static::$_batch_mode;
         // @codingStandardsIgnoreEnd
     }
 
@@ -264,7 +264,7 @@ abstract class ModuleCore
     public static function setBatchMode($value)
     {
         // @codingStandardsIgnoreStart
-        self::$_batch_mode = (bool) $value;
+        static::$_batch_mode = (bool) $value;
         // @codingStandardsIgnoreEnd
     }
 
@@ -274,12 +274,12 @@ abstract class ModuleCore
      */
     public static function processDeferedFuncCall()
     {
-        self::setBatchMode(false);
+        static::setBatchMode(false);
         // @codingStandardsIgnoreStart
-        foreach (self::$_defered_func_call as $funcCall) {
+        foreach (static::$_defered_func_call as $funcCall) {
             call_user_func_array($funcCall[0], $funcCall[1]);
         }
-        self::$_defered_func_call = [];
+        static::$_defered_func_call = [];
         // @codingStandardsIgnoreEnd
     }
 
@@ -291,14 +291,14 @@ abstract class ModuleCore
      */
     public static function processDeferedClearCache()
     {
-        self::setBatchMode(false);
+        static::setBatchMode(false);
 
         // @codingStandardsIgnoreStart
-        foreach (self::$_defered_clearCache as $clearCacheArray) {
-            self::_deferedClearCache($clearCacheArray[0], $clearCacheArray[1], $clearCacheArray[2]);
+        foreach (static::$_defered_clearCache as $clearCacheArray) {
+            static::_deferedClearCache($clearCacheArray[0], $clearCacheArray[1], $clearCacheArray[2]);
         }
 
-        self::$_defered_clearCache = [];
+        static::$_defered_clearCache = [];
         // @codingStandardsIgnoreEnd
     }
 
@@ -355,7 +355,7 @@ abstract class ModuleCore
 
         // Init cache upgrade details
         // @codingStandardsIgnoreStart
-        self::$modules_cache[$module->name]['upgrade'] = [
+        static::$modules_cache[$module->name]['upgrade'] = [
             'success'             => false, // bool to know if upgrade succeed or not
             'available_upgrade'   => 0, // Number of available module before any upgrade
             'number_upgraded'     => 0, // Number of upgrade done
@@ -407,7 +407,7 @@ abstract class ModuleCore
      */
     public static function needUpgrade($module)
     {
-        self::$modules_cache[$module->name]['upgrade']['upgraded_from'] = $module->database_version;
+        static::$modules_cache[$module->name]['upgrade']['upgraded_from'] = $module->database_version;
         // Check the version of the module with the registered one and look if any upgrade file exist
         if (Tools::version_compare($module->version, $module->database_version, '>')) {
             $oldVersion = $module->database_version;
@@ -440,7 +440,7 @@ abstract class ModuleCore
             return false;
         }
 
-        if (!isset(self::$_INSTANCE[$moduleName])) {
+        if (!isset(static::$_INSTANCE[$moduleName])) {
             if (!Tools::file_exists_no_cache(_PS_MODULE_DIR_.$moduleName.'/'.$moduleName.'.php')) {
                 return false;
             }
@@ -448,7 +448,7 @@ abstract class ModuleCore
             return Module::coreLoadModule($moduleName);
         }
 
-        return self::$_INSTANCE[$moduleName];
+        return static::$_INSTANCE[$moduleName];
     }
 
     /**
@@ -486,12 +486,12 @@ abstract class ModuleCore
             $override = $moduleName.'Override';
 
             if (class_exists($override, false)) {
-                $r = self::$_INSTANCE[$moduleName] = Adapter_ServiceLocator::get($override);
+                $r = static::$_INSTANCE[$moduleName] = Adapter_ServiceLocator::get($override);
             }
         }
 
         if (!$r && class_exists($moduleName, false)) {
-            $r = self::$_INSTANCE[$moduleName] = Adapter_ServiceLocator::get($moduleName);
+            $r = static::$_INSTANCE[$moduleName] = Adapter_ServiceLocator::get($moduleName);
         }
 
         // @codingStandardsIgnoreStart
@@ -562,7 +562,7 @@ abstract class ModuleCore
         // No files upgrade, then upgrade succeed
         if (count($list) == 0) {
             // @codingStandardsIgnoreStart
-            self::$modules_cache[$moduleName]['upgrade']['success'] = true;
+            static::$modules_cache[$moduleName]['upgrade']['success'] = true;
             // @codingStandardsIgnoreEnd
             Module::upgradeModuleVersion($moduleName, $moduleVersion);
         }
@@ -571,8 +571,8 @@ abstract class ModuleCore
 
         // Set the list to module cache
         // @codingStandardsIgnoreStart
-        self::$modules_cache[$moduleName]['upgrade']['upgrade_file_left'] = $list;
-        self::$modules_cache[$moduleName]['upgrade']['available_upgrade'] = count($list);
+        static::$modules_cache[$moduleName]['upgrade']['upgrade_file_left'] = $list;
+        static::$modules_cache[$moduleName]['upgrade']['available_upgrade'] = count($list);
         // @codingStandardsIgnoreEnd
 
         return (bool) count($list);
@@ -591,8 +591,8 @@ abstract class ModuleCore
     public static function getUpgradeStatus($moduleName)
     {
         // @codingStandardsIgnoreStart
-        return (isset(self::$modules_cache[$moduleName]) &&
-            self::$modules_cache[$moduleName]['upgrade']['success']);
+        return (isset(static::$modules_cache[$moduleName]) &&
+            static::$modules_cache[$moduleName]['upgrade']['success']);
         // @codingStandardsIgnoreEnd
     }
 
@@ -667,7 +667,7 @@ abstract class ModuleCore
     {
         // Module can now define AdminTab keeping the module translations method,
         // i.e. in modules/[module name]/[iso_code].php
-        if (!isset(self::$classInModule[$currentClass]) && class_exists($currentClass)) {
+        if (!isset(static::$classInModule[$currentClass]) && class_exists($currentClass)) {
             global $_MODULES;
             $_MODULE = [];
             $reflectionClass = new ReflectionClass($currentClass);
@@ -676,23 +676,23 @@ abstract class ModuleCore
             if (substr(realpath($filePath), 0, strlen($realpathModuleDir)) == $realpathModuleDir) {
                 // For controllers in module/controllers path
                 if (basename(dirname(dirname($filePath))) == 'controllers') {
-                    self::$classInModule[$currentClass] = basename(dirname(dirname(dirname($filePath))));
+                    static::$classInModule[$currentClass] = basename(dirname(dirname(dirname($filePath))));
                 } else {
                     // For old AdminTab controllers
-                    self::$classInModule[$currentClass] = substr(dirname($filePath), strlen($realpathModuleDir) + 1);
+                    static::$classInModule[$currentClass] = substr(dirname($filePath), strlen($realpathModuleDir) + 1);
                 }
 
-                $file = _PS_MODULE_DIR_.self::$classInModule[$currentClass].'/'.Context::getContext()->language->iso_code.'.php';
+                $file = _PS_MODULE_DIR_.static::$classInModule[$currentClass].'/'.Context::getContext()->language->iso_code.'.php';
                 if (file_exists($file) && include_once($file)) {
                     $_MODULES = !empty($_MODULES) ? array_merge($_MODULES, $_MODULE) : $_MODULE;
                 }
             } else {
-                self::$classInModule[$currentClass] = false;
+                static::$classInModule[$currentClass] = false;
             }
         }
 
         // return name of the module, or false
-        return self::$classInModule[$currentClass];
+        return static::$classInModule[$currentClass];
     }
 
     /**
@@ -965,9 +965,9 @@ abstract class ModuleCore
 
                     if (!$xmlExist || $needNewConfigFile) {
                         // @codingStandardsIgnoreStart
-                        self::$_generate_config_xml_mode = true;
+                        static::$_generate_config_xml_mode = true;
                         $tmpModule->_generateConfigXml();
-                        self::$_generate_config_xml_mode = false;
+                        static::$_generate_config_xml_mode = false;
                         // @codingStandardsIgnoreEnd
                     }
 
@@ -1205,7 +1205,7 @@ abstract class ModuleCore
      */
     public static function getNativeModuleList()
     {
-        return self::getNonNativeModuleList();
+        return static::getNonNativeModuleList();
     }
 
     /**
@@ -2114,7 +2114,7 @@ abstract class ModuleCore
     public function runUpgradeModule()
     {
         // @codingStandardsIgnoreStart
-        $upgrade = &self::$modules_cache[$this->name]['upgrade'];
+        $upgrade = &static::$modules_cache[$this->name]['upgrade'];
         // @codingStandardsIgnore
         foreach ($upgrade['upgrade_file_left'] as $num => $fileDetail) {
             foreach ($fileDetail['upgrade_function'] as $item) {
@@ -2463,7 +2463,7 @@ abstract class ModuleCore
      */
     public function l($string, $specific = false)
     {
-        if (self::$_generate_config_xml_mode) {
+        if (static::$_generate_config_xml_mode) {
             return $string;
         }
 
@@ -3123,21 +3123,21 @@ abstract class ModuleCore
             return true;
         }
 
-        if (!isset(self::$cache_permissions[$employee->id_profile])) {
-            self::$cache_permissions[$employee->id_profile] = [];
+        if (!isset(static::$cache_permissions[$employee->id_profile])) {
+            static::$cache_permissions[$employee->id_profile] = [];
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('SELECT `id_module`, `view`, `configure`, `uninstall` FROM `'._DB_PREFIX_.'module_access` WHERE `id_profile` = '.(int) $employee->id_profile);
             foreach ($result as $row) {
-                self::$cache_permissions[$employee->id_profile][$row['id_module']]['view'] = $row['view'];
-                self::$cache_permissions[$employee->id_profile][$row['id_module']]['configure'] = $row['configure'];
-                self::$cache_permissions[$employee->id_profile][$row['id_module']]['uninstall'] = $row['uninstall'];
+                static::$cache_permissions[$employee->id_profile][$row['id_module']]['view'] = $row['view'];
+                static::$cache_permissions[$employee->id_profile][$row['id_module']]['configure'] = $row['configure'];
+                static::$cache_permissions[$employee->id_profile][$row['id_module']]['uninstall'] = $row['uninstall'];
             }
         }
 
-        if (!isset(self::$cache_permissions[$employee->id_profile][$idModule])) {
+        if (!isset(static::$cache_permissions[$employee->id_profile][$idModule])) {
             throw new PrestaShopException('No access reference in table module_access for id_module '.$idModule.'.');
         }
 
-        return (bool) self::$cache_permissions[$employee->id_profile][$idModule][$variable];
+        return (bool) static::$cache_permissions[$employee->id_profile][$idModule][$variable];
     }
 
     /**
@@ -3316,7 +3316,7 @@ abstract class ModuleCore
             $ps_smarty_clear_cache = Configuration::get('PS_SMARTY_CLEAR_CACHE');
         }
 
-        if (self::$_batch_mode) {
+        if (static::$_batch_mode) {
             if ($ps_smarty_clear_cache == 'never') {
                 return 0;
             }
@@ -3326,8 +3326,8 @@ abstract class ModuleCore
             }
 
             $key = $template.'-'.$cacheId.'-'.$compileId;
-            if (!isset(self::$_defered_clearCache[$key])) {
-                self::$_defered_clearCache[$key] = [$this->getTemplatePath($template), $cacheId, $compileId];
+            if (!isset(static::$_defered_clearCache[$key])) {
+                static::$_defered_clearCache[$key] = [$this->getTemplatePath($template), $cacheId, $compileId];
             }
         } else {
             if ($ps_smarty_clear_cache == 'never') {

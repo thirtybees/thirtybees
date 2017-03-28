@@ -221,7 +221,7 @@ class AdminStockMvtControllerCore extends AdminController
         $idWarehouse = (int) $this->getCurrentWarehouseId();
         if ($idWarehouse > 0) {
             $this->_where = ' AND w.id_warehouse = '.$idWarehouse;
-            self::$currentIndex .= '&id_warehouse='.$idWarehouse;
+            static::$currentIndex .= '&id_warehouse='.$idWarehouse;
         }
 
         $this->_orderBy = 'a.date_add';

@@ -186,7 +186,7 @@ class DispatcherCore
     /**
      * @var string Front controller to use
      */
-    protected $front_controller = self::FC_FRONT;
+    protected $front_controller = static::FC_FRONT;
     // @codingStandardsIgnoreEnd
 
     /**
@@ -199,11 +199,11 @@ class DispatcherCore
      */
     public static function getInstance()
     {
-        if (!self::$instance) {
-            self::$instance = new Dispatcher();
+        if (!static::$instance) {
+            static::$instance = new Dispatcher();
         }
 
-        return self::$instance;
+        return static::$instance;
     }
 
     /**
@@ -330,20 +330,20 @@ class DispatcherCore
 
         // Select right front controller
         if (defined('_PS_ADMIN_DIR_')) {
-            $this->front_controller = self::FC_ADMIN;
+            $this->front_controller = static::FC_ADMIN;
             $this->controller_not_found = 'adminnotfound';
         } elseif (Tools::getValue('fc') == 'module') {
-            $this->front_controller = self::FC_MODULE;
+            $this->front_controller = static::FC_MODULE;
             $this->controller_not_found = 'pagenotfound';
         } else {
-            $this->front_controller = self::FC_FRONT;
+            $this->front_controller = static::FC_FRONT;
             $this->controller_not_found = 'pagenotfound';
         }
 
         $this->setRequestUri();
 
         // Switch language if needed (only on front)
-        if (in_array($this->front_controller, [self::FC_FRONT, self::FC_MODULE])) {
+        if (in_array($this->front_controller, [static::FC_FRONT, static::FC_MODULE])) {
             Tools::switchLanguage();
         }
 
@@ -520,7 +520,7 @@ class DispatcherCore
         // Dispatch with right front controller
         switch ($this->front_controller) {
             // Dispatch front office controller
-            case self::FC_FRONT:
+            case static::FC_FRONT:
                 $controllers = Dispatcher::getControllers([_PS_FRONT_CONTROLLER_DIR_, _PS_OVERRIDE_DIR_.'controllers/front/']);
                 $controllers['index'] = 'IndexController';
                 if (isset($controllers['auth'])) {
@@ -537,11 +537,11 @@ class DispatcherCore
                     $this->controller = $this->controller_not_found;
                 }
                 $controllerClass = $controllers[strtolower($this->controller)];
-                $paramsHookActionDispatcher = ['controller_type' => self::FC_FRONT, 'controller_class' => $controllerClass, 'is_module' => 0];
+                $paramsHookActionDispatcher = ['controller_type' => static::FC_FRONT, 'controller_class' => $controllerClass, 'is_module' => 0];
                 break;
 
             // Dispatch module controller for front office and ajax
-            case self::FC_MODULE:
+            case static::FC_MODULE:
                 $moduleName = Validate::isModuleName(Tools::getValue('module')) ? Tools::getValue('module') : '';
                 $module = Module::getInstanceByName($moduleName);
                 $controllerClass = 'PageNotFoundController';
@@ -558,11 +558,11 @@ class DispatcherCore
                         $controllerClass = $moduleName.$this->controller.'ModuleAjaxController';
                     }
                 }
-                $paramsHookActionDispatcher = ['controller_type' => self::FC_FRONT, 'controller_class' => $controllerClass, 'is_module' => 1];
+                $paramsHookActionDispatcher = ['controller_type' => static::FC_FRONT, 'controller_class' => $controllerClass, 'is_module' => 1];
                 break;
 
             // Dispatch back office controller + module back office controller
-            case self::FC_ADMIN:
+            case static::FC_ADMIN:
                 if ($this->use_default_controller && !Tools::getValue('token') && Validate::isLoadedObject(Context::getContext()->employee) && Context::getContext()->employee->isLoggedBack()) {
                     Tools::redirectAdmin('index.php?controller='.$this->controller.'&token='.Tools::getAdminTokenLite($this->controller));
                 }
@@ -584,7 +584,7 @@ class DispatcherCore
                             $controllerClass = $controllers[strtolower($this->controller)].(strpos($controllers[strtolower($this->controller)], 'Controller') ? '' : 'Controller');
                         }
                     }
-                    $paramsHookActionDispatcher = ['controller_type' => self::FC_ADMIN, 'controller_class' => $controllerClass, 'is_module' => 1];
+                    $paramsHookActionDispatcher = ['controller_type' => static::FC_ADMIN, 'controller_class' => $controllerClass, 'is_module' => 1];
                 } else {
                     $controllers = Dispatcher::getControllers([_PS_ADMIN_DIR_.'/tabs/', _PS_ADMIN_CONTROLLER_DIR_, _PS_OVERRIDE_DIR_.'controllers/admin/']);
                     if (!isset($controllers[strtolower($this->controller)])) {
@@ -596,7 +596,7 @@ class DispatcherCore
                     }
 
                     $controllerClass = $controllers[strtolower($this->controller)];
-                    $paramsHookActionDispatcher = ['controller_type' => self::FC_ADMIN, 'controller_class' => $controllerClass, 'is_module' => 0];
+                    $paramsHookActionDispatcher = ['controller_type' => static::FC_ADMIN, 'controller_class' => $controllerClass, 'is_module' => 0];
 
                     if (file_exists(_PS_ADMIN_DIR_.'/tabs/'.$controllerClass.'.php')) {
                         $retrocompatibilityAdminTab = _PS_ADMIN_DIR_.'/tabs/'.$controllerClass.'.php';
@@ -763,7 +763,7 @@ class DispatcherCore
                                 $controller = $m[2];
                             }
                             if (isset($_GET['fc']) && $_GET['fc'] == 'module') {
-                                $this->front_controller = self::FC_MODULE;
+                                $this->front_controller = static::FC_MODULE;
                             }
                             break;
                         }

@@ -113,7 +113,7 @@ class LanguageCore extends ObjectModel
      */
     public static function getIDs($active = true, $idShop = false)
     {
-        return self::getLanguages($active, $idShop, true);
+        return static::getLanguages($active, $idShop, true);
     }
 
     /**
@@ -130,12 +130,12 @@ class LanguageCore extends ObjectModel
      */
     public static function getLanguages($active = true, $idShop = false, $idsOnly = false)
     {
-        if (!self::$_LANGUAGES) {
+        if (!static::$_LANGUAGES) {
             Language::loadLanguages();
         }
 
         $languages = [];
-        foreach (self::$_LANGUAGES as $language) {
+        foreach (static::$_LANGUAGES as $language) {
             if ($active && !$language['active'] || ($idShop && !isset($language['shops'][(int) $idShop]))) {
                 continue;
             }
@@ -154,7 +154,7 @@ class LanguageCore extends ObjectModel
      */
     public static function loadLanguages()
     {
-        self::$_LANGUAGES = [];
+        static::$_LANGUAGES = [];
 
         $sql = 'SELECT l.*, ls.`id_shop`
 				FROM `'._DB_PREFIX_.'lang` l
@@ -162,10 +162,10 @@ class LanguageCore extends ObjectModel
 
         $result = Db::getInstance()->executeS($sql);
         foreach ($result as $row) {
-            if (!isset(self::$_LANGUAGES[(int) $row['id_lang']])) {
-                self::$_LANGUAGES[(int) $row['id_lang']] = $row;
+            if (!isset(static::$_LANGUAGES[(int) $row['id_lang']])) {
+                static::$_LANGUAGES[(int) $row['id_lang']] = $row;
             }
-            self::$_LANGUAGES[(int) $row['id_lang']]['shops'][(int) $row['id_shop']] = true;
+            static::$_LANGUAGES[(int) $row['id_lang']]['shops'][(int) $row['id_shop']] = true;
         }
     }
 
@@ -179,11 +179,11 @@ class LanguageCore extends ObjectModel
      */
     public static function getLanguage($idLang)
     {
-        if (!array_key_exists((int) $idLang, self::$_LANGUAGES)) {
+        if (!array_key_exists((int) $idLang, static::$_LANGUAGES)) {
             return false;
         }
 
-        return self::$_LANGUAGES[(int) ($idLang)];
+        return static::$_LANGUAGES[(int) ($idLang)];
     }
 
     /**
@@ -304,15 +304,15 @@ class LanguageCore extends ObjectModel
      */
     public static function isInstalled($iso_code)
     {
-        if (self::$_cache_language_installation === null) {
-            self::$_cache_language_installation = [];
+        if (static::$_cache_language_installation === null) {
+            static::$_cache_language_installation = [];
             $result = Db::getInstance()->executeS('SELECT `id_lang`, `iso_code` FROM `'._DB_PREFIX_.'lang`');
             foreach ($result as $row) {
-                self::$_cache_language_installation[$row['iso_code']] = $row['id_lang'];
+                static::$_cache_language_installation[$row['iso_code']] = $row['id_lang'];
             }
         }
 
-        return (isset(self::$_cache_language_installation[$iso_code]) ? self::$_cache_language_installation[$iso_code] : false);
+        return (isset(static::$_cache_language_installation[$iso_code]) ? static::$_cache_language_installation[$iso_code] : false);
     }
 
     /**
@@ -342,8 +342,8 @@ class LanguageCore extends ObjectModel
             $idShop = (int) Context::getContext()->shop->id;
         }
 
-        if (!isset(self::$countActiveLanguages[$idShop])) {
-            self::$countActiveLanguages[$idShop] = Db::getInstance()->getValue(
+        if (!isset(static::$countActiveLanguages[$idShop])) {
+            static::$countActiveLanguages[$idShop] = Db::getInstance()->getValue(
                 '
 				SELECT COUNT(DISTINCT l.id_lang) FROM `'._DB_PREFIX_.'lang` l
 				JOIN '._DB_PREFIX_.'lang_shop lang_shop ON (lang_shop.id_lang = l.id_lang AND lang_shop.id_shop = '.(int) $idShop.')
@@ -352,7 +352,7 @@ class LanguageCore extends ObjectModel
             );
         }
 
-        return self::$countActiveLanguages[$idShop];
+        return static::$countActiveLanguages[$idShop];
     }
 
     /**
@@ -471,7 +471,7 @@ class LanguageCore extends ObjectModel
             }
             // Clear smarty modules cache
             Tools::clearCache();
-            if (!self::checkAndAddLanguage((string) $iso, $langPack, false, $params)) {
+            if (!static::checkAndAddLanguage((string) $iso, $langPack, false, $params)) {
                 $errors[] = sprintf(Tools::displayError('An error occurred while creating the language: %s'), (string) $iso);
             } else {
                 // Reset cache
@@ -885,7 +885,7 @@ class LanguageCore extends ObjectModel
      */
     public static function checkFilesWithIsoCode($isoCode)
     {
-        if (isset(self::$_checkedLangs[$isoCode]) && self::$_checkedLangs[$isoCode]) {
+        if (isset(static::$_checkedLangs[$isoCode]) && static::$_checkedLangs[$isoCode]) {
             return true;
         }
 
@@ -894,7 +894,7 @@ class LanguageCore extends ObjectModel
                 return false;
             }
         }
-        self::$_checkedLangs[$isoCode] = true;
+        static::$_checkedLangs[$isoCode] = true;
 
         return true;
     }
@@ -1187,8 +1187,8 @@ class LanguageCore extends ObjectModel
      */
     public static function getIsoById($idLang)
     {
-        if (isset(self::$_LANGUAGES[(int) $idLang]['iso_code'])) {
-            return self::$_LANGUAGES[(int) $idLang]['iso_code'];
+        if (isset(static::$_LANGUAGES[(int) $idLang]['iso_code'])) {
+            return static::$_LANGUAGES[(int) $idLang]['iso_code'];
         }
 
         return false;

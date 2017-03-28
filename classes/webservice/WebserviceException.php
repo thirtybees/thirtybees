@@ -63,7 +63,7 @@ class WebserviceExceptionCore extends Exception
             $this->setStatus($code[1]);
         }
         parent::__construct($message, $exceptionCode);
-        $this->type = self::SIMPLE;
+        $this->type = static::SIMPLE;
     }
 
     /**
@@ -142,7 +142,7 @@ class WebserviceExceptionCore extends Exception
      */
     public function setDidYouMean($wrongValue, $availableValues)
     {
-        $this->type = self::DID_YOU_MEAN;
+        $this->type = static::DID_YOU_MEAN;
         $this->wrong_value = $wrongValue;
         $this->available_values = $availableValues;
 

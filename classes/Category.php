@@ -484,7 +484,7 @@ class CategoryCore extends ObjectModel
      */
     public static function getHomeCategories($idLang, $active = true, $idShop = false)
     {
-        return self::getChildren(Configuration::get('PS_HOME_CATEGORY'), $idLang, $active, $idShop);
+        return static::getChildren(Configuration::get('PS_HOME_CATEGORY'), $idLang, $active, $idShop);
     }
 
     /**
@@ -705,8 +705,8 @@ class CategoryCore extends ObjectModel
             return false;
         }
 
-        if (!isset(self::$_links[$idCategory.'-'.$idLang])) {
-            self::$_links[$idCategory.'-'.$idLang] = Db::getInstance()->getValue(
+        if (!isset(static::$_links[$idCategory.'-'.$idLang])) {
+            static::$_links[$idCategory.'-'.$idLang] = Db::getInstance()->getValue(
                 '
 			SELECT cl.`link_rewrite`
 			FROM `'._DB_PREFIX_.'category_lang` cl
@@ -716,7 +716,7 @@ class CategoryCore extends ObjectModel
             );
         }
 
-        return self::$_links[$idCategory.'-'.$idLang];
+        return static::$_links[$idCategory.'-'.$idLang];
     }
 
     /**
@@ -1284,7 +1284,7 @@ class CategoryCore extends ObjectModel
      */
     protected static function _subTree(&$categories, $idCategory, &$n)
     {
-        return self::subTree($categories, $idCategory, $n);
+        return static::subTree($categories, $idCategory, $n);
     }
 
     /**

@@ -191,7 +191,7 @@ class AdminShippingControllerCore extends AdminController
                         }
                         /* Update delivery prices */
                         $carrier->addDeliveryPrice($priceList);
-                        Tools::redirectAdmin(self::$currentIndex.'&conf=6&id_carrier='.$carrier->id.'&token='.$this->token);
+                        Tools::redirectAdmin(static::$currentIndex.'&conf=6&id_carrier='.$carrier->id.'&token='.$this->token);
                     } else {
                         $this->errors[] = Tools::displayError('An error occurred while attempting to update fees (cannot load carrier object).');
                     }

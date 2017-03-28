@@ -93,8 +93,8 @@ class GroupReductionCore extends ObjectModel
             return 0;
         }
 
-        if (!isset(self::$reduction_cache[$idProduct.'-'.$idGroup])) {
-            self::$reduction_cache[$idProduct.'-'.$idGroup] = Db::getInstance()->getValue(
+        if (!isset(static::$reduction_cache[$idProduct.'-'.$idGroup])) {
+            static::$reduction_cache[$idProduct.'-'.$idGroup] = Db::getInstance()->getValue(
                 '
 			SELECT `reduction`
 			FROM `'._DB_PREFIX_.'product_group_reduction_cache`
@@ -103,7 +103,7 @@ class GroupReductionCore extends ObjectModel
         }
 
         // Should return string (decimal in database) and not a float
-        return self::$reduction_cache[$idProduct.'-'.$idGroup];
+        return static::$reduction_cache[$idProduct.'-'.$idGroup];
     }
 
     /**

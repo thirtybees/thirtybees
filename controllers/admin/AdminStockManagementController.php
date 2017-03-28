@@ -133,7 +133,7 @@ class AdminStockManagementControllerCore extends AdminController
             $this->_where = 'AND a.id_product = '.$idProduct;
             $this->_group = 'GROUP BY a.id_product_attribute';
 
-            self::$currentIndex = self::$currentIndex.'&id_product='.(int) $idProduct;
+            static::$currentIndex = static::$currentIndex.'&id_product='.(int) $idProduct;
             $this->processFilter();
 
             return parent::renderList();
@@ -417,7 +417,7 @@ class AdminStockManagementControllerCore extends AdminController
             $quantity = (int) $quantity;
 
             $token = Tools::getValue('token') ? Tools::getValue('token') : $this->token;
-            $redirect = self::$currentIndex.'&token='.$token;
+            $redirect = static::$currentIndex.'&token='.$token;
         }
 
         // Global checks when add / remove product
@@ -487,7 +487,7 @@ class AdminStockManagementControllerCore extends AdminController
                     StockAvailable::synchronize($idProduct);
 
                     if (Tools::isSubmit('addstockAndStay')) {
-                        $redirect = self::$currentIndex.'&id_product='.(int) $idProduct;
+                        $redirect = static::$currentIndex.'&id_product='.(int) $idProduct;
                         if ($idProductAttribute) {
                             $redirect .= '&id_product_attribute='.(int) $idProductAttribute;
                         }
@@ -1345,7 +1345,7 @@ class AdminStockManagementControllerCore extends AdminController
                 // Default cancel button - like old back link
                 $back = Tools::safeOutput(Tools::getValue('back', ''));
                 if (empty($back)) {
-                    $back = self::$currentIndex.'&token='.$this->token;
+                    $back = static::$currentIndex.'&token='.$this->token;
                 }
 
                 $this->toolbar_btn['cancel'] = [
@@ -1391,14 +1391,14 @@ class AdminStockManagementControllerCore extends AdminController
      */
     public function displayAddstockLink($token = null, $id)
     {
-        if (!array_key_exists('AddStock', self::$cache_lang)) {
-            self::$cache_lang['AddStock'] = $this->l('Add stock');
+        if (!array_key_exists('AddStock', static::$cache_lang)) {
+            static::$cache_lang['AddStock'] = $this->l('Add stock');
         }
 
         $this->context->smarty->assign(
             [
-                'href'   => self::$currentIndex.'&'.$this->identifier.'='.$id.'&addstock&token='.($token != null ? $token : $this->token),
-                'action' => self::$cache_lang['AddStock'],
+                'href'   => static::$currentIndex.'&'.$this->identifier.'='.$id.'&addstock&token='.($token != null ? $token : $this->token),
+                'action' => static::$cache_lang['AddStock'],
             ]
         );
 
@@ -1417,14 +1417,14 @@ class AdminStockManagementControllerCore extends AdminController
      */
     public function displayRemovestockLink($token = null, $id)
     {
-        if (!array_key_exists('RemoveStock', self::$cache_lang)) {
-            self::$cache_lang['RemoveStock'] = $this->l('Remove stock');
+        if (!array_key_exists('RemoveStock', static::$cache_lang)) {
+            static::$cache_lang['RemoveStock'] = $this->l('Remove stock');
         }
 
         $this->context->smarty->assign(
             [
-                'href'   => self::$currentIndex.'&'.$this->identifier.'='.$id.'&removestock&token='.($token != null ? $token : $this->token),
-                'action' => self::$cache_lang['RemoveStock'],
+                'href'   => static::$currentIndex.'&'.$this->identifier.'='.$id.'&removestock&token='.($token != null ? $token : $this->token),
+                'action' => static::$cache_lang['RemoveStock'],
             ]
         );
 
@@ -1443,14 +1443,14 @@ class AdminStockManagementControllerCore extends AdminController
      */
     public function displayTransferstockLink($token = null, $id)
     {
-        if (!array_key_exists('TransferStock', self::$cache_lang)) {
-            self::$cache_lang['TransferStock'] = $this->l('Transfer stock');
+        if (!array_key_exists('TransferStock', static::$cache_lang)) {
+            static::$cache_lang['TransferStock'] = $this->l('Transfer stock');
         }
 
         $this->context->smarty->assign(
             [
-                'href'   => self::$currentIndex.'&'.$this->identifier.'='.$id.'&transferstock&token='.($token != null ? $token : $this->token),
-                'action' => self::$cache_lang['TransferStock'],
+                'href'   => static::$currentIndex.'&'.$this->identifier.'='.$id.'&transferstock&token='.($token != null ? $token : $this->token),
+                'action' => static::$cache_lang['TransferStock'],
             ]
         );
 
@@ -1469,14 +1469,14 @@ class AdminStockManagementControllerCore extends AdminController
      */
     public function displayPrepareRemovestockLink($token = null, $id)
     {
-        if (!array_key_exists('RemoveStock', self::$cache_lang)) {
-            self::$cache_lang['RemoveStock'] = $this->l('Remove stock');
+        if (!array_key_exists('RemoveStock', static::$cache_lang)) {
+            static::$cache_lang['RemoveStock'] = $this->l('Remove stock');
         }
 
         $this->context->smarty->assign(
             [
-                'href'   => self::$currentIndex.'&'.$this->identifier.'='.$id.'&token='.($token != null ? $token : $this->token),
-                'action' => self::$cache_lang['RemoveStock'],
+                'href'   => static::$currentIndex.'&'.$this->identifier.'='.$id.'&token='.($token != null ? $token : $this->token),
+                'action' => static::$cache_lang['RemoveStock'],
             ]
         );
 
@@ -1495,14 +1495,14 @@ class AdminStockManagementControllerCore extends AdminController
      */
     public function displayPrepareTransferstockLink($token = null, $id)
     {
-        if (!array_key_exists('TransferStock', self::$cache_lang)) {
-            self::$cache_lang['TransferStock'] = $this->l('Transfer stock');
+        if (!array_key_exists('TransferStock', static::$cache_lang)) {
+            static::$cache_lang['TransferStock'] = $this->l('Transfer stock');
         }
 
         $this->context->smarty->assign(
             [
-                'href'   => self::$currentIndex.'&'.$this->identifier.'='.$id.'&token='.($token != null ? $token : $this->token),
-                'action' => self::$cache_lang['TransferStock'],
+                'href'   => static::$currentIndex.'&'.$this->identifier.'='.$id.'&token='.($token != null ? $token : $this->token),
+                'action' => static::$cache_lang['TransferStock'],
             ]
         );
 

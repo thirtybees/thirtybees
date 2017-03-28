@@ -321,7 +321,7 @@ abstract class TreeToolbarButtonCore
     public function getTemplateDirectory()
     {
         if (!isset($this->_template_directory)) {
-            $this->_template_directory = $this->_normalizeDirectory(self::DEFAULT_TEMPLATE_DIRECTORY);
+            $this->_template_directory = $this->_normalizeDirectory(static::DEFAULT_TEMPLATE_DIRECTORY);
         }
 
         return $this->_template_directory;

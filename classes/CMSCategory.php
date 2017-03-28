@@ -339,8 +339,8 @@ class CMSCategoryCore extends ObjectModel
             return false;
         }
 
-        if (isset(self::$_links[$idCmsCategory.'-'.$idLang])) {
-            return self::$_links[$idCmsCategory.'-'.$idLang];
+        if (isset(static::$_links[$idCmsCategory.'-'.$idLang])) {
+            return static::$_links[$idCmsCategory.'-'.$idLang];
         }
 
         $result = Db::getInstance()->getRow(
@@ -351,7 +351,7 @@ class CMSCategoryCore extends ObjectModel
 		WHERE `id_lang` = '.(int) $idLang.'
 		AND c.`id_cms_category` = '.(int) $idCmsCategory
         );
-        self::$_links[$idCmsCategory.'-'.$idLang] = $result['link_rewrite'];
+        static::$_links[$idCmsCategory.'-'.$idLang] = $result['link_rewrite'];
 
         return $result['link_rewrite'];
     }

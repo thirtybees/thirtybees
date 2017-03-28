@@ -62,7 +62,7 @@ abstract class AbstractLoggerCore
         if (array_key_exists((int)$level, $this->level_value)) {
             $this->level = $level;
         } else {
-            $this->level = self::INFO;
+            $this->level = static::INFO;
         }
     }
 
@@ -103,7 +103,7 @@ abstract class AbstractLoggerCore
     */
     public function logDebug($message)
     {
-        $this->log($message, self::DEBUG);
+        $this->log($message, static::DEBUG);
     }
 
     /**
@@ -116,7 +116,7 @@ abstract class AbstractLoggerCore
     */
     public function logInfo($message)
     {
-        $this->log($message, self::INFO);
+        $this->log($message, static::INFO);
     }
 
     /**
@@ -129,7 +129,7 @@ abstract class AbstractLoggerCore
     */
     public function logWarning($message)
     {
-        $this->log($message, self::WARNING);
+        $this->log($message, static::WARNING);
     }
 
     /**
@@ -142,6 +142,6 @@ abstract class AbstractLoggerCore
     */
     public function logError($message)
     {
-        $this->log($message, self::ERROR);
+        $this->log($message, static::ERROR);
     }
 }

@@ -81,7 +81,7 @@ class AdminPerformanceControllerCore extends AdminController
         $this->context->smarty->assign(
             [
                 'content'                   => $this->content,
-                'url_post'                  => self::$currentIndex.'&token='.$this->token,
+                'url_post'                  => static::$currentIndex.'&token='.$this->token,
                 'show_page_header_toolbar'  => $this->show_page_header_toolbar,
                 'page_header_toolbar_title' => $this->page_header_toolbar_title,
                 'page_header_toolbar_btn'   => $this->page_header_toolbar_btn,
@@ -100,7 +100,7 @@ class AdminPerformanceControllerCore extends AdminController
         parent::initPageHeaderToolbar();
 
         $this->page_header_toolbar_btn['clear_cache'] = [
-            'href' => self::$currentIndex.'&token='.$this->token.'&empty_smarty_cache=1',
+            'href' => static::$currentIndex.'&token='.$this->token.'&empty_smarty_cache=1',
             'desc' => $this->l('Clear cache'),
             'icon' => 'process-icon-eraser',
         ];
@@ -920,7 +920,7 @@ class AdminPerformanceControllerCore extends AdminController
                         (int) Tools::getValue('memcachedPort'),
                         (int) Tools::getValue('memcachedWeight')
                     )) {
-                        Tools::redirectAdmin(self::$currentIndex.'&token='.Tools::getValue('token').'&conf=4');
+                        Tools::redirectAdmin(static::$currentIndex.'&token='.Tools::getValue('token').'&conf=4');
                     } else {
                         $this->errors[] = Tools::displayError('The Memcached server cannot be added.');
                     }
@@ -932,7 +932,7 @@ class AdminPerformanceControllerCore extends AdminController
         if (Tools::getValue('deleteMemcachedServer')) {
             if ($this->tabAccess['add'] === '1') {
                 if (CacheMemcache::deleteServer((int) Tools::getValue('deleteMemcachedServer'))) {
-                    Tools::redirectAdmin(self::$currentIndex.'&token='.Tools::getValue('token').'&conf=4');
+                    Tools::redirectAdmin(static::$currentIndex.'&token='.Tools::getValue('token').'&conf=4');
                 } else {
                     $this->errors[] = Tools::displayError('There was an error when attempting to delete the Memcached server.');
                 }
@@ -961,7 +961,7 @@ class AdminPerformanceControllerCore extends AdminController
                         pSQL(Tools::getValue('redisAuth')),
                         (int) Tools::getValue('redisDb')
                     )) {
-                        Tools::redirectAdmin(self::$currentIndex.'&token='.Tools::getValue('token').'&conf=4');
+                        Tools::redirectAdmin(static::$currentIndex.'&token='.Tools::getValue('token').'&conf=4');
                     } else {
                         $this->errors[] = Tools::displayError('The Redis server cannot be added.');
                     }
@@ -973,7 +973,7 @@ class AdminPerformanceControllerCore extends AdminController
         if (Tools::isSubmit('deleteRedisServer')) {
             if ($this->tabAccess['add'] === '1') {
                 if (CacheRedis::deleteServer((int) Tools::getValue('deleteRedisServer'))) {
-                    Tools::redirectAdmin(self::$currentIndex.'&token='.Tools::getValue('token').'&conf=4');
+                    Tools::redirectAdmin(static::$currentIndex.'&token='.Tools::getValue('token').'&conf=4');
                 } else {
                     $this->errors[] = Tools::displayError('There was an error when attempting to delete the Redis server.');
                 }
@@ -1281,16 +1281,16 @@ class AdminPerformanceControllerCore extends AdminController
 
             if (!empty($debugModeStatus)) {
                 switch ($debugModeStatus) {
-                    case self::DEBUG_MODE_ERROR_NO_DEFINITION_FOUND:
+                    case static::DEBUG_MODE_ERROR_NO_DEFINITION_FOUND:
                         $this->errors[] = Tools::displayError(sprintf($this->l('Error: could not detect whether debug mode is enabled. Make sure that the correct permissions are set on the file %s'), _PS_ROOT_DIR_.'/config/defines.inc.php'));
                         break;
-                    case self::DEBUG_MODE_ERROR_NO_WRITE_ACCESS:
+                    case static::DEBUG_MODE_ERROR_NO_WRITE_ACCESS:
                         $this->errors[] = Tools::displayError(sprintf($this->l('Error: could not write to file. Make sure that the correct permissions are set on the file %s'), _PS_ROOT_DIR_.'/config/defines.inc.php'));
                         break;
-                    case self::DEBUG_MODE_ERROR_NO_WRITE_ACCESS_CUSTOM:
+                    case static::DEBUG_MODE_ERROR_NO_WRITE_ACCESS_CUSTOM:
                         $this->errors[] = Tools::displayError(sprintf($this->l('Error: could not write to file. Make sure that the correct permissions are set on the file %s'), _PS_ROOT_DIR_.'/config/defines_custom.inc.php'));
                         break;
-                    case self::DEBUG_MODE_ERROR_NO_READ_ACCESS:
+                    case static::DEBUG_MODE_ERROR_NO_READ_ACCESS:
                         $this->errors[] = Tools::displayError(sprintf($this->l('Error: could not read file. Make sure that the correct permissions are set on the file %s'), _PS_ROOT_DIR_.'/config/defines.inc.php'));
                         break;
                     default:
@@ -1306,16 +1306,16 @@ class AdminPerformanceControllerCore extends AdminController
 
             if (!empty($profilingStatus)) {
                 switch ($profilingStatus) {
-                    case self::DEBUG_MODE_ERROR_NO_DEFINITION_FOUND:
+                    case static::DEBUG_MODE_ERROR_NO_DEFINITION_FOUND:
                         $this->errors[] = Tools::displayError(sprintf($this->l('Error: could not detect whether debug mode is enabled. Make sure that the correct permissions are set on the file %s'), _PS_ROOT_DIR_.'/config/defines.inc.php'));
                         break;
-                    case self::DEBUG_MODE_ERROR_NO_WRITE_ACCESS:
+                    case static::DEBUG_MODE_ERROR_NO_WRITE_ACCESS:
                         $this->errors[] = Tools::displayError(sprintf($this->l('Error: could not write to file. Make sure that the correct permissions are set on the file %s'), _PS_ROOT_DIR_.'/config/defines.inc.php'));
                         break;
-                    case self::DEBUG_MODE_ERROR_NO_WRITE_ACCESS_CUSTOM:
+                    case static::DEBUG_MODE_ERROR_NO_WRITE_ACCESS_CUSTOM:
                         $this->errors[] = Tools::displayError(sprintf($this->l('Error: could not write to file. Make sure that the correct permissions are set on the file %s'), _PS_ROOT_DIR_.'/config/defines_custom.inc.php'));
                         break;
-                    case self::DEBUG_MODE_ERROR_NO_READ_ACCESS:
+                    case static::DEBUG_MODE_ERROR_NO_READ_ACCESS:
                         $this->errors[] = Tools::displayError(sprintf($this->l('Error: could not read file. Make sure that the correct permissions are set on the file %s'), _PS_ROOT_DIR_.'/config/defines.inc.php'));
                         break;
                     default:
@@ -1327,7 +1327,7 @@ class AdminPerformanceControllerCore extends AdminController
 
         if ($redirectAdmin && (!isset($this->errors) || !count($this->errors))) {
             Hook::exec('action'.get_class($this).ucfirst($this->action).'After', ['controller' => $this, 'return' => '']);
-            Tools::redirectAdmin(self::$currentIndex.'&token='.Tools::getValue('token').'&conf=4');
+            Tools::redirectAdmin(static::$currentIndex.'&token='.Tools::getValue('token').'&conf=4');
         }
     }
 
@@ -1474,35 +1474,35 @@ class AdminPerformanceControllerCore extends AdminController
             if (!empty($definesCustomClean) && preg_match('/define\(\'_PS_MODE_DEV_\', ([a-zA-Z]+)\);/Ui', $definesCustomClean)) {
                 $definesCustom = preg_replace('/define\(\'_PS_MODE_DEV_\', ([a-zA-Z]+)\);/Ui', 'define(\'_PS_MODE_DEV_\', true);', $definesCustom);
                 if (!@file_put_contents(_PS_ROOT_DIR_.'/config/defines_custom.inc.php', $definesCustom)) {
-                    return self::DEBUG_MODE_ERROR_NO_WRITE_ACCESS_CUSTOM;
+                    return static::DEBUG_MODE_ERROR_NO_WRITE_ACCESS_CUSTOM;
                 }
 
                 if (function_exists('opcache_invalidate')) {
                     opcache_invalidate(_PS_ROOT_DIR_.'/config/defines_custom.inc.php');
                 }
 
-                return self::DEBUG_MODE_SUCCEEDED;
+                return static::DEBUG_MODE_SUCCEEDED;
             }
         }
 
         if (!$this->isDefinesReadable()) {
-            return self::DEBUG_MODE_ERROR_NO_READ_ACCESS;
+            return static::DEBUG_MODE_ERROR_NO_READ_ACCESS;
         }
         $definesClean = php_strip_whitespace(_PS_ROOT_DIR_.'/config/defines.inc.php');
         $defines = file_get_contents(_PS_ROOT_DIR_.'/config/defines.inc.php');
         if (!preg_match('/define\(\'_PS_MODE_DEV_\', ([a-zA-Z]+)\);/Ui', $definesClean)) {
-            return self::DEBUG_MODE_ERROR_NO_DEFINITION_FOUND;
+            return static::DEBUG_MODE_ERROR_NO_DEFINITION_FOUND;
         }
         $defines = preg_replace('/define\(\'_PS_MODE_DEV_\', ([a-zA-Z]+)\);/Ui', 'define(\'_PS_MODE_DEV_\', true);', $defines);
         if (!@file_put_contents(_PS_ROOT_DIR_.'/config/defines.inc.php', $defines)) {
-            return self::DEBUG_MODE_ERROR_NO_WRITE_ACCESS;
+            return static::DEBUG_MODE_ERROR_NO_WRITE_ACCESS;
         }
 
         if (function_exists('opcache_invalidate')) {
             opcache_invalidate(_PS_ROOT_DIR_.'/config/defines.inc.php');
         }
 
-        return self::DEBUG_MODE_SUCCEEDED;
+        return static::DEBUG_MODE_SUCCEEDED;
     }
 
     /**
@@ -1519,35 +1519,35 @@ class AdminPerformanceControllerCore extends AdminController
             if (!empty($definesCustomClean) && preg_match('/define\(\'_PS_MODE_DEV_\', ([a-zA-Z]+)\);/Ui', $definesCustomClean)) {
                 $definesCustom = preg_replace('/define\(\'_PS_MODE_DEV_\', ([a-zA-Z]+)\);/Ui', 'define(\'_PS_MODE_DEV_\', false);', $definesCustom);
                 if (!@file_put_contents(_PS_ROOT_DIR_.'/config/defines_custom.inc.php', $definesCustom)) {
-                    return self::DEBUG_MODE_ERROR_NO_WRITE_ACCESS_CUSTOM;
+                    return static::DEBUG_MODE_ERROR_NO_WRITE_ACCESS_CUSTOM;
                 }
 
                 if (function_exists('opcache_invalidate')) {
                     opcache_invalidate(_PS_ROOT_DIR_.'/config/defines_custom.inc.php');
                 }
 
-                return self::DEBUG_MODE_SUCCEEDED;
+                return static::DEBUG_MODE_SUCCEEDED;
             }
         }
 
         if (!$this->isDefinesReadable()) {
-            return self::DEBUG_MODE_ERROR_NO_READ_ACCESS;
+            return static::DEBUG_MODE_ERROR_NO_READ_ACCESS;
         }
         $definesClean = php_strip_whitespace(_PS_ROOT_DIR_.'/config/defines.inc.php');
         $defines = file_get_contents(_PS_ROOT_DIR_.'/config/defines.inc.php');
         if (!preg_match('/define\(\'_PS_MODE_DEV_\', ([a-zA-Z]+)\);/Ui', $definesClean)) {
-            return self::DEBUG_MODE_ERROR_NO_DEFINITION_FOUND;
+            return static::DEBUG_MODE_ERROR_NO_DEFINITION_FOUND;
         }
         $defines = preg_replace('/define\(\'_PS_MODE_DEV_\', ([a-zA-Z]+)\);/Ui', 'define(\'_PS_MODE_DEV_\', false);', $defines);
         if (!@file_put_contents(_PS_ROOT_DIR_.'/config/defines.inc.php', $defines)) {
-            return self::DEBUG_MODE_ERROR_NO_WRITE_ACCESS;
+            return static::DEBUG_MODE_ERROR_NO_WRITE_ACCESS;
         }
 
         if (function_exists('opcache_invalidate')) {
             opcache_invalidate(_PS_ROOT_DIR_.'/config/defines.inc.php');
         }
 
-        return self::DEBUG_MODE_SUCCEEDED;
+        return static::DEBUG_MODE_SUCCEEDED;
     }
 
     /**
@@ -1565,35 +1565,35 @@ class AdminPerformanceControllerCore extends AdminController
             if (!empty($definesCustomClean) && preg_match('/define\(\'_PS_DEBUG_PROFILING_\', ([a-zA-Z]+)\);/Ui', $definesCustomClean)) {
                 $definesCustom = preg_replace('/define\(\'_PS_DEBUG_PROFILING_\', ([a-zA-Z]+)\);/Ui', 'define(\'_PS_DEBUG_PROFILING_\', true);', $definesCustom);
                 if (!@file_put_contents(_PS_ROOT_DIR_.'/config/defines_custom.inc.php', $definesCustom)) {
-                    return self::PROFILING_ERROR_NO_WRITE_ACCESS_CUSTOM;
+                    return static::PROFILING_ERROR_NO_WRITE_ACCESS_CUSTOM;
                 }
 
                 if (function_exists('opcache_invalidate')) {
                     opcache_invalidate(_PS_ROOT_DIR_.'/config/defines_custom.inc.php');
                 }
 
-                return self::PROFILING_SUCCEEDED;
+                return static::PROFILING_SUCCEEDED;
             }
         }
 
         if (!$this->isDefinesReadable()) {
-            return self::PROFILING_ERROR_NO_READ_ACCESS;
+            return static::PROFILING_ERROR_NO_READ_ACCESS;
         }
         $definesClean = php_strip_whitespace(_PS_ROOT_DIR_.'/config/defines.inc.php');
         $defines = file_get_contents(_PS_ROOT_DIR_.'/config/defines.inc.php');
         if (!preg_match('/define\(\'_PS_DEBUG_PROFILING_\', ([a-zA-Z]+)\);/Ui', $definesClean)) {
-            return self::PROFILING_ERROR_NO_DEFINITION_FOUND;
+            return static::PROFILING_ERROR_NO_DEFINITION_FOUND;
         }
         $defines = preg_replace('/define\(\'_PS_DEBUG_PROFILING_\', ([a-zA-Z]+)\);/Ui', 'define(\'_PS_DEBUG_PROFILING_\', true);', $defines);
         if (!@file_put_contents(_PS_ROOT_DIR_.'/config/defines.inc.php', $defines)) {
-            return self::PROFILING_ERROR_NO_WRITE_ACCESS;
+            return static::PROFILING_ERROR_NO_WRITE_ACCESS;
         }
 
         if (function_exists('opcache_invalidate')) {
             opcache_invalidate(_PS_ROOT_DIR_.'/config/defines.inc.php');
         }
 
-        return self::PROFILING_SUCCEEDED;
+        return static::PROFILING_SUCCEEDED;
     }
 
     /**
@@ -1610,35 +1610,35 @@ class AdminPerformanceControllerCore extends AdminController
             if (!empty($definesCustomClean) && preg_match('/define\(\'_PS_DEBUG_PROFILING_\', ([a-zA-Z]+)\);/Ui', $definesCustomClean)) {
                 $definesCustom = preg_replace('/define\(\'_PS_DEBUG_PROFILING_\', ([a-zA-Z]+)\);/Ui', 'define(\'_PS_DEBUG_PROFILING_\', false);', $definesCustom);
                 if (!@file_put_contents(_PS_ROOT_DIR_.'/config/defines_custom.inc.php', $definesCustom)) {
-                    return self::PROFILING_ERROR_NO_WRITE_ACCESS_CUSTOM;
+                    return static::PROFILING_ERROR_NO_WRITE_ACCESS_CUSTOM;
                 }
 
                 if (function_exists('opcache_invalidate')) {
                     opcache_invalidate(_PS_ROOT_DIR_.'/config/defines_custom.inc.php');
                 }
 
-                return self::PROFILING_SUCCEEDED;
+                return static::PROFILING_SUCCEEDED;
             }
         }
 
         if (!$this->isDefinesReadable()) {
-            return self::PROFILING_ERROR_NO_READ_ACCESS;
+            return static::PROFILING_ERROR_NO_READ_ACCESS;
         }
         $definesClean = php_strip_whitespace(_PS_ROOT_DIR_.'/config/defines.inc.php');
         $defines = file_get_contents(_PS_ROOT_DIR_.'/config/defines.inc.php');
         if (!preg_match('/define\(\'_PS_DEBUG_PROFILING_\', ([a-zA-Z]+)\);/Ui', $definesClean)) {
-            return self::PROFILING_ERROR_NO_DEFINITION_FOUND;
+            return static::PROFILING_ERROR_NO_DEFINITION_FOUND;
         }
         $defines = preg_replace('/define\(\'_PS_DEBUG_PROFILING_\', ([a-zA-Z]+)\);/Ui', 'define(\'_PS_DEBUG_PROFILING_\', false);', $defines);
         if (!@file_put_contents(_PS_ROOT_DIR_.'/config/defines.inc.php', $defines)) {
-            return self::PROFILING_ERROR_NO_WRITE_ACCESS;
+            return static::PROFILING_ERROR_NO_WRITE_ACCESS;
         }
 
         if (function_exists('opcache_invalidate')) {
             opcache_invalidate(_PS_ROOT_DIR_.'/config/defines.inc.php');
         }
 
-        return self::PROFILING_SUCCEEDED;
+        return static::PROFILING_SUCCEEDED;
     }
 
     /**

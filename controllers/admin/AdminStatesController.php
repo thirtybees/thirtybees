@@ -135,7 +135,7 @@ class AdminStatesControllerCore extends AdminController
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_state'] = [
-                'href' => self::$currentIndex.'&addstate&token='.$this->token,
+                'href' => static::$currentIndex.'&addstate&token='.$this->token,
                 'desc' => $this->l('Add new state', null, null, false),
                 'icon' => 'process-icon-new',
             ];
@@ -263,7 +263,7 @@ class AdminStatesControllerCore extends AdminController
                     /** @var State $object */
                     if (!$object->isUsed()) {
                         if ($object->delete()) {
-                            Tools::redirectAdmin(self::$currentIndex.'&conf=1&token='.(Tools::getValue('token') ? Tools::getValue('token') : $this->token));
+                            Tools::redirectAdmin(static::$currentIndex.'&conf=1&token='.(Tools::getValue('token') ? Tools::getValue('token') : $this->token));
                         }
                         $this->errors[] = Tools::displayError('An error occurred during deletion.');
                     } else {

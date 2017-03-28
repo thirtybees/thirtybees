@@ -126,7 +126,7 @@ class AdminLanguagesControllerCore extends AdminController
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_language'] = [
-                'href' => self::$currentIndex.'&addlang&token='.$this->token,
+                'href' => static::$currentIndex.'&addlang&token='.$this->token,
                 'desc' => $this->l('Add new language', null, null, false),
                 'icon' => 'process-icon-new',
             ];

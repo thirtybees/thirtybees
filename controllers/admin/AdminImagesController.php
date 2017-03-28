@@ -406,7 +406,7 @@ class AdminImagesControllerCore extends AdminController
         if (Tools::isSubmit('submitRegenerate'.$this->table)) {
             if ($this->tabAccess['edit'] === '1') {
                 if ($this->_regenerateThumbnails(Tools::getValue('type'), Tools::getValue('erase'))) {
-                    Tools::redirectAdmin(self::$currentIndex.'&conf=9'.'&token='.$this->token);
+                    Tools::redirectAdmin(static::$currentIndex.'&conf=9'.'&token='.$this->token);
                 }
             } else {
                 $this->errors[] = Tools::displayError('You do not have permission to edit this.');
@@ -414,7 +414,7 @@ class AdminImagesControllerCore extends AdminController
         } elseif (Tools::isSubmit('submitMoveImages'.$this->table)) {
             if ($this->tabAccess['edit'] === '1') {
                 if ($this->_moveImagesToNewFileSystem()) {
-                    Tools::redirectAdmin(self::$currentIndex.'&conf=25'.'&token='.$this->token);
+                    Tools::redirectAdmin(static::$currentIndex.'&conf=25'.'&token='.$this->token);
                 }
             } else {
                 $this->errors[] = Tools::displayError('You do not have permission to edit this.');
@@ -774,7 +774,7 @@ class AdminImagesControllerCore extends AdminController
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_image_type'] = [
-                'href' => self::$currentIndex.'&addimage_type&token='.$this->token,
+                'href' => static::$currentIndex.'&addimage_type&token='.$this->token,
                 'desc' => $this->l('Add new image type', null, null, false),
                 'icon' => 'process-icon-new',
             ];

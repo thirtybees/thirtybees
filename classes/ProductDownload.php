@@ -120,10 +120,10 @@ class ProductDownloadCore extends ObjectModel
         if (!ProductDownload::isFeatureActive()) {
             return false;
         }
-        if (array_key_exists((int) $idProduct, self::$_productIds)) {
-            return self::$_productIds[$idProduct];
+        if (array_key_exists((int) $idProduct, static::$_productIds)) {
+            return static::$_productIds[$idProduct];
         }
-        self::$_productIds[$idProduct] = (int) Db::getInstance()->getValue(
+        static::$_productIds[$idProduct] = (int) Db::getInstance()->getValue(
             '
 		SELECT `id_product_download`
 		FROM `'._DB_PREFIX_.'product_download`
@@ -132,7 +132,7 @@ class ProductDownloadCore extends ObjectModel
 		ORDER BY `id_product_download` DESC'
         );
 
-        return self::$_productIds[$idProduct];
+        return static::$_productIds[$idProduct];
     }
 
     /**

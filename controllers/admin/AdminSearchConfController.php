@@ -264,7 +264,7 @@ class AdminSearchConfControllerCore extends AdminController
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_alias'] = [
-                'href' => self::$currentIndex.'&addalias&token='.$this->token,
+                'href' => static::$currentIndex.'&addalias&token='.$this->token,
                 'desc' => $this->l('Add new alias', null, null, false),
                 'icon' => 'process-icon-new',
             ];

@@ -272,14 +272,14 @@ class SupplierCore extends ObjectModel
      */
     public static function getNameById($idSupplier)
     {
-        if (!isset(self::$cache_name[$idSupplier])) {
-            self::$cache_name[$idSupplier] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+        if (!isset(static::$cache_name[$idSupplier])) {
+            static::$cache_name[$idSupplier] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 '
 			SELECT `name` FROM `'._DB_PREFIX_.'supplier` WHERE `id_supplier` = '.(int) $idSupplier
             );
         }
 
-        return self::$cache_name[$idSupplier];
+        return static::$cache_name[$idSupplier];
     }
 
     /**

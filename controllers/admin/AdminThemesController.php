@@ -770,7 +770,7 @@ class AdminThemesControllerCore extends AdminController
                 $this->to_hook = [];
 
                 foreach ($this->module_list as $array) {
-                    if (!self::checkParentClass($array['name'])) {
+                    if (!static::checkParentClass($array['name'])) {
                         continue;
                     }
                     if (in_array($array['name'], $this->native_modules)) {
@@ -785,7 +785,7 @@ class AdminThemesControllerCore extends AdminController
                 }
                 foreach ($this->native_modules as $str) {
                     $flag = 0;
-                    if (!self::checkParentClass($str)) {
+                    if (!static::checkParentClass($str)) {
                         continue;
                     }
                     foreach ($this->module_list as $tmp) {
@@ -899,9 +899,9 @@ class AdminThemesControllerCore extends AdminController
         $author = Tools::getValue('name');
         $themeName = Tools::getValue('theme_name');
 
-        if (!$author || !Validate::isGenericName($author) || strlen($author) > self::MAX_NAME_LENGTH) {
+        if (!$author || !Validate::isGenericName($author) || strlen($author) > static::MAX_NAME_LENGTH) {
             $this->errors[] = $this->l('Please enter a valid author name');
-        } elseif (!$themeName || !Validate::isGenericName($themeName) || strlen($themeName) > self::MAX_NAME_LENGTH) {
+        } elseif (!$themeName || !Validate::isGenericName($themeName) || strlen($themeName) > static::MAX_NAME_LENGTH) {
             $this->errors[] = $this->l('Please enter a valid theme name');
         }
 
@@ -936,7 +936,7 @@ class AdminThemesControllerCore extends AdminController
                 $this->errors[] = $this->l('An error occurred during documentation upload');
             } elseif ($_FILES['documentation']['size'] > 1048576) {
                 $this->errors[] = $this->l('An error occurred while uploading the documentation. Maximum size allowed is 1MB.');
-            } elseif (!$name || !Validate::isGenericName($name) || strlen($name) > self::MAX_NAME_LENGTH) {
+            } elseif (!$name || !Validate::isGenericName($name) || strlen($name) > static::MAX_NAME_LENGTH) {
                 $this->errors[] = $this->l('Please enter a valid documentation name');
             }
         }
@@ -1396,7 +1396,7 @@ class AdminThemesControllerCore extends AdminController
         $nativeModules = $this->getNativeModule();
 
         foreach ($moduleList as $array) {
-            if (!self::checkParentClass($array['name'])) {
+            if (!static::checkParentClass($array['name'])) {
                 continue;
             }
             if (in_array($array['name'], $nativeModules)) {
@@ -2029,7 +2029,7 @@ class AdminThemesControllerCore extends AdminController
                 'import_theme'        => true,
                 'logged_on_addons'    => false,
                 'iso_code'            => $this->context->language->iso_code,
-                'add_new_theme_href'  => self::$currentIndex.'&addtheme&token='.$this->token,
+                'add_new_theme_href'  => static::$currentIndex.'&addtheme&token='.$this->token,
                 'add_new_theme_label' => $this->l('Create a new theme'),
             ]
         );
@@ -2105,7 +2105,7 @@ class AdminThemesControllerCore extends AdminController
 
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['import_theme'] = [
-                'href' => self::$currentIndex.'&action=importtheme&token='.$this->token,
+                'href' => static::$currentIndex.'&action=importtheme&token='.$this->token,
                 'desc' => $this->l('Add new theme', null, null, false),
                 'icon' => 'process-icon-new',
             ];
@@ -2115,7 +2115,7 @@ class AdminThemesControllerCore extends AdminController
             }
 
             $this->page_header_toolbar_btn['export_theme'] = [
-                'href' => self::$currentIndex.'&action=exporttheme&token='.$this->token,
+                'href' => static::$currentIndex.'&action=exporttheme&token='.$this->token,
                 'desc' => $this->l('Export theme', null, null, false),
                 'icon' => 'process-icon-export',
             ];
@@ -2911,7 +2911,7 @@ class AdminThemesControllerCore extends AdminController
         Configuration::updateGlobalValue('PS_FAVICON', 'favicon.ico');
 
         if (!$this->errors) {
-            $this->redirect_after = self::$currentIndex.'&token='.$this->token;
+            $this->redirect_after = static::$currentIndex.'&token='.$this->token;
         }
     }
 
@@ -2961,7 +2961,7 @@ class AdminThemesControllerCore extends AdminController
         Configuration::updateGlobalValue('PS_FAVICON_57', 'favicon_57.png');
 
         if (!$this->errors) {
-            $this->redirect_after = self::$currentIndex.'&token='.$this->token;
+            $this->redirect_after = static::$currentIndex.'&token='.$this->token;
         }
     }
 
@@ -2984,7 +2984,7 @@ class AdminThemesControllerCore extends AdminController
         Configuration::updateGlobalValue('PS_FAVICON_72', 'favicon_72.png');
 
         if (!$this->errors) {
-            $this->redirect_after = self::$currentIndex.'&token='.$this->token;
+            $this->redirect_after = static::$currentIndex.'&token='.$this->token;
         }
     }
 
@@ -3007,7 +3007,7 @@ class AdminThemesControllerCore extends AdminController
         Configuration::updateGlobalValue('PS_FAVICON_114', 'favicon_114.png');
 
         if (!$this->errors) {
-            $this->redirect_after = self::$currentIndex.'&token='.$this->token;
+            $this->redirect_after = static::$currentIndex.'&token='.$this->token;
         }
     }
 
@@ -3030,7 +3030,7 @@ class AdminThemesControllerCore extends AdminController
         Configuration::updateGlobalValue('PS_FAVICON_144', 'favicon_144.png');
 
         if (!$this->errors) {
-            $this->redirect_after = self::$currentIndex.'&token='.$this->token;
+            $this->redirect_after = static::$currentIndex.'&token='.$this->token;
         }
     }
 
@@ -3051,7 +3051,7 @@ class AdminThemesControllerCore extends AdminController
         if ($idTheme && $this->context->shop->id_theme != $idTheme) {
             $this->context->shop->id_theme = $idTheme;
             $this->context->shop->update();
-            $this->redirect_after = self::$currentIndex.'&token='.$this->token;
+            $this->redirect_after = static::$currentIndex.'&token='.$this->token;
         }
     }
 
@@ -3133,7 +3133,7 @@ class AdminThemesControllerCore extends AdminController
         if (Validate::isLoadedObject($object = $this->loadObject())) {
             /** @var Theme $object */
             if ($object->toggleResponsive()) {
-                $this->redirect_after = self::$currentIndex.'&conf=5&token='.$this->token;
+                $this->redirect_after = static::$currentIndex.'&conf=5&token='.$this->token;
             } else {
                 $this->errors[] = Tools::displayError('An error occurred while updating responsive status.');
             }
@@ -3156,7 +3156,7 @@ class AdminThemesControllerCore extends AdminController
         if (Validate::isLoadedObject($object = $this->loadObject())) {
             /** @var Theme $object */
             if ($object->toggleDefaultLeftColumn()) {
-                $this->redirect_after = self::$currentIndex.'&conf=5&token='.$this->token;
+                $this->redirect_after = static::$currentIndex.'&conf=5&token='.$this->token;
             } else {
                 $this->errors[] = Tools::displayError('An error occurred while updating default left column status.');
             }
@@ -3179,7 +3179,7 @@ class AdminThemesControllerCore extends AdminController
         if (Validate::isLoadedObject($object = $this->loadObject())) {
             /** @var Theme $object */
             if ($object->toggleDefaultRightColumn()) {
-                $this->redirect_after = self::$currentIndex.'&conf=5&token='.$this->token;
+                $this->redirect_after = static::$currentIndex.'&conf=5&token='.$this->token;
             } else {
                 $this->errors[] = Tools::displayError('An error occurred while updating default right column status.');
             }
@@ -3236,7 +3236,7 @@ class AdminThemesControllerCore extends AdminController
         }
 
         if ($result) {
-            $this->redirect_after = self::$currentIndex.'&updatetheme&id_theme='.$themeMeta['id_theme'].'&conf=5&token='.$this->token;
+            $this->redirect_after = static::$currentIndex.'&updatetheme&id_theme='.$themeMeta['id_theme'].'&conf=5&token='.$this->token;
         } else {
             $this->errors[] = Tools::displayError('An error occurred while updating this meta.');
         }
@@ -3288,7 +3288,7 @@ class AdminThemesControllerCore extends AdminController
         }
 
         if ($result) {
-            $this->redirect_after = self::$currentIndex.'&updatetheme&id_theme='.$themeMeta['id_theme'].'&conf=5&token='.$this->token;
+            $this->redirect_after = static::$currentIndex.'&updatetheme&id_theme='.$themeMeta['id_theme'].'&conf=5&token='.$this->token;
         } else {
             $this->errors[] = Tools::displayError('An error occurred while updating this meta.');
         }
@@ -3382,7 +3382,7 @@ class AdminThemesControllerCore extends AdminController
         while (($file = readdir($dir)) !== false) {
             if (strncmp($file, '.', 1) != 0) {
                 if (is_dir($src.'/'.$file)) {
-                    self::recurseCopy($src.'/'.$file, $dst.'/'.$file);
+                    static::recurseCopy($src.'/'.$file, $dst.'/'.$file);
                 } elseif (is_readable($src.'/'.$file) && $file != 'Thumbs.db' && $file != '.DS_Store' && substr($file, -1) != '~') {
                     copy($src.'/'.$file, $dst.'/'.$file);
                 }

@@ -208,7 +208,7 @@ class AdminLocalizationControllerCore extends AdminController
                     if (!$localizationPack->loadLocalisationPack($pack, $selection, false, $isoLocalizationPack)) {
                         $this->errors = array_merge($this->errors, $localizationPack->getErrors());
                     } else {
-                        Tools::redirectAdmin(self::$currentIndex.'&conf=23&token='.$this->token);
+                        Tools::redirectAdmin(static::$currentIndex.'&conf=23&token='.$this->token);
                     }
                 }
             }
@@ -255,7 +255,7 @@ class AdminLocalizationControllerCore extends AdminController
             [
                 'localization_form'         => $this->renderForm(),
                 'localization_options'      => $this->renderOptions(),
-                'url_post'                  => self::$currentIndex.'&token='.$this->token,
+                'url_post'                  => static::$currentIndex.'&token='.$this->token,
                 'show_page_header_toolbar'  => $this->show_page_header_toolbar,
                 'page_header_toolbar_title' => $this->page_header_toolbar_title,
                 'page_header_toolbar_btn'   => $this->page_header_toolbar_btn,

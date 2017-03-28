@@ -194,7 +194,7 @@ class AdminCustomersControllerCore extends AdminController
             $this->can_add_customer = false;
         }
 
-        self::$meaning_status = [
+        static::$meaning_status = [
             'open'     => $this->l('Open'),
             'closed'   => $this->l('Closed'),
             'pending1' => $this->l('Pending 1'),
@@ -343,7 +343,7 @@ class AdminCustomersControllerCore extends AdminController
     {
         if (empty($this->display) && $this->can_add_customer) {
             $this->page_header_toolbar_btn['new_customer'] = [
-                'href' => self::$currentIndex.'&addcustomer&token='.$this->token,
+                'href' => static::$currentIndex.'&addcustomer&token='.$this->token,
                 'desc' => $this->l('Add new customer', null, null, false),
                 'icon' => 'process-icon-new',
             ];
@@ -838,8 +838,8 @@ class AdminCustomersControllerCore extends AdminController
         for ($i = 0; $i < $totalMessages; $i++) {
             $messages[$i]['message'] = substr(strip_tags(html_entity_decode($messages[$i]['message'], ENT_NOQUOTES, 'UTF-8')), 0, 75);
             $messages[$i]['date_add'] = Tools::displayDate($messages[$i]['date_add'], null, true);
-            if (isset(self::$meaning_status[$messages[$i]['status']])) {
-                $messages[$i]['status'] = self::$meaning_status[$messages[$i]['status']];
+            if (isset(static::$meaning_status[$messages[$i]['status']])) {
+                $messages[$i]['status'] = static::$meaning_status[$messages[$i]['status']];
             }
         }
 
@@ -1124,7 +1124,7 @@ class AdminCustomersControllerCore extends AdminController
             if ($idOrder = (int) Tools::getValue('id_order')) {
                 Tools::redirectAdmin($this->context->link->getAdminLink('AdminOrders').'&id_order='.$idOrder.'&vieworder&conf=3');
             } else {
-                Tools::redirectAdmin(self::$currentIndex.'&'.$this->identifier.'='.$customer->id.'&viewcustomer&conf=3&token='.$this->token);
+                Tools::redirectAdmin(static::$currentIndex.'&'.$this->identifier.'='.$customer->id.'&viewcustomer&conf=3&token='.$this->token);
             }
         } else {
             $this->errors[] = Tools::displayError('An error occurred while updating customer information.');
@@ -1148,7 +1148,7 @@ class AdminCustomersControllerCore extends AdminController
         if (!$customer->update()) {
             $this->errors[] = Tools::displayError('An error occurred while updating customer information.');
         }
-        Tools::redirectAdmin(self::$currentIndex.'&token='.$this->token);
+        Tools::redirectAdmin(static::$currentIndex.'&token='.$this->token);
     }
 
     /**
@@ -1164,7 +1164,7 @@ class AdminCustomersControllerCore extends AdminController
         if (!$customer->update()) {
             $this->errors[] = Tools::displayError('An error occurred while updating customer information.');
         }
-        Tools::redirectAdmin(self::$currentIndex.'&token='.$this->token);
+        Tools::redirectAdmin(static::$currentIndex.'&token='.$this->token);
     }
 
     /**
@@ -1226,7 +1226,7 @@ class AdminCustomersControllerCore extends AdminController
 
         $tpl->assign(
             [
-                'href'    => self::$currentIndex.'&'.$this->identifier.'='.$id.'&delete'.$this->table.'&token='.($token != null ? $token : $this->token),
+                'href'    => static::$currentIndex.'&'.$this->identifier.'='.$id.'&delete'.$this->table.'&token='.($token != null ? $token : $this->token),
                 'confirm' => $this->l('Delete the selected item?').$name,
                 'action'  => $this->l('Delete'),
                 'id'      => $id,

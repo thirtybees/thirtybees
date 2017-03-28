@@ -178,15 +178,15 @@ class FrontControllerCore extends Controller
             return [];
         }
 
-        if (!is_array(self::$currentCustomerGroups)) {
-            self::$currentCustomerGroups = [];
+        if (!is_array(static::$currentCustomerGroups)) {
+            static::$currentCustomerGroups = [];
             $result = Db::getInstance()->executeS('SELECT id_group FROM '._DB_PREFIX_.'customer_group WHERE id_customer = '.(int) $context->customer->id);
             foreach ($result as $row) {
-                self::$currentCustomerGroups[] = $row['id_group'];
+                static::$currentCustomerGroups[] = $row['id_group'];
             }
         }
 
-        return self::$currentCustomerGroups;
+        return static::$currentCustomerGroups;
     }
 
     /**
@@ -1319,7 +1319,7 @@ class FrontControllerCore extends Controller
      */
     public function pagination($totalProducts = null)
     {
-        if (!self::$initialized) {
+        if (!static::$initialized) {
             $this->init();
         } elseif (!$this->context) {
             $this->context = Context::getContext();
@@ -1420,11 +1420,11 @@ class FrontControllerCore extends Controller
          */
         global $useSSL, $cookie, $smarty, $cart, $iso, $defaultCountry, $protocolLink, $protocolContent, $link, $cssFiles, $jsFiles, $currency;
 
-        if (self::$initialized) {
+        if (static::$initialized) {
             return;
         }
 
-        self::$initialized = true;
+        static::$initialized = true;
 
         parent::init();
 
@@ -1750,10 +1750,10 @@ class FrontControllerCore extends Controller
          * Use the Context to access objects instead.
          * Example: $this->context->cart
          */
-        self::$cookie = $this->context->cookie;
-        self::$cart = $cart;
-        self::$smarty = $this->context->smarty;
-        self::$link = $link;
+        static::$cookie = $this->context->cookie;
+        static::$cart = $cart;
+        static::$smarty = $this->context->smarty;
+        static::$link = $link;
         $defaultCountry = $this->context->country;
 
         $this->displayMaintenancePage();

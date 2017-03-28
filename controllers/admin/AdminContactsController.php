@@ -158,7 +158,7 @@ class AdminContactsControllerCore extends AdminController
         $this->initToolbar();
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_contact'] = [
-                'href' => self::$currentIndex.'&addcontact&token='.$this->token,
+                'href' => static::$currentIndex.'&addcontact&token='.$this->token,
                 'desc' => $this->l('Add new contact', null, null, false),
                 'icon' => 'process-icon-new',
             ];

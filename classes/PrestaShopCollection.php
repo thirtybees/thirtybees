@@ -252,7 +252,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
                 $currentDef = $definition['associations'][$asso];
 
                 // Special case for lang alias
-                if ($asso == self::LANG_ALIAS) {
+                if ($asso == static::LANG_ALIAS) {
                     $isLang = true;
                     break;
                 }
@@ -311,7 +311,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
         if (!isset($this->join_list[$association])) {
             $definition = $this->getDefinition($association);
             $on = '{'.$definition['asso']['complete_field'].'} = {'.$definition['asso']['complete_foreign_field'].'}';
-            $type = self::LEFT_JOIN;
+            $type = static::LEFT_JOIN;
             $this->join_list[$association] = [
                 'table' => ($definition['is_lang']) ? $definition['table'].'_lang' : $definition['table'],
                 'alias' => $this->generateAlias($association),
@@ -590,9 +590,9 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
 
         // If multilang, create association to lang table
         if (!empty($this->definition['multilang'])) {
-            $this->join(self::LANG_ALIAS);
+            $this->join(static::LANG_ALIAS);
             if ($this->id_lang) {
-                $this->where(self::LANG_ALIAS.'.id_lang', '=', $this->id_lang);
+                $this->where(static::LANG_ALIAS.'.id_lang', '=', $this->id_lang);
             }
         }
 
@@ -600,15 +600,15 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
         foreach ($this->join_list as $data) {
             $on = '('.implode(') AND (', $data['on']).')';
             switch ($data['type']) {
-                case self::LEFT_JOIN :
+                case static::LEFT_JOIN :
                     $this->query->leftJoin($data['table'], $data['alias'], $on);
                     break;
 
-                case self::INNER_JOIN :
+                case static::INNER_JOIN :
                     $this->query->innerJoin($data['table'], $data['alias'], $on);
                     break;
 
-                case self::LEFT_OUTER_JOIN :
+                case static::LEFT_OUTER_JOIN :
                     $this->query->leftOuterJoin($data['table'], $data['alias'], $on);
                     break;
             }

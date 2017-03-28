@@ -212,7 +212,7 @@ class AdminEmployeesControllerCore extends AdminController
 
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_employee'] = [
-                'href' => self::$currentIndex.'&addemployee&token='.$this->token,
+                'href' => static::$currentIndex.'&addemployee&token='.$this->token,
                 'desc' => $this->l('Add new employee', null, null, false),
                 'icon' => 'process-icon-new',
             ];

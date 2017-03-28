@@ -208,11 +208,11 @@ class AddressCore extends ObjectModel
     public function update($nullValues = false)
     {
         // Empty related caches
-        if (isset(self::$_idCountries[$this->id])) {
-            unset(self::$_idCountries[$this->id]);
+        if (isset(static::$_idCountries[$this->id])) {
+            unset(static::$_idCountries[$this->id]);
         }
-        if (isset(self::$_idZones[$this->id])) {
-            unset(self::$_idZones[$this->id]);
+        if (isset(static::$_idZones[$this->id])) {
+            unset(static::$_idZones[$this->id]);
         }
 
         if (Validate::isUnsignedId($this->id_customer)) {
@@ -297,16 +297,16 @@ class AddressCore extends ObjectModel
             return false;
         }
 
-        if (isset(self::$_idZones[$idAddress])) {
-            return self::$_idZones[$idAddress];
+        if (isset(static::$_idZones[$idAddress])) {
+            return static::$_idZones[$idAddress];
         }
 
         $idZone = Hook::exec('actionGetIDZoneByAddressID', ['id_address' => $idAddress]);
 
         if (is_numeric($idZone)) {
-            self::$_idZones[$idAddress] = (int) $idZone;
+            static::$_idZones[$idAddress] = (int) $idZone;
 
-            return self::$_idZones[$idAddress];
+            return static::$_idZones[$idAddress];
         }
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
@@ -318,9 +318,9 @@ class AddressCore extends ObjectModel
 			WHERE a.`id_address` = '.(int) $idAddress
         );
 
-        self::$_idZones[$idAddress] = (int) ((int) $result['id_zone_state'] ? $result['id_zone_state'] : $result['id_zone']);
+        static::$_idZones[$idAddress] = (int) ((int) $result['id_zone_state'] ? $result['id_zone_state'] : $result['id_zone']);
 
-        return self::$_idZones[$idAddress];
+        return static::$_idZones[$idAddress];
     }
 
     /**
@@ -387,8 +387,8 @@ class AddressCore extends ObjectModel
      */
     public static function getCountryAndState($idAddress)
     {
-        if (isset(self::$_idCountries[$idAddress])) {
-            return self::$_idCountries[$idAddress];
+        if (isset(static::$_idCountries[$idAddress])) {
+            return static::$_idCountries[$idAddress];
         }
         if ($idAddress) {
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
@@ -399,7 +399,7 @@ class AddressCore extends ObjectModel
         } else {
             $result = false;
         }
-        self::$_idCountries[$idAddress] = $result;
+        static::$_idCountries[$idAddress] = $result;
 
         return $result;
     }
@@ -572,8 +572,8 @@ class AddressCore extends ObjectModel
     public function getFieldsRequiredDB()
     {
         $this->cacheFieldsRequiredDatabase(false);
-        if (isset(self::$fieldsRequiredDatabase['Address'])) {
-            return self::$fieldsRequiredDatabase['Address'];
+        if (isset(static::$fieldsRequiredDatabase['Address'])) {
+            return static::$fieldsRequiredDatabase['Address'];
         }
 
         return [];

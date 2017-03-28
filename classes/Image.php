@@ -450,8 +450,8 @@ class ImageCore extends ObjectModel
 
         if (!file_exists(_PS_PROD_IMG_DIR_.$this->getImgFolder())) {
             // Apparently sometimes mkdir cannot set the rights, and sometimes chmod can't. Trying both.
-            $success = @mkdir(_PS_PROD_IMG_DIR_.$this->getImgFolder(), self::$access_rights, true);
-            $chmod = @chmod(_PS_PROD_IMG_DIR_.$this->getImgFolder(), self::$access_rights);
+            $success = @mkdir(_PS_PROD_IMG_DIR_.$this->getImgFolder(), static::$access_rights, true);
+            $chmod = @chmod(_PS_PROD_IMG_DIR_.$this->getImgFolder(), static::$access_rights);
 
             // Create an index.php file in the new folder
             if (($success || $chmod)
@@ -524,7 +524,7 @@ class ImageCore extends ObjectModel
      */
     public static function getWidth($params, &$smarty)
     {
-        $result = self::getSize($params['type']);
+        $result = static::getSize($params['type']);
 
         return $result['width'];
     }
@@ -539,8 +539,8 @@ class ImageCore extends ObjectModel
      */
     public static function getSize($type)
     {
-        if (!isset(self::$_cacheGetSize[$type]) || self::$_cacheGetSize[$type] === null) {
-            self::$_cacheGetSize[$type] = Db::getInstance()->getRow(
+        if (!isset(static::$_cacheGetSize[$type]) || static::$_cacheGetSize[$type] === null) {
+            static::$_cacheGetSize[$type] = Db::getInstance()->getRow(
                 '
 				SELECT `width`, `height`
 				FROM '._DB_PREFIX_.'image_type
@@ -549,7 +549,7 @@ class ImageCore extends ObjectModel
             );
         }
 
-        return self::$_cacheGetSize[$type];
+        return static::$_cacheGetSize[$type];
     }
 
     /**
@@ -563,7 +563,7 @@ class ImageCore extends ObjectModel
      */
     public static function getHeight($params, &$smarty)
     {
-        $result = self::getSize($params['type']);
+        $result = static::getSize($params['type']);
 
         return $result['height'];
     }
@@ -665,8 +665,8 @@ class ImageCore extends ObjectModel
                     $newPath = _PS_PROD_IMG_DIR_.$image->getImgPath().(isset($matches[3]) ? $matches[3] : '').'.jpg';
                     if (file_exists($newPath)) {
                         if (!file_exists(_PS_PROD_IMG_DIR_.$tmpFolder)) {
-                            @mkdir(_PS_PROD_IMG_DIR_.$tmpFolder, self::$access_rights);
-                            @chmod(_PS_PROD_IMG_DIR_.$tmpFolder, self::$access_rights);
+                            @mkdir(_PS_PROD_IMG_DIR_.$tmpFolder, static::$access_rights);
+                            @chmod(_PS_PROD_IMG_DIR_.$tmpFolder, static::$access_rights);
                         }
                         $tmp_path = _PS_PROD_IMG_DIR_.$tmpFolder.basename($file);
                         if (!@rename($newPath, $tmp_path) || !file_exists($tmp_path)) {
@@ -712,8 +712,8 @@ class ImageCore extends ObjectModel
             return false;
         }
 
-        @mkdir($test_folder, self::$access_rights, true);
-        @chmod($test_folder, self::$access_rights);
+        @mkdir($test_folder, static::$access_rights, true);
+        @chmod($test_folder, static::$access_rights);
         if (!is_writeable($test_folder)) {
             return false;
         }

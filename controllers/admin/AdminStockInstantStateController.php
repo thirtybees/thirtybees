@@ -215,7 +215,7 @@ class AdminStockInstantStateControllerCore extends AdminController
 
         if ($this->getCurrentCoverageWarehouse() != -1) {
             $this->_where .= ' AND a.id_warehouse = '.$this->getCurrentCoverageWarehouse();
-            self::$currentIndex .= '&id_warehouse='.(int) $this->getCurrentCoverageWarehouse();
+            static::$currentIndex .= '&id_warehouse='.(int) $this->getCurrentCoverageWarehouse();
         }
 
         // toolbar btn
@@ -420,7 +420,7 @@ class AdminStockInstantStateControllerCore extends AdminController
 
             $this->_group = 'GROUP BY a.price_te';
 
-            self::$currentIndex = self::$currentIndex.'&id_stock='.Tools::getValue('id_stock').'&detailsstock';
+            static::$currentIndex = static::$currentIndex.'&id_stock='.Tools::getValue('id_stock').'&detailsstock';
 
             return parent::renderList();
         }

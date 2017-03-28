@@ -482,7 +482,7 @@ class AdminShopControllerCore extends AdminController
         }
 
         $idShop = (int) Tools::getValue('id_shop');
-        self::$currentIndex = self::$currentIndex.'&id_shop_group='.(int) (Tools::getValue('id_shop_group') ?
+        static::$currentIndex = static::$currentIndex.'&id_shop_group='.(int) (Tools::getValue('id_shop_group') ?
                 Tools::getValue('id_shop_group') : (isset($obj->id_shop_group) ? $obj->id_shop_group : Shop::getContextShopGroupID()));
         $shop = new Shop($idShop);
         $selectedCat = Shop::getCategories($idShop);
@@ -675,15 +675,15 @@ class AdminShopControllerCore extends AdminController
                 $this->updateAssoShop($object->id);
                 // Save and stay on same form
                 if (Tools::isSubmit('submitAdd'.$this->table.'AndStay')) {
-                    $this->redirect_after = self::$currentIndex.'&shop_id='.(int) $object->id.'&conf=3&update'.$this->table.'&token='.$this->token;
+                    $this->redirect_after = static::$currentIndex.'&shop_id='.(int) $object->id.'&conf=3&update'.$this->table.'&token='.$this->token;
                 }
                 // Save and back to parent
                 if (Tools::isSubmit('submitAdd'.$this->table.'AndBackToParent')) {
-                    $this->redirect_after = self::$currentIndex.'&shop_id='.(int) $parentId.'&conf=3&token='.$this->token;
+                    $this->redirect_after = static::$currentIndex.'&shop_id='.(int) $parentId.'&conf=3&token='.$this->token;
                 }
                 // Default behavior (save and back)
                 if (empty($this->redirect_after)) {
-                    $this->redirect_after = self::$currentIndex.($parentId ? '&shop_id='.$object->id : '').'&conf=3&token='.$this->token;
+                    $this->redirect_after = static::$currentIndex.($parentId ? '&shop_id='.$object->id : '').'&conf=3&token='.$this->token;
                 }
             }
         }
@@ -751,14 +751,14 @@ class AdminShopControllerCore extends AdminController
     {
         if ($this->tabAccess['edit'] == 1) {
             $tpl = $this->createTemplate('helpers/list/list_action_edit.tpl');
-            if (!array_key_exists('Edit', self::$cache_lang)) {
-                self::$cache_lang['Edit'] = $this->l('Edit', 'Helper');
+            if (!array_key_exists('Edit', static::$cache_lang)) {
+                static::$cache_lang['Edit'] = $this->l('Edit', 'Helper');
             }
 
             $tpl->assign(
                 [
                     'href'   => $this->context->link->getAdminLink('AdminShop').'&shop_id='.(int) $id.'&update'.$this->table,
-                    'action' => self::$cache_lang['Edit'],
+                    'action' => static::$cache_lang['Edit'],
                     'id'     => $id,
                 ]
             );
@@ -954,7 +954,7 @@ class AdminShopControllerCore extends AdminController
         }
 
         if (Tools::isSubmit('submitAddshopAndStay') || Tools::isSubmit('submitAddshop')) {
-            $this->redirect_after = self::$currentIndex.'&shop_id='.(int) $newShop->id.'&conf=4&token='.$this->token;
+            $this->redirect_after = static::$currentIndex.'&shop_id='.(int) $newShop->id.'&conf=4&token='.$this->token;
         }
 
         return parent::afterUpdate($newShop);

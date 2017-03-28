@@ -247,7 +247,7 @@ class AdminReturnControllerCore extends AdminController
                         }
                         if ((int) ($orderReturn->countProduct()) > 1) {
                             if (OrderReturn::deleteOrderReturnDetail($idOrderReturn, $idOrderDetail, (int) (Tools::getValue('id_customization', 0)))) {
-                                Tools::redirectAdmin(self::$currentIndex.'&conf=4token='.$this->token);
+                                Tools::redirectAdmin(static::$currentIndex.'&conf=4token='.$this->token);
                             } else {
                                 $this->errors[] = Tools::displayError('An error occurred while deleting the details of your order return.');
                             }
@@ -295,9 +295,9 @@ class AdminReturnControllerCore extends AdminController
                         );
 
                         if (Tools::isSubmit('submitAddorder_returnAndStay')) {
-                            Tools::redirectAdmin(self::$currentIndex.'&conf=4&token='.$this->token.'&updateorder_return&id_order_return='.(int) $idOrderReturn);
+                            Tools::redirectAdmin(static::$currentIndex.'&conf=4&token='.$this->token.'&updateorder_return&id_order_return='.(int) $idOrderReturn);
                         } else {
-                            Tools::redirectAdmin(self::$currentIndex.'&conf=4&token='.$this->token);
+                            Tools::redirectAdmin(static::$currentIndex.'&conf=4&token='.$this->token);
                         }
                     }
                 } else {

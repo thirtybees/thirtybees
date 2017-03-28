@@ -122,7 +122,7 @@ class TagCore extends ObjectModel
                 if (!Validate::isGenericName($tag)) {
                     return false;
                 }
-                $tag = trim(Tools::substr($tag, 0, self::$definition['fields']['name']['size']));
+                $tag = trim(Tools::substr($tag, 0, static::$definition['fields']['name']['size']));
                 $tagObj = new Tag(null, $tag, (int) $idLang);
 
                 /* Tag does not exist in database */
@@ -149,7 +149,7 @@ class TagCore extends ObjectModel
         );
 
         if ($list != []) {
-            self::updateTagCount($list);
+            static::updateTagCount($list);
         }
 
         return $result;
@@ -201,7 +201,7 @@ class TagCore extends ObjectModel
                 }
             }
         }
-        self::updateTagCount([(int) $this->id]);
+        static::updateTagCount([(int) $this->id]);
 
         return $result;
     }
@@ -336,7 +336,7 @@ class TagCore extends ObjectModel
             $tagList[] = $tagRemoved['id_tag'];
         }
         if ($tagList != []) {
-            self::updateTagCount($tagList);
+            static::updateTagCount($tagList);
         }
 
         return $result;

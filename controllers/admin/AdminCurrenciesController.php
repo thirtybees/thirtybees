@@ -314,7 +314,7 @@ class AdminCurrenciesControllerCore extends AdminController
     public function processExchangeRates()
     {
         if (!$this->errors = Currency::refreshCurrencies()) {
-            Tools::redirectAdmin(self::$currentIndex.'&conf=6&token='.$this->token);
+            Tools::redirectAdmin(static::$currentIndex.'&conf=6&token='.$this->token);
         }
     }
 
@@ -348,7 +348,7 @@ class AdminCurrenciesControllerCore extends AdminController
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_currency'] = [
-                'href' => self::$currentIndex.'&addcurrency&token='.$this->token,
+                'href' => static::$currentIndex.'&addcurrency&token='.$this->token,
                 'desc' => $this->l('Add new currency', null, null, false),
                 'icon' => 'process-icon-new',
             ];

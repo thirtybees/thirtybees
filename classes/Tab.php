@@ -109,18 +109,18 @@ class TabCore extends ObjectModel
     public static function getIdFromClassName($className)
     {
         $className = strtolower($className);
-        if (self::$_getIdFromClassName === null) {
-            self::$_getIdFromClassName = [];
+        if (static::$_getIdFromClassName === null) {
+            static::$_getIdFromClassName = [];
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('SELECT id_tab, class_name FROM `'._DB_PREFIX_.'tab`', true, false);
 
             if (is_array($result)) {
                 foreach ($result as $row) {
-                    self::$_getIdFromClassName[strtolower($row['class_name'])] = $row['id_tab'];
+                    static::$_getIdFromClassName[strtolower($row['class_name'])] = $row['id_tab'];
                 }
             }
         }
 
-        return (isset(self::$_getIdFromClassName[$className]) ? (int) self::$_getIdFromClassName[$className] : false);
+        return (isset(static::$_getIdFromClassName[$className]) ? (int) static::$_getIdFromClassName[$className] : false);
     }
 
     /**
@@ -185,8 +185,8 @@ class TabCore extends ObjectModel
      */
     public static function getTabs($idLang, $idParent = null)
     {
-        if (!isset(self::$_cache_tabs[$idLang])) {
-            self::$_cache_tabs[$idLang] = [];
+        if (!isset(static::$_cache_tabs[$idLang])) {
+            static::$_cache_tabs[$idLang] = [];
             // Keep t.*, tl.name instead of only * because if translations are missing, the join on tab_lang will overwrite the id_tab in the results
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                 '
@@ -199,23 +199,23 @@ class TabCore extends ObjectModel
 
             if (is_array($result)) {
                 foreach ($result as $row) {
-                    if (!isset(self::$_cache_tabs[$idLang][$row['id_parent']])) {
-                        self::$_cache_tabs[$idLang][$row['id_parent']] = [];
+                    if (!isset(static::$_cache_tabs[$idLang][$row['id_parent']])) {
+                        static::$_cache_tabs[$idLang][$row['id_parent']] = [];
                     }
-                    self::$_cache_tabs[$idLang][$row['id_parent']][] = $row;
+                    static::$_cache_tabs[$idLang][$row['id_parent']][] = $row;
                 }
             }
         }
         if ($idParent === null) {
             $arrayAll = [];
-            foreach (self::$_cache_tabs[$idLang] as $arrayParent) {
+            foreach (static::$_cache_tabs[$idLang] as $arrayParent) {
                 $arrayAll = array_merge($arrayAll, $arrayParent);
             }
 
             return $arrayAll;
         }
 
-        return (isset(self::$_cache_tabs[$idLang][$idParent]) ? self::$_cache_tabs[$idLang][$idParent] : []);
+        return (isset(static::$_cache_tabs[$idLang][$idParent]) ? static::$_cache_tabs[$idLang][$idParent] : []);
     }
 
     /**
@@ -496,7 +496,7 @@ class TabCore extends ObjectModel
         if (isset($retro[$className])) {
             $this->id_parent = Tab::getIdFromClassName($retro[$className]);
         }
-        self::$_cache_tabs = [];
+        static::$_cache_tabs = [];
 
         // Set good position for new tab
         $this->position = Tab::getNewLastPosition($this->id_parent);
@@ -505,7 +505,7 @@ class TabCore extends ObjectModel
         // Add tab
         if (parent::add($autodate, $nullValues)) {
             //forces cache to be reloaded
-            self::$_getIdFromClassName = null;
+            static::$_getIdFromClassName = null;
 
             return Tab::initAccess($this->id);
         }
@@ -597,7 +597,7 @@ class TabCore extends ObjectModel
      */
     public function save($nullValues = false, $autodate = true)
     {
-        self::$_getIdFromClassName = null;
+        static::$_getIdFromClassName = null;
 
         return parent::save();
     }
@@ -611,8 +611,8 @@ class TabCore extends ObjectModel
     public function delete()
     {
         if (Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'access WHERE `id_tab` = '.(int) $this->id) && parent::delete()) {
-            if (is_array(self::$_getIdFromClassName) && isset(self::$_getIdFromClassName[strtolower($this->class_name)])) {
-                self::$_getIdFromClassName = null;
+            if (is_array(static::$_getIdFromClassName) && isset(static::$_getIdFromClassName[strtolower($this->class_name)])) {
+                static::$_getIdFromClassName = null;
             }
 
             return $this->cleanPositions($this->id_parent);
@@ -726,7 +726,7 @@ class TabCore extends ObjectModel
             $this->position = Tab::getNewLastPosition($this->id_parent);
         }
 
-        self::$_cache_tabs = [];
+        static::$_cache_tabs = [];
 
         return parent::update($nullValues);
     }

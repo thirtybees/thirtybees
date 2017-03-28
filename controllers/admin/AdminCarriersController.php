@@ -559,7 +559,7 @@ class AdminCarriersControllerCore extends AdminController
                                 $this->postImage($newCarrier->id);
                                 $this->changeZones($newCarrier->id);
                                 $newCarrier->setTaxRulesGroup((int) Tools::getValue('id_tax_rules_group'));
-                                Tools::redirectAdmin(self::$currentIndex.'&id_'.$this->table.'='.$currentCarrier->id.'&conf=4&token='.$this->token);
+                                Tools::redirectAdmin(static::$currentIndex.'&id_'.$this->table.'='.$currentCarrier->id.'&conf=4&token='.$this->token);
                             } else {
                                 $this->errors[] = Tools::displayError('An error occurred while updating an object.').' <b>'.$this->table.'</b>';
                             }
@@ -582,7 +582,7 @@ class AdminCarriersControllerCore extends AdminController
                                 $this->changeZones($carrier->id);
                                 $this->changeGroups($carrier->id);
                                 $this->updateAssoShop($carrier->id);
-                                Tools::redirectAdmin(self::$currentIndex.'&id_'.$this->table.'='.$carrier->id.'&conf=3&token='.$this->token);
+                                Tools::redirectAdmin(static::$currentIndex.'&id_'.$this->table.'='.$carrier->id.'&conf=3&token='.$this->token);
                             }
                         } else {
                             $this->errors[] = Tools::displayError('An error occurred while creating an object.').' <b>'.$this->table.'</b>';
@@ -676,7 +676,7 @@ class AdminCarriersControllerCore extends AdminController
         if (!$carrier->update()) {
             $this->errors[] = Tools::displayError('An error occurred while updating carrier information.');
         }
-        Tools::redirectAdmin(self::$currentIndex.'&token='.$this->token);
+        Tools::redirectAdmin(static::$currentIndex.'&token='.$this->token);
     }
 
     /**
@@ -745,14 +745,14 @@ class AdminCarriersControllerCore extends AdminController
     {
         if ($this->tabAccess['edit'] == 1) {
             $tpl = $this->createTemplate('helpers/list/list_action_edit.tpl');
-            if (!array_key_exists('Edit', self::$cache_lang)) {
-                self::$cache_lang['Edit'] = $this->l('Edit', 'Helper');
+            if (!array_key_exists('Edit', static::$cache_lang)) {
+                static::$cache_lang['Edit'] = $this->l('Edit', 'Helper');
             }
 
             $tpl->assign(
                 [
                     'href'   => $this->context->link->getAdminLink('AdminCarrierWizard').'&id_carrier='.(int) $id,
-                    'action' => self::$cache_lang['Edit'],
+                    'action' => static::$cache_lang['Edit'],
                     'id'     => $id,
                 ]
             );
@@ -777,30 +777,30 @@ class AdminCarriersControllerCore extends AdminController
         if ($this->tabAccess['delete'] == 1) {
             $tpl = $this->createTemplate('helpers/list/list_action_delete.tpl');
 
-            if (!array_key_exists('Delete', self::$cache_lang)) {
-                self::$cache_lang['Delete'] = $this->l('Delete', 'Helper');
+            if (!array_key_exists('Delete', static::$cache_lang)) {
+                static::$cache_lang['Delete'] = $this->l('Delete', 'Helper');
             }
 
-            if (!array_key_exists('DeleteItem', self::$cache_lang)) {
-                self::$cache_lang['DeleteItem'] = $this->l('Delete selected item?', 'Helper');
+            if (!array_key_exists('DeleteItem', static::$cache_lang)) {
+                static::$cache_lang['DeleteItem'] = $this->l('Delete selected item?', 'Helper');
             }
 
-            if (!array_key_exists('Name', self::$cache_lang)) {
-                self::$cache_lang['Name'] = $this->l('Name:', 'Helper');
+            if (!array_key_exists('Name', static::$cache_lang)) {
+                static::$cache_lang['Name'] = $this->l('Name:', 'Helper');
             }
 
             if (!is_null($name)) {
-                $name = '\n\n'.self::$cache_lang['Name'].' '.$name;
+                $name = '\n\n'.static::$cache_lang['Name'].' '.$name;
             }
 
             $data = [
                 $this->identifier => $id,
                 'href'            => $this->context->link->getAdminLink('AdminCarriers').'&id_carrier='.(int) $id.'&deletecarrier=1',
-                'action'          => self::$cache_lang['Delete'],
+                'action'          => static::$cache_lang['Delete'],
             ];
 
             if ($this->specificConfirmDelete !== false) {
-                $data['confirm'] = !is_null($this->specificConfirmDelete) ? '\r'.$this->specificConfirmDelete : addcslashes(Tools::htmlentitiesDecodeUTF8(self::$cache_lang['DeleteItem'].$name), '\'');
+                $data['confirm'] = !is_null($this->specificConfirmDelete) ? '\r'.$this->specificConfirmDelete : addcslashes(Tools::htmlentitiesDecodeUTF8(static::$cache_lang['DeleteItem'].$name), '\'');
             }
 
             $tpl->assign(array_merge($this->tpl_delete_link_vars, $data));

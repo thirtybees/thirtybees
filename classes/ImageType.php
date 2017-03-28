@@ -97,7 +97,7 @@ class ImageTypeCore extends ObjectModel
      */
     public static function getImagesTypes($type = null, $orderBySize = false)
     {
-        if (!isset(self::$images_types_cache[$type])) {
+        if (!isset(static::$images_types_cache[$type])) {
             $where = 'WHERE 1';
             if (!empty($type)) {
                 $where .= ' AND `'.bqSQL($type).'` = 1 ';
@@ -109,10 +109,10 @@ class ImageTypeCore extends ObjectModel
                 $query = 'SELECT * FROM `'._DB_PREFIX_.'image_type` '.$where.' ORDER BY `name` ASC';
             }
 
-            self::$images_types_cache[$type] = Db::getInstance()->executeS($query);
+            static::$images_types_cache[$type] = Db::getInstance()->executeS($query);
         }
 
-        return self::$images_types_cache[$type];
+        return static::$images_types_cache[$type];
     }
 
     /**
@@ -155,11 +155,11 @@ class ImageTypeCore extends ObjectModel
         $nameWithoutThemeName = str_replace(['_'.$themeName, $themeName.'_'], '', $name);
 
         //check if the theme name is already in $name if yes only return $name
-        if (strstr($name, $themeName) && self::getByNameNType($name)) {
+        if (strstr($name, $themeName) && static::getByNameNType($name)) {
             return $name;
-        } elseif (self::getByNameNType($nameWithoutThemeName.'_'.$themeName)) {
+        } elseif (static::getByNameNType($nameWithoutThemeName.'_'.$themeName)) {
             return $nameWithoutThemeName.'_'.$themeName;
-        } elseif (self::getByNameNType($themeName.'_'.$nameWithoutThemeName)) {
+        } elseif (static::getByNameNType($themeName.'_'.$nameWithoutThemeName)) {
             return $themeName.'_'.$nameWithoutThemeName;
         } else {
             return $nameWithoutThemeName.'_default';
@@ -179,7 +179,7 @@ class ImageTypeCore extends ObjectModel
     {
         static $isPassed = false;
 
-        if (!isset(self::$images_types_name_cache[$name.'_'.$type.'_'.$order]) && !$isPassed) {
+        if (!isset(static::$images_types_name_cache[$name.'_'.$type.'_'.$order]) && !$isPassed) {
             $results = Db::getInstance()->ExecuteS('SELECT * FROM `'._DB_PREFIX_.'image_type`');
 
             $types = ['products', 'categories', 'manufacturers', 'suppliers', 'scenes', 'stores'];
@@ -188,7 +188,7 @@ class ImageTypeCore extends ObjectModel
             foreach ($results as $result) {
                 foreach ($result as $value) {
                     for ($i = 0; $i < $total; ++$i) {
-                        self::$images_types_name_cache[$result['name'].'_'.$types[$i].'_'.$value] = $result;
+                        static::$images_types_name_cache[$result['name'].'_'.$types[$i].'_'.$value] = $result;
                     }
                 }
             }
@@ -197,8 +197,8 @@ class ImageTypeCore extends ObjectModel
         }
 
         $return = false;
-        if (isset(self::$images_types_name_cache[$name.'_'.$type.'_'.$order])) {
-            $return = self::$images_types_name_cache[$name.'_'.$type.'_'.$order];
+        if (isset(static::$images_types_name_cache[$name.'_'.$type.'_'.$order])) {
+            $return = static::$images_types_name_cache[$name.'_'.$type.'_'.$order];
         }
 
         return $return;

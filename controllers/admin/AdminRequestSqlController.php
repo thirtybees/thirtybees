@@ -74,7 +74,7 @@ class AdminRequestSqlControllerCore extends AdminController
                         'cast'       => 'intval',
                         'type'       => 'select',
                         'identifier' => 'value',
-                        'list'       => self::$encoding_file,
+                        'list'       => static::$encoding_file,
                         'visibility' => Shop::CONTEXT_ALL,
                     ],
                 ],
@@ -300,7 +300,7 @@ class AdminRequestSqlControllerCore extends AdminController
 
         $tpl->assign(
             [
-                'href'   => self::$currentIndex.'&token='.$this->token.'&'.$this->identifier.'='.$id.'&export'.$this->table.'=1',
+                'href'   => static::$currentIndex.'&token='.$this->token.'&'.$this->identifier.'='.$id.'&export'.$this->table.'=1',
                 'action' => $this->l('Export'),
             ]
         );
@@ -359,7 +359,7 @@ class AdminRequestSqlControllerCore extends AdminController
         $this->context->smarty->assign(
             [
                 'content'                   => $this->content,
-                'url_post'                  => self::$currentIndex.'&token='.$this->token,
+                'url_post'                  => static::$currentIndex.'&token='.$this->token,
                 'show_page_header_toolbar'  => $this->show_page_header_toolbar,
                 'page_header_toolbar_title' => $this->page_header_toolbar_title,
                 'page_header_toolbar_btn'   => $this->page_header_toolbar_btn,
@@ -378,7 +378,7 @@ class AdminRequestSqlControllerCore extends AdminController
     {
         if ($this->display == 'view' && $idRequest = Tools::getValue('id_request_sql')) {
             $this->toolbar_btn['edit'] = [
-                'href' => self::$currentIndex.'&amp;updaterequest_sql&amp;token='.$this->token.'&amp;id_request_sql='.(int) $idRequest,
+                'href' => static::$currentIndex.'&amp;updaterequest_sql&amp;token='.$this->token.'&amp;id_request_sql='.(int) $idRequest,
                 'desc' => $this->l('Edit this SQL query'),
             ];
         }
@@ -401,7 +401,7 @@ class AdminRequestSqlControllerCore extends AdminController
     {
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_request'] = [
-                'href' => self::$currentIndex.'&addrequest_sql&token='.$this->token,
+                'href' => static::$currentIndex.'&addrequest_sql&token='.$this->token,
                 'desc' => $this->l('Add new SQL query', null, null, false),
                 'icon' => 'process-icon-new',
             ];
@@ -528,7 +528,7 @@ class AdminRequestSqlControllerCore extends AdminController
                         if (Configuration::get('PS_ENCODING_FILE_MANAGER_SQL')) {
                             $charset = Configuration::get('PS_ENCODING_FILE_MANAGER_SQL');
                         } else {
-                            $charset = self::$encoding_file[0]['name'];
+                            $charset = static::$encoding_file[0]['name'];
                         }
 
                         header('Content-Type: text/csv; charset='.$charset);

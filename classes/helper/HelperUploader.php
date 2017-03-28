@@ -292,7 +292,7 @@ class HelperUploaderCore extends Uploader
     public function getTemplate()
     {
         if (!isset($this->_template)) {
-            $this->setTemplate(self::DEFAULT_TEMPLATE);
+            $this->setTemplate(static::DEFAULT_TEMPLATE);
         }
 
         return $this->_template;
@@ -322,7 +322,7 @@ class HelperUploaderCore extends Uploader
     public function getTemplateDirectory()
     {
         if (!isset($this->_template_directory)) {
-            $this->_template_directory = self::DEFAULT_TEMPLATE_DIRECTORY;
+            $this->_template_directory = static::DEFAULT_TEMPLATE_DIRECTORY;
         }
 
         return $this->_normalizeDirectory($this->_template_directory);
@@ -472,7 +472,7 @@ class HelperUploaderCore extends Uploader
         $this->getContext()->controller->addJs(__PS_BASE_URI__.'js/vendor/ladda.js');
 
         if ($this->useAjax() && !isset($this->_template)) {
-            $this->setTemplate(self::DEFAULT_AJAX_TEMPLATE);
+            $this->setTemplate(static::DEFAULT_AJAX_TEMPLATE);
         }
 
         $template = $this->getContext()->smarty->createTemplate(

@@ -238,7 +238,7 @@ class AdminOrdersControllerCore extends AdminController
 
         if (empty($this->display)) {
             $this->page_header_toolbar_btn['new_order'] = [
-                'href' => self::$currentIndex.'&addorder&token='.$this->token,
+                'href' => static::$currentIndex.'&addorder&token='.$this->token,
                 'desc' => $this->l('Add new order', null, null, false),
                 'icon' => 'process-icon-new',
             ];
@@ -513,7 +513,7 @@ class AdminOrdersControllerCore extends AdminController
                 }
             }
             if (!count($this->errors)) {
-                Tools::redirectAdmin(self::$currentIndex.'&conf=4&token='.$this->token);
+                Tools::redirectAdmin(static::$currentIndex.'&conf=4&token='.$this->token);
             }
         }
     }
@@ -529,7 +529,7 @@ class AdminOrdersControllerCore extends AdminController
     {
         if (Tools::isSubmit('submitBulkupdateOrderStatus'.$this->table)) {
             if (Tools::getIsset('cancel')) {
-                Tools::redirectAdmin(self::$currentIndex.'&token='.$this->token);
+                Tools::redirectAdmin(static::$currentIndex.'&token='.$this->token);
             }
 
             $this->tpl_list_vars['updateOrderStatus_mode'] = true;
@@ -609,7 +609,7 @@ class AdminOrdersControllerCore extends AdminController
                             (int) $order->id_shop
                         )) {
                             Hook::exec('actionAdminOrdersTrackingNumberUpdate', ['order' => $order, 'customer' => $customer, 'carrier' => $carrier], null, false, true, false, $order->id_shop);
-                            Tools::redirectAdmin(self::$currentIndex.'&id_order='.$order->id.'&vieworder&conf=4&token='.$this->token);
+                            Tools::redirectAdmin(static::$currentIndex.'&id_order='.$order->id.'&vieworder&conf=4&token='.$this->token);
                         } else {
                             $this->errors[] = Tools::displayError('An error occurred while sending an email to the customer.');
                         }
@@ -658,7 +658,7 @@ class AdminOrdersControllerCore extends AdminController
                                 }
                             }
 
-                            Tools::redirectAdmin(self::$currentIndex.'&id_order='.(int) $order->id.'&vieworder&token='.$this->token);
+                            Tools::redirectAdmin(static::$currentIndex.'&id_order='.(int) $order->id.'&vieworder&token='.$this->token);
                         }
                         $this->errors[] = Tools::displayError('An error occurred while changing order status, or we were unable to send an email to the customer.');
                     } else {
@@ -726,7 +726,7 @@ class AdminOrdersControllerCore extends AdminController
                         if (!$customerMessage->add()) {
                             $this->errors[] = Tools::displayError('An error occurred while saving the message.');
                         } elseif ($customerMessage->private) {
-                            Tools::redirectAdmin(self::$currentIndex.'&id_order='.(int) $order->id.'&vieworder&conf=11&token='.$this->token);
+                            Tools::redirectAdmin(static::$currentIndex.'&id_order='.(int) $order->id.'&vieworder&conf=11&token='.$this->token);
                         } else {
                             $message = $customerMessage->message;
                             if (Configuration::get('PS_MAIL_TYPE', null, null, $order->id_shop) != Mail::TYPE_TEXT) {
@@ -755,7 +755,7 @@ class AdminOrdersControllerCore extends AdminController
                                 true,
                                 (int) $order->id_shop
                             )) {
-                                Tools::redirectAdmin(self::$currentIndex.'&id_order='.$order->id.'&vieworder&conf=11'.'&token='.$this->token);
+                                Tools::redirectAdmin(static::$currentIndex.'&id_order='.$order->id.'&vieworder&conf=11'.'&token='.$this->token);
                             }
                         }
                         $this->errors[] = Tools::displayError('An error occurred while sending an email to the customer.');
@@ -956,7 +956,7 @@ class AdminOrdersControllerCore extends AdminController
 
                     // Redirect if no errors
                     if (!count($this->errors)) {
-                        Tools::redirectAdmin(self::$currentIndex.'&id_order='.$order->id.'&vieworder&conf=30&token='.$this->token);
+                        Tools::redirectAdmin(static::$currentIndex.'&id_order='.$order->id.'&vieworder&conf=30&token='.$this->token);
                     }
                 } else {
                     $this->errors[] = Tools::displayError('The partial refund data is incorrect.');
@@ -1217,7 +1217,7 @@ class AdminOrdersControllerCore extends AdminController
 
                     // Redirect if no errors
                     if (!count($this->errors)) {
-                        Tools::redirectAdmin(self::$currentIndex.'&id_order='.$order->id.'&vieworder&conf=31&token='.$this->token);
+                        Tools::redirectAdmin(static::$currentIndex.'&id_order='.$order->id.'&vieworder&conf=31&token='.$this->token);
                     }
                 }
             } else {
@@ -1254,7 +1254,7 @@ class AdminOrdersControllerCore extends AdminController
                     if (!$order->addOrderPayment($amount, Tools::getValue('payment_method'), Tools::getValue('payment_transaction_id'), $currency, Tools::getValue('payment_date'), $orderInvoice)) {
                         $this->errors[] = Tools::displayError('An error occurred during payment.');
                     } else {
-                        Tools::redirectAdmin(self::$currentIndex.'&id_order='.$order->id.'&vieworder&conf=4&token='.$this->token);
+                        Tools::redirectAdmin(static::$currentIndex.'&id_order='.$order->id.'&vieworder&conf=4&token='.$this->token);
                     }
                 }
             } else {
@@ -1267,7 +1267,7 @@ class AdminOrdersControllerCore extends AdminController
                 if ($this->tabAccess['edit'] === '1') {
                     $orderInvoice->note = $note;
                     if ($orderInvoice->save()) {
-                        Tools::redirectAdmin(self::$currentIndex.'&id_order='.$orderInvoice->id_order.'&vieworder&conf=4&token='.$this->token);
+                        Tools::redirectAdmin(static::$currentIndex.'&id_order='.$orderInvoice->id_order.'&vieworder&conf=4&token='.$this->token);
                     } else {
                         $this->errors[] = Tools::displayError('The invoice note was not saved.');
                     }
@@ -1314,7 +1314,7 @@ class AdminOrdersControllerCore extends AdminController
                         $cart->secure_key
                     );
                     if ($paymentModule->currentOrder) {
-                        Tools::redirectAdmin(self::$currentIndex.'&id_order='.$paymentModule->currentOrder.'&vieworder'.'&token='.$this->token);
+                        Tools::redirectAdmin(static::$currentIndex.'&id_order='.$paymentModule->currentOrder.'&vieworder'.'&token='.$this->token);
                     }
                 }
             } else {
@@ -1331,7 +1331,7 @@ class AdminOrdersControllerCore extends AdminController
                         $order->id_address_invoice = $address->id;
                     }
                     $order->update();
-                    Tools::redirectAdmin(self::$currentIndex.'&id_order='.$order->id.'&vieworder&conf=4&token='.$this->token);
+                    Tools::redirectAdmin(static::$currentIndex.'&id_order='.$order->id.'&vieworder&conf=4&token='.$this->token);
                 } else {
                     $this->errors[] = Tools::displayError('This address can\'t be loaded');
                 }
@@ -1441,7 +1441,7 @@ class AdminOrdersControllerCore extends AdminController
                 $this->errors[] = Tools::displayError('This order already has an invoice.');
             } else {
                 $order->setInvoice(true);
-                Tools::redirectAdmin(self::$currentIndex.'&id_order='.$order->id.'&vieworder&conf=4&token='.$this->token);
+                Tools::redirectAdmin(static::$currentIndex.'&id_order='.$order->id.'&vieworder&conf=4&token='.$this->token);
             }
         } elseif (Tools::isSubmit('submitDeleteVoucher') && isset($order)) {
             if ($this->tabAccess['edit'] === '1') {
@@ -1476,7 +1476,7 @@ class AdminOrdersControllerCore extends AdminController
                     // Delete Order Cart Rule and update Order
                     $orderCartRule->delete();
                     $order->update();
-                    Tools::redirectAdmin(self::$currentIndex.'&id_order='.$order->id.'&vieworder&conf=4&token='.$this->token);
+                    Tools::redirectAdmin(static::$currentIndex.'&id_order='.$order->id.'&vieworder&conf=4&token='.$this->token);
                 } else {
                     $this->errors[] = Tools::displayError('You cannot edit this cart rule.');
                 }
@@ -1643,7 +1643,7 @@ class AdminOrdersControllerCore extends AdminController
                     }
 
                     if ($res) {
-                        Tools::redirectAdmin(self::$currentIndex.'&id_order='.$order->id.'&vieworder&conf=4&token='.$this->token);
+                        Tools::redirectAdmin(static::$currentIndex.'&id_order='.$order->id.'&vieworder&conf=4&token='.$this->token);
                     } else {
                         $this->errors[] = Tools::displayError('An error occurred during the OrderCartRule creation');
                     }
@@ -1667,7 +1667,7 @@ class AdminOrdersControllerCore extends AdminController
                     }
 
                     if ($history->sendEmail($order, $templateVars)) {
-                        Tools::redirectAdmin(self::$currentIndex.'&id_order='.$order->id.'&vieworder&conf=10&token='.$this->token);
+                        Tools::redirectAdmin(static::$currentIndex.'&id_order='.$order->id.'&vieworder&conf=10&token='.$this->token);
                     } else {
                         $this->errors[] = Tools::displayError('An error occurred while sending the e-mail to the customer.');
                     }
@@ -1924,7 +1924,7 @@ class AdminOrdersControllerCore extends AdminController
             'currencies'                   => Currency::getCurrenciesByIdShop($order->id_shop),
             'previousOrder'                => $order->getPreviousOrderId(),
             'nextOrder'                    => $order->getNextOrderId(),
-            'current_index'                => self::$currentIndex,
+            'current_index'                => static::$currentIndex,
             'carrierModuleCall'            => $carrierModuleCall,
             'iso_code_lang'                => $this->context->language->iso_code,
             'id_lang'                      => $this->context->language->id,
@@ -2421,7 +2421,7 @@ class AdminOrdersControllerCore extends AdminController
                 'invoices_collection' => $invoiceCollection,
                 'current_id_lang'     => Context::getContext()->language->id,
                 'link'                => Context::getContext()->link,
-                'current_index'       => self::$currentIndex,
+                'current_index'       => static::$currentIndex,
                 'display_warehouse'   => (int) Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT'),
             ]
         );
@@ -2716,7 +2716,7 @@ class AdminOrdersControllerCore extends AdminController
                 'invoices_collection' => $invoiceCollection,
                 'current_id_lang'     => Context::getContext()->language->id,
                 'link'                => Context::getContext()->link,
-                'current_index'       => self::$currentIndex,
+                'current_index'       => static::$currentIndex,
                 'display_warehouse'   => (int) Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT'),
             ]
         );
@@ -2825,7 +2825,7 @@ class AdminOrdersControllerCore extends AdminController
             'invoices_collection' => $invoiceCollection,
             'current_id_lang'     => Context::getContext()->language->id,
             'link'                => Context::getContext()->link,
-            'current_index'       => self::$currentIndex,
+            'current_index'       => static::$currentIndex,
         ]);
 
         $this->sendChangedNotification($order);

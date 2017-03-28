@@ -155,7 +155,7 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
      */
     public function getFilename()
     {
-        return self::l('SupplyOrderForm').sprintf('_%s', $this->supply_order->reference).'.pdf';
+        return static::l('SupplyOrderForm').sprintf('_%s', $this->supply_order->reference).'.pdf';
     }
 
     /**
