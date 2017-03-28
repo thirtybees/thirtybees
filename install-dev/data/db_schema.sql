@@ -2596,24 +2596,6 @@ CREATE TABLE IF NOT EXISTS `PREFIX_shop` (
   DEFAULT CHARSET = utf8mb4
   DEFAULT COLLATE utf8mb4_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `PREFIX_shop_url` (
-  `id_shop_url`  INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_shop`      INT(11) UNSIGNED NOT NULL,
-  `domain`       VARCHAR(150)     NOT NULL,
-  `domain_ssl`   VARCHAR(150)     NOT NULL,
-  `physical_uri` VARCHAR(64)      NOT NULL,
-  `virtual_uri`  VARCHAR(64)      NOT NULL,
-  `main`         TINYINT(1)       NOT NULL,
-  `active`       TINYINT(1)       NOT NULL,
-  PRIMARY KEY (`id_shop_url`),
-  KEY `id_shop` (`id_shop`, `main`),
-  UNIQUE KEY `full_shop_url` (`domain`, `physical_uri`, `virtual_uri`),
-  UNIQUE KEY `full_shop_url_ssl` (`domain_ssl`, `physical_uri`, `virtual_uri`)
-)
-  ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  DEFAULT COLLATE utf8mb4_unicode_ci;
-
 CREATE TABLE IF NOT EXISTS `PREFIX_theme` (
   `id_theme`             INT(11)          NOT NULL AUTO_INCREMENT,
   `name`                 VARCHAR(64)      NOT NULL,
