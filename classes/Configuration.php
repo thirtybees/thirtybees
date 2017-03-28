@@ -261,7 +261,7 @@ class ConfigurationCore extends ObjectModel
     const ROUTE_CMS_RULE = 'PS_ROUTE_cms_rule';
     const ROUTE_CMS_CATEGORY_RULE = 'PS_ROUTE_cms_category_rule';
     const DISABLE_OVERRIDES = 'PS_DISABLE_OVERRIDES';
-    const PS_DISABLE_NON_NATIVE_MODULE = 'PS_DISABLE_NON_NATIVE_MODULE';
+    const DISABLE_NON_NATIVE_MODULE = 'PS_DISABLE_NON_NATIVE_MODULE';
     // @codingStandardsIgnoreStart
     /**
      * @see ObjectModel::$definition
