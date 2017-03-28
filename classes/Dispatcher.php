@@ -186,7 +186,7 @@ class DispatcherCore
     /**
      * @var string Front controller to use
      */
-    protected $front_controller = static::FC_FRONT;
+    protected $front_controller = self::FC_FRONT;
     // @codingStandardsIgnoreEnd
 
     /**

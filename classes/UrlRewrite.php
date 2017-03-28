@@ -89,13 +89,13 @@ class UrlRewriteCore extends Objectmodel
         $idLang = null,
         $idShop = null,
         array $entities = [
-            static::ENTITY_PRODUCT,
-            static::ENTITY_CATEGORY,
-            static::ENTITY_SUPPLIER,
-            static::ENTITY_MANUFACTURER,
-            static::ENTITY_CMS,
-            static::ENTITY_CMS_CATEGORY,
-            static::ENTITY_PAGE,
+            self::ENTITY_PRODUCT,
+            self::ENTITY_CATEGORY,
+            self::ENTITY_SUPPLIER,
+            self::ENTITY_MANUFACTURER,
+            self::ENTITY_CMS,
+            self::ENTITY_CMS_CATEGORY,
+            self::ENTITY_PAGE,
         ]
     ) {
         if ($idShop) {
