@@ -749,7 +749,7 @@ class CarrierCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function getCarriers($idLang, $active = false, $delete = false, $idZone = false, $idsGroup = null, $modules_filters = static::PS_CARRIERS_ONLY)
+    public static function getCarriers($idLang, $active = false, $delete = false, $idZone = false, $idsGroup = null, $modules_filters = self::PS_CARRIERS_ONLY)
     {
         // Filter by groups and no groups => return empty array
         if ($idsGroup && (!is_array($idsGroup) || !count($idsGroup))) {
