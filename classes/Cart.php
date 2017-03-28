@@ -592,7 +592,7 @@ class CartCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function getTotalCart($idCart, $useTaxDisplay = false, $type = static::BOTH)
+    public static function getTotalCart($idCart, $useTaxDisplay = false, $type = self::BOTH)
     {
         $cart = new Cart($idCart);
         if (!Validate::isLoadedObject($cart)) {
@@ -626,7 +626,7 @@ class CartCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function getOrderTotal($withTaxes = true, $type = static::BOTH, $products = null, $idCarrier = null, $useCache = true)
+    public function getOrderTotal($withTaxes = true, $type = self::BOTH, $products = null, $idCarrier = null, $useCache = true)
     {
         // Dependencies
         $addressFactory = Adapter_ServiceLocator::get('Adapter_AddressFactory');
