@@ -123,7 +123,14 @@ class AdminShopUrlControllerCore extends AdminController
      */
     public function renderList()
     {
-        $this->addRowActionSkipList('delete', [1]);
+        $mainUrls = [];
+        foreach (ShopUrl::get() as $key => $url) {
+            if ($url['main']) {
+                $mainUrls[] = $key;
+            }
+        }
+
+        $this->addRowActionSkipList('delete', $mainUrls);
 
         $this->addRowAction('edit');
         $this->addRowAction('delete');
