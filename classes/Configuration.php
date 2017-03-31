@@ -386,6 +386,22 @@ class ConfigurationCore extends ObjectModel
             $idLang = 0;
         }
 
+        // Backwards compatibility for deprecated keys.
+        $domain = false;
+        if ($key === 'PS_SHOP_DOMAIN') {
+            $domain = ShopUrl::getDefaultUrl()->domain;
+        }
+        if ($key === 'PS_SHOP_DOMAIN_SSL') {
+            $domain = ShopUrl::getDefaultUrl()->domain_ssl;
+        }
+        if ($domain === '*automatic*') {
+            $domain = $_SERVER['HTTP_HOST'];
+        }
+        if ($domain) {
+            return $domain;
+        }
+        // End deprecated keys.
+
         if ($idShop && Configuration::hasKey($key, $idLang, null, $idShop)) {
             return static::$_cache[static::$definition['table']][$idLang]['shop'][$idShop][$key];
         } elseif ($idShopGroup && Configuration::hasKey($key, $idLang, $idShopGroup)) {
@@ -413,6 +429,12 @@ class ConfigurationCore extends ObjectModel
         $db = Db::getInstance();
         $rows = (array) $db->executeS($sql);
         foreach ($rows as $row) {
+            // Ignore deprecated keys.
+            if ($row['name'] === 'PS_SHOP_DOMAIN' ||
+                $row['name'] === 'PS_SHOP_DOMAIN_SSL') {
+                continue;
+            }
+
             $lang = ($row['id_lang']) ? $row['id_lang'] : 0;
             static::$types[$row['name']] = ($lang) ? 'lang' : 'normal';
             if (!isset(static::$_cache[static::$definition['table']][$lang])) {
@@ -458,6 +480,12 @@ class ConfigurationCore extends ObjectModel
     {
         if (!is_int($key) && !is_string($key)) {
             return false;
+        }
+
+        // Deprecated keys provided for backwards compatibility.
+        if ($key === 'PS_SHOP_DOMAIN' ||
+            $key === 'PS_SHOP_DOMAIN_SSL') {
+            return true;
         }
 
         $idLang = (int) $idLang;
@@ -599,6 +627,21 @@ class ConfigurationCore extends ObjectModel
         if (!Validate::isConfigName($key)) {
             die(sprintf(Tools::displayError('[%s] is not a valid configuration key'), Tools::htmlentitiesUTF8($key)));
         }
+
+        // Backwards compatibility for deprecated keys.
+        if ($key === 'PS_SHOP_DOMAIN') {
+            $url = ShopUrl::getDefaultUrl();
+            $url->domain = $values;
+            $url->update();
+            return;
+        }
+        if ($key === 'PS_SHOP_DOMAIN_SSL') {
+            $url = ShopUrl::getDefaultUrl();
+            $url->domain_ssl = $values;
+            $url->update();
+            return;
+        }
+        // End deprecated keys.
 
         if ($idShop === null || !Shop::isFeatureActive()) {
             $idShop = Shop::getContextShopID(true);
