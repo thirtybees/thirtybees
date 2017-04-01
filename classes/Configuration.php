@@ -210,8 +210,6 @@ class ConfigurationCore extends ObjectModel
     const STATS_OLD_CONNECT_AUTO_CLEAN = 'PS_STATS_OLD_CONNECT_AUTO_CLEAN';
     const STATS_GRID_RENDER = 'PS_STATS_GRID_RENDER';
     const BASE_DISTANCE_UNIT = 'PS_BASE_DISTANCE_UNIT';
-    const SHOP_DOMAIN = 'PS_SHOP_DOMAIN';
-    const SHOP_DOMAIN_SSL = 'PS_SHOP_DOMAIN_SSL';
     const SHOP_NAME = 'PS_SHOP_NAME';
     const SHOP_EMAIL = 'PS_SHOP_EMAIL';
     const MAIL_METHOD = 'PS_MAIL_METHOD';
@@ -389,9 +387,11 @@ class ConfigurationCore extends ObjectModel
         // Backwards compatibility for deprecated keys.
         $domain = false;
         if ($key === 'PS_SHOP_DOMAIN') {
+            Tools::displayParameterAsDeprecated('PS_SHOP_DOMAIN');
             $domain = ShopUrl::getDefaultUrl()->domain;
         }
         if ($key === 'PS_SHOP_DOMAIN_SSL') {
+            Tools::displayParameterAsDeprecated('PS_SHOP_DOMAIN_SSL');
             $domain = ShopUrl::getDefaultUrl()->domain_ssl;
         }
         if ($domain === '*automatic*') {
