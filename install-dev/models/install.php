@@ -591,8 +591,6 @@ class InstallModelInstall extends InstallAbstractModel
         $idCountry = (int) Country::getByIso($data['shopCountry']);
 
         // Set default configuration
-        Configuration::updateGlobalValue('PS_SHOP_DOMAIN', Tools::getHttpHost());
-        Configuration::updateGlobalValue('PS_SHOP_DOMAIN_SSL', Tools::getHttpHost());
         Configuration::updateGlobalValue('PS_INSTALL_VERSION', _TB_INSTALL_VERSION_);
         Configuration::updateGlobalValue('PS_LOCALE_LANGUAGE', $this->language->getLanguageIso());
         Configuration::updateGlobalValue('PS_SHOP_NAME', $data['shopName']);
