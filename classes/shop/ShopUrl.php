@@ -189,6 +189,34 @@ class ShopUrlCore extends ObjectFileModel
     }
 
     /**
+     * Get the default shop URL, which is the first defined main URL.
+     *
+     * @return bool|ShopUrl ShopUrl object or false on failure to find one.
+     *
+     * @since   1.1.0
+     * @version 1.1.0 Initial version
+     */
+    public static function getDefaultUrl()
+    {
+        global $shopUrlConfig;
+
+        $result = false;
+        if (is_array($shopUrlConfig)) {
+            foreach ($shopUrlConfig as $id => $url) {
+                // We could also check $url['active'] here, but the GUI
+                // (AdminShopUrlController) disallows to disable the main URL,
+                // so the main URL is always active, unless tweaked manually.
+                if ($url['main']) {
+                    $result = new ShopUrl($id);
+                }
+                break;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
      * @return bool
      *
      * @since   1.0.0
