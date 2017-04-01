@@ -468,8 +468,9 @@ class AdminMetaControllerCore extends AdminController
     public function postProcess()
     {
         /* PrestaShop demo mode */
-        if (_PS_MODE_DEMO_ && Tools::isSubmit('submitOptionsmeta')
-            && (Tools::getValue('domain') != Configuration::get('PS_SHOP_DOMAIN') || Tools::getValue('domain_ssl') != Configuration::get('PS_SHOP_DOMAIN_SSL'))) {
+        if (_PS_MODE_DEMO_ && Tools::isSubmit('submitOptionsmeta') &&
+            (Tools::getValue('domain') != ShopUrl::getDefaultUrl()->domain ||
+             Tools::getValue('domain_ssl') != ShopUrl::getDefaultUrl()->domain_ssl)) {
             $this->errors[] = Tools::displayError('This functionality has been disabled.');
 
             return null;
@@ -823,7 +824,6 @@ class AdminMetaControllerCore extends AdminController
             if (Validate::isCleanHtml($value)) {
                 $this->url->domain = $value;
                 $this->url->update();
-                Configuration::updateGlobalValue('PS_SHOP_DOMAIN', $value);
             } else {
                 $this->errors[] = Tools::displayError('This domain is not valid.');
             }
@@ -845,7 +845,6 @@ class AdminMetaControllerCore extends AdminController
             if (Validate::isCleanHtml($value)) {
                 $this->url->domain_ssl = $value;
                 $this->url->update();
-                Configuration::updateGlobalValue('PS_SHOP_DOMAIN_SSL', $value);
             } else {
                 $this->errors[] = Tools::displayError('The SSL domain is not valid.');
             }
