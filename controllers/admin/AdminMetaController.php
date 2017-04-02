@@ -96,18 +96,21 @@ class AdminMetaControllerCore extends AdminController
         $generalFields = [
             'PS_REWRITING_SETTINGS'       => [
                 'title'      => $this->l('Friendly URL'),
-                'hint'       => ($modRewrite ? $this->l('Enable this option only if your server allows URL rewriting (recommended).') : ''),
+                'hint'       => ($this->l('This option gives your shop SEO friendly, human readable URLs, e.g. http://example.com/blouse instead of http://example.com/index.php?id_product=1&controller=product (recommended).')),
                 'validation' => 'isBool',
                 'cast'       => 'intval',
                 'type'       => 'bool',
                 'desc'       => (!$modRewrite ? $this->l('URL rewriting (mod_rewrite) is not active on your server, or it is not possible to check your server configuration. If you want to use Friendly URLs, you must activate this mod.') : ''),
+                'disabled'   => !$modRewrite,
             ],
             'PS_ALLOW_ACCENTED_CHARS_URL' => [
                 'title'      => $this->l('Accented URL'),
-                'hint'       => $this->l('Enable this option if you want to allow accented characters in your friendly URLs.').' '.$this->l('You should only activate this option if you are using non-latin characters ; for all the latin charsets, your SEO will be better without this option.'),
+                'hint'       => $this->l('Enable this option if you want to allow accented characters in your friendly URLs.').' '.$this->l('You should only activate this option if you are using non-latin characters. For all the latin charsets, your SEO will be better without this option.'),
                 'validation' => 'isBool',
                 'cast'       => 'intval',
                 'type'       => 'bool',
+                'desc'       => (!$modRewrite ? $this->l('Not available because URL rewriting (mod_rewrite) isn\'t available.') : ''),
+                'disabled'   => !$modRewrite,
             ],
             'PS_CANONICAL_REDIRECT'       => [
                 'title'      => $this->l('Redirect to the canonical URL'),
