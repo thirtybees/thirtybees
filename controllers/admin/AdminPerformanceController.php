@@ -273,7 +273,7 @@ class AdminPerformanceControllerCore extends AdminController
                             'label' => $this->l('Disabled'),
                         ],
                     ],
-                    'hint'    => $this->l('Enable or disable non PrestaShop Modules.'),
+                    'hint'    => $this->l('Enable or disable non thirty bees modules.'),
                 ],
                 [
                     'type'    => 'switch',
