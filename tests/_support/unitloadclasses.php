@@ -10,8 +10,6 @@ $kernel->loadFile(__DIR__.'/override/classes/Validate.php');
 $kernel->loadFile(__DIR__.'/../../Core/Foundation/Database/Core_Foundation_Database_EntityInterface.php');
 $kernel->loadFile(__DIR__.'/../../classes/ObjectModel.php');
 $kernel->loadFile(__DIR__.'/override/classes/ObjectModel.php');
-$kernel->loadFile(__DIR__.'/../../classes/ObjectFileModel.php');
-$kernel->loadFile(__DIR__.'/override/classes/ObjectFileModel.php');
 $kernel->loadFile(__DIR__.'/../../classes/CartRule.php');
 $kernel->loadFile(__DIR__.'/override/classes/CartRule.php');
 $kernel->loadFile(__DIR__.'/../../classes/Cart.php');
