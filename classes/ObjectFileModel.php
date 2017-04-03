@@ -74,17 +74,17 @@ abstract class ObjectFileModelCore extends ObjectModel
         global $shopUrlConfig;
 
         $className = get_class($this);
-        if (!isset(ObjectFileModel::$loaded_classes[$className])) {
-            $this->def = ObjectFileModel::getDefinition($className);
-            ObjectFileModel::$loaded_classes[$className] = get_object_vars($this);
+        if (!isset(static::$loaded_classes[$className])) {
+            $this->def = static::getDefinition($className);
+            static::$loaded_classes[$className] = get_object_vars($this);
         } else {
-            foreach (ObjectFileModel::$loaded_classes[$className] as $key => $value) {
+            foreach (static::$loaded_classes[$className] as $key => $value) {
                 $this->{$key} = $value;
             }
         }
 
-        if ( ! is_writable(_PS_ROOT_DIR_.$this->def['path']) &&
-             ! is_writable(dirname(_PS_ROOT_DIR_.$this->def['path']))) {
+        if (!is_writable(_PS_ROOT_DIR_.$this->def['path']) &&
+             !is_writable(dirname(_PS_ROOT_DIR_.$this->def['path']))) {
             throw new PrestaShopException('Storage file '._PS_ROOT_DIR_.$this->def['path'].' for class '.get_class($this).' not writable.');
         }
 
@@ -126,14 +126,13 @@ abstract class ObjectFileModelCore extends ObjectModel
      * @since   1.1.0
      * @version 1.1.0 Initial version
      */
-    public static function get($id = NULL)
+    public static function get($id = null)
     {
         global $shopUrlConfig;
 
         if (!is_array($shopUrlConfig)) {
-            // foreach() loops don't like NULL.
             return [];
-        } else if ($id) {
+        } elseif ($id) {
             return $shopUrlConfig[$id];
         } else {
             return $shopUrlConfig;
@@ -187,8 +186,6 @@ abstract class ObjectFileModelCore extends ObjectModel
     {
         global $shopUrlConfig;
 
-        $result = true;
-
         if (isset($this->id) && !$this->force_id) {
             unset($this->id);
         }
@@ -205,8 +202,8 @@ abstract class ObjectFileModelCore extends ObjectModel
             $this->date_upd = date('Y-m-d H:i:s');
         }
 
+        $idShopList = Shop::getContextListShopID();
         if (Shop::isTableAssociated($this->def['table'])) {
-            $idShopList = Shop::getContextListShopID();
             if (count($this->id_shop_list) > 0) {
                 $idShopList = $this->id_shop_list;
             }
