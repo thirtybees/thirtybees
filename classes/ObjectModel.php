@@ -226,16 +226,16 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     public function __construct($id = null, $idLang = null, $idShop = null)
     {
         $className = get_class($this);
-        if (!isset(ObjectModel::$loaded_classes[$className])) {
-            $this->def = ObjectModel::getDefinition($className);
+        if (!isset(static::$loaded_classes[$className])) {
+            $this->def = static::getDefinition($className);
             $this->setDefinitionRetrocompatibility();
             if (!Validate::isTableOrIdentifier($this->def['primary']) || !Validate::isTableOrIdentifier($this->def['table'])) {
                 throw new PrestaShopException('Identifier or table format not valid for class '.$className);
             }
 
-            ObjectModel::$loaded_classes[$className] = get_object_vars($this);
+            static::$loaded_classes[$className] = get_object_vars($this);
         } else {
-            foreach (ObjectModel::$loaded_classes[$className] as $key => $value) {
+            foreach (static::$loaded_classes[$className] as $key => $value) {
                 $this->{$key} = $value;
             }
         }
