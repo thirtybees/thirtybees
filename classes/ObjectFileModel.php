@@ -70,11 +70,11 @@ abstract class ObjectFileModelCore extends ObjectModel
     public function __construct($id = null, $idLang = null, $idShop = null)
     {
         $className = get_class($this);
-        if (!isset(ObjectFileModel::$loaded_classes[$className])) {
-            $this->def = ObjectFileModel::getDefinition($className);
-            ObjectFileModel::$loaded_classes[$className] = get_object_vars($this);
+        if (!isset(static::$loaded_classes[$className])) {
+            $this->def = static::getDefinition($className);
+            static::$loaded_classes[$className] = get_object_vars($this);
         } else {
-            foreach (ObjectFileModel::$loaded_classes[$className] as $key => $value) {
+            foreach (static::$loaded_classes[$className] as $key => $value) {
                 $this->{$key} = $value;
             }
         }
@@ -214,8 +214,8 @@ abstract class ObjectFileModelCore extends ObjectModel
             $this->date_upd = date('Y-m-d H:i:s');
         }
 
+        $idShopList = Shop::getContextListShopID();
         if (Shop::isTableAssociated($this->def['table'])) {
-            $idShopList = Shop::getContextListShopID();
             if (count($this->id_shop_list) > 0) {
                 $idShopList = $this->id_shop_list;
             }
