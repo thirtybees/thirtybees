@@ -56,7 +56,6 @@ class ConfigurationTestCore
         '/localization/fr.xml',
         '/mails/index.php',
         '/modules/index.php',
-        '/override/controllers/front/index.php',
         '/pdf/order-return.tpl',
         '/themes/community-theme-default/css/global.css',
         '/translations/export/index.php',
