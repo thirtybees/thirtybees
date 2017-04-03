@@ -123,20 +123,78 @@ class AdminShopUrlControllerCore extends AdminController
      */
     public function renderList()
     {
-        $this->addRowActionSkipList('delete', [1]);
+        $mainUrls = [];
+        foreach (ShopUrl::get() as $key => $url) {
+            if ($url['main']) {
+                $mainUrls[] = $key;
+            }
+        }
+
+        $this->addRowActionSkipList('delete', $mainUrls);
 
         $this->addRowAction('edit');
         $this->addRowAction('delete');
 
-        $this->_select = 's.name AS shop_name, CONCAT(\'http://\', a.domain, a.physical_uri, a.virtual_uri) AS url';
-        $this->_join = 'LEFT JOIN `'._DB_PREFIX_.'shop` s ON (s.id_shop = a.id_shop)';
-
-        if ($idShop = (int) Tools::getValue('id_shop')) {
-            $this->_where = 'AND a.id_shop = '.$idShop;
-        }
-        $this->_use_found_rows = false;
-
         return parent::renderList();
+    }
+
+    /**
+     * @param int         $idLang
+     * @param string|null $orderBy
+     * @param string|null $orderWay
+     * @param int         $start
+     * @param int|null    $limit
+     * @param int|bool    $idLangShop
+     *
+     * @return void
+     *
+     * @since 1.1.0
+     */
+    public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
+    {
+        $this->dispatchFieldsListingModifierEvent();
+
+        // Get a model copy.
+        $this->_list = $this->className::get();
+
+        // While we can get the main list from the model (ShopUrl) we need a
+        // DB query anyways, because shop names aren't stored in the model.
+        $sql = 'SELECT id_shop, name
+                FROM '._DB_PREFIX_.'shop';
+        $sqlResult = Db::getInstance()->executeS($sql);
+
+        $idShop = Tools::getValue('id_shop');
+        foreach ($this->_list as $idShopUrl => &$row) {
+            // Remove foreign shops.
+            if ($idShop && $row['id_shop'] != $idShop) {
+                unset($this->_list[$idShopUrl]);
+                continue;
+            }
+
+            // Add computed fields.
+            $row['id_shop_url'] = $idShopUrl;
+            $row['url'] = 'http://'.$row['domain'].$row['physical_uri'].$row['virtual_uri'];
+            $row['shop_name'] = '???'; // fallback
+            foreach ($sqlResult as $shop) {
+                if ($shop['id_shop'] == $row['id_shop']) {
+                    $row['shop_name'] = $shop['name'];
+                    break;
+                }
+            }
+        }
+        unset($row);
+        $this->_listTotal = count($this->_list);
+
+        // Sorting/Ordering.
+        $this->computeListOrdering();
+        usort($this->_list, array('self', 'compareByArrayValues'));
+
+        Hook::exec(
+            'action'.$this->controller_name.'ListingResultsModifier', [
+                'list'       => &$this->_list,
+                'list_total' => &$this->_listTotal,
+            ]
+        );
     }
 
     /**

@@ -226,32 +226,48 @@ class ShopCore extends ObjectModel
      */
     public function setUrl()
     {
-        $cacheId = 'Shop::setUrl_'.(int) $this->id;
-        if (!Cache::isStored($cacheId)) {
-            $row = Db::getInstance()->getRow(
-                '
-			SELECT su.physical_uri, su.virtual_uri, su.domain, su.domain_ssl, t.id_theme, t.name, t.directory
+        static $row = NULL; // Trivial caching.
+
+        if (!$row) {
+            $query = '
+                SELECT t.id_theme, t.name, t.directory
 			FROM '._DB_PREFIX_.'shop s
-			LEFT JOIN '._DB_PREFIX_.'shop_url su ON (s.id_shop = su.id_shop)
 			LEFT JOIN '._DB_PREFIX_.'theme t ON (t.id_theme = s.id_theme)
 			WHERE s.id_shop = '.(int) $this->id.'
-			AND s.active = 1 AND s.deleted = 0 AND su.main = 1'
-            );
-            Cache::store($cacheId, $row);
-        } else {
-            $row = Cache::retrieve($cacheId);
+                AND s.active = 1 AND s.deleted = 0
+            ';
+            $row = Db::getInstance()->getRow($query);
         }
         if (!$row) {
+            return false;
+        }
+
+        // Find matching shop URL.
+        foreach (ShopUrl::get() as $url) {
+            if ($url['id_shop'] == $this->id && $url['main']) {
+                break;
+            }
+            unset($url);
+        }
+        if (!isset($url)) {
             return false;
         }
 
         $this->theme_id = $row['id_theme'];
         $this->theme_name = $row['name'];
         $this->theme_directory = $row['directory'];
-        $this->physical_uri = $row['physical_uri'];
-        $this->virtual_uri = $row['virtual_uri'];
-        $this->domain = $row['domain'];
-        $this->domain_ssl = $row['domain_ssl'];
+        $this->physical_uri = $url['physical_uri'];
+        $this->virtual_uri = $url['virtual_uri'];
+        if ($url['domain'] === '*automatic*') {
+            $this->domain = $_SERVER['HTTP_HOST'];
+        } else {
+            $this->domain = $url['domain'];
+        }
+        if ($url['domain_ssl'] === '*automatic*') {
+            $this->domain_ssl = $_SERVER['HTTP_HOST'];
+        } else {
+            $this->domain_ssl = $url['domain'];
+        }
 
         return true;
     }
@@ -331,7 +347,7 @@ class ShopCore extends ObjectModel
         $res &= Db::getInstance()->delete('stock_available', '`id_shop` = '.(int) $this->id);
 
         // Remove urls
-        $res &= Db::getInstance()->delete('shop_url', '`id_shop` = '.(int) $this->id);
+        ShopUrl::deleteShopUrls($this->id);
 
         // Remove currency restrictions
         $res &= Db::getInstance()->delete('module_currency', '`id_shop` = '.(int) $this->id);
@@ -399,47 +415,52 @@ class ShopCore extends ObjectModel
     {
         // Find current shop from URL
         if (!($idShop = Tools::getValue('id_shop')) || defined('_PS_ADMIN_DIR_')) {
-            $foundUri = '';
-            $isMainUri = false;
             $host = Tools::getHttpHost();
             $requestUri = rawurldecode($_SERVER['REQUEST_URI']);
 
-            $sql = 'SELECT s.id_shop, CONCAT(su.physical_uri, su.virtual_uri) AS uri, su.domain, su.main
-					FROM '._DB_PREFIX_.'shop_url su
-					LEFT JOIN '._DB_PREFIX_.'shop s ON (s.id_shop = su.id_shop)
-					WHERE (su.domain = \''.pSQL($host).'\' OR su.domain_ssl = \''.pSQL($host).'\')
-						AND s.active = 1
-						AND s.deleted = 0
-					ORDER BY LENGTH(CONCAT(su.physical_uri, su.virtual_uri)) DESC';
-
+            $allUrls = ShopUrl::get();
+            $sql = 'SELECT id_shop, active, deleted
+                    FROM '._DB_PREFIX_.'shop';
             $result = Db::getInstance()->executeS($sql);
 
-            $through = false;
-            foreach ($result as $row) {
-                // An URL matching current shop was found
-                if (preg_match('#^'.preg_quote($row['uri'], '#').'#i', $requestUri)) {
-                    $through = true;
-                    $idShop = $row['id_shop'];
-                    $foundUri = $row['uri'];
-                    if ($row['main']) {
-                        $isMainUri = true;
+            // Search for a shop matching this host.
+            $idShop = false;
+            $isMainUri = false;
+            $foundUri = false;
+            foreach ($allUrls as $url) {
+                if ($host === $url['domain'] || $host === $url['domain_ssl']) {
+                    $uri = $url['physical_uri'].$url['virtual_uri'];
+                    foreach ($result as $row) {
+                        if ($row['id_shop'] == $url['id_shop'] &&
+                            $row['active'] && !$row['deleted'] &&
+                            preg_match('#^'.preg_quote($uri, '#').'#i', $requestUri)) {
+
+                            $idShop = $row['id_shop'];
+                            $foundUri = $uri;
+                            if ($url['main']) {
+                                $isMainUri = true;
+                            }
+                            break;
+                        }
                     }
-                    break;
+                    if ($idShop) {
+                        break;
+                    }
                 }
             }
 
             // If an URL was found but is not the main URL, redirect to main URL
-            if ($through && $idShop && !$isMainUri) {
-                foreach ($result as $row) {
-                    if ($row['id_shop'] == $idShop && $row['main']) {
+            if ($idShop && !$isMainUri) {
+                foreach ($allUrls as $url) {
+                    if ($url['id_shop'] == $idShop && $url['main']) {
                         $requestUri = substr($requestUri, strlen($foundUri));
-                        $url = str_replace('//', '/', $row['domain'].$row['uri'].$requestUri);
+                        $uri = str_replace('//', '/', $url['domain'].$foundUri.$requestUri);
                         $redirectType = Configuration::get('PS_CANONICAL_REDIRECT');
                         $redirectCode = ($redirectType == 1 ? '302' : '301');
                         $redirectHeader = ($redirectType == 1 ? 'Found' : 'Moved Permanently');
                         header('HTTP/1.0 '.$redirectCode.' '.$redirectHeader);
                         header('Cache-Control: no-cache');
-                        header('Location: http://'.$url);
+                        header('Location: http://'.$uri);
                         exit;
                     }
                 }
@@ -475,6 +496,28 @@ class ShopCore extends ObjectModel
                 }
             }
         } else {
+            // Handle automatic shop URLs.
+            if (!$idShop) {
+                // The whole purpose of this block is to find out wether
+                // we should load the default shop with or without redirection.
+                // Keeping $idShop at false means with redirection.
+                $idDefaultShop = Configuration::get('PS_SHOP_DEFAULT');
+
+                foreach (ShopUrl::get() as $url) {
+                    if ($url['id_shop'] == $idDefaultShop && $url['main']) {
+                        if (Configuration::get('PS_SSL_ENABLED')) {
+                            if ($url['domain_ssl'] === '*automatic*') {
+                                $idShop = $idDefaultShop;
+                            }
+                        } else {
+                            if ($url['domain'] === '*automatic*') {
+                                $idShop = $idDefaultShop;
+                            }
+                        }
+                    }
+                }
+            }
+
             $shop = new Shop($idShop);
             if (!Validate::isLoadedObject($shop) || !$shop->active) {
                 // No shop found ... too bad, let's redirect to default shop
@@ -525,7 +568,7 @@ class ShopCore extends ObjectModel
 
     /**
      * @return Address the current shop address
-     *                 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -551,7 +594,7 @@ class ShopCore extends ObjectModel
      * Get shop theme name
      *
      * @return string
-     * 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -564,7 +607,7 @@ class ShopCore extends ObjectModel
      * Get shop URI
      *
      * @return string
-     * 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -580,7 +623,7 @@ class ShopCore extends ObjectModel
      * @param string $addBaseUri     if set to true, shop base uri will be added
      *
      * @return string complete base url of current shop
-     *                
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -605,7 +648,7 @@ class ShopCore extends ObjectModel
      * Get group of current shop
      *
      * @return ShopGroup
-     * 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -622,7 +665,7 @@ class ShopCore extends ObjectModel
      * Get root category of current shop
      *
      * @return int
-     * 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -635,25 +678,31 @@ class ShopCore extends ObjectModel
      * Get list of shop's urls
      *
      * @return array
-     * 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function getUrls()
     {
-        $sql = 'SELECT *
-				FROM '._DB_PREFIX_.'shop_url
-				WHERE active = 1
-					AND id_shop = '.(int) $this->id;
+        $result = ShopUrl::get();
+        foreach ($result as $id => &$url) {
+            // Remove the ones we don't need.
+            if ($url['id_shop'] != $this->id || !$url['active']) {
+                unset($result[$id]);
+            } else {
+                $url['id_shop_url'] = $id;
+            }
+        }
+        unset($url);
 
-        return Db::getInstance()->executeS($sql);
+        return $result;
     }
 
     /**
      * Check if current shop ID is the same as default shop in configuration
      *
      * @return bool
-     * 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -666,7 +715,7 @@ class ShopCore extends ObjectModel
      * Get the associated table if available
      *
      * @return array
-     * 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -683,7 +732,7 @@ class ShopCore extends ObjectModel
      * check if the table has an id_shop_default
      *
      * @return bool
-     * 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -700,7 +749,7 @@ class ShopCore extends ObjectModel
      * Get list of associated tables to shop
      *
      * @return array
-     * 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -720,7 +769,7 @@ class ShopCore extends ObjectModel
      * @param array  $table_details
      *
      * @return bool
-     * 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -741,7 +790,7 @@ class ShopCore extends ObjectModel
      * @param string $table
      *
      * @return bool
-     * 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -758,7 +807,7 @@ class ShopCore extends ObjectModel
      * Load list of groups and shops, and cache it
      *
      * @param bool $refresh
-     * 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -781,12 +830,10 @@ class ShopCore extends ObjectModel
             $where .= 'AND es.id_employee = '.(int) $employee->id;
         }
 
-        $sql = 'SELECT gs.*, s.*, gs.name AS group_name, s.name AS shop_name, s.active, su.domain, su.domain_ssl, su.physical_uri, su.virtual_uri
+        $sql = 'SELECT gs.*, s.*, gs.name AS group_name, s.name AS shop_name, s.active
 				FROM '._DB_PREFIX_.'shop_group gs
 				LEFT JOIN '._DB_PREFIX_.'shop s
 					ON s.id_shop_group = gs.id_shop_group
-				LEFT JOIN '._DB_PREFIX_.'shop_url su
-					ON s.id_shop = su.id_shop AND su.main = 1
 				'.$from.'
 				WHERE s.deleted = 0
 					AND gs.deleted = 0
@@ -806,24 +853,37 @@ class ShopCore extends ObjectModel
                     ];
                 }
 
-                static::$shops[$row['id_shop_group']]['shops'][$row['id_shop']] = [
+                // Find matching main URL.
+                foreach (ShopUrl::get() as $url) {
+                    if ($url['id_shop'] == $row['id_shop'] && $url['main']) {
+                        break;
+                    }
+                    unset($url);
+                }
+
+                $dest = &static::$shops[$row['id_shop_group']]['shops'][$row['id_shop']];
+                $dest = [
                     'id_shop'       => $row['id_shop'],
                     'id_shop_group' => $row['id_shop_group'],
                     'name'          => $row['shop_name'],
                     'id_theme'      => $row['id_theme'],
                     'id_category'   => $row['id_category'],
-                    'domain'        => $row['domain'],
-                    'domain_ssl'    => $row['domain_ssl'],
-                    'uri'           => $row['physical_uri'].$row['virtual_uri'],
                     'active'        => $row['active'],
                 ];
+                if (isset($url)) {
+                    $dest += [
+                        'domain'     => $url['domain'],
+                        'domain_ssl' => $url['domain_ssl'],
+                        'uri'        => $url['physical_uri'].$url['virtual_uri'],
+                    ];
+                }
             }
         }
     }
 
     /**
      * @return array|null
-     * 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -853,7 +913,7 @@ class ShopCore extends ObjectModel
      * @param bool $getAsListId
      *
      * @return array
-     * 
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -889,15 +949,11 @@ class ShopCore extends ObjectModel
             return false;
         }
 
-        $query = new DbQuery();
-        $query->select('domain');
-        $query->from('shop_url');
-        $query->where('main = 1');
-        $query->where('active = 1');
-        $query .= $this->addSqlRestriction(Shop::SHARE_ORDER);
         $domains = [];
-        foreach (Db::getInstance()->executeS($query) as $row) {
-            $domains[] = $row['domain'];
+        foreach (ShopUrl::get() as $url) {
+            if ($url['main'] && $url['active']) {
+                $domains[] = $url['domain'];
+            }
         }
 
         return $domains;

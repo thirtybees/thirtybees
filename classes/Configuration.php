@@ -431,6 +431,14 @@ class ConfigurationCore extends ObjectModel
                 static::$_cache[static::$definition['table']][$lang]['global'][$row['name']] = $row['value'];
             }
         }
+
+        // Adjust automatic values.
+        if (static::get('PS_SHOP_DOMAIN') === '*automatic*') {
+            static::set('PS_SHOP_DOMAIN', $_SERVER['HTTP_HOST']);
+        }
+        if (static::get('PS_SHOP_DOMAIN_SSL') === '*automatic*') {
+            static::set('PS_SHOP_DOMAIN_SSL', $_SERVER['HTTP_HOST']);
+        }
     }
 
     /**
@@ -669,6 +677,14 @@ class ConfigurationCore extends ObjectModel
                     );
                 }
             }
+        }
+
+        // Adjust automatic values.
+        if ($key === 'PS_SHOP_DOMAIN' && in_array('*automatic*', $values)) {
+            $values = $_SERVER['HTTP_HOST'];
+        }
+        if ($key === 'PS_SHOP_DOMAIN_SSL' && in_array('*automatic*', $values)) {
+            $values = $_SERVER['HTTP_HOST'];
         }
 
         Configuration::set($key, $values, $idShopGroup, $idShop);
