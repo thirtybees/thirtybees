@@ -34,7 +34,7 @@
  *
  * @since 1.0.0
  */
-class ShopUrlCore extends ObjectFileModel
+class ShopUrlCore extends ObjectModel
 {
     // @codingStandardsIgnoreStart
     public $id_shop;
@@ -55,7 +55,6 @@ class ShopUrlCore extends ObjectFileModel
     public static $definition = [
         'table'   => 'shop_url',
         'primary' => 'id_shop_url',
-        'path'    => '/config/shop.inc.php',
         'fields'  => [
             'active'       => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                          ],
             'main'         => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                          ],
