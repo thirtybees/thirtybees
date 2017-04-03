@@ -73,58 +73,6 @@ class ShopUrlCore extends ObjectModel
     ];
 
     /**
-     * This shall help with the transition from using a database table to
-     * using an PHP array written to a file. It copies DB content to
-     * the global configuration array.
-     *
-     * This method can go away as soon as this class is no longer inherited
-     * from ObjectModel. By then we have to have some other means to write
-     * the array, of course.
-     */
-    public function update($null_values = false)
-    {
-        global $shopUrlConfig;
-
-        $result = parent::update($null_values);
-
-        // Make sure each shop in the database is also in shopUrlConfig. This
-        // task can be removed as soon as shop changes are stored in
-        // shopUrlConfig by calling code.
-        $sql = 'SELECT id_shop_url, id_shop, domain, domain_ssl, physical_uri, virtual_uri, main, active
-                FROM '._DB_PREFIX_.'shop_url';
-        $sqlResult = Db::getInstance()->executeS($sql);
-
-        $shopUrlConfig = array();
-        foreach ($sqlResult as $url) {
-            $shopUrlConfig[$url['id_shop_url']] = $url;
-            unset($shopUrlConfig[$url['id_shop_url']]['id_shop_url']);
-        }
-
-        $this->write();
-
-        return $result;
-    }
-
-    /**
-     * Do the opposite of update(): forward $shopUrlConfig to the DB. Also
-     * expected to be temporary, only.
-     */
-    public static function push()
-    {
-        global $shopUrlConfig;
-
-        // To make sure we also drop records no longer existing, we drop the
-        // entire table and write a fresh one. Performance is no issue here.
-        Db::getInstance()->delete('shop_url');
-
-        foreach ($shopUrlConfig as $key => $url) {
-            $url['id_shop_url'] = $key;
-
-            Db::getInstance()->insert('shop_url', $url);
-        }
-    }
-
-    /**
      * @see     ObjectModel::getFields()
      * @return array
      *
@@ -280,18 +228,8 @@ class ShopUrlCore extends ObjectModel
 			WHERE main = 1
 			AND id_shop = '.($idShop !== null ? (int) $idShop : (int) Context::getContext()->shop->id)
             );
-
-            // Adjust automatic values.
-            if ($row['domain'] === '*automatic*') {
-                static::$main_domain[(int)$idShop] = $_SERVER['HTTP_HOST'];
-            } else {
-                static::$main_domain[(int)$idShop] = $row['domain'];
-            }
-            if ($row['domain_ssl'] === '*automatic*') {
-                static::$main_domain_ssl[(int)$idShop] = $_SERVER['HTTP_HOST'];
-            } else {
-                static::$main_domain_ssl[(int)$idShop] = $row['domain_ssl'];
-            }
+            static::$main_domain[(int) $idShop] = $row['domain'];
+            static::$main_domain_ssl[(int) $idShop] = $row['domain_ssl'];
         }
     }
 

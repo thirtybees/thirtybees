@@ -155,7 +155,7 @@ class AdminMetaControllerCore extends AdminController
         if (!Shop::isFeatureActive()) {
             $this->url = ShopUrl::getShopUrls($this->context->shop->id)->where('main', '=', 1)->getFirst();
             if ($this->url) {
-                $shopUrlOptions['description'] = $this->l('Here you can set the URL for your shop. You can set this to literally \'*automatic*\' (with stars, without quotes) to let PrestaShop detect this automatically. If you migrate your shop to a new URL and don\'t use \'*automatic*\', remember to change the values below.');
+                $shopUrlOptions['description'] = $this->l('Here you can set the URL for your shop. If you migrate your shop to a new URL, remember to change the values below.');
                 $shopUrlOptions['fields'] = [
                     'domain'     => [
                         'title'        => $this->l('Shop domain'),
