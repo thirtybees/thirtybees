@@ -243,12 +243,14 @@ class AdminShopControllerCore extends AdminController
         $this->addRowAction('edit');
         $this->addRowAction('delete');
 
-        $this->_select = 'gs.name shop_group_name, cl.name category_name';
+        $this->_select = 'gs.name shop_group_name, cl.name category_name, CONCAT(\'http://\', su.domain, su.physical_uri, su.virtual_uri) AS url';
         $this->_join = '
 			LEFT JOIN `'._DB_PREFIX_.'shop_group` gs
 				ON (a.id_shop_group = gs.id_shop_group)
 			LEFT JOIN `'._DB_PREFIX_.'category_lang` cl
 				ON (a.id_category = cl.id_category AND cl.id_lang='.(int) $this->context->language->id.')
+			LEFT JOIN '._DB_PREFIX_.'shop_url su
+				ON a.id_shop = su.id_shop AND su.main = 1
 		';
         $this->_group = 'GROUP BY a.id_shop';
 
@@ -360,28 +362,15 @@ class AdminShopControllerCore extends AdminController
         }
 
         parent::getList($idLang, $orderBy, $orderWay, $start, $limit, $idLangShop);
+        $shopDeleteList = [];
 
         // don't allow to remove shop which have dependencies (customers / orders / ... )
-        $shopDeleteList = [];
         foreach ($this->_list as &$shop) {
             if (Shop::hasDependency($shop['id_shop'])) {
                 $shopDeleteList[] = $shop['id_shop'];
             }
         }
         $this->context->smarty->assign('shops_having_dependencies', $shopDeleteList);
-
-        // Add URLs.
-        $allUrls = ShopUrl::get();
-        foreach ($this->_list as &$shop) {
-            foreach ($allUrls as $url) {
-                if ($shop['id_shop'] == $url['id_shop'] && $url['main']) {
-                    $shop['url']  = 'http://'. $url['domain'];
-                    $shop['url'] .= $url['physical_uri'].$url['virtual_uri'];
-                    break;
-                }
-            }
-        }
-        unset($shop);
     }
 
     /**
@@ -830,27 +819,12 @@ class AdminShopControllerCore extends AdminController
     public function ajaxProcessTree()
     {
         $tree = [];
-        $sql = 'SELECT g.id_shop_group, g.name as group_name, s.id_shop, s.name as shop_name
+        $sql = 'SELECT g.id_shop_group, g.name as group_name, s.id_shop, s.name as shop_name, u.id_shop_url, u.domain, u.physical_uri, u.virtual_uri
 				FROM '._DB_PREFIX_.'shop_group g
 				LEFT JOIN  '._DB_PREFIX_.'shop s ON g.id_shop_group = s.id_shop_group
-				ORDER BY g.name, s.name';
-        $shopResults = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
-
-        // Add URLs and duplicate shops with mutliple URLs.
-        $results = [];
-        $allUrls = ShopUrl::get();
-        foreach ($shopResults as $shop) {
-            foreach ($allUrls as $id => $url) {
-                if ($shop['id_shop'] == $url['id_shop']) {
-                    $shop['id_shop_url'] = $id;
-                    $shop['domain'] = $url['domain'];
-                    $shop['physical_uri'] = $url['physical_uri'];
-                    $shop['virtual_uri'] = $url['virtual_uri'];
-                    $results[] = $shop;
-                }
-            }
-        }
-
+				LEFT JOIN  '._DB_PREFIX_.'shop_url u ON u.id_shop = s.id_shop
+				ORDER BY g.name, s.name, u.domain';
+        $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
         foreach ($results as $row) {
             $idShopGroup = $row['id_shop_group'];
             $idShop = $row['id_shop'];

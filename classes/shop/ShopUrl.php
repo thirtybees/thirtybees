@@ -53,15 +53,7 @@ class ShopUrlCore extends ObjectFileModel
      * @see ObjectModel::$definition
      */
     public static $definition = [
-        // Note: 'table' and 'primary' aren't really needed for file based
-        // storage. However, parent and related classes sometimes rely on the
-        // assumption of database based storage and also use these properties
-        // as kind of an identifier, so these properties are kept.
-        //
-        // For file based storage, we choose 'table' to be the variable name
-        // written to the file. 'primary' is replaced by the index of the table
-        // in that file.
-        'table'   => 'shopUrlConfig',
+        'table'   => 'shop_url',
         'primary' => 'id_shop_url',
         'path'    => '/config/shop.inc.php',
         'fields'  => [
@@ -82,26 +74,22 @@ class ShopUrlCore extends ObjectFileModel
     ];
 
     /**
-     * Deletes all URLs of a shop.
-     *
-     * @param string $idShop
-     *
-     * @since   1.1.0
-     * @version 1.1.0 Initial version
+     * Do the opposite of update(): forward $shopUrlConfig to the DB. Also
+     * expected to be temporary, only.
      */
-    public static function deleteShopUrls($idShop)
+    public static function push()
     {
         global $shopUrlConfig;
 
-        if (is_array($shopUrlConfig)) {
-            foreach ($shopUrlConfig as $key => $url) {
-                if ($url['id_shop'] == $idShop) {
-                    unset($shopUrlConfig[$key]);
-                }
-            }
-        }
+        // To make sure we also drop records no longer existing, we drop the
+        // entire table and write a fresh one. Performance is no issue here.
+        Db::getInstance()->delete('shop_url');
 
-        (new ShopUrl)->write();
+        foreach ($shopUrlConfig as $key => $url) {
+            $url['id_shop_url'] = $key;
+
+            Db::getInstance()->insert('shop_url', $url);
+        }
     }
 
     /**
@@ -162,27 +150,20 @@ class ShopUrlCore extends ObjectFileModel
     }
 
     /**
-     * Get list of shop urls. For getting just the data, use ShopUrl::get().
+     * Get list of shop urls
      *
-     * @param bool|int $idShop
+     * @param bool $idShop
      *
-     * @return array Array of ShopUrl objects.
+     * @return PrestaShopCollection Collection of ShopUrl
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @version 1.1.0 Return array instead of a PrestaShopCollection.
      */
     public static function getShopUrls($idShop = false)
     {
-        global $shopUrlConfig;
-
-        $urls = [];
-        if (is_array($shopUrlConfig)) {
-            foreach ($shopUrlConfig as $id => $url) {
-                if (!$idShop || $url['id_shop'] == $idShop) {
-                    $urls[] = new ShopUrl($id);
-                }
-            }
+        $urls = new PrestaShopCollection('ShopUrl');
+        if ($idShop) {
+            $urls->where('id_shop', '=', $idShop);
         }
 
         return $urls;
@@ -196,47 +177,38 @@ class ShopUrlCore extends ObjectFileModel
      */
     public function setMain()
     {
-        global $shopUrlConfig;
-
-        $res = false;
-        if (is_array($shopUrlConfig)) {
-            foreach ($shopUrlConfig as $id => &$url) {
-                if ($url['id_shop'] == $this->id_shop) {
-                    if ($id == $this->id) {
-                        $url['main'] = 1;
-                        $res = true;
-                    } else {
-                        $url['main'] = 0;
-                    }
-                }
-            }
-            unset($url);
-        }
+        $res = Db::getInstance()->update('shop_url', ['main' => 0], 'id_shop = '.(int) $this->id_shop);
+        $res &= Db::getInstance()->update('shop_url', ['main' => 1], 'id_shop_url = '.(int) $this->id);
         $this->main = true;
 
-        $this->write();
+        // Reset main URL for all shops to prevent problems
+        $sql = 'SELECT s1.id_shop_url FROM '._DB_PREFIX_.'shop_url s1
+				WHERE (
+					SELECT COUNT(*) FROM '._DB_PREFIX_.'shop_url s2
+					WHERE s2.main = 1
+					AND s2.id_shop = s1.id_shop
+				) = 0
+				GROUP BY s1.id_shop';
+        foreach (Db::getInstance()->executeS($sql) as $row) {
+            Db::getInstance()->update('shop_url', ['main' => 1], 'id_shop_url = '.$row['id_shop_url']);
+        }
 
         return $res;
     }
 
     /**
-     * Test wether a combination of domain, physical URI and virtual URI
-     * exists already.
-     *
      * @param $domain
      * @param $domainSsl
      * @param $physicalUri
      * @param $virtualUri
      *
-     * @return bool True = URL exists already, False = URL doesn't exit yet.
+     * @return false|null|string
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function canAddThisUrl($domain, $domainSsl, $physicalUri, $virtualUri)
     {
-        global $shopUrlConfig;
-
         $physicalUri = trim($physicalUri, '/');
 
         if ($physicalUri) {
@@ -250,20 +222,14 @@ class ShopUrlCore extends ObjectFileModel
             $virtualUri = preg_replace('#/+#', '/', trim($virtualUri, '/')).'/';
         }
 
-        $exists = false;
-        if (is_array($shopUrlConfig)) {
-            foreach ($shopUrlConfig as $url) {
-                if ($url['physical_uri'] === $physicalUri &&
-                    $url['virtual_uri'] === $virtualUri &&
-                    ($url['domain'] === $domain || $url['domain_ssl'] === $domainSsl)) {
+        $sql = 'SELECT id_shop_url
+				FROM '._DB_PREFIX_.'shop_url
+				WHERE physical_uri = \''.pSQL($physicalUri).'\'
+					AND virtual_uri = \''.pSQL($virtualUri).'\'
+					AND (domain = \''.pSQL($domain).'\' '.(($domainSsl) ? ' OR domain_ssl = \''.pSQL($domainSsl).'\'' : '').')'
+            .($this->id ? ' AND id_shop_url != '.(int) $this->id : '');
 
-                    $exists = true;
-                    break;
-                }
-            }
-        }
-
-        return $exists;
+        return Db::getInstance()->getValue($sql);
     }
 
     /**
@@ -272,33 +238,27 @@ class ShopUrlCore extends ObjectFileModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function cacheMainDomainForShop($idShop = null)
+    public static function cacheMainDomainForShop($idShop)
     {
-        global $shopUrlConfig;
+        if (!isset(static::$main_domain_ssl[(int) $idShop]) || !isset(static::$main_domain[(int) $idShop])) {
+            $row = Db::getInstance()->getRow(
+                '
+			SELECT domain, domain_ssl
+			FROM '._DB_PREFIX_.'shop_url
+			WHERE main = 1
+			AND id_shop = '.($idShop !== null ? (int) $idShop : (int) Context::getContext()->shop->id)
+            );
 
-        if (is_array($shopUrlConfig) &&
-            (!isset(static::$main_domain_ssl[(int) $idShop]) ||
-             !isset(static::$main_domain[(int) $idShop]))) {
-            $idShopNotNull = $idShop;
-            if ($idShopNotNull === null) {
-                $idShopNotNull = Context::getContext()->shop->id;
+            // Adjust automatic values.
+            if ($row['domain'] === '*automatic*') {
+                static::$main_domain[(int)$idShop] = $_SERVER['HTTP_HOST'];
+            } else {
+                static::$main_domain[(int)$idShop] = $row['domain'];
             }
-
-            foreach ($shopUrlConfig as $url) {
-                if ($url['id_shop'] == $idShopNotNull && $url['main']) {
-                    // Adjust automatic values.
-                    if ($url['domain'] === '*automatic*') {
-                        static::$main_domain[(int)$idShop] = $_SERVER['HTTP_HOST'];
-                    } else {
-                        static::$main_domain[(int)$idShop] = $url['domain'];
-                    }
-                    if ($url['domain_ssl'] === '*automatic*') {
-                        static::$main_domain_ssl[(int)$idShop] = $_SERVER['HTTP_HOST'];
-                    } else {
-                        static::$main_domain_ssl[(int)$idShop] = $url['domain_ssl'];
-                    }
-                    break;
-                }
+            if ($row['domain_ssl'] === '*automatic*') {
+                static::$main_domain_ssl[(int)$idShop] = $_SERVER['HTTP_HOST'];
+            } else {
+                static::$main_domain_ssl[(int)$idShop] = $row['domain_ssl'];
             }
         }
     }

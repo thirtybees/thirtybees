@@ -3041,30 +3041,30 @@ class ToolsCore
         }
 
         $domains = [];
-        foreach (ShopUrl::get() as $shopUrl) {
-            /** @var ShopUrl $shopUrl */
-            if (!isset($domains[$shopUrl['domain']])) {
-                $domains[$shopUrl['domain']] = [];
+        foreach (ShopUrl::getShopUrls() as $shop_url) {
+            /** @var ShopUrl $shop_url */
+            if (!isset($domains[$shop_url->domain])) {
+                $domains[$shop_url->domain] = [];
             }
 
-            $domains[$shopUrl['domain']][] = [
-                'physical' => $shopUrl['physical_uri'],
-                'virtual'  => $shopUrl['virtual_uri'],
-                'id_shop'  => $shopUrl['id_shop'],
+            $domains[$shop_url->domain][] = [
+                'physical' => $shop_url->physical_uri,
+                'virtual'  => $shop_url->virtual_uri,
+                'id_shop'  => $shop_url->id_shop,
             ];
 
-            if ($shopUrl['domain'] == $shopUrl['domain_ssl']) {
+            if ($shop_url->domain == $shop_url->domain_ssl) {
                 continue;
             }
 
-            if (!isset($domains[$shopUrl['domain_ssl']])) {
-                $domains[$shopUrl['domain_ssl']] = [];
+            if (!isset($domains[$shop_url->domain_ssl])) {
+                $domains[$shop_url->domain_ssl] = [];
             }
 
-            $domains[$shopUrl['domain_ssl']][] = [
-                'physical' => $shopUrl['physical_uri'],
-                'virtual'  => $shopUrl['virtual_uri'],
-                'id_shop'  => $shopUrl['id_shop'],
+            $domains[$shop_url->domain_ssl][] = [
+                'physical' => $shop_url->physical_uri,
+                'virtual'  => $shop_url->virtual_uri,
+                'id_shop'  => $shop_url->id_shop,
             ];
         }
 

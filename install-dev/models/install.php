@@ -341,7 +341,7 @@ class InstallModelInstall extends InstallAbstractModel
         $shopUrl->main = true;
         $shopUrl->active = true;
         if (!$shopUrl->add()) {
-            $this->setError($this->language->l('Cannot create shop URL'));
+            $this->setError($this->language->l('Cannot create shop URL').' / '.Db::getInstance()->getMsgError());
 
             return false;
         }
