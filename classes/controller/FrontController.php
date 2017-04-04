@@ -253,28 +253,28 @@ class FrontControllerCore extends Controller
             // These hooks aren't used for the mobile theme.
             // Needed hooks are called in the tpl files.
 
-            $hookHeader = Hook::exec('displayHeader');
-            $extraFavicons = '
+            $hook_header = Hook::exec('displayHeader');
+            $extra_favicons = '
                 <link rel="shortcut icon" sizes="57x57" href="'.$this->context->link->getMediaLink(_PS_IMG_.'favicon_57.png').'">
                 <link rel="shortcut icon" sizes="72x72" href="'.$this->context->link->getMediaLink(_PS_IMG_.'favicon_72.png').'">
                 <link rel="shortcut icon" sizes="114x114" href="'.$this->context->link->getMediaLink(_PS_IMG_.'favicon_114.png').'">
                 <link rel="shortcut icon" sizes="144x144" href="'.$this->context->link->getMediaLink(_PS_IMG_.'favicon_144.png').'">';
                 
-            $hookHeader .= $extraFavicons;
+            $hook_header .= $extra_favicons;
 
             if (isset($this->php_self)) { // append some seo fields, canonical, hrefLang, rel prev/next
-                $hookHeader .= $this->getSeoFields();
+                $hook_header .= $this->getSeoFields();
             }
 
 
             // To be removed: append extra css and metas to the header hook
-            $extraCode = Configuration::getMultiple(['PS_CUSTOMCODE_METAS', 'PS_CUSTOMCODE_CSS']);
-            $extraCss = $extraCode['PS_CUSTOMCODE_CSS'] ? '<style>'.$extraCode['PS_CUSTOMCODE_CSS'].'</style>' : '';
-            $hookHeader .= $extraCode['PS_CUSTOMCODE_METAS'].$extraCss;
+            $extra_code = Configuration::getMultiple(['PS_CUSTOMCODE_METAS', 'PS_CUSTOMCODE_CSS']);
+            $extra_css = $extra_code['PS_CUSTOMCODE_CSS'] ? '<style>'.$extra_code['PS_CUSTOMCODE_CSS'].'</style>' : '';
+            $hook_header .= $extra_code['PS_CUSTOMCODE_METAS'].$extra_css;
 
             $this->context->smarty->assign(
                 [
-                    'HOOK_HEADER'       => $hookHeader,
+                    'HOOK_HEADER'       => $hook_header,
                     'HOOK_TOP'          => Hook::exec('displayTop'),
                     'HOOK_LEFT_COLUMN'  => ($this->display_column_left ? Hook::exec('displayLeftColumn') : ''),
                     'HOOK_RIGHT_COLUMN' => ($this->display_column_right ? Hook::exec('displayRightColumn', ['cart' => $this->context->cart]) : ''),
@@ -334,40 +334,40 @@ class FrontControllerCore extends Controller
     {
         $content = '';
         $languages = Language::getLanguages();
-        $defaultLang = Configuration::get('PS_LANG_DEFAULT');
+        $default_lang = Configuration::get('PS_LANG_DEFAULT');
         switch ($this->php_self) {
             case 'product': // product page
-                $idProduct = (int) Tools::getValue('id_product');
-                $canonical = $this->context->link->getProductLink($idProduct);
-                $hrefLang = $this->getHrefLang('product', $idProduct, $languages, $defaultLang);
+                $id_product = (int) Tools::getValue('id_product');
+                $canonical = $this->context->link->getProductLink($id_product);
+                $hreflang = $this->getHrefLang('product', $id_product, $languages, $default_lang);
 
                 break;
 
             case 'category':
-                $idCategory = (int) Tools::getValue('id_category');
-                $content .= $this->getRelPrevNext('category', $idCategory);
-                $canonical = $this->context->link->getCategoryLink((int) $idCategory);
-                $hrefLang = $this->getHrefLang('category', $idCategory, $languages, $defaultLang);
+                $id_category = (int) Tools::getValue('id_category');
+                $content .= $this->getRelPrevNext('category', $id_category);
+                $canonical = $this->context->link->getCategoryLink((int) $id_category);
+                $hreflang = $this->getHrefLang('category', $id_category, $languages, $default_lang);
 
                 break;
 
             case 'manufacturer':
-                $idManufacturer = (int) Tools::getValue('id_manufacturer');
-                $content .= $this->getRelPrevNext('manufacturer', $idManufacturer);
-                $hrefLang = $this->getHrefLang('manufacturer', $idManufacturer, $languages, $defaultLang);
+                $id_manufacturer = (int) Tools::getValue('id_manufacturer');
+                $content .= $this->getRelPrevNext('manufacturer', $id_manufacturer);
+                $hreflang = $this->getHrefLang('manufacturer', $id_manufacturer, $languages, $default_lang);
 
-                if (!$idManufacturer) {
+                if (!$id_manufacturer) {
                     $canonical = $this->context->link->getPageLink('manufacturer');
                 } else {
-                    $canonical = $this->context->link->getManufacturerLink($idManufacturer);
+                    $canonical = $this->context->link->getManufacturerLink($id_manufacturer);
                 }
 
                 break;
 
             case 'supplier':
-                $idSupplier = (int) Tools::getValue('id_supplier');
-                $content .= $this->getRelPrevNext('supplier', $idSupplier);
-                $hrefLang = $this->getHrefLang('supplier', $idSupplier, $languages, $defaultLang);
+                $id_supplier = (int) Tools::getValue('id_supplier');
+                $content .= $this->getRelPrevNext('supplier', $id_supplier);
+                $hreflang = $this->getHrefLang('supplier', $id_supplier, $languages, $default_lang);
 
                 if (!Tools::getValue('id_supplier')) {
                     $canonical = $this->context->link->getPageLink('supplier');
@@ -378,14 +378,14 @@ class FrontControllerCore extends Controller
                 break;
             default:
                 $canonical = $this->context->link->getPageLink($this->php_self);
-                $hrefLang = $this->getHrefLang($this->php_self, 0, $languages, $defaultLang);
+                $hreflang = $this->getHrefLang($this->php_self, 0, $languages, $default_lang);
                 break;
 
         }
         // build new content
         $content .= '<link rel="canonical" href="'.$canonical.'">'."\n";
-        if (isset($hrefLang) && is_array($hrefLang)) {
-            foreach ($hrefLang as $lang) {
+        if ($hreflang) {
+            foreach ($hreflang as $lang) {
                 $content .= "$lang\n";
             }
         }
@@ -1296,18 +1296,18 @@ class FrontControllerCore extends Controller
      */
     public function initFooter()
     {
-        $hookFooter = Hook::exec('displayFooter');
-        $extraJavaScript = Configuration::get('PS_CUSTOMCODE_JS');
-        $extraJavaScriptConf = '';
+        $hook_footer = Hook::exec('displayFooter');
+        $extra_js = Configuration::get('PS_CUSTOMCODE_JS');
+        $extra_js_conf = '';
         if (isset($this->php_self) && $this->php_self == 'order-confirmation') {
-            $extraJavaScriptConf = Configuration::get('PS_CUSTOMCODE_ORDERCONF_JS');
+            $extra_js_conf = Configuration::get('PS_CUSTOMCODE_ORDERCONF_JS');
         }
 
-        $hookFooter .= '<script>'.$extraJavaScript.$extraJavaScriptConf.'</script>';
+        $hook_footer .= '<script>'.$extra_js.$extra_js_conf.'</script>';
 
         $this->context->smarty->assign(
             [
-                'HOOK_FOOTER'            => $hookFooter,
+                'HOOK_FOOTER'            => $hook_footer,
                 'conditions'             => Configuration::get('PS_CONDITIONS'),
                 'id_cgv'                 => Configuration::get('PS_CONDITIONS_CMS_ID'),
                 'PS_SHOP_NAME'           => Configuration::get('PS_SHOP_NAME'),
