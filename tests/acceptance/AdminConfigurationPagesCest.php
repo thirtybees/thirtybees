@@ -72,7 +72,6 @@ class AdminConfigurationPagesCest
             'AdminMaintenance',
             'AdminGeolocation',
             'AdminCustomCode',
-            'AdminCTTopMenuItem',
         ],
         'AdminTools' => [
             'AdminInformation',
