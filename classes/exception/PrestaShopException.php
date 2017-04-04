@@ -36,6 +36,34 @@
  */
 class PrestaShopExceptionCore extends Exception
 {
+    protected $trace;
+
+    /**
+     * PrestaShopExceptionCore constructor.
+     *
+     * @param string         $message
+     * @param int            $code
+     * @param Exception|null $previous
+     * @param array|null     $customTrace
+     */
+    public function __construct($message = "", $code = 0, Exception $previous = null, $customTrace = null, $file = null, $line = null)
+    {
+        parent::__construct($message, $code, $previous);
+
+        if (!$customTrace) {
+            $this->trace = $this->getTrace();
+        } else {
+            $this->trace = $customTrace;
+        }
+
+        if ($file) {
+            $this->file = $file;
+        }
+        if ($line) {
+            $this->line = $line;
+        }
+    }
+
     /**
      * This method acts like an error handler, if dev mode is on, display the error else use a better silent way
      *
@@ -64,11 +92,11 @@ class PrestaShopExceptionCore extends Exception
             echo '<h2>['.get_class($this).']</h2>';
             echo $this->getExtendedMessage();
 
-            echo $this->displayFileDebug($this->getFile(), $this->getLine());
+            echo $this->displayFileDebug($this->file, $this->line);
 
             // Display debug backtrace
             echo '<ul>';
-            foreach ($this->getTrace() as $id => $trace) {
+            foreach ($this->trace as $id => $trace) {
                 $relativeFile = (isset($trace['file'])) ? ltrim(str_replace([_PS_ROOT_DIR_, '\\'], ['', '/'], $trace['file']), '/') : '';
                 $currentLine = (isset($trace['line'])) ? $trace['line'] : '';
                 if (defined('_PS_ADMIN_DIR_')) {
@@ -99,10 +127,10 @@ class PrestaShopExceptionCore extends Exception
             $markdown .= '## '.get_class($this).'  ';
             $markdown .= $this->getExtendedMessageMarkdown();
 
-            $markdown .= $this->displayFileDebug($this->getFile(), $this->getLine(), null, true);
+            $markdown .= $this->displayFileDebug($this->file, $this->line, null, true);
 
             // Display debug backtrace
-            foreach ($this->getTrace() as $id => $trace) {
+            foreach ($this->trace as $id => $trace) {
                 $relativeFile = (isset($trace['file'])) ? ltrim(str_replace([_PS_ROOT_DIR_, '\\'], ['', '/'], $trace['file']), '/') : '';
                 $currentLine = (isset($trace['line'])) ? $trace['line'] : '';
                 if (defined('_PS_ADMIN_DIR_')) {
