@@ -66,7 +66,7 @@ You can find the latest version of the roadmap here: https://thirtybees.com/road
     - apcu/redis/memcache(d)
 
 ## Installation
-There is currently no release package available, but you can install from git. These are the instructions:
+These are the instructions to install via git:
 - Recursively clone the repository:
 ```shell
 $ git clone https://github.com/thirtybees/ThirtyBees.git --recursive
