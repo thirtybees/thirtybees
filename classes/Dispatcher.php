@@ -59,6 +59,7 @@ class DispatcherCore
             'keywords' => [
                 'id' => [
                     'regexp' => '[0-9]+',
+                    'alias'  => 'id_category',
                 ],
                 'rewrite' => [
                     'regexp' => '[_a-zA-Z0-9\pL\pS-]*',
@@ -81,6 +82,7 @@ class DispatcherCore
             'keywords' => [
                 'id' => [
                     'regexp' => '[0-9]+',
+                    'alias'  => 'id_supplier',
                 ],
                 'rewrite' => [
                     'regexp' => '[_a-zA-Z0-9\pL\pS-]*',
@@ -100,6 +102,7 @@ class DispatcherCore
             'keywords' => [
                 'id' => [
                     'regexp' => '[0-9]+',
+                    'alias'  => 'id_manufacturer',
                 ],
                 'rewrite' => [
                     'regexp' => '[_a-zA-Z0-9\pL\pS-]*',
@@ -119,6 +122,7 @@ class DispatcherCore
             'keywords' => [
                 'id' => [
                     'regexp' => '[0-9]+',
+                    'alias'  => 'id_cms',
                 ],
                 'rewrite' => [
                     'regexp' => '[_a-zA-Z0-9\pL\pS-]*',
@@ -141,6 +145,7 @@ class DispatcherCore
             'keywords' => [
                 'id' => [
                     'regexp' => '[0-9]+',
+                    'alias'  => 'id_cms_category'
                 ],
                 'rewrite' => [
                     'regexp' => '[_a-zA-Z0-9\pL\pS-]*',
@@ -180,6 +185,7 @@ class DispatcherCore
             'keywords' => [
                 'id' => [
                     'regexp' => '[0-9]+',
+                    'alias'  => 'id_product',
                 ],
                 'rewrite' => [
                     'regexp' => '[_a-zA-Z0-9\pL\pS-]*',
@@ -223,6 +229,7 @@ class DispatcherCore
             'keywords' => [
                 'id' => [
                     'regexp' => '[0-9]+',
+                    'alias'  => 'id_category',
                 ],
                 'selected_filters' => [
                     'regexp' => '.*',
@@ -352,7 +359,7 @@ class DispatcherCore
                     $appendRegexp = $append.')?';
                 }
 
-                if (isset($keywords[$keyword]['param'])) {
+                if (isset($keywords[$keyword]['param']) && $keywords[$keyword]['param']) {
                     $regexp = str_replace($m[0][$i], $prependRegexp.'(?P<'.$keywords[$keyword]['param'].'>'.$keywords[$keyword]['regexp'].')'.$appendRegexp, $regexp);
                 } elseif ($keyword === 'id') {
                     $regexp = str_replace($m[0][$i], $prependRegexp.'(?P<id>'.$keywords[$keyword]['regexp'].')'.$appendRegexp, $regexp);
@@ -769,16 +776,22 @@ class DispatcherCore
             $idShop = (int) Context::getContext()->shop->id;
         }
         $controller = Tools::getValue('controller');
-        if (isset($controller) && is_string($controller) &&
-            preg_match('/^([0-9a-z_-]+)\?(.*)=(.*)$/Ui', $controller, $m)
-        ) {
-            $controller = $m[1];
-            if (isset($_GET['controller'])) {
-                $_GET[$m[2]] = $m[3];
-            } else {
-                if (isset($_POST['controller'])) {
-                    $_POST[$m[2]] = $m[3];
+        if (isset($controller) && is_string($controller)) {
+            if (preg_match('/^([0-9a-z_-]+)\?(.*)=(.*)$/Ui', $controller, $m)) {
+                $controller = $m[1];
+                if (isset($_GET['controller'])) {
+                    $_GET[$m[2]] = $m[3];
+                } else {
+                    if (isset($_POST['controller'])) {
+                        $_POST[$m[2]] = $m[3];
+                    }
                 }
+            } elseif (!$this->use_routes && Validate::isControllerName($controller) && Tools::isSubmit('id_'.$controller)) {
+                $id = Tools::getValue('id_'.$controller);
+                $_GET['id_'.$controller] = $id;
+                $this->controller = $controller;
+
+                return $this->controller;
             }
         }
         if (!Validate::isControllerName($controller)) {
@@ -1145,10 +1158,10 @@ class DispatcherCore
     public function createUrl($routeId, $idLang = null, array $params = [], $forceRoutes = false, $anchor = '', $idShop = null)
     {
         if ($idLang === null) {
-            $idLang = (int)Context::getContext()->language->id;
+            $idLang = (int) Context::getContext()->language->id;
         }
         if ($idShop === null) {
-            $idShop = (int)Context::getContext()->shop->id;
+            $idShop = (int) Context::getContext()->shop->id;
         }
 
         if (!isset($this->routes[$idShop])) {
@@ -1158,26 +1171,28 @@ class DispatcherCore
         if (!isset($this->routes[$idShop][$idLang][$routeId])) {
             $query = http_build_query($params, '', '&');
             $indexLink = $this->use_routes ? '' : 'index.php';
+
             return ($routeId == 'index') ? $indexLink.(($query) ? '?'.$query : '') : ((trim($routeId) == '') ? '' : 'index.php?controller='.$routeId).(($query) ? '&'.$query : '').$anchor;
         }
         $route = $this->routes[$idShop][$idLang][$routeId];
         // Check required fields
         $queryParams = isset($route['params']) ? $route['params'] : [];
-        foreach ($route['keywords'] as $key => $data) {
-            if (!$data['required']) {
-                continue;
-            }
-
-            if (!array_key_exists($key, $params)) {
-                throw new PrestaShopException('Dispatcher::createUrl() miss required parameter "'.$key.'" for route "'.$routeId.'"');
-            }
-            if (isset($this->default_routes[$routeId])) {
-                $queryParams[$this->default_routes[$routeId]['keywords'][$key]['param']] = $params[$key];
-            }
-        }
-
+        // Skip if we are not using routes
         // Build an url which match a route
         if ($this->use_routes || $forceRoutes) {
+            foreach ($route['keywords'] as $key => $data) {
+                if (!$data['required']) {
+                    continue;
+                }
+
+                if (!array_key_exists($key, $params)) {
+                    throw new PrestaShopException('Dispatcher::createUrl() miss required parameter "'.$key.'" for route "'.$routeId.'"');
+                }
+                if (isset($this->default_routes[$routeId])) {
+                    $queryParams[$this->default_routes[$routeId]['keywords'][$key]['param']] = $params[$key];
+                }
+            }
+
             $url = $route['rule'];
             $addParam = [];
 
@@ -1204,6 +1219,13 @@ class DispatcherCore
             foreach ($params as $key => $value) {
                 if (!isset($route['keywords'][$key]) && !isset($this->default_routes[$routeId]['keywords'][$key])) {
                     $addParams[$key] = $value;
+                }
+            }
+            if (isset($this->default_routes[$routeId])) {
+                foreach ($this->default_routes[$routeId]['keywords'] as $key => $keyword) {
+                    if (isset($keyword['alias']) && $keyword['alias']) {
+                        $addParams[$keyword['alias']] = $params[$key];
+                    }
                 }
             }
 
