@@ -331,5 +331,8 @@
     <hook id="actionRegisterErrorHandlers" live_edit="0">
       <name>actionRegisterErrorHandlers</name><title>Register error handlers</title><description>This hook is called to make sure error handler modules can register their handlers</description>
     </hook>
+    <hook id="actionRegisterAutoloader" live_edit="0">
+      <name>actionRegisterAutoloader</name><title>Register autoloader</title><description>This hook is called to make sure library modules can register their libraries</description>
+    </hook>
   </entities>
 </entity_hook>

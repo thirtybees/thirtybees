@@ -30,22 +30,20 @@
  */
 
 /**
- * Class ErrorModuleCore
+ * Class LibraryModuleCore
  *
  * @since 1.0.0
  */
-abstract class ErrorModuleCore extends Module
+abstract class LibraryModuleCore extends Module
 {
     /**
      * Register the error handlers
      *
-     * This function lets the `ErrorModule` register the necessary error handlers and shutdown functions.
-     * This might override the default uncaught exception handler in thirty bees
+     * This function lets the `LibraryModule` register the necessary autoloader for the libraries it contains.
      *
      * @return bool
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @since 1.0.1
      */
-    abstract public function hookActionRegisterErrorHandlers();
+    abstract public function hookActionRegisterAutoloader();
 }
