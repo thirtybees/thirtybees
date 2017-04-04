@@ -328,5 +328,8 @@
     <hook id="displayCartExtraProductActions" live_edit="0">
       <name>displayCartExtraProductActions</name><title>Extra buttons in shopping cart</title><description>This hook adds extra buttons to the product lines, in the shopping cart</description>
     </hook>
+    <hook id="actionRegisterErrorHandlers" live_edit="0">
+      <name>actionRegisterErrorHandlers</name><title>Register error handlers</title><description>This hook is called to make sure error handler modules can register their handlers</description>
+    </hook>
   </entities>
 </entity_hook>
