@@ -278,7 +278,6 @@ class AdminLocalizationControllerCore extends AdminController
             $xmlLocalization = @simplexml_load_file($localizationFile);
         }
 
-        // Array to hold the list of country ISOs that have a localization pack hosted on prestashop.com
         $remoteIsos = [];
 
         $i = 0;
@@ -289,10 +288,6 @@ class AdminLocalizationControllerCore extends AdminController
                 $localizationsPack[$i]['name'] = (string) $pack->name;
                 $i++;
             }
-        }
-
-        if (!$localizationsPack) {
-            return $this->displayWarning($this->l('Cannot connect'));
         }
 
         // Add local localization .xml files to the list if they are not already there
