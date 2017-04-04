@@ -414,8 +414,9 @@ class LanguageCore extends ObjectModel
             return false;
         }
         if ($version == null) {
-            $version = implode('.', array_pad(explode('.', _PS_VERSION_), 3, '0'));
+            $version = _TB_VERSION_;
         }
+        $version = implode('.', array_pad(explode('.', $version), 3, '0'));
 
         $langPack = false;
         $errors = array();
