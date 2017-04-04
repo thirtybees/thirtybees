@@ -278,9 +278,6 @@ class ShopCore extends ObjectModel
         Configuration::updateValue('PS_ROUTE_cms_category_rule', array_map(function() {return '{categories:/}{rewrite}';}, $langs));
         // @codingStandardsIgnoreEnd
 
-        // Regenerate URLs for shop and insert defaults
-        UrlRewrite::regenerateUrlRewrites(null, $this->id);
-
         Shop::cacheShops(true);
 
         return $res;

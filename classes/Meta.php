@@ -527,25 +527,6 @@ class MetaCore extends ObjectModel
     }
 
     /**
-     * @param bool $autoDate
-     * @param bool $nullValues
-     *
-     * @return bool Indicates whether adding succeeded
-     *
-     * @since 1.0.0
-     */
-    public function add($autoDate = true, $nullValues = false)
-    {
-        $result = parent::add($autoDate, $nullValues);
-
-        if (!defined('TB_INSTALLATION_IN_PROGRESS')) {
-            UrlRewrite::regenerateUrlRewrites(null, null, [UrlRewrite::ENTITY_PAGE]);
-        }
-
-        return $result;
-    }
-
-    /**
      * @param bool $nullValues
      *
      * @return bool
@@ -557,10 +538,6 @@ class MetaCore extends ObjectModel
     {
         if (!parent::update($nullValues)) {
             return false;
-        }
-
-        if (!defined('TB_INSTALLATION_IN_PROGRESS')) {
-            UrlRewrite::regenerateUrlRewrites(null, null, [UrlRewrite::ENTITY_PAGE]);
         }
 
         return Tools::generateHtaccess();

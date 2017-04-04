@@ -223,8 +223,6 @@ class SupplierCore extends ObjectModel
     public function add($autoDate = true, $nullValues = false)
     {
         if (parent::add($autoDate, $nullValues)) {
-            UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_SUPPLIER, $this->id);
-
             return true;
         }
 
@@ -242,13 +240,7 @@ class SupplierCore extends ObjectModel
             PageCache::invalidateEntity('supplier', $this->id);
         }
 
-        $return = parent::update($nullValues);
-
-        UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_SUPPLIER, $this->id);
-
-        return $return;
-
-        
+        return parent::update($nullValues);
     }
 
     public function delete()

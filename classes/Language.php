@@ -656,8 +656,6 @@ class LanguageCore extends ObjectModel
         // @todo Since a lot of modules are not in right format with their primary keys name, just get true ...
         $this->loadUpdateSQL();
 
-        UrlRewrite::regenerateUrlRewrites($this->id);
-
         return true;
     }
 

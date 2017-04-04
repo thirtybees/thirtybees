@@ -1554,8 +1554,6 @@ abstract class ModuleCore
         }
         // @codingStandardsIgnoreEnd
 
-        UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_PAGE);
-
         return true;
     }
 
@@ -2261,7 +2259,6 @@ abstract class ModuleCore
         if (Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'module` WHERE `id_module` = '.(int) $this->id)) {
             Cache::clean('Module::isInstalled'.$this->name);
             Cache::clean('Module::getModuleIdByName_'.pSQL($this->name));
-            UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_PAGE);
 
             return true;
         }

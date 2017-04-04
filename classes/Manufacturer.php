@@ -625,23 +625,6 @@ class ManufacturerCore extends ObjectModel
     }
 
     /**
-     * @param bool $autoDate
-     * @param bool $nullValues
-     *
-     * @return bool Indicates whether saving succeeded
-     */
-    public function add($autoDate = true, $nullValues = false)
-    {
-        if (parent::add($autoDate, $nullValues)) {
-            UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_MANUFACTURER, $this->id);
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
      * @param null $nullValues
      *
      * @return bool Indicates whether updating succeeded
@@ -652,11 +635,6 @@ class ManufacturerCore extends ObjectModel
             PageCache::invalidateEntity('manufacturer', $this->id);
         }
 
-        $return = parent::update($nullValues);
-
-        UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_MANUFACTURER, $this->id);
-
-        return $return;
-
+        return parent::update($nullValues);
     }
 }

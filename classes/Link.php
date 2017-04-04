@@ -74,8 +74,8 @@ class LinkCore
             define('_PS_BASE_URL_SSL_', Tools::getShopDomainSsl(true));
         }
 
-        if (Link::$categoryDisableRewrite === null) {
-            Link::$categoryDisableRewrite = [Configuration::get('PS_HOME_CATEGORY'), Configuration::get('PS_ROOT_CATEGORY')];
+        if (static::$categoryDisableRewrite === null) {
+            static::$categoryDisableRewrite = [Configuration::get('PS_HOME_CATEGORY'), Configuration::get('PS_ROOT_CATEGORY')];
         }
 
         $this->ssl_enable = Configuration::get('PS_SSL_ENABLED');
@@ -88,6 +88,7 @@ class LinkCore
      */
     public function __get($property)
     {
+        // FIXME: convert to camelCase
         if (in_array($property, [
             'category_disable_rewrite',
         ])) {
@@ -113,25 +114,7 @@ class LinkCore
         return $url.((strpos($url, '?')) ? '&' : '?').'deletePicture='.$idPicture;
     }
 
-    /**
-     * @param int|Product $product
-     * @param string|null $alias            DEPRECATED
-     * @param string|null $category         DEPRECATED
-     * @param string|null $ean13            DEPRECATED
-     * @param int|null    $idLang
-     * @param int|null    $idShop
-     * @param int         $ipa
-     * @param bool        $forceRoutes
-     * @param bool        $relativeProtocol
-     * @param bool        $addAnchor
-     * @param array       $extraParams
-     *
-     * @return string
-     * @throws PrestaShopException
-     *
-     * @since 1.0.0
-     */
-    public function getProductLink($product, $alias = null, $category = null, $ean13 = null, $idLang = null, $idShop = null, $ipa = 0, $forceRoutes = false, $relativeProtocol = false, $addAnchor = false, $extraParams = [])
+    public function getProductLink($product, $alias = null, $category = null, $ean13 = null, $idLang = null, $idShop = null, $ipa = 0, $forceRoutes = false, $relativeProtocol = false, $addAnchor = false, $extraParams = array())
     {
         $dispatcher = Dispatcher::getInstance();
 
@@ -150,35 +133,44 @@ class LinkCore
                 throw new PrestaShopException('Invalid product vars');
             }
         }
+
         // Set available keywords
-        $params = [];
+        $params = array();
         $params['id'] = $product->id;
         $params['rewrite'] = (!$alias) ? $product->getFieldByLang('link_rewrite') : $alias;
+
         $params['ean13'] = (!$ean13) ? $product->ean13 : $ean13;
         $params['meta_keywords'] =    Tools::str2url($product->getFieldByLang('meta_keywords'));
         $params['meta_title'] = Tools::str2url($product->getFieldByLang('meta_title'));
+
         if ($dispatcher->hasKeyword('product_rule', $idLang, 'manufacturer', $idShop)) {
             $params['manufacturer'] = Tools::str2url($product->isFullyLoaded ? $product->manufacturer_name : Manufacturer::getNameById($product->id_manufacturer));
         }
+
         if ($dispatcher->hasKeyword('product_rule', $idLang, 'supplier', $idShop)) {
             $params['supplier'] = Tools::str2url($product->isFullyLoaded ? $product->supplier_name : Supplier::getNameById($product->id_supplier));
         }
+
         if ($dispatcher->hasKeyword('product_rule', $idLang, 'price', $idShop)) {
             $params['price'] = $product->isFullyLoaded ? $product->price : Product::getPriceStatic($product->id, false, null, 6, null, false, true, 1, false, null, null, null, $product->specificPrice);
         }
+
         if ($dispatcher->hasKeyword('product_rule', $idLang, 'tags', $idShop)) {
             $params['tags'] = Tools::str2url($product->getTags($idLang));
         }
+
         if ($dispatcher->hasKeyword('product_rule', $idLang, 'category', $idShop)) {
             $params['category'] = (!is_null($product->category) && !empty($product->category)) ? Tools::str2url($product->category) : Tools::str2url($category);
         }
+
         if ($dispatcher->hasKeyword('product_rule', $idLang, 'reference', $idShop)) {
             $params['reference'] = Tools::str2url($product->reference);
         }
+
         if ($dispatcher->hasKeyword('product_rule', $idLang, 'categories', $idShop)) {
             $params['category'] = (!$category) ? $product->category : $category;
-            $cats = [];
-            $categoryDisableRewrite = Link::$categoryDisableRewrite;
+            $cats = array();
+            $categoryDisableRewrite = static::$categoryDisableRewrite;
             foreach ($product->getParentCategories($idLang) as $cat) {
                 if (!in_array($cat['id_category'], $categoryDisableRewrite)) {
                     //remove root and home category from the URL
@@ -187,14 +179,9 @@ class LinkCore
             }
             $params['categories'] = implode('/', $cats);
         }
-
         $anchor = $ipa ? $product->getAnchor((int) $ipa, (bool) $addAnchor) : '';
 
-        if (isset($params)) {
-            $extraParams = array_merge($extraParams, $params);
-        }
-
-        return $url.$dispatcher->createUrl('product_rule', $idLang, $extraParams, $forceRoutes, $anchor, $idShop);
+        return $url.$dispatcher->createUrl('product_rule', $idLang, array_merge($params, $extraParams), $forceRoutes, $anchor, $idShop);
     }
 
     /**
@@ -436,13 +423,13 @@ class LinkCore
             $category = new Category($category, $idLang);
         }
         // Set available keywords
-        $params = [];
+        $params = array();
         $params['id'] = $category->id;
         $params['rewrite'] = (!$alias) ? $category->link_rewrite : $alias;
-        $params['meta_keywords'] = Tools::str2url($category->getFieldByLang('meta_keywords'));
+        $params['meta_keywords'] =    Tools::str2url($category->getFieldByLang('meta_keywords'));
         $params['meta_title'] = Tools::str2url($category->getFieldByLang('meta_title'));
-        $cats = [];
-        $categoryDisableRewrite = Link::$categoryDisableRewrite;
+        $cats = array();
+        $categoryDisableRewrite = static::$categoryDisableRewrite;
 
         foreach ($category->getParentsCategories($idLang) as $cat) {
             if (!in_array($cat['id_category'], $categoryDisableRewrite)) {
@@ -454,7 +441,7 @@ class LinkCore
         $cats = array_reverse($cats);
         $params['categories'] = trim(implode('/', $cats), '/');
 
-        // Selected filters is used by the module blocklayered
+        // Selected filters are used by layered navigation modules
         $selectedFilters = is_null($selectedFilters) ? '' : $selectedFilters;
         if (empty($selectedFilters)) {
             $rule = 'category_rule';
@@ -568,14 +555,14 @@ class LinkCore
             $cms = new CMS($cms, $idLang);
         }
         // Set available keywords
-        $params = [];
+        $params = array();
         $params['id'] = $cms->id;
         $params['rewrite'] = (!$alias) ? (is_array($cms->link_rewrite) ? $cms->link_rewrite[(int) $idLang] : $cms->link_rewrite) : $alias;
         $params['meta_keywords'] = '';
         $params['categories'] = $this->findCMSSubcategories($cms->id, $idLang);
 
         if (isset($cms->meta_keywords) && !empty($cms->meta_keywords)) {
-            $params['meta_keywords'] = is_array($cms->meta_keywords) ? Tools::str2url($cms->meta_keywords[(int) $idLang]) : Tools::str2url($cms->meta_keywords);
+            $params['meta_keywords'] = is_array($cms->meta_keywords) ?  Tools::str2url($cms->meta_keywords[(int) $idLang]) :  Tools::str2url($cms->meta_keywords);
         }
         $params['meta_title'] = '';
         if (isset($cms->meta_title) && !empty($cms->meta_title)) {
@@ -659,7 +646,7 @@ class LinkCore
             $cmsCategory->meta_title = $cmsCategory->meta_title[(int) $idLang];
         }
         // Set available keywords
-        $params = [];
+        $params = array();
         $params['id'] = $cmsCategory->id;
         $params['rewrite'] = (!$alias) ? $cmsCategory->link_rewrite : $alias;
         $params['meta_keywords'] = Tools::str2url($cmsCategory->meta_keywords);

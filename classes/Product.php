@@ -4919,8 +4919,6 @@ class ProductCore extends ObjectModel
 
         $return = parent::update($nullValues);
 
-        UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_PRODUCT, $this->id);
-
         $this->setGroupReduction();
 
         // Sync stock Reference, EAN13 and UPC
@@ -7409,8 +7407,6 @@ class ProductCore extends ObjectModel
         if (!parent::add($autodate, $nullValues)) {
             return false;
         }
-
-        UrlRewrite::regenerateUrlRewrite(UrlRewrite::ENTITY_PRODUCT, $this->id);
 
         $idShopList = Shop::getContextListShopID();
         if ($this->getType() == Product::PTYPE_VIRTUAL) {
