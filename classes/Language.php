@@ -416,7 +416,7 @@ class LanguageCore extends ObjectModel
         if ($version == null) {
             $version = _TB_VERSION_;
         }
-        $version = implode('.', array_pad(explode('.', $version), 3, '0'));
+        $version = implode('.', array_map('intval', explode('.', $version, 3)));
 
         $langPack = false;
         $errors = array();
@@ -526,7 +526,7 @@ class LanguageCore extends ObjectModel
 
         // If the language pack has not been provided, retrieve it from translations.thirtybees.com
         if (!$langPack) {
-            $version = implode('.', array_pad(explode('.', _PS_VERSION_), 3, '0'));
+            $version = implode('.', array_map('intval', explode('.', _TB_VERSION_, 3)));
             $guzzle = new GuzzleHttp\Client([
                 'base_uri' => "https://translations.thirtybees.com/packs/{$version}/",
                 'timeout'  => 20,
