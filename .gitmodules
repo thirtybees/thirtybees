@@ -405,3 +405,6 @@
 [submodule "modules/beesblog"]
 	path = modules/beesblog
 	url = https://github.com/thirtybees/beesblog.git
+[submodule "modules/blocktopmenu"]
+	path = modules/blocktopmenu
+	url = https://github.com/thirtybees/blocktopmenu.git
