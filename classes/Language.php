@@ -413,9 +413,9 @@ class LanguageCore extends ObjectModel
         if (!Validate::isLanguageIsoCode((string) $iso)) {
             return false;
         }
-        // TODO: filter beta RC versions etc.
         if ($version == null) {
-            $version = _TB_VERSION_;
+            $versionArray = array_pad(explode('.', _PS_VERSION_), 3, '0');
+            $version = "$versionArray[0].$versionArray[1].$versionArray[2]";
         }
 
         $langPack = false;
@@ -526,8 +526,8 @@ class LanguageCore extends ObjectModel
 
         // If the language pack has not been provided, retrieve it from translations.thirtybees.com
         if (!$langPack) {
-            // TODO: filter rc beta etc.
-            $version = _TB_VERSION_;
+            $versionArray = array_pad(explode('.', _PS_VERSION_), 3, '0');
+            $version = "$versionArray[0].$versionArray[1].$versionArray[2]";
             $guzzle = new GuzzleHttp\Client([
                 'base_uri' => "https://translations.thirtybees.com/packs/{$version}/",
                 'timeout'  => 20,
