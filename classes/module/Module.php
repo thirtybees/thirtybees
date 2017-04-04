@@ -29,6 +29,7 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 use vierbergenlars\SemVer\expression;
+use vierbergenlars\SemVer\version;
 
 /**
  * Class ModuleCore
@@ -1572,7 +1573,7 @@ abstract class ModuleCore
 
         if (version_compare(_PS_VERSION_, $this->ps_versions_compliancy['min'], '<') || version_compare(_PS_VERSION_, $this->ps_versions_compliancy['max'], '>')) {
             return false;
-        } elseif (isset($range) && !$range->satisfiedBy(_TB_VERSION_)) {
+        } elseif (isset($range) && !$range->satisfiedBy(new version(_TB_VERSION_))) {
             return false;
         } else {
             return true;
