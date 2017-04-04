@@ -87,6 +87,7 @@ set_exception_handler(function (Exception $e) {
     $exception = new PrestaShopException($e->getMessage(), $e->getCode(), null, $e->getTrace(), $e->getFile(), $e->getLine());
     $exception->displayMessage();
 });
+Hook::exec('registerErrorHandlers');
 
 if (Tools::convertBytes(ini_get('upload_max_filesize')) < Tools::convertBytes('100M')) {
     ini_set('upload_max_filesize', '100M');
