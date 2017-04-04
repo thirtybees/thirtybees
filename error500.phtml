@@ -50,7 +50,7 @@
                 color: #bbb;
             }
             h2 {
-                color: #D35780;
+                color: #fad629;
                 margin: 0 10px;
                 font-size: 40px;
                 text-align: center;
@@ -69,6 +69,10 @@
                 margin: 1em 0;
             }
 
+			a {
+				color: #d8b81c;
+			}
+
             ul {
                 padding: 0 0 0 40px;
                 margin: 1em 0;
@@ -84,12 +88,34 @@
                 padding: 0;
                 border: 0;
             }
+
+			pre {
+				white-space: pre-wrap;       /* Since CSS 2.1 */
+				white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+				white-space: -pre-wrap;      /* Opera 4-6 */
+				white-space: -o-pre-wrap;    /* Opera 7 */
+				word-wrap: break-word;       /* Internet Explorer 5.5+ */
+				width: 400px;
+			}
         </style>
     </head>
     <body>
         <div class="container">
             <h2><span>500</span> Server Error</h2>
             <p>Oops, something went wrong.<br /><br />Try to refresh this page or feel free to contact us if the problem persists.</p>
+			<pre><code id="encryptedError"><?php echo $markdown; ?></code></pre>
         </div>
+		<script type="text/javascript">
+          (function() {
+            var encryptedError = document.getElementById('encryptedError');
+            var previousmessage = encryptedError.innerHTML;
+
+			window.readAll = function() {
+              encryptedError.innerHTML = previousmessage;
+			};
+
+            encryptedError.innerHTML = '<a href="javascript:readAll();">' + previousmessage.substring(0, 20) + '...</a>';
+          }());
+		</script>
     </body>
 </html>

@@ -151,7 +151,10 @@ class PrestaShopExceptionCore extends Exception
                     $markdown .= $this->displayArgsDebug($trace['args'], $id, true);
                 }
             }
-            echo Encryptor::getInstance()->encrypt($markdown);
+            header('Content-Type: text/html');
+            $markdown = Encryptor::getInstance()->encrypt($markdown);
+
+            echo $this->displayErrorTemplate(_PS_ROOT_DIR_.'/error500.phtml', ['markdown' => $markdown]);
         }
         // Log the error to the disk
         $this->logError();
@@ -312,5 +315,33 @@ class PrestaShopExceptionCore extends Exception
             $this->getLine(),
             ltrim(str_replace([_PS_ROOT_DIR_, '\\'], ['', '/'], $this->getFile()), '/')
         );
+    }
+
+    /**
+     * Display a phtml template file
+     *
+     * @param string $file
+     * @param array  $params
+     *
+     * @return string Content
+     *
+     * @since 1.0.0
+     */
+    protected function displayErrorTemplate($file, $params = [])
+    {
+        foreach ($params as $name => $param) {
+            $$name = $param;
+        }
+
+        ob_start();
+
+        include($file);
+
+        $content = ob_get_contents();
+        if (ob_get_level() && ob_get_length() > 0) {
+            ob_end_clean();
+        }
+
+        return $content;
     }
 }
