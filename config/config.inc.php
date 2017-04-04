@@ -87,7 +87,6 @@ set_exception_handler(function (Exception $e) {
     $exception = new PrestaShopException($e->getMessage(), $e->getCode(), null, $e->getTrace(), $e->getFile(), $e->getLine());
     $exception->displayMessage();
 });
-Hook::exec('registerErrorHandlers');
 
 if (Tools::convertBytes(ini_get('upload_max_filesize')) < Tools::convertBytes('100M')) {
     ini_set('upload_max_filesize', '100M');
@@ -139,6 +138,9 @@ require_once($currentDir.'/defines_uri.inc.php');
 
 global $_MODULES;
 $_MODULES = [];
+
+Hook::exec('actionRegisterAutoloader');
+Hook::exec('actionRegisterErrorHandlers');
 
 define('_PS_PRICE_DISPLAY_PRECISION_', Configuration::get('PS_PRICE_DISPLAY_PRECISION'));
 define('_PS_PRICE_COMPUTE_PRECISION_', _PS_PRICE_DISPLAY_PRECISION_);
