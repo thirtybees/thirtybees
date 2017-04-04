@@ -844,4 +844,127 @@ class UrlRewriteCore extends Objectmodel
             Db::getInstance()->insert(bqSQL(static::$definition['table']), $insert);
         }
     }
+
+    /**
+     * @param int      $idLang
+     * @param int      $idShop
+     * @param array    $categories
+     * @param array    $newRoutes
+     * @param int|null $idProduct
+     *
+     * @since 1.0.1
+     */
+    public static function updateProductRewrite($idLang, $idShop, $idProduct = null)
+    {
+        $newRoutes = [];
+        $categories = static::getCategoryInfo($idLang, $idShop);
+        static::getRoutes($idLang, $idShop, $newRoutes);
+
+        $usedKeys = [
+            'id'            => static::hasKeyword($newRoutes[$idShop][$idLang][static::ENTITY_PRODUCT], 'id'),
+            'rewrite'       => true,
+            'ean13'         => static::hasKeyword($newRoutes[$idShop][$idLang][static::ENTITY_PRODUCT], 'ean13'),
+            'category'      => static::hasKeyword($newRoutes[$idShop][$idLang][static::ENTITY_PRODUCT], 'category'),
+            'categories'    => static::hasKeyword($newRoutes[$idShop][$idLang][static::ENTITY_PRODUCT], 'categories'),
+            'reference'     => static::hasKeyword($newRoutes[$idShop][$idLang][static::ENTITY_PRODUCT], 'reference'),
+            'meta_keywords' => static::hasKeyword($newRoutes[$idShop][$idLang][static::ENTITY_PRODUCT], 'meta_keywords'),
+            'meta_title'    => static::hasKeyword($newRoutes[$idShop][$idLang][static::ENTITY_PRODUCT], 'meta_title'),
+            'manufacturer'  => static::hasKeyword($newRoutes[$idShop][$idLang][static::ENTITY_PRODUCT], 'manufacturer'),
+            'supplier'      => static::hasKeyword($newRoutes[$idShop][$idLang][static::ENTITY_PRODUCT], 'supplier'),
+        ];
+
+
+        $sql = new DbQuery();
+        $select = 'p.`id_product` AS `id`, pl.`link_rewrite` as `rewrite`';
+        if ($usedKeys['category']) {
+            $select .= ', cl.`link_rewrite` as `category`';
+            $sql->leftJoin('category_lang', 'cl', 'p.`id_category_default` = cl.`id_category`');
+            $sql->where('cl.`id_lang` = '.(int) $idLang);
+        }
+        if ($usedKeys['categories']) {
+            $select .= ', p.`id_category_default`';
+        }
+        if ($usedKeys['reference']) {
+            $select .= ', p.`reference`';
+        }
+        if ($usedKeys['meta_keywords']) {
+            $select .= ', pl.`meta_keywords`';
+        }
+        if ($usedKeys['meta_title']) {
+            $select .= ', pl.`meta_title`';
+        }
+        if ($usedKeys['manufacturer']) {
+            $select .= ', m.`name` as `manufacturer_name`';
+            $sql->leftJoin('manufacturer', 'm', 'p.`id_manufacturer` = m.`id_manufacturer`');
+        }
+        if ($usedKeys['supplier']) {
+            $select .= ', s.`name` as `supplier_name`';
+            $sql->leftJoin('supplier', 's', 'p.`id_manufacturer` = s.`id_manufacturer`');
+        }
+
+        $sql->select($select);
+        $sql->from('product', 'p');
+        $sql->leftJoin('product_shop', 'ps', 'ps.`id_product` = p.`id_product`');
+        $sql->leftJoin('product_lang', 'pl', 'pl.`id_product` = p.`id_product`');
+        $sql->where('pl.`id_lang` = '.(int) $idLang);
+        $sql->where('pl.`id_shop` = '.(int) $idShop);
+        if ($idProduct) {
+            $sql->where('p.`id_product` = '.(int) $idProduct);
+        }
+
+        $productInfos = Db::getInstance()->executeS($sql);
+        if ($usedKeys['supplier'] || $usedKeys['manufacturer'] || $usedKeys['categories']) {
+            foreach ($productInfos as &$productInfo) {
+                if ($usedKeys['supplier']) {
+                    $productInfo['supplier'] = Tools::link_rewrite($productInfo['supplier_name']);
+                    unset($productInfo['supplier_name']);
+                }
+                if ($usedKeys['manufacturer']) {
+                    $productInfo['manufacturer'] = Tools::link_rewrite($productInfo['manufacturer_name']);
+                    unset($productInfo['manufacturer_name']);
+                }
+                if ($usedKeys['categories']) {
+                    $categoryRewrite = '';
+                    $idCategory = (int) $productInfo['id_category_default'];
+                    $depth = 0;
+                    while ($idCategory && $depth < static::MAX_CATEGORY_DEPTH && $categories[$idCategory]['rewrite']) {
+                        $categoryRewrite = '/'.$categories[$idCategory]['rewrite'].$categoryRewrite;
+                        $idCategory = (int) $categories[$idCategory]['id_parent'];
+                        $depth++;
+                    }
+                    $productInfo['categories'] = trim($categoryRewrite, '/');
+                }
+            }
+        }
+
+        $insert = [];
+        for ($i = 0; $i < count($productInfos); $i++) {
+            $rewrite = static::createBaseUrl($newRoutes[$idShop][$idLang][static::ENTITY_PRODUCT], $productInfos[$i]);
+
+            $sql = new DbQuery();
+            $sql->select(bqSQL(static::$definition['primary']));
+            $sql->from(bqSQL(static::$definition['table']));
+            $sql->where('`id_entity` = '.(int) $idProduct);
+            $sql->where('`entity` = '.static::ENTITY_PRODUCT);
+            $sql->where('`rewrite` = \''.pSQL($rewrite).'\'');
+            $sql->where('`id_lang` = '.(int) $idLang);
+            $sql->where('`id_shop` = '.(int) $idShop);
+            $sql->where('`redirect` = '.static::REDIRECT_301);
+
+            if (!Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql)) {
+                $insert[] = [
+                    'id_entity' => $productInfos[$i]['id'],
+                    'entity' => static::ENTITY_PRODUCT,
+                    'rewrite' => $rewrite,
+                    'id_shop' => $idShop,
+                    'id_lang' => $idLang,
+                    'redirect' => static::REDIRECT_301,
+                ];
+            }
+        }
+
+        if (!empty($insert)) {
+            Db::getInstance()->insert(bqSQL(static::$definition['table']), $insert);
+        }
+    }
 }

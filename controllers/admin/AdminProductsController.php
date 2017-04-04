@@ -1091,6 +1091,10 @@ class AdminProductsControllerCore extends AdminController
                     }
                 }
             }
+
+            if ($this->isTabSubmitted('Seo')) {
+                UrlRewrite::updateProductRewrite($this->context->language->id, $this->context->shop->id, $this->object->id);
+            }
         }
 
         // Delete a product in the download folder

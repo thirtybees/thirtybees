@@ -771,7 +771,6 @@ class DispatcherCore
 
 
         list($uri) = explode('?', $this->request_uri);
-        $uri = rtrim($uri, '/');
         if (isset(Context::getContext()->shop) && $idShop === null) {
             $idShop = (int) Context::getContext()->shop->id;
         }
@@ -819,7 +818,6 @@ class DispatcherCore
                     );
                 }
                 list($uri) = explode('?', $this->request_uri);
-                $uri = rtrim($uri, '/');
                 if (isset($this->routes[$idShop][Context::getContext()->language->id])) {
                     $routes = $this->routes[$idShop][Context::getContext()->language->id];
 
@@ -916,6 +914,40 @@ class DispatcherCore
                                         }
                                     }
                                     $_GET['id_cms'] = $idCms;
+                                }
+                            }
+                            // Check redirects
+                            $fullRewrite = ltrim($uri, '/');
+                            if ($fullRewrite && $entity = UrlRewrite::lookup(ltrim($uri, '/'), Context::getContext()->language->id, $idShop, UrlRewrite::REDIRECT_301)) {
+                                switch ($entity[0]['entity']) {
+                                    case UrlRewrite::ENTITY_PRODUCT:
+                                        $_GET['id_product'] = (int) $entity[0]['id_entity'];
+                                        $controller = 'product';
+                                        break 2;
+                                    case UrlRewrite::ENTITY_CATEGORY:
+                                        $_GET['id_category'] = (int) $entity[0]['id_entity'];
+                                        $controller = 'category';
+                                        break 2;
+                                    case UrlRewrite::ENTITY_SUPPLIER:
+                                        $_GET['id_supplier'] = (int) $entity[0]['id_entity'];
+                                        $controller = 'supplier';
+                                        break 2;
+                                    case UrlRewrite::ENTITY_MANUFACTURER:
+                                        $_GET['id_manufacturer'] = (int) $entity[0]['id_entity'];
+                                        $controller = 'manufacturer';
+                                        break 2;
+                                    case UrlRewrite::ENTITY_CMS:
+                                        $_GET['id_cms'] = (int) $entity[0]['id_entity'];
+                                        $controller = 'cms';
+                                        break 2;
+                                    case UrlRewrite::ENTITY_CMS_CATEGORY:
+                                        $_GET['id_cms_category'] = (int) $entity[0]['id_entity'];
+                                        $controller = 'cms';
+                                        break 2;
+                                    case UrlRewrite::ENTITY_PAGE:
+                                        $meta = new Meta($entity[0]['id_entity']);
+                                        $controller = $meta->page;
+                                        break 2;
                                 }
                             }
                             foreach ($m as $k => $v) {
@@ -1282,13 +1314,13 @@ class DispatcherCore
             if (count($results) > 1 && !empty($url)) {
                 // Multiple rewrites available, full URL needs to be checked
                 foreach ($results as $result) {
-                    $productLink = rtrim($link->getProductLink($result['id_product']), '/');
+                    $productLink = $link->getProductLink($result['id_product']);
                     if ($url === str_replace($baseLink, '', $productLink)) {
                         return (int) $result['id_product'];
                     }
                 }
             } else {
-                $productLink = rtrim($link->getProductLink((int) $results[0]['id_product']), '/');
+                $productLink = $link->getProductLink((int) $results[0]['id_product']);
                 if ($url === str_replace($baseLink, '', $productLink)) {
                     return (int) $results[0]['id_product'];
                 }
@@ -1330,13 +1362,13 @@ class DispatcherCore
             if (count($results) > 1 && !empty($url)) {
                 // Multiple rewrites available, full URL needs to be checked
                 foreach ($results as $result) {
-                    $categoryLink = rtrim($link->getCategoryLink($result['id_category']), '/');
+                    $categoryLink = $link->getCategoryLink($result['id_category']);
                     if ($url === str_replace($baseLink, '', $categoryLink)) {
                         return (int) $result['id_category'];
                     }
                 }
             } else {
-                $categoryLink = rtrim($link->getCategoryLink((int) $results[0]['id_category']), '/');
+                $categoryLink = $link->getCategoryLink((int) $results[0]['id_category']);
                 if ($url === str_replace($baseLink, '', $categoryLink)) {
                     return (int) $results[0]['id_category'];
                 }
@@ -1417,13 +1449,13 @@ class DispatcherCore
             if (count($results) > 1 && !empty($url)) {
                 // Multiple rewrites available, full URL needs to be checked
                 foreach ($results as $result) {
-                    $cmsLink = rtrim($link->getCMSLink($result['id_cms']), '/');
+                    $cmsLink = $link->getCMSLink($result['id_cms']);
                     if ($url === str_replace($baseLink, '', $cmsLink)) {
                         return (int) $result['id_cms'];
                     }
                 }
             } else {
-                $cmsLink = rtrim($link->getCMSLink((int) $results[0]['id_cms']), '/');
+                $cmsLink = $link->getCMSLink((int) $results[0]['id_cms']);
                 if ($url === str_replace($baseLink, '', $cmsLink)) {
                     return (int) $results[0]['id_cms'];
                 }
@@ -1467,13 +1499,13 @@ class DispatcherCore
             if (count($results) > 1 && !empty($url)) {
                 // Multiple rewrites available, full URL needs to be checked
                 foreach ($results as $result) {
-                    $cmsLink = rtrim($link->getCMSCategoryLink($result['id_cms_category']), '/');
+                    $cmsLink = $link->getCMSCategoryLink($result['id_cms_category']);
                     if ($url === str_replace($baseLink, '', $cmsLink)) {
                         return (int) $result['id_cms_category'];
                     }
                 }
             } else {
-                $cmsLink = rtrim($link->getCMSCategoryLink((int) $results[0]['id_cms_category']), '/');
+                $cmsLink = $link->getCMSCategoryLink((int) $results[0]['id_cms_category']);
                 if ($url === str_replace($baseLink, '', $cmsLink)) {
                     return (int) $results[0]['id_cms_category'];
                 }
