@@ -428,7 +428,7 @@ class WebserviceOutputBuilderCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function getContent($objects, $schemaToDisplay = null, $fieldsToDisplay = 'minimum', $depth = 0, $typeOfView = static::VIEW_LIST, $override = true)
+    public function getContent($objects, $schemaToDisplay = null, $fieldsToDisplay = 'minimum', $depth = 0, $typeOfView = self::VIEW_LIST, $override = true)
     {
         $this->fieldsToDisplay = $fieldsToDisplay;
         $this->depth = $depth;
