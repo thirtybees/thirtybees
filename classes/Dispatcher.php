@@ -1216,6 +1216,14 @@ class DispatcherCore
             }
         } else {
             $addParams = [];
+            foreach ($route['keywords'] as $key => $data) {
+                if (!$data['required'] || !array_key_exists($key, $params) || ($key === 'rewrite' && in_array($route['controller'], ['product', 'category', 'supplier', 'manufacturer', 'cms', 'cms_category']))) {
+                    continue;
+                }
+                if (isset($this->default_routes[$routeId])) {
+                    $queryParams[$this->default_routes[$routeId]['keywords'][$key]['param']] = $params[$key];
+                }
+            }
             foreach ($params as $key => $value) {
                 if (!isset($route['keywords'][$key]) && !isset($this->default_routes[$routeId]['keywords'][$key])) {
                     $addParams[$key] = $value;
