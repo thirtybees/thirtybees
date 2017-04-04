@@ -226,8 +226,7 @@ class AdminTranslationsControllerCore extends AdminController
         $packsToInstall = [];
         $packsToUpdate = [];
         $token = Tools::getAdminToken('AdminLanguages'.(int) Tab::getIdFromClassName('AdminLanguages').(int) $this->context->employee->id);
-        $versionArray = array_pad(explode('.', _TB_VERSION_), 3, '0');
-        $version = "$versionArray[0].$versionArray[1].$versionArray[2]";
+        $version = implode('.', array_pad(explode('.', _TB_VERSION_), 3, '0'));
         $fileName = "{$this->link_lang_pack}/{$version}/index.json";
 
         $guzzle = new \GuzzleHttp\Client([
@@ -1212,8 +1211,7 @@ class AdminTranslationsControllerCore extends AdminController
                 'verify'   => _PS_TOOL_DIR_.'cacert.pem',
             ]);
 
-            $versionArray = array_pad(explode('.', $arrImportLang[1]), 3, '0');
-            $version = "$versionArray[0].$versionArray[1].$versionArray[2]";
+            $version = implode('.', array_pad(explode('.', $arrImportLang[1]), 3, '0'));
             $file = _PS_TRANSLATIONS_DIR_.$arrImportLang[0].'.gzip';
             $arrImportLang[1] = $version;
             try {

@@ -414,8 +414,7 @@ class LanguageCore extends ObjectModel
             return false;
         }
         if ($version == null) {
-            $versionArray = array_pad(explode('.', _PS_VERSION_), 3, '0');
-            $version = "$versionArray[0].$versionArray[1].$versionArray[2]";
+            $version = implode('.', array_pad(explode('.', _PS_VERSION_), 3, '0'));
         }
 
         $langPack = false;
@@ -526,8 +525,7 @@ class LanguageCore extends ObjectModel
 
         // If the language pack has not been provided, retrieve it from translations.thirtybees.com
         if (!$langPack) {
-            $versionArray = array_pad(explode('.', _PS_VERSION_), 3, '0');
-            $version = "$versionArray[0].$versionArray[1].$versionArray[2]";
+            $version = implode('.', array_pad(explode('.', _PS_VERSION_), 3, '0'));
             $guzzle = new GuzzleHttp\Client([
                 'base_uri' => "https://translations.thirtybees.com/packs/{$version}/",
                 'timeout'  => 20,
