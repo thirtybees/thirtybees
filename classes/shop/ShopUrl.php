@@ -61,6 +61,7 @@ class ShopUrlCore extends ObjectModel
         'table'   => 'shop_url',
         'primary' => 'id_shop_url',
         'path'    => '/config/shop.inc.php', // Has to match include() above.
+        'storage' => 'shopUrlConfig',
         'fields'  => [
             'active'       => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                          ],
             'main'         => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                          ],
@@ -89,7 +90,8 @@ class ShopUrlCore extends ObjectModel
      */
     public function update($null_values = false)
     {
-        global $shopUrlConfig;
+        $storageName = static::$definition['storage'];
+        global ${$storageName};
 
         $result = parent::update($null_values);
 
@@ -100,10 +102,11 @@ class ShopUrlCore extends ObjectModel
                 FROM '._DB_PREFIX_.'shop_url';
         $sqlResult = Db::getInstance()->executeS($sql);
 
-        $shopUrlConfig = array();
+        $storage = &${$storageName};
+        $storage = array();
         foreach ($sqlResult as $url) {
-            $shopUrlConfig[$url['id_shop_url']] = $url;
-            unset($shopUrlConfig[$url['id_shop_url']]['id_shop_url']);
+            $storage[$url['id_shop_url']] = $url;
+            unset($storage[$url['id_shop_url']]['id_shop_url']);
         }
 
         static::writeStorage();
@@ -117,14 +120,15 @@ class ShopUrlCore extends ObjectModel
      */
     public static function push()
     {
-        global $shopUrlConfig;
+        $storageName = static::$definition['storage'];
+        global ${$storageName};
 
-        if (is_array($shopUrlConfig)) {
+        if (is_array(${$storageName})) {
             // To make sure we also drop records no longer existing, we drop the
             // entire table and write a fresh one. Performance is no issue here.
             Db::getInstance()->delete('shop_url');
 
-            foreach ($shopUrlConfig as $key => $url) {
+            foreach (${$storageName} as $key => $url) {
                 $url['id_shop_url'] = $key;
 
                 Db::getInstance()->insert('shop_url', $url);
@@ -142,13 +146,14 @@ class ShopUrlCore extends ObjectModel
      */
     public static function writeStorage()
     {
-        global $shopUrlConfig; // Assume it exists.
+        $storageName = static::$definition['storage'];
+        global ${$storageName}; // Assume it exists.
 
         $result = file_put_contents(_PS_ROOT_DIR_.static::$definition['path'],
             "<?php\n\n".
-            'global $shopUrlConfig;'."\n\n".
-            '$shopUrlConfig = '.
-              var_export($shopUrlConfig, true).
+            'global $'.$storageName.';'."\n\n".
+            '$'.$storageName.' = '.
+              var_export(${$storageName}, true).
             ';'."\n");
 
         // Clear most citizens in cache-mess-city. Else the include_once()
