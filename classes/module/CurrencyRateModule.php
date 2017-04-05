@@ -84,7 +84,7 @@ abstract class CurrencyRateModuleCore extends Module
             return false;
         }
 
-        static::scanMissingCurrencyRateModules();
+        static::scanMissingCurrencyRateModules(false, $this->name);
 
         return true;
     }
@@ -151,8 +151,9 @@ abstract class CurrencyRateModuleCore extends Module
      * @return false|array Result
      *
      * @since 1.0.0
+     * @since 1.0.1 Extra module name
      */
-    public static function scanMissingCurrencyRateModules($baseCurrency = false)
+    public static function scanMissingCurrencyRateModules($baseCurrency = false, $extraModule = null)
     {
         if (!$baseCurrency) {
             $defaultCurrency = Currency::getDefaultCurrency();
@@ -160,6 +161,10 @@ abstract class CurrencyRateModuleCore extends Module
                 return false;
             }
             $baseCurrency = $defaultCurrency->iso_code;
+        }
+
+        if ($extraModule) {
+            $extraModule = Module::getInstanceByName($extraModule);
         }
 
         $registeredModules = static::getCurrencyRateInfo();
@@ -172,6 +177,14 @@ abstract class CurrencyRateModuleCore extends Module
                 }
 
                 $availableModuleName = static::providesExchangeRate($currency->iso_code, $baseCurrency, true);
+                if (!$availableModuleName && Validate::isLoadedObject($extraModule)) {
+                    /** @var CurrencyRateModule $providedCurrencies */
+                    $providedCurrencies = $extraModule->getSupportedCurrencies();
+                    if (in_array($baseCurrency, $providedCurrencies) && in_array($currencyCode, $providedCurrencies)) {
+                        $availableModuleName = $extraModule->name;
+                    }
+                }
+
                 if ($availableModuleName) {
                     $availableModule = Module::getInstanceByName($availableModuleName);
                     if (Validate::isLoadedObject($availableModule)) {
@@ -319,22 +332,18 @@ abstract class CurrencyRateModuleCore extends Module
      */
     public static function setModule($idCurrency, $idModule)
     {
-        if (Db::getInstance()->getValue('SELECT `id_currency` FROM `'._DB_PREFIX_.'currency_module` WHERE `id_currency` = '.(int) $idCurrency)) {
-            Db::getInstance()->update(
-                'currency_modules',
-                [
-                    'id_module' => (int) $idModule,
-                ],
-                '`id_currency` = '.(int) $idCurrency
-            );
-        } else {
-            Db::getInstance()->insert(
-                'currency_module',
-                [
-                    'id_currency' => (int) $idCurrency,
-                    'id_module'   => (int) $idModule,
-                ]
-            );
-        }
+        Db::getInstance()->delete(
+            'currency_module',
+            '`id_currency` = '.(int) $idCurrency,
+            1,
+            false
+        );
+        Db::getInstance()->insert(
+            'currency_module',
+            [
+                'id_currency' => (int) $idCurrency,
+                'id_module'   => (int) $idModule,
+            ]
+        );
     }
 }

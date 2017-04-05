@@ -71,7 +71,7 @@ class AdminCurrenciesControllerCore extends AdminController
             'change' => [
                 'title'       => $this->l('Currency rates'),
                 'image'       => '../img/admin/exchangesrate.gif',
-                'description' => $this->l('Use thirty bees\' webservice to update your currency\'s exchange rates. However, please use caution: rates are provided as-is.'),
+                'description' => $this->l('Use currency rate modules to update your currency\'s exchange rates. However, please use caution: rates are provided as-is.'),
                 'submit'      => [
                     'title' => $this->l('Update currency rates'),
                     'name'  => 'SubmitExchangesRates',
