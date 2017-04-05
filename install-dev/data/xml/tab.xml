@@ -210,6 +210,12 @@
     <tab id="SEO_URLs" id_parent="Preferences" active="1" hide_host_mode="0">
       <class_name>AdminMeta</class_name>
     </tab>
+    <tab id="Redirects" id_parent="Preferences" active="1" hide_host_mode="0">
+      <class_name>AdminRedirects</class_name>
+    </tab>
+    <tab id="Duplicate_URLs" id_parent="Preferences" active="1" hide_host_mode="0">
+      <class_name>AdminDuplicateUrls</class_name>
+    </tab>
     <tab id="CMS" id_parent="Preferences" active="1" hide_host_mode="0">
       <class_name>AdminCmsContent</class_name>
     </tab>
