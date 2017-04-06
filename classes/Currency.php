@@ -251,11 +251,20 @@ class CurrencyCore extends ObjectModel
         }
 
         $currencyRates = CurrencyRateModule::getCurrencyRateInfo();
+        $moduleRates = [];
         foreach ($currencyRates as $currency => $module) {
-            if (Tools::strtoupper($currency) !== 'USD') {
+            if (Tools::strtoupper($currency) === Tools::strtoupper($defaultCurrency->iso_code)) {
                 continue;
             }
-            $response = Hook::exec('actionRetrieveCurrencyRates', ['currencies' => [Tools::strtoupper($currency)], 'baseCurrency' => Tools::strtoupper($defaultCurrency->iso_code)], $module->id, true);
+            if (!isset($moduleRates[$module->id])) {
+                $moduleRates[$module->id] = [Tools::strtoupper($currency)];
+            } else {
+                $moduleRates[$module->id][] = Tools::strtoupper($currency);
+            }
+        }
+
+        foreach ($moduleRates as $idModule => $currencies) {
+            $response = Hook::exec('actionRetrieveCurrencyRates', ['currencies' => $currencies, 'baseCurrency' => Tools::strtoupper($defaultCurrency->iso_code)], $idModule, true);
             foreach ($response as $rates) {
                 foreach ($rates as $isoCode => $rate) {
                     $currency = Currency::getCurrencyInstance(Currency::getIdByIsoCode($isoCode));
