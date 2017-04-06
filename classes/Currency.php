@@ -143,8 +143,8 @@ class CurrencyCore extends ObjectModel
     }
 
     /**
-     * @param      $idModule
-     * @param null $idShop
+     * @param int      $idModule
+     * @param int|null $idShop
      *
      * @return array|bool|null|object
      *
@@ -166,8 +166,8 @@ class CurrencyCore extends ObjectModel
     }
 
     /**
-     * @param      $idModule
-     * @param null $idShop
+     * @param int      $idModule
+     * @param int|null $idShop
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
@@ -193,8 +193,8 @@ class CurrencyCore extends ObjectModel
     }
 
     /**
-     * @param      $idModule
-     * @param null $idShop
+     * @param int      $idModule
+     * @param int|null $idShop
      *
      * @return array|bool|false|mysqli_result|null|PDOStatement|resource
      *
@@ -220,7 +220,7 @@ class CurrencyCore extends ObjectModel
     }
 
     /**
-     * @param $idCurrency
+     * @param int $idCurrency
      *
      * @return array|bool|null|object
      *
@@ -252,17 +252,16 @@ class CurrencyCore extends ObjectModel
 
         $currencyRates = CurrencyRateModule::getCurrencyRateInfo();
         foreach ($currencyRates as $currency => $module) {
-            /** @var CurrencyRateModule $module */
-            $currencyObj = new Currency(Currency::getIdByIsoCode($currency));
-            if (!Validate::isLoadedObject($currencyObj)) {
+            if (Tools::strtoupper($currency) !== 'USD') {
                 continue;
             }
-            if ($currencyObj->id != $defaultCurrency->id && Validate::isLoadedObject($module)) {
-                /** @var Currency $currency */
-                $rate = $module->hookRate($defaultCurrency->iso_code, $currencyObj->iso_code);
-                if ($rate !== false) {
-                    $currencyObj->conversion_rate = $rate;
-                    $currencyObj->save();
+            $response = Hook::exec('actionRetrieveCurrencyRates', ['currencies' => [Tools::strtoupper($currency)], 'baseCurrency' => Tools::strtoupper($defaultCurrency->iso_code)], $module->id, true);
+            foreach ($response as $rates) {
+                foreach ($rates as $isoCode => $rate) {
+                    $currency = Currency::getCurrencyInstance(Currency::getIdByIsoCode($isoCode));
+                    $currency->conversion_rate = $rate;
+
+                    $currency->save();
                 }
             }
         }
@@ -316,7 +315,7 @@ class CurrencyCore extends ObjectModel
     }
 
     /**
-     * @param $id
+     * @param int $id
      *
      * @return mixed
      *
