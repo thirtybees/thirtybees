@@ -131,7 +131,8 @@ class QqUploadedFileForm
 {
     /**
      * Save the file to the specified path
-     * @return bool TRUE on success
+     *
+     * @return bool|array TRUE on success
      */
     public function save()
     {
