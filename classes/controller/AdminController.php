@@ -3181,24 +3181,21 @@ class AdminControllerCore extends Controller
      */
     public function renderModulesList()
     {
-        // Load cache file modules list (natives and partners modules)
-        $xmlModules = false;
-        if (file_exists(_PS_ROOT_DIR_.Module::CACHE_FILE_MODULES_LIST)) {
-            $xmlModules = @simplexml_load_file(_PS_ROOT_DIR_.Module::CACHE_FILE_MODULES_LIST);
+        // Load cached modules (from the `tbupdater` module)
+        $jsonModules = false;
+        $updater = Module::getInstanceByName('tbupdater');
+        if (Validate::isLoadedObject($updater)) {
+            /** @var TbUpdater $updater */
+            $jsonModules = $updater->getCachedModuleInfo();
         }
-        if ($xmlModules) {
-            foreach ($xmlModules->children() as $xml_module) {
-                /** @var SimpleXMLElement $xml_module */
-                foreach ($xml_module->children() as $module) {
-                    /** @var SimpleXMLElement $module */
-                    foreach ($module->attributes() as $key => $value) {
-                        if ($xml_module->attributes() == 'native' && $key == 'name') {
-                            $this->list_natives_modules[] = (string) $value;
-                        }
-                        if ($xml_module->attributes() == 'partner' && $key == 'name') {
-                            $this->list_partners_modules[] = (string) $value;
-                        }
-                    }
+
+        if ($jsonModules) {
+            foreach ($jsonModules as $moduleName => $jsonModule) {
+                /** @var array $jsonModules */
+                if (isset($jsonModule['type']) && $jsonModule['type'] === 'partner') {
+                    $this->list_partners_modules = $moduleName;
+                } else {
+                    $this->list_natives_modules = $moduleName;
                 }
             }
         }
@@ -3321,26 +3318,18 @@ class AdminControllerCore extends Controller
         // Fill module data
         $module->logo = '../../img/questionmark.png';
 
-        if (@filemtime(
-            _PS_ROOT_DIR_.DIRECTORY_SEPARATOR.basename(_PS_MODULE_DIR_).DIRECTORY_SEPARATOR.$module->name
-            .DIRECTORY_SEPARATOR.'logo.gif'
-        )
-        ) {
+        if (@filemtime(_PS_ROOT_DIR_.DIRECTORY_SEPARATOR.basename(_PS_MODULE_DIR_).DIRECTORY_SEPARATOR.$module->name.DIRECTORY_SEPARATOR.'logo.gif')) {
             $module->logo = 'logo.gif';
         }
-        if (@filemtime(
-            _PS_ROOT_DIR_.DIRECTORY_SEPARATOR.basename(_PS_MODULE_DIR_).DIRECTORY_SEPARATOR.$module->name
-            .DIRECTORY_SEPARATOR.'logo.png'
-        )
-        ) {
+        if (@filemtime(_PS_ROOT_DIR_.DIRECTORY_SEPARATOR.basename(_PS_MODULE_DIR_).DIRECTORY_SEPARATOR.$module->name.DIRECTORY_SEPARATOR.'logo.png')) {
             $module->logo = 'logo.png';
         }
 
-        $link_admin_modules = $this->context->link->getAdminLink('AdminModules', true);
+        $linkAdminModules = $this->context->link->getAdminLink('AdminModules', true);
 
-        $module->options['install_url'] = $link_admin_modules.'&install='.urlencode($module->name).'&tab_module='.$module->tab.'&module_name='.$module->name.'&anchor='.ucfirst($module->name);
-        $module->options['update_url'] = $link_admin_modules.'&update='.urlencode($module->name).'&tab_module='.$module->tab.'&module_name='.$module->name.'&anchor='.ucfirst($module->name);
-        $module->options['uninstall_url'] = $link_admin_modules.'&uninstall='.urlencode($module->name).'&tab_module='.$module->tab.'&module_name='.$module->name.'&anchor='.ucfirst($module->name);
+        $module->options['install_url'] = $linkAdminModules.'&install='.urlencode($module->name).'&tab_module='.$module->tab.'&module_name='.$module->name.'&anchor='.ucfirst($module->name);
+        $module->options['update_url'] = $linkAdminModules.'&update='.urlencode($module->name).'&tab_module='.$module->tab.'&module_name='.$module->name.'&anchor='.ucfirst($module->name);
+        $module->options['uninstall_url'] = $linkAdminModules.'&uninstall='.urlencode($module->name).'&tab_module='.$module->tab.'&module_name='.$module->name.'&anchor='.ucfirst($module->name);
 
         $module->optionsHtml = $this->displayModuleOptions($module, $outputType, $back);
 
@@ -3361,7 +3350,7 @@ class AdminControllerCore extends Controller
      * Display modules list
      *
      * @param Module      $module
-     * @param string      $output_type (link or select)
+     * @param string      $outputType (link or select)
      * @param string|null $back
      *
      * @return string|array
@@ -3369,7 +3358,7 @@ class AdminControllerCore extends Controller
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function displayModuleOptions($module, $output_type = 'link', $back = null)
+    public function displayModuleOptions($module, $outputType = 'link', $back = null)
     {
         if (!isset($module->enable_device)) {
             $module->enable_device = Context::DEVICE_COMPUTER | Context::DEVICE_TABLET | Context::DEVICE_MOBILE;
@@ -3398,11 +3387,11 @@ class AdminControllerCore extends Controller
             $this->translationsTab['Mark as Favorite'] = $this->l('Mark as Favorite');
         }
 
-        $link_admin_modules = $this->context->link->getAdminLink('AdminModules', true);
-        $modules_options = [];
+        $linkAdminModules = $this->context->link->getAdminLink('AdminModules', true);
+        $modulesOptions = [];
 
-        $configure_module = [
-            'href'    => $link_admin_modules.'&configure='.urlencode($module->name).'&tab_module='.$module->tab.'&module_name='.urlencode($module->name),
+        $configureModule = [
+            'href'    => $linkAdminModules.'&configure='.urlencode($module->name).'&tab_module='.$module->tab.'&module_name='.urlencode($module->name),
             'onclick' => $module->onclick_option && isset($module->onclick_option_content['configure']) ? $module->onclick_option_content['configure'] : '',
             'title'   => '',
             'text'    => $this->translationsTab['Configure'],
@@ -3410,35 +3399,35 @@ class AdminControllerCore extends Controller
             'icon'    => 'wrench',
         ];
 
-        $desactive_module = [
-            'href'    => $link_admin_modules.'&module_name='.urlencode($module->name).'&'.($module->active ? 'enable=0' : 'enable=1').'&tab_module='.$module->tab,
+        $deactivateModule = [
+            'href'    => $linkAdminModules.'&module_name='.urlencode($module->name).'&'.($module->active ? 'enable=0' : 'enable=1').'&tab_module='.$module->tab,
             'onclick' => $module->active && $module->onclick_option && isset($module->onclick_option_content['desactive']) ? $module->onclick_option_content['desactive'] : '',
             'title'   => Shop::isFeatureActive() ? htmlspecialchars($module->active ? $this->translationsTab['Disable this module'] : $this->translationsTab['Enable this module for all shops']) : '',
             'text'    => $module->active ? $this->translationsTab['Disable'] : $this->translationsTab['Enable'],
             'cond'    => $module->id,
             'icon'    => 'off',
         ];
-        $link_reset_module = $link_admin_modules.'&module_name='.urlencode($module->name).'&reset&tab_module='.$module->tab;
+        $linkResetModule = $linkAdminModules.'&module_name='.urlencode($module->name).'&reset&tab_module='.$module->tab;
 
-        $is_reset_ready = false;
+        $isResetReady = false;
         if (Validate::isModuleName($module->name)) {
             if (method_exists(Module::getInstanceByName($module->name), 'reset')) {
-                $is_reset_ready = true;
+                $isResetReady = true;
             }
         }
 
-        $reset_module = [
-            'href'    => $link_reset_module,
+        $resetModule = [
+            'href'    => $linkResetModule,
             'onclick' => $module->onclick_option && isset($module->onclick_option_content['reset']) ? $module->onclick_option_content['reset'] : '',
             'title'   => '',
             'text'    => $this->translationsTab['Reset'],
             'cond'    => $module->id && $module->active,
             'icon'    => 'undo',
-            'class'   => ($is_reset_ready ? 'reset_ready' : ''),
+            'class'   => ($isResetReady ? 'reset_ready' : ''),
         ];
 
-        $delete_module = [
-            'href'    => $link_admin_modules.'&delete='.urlencode($module->name).'&tab_module='.$module->tab.'&module_name='.urlencode($module->name),
+        $deleteModule = [
+            'href'    => $linkAdminModules.'&delete='.urlencode($module->name).'&tab_module='.$module->tab.'&module_name='.urlencode($module->name),
             'onclick' => $module->onclick_option && isset($module->onclick_option_content['delete']) ? $module->onclick_option_content['delete'] : 'return confirm(\''.$this->translationsTab['This action will permanently remove the module from the server. Are you sure you want to do this?'].'\');',
             'title'   => '',
             'text'    => $this->translationsTab['Delete'],
@@ -3447,8 +3436,8 @@ class AdminControllerCore extends Controller
             'class'   => 'text-danger',
         ];
 
-        $display_mobile = [
-            'href'    => $link_admin_modules.'&module_name='.urlencode($module->name).'&'.($module->enable_device & Context::DEVICE_MOBILE ? 'disable_device' : 'enable_device').'='.Context::DEVICE_MOBILE.'&tab_module='.$module->tab,
+        $displayMobile = [
+            'href'    => $linkAdminModules.'&module_name='.urlencode($module->name).'&'.($module->enable_device & Context::DEVICE_MOBILE ? 'disable_device' : 'enable_device').'='.Context::DEVICE_MOBILE.'&tab_module='.$module->tab,
             'onclick' => '',
             'title'   => htmlspecialchars($module->enable_device & Context::DEVICE_MOBILE ? $this->translationsTab['Disable on mobiles'] : $this->translationsTab['Display on mobiles']),
             'text'    => $module->enable_device & Context::DEVICE_MOBILE ? $this->translationsTab['Disable on mobiles'] : $this->translationsTab['Display on mobiles'],
@@ -3456,8 +3445,8 @@ class AdminControllerCore extends Controller
             'icon'    => 'mobile',
         ];
 
-        $display_tablet = [
-            'href'    => $link_admin_modules.'&module_name='.urlencode($module->name).'&'.($module->enable_device & Context::DEVICE_TABLET ? 'disable_device' : 'enable_device').'='.Context::DEVICE_TABLET.'&tab_module='.$module->tab,
+        $displayTablet = [
+            'href'    => $linkAdminModules.'&module_name='.urlencode($module->name).'&'.($module->enable_device & Context::DEVICE_TABLET ? 'disable_device' : 'enable_device').'='.Context::DEVICE_TABLET.'&tab_module='.$module->tab,
             'onclick' => '',
             'title'   => htmlspecialchars($module->enable_device & Context::DEVICE_TABLET ? $this->translationsTab['Disable on tablets'] : $this->translationsTab['Display on tablets']),
             'text'    => $module->enable_device & Context::DEVICE_TABLET ? $this->translationsTab['Disable on tablets'] : $this->translationsTab['Display on tablets'],
@@ -3465,8 +3454,8 @@ class AdminControllerCore extends Controller
             'icon'    => 'tablet',
         ];
 
-        $display_computer = [
-            'href'    => $link_admin_modules.'&module_name='.urlencode($module->name).'&'.($module->enable_device & Context::DEVICE_COMPUTER ? 'disable_device' : 'enable_device').'='.Context::DEVICE_COMPUTER.'&tab_module='.$module->tab,
+        $displayComputer = [
+            'href'    => $linkAdminModules.'&module_name='.urlencode($module->name).'&'.($module->enable_device & Context::DEVICE_COMPUTER ? 'disable_device' : 'enable_device').'='.Context::DEVICE_COMPUTER.'&tab_module='.$module->tab,
             'onclick' => '',
             'title'   => htmlspecialchars($module->enable_device & Context::DEVICE_COMPUTER ? $this->translationsTab['Disable on computers'] : $this->translationsTab['Display on computers']),
             'text'    => $module->enable_device & Context::DEVICE_COMPUTER ? $this->translationsTab['Disable on computers'] : $this->translationsTab['Display on computers'],
@@ -3475,7 +3464,7 @@ class AdminControllerCore extends Controller
         ];
 
         $install = [
-            'href'    => $link_admin_modules.'&install='.urlencode($module->name).'&tab_module='.$module->tab.'&module_name='.$module->name.'&anchor='.ucfirst($module->name).(!is_null($back) ? '&back='.urlencode($back) : ''),
+            'href'    => $linkAdminModules.'&install='.urlencode($module->name).'&tab_module='.$module->tab.'&module_name='.$module->name.'&anchor='.ucfirst($module->name).(!is_null($back) ? '&back='.urlencode($back) : ''),
             'onclick' => '',
             'title'   => $this->translationsTab['Install'],
             'text'    => $this->translationsTab['Install'],
@@ -3484,7 +3473,7 @@ class AdminControllerCore extends Controller
         ];
 
         $uninstall = [
-            'href'    => $link_admin_modules.'&uninstall='.urlencode($module->name).'&tab_module='.$module->tab.'&module_name='.$module->name.'&anchor='.ucfirst($module->name).(!is_null($back) ? '&back='.urlencode($back) : ''),
+            'href'    => $linkAdminModules.'&uninstall='.urlencode($module->name).'&tab_module='.$module->tab.'&module_name='.$module->name.'&anchor='.ucfirst($module->name).(!is_null($back) ? '&back='.urlencode($back) : ''),
             'onclick' => (isset($module->onclick_option_content['uninstall']) ? $module->onclick_option_content['uninstall'] : 'return confirm(\''.$this->translationsTab['confirm_uninstall_popup'].'\');'),
             'title'   => $this->translationsTab['Uninstall'],
             'text'    => $this->translationsTab['Uninstall'],
@@ -3492,7 +3481,7 @@ class AdminControllerCore extends Controller
             'icon'    => 'minus-sign-alt',
         ];
 
-        $remove_from_favorite = [
+        $removeFromFavorite = [
             'href'        => '#',
             'class'       => 'action_unfavorite toggle_favorite',
             'onclick'     => '',
@@ -3504,7 +3493,7 @@ class AdminControllerCore extends Controller
             'data-module' => $module->name,
         ];
 
-        $mark_as_favorite = [
+        $markAsFavorite = [
             'href'        => '#',
             'class'       => 'action_favorite toggle_favorite',
             'onclick'     => '',
@@ -3534,77 +3523,77 @@ class AdminControllerCore extends Controller
         ];
 
         if (isset($module->version_addons) && $module->version_addons) {
-            $modules_options[] = $update;
+            $modulesOptions[] = $update;
         }
 
         if ($module->active) {
-            $modules_options[] = $configure_module;
-            $modules_options[] = $desactive_module;
-            $modules_options[] = $display_mobile;
-            $modules_options[] = $display_tablet;
-            $modules_options[] = $display_computer;
+            $modulesOptions[] = $configureModule;
+            $modulesOptions[] = $deactivateModule;
+            $modulesOptions[] = $displayMobile;
+            $modulesOptions[] = $displayTablet;
+            $modulesOptions[] = $displayComputer;
         } else {
-            $modules_options[] = $desactive_module;
-            $modules_options[] = $configure_module;
+            $modulesOptions[] = $deactivateModule;
+            $modulesOptions[] = $configureModule;
         }
 
-        $modules_options[] = $reset_module;
+        $modulesOptions[] = $resetModule;
 
-        if ($output_type == 'select') {
+        if ($outputType == 'select') {
             if (!$module->id) {
-                $modules_options[] = $install;
+                $modulesOptions[] = $install;
             } else {
-                $modules_options[] = $uninstall;
+                $modulesOptions[] = $uninstall;
             }
-        } elseif ($output_type == 'array') {
+        } elseif ($outputType == 'array') {
             if ($module->id) {
-                $modules_options[] = $uninstall;
+                $modulesOptions[] = $uninstall;
             }
         }
 
         if (isset($module->preferences) && isset($module->preferences['favorite']) && $module->preferences['favorite'] == 1) {
-            $remove_from_favorite['style'] = '';
-            $mark_as_favorite['style'] = 'display:none;';
-            $modules_options[] = $remove_from_favorite;
-            $modules_options[] = $mark_as_favorite;
+            $removeFromFavorite['style'] = '';
+            $markAsFavorite['style'] = 'display:none;';
+            $modulesOptions[] = $removeFromFavorite;
+            $modulesOptions[] = $markAsFavorite;
         } else {
-            $mark_as_favorite['style'] = '';
-            $remove_from_favorite['style'] = 'display:none;';
-            $modules_options[] = $remove_from_favorite;
-            $modules_options[] = $mark_as_favorite;
+            $markAsFavorite['style'] = '';
+            $removeFromFavorite['style'] = 'display:none;';
+            $modulesOptions[] = $removeFromFavorite;
+            $modulesOptions[] = $markAsFavorite;
         }
 
         if ($module->id == 0) {
             $install['cond'] = 1;
             $install['flag_install'] = 1;
-            $modules_options[] = $install;
+            $modulesOptions[] = $install;
         }
-        $modules_options[] = $divider;
-        $modules_options[] = $delete_module;
+        $modulesOptions[] = $divider;
+        $modulesOptions[] = $deleteModule;
 
         $return = '';
-        foreach ($modules_options as $option_name => $option) {
+        foreach ($modulesOptions as $optionName => $option) {
             if ($option['cond']) {
-                if ($output_type == 'link') {
-                    $return .= '<li><a class="'.$option_name.' action_module';
+                if ($outputType == 'link') {
+                    $return .= '<li><a class="'.$optionName.' action_module';
                     $return .= '" href="'.$option['href'].(!is_null($back) ? '&back='.urlencode($back) : '').'"';
                     $return .= ' onclick="'.$option['onclick'].'"  title="'.$option['title'].'"><i class="icon-'.(isset($option['icon']) && $option['icon'] ? $option['icon'] : 'cog').'"></i>&nbsp;'.$option['text'].'</a></li>';
-                } elseif ($output_type == 'array') {
+                } elseif ($outputType == 'array') {
                     if (!is_array($return)) {
                         $return = [];
                     }
 
                     $html = '<a class="';
 
-                    $is_install = isset($option['flag_install']) ? true : false;
+                    $isInstall = isset($option['flag_install']) ? true : false;
 
                     if (isset($option['class'])) {
                         $html .= $option['class'];
                     }
-                    if ($is_install) {
+                    if ($isInstall) {
                         $html .= ' btn btn-success';
                     }
-                    if (!$is_install && count($return) == 0) {
+                    if (!$isInstall && count($return) == 0) {
                         $html .= ' btn btn-default';
                     }
 
@@ -3624,13 +3613,13 @@ class AdminControllerCore extends Controller
 
                     $html .= ' href="'.htmlentities($option['href']).(!is_null($back) ? '&back='.urlencode($back) : '').'" onclick="'.$option['onclick'].'"  title="'.$option['title'].'"><i class="icon-'.(isset($option['icon']) && $option['icon'] ? $option['icon'] : 'cog').'"></i> '.$option['text'].'</a>';
                     $return[] = $html;
-                } elseif ($output_type == 'select') {
-                    $return .= '<option id="'.$option_name.'" data-href="'.htmlentities($option['href']).(!is_null($back) ? '&back='.urlencode($back) : '').'" data-onclick="'.$option['onclick'].'">'.$option['text'].'</option>';
+                } elseif ($outputType == 'select') {
+                    $return .= '<option id="'.$optionName.'" data-href="'.htmlentities($option['href']).(!is_null($back) ? '&back='.urlencode($back) : '').'" data-onclick="'.$option['onclick'].'">'.$option['text'].'</option>';
                 }
             }
         }
 
-        if ($output_type == 'select') {
+        if ($outputType == 'select') {
             $return = '<select id="select_'.$module->name.'">'.$return.'</select>';
         }
 

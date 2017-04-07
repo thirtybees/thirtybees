@@ -885,7 +885,7 @@ abstract class ModuleCore
 
                     $item->active = 0;
                     $item->onclick_option = false;
-                    $item->trusted = Module::isModuleTrusted($item->name);
+                    $item->trusted = true;
 
                     $moduleList[] = $item;
 
@@ -925,45 +925,46 @@ abstract class ModuleCore
                 if (class_exists($module, false)) {
                     $tmpModule = Adapter_ServiceLocator::get($module);
 
-                    $item = new stdClass();
-                    $item->id = $tmpModule->id;
-                    $item->warning = $tmpModule->warning;
-                    $item->name = $tmpModule->name;
-                    $item->version = $tmpModule->version;
-                    $item->tab = $tmpModule->tab;
-                    $item->displayName = $tmpModule->displayName;
-                    $item->description = stripslashes($tmpModule->description);
-                    $item->author = $tmpModule->author;
-                    $item->author_uri = (isset($tmpModule->author_uri) && $tmpModule->author_uri) ? $tmpModule->author_uri : false;
-                    $item->limited_countries = $tmpModule->limited_countries;
-                    $item->parent_class = get_parent_class($module);
-                    $item->is_configurable = $tmpModule->is_configurable = method_exists($tmpModule, 'getContent') ? 1 : 0;
-                    $item->need_instance = isset($tmpModule->need_instance) ? $tmpModule->need_instance : 0;
-                    $item->active = $tmpModule->active;
-                    $item->trusted = Module::isModuleTrusted($tmpModule->name);
-                    $item->currencies = isset($tmpModule->currencies) ? $tmpModule->currencies : null;
-                    $item->currencies_mode = isset($tmpModule->currencies_mode) ? $tmpModule->currencies_mode : null;
-                    $item->confirmUninstall = isset($tmpModule->confirmUninstall) ? html_entity_decode($tmpModule->confirmUninstall) : null;
-                    $item->description_full = stripslashes($tmpModule->description_full);
-                    $item->additional_description = isset($tmpModule->additional_description) ? stripslashes($tmpModule->additional_description) : null;
-                    $item->compatibility = isset($tmpModule->compatibility) ? (array) $tmpModule->compatibility : null;
-                    $item->nb_rates = isset($tmpModule->nb_rates) ? (array) $tmpModule->nb_rates : null;
-                    $item->avg_rate = isset($tmpModule->avg_rate) ? (array) $tmpModule->avg_rate : null;
-                    $item->badges = isset($tmpModule->badges) ? (array) $tmpModule->badges : null;
-                    $item->url = isset($tmpModule->url) ? $tmpModule->url : null;
-                    $item->onclick_option = method_exists($module, 'onclickOption') ? true : false;
+                    $item = [
+                        'id'                     => $tmpModule->id,
+                        'warning'                => $tmpModule->warning,
+                        'name'                   => $tmpModule->name,
+                        'version'                => $tmpModule->version,
+                        'tab'                    => $tmpModule->tab,
+                        'displayName'            => $tmpModule->displayName,
+                        'description'            => stripslashes($tmpModule->description),
+                        'author'                 => $tmpModule->author,
+                        'author_uri'             => (isset($tmpModule->author_uri) && $tmpModule->author_uri) ? $tmpModule->author_uri : false,
+                        'limited_countries'      => $tmpModule->limited_countries,
+                        'parent_class'           => get_parent_class($module),
+                        'is_configurable'        => $tmpModule->is_configurable = method_exists($tmpModule, 'getContent') ? 1 : 0,
+                        'need_instance'          => isset($tmpModule->need_instance) ? $tmpModule->need_instance : 0,
+                        'active'                 => $tmpModule->active,
+                        'trusted'                => true,
+                        'currencies'             => isset($tmpModule->currencies) ? $tmpModule->currencies : null,
+                        'currencies_mode'        => isset($tmpModule->currencies_mode) ? $tmpModule->currencies_mode : null,
+                        'confirmUninstall'       => isset($tmpModule->confirmUninstall) ? html_entity_decode($tmpModule->confirmUninstall) : null,
+                        'description_full'       => stripslashes($tmpModule->description_full),
+                        'additional_description' => isset($tmpModule->additional_description) ? stripslashes($tmpModule->additional_description) : null,
+                        'compatibility'          => isset($tmpModule->compatibility) ? (array) $tmpModule->compatibility : null,
+                        'nb_rates'               => isset($tmpModule->nb_rates) ? (array) $tmpModule->nb_rates : null,
+                        'avg_rate'               => isset($tmpModule->avg_rate) ? (array) $tmpModule->avg_rate : null,
+                        'badges'                 => isset($tmpModule->badges) ? (array) $tmpModule->badges : null,
+                        'url'                    => isset($tmpModule->url) ? $tmpModule->url : null,
+                        'onclick_option'         => method_exists($module, 'onclickOption') ? true : false,
+                    ];
 
-                    if ($item->onclick_option) {
+                    if ($item['onclick_option']) {
                         $href = Context::getContext()->link->getAdminLink('Module', true).'&module_name='.$tmpModule->name.'&tab_module='.$tmpModule->tab;
-                        $item->onclick_option_content = [];
+                        $item['onclick_option_content'] = [];
                         $optionTab = ['desactive', 'reset', 'configure', 'delete'];
 
                         foreach ($optionTab as $opt) {
-                            $item->onclick_option_content[$opt] = $tmpModule->onclickOption($opt, $href);
+                            $item['onclick_option_content'][$opt] = $tmpModule->onclickOption($opt, $href);
                         }
                     }
 
-                    $moduleList[] = $item;
+                    $moduleList[$tmpModule->name] = (object) $item;
 
                     if (!$xmlExist || $needNewConfigFile) {
                         // @codingStandardsIgnoreStart
@@ -999,107 +1000,64 @@ abstract class ModuleCore
             }
         }
 
-        // Get Default Country Modules and customer module
-        $filesList = [];
-        foreach ($filesList as $f) {
-            if (file_exists($f['file']) && ($f['loggedOnAddons'] == 0 || $loggedOnAddons)) {
-                if (Module::useTooMuchMemory()) {
-                    $errors[] = Tools::displayError('All modules cannot be loaded due to memory limit restrictions, please increase your memory_limit value on your server configuration');
-                    break;
+        // Get native and partner modules
+        /** @var TbUpdater $updater */
+        $updater = Module::getInstanceByName('tbupdater');
+        $languageCode = str_replace('_', '-', Tools::strtolower(Context::getContext()->language->language_code));
+
+        if (Validate::isLoadedObject($updater) && $modules = $updater->getCachedModuleInfo()) {
+            foreach ($modules as $name => $module) {
+                if (array_key_exists($name, $moduleList)) {
+                    $moduleList[$name]->version = $module['versions']['latest'];
+
+                    continue;
                 }
 
-                $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
-                $file = $f['file'];
-                try {
-                    $content = (string) $guzzle->get($file)->getBody();
-                } catch (Exception $e) {
-                    $content = '';
-                }
-                $xml = @simplexml_load_string($content, null, LIBXML_NOCDATA);
+                $item = [
+                    'id'                  => 0,
+                    'warning'             => '',
+                    'type'                => 'native',
+                    'name'                => $name,
+                    'version'             => $module['versions']['latest'],
+                    'tab'                 => isset($module['tab']) ? $module['tab'] : 'administration',
+                    'displayName'         => isset($module['displayName'][$languageCode]) ? $module['displayName'][$languageCode] : (isset($module['displayName']['en-us']) ? $module['displayName']['en-us'] : 'Unknown module'),
+                    'description'         => isset($module['description'][$languageCode]) ? $module['description'][$languageCode] : (isset($module['description']['en-us']) ? $module['description']['en-us'] : ''),
+                    'description_full'    => isset($module['description_full'][$languageCode]) ? $module['description_full'][$languageCode] : (isset($module['description_full']['en-us']) ? $module['description_full']['en-us'] : ''),
+                    'author'              => isset($module['author']) ? $module['author'] : 'thirty bees',
+                    'limited_countries'   => [],
+                    'parent_class'        => '',
+                    'onclick_option'      => false,
+                    'is_configurable'     => 0,
+                    'need_instance'       => 0,
+                    'not_on_disk'         => 1,
+                    'available_on_addons' => 1,
+                    'trusted'             => true,
+                    'active'              => 0,
+                    'url'                 => isset($module['url']) ? $module['url'] : '',
+                ];
 
-                if ($xml && isset($xml->module)) {
-                    foreach ($xml->module as $modaddons) {
-                        $flagFound = 0;
-
-                        foreach ($moduleList as $k => &$m) {
-                            if (Tools::strtolower($m->name) == Tools::strtolower($modaddons->name) && !isset($m->available_on_addons)) {
-                                $flagFound = 1;
-                                if ($m->version != $modaddons->version && version_compare($m->version, $modaddons->version) === -1) {
-                                    $moduleList[$k]->version_addons = $modaddons->version;
-                                }
-                            }
+                if (isset($module['img'])) {
+                    if (!file_exists(_PS_TMP_IMG_DIR_.md5((int) $name).'.jpg')) {
+                        $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
+                        try {
+                            $contents = (string) $guzzle->get($module['img'])->getBody();
+                        } catch (Exception $e) {
+                            $contents = null;
                         }
-
-                        if ($flagFound == 0) {
-                            $item = new stdClass();
-                            $item->id = 0;
-                            $item->warning = '';
-                            $item->type = strip_tags((string) $f['type']);
-                            $item->name = strip_tags((string) $modaddons->name);
-                            $item->version = strip_tags((string) $modaddons->version);
-                            $item->tab = strip_tags((string) $modaddons->tab);
-                            $item->displayName = strip_tags((string) $modaddons->displayName);
-                            $item->description = stripslashes(strip_tags((string) $modaddons->description));
-                            $item->description_full = stripslashes(strip_tags((string) $modaddons->description_full));
-                            $item->author = strip_tags((string) $modaddons->author);
-                            $item->limited_countries = [];
-                            $item->parent_class = '';
-                            $item->onclick_option = false;
-                            $item->is_configurable = 0;
-                            $item->need_instance = 0;
-                            $item->not_on_disk = 1;
-                            $item->available_on_addons = 1;
-                            $item->trusted = true;
-                            $item->active = 0;
-                            $item->description_full = stripslashes($modaddons->description_full);
-                            $item->additional_description = isset($modaddons->additional_description) ? stripslashes($modaddons->additional_description) : null;
-                            $item->compatibility = isset($modaddons->compatibility) ? (array) $modaddons->compatibility : null;
-                            $item->nb_rates = isset($modaddons->nb_rates) ? (array) $modaddons->nb_rates : null;
-                            $item->avg_rate = isset($modaddons->avg_rate) ? (array) $modaddons->avg_rate : null;
-                            $item->badges = isset($modaddons->badges) ? (array) $modaddons->badges : null;
-                            $item->url = isset($modaddons->url) ? $modaddons->url : null;
-
-                            if (isset($modaddons->img)) {
-                                if (!file_exists(_PS_TMP_IMG_DIR_.md5((int) $modaddons->id.'-'.$modaddons->name).'.jpg')) {
-                                    $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
-                                    try {
-                                        $contents = (string) $guzzle->get($modaddons->img)->getBody();
-                                    } catch (Exception $e) {
-                                        $contents = null;
-                                    }
-                                    if (!file_put_contents(_PS_TMP_IMG_DIR_.md5((int) $modaddons->id.'-'.$modaddons->name).'.jpg', $contents)) {
-                                        copy(_PS_IMG_DIR_.'404.gif', _PS_TMP_IMG_DIR_.md5((int) $modaddons->id.'-'.$modaddons->name).'.jpg');
-                                    }
-                                }
-
-                                if (file_exists(_PS_TMP_IMG_DIR_.md5((int) $modaddons->id.'-'.$modaddons->name).'.jpg')) {
-                                    $item->image = '../img/tmp/'.md5((int) $modaddons->id.'-'.$modaddons->name).'.jpg';
-                                }
-                            }
-
-                            if ($item->type == 'addonsMustHave') {
-                                $item->addons_buy_url = strip_tags((string) $modaddons->url);
-                                $prices = (array) $modaddons->price;
-                                $idDefaultCurrency = Configuration::get('PS_CURRENCY_DEFAULT');
-
-                                foreach ($prices as $currency => $price) {
-                                    if ($idCurrency = Currency::getIdByIsoCode($currency)) {
-                                        $item->price = (float) $price;
-                                        $item->id_currency = (int) $idCurrency;
-
-                                        if ($idDefaultCurrency == $idCurrency) {
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-
-                            $moduleList[$modaddons->id.'-'.$item->name] = $item;
+                        if (!@file_put_contents(_PS_TMP_IMG_DIR_.md5((int) $name).'.jpg', $contents)) {
+                            copy(_PS_IMG_DIR_.'404.gif', _PS_TMP_IMG_DIR_.md5((int) $name).'.jpg');
                         }
                     }
+
+                    if (@file_exists(_PS_TMP_IMG_DIR_.md5((int) $name).'.jpg')) {
+                        $item['image'] = '../img/tmp/'.md5((int) $name).'.jpg';
+                    }
                 }
+
+                $moduleList[$name] = (object) $item;
             }
         }
+
 
         foreach ($moduleList as $key => &$module) {
             if (isset($modulesInstalled[$module->name])) {
@@ -1114,7 +1072,6 @@ abstract class ModuleCore
             }
         }
 
-        usort($moduleList, create_function('$a,$b', 'return strnatcasecmp($a->displayName, $b->displayName);'));
         if ($errors) {
             if (!isset(Context::getContext()->controller) && !Context::getContext()->controller->controller_name) {
                 echo '<div class="alert error"><h3>'.Tools::displayError('The following module(s) could not be loaded').':</h3><ol>';
