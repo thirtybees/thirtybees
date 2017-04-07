@@ -231,7 +231,9 @@ class AdminLocalizationControllerCore extends AdminController
     }
 
     /**
-     * @sinec 1.0.0
+     * @return void
+     *
+     * @since 1.0.0
      */
     public function display()
     {
@@ -240,6 +242,8 @@ class AdminLocalizationControllerCore extends AdminController
     }
 
     /**
+     * @return void
+     *
      * @since 1.0.0
      */
     public function initContent()
