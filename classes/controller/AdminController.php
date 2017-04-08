@@ -3186,7 +3186,7 @@ class AdminControllerCore extends Controller
         $updater = Module::getInstanceByName('tbupdater');
         if (Validate::isLoadedObject($updater)) {
             /** @var TbUpdater $updater */
-            $jsonModules = $updater->getCachedModuleInfo();
+            $jsonModules = $updater->getCachedModulesInfo();
         }
 
         if ($jsonModules) {
