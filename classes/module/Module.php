@@ -1005,7 +1005,7 @@ abstract class ModuleCore
         $updater = Module::getInstanceByName('tbupdater');
         $languageCode = str_replace('_', '-', Tools::strtolower(Context::getContext()->language->language_code));
 
-        if (Validate::isLoadedObject($updater) && $modules = $updater->getCachedModuleInfo()) {
+        if (Validate::isLoadedObject($updater) && $modules = $updater->getCachedModulesInfo()) {
             foreach ($modules as $name => $module) {
                 if (array_key_exists($name, $moduleList)) {
                     $moduleList[$name]->version = $module['versions']['latest'];
@@ -1018,7 +1018,7 @@ abstract class ModuleCore
                     'warning'             => '',
                     'type'                => 'native',
                     'name'                => $name,
-                    'version'             => $module['versions']['latest'],
+                    'version'             => $module['version'],
                     'tab'                 => isset($module['tab']) ? $module['tab'] : 'administration',
                     'displayName'         => isset($module['displayName'][$languageCode]) ? $module['displayName'][$languageCode] : (isset($module['displayName']['en-us']) ? $module['displayName']['en-us'] : 'Unknown module'),
                     'description'         => isset($module['description'][$languageCode]) ? $module['description'][$languageCode] : (isset($module['description']['en-us']) ? $module['description']['en-us'] : ''),
