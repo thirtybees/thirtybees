@@ -1477,12 +1477,15 @@ class AdminModulesControllerCore extends AdminController
                 foreach ($modules as $name) {
                     // Check potential error
                     if (!($module = Module::getInstanceByName(urldecode($name)))) {
-                        $this->errors[] = $this->l('Module not found');
-                    } elseif (($this->context->mode >= Context::MODE_HOST_CONTRIB) && in_array($module->name, Module::$hosted_modules_blacklist)) {
-                        $this->errors[] = Tools::displayError('You do not have permission to access this module.');
+                        // Try the thirty bees updater
+                        /** @var TbUpdater $updater */
+                        $updater = Module::getInstanceByName('tbupdater');
+                        if ($key === 'install' && Validate::isLoadedObject($updater) && $updater->installModule(urldecode($name))) {
+                            // TODO: do something with this
+                        } else {
+                            $this->errors[] = $this->l('Module not found');
+                        }
                     } elseif ($key == 'install' && $this->tabAccess['add'] !== '1') {
-                        $this->errors[] = Tools::displayError('You do not have permission to install this module.');
-                    } elseif ($key == 'install' && ($this->context->mode == Context::MODE_HOST) && !Module::isModuleTrusted($module->name)) {
                         $this->errors[] = Tools::displayError('You do not have permission to install this module.');
                     } elseif ($key == 'delete' && ($this->tabAccess['delete'] !== '1' || !$module->getPermission('configure'))) {
                         $this->errors[] = Tools::displayError('You do not have permission to delete this module.');
