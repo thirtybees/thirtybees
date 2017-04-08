@@ -83,7 +83,7 @@ if (_PS_DEBUG_PROFILING_) {
 }
 
 /* Set uncaught exception handler */
-set_exception_handler(function (Exception $e) {
+set_exception_handler(function ($e) {
     $exception = new PrestaShopException($e->getMessage(), $e->getCode(), null, $e->getTrace(), $e->getFile(), $e->getLine());
     $exception->displayMessage();
 });
