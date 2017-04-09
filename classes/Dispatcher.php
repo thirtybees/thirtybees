@@ -921,28 +921,22 @@ class DispatcherCore
                             if ($fullRewrite && $entity = UrlRewrite::lookup(ltrim($uri, '/'), Context::getContext()->language->id, $idShop, UrlRewrite::REDIRECT_301)) {
                                 switch ($entity[0]['entity']) {
                                     case UrlRewrite::ENTITY_PRODUCT:
-                                        $_GET['id_product'] = (int) $entity[0]['id_entity'];
-                                        $controller = 'product';
+                                        Tools::redirectLink(Context::getContext()->link->getProductLink((int) $entity[0]['id_entity']));
                                         break 2;
                                     case UrlRewrite::ENTITY_CATEGORY:
-                                        $_GET['id_category'] = (int) $entity[0]['id_entity'];
-                                        $controller = 'category';
+                                        Tools::redirectLink(Context::getContext()->link->getCategoryLink((int) $entity[0]['id_entity']));
                                         break 2;
                                     case UrlRewrite::ENTITY_SUPPLIER:
-                                        $_GET['id_supplier'] = (int) $entity[0]['id_entity'];
-                                        $controller = 'supplier';
+                                        Tools::redirectLink(Context::getContext()->link->getSupplierLink((int) $entity[0]['id_entity']));
                                         break 2;
                                     case UrlRewrite::ENTITY_MANUFACTURER:
-                                        $_GET['id_manufacturer'] = (int) $entity[0]['id_entity'];
-                                        $controller = 'manufacturer';
+                                        Tools::redirectLink(Context::getContext()->link->getManufacturerLink((int) $entity[0]['id_entity']));
                                         break 2;
                                     case UrlRewrite::ENTITY_CMS:
-                                        $_GET['id_cms'] = (int) $entity[0]['id_entity'];
-                                        $controller = 'cms';
+                                        Tools::redirectLink(Context::getContext()->link->getCMSLink((int) $entity[0]['id_entity']));
                                         break 2;
                                     case UrlRewrite::ENTITY_CMS_CATEGORY:
-                                        $_GET['id_cms_category'] = (int) $entity[0]['id_entity'];
-                                        $controller = 'cms';
+                                        Tools::redirectLink(Context::getContext()->link->getCMSCategoryLink((int) $entity[0]['id_entity']));
                                         break 2;
                                     case UrlRewrite::ENTITY_PAGE:
                                         $meta = new Meta($entity[0]['id_entity']);
@@ -954,6 +948,7 @@ class DispatcherCore
                                 // We might have us an external module page here, so just set whatever we can
                                 if (!is_numeric($k)
                                     && $k !== 'id'
+                                    && $k !== 'ipa'
                                     && $k !== 'rewrite'
                                     && $k !== 'cms_rewrite'
                                     && $k !== 'cms_cat_rewrite'
