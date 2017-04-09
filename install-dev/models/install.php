@@ -844,6 +844,7 @@ class InstallModelInstall extends InstallAbstractModel
                 'statssearch',
                 'statsstock',
                 'statsvisits',
+                'tbupdater',
                 'themeconfigurator',
             ];
         }
