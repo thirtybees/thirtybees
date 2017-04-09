@@ -55,9 +55,7 @@ class ShopUrlCore extends ObjectFileModel
     public static $definition = [
         'table'   => 'shop_url',
         'primary' => 'id_shop_url',
-        // Has to match one of the include()'s in ObjectFileModel.
         'path'    => '/config/shop.inc.php',
-        'storage' => 'shopUrlConfig',
         'fields'  => [
             'active'       => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                          ],
             'main'         => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                          ],
@@ -79,21 +77,16 @@ class ShopUrlCore extends ObjectFileModel
      * Do the opposite of update(): forward $shopUrlConfig to the DB. Also
      * expected to be temporary, only.
      */
-    public static function push()
+    public static function push($storage)
     {
-        $storageName = static::$definition['storage'];
-        global ${$storageName};
+        // To make sure we also drop records no longer existing, we drop the
+        // entire table and write a fresh one. Performance is no issue here.
+        Db::getInstance()->delete('shop_url');
 
-        if (is_array(${$storageName})) {
-            // To make sure we also drop records no longer existing, we drop the
-            // entire table and write a fresh one. Performance is no issue here.
-            Db::getInstance()->delete('shop_url');
+        foreach ($storage as $key => $url) {
+            $url['id_shop_url'] = $key;
 
-            foreach (${$storageName} as $key => $url) {
-                $url['id_shop_url'] = $key;
-
-                Db::getInstance()->insert('shop_url', $url);
-            }
+            Db::getInstance()->insert('shop_url', $url);
         }
     }
 

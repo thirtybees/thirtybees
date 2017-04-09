@@ -37,11 +37,6 @@
  * crucial for shop synchronisation.
  */
 
-// This file might not exist. For example, at install time it doesn't.
-// Accordingly, we also have to check for the existence of $shopUrlConfig
-// on every read access.
-@include_once(_PS_ROOT_DIR_.'/config/shop.inc.php');
-
 /**
  * Class ObjectFileModelCore
  *
@@ -52,6 +47,13 @@
  */
 abstract class ObjectFileModelCore extends ObjectModel
 {
+    /**
+     * This is valid after a modification, only. To get the stored data, use
+     * ::getStorage() from a subclass or static::getStorage() in this class.
+     */
+    // Not needed. See comment in ::getStorage().
+    //protected static $storage = null;
+
     /**
      * Builds the object
      *
@@ -67,9 +69,6 @@ abstract class ObjectFileModelCore extends ObjectModel
      */
     public function __construct($id = null, $idLang = null, $idShop = null)
     {
-        $storageName = static::$definition['storage'];
-        global ${$storageName};
-
         $className = get_class($this);
         if (!isset(ObjectFileModel::$loaded_classes[$className])) {
             $this->def = ObjectFileModel::getDefinition($className);
@@ -99,14 +98,13 @@ abstract class ObjectFileModelCore extends ObjectModel
         }
 
         if ($id) {
-            if (is_array(${$storageName})) {
-                // This is what Adapter_EntityMapper does after database access.
-                foreach (${$storageName}[$id] as $key => $value) {
-                    if (property_exists($this, $key)) {
-                        $this->{$key} = $value;
-                    } else {
-                        unset(${$storageName}[$id][$key]);
-                    }
+            $storage = static::getStorage();
+            // This is what Adapter_EntityMapper does after database access.
+            foreach ($storage[$id] as $key => $value) {
+                if (property_exists($this, $key)) {
+                    $this->{$key} = $value;
+                } else {
+                    unset($storage[$id][$key]);
                 }
             }
             $this->id = $id;
@@ -123,17 +121,32 @@ abstract class ObjectFileModelCore extends ObjectModel
      * @since   1.1.0
      * @version 1.1.0 Initial version
      */
-    public static function get($id = null)
+    public static function getStorage($id = null)
     {
-        $storageName = static::$definition['storage'];
-        global ${$storageName};
+        // This is for cases where storage is changed and also used after that.
+        // Subclass ShopUrl doesn't need it, still kept this code in comments
+        // for upcoming subclasses needing it. Also uncomment section in
+        // ::writeStorage and class variable $storage, then.
+        //if (static::$storage) {
+        //    // Storage was changed during this run, so include()'ing the
+        //    // file (see below) no longer works.
+        //    if ($id) {
+        //        return static::$storage[$id];
+        //    } else {
+        //        return static::$storage;
+        //    }
+        //}
 
-        if (!is_array(${$storageName})) {
+        // This file might not exist. For example, at install time it doesn't.
+        // Accordingly, we also have to check for the existence of $storage.
+        @include(_PS_ROOT_DIR_.static::$definition['path']);
+
+        if (!isset($storage) || !is_array($storage)) {
             return [];
         } elseif ($id) {
-            return ${$storageName}[$id];
+            return $storage[$id];
         } else {
-            return ${$storageName};
+            return $storage;
         }
     }
 
@@ -146,17 +159,17 @@ abstract class ObjectFileModelCore extends ObjectModel
      * @since   1.1.0
      * @version 1.1.0 Initial version
      */
-    public static function writeStorage()
+    public static function writeStorage($storage)
     {
-        $storageName = static::$definition['storage'];
-        global ${$storageName};
-
         $result = file_put_contents(_PS_ROOT_DIR_.static::$definition['path'],
             "<?php\n\n".
-            'global $'.$storageName.';'."\n\n".
-            '$'.$storageName.' = '.
-              var_export(${$storageName}, true).
-            ';'."\n");
+            '$storage = '.var_export($storage, true).";\n");
+
+        // Not needed. See comment in ::getStorage().
+        //if ($result) {
+        //    // For the remainder of this run.
+        //    static::$storage = $storage;
+        //}
 
         // Clear most citizens in cache-mess-city. Else the include_once()
         // above may well read an old version on the next page load.
@@ -185,9 +198,6 @@ abstract class ObjectFileModelCore extends ObjectModel
      */
     public function add($autoDate = true, $nullValues = false)
     {
-        $storageName = static::$definition['storage'];
-        global ${$storageName};
-
         if (isset($this->id) && !$this->force_id) {
             unset($this->id);
         }
@@ -219,17 +229,17 @@ abstract class ObjectFileModelCore extends ObjectModel
         // Find the smallest insertion point. count($array) is unreliable,
         // because there can be gaps after previous deletions.
         $newId = 1;
-        while (is_array(${$storageName}) &&
-               array_key_exists($newId, ${$storageName})) {
+        $storage = static::getStorage();
+        while (array_key_exists($newId, $storage)) {
             $newId++;
         }
 
         // Array insertion.
-        ${$storageName}[$newId] = $fields;
-        $result = static::writeStorage();
+        $storage[$newId] = $fields;
+        $result = static::writeStorage($storage);
         // Remove later. Comment out to see wether the code here actually works,
         // or wether DB gets written by some other means we no longer want.
-        ShopUrl::push();
+        ShopUrl::push($storage);
 
         $this->id = $newId;
 
@@ -252,11 +262,6 @@ abstract class ObjectFileModelCore extends ObjectModel
       */
     public function update($nullValues = false)
     {
-        $storageName = static::$definition['storage'];
-        global ${$storageName};
-
-        $result = true;
-
         // @hook actionObject*UpdateBefore
         Hook::exec('actionObjectUpdateBefore', ['object' => $this]);
         Hook::exec('actionObject'.get_class($this).'UpdateBefore', ['object' => $this]);
@@ -289,11 +294,12 @@ abstract class ObjectFileModelCore extends ObjectModel
         // Array update.
         $fields = $this->getFields();
         unset($fields[$this->def['primary']]); // Set by getFields(), but not needed.
-        ${$storageName}[$this->id] = $fields;
-        $result = static::writeStorage();
+        $storage = static::getStorage();
+        $storage[$this->id] = $fields;
+        $result = static::writeStorage($storage);
         // Remove later. Comment out to see wether the code here actually works,
         // or wether DB gets written by some other means we no longer want.
-        ShopUrl::push();
+        ShopUrl::push($storage);
 
         /* Associations, multilingual fields not yet implemented. */
 
@@ -315,22 +321,18 @@ abstract class ObjectFileModelCore extends ObjectModel
      */
     public function delete()
     {
-        $storageName = static::$definition['storage'];
-        global ${$storageName};
-
         // @hook actionObject*DeleteBefore
         Hook::exec('actionObjectDeleteBefore', ['object' => $this]);
         Hook::exec('actionObject'.get_class($this).'DeleteBefore', ['object' => $this]);
 
         /* Associations, multilingual fields not yet implemented. */
 
-        if (is_array(${$storageName})) {
-            unset(${$storageName}[$this->id]);
-        }
-        $result = static::writeStorage();
+        $storage = static::getStorage();
+        unset($storage[$this->id]);
+        $result = static::writeStorage($storage);
         // Remove later. Comment out to see wether the code here actually works,
         // or wether DB gets written by some other means we no longer want.
-        ShopUrl::push();
+        ShopUrl::push($storage);
 
         // @hook actionObject*DeleteAfter
         Hook::exec('actionObjectDeleteAfter', ['object' => $this]);

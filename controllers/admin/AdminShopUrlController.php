@@ -148,7 +148,7 @@ class AdminShopUrlControllerCore extends AdminController
         $this->dispatchFieldsListingModifierEvent();
 
         // Get a model copy.
-        $this->_list = $this->className::get();
+        $this->_list = $this->className::getStorage();
 
         // While we can get the main list from the model (ShopUrl) we need a
         // DB query anyways, because shop names aren't stored in the model.
