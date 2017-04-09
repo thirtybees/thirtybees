@@ -28,8 +28,8 @@
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
-use vierbergenlars\SemVer\expression;
-use vierbergenlars\SemVer\version;
+use vierbergenlars\SemVer\expression as Expression;
+use vierbergenlars\SemVer\version as Version;
 
 /**
  * Class ModuleCore
@@ -866,31 +866,30 @@ abstract class ModuleCore
                         }
                     }
 
-                    $item = new stdClass();
-                    $item->id = 0;
-                    $item->warning = '';
+                    $item = [
+                        'id' => 0,
+                        'warning' => '',
+                        'active' => 0,
+                        'onclick_option' => false,
+                        'trusted' => true,
+                        'displayName' => stripslashes(Translate::getModuleTranslation((string) $xmlModule->name, Module::configXmlStringFormat($xmlModule->displayName), (string) $xmlModule->name)),
+                        'description' => stripslashes(Translate::getModuleTranslation((string) $xmlModule->name, Module::configXmlStringFormat($xmlModule->description), (string) $xmlModule->name)),
+                        'author' => stripslashes(Translate::getModuleTranslation((string) $xmlModule->name, Module::configXmlStringFormat($xmlModule->author), (string) $xmlModule->name)),
+                        'author_uri' => (isset($xmlModule->author_uri) && $xmlModule->author_uri) ? stripslashes($xmlModule->author_uri) : false,
+                    ];
 
                     foreach ($xmlModule as $k => $v) {
-                        $item->$k = (string) $v;
+                        $item[$k] = (string) $v;
                     }
-
-                    $item->displayName = stripslashes(Translate::getModuleTranslation((string) $xmlModule->name, Module::configXmlStringFormat($xmlModule->displayName), (string) $xmlModule->name));
-                    $item->description = stripslashes(Translate::getModuleTranslation((string) $xmlModule->name, Module::configXmlStringFormat($xmlModule->description), (string) $xmlModule->name));
-                    $item->author = stripslashes(Translate::getModuleTranslation((string) $xmlModule->name, Module::configXmlStringFormat($xmlModule->author), (string) $xmlModule->name));
-                    $item->author_uri = (isset($xmlModule->author_uri) && $xmlModule->author_uri) ? stripslashes($xmlModule->author_uri) : false;
 
                     if (isset($xmlModule->confirmUninstall)) {
-                        $item->confirmUninstall = Translate::getModuleTranslation((string) $xmlModule->name, html_entity_decode(Module::configXmlStringFormat($xmlModule->confirmUninstall)), (string) $xmlModule->name);
+                        $item['confirmUninstall'] = Translate::getModuleTranslation((string) $xmlModule->name, html_entity_decode(Module::configXmlStringFormat($xmlModule->confirmUninstall)), (string) $xmlModule->name);
                     }
 
-                    $item->active = 0;
-                    $item->onclick_option = false;
-                    $item->trusted = true;
+                    $moduleList[] = (object) $item;
 
-                    $moduleList[] = $item;
-
-                    $moduleNameList[] = '\''.pSQL($item->name).'\'';
-                    $modulesNameToCursor[Tools::strtolower(strval($item->name))] = $item;
+                    $moduleNameList[] = '\''.pSQL($item['name']).'\'';
+                    $modulesNameToCursor[Tools::strtolower(strval($item['name']))] = (object) $item;
                 }
             }
 
@@ -1008,7 +1007,12 @@ abstract class ModuleCore
         if (Validate::isLoadedObject($updater) && $modules = $updater->getCachedModulesInfo()) {
             foreach ($modules as $name => $module) {
                 if (array_key_exists($name, $moduleList)) {
-                    $moduleList[$name]->version = $module['versions']['latest'];
+                    if (isset($moduleList[$name]->version)
+                        && isset($module['version'])
+                        && Version::gt($module['version'], $moduleList[$name]->version)
+                        ) {
+                        $moduleList[$name]->version_addons = $module['version'];
+                    }
 
                     continue;
                 }
@@ -1525,12 +1529,12 @@ abstract class ModuleCore
     public function checkCompliancy()
     {
         if (isset($this->tb_versions_compliancy) && $this->tb_versions_compliancy) {
-            $range = new expression($this->tb_versions_compliancy);
+            $range = new Expression($this->tb_versions_compliancy);
         }
 
         if (version_compare(_PS_VERSION_, $this->ps_versions_compliancy['min'], '<') || version_compare(_PS_VERSION_, $this->ps_versions_compliancy['max'], '>')) {
             return false;
-        } elseif (isset($range) && !$range->satisfiedBy(new version(_TB_VERSION_))) {
+        } elseif (isset($range) && !$range->satisfiedBy(new Version(_TB_VERSION_))) {
             return false;
         } else {
             return true;

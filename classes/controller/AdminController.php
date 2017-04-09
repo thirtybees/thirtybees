@@ -4300,13 +4300,13 @@ class AdminControllerCore extends Controller
 
         $languages = Language::getLanguages(false);
 
-        $hide_multishop_checkbox = (Shop::getTotalShops(false, null) < 2) ? true : false;
-        foreach ($this->fields_options as $category_data) {
-            if (!isset($category_data['fields'])) {
+        $hideMultishopCheckbox = (Shop::getTotalShops(false, null) < 2) ? true : false;
+        foreach ($this->fields_options as $categoryData) {
+            if (!isset($categoryData['fields'])) {
                 continue;
             }
 
-            $fields = $category_data['fields'];
+            $fields = $categoryData['fields'];
 
             foreach ($fields as $field => $values) {
                 if (isset($values['type']) && $values['type'] == 'selectLang') {
@@ -4326,7 +4326,7 @@ class AdminControllerCore extends Controller
             // Validate fields
             foreach ($fields as $field => $values) {
                 // We don't validate fields with no visibility
-                if (!$hide_multishop_checkbox && Shop::isFeatureActive() && isset($values['visibility']) && $values['visibility'] > Shop::getContext()) {
+                if (!$hideMultishopCheckbox && Shop::isFeatureActive() && isset($values['visibility']) && $values['visibility'] > Shop::getContext()) {
                     continue;
                 }
 
@@ -4349,15 +4349,15 @@ class AdminControllerCore extends Controller
                 if (isset($values['type']) && $values['type'] == 'textLang') {
                     foreach ($languages as $language) {
                         if (Tools::getValue($field.'_'.$language['id_lang']) && isset($values['validation'])) {
-                            $values_validation = $values['validation'];
-                            if (!Validate::$values_validation(Tools::getValue($field.'_'.$language['id_lang']))) {
+                            $valuesValidation = $values['validation'];
+                            if (!Validate::$valuesValidation(Tools::getValue($field.'_'.$language['id_lang']))) {
                                 $this->errors[] = sprintf(Tools::displayError('field %s is invalid.'), $values['title']);
                             }
                         }
                     }
                 } elseif (Tools::getValue($field) && isset($values['validation'])) {
-                    $values_validation = $values['validation'];
-                    if (!Validate::$values_validation(Tools::getValue($field))) {
+                    $valuesValidation = $values['validation'];
+                    if (!Validate::$valuesValidation(Tools::getValue($field))) {
                         $this->errors[] = sprintf(Tools::displayError('field %s is invalid.'), $values['title']);
                     }
                 }
@@ -4374,20 +4374,20 @@ class AdminControllerCore extends Controller
                         continue;
                     }
 
-                    if (!$hide_multishop_checkbox && Shop::isFeatureActive() && Shop::getContext() != Shop::CONTEXT_ALL && empty($options['no_multishop_checkbox']) && empty($_POST['multishopOverrideOption'][$key])) {
+                    if (!$hideMultishopCheckbox && Shop::isFeatureActive() && Shop::getContext() != Shop::CONTEXT_ALL && empty($options['no_multishop_checkbox']) && empty($_POST['multishopOverrideOption'][$key])) {
                         Configuration::deleteFromContext($key);
                         continue;
                     }
 
                     // check if a method updateOptionFieldName is available
-                    $method_name = 'updateOption'.Tools::toCamelCase($key, true);
-                    if (method_exists($this, $method_name)) {
-                        $this->$method_name(Tools::getValue($key));
+                    $methodName = 'updateOption'.Tools::toCamelCase($key, true);
+                    if (method_exists($this, $methodName)) {
+                        $this->$methodName(Tools::getValue($key));
                     } elseif (isset($options['type']) && in_array($options['type'], ['textLang', 'textareaLang'])) {
                         $list = [];
                         foreach ($languages as $language) {
-                            $key_lang = Tools::getValue($key.'_'.$language['id_lang']);
-                            $val = (isset($options['cast']) ? $options['cast']($key_lang) : $key_lang);
+                            $keyLang = Tools::getValue($key.'_'.$language['id_lang']);
+                            $val = (isset($options['cast']) ? $options['cast']($keyLang) : $keyLang);
                             if ($this->validateField($val, $options)) {
                                 if (Validate::isCleanHtml($val)) {
                                     $list[$language['id_lang']] = $val;

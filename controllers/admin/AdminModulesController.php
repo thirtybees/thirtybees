@@ -205,7 +205,7 @@ class AdminModulesControllerCore extends AdminController
 
         if (Validate::isLoadedObject($module)) {
             /** @var TbUpdater $module */
-            $module->checkForUpdates();
+            $module->checkForUpdates($forceReloadCache);
         }
     }
 
@@ -1463,7 +1463,22 @@ class AdminModulesControllerCore extends AdminController
                 return;
             }
 
-            if (($modules = Tools::getValue($key)) && $key != 'checkAndUpdate' && $key != 'updateAll') {
+            if ($key == 'check') {
+                $this->ajaxProcessRefreshModuleList(true);
+            } elseif ($key == 'checkAndUpdate') {
+                $modules = array();
+                $this->ajaxProcessRefreshModuleList(true);
+                $modulesOnDisk = Module::getModulesOnDisk(true, $this->logged_on_addons, $this->id_employee);
+                // Browse modules list
+                foreach ($modulesOnDisk as $km => $moduleOnDisk) {
+                    if (!Tools::getValue('module_name') && isset($moduleOnDisk->version_addons) && $moduleOnDisk->version_addons) {
+                        $modules[] = $moduleOnDisk->name;
+                    }
+                }
+                if (!Tools::getValue('module_name')) {
+                    $modulesListSave = implode('|', $modules);
+                }
+            } elseif (($modules = Tools::getValue($key)) && $key != 'checkAndUpdate' && $key != 'updateAll') {
                 if (strpos($modules, '|')) {
                     $modulesListSave = $modules;
                     $modules = explode('|', $modules);
@@ -1471,18 +1486,51 @@ class AdminModulesControllerCore extends AdminController
                 if (!is_array($modules)) {
                     $modules = (array) $modules;
                 }
+            } elseif ($key == 'updateAll') {
+                $allModules = Module::getModulesOnDisk(true, false, $this->context->employee->id);
+                $upgradeAvailable = 0;
+                $modules = [];
+                foreach ($allModules as $km => $moduleToUpdate) {
+                    if ($moduleToUpdate->installed && isset($moduleToUpdate->version_addons) && $moduleToUpdate->version_addons) {
+                        $modules[] = (string) $moduleToUpdate->name;
+                    }
+                }
             }
 
+            /** @var TbUpdater $tbupdater */
+            $tbupdater = Module::getInstanceByName('tbupdater');
+            $moduleUpgraded = array();
+            $moduleErrors = array();
             if (isset($modules)) {
                 foreach ($modules as $name) {
+                    $moduleToUpdate = array();
+                    $moduleToUpdate[$name] = null;
+                    $fullReport = null;
+
+                    // If Addons module, download and unzip it before installing it
+                    if (Validate::isLoadedObject($tbupdater) && !file_exists(_PS_MODULE_DIR_.$name.'/'.$name.'.php') || $key == 'update' || $key == 'updateAll') {
+                        foreach ($tbupdater->getCachedModulesInfo() as $moduleInfo) {
+                            if (Tools::strtolower($name) == Tools::strtolower($moduleInfo->name)) {
+                                $moduleToUpdate[$name]['id'] = $moduleInfo->id;
+                                $moduleToUpdate[$name]['displayName'] = $moduleInfo->displayName;
+                            }
+                        }
+
+                        foreach ($moduleToUpdate as $name => $attr) {
+                            if (!$tbupdater->updateModule($name)) {
+                                $this->errors[] = sprintf(Tools::displayError('Module %s cannot be upgraded: Error while extracting the latest version.'), '<strong>'.$attr['displayName'].'</strong>');
+                            } else {
+                                $moduleUpgraded[] = $name;
+                            }
+                        }
+                    }
+
                     // Check potential error
                     if (!($module = Module::getInstanceByName(urldecode($name)))) {
                         // Try the thirty bees updater
                         /** @var TbUpdater $updater */
                         $updater = Module::getInstanceByName('tbupdater');
-                        if ($key === 'install' && Validate::isLoadedObject($updater) && $updater->installModule(urldecode($name))) {
-                            // TODO: do something with this
-                        } else {
+                        if (!($key === 'install' && Validate::isLoadedObject($updater) && $updater->installModule(urldecode($name)))) {
                             $this->errors[] = $this->l('Module not found');
                         }
                     } elseif ($key == 'install' && $this->tabAccess['add'] !== '1') {
