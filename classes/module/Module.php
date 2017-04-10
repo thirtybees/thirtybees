@@ -38,7 +38,6 @@ use vierbergenlars\SemVer\version as Version;
  */
 abstract class ModuleCore
 {
-    const CACHE_FILE_MODULES_LIST = '/config/xml/modules_list.xml';
     const CACHE_FILE_TAB_MODULES_LIST = '/config/xml/tab_modules_list.xml';
     // @codingStandardsIgnoreStart
     /** @var array used by AdminTab to determine which lang file to use (admin.php or module lang file) */
