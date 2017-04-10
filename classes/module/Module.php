@@ -889,7 +889,7 @@ abstract class ModuleCore
                     $moduleList[] = (object) $item;
 
                     $moduleNameList[] = '\''.pSQL($item['name']).'\'';
-                    $modulesNameToCursor[Tools::strtolower(strval($item['name']))] = (object) $item;
+                    $modulesNameToCursor[Tools::strtolower(strval($item['name']))] = end($moduleList);
                 }
             }
 
@@ -925,7 +925,7 @@ abstract class ModuleCore
                     $tmpModule = Adapter_ServiceLocator::get($module);
 
                     $item = [
-                        'id'                     => $tmpModule->id,
+                        'id'                     => is_null($tmpModule->id) ? 0 : $tmpModule->id,
                         'warning'                => $tmpModule->warning,
                         'name'                   => $tmpModule->name,
                         'version'                => $tmpModule->version,
@@ -963,7 +963,7 @@ abstract class ModuleCore
                         }
                     }
 
-                    $moduleList[$tmpModule->name] = (object) $item;
+                    $moduleList[] = (object) $item;
 
                     if (!$xmlExist || $needNewConfigFile) {
                         // @codingStandardsIgnoreStart
@@ -1058,7 +1058,7 @@ abstract class ModuleCore
                     }
                 }
 
-                $moduleList[$name] = (object) $item;
+                $moduleList[] = (object) $item;
             }
         }
 

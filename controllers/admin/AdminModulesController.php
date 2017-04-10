@@ -138,28 +138,6 @@ class AdminModulesControllerCore extends AdminController
                 'PS_SHOW_CAT_MODULES_'.(int) $this->id_employee,
             ]
         );
-
-        // Load cache file modules list (natives and partners modules)
-        $xmlModules = false;
-        if (file_exists(_PS_ROOT_DIR_.Module::CACHE_FILE_MODULES_LIST)) {
-            $xmlModules = @simplexml_load_file(_PS_ROOT_DIR_.Module::CACHE_FILE_MODULES_LIST);
-        }
-        if ($xmlModules) {
-            foreach ($xmlModules->children() as $xmlModule) {
-                /** @var SimpleXMLElement $xmlModule */
-                foreach ($xmlModule->children() as $module) {
-                    /** @var SimpleXMLElement $module */
-                    foreach ($module->attributes() as $key => $value) {
-                        if ($xmlModule->attributes() == 'native' && $key == 'name') {
-                            $this->list_natives_modules[] = (string) $value;
-                        }
-                        if ($xmlModule->attributes() == 'partner' && $key == 'name') {
-                            $this->list_partners_modules[] = (string) $value;
-                        }
-                    }
-                }
-            }
-        }
     }
 
     /**
@@ -332,6 +310,11 @@ class AdminModulesControllerCore extends AdminController
 
         // Retrieve Modules List
         $modules = Module::getModulesOnDisk(true, $this->logged_on_addons, $this->id_employee);
+//        foreach ($modules as $module) {
+//            if (!$module->id && $module->installed) {
+//                ddd($module);
+//            }
+//        }
         $this->initModulesList($modules);
         $this->nb_modules_total = count($modules);
         $moduleErrors = [];
@@ -848,7 +831,7 @@ class AdminModulesControllerCore extends AdminController
      */
     protected function getModulesByInstallation($tabModulesList = null)
     {
-        $allModules = Module::getModulesOnDisk(true, $this->logged_on_addons, $this->id_employee);
+        $allModules = Module::getModulesOnDisk(true, false, $this->id_employee);
         $allUniqueModules = [];
         $modulesList = ['installed' => [], 'not_installed' => []];
 
@@ -1468,7 +1451,7 @@ class AdminModulesControllerCore extends AdminController
             } elseif ($key == 'checkAndUpdate') {
                 $modules = array();
                 $this->ajaxProcessRefreshModuleList(true);
-                $modulesOnDisk = Module::getModulesOnDisk(true, $this->logged_on_addons, $this->id_employee);
+                $modulesOnDisk = Module::getModulesOnDisk(true, false, $this->id_employee);
                 // Browse modules list
                 foreach ($modulesOnDisk as $km => $moduleOnDisk) {
                     if (!Tools::getValue('module_name') && isset($moduleOnDisk->version_addons) && $moduleOnDisk->version_addons) {
@@ -1488,7 +1471,6 @@ class AdminModulesControllerCore extends AdminController
                 }
             } elseif ($key == 'updateAll') {
                 $allModules = Module::getModulesOnDisk(true, false, $this->context->employee->id);
-                $upgradeAvailable = 0;
                 $modules = [];
                 foreach ($allModules as $km => $moduleToUpdate) {
                     if ($moduleToUpdate->installed && isset($moduleToUpdate->version_addons) && $moduleToUpdate->version_addons) {
