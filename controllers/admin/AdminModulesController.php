@@ -310,11 +310,6 @@ class AdminModulesControllerCore extends AdminController
 
         // Retrieve Modules List
         $modules = Module::getModulesOnDisk(true, $this->logged_on_addons, $this->id_employee);
-//        foreach ($modules as $module) {
-//            if (!$module->id && $module->installed) {
-//                ddd($module);
-//            }
-//        }
         $this->initModulesList($modules);
         $this->nb_modules_total = count($modules);
         $moduleErrors = [];
