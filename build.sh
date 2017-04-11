@@ -13,7 +13,7 @@ echo "Assuming all module repositories are up to date."
 DIR=$(mktemp -d)
 trap "rm -rf ${DIR}" 0
 
-DIR+="/thirty-bees-v${TB_VERSION}"
+DIR+="/thirtybees-v${TB_VERSION}"
 mkdir "${DIR}"
 export DIR
 
