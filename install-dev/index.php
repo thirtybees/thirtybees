@@ -40,6 +40,11 @@ if (extension_loaded('geoip')) {
     $errors[] = 'The <code>geoip</code> PHP extension is loaded. This causes conflicts with thirty bees. We recommend to disable the PHP extension.';
 }
 
+// Check if composer packages are available
+if (!file_exists(dirname(__FILE__).'/../vendor/autoload.php')) {
+    $errors[] = 'The composer packages are not available. Make sure you have copied the <code>vendor</code> folder or have run the <code>composer install --no-dev</code> command.';
+}
+
 if (!empty($errors)) {
     include(dirname(__FILE__).'/theme/views/errors.phtml');
     die();
