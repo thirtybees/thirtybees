@@ -21,7 +21,7 @@ class AdminCustomCodeControllerCore extends AdminController
         $this->bootstrap = true;
 
         $fields = array(
-            'TB_CUSTOMCODE_METAS' => [
+            Configuration::CUSTOMCODE_METAS => [
                 'title'                     => $this->l('Add extra metas to the header'),
                 'desc'                      => $this->l('You can use this form to add extra meta tags to your front office'),
                 'type'                      => 'code',
@@ -31,7 +31,7 @@ class AdminCustomCodeControllerCore extends AdminController
                 'enableLiveAutocompletion'  => true,
                 'visibility'                => Shop::CONTEXT_ALL,
             ],
-            'TB_CUSTOMCODE_CSS'   => [
+            Configuration::CUSTOMCODE_CSS   => [
                 'title'                     => $this->l('Add extra css to your pages'),
                 'desc'                      => $this->l('You can use this form to add extra css styles to your front office'),
                 'type'                      => 'code',
@@ -41,7 +41,7 @@ class AdminCustomCodeControllerCore extends AdminController
                 'enableLiveAutocompletion'  => true,
                 'visibility'                => Shop::CONTEXT_ALL,
             ],
-            'TB_CUSTOMCODE_JS'    => [
+            Configuration::CUSTOMCODE_JS    => [
                 'title'                     => $this->l('Add extra JavaScript to your pages'),
                 'desc'                      => $this->l('You can use this form to add extra JavaScript code to your front office'),
                 'type'                      => 'code',
@@ -54,7 +54,7 @@ class AdminCustomCodeControllerCore extends AdminController
         );
 
         $fields2 = [
-            'TB_CUSTOMCODE_ORDERCONF_JS' => [
+            Configuration::CUSTOMCODE_ORDERCONF_JS => [
                 'title'                     => $this->l('Add extra JS to the order confirmation page'),
                 'desc'                      => $this->l('You can use this form to add extra javascript code to the order confirmation page (trackings, etc)'),
                 'type'                      => 'code',

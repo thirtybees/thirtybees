@@ -852,8 +852,8 @@ class FrontControllerCore extends Controller
                 );
 
                 // If the controller is a module, then getTemplatePath will try to find the template in the modules, so we need to instanciate a real frontcontroller
-                $front_controller = preg_match('/ModuleFrontController$/', get_class($this)) ? new FrontController() : $this;
-                $this->smartyOutputContent($front_controller->getTemplatePath($this->getThemeDir().'maintenance.tpl'));
+                $frontController = preg_match('/ModuleFrontController$/', get_class($this)) ? new FrontController() : $this;
+                $this->smartyOutputContent($frontController->getTemplatePath($this->getThemeDir().'maintenance.tpl'));
                 exit;
             }
         }
@@ -1180,21 +1180,21 @@ class FrontControllerCore extends Controller
      */
     public function initFooter()
     {
-        $hook_footer = Hook::exec('displayFooter');
-        $extra_js = Configuration::get('PS_CUSTOMCODE_JS');
-        $extra_js_conf = '';
+        $hookFooter = Hook::exec('displayFooter');
+        $extraJs = Configuration::get(Configuration::CUSTOMCODE_JS);
+        $extraJsConf = '';
         if (isset($this->php_self) && $this->php_self == 'order-confirmation') {
-            $extra_js_conf = Configuration::get('PS_CUSTOMCODE_ORDERCONF_JS');
+            $extraJsConf = Configuration::get(Configuration::CUSTOMCODE_ORDERCONF_JS);
         }
 
-        $hook_footer .= '<script>'.$extra_js.$extra_js_conf.'</script>';
+        $hookFooter .= '<script>'.$extraJs.$extraJsConf.'</script>';
 
         $this->context->smarty->assign(
             [
-                'HOOK_FOOTER'            => $hook_footer,
-                'conditions'             => Configuration::get('PS_CONDITIONS'),
-                'id_cgv'                 => Configuration::get('PS_CONDITIONS_CMS_ID'),
-                'PS_SHOP_NAME'           => Configuration::get('PS_SHOP_NAME'),
+                'HOOK_FOOTER'            => $hookFooter,
+                'conditions'             => Configuration::get(Configuration::CONDITIONS),
+                'id_cgv'                 => Configuration::get(Configuration::CONDITIONS_CMS_ID),
+                'PS_SHOP_NAME'           => Configuration::get(Configuration::SHOP_NAME),
                 'PS_ALLOW_MOBILE_DEVICE' => isset($_SERVER['HTTP_USER_AGENT']) && (bool) Configuration::get('PS_ALLOW_MOBILE_DEVICE') && @filemtime(_PS_THEME_MOBILE_DIR_),
             ]
         );
