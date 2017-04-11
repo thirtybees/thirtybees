@@ -101,4 +101,6 @@
   <tab id="Configuration" name="Configuration"/>
   <tab id="CarrierWizard" name="Carrier"/>
   <tab id="Custom_Code" name="Custom Code"/>
+  <tab id="Redirects" name="Redirects"/>
+  <tab id="Duplicate_Urls" name="Duplicate URLs"/>
 </entity_tab>

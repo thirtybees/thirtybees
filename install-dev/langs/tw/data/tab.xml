@@ -104,4 +104,6 @@
   <tab id="Supply_orders" name="採購單"/>
   <tab id="Configuration" name="設定"/>
   <tab id="Custom_Code" name="Custom Code"/>
+  <tab id="Redirects" name="Redirects"/>
+  <tab id="Duplicate_Urls" name="Duplicate URLs"/>
 </entity_tab>

@@ -103,4 +103,6 @@
   <tab id="Configuration" name="Configuratie"/>
   <tab id="CarrierWizard" name="Vervoerder"/>
   <tab id="Custom_Code" name="Aangepaste Code"/>
+  <tab id="Redirects" name="Doorverwijzingen"/>
+  <tab id="Duplicate_Urls" name="Dubbele URL's"/>
 </entity_tab>

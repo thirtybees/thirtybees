@@ -101,4 +101,6 @@
   <tab id="Configuration" name="Konfigūracija"/>
   <tab id="CarrierWizard" name="Vežėjas"/>
   <tab id="Custom_Code" name="Custom Code"/>
+  <tab id="Redirects" name="Redirects"/>
+  <tab id="Duplicate_Urls" name="Duplicate URLs"/>
 </entity_tab>

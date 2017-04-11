@@ -100,4 +100,6 @@
   <tab id="Webservice" name="Webservice"/>
   <tab id="Zones" name="C&#xE1;c khu v&#x1EF1;c"/>
   <tab id="Custom_Code" name="Custom Code"/>
+  <tab id="Redirects" name="Redirects"/>
+  <tab id="Duplicate_Urls" name="Duplicate URLs"/>
 </entity_tab>
