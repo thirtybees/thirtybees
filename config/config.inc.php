@@ -139,9 +139,6 @@ require_once($currentDir.'/defines_uri.inc.php');
 global $_MODULES;
 $_MODULES = [];
 
-Hook::exec('actionRegisterAutoloader');
-Hook::exec('actionRegisterErrorHandlers');
-
 define('_PS_PRICE_DISPLAY_PRECISION_', Configuration::get('PS_PRICE_DISPLAY_PRECISION'));
 define('_PS_PRICE_COMPUTE_PRECISION_', _PS_PRICE_DISPLAY_PRECISION_);
 
@@ -273,3 +270,6 @@ if (!defined('_MEDIA_SERVER_2_')) {
 if (!defined('_MEDIA_SERVER_3_')) {
     define('_MEDIA_SERVER_3_', Configuration::get('PS_MEDIA_SERVER_3'));
 }
+
+Hook::exec('actionRegisterAutoloader');
+Hook::exec('actionRegisterErrorHandlers');
