@@ -13,7 +13,7 @@ echo "Assuming all module repositories are up to date."
 DIR=$(mktemp -d)
 trap "rm -rf ${DIR}" 0
 
-DIR+="/thirty-bees-${TB_VERSION}"
+DIR+="/thirty-bees-v${TB_VERSION}"
 mkdir "${DIR}"
 export DIR
 
@@ -112,12 +112,11 @@ done
   echo -n "Creating package ... "
   cd "${DIR}"
   node ./tools/generatemd5list.js
-  cd ..
-  zip -r -q $(basename "${DIR}").zip $(basename "${DIR}")
+  zip -r -q $(basename "${DIR}").zip .
   echo "done."
 )
 
-mv "${DIR}"/../$(basename "${DIR}").zip .
+mv "${DIR}"/$(basename "${DIR}").zip .
 echo "Created $(basename "${DIR}").zip successfully."
 
 exit 0
