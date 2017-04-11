@@ -385,7 +385,6 @@ class ShopCore extends ObjectModel
 
     /**
      * Find the shop from current domain / uri and get an instance of this shop
-     * if INSTALL_VERSION is defined, will return an empty shop object
      *
      * @return Shop
      *
