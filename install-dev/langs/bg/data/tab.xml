@@ -102,5 +102,5 @@
   <tab id="CarrierWizard" name="Превозвач"/>
   <tab id="Custom_Code" name="Custom Code"/>
   <tab id="Redirects" name="Redirects"/>
-  <tab id="Duplicate_Urls" name="Duplicate URLs"/>
+  <tab id="Duplicate_URLs" name="Duplicate URLs"/>
 </entity_tab>
