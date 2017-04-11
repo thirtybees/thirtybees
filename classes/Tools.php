@@ -4112,21 +4112,13 @@ exit;
     }
 
     /**
-     * @return bool
+     * @return true
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @deprecated 1.0.1 Not everyone uses Apache
      */
     public static function modRewriteActive()
     {
-        if (Tools::apacheModExists('mod_rewrite')) {
-            return true;
-        }
-        if ((isset($_SERVER['HTTP_MOD_REWRITE']) && Tools::strtolower($_SERVER['HTTP_MOD_REWRITE']) == 'on') || Tools::strtolower(getenv('HTTP_MOD_REWRITE')) == 'on') {
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
     /**
