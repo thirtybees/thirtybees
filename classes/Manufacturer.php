@@ -501,8 +501,6 @@ class ManufacturerCore extends ObjectModel
             PageCache::invalidateEntity('manufacturer', $this->id);
         }
 
-        UrlRewrite::deleteUrlRewrite(UrlRewrite::ENTITY_MANUFACTURER, $this->id);
-
         if (parent::delete()) {
             CartRule::cleanProductRuleIntegrity('manufacturers', $this->id);
 

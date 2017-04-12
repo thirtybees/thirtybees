@@ -101,6 +101,5 @@
   <tab id="Configuration" name="הגדרות"/>
   <tab id="CarrierWizard" name="מובילים"/>
   <tab id="Custom_Code" name="Custom Code"/>
-  <tab id="Redirects" name="Redirects"/>
   <tab id="Duplicate_URLs" name="Duplicate URLs"/>
 </entity_tab>

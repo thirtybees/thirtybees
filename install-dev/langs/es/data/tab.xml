@@ -100,6 +100,5 @@
   <tab id="Configuration" name="Configuración"/>
   <tab id="CarrierWizard" name="Transportista"/>
   <tab id="Custom_Code" name="Custom Code"/>
-  <tab id="Redirects" name="Redirects"/>
   <tab id="Duplicate_URLs" name="Duplicate URLs"/>
 </entity_tab>

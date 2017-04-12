@@ -2131,7 +2131,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             // Is field multilang?
             if (isset($field['lang']) && $field['lang']) {
                 if (is_array($this->{$fieldName})) {
-                    return $this->{$fieldName}[$idLang ? $idLang : Context::getContext()->language->id];
+                    return $this->{$fieldName}[$idLang ?: Context::getContext()->language->id];
                 }
             }
 

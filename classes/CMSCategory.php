@@ -679,8 +679,6 @@ class CMSCategoryCore extends ObjectModel
             PageCache::invalidateEntity('cms', $this->id);
         }
 
-        UrlRewrite::deleteUrlRewrite(UrlRewrite::ENTITY_CMS_CATEGORY, $this->id);
-
         $this->clearCache();
 
         // Get children categories

@@ -1691,8 +1691,6 @@ class CategoryCore extends ObjectModel
             PageCache::invalidateEntity('category', $this->id);
         }
 
-        UrlRewrite::deleteUrlRewrite(UrlRewrite::ENTITY_CATEGORY, $this->id);
-
         $this->clearCache();
 
         $deletedChildren = $allCat = $this->getAllChildren();

@@ -916,34 +916,6 @@ class DispatcherCore
                                     $_GET['id_cms'] = $idCms;
                                 }
                             }
-                            // Check redirects
-                            $fullRewrite = ltrim($uri, '/');
-                            if ($fullRewrite && $entity = UrlRewrite::lookup(ltrim($uri, '/'), Context::getContext()->language->id, $idShop, UrlRewrite::REDIRECT_301)) {
-                                switch ($entity[0]['entity']) {
-                                    case UrlRewrite::ENTITY_PRODUCT:
-                                        Tools::redirectLink(Context::getContext()->link->getProductLink((int) $entity[0]['id_entity']));
-                                        break 2;
-                                    case UrlRewrite::ENTITY_CATEGORY:
-                                        Tools::redirectLink(Context::getContext()->link->getCategoryLink((int) $entity[0]['id_entity']));
-                                        break 2;
-                                    case UrlRewrite::ENTITY_SUPPLIER:
-                                        Tools::redirectLink(Context::getContext()->link->getSupplierLink((int) $entity[0]['id_entity']));
-                                        break 2;
-                                    case UrlRewrite::ENTITY_MANUFACTURER:
-                                        Tools::redirectLink(Context::getContext()->link->getManufacturerLink((int) $entity[0]['id_entity']));
-                                        break 2;
-                                    case UrlRewrite::ENTITY_CMS:
-                                        Tools::redirectLink(Context::getContext()->link->getCMSLink((int) $entity[0]['id_entity']));
-                                        break 2;
-                                    case UrlRewrite::ENTITY_CMS_CATEGORY:
-                                        Tools::redirectLink(Context::getContext()->link->getCMSCategoryLink((int) $entity[0]['id_entity']));
-                                        break 2;
-                                    case UrlRewrite::ENTITY_PAGE:
-                                        $meta = new Meta($entity[0]['id_entity']);
-                                        $controller = $meta->page;
-                                        break 2;
-                                }
-                            }
                             foreach ($m as $k => $v) {
                                 // We might have us an external module page here, so just set whatever we can
                                 if (!is_numeric($k)

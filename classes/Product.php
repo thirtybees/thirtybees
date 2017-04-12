@@ -3855,8 +3855,6 @@ class ProductCore extends ObjectModel
             PageCache::invalidateEntity('product', $this->id);
         }
 
-        UrlRewrite::deleteUrlRewrite(UrlRewrite::ENTITY_PRODUCT, $this->id);
-
         if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') && $this->advanced_stock_management) {
             $stockManager = StockManagerFactory::getManager();
             $physicalQuantity = $stockManager->getProductPhysicalQuantities($this->id, 0);

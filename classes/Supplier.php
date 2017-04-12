@@ -249,8 +249,6 @@ class SupplierCore extends ObjectModel
             PageCache::invalidateEntity('supplier', $this->id);
         }
 
-        UrlRewrite::deleteUrlRewrite(UrlRewrite::ENTITY_SUPPLIER, $this->id);
-
         return parent::delete();
     }
 

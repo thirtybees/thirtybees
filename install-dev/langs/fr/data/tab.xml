@@ -101,6 +101,5 @@
   <tab id="Zones" name="Zones"/>
   <tab id="CarrierWizard" name="Transporteur"/>
   <tab id="Custom_Code" name="Custom Code"/>
-  <tab id="Redirects" name="Redirects"/>
   <tab id="Duplicate_URLs" name="Duplicate URLs"/>
 </entity_tab>
