@@ -1009,7 +1009,7 @@ abstract class ModuleCore
                     $moduleFromList = $modulesNameToCursor[Tools::strtolower(strval($name))];
                     if ($moduleFromList->version && Version::gt($module['version'], $moduleFromList->version)) {
                         $moduleFromList->version_addons = $module['version'];
-                        $modulesNameToCursor[Tools::strtolower(strval($item['name']))] = $moduleFromList;
+                        $modulesNameToCursor[Tools::strtolower(strval($name))] = $moduleFromList;
 
                         continue;
                     }
