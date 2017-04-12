@@ -1005,15 +1005,14 @@ abstract class ModuleCore
 
         if (Validate::isLoadedObject($updater) && $modules = $updater->getCachedModulesInfo()) {
             foreach ($modules as $name => $module) {
-                if (array_key_exists($name, $moduleList)) {
-                    if (isset($moduleList[$name]->version)
-                        && isset($module['version'])
-                        && Version::gt($module['version'], $moduleList[$name]->version)
-                        ) {
-                        $moduleList[$name]->version_addons = $module['version'];
-                    }
+                if (isset($modulesNameToCursor[Tools::strtolower(strval($name))])) {
+                    $moduleFromList = $modulesNameToCursor[Tools::strtolower(strval($name))];
+                    if ($moduleFromList->version && Version::gt($module['version'], $moduleFromList->version)) {
+                        $moduleFromList->version_addons = $module['version'];
+                        $modulesNameToCursor[Tools::strtolower(strval($item['name']))] = $moduleFromList;
 
-                    continue;
+                        continue;
+                    }
                 }
 
                 $item = [
