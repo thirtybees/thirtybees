@@ -885,10 +885,12 @@ abstract class ModuleCore
                         $item['confirmUninstall'] = Translate::getModuleTranslation((string) $xmlModule->name, html_entity_decode(Module::configXmlStringFormat($xmlModule->confirmUninstall)), (string) $xmlModule->name);
                     }
 
-                    $moduleList[] = (object) $item;
+                    $item = (object) $item;
 
-                    $moduleNameList[] = '\''.pSQL($item['name']).'\'';
-                    $modulesNameToCursor[Tools::strtolower(strval($item['name']))] = end($moduleList);
+                    $moduleList[] = $item;
+
+                    $moduleNameList[] = '\''.pSQL($item->name).'\'';
+                    $modulesNameToCursor[Tools::strtolower(strval($item->name))] = $item;
                 }
             }
 
@@ -962,7 +964,9 @@ abstract class ModuleCore
                         }
                     }
 
-                    $moduleList[] = (object) $item;
+                    $item = (object) $item;
+                    $moduleList[] = $item;
+                    $modulesNameToCursor[Tools::strtolower($item->name)] = $item;
 
                     if (!$xmlExist || $needNewConfigFile) {
                         // @codingStandardsIgnoreStart
@@ -1010,9 +1014,9 @@ abstract class ModuleCore
                     if ($moduleFromList->version && Version::gt($module['version'], $moduleFromList->version)) {
                         $moduleFromList->version_addons = $module['version'];
                         $modulesNameToCursor[Tools::strtolower(strval($name))] = $moduleFromList;
-
-                        continue;
                     }
+
+                    continue;
                 }
 
                 $item = [
