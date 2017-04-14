@@ -30,7 +30,6 @@ $(document).ready(function() {
 	initCarrierWizard();
 	if (parseInt($('input[name="is_free"]:checked').val()))
 		is_freeClick($('input[name="is_free"]:checked'));
-	displayRangeType();
 
 	$('#attachement_fileselectbutton').click(function(e) {
 		$('#carrier_logo_input').trigger('click');
@@ -123,7 +122,6 @@ function onShowStepCallback()
 	$('.anchor li a').each(function () {
 		$(this).closest('li').addClass($(this).attr('class'));
 	});
-	$('#carrier_logo_block').prependTo($('div.content').filter(function() { return $(this).css('display') != 'none' }).find('.defaultForm').find('fieldset'));
 	resizeWizard();
 }
 
@@ -202,13 +200,10 @@ function displaySummary()
 		else
 			tmp = tmp.replace('@s1', '<strong>' + summary_translation_undefined + '</strong>');
 
-
-
 	$('#summary_shipping_cost').text(tmp);
 
 	// Weight or price ranges
 	$('#summary_range').text(summary_translation_range+' '+summary_translation_range_limit);
-
 
 	if ($('input[name="shipping_method"]:checked').val() == 1)
 		unit = PS_WEIGHT_UNIT;
@@ -422,7 +417,7 @@ function bind_inputs()
 	});
 
 	$(document.body).off('change', 'tr.fees_all td input').on('change', 'tr.fees_all td input', function() {
-	   index = $(this).closest('td').index();
+		index = $(this).closest('td').index();
 		val = $(this).val();
 		$(this).val('');
 		$('tr.fees').each(function () {
@@ -601,7 +596,6 @@ function enableGlobalFees(index) {
 function disabledGlobalFees(index) {
   $('#zone_ranges .fees_all td:eq('+index+')').find('div.input-group input').attr('disabled', 'disabled');
 }
-
 
 function disableRange(index)
 {
@@ -784,5 +778,4 @@ function checkAllZones(elt)
 		$('.input_zone').removeAttr('checked');
 		$('.fees div.input-group input:text, .fees_all div.input-group input:text').attr('disabled', 'disabled');
 	}
-
 }
