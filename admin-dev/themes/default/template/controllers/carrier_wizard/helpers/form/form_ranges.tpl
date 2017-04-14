@@ -97,7 +97,7 @@
 								<td>&nbsp;</td>
 							{else}
 								<td>
-									<button class="btn btn-default">{l s='Delete'}</button>
+									<a href="#" onclick="delete_range();" class="btn btn-default">{l s='Delete'}</a>
 								</td>
 							{/if}
 						{/foreach}
