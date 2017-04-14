@@ -115,12 +115,8 @@ function displayRangeType()
 	$('.range_type').html(string);
 }
 
-function onShowStepCallback()
-{
-	$('.anchor li a').each(function () {
-		$(this).closest('li').addClass($(this).attr('class'));
-	});
-	resizeWizard();
+function onShowStepCallback() {
+  resizeWizard();
 }
 
 function onFinishCallback(obj, context)
