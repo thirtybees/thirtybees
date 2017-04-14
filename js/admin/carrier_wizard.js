@@ -23,13 +23,9 @@
 *  International Registered Trademark & Property of PrestaShop SA
 */
 
-var fees_is_hide = false;
-
 $(document).ready(function() {
 	bind_inputs();
 	initCarrierWizard();
-	if (parseInt($('input[name="is_free"]:checked').val()))
-		is_freeClick($('input[name="is_free"]:checked'));
 
 	$('#attachement_fileselectbutton').click(function(e) {
 		$('#carrier_logo_input').trigger('click');
@@ -66,11 +62,13 @@ $(document).ready(function() {
 	{
 		$('#shipping_handling_off').prop('checked', true).prop('disabled', true);
 		$('#shipping_handling_on').prop('disabled', true).prop('checked', false);
+    hideFees();
 	}
 
 	$('#is_free_on').click(function(e) {
 		$('#shipping_handling_off').prop('checked', true).prop('disabled', true);
 		$('#shipping_handling_on').prop('disabled', true).prop('checked', false);
+    hideFees();
 	});
 
 	$('#is_free_off').click(function(e) {
@@ -79,6 +77,7 @@ $(document).ready(function() {
 			$('#shipping_handling_off').prop('disabled', false).prop('checked', false);
 			$('#shipping_handling_on').prop('disabled', false).prop('checked', true);
 		}
+    showFees();
 	});
 });
 
@@ -113,7 +112,6 @@ function displayRangeType()
 		$('.price_unit').show();
 		$('.weight_unit').hide();
 	}
-	is_freeClick($('input[name="is_free"]:checked'));
 	$('.range_type').html(string);
 }
 
@@ -427,10 +425,6 @@ function bind_inputs()
 		return false;
 	});
 
-	$('input[name="is_free"]').off('click').on('click', function() {
-		is_freeClick(this);
-	});
-
 	$('input[name="shipping_method"]').off('click').on('click', function() {
 		$.ajax({
 			type:"POST",
@@ -454,15 +448,6 @@ function bind_inputs()
 	});
 }
 
-function is_freeClick(elt)
-{
-	var is_free = $(elt);
-	if (parseInt(is_free.val()))
-		hideFees();
-	else if (fees_is_hide)
-		showFees();
-}
-
 function hideFees()
 {
 	$('tr.range_inf td, tr.range_sup td, tr.fees_all td, tr.fees td').each(function () {
@@ -472,7 +457,6 @@ function hideFees()
 			$(this).css('background-color', '#999999');
 		}
 	});
-	fees_is_hide = true;
 }
 
 function showFees()
