@@ -336,19 +336,6 @@ function bind_inputs()
 		$('.wizard_error').fadeOut('fast', function () { $(this).remove()});
 	});
 
-	$('tr.delete_range td button').off('click').on('click', function () {
-		if (confirm(delete_range_confirm))
-		{
-			index = $(this).closest('td').index();
-			$('tr.range_sup td:eq('+index+'), tr.range_inf td:eq('+index+'), tr.fees_all td:eq('+index+'), tr.delete_range td:eq('+index+')').remove();
-			$('tr.fees').each(function () {
-				$(this).find('td:eq('+index+')').remove();
-			});
-			rebuildTabindex();
-		}
-		return false;
-	});
-
 	$('tr.fees td input:checkbox').off('change').on('change', function ()
 	{
 		if($(this).is(':checked'))
@@ -598,7 +585,8 @@ function add_new_range()
 	$('tr.fees').each(function () {
 		$(this).find('td:last').after('<td><div class="input-group fixed-width-md"><span class="input-group-addon currency_sign">'+currency_sign+'</span><input class="form-control" disabled="disabled" name="fees['+$(this).data('zoneid')+'][]" type="text" /></div></td>');
 	});
-	$('tr.delete_range td:last').after('<td><button class="btn btn-default">'+labelDelete+'</button</td>');
+
+  $('#zone_ranges .delete_range td:last').after('<td><a href="#" onclick="delete_range();" class="btn btn-default">'+labelDelete+'</a></td>');
 
 	bind_inputs();
 	rebuildTabindex();
@@ -607,10 +595,19 @@ function add_new_range()
 	return false;
 }
 
-function delete_new_range()
-{
-	if ($('#new_range_form_placeholder').find('td').length = 1)
-		return false;
+function delete_range() {
+  if (confirm(delete_range_confirm)) {
+    let index = $(this).closest('td').index();
+    $('#zone_ranges .range_sup td:eq('+index+'), \
+       #zone_ranges .range_inf td:eq('+index+'), \
+       #zone_ranges .fees_all td:eq('+index+'), \
+       #zone_ranges .delete_range td:eq('+index+')').remove();
+    $('#zone_ranges .fees').each(function () {
+      $(this).find('td:eq('+index+')').remove();
+    });
+    rebuildTabindex();
+  }
+  return false;
 }
 
 function checkAllFieldIsNumeric()
