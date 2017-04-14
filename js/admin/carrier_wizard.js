@@ -594,18 +594,12 @@ function enableRange(index)
 	bind_inputs();
 }
 
-function enableGlobalFees(index)
-{
-	$('span.fees_all').show();
-	$('tr.fees_all td:eq('+index+')').find('div.input-group input').show().removeAttr('disabled');
-	$('tr.fees_all td:eq('+index+')').find('div.input-group .currency_sign').show();
+function enableGlobalFees(index) {
+  $('#zone_ranges .fees_all td:eq('+index+')').find('div.input-group input').removeAttr('disabled');
 }
 
-function disabledGlobalFees(index)
-{
-	$('span.fees_all').hide();
-	$('tr.fees_all td:eq('+index+')').find('div.input-group input').hide().attr('disabled', 'disabled');
-	$('tr.fees_all td:eq('+index+')').find('div.input-group .currency_sign').hide();
+function disabledGlobalFees(index) {
+  $('#zone_ranges .fees_all td:eq('+index+')').find('div.input-group input').attr('disabled', 'disabled');
 }
 
 
