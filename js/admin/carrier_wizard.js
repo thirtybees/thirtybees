@@ -336,23 +336,19 @@ function bind_inputs()
 		$('.wizard_error').fadeOut('fast', function () { $(this).remove()});
 	});
 
-	$('tr.fees td input:checkbox').off('change').on('change', function ()
-	{
-		if($(this).is(':checked'))
-		{
-			$(this).closest('tr').find('td').each(function () {
-				index = $(this).index();
-				if ($('tr.fees_all td:eq('+index+')').hasClass('validated'))
-				{
-					enableGlobalFees(index);
-					$(this).find('div.input-group input:text').removeAttr('disabled');
-				}
-				else
-					disabledGlobalFees(index);
-			});
-		}
-		else
-			$(this).closest('tr').find('td').find('div.input-group input:text').attr('disabled', 'disabled');
+  $('#zone_ranges .fees td input:checkbox').off('change').on('change', function () {
+    let priceField = $(this).closest('tr').find('input:text');
+    if ($(this).prop('checked')) {
+      priceField.removeAttr('disabled');
+      if (priceField.val().length === 0) {
+        priceField.val((0).toFixed(6));
+      }
+    } else {
+      priceField.attr('disabled', 'disabled');
+      if (priceField.val() == 0) {
+        priceField.val('');
+      }
+    }
 
 		return false;
 	});
