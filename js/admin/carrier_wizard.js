@@ -357,12 +357,6 @@ function bind_inputs()
 		$(this).closest('div.input-group').removeClass('has-error');
 	});
 
-	$('tr.fees_all td input:text').keypress(function (evn) {
-		index = $(this).parent('td').index();
-		if (evn.keyCode == 13)
-			return false;
-	});
-
 	$(document.body).off('change', 'tr.fees_all td input').on('change', 'tr.fees_all td input', function() {
 		index = $(this).closest('td').index();
 		val = $(this).val();
@@ -450,14 +444,6 @@ function validateRange(index)
 	}
 
 	return is_valid;
-}
-
-function enableGlobalFees(index) {
-  $('#zone_ranges .fees_all td:eq('+index+')').find('div.input-group input').removeAttr('disabled');
-}
-
-function disabledGlobalFees(index) {
-  $('#zone_ranges .fees_all td:eq('+index+')').find('div.input-group input').attr('disabled', 'disabled');
 }
 
 function add_new_range() {
