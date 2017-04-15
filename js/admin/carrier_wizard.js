@@ -461,22 +461,30 @@ function disabledGlobalFees(index) {
 }
 
 function add_new_range() {
-	last_sup_val = $('tr.range_sup td:last input').val();
-	//add new rand sup input
-	$('tr.range_sup td:last').after('<td class="range_data"><div class="input-group fixed-width-md"><span class="input-group-addon weight_unit" style="display: none;">'+PS_WEIGHT_UNIT+'</span><span class="input-group-addon price_unit" style="display: none;">'+currency_sign+'</span><input class="form-control" name="range_sup[]" type="text" autocomplete="off" /></div></td>');
-	//add new rand inf input
-	$('tr.range_inf td:last').after('<td class="border_bottom"><div class="input-group fixed-width-md"><span class="input-group-addon weight_unit" style="display: none;">'+PS_WEIGHT_UNIT+'</span><span class="input-group-addon price_unit" style="display: none;">'+currency_sign+'</span><input class="form-control" name="range_inf[]" type="text" value="'+last_sup_val+'" autocomplete="off" /></div></td>');
-	$('tr.fees_all td:last').after('<td class="border_top border_bottom"><div class="input-group fixed-width-md"><span class="input-group-addon currency_sign" style="display:none" >'+currency_sign+'</span><input class="form-control" style="display:none" type="text" /></div></td>');
+  let rangesZone = $('#zone_ranges');
+  let lastSup = rangesZone.find('.range_sup td:last input:text').val();
 
-	$('tr.fees').each(function () {
-		$(this).find('td:last').after('<td><div class="input-group fixed-width-md"><span class="input-group-addon currency_sign">'+currency_sign+'</span><input class="form-control" disabled="disabled" name="fees['+$(this).data('zoneid')+'][]" type="text" /></div></td>');
-	});
+  rangesZone.find('.range_inf, .range_sup, .fees_all, .fees').each(function() {
+    let node = $(this).find('td:last');
+    node.after(node.clone());
+  });
 
-  $('#zone_ranges .delete_range td:last').after('<td><a href="#" onclick="delete_range();" class="btn btn-default">'+labelDelete+'</a></td>');
+  rangesZone.find('.range_inf td:last input:text').val(lastSup);
+  rangesZone.find('.range_sup td:last input:text').val('');
+
+  rangesZone.find('.range_inf, .range_sup, .fees')
+            .find('td:last .form-control').each(function() {
+    let control = $(this);
+    let text = control.prop('name');
+    text = text.substr(0, text.lastIndexOf('['))+'[]';
+    control.prop('name', text);
+  });
+
+  // delete_range button may not exist in the previous range.
+  rangesZone.find('.delete_range td:last').after('<td><a href="#" onclick="delete_range();" class="btn btn-default">'+labelDelete+'</a></td>');
 
 	bind_inputs();
 	rebuildTabindex();
-	displayRangeType();
 	resizeWizard();
 	return false;
 }
