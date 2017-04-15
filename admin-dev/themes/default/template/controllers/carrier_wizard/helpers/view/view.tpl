@@ -35,7 +35,6 @@
 	var carrierlist_url = '{$carrierlist_url|addslashes}';
 	var nbr_steps = {$wizard_steps.steps|count};
 	var enableAllSteps = {if $enableAllSteps|intval == 1}true{else}false{/if};
-	var need_to_validate = '{l s='Please validate the last range before create a new one.' js=1}';
 	var delete_range_confirm = '{l s='Are you sure to delete this range ?' js=1}';
 	var currency_sign = '{$currency_sign}';
 	var currency_iso_code = '{$currency_iso_code}';
