@@ -612,13 +612,11 @@ function checkAllZones(elt)
 	if($(elt).is(':checked'))
 	{
 		$('.input_zone').attr('checked', 'checked');
-    $('#zone_ranges .fees_all div.input-group input:text, \
-       #zone_ranges .fees div.input-group input:text').removeAttr('disabled');
+    $('#zone_ranges .fees div.input-group input:text').removeAttr('disabled');
 	}
 	else
 	{
 		$('.input_zone').removeAttr('checked');
-    $('#zone_ranges .fees_all div.input-group input:text, \
-       #zone_ranges .fees div.input-group input:text').attr('disabled', 'disabled');
+    $('#zone_ranges .fees div.input-group input:text').attr('disabled', 'disabled');
 	}
 }
