@@ -30,10 +30,6 @@
 
 {block name="field"}
 	{if $input.name == 'zones'}
-		<div class="ranges_not_follow warn" style="display:none">
-			<label>{l s="Ranges are not correctly ordered:"}</label>
-			<a href="#" onclick="checkRangeContinuity(true); return false;" class="btn btn-default">{l s="Reordering"}</a>
-		</div>
 		{include file='controllers/carrier_wizard/helpers/form/form_ranges.tpl'}
 
 		<div class="new_range">
