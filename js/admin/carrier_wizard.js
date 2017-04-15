@@ -515,67 +515,6 @@ function rebuildTabindex()
 	});
 }
 
-function repositionRange(current_index, new_index)
-{
-	$('tr.range_sup, tr.range_inf, tr.fees_all, tr.fees, tr.delete_range ').each(function () {
-		$(this).find('td:eq('+current_index+')').each(function () {
-			$(this).closest('tr').find('td:eq('+new_index+')').after(this.outerHTML);
-			$(this).remove();
-		});
-	});
-}
-
-function checkRangeContinuity(reordering)
-{
-	reordering = typeof reordering !== 'undefined' ? reordering : false;
-	res = true;
-
-	$('tr.range_sup td').not('.range_type, .range_sign').each(function ()
-	{
-		index = $(this).index();
-		if (index > 2)
-		{
-			range_sup = parseFloat($('tr.range_sup td:eq('+index+')').find('div.input-group input:text').val().trim());
-			range_inf = parseFloat($('tr.range_inf td:eq('+index+')').find('div.input-group input:text').val().trim());
-			prev_index = index-1;
-			prev_range_sup = parseFloat($('tr.range_sup td:eq('+prev_index+')').find('div.input-group input:text').val().trim());
-			prev_range_inf = parseFloat($('tr.range_inf td:eq('+prev_index+')').find('div.input-group input:text').val().trim());
-
-			if (range_inf < prev_range_inf || range_sup < prev_range_sup)
-			{
-				res = false;
-				if (reordering)
-				{
-					new_position = getCorrectRangePosistion(range_inf, range_sup);
-					if (new_position)
-						repositionRange(index, new_position);
-				}
-			}
-		}
-	});
-	if (res)
-		$('.ranges_not_follow').fadeOut();
-	else
-		$('.ranges_not_follow').fadeIn();
-	resizeWizard();
-}
-
-function getCorrectRangePosistion(current_inf, current_sup)
-{
-	new_position = false;
-	$('tr.range_sup td').not('.range_type, .range_sign').each(function ()
-	{
-		index = $(this).index();
-		range_sup = parseFloat($('tr.range_sup td:eq('+index+')').find('div.input-group input:text').val().trim());
-		next_range_inf = 0
-		if ($('tr.range_inf td:eq('+index+1+')').length)
-			next_range_inf = parseFloat($('tr.range_inf td:eq('+index+1+')').find('div.input-group input:text').val().trim());
-		if (current_inf >= range_sup && current_sup < next_range_inf)
-			new_position = index;
-	});
-	return new_position;
-}
-
 function isOverlapping()
 {
 	var is_valid = false;
