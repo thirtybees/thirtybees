@@ -448,32 +448,24 @@ function bind_inputs()
 	});
 }
 
-function hideFees()
-{
-	$('tr.range_inf td, tr.range_sup td, tr.fees_all td, tr.fees td').each(function () {
-		if ($(this).index() >= 2)
-		{
-			$(this).find('input:text, button').val('').attr('disabled', 'disabled').css('background-color', '#999999').css('border-color', '#999999');
-			$(this).css('background-color', '#999999');
-		}
-	});
+function hideFees() {
+  $('#zone_ranges .range_inf td input, \
+     #zone_ranges .range_sup td input, \
+     #zone_ranges .fees_all td input, \
+     #zone_ranges .fees td input').attr('disabled', 'disabled');
 }
 
-function showFees()
-{
-	$('tr.range_inf td, tr.range_sup td, tr.fees_all td, tr.fees td').each(function () {
-		if ($(this).index() >= 2)
-		{
-			//enable only if zone is active
-			tr = $(this).closest('tr');
-			validate = $('tr.fees_all td:eq('+$(this).index()+')').hasClass('validated');
-			if ($(tr).index() > 2 && $(tr).find('td:eq(1) input').attr('checked') && validate || !$(tr).hasClass('range_sup') || !$(tr).hasClass('range_inf'))
-				$(this).find('div.input-group input:text').removeAttr('disabled');
-			$(this).find('input:text, button').css('background-color', '').css('border-color', '');
-			$(this).find('button').css('background-color', '').css('border-color', '').removeAttr('disabled');
-			$(this).css('background-color', '');
-		}
-	});
+function showFees() {
+  $('#zone_ranges .range_inf td input, \
+     #zone_ranges .range_sup td input, \
+     #zone_ranges .fees_all td input').removeAttr('disabled');
+  $('#zone_ranges .fees td input:checkbox').each(function () {
+    let checkbox = $(this);
+    checkbox.removeAttr('disabled');
+    if (checkbox.prop('checked')) {
+      checkbox.closest('tr').find('input:text').removeAttr('disabled');
+    }
+  });
 }
 
 function validateRange(index)
