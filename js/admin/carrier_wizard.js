@@ -388,8 +388,7 @@ function bind_inputs() {
 	});
 
 	$('#zones_table td input[type=text]').off('change').on('change', function () {
-    $(this).closest('div.input-group').removeClass('has-error');
-		checkAllFieldIsNumeric();
+    checkFieldIsNumeric($(this));
 	});
 }
 
@@ -493,13 +492,13 @@ function delete_range() {
   return false;
 }
 
-function checkAllFieldIsNumeric()
-{
-	$('#carrier_wizard .actionBar a.btn').removeClass('disabled');
-	$('#zones_table td input[type=text]').each(function () {
-		if (!$.isNumeric($(this).val()) && $(this).val() != '')
-			$(this).closest('div.input-group').addClass('has-error');
-	});
+function checkFieldIsNumeric(element) {
+  let value = element.val();
+  if (value.length && $.isNumeric(value)) {
+    element.closest('div.input-group').removeClass('has-error');
+  } else {
+    element.closest('div.input-group').addClass('has-error');
+  }
 }
 
 function rebuildTabindex()
