@@ -318,7 +318,6 @@ function displayError(errors, step_number)
 	}
 	$('#step-'+step_number).prepend(str_error+'</ul></div>');
 	$('.wizard_error').fadeIn('fast');
-	bind_inputs();
   resizeWizard();
 }
 
