@@ -132,7 +132,6 @@ function onFinishCallback(obj, context)
 			if (data.has_error)
 			{
 				displayError(data.errors, context.fromStep);
-				resizeWizard();
 			}
 			else
 				window.location.href = carrierlist_url;
@@ -296,7 +295,6 @@ function validateSteps(fromStep, toStep)
 						$(this).closest('div.input-group').removeClass('has-error');
 					});
 					displayError(datas.errors, fromStep);
-					resizeWizard();
 				}
 			},
 			error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -321,11 +319,26 @@ function displayError(errors, step_number)
 	$('#step-'+step_number).prepend(str_error+'</ul></div>');
 	$('.wizard_error').fadeIn('fast');
 	bind_inputs();
+  resizeWizard();
 }
 
-function resizeWizard()
-{
-	resizeInterval = setInterval(function (){$("#carrier_wizard").smartWizard('fixHeight'); clearInterval(resizeInterval)}, 100);
+function resizeWizard() {
+  // @TODO: should be:
+  //resizeInterval = setInterval(function (){$("#carrier_wizard").smartWizard('fixHeight'); clearInterval(resizeInterval)}, 100);
+
+  // Because helpers/form/form.tpl adds inline scripts (ouch, this gives us
+  // 4 times the same script node) and jQuery gives script nodes a height
+  // (see https://bugs.jquery.com/ticket/10159), the above doesn't work
+  // properly. Instead:
+  $('#carrier_wizard').find('.step_container:visible').each(function() {
+    let container = $(this);
+    let height = 0;
+    container.children().not('script, style').each(function() {
+      height += $(this).outerHeight(true);
+    });
+    container.height(height + 5);
+    container.parent().height(height + 20);
+  });
 }
 
 function bind_inputs()
@@ -487,6 +500,7 @@ function delete_range() {
     });
     rebuildTabindex();
   }
+  resizeWizard();
   return false;
 }
 
