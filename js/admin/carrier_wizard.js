@@ -147,7 +147,8 @@ function onLeaveStepCallback(obj, context)
 	if (context.toStep == nbr_steps)
 		displaySummary();
 
-	return validateSteps(context.fromStep, context.toStep); // return false to stay on step and true to continue navigation
+  // Return false to stay on step and true to continue navigation.
+  return validateStep(context.fromStep);
 }
 
 function displaySummary()
@@ -248,61 +249,98 @@ function displaySummary()
 	});
 }
 
-function validateSteps(fromStep, toStep)
-{
-	var is_ok = true;
-	if ((multistore_enable && fromStep == 3) || (!multistore_enable && fromStep == 2))
-	{
-		if (toStep > fromStep && !$('#is_free_on').attr('checked'))
-		{
-			is_ok = false;
-			$('.input_zone').each(function () {
-				if ($(this).prop('checked'))
-					is_ok = true;
-			});
+function validateStep(step) {
+  let ok = true;
 
-			if (!is_ok)
-			{
-				displayError([select_at_least_one_zone], fromStep);
-				return;
-			}
-		}
+  $('.wizard_error').remove();
 
-		if (toStep > fromStep && !$('#is_free_on').attr('checked') && !validateRange(2))
-			is_ok = false;
-	}
+  // The ranges step is the only one we validate here.
+  let rangesZone = undefined;
+  $('#step-'+step+':visible #zone_ranges').each(function() {
+    rangesZone = $(this);
+  });
 
-	$('.wizard_error').remove();
+  if (rangesZone !== undefined && !$('#is_free_on').prop('checked')) {
+    // Test individual values.
+    rangesZone.find('.range_inf, .range_sup, .fees').
+               find('input:text:enabled').each(function () {
+      checkFieldIsNumeric($(this));
+    });
+    rangesZone.find('.has-error').each(function() {
+      ok = false;
+    });
+    if (!ok) {
+      displayError([invalid_value], step);
+      return false;
+    }
 
-	if (is_ok && isOverlapping())
-		is_ok = false;
+    // Test for at least one activated zone.
+    ok = false;
+    rangesZone.find('.fees input:checkbox:checked').each(function() {
+      ok = true;
+    });
+    if (!ok) {
+      displayError([select_at_least_one_zone], step);
+      return false;
+    }
 
-	if (is_ok)
-	{
-		form = $('#carrier_wizard #step-'+fromStep+' form');
-		$.ajax({
-			type:"POST",
-			url : validate_url,
-			async: false,
-			dataType: 'json',
-			data : form.serialize()+'&step_number='+fromStep+'&action=validate_step&ajax=1',
-			success : function(datas)
-			{
-				if (datas.has_error)
-				{
-					is_ok = false;
-					$('div.input-group input').focus(function () {
-						$(this).closest('div.input-group').removeClass('has-error');
-					});
-					displayError(datas.errors, fromStep);
-				}
-			},
-			error: function(XMLHttpRequest, textStatus, errorThrown) {
-				jAlert("TECHNICAL ERROR: \n\nDetails:\nError thrown: " + XMLHttpRequest + "\n" + 'Text status: ' + textStatus);
-			}
-		});
-	}
-	return is_ok;
+    let nbrRanges = 0;
+    rangesZone.find('.range_inf .input-group').each(function() {
+      nbrRanges++;
+    });
+
+    // Test against negative and zero-sized ranges.
+    for (let i = 0; i < nbrRanges; i++) {
+      let rangeInf = rangesZone.find('.range_inf .input-group:eq('+i+') input:text');
+      let rangeSup = rangesZone.find('.range_sup .input-group:eq('+i+') input:text');
+      if (parseFloat(rangeInf.val()) < 0 ||
+          parseFloat(rangeInf.val()) >= parseFloat(rangeSup.val())) {
+        ok = false;
+        rangeInf.closest('.input-group').addClass('has-error');
+        rangeSup.closest('.input-group').addClass('has-error');
+      }
+    }
+    if (!ok) {
+      displayError([negative_range], step);
+      return false;
+    }
+
+    // Test for a continuous series of ranges.
+    for (let i = 0; nbrRanges > 1 && i < nbrRanges - 1; i++) {
+      let rangeSup = rangesZone.find('.range_sup .input-group:eq('+i+') input:text');
+      let rangeInf = rangesZone.find('.range_inf .input-group:eq('+(i + 1)+') input:text');
+      if (parseFloat(rangeSup.val()) !== parseFloat(rangeInf.val())) {
+        ok = false;
+        rangeSup.closest('.input-group').addClass('has-error');
+        rangeInf.closest('.input-group').addClass('has-error');
+      }
+    }
+    if (!ok) {
+      displayError([overlapping_range], step);
+      return false;
+    }
+  }
+
+  // All steps get validated by a POST request.
+  let form = $('#carrier_wizard #step-'+step+' form');
+  $.ajax({
+    type:"POST",
+    url: validate_url,
+    async: false,
+    dataType: 'json',
+    data: form.serialize()+'&step_number='+step+'&action=validate_step&ajax=1',
+    success: function(datas) {
+      if (datas.has_error) {
+        ok = false;
+        displayError(datas.errors, step);
+      }
+    },
+    error: function(XMLHttpRequest, textStatus, errorThrown) {
+      jAlert("TECHNICAL ERROR: \n\nDetails:\nError thrown: "+XMLHttpRequest+"\nText status: "+textStatus);
+    }
+  });
+
+  return ok;
 }
 
 function displayError(errors, step_number)
@@ -414,41 +452,6 @@ function showFees() {
   });
 }
 
-function validateRange(index)
-{
-	$('#carrier_wizard .actionBar a.btn').removeClass('disabled');
-	$('.wizard_error').remove();
-	//reset error css
-	$('tr.range_sup td input:text').closest('div.input-group').removeClass('has-error');
-	$('tr.range_inf td input:text').closest('div.input-group').removeClass('has-error');
-
-	var is_valid = true;
-	range_sup = parseFloat($('tr.range_sup td:eq('+index+')').find('div.input-group input:text').val().trim());
-	range_inf = parseFloat($('tr.range_inf td:eq('+index+')').find('div.input-group input:text').val().trim());
-
-	if (isNaN(range_sup) || range_sup.length === 0)
-	{
-		$('tr.range_sup td:eq('+index+')').find('div.input-group input:text').closest('div.input-group').addClass('has-error');
-		is_valid = false;
-		displayError([invalid_range], $("#carrier_wizard").smartWizard('currentStep'));
-	}
-	else if (is_valid && (isNaN(range_inf) || range_inf.length === 0))
-	{
-		$('tr.range_inf td:eq('+index+')').find('div.input-group input:text').closest('div.input-group').addClass('has-error');
-		is_valid = false;
-		displayError([invalid_range], $("#carrier_wizard").smartWizard('currentStep'));
-	}
-	else if (is_valid && range_inf >= range_sup)
-	{
-		$('tr.range_sup td:eq('+index+')').find('div.input-group input:text').closest('div.input-group').addClass('has-error');
-		$('tr.range_inf td:eq('+index+')').find('div.input-group input:text').closest('div.input-group').addClass('has-error');
-		is_valid = false;
-		displayError([invalid_range], $("#carrier_wizard").smartWizard('currentStep'));
-	}
-
-	return is_valid;
-}
-
 function add_new_range() {
   let rangesZone = $('#zone_ranges');
   let lastSup = rangesZone.find('.range_sup td:last input:text').val();
@@ -517,37 +520,6 @@ function rebuildTabindex()
 		});
 		i++;
 	});
-}
-
-function isOverlapping()
-{
-	var is_valid = false;
-	$('#carrier_wizard .actionBar a.btn').removeClass('disabled');
-	$('tr.range_sup td').not('.range_type, .range_sign').each( function ()
-	{
-		index = $(this).index();
-		current_inf = parseFloat($('.range_inf td:eq('+index+') input').val());
-		current_sup = parseFloat($('.range_sup td:eq('+index+') input').val());
-
-		$('tr.range_sup td').not('.range_type, .range_sign').each( function ()
-		{
-			testing_index = $(this).index();
-
-			if (testing_index != index) //do not test himself
-			{
-				testing_inf = parseFloat($('.range_inf td:eq('+testing_index+') input').val());
-				testing_sup = parseFloat($('.range_sup td:eq('+testing_index+') input').val());
-
-				if ((current_inf >= testing_inf && current_inf < testing_sup) || (current_sup > testing_inf && current_sup < testing_sup))
-				{
-					$('tr.range_sup td:eq('+testing_index+') div.input-group, tr.range_inf td:eq('+testing_index+') div.input-group').addClass('has-error');
-					displayError([overlapping_range], $("#carrier_wizard").smartWizard('currentStep'));
-					is_valid = true;
-				}
-			}
-		});
-	});
-	return is_valid;
 }
 
 function checkAllZones(elt)
