@@ -340,14 +340,7 @@ function resizeWizard() {
   });
 }
 
-function bind_inputs()
-{
-	$('input').focus(function () {
-		$(this).closest('div.input-group').removeClass('has-error');
-		$('#carrier_wizard .actionBar a.btn').not('.buttonFinish').removeClass('disabled');
-		$('.wizard_error').fadeOut('fast', function () { $(this).remove()});
-	});
-
+function bind_inputs() {
   $('#zone_ranges .fees td input:checkbox').off('change').on('change', function () {
     let priceField = $(this).closest('tr').find('input:text');
     if ($(this).prop('checked')) {
@@ -363,10 +356,6 @@ function bind_inputs()
     }
 
 		return false;
-	});
-
-	$('tr.range_sup td input:text, tr.range_inf td input:text').focus(function () {
-		$(this).closest('div.input-group').removeClass('has-error');
 	});
 
 	$(document.body).off('change', 'tr.fees_all td input').on('change', 'tr.fees_all td input', function() {
@@ -399,6 +388,7 @@ function bind_inputs()
 	});
 
 	$('#zones_table td input[type=text]').off('change').on('change', function () {
+    $(this).closest('div.input-group').removeClass('has-error');
 		checkAllFieldIsNumeric();
 	});
 }
