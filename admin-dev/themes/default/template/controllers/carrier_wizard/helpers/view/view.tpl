@@ -39,8 +39,9 @@
 	var currency_sign = '{$currency_sign}';
 	var currency_iso_code = '{$currency_iso_code}';
 	var PS_WEIGHT_UNIT = '{$PS_WEIGHT_UNIT}';
-	var invalid_range = '{l s='This range is not valid' js=1}';
-	var overlapping_range = '{l s='Ranges are overlapping' js=1}';
+	var invalid_value = '{l s='One of the entered values is not valid' js=1}';
+	var negative_range = '{l s='At least one range is of zero size or negative' js=1}';
+	var overlapping_range = '{l s='Gaps or overlappings between ranges' js=1}';
 	var select_at_least_one_zone = '{l s='Please select at least one zone' js=1}';
 	var multistore_enable = '{$multistore_enable}';
 </script>
