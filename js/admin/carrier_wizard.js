@@ -119,27 +119,22 @@ function onShowStepCallback() {
   resizeWizard();
 }
 
-function onFinishCallback(obj, context)
-{
-	$('.wizard_error').remove();
-	$.ajax({
-		type:"POST",
-		url : validate_url,
-		async: false,
-		dataType: 'json',
-		data : $('#carrier_wizard .stepContainer .content form').serialize() + '&action=finish_step&ajax=1&step_number='+context.fromStep,
-		success : function(data) {
-			if (data.has_error)
-			{
-				displayError(data.errors, context.fromStep);
-			}
-			else
-				window.location.href = carrierlist_url;
-		},
-		error: function(XMLHttpRequest, textStatus, errorThrown) {
-			jAlert("TECHNICAL ERROR: \n\nDetails:\nError thrown: " + XMLHttpRequest + "\n" + 'Text status: ' + textStatus);
-		}
-	});
+function onFinishCallback(obj, context) {
+  let ok = false;
+
+  ok = validateStep(context.fromStep);
+
+  if (ok) {
+    ok = ajaxRequest(context.fromStep,
+                     $('#carrier_wizard .stepContainer .content form').serialize()+
+                     '&action=finish_step&ajax=1&step_number='+context.fromStep);
+  }
+
+  if (ok) {
+    window.location.href = carrierlist_url;
+  }
+
+  return false;
 }
 
 function onLeaveStepCallback(obj, context)
