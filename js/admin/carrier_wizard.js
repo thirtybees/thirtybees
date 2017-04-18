@@ -322,17 +322,27 @@ function validateStep(step) {
   }
 
   // All steps get validated by a POST request.
-  let form = $('#carrier_wizard #step-'+step+' form');
+  ok = ajaxRequest(step,
+                   $('#carrier_wizard #step-'+step+' form').serialize()+
+                   '&step_number='+step+'&action=validate_step&ajax=1');
+
+  return ok;
+}
+
+function ajaxRequest(step, data) {
+  let success = false;
+
   $.ajax({
     type:"POST",
     url: validate_url,
     async: false,
     dataType: 'json',
-    data: form.serialize()+'&step_number='+step+'&action=validate_step&ajax=1',
+    data: data,
     success: function(datas) {
       if (datas.has_error) {
-        ok = false;
         displayError(datas.errors, step);
+      } else {
+        success = true;
       }
     },
     error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -340,7 +350,7 @@ function validateStep(step) {
     }
   });
 
-  return ok;
+  return success;
 }
 
 function displayError(errors, step_number)
