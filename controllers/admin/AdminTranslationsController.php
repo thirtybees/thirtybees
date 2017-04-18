@@ -3320,7 +3320,7 @@ class AdminTranslationsControllerCore extends AdminController
                         } elseif (array_key_exists($defaultKey, $GLOBALS[$nameVar])) {
                             $this->modules_translations[$themeName][$moduleName][$templateName][$key]['trad'] = html_entity_decode($GLOBALS[$nameVar][$defaultKey], ENT_COMPAT, 'UTF-8');
                         } elseif (array_key_exists($prestaShopKey, $GLOBALS[$nameVar])) {
-                            $this->modules_translations[$themeName][$moduleName][$templateName][$key]['trad'] = html_entity_decode($GLOBALS[$nameVar][$defaultKey], ENT_COMPAT, 'UTF-8');
+                            $this->modules_translations[$themeName][$moduleName][$templateName][$key]['trad'] = html_entity_decode($GLOBALS[$nameVar][$prestaShopKey], ENT_COMPAT, 'UTF-8');
                         } else {
                             $this->modules_translations[$themeName][$moduleName][$templateName][$key]['trad'] = '';
                             $this->missing_translations++;
