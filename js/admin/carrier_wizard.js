@@ -146,8 +146,7 @@ function onLeaveStepCallback(obj, context)
   return validateStep(context.fromStep);
 }
 
-function displaySummary()
-{
+function displaySummary() {
     var id_default_lang = typeof default_language !== 'undefined' ? default_language : 1,
         id_lang = id_default_lang;
 
@@ -160,68 +159,63 @@ function displaySummary()
                 break;
             }
 
-    // used as buffer - you must not replace directly in the translation vars
-    var tmp,
-        delay_text = $('#delay_' + id_lang).val();
-
-    // Assign text in default language if empty
-    if (!delay_text)
-        delay_text = $('#delay_' + id_default_lang).val();
+  // used as buffer - you must not replace directly in the translation vars
+  let html;
 
 	// Carrier name
 	$('#summary_name').text($('#name').val());
 
 	// Delay and pricing
-	tmp = summary_translation_meta_informations.replace('@s2', '<strong>' + delay_text + '</strong>');
-	if ($('#is_free_on').attr('checked'))
-		tmp = tmp.replace('@s1', summary_translation_free);
-	else
-		tmp = tmp.replace('@s1', summary_translation_paid);
-	$('#summary_meta_informations').html(tmp);
+  let delayText = $('#delay_' + id_lang).val();
+  if (!delayText)
+    delayText = $('#delay_' + id_default_lang).val();
+  html = summary_translation_meta_informations.replace('@s2', delayText);
 
-	// Tax and calculation mode for the shipping cost
-	tmp = summary_translation_shipping_cost.replace('@s2', '<strong>' + $('#id_tax_rules_group option:selected').text() + '</strong>');
+  if ($('#is_free_on').prop('checked')) {
+    html = html.replace('@s1', summary_translation_free);
+  } else {
+    html = html.replace('@s1', summary_translation_paid);
+  }
+	$('#summary_meta_informations').html(html);
 
-		if ($('#billing_price').attr('checked'))
-			tmp = tmp.replace('@s1', summary_translation_price);
-		else if ($('#billing_weight').attr('checked'))
-			tmp = tmp.replace('@s1', summary_translation_weight);
-		else
-			tmp = tmp.replace('@s1', '<strong>' + summary_translation_undefined + '</strong>');
+  if ($('#is_free_on').prop('checked')) {
+    $('#summary_shipping_cost, #summary_range').hide();
+  } else {
+    // Tax and calculation mode for the shipping cost
+    html = summary_translation_shipping_cost
+             .replace('@s2', $('#id_tax_rules_group option:selected').text());
+    if ($('#billing_price').attr('checked')) {
+      html = html.replace('@s1', summary_translation_price);
+    } else {
+      html = html.replace('@s1', summary_translation_weight);
+    }
+    $('#summary_shipping_cost').html(html);
 
-	$('#summary_shipping_cost').text(tmp);
+    // Weight or price ranges
+    html = summary_translation_range+' '+summary_translation_range_limit;
 
-	// Weight or price ranges
-	$('#summary_range').text(summary_translation_range+' '+summary_translation_range_limit);
+    if ($('input[name="shipping_method"]:checked').val() == 1) {
+      unit = PS_WEIGHT_UNIT;
+    } else {
+      unit = currency_sign;
+    }
 
-	if ($('input[name="shipping_method"]:checked').val() == 1)
-		unit = PS_WEIGHT_UNIT;
-	else
-		unit = currency_sign;
+    let range_inf = summary_translation_undefined;
+    let range_sup = summary_translation_undefined;
+    $('#zone_ranges .range_inf td input:text:first').each(function() {
+      range_inf = $(this).val();
+    });
+    $('#zone_ranges .range_sup td input:text:last').each(function(){
+      range_sup = $(this).val();
+    });
 
-	var range_inf = summary_translation_undefined;
-	var range_sup = summary_translation_undefined;
+    $('#summary_range').html(html.replace('@s1', range_inf+' '+unit)
+                                 .replace('@s2', range_sup+' '+unit)
+                                 .replace('@s3', $('#range_behavior option:selected').text())
+    );
+    $('#summary_shipping_cost, #summary_range').show();
+  }
 
-	$('tr.range_inf td input').each(function()
-	{
-		if (!isNaN(parseFloat($(this).val())) && (range_inf == summary_translation_undefined || parseFloat(range_inf) > parseFloat($(this).val())))
-			range_inf = $(this).val();
-	});
-
-	$('tr.range_sup td input').each(function(){
-
-		if (!isNaN(parseFloat($(this).val())) && (range_sup == summary_translation_undefined || parseFloat(range_sup) < parseFloat($(this).val())))
-			range_sup = $(this).val();
-	});
-
-	$('#summary_range').html(
-		$('#summary_range').html()
-		.replace('@s1', '<strong>' + range_inf +' '+ unit + '</strong>')
-		.replace('@s2', '<strong>' + range_sup +' '+ unit + '</strong>')
-		.replace('@s3', '<strong>' + $('#range_behavior option:selected').text().toLowerCase() + '</strong>')
-	);
-	if ($('#is_free_on').attr('checked'))
-		$('span.is_free').hide();
 	// Delivery zones
 	$('#summary_zones').html('');
 	$('.input_zone').each(function(){
