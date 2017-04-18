@@ -498,7 +498,10 @@ function delete_range() {
     });
     rebuildTabindex();
   }
+
+  $('.wizard_error').remove();
   resizeWizard();
+
   return false;
 }
 
