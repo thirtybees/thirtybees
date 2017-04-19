@@ -342,14 +342,11 @@ function ajaxRequest(step, data) {
   return success;
 }
 
-function displayError(errors, step_number)
-{
-	$('#carrier_wizard .actionBar a.btn').removeClass('disabled');
+function displayError(errors, step_number) {
 	$('.wizard_error').remove();
 	str_error = '<div class="error wizard_error" style="display:none"><ul>';
 	for (var error in errors)
 	{
-		$('#carrier_wizard .actionBar a.btn').addClass('disabled');
 		$('input[name="'+error+'"]').closest('div.input-group').addClass('has-error');
 		str_error += '<li>'+errors[error]+'</li>';
 	}
