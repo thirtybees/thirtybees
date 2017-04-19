@@ -2,7 +2,7 @@
     "require": {
         "guzzlehttp/guzzle": "~6.0",
         "swiftmailer/swiftmailer": "~5.4",
-        "tecnickcom/tcpdf": "^6.2",
+        "tecnickcom/tcpdf": "~5.9",
         "phpoffice/phpexcel": "^1.8",
         "commerceguys/intl": "^0.7.4",
         "ezyang/htmlpurifier": "^4.8",
