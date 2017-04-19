@@ -1760,7 +1760,7 @@ class AdminTranslationsControllerCore extends AdminController
                         $pattern = '\'<{'.strtolower($moduleName).'}'.strtolower($themeName).'>'.strtolower($templateName).'_'.md5($key).'\'';
                     } else {
                         $postKey = md5(strtolower($moduleName).'_'.strtolower($templateName).'_'.md5($key));
-                        $pattern = '\'<{'.strtolower($moduleName).'}(thirtybees|prestashop)>'.strtolower($templateName).'_'.md5($key).'\'';
+                        $pattern = '\'<{'.strtolower($moduleName).'}prestashop>'.strtolower($templateName).'_'.md5($key).'\'';
                     }
 
                     if (array_key_exists($postKey, $_POST) && !in_array($pattern, $arrayCheckDuplicate)) {
