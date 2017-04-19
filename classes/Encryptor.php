@@ -70,7 +70,7 @@ class EncryptorCore
         $this->content = [];
 
         // Get cipher tool from cookie first
-        if (!$this->cipherTool = Context::getContext()->cookie->getCipherTool()) {
+        if (!Validate::isLoadedObject(Context::getContext()->cookie) || !$this->cipherTool = Context::getContext()->cookie->getCipherTool()) {
             if ((int) Configuration::get('PS_CIPHER_ALGORITHM') === 1 && defined('_RIJNDAEL_KEY_')) {
                 $this->cipherTool = new Rijndael(_RIJNDAEL_KEY_, _RIJNDAEL_IV_);
             } elseif ((int) Configuration::get('PS_CIPHER_ALGORITHM') === 2 && defined('_PHP_ENCRYPTION_KEY_')) {
