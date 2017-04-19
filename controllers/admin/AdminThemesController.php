@@ -621,7 +621,7 @@ class AdminThemesControllerCore extends AdminController
      */
     public function processUpdate()
     {
-        if (!in_array($this->authorizationLevel(), [AdminController::LEVEL_EDIT, AdminController::LEVEL_ADD, AdminController::LEVEL_DELETE]) || _PS_MODE_DEMO_) {
+        if (!($this->tabAccess['delete'] && $this->tabAccess['edit'] && $this->tabAccess['add']) || _PS_MODE_DEMO_) {
             $this->errors[] = Tools::displayError('You do not have permission to edit here.');
         } else {
             if (Tools::getIsset('id_theme') && Tools::getIsset('name') && Tools::getIsset('directory')) {
@@ -663,7 +663,7 @@ class AdminThemesControllerCore extends AdminController
      */
     public function processDelete()
     {
-        if (!in_array($this->authorizationLevel(), [AdminController::LEVEL_DELETE]) || _PS_MODE_DEMO_) {
+        if (!$this->tabAccess['delete'] || _PS_MODE_DEMO_) {
             $this->errors[] = Tools::displayError('You do not have permission to delete here.');
         } else {
             /** @var Theme $obj */
@@ -1601,8 +1601,9 @@ class AdminThemesControllerCore extends AdminController
      */
     public function processImportTheme()
     {
-        if (!in_array($this->authorizationLevel(), [AdminController::LEVEL_ADD, AdminController::LEVEL_DELETE]) || _PS_MODE_DEMO_) {
+        if (!($this->tabAccess['add'] && $this->tabAccess['delete']) || _PS_MODE_DEMO_) {
             $this->errors[] = Tools::displayError('You do not have permission to add here.');
+
             return false;
         } else {
             $this->display = 'importtheme';
@@ -1684,7 +1685,7 @@ class AdminThemesControllerCore extends AdminController
      */
     protected function extractTheme($themeZipFile, $sandbox)
     {
-        if (!in_array($this->authorizationLevel(), [AdminController::LEVEL_EDIT, AdminController::LEVEL_ADD, AdminController::LEVEL_DELETE]) || _PS_MODE_DEMO_) {
+        if (!($this->tabAccess['add'] && $this->tabAccess['edit'] && $this->tabAccess['delete']) || _PS_MODE_DEMO_) {
             $this->errors[] = $this->l('You do not have permission to extract here.');
 
             return false;
@@ -1711,7 +1712,7 @@ class AdminThemesControllerCore extends AdminController
      */
     protected function installTheme($themeDir, $sandbox = false, $redirect = true)
     {
-        if (!in_array($this->authorizationLevel(), [AdminController::LEVEL_ADD, AdminController::LEVEL_DELETE]) && !_PS_MODE_DEMO_) {
+        if ($this->tabAccess['add'] && $this->tabAccess['delete'] && !_PS_MODE_DEMO_) {
             if (!$sandbox) {
                 $uniqid = uniqid();
                 $sandbox = _PS_CACHE_DIR_.'sandbox'.DIRECTORY_SEPARATOR.$uniqid.DIRECTORY_SEPARATOR;
@@ -3350,7 +3351,7 @@ class AdminThemesControllerCore extends AdminController
      */
     protected function processUpdateOptions()
     {
-        if (!in_array($this->authorizationLevel(), [AdminController::LEVEL_EDIT, AdminController::LEVEL_ADD, AdminController::LEVEL_DELETE]) || _PS_MODE_DEMO_) {
+        if (!($this->tabAccess['add'] && $this->tabAccess['edit'] && $this->tabAccess['delete']) || _PS_MODE_DEMO_) {
             $this->errors[] = Tools::displayError('You do not have permission to edit here.');
         } else {
             parent::processUpdateOptions();
