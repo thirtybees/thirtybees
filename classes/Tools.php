@@ -763,12 +763,12 @@ class ToolsCore
     /**
      * Return price with currency sign for a given product
      *
-     * @param float        $price    Product price
-     * @param object|array $currency Current currency (object, id_currency, NULL => context currency)
+     * @param float        $price      Product price
+     * @param object|array $tbCurrency Current (thirty bees) Currency
      * @param bool         $noUtf8
      * @param Context      $context
      *
-     * @return string Price correctly formated (sign, decimal separator...)
+     * @return string Price correctly formatted (sign, decimal separator...)
      * if you modify this function, don't forget to modify the Javascript function formatCurrency (in tools.js)
      *
      * @since   1.0.0
@@ -776,7 +776,7 @@ class ToolsCore
      *
      * @todo    : move to intl
      */
-    public static function displayPrice($price, $currency = null, $noUtf8 = false, Context $context = null)
+    public static function displayPrice($price, $tbCurrency = null, $noUtf8 = false, Context $context = null)
     {
         if (!is_numeric($price)) {
             return $price;
@@ -784,18 +784,18 @@ class ToolsCore
         if (!$context) {
             $context = Context::getContext();
         }
-        if ($currency === null) {
-            $currency = $context->currency;
-        } elseif (is_int($currency)) {
-            $currency = Currency::getCurrencyInstance((int) $currency);
+        if ($tbCurrency === null) {
+            $tbCurrency = $context->currency;
+        } elseif (is_int($tbCurrency)) {
+            $tbCurrency = Currency::getCurrencyInstance((int) $tbCurrency);
         }
 
-        if (is_array($currency)) {
-            $currencyIso = $currency['iso_code'];
-            $currencyDecimals = (int) $currency['decimals'] * _PS_PRICE_DISPLAY_PRECISION_;
-        } elseif (is_object($currency)) {
-            $currencyIso = $currency->iso_code;
-            $currencyDecimals = (int) $currency->decimals * _PS_PRICE_DISPLAY_PRECISION_;
+        if (is_array($tbCurrency)) {
+            $currencyIso = $tbCurrency['iso_code'];
+            $currencyDecimals = (int) $tbCurrency['decimals'] * _PS_PRICE_DISPLAY_PRECISION_;
+        } elseif (is_object($tbCurrency)) {
+            $currencyIso = $tbCurrency->iso_code;
+            $currencyDecimals = (int) $tbCurrency->decimals * _PS_PRICE_DISPLAY_PRECISION_;
         } else {
             return false;
         }
@@ -807,6 +807,7 @@ class ToolsCore
         $numberFormatRepository = new NumberFormatRepository();
 
         $currency = $currencyRepository->get(Tools::strtoupper($currencyIso));
+        $currency->setSymbol($tbCurrency->sign);
         $numberFormat = $numberFormatRepository->get($languageIso);
 
         $currencyFormatter = new NumberFormatter($numberFormat, NumberFormatter::CURRENCY);
