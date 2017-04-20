@@ -85,7 +85,7 @@ function formatCurrency(price, currencyFormat, currencySign, currencyBlank) {
     currency = window.currency.iso_code;
   }
 
-  return price.toLocaleString(locale, { style: 'currency', currency: 'USD', currencyDisplay: 'code' }).replace(/USD/, currencySign);
+  return price.toLocaleString(locale, { style: 'currency', currency: 'USD', currencyDisplay: 'code' }).replace('USD', currencySign);
 }
 
 function ps_round_helper(value, mode) {
