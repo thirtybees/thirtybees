@@ -215,6 +215,10 @@ class AdminInformationControllerCore extends AdminController
     }
 
     /**
+     * Generate the list of files to be checked and also save it in
+     * config/json/files.json. This can't be done from back office, but
+     * is done automatically when building a distribution package.
+     *
      * @return array md5 list
      */
     public function generateMd5List()
@@ -242,7 +246,8 @@ class AdminInformationControllerCore extends AdminController
             $md5List[$filePath] = md5_file($file->getPathname());
         }
 
-        file_put_contents(_PS_CONFIG_DIR_.'json/files.json', json_encode($md5List));
+        file_put_contents(_PS_CONFIG_DIR_.'json/files.json',
+                          json_encode($md5List, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
 
         return $md5List;
     }
