@@ -13,7 +13,20 @@ var checkDirs = [
   '../admin',
   '../vendor',
 ];
+var checkFiles = [
+  '../init.php',
+  '../index.php',
+  '../images.inc.php',
+  '../header.php',
+  '../footer.php',
+  '../error500.phtml',
+];
 var check = checkDirs.length;
+
+var walkFile = function(filePath) {
+  var data = fs.readFileSync(filePath, 'utf-8');
+  files['/' + path.relative(currentDirectory, filePath)] = checksum(data);
+};
 
 var walk = function(dir, action, done) {
 
@@ -109,6 +122,10 @@ function checksum(str, algorithm, encoding) {
     .createHash(algorithm || 'md5')
     .update(str, 'utf8')
     .digest(encoding || 'hex');
+}
+
+for (var i = 0; i < checkFiles.length; i += 1) {
+  walkFile(path.join(__dirname, checkFiles[i]));
 }
 
 for (var i = 0; i < checkDirs.length; i += 1) {
