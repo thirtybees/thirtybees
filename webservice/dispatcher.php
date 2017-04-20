@@ -66,11 +66,10 @@ $inputXml = null;
 
 // if a XML is in PUT or in POST
 if (($_SERVER['REQUEST_METHOD'] == 'PUT') || ($_SERVER['REQUEST_METHOD'] == 'POST')) {
-    $putresource = fopen("php://input", "r");
-    while ($putData = fread($putresource, 1024)) {
-        $inputXml .= $putData;
+    $inputXml = file_get_contents('php://input');
+    if (isset($_SERVER['HTTP_CONTENT_ENCODING']) && $_SERVER['HTTP_CONTENT_ENCODING'] == 'gzip') {
+        $inputXml = zlib_decode($inputXml);
     }
-    fclose($putresource);
 }
 if (isset($inputXml) && strncmp($inputXml, 'xml=', 4) == 0) {
     $inputXml = substr($inputXml, 4);
