@@ -72,11 +72,6 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
     protected $imageType = null;
 
     /**
-     * @var int The maximum size supported when uploading images, in bytes
-     */
-    protected $imgMaxUploadSize = 3000000;
-
-    /**
      * @var array The list of supported mime types
      */
     protected $acceptedImgMimeTypes = ['image/gif', 'image/jpg', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/x-png'];
@@ -1141,11 +1136,12 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
      */
     protected function writePostedImageOnDisk($receptionPath, $destWidth = null, $destHeight = null, $imageTypes = null, $parentPath = null)
     {
+		$imgMaxUploadSize = Tools::getMaxUploadSize();
         if ($this->wsObject->method == 'PUT') {
             if (isset($_FILES['image']['tmp_name']) && $_FILES['image']['tmp_name']) {
                 $file = $_FILES['image'];
-                if ($file['size'] > $this->imgMaxUploadSize) {
-                    throw new WebserviceException(sprintf('The image size is too large (maximum allowed is %d KB)', ($this->imgMaxUploadSize / 1000)), [72, 400]);
+                if ($file['size'] > $imgMaxUploadSize) {
+                    throw new WebserviceException(sprintf('The image size is too large (maximum allowed is %d KB)', ($imgMaxUploadSize / 1000)), [72, 400]);
                 }
                 // Get mime content type
                 $mimeType = false;
@@ -1191,8 +1187,8 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
         } elseif ($this->wsObject->method == 'POST') {
             if (isset($_FILES['image']['tmp_name']) && $_FILES['image']['tmp_name']) {
                 $file = $_FILES['image'];
-                if ($file['size'] > $this->imgMaxUploadSize) {
-                    throw new WebserviceException(sprintf('The image size is too large (maximum allowed is %d KB)', ($this->imgMaxUploadSize / 1000)), [72, 400]);
+                if ($file['size'] > $imgMaxUploadSize) {
+                    throw new WebserviceException(sprintf('The image size is too large (maximum allowed is %d KB)', ($imgMaxUploadSize / 1000)), [72, 400]);
                 }
                 require_once(_PS_CORE_DIR_.'/images.inc.php');
                 if ($error = ImageManager::validateUpload($file)) {
@@ -1228,7 +1224,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
                     if (!isset($file['tmp_name'])) {
                         return false;
                     }
-                    if ($error = ImageManager::validateUpload($file, $this->imgMaxUploadSize)) {
+                    if ($error = ImageManager::validateUpload($file, $imgMaxUploadSize)) {
                         throw new WebserviceException('Bad image : '.$error, [76, 400]);
                     }
 
