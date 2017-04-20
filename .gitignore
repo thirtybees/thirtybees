@@ -14,59 +14,61 @@ config.codekit
 *.sublime-workspace
 nbproject
 bower_components
+node_modules
 composer.lock
 
 # Cache, temp and personal files
 
-cache/*
-download/*
-img/*
-log/*
-upload/*
-vendor/*
+/cache/*
+/download/*
+/img/*
+/log/*
+/upload/*
+/vendor/*
 
-admin-dev/autoupgrade/*
-admin-dev/backups/*
-admin-dev/import/*
+/admin-dev/autoupgrade/*
+/admin-dev/backups/*
+/admin-dev/import/*
 
-themes/*/cache/*
-admin-dev/themes/*/cache/*
+/themes/*/cache/*
+/admin-dev/themes/*/cache/*
 
 # Config
 
-config/settings.inc.php
-config/settings.old.php
-config/xml/*
-!config/xml/themes/default.xml
+/config/settings.inc.php
+/config/settings.old.php
+/config/xml/*
+/!config/xml/themes/default.xml
 
 # Themes, modules and overrides
 
-modules/*
-override/*
+/modules/*
+/override/*
 
-admin-dev/themes/default/sass/ie.sass
-admin-dev/themes/default/sass/print.sass
-admin-dev/themes/default/sass/screen.sass
-admin-dev/themes/default/css/ie.css
-admin-dev/themes/default/css/print.css
-admin-dev/themes/default/css/screen.css
+/admin-dev/themes/default/sass/ie.sass
+/admin-dev/themes/default/sass/print.sass
+/admin-dev/themes/default/sass/screen.sass
+/admin-dev/themes/default/css/ie.css
+/admin-dev/themes/default/css/print.css
+/admin-dev/themes/default/css/screen.css
 
 # Translations and emails templates
 
-translations/*
-mails/*
-!mails/en/
-themes/community-theme-default/lang/*
-themes/community-theme-default/modules/*/translations/*.php
-themes/community-theme-default/mails/*
-!themes/community-theme-default/mails/en/
-themes/community-theme-default/modules/*/mails/*
-!themes/community-theme-default/modules/*/mails/en
+/translations/*
+/mails/*
+/!mails/en/
+/themes/community-theme-default/lang/*
+/themes/community-theme-default/modules/*/translations/*.php
+/themes/community-theme-default/mails/*
+/!themes/community-theme-default/mails/en/
+/themes/community-theme-default/modules/*/mails/*
+/!themes/community-theme-default/modules/*/mails/en
 
 # MISC
 
-*sitemap.xml
-robots.txt
+/*sitemap.xml
+/robots.txt
 
-tests/_output/*
-c3.php
+/tests/_output/*
+/c3.php
+/config/json/files.json
