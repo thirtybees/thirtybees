@@ -22,7 +22,7 @@ var walk = function(dir, action, done) {
   };
 
   var checkSuccess = function() {
-    if(!dead && pending == 0) {
+    if(!dead && !pending) {
       done();
     }
   };
@@ -49,7 +49,7 @@ var walk = function(dir, action, done) {
         else { // iterate over the files
           list.forEach(function(file) {
             if(!dead) { // if we are already dead, we don't do anything
-              var path = dir + "/" + file;
+              var path = dir + '/' + file;
               pending++; // async operation starting after this line
               fs.stat(path, function(err, stat) {
                 if(!dead) { // if we are already dead, we don't do anything
@@ -63,13 +63,13 @@ var walk = function(dir, action, done) {
                     else {
                       performAction(path, stat); // it's not a directory, just perform the action
                     }
-                    pending--; checkSuccess(); // async operation complete
+                    pending -= 1; checkSuccess(); // async operation complete
                   }
                 }
               });
             }
           });
-          pending--; checkSuccess(); // async operation complete
+          pending -= 1; checkSuccess(); // async operation complete
         }
       }
     });
@@ -79,7 +79,7 @@ var walk = function(dir, action, done) {
   dive(dir);
 };
 
-function logFile(filePath, stat) {
+function logFile(filePath) {
   if (filePath) {
     if (path.basename(filePath) !== 'index.php') {
       var data = fs.readFileSync(filePath, 'utf-8');
@@ -88,22 +88,22 @@ function logFile(filePath, stat) {
   }
 }
 
-function walkFinished(error) {
-  check--;
+function walkFinished() {
+  check -= 1;
   if (check <= 0) {
     fs.writeFile(path.join(__dirname, '../config/json/files.json'), JSON.stringify(files, null, 4), function(err) { process.exit(); });
   }
 }
 
-function checksum (str, algorithm, encoding) {
+function checksum(str, algorithm, encoding) {
   return crypto
     .createHash(algorithm || 'md5')
     .update(str, 'utf8')
-    .digest(encoding || 'hex')
+    .digest(encoding || 'hex');
 }
 
-walk(path.join(__dirname, '../classes'),     logFile, walkFinished);
+walk(path.join(__dirname, '../classes'), logFile, walkFinished);
 walk(path.join(__dirname, '../controllers'), logFile, walkFinished);
-walk(path.join(__dirname, '../Core'),        logFile, walkFinished);
-walk(path.join(__dirname, '../Adapter'),     logFile, walkFinished);
-walk(path.join(__dirname, '../admin'),       logFile, walkFinished);
+walk(path.join(__dirname, '../Core'), logFile, walkFinished);
+walk(path.join(__dirname, '../Adapter'), logFile, walkFinished);
+walk(path.join(__dirname, '../admin'), logFile, walkFinished);
