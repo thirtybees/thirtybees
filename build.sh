@@ -118,7 +118,7 @@ done
 (
   echo -n "Creating package ... "
   cd "${DIR}"
-  node ./tools/generatemd5list.js
+  php ./tools/generatemd5list.php
   zip -r -q $(basename "${DIR}").zip .
   echo "done."
 )
