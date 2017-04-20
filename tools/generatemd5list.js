@@ -5,7 +5,16 @@ var crypto = require('crypto');
 var files = {};
 var currentDirectory = path.join(__dirname, '../');
 
-var check = 5;
+var checkDirs = [
+  '../classes',
+  '../controllers',
+  '../Core',
+  '../Adapter',
+  '../admin',
+  '../vendor',
+];
+var check = checkDirs.length;
+
 var walk = function(dir, action, done) {
 
   // this flag will indicate if an error occurred (in this case we don't want to go on walking the tree)
@@ -102,8 +111,6 @@ function checksum(str, algorithm, encoding) {
     .digest(encoding || 'hex');
 }
 
-walk(path.join(__dirname, '../classes'), logFile, walkFinished);
-walk(path.join(__dirname, '../controllers'), logFile, walkFinished);
-walk(path.join(__dirname, '../Core'), logFile, walkFinished);
-walk(path.join(__dirname, '../Adapter'), logFile, walkFinished);
-walk(path.join(__dirname, '../admin'), logFile, walkFinished);
+for (var i = 0; i < checkDirs.length; i += 1) {
+  walk(path.join(__dirname, checkDirs[i]), logFile, walkFinished);
+}
