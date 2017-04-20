@@ -205,10 +205,19 @@ class AdminInformationControllerCore extends AdminController
      */
     public function displayAjaxCheckFiles()
     {
-        $this->fileList = ['missing' => [], 'updated' => []];
-        if (file_exists(_PS_CONFIG_DIR_.'json/files.json')) {
-            $files = json_decode(file_get_contents(_PS_CONFIG_DIR_.'json/files.json'), true);
+        $this->fileList = ['listMissing'   => false,
+                           'isDevelopment' => false,
+                           'missing'       => [],
+                           'updated'       => []];
+        $filesFile = _PS_CONFIG_DIR_.'json/files.json';
+        if (file_exists($filesFile)) {
+            $files = json_decode(file_get_contents($filesFile), true);
             $this->getListOfUpdatedFiles($files);
+        } else {
+          $this->fileList['listMissing'] = $filesFile;
+          if (file_exists(_PS_ROOT_DIR_.'/admin-dev/')) {
+            $this->fileList['isDevelopment'] = true;
+          }
         }
 
         die(json_encode($this->fileList));
