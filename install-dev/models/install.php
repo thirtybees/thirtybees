@@ -873,7 +873,7 @@ class InstallModelInstall extends InstallAbstractModel
 
         // try to download fixtures if no low memory mode
         if ($entity === null) {
-            if (Tools::copy('http://api.prestashop.com/fixtures/'.$data['shopCountry'].'/'.$data['shopActivity'].'/fixtures.zip', $zipFile)) {
+            if (Tools::copy('http://api.thirtybees.com/fixtures/'.$data['shopCountry'].'/'.$data['shopActivity'].'/fixtures.zip', $zipFile)) {
                 Tools::deleteDirectory($tempDir, true);
                 if (Tools::ZipTest($zipFile)) {
                     if (Tools::ZipExtract($zipFile, $tempDir)) {

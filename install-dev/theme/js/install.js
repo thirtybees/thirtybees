@@ -61,21 +61,20 @@ $(document).ready(function()
 });
 
 function tbinstall_twitter_click(message) {
-	window.open('https://twitter.com/intent/tweet?button_hashtag=PrestaShop&text=' + message, 'sharertwt', 'toolbar=0,status=0,width=640,height=445');
+	window.open('https://twitter.com/intent/tweet?button_hashtag=thirtybees&text=' + message, 'sharertwt', 'toolbar=0,status=0,width=640,height=445');
 }
 
 function tbinstall_facebook_click() {
-	window.open('http://www.facebook.com/sharer.php?u=http://www.prestashop.com/', 'sharerfacebook', 'toolbar=0,status=0,width=660,height=445');
+	window.open('http://www.facebook.com/sharer.php?u=https://thirtybees.com/', 'sharerfacebook', 'toolbar=0,status=0,width=660,height=445');
 }
 
 function tbinstall_google_click() {
-	window.open('https://plus.google.com/share?url=http://www.prestashop.com/', 'sharergplus', 'toolbar=0,status=0,width=660,height=445');
+	window.open('https://plus.google.com/share?url=https://thirtybees.com/', 'sharergplus', 'toolbar=0,status=0,width=660,height=445');
 }
 
 function tbinstall_pinterest_click() {
-	window.open('http://www.pinterest.com/pin/create/button/?media=http://img-cdn.prestashop.com/logo.png&url=http://www.prestashop.com/', 'sharerpinterest', 'toolbar=0,status=0,width=660,height=445');
 }
 
 function tbinstall_linkedin_click() {
-	window.open('https://www.linkedin.com/shareArticle?title=PrestaShop&url=http://www.prestashop.com/download', 'sharerlinkedin', 'toolbar=0,status=0,width=600,height=450');
+	window.open('https://www.linkedin.com/shareArticle?title=thirty bees&url=https://thirtybees.com/download', 'sharerlinkedin', 'toolbar=0,status=0,width=600,height=450');
 }

@@ -144,7 +144,7 @@ class Datas
         'adminEmail'       => [
             'name'     => 'email',
             'validate' => 'isEmail',
-            'default'  => 'pub@prestashop.com',
+            'default'  => 'pub@thirtybees.com',
         ],
         'showLicense'      => [
             'name'    => 'license',
