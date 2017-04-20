@@ -85,7 +85,7 @@ class Datas
         'databaseName'     => [
             'name'     => 'db_name',
             'alias'    => 'd',
-            'default'  => 'prestashop',
+            'default'  => 'thirtybees',
             'validate' => 'isGenericName',
         ],
         'databaseClear'    => [
@@ -114,7 +114,7 @@ class Datas
         'shopName'         => [
             'name'     => 'name',
             'validate' => 'isGenericName',
-            'default'  => 'PrestaShop',
+            'default'  => 'thirty bees',
         ],
         'shopActivity'     => [
             'name'     => 'activity',
@@ -149,12 +149,12 @@ class Datas
         'showLicense'      => [
             'name'    => 'license',
             'default' => 0,
-            'help'    => 'show PrestaShop license',
+            'help'    => 'show thirty bees license',
         ],
         'newsletter'        => [
             'name'    => 'newsletter',
             'default' => 1,
-            'help'    => 'get news from PrestaShop',
+            'help'    => 'get news from thirty bees',
         ],
         'sendEmail'        => [
             'name'    => 'send_email',
