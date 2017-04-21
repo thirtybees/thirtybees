@@ -261,10 +261,6 @@ class AdminInformationControllerCore extends AdminController
         }
 
         foreach ($md5List as $file => $md5) {
-            // We're only interested in PHP files
-            if (Tools::substr($file, -4) !== '.php') {
-                continue;
-            }
             if (strpos($file, '/admin/') === 0) {
                 $file = str_replace('/admin/', $adminDir.'/', $file);
             }
