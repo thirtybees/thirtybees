@@ -762,7 +762,6 @@ ul#optional_update li.ok {
 #progress_bar ol.process_list li.success {
 	background: url("img/bg-li-tabs-finished.png") no-repeat scroll 0 3px transparent;
 	color: #666;
-    text-decoration: line-through;
 	padding-left: 18px;
 }
 #progress_bar ol.process_list li.fail {
