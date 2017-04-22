@@ -38,7 +38,6 @@ function start_install()
 	is_installing = true;
 
 	$('.process_step').removeClass('fail').removeClass('success').hide();
-	$('.error_log').hide();
 	$('#progress_bar').show();
 	$('#progress_bar .installing').show();
 	$('.stepList li:last-child').removeClass('ok').removeClass('ko');
@@ -186,7 +185,7 @@ function install_error(step, errors)
 			display += '<li>' + v + '</li>';
 		});
 		display += '</ol>';
-		$('#process_step_'+step.key+' .error_log').html(display).show();
+		$('#error_process .error_log').html(display).show();
 	}
 	if (typeof psuser_assistance != 'undefined')
 		psuser_assistance.setStep('install_process_error');
