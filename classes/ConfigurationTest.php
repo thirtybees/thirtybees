@@ -385,6 +385,8 @@ class ConfigurationTestCore
     }
 
     /**
+     * Test if directory is writable
+     *
      * @param string $dir        Directory path, absolute or relative
      * @param bool   $recursive
      * @param null   $fullReport
