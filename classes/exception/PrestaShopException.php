@@ -75,7 +75,7 @@ class PrestaShopExceptionCore extends Exception
         // FIXME 1.0.1: Improve the error page
         header('HTTP/1.1 500 Internal Server Error');
 
-        if (_PS_MODE_DEV_ || defined('_PS_ADMIN_DIR_') || getenv('CI')) {
+        if (_PS_MODE_DEV_ || getenv('CI')) {
             // Display error message
             echo '<style>
 				#psException{font-family: Verdana; font-size: 14px}
