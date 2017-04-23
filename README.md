@@ -7,7 +7,7 @@ thirty bees is an open-source fork of PrestaShop 1.6. Our aim with this fork is 
 ![thirty bees screenshot](https://cloud.githubusercontent.com/assets/6775736/22063185/c5ef8e3c-dd7d-11e6-923c-4b62ac404c86.png)
 
 
-## Roadmap for thirty bees to version 1.0.0
+## Roadmap for thirty bees version 1.0.x
 
 **Overview of the general goal:**
 
