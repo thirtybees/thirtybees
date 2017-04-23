@@ -205,16 +205,29 @@ class AdminInformationControllerCore extends AdminController
      */
     public function displayAjaxCheckFiles()
     {
-        $this->fileList = ['missing' => [], 'updated' => []];
-        if (file_exists(_PS_CONFIG_DIR_.'json/files.json')) {
-            $files = json_decode(file_get_contents(_PS_CONFIG_DIR_.'json/files.json'), true);
+        $this->fileList = ['listMissing'   => false,
+                           'isDevelopment' => false,
+                           'missing'       => [],
+                           'updated'       => []];
+        $filesFile = _PS_CONFIG_DIR_.'json/files.json';
+        if (file_exists($filesFile)) {
+            $files = json_decode(file_get_contents($filesFile), true);
             $this->getListOfUpdatedFiles($files);
+        } else {
+          $this->fileList['listMissing'] = $filesFile;
+          if (file_exists(_PS_ROOT_DIR_.'/admin-dev/')) {
+            $this->fileList['isDevelopment'] = true;
+          }
         }
 
         die(json_encode($this->fileList));
     }
 
     /**
+     * Generate the list of files to be checked and also save it in
+     * config/json/files.json. This can't be done from back office, but
+     * is done automatically when building a distribution package.
+     *
      * @return array md5 list
      */
     public function generateMd5List()
@@ -242,7 +255,8 @@ class AdminInformationControllerCore extends AdminController
             $md5List[$filePath] = md5_file($file->getPathname());
         }
 
-        file_put_contents(_PS_CONFIG_DIR_.'json/files.json', json_encode($md5List));
+        file_put_contents(_PS_CONFIG_DIR_.'json/files.json',
+                          json_encode($md5List, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
 
         return $md5List;
     }
@@ -261,10 +275,6 @@ class AdminInformationControllerCore extends AdminController
         }
 
         foreach ($md5List as $file => $md5) {
-            // We're only interested in PHP files
-            if (Tools::substr($file, -4) !== '.php') {
-                continue;
-            }
             if (strpos($file, '/admin/') === 0) {
                 $file = str_replace('/admin/', $adminDir.'/', $file);
             }

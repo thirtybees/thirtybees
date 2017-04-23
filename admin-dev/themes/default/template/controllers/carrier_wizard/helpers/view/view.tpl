@@ -35,14 +35,13 @@
 	var carrierlist_url = '{$carrierlist_url|addslashes}';
 	var nbr_steps = {$wizard_steps.steps|count};
 	var enableAllSteps = {if $enableAllSteps|intval == 1}true{else}false{/if};
-	var need_to_validate = '{l s='Please validate the last range before create a new one.' js=1}';
 	var delete_range_confirm = '{l s='Are you sure to delete this range ?' js=1}';
 	var currency_sign = '{$currency_sign}';
 	var currency_iso_code = '{$currency_iso_code}';
 	var PS_WEIGHT_UNIT = '{$PS_WEIGHT_UNIT}';
-	var invalid_range = '{l s='This range is not valid' js=1}';
-	var overlapping_range = '{l s='Ranges are overlapping' js=1}';
-	var range_is_overlapping = '{l s='Ranges are overlapping' js=1}';
+	var invalid_value = '{l s='One of the entered values is not valid' js=1}';
+	var negative_range = '{l s='At least one range is of zero size or negative' js=1}';
+	var overlapping_range = '{l s='Gaps or overlappings between ranges' js=1}';
 	var select_at_least_one_zone = '{l s='Please select at least one zone' js=1}';
 	var multistore_enable = '{$multistore_enable}';
 </script>
@@ -68,7 +67,7 @@
 			{/foreach}
 			</ul>
 			{foreach from=$wizard_contents.contents key=step_nbr item=content}
-				<div id="step-{$step_nbr + 1}" class="step_container"> 	
+				<div id="step-{$step_nbr + 1}" class="step_container">
 					{$content}
 				</div>
 			{/foreach}

@@ -47,7 +47,7 @@
 					</tr>
 					<tr class="fees_all">
 						<td class="border_top border_bottom border_bold">
-							<span class="fees_all" {if $ranges|count == 0}style="display:none" {/if}>All</span>
+							<span class="fees_all">All</span>
 						</td>
 						<td style="">
 							<input type="checkbox" onclick="checkAllZones(this);" class="form-control">
@@ -55,15 +55,15 @@
 						{foreach from=$ranges key=r item=range}
 						<td class="border_top border_bottom {if $range.id_range != 0} validated {/if}"  >
 							<div class="input-group fixed-width-md">
-								<span class="input-group-addon currency_sign" {if $range.id_range == 0} style="display:none" {/if}>{$currency_sign}</span>
-								<input class="form-control" type="text" {if isset($form_id) &&  !$form_id} disabled="disabled"{/if} {if $range.id_range == 0} style="display:none"{/if} autocomplete="off" />
+								<span class="input-group-addon currency_sign">{$currency_sign}</span>
+								<input class="form-control" type="text" {if isset($form_id) && !$form_id} disabled="disabled"{/if} autocomplete="off" />
 							</div>
 						</td>
 						{foreachelse}
 						<td class="border_top border_bottom">
 							<div class="input-group fixed-width-md">
-								<span class="input-group-addon currency_sign" style="display:none">{$currency_sign}</span>
-								<input class="form-control" style="display:none" type="text" autocomplete="off" />
+								<span class="input-group-addon currency_sign">{$currency_sign}</span>
+								<input class="form-control" type="text" autocomplete="off" />
 							</div>
 						</td>
 						{/foreach}
@@ -97,7 +97,7 @@
 								<td>&nbsp;</td>
 							{else}
 								<td>
-									<button class="btn btn-default">{l s='Delete'}</button>
+									<a href="#" onclick="delete_range();" class="btn btn-default">{l s='Delete'}</a>
 								</td>
 							{/if}
 						{/foreach}

@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 
 # This script builds an installation package from the current repository.
+#
+# Usage: ./build.sh [<git branch>]
+#
+# Currently, only Git branches 'master' and 'HEAD' make sense, because the
+# same branch name is used for each submodule, too. Default is branch 'master'.
+
+
+GIT_BRANCH="${1:-master}"
 
 TB_VERSION=$((cat install-dev/install_version.php &&
               echo 'print(_TB_INSTALL_VERSION_);') | \
@@ -69,7 +77,7 @@ for D in "${REPOS_GIT[@]}"; do
     cd ${D} || continue
 
     mkdir -p "${DIR}/${D}"
-    git archive master | tar -C "${DIR}/${D}" -xf-
+    git archive "${GIT_BRANCH}" | tar -C "${DIR}/${D}" -xf-
 
     cd "${DIR}/${D}"
     if [ -d admin-dev ]; then
@@ -110,7 +118,7 @@ done
 (
   echo -n "Creating package ... "
   cd "${DIR}"
-  node ./tools/generatemd5list.js
+  php ./tools/generatemd5list.php
   zip -r -q $(basename "${DIR}").zip .
   echo "done."
 )

@@ -38,7 +38,6 @@ function start_install()
 	is_installing = true;
 
 	$('.process_step').removeClass('fail').removeClass('success').hide();
-	$('.error_log').hide();
 	$('#progress_bar').show();
 	$('#progress_bar .installing').show();
 	$('.stepList li:last-child').removeClass('ok').removeClass('ko');
@@ -92,12 +91,14 @@ function process_install(step)
 			// An error occured during this step
 			else
 			{
-				install_error(step, (json) ? json.message : '');
+				install_error(step, 'Process '+step.key+'=true: '+(json) ? json.message : '(no message)');
 			}
 		},
-		// An error HTTP (page not found, json not valid, etc.) occured during this step
-		error: function() {
-			install_error(step);
+    error: function(jqXHR, textStatus, errorThrown) {
+      install_error(step, [
+        'Ajax request failed for process '+step.key+'=true with '+textStatus+'.',
+        errorThrown
+      ]);
 		}
 	});
 }
@@ -145,13 +146,15 @@ function process_install_subtask(step, current_subtask)
 				else
 					process_install_subtask(step, current_subtask);
 			}
-			else 
-				install_error(step, (json) ? json.message : '');
+			else
+				install_error(step, 'Subtask '+params+': '+(json) ? json.message : '(no message)');
 		},
-		// An error HTTP (page not found, json not valid, etc.) occured during this step
-		error: function() {
-			install_error(step);
-		}
+    error: function(jqXHR, textStatus, errorThrown) {
+      install_error(step, [
+        'Ajax request failed for subtask '+params+' with '+textStatus+'.',
+        errorThrown
+      ]);
+		},
 	});
 }
 
@@ -174,8 +177,6 @@ function install_error(step, errors)
 			list_errors = [];
 			list_errors[0] = errors;
 		}
-		else if ($.type(list_errors) == 'array')
-			list_errors = list_errors[0];
 
 		var display = '<ol>';
 
@@ -186,7 +187,7 @@ function install_error(step, errors)
 			display += '<li>' + v + '</li>';
 		});
 		display += '</ol>';
-		$('#process_step_'+step.key+' .error_log').html(display).show();
+		$('#error_process .error_log').html(display).show();
 	}
 	if (typeof psuser_assistance != 'undefined')
 		psuser_assistance.setStep('install_process_error');
