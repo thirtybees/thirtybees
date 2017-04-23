@@ -11,7 +11,7 @@ thirty bees is an open-source fork of PrestaShop 1.6. Our aim with this fork is 
 
 **Overview of the general goal:**
 
-To launch version 1.0.0 of the thirty bees core around February 1st 2017. In this version we are striving to fix as many bugs as possible, while maintaining compatibility with existing themes and modules. We want to provide the stablest platform for current users to migrate into. 
+With version 1.0.x we are striving to fix as many bugs as possible, while maintaining compatibility with existing themes and modules. We want to provide the stablest platform for current users to migrate into. 
 
 **New Features being added into v1.0.0 of thirty bees:**
 
@@ -35,9 +35,9 @@ Native modules will be refactored to remove legacy code. Code that supports prev
 
 **New native modules:**
 
-* MailChimp sync
+* MailChimp (including e-commerce features)
 * Stripe (Credit cards, Apple Pay, AliPay, Bitcoins)
-* Thirty Bees blog module
+* thirty bees blog module
 
 ### Updated roadmap
 You can find the latest version of the roadmap here: https://thirtybees.com/roadmap
@@ -68,9 +68,9 @@ You can find the latest version of the roadmap here: https://thirtybees.com/road
 These are the instructions to install via git:
 - Recursively clone the repository:
 ```shell
-$ git clone https://github.com/thirtybees/ThirtyBees.git --recursive
+$ git clone https://github.com/thirtybees/thirtybees.git --recursive
 ```
-- Then cd into the `ThirtyBees` folder
+- Then cd into the `thirtybees` folder
 - Run composer to install the dependencies:
 ```shell
 $ composer install
