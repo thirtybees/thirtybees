@@ -27,7 +27,7 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-class AdminDuplicateUrlsController extends AdminController
+class AdminDuplicateUrlsControllerCore extends AdminController
 {
     /**
      * AdminDuplicateUrlsController constructor.
