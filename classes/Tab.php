@@ -46,7 +46,13 @@ class TabCore extends ObjectModel
      * @return array tabs
      */
     protected static $_cache_tabs = [];
-    /** @var string Displayed name */
+    /**
+     * Displayed name
+     *
+     * Multilang property
+     *
+     * @var array
+     */
     public $name;
     /** @var string Class and file name */
     public $class_name;
