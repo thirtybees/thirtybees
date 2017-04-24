@@ -148,7 +148,7 @@ class SpecificPriceRuleCore extends ObjectModel
     public function resetApplication($products = false)
     {
         $where = '';
-        if ($products && count($products)) {
+        if ($products && is_array($products) && count($products)) {
             $where .= ' AND id_product IN ('.implode(', ', array_map('intval', $products)).')';
         }
 
@@ -361,7 +361,7 @@ class SpecificPriceRuleCore extends ObjectModel
     /**
      * @param array $conditions
      *
-     * @return bool|void
+     * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -369,7 +369,7 @@ class SpecificPriceRuleCore extends ObjectModel
     public function addConditions($conditions)
     {
         if (!is_array($conditions)) {
-            return;
+            return false;
         }
 
         $result = Db::getInstance()->insert(
