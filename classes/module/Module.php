@@ -1007,6 +1007,9 @@ abstract class ModuleCore
         $updater = Module::getInstanceByName('tbupdater');
         $languageCode = str_replace('_', '-', Tools::strtolower(Context::getContext()->language->language_code));
 
+        // This array gets filled with requested module images to download (key = module code, value = guzzle promise)
+        $imagePromises = [];
+        $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
         if (Validate::isLoadedObject($updater) && $modules = $updater->getCachedModulesInfo()) {
             foreach ($modules as $name => $module) {
                 if (isset($modulesNameToCursor[Tools::strtolower(strval($name))])) {
@@ -1044,25 +1047,22 @@ abstract class ModuleCore
 
                 if (isset($module['img'])) {
                     if (!file_exists(_PS_TMP_IMG_DIR_.md5($name).'.png')) {
-                        $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
                         try {
-                            $guzzle->get($module['img'], ['sink' => _PS_TMP_IMG_DIR_.md5($name).'.png']);
+                            $imagePromises[$name] = $guzzle->getAsync($module['img'], ['sink' => _PS_TMP_IMG_DIR_.md5($name).'.png']);
                         } catch (Exception $e) {
-                        }
-                        if (!@file_exists(_PS_TMP_IMG_DIR_.md5($name).'.png')) {
-                            copy(_PS_IMG_DIR_.'404.gif', _PS_TMP_IMG_DIR_.md5($name).'.png');
                         }
                     }
 
-                    if (@file_exists(_PS_TMP_IMG_DIR_.md5((int) $name).'.png')) {
-                        $item['image'] = '../img/tmp/'.md5($name).'.png';
-                    }
+                    $item['image'] = '../img/tmp/'.md5($name).'.png';
                 }
 
                 $moduleList[] = (object) $item;
             }
         }
-
+        // Download images simultaneously
+        if (!empty($imagePromises)) {
+            GuzzleHttp\Promise\settle($imagePromises)->wait();
+        }
 
         foreach ($moduleList as $key => &$module) {
             if (isset($modulesInstalled[$module->name])) {
