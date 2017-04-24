@@ -1457,7 +1457,7 @@ class AdminModulesControllerCore extends AdminController
     public function postProcessCallback()
     {
         $return = false;
-        $installedModules = array();
+        $installedModules = [];
         foreach ($this->map as $key => $method) {
             if (!Tools::getValue($key)) {
                 continue;
@@ -1472,7 +1472,7 @@ class AdminModulesControllerCore extends AdminController
             if ($key == 'check') {
                 $this->ajaxProcessRefreshModuleList(true);
             } elseif ($key == 'checkAndUpdate') {
-                $modules = array();
+                $modules = [];
                 $this->ajaxProcessRefreshModuleList(true);
                 $modulesOnDisk = Module::getModulesOnDisk(true, false, $this->id_employee);
                 // Browse modules list
@@ -1504,20 +1504,20 @@ class AdminModulesControllerCore extends AdminController
 
             /** @var TbUpdater $tbupdater */
             $tbupdater = Module::getInstanceByName('tbupdater');
-            $moduleUpgraded = array();
-            $moduleErrors = array();
+            $moduleUpgraded = [];
+            $moduleErrors = [];
             if (isset($modules)) {
                 foreach ($modules as $name) {
-                    $moduleToUpdate = array();
+                    $moduleToUpdate = [];
                     $moduleToUpdate[$name] = null;
                     $fullReport = null;
 
                     // If Addons module, download and unzip it before installing it
                     if (Validate::isLoadedObject($tbupdater) && !file_exists(_PS_MODULE_DIR_.$name.'/'.$name.'.php') || $key == 'update' || $key == 'updateAll') {
-                        foreach ($tbupdater->getCachedModulesInfo() as $moduleInfo) {
-                            if (Tools::strtolower($name) == Tools::strtolower($moduleInfo->name)) {
-                                $moduleToUpdate[$name]['id'] = $moduleInfo->id;
-                                $moduleToUpdate[$name]['displayName'] = $moduleInfo->displayName;
+                        foreach ($tbupdater->getCachedModulesInfo($this->context->language->language_code) as $moduleInfoName => $moduleInfo) {
+                            if (Tools::strtolower($name) == Tools::strtolower($moduleInfoName)) {
+                                $moduleToUpdate[$name]['id'] = 0;
+                                $moduleToUpdate[$name]['displayName'] = $moduleInfo['displayName'];
                             }
                         }
 
@@ -1600,7 +1600,7 @@ class AdminModulesControllerCore extends AdminController
                                 $isResetReady = true;
                             }
                             $this->context->smarty->assign(
-                                array(
+                                [
                                     'module_name'               => $module->name,
                                     'module_display_name'       => $module->displayName,
                                     'back_link'                 => $backLink,
@@ -1616,7 +1616,7 @@ class AdminModulesControllerCore extends AdminController
                                     'page_header_toolbar_btn'   => $this->page_header_toolbar_btn,
                                     'add_permission'            => $this->tabAccess['add'],
                                     'is_reset_ready'            => $isResetReady,
-                                )
+                                ]
                             );
                             // Display checkbox in toolbar if multishop
                             if (Shop::isFeatureActive()) {
@@ -1629,19 +1629,19 @@ class AdminModulesControllerCore extends AdminController
                                     $shopContext = 'all shops';
                                 }
                                 $this->context->smarty->assign(
-                                    array(
+                                    [
                                         'module'                     => $module,
                                         'display_multishop_checkbox' => true,
                                         'current_url'                => $this->getCurrentUrl('enable'),
                                         'shop_context'               => $shopContext,
-                                    )
+                                    ]
                                 );
                             }
                             $this->context->smarty->assign(
-                                array(
+                                [
                                     'is_multishop'      => Shop::isFeatureActive(),
                                     'multishop_context' => Shop::CONTEXT_ALL | Shop::CONTEXT_GROUP | Shop::CONTEXT_SHOP,
-                                )
+                                ]
                             );
                             if (Shop::isFeatureActive() && isset(Context::getContext()->tmpOldShop)) {
                                 Context::getContext()->shop = clone(Context::getContext()->tmpOldShop);
@@ -1659,7 +1659,7 @@ class AdminModulesControllerCore extends AdminController
                                 $installedModules[] = $module->id;
                             }
                         } elseif ($echo === false) {
-                            $moduleErrors[] = array('name' => $name, 'message' => $module->getErrors());
+                            $moduleErrors[] = ['name' => $name, 'message' => $module->getErrors()];
                         }
                         if (Shop::isFeatureActive() && Shop::getContext() != Shop::CONTEXT_ALL && isset(Context::getContext()->tmpOldShop)) {
                             Context::getContext()->shop = clone(Context::getContext()->tmpOldShop);
