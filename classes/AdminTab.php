@@ -338,7 +338,7 @@ abstract class AdminTabCore
                 $this->_includeObj[$key] = new $classname;
             }
 
-            /** @var AdminTab $adminTab */
+            /** @var static $adminTab */
             $adminTab = $this->_includeObj[$key];
             $adminTab->token = $this->token;
 
