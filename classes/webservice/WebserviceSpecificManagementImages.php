@@ -1136,7 +1136,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
      */
     protected function writePostedImageOnDisk($receptionPath, $destWidth = null, $destHeight = null, $imageTypes = null, $parentPath = null)
     {
-		$imgMaxUploadSize = Tools::getMaxUploadSize();
+        $imgMaxUploadSize = Tools::getMaxUploadSize();
         if ($this->wsObject->method == 'PUT') {
             if (isset($_FILES['image']['tmp_name']) && $_FILES['image']['tmp_name']) {
                 $file = $_FILES['image'];
