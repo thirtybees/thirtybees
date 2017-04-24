@@ -1043,20 +1043,19 @@ abstract class ModuleCore
                 ];
 
                 if (isset($module['img'])) {
-                    if (!file_exists(_PS_TMP_IMG_DIR_.md5((int) $name).'.jpg')) {
+                    if (!file_exists(_PS_TMP_IMG_DIR_.md5($name).'.png')) {
                         $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
                         try {
-                            $contents = (string) $guzzle->get($module['img'])->getBody();
+                            $guzzle->get($module['img'], ['sink' => _PS_TMP_IMG_DIR_.md5($name).'.png']);
                         } catch (Exception $e) {
-                            $contents = null;
                         }
-                        if (!@file_put_contents(_PS_TMP_IMG_DIR_.md5((int) $name).'.jpg', $contents)) {
-                            copy(_PS_IMG_DIR_.'404.gif', _PS_TMP_IMG_DIR_.md5((int) $name).'.jpg');
+                        if (!@file_exists(_PS_TMP_IMG_DIR_.md5($name).'.png')) {
+                            copy(_PS_IMG_DIR_.'404.gif', _PS_TMP_IMG_DIR_.md5($name).'.png');
                         }
                     }
 
-                    if (@file_exists(_PS_TMP_IMG_DIR_.md5((int) $name).'.jpg')) {
-                        $item['image'] = '../img/tmp/'.md5((int) $name).'.jpg';
+                    if (@file_exists(_PS_TMP_IMG_DIR_.md5((int) $name).'.png')) {
+                        $item['image'] = '../img/tmp/'.md5($name).'.png';
                     }
                 }
 
