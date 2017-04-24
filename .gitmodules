@@ -353,11 +353,6 @@
 	url = https://github.com/thirtybees/vatnumber.git
 	branch = master
 	ignore = dirty
-[submodule "modules/cheque"]
-	path = modules/cheque
-	url = https://github.com/thirtybees/cheque.git
-	branch = master
-	ignore = dirty
 [submodule "modules/sendtoafriend"]
 	path = modules/sendtoafriend
 	url = https://github.com/thirtybees/sendtoafriend.git
