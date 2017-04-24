@@ -4517,7 +4517,7 @@ class AdminControllerCore extends Controller
                     }
 
                     if ($delete_ok) {
-                        PrestaShopLogger::addLog(sprintf($this->l('%s deletion', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int) $to_delete->id, true, (int) $this->context->employee->id);
+                        Logger::addLog(sprintf($this->l('%s deletion', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int) $to_delete->id, true, (int) $this->context->employee->id);
                     } else {
                         $this->errors[] = sprintf(Tools::displayError('Can\'t delete #%d'), $id);
                     }
