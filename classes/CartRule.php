@@ -378,24 +378,6 @@ class CartRuleCore extends ObjectModel
             $result = $resultBak;
         }
 
-        // Retrocompatibility with 1.4 discounts
-        foreach ($result as &$cartRule) {
-            $cartRule['value'] = 0;
-            $cartRule['minimal'] = Tools::convertPriceFull($cartRule['minimum_amount'], new Currency($cartRule['minimum_amount_currency']), Context::getContext()->currency);
-            $cartRule['cumulable'] = !$cartRule['cart_rule_restriction'];
-            $cartRule['id_discount_type'] = false;
-            if ($cartRule['free_shipping']) {
-                $cartRule['id_discount_type'] = Discount::FREE_SHIPPING;
-            } elseif ($cartRule['reduction_percent'] > 0) {
-                $cartRule['id_discount_type'] = Discount::PERCENT;
-                $cartRule['value'] = $cartRule['reduction_percent'];
-            } elseif ($cartRule['reduction_amount'] > 0) {
-                $cartRule['id_discount_type'] = Discount::AMOUNT;
-                $cartRule['value'] = $cartRule['reduction_amount'];
-            }
-        }
-        unset($cartRule);
-
         return $result;
     }
 
