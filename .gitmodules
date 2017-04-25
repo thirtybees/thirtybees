@@ -371,12 +371,6 @@
 [submodule "modules/fixerio"]
 	path = modules/fixerio
 	url = https://github.com/thirtybees/fixerio
-[submodule "modules/custompayments"]
-	path = modules/custompayments
-	url = https://github.com/thirtybees/custompayments.git
-[submodule "modules/mailchimp"]
-	path = modules/mailchimp
-	url = https://github.com/thirtybees/mailchimp.git
 [submodule "modules/themeconfigurator"]
 	path = modules/themeconfigurator
 	url = https://github.com/thirtybees/themeconfigurator.git
