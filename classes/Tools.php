@@ -784,7 +784,7 @@ class ToolsCore
         if (!$context) {
             $context = Context::getContext();
         }
-        if ($tbCurrency === null) {
+        if (!$tbCurrency) {
             $tbCurrency = $context->currency;
         } elseif (is_int($tbCurrency)) {
             $tbCurrency = Currency::getCurrencyInstance((int) $tbCurrency);
@@ -793,6 +793,10 @@ class ToolsCore
         if (is_array($tbCurrency)) {
             $currencyIso = $tbCurrency['iso_code'];
             $currencyDecimals = (int) $tbCurrency['decimals'] * _PS_PRICE_DISPLAY_PRECISION_;
+            $currencyArray = $tbCurrency;
+
+            $tbCurrency = new Currency();
+            $tbCurrency->hydrate($currencyArray);
         } elseif (is_object($tbCurrency)) {
             $currencyIso = $tbCurrency->iso_code;
             $currencyDecimals = (int) $tbCurrency->decimals * _PS_PRICE_DISPLAY_PRECISION_;
