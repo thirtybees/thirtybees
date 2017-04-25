@@ -348,11 +348,6 @@
 	url = https://github.com/thirtybees/trackingfront.git
 	branch = master
 	ignore = dirty
-[submodule "modules/vatnumber"]
-	path = modules/vatnumber
-	url = https://github.com/thirtybees/vatnumber.git
-	branch = master
-	ignore = dirty
 [submodule "modules/sendtoafriend"]
 	path = modules/sendtoafriend
 	url = https://github.com/thirtybees/sendtoafriend.git
@@ -377,9 +372,6 @@
 [submodule "modules/tbupdater"]
 	path = modules/tbupdater
 	url = https://github.com/thirtybees/tbupdater.git
-[submodule "modules/cronjobs"]
-	path = modules/cronjobs
-	url = https://github.com/thirtybees/cronjobs
 [submodule "modules/beesblog"]
 	path = modules/beesblog
 	url = https://github.com/thirtybees/beesblog.git
