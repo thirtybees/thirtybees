@@ -358,11 +358,6 @@
 	url = https://github.com/thirtybees/sendtoafriend.git
 	branch = master
 	ignore = dirty
-[submodule "modules/paypal"]
-	path = modules/paypal
-	url = https://github.com/thirtybees/paypal.git
-	branch = master
-	ignore = dirty
 [submodule "modules/ctconfiguration"]
 	path = modules/ctconfiguration
 	url = https://github.com/thirtybees/ctconfiguration.git
@@ -379,15 +374,9 @@
 [submodule "modules/custompayments"]
 	path = modules/custompayments
 	url = https://github.com/thirtybees/custompayments.git
-[submodule "modules/stripe"]
-	path = modules/stripe
-	url = https://github.com/thirtybees/stripe.git
 [submodule "modules/mailchimp"]
 	path = modules/mailchimp
 	url = https://github.com/thirtybees/mailchimp.git
-[submodule "modules/authorizeaim"]
-	path = modules/authorizeaim
-	url = https://github.com/thirtybees/authorizeaim.git
 [submodule "modules/themeconfigurator"]
 	path = modules/themeconfigurator
 	url = https://github.com/thirtybees/themeconfigurator.git
