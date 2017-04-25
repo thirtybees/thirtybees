@@ -811,7 +811,9 @@ class ToolsCore
         $numberFormatRepository = new NumberFormatRepository();
 
         $currency = $currencyRepository->get(Tools::strtoupper($currencyIso));
-        $currency->setSymbol($tbCurrency->sign);
+        if ($tbCurrency->sign) {
+            $currency->setSymbol($tbCurrency->sign);
+        }
         $numberFormat = $numberFormatRepository->get($languageIso);
 
         $currencyFormatter = new NumberFormatter($numberFormat, NumberFormatter::CURRENCY);
