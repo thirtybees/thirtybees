@@ -944,7 +944,7 @@ CREATE TABLE `PREFIX_employee` (
   `id_last_order`            INT(11) UNSIGNED    NOT NULL DEFAULT '0',
   `id_last_customer_message` INT(11) UNSIGNED    NOT NULL DEFAULT '0',
   `id_last_customer`         INT(11) UNSIGNED    NOT NULL DEFAULT '0',
-  `last_connection_date`     DATE                         DEFAULT '0000-00-00',
+  `last_connection_date`     DATE                         DEFAULT '1970-01-01',
   PRIMARY KEY (`id_employee`),
   KEY `employee_login` (`email`, `passwd`),
   KEY `id_employee_passwd` (`id_employee`, `passwd`),
@@ -1831,7 +1831,7 @@ CREATE TABLE `PREFIX_product` (
   `redirect_type`             ENUM ('', '404', '301', '302')             NOT NULL DEFAULT '',
   `id_product_redirected`     INT(11) UNSIGNED                           NOT NULL DEFAULT '0',
   `available_for_order`       TINYINT(1)                                 NOT NULL DEFAULT '1',
-  `available_date`            DATE                                       NOT NULL DEFAULT '0000-00-00',
+  `available_date`            DATE                                       NOT NULL DEFAULT '1970-01-01',
   `condition`                 ENUM ('new', 'used', 'refurbished')        NOT NULL DEFAULT 'new',
   `show_price`                TINYINT(1)                                 NOT NULL DEFAULT '1',
   `indexed`                   TINYINT(1)                                 NOT NULL DEFAULT '0',
@@ -1876,7 +1876,7 @@ CREATE TABLE IF NOT EXISTS `PREFIX_product_shop` (
   `redirect_type`             ENUM ('', '404', '301', '302')             NOT NULL DEFAULT '',
   `id_product_redirected`     INT(11) UNSIGNED                           NOT NULL DEFAULT '0',
   `available_for_order`       TINYINT(1)                                 NOT NULL DEFAULT '1',
-  `available_date`            DATE                                       NOT NULL DEFAULT '0000-00-00',
+  `available_date`            DATE                                       NOT NULL DEFAULT '1970-01-01',
   `condition`                 ENUM ('new', 'used', 'refurbished')        NOT NULL DEFAULT 'new',
   `show_price`                TINYINT(1)                                 NOT NULL DEFAULT '1',
   `indexed`                   TINYINT(1)                                 NOT NULL DEFAULT '0',
@@ -1911,7 +1911,7 @@ CREATE TABLE `PREFIX_product_attribute` (
   `unit_price_impact`    DECIMAL(20, 6)      NOT NULL DEFAULT '0.00',
   `default_on`           TINYINT(1) UNSIGNED NULL     DEFAULT NULL,
   `minimal_quantity`     INT(11) UNSIGNED    NOT NULL DEFAULT '1',
-  `available_date`       DATE                NOT NULL DEFAULT '0000-00-00',
+  `available_date`       DATE                NOT NULL DEFAULT '1970-01-01',
   PRIMARY KEY (`id_product_attribute`),
   KEY `product_attribute_product` (`id_product`),
   KEY `reference` (`reference`),
@@ -1934,7 +1934,7 @@ CREATE TABLE `PREFIX_product_attribute_shop` (
   `unit_price_impact`    DECIMAL(20, 6)      NOT NULL DEFAULT '0.00',
   `default_on`           TINYINT(1) UNSIGNED NULL     DEFAULT NULL,
   `minimal_quantity`     INT(11) UNSIGNED    NOT NULL DEFAULT '1',
-  `available_date`       DATE                NOT NULL DEFAULT '0000-00-00',
+  `available_date`       DATE                NOT NULL DEFAULT '1970-01-01',
   PRIMARY KEY (`id_product_attribute`, `id_shop`),
   UNIQUE KEY `id_product` (`id_product`, `id_shop`, `default_on`)
 )
@@ -3316,7 +3316,7 @@ CREATE TABLE `PREFIX_smarty_lazy_cache` (
   `cache_id`      VARCHAR(64)  NOT NULL DEFAULT '',
   `compile_id`    VARCHAR(32)  NOT NULL DEFAULT '',
   `filepath`      VARCHAR(255) NOT NULL DEFAULT '',
-  `last_update`   DATETIME     NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `last_update`   DATETIME     NOT NULL DEFAULT '1970-01-01 00:00:00',
   PRIMARY KEY (`template_hash`, `cache_id`, `compile_id`)
 )
   ENGINE = InnoDB
@@ -3324,7 +3324,7 @@ CREATE TABLE `PREFIX_smarty_lazy_cache` (
 
 CREATE TABLE `PREFIX_smarty_last_flush` (
   `type`       ENUM ('compile', 'template'),
-  `last_flush` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `last_flush` DATETIME NOT NULL DEFAULT '1970-01-01 00:00:00',
   PRIMARY KEY (`type`)
 )
   ENGINE = InnoDB
