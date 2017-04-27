@@ -13,7 +13,7 @@ thirty bees is an open-source fork of PrestaShop 1.6. Our aim with this fork is 
 
 With version 1.0.x we are striving to fix as many bugs as possible, while maintaining compatibility with existing themes and modules. We want to provide the stablest platform for current users to migrate into. 
 
-**New Features being added into v1.0.0 of thirty bees:**
+**New Features being added into v1.0.x of thirty bees:**
 
 * Ability to add CSS from the back office
 * Ability to add JavaScript snippets from the back office
@@ -28,7 +28,7 @@ With version 1.0.x we are striving to fix as many bugs as possible, while mainta
 
 Native modules will be refactored to remove legacy code. Code that supports previous PrestaShop versions will be removed and refactored to support PHP 5.5 - PHP 7.1.
 
- **Rewritten modules:**
+**Rewritten modules:**
 
 * PayPal will totally be rewritten
 * Authorize.net will be refactored
