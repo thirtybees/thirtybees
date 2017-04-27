@@ -2861,7 +2861,7 @@ class AdminControllerCore extends Controller
             $helper->tpl_vars = $this->getTemplateFormVars();
             $helper->show_cancel_button = (isset($this->show_form_cancel_button)) ? $this->show_form_cancel_button : ($this->display == 'add' || $this->display == 'edit');
 
-            $back = Tools::safeOutput(Tools::getValue('back', ''));
+            $back = Tools::getValue('back', '');
             if (empty($back)) {
                 $back = static::$currentIndex.'&token='.$this->token;
             }
