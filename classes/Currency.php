@@ -251,6 +251,10 @@ class CurrencyCore extends ObjectModel
         }
 
         $currencyRates = CurrencyRateModule::getCurrencyRateInfo();
+        if ($currencyRates === false) {
+            return null;
+        }
+        $currencyRates = array_filter($currencyRates);
         $moduleRates = [];
         foreach ($currencyRates as $currency => $module) {
             if (Tools::strtoupper($currency) === Tools::strtoupper($defaultCurrency->iso_code)) {
