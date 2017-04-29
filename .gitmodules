@@ -363,6 +363,11 @@
 	url = https://github.com/thirtybees/community-theme-default.git
 	branch = master
 	ignore = dirty
+[submodule "themes/community-theme-united"]
+	path = themes/community-theme-united
+	url = https://github.com/thirtybees/community-theme-united.git
+	branch = master
+	ignore = dirty
 [submodule "modules/fixerio"]
 	path = modules/fixerio
 	url = https://github.com/thirtybees/fixerio
