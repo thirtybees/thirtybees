@@ -51,12 +51,12 @@ UPDATE `PREFIX_configuration` SET value = 'store.jpg' WHERE name = 'BLOCKSTORE_I
 UPDATE `PREFIX_configuration` SET value = 'jpg' WHERE name = 'BLOCKADVERT_IMG_EXT';
 UPDATE `PREFIX_configuration` SET value = 'CAT3,CAT8,CAT5,LNK1' WHERE name = 'MOD_BLOCKTOPMENU_ITEMS';
 UPDATE `PREFIX_configuration` SET value = '0' WHERE name = 'MOD_BLOCKTOPMENU_SEARCH';
-UPDATE `PREFIX_configuration` SET value = 'http://www.facebook.com/prestashop' WHERE name = 'BLOCKSOCIAL_FACEBOOK';
-UPDATE `PREFIX_configuration` SET value = 'http://www.twitter.com/prestashop' WHERE name = 'BLOCKSOCIAL_TWITTER';
+UPDATE `PREFIX_configuration` SET value = 'https://www.facebook.com/thirtybees/' WHERE name = 'BLOCKSOCIAL_FACEBOOK';
+UPDATE `PREFIX_configuration` SET value = 'https://twitter.com/thethirtybees' WHERE name = 'BLOCKSOCIAL_TWITTER';
 UPDATE `PREFIX_configuration` SET value = 'http://www.thirtybees.com/blog/en/' WHERE name = 'BLOCKSOCIAL_RSS';
-UPDATE `PREFIX_configuration` SET value = 'https://www.google.com/+prestashop' WHERE name = 'BLOCKSOCIAL_GOOGLE_PLUS';
+UPDATE `PREFIX_configuration` SET value = 'https://plus.google.com/112571661306551347471' WHERE name = 'BLOCKSOCIAL_GOOGLE_PLUS';
 UPDATE `PREFIX_configuration` SET value = 'My Company' WHERE name = 'BLOCKCONTACTINFOS_COMPANY';
-UPDATE `PREFIX_configuration` SET value = '42 Puffin street\n12345 Puffinville\nFrance' WHERE name = 'BLOCKCONTACTINFOS_ADDRESS';
+UPDATE `PREFIX_configuration` SET value = '42 Bee Lane\n12345 The Hive\nNetherlands' WHERE name = 'BLOCKCONTACTINFOS_ADDRESS';
 UPDATE `PREFIX_configuration` SET value = '0123-456-789' WHERE name = 'BLOCKCONTACTINFOS_PHONE';
 UPDATE `PREFIX_configuration` SET value = 'sales@yourcompany.com' WHERE name = 'BLOCKCONTACTINFOS_EMAIL';
 UPDATE `PREFIX_configuration` SET value = '0123-456-789' WHERE name = 'BLOCKCONTACT_TELNUMBER';
