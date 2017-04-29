@@ -54,7 +54,7 @@ UPDATE `PREFIX_configuration` SET value = '0' WHERE name = 'MOD_BLOCKTOPMENU_SEA
 UPDATE `PREFIX_configuration` SET value = 'https://www.facebook.com/thirtybees/' WHERE name = 'BLOCKSOCIAL_FACEBOOK';
 UPDATE `PREFIX_configuration` SET value = 'https://twitter.com/thethirtybees' WHERE name = 'BLOCKSOCIAL_TWITTER';
 UPDATE `PREFIX_configuration` SET value = 'http://www.thirtybees.com/blog/en/' WHERE name = 'BLOCKSOCIAL_RSS';
-UPDATE `PREFIX_configuration` SET value = 'https://plus.google.com/112571661306551347471' WHERE name = 'BLOCKSOCIAL_GOOGLE_PLUS';
+UPDATE `PREFIX_configuration` SET value = 'https://plus.google.com/+thirtybees' WHERE name = 'BLOCKSOCIAL_GOOGLE_PLUS';
 UPDATE `PREFIX_configuration` SET value = 'My Company' WHERE name = 'BLOCKCONTACTINFOS_COMPANY';
 UPDATE `PREFIX_configuration` SET value = '42 Bee Lane\n12345 The Hive\nNetherlands' WHERE name = 'BLOCKCONTACTINFOS_ADDRESS';
 UPDATE `PREFIX_configuration` SET value = '0123-456-789' WHERE name = 'BLOCKCONTACTINFOS_PHONE';
