@@ -101,5 +101,5 @@
   <tab id="Configuration" name="Configuration"/>
   <tab id="CarrierWizard" name="Carrier"/>
   <tab id="Custom_Code" name="Custom Code"/>
-  <tab id="Duplicate_URLs" name="Duplicate URLs"/>
+  <tab id="Image_Mapping" name="Image Mapping"/>
 </entity_tab>
