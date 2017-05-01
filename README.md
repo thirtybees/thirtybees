@@ -7,37 +7,11 @@ thirty bees is an open-source fork of PrestaShop 1.6. Our aim with this fork is 
 ![thirty bees screenshot](https://cloud.githubusercontent.com/assets/6775736/22063185/c5ef8e3c-dd7d-11e6-923c-4b62ac404c86.png)
 
 
-## Roadmap for thirty bees version 1.0.x
+## Roadmap for thirty bees version 1.1.x
 
-**Overview of the general goal:**
+**New Features being added into v1.1.x of thirty bees:**
 
-With version 1.0.x we are striving to fix as many bugs as possible, while maintaining compatibility with existing themes and modules. We want to provide the stablest platform for current users to migrate into. 
-
-**New Features being added into v1.0.0 of thirty bees:**
-
-* Ability to add CSS from the back office
-* Ability to add JavaScript snippets from the back office
-* Enhanced Favicon / device icon support
-* Full page caching in the core, with the following caching mechanisms:
-  * redis
-  * memcache(d)
-  * APCu
-  * file system
-
-**Native Modules:**
-
-Native modules will be refactored to remove legacy code. Code that supports previous PrestaShop versions will be removed and refactored to support PHP 5.5 - PHP 7.1.
-
- **Rewritten modules:**
-
-* PayPal will totally be rewritten
-* Authorize.net will be refactored
-
-**New native modules:**
-
-* MailChimp (including e-commerce features)
-* Stripe (Credit cards, Apple Pay, AliPay, Bitcoins)
-* thirty bees blog module
+No ideas, yet. Would you mind helping us with that? https://thirtybees.com/feature-request/
 
 ### Updated roadmap
 You can find the latest version of the roadmap here: https://thirtybees.com/roadmap
@@ -45,7 +19,7 @@ You can find the latest version of the roadmap here: https://thirtybees.com/road
 ## Requirements
 **General server requirements:**
 
-- PHP 5.5 - PHP 7.1
+- PHP 5.6 - PHP 7.1
 - Apache, nginx or IIS
 - Windows, Linux or OS X
 - MySQL 5.5.3+ or MariaDB 5.5+
