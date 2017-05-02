@@ -2203,6 +2203,9 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             if ($fieldName === $definition['primary']) {
                 continue;
             }
+            if (isset($field['lang']) && $field['lang'] || isset($field['shop']) && $field['shop']) {
+                continue;
+            }
             $sql .= '`'.$fieldName.'` '.$field['db_type'];
             if (isset($field['required'])) {
                 $sql .= ' NOT NULL';
