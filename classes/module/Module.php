@@ -1446,7 +1446,7 @@ abstract class ModuleCore
         }
 
         // Invalidate opcache
-        if (function_exists('opcache_invalidate')) {
+        if (function_exists('opcache_invalidate') && file_exists(_PS_MODULE_DIR_.$this->name)) {
             foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_PS_MODULE_DIR_.$this->name)) as $file) {
                 /** @var SplFileInfo $file */
                 if (substr($file->getFilename(), -4) !== '.php' || $file->isLink()) {
