@@ -118,7 +118,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      *
      * @param string $sql
      *
-     * @return PrestaShopCollection
+     * @return static
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -228,7 +228,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      * @param string $association
      *
      * @return array
-     *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -297,7 +297,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      * @param string $on
      * @param int    $type
      *
-     * @return PrestaShopCollection
+     * @return false|static
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -305,7 +305,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
     public function join($association, $on = '', $type = null)
     {
         if (!$association) {
-            return;
+            return false;
         }
 
         if (!isset($this->join_list[$association])) {
@@ -356,7 +356,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      * @param string $operator List of operators : =, !=, <>, <, <=, >, >=, like, notlike, regexp, notregexp
      * @param mixed  $value
      *
-     * @return PrestaShopCollection
+     * @return static
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -372,12 +372,14 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      * @param string $field    Field name
      * @param string $operator List of operators : =, !=, <>, <, <=, >, >=, like, notlike, regexp, notregexp
      * @param mixed  $value
-     * @param string $type     where|having
+     * @param string $method
      *
-     * @return PrestaShopCollection
+     * @return static
+     * @throws PrestaShopException
+     * @internal param string $type where|having
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @since    1.0.0
+     * @version  1.0.0 Initial version
      */
     public function where($field, $operator, $value, $method = 'where')
     {
@@ -388,44 +390,43 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
         // Create WHERE clause with an array value (IN, NOT IN)
         if (is_array($value)) {
             switch (strtolower($operator)) {
-                case '=' :
-                case 'in' :
+                case '=':
+                case 'in':
                     $this->query->$method($this->parseField($field).' IN('.implode(', ', $this->formatValue($value, $field)).')');
                     break;
 
-                case '!=' :
-                case '<>' :
-                case 'notin' :
+                case '!=':
+                case '<>':
+                case 'notin':
                     $this->query->$method($this->parseField($field).' NOT IN('.implode(', ', $this->formatValue($value, $field)).')');
                     break;
 
-                default :
+                default:
                     throw new PrestaShopException('Operator not supported for array value');
             }
         } // Create WHERE clause
         else {
             switch (strtolower($operator)) {
-                case '=' :
-                case '!=' :
-                case '<>' :
-                case '>' :
-                case '>=' :
-                case '<' :
-                case '<=' :
-                case 'like' :
-                case 'regexp' :
+                case '=':
+                case '!=':
+                case '<>':
+                case '>':
+                case '>=':
+                case '<':
+                case '<=':
+                case 'like':
+                case 'regexp':
                     $this->query->$method($this->parseField($field).' '.$operator.' '.$this->formatValue($value, $field));
                     break;
 
-                case 'notlike' :
+                case 'notlike':
                     $this->query->$method($this->parseField($field).' NOT LIKE '.$this->formatValue($value, $field));
                     break;
 
-                case 'notregexp' :
+                case 'notregexp':
                     $this->query->$method($this->parseField($field).' NOT REGEXP '.$this->formatValue($value, $field));
                     break;
-
-                default :
+                default:
                     throw new PrestaShopException('Operator not supported');
             }
         }
@@ -464,7 +465,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      *
      * @param string $sql
      *
-     * @return PrestaShopCollection
+     * @return static
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -482,8 +483,8 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      * @param string $field Field name
      * @param string $order asc|desc
      *
-     * @return PrestaShopCollection
-     *
+     * @return static
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -503,7 +504,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      *
      * @param string $sql
      *
-     * @return PrestaShopCollection
+     * @return static
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -520,7 +521,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      *
      * @param string $field Field name
      *
-     * @return PrestaShopCollection
+     * @return static
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -537,7 +538,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      *
      * @param string $sql
      *
-     * @return PrestaShopCollection
+     * @return static
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -552,7 +553,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
     /**
      * Retrieve the first result
      *
-     * @return ObjectModel
+     * @return false|ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -572,7 +573,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      *
      * @param bool $displayQuery If true, query will be displayed (for debug purpose)
      *
-     * @return PrestaShopCollection
+     * @return static
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -600,15 +601,15 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
         foreach ($this->join_list as $data) {
             $on = '('.implode(') AND (', $data['on']).')';
             switch ($data['type']) {
-                case static::LEFT_JOIN :
+                case static::LEFT_JOIN:
                     $this->query->leftJoin($data['table'], $data['alias'], $on);
                     break;
 
-                case static::INNER_JOIN :
+                case static::INNER_JOIN:
                     $this->query->innerJoin($data['table'], $data['alias'], $on);
                     break;
 
-                case static::LEFT_OUTER_JOIN :
+                case static::LEFT_OUTER_JOIN:
                     $this->query->leftOuterJoin($data['table'], $data['alias'], $on);
                     break;
             }
@@ -737,9 +738,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
     /**
      * Check if a result exist
      *
-     * @see     ArrayAccess::offsetExists()
-     *
-     * @param $offset
+     * @param int $offset
      *
      * @return bool
      *
@@ -756,12 +755,10 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
     /**
      * Get a result by offset
      *
-     * @see     ArrayAccess::offsetGet()
-     *
-     * @param $offset
+     * @param mixed $offset
      *
      * @return ObjectModel
-     *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -778,11 +775,10 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
     /**
      * Add an element in the collection
      *
-     * @see     ArrayAccess::offsetSet()
+     * @param int   $offset
+     * @param mixed $value
      *
-     * @param $offset
-     * @param $value
-     *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -821,7 +817,7 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
      *
      * @param int $pageNumber
      *
-     * @return PrestaShopCollection
+     * @return static
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -841,16 +837,16 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
     /**
      * Set the nuber of item per page
      *
-     * @param int $page_size
+     * @param int $pageSize
      *
-     * @return PrestaShopCollection
+     * @return static
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function setPageSize($page_size)
+    public function setPageSize($pageSize)
     {
-        $this->page_size = (int) $page_size;
+        $this->page_size = (int) $pageSize;
 
         return $this;
     }
