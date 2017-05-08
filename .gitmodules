@@ -361,7 +361,7 @@
 [submodule "themes/community-theme-default"]
 	path = themes/community-theme-default
 	url = https://github.com/thirtybees/community-theme-default.git
-	branch = master
+	branch = 1.0.x
 	ignore = dirty
 [submodule "modules/fixerio"]
 	path = modules/fixerio
