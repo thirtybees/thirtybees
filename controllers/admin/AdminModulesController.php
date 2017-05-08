@@ -1165,8 +1165,8 @@ class AdminModulesControllerCore extends AdminController
                 $zipFolders = scandir($tmpFolder);
                 foreach ($zipFolders as $zipFolder) {
                     if (!in_array($zipFolder, ['.', '..', '.svn', '.git', '__MACOSX'])) {
-                        if (file_exists(_PS_MODULE_DIR_.$zipFolder) && !ConfigurationTest::testDir(_PS_MODULE_DIR_.$zipFolder)) {
-                            $this->errors[] = Tools::displayError('There was an error while extracting the module. The destination folder is not writable.');
+                        if (file_exists(_PS_MODULE_DIR_.$zipFolder) && !ConfigurationTest::testDir(_PS_MODULE_DIR_.$zipFolder, true, $report, true)) {
+                            $this->errors[] = $this->l('There was an error while extracting the module.').' '.$report;
 
                             return false;
                         }
@@ -1182,8 +1182,8 @@ class AdminModulesControllerCore extends AdminController
                 $zipFolders = scandir($tmpFolder);
                 foreach ($zipFolders as $zipFolder) {
                     if (!in_array($zipFolder, ['.', '..', '.svn', '.git', '__MACOSX'])) {
-                        if (file_exists(_PS_MODULE_DIR_.$zipFolder) && !ConfigurationTest::testDir(_PS_MODULE_DIR_.$zipFolder)) {
-                            $this->errors[] = Tools::displayError('There was an error while extracting the module. The destination folder is not writable.');
+                        if (file_exists(_PS_MODULE_DIR_.$zipFolder) && !ConfigurationTest::testDir(_PS_MODULE_DIR_.$zipFolder, true, $report, true)) {
+                            $this->errors[] = $this->l('There was an error while extracting the module.').' '.$report;
 
                             return false;
                         }
