@@ -366,15 +366,20 @@
 [submodule "modules/fixerio"]
 	path = modules/fixerio
 	url = https://github.com/thirtybees/fixerio
+	branch = master
+	ignore = dirty
 [submodule "modules/themeconfigurator"]
 	path = modules/themeconfigurator
 	url = https://github.com/thirtybees/themeconfigurator.git
+	branch = master
+	ignore = dirty
 [submodule "modules/tbupdater"]
 	path = modules/tbupdater
 	url = https://github.com/thirtybees/tbupdater.git
-[submodule "modules/beesblog"]
-	path = modules/beesblog
-	url = https://github.com/thirtybees/beesblog.git
+	branch = master
+	ignore = dirty
 [submodule "modules/blocktopmenu"]
 	path = modules/blocktopmenu
 	url = https://github.com/thirtybees/blocktopmenu.git
+	branch = master
+	ignore = dirty
