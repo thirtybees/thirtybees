@@ -644,10 +644,10 @@
       <value/>
     </configuration>
     <configuration id="blocksocial_facebook" name="BLOCKSOCIAL_FACEBOOK">
-      <value>http://www.facebook.com/prestashop</value>
+      <value>http://www.facebook.com/thirtybees</value>
     </configuration>
     <configuration id="blocksocial_twitter" name="BLOCKSOCIAL_TWITTER">
-      <value>http://www.twitter.com/prestashop</value>
+      <value>http://www.twitter.com/thethirtybees</value>
     </configuration>
     <configuration id="blocksocial_rss" name="BLOCKSOCIAL_RSS">
       <value>http://www.thirtybees.com/blog/en/feed/</value>
