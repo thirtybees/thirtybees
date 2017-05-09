@@ -350,7 +350,7 @@ class ImageCore extends ObjectModel
                     copy(_PS_PROD_IMG_DIR_.$imageOld->getExistingImgPath().'.jpg', $newPath.'.jpg');
                 }
 
-                Image::replaceAttributeImageAssociationId($combinationImages, (int) $imageOld->id, (int) $imageNew->id);
+                static::replaceAttributeImageAssociationId($combinationImages, (int) $imageOld->id, (int) $imageNew->id);
 
                 // Duplicate shop associations for images
                 $imageNew->duplicateShops($idProductOld);
