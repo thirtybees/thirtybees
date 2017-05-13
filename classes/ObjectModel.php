@@ -2382,7 +2382,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * require an extra parameter, with the type of the column in the database.
      *
      * @param string      $name             Column name
-     * @param string      $columnDefinition Column type definition
+     * @param array       $columnDefinition Column type definition
      * @param string|null $className        Class name
      *
      * @return bool Indicates whether the column was successfully created
