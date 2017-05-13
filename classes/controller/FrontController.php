@@ -1659,6 +1659,7 @@ class FrontControllerCore extends Controller
                 'mail_dir'            => _MAIL_DIR_,
                 'lang_iso'            => $this->context->language->iso_code,
                 'lang_id'             => (int) $this->context->language->id,
+                'isRtl'               => $this->context->language->is_rtl,
                 'language_code'       => $this->context->language->language_code ? $this->context->language->language_code : $this->context->language->iso_code,
                 'come_from'           => Tools::getHttpHost(true, true).Tools::htmlentitiesUTF8(str_replace(['\'', '\\'], '', urldecode($_SERVER['REQUEST_URI']))),
                 'cart_qties'          => (int) $cart->nbProducts(),

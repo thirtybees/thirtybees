@@ -110,12 +110,94 @@ html
 				a, li.active a
 					&.title
 						border-left: 3px solid #fff
-						border-right: 0px
+						border-right: 0
 						background-color: $sidebar-menu-bg-hover-color
 				@media (min-height: $min-height)
 					ul.submenu
 						body:not(.page-sidebar-closed) &
 							margin-right: 35px
-							margin-left: 0px
+							margin-left: 0
 							@include border-right(1px solid $sidebar-menu-bg-hover-color)
-							border-left: 0px
+							border-left: 0
+// Fix carrier wizard
+#carrier_wizard
+	.stepContainer
+		div.content
+			right: 0 !important
+			left: auto !important
+	ul.anchor
+		float: right
+		&.nbr_steps_4
+			li
+				float: right
+		&.nbr_steps_5
+			li
+				float: right
+	li
+		a
+			margin: 0 0 0 16px
+			.stepNumber
+				float: right
+				margin-left: 3px
+				margin-right: 0
+			.stepDesc
+				text-align: right
+			.chevron
+				border-right: 14px solid white
+				border-left: 0
+				left: -16px
+				right: auto
+				&:after
+					border-right: 14px solid #ccc
+					border-left: 0
+					left: 2px
+					right: auto
+		a.disabled
+			.chevron:after
+				border-right: 14px solid #ccc
+				border-left: 0
+		a.selected
+			.chevron:after
+				border-right: 14px solid $main-color
+				border-left: 0
+		a.done
+			.chevron:after
+				border-right: 14px solid $brand-success
+				border-left: 0
+	.msgBox
+		float: right
+		margin: 4px 5px 0 0
+		.content
+			float: right
+	#carrier_logo_block
+		left: 10px
+		right: auto
+	.actionBar a
+		float: left
+		margin-left: 10px
+		margin-right: 0
+
+// Tinymce
+.mce-container
+	*
+		text-align: right
+		direction: rtl
+.mce-widget
+	direction: rtl
+.mce-rtl
+	.mce-flow-layout
+		text-align: right
+		direction: rtl
+	.mce-flow-layout-item
+		margin: 2px 2px 2px 0
+.mce-btn-group
+	.mce-last
+		border-right: solid 1px #ccc
+		border-top-left-radius: 3px
+		border-bottom-left-radius: 3px
+		-webkit-border-radius: 3px 0 0 3px
+		border-radius: 3px 0 0 3px
+.mce-widget
+	*
+		text-align: right
+		direction: rtl

@@ -109,10 +109,29 @@
           (function() {
             var encryptedError = document.getElementById('encryptedError');
             var previousmessage = encryptedError.innerHTML;
+            var copyBtn = '<a href="javascript:copyAllText();" id="copyError" title="Copy">Copy Error</a><br/>';
 
             window.readAll = function() {
-              encryptedError.innerHTML = previousmessage;
+              encryptedError.innerHTML = copyBtn + '<span id="errorContent">' + previousmessage + '</span>';
             };
+
+            window.copyAllText = function() {
+                var errorContent = document.getElementById('errorContent');
+                var range = document.createRange();
+                range.selectNodeContents(errorContent);
+                var sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(range);
+                try {
+                    succeed = document.execCommand("copy");
+                } catch(e) {
+                    succeed = false;
+                }
+                if(succeed)
+                    alert('Encrypted error copied!')
+                else
+                    alert('Error, try copying manually')
+            }
 
             encryptedError.innerHTML = '<a href="javascript:readAll();">' + previousmessage.substring(0, 20) + '...</a>';
 
@@ -136,6 +155,8 @@
             }
             document.getElementById('errorTitle').innerHTML = translations[browserLanguage].errorTitle;
             document.getElementById('errorMessage').innerHTML = translations[browserLanguage].errorMessage;
+
+
           }());
         </script>
     </body>

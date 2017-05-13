@@ -1,5 +1,6 @@
 {*
 * 2007-2016 PrestaShop
+* 2017 - thirty bees
 *
 * NOTICE OF LICENSE
 *
@@ -18,9 +19,12 @@
 * needs please refer to http://www.prestashop.com for more information.
 *
 *  @author PrestaShop SA <contact@prestashop.com>
+*  @author thirty bees
 *  @copyright  2007-2016 PrestaShop SA
+*  @copyright 2017 -  thirty bees
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
+*  International Trademark & Property of thirty bees
 *}
 {if isset($js_def) && is_array($js_def) && $js_def|@count}
 <script type="text/javascript">
