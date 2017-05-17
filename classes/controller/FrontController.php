@@ -648,9 +648,22 @@ class FrontControllerCore extends Controller
 
         $layoutDir = $this->getThemeDir();
         $layoutOverrideDir = $this->getOverrideThemeDir();
-
         $layout = false;
-        if ($entity) {
+
+        if ($this->is17Theme()) {
+            $themeSettings = $this->themeConfig['theme_settings'];
+            $customLayout = @$themeSettings['layouts'][$entity];
+            if (isset($customLayout) && $customLayout) {
+                $layoutName = $customLayout;
+            } else {
+                $layoutName = $themeSettings['default_layout'];
+            }
+
+            $layout = 'layouts/'.$layoutName.'.tpl';
+        }
+
+        if (!$layout && $entity) {
+            // It's a PS 1.6 compatible or earlier theme.
             if ($idItem > 0 && file_exists($layoutOverrideDir.'layout-'.$entity.'-'.$idItem.'.tpl')) {
                 $layout = $layoutOverrideDir.'layout-'.$entity.'-'.$idItem.'.tpl';
             } elseif (file_exists($layoutOverrideDir.'layout-'.$entity.'.tpl')) {
@@ -942,7 +955,12 @@ class FrontControllerCore extends Controller
         );
 
         $layout = $this->getLayout();
-        if ($layout) {
+        if ($layout && $this->is17Theme()) {
+            // @TODO: $layout this is just the boilerplate layout. Replace
+            //        it with the actually wanted one in $this->template.
+            $this->smartyOutputContent($layout);
+        } elseif ($layout) {
+            // It's a PS 1.6 compatible or earlier theme.
             if ($this->template) {
                 $template = $this->context->smarty->fetch($this->template);
             } else {

@@ -30,7 +30,11 @@
  */
 
 global $smarty;
-$smarty->setTemplateDir(_PS_THEME_DIR_.'tpl');
+$smarty->setTemplateDir([
+    _PS_THEME_DIR_,
+    _PS_THEME_DIR_.'tpl',
+    _PS_THEME_DIR_.'templates',
+]);
 
 if (Configuration::get('PS_JS_HTML_THEME_COMPRESSION')) {
     $smarty->registerFilter('output', 'smartyPackJSinHTML');
