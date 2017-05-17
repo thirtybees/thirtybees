@@ -117,6 +117,8 @@ class FrontControllerCore extends Controller
     /** @var bool If true, forces display to maintenance page. */
     protected $maintenance = false;
     // @codingStandardsIgnoreEnd
+    /** @var array|bool Theme configuration. If set, it's a PS 1.7 compatible theme. */
+    public $themeConfig = false;
 
     /**
      * Controller constructor.
@@ -145,8 +147,14 @@ class FrontControllerCore extends Controller
             $useSSL = $this->ssl;
         }
 
-        if (isset($this->php_self) && is_object(Context::getContext()->theme)) {
-            $columns = Context::getContext()->theme->hasColumns($this->php_self);
+        $theme = Context::getContext()->theme;
+        if (isset($this->php_self) && is_object($theme)) {
+            $themeConfigFile = $this->getThemeDir().'config/theme.yml';
+            if (file_exists($themeConfigFile)) {
+                // It's a PS 1.7 compatible theme.
+                $this->themeConfig = Spyc::YAMLLoad($themeConfigFile);
+            } else {
+                $columns = $theme->hasColumns($this->php_self);
 
             // Don't use theme tables if not configured in DB
             if ($columns) {
@@ -154,6 +162,7 @@ class FrontControllerCore extends Controller
                 $this->display_column_right = $columns['right_column'];
             }
         }
+    }
     }
 
     /**
@@ -2241,5 +2250,17 @@ class FrontControllerCore extends Controller
     protected function redirect()
     {
         Tools::redirectLink($this->redirect_after);
+    }
+
+    /**
+     * Wether the current theme is a PrestaShop 1.7 compatible one.
+     *
+     * @return  bool
+     *
+     * @since   1.1.0
+     * @version 1.1.0 Initial version
+     */
+    public function is17Theme() {
+        return (bool) $this->themeConfig;
     }
 }
