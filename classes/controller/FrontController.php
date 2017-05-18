@@ -36,6 +36,8 @@
  */
 class FrontControllerCore extends Controller
 {
+    use FrontController17;
+
     /**
      * True if controller has already been initialized.
      * Prevents initializing controller more than once.
@@ -258,7 +260,9 @@ class FrontControllerCore extends Controller
             $this->context->cart = new Cart();
         }
 
-        if (!$this->useMobileTheme()) {
+        if ($this->is17Theme()) {
+            $this->assignGeneralPurposeVariables();
+        } elseif (!$this->useMobileTheme()) {
             // These hooks aren't used for the mobile theme.
             // Needed hooks are called in the tpl files.
 
