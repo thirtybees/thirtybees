@@ -69,8 +69,8 @@ smartyRegisterFunction($smarty, 'function', 'd', 'smartyDieObject'); // Debug on
 smartyRegisterFunction($smarty, 'function', 'l', 'smartyTranslate', false);
 smartyRegisterFunction($smarty, 'function', 'hook', 'smartyHook');
 smartyRegisterFunction($smarty, 'function', 'toolsConvertPrice', 'toolsConvertPrice');
-smartyRegisterFunction($smarty, 'modifier', 'json_encode', ['Tools', 'jsonEncode']);
-smartyRegisterFunction($smarty, 'modifier', 'json_decode', ['Tools', 'jsonDecode']);
+smartyRegisterFunction($smarty, 'modifier', 'json_encode', ['Tools', 'jsonEncode']); // deprecated
+smartyRegisterFunction($smarty, 'modifier', 'json_decode', ['Tools', 'jsonDecode']); // deprecated
 smartyRegisterFunction($smarty, 'function', 'dateFormat', ['Tools', 'dateFormat']);
 smartyRegisterFunction($smarty, 'function', 'convertPrice', ['Product', 'convertPrice']);
 smartyRegisterFunction($smarty, 'function', 'convertPriceWithCurrency', ['Product', 'convertPriceWithCurrency']);
@@ -85,8 +85,11 @@ smartyRegisterFunction($smarty, 'function', 'getHeightSize', ['Image', 'getHeigh
 smartyRegisterFunction($smarty, 'function', 'addJsDef', ['Media', 'addJsDef']);
 smartyRegisterFunction($smarty, 'block', 'addJsDefL', ['Media', 'addJsDefL']);
 smartyRegisterFunction($smarty, 'modifier', 'boolval', ['Tools', 'boolval']);
+smartyRegisterFunction($smarty, 'modifier', 'classname', 'smartyClassname');
+smartyRegisterFunction($smarty, 'modifier', 'classnames', 'smartyClassnames');
 smartyRegisterFunction($smarty, 'modifier', 'cleanHtml', 'smartyCleanHtml');
 smartyRegisterFunction($smarty, 'function', 'implode', array('Tools', 'smartyImplode'));
+smartyRegisterFunction($smarty, 'function', 'url', array('Link', 'getUrlSmarty'));
 
 function smartyDieObject($params, &$smarty)
 {
@@ -218,6 +221,27 @@ function smartyCleanHtml($data)
     if (Validate::isCleanHtml($data)) {
         return $data;
     }
+}
+
+function smartyClassname($classname)
+{
+    $classname = Tools::replaceAccentedChars(strtolower($classname));
+    $classname = preg_replace('/[^A-Za-z0-9]/', '-', $classname);
+    $classname = preg_replace('/[-]+/', '-', $classname);
+
+    return $classname;
+}
+
+function smartyClassnames(array $classnames)
+{
+    $enabledClasses = array();
+    foreach ($classnames as $classname => $enabled) {
+        if ($enabled) {
+            $enabledClasses[] = smartyClassname($classname);
+        }
+    }
+
+    return implode(' ', $enabledClasses);
 }
 
 function toolsConvertPrice($params, &$smarty)

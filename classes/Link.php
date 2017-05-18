@@ -920,4 +920,108 @@ class LinkCore
 
         return http_build_query($output);
     }
+
+    /**
+     * Introduced for compatibility with PS 1.7 themes.
+     *
+     * @param array  $params
+     *
+     * @return string
+     *
+     * @since   1.1.0
+     * @version 1.1.0 Initial version, copied from PS 1.7.0.0,
+     *                handling $params['entity'] === 'sf' removed.
+     */
+    public static function getUrlSmarty($params)
+    {
+        $context = Context::getContext();
+
+        if (!isset($params['params'])) {
+            $params['params'] = [];
+        }
+
+        if (isset($params['id'])) {
+            $entity = str_replace('-', '_', $params['entity']);
+            $id = ['id_'.$entity => $params['id']];
+            $params['params'] = array_merge($id, $params['params']);
+        }
+
+        $default = [
+            'id_lang'           => $context->language->id,
+            'id_shop'           => null,
+            'alias'             => null,
+            'ssl'               => null,
+            'relative_protocol' => false,
+        ];
+        $params = array_merge($default, $params);
+
+        $urlParameters = http_build_query($params['params']);
+
+        switch ($params['entity']) {
+            case 'language':
+                $link = $context->link->getLanguageLink($params['id']);
+                break;
+            case 'category':
+                $params = array_merge(['selected_filters' => null], $params);
+                $link = $context->link->getCategoryLink(
+                    new Category($params['id'], $params['id_lang']),
+                    $params['alias'],
+                    $params['id_lang'],
+                    $params['selected_filters'],
+                    $params['id_shop'],
+                    $params['relative_protocol']
+                );
+                break;
+            case 'categoryImage':
+                $params = array_merge(['selected_filters' => null], $params);
+                $link = $context->link->getCatImageLink(
+                    $params['name'],
+                    $params['id'],
+                    $params['type'] = (isset($params['type']) ? $params['type'] : null)
+                );
+                break;
+            case 'cms':
+                $link = $context->link->getCMSLink(
+                    new CMS($params['id'], $params['id_lang']),
+                    $params['alias'],
+                    $params['ssl'],
+                    $params['id_lang'],
+                    $params['id_shop'],
+                    $params['relative_protocol']
+                );
+                break;
+            case 'module':
+                $params = array_merge([
+                    'selected_filters'  => null,
+                    'params'            => array(),
+                    'controller'        => 'default',
+                ], $params);
+                $link = $context->link->getModuleLink(
+                    $params['name'],
+                    $params['controller'],
+                    $params['params'],
+                    $params['ssl'],
+                    $params['id_lang'],
+                    $params['id_shop'],
+                    $params['relative_protocol']
+                );
+                break;
+            case 'sf':
+                throw new PrestaShopException('thirty bees has no Symfony kernel.');
+                break;
+            default:
+                $link = $context->link->getPageLink(
+                    $params['entity'],
+                    $params['ssl'],
+                    $params['id_lang'],
+                    $urlParameters,
+                    false,
+                    $params['id_shop'],
+                    $params['relative_protocol']
+                );
+                break;
+        }
+
+        return $link;
+    }
 }
