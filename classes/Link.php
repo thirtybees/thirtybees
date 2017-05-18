@@ -114,7 +114,7 @@ class LinkCore
         return $url.((strpos($url, '?')) ? '&' : '?').'deletePicture='.$idPicture;
     }
 
-    public function getProductLink($product, $alias = null, $category = null, $ean13 = null, $idLang = null, $idShop = null, $ipa = 0, $forceRoutes = false, $relativeProtocol = false, $addAnchor = false, $extraParams = array())
+    public function getProductLink($product, $alias = null, $category = null, $ean13 = null, $idLang = null, $idShop = null, $ipa = 0, $forceRoutes = false, $relativeProtocol = false, $addAnchor = false, $extraParams = [])
     {
         $dispatcher = Dispatcher::getInstance();
 
@@ -135,7 +135,7 @@ class LinkCore
         }
 
         // Set available keywords
-        $params = array();
+        $params = [];
         $params['id'] = $product->id;
         $params['rewrite'] = (!$alias) ? $product->getFieldByLang('link_rewrite') : $alias;
 
@@ -169,7 +169,7 @@ class LinkCore
 
         if ($dispatcher->hasKeyword('product_rule', $idLang, 'categories', $idShop)) {
             $params['category'] = (!$category) ? $product->category : $category;
-            $cats = array();
+            $cats = [];
             $categoryDisableRewrite = static::$categoryDisableRewrite;
             foreach ($product->getParentCategories($idLang) as $cat) {
                 if (!in_array($cat['id_category'], $categoryDisableRewrite)) {
@@ -423,12 +423,12 @@ class LinkCore
             $category = new Category($category, $idLang);
         }
         // Set available keywords
-        $params = array();
+        $params = [];
         $params['id'] = $category->id;
         $params['rewrite'] = (!$alias) ? $category->link_rewrite : $alias;
         $params['meta_keywords'] =    Tools::str2url($category->getFieldByLang('meta_keywords'));
         $params['meta_title'] = Tools::str2url($category->getFieldByLang('meta_title'));
-        $cats = array();
+        $cats = [];
         $categoryDisableRewrite = static::$categoryDisableRewrite;
 
         foreach ($category->getParentsCategories($idLang) as $cat) {
@@ -555,7 +555,7 @@ class LinkCore
             $cms = new CMS($cms, $idLang);
         }
         // Set available keywords
-        $params = array();
+        $params = [];
         $params['id'] = $cms->id;
         $params['rewrite'] = (!$alias) ? (is_array($cms->link_rewrite) ? $cms->link_rewrite[(int) $idLang] : $cms->link_rewrite) : $alias;
         $params['meta_keywords'] = '';
@@ -646,7 +646,7 @@ class LinkCore
             $cmsCategory->meta_title = $cmsCategory->meta_title[(int) $idLang];
         }
         // Set available keywords
-        $params = array();
+        $params = [];
         $params['id'] = $cmsCategory->id;
         $params['rewrite'] = (!$alias) ? $cmsCategory->link_rewrite : $alias;
         $params['meta_keywords'] = Tools::str2url($cmsCategory->meta_keywords);
@@ -993,7 +993,7 @@ class LinkCore
             case 'module':
                 $params = array_merge([
                     'selected_filters'  => null,
-                    'params'            => array(),
+                    'params'            => [],
                     'controller'        => 'default',
                 ], $params);
                 $link = $context->link->getModuleLink(
