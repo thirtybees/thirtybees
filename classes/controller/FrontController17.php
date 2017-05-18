@@ -475,11 +475,6 @@ trait FrontController17
 //            'configuration'   => $this->getTemplateVarConfiguration(),
 //            'field_required'  => $this->context->customer->validateFieldsRequiredDatabase(),
 //            'breadcrumb'      => $this->getBreadcrumb(),
-            // Huh? Not assigning 'link' makes loaded pages empty. Why?
-            'link'            => $this->context->link,
-            'time'            => time(),
-            'static_token'    => Tools::getToken(false),
-            'token'           => Tools::getToken(),
         ];
 
         $this->context->smarty->assign($templateVars);

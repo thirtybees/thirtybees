@@ -588,18 +588,20 @@ class FrontControllerCore extends Controller
         // Added powered by for builtwith.com
         header('Powered-By: thirty bees');
         // Hooks are voluntary out the initialize array (need those variables already assigned)
-        $this->context->smarty->assign(
-            [
+        $this->context->smarty->assign([
                 'time'                  => time(),
-                'img_update_time'       => Configuration::get('PS_IMG_UPDATE_TIME'),
                 'static_token'          => Tools::getToken(false),
                 'token'                 => Tools::getToken(),
+        ]);
+        if (!$this->is17Theme()) {
+            $this->context->smarty->assign([
+                'img_update_time'       => Configuration::get('PS_IMG_UPDATE_TIME'),
                 'priceDisplayPrecision' => _PS_PRICE_DISPLAY_PRECISION_,
                 'content_only'          => (int) Tools::getValue('content_only'),
-            ]
-        );
+            ]);
 
         $this->context->smarty->assign($this->initLogoAndFavicon());
+    }
     }
 
     /**
@@ -732,7 +734,9 @@ class FrontControllerCore extends Controller
 
         $html = '';
         $jsTag = 'js_def';
+        if (!$this->is17Theme()) {
         $this->context->smarty->assign($jsTag, $jsTag);
+        }
 
 $debugArray = $this->context->smarty->tpl_vars;
 ksort($debugArray);
@@ -955,16 +959,25 @@ file_put_contents(_PS_ROOT_DIR_.'/config/debug', $obContents);
 //            }
 //        }
 
-        $this->context->smarty->assign(
-            [
+        if ($this->is17Theme()) {
+            $this->context->smarty->assign([
+                'layout'          => $this->getLayout(),
+//                'stylesheets'     => $this->getStylesheets(),
+//                'javascript'      => $this->getJavascript(),
+//                'js_custom_vars'  => Media::getJsDef(),
+//                'notifications'   => $this->prepareNotifications(),
+            ]);
+        } else {
+            // It's a PS 1.6 compatible or earlier theme.
+            $this->context->smarty->assign([
                 'css_files'      => $this->css_files,
                 'js_files'       => ($this->getLayout() && (bool) Configuration::get('PS_JS_DEFER')) ? [] : $this->js_files,
                 'js_defer'       => (bool) Configuration::get('PS_JS_DEFER'),
                 'errors'         => $this->errors,
                 'display_header' => $this->display_header,
                 'display_footer' => $this->display_footer,
-            ]
-        );
+            ]);
+        }
 
         $layout = $this->getLayout();
         if ($layout && $this->is17Theme()) {
@@ -1220,6 +1233,10 @@ file_put_contents(_PS_ROOT_DIR_.'/config/debug', $obContents);
      */
     public function initFooter()
     {
+        if ($this->is17Theme()) {
+            return;
+        }
+
         $hookFooter = Hook::exec('displayFooter');
         $extraJs = Configuration::get(Configuration::CUSTOMCODE_JS);
         $extraJsConf = '';
@@ -1481,7 +1498,7 @@ file_put_contents(_PS_ROOT_DIR_.'/config/debug', $obContents);
         }
 
         // If account created with the 2 steps register process, remove 'account_created' from cookie
-        if (isset($this->context->cookie->account_created)) {
+        if (!$this->is17Theme() && isset($this->context->cookie->account_created)) {
             $this->context->smarty->assign('account_created', 1);
             unset($this->context->cookie->account_created);
         }
@@ -1640,12 +1657,16 @@ file_put_contents(_PS_ROOT_DIR_.'/config/debug', $obContents);
             $pageName = (preg_match('/^[0-9]/', $pageName) ? 'page_'.$pageName : $pageName);
         }
 
+        if (!$this->is17Theme()) { // For PS 1.7 themes, see FrontController17.
         $this->context->smarty->assign(Meta::getMetaTags($this->context->language->id, $pageName));
+        }
         $this->context->smarty->assign('request_uri', Tools::safeOutput(urldecode($_SERVER['REQUEST_URI'])));
 
-        /* Breadcrumb */
+        /* Breadcrumb (should be deprecated) */
+        if (!$this->is17Theme()) {
         $navigationPipe = (Configuration::get('PS_NAVIGATION_PIPE') ? Configuration::get('PS_NAVIGATION_PIPE') : '>');
         $this->context->smarty->assign('navigationPipe', $navigationPipe);
+        }
 
         // Automatically redirect to the canonical URL if needed
         if (!empty($this->php_self) && !Tools::getValue('ajax')) {
@@ -1675,13 +1696,17 @@ file_put_contents(_PS_ROOT_DIR_.'/config/debug', $obContents);
             $comparedProducts = CompareProduct::getCompareProducts($this->context->cookie->id_compare);
         }
 
-        $this->context->smarty->assign(
-            [
+        $this->context->smarty->assign([
+            // Huh? Not assigning 'link' makes loaded pages empty. Why?
+            'link'          => $this->context->link,
+            'priceDisplay'  => Product::getTaxCalculationMethod((int) $this->context->cookie->id_customer),
+        ]);
+        if (!$this->is17Theme()) {
+            $this->context->smarty->assign([
                 // Useful for layout.tpl
                 'mobile_device'       => $this->context->getMobileDevice(),
-                'link'                => $link,
                 'cart'                => $cart,
-                'currency'            => $currency,
+                'currency'            => $currency,  // Not compatible with PS 1.7.
                 'currencyRate'        => (float) $currency->getConversationRate(),
                 'cookie'              => $this->context->cookie,
                 'page_name'           => $pageName,
@@ -1704,7 +1729,6 @@ file_put_contents(_PS_ROOT_DIR_.'/config/debug', $obContents);
                 'currencies'          => Currency::getCurrencies(),
                 'languages'           => $languages,
                 'meta_language'       => implode(',', $metaLanguage),
-                'priceDisplay'        => Product::getTaxCalculationMethod((int) $this->context->cookie->id_customer),
                 'is_logged'           => (bool) $this->context->customer->isLogged(),
                 'is_guest'            => (bool) $this->context->customer->isGuest(),
                 'add_prod_display'    => (int) Configuration::get('PS_ATTRIBUTE_CATEGORY_DISPLAY'),
@@ -1726,8 +1750,7 @@ file_put_contents(_PS_ROOT_DIR_.'/config/debug', $obContents);
                 'currencySign'        => $currency->sign, // backward compat, see global.tpl
                 'currencyFormat'      => $currency->format, // backward compat
                 'currencyBlank'       => $currency->blank, // backward compat
-            ]
-        );
+            ]);
 
         // Add the tpl files directory for mobile
         if ($this->useMobileTheme()) {
@@ -1779,6 +1802,7 @@ file_put_contents(_PS_ROOT_DIR_.'/config/debug', $obContents);
             } else {
                 $this->context->smarty->assign($assignKey, $assignValue);
             }
+        }
         }
 
         /*
