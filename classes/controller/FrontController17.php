@@ -469,7 +469,7 @@ trait FrontController17
             'currency'        => $this->getTemplateVarCurrency(),
 //            'customer'        => $this->getTemplateVarCustomer(),
 //            'language'        => $this->objectPresenter->present($this->context->language),
-//            'page'            => $this->getTemplateVarPage(),
+            'page'            => $this->getTemplateVarPage(),
 //            'shop'            => $this->getTemplateVarShop(),
 //            'urls'            => $this->getTemplateVarUrls(),
 //            'configuration'   => $this->getTemplateVarConfiguration(),
@@ -1512,55 +1512,87 @@ trait FrontController17
 //
 //        return $shop;
 //    }
+
+    protected function getTemplateVarPage()
+    {
+        $pageName = $this->getPageName();
+        $metaTags = Meta::getMetaTags($this->context->language->id, $pageName);
+
+        $accountControllers = [
+            'address',
+            'authentication',
+            'discount',
+            'history',
+            'identity',
+            'order-follow',
+            'order-slip',
+            'password',
+            'guest-tracking',
+        ];
+
+// @TODO: With PS 1.7, 'body_classes' has 14 items, here we get only 5. Two are
+//        commented out, but where do the other 7 come from?
 //
-//    public function getTemplateVarPage()
-//    {
-//        $page_name = $this->getPageName();
-//        $meta_tags = Meta::getMetaTags($this->context->language->id, $page_name);
+// PS 1.7 original for a product page:
+//      ["body_classes"]=>
+//      array(14) {
+//        ["lang-en"]=>bool(true)
+//        ["lang-rtl"]=>bool(false)
+//        ["country-DE"]=>bool(true)
+//        ["currency-EUR"]=>bool(true)
+//        ["layout-full-width"]=>bool(true)
+//        ["page-product"]=>bool(true)
+//        ["tax-display-enabled"]=>bool(true)
+//        ["product-id-9"]=>bool(true)
+//        ["product-Gen7 v2.0 Components"]=>bool(true)
+//        ["product-id-category-2"]=>bool(true)
+//        ["product-id-manufacturer-0"]=>bool(true)
+//        ["product-id-supplier-0"]=>bool(true)
+//        ["product-on-sale"]=>bool(true)
+//        ["product-available-for-order"]=>bool(true)
+//      }
 //
-//        $my_account_controllers = [
-//            'address',
-//            'authentication',
-//            'discount',
-//            'history',
-//            'identity',
-//            'order-follow',
-//            'order-slip',
-//            'password',
-//            'guest-tracking',
-//        ];
-//
-//        $body_classes = [
-//            'lang-'.$this->context->language->iso_code                              => true,
-//            'lang-rtl'                          => (bool) $this->context->language->is_rtl,
-//            'country-'.$this->context->country->iso_code                            => true,
-//            'currency-'.$this->context->currency->iso_code                          => true,
+// Here we get this, also for a product page:
+//      ["body_classes"]=>
+//      array(5) {
+//        ["lang-en"]=>bool(true)
+//        ["lang-rtl"]=>bool(false)
+//        ["country-DE"]=>bool(true)
+//        ["currency-EUR"]=>bool(true)
+//        ["page-pagenotfound"]=>bool(true)
+//      }
+
+        $bodyClasses = [
+            'lang-'.$this->context->language->iso_code                              => true,
+            'lang-rtl'                          => (bool) $this->context->language->is_rtl,
+            'country-'.$this->context->country->iso_code                            => true,
+            'currency-'.$this->context->currency->iso_code                          => true,
 //            $this->context->shop->theme->getLayoutNameForPage($this->php_self)      => true,
-//            'page-'.$this->php_self                                                 => true,
+            'page-'.$this->php_self                                                 => true,
 //            'tax-display-'.($this->getDisplayTaxesLabel() ? 'enabled' : 'disabled') => true,
-//        ];
-//
-//        if (in_array($this->php_self, $my_account_controllers)) {
-//            $body_classes['page-customer-account'] = true;
-//        }
-//
-//        $page = [
-//            'title'               => '',
-//            'canonical'           => $this->getCanonicalURL(),
-//            'meta'                => [
-//                'title'       => $meta_tags['meta_title'],
-//                'description' => $meta_tags['meta_description'],
-//                'keywords'    => $meta_tags['meta_keywords'],
-//                'robots'      => 'index',
-//            ],
-//            'page_name'           => $page_name,
-//            'body_classes'        => $body_classes,
-//            'admin_notifications' => [],
-//        ];
-//
-//        return $page;
-//    }
-//
+        ];
+
+        if (in_array($this->php_self, $accountControllers)) {
+            $bodyClasses['page-customer-account'] = true;
+        }
+
+        $page = [
+            'title'               => '',
+            'canonical'           => '',
+            'meta'                => [
+                'title'       => $metaTags['meta_title'],
+                'description' => $metaTags['meta_description'],
+                'keywords'    => $metaTags['meta_keywords'],
+                'robots'      => 'index',
+            ],
+            'page_name'           => $pageName,
+            'body_classes'        => $bodyClasses,
+            'admin_notifications' => [],
+        ];
+
+        return $page;
+    }
+
 //    public function getBreadcrumb()
 //    {
 //        $breadcrumb = $this->getBreadcrumbLinks();
