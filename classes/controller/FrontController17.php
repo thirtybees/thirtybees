@@ -467,7 +467,7 @@ trait FrontController17
     {
         $templateVars = [
             'currency'        => $this->getTemplateVarCurrency(),
-//            'customer'        => $this->getTemplateVarCustomer(),
+            'customer'        => $this->getTemplateVarCustomer(),
 //            'language'        => $this->objectPresenter->present($this->context->language),
             'page'            => $this->getTemplateVarPage(),
 //            'shop'            => $this->getTemplateVarShop(),
@@ -1449,37 +1449,68 @@ trait FrontController17
         return $curr;
     }
 
-//    public function getTemplateVarCustomer($customer = null)
-//    {
-//        if (Validate::isLoadedObject($customer)) {
-//            $cust = $this->objectPresenter->present($customer);
-//        } else {
-//            $cust = $this->objectPresenter->present($this->context->customer);
-//        }
-//
-//        unset($cust['secure_key']);
-//        unset($cust['passwd']);
-//        unset($cust['show_public_prices']);
-//        unset($cust['deleted']);
-//        unset($cust['id_lang']);
-//
-//        $cust['is_logged'] = $this->context->customer->isLogged(true);
-//
-//        $cust['gender'] = $this->objectPresenter->present(new Gender($cust['id_gender']));
-//        unset($cust['id_gender']);
-//
-//        $cust['risk'] = $this->objectPresenter->present(new Risk($cust['id_risk']));
-//        unset($cust['id_risk']);
-//
-//        $addresses = $this->context->customer->getSimpleAddresses();
+    protected function getTemplateVarCustomer($customer = null)
+    {
+        if (!Validate::isLoadedObject($customer)) {
+            $customer = $this->context->customer;
+        }
+
+        $fields = [
+            'lastname',
+            'firstname',
+            'email',
+            'last_passwd_gen',
+            'birthday',
+            'website',
+            'company',
+            'siret',
+            'ape',
+            'outstanding_allow_amount',
+            'max_payment_days',
+            'note',
+            'is_guest',
+            'id_shop',
+            'id_shop_group',
+            'id_default_group',
+            'date_add',
+            'date_upd',
+            'reset_password_token',
+            'reset_password_validity',
+            'id',
+        ];
+        foreach ($fields as $field) {
+            $cust[$field] = $customer->{$field};
+        }
+
+        $cust['is_logged'] = $customer->logged;
+
+        $gender = new Gender($customer->id_gender);
+        $cust['gender'] = [
+            'type'  => $gender->type,
+            'name'  => $gender->name,
+            'id'    => $gender->id,
+        ];
+
+        $risk = new Risk($customer->id_risk);
+        $cust['risk'] = [
+            'name'    => $risk->name,
+            'color'   => $risk->color,
+            'percent' => $risk->percent,
+            'id'      => $risk->id,
+        ];
+
+// @TODO: this needs testing with actual addresses. PS 1.7 calls ->getSimpleAddresses,
+//        which doesn't exist in 1.6/30bz. What is the distinction?
+        $addresses = $this->context->customer->getAddresses($customer->id_lang);
+// @TODO: does this formatting work? Test with real addresses.
 //        foreach ($addresses as &$a) {
 //            $a['formatted'] = AddressFormat::generateAddress(new Address($a['id']), [], '<br>');
 //        }
-//        $cust['addresses'] = $addresses;
-//
-//        return $cust;
-//    }
-//
+        $cust['addresses'] = $addresses;
+
+        return $cust;
+    }
+
 //    public function getTemplateVarShop()
 //    {
 //        $address = $this->context->shop->getAddress();
