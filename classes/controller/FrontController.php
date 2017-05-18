@@ -1636,27 +1636,7 @@ file_put_contents(_PS_ROOT_DIR_.'/config/debug', $obContents);
             $this->context->cart = $cart;
         }
 
-        /* get page name to display it in body id */
-
-        // Are we in a payment module
-        $moduleName = '';
-        if (Validate::isModuleName(Tools::getValue('module'))) {
-            $moduleName = Tools::getValue('module');
-        }
-
-        if (!empty($this->page_name)) {
-            $pageName = $this->page_name;
-        } elseif (!empty($this->php_self)) {
-            $pageName = $this->php_self;
-        } elseif (Tools::getValue('fc') == 'module' && $moduleName != '' && (Module::getInstanceByName($moduleName) instanceof PaymentModule)) {
-            $pageName = 'module-payment-submit';
-        } elseif (preg_match('#^'.preg_quote($this->context->shop->physical_uri, '#').'modules/([a-zA-Z0-9_-]+?)/(.*)$#', $_SERVER['REQUEST_URI'], $m)) {
-            $pageName = 'module-'.$m[1].'-'.str_replace(['.php', '/'], ['', '-'], $m[2]);
-        } else {
-            $pageName = Dispatcher::getInstance()->getController();
-            $pageName = (preg_match('/^[0-9]/', $pageName) ? 'page_'.$pageName : $pageName);
-        }
-
+        $pageName = $this->getPageName();
         if (!$this->is17Theme()) { // For PS 1.7 themes, see FrontController17.
         $this->context->smarty->assign(Meta::getMetaTags($this->context->language->id, $pageName));
         }
@@ -2316,5 +2296,36 @@ file_put_contents(_PS_ROOT_DIR_.'/config/debug', $obContents);
      */
     public function is17Theme() {
         return (bool) $this->themeConfig;
+    }
+
+    /**
+     * Get the name of this page.
+     *
+     * @return
+     * @since   1.1.0
+     * @version 1.1.0 Initial version
+     */
+    protected function getPageName()
+    {
+        // Are we in a payment module?
+        $moduleName = '';
+        if (Validate::isModuleName(Tools::getValue('module'))) {
+            $moduleName = Tools::getValue('module');
+        }
+
+        if (!empty($this->page_name)) {
+            $pageName = $this->page_name;
+        } elseif (!empty($this->php_self)) {
+            $pageName = $this->php_self;
+        } elseif (Tools::getValue('fc') == 'module' && $moduleName != '' && (Module::getInstanceByName($moduleName) instanceof PaymentModule)) {
+            $pageName = 'module-payment-submit';
+        } elseif (preg_match('#^'.preg_quote($this->context->shop->physical_uri, '#').'modules/([a-zA-Z0-9_-]+?)/(.*)$#', $_SERVER['REQUEST_URI'], $m)) {
+            $pageName = 'module-'.$m[1].'-'.str_replace(['.php', '/'], ['', '-'], $m[2]);
+        } else {
+            $pageName = Dispatcher::getInstance()->getController();
+            $pageName = (preg_match('/^[0-9]/', $pageName) ? 'page_'.$pageName : $pageName);
+        }
+
+        return $pageName;
     }
 }

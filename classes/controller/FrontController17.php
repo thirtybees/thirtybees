@@ -1651,32 +1651,6 @@ trait FrontController17
 //    {
 //        return Tools::getCurrentUrlProtocolPrefix().$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
 //    }
-//
-//    public function getPageName()
-//    {
-//        // Are we in a payment module
-//        $module_name = '';
-//        if (Validate::isModuleName(Tools::getValue('module'))) {
-//            $module_name = Tools::getValue('module');
-//        }
-//
-//        if (!empty($this->page_name)) {
-//            $page_name = $this->page_name;
-//        } elseif (!empty($this->php_self)) {
-//            $page_name = $this->php_self;
-//        } elseif (Tools::getValue('fc') == 'module' && $module_name != '' && (Module::getInstanceByName($module_name) instanceof PaymentModule)) {
-//            $page_name = 'module-payment-submit';
-//        } elseif (preg_match('#^'.preg_quote($this->context->shop->physical_uri, '#').'modules/([a-zA-Z0-9_-]+?)/(.*)$#', $_SERVER['REQUEST_URI'], $m)) {
-//            // @retrocompatibility Are we in a module ?
-//            $page_name = 'module-'.$m[1].'-'.str_replace(['.php', '/'], ['', '-'], $m[2]);
-//        } else {
-//            $page_name = Dispatcher::getInstance()->getController();
-//            $page_name = (preg_match('/^[0-9]/', $page_name) ? 'page_'.$page_name : $page_name);
-//        }
-//
-//        return $page_name;
-//    }
-//
 //    protected function render($template, array $params = [])
 //    {
 //        $scope = $this->context->smarty->createData(
