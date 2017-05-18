@@ -466,7 +466,7 @@ trait FrontController17
     protected function assignGeneralPurposeVariables()
     {
         $templateVars = [
-//            'currency'        => $this->getTemplateVarCurrency(),
+            'currency'        => $this->getTemplateVarCurrency(),
 //            'customer'        => $this->getTemplateVarCustomer(),
 //            'language'        => $this->objectPresenter->present($this->context->language),
 //            'page'            => $this->getTemplateVarPage(),
@@ -1433,7 +1433,22 @@ trait FrontController17
 //    {
 //        return (Module::isEnabled('ps_legalcompliance') && (bool) Configuration::get('AEUC_LABEL_TAX_INC_EXC')) || $this->context->country->display_tax_label;
 //    }
-//
+
+    protected function getTemplateVarCurrency()
+    {
+        $fields = [
+            'name',
+            'iso_code',
+            'iso_code_num',
+            'sign',
+        ];
+        foreach ($fields as $field) {
+            $curr[$field] = $this->context->currency->{$field};
+        }
+
+        return $curr;
+    }
+
 //    public function getTemplateVarCustomer($customer = null)
 //    {
 //        if (Validate::isLoadedObject($customer)) {
