@@ -519,21 +519,56 @@ trait FrontController17
 //    public function process()
 //    {
 //    }
-//
-//    /**
-//     * @return mixed
-//     */
-//    public function getStylesheets()
-//    {
-//        $cssFileList = $this->stylesheetManager->getList();
-//
-//        if (Configuration::get('PS_CSS_THEME_CACHE')) {
-//            $cssFileList = $this->cccReducer->reduceCss($cssFileList);
-//        }
-//
-//        return $cssFileList;
-//    }
-//
+
+    /**
+     * @return mixed
+     */
+    public function getStylesheets()
+    {
+        /**
+          * PrestaShop 1.7 distinguishes between 'external' and 'inline'
+          * stylesheets. What 30bz/PS 1.6 does is all 'external', so the list
+          * of 'inline' sheets is empty.
+          */
+        $list = [
+            'external'  => [],
+            'inline'    => [],
+        ];
+
+        /**
+         * PrestaShop 1.7 features StylesheetManager (and JavascriptManager),
+         * which records not only file paths, but also some meta data about
+         * the origin of these files. Typical record:
+         *
+         *   ["modules-aeuc_front"] =>
+         *     array(6) {
+         *       ["id"]        => string(18) "modules-aeuc_front"
+         *       ["type"]      => string(8)  "external"
+         *       ["path"]      => string(90) "/var/www/html/shop/modules/ps_legalcompliance/views/css/aeuc_front.css"
+         *       ["uri"]       => string(103) "http://www.example.com/shop/modules/ps_legalcompliance/views/css/aeuc_front.css"
+         *       ["media"]     => string(3) "all"
+         *       ["priority"]  => int(150)
+         *
+         * We have no such meta data, so we have to make it.
+         */
+        $i = 1;
+        $baseUrl = $this->context->shop->getBaseURL(true, false);
+        $pathSkip = strlen($this->context->shop->getBaseURI()) - 1;
+        foreach ($this->css_files as $path => $media) {
+            $list['external']['stylesheet-'.$i] = [
+                'id'        => 'stylesheet-'.$i,
+                'type'      => 'external',
+                'path'      => _PS_ROOT_DIR_.substr($path, $pathSkip),
+                'uri'       => $baseUrl.$path,
+                'media'     => $media,
+                'priority'  => 50,
+            ];
+            $i++;
+        }
+
+        return $list;
+    }
+
 //    /**
 //     * @return mixed
 //     */

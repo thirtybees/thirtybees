@@ -962,7 +962,7 @@ file_put_contents(_PS_ROOT_DIR_.'/config/debug', $obContents);
         if ($this->is17Theme()) {
             $this->context->smarty->assign([
                 'layout'          => $this->getLayout(),
-//                'stylesheets'     => $this->getStylesheets(),
+                'stylesheets'     => $this->getStylesheets(),
 //                'javascript'      => $this->getJavascript(),
 //                'js_custom_vars'  => Media::getJsDef(),
 //                'notifications'   => $this->prepareNotifications(),
