@@ -569,20 +569,46 @@ trait FrontController17
         return $list;
     }
 
-//    /**
-//     * @return mixed
-//     */
-//    public function getJavascript()
-//    {
-//        $jsFileList = $this->javascriptManager->getList();
-//
-//        if (Configuration::get('PS_JS_THEME_CACHE')) {
-//            $jsFileList = $this->cccReducer->reduceJs($jsFileList);
-//        }
-//
-//        return $jsFileList;
-//    }
-//
+    /**
+     * @return mixed
+     */
+    public function getJavascript()
+    {
+        /**
+         * This is similar to getStylesheets(), just a more complex structure
+         * of empty entries and an option to send nothing at all.
+         */
+        $list = [
+            'head'    => [
+                'external'  => [],
+                'inline'    => [],
+            ],
+            'bottom'  => [
+                'external'  => [],
+                'inline'    => [],
+            ]
+        ];
+
+        if (!($this->getLayout() && Configuration::get('PS_JS_DEFER'))) {
+            $i = 1;
+            $baseUrl = $this->context->shop->getBaseURL(true, false);
+            $pathSkip = strlen($this->context->shop->getBaseURI()) - 1;
+            foreach ($this->js_files as $path) {
+                $list['bottom']['external']['javascript-'.$i] = [
+                    'id'        => 'javascript-'.$i,
+                    'type'      => 'external',
+                    'path'      => _PS_ROOT_DIR_.substr($path, $pathSkip),
+                    'uri'       => $baseUrl.$path,
+                    'media'     => 'all',
+                    'priority'  => 50,
+                ];
+                $i++;
+            }
+        }
+
+        return $list;
+    }
+
 //    /**
 //     * Redirects to redirect_after link.
 //     *

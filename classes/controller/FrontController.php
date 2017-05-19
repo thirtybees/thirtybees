@@ -963,7 +963,7 @@ file_put_contents(_PS_ROOT_DIR_.'/config/debug', $obContents);
             $this->context->smarty->assign([
                 'layout'          => $this->getLayout(),
                 'stylesheets'     => $this->getStylesheets(),
-//                'javascript'      => $this->getJavascript(),
+                'javascript'      => $this->getJavascript(),
 //                'js_custom_vars'  => Media::getJsDef(),
 //                'notifications'   => $this->prepareNotifications(),
             ]);
