@@ -468,7 +468,7 @@ trait FrontController17
         $templateVars = [
             'currency'        => $this->getTemplateVarCurrency(),
             'customer'        => $this->getTemplateVarCustomer(),
-//            'language'        => $this->objectPresenter->present($this->context->language),
+            'language'        => $this->getTemplateVarLanguage(),
             'page'            => $this->getTemplateVarPage(),
 //            'shop'            => $this->getTemplateVarShop(),
 //            'urls'            => $this->getTemplateVarUrls(),
@@ -1509,6 +1509,32 @@ trait FrontController17
         $cust['addresses'] = $addresses;
 
         return $cust;
+    }
+
+    protected function getTemplateVarLanguage()
+    {
+        $fields = [
+            'name',
+            'iso_code',
+            'language_code',
+            'is_rtl',
+            'date_format_lite',
+            'date_format_full',
+            'id',
+        ];
+        foreach ($fields as $field) {
+            $lang[$field] = $this->context->language->{$field};
+        }
+
+        // Language->locale doesn't exist, yet.
+        $locale = $this->context->language->language_code;
+        $locale = explode('-', $locale);
+        if (count($locale) < 2) {
+            $locale[1] = $locale[0];
+        }
+        $lang['locale'] = $locale[0].'-'.strtoupper($locale[1]);
+
+        return $lang;
     }
 
 //    public function getTemplateVarShop()
