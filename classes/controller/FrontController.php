@@ -720,16 +720,23 @@ class FrontControllerCore extends Controller
      */
     protected function smartyOutputContent($content)
     {
-        if (!Configuration::get('TB_PAGE_CACHE_ENABLED')) {
-            parent::smartyOutputContent($content);
-
-            return;
-        }
+//        if (!Configuration::get('TB_PAGE_CACHE_ENABLED')) {
+//            parent::smartyOutputContent($content);
+//
+//            return;
+//        }
 
         $html = '';
         $jsTag = 'js_def';
         $this->context->smarty->assign($jsTag, $jsTag);
 
+$debugArray = $this->context->smarty->tpl_vars;
+ksort($debugArray);
+ob_start();
+var_export($debugArray);
+$obContents = ob_get_contents();
+ob_end_clean();
+file_put_contents(_PS_ROOT_DIR_.'/config/debug', $obContents);
         if (is_array($content)) {
             foreach ($content as $tpl) {
                 $html .= $this->context->smarty->fetch($tpl);
@@ -931,17 +938,18 @@ class FrontControllerCore extends Controller
     {
         Tools::safePostVars();
 
-        // assign css_files and js_files at the very last time
-        if ((Configuration::get('PS_CSS_THEME_CACHE') || Configuration::get('PS_JS_THEME_CACHE')) && is_writable(_PS_THEME_DIR_.'cache')) {
-            // CSS compressor management
-            if (Configuration::get('PS_CSS_THEME_CACHE')) {
-                $this->css_files = Media::cccCss($this->css_files);
-            }
-            //JS compressor management
-            if (Configuration::get('PS_JS_THEME_CACHE') && !$this->useMobileTheme()) {
-                $this->js_files = Media::cccJs($this->js_files);
-            }
-        }
+// Note: PS 1.7 doesn't do this.
+//        // assign css_files and js_files at the very last time
+//        if ((Configuration::get('PS_CSS_THEME_CACHE') || Configuration::get('PS_JS_THEME_CACHE')) && is_writable(_PS_THEME_DIR_.'cache')) {
+//            // CSS compressor management
+//            if (Configuration::get('PS_CSS_THEME_CACHE')) {
+//                $this->css_files = Media::cccCss($this->css_files);
+//            }
+//            //JS compressor management
+//            if (Configuration::get('PS_JS_THEME_CACHE') && !$this->useMobileTheme()) {
+//                $this->js_files = Media::cccJs($this->js_files);
+//            }
+//        }
 
         $this->context->smarty->assign(
             [
