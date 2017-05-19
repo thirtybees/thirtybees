@@ -470,7 +470,7 @@ trait FrontController17
             'customer'        => $this->getTemplateVarCustomer(),
             'language'        => $this->getTemplateVarLanguage(),
             'page'            => $this->getTemplateVarPage(),
-//            'shop'            => $this->getTemplateVarShop(),
+            'shop'            => $this->getTemplateVarShop(),
 //            'urls'            => $this->getTemplateVarUrls(),
 //            'configuration'   => $this->getTemplateVarConfiguration(),
 //            'field_required'  => $this->context->customer->validateFieldsRequiredDatabase(),
@@ -1537,38 +1537,40 @@ trait FrontController17
         return $lang;
     }
 
-//    public function getTemplateVarShop()
-//    {
-//        $address = $this->context->shop->getAddress();
-//
-//        $shop = [
-//            'name'                => Configuration::get('PS_SHOP_NAME'),
-//            'email'               => Configuration::get('PS_SHOP_EMAIL'),
-//            'registration_number' => Configuration::get('PS_SHOP_DETAILS'),
-//
-//            'long'                => Configuration::get('PS_STORES_CENTER_LONG'),
-//            'lat'                 => Configuration::get('PS_STORES_CENTER_LAT'),
-//
-//            'logo'                => (Configuration::get('PS_LOGO')) ? _PS_IMG_.Configuration::get('PS_LOGO') : '',
-//            'stores_icon'         => (Configuration::get('PS_STORES_ICON')) ? _PS_IMG_.Configuration::get('PS_STORES_ICON') : '',
-//            'favicon'             => (Configuration::get('PS_FAVICON')) ? _PS_IMG_.Configuration::get('PS_FAVICON') : '',
-//            'favicon_update_time' => Configuration::get('PS_IMG_UPDATE_TIME'),
-//
-//            'address'             => [
-//                'formatted' => AddressFormat::generateAddress($address, [], '<br>'),
-//                'address1'  => $address->address1,
-//                'address2'  => $address->address2,
-//                'postcode'  => $address->postcode,
-//                'city'      => $address->city,
-//                'state'     => (new State($address->id_state))->name[$this->context->language->id],
-//                'country'   => (new Country($address->id_country))->name[$this->context->language->id],
-//            ],
-//            'phone'               => Configuration::get('PS_SHOP_PHONE'),
-//            'fax'                 => Configuration::get('PS_SHOP_FAX'),
-//        ];
-//
-//        return $shop;
-//    }
+    protected function getTemplateVarShop()
+    {
+        $address = $this->context->shop->getAddress();
+
+        // Note: PS 1.7 sets empty fields to false, 30bz/PS 1.6 to NULL.
+        //       Let's cross fingers this doesn't make a distinction.
+        $shop = [
+            'name'                => Configuration::get('PS_SHOP_NAME'),
+            'email'               => Configuration::get('PS_SHOP_EMAIL'),
+            'registration_number' => Configuration::get('PS_SHOP_DETAILS'),
+
+            'long'                => Configuration::get('PS_STORES_CENTER_LONG'),
+            'lat'                 => Configuration::get('PS_STORES_CENTER_LAT'),
+
+            'logo'                => (Configuration::get('PS_LOGO')) ? _PS_IMG_.Configuration::get('PS_LOGO') : '',
+            'stores_icon'         => (Configuration::get('PS_STORES_ICON')) ? _PS_IMG_.Configuration::get('PS_STORES_ICON') : '',
+            'favicon'             => (Configuration::get('PS_FAVICON')) ? _PS_IMG_.Configuration::get('PS_FAVICON') : '',
+            'favicon_update_time' => Configuration::get('PS_IMG_UPDATE_TIME'),
+
+            'address'             => [
+                'formatted' => AddressFormat::generateAddress($address, [], '<br>'),
+                'address1'  => $address->address1,
+                'address2'  => $address->address2,
+                'postcode'  => $address->postcode,
+                'city'      => $address->city,
+                'state'     => (new State($address->id_state))->name[$this->context->language->id],
+                'country'   => (new Country($address->id_country))->name[$this->context->language->id],
+            ],
+            'phone'               => Configuration::get('PS_SHOP_PHONE'),
+            'fax'                 => Configuration::get('PS_SHOP_FAX'),
+        ];
+
+        return $shop;
+    }
 
     protected function getTemplateVarPage()
     {
