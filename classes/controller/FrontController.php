@@ -262,6 +262,10 @@ class FrontControllerCore extends Controller
 
         if ($this->is17Theme()) {
             $this->assignGeneralPurposeVariables();
+
+            $this->context->smarty->assign([
+                'HOOK_HEADER' => Hook::exec('displayHeader'),
+            ]);
         } elseif (!$this->useMobileTheme()) {
             // These hooks aren't used for the mobile theme.
             // Needed hooks are called in the tpl files.
