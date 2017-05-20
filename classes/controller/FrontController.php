@@ -969,7 +969,7 @@ file_put_contents(_PS_ROOT_DIR_.'/config/debug', $obContents);
                 'stylesheets'     => $this->getStylesheets(),
                 'javascript'      => $this->getJavascript(),
                 'js_custom_vars'  => Media::getJsDef(),
-//                'notifications'   => $this->prepareNotifications(),
+                'notifications'   => $this->prepareNotifications(),
             ]);
         } else {
             // It's a PS 1.6 compatible or earlier theme.

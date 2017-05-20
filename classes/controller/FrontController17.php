@@ -700,31 +700,19 @@ trait FrontController17
 //
 //        echo trim($html);
 //    }
-//
-//    protected function prepareNotifications()
-//    {
-//        $notifications = [
-//            'error'   => $this->errors,
-//            'warning' => $this->warning,
-//            'success' => $this->success,
-//            'info'    => $this->info,
-//        ];
-//
-//        if (session_status() == PHP_SESSION_NONE) {
-//            session_start();
-//        }
-//
-//        if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['notifications'])) {
-//            $notifications = array_merge($notifications, json_decode($_SESSION['notifications'], true));
-//            unset($_SESSION['notifications']);
-//        } elseif (isset($_COOKIE['notifications'])) {
-//            $notifications = array_merge($notifications, json_decode($_COOKIE['notifications'], true));
-//            unset($_COOKIE['notifications']);
-//        }
-//
-//        return $notifications;
-//    }
-//
+
+    protected function prepareNotifications()
+    {
+        $notifications = [
+            'error'   => $this->errors,
+            'warning' => [],
+            'success' => [],
+            'info'    => [],
+        ];
+
+        return $notifications;
+    }
+
 //    /**
 //     * Displays maintenance page if shop is closed.
 //     */
