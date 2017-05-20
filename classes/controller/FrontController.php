@@ -1787,6 +1787,8 @@ file_put_contents(_PS_ROOT_DIR_.'/config/debug', $obContents);
                 $this->context->smarty->assign($assignKey, $assignValue);
             }
         }
+        } else {
+            $this->assignRetrocompatibilityVariables();
         }
 
         /*

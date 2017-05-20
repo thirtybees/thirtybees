@@ -481,6 +481,42 @@ trait FrontController17
         Media::addJsDef(['prestashop' => $templateVars]);
     }
 
+    /**
+     * Assign Smarty variables establishing compatibility with PS 1.6 and
+     * older 30bz modules.
+     */
+    protected function assignRetrocompatibilityVariables()
+    {
+        // Compatibility with module socialshare, file socialsharing_header.tpl.
+        $link = $this->context->link;
+        $pageName = $this->getPageName();
+        $metaTags = Meta::getMetaTags($this->context->language->id, $pageName);
+        $this->context->smarty->assign([
+            'request'           => $link->getPaginationLink(false, false, false, true),
+            // New: $shop['name']
+            'shop_name'         => Configuration::get('PS_SHOP_NAME'),
+            // New: $page['meta']['title']
+            'meta_title'        => $metaTags['meta_title'],
+            // New: $page['meta']['description']
+            'meta_description'  => $metaTags['meta_description'],
+            // One problem not solvable here: this template uses
+            // {$currency->iso_code}, but should use {$currency.iso_code}.
+        ]);
+
+        // Compatibility with modules
+        //   blockbestsellers, file blockbestsellers.tpl
+        //   blockuserinfo, file blockuserinfo.tpl
+        //   homefeatured, file homefeatured.tpl
+        //   blockcart, file crossselling.tpl
+        //   productscategory, file productscategory.tpl
+        //   blockspecials, file blockspecials.tpl
+        //   blockcms, file blockcms.tpl
+        //   crossselling, file crossselling.tpl
+        $this->context->smarty->assign([
+            'PS_CATALOG_MODE' => (bool) Configuration::get('PS_CATALOG_MODE') || (Group::isFeatureActive() && !(bool) Group::getCurrent()->show_prices),
+        ]);
+    }
+
 //    /**
 //     * Initializes common front page content: header, footer and side columns.
 //     */
