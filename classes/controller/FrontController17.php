@@ -473,7 +473,7 @@ trait FrontController17
             'shop'            => $this->getTemplateVarShop(),
             'urls'            => $this->getTemplateVarUrls(),
             'configuration'   => $this->getTemplateVarConfiguration(),
-//            'field_required'  => $this->context->customer->validateFieldsRequiredDatabase(),
+            'field_required'  => $this->context->customer->validateFieldsRequiredDatabase(),
 //            'breadcrumb'      => $this->getBreadcrumb(),
         ];
 
