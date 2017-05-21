@@ -472,7 +472,7 @@ trait FrontController17
             'page'            => $this->getTemplateVarPage(),
             'shop'            => $this->getTemplateVarShop(),
             'urls'            => $this->getTemplateVarUrls(),
-//            'configuration'   => $this->getTemplateVarConfiguration(),
+            'configuration'   => $this->getTemplateVarConfiguration(),
 //            'field_required'  => $this->context->customer->validateFieldsRequiredDatabase(),
 //            'breadcrumb'      => $this->getBreadcrumb(),
         ];
@@ -1513,36 +1513,37 @@ trait FrontController17
         return $urls;
     }
 
-//    public function getTemplateVarConfiguration()
-//    {
-//        $quantity_discount_price = Configuration::get('PS_DISPLAY_DISCOUNT_PRICE');
-//
-//        return [
-//            'display_taxes_label'       => $this->getDisplayTaxesLabel(),
-//            'low_quantity_threshold'    => (int) Configuration::get('PS_LAST_QTIES'),
-//            'is_b2b'                    => (bool) Configuration::get('PS_B2B_ENABLE'),
-//            'is_catalog'                => (bool) Configuration::isCatalogMode(),
-//            'show_prices'               => (bool) Configuration::showPrices(),
-//            'opt_in' => [
-//                'partner' => (bool) Configuration::get('PS_CUSTOMER_OPTIN'),
-//            ],
-//            'quantity_discount' => [
-//                'type'    => ($quantity_discount_price) ? 'price' : 'discount',
-//                'label'   => ($quantity_discount_price)
-//                    ? $this->getTranslator()->trans('Price', [], 'Shop.Theme.Catalog')
-//                    : $this->getTranslator()->trans('Discount', [], 'Shop.Theme.Catalog'),
-//            ],
-//            'voucher_enabled'           => (int) CartRule::isFeatureActive(),
-//            'return_enabled'            => (int) Configuration::get('PS_ORDER_RETURN'),
-//            'number_of_days_for_return' => (int) Configuration::get('PS_ORDER_RETURN_NB_DAYS'),
-//
-//        ];
-//    }
-//
-//    protected function getDisplayTaxesLabel()
-//    {
-//        return (Module::isEnabled('ps_legalcompliance') && (bool) Configuration::get('AEUC_LABEL_TAX_INC_EXC')) || $this->context->country->display_tax_label;
-//    }
+    public function getTemplateVarConfiguration()
+    {
+        $quantityDiscountDrice = Configuration::get('PS_DISPLAY_DISCOUNT_PRICE');
+
+        return [
+            'display_taxes_label'       => $this->getDisplayTaxesLabel(),
+            'low_quantity_threshold'    => (int) Configuration::get('PS_LAST_QTIES'),
+            'is_b2b'                    => (bool) Configuration::get('PS_B2B_ENABLE'),
+            'is_catalog'                => (bool) Configuration::isCatalogMode(),
+            'show_prices'               => (bool) Configuration::showPrices(),
+            'opt_in' => [
+                'partner' => (bool) Configuration::get('PS_CUSTOMER_OPTIN'),
+            ],
+            'quantity_discount' => [
+                'type'    => ($quantityDiscountDrice) ? 'price' : 'discount',
+// @TODO: where's the translator? Looks like this is the only place where a
+//        controller wants to translate something. There's likely some other
+//        mechanism.
+//                'label'   => ($quantityDiscountDrice) ? $this->l('Price') : $this->l('Discount'),
+            ],
+            'voucher_enabled'           => (int) CartRule::isFeatureActive(),
+            'return_enabled'            => (int) Configuration::get('PS_ORDER_RETURN'),
+            'number_of_days_for_return' => (int) Configuration::get('PS_ORDER_RETURN_NB_DAYS'),
+
+        ];
+    }
+
+    protected function getDisplayTaxesLabel()
+    {
+        return (Module::isEnabled('advancedeucompliance') && (bool) Configuration::get('AEUC_LABEL_TAX_INC_EXC')) || $this->context->country->display_tax_label;
+    }
 
     protected function getTemplateVarCurrency()
     {
