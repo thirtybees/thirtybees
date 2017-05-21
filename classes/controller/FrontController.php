@@ -1047,6 +1047,39 @@ file_put_contents(_PS_ROOT_DIR_.'/config/debug', $obContents);
      */
     public function setMedia()
     {
+        if ($this->is17Theme()) {
+            // We can't rely on _THEME_CSS_DIR_ or _THEME_JS_DIR_ here.
+            $this->addCSS(_THEME_DIR_.'assets/css/theme.css');
+            $this->addCSS(_THEME_DIR_.'assets/css/custom.css', 'all', 0, true);
+
+            if ($this->context->language->is_rtl) {
+                $this->addCSS(_THEME_DIR_.'assets/css/rtl.css', 'all', 0, true);
+            }
+
+            $this->addJS(_THEMES_DIR_.'core.js');
+            $this->addJS(_THEME_DIR_.'assets/js/theme.js');
+            $this->addJS(_THEME_DIR_.'assets/js/custom.js', 0, true);
+
+// PrestaShop 1.7 loads a lot of additional assets here, none of which is used
+// in the default theme. For example static CSS/JS or page-specific CSS/JS.
+// See src/Core/Addon/Theme/Theme.php, getPageSpecificCss() and getPageSpecificJs().
+//
+//            $assets = $this->context->shop->theme->getPageSpecificAssets($this->php_self);
+//            if (!empty($assets)) {
+//                foreach ($assets['css'] as $css) {
+//                    $this->registerStylesheet($css['id'], $css['path'], $css);
+//                }
+//                foreach ($assets['js'] as $js) {
+//                    $this->registerJavascript($js['id'], $js['path'], $js);
+//                }
+//            }
+
+            // Execute Hook FrontController SetMedia
+            Hook::exec('actionFrontControllerSetMedia', []);
+
+            return true;
+        }
+
         /*
          * If website is accessed by mobile device
          * @see FrontControllerCore::setMobileMedia()
