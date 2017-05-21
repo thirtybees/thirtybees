@@ -474,7 +474,7 @@ trait FrontController17
             'urls'            => $this->getTemplateVarUrls(),
             'configuration'   => $this->getTemplateVarConfiguration(),
             'field_required'  => $this->context->customer->validateFieldsRequiredDatabase(),
-//            'breadcrumb'      => $this->getBreadcrumb(),
+            'breadcrumb'      => $this->getBreadcrumb(),
         ];
 
         $this->context->smarty->assign($templateVars);
@@ -1763,26 +1763,19 @@ trait FrontController17
         return $page;
     }
 
-//    public function getBreadcrumb()
-//    {
-//        $breadcrumb = $this->getBreadcrumbLinks();
-//        $breadcrumb['count'] = count($breadcrumb['links']);
-//
-//        return $breadcrumb;
-//    }
-//
-//    protected function getBreadcrumbLinks()
-//    {
-//        $breadcrumb = [];
-//
-//        $breadcrumb['links'][] = [
-//            'title' => $this->getTranslator()->trans('Home', [], 'Shop.Theme'),
-//            'url'   => $this->context->link->getPageLink('index', true),
-//        ];
-//
-//        return $breadcrumb;
-//    }
-//
+    public function getBreadcrumb()
+    {
+        $breadcrumb = [];
+
+        $breadcrumb['links'][] = [
+            'title' => 'Home',  // PS 1.7 translates this.
+            'url'   => $this->context->link->getPageLink('index', true),
+        ];
+        $breadcrumb['count'] = count($breadcrumb['links']);
+
+        return $breadcrumb;
+    }
+
 //    protected function getCategoryPath($category)
 //    {
 //        if ($category->id_parent != 0 && !$category->is_root_category) {
