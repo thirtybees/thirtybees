@@ -35,6 +35,13 @@ eval('$set17 = '.file_get_contents('../www.reprap-diy.com/shop2/config/debug').'
 
 print("# Keys in 16, but not in 17:\n");
 foreach (array_keys($set16) as $key) {
+  // Ignore fields assigned by modules.
+  if (in_array($key, [
+                        'ctheme',  // ctconfiguration
+                     ])) {
+    continue;
+  }
+
   if (!array_key_exists($key, $set17)) {
     print("$key\n");
   }
