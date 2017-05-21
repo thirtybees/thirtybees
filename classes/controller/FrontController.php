@@ -737,8 +737,8 @@ class FrontControllerCore extends Controller
 //        }
 
         $html = '';
-        $jsTag = 'js_def';
         if (!$this->is17Theme()) {
+            $jsTag = 'js_def';
         $this->context->smarty->assign($jsTag, $jsTag);
         }
 
@@ -758,6 +758,12 @@ file_put_contents(_PS_ROOT_DIR_.'/config/debug', $obContents);
         }
 
         $html = trim($html);
+
+        if ($this->is17Theme()) {
+            echo $html;
+
+            return;
+        }
 
         if (in_array($this->controller_type, ['front', 'modulefront']) && !empty($html) && $this->getLayout()) {
             $liveEditContent = '';
