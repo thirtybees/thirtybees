@@ -15,18 +15,18 @@ extensions:
 modules:
     config:
         Db:
-            dsn: 'mysql:host=localhost;dbname=tb.unit.test'
+            dsn: 'mysql:host=thirty.bees;dbname=thirtybees'
             user: 'root'
             password: ''
             populate: false
             cleanup: false
             reconnect: true
         WebDriver:
-            url: 'http://127.0.0.1:8888'
+            url: 'http://thirty.bees:8888'
             browser: phantomjs
             window_size: 1920x1080
         PhpBrowser:
-            url: 'http://127.0.0.1:8888'
+            url: 'http://thirty.bees:8888'
 coverage:
     enabled: true
     remote: false
