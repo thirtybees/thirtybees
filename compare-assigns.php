@@ -42,6 +42,17 @@ foreach (array_keys($set16) as $key) {
     continue;
   }
 
+  // Ignore fields introduced for module retrocompatibility.
+  if (in_array($key, [
+                        'request',
+                        'shop_name',
+                        'meta_title',
+                        'meta_description',
+                        'PS_CATALOG_MODE',
+                     ])) {
+    continue;
+  }
+
   if (!array_key_exists($key, $set17)) {
     print("$key\n");
   }
