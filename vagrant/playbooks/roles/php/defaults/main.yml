@@ -1,0 +1,3 @@
+---
+php_version: 7.0
+composer_process_timeout: 900

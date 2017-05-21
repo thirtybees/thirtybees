@@ -1,0 +1,17 @@
+---
+- name: Install nginx
+  apt: name=nginx state=present
+
+- name: Copy across new nginx config
+  template:
+    src=nginx.conf.j2
+    dest=/etc/nginx/nginx.conf
+  notify:
+    - restart nginx
+
+- name: Remove default virtual host
+  file:
+    path=/etc/nginx/sites-enabled/default
+    state=absent
+  notify:
+    - restart nginx
