@@ -761,7 +761,7 @@ class ProductControllerCore extends FrontController
                             $currentCover = $this->context->smarty->tpl_vars['cover']->value;
                         }
 
-                        if (is_array($combinationImages[$row['id_product_attribute']])) {
+                        if (isset($currentCover) && is_array($combinationImages[$row['id_product_attribute']])) {
                             foreach ($combinationImages[$row['id_product_attribute']] as $tmp) {
                                 if ($tmp['id_image'] == $currentCover['id_image']) {
                                     $combinations[$row['id_product_attribute']]['id_image'] = $idImage = (int) $tmp['id_image'];
