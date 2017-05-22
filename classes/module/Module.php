@@ -2902,6 +2902,9 @@ abstract class ModuleCore
 
             $this->resetCurrentSubTemplate($template, $cache_id, $compile_id);
 
+            if ($result && _PS_MODE_DEV_ === true)
+                $result = '<!-- START ' . $this->getTemplatePath($template) .'-->' . $result . '<!-- END ' . $this->getTemplatePath($template) .'-->';
+
             return $result;
         }
     }
