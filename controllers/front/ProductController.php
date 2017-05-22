@@ -289,6 +289,14 @@ class ProductControllerCore extends FrontController
             $packItems = Pack::isPack($this->product->id) ? Pack::getItemTable($this->product->id, $this->context->language->id, true) : [];
             $this->context->smarty->assign('packItems', $packItems);
             $this->context->smarty->assign('packs', Pack::getPacksTable($this->product->id, $this->context->language->id, true, 1));
+            if ($this->is17Theme()) {
+                $noPackPrice = $this->product->getNoPackPrice();
+                $productPrice = $this->product->getPrice(Product::$_taxCalculationMethod == PS_TAX_INC, false);
+                $this->context->smarty->assign([
+                    'noPackPrice'       => $noPackPrice,
+                    'displayPackPrice'  => $packItems && $productPrice < $noPackPrice,
+                ]);
+            }
 
             if (isset($this->category->id) && $this->category->id) {
                 $returnLink = Tools::safeOutput($this->context->link->getCategoryLink($this->category));
