@@ -318,7 +318,33 @@ class ProductControllerCore extends FrontController
                 'accessories'              => $accessories,
                 'product_manufacturer'     => new Manufacturer((int) $this->product->id_manufacturer, $this->context->language->id),
             ]);
-            if (!$this->is17Theme()) {
+            if ($this->is17Theme()) {
+                $priceDisplay = Product::getTaxCalculationMethod((int) $this->context->cookie->id_customer);
+                $productPrice = 0;
+                $productPriceWithoutReduction = 0;
+
+                if (!$priceDisplay || $priceDisplay == 2) {
+                    $productPrice = $this->product->getPrice(true, null, 6);
+                    $productPriceWithoutReduction = $this->product->getPriceWithoutReduct(false, null);
+                } elseif ($priceDisplay == 1) {
+                    $productPrice = $this->product->getPrice(false, null, 6);
+                    $productPriceWithoutReduction = $this->product->getPriceWithoutReduct(true, null);
+                }
+
+                $productManufacturer = new Manufacturer((int) $this->product->id_manufacturer, $this->context->language->id);
+                $productBrandUrl = $this->context->link->getManufacturerLink($productManufacturer->id);
+
+                $this->context->smarty->assign([
+                    'productPriceWithoutReduction'  => $productPriceWithoutReduction,
+                    'displayUnitPrice'              => !empty($this->product->unity) && $this->product->unit_price_ratio > 0.000000,
+                    // Other than PS 1.7, 30bz / PS 1.6 has only rudimentary
+                    // support for manufacturer images/logos. For inspiration
+                    // on how to get this into 30bz as well, see
+                    // Link->getManufacturerImageLink() in PS 1.7.
+                    'manufacturer_image_url'        => null,
+                    'product_brand_url'             => $productBrandUrl,
+                ]);
+            } else {
                 $this->context->smarty->assign([
                     'stock_management'         => Configuration::get('PS_STOCK_MANAGEMENT'),
                     'return_link'              => $returnLink,
