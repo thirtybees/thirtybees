@@ -728,10 +728,60 @@ class ProductControllerCore extends FrontController
 
         $prod['weight_unit'] = Configuration::get('PS_WEIGHT_UNIT');
 
+        // PS 1.7 assembles entries for this list in ImageRetriever->getImage().
+        $imageList = [];
+        if (isset($tplVars['images']) && is_object($tplVars['images'])) {
+            $typeList = ImageType::getImagesTypes();
+
+            foreach ($tplVars['images']->value as $image) {
+                foreach ($typeList as $type) {
+                    if ($type['products']) {
+                        $imageDesc['url'] = $this->context->link->getImageLink(
+                            $this->product->link_rewrite,
+                            $image['id_image'],
+                            $type['name']
+                        );
+                        $imageDesc['width'] = $type['width'];
+                        $imageDesc['height'] = $type['height'];
+
+                        $imageEntry['bySize'][$type['name']] = $imageDesc;
+                    }
+                }
+
+                foreach (['small', 'medium', 'large'] as $format) {
+                    $name = ImageType::getFormatedName($format);
+
+                    $imageDesc['url'] = $this->context->link->getImageLink(
+                        $this->product->link_rewrite,
+                        $image['id_image'],
+                        $name
+                    );
+
+                    $size = Image::getSize($name);
+                    $imageDesc['width'] = $size['width'];
+                    $imageDesc['height'] = $size['height'];
+
+                    $imageEntry[$format] = $imageDesc;
+                }
+
+                $imageEntry = array_merge($imageEntry, $image);
+                $imageEntry['associatedVariants'] = []; // What is this?
+
+                $imageList[] = $imageEntry;
+            }
+            unset($tplVars['images']);
+            $prod['images'] = $imageList;
+        }
+
+        $prod['cover'] = null;
+        foreach ($imageList as $image) {
+            if ($image['cover']) {
+                $prod['cover'] = $image;
+                break;
+            }
+        }
 
 // Still missing:
-//            'images',
-//            'cover',
 //            'url',
 //            'canonical_url',
 //            'has_discount',
@@ -981,9 +1031,10 @@ class ProductControllerCore extends FrontController
                 'cartSize'    => Image::getSize(ImageType::getFormatedName('cart')),
                 'col_img_dir' => _PS_COL_IMG_DIR_,
             ]);
-            if (count($productImages)) {
-                $this->context->smarty->assign('images', $productImages);
-            }
+        }
+        // For PS 1.7 themes, this gets moved into 'product' later.
+        if (count($productImages)) {
+            $this->context->smarty->assign('images', $productImages);
         }
     }
 
