@@ -822,8 +822,38 @@ class ProductControllerCore extends FrontController
             $prod['unit_price'] = $prod['unit_price_full'] = '';
         }
 
+        // Inspired by PS 1.7 ProductPresenter->shouldEnableAddToCartButton().
+        $shouldShowButton = true;
+        if ($prod['customizable'] == 2 || !$prod['customization_required']) {
+            $shouldShowButton = false;
+
+            if (array_key_exists('customizations', $prod)) {
+                $shouldShowButton = true;
+                foreach ($prod['customizations']['fields'] as $field) {
+                    if ($field['required'] && !$field['is_customized']) {
+                        $shouldShowButton = false;
+                    }
+                }
+            }
+        }
+
+        $shouldShowButton = $shouldShowButton && $prod['available_for_order'];
+
+        if ($prod['quantity'] <= 0 && !$prod['allow_oosp']) {
+            $shouldShowButton = false;
+        }
+
+        if ($shouldShowButton) {
+            $params = [
+                'add'                   => true,
+                'id_product'            => $prod['id_product'],
+                'id_product_attribute'  => $prod['id_product_attribute'],
+            ];
+
+            $prod['add_to_cart_url'] = $this->context->link->getPageLink('cart', true, null, $params, false);
+        }
+
 // Still missing:
-//            'add_to_cart_url',
 //            'main_variants',
 //            'flags',
 //            'labels',
