@@ -786,16 +786,43 @@ class ProductControllerCore extends FrontController
             null, null, null, null, null, Tools::getValue('id_product_attribute'));
         $prod['canonical_url'] = $this->context->link->getProductLink($this->product);
 
+        // Next nine inspired by PS 1.7 ProductPresenter->addPriceInformation().
+        $prod['has_discount']                 = false;
+        $prod['discount_type']                = null;
+        $prod['discount_percentage']          = null;
+        $prod['discount_percentage_absolute'] = null;
+        $prod['discount_amount']              = null;
+
+        if ($tplVars['tax_enabled']->value) {
+            $price = $regularPrice = $prod['price'];
+        } else {
+            $price = $regularPrice = $prod['price_tax_exc'];
+        }
+
+        if ($prod['specific_prices']) {
+            $prod['has_discount'] = ($prod['reduction'] != 0);
+            $prod['discount_type'] = $prod['specific_prices']['reduction_type'];
+            // TODO: format according to locale preferences
+            $prod['discount_percentage'] = -round(100 * $prod['specific_prices']['reduction']).'%';
+            $prod['discount_percentage_absolute'] = round(100 * $prod['specific_prices']['reduction']).'%';
+            // TODO: Fix issue with tax calculation
+            $prod['discount_amount'] = Tools::displayPrice($prod['reduction']);
+            $regularPrice = $prod['price_without_reduction'];
+        }
+
+        $prod['price_amount']         = $price;
+        $prod['price']                = Tools::displayPrice($price);
+        $prod['regular_price_amount'] = $regularPrice;
+        $prod['regular_price']        = Tools::displayPrice($regularPrice);
+
+        if ($prod['unit_price']) {
+            $prod['unit_price'] = Tools::displayPrice($prod['unit_price']);
+            $prod['unit_price_full'] = $prod['unit_price'].' '.$prod['unity'];
+        } else {
+            $prod['unit_price'] = $prod['unit_price_full'] = '';
+        }
+
 // Still missing:
-//            'has_discount',
-//            'discount_type',
-//            'discount_percentage',
-//            'discount_percentage_absolute',
-//            'discount_amount',
-//            'price_amount',
-//            'regular_price_amount',
-//            'regular_price',
-//            'unit_price_full',
 //            'add_to_cart_url',
 //            'main_variants',
 //            'flags',
