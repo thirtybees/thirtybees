@@ -853,8 +853,34 @@ class ProductControllerCore extends FrontController
             $prod['add_to_cart_url'] = $this->context->link->getPageLink('cart', true, null, $params, false);
         }
 
+        // See also PS 1.7 ProductPresenter->addMainVariantsInformation().
+        // Despite the variable name, PS 1.7 lists color attributes here, only.
+        $mainVariants = [];
+        $colors = Product::getAttributesColorList([$prod['id_product']]);
+        foreach (reset($colors) as $color) {
+            $attribute = [
+                'id_product_attribute'  => $color['id_product_attribute'],
+                'texture'               => '',  // Not supported by 30bz.
+                'id_product'            => $prod['id_product'],
+                'name'                  => $color['name'],
+                'type'                  => 'color',
+                'html_color_code'       => $color['color'],
+            ];
+
+            $attribute['url'] = $prod['link'].'?id_product_attribute='.$color['id_product_attribute'];
+
+            $params = [
+                'add'                   => true,
+                'id_product'            => $prod['id_product'],
+                'id_product_attribute'  => $color['id_product_attribute'],
+            ];
+            $attribute['add_to_cart_url'] = $this->context->link->getPageLink('cart', true, null, $params, false);
+
+            $mainVariants[] = $attribute;
+        }
+        $prod['main_variants'] = $mainVariants;
+
 // Still missing:
-//            'main_variants',
 //            'flags',
 //            'labels',
 //            'show_availability',
