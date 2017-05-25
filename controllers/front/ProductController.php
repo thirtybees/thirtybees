@@ -781,9 +781,12 @@ class ProductControllerCore extends FrontController
             }
         }
 
+        // Product URLs.
+        $prod['url'] = $this->context->link->getProductLink($this->product,
+            null, null, null, null, null, Tools::getValue('id_product_attribute'));
+        $prod['canonical_url'] = $this->context->link->getProductLink($this->product);
+
 // Still missing:
-//            'url',
-//            'canonical_url',
 //            'has_discount',
 //            'discount_type',
 //            'discount_percentage',
