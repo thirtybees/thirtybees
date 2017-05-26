@@ -635,29 +635,39 @@ class ProductControllerCore extends FrontController
             && !Configuration::isCatalogMode()
         );
 
+        // There's Product::getProductProperties(), which calculates quite a
+        // few additional things (and also duplicates a lot in 30bz).
+        $productProperties = Product::getProductProperties($this->context->language->id, $prod, $this->context);
+        $fields = [
+            'allow_oosp',
+            'category',
+            //'category_name',
+            'link',
+            'attribute_price',
+            'price_tax_exc',
+            'price_without_reduction',
+            'reduction',
+            'specific_prices',
+            'quantity',
+            'quantity_all_versions',
+            'id_image',
+            'features',
+            'attachments',
+            'virtual',
+            'pack',
+            'packItems',
+            'nopackprice',
+            'customization_required',
+            'rate',
+            'tax_name',
+        ];
+        foreach ($fields as $field) {
+            $prod[$field] = $productProperties[$field];
+        }
+
 
 // Still missing:
-//            'allow_oosp',
-//            'category',
 //            'category_name',
-//            'link',
-//            'attribute_price',
-//            'price_tax_exc',
-//            'price_without_reduction',
-//            'reduction',
-//            'specific_prices',
-//            'quantity',
-//            'quantity_all_versions',
-//            'id_image',
-//            'features',
-//            'attachments',
-//            'virtual',
-//            'pack',
-//            'packItems',
-//            'nopackprice',
-//            'customization_required',
-//            'rate',
-//            'tax_name',
 //            'customizations',
 //            'id_customization',
 //            'is_customizable',
