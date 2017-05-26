@@ -459,7 +459,7 @@ class AdminCarriersControllerCore extends AdminController
     /**
      * Overload the property $fields_value
      *
-     * @param object $obj
+     * @param ObjectModel $obj
      *
      * @since 1.0.0
      */
