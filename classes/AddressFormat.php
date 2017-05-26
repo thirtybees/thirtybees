@@ -130,14 +130,14 @@ class AddressFormatCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @return bool
      */
     protected function _checkValidateClassField($className, $fieldName, $isIdField)
     {
         $isValide = false;
 
         if (!class_exists($className)) {
-            $this->_errorFormatList[] = Tools::displayError('This class name does not exist.').
-                ': '.$className;
+            $this->_errorFormatList[] = Tools::displayError('This class name does not exist.').': '.$className;
         } else {
             $obj = new $className();
             $reflect = new ReflectionObject($obj);
@@ -154,8 +154,7 @@ class AddressFormatCore extends ObjectModel
             }
 
             if (!$isValide) {
-                $this->_errorFormatList[] = Tools::displayError('This property does not exist in the class or is forbidden.').
-                    ': '.$className.': '.$fieldName;
+                $this->_errorFormatList[] = Tools::displayError('This property does not exist in the class or is forbidden.').': '.$className.': '.$fieldName;
             }
 
             unset($obj);
@@ -188,8 +187,7 @@ class AddressFormatCore extends ObjectModel
                 if (in_array($associationName[0], static::$forbiddenPropertyList) ||
                     !$this->_checkValidateClassField('Address', $associationName[0], false)
                 ) {
-                    $this->_errorFormatList[] = Tools::displayError('This name is not allowed.').': '.
-                        $associationName[0];
+                    $this->_errorFormatList[] = Tools::displayError('This name is not allowed.').': '.$associationName[0];
                 }
             } elseif ($totalNameUsed == 2) {
                 if (empty($associationName[0]) || empty($associationName[1])) {
@@ -199,8 +197,7 @@ class AddressFormatCore extends ObjectModel
                     $associationName[1] = strtolower($associationName[1]);
 
                     if (in_array($associationName[0], static::$forbiddenClassList)) {
-                        $this->_errorFormatList[] = Tools::displayError('This name is not allowed.').': '.
-                            $associationName[0];
+                        $this->_errorFormatList[] = Tools::displayError('This name is not allowed.').': '.$associationName[0];
                     } else {
                         // Check if the id field name exist in the Address class
                         // Don't check this attribute on Address (no sense)
@@ -235,8 +232,7 @@ class AddressFormatCore extends ObjectModel
                                 $this->_checkLiableAssociation($patternName, $fieldsValidate);
                                 $usedKeyList[] = $patternName;
                             } else {
-                                $this->_errorFormatList[] = Tools::displayError('This key has already been used.').
-                                    ': '.$patternName;
+                                $this->_errorFormatList[] = Tools::displayError('This key has already been used.').': '.$patternName;
                             }
                         }
                     }
@@ -315,7 +311,7 @@ class AddressFormatCore extends ObjectModel
     }
 
     /**
-     * @param $orderedAddressField
+     * @param array $orderedAddressField
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -545,8 +541,8 @@ class AddressFormatCore extends ObjectModel
     public static function getOrderedAddressFields($idCountry = 0, $splitAll = false, $cleaned = false)
     {
         $out = [];
-        $field_set = explode("\n", AddressFormat::getAddressCountryFormat($idCountry));
-        foreach ($field_set as $fieldItem) {
+        $fieldSet = explode("\n", AddressFormat::getAddressCountryFormat($idCountry));
+        foreach ($fieldSet as $fieldItem) {
             if ($splitAll) {
                 if ($cleaned) {
                     $keyList = ($cleaned) ? preg_split(static::_CLEANING_REGEX_, $fieldItem, -1, PREG_SPLIT_NO_EMPTY) :
@@ -567,7 +563,7 @@ class AddressFormatCore extends ObjectModel
     }
 
     /**
-     * @param $address
+     * @param Address $address
      *
      * @return array
      *
