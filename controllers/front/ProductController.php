@@ -312,10 +312,17 @@ class ProductControllerCore extends FrontController
                 $customizationDatas = $this->context->cart->getProductCustomization($this->product->id, null, true);
             }
 
+            if ($this->is17Theme()) {
+                $productForTemplate = $this->getTemplateVarProduct();
+            } else {
+                $productForTemplate = $this->product;
+            }
+
             $this->context->smarty->assign([
                 'customizationFields'      => $customizationFields,
                 'id_customization'         => empty($customizationDatas) ? null : $customizationDatas[0]['id_customization'],
                 'accessories'              => $accessories,
+                'product'                  => $productForTemplate,
                 'product_manufacturer'     => new Manufacturer((int) $this->product->id_manufacturer, $this->context->language->id),
             ]);
             if ($this->is17Theme()) {
@@ -348,7 +355,6 @@ class ProductControllerCore extends FrontController
                 $this->context->smarty->assign([
                     'stock_management'         => Configuration::get('PS_STOCK_MANAGEMENT'),
                     'return_link'              => $returnLink,
-                    'product'                  => $this->product,  // Not compatible with PS 1.7 theme.
                     'features'                 => $this->product->getFrontFeatures($this->context->language->id),
                     'attachments'              => (($this->product->cache_has_attachments) ? $this->product->getAttachments($this->context->language->id) : []),
                     'allow_oosp'               => $this->product->isAvailableWhenOutOfStock((int) $this->product->out_of_stock),
@@ -504,6 +510,154 @@ class ProductControllerCore extends FrontController
             $this->context->smarty->assign('quantityBackup', (int) $_POST['quantityBackup']);
         }
         $this->context->smarty->assign('customizationFormTarget', $customizationFormTarget);
+    }
+
+    /**
+     * Assemble template vars for a product compatible with PS 1.7 themes.
+     *
+     * @return array
+     *
+     * @since   1.1.0
+     * @version 1.1.0 Initial version
+     */
+    public function getTemplateVarProduct()
+    {
+        $fields = [
+            // Commented out fields are those requiring custom handling.
+            'id_shop_default',
+            'id_manufacturer',
+            'id_supplier',
+            'reference',
+            'supplier_reference',
+            'location',
+            'width',
+            'height',
+            'depth',
+            'weight',
+            'quantity_discount',
+            'ean13',
+            //'isbn',
+            'upc',
+            'cache_is_pack',
+            'cache_has_attachments',
+            'is_virtual',
+            //'state',
+            'id_category_default',
+            'id_tax_rules_group',
+            'on_sale',
+            'online_only',
+            //'ecotax',
+            'minimal_quantity',  // PS 1.7 uses $this->getProductMinimalQuantity()
+            'price',
+            'wholesale_price',
+            'unity',
+            'unit_price_ratio',
+            'additional_shipping_cost',
+            'customizable',
+            'text_fields',
+            'uploadable_files',
+            'redirect_type',
+            'id_product_redirected',
+            'available_for_order',
+            'available_date',
+            //'show_condition',
+            //'condition',
+            'show_price',
+            'indexed',
+            'visibility',
+            'cache_default_attribute',
+            'advanced_stock_management',
+            'date_add',
+            'date_upd',
+            'pack_stock_type',
+            'meta_description',
+            'meta_keywords',
+            'meta_title',
+            'link_rewrite',
+            'name',
+            'description',
+            'description_short',
+            'available_now',
+            'available_later',
+            'id',
+            //'id_product',
+            'out_of_stock',
+            'new',
+            //'id_product_attribute',
+            //'quantity_wanted',
+            //'extraContent',
+            'unit_price',
+        ];
+        foreach ($fields as $field) {
+            $prod[$field] = $this->product->{$field};
+        }
+
+
+// Still missing:
+//            'isbn',
+//            'state',
+//            'ecotax',
+//            'show_condition',
+//            'condition',
+//            'id_product',
+//            'id_product_attribute',
+//            'quantity_wanted',
+//            'extraContent',
+//            'allow_oosp',
+//            'category',
+//            'category_name',
+//            'link',
+//            'attribute_price',
+//            'price_tax_exc',
+//            'price_without_reduction',
+//            'reduction',
+//            'specific_prices',
+//            'quantity',
+//            'quantity_all_versions',
+//            'id_image',
+//            'features',
+//            'attachments',
+//            'virtual',
+//            'pack',
+//            'packItems',
+//            'nopackprice',
+//            'customization_required',
+//            'rate',
+//            'tax_name',
+//            'ecotax_rate',
+//            'customizations',
+//            'id_customization',
+//            'is_customizable',
+//            'show_quantities',
+//            'quantity_label',
+//            'quantity_discounts',
+//            'customer_group_discount',
+//            'attributes',
+//            'weight_unit',
+//            'images',
+//            'cover',
+//            'url',
+//            'canonical_url',
+//            'has_discount',
+//            'discount_type',
+//            'discount_percentage',
+//            'discount_percentage_absolute',
+//            'discount_amount',
+//            'price_amount',
+//            'regular_price_amount',
+//            'regular_price',
+//            'unit_price_full',
+//            'add_to_cart_url',
+//            'main_variants',
+//            'flags',
+//            'labels',
+//            'show_availability',
+//            'availability_message',
+//            'availability_date',
+//            'availability',
+//            'reference_to_display',
+
+        return $prod;
     }
 
     /**
