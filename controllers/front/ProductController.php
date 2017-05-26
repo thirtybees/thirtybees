@@ -674,9 +674,42 @@ class ProductControllerCore extends FrontController
         $prod['customer_group_discount'] = $tplVars['group_reduction']->value;
         unset($tplVars['group_reduction']);
 
+        // $product.customizations doesn't work in PS 1.7.0.0, this template
+        // variable is always empty. Accordingly this is a best guess based on
+        // what 30bz does and on code in PS 1.7's product-customization.tpl.
+        $custRequired = false;
+        $cust = $this->product->getCustomizationFields($this->context->language->id, $this->context->shop->id);
+        if (!$cust) {
+            $cust = [];
+        } else {
+            foreach ($cust as &$field) {
+                $field['label'] = $field['name'];
+                unset($field['name']);
+
+                if ($field['type'] == Product::CUSTOMIZE_FILE) {
+                    $field['type'] = 'image';
+                    $field['text'] = 'Upload image:'; // 30bz has no equivalent.
+                } elseif ($field['type'] == Product::CUSTOMIZE_TEXTFIELD) {
+                    $field['type'] = 'text';
+                    $field['text'] = 'Enter text:';   // 30bz has no equivalent.
+                }
+
+                // 30bz has no equivalent, but see $pictures and $textFields
+                // in initContent().
+                // @TODO: this likely needs more work, like actually applying
+                //        customisations (currently impossible in PS 1.7).
+                $field['is_customized'] = false;
+
+                if ($field['required']) {
+                    $custRequired = true;
+                }
+            }
+            unset($field);
+        }
+        $prod['customizations']['fields'] = $cust;
+
 
 // Still missing:
-//            'customizations',
 //            'id_customization',
 //            'is_customizable',
 //            'quantity_label',
