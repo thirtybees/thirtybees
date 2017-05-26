@@ -726,9 +726,10 @@ class ProductControllerCore extends FrontController
             $prod['attributes'][$attribute['id_attribute_group']] = $attribute;
         }
 
+        $prod['weight_unit'] = Configuration::get('PS_WEIGHT_UNIT');
+
 
 // Still missing:
-//            'weight_unit',
 //            'images',
 //            'cover',
 //            'url',
