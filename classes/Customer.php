@@ -37,6 +37,45 @@
 class CustomerCore extends ObjectModel
 {
     // @codingStandardsIgnoreStart
+    /**
+     * @see ObjectModel::$definition
+     */
+    public static $definition = [
+        'table'   => 'customer',
+        'primary' => 'id_customer',
+        'fields'  => [
+            'secure_key'                 => ['type' => self::TYPE_STRING, 'validate' => 'isMd5', 'copy_post' => false],
+            'lastname'                   => ['type' => self::TYPE_STRING, 'validate' => 'isName', 'required' => true, 'size' => 32],
+            'firstname'                  => ['type' => self::TYPE_STRING, 'validate' => 'isName', 'required' => true, 'size' => 32],
+            'email'                      => ['type' => self::TYPE_STRING, 'validate' => 'isEmail', 'required' => true, 'size' => 128],
+            'passwd'                     => ['type' => self::TYPE_STRING, 'validate' => 'isPasswd', 'required' => true, 'size' => 60],
+            'last_passwd_gen'            => ['type' => self::TYPE_STRING, 'copy_post' => false],
+            'id_gender'                  => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
+            'birthday'                   => ['type' => self::TYPE_DATE, 'validate' => 'isBirthDate'],
+            'newsletter'                 => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'newsletter_date_add'        => ['type' => self::TYPE_DATE, 'copy_post' => false],
+            'ip_registration_newsletter' => ['type' => self::TYPE_STRING, 'copy_post' => false],
+            'optin'                      => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'website'                    => ['type' => self::TYPE_STRING, 'validate' => 'isUrl'],
+            'company'                    => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName'],
+            'siret'                      => ['type' => self::TYPE_STRING, 'validate' => 'isSiret'],
+            'ape'                        => ['type' => self::TYPE_STRING, 'validate' => 'isApe'],
+            'outstanding_allow_amount'   => ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat', 'copy_post' => false],
+            'show_public_prices'         => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'copy_post' => false],
+            'id_risk'                    => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'copy_post' => false],
+            'max_payment_days'           => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'copy_post' => false],
+            'active'                     => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'copy_post' => false],
+            'deleted'                    => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'copy_post' => false],
+            'note'                       => ['type' => self::TYPE_HTML, 'validate' => 'isCleanHtml', 'copy_post' => false, 'size' => 65000],
+            'is_guest'                   => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'copy_post' => false],
+            'id_shop'                    => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'copy_post' => false],
+            'id_shop_group'              => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'copy_post' => false],
+            'id_default_group'           => ['type' => self::TYPE_INT, 'copy_post' => false],
+            'id_lang'                    => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'copy_post' => false],
+            'date_add'                   => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'copy_post' => false],
+            'date_upd'                   => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'copy_post' => false],
+        ],
+    ];
     protected static $_defaultGroupId = [];
     protected static $_customerHasAddress = [];
     protected static $_customer_groups = [];
@@ -110,49 +149,8 @@ class CustomerCore extends ObjectModel
     public $logged = 0;
     /** @var int id_guest meaning the guest table, not the guest customer */
     public $id_guest;
-    public $groupBox;
     // @codingStandardsIgnoreEnd
-
-    /**
-     * @see ObjectModel::$definition
-     */
-    public static $definition = [
-        'table'   => 'customer',
-        'primary' => 'id_customer',
-        'fields'  => [
-            'secure_key'                 => ['type' => self::TYPE_STRING, 'validate' => 'isMd5',           'copy_post' => false                                                          ],
-            'lastname'                   => ['type' => self::TYPE_STRING, 'validate' => 'isName',                                'required' => true, 'size' => 32                        ],
-            'firstname'                  => ['type' => self::TYPE_STRING, 'validate' => 'isName',                                'required' => true, 'size' => 32                        ],
-            'email'                      => ['type' => self::TYPE_STRING, 'validate' => 'isEmail',                               'required' => true, 'size' => 128                       ],
-            'passwd'                     => ['type' => self::TYPE_STRING, 'validate' => 'isPasswd',                              'required' => true, 'size' => 60                        ],
-            'last_passwd_gen'            => ['type' => self::TYPE_STRING,                                  'copy_post' => false                                                          ],
-            'id_gender'                  => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId'                                                                                   ],
-            'birthday'                   => ['type' => self::TYPE_DATE,   'validate' => 'isBirthDate'                                                                                    ],
-            'newsletter'                 => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                                                                         ],
-            'newsletter_date_add'        => ['type' => self::TYPE_DATE,                                    'copy_post' => false                                                          ],
-            'ip_registration_newsletter' => ['type' => self::TYPE_STRING,                                  'copy_post' => false                                                          ],
-            'optin'                      => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                                                                         ],
-            'website'                    => ['type' => self::TYPE_STRING, 'validate' => 'isUrl'                                                                                          ],
-            'company'                    => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName'                                                                                  ],
-            'siret'                      => ['type' => self::TYPE_STRING, 'validate' => 'isSiret'                                                                                        ],
-            'ape'                        => ['type' => self::TYPE_STRING, 'validate' => 'isApe'                                                                                          ],
-            'outstanding_allow_amount'   => ['type' => self::TYPE_FLOAT,  'validate' => 'isFloat',         'copy_post' => false                                                          ],
-            'show_public_prices'         => ['type' => self::TYPE_BOOL,   'validate' => 'isBool',          'copy_post' => false                                                          ],
-            'id_risk'                    => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt',   'copy_post' => false                                                          ],
-            'max_payment_days'           => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt',   'copy_post' => false                                                          ],
-            'active'                     => ['type' => self::TYPE_BOOL,   'validate' => 'isBool',          'copy_post' => false                                                          ],
-            'deleted'                    => ['type' => self::TYPE_BOOL,   'validate' => 'isBool',          'copy_post' => false                                                          ],
-            'note'                       => ['type' => self::TYPE_HTML,   'validate' => 'isCleanHtml',     'copy_post' => false,                                          'size' => 65000],
-            'is_guest'                   => ['type' => self::TYPE_BOOL,   'validate' => 'isBool',          'copy_post' => false                                                          ],
-            'id_shop'                    => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',    'copy_post' => false                                                          ],
-            'id_shop_group'              => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',    'copy_post' => false                                                          ],
-            'id_default_group'           => ['type' => self::TYPE_INT,                                     'copy_post' => false                                                          ],
-            'id_lang'                    => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',    'copy_post' => false                                                          ],
-            'date_add'                   => ['type' => self::TYPE_DATE,   'validate' => 'isDate',          'copy_post' => false                                                          ],
-            'date_upd'                   => ['type' => self::TYPE_DATE,   'validate' => 'isDate',          'copy_post' => false                                                          ],
-        ],
-    ];
-
+    public $groupBox;
     protected $webserviceParameters = [
         'fields'       => [
             'id_default_group'           => ['xlink_resource' => 'groups'],
@@ -359,7 +357,7 @@ class CustomerCore extends ObjectModel
      * @return array|false|mysqli_result|null|PDOStatement|resource Corresponding customers
      * @throws PrestaShopDatabaseException
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function searchByName($query, $limit = null)
@@ -681,9 +679,9 @@ class CustomerCore extends ObjectModel
                 return false;
             }
         }
-        
+
         if (!$result) {
-	        return false;
+            return false;
         }
 
         $this->id = $result['id_customer'];
@@ -1029,7 +1027,7 @@ class CustomerCore extends ObjectModel
     /**
      * Check customer informations and return customer validity
      *
-     * @since 1.5.0
+     * @since   1.5.0
      *
      * @param bool $withGuest
      *
@@ -1059,8 +1057,8 @@ class CustomerCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      *
-     * @todo: adapt validation for hashed password
-     * @todo: find out why both hashed and plaintext password are passed
+     * @todo    : adapt validation for hashed password
+     * @todo    : find out why both hashed and plaintext password are passed
      */
     public static function checkPassword($idCustomer, $plaintextOrHashedPassword)
     {
