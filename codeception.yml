@@ -16,8 +16,8 @@ modules:
     config:
         Db:
             dsn: 'mysql:host=thirty.bees;dbname=thirtybees'
-            user: 'thirtybees'
-            password: 'thirtybees'
+            user: 'root'
+            password: ''
             populate: false
             cleanup: false
             reconnect: true
