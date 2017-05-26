@@ -592,17 +592,19 @@ class ProductControllerCore extends FrontController
             $prod[$field] = $this->product->{$field};
         }
 
+        // Fields not supported by 30bz, replaced by default values.
+        $prod['isbn']           = '';
+        $prod['state']          = '1'; // 0 = temporary state, 1 = saved state.
+        $prod['show_condition'] = '1'; // 0 = don't show condition, 1 = show condition.
+        $prod['extraContent']   = [];
+
 
 // Still missing:
-//            'isbn',
-//            'state',
 //            'ecotax',
-//            'show_condition',
 //            'condition',
 //            'id_product',
 //            'id_product_attribute',
 //            'quantity_wanted',
-//            'extraContent',
 //            'allow_oosp',
 //            'category',
 //            'category_name',
