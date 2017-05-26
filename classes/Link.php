@@ -114,6 +114,24 @@ class LinkCore
         return $url.((strpos($url, '?')) ? '&' : '?').'deletePicture='.$idPicture;
     }
 
+    /**
+     * @param int|Product $product
+     * @param string|null $alias
+     * @param int|null    $category
+     * @param string|null $ean13
+     * @param int|null    $idLang
+     * @param int|null    $idShop
+     * @param int         $ipa
+     * @param bool        $forceRoutes
+     * @param bool        $relativeProtocol
+     * @param bool        $addAnchor
+     * @param array       $extraParams
+     *
+     * @return string
+     * @throws PrestaShopException
+     *
+     * @since 1.0.0
+     */
     public function getProductLink($product, $alias = null, $category = null, $ean13 = null, $idLang = null, $idShop = null, $ipa = 0, $forceRoutes = false, $relativeProtocol = false, $addAnchor = false, $extraParams = array())
     {
         $dispatcher = Dispatcher::getInstance();
