@@ -713,9 +713,11 @@ class ProductControllerCore extends FrontController
         $prod['id_customization'] = 0;
         $prod['is_customizable'] = $prod['customizable'];
 
+        // Should be translated, but 30bz doesn't feature translations, yet.
+        $prod['quantity_label'] = $this->product->quantity == 1 ? 'Item' : 'Items';
+
 
 // Still missing:
-//            'quantity_label',
 //            'attributes',
 //            'weight_unit',
 //            'images',
