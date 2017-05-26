@@ -552,8 +552,10 @@ class AddressFormatCore extends ObjectModel
                     $keyList = ($cleaned) ? preg_split(static::_CLEANING_REGEX_, $fieldItem, -1, PREG_SPLIT_NO_EMPTY) :
                         explode(' ', $fieldItem);
                 }
-                foreach ($keyList as $wordItem) {
-                    $out[] = trim($wordItem);
+                if (isset($keyList)) {
+                    foreach ($keyList as $wordItem) {
+                        $out[] = trim($wordItem);
+                    }
                 }
             } else {
                 $out[] = ($cleaned) ? implode(' ', preg_split(static::_CLEANING_REGEX_, trim($fieldItem), -1, PREG_SPLIT_NO_EMPTY))
