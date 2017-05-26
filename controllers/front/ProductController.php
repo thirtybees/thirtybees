@@ -716,9 +716,18 @@ class ProductControllerCore extends FrontController
         // Should be translated, but 30bz doesn't feature translations, yet.
         $prod['quantity_label'] = $this->product->quantity == 1 ? 'Item' : 'Items';
 
+        // See also PS 1.7 Product->getProductProperties().
+        // @TODO: subattributes 'reference', 'ean13', 'isbn' and 'upc' are
+        //        missing. PS 1.7 grabs them in Product::getAttributesParams().
+        $prod['attributes'] = [];
+        $attributes = Product::getAttributesParams($prod['id_product'], $prod['id_product_attribute']);
+
+        foreach ($attributes as $attribute) {
+            $prod['attributes'][$attribute['id_attribute_group']] = $attribute;
+        }
+
 
 // Still missing:
-//            'attributes',
 //            'weight_unit',
 //            'images',
 //            'cover',
