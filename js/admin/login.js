@@ -82,18 +82,6 @@ $(document).ready(function() {
 			}
 		});
 	});
-
-	//Preload images
-	$('<img/>')[0].src = img_dir+'thirty-bees-avatar.png';
-	$('<img/>')[0].src = img_dir+'preston-login-wink@2x.png';
-
-	$('button[name="submitLogin"]').on('mouseover', function() {
-		$('#shop-img img').attr('src', img_dir+'preston-login-wink@2x.png');
-	});
-
-	$('button[name="submitLogin"]').on('mouseout', function() {
-		$('#shop-img img').attr('src', img_dir+'thirty-bees-avatar.png');
-	});
 });
 
 //todo: ladda init
