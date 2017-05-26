@@ -598,9 +598,19 @@ class ProductControllerCore extends FrontController
         $prod['show_condition'] = '1'; // 0 = don't show condition, 1 = show condition.
         $prod['extraContent']   = [];
 
+        $tplVars = &$this->context->smarty->tpl_vars;
+
+        // Ecotax can be refurbished from native 30bz template vars.
+        $prod['ecotax'] = [
+            'value'   => Tools::displayPrice($tplVars['ecotax']->value),
+            'amount'  => $tplVars['ecotax']->value,
+            'rate'    => $tplVars['ecotaxTax_rate']->value,
+        ];
+        unset($tplVars['ecotax'], $tplVars['ecotaxTax_rate']);
+        $prod['ecotax_rate'] = $prod['ecotax']['amount'];
+
 
 // Still missing:
-//            'ecotax',
 //            'condition',
 //            'id_product',
 //            'id_product_attribute',
@@ -626,7 +636,6 @@ class ProductControllerCore extends FrontController
 //            'customization_required',
 //            'rate',
 //            'tax_name',
-//            'ecotax_rate',
 //            'customizations',
 //            'id_customization',
 //            'is_customizable',
@@ -772,6 +781,9 @@ class ProductControllerCore extends FrontController
                 'no_tax'                     => Tax::excludeTaxeOption() || !$this->product->getTaxesRate($address),
                 'tax_enabled'                => Configuration::get('PS_TAX') && !Configuration::get('AEUC_LABEL_TAX_INC_EXC'),
                 'customer_group_without_tax' => Group::getPriceDisplayMethod($this->context->customer->id_default_group),
+                // For PS 1.7 themes, these two get moved into 'product' later.
+                'ecotaxTax_rate'             => $ecotaxRate,
+                'ecotax'                     => (!count($this->errors) && $this->product->ecotax > 0 ? Tools::convertPrice((float) $this->product->ecotax) : 0),
             ]
         );
         if (!$this->is17Theme()) {
@@ -779,10 +791,8 @@ class ProductControllerCore extends FrontController
                 'quantity_discounts'         => $this->formatQuantityDiscounts($quantityDiscounts, $productPrice, (float) $tax, $ecotaxTaxAmount),
                 'ecotax_tax_inc'             => $ecotaxTaxAmount,
                 'ecotax_tax_exc'             => Tools::ps_round($this->product->ecotax, 2),
-                'ecotaxTax_rate'             => $ecotaxRate,
                 'productPriceWithoutEcoTax'  => (float) $productPriceWithoutEcoTax,
                 'group_reduction'            => $groupReduction,
-                'ecotax'                     => (!count($this->errors) && $this->product->ecotax > 0 ? Tools::convertPrice((float) $this->product->ecotax) : 0),
             ]);
         }
     }
