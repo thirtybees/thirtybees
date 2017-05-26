@@ -617,11 +617,26 @@ class ProductControllerCore extends FrontController
             'schema_url'  => 'https://schema.org/'.ucfirst($condition).'Condition',
         ];
 
+        // Next four are code copied from PS 1.7, getTemplateVarProduct().
+        $prod['id_product']           = $this->product->id;  // Same as 'id'.
+        $prod['id_product_attribute'] = (int) Tools::getValue('id_product_attribute');
+
+        $requiredQuantity = (int) Tools::getValue('quantity_wanted', $this->product->minimal_quantity);
+        if ($requiredQuantity < $this->product->minimal_quantity) {
+            $requiredQuantity = $this->product->minimal_quantity;
+        }
+        $prod['quantity_wanted'] = $requiredQuantity;
+
+        $prod['show_quantities'] = (bool) (
+            Configuration::get('PS_DISPLAY_QTIES')
+            && Configuration::get('PS_STOCK_MANAGEMENT')
+            && $this->product->quantity > 0
+            && $this->product->available_for_order
+            && !Configuration::isCatalogMode()
+        );
+
 
 // Still missing:
-//            'id_product',
-//            'id_product_attribute',
-//            'quantity_wanted',
 //            'allow_oosp',
 //            'category',
 //            'category_name',
@@ -646,7 +661,6 @@ class ProductControllerCore extends FrontController
 //            'customizations',
 //            'id_customization',
 //            'is_customizable',
-//            'show_quantities',
 //            'quantity_label',
 //            'quantity_discounts',
 //            'customer_group_discount',
