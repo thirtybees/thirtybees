@@ -708,10 +708,13 @@ class ProductControllerCore extends FrontController
         }
         $prod['customizations']['fields'] = $cust;
 
+        // The actually choosen customization.
+        // @TODO: this is most likely not always zero.
+        $prod['id_customization'] = 0;
+        $prod['is_customizable'] = $prod['customizable'];
+
 
 // Still missing:
-//            'id_customization',
-//            'is_customizable',
 //            'quantity_label',
 //            'attributes',
 //            'weight_unit',
