@@ -763,7 +763,7 @@ class ProductControllerCore extends FrontController
 
                         if (is_array($combinationImages[$row['id_product_attribute']])) {
                             foreach ($combinationImages[$row['id_product_attribute']] as $tmp) {
-                                if ($tmp['id_image'] == $currentCover['id_image']) {
+                                if (isset($currentCover) && $tmp['id_image'] == $currentCover['id_image']) {
                                     $combinations[$row['id_product_attribute']]['id_image'] = $idImage = (int) $tmp['id_image'];
                                     break;
                                 }
