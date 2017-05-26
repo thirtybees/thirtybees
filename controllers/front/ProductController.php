@@ -609,9 +609,16 @@ class ProductControllerCore extends FrontController
         unset($tplVars['ecotax'], $tplVars['ecotaxTax_rate']);
         $prod['ecotax_rate'] = $prod['ecotax']['amount'];
 
+        // Condition: new/used/refurbished.
+        $condition = $this->product->condition;
+        $prod['condition'] = [
+            'type'        => $condition,
+            'label'       => ucfirst($condition),
+            'schema_url'  => 'https://schema.org/'.ucfirst($condition).'Condition',
+        ];
+
 
 // Still missing:
-//            'condition',
 //            'id_product',
 //            'id_product_attribute',
 //            'quantity_wanted',
