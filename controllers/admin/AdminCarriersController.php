@@ -749,13 +749,11 @@ class AdminCarriersControllerCore extends AdminController
                 static::$cache_lang['Edit'] = $this->l('Edit', 'Helper');
             }
 
-            $tpl->assign(
-                [
-                    'href'   => $this->context->link->getAdminLink('AdminCarrierWizard').'&id_carrier='.(int) $id,
-                    'action' => static::$cache_lang['Edit'],
-                    'id'     => $id,
-                ]
-            );
+            $tpl->assign([
+                'href'   => $this->context->link->getAdminLink('AdminCarrierWizard').'&id_carrier='.(int) $id,
+                'action' => static::$cache_lang['Edit'],
+                'id'     => $id,
+            ]);
 
             return $tpl->fetch();
         } else {
