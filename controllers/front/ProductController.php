@@ -880,8 +880,46 @@ class ProductControllerCore extends FrontController
         }
         $prod['main_variants'] = $mainVariants;
 
+        // Flags. PS 1.7 does this in ProductPresenter->addFlags().
+        $showPrice = Configuration::showPrices() && $prod['show_price'];
+        $flags = [];
+        if ($showPrice && $prod['online_only']) {
+            $flags['online-only'] = [
+                'type'  => 'online-only',
+                'label' => 'Online only',   // Should be translated.
+            ];
+        }
+        if ($showPrice && $prod['on_sale']
+            && !Configuration::isCatalogMode()) {
+            $flags['on-sale'] = [
+                'type'  => 'on-sale',
+                'label' => 'On sale!',      // Should be translated.
+            ];
+        }
+        if ($showPrice && $prod['reduction']
+            && !Configuration::isCatalogMode()
+            && !$prod['on_sale']) {
+            $flags['discount'] = [
+                'type'  => 'discount',
+                'label' => 'Reduced price', // Should be translated.
+            ];
+        }
+        if ($prod['new']) {
+            $flags['new'] = [
+                'type'  => 'new',
+                'label' => 'New!',          // Should be translated.
+            ];
+        }
+        if ($prod['pack']) {
+            $flags['pack'] = [
+                'type'  => 'pack',
+                'label' => 'Pack',          // Should be translated.
+            ];
+        }
+        $prod['flags'] = $flags;
+
+
 // Still missing:
-//            'flags',
 //            'labels',
 //            'show_availability',
 //            'availability_message',
