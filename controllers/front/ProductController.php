@@ -918,9 +918,21 @@ class ProductControllerCore extends FrontController
         }
         $prod['flags'] = $flags;
 
+        // Labels. PS 1.7 does this in ProductPresenter->addLabels().
+        if ($tplVars['tax_enabled']->value) {
+            $prod['labels'] = [
+                'tax_short' => '(tax incl.)',   // Should be translated.
+                'tax_long'  => 'tax included',  // Should be translated.
+            ];
+        } else {
+            $prod['labels'] = [
+                'tax_short' => '(tax excl.)',   // Should be translated.
+                'tax_long'  => 'tax excluded',  // Should be translated.
+            ];
+        }
+
 
 // Still missing:
-//            'labels',
 //            'show_availability',
 //            'availability_message',
 //            'availability_date',
