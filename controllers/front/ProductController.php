@@ -931,12 +931,44 @@ class ProductControllerCore extends FrontController
             ];
         }
 
+        // Availability. PS 1.7 does this in ProductPresenter->addQuantityInformation().
+        // All instances of $prod['availability_message'] should be translated.
+        $showAvailability = $showPrice && Configuration::get('PS_STOCK_MANAGEMENT');
+
+        $prod['show_availability'] = $showAvailability;
+        $prod['availability_date'] = $prod['available_date'];
+        if ($showAvailability) {
+            if ($prod['quantity'] > 0) {
+                if ($prod['quantity'] < Configuration::get('PS_LAST_QTIES')) {
+                    $prod['availability_message'] = 'Last items in stock';
+                    $prod['availability']         = 'last_remaining_items';
+                } else {
+                    $prod['availability_message'] = $prod['available_now'];
+                    $prod['availability']         = 'available';
+                }
+            } elseif ($prod['allow_oosp']) {
+                if ($prod['available_later']) {
+                    $prod['availability_message'] = $prod['available_later'];
+                    $prod['availability']         = 'available';
+                } else {
+                    $prod['availability_message'] = null;
+                    $prod['availability']         = 'unavailable';
+                }
+            } elseif ($prod['quantity_all_versions']) {
+                $prod['availability_message'] = 'Product available with different options';
+                $prod['availability']         = 'unavailable';
+            } else {
+                $prod['availability_message'] = 'Out of stock';
+                $prod['availability']         = 'unavailable';
+            }
+        } else {
+            $prod['availability_date']    = null;
+            $prod['availability_message'] = null;
+            $prod['availability']         = null;
+        }
+
 
 // Still missing:
-//            'show_availability',
-//            'availability_message',
-//            'availability_date',
-//            'availability',
 //            'reference_to_display',
 
         return $prod;
