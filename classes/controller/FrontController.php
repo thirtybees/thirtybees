@@ -1723,6 +1723,8 @@ file_put_contents(_PS_ROOT_DIR_.'/config/debug', $obContents);
             // Huh? Not assigning 'link' makes loaded pages empty. Why?
             'link'          => $this->context->link,
             'priceDisplay'  => Product::getTaxCalculationMethod((int) $this->context->cookie->id_customer),
+            // Deprecated
+            'logged'        => $this->context->customer->isLogged(),
         ]);
         if (!$this->is17Theme()) {
             $this->context->smarty->assign([
@@ -1788,7 +1790,6 @@ file_put_contents(_PS_ROOT_DIR_.'/config/debug', $obContents);
         $this->context->smarty->assign(
             [
                 'id_currency_cookie' => (int) $currency->id,
-                'logged'             => $this->context->customer->isLogged(),
                 'customerName'       => ($this->context->customer->logged ? $this->context->cookie->customer_firstname.' '.$this->context->cookie->customer_lastname : false),
             ]
         );
