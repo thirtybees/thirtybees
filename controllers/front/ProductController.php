@@ -967,9 +967,15 @@ class ProductControllerCore extends FrontController
             $prod['availability']         = null;
         }
 
-
-// Still missing:
-//            'reference_to_display',
+        // 'reference_to_display'.
+        // PS 1.7 does this in ProductPresenter->addReferenceToDisplay().
+        foreach ($prod['attributes'] as $attribute) {
+            if (isset($attribute['reference'])) {
+                $prod['reference_to_display'] = $attribute['reference'];
+            } else {
+                $prod['reference_to_display'] = $prod['reference'];
+            }
+        }
 
         return $prod;
     }
