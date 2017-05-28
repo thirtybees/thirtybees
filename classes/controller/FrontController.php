@@ -1723,6 +1723,8 @@ file_put_contents(_PS_ROOT_DIR_.'/config/debug', $obContents);
             // Huh? Not assigning 'link' makes loaded pages empty. Why?
             'link'          => $this->context->link,
             'priceDisplay'  => Product::getTaxCalculationMethod((int) $this->context->cookie->id_customer),
+            'languages'     => $languages,
+            'lang_iso'      => $this->context->language->iso_code,
             // Deprecated
             'logged'        => $this->context->customer->isLogged(),
         ]);
@@ -1746,13 +1748,11 @@ file_put_contents(_PS_ROOT_DIR_.'/config/debug', $obContents);
                 'tpl_uri'             => _THEME_DIR_,
                 'modules_dir'         => _MODULE_DIR_,
                 'mail_dir'            => _MAIL_DIR_,
-                'lang_iso'            => $this->context->language->iso_code,
                 'lang_id'             => (int) $this->context->language->id,
                 'language_code'       => $this->context->language->language_code ? $this->context->language->language_code : $this->context->language->iso_code,
                 'come_from'           => Tools::getHttpHost(true, true).Tools::htmlentitiesUTF8(str_replace(['\'', '\\'], '', urldecode($_SERVER['REQUEST_URI']))),
                 'cart_qties'          => (int) $cart->nbProducts(),
                 'currencies'          => Currency::getCurrencies(),
-                'languages'           => $languages,
                 'meta_language'       => implode(',', $metaLanguage),
                 'is_logged'           => (bool) $this->context->customer->isLogged(),
                 'is_guest'            => (bool) $this->context->customer->isGuest(),
