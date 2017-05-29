@@ -330,18 +330,18 @@ class AdminMetaControllerCore extends AdminController
      */
     public function addFieldRoute($routeId, $title)
     {
-        $keywords = array();
+        $keywords = [];
         foreach (Dispatcher::getInstance()->default_routes[$routeId]['keywords'] as $keyword => $data) {
             $keywords[] = ((isset($data['param'])) ? '<span class="red">'.$keyword.'*</span>' : $keyword);
         }
-        $this->fields_options['routes']['fields']['PS_ROUTE_'.$routeId] = array(
-            'title' =>    $title,
-            'desc' => sprintf($this->l('Keywords: %s'), implode(', ', $keywords)),
-            'validation' => 'isString',
-            'type' => 'text',
-            'size' => 70,
-            'defaultValue' => Dispatcher::getInstance()->default_routes[$routeId]['rule'],
-        );
+        $this->fields_options['routes']['fields']['PS_ROUTE_'.$routeId] = [
+            'title'         => $title,
+            'desc'          => sprintf($this->l('Keywords: %s'), implode(', ', $keywords)),
+            'validation'    => 'isString',
+            'type'          => 'text',
+            'size'          => 70,
+            'defaultValue'  => Dispatcher::getInstance()->default_routes[$routeId]['rule'],
+        ];
     }
 
     /**
@@ -693,7 +693,7 @@ class AdminMetaControllerCore extends AdminController
 
         $multiLang = !Tools::getValue('PS_ROUTE_'.$route);
 
-        $errors = array();
+        $errors = [];
         $rule = Tools::getValue('PS_ROUTE_'.$route);
         foreach (Language::getIDs(false) as $idLang) {
             if ($multiLang) {
@@ -708,10 +708,10 @@ class AdminMetaControllerCore extends AdminController
                     if (!preg_match('/:\/}[a-zA-Z0-9-_]*{/', $rule) && !preg_match('/}[a-zA-Z0-9-_]*{\/:/', $rule)) {
                         $this->errors[] = sprintf('Route "%1$s" with rule: "%2$s" needs a correct delimiter', $route, htmlspecialchars($rule));
                     } else {
-                        Configuration::updateValue('PS_ROUTE_'.$route, array((int) $idLang => $rule));
+                        Configuration::updateValue('PS_ROUTE_'.$route, [(int) $idLang => $rule]);
                     }
                 } else {
-                    Configuration::updateValue('PS_ROUTE_'.$route, array((int) $idLang => $rule));
+                    Configuration::updateValue('PS_ROUTE_'.$route, [(int) $idLang => $rule]);
                 }
             }
         }
