@@ -338,7 +338,7 @@ class AdminMetaControllerCore extends AdminController
             'title'         => $title,
             'desc'          => sprintf($this->l('Keywords: %s'), implode(', ', $keywords)),
             'validation'    => 'isString',
-            'type'          => 'text',
+            'type'          => 'textLang',
             'size'          => 70,
             'defaultValue'  => Dispatcher::getInstance()->default_routes[$routeId]['rule'],
         ];
