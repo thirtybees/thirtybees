@@ -130,7 +130,7 @@ function str2url(str, encoding, ucfirst) {
   str = str.replace(/[ ]/g, '-');
   str = str.replace(/[\/\\"'|,;%]*/g, '');
 
-  if (ucfirst == 1) {
+  if (ucfirst) {
     var first_char = str.charAt(0);
     str = first_char.toUpperCase() + str.slice(1);
   }
