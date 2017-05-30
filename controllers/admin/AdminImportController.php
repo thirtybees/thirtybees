@@ -573,6 +573,18 @@ class AdminImportControllerCore extends AdminController
     /**
      * @param string $field
      *
+     * @return bool
+     *
+     * @since 1.0.2
+     */
+    protected static function getBoolean($field)
+    {
+        return (bool) $field;
+    }
+
+    /**
+     * @param string $field
+     *
      * @return float
      *
      * @since 1.0.0
