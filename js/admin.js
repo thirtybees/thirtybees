@@ -80,7 +80,7 @@ function str2url(str, encoding, ucfirst) {
     str = str.replace(/[\u044E]/g, 'yu');
     str = str.replace(/[\u0436]/g, 'zh');
 
-		/* Uppercase */
+    // Uppercase
     str = str.replace(/[\u0100\u0102\u0104\u00C0\u00C1\u00C2\u00C3\u00C4\u00C5\u0410]/g, 'A');
     str = str.replace(/[\u0411]/g, 'B');
     str = str.replace(/[\u00C7\u0106\u0108\u010A\u010C\u0426]/g, 'C');
