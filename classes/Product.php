@@ -4503,11 +4503,10 @@ class ProductCore extends ObjectModel
                     'id_product'  => (int) $this->id,
                     'position'    => (int) $newCategoryPos[$newIdCateg],
                 ];
+                Db::getInstance()->delete('category_product', '`id_category` = '.(int) $newIdCateg);
             }
         }
 
-        // Clear first
-        Db::getInstance()->delete('category_product', '`id_category` = '.(int) $newIdCateg);
         // Then insert
         Db::getInstance()->insert('category_product', $productCats);
 
