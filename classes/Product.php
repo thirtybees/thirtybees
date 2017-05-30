@@ -4506,6 +4506,9 @@ class ProductCore extends ObjectModel
             }
         }
 
+        // Clear first
+        Db::getInstance()->delete('category_product', '`id_category` = '.(int) $newIdCateg);
+        // Then insert
         Db::getInstance()->insert('category_product', $productCats);
 
         return true;
