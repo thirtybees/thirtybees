@@ -281,7 +281,9 @@ class CustomerCore extends ObjectModel
         $sql->select('`id_customer`');
         $sql->from(bqSQL(static::$definition['table']));
         $sql->where('`email` = \''.pSQL($email).'\' '.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER));
-        $sql->where('`is_guest` = 0');
+        if ($ignoreGuest) {
+            $sql->where('`is_guest` = 0');
+        }
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
 
         return ($returnId ? (int) $result : (bool) $result);
