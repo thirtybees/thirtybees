@@ -112,7 +112,6 @@ class AddressCore extends ObjectModel
     protected static $_idZones = [];
     protected static $_idCountries = [];
 
-    protected $_includeVars = ['addressType' => 'table'];
     protected $_includeContainer = false;
     // @codingStandardsIgnoreEnd
 

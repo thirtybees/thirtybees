@@ -836,7 +836,7 @@ abstract class PaymentModuleCore extends Module
                         $customerMessage->id_customer_thread = $customerThread->id;
                         $customerMessage->id_employee = 0;
                         $customerMessage->message = $updateMessage->message;
-                        $customerMessage->private = 0;
+                        $customerMessage->private = 1;
 
                         if (!$customerMessage->add()) {
                             $this->errors[] = Tools::displayError('An error occurred while saving message');

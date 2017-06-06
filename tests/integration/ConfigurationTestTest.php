@@ -42,7 +42,6 @@ class ConfigurationTestTest extends \Codeception\Test\Unit
     {
         $expected = [
             'NewPhpVersion'   => false,
-            'RegisterGlobals' => false,
             'Gz'              => false,
             'Mbstring'        => false,
             'Tlsv12'          => false,

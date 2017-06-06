@@ -1957,7 +1957,7 @@ class ToolsCore
             /* c  */
             '/[\x{00E7}\x{0107}\x{0109}\x{010D}\x{0446}]/u',
             /* d  */
-            '/[\x{010F}\x{0111}\x{0434}\x{0110}]/u',
+            '/[\x{010F}\x{0111}\x{0434}\x{0110}\x{00F0}]/u',
             /* e  */
             '/[\x{00E8}\x{00E9}\x{00EA}\x{00EB}\x{0113}\x{0115}\x{0117}\x{0119}\x{011B}\x{0435}\x{044D}\x{00C8}-\x{00CA}\x{1EB8}-\x{1EC7}]/u',
             /* f  */
@@ -2033,7 +2033,7 @@ class ToolsCore
             /* C  */
             '/[\x{00C7}\x{0106}\x{0108}\x{010A}\x{010C}\x{0426}]/u',
             /* D  */
-            '/[\x{010E}\x{0110}\x{0414}]/u',
+            '/[\x{010E}\x{0110}\x{0414}\x{00D0}]/u',
             /* E  */
             '/[\x{00C8}\x{00C9}\x{00CA}\x{00CB}\x{0112}\x{0114}\x{0116}\x{0118}\x{011A}\x{0415}\x{042D}]/u',
             /* F  */
@@ -3222,7 +3222,8 @@ class ToolsCore
         fwrite($write_fd, "AddType application/vnd.ms-fontobject .eot\n");
         fwrite($write_fd, "AddType font/ttf .ttf\n");
         fwrite($write_fd, "AddType font/otf .otf\n");
-        fwrite($write_fd, "AddType application/x-font-woff .woff\n");
+        fwrite($write_fd, "AddType application/font-woff .woff\n");
+        fwrite($write_fd, "AddType application/font-woff2 .woff2\n");
         fwrite(
             $write_fd, "<IfModule mod_headers.c>
 	<FilesMatch \"\.(ttf|ttc|otf|eot|woff|svg)$\">
