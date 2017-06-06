@@ -219,10 +219,12 @@ class ProductControllerCore extends FrontController
 
             $this->product->description = $this->transformDescriptionWithImg($this->product->description);
 
-            // Assign to the template the id of the virtual product. "0" if the product is not downloadable.
-            $this->context->smarty->assign('virtual', ProductDownload::getIdFromIdProduct((int) $this->product->id));
+            if (!$this->is17Theme()) {
+                // Assign to the template the id of the virtual product. "0" if the product is not downloadable.
+                $this->context->smarty->assign('virtual', ProductDownload::getIdFromIdProduct((int) $this->product->id));
 
-            $this->context->smarty->assign('customizationFormTarget', Tools::safeOutput(urldecode($_SERVER['REQUEST_URI'])));
+                $this->context->smarty->assign('customizationFormTarget', Tools::safeOutput(urldecode($_SERVER['REQUEST_URI'])));
+            }
 
             if (Tools::isSubmit('submitCustomizedDatas')) {
                 // If cart has not been saved, we need to do it so that customization fields can have an id_cart
@@ -287,6 +289,14 @@ class ProductControllerCore extends FrontController
             $packItems = Pack::isPack($this->product->id) ? Pack::getItemTable($this->product->id, $this->context->language->id, true) : [];
             $this->context->smarty->assign('packItems', $packItems);
             $this->context->smarty->assign('packs', Pack::getPacksTable($this->product->id, $this->context->language->id, true, 1));
+            if ($this->is17Theme()) {
+                $noPackPrice = $this->product->getNoPackPrice();
+                $productPrice = $this->product->getPrice(Product::$_taxCalculationMethod == PS_TAX_INC, false);
+                $this->context->smarty->assign([
+                    'noPackPrice'       => $noPackPrice,
+                    'displayPackPrice'  => $packItems && $productPrice < $noPackPrice,
+                ]);
+            }
 
             if (isset($this->category->id) && $this->category->id) {
                 $returnLink = Tools::safeOutput($this->context->link->getCategoryLink($this->category));
@@ -302,16 +312,49 @@ class ProductControllerCore extends FrontController
                 $customizationDatas = $this->context->cart->getProductCustomization($this->product->id, null, true);
             }
 
-            $this->context->smarty->assign(
-                [
+            if ($this->is17Theme()) {
+                $productForTemplate = $this->getTemplateVarProduct();
+            } else {
+                $productForTemplate = $this->product;
+            }
+
+            $this->context->smarty->assign([
+                'customizationFields'      => $customizationFields,
+                'id_customization'         => empty($customizationDatas) ? null : $customizationDatas[0]['id_customization'],
+                'accessories'              => $accessories,
+                'product'                  => $productForTemplate,
+                'product_manufacturer'     => new Manufacturer((int) $this->product->id_manufacturer, $this->context->language->id),
+            ]);
+            if ($this->is17Theme()) {
+                $priceDisplay = Product::getTaxCalculationMethod((int) $this->context->cookie->id_customer);
+                $productPrice = 0;
+                $productPriceWithoutReduction = 0;
+
+                if (!$priceDisplay || $priceDisplay == 2) {
+                    $productPrice = $this->product->getPrice(true, null, 6);
+                    $productPriceWithoutReduction = $this->product->getPriceWithoutReduct(false, null);
+                } elseif ($priceDisplay == 1) {
+                    $productPrice = $this->product->getPrice(false, null, 6);
+                    $productPriceWithoutReduction = $this->product->getPriceWithoutReduct(true, null);
+                }
+
+                $productManufacturer = new Manufacturer((int) $this->product->id_manufacturer, $this->context->language->id);
+                $productBrandUrl = $this->context->link->getManufacturerLink($productManufacturer->id);
+
+                $this->context->smarty->assign([
+                    'productPriceWithoutReduction'  => $productPriceWithoutReduction,
+                    'displayUnitPrice'              => !empty($this->product->unity) && $this->product->unit_price_ratio > 0.000000,
+                    // Other than PS 1.7, 30bz / PS 1.6 has only rudimentary
+                    // support for manufacturer images/logos. For inspiration
+                    // on how to get this into 30bz as well, see
+                    // Link->getManufacturerImageLink() in PS 1.7.
+                    'manufacturer_image_url'        => null,
+                    'product_brand_url'             => $productBrandUrl,
+                ]);
+            } else {
+                $this->context->smarty->assign([
                     'stock_management'         => Configuration::get('PS_STOCK_MANAGEMENT'),
-                    'customizationFields'      => $customizationFields,
-                    'id_customization'         => empty($customizationDatas) ? null : $customizationDatas[0]['id_customization'],
-                    'accessories'              => $accessories,
                     'return_link'              => $returnLink,
-                    'product'                  => $this->product,
-                    'product_manufacturer'     => new Manufacturer((int) $this->product->id_manufacturer, $this->context->language->id),
-                    'token'                    => Tools::getToken(false),
                     'features'                 => $this->product->getFrontFeatures($this->context->language->id),
                     'attachments'              => (($this->product->cache_has_attachments) ? $this->product->getAttachments($this->context->language->id) : []),
                     'allow_oosp'               => $this->product->isAvailableWhenOutOfStock((int) $this->product->out_of_stock),
@@ -336,8 +379,8 @@ class ProductControllerCore extends FrontController
                         'category-'.(isset($this->category) ? $this->category->getFieldByLang('link_rewrite') : ''),
                     ],
                     'display_discount_price'   => Configuration::get('PS_DISPLAY_DISCOUNT_PRICE'),
-                ]
-            );
+                ]);
+            }
         }
         $this->setTemplate(_PS_THEME_DIR_.'product.tpl');
     }
@@ -470,6 +513,474 @@ class ProductControllerCore extends FrontController
     }
 
     /**
+     * Assemble template vars for a product compatible with PS 1.7 themes.
+     *
+     * @return array
+     *
+     * @since   1.1.0
+     * @version 1.1.0 Initial version
+     */
+    public function getTemplateVarProduct()
+    {
+        $fields = [
+            // Commented out fields are those requiring custom handling.
+            'id_shop_default',
+            'id_manufacturer',
+            'id_supplier',
+            'reference',
+            'supplier_reference',
+            'location',
+            'width',
+            'height',
+            'depth',
+            'weight',
+            'quantity_discount',
+            'ean13',
+            //'isbn',
+            'upc',
+            'cache_is_pack',
+            'cache_has_attachments',
+            'is_virtual',
+            //'state',
+            'id_category_default',
+            'id_tax_rules_group',
+            'on_sale',
+            'online_only',
+            //'ecotax',
+            'minimal_quantity',  // PS 1.7 uses $this->getProductMinimalQuantity()
+            'price',
+            'wholesale_price',
+            'unity',
+            'unit_price_ratio',
+            'additional_shipping_cost',
+            'customizable',
+            'text_fields',
+            'uploadable_files',
+            'redirect_type',
+            'id_product_redirected',
+            'available_for_order',
+            'available_date',
+            //'show_condition',
+            //'condition',
+            'show_price',
+            'indexed',
+            'visibility',
+            'cache_default_attribute',
+            'advanced_stock_management',
+            'date_add',
+            'date_upd',
+            'pack_stock_type',
+            'meta_description',
+            'meta_keywords',
+            'meta_title',
+            'link_rewrite',
+            'name',
+            'description',
+            'description_short',
+            'available_now',
+            'available_later',
+            'id',
+            //'id_product',
+            'out_of_stock',
+            'new',
+            //'id_product_attribute',
+            //'quantity_wanted',
+            //'extraContent',
+            'unit_price',
+        ];
+        foreach ($fields as $field) {
+            $prod[$field] = $this->product->{$field};
+        }
+
+        // Fields not supported by 30bz, replaced by default values.
+        $prod['isbn']           = '';
+        $prod['state']          = '1'; // 0 = temporary state, 1 = saved state.
+        $prod['show_condition'] = '1'; // 0 = don't show condition, 1 = show condition.
+        $prod['extraContent']   = [];
+
+        $tplVars = &$this->context->smarty->tpl_vars;
+
+        // Ecotax can be refurbished from native 30bz template vars.
+        $prod['ecotax'] = [
+            'value'   => Tools::displayPrice($tplVars['ecotax']->value),
+            'amount'  => $tplVars['ecotax']->value,
+            'rate'    => $tplVars['ecotaxTax_rate']->value,
+        ];
+        unset($tplVars['ecotax'], $tplVars['ecotaxTax_rate']);
+        $prod['ecotax_rate'] = $prod['ecotax']['amount'];
+
+        // Condition: new/used/refurbished.
+        $condition = $this->product->condition;
+        $prod['condition'] = [
+            'type'        => $condition,
+            'label'       => ucfirst($condition),
+            'schema_url'  => 'https://schema.org/'.ucfirst($condition).'Condition',
+        ];
+
+        // Next four are code copied from PS 1.7, getTemplateVarProduct().
+        $prod['id_product']           = $this->product->id;  // Same as 'id'.
+        $prod['id_product_attribute'] = (int) Tools::getValue('id_product_attribute');
+
+        $requiredQuantity = (int) Tools::getValue('quantity_wanted', $this->product->minimal_quantity);
+        if ($requiredQuantity < $this->product->minimal_quantity) {
+            $requiredQuantity = $this->product->minimal_quantity;
+        }
+        $prod['quantity_wanted'] = $requiredQuantity;
+
+        $prod['show_quantities'] = (bool) (
+            Configuration::get('PS_DISPLAY_QTIES')
+            && Configuration::get('PS_STOCK_MANAGEMENT')
+            && $this->product->quantity > 0
+            && $this->product->available_for_order
+            && !Configuration::isCatalogMode()
+        );
+
+        // There's Product::getProductProperties(), which calculates quite a
+        // few additional things (and also duplicates a lot in 30bz).
+        $productProperties = Product::getProductProperties($this->context->language->id, $prod, $this->context);
+        $fields = [
+            'allow_oosp',
+            'category',
+            //'category_name',
+            'link',
+            'attribute_price',
+            'price_tax_exc',
+            'price_without_reduction',
+            'reduction',
+            'specific_prices',
+            'quantity',
+            'quantity_all_versions',
+            'id_image',
+            'features',
+            'attachments',
+            'virtual',
+            'pack',
+            'packItems',
+            'nopackprice',
+            'customization_required',
+            'rate',
+            'tax_name',
+        ];
+        foreach ($fields as $field) {
+            $prod[$field] = $productProperties[$field];
+        }
+
+        // Some values already exist, just elsewhere.
+        $prod['category_name'] = $tplVars['category']->value->name;
+
+        $prod['quantity_discounts'] = $tplVars['quantity_discounts']->value;
+        unset($tplVars['quantity_discounts']);
+
+        $prod['customer_group_discount'] = $tplVars['group_reduction']->value;
+        unset($tplVars['group_reduction']);
+
+        // $product.customizations doesn't work in PS 1.7.0.0, this template
+        // variable is always empty. Accordingly this is a best guess based on
+        // what 30bz does and on code in PS 1.7's product-customization.tpl.
+        $custRequired = false;
+        $cust = $this->product->getCustomizationFields($this->context->language->id, $this->context->shop->id);
+        if (!$cust) {
+            $cust = [];
+        } else {
+            foreach ($cust as &$field) {
+                $field['label'] = $field['name'];
+                unset($field['name']);
+
+                if ($field['type'] == Product::CUSTOMIZE_FILE) {
+                    $field['type'] = 'image';
+                    $field['text'] = 'Upload image:'; // 30bz has no equivalent.
+                } elseif ($field['type'] == Product::CUSTOMIZE_TEXTFIELD) {
+                    $field['type'] = 'text';
+                    $field['text'] = 'Enter text:';   // 30bz has no equivalent.
+                }
+
+                // 30bz has no equivalent, but see $pictures and $textFields
+                // in initContent().
+                // @TODO: this likely needs more work, like actually applying
+                //        customisations (currently impossible in PS 1.7).
+                $field['is_customized'] = false;
+
+                if ($field['required']) {
+                    $custRequired = true;
+                }
+            }
+            unset($field);
+        }
+        $prod['customizations']['fields'] = $cust;
+
+        // The actually choosen customization.
+        // @TODO: this is most likely not always zero.
+        $prod['id_customization'] = 0;
+        $prod['is_customizable'] = $prod['customizable'];
+
+        // Should be translated, but 30bz doesn't feature translations, yet.
+        $prod['quantity_label'] = $this->product->quantity == 1 ? 'Item' : 'Items';
+
+        // See also PS 1.7 Product->getProductProperties().
+        // @TODO: subattributes 'reference', 'ean13', 'isbn' and 'upc' are
+        //        missing. PS 1.7 grabs them in Product::getAttributesParams().
+        $prod['attributes'] = [];
+        $attributes = Product::getAttributesParams($prod['id_product'], $prod['id_product_attribute']);
+
+        foreach ($attributes as $attribute) {
+            $prod['attributes'][$attribute['id_attribute_group']] = $attribute;
+        }
+
+        $prod['weight_unit'] = Configuration::get('PS_WEIGHT_UNIT');
+
+        // PS 1.7 assembles entries for this list in ImageRetriever->getImage().
+        $imageList = [];
+        if (isset($tplVars['images']) && is_object($tplVars['images'])) {
+            $typeList = ImageType::getImagesTypes();
+
+            foreach ($tplVars['images']->value as $image) {
+                foreach ($typeList as $type) {
+                    if ($type['products']) {
+                        $imageDesc['url'] = $this->context->link->getImageLink(
+                            $this->product->link_rewrite,
+                            $image['id_image'],
+                            $type['name']
+                        );
+                        $imageDesc['width'] = $type['width'];
+                        $imageDesc['height'] = $type['height'];
+
+                        $imageEntry['bySize'][$type['name']] = $imageDesc;
+                    }
+                }
+
+                foreach (['small', 'medium', 'large'] as $format) {
+                    $name = ImageType::getFormatedName($format);
+
+                    $imageDesc['url'] = $this->context->link->getImageLink(
+                        $this->product->link_rewrite,
+                        $image['id_image'],
+                        $name
+                    );
+
+                    $size = Image::getSize($name);
+                    $imageDesc['width'] = $size['width'];
+                    $imageDesc['height'] = $size['height'];
+
+                    $imageEntry[$format] = $imageDesc;
+                }
+
+                $imageEntry = array_merge($imageEntry, $image);
+                $imageEntry['associatedVariants'] = []; // What is this?
+
+                $imageList[] = $imageEntry;
+            }
+            unset($tplVars['images']);
+            $prod['images'] = $imageList;
+        }
+
+        $prod['cover'] = null;
+        foreach ($imageList as $image) {
+            if ($image['cover']) {
+                $prod['cover'] = $image;
+                break;
+            }
+        }
+
+        // Product URLs.
+        $prod['url'] = $this->context->link->getProductLink($this->product,
+            null, null, null, null, null, Tools::getValue('id_product_attribute'));
+        $prod['canonical_url'] = $this->context->link->getProductLink($this->product);
+
+        // Next nine inspired by PS 1.7 ProductPresenter->addPriceInformation().
+        $prod['has_discount']                 = false;
+        $prod['discount_type']                = null;
+        $prod['discount_percentage']          = null;
+        $prod['discount_percentage_absolute'] = null;
+        $prod['discount_amount']              = null;
+
+        if ($tplVars['tax_enabled']->value) {
+            $price = $regularPrice = $prod['price'];
+        } else {
+            $price = $regularPrice = $prod['price_tax_exc'];
+        }
+
+        if ($prod['specific_prices']) {
+            $prod['has_discount'] = ($prod['reduction'] != 0);
+            $prod['discount_type'] = $prod['specific_prices']['reduction_type'];
+            // TODO: format according to locale preferences
+            $prod['discount_percentage'] = -round(100 * $prod['specific_prices']['reduction']).'%';
+            $prod['discount_percentage_absolute'] = round(100 * $prod['specific_prices']['reduction']).'%';
+            // TODO: Fix issue with tax calculation
+            $prod['discount_amount'] = Tools::displayPrice($prod['reduction']);
+            $regularPrice = $prod['price_without_reduction'];
+        }
+
+        $prod['price_amount']         = $price;
+        $prod['price']                = Tools::displayPrice($price);
+        $prod['regular_price_amount'] = $regularPrice;
+        $prod['regular_price']        = Tools::displayPrice($regularPrice);
+
+        if ($prod['unit_price']) {
+            $prod['unit_price'] = Tools::displayPrice($prod['unit_price']);
+            $prod['unit_price_full'] = $prod['unit_price'].' '.$prod['unity'];
+        } else {
+            $prod['unit_price'] = $prod['unit_price_full'] = '';
+        }
+
+        // Inspired by PS 1.7 ProductPresenter->shouldEnableAddToCartButton().
+        $shouldShowButton = true;
+        if ($prod['customizable'] == 2 || !$prod['customization_required']) {
+            $shouldShowButton = false;
+
+            if (array_key_exists('customizations', $prod)) {
+                $shouldShowButton = true;
+                foreach ($prod['customizations']['fields'] as $field) {
+                    if ($field['required'] && !$field['is_customized']) {
+                        $shouldShowButton = false;
+                    }
+                }
+            }
+        }
+
+        $shouldShowButton = $shouldShowButton && $prod['available_for_order'];
+
+        if ($prod['quantity'] <= 0 && !$prod['allow_oosp']) {
+            $shouldShowButton = false;
+        }
+
+        if ($shouldShowButton) {
+            $params = [
+                'add'                   => true,
+                'id_product'            => $prod['id_product'],
+                'id_product_attribute'  => $prod['id_product_attribute'],
+            ];
+
+            $prod['add_to_cart_url'] = $this->context->link->getPageLink('cart', true, null, $params, false);
+        }
+
+        // See also PS 1.7 ProductPresenter->addMainVariantsInformation().
+        // Despite the variable name, PS 1.7 lists color attributes here, only.
+        $mainVariants = [];
+        $colors = Product::getAttributesColorList([$prod['id_product']]);
+        foreach (reset($colors) as $color) {
+            $attribute = [
+                'id_product_attribute'  => $color['id_product_attribute'],
+                'texture'               => '',  // Not supported by 30bz.
+                'id_product'            => $prod['id_product'],
+                'name'                  => $color['name'],
+                'type'                  => 'color',
+                'html_color_code'       => $color['color'],
+            ];
+
+            $attribute['url'] = $prod['link'].'?id_product_attribute='.$color['id_product_attribute'];
+
+            $params = [
+                'add'                   => true,
+                'id_product'            => $prod['id_product'],
+                'id_product_attribute'  => $color['id_product_attribute'],
+            ];
+            $attribute['add_to_cart_url'] = $this->context->link->getPageLink('cart', true, null, $params, false);
+
+            $mainVariants[] = $attribute;
+        }
+        $prod['main_variants'] = $mainVariants;
+
+        // Flags. PS 1.7 does this in ProductPresenter->addFlags().
+        $showPrice = Configuration::showPrices() && $prod['show_price'];
+        $flags = [];
+        if ($showPrice && $prod['online_only']) {
+            $flags['online-only'] = [
+                'type'  => 'online-only',
+                'label' => 'Online only',   // Should be translated.
+            ];
+        }
+        if ($showPrice && $prod['on_sale']
+            && !Configuration::isCatalogMode()) {
+            $flags['on-sale'] = [
+                'type'  => 'on-sale',
+                'label' => 'On sale!',      // Should be translated.
+            ];
+        }
+        if ($showPrice && $prod['reduction']
+            && !Configuration::isCatalogMode()
+            && !$prod['on_sale']) {
+            $flags['discount'] = [
+                'type'  => 'discount',
+                'label' => 'Reduced price', // Should be translated.
+            ];
+        }
+        if ($prod['new']) {
+            $flags['new'] = [
+                'type'  => 'new',
+                'label' => 'New!',          // Should be translated.
+            ];
+        }
+        if ($prod['pack']) {
+            $flags['pack'] = [
+                'type'  => 'pack',
+                'label' => 'Pack',          // Should be translated.
+            ];
+        }
+        $prod['flags'] = $flags;
+
+        // Labels. PS 1.7 does this in ProductPresenter->addLabels().
+        if ($tplVars['tax_enabled']->value) {
+            $prod['labels'] = [
+                'tax_short' => '(tax incl.)',   // Should be translated.
+                'tax_long'  => 'tax included',  // Should be translated.
+            ];
+        } else {
+            $prod['labels'] = [
+                'tax_short' => '(tax excl.)',   // Should be translated.
+                'tax_long'  => 'tax excluded',  // Should be translated.
+            ];
+        }
+
+        // Availability. PS 1.7 does this in ProductPresenter->addQuantityInformation().
+        // All instances of $prod['availability_message'] should be translated.
+        $showAvailability = $showPrice && Configuration::get('PS_STOCK_MANAGEMENT');
+
+        $prod['show_availability'] = $showAvailability;
+        $prod['availability_date'] = $prod['available_date'];
+        if ($showAvailability) {
+            if ($prod['quantity'] > 0) {
+                if ($prod['quantity'] < Configuration::get('PS_LAST_QTIES')) {
+                    $prod['availability_message'] = 'Last items in stock';
+                    $prod['availability']         = 'last_remaining_items';
+                } else {
+                    $prod['availability_message'] = $prod['available_now'];
+                    $prod['availability']         = 'available';
+                }
+            } elseif ($prod['allow_oosp']) {
+                if ($prod['available_later']) {
+                    $prod['availability_message'] = $prod['available_later'];
+                    $prod['availability']         = 'available';
+                } else {
+                    $prod['availability_message'] = null;
+                    $prod['availability']         = 'unavailable';
+                }
+            } elseif ($prod['quantity_all_versions']) {
+                $prod['availability_message'] = 'Product available with different options';
+                $prod['availability']         = 'unavailable';
+            } else {
+                $prod['availability_message'] = 'Out of stock';
+                $prod['availability']         = 'unavailable';
+            }
+        } else {
+            $prod['availability_date']    = null;
+            $prod['availability_message'] = null;
+            $prod['availability']         = null;
+        }
+
+        // 'reference_to_display'.
+        // PS 1.7 does this in ProductPresenter->addReferenceToDisplay().
+        foreach ($prod['attributes'] as $attribute) {
+            if (isset($attribute['reference'])) {
+                $prod['reference_to_display'] = $attribute['reference'];
+            } else {
+                $prod['reference_to_display'] = $prod['reference'];
+            }
+        }
+
+        return $prod;
+    }
+
+    /**
      * Assign template vars related to category
      *
      * @return void
@@ -497,7 +1008,6 @@ class ProductControllerCore extends FrontController
             // various assignements before Hook::exec
             $this->context->smarty->assign(
                 [
-                    'path'                 => $path,
                     'category'             => $this->category,
                     'subCategories'        => $subCategories,
                     'id_category_current'  => (int) $this->category->id,
@@ -506,8 +1016,18 @@ class ProductControllerCore extends FrontController
                     'categories'           => Category::getHomeCategories($this->context->language->id, true, (int) $this->context->shop->id),
                 ]
             );
+            if (!$this->is17Theme()) {
+                $this->context->smarty->assign([
+                    'path'  => $path,
+                ]);
+            }
         }
-        $this->context->smarty->assign(['HOOK_PRODUCT_FOOTER' => Hook::exec('displayFooterProduct', ['product' => $this->product, 'category' => $this->category])]);
+
+        if (!$this->is17Theme()) {
+            $this->context->smarty->assign([
+                'HOOK_PRODUCT_FOOTER' => Hook::exec('displayFooterProduct', ['product' => $this->product, 'category' => $this->category])
+            ]);
+        }
     }
 
     /**
@@ -567,18 +1087,23 @@ class ProductControllerCore extends FrontController
         $address = new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
         $this->context->smarty->assign(
             [
-                'quantity_discounts'         => $this->formatQuantityDiscounts($quantityDiscounts, $productPrice, (float) $tax, $ecotaxTaxAmount),
-                'ecotax_tax_inc'             => $ecotaxTaxAmount,
-                'ecotax_tax_exc'             => Tools::ps_round($this->product->ecotax, 2),
-                'ecotaxTax_rate'             => $ecotaxRate,
-                'productPriceWithoutEcoTax'  => (float) $productPriceWithoutEcoTax,
-                'group_reduction'            => $groupReduction,
                 'no_tax'                     => Tax::excludeTaxeOption() || !$this->product->getTaxesRate($address),
-                'ecotax'                     => (!count($this->errors) && $this->product->ecotax > 0 ? Tools::convertPrice((float) $this->product->ecotax) : 0),
                 'tax_enabled'                => Configuration::get('PS_TAX') && !Configuration::get('AEUC_LABEL_TAX_INC_EXC'),
                 'customer_group_without_tax' => Group::getPriceDisplayMethod($this->context->customer->id_default_group),
+                // For PS 1.7 themes, these four get moved into 'product' later.
+                'ecotaxTax_rate'             => $ecotaxRate,
+                'ecotax'                     => (!count($this->errors) && $this->product->ecotax > 0 ? Tools::convertPrice((float) $this->product->ecotax) : 0),
+                'quantity_discounts'         => $this->formatQuantityDiscounts($quantityDiscounts, $productPrice, (float) $tax, $ecotaxTaxAmount),
+                'group_reduction'            => $groupReduction,
             ]
         );
+        if (!$this->is17Theme()) {
+            $this->context->smarty->assign([
+                'ecotax_tax_inc'             => $ecotaxTaxAmount,
+                'ecotax_tax_exc'             => Tools::ps_round($this->product->ecotax, 2),
+                'productPriceWithoutEcoTax'  => (float) $productPriceWithoutEcoTax,
+            ]);
+        }
     }
 
     /**
@@ -640,12 +1165,14 @@ class ProductControllerCore extends FrontController
         $images = $this->product->getImages((int) $this->context->cookie->id_lang);
         $productImages = [];
 
-        if (isset($images[0])) {
+        if (isset($images[0]) && !$this->is17Theme()) {
             $this->context->smarty->assign('mainImage', $images[0]);
         }
         foreach ($images as $k => $image) {
             if ($image['cover']) {
-                $this->context->smarty->assign('mainImage', $image);
+                if (!$this->is17Theme()) {
+                    $this->context->smarty->assign('mainImage', $image);
+                }
                 $cover = $image;
                 $cover['id_image'] = (Configuration::get('PS_LEGACY_IMAGES') ? ($this->product->id.'-'.$image['id_image']) : $image['id_image']);
                 $cover['id_image_only'] = (int) $image['id_image'];
@@ -667,8 +1194,8 @@ class ProductControllerCore extends FrontController
             }
         }
         $size = Image::getSize(ImageType::getFormatedName('large'));
-        $this->context->smarty->assign(
-            [
+        if (!$this->is17Theme()) {
+            $this->context->smarty->assign([
                 'have_image'  => (isset($cover['id_image']) && (int) $cover['id_image']) ? [(int) $cover['id_image']] : Product::getCover((int) Tools::getValue('id_product')),
                 'cover'       => $cover,
                 'imgWidth'    => (int) $size['width'],
@@ -677,8 +1204,9 @@ class ProductControllerCore extends FrontController
                 'homeSize'    => Image::getSize(ImageType::getFormatedName('home')),
                 'cartSize'    => Image::getSize(ImageType::getFormatedName('cart')),
                 'col_img_dir' => _PS_COL_IMG_DIR_,
-            ]
-        );
+            ]);
+        }
+        // For PS 1.7 themes, this gets moved into 'product' later.
         if (count($productImages)) {
             $this->context->smarty->assign('images', $productImages);
         }
@@ -761,7 +1289,7 @@ class ProductControllerCore extends FrontController
                             $currentCover = $this->context->smarty->tpl_vars['cover']->value;
                         }
 
-                        if (is_array($combinationImages[$row['id_product_attribute']])) {
+                        if (isset($currentCover) && is_array($combinationImages[$row['id_product_attribute']])) {
                             foreach ($combinationImages[$row['id_product_attribute']] as $tmp) {
                                 if ($tmp['id_image'] == $currentCover['id_image']) {
                                     $combinations[$row['id_product_attribute']]['id_image'] = $idImage = (int) $tmp['id_image'];
@@ -791,7 +1319,9 @@ class ProductControllerCore extends FrontController
                                 }
                                 $cover['id_image'] = (Configuration::get('PS_LEGACY_IMAGES') ? ($this->product->id.'-'.$idImage) : (int) $idImage);
                                 $cover['id_image_only'] = (int) $idImage;
-                                $this->context->smarty->assign('cover', $cover);
+                                if (!$this->is17Theme()) {
+                                    $this->context->smarty->assign('cover', $cover);
+                                }
                             }
                         }
                     }

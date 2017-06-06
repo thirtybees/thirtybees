@@ -1,0 +1,325 @@
+classes/pdf/HTMLTemplateOrderReturn.php:89:        $this->smarty->assign(
+classes/pdf/HTMLTemplateOrderReturn.php:107:        $this->smarty->assign($tpls);
+classes/pdf/HTMLTemplateOrderReturn.php:149:        $this->smarty->assign(
+classes/pdf/HTMLTemplateOrderSlip.php:87:        $this->smarty->assign(
+classes/pdf/HTMLTemplateOrderSlip.php:173:        $this->smarty->assign(
+classes/pdf/HTMLTemplateOrderSlip.php:197:        $this->smarty->assign($tpls);
+classes/pdf/HTMLTemplateOrderSlip.php:243:        $this->smarty->assign(
+classes/pdf/HTMLTemplate.php:82:        $this->smarty->assign(
+classes/pdf/HTMLTemplate.php:165:        $this->smarty->assign(
+classes/pdf/HTMLTemplate.php:190:        $this->smarty->assign(
+classes/pdf/HTMLTemplateInvoice.php:93:        $this->smarty->assign(['header' => HTMLTemplateInvoice::l('Invoice')]);
+classes/pdf/HTMLTemplateInvoice.php:347:        $this->smarty->assign($data);
+classes/pdf/HTMLTemplateInvoice.php:360:        $this->smarty->assign($tpls);
+classes/pdf/HTMLTemplateInvoice.php:403:        $this->smarty->assign($data);
+classes/pdf/HTMLTemplateSupplyOrderForm.php:94:        $this->smarty->assign(
+classes/pdf/HTMLTemplateSupplyOrderForm.php:113:        $this->smarty->assign($tpls);
+classes/pdf/HTMLTemplateSupplyOrderForm.php:213:        $this->smarty->assign(
+classes/pdf/HTMLTemplateSupplyOrderForm.php:243:        $this->smarty->assign(
+classes/pdf/HTMLTemplateDeliverySlip.php:90:        $this->smarty->assign(['header' => HTMLTemplateDeliverySlip::l('Delivery')]);
+classes/pdf/HTMLTemplateDeliverySlip.php:140:        $this->smarty->assign(
+classes/pdf/HTMLTemplateDeliverySlip.php:159:        $this->smarty->assign($tpls);
+classes/module/Module.php:2885:            $this->smarty->assign(
+classes/module/PaymentModule.php:1056:            $this->context->smarty->assign('list', $var);
+classes/helper/HelperList.php:174:        $this->tpl->assign(
+classes/helper/HelperList.php:203:        $tpl_enable->assign(
+classes/helper/HelperList.php:371:        $this->content_tpl->assign(
+classes/helper/HelperList.php:429:        $tpl->assign(
+classes/helper/HelperList.php:476:        $tpl->assign(
+classes/helper/HelperList.php:501:        $tpl->assign(
+classes/helper/HelperList.php:521:        $tpl->assign(
+classes/helper/HelperList.php:568:        $tpl->assign(array_merge($this->tpl_delete_link_vars, $data));
+classes/helper/HelperList.php:586:        $tpl->assign(
+classes/helper/HelperList.php:739:        Context::getContext()->smarty->assign(
+classes/helper/HelperList.php:759:        $this->header_tpl->assign(
+classes/helper/HelperList.php:838:        $this->footer_tpl->assign(
+classes/helper/HelperCalendar.php:411:        $this->tpl->assign(
+classes/helper/HelperOptions.php:254:        $this->tpl->assign(
+classes/helper/HelperTreeCategories.php:606:        $this->getContext()->smarty->assign('root_category', Configuration::get('PS_ROOT_CATEGORY'));
+classes/helper/HelperTreeCategories.php:607:        $this->getContext()->smarty->assign('token', Tools::getAdminTokenLite('AdminProducts'));
+classes/helper/HelperTreeCategories.php:639:                )->assign(
+classes/helper/HelperTreeCategories.php:650:                )->assign(
+classes/helper/HelperTreeShops.php:274:                )->assign($this->getAttributes())->assign(
+classes/helper/HelperTreeShops.php:284:                )->assign($this->getAttributes())->assign(
+classes/helper/HelperUploader.php:482:        $template->assign(
+classes/helper/Helper.php:143:        $this->tpl->assign($this->tpl_vars);
+classes/helper/Helper.php:377:        $tpl->assign($this->tpl_vars);
+classes/helper/Helper.php:400:        $tpl->assign($this->tpl_vars);
+classes/helper/HelperShop.php:77:        $tpl->assign(
+classes/helper/HelperView.php:65:        $this->tpl->assign(
+classes/helper/HelperKpiRow.php:56:        $this->tpl->assign('kpis', $this->kpis);
+classes/helper/HelperKpi.php:67:        $this->tpl->assign(
+classes/helper/HelperForm.php:168:                                $this->context->smarty->assign('categories_tree', $tree->render());
+classes/helper/HelperForm.php:282:        $this->tpl->assign(
+classes/controller/FrontController17.php:409://        $this->context->smarty->assign('request_uri', Tools::safeOutput(urldecode($_SERVER['REQUEST_URI'])));
+classes/controller/FrontController17.php:484:        $this->context->smarty->assign($templateVars);
+classes/controller/FrontController17.php:500://        $this->context->smarty->assign([
+classes/controller/FrontController17.php:646://                $this->context->smarty->assign([
+classes/controller/FrontController17.php:664://        $this->context->smarty->assign([
+classes/controller/FrontController17.php:1320://                $tpl->assign([
+classes/controller/FrontController17.php:1686://        $scope->assign($params);
+classes/controller/AdminController.php:434:        $this->context->smarty->assign(
+classes/controller/AdminController.php:911:        $this->context->smarty->assign(
+classes/controller/AdminController.php:1954:            $this->context->smarty->assign('url', htmlentities($url));
+classes/controller/AdminController.php:2009:            $this->context->smarty->assign(
+classes/controller/AdminController.php:2034:        $this->context->smarty->assign(
+classes/controller/AdminController.php:2050:        $this->context->smarty->assign('meta_title', $this->meta_title);
+classes/controller/AdminController.php:2070:                $this->context->smarty->assign('content', $this->context->smarty->fetch($tplAction));
+classes/controller/AdminController.php:2083:            $this->context->smarty->assign('conf', $this->json ? json_encode($this->_conf[(int) $conf]) : $this->_conf[(int) $conf]);
+classes/controller/AdminController.php:2090:            $this->context->smarty->assign($type, $this->json ? json_encode(array_unique($this->$type)) : array_unique($this->$type));
+classes/controller/AdminController.php:2094:            $this->context->smarty->assign(
+classes/controller/AdminController.php:2102:        $this->context->smarty->assign(
+classes/controller/AdminController.php:2278:            $this->context->smarty->assign(
+classes/controller/AdminController.php:2305:            $this->context->smarty->assign('default_tab_link', $this->context->link->getAdminLink('AdminDashboard'));
+classes/controller/AdminController.php:2311:        $this->context->smarty->assign(
+classes/controller/AdminController.php:2345:            $this->context->smarty->assign('base_url_tc', $this->context->link->getPageLink('index', null, $idLang = null, $request));
+classes/controller/AdminController.php:2431:        $this->context->smarty->assign(
+classes/controller/AdminController.php:2599:            $this->context->smarty->assign(
+classes/controller/AdminController.php:2706:        $this->context->smarty->assign(
+classes/controller/AdminController.php:3727:        $this->context->smarty->assign('css_files', $this->css_files);
+classes/controller/AdminController.php:3728:        $this->context->smarty->assign('js_files', array_unique($this->js_files));
+classes/controller/AdminController.php:3730:        $this->context->smarty->assign(
+classes/controller/AdminController.php:3753:                $this->context->smarty->assign($modal);
+classes/controller/AdminController.php:3878:        $this->context->smarty->assign(
+classes/controller/AdminController.php:3889:            $this->context->smarty->assign('displayBackOfficeHeader', Hook::exec('displayBackOfficeHeader', []));
+classes/controller/AdminController.php:3892:        $this->context->smarty->assign(
+classes/controller/AdminController.php:4154:        $this->context->smarty->assign(
+classes/controller/AdminController.php:4165:        $this->context->smarty->assign('navigationPipe', $navigationPipe);
+classes/controller/AdminController.php:4179:            $this->context->smarty->assign(
+classes/controller/AdminController.php:4190:        $this->context->smarty->assign(
+classes/controller/AdminController.php:4269:        $this->context->smarty->assign(
+classes/controller/FrontController.php:290:            $this->context->smarty->assign(
+classes/controller/FrontController.php:299:            $this->context->smarty->assign('HOOK_MOBILE_HEADER', Hook::exec('displayMobileHeader'));
+classes/controller/FrontController.php:558:        $this->context->smarty->assign(
+classes/controller/FrontController.php:568:        $this->context->smarty->assign(
+classes/controller/FrontController.php:592:        $this->context->smarty->assign(
+classes/controller/FrontController.php:603:        $this->context->smarty->assign($this->initLogoAndFavicon());
+classes/controller/FrontController.php:737:        $this->context->smarty->assign($jsTag, $jsTag);
+classes/controller/FrontController.php:760:            $this->context->smarty->assign([$jsTag => Media::getJsDef(), 'js_files' => $defer ? array_unique($this->js_files) : [], 'js_inline' => ($defer && $domAvailable) ? Media::getInlineScript() : []]);
+classes/controller/FrontController.php:876:                $this->context->smarty->assign($this->initLogoAndFavicon());
+classes/controller/FrontController.php:877:                $this->context->smarty->assign(
+classes/controller/FrontController.php:956:            $this->context->smarty->assign([
+classes/controller/FrontController.php:965:            $this->context->smarty->assign([
+classes/controller/FrontController.php:997:            $this->context->smarty->assign('template', $template);
+classes/controller/FrontController.php:1247:        $this->context->smarty->assign(
+classes/controller/FrontController.php:1281:            $data->assign(
+classes/controller/FrontController.php:1348:        $this->context->smarty->assign(
+classes/controller/FrontController.php:1426:        $this->context->smarty->assign(
+classes/controller/FrontController.php:1500:            $this->context->smarty->assign('account_created', 1);
+classes/controller/FrontController.php:1658:        $this->context->smarty->assign(Meta::getMetaTags($this->context->language->id, $pageName));
+classes/controller/FrontController.php:1659:        $this->context->smarty->assign('request_uri', Tools::safeOutput(urldecode($_SERVER['REQUEST_URI'])));
+classes/controller/FrontController.php:1663:        $this->context->smarty->assign('navigationPipe', $navigationPipe);
+classes/controller/FrontController.php:1693:        $this->context->smarty->assign(
+classes/controller/FrontController.php:1749:            $this->context->smarty->assign(
+classes/controller/FrontController.php:1757:        $this->context->smarty->assign(
+classes/controller/FrontController.php:1793:                $this->context->smarty->assign($assignKey, $protocolContent.Tools::getMediaServer($assignValue).$assignValue);
+classes/controller/FrontController.php:1795:                $this->context->smarty->assign($assignKey, $assignValue);
+classes/controller/FrontController.php:1908:                                $this->context->smarty->assign(
+classes/controller/FrontController.php:1939:                    $this->context->smarty->assign(
+classes/controller/FrontController.php:2059:        $this->context->smarty->assign(
+classes/controller/FrontController.php:2174:        $this->context->smarty->assign(
+classes/controller/FrontController.php:2198:        $this->context->smarty->assign($assign);
+classes/controller/FrontController.php:2251:                $tpl->assign(
+classes/controller/Controller.php:784:        $this->context->smarty->assign($jsTag, $jsTag);
+classes/controller/Controller.php:804:            $this->context->smarty->assign(
+classes/controller/Controller.php:889:        Context::getContext()->smarty->assign('php_errors', Controller::$php_errors);
+classes/tree/TreeToolbar.php:323:        )->assign('actions', $this->getActions())->fetch();
+classes/tree/TreeToolbarButton.php:402:        )->assign($this->getAttributes())->fetch();
+classes/tree/Tree.php:715:            $headerTemplate->assign($this->getAttributes())
+classes/tree/Tree.php:716:                ->assign(
+classes/tree/Tree.php:722:            $template->assign('header', $headerTemplate->fetch());
+classes/tree/Tree.php:726:        $template->assign($this->getAttributes())->assign(
+classes/tree/Tree.php:766:                )->assign(
+classes/tree/Tree.php:776:                )->assign(
+controllers/front/OrderController.php:117:            $this->context->smarty->assign('multi_shipping', true);
+controllers/front/OrderController.php:119:            $this->context->smarty->assign('multi_shipping', false);
+controllers/front/OrderController.php:123:            $this->context->smarty->assign('address_list', $this->context->customer->getAddresses($this->context->language->id));
+controllers/front/OrderController.php:125:            $this->context->smarty->assign('address_list', []);
+controllers/front/OrderController.php:158:            $this->context->smarty->assign('errors', $this->errors);
+controllers/front/OrderController.php:183:        $this->context->smarty->assign(
+controllers/front/OrderController.php:221:            $this->context->smarty->assign('virtual_cart', $this->context->cart->isVirtualCart());
+controllers/front/OrderController.php:235:                $this->context->smarty->assign('empty', 1);
+controllers/front/OrderController.php:244:                    $this->context->smarty->assign('product_list', $this->context->cart->getProducts());
+controllers/front/OrderController.php:338:        $this->context->smarty->assign('cart', $this->context->cart);
+controllers/front/OrderController.php:356:        $this->context->smarty->assign(
+controllers/front/OrderController.php:518:        $this->context->smarty->assign($this->context->cart->getSummaryDetails());
+controllers/front/OrderController.php:529:        $this->context->smarty->assign(
+controllers/front/GuestTrackingController.php:104:                $this->context->smarty->assign('show_login_link', true);
+controllers/front/GuestTrackingController.php:121:                        $this->context->smarty->assign('transformSuccess', true);
+controllers/front/GuestTrackingController.php:177:        $this->context->smarty->assign(
+controllers/front/GuestTrackingController.php:208:        $this->context->smarty->assign(
+controllers/front/GuestTrackingController.php:237:        $this->context->smarty->assign([
+controllers/front/SupplierController.php:154:            $this->context->smarty->assign(
+controllers/front/SupplierController.php:191:            $this->context->smarty->assign(
+controllers/front/AddressController.php:290:        $this->context->smarty->assign(
+controllers/front/AddressController.php:305:            $this->context->smarty->assign('back', Tools::safeOutput($back));
+controllers/front/AddressController.php:308:            $this->context->smarty->assign('mod', Tools::safeOutput($mod));
+controllers/front/AddressController.php:311:            $this->context->smarty->assign('account_created', 1);
+controllers/front/AddressController.php:341:        $this->context->smarty->assign(
+controllers/front/AddressController.php:362:        $this->context->smarty->assign(
+controllers/front/AddressController.php:392:        $this->context->smarty->assign(
+controllers/front/ManufacturerController.php:136:        $this->context->smarty->assign(
+controllers/front/ManufacturerController.php:167:            $this->context->smarty->assign(
+controllers/front/ManufacturerController.php:177:            $this->context->smarty->assign('nbManufacturers', 0);
+controllers/front/OrderOpcController.php:58:            $this->context->smarty->assign('virtual_cart', $this->context->cart->isVirtualCart());
+controllers/front/OrderOpcController.php:61:        $this->context->smarty->assign('is_multi_address_delivery', $this->context->cart->isMultiAddressDelivery() || ((int) Tools::getValue('multi-shipping') == 1));
+controllers/front/OrderOpcController.php:62:        $this->context->smarty->assign('open_multishipping_fancybox', (int) Tools::getValue('multi-shipping') == 1);
+controllers/front/OrderOpcController.php:168:                                $this->context->smarty->assign('isVirtualCart', $this->context->cart->isVirtualCart());
+controllers/front/OrderOpcController.php:183:                                    $this->context->smarty->assign(
+controllers/front/OrderOpcController.php:230:                                $this->context->smarty->assign('isVirtualCart', $this->context->cart->isVirtualCart());
+controllers/front/OrderOpcController.php:313:                            $this->context->smarty->assign('product_list', $this->context->cart->getProducts());
+controllers/front/OrderOpcController.php:316:                                $this->context->smarty->assign('address_list', $this->context->customer->getAddresses($this->context->language->id));
+controllers/front/OrderOpcController.php:318:                                $this->context->smarty->assign('address_list', []);
+controllers/front/OrderOpcController.php:328:                                $this->context->smarty->assign('address_list', $this->context->customer->getAddresses($this->context->language->id));
+controllers/front/OrderOpcController.php:330:                                $this->context->smarty->assign('address_list', []);
+controllers/front/OrderOpcController.php:332:                            $this->context->smarty->assign('opc', true);
+controllers/front/OrderOpcController.php:463:        $this->context->smarty->assign('isVirtualCart', $this->context->cart->isVirtualCart());
+controllers/front/OrderOpcController.php:497:        $this->context->smarty->assign($vars);
+controllers/front/OrderOpcController.php:603:        $this->context->smarty->assign(
+controllers/front/OrderOpcController.php:688:        $this->context->smarty->assign(
+controllers/front/OrderOpcController.php:707:        $this->context->smarty->assign(
+controllers/front/OrderOpcController.php:717:            $this->context->smarty->assign('guestInformations', $this->_getGuestInformations());
+controllers/front/OrderOpcController.php:730:        $this->context->smarty->assign('newsletter', $newsletter);
+controllers/front/OrderOpcController.php:731:        $this->context->smarty->assign('optin', (bool) Configuration::get('PS_CUSTOMER_OPTIN'));
+controllers/front/OrderOpcController.php:732:        $this->context->smarty->assign('field_required', $this->context->customer->validateFieldsRequiredDatabase());
+controllers/front/OrderOpcController.php:832:            $this->context->smarty->assign(
+controllers/front/OrderOpcController.php:862:            $this->context->smarty->assign(
+controllers/front/OrderOpcController.php:871:            $this->context->smarty->assign(
+controllers/front/OrderDetailController.php:160:                    $this->context->smarty->assign('message_confirmation', true);
+controllers/front/OrderDetailController.php:210:                    $this->context->smarty->assign('total_old', (float) $order->total_paid - $order->total_discounts);
+controllers/front/OrderDetailController.php:222:                $this->context->smarty->assign(
+controllers/front/OrderDetailController.php:259:                    $this->context->smarty->assign('followup', str_replace('@', $order->shipping_number, $carrier->url));
+controllers/front/OrderDetailController.php:261:                $this->context->smarty->assign('HOOK_ORDERDETAILDISPLAYED', Hook::exec('displayOrderDetail', ['order' => $order]));
+controllers/front/SearchController.php:111:            $this->context->smarty->assign(
+controllers/front/SearchController.php:140:            $this->context->smarty->assign(
+controllers/front/SearchController.php:157:            $this->context->smarty->assign(
+controllers/front/SearchController.php:167:            $this->context->smarty->assign(
+controllers/front/SearchController.php:176:        $this->context->smarty->assign(['add_prod_display' => Configuration::get('PS_ATTRIBUTE_CATEGORY_DISPLAY'), 'comparator_max_item' => Configuration::get('PS_COMPARATOR_MAX_ITEM')]);
+controllers/front/SearchController.php:195:            $this->context->smarty->assign('static_token', Tools::getToken(false));
+controllers/front/DiscountController.php:82:        $this->context->smarty->assign(
+controllers/front/StoresController.php:59:            $this->context->smarty->assign('errors', $this->errors);
+controllers/front/StoresController.php:82:        $this->context->smarty->assign(
+controllers/front/StoresController.php:132:        $this->context->smarty->assign(
+controllers/front/StoresController.php:150:        $this->context->smarty->assign('hasStoreIcon', file_exists(_PS_IMG_DIR_.Configuration::get('PS_STORES_ICON')));
+controllers/front/StoresController.php:157:        $this->context->smarty->assign(
+controllers/front/StoresController.php:360:            $smarty->assign('days_datas', $daysDatas);
+controllers/front/StoresController.php:361:            $smarty->assign('id_country', $store['id_country']);
+controllers/front/PricesDropController.php:77:        $this->context->smarty->assign(
+controllers/front/OrderConfirmationController.php:155:        $this->context->smarty->assign(
+controllers/front/OrderConfirmationController.php:164:            $this->context->smarty->assign(
+controllers/front/ParentOrderController.php:130:                    $this->context->smarty->assign(
+controllers/front/ParentOrderController.php:148:        $this->context->smarty->assign('back', Tools::safeOutput(Tools::getValue('back')));
+controllers/front/ParentOrderController.php:406:        $this->context->smarty->assign($summary);
+controllers/front/ParentOrderController.php:407:        $this->context->smarty->assign(
+controllers/front/ParentOrderController.php:428:        $this->context->smarty->assign(
+controllers/front/ParentOrderController.php:497:            $this->context->smarty->assign(
+controllers/front/ParentOrderController.php:531:                    $this->context->smarty->assign('delivery', $deliveryAddress);
+controllers/front/ParentOrderController.php:539:                    $this->context->smarty->assign('invoice', $invoiceAddress);
+controllers/front/ParentOrderController.php:544:            $this->context->smarty->assign('oldMessage', $oldMessage['message']);
+controllers/front/ParentOrderController.php:563:        $this->context->smarty->assign(
+controllers/front/ParentOrderController.php:590:        $this->context->smarty->assign($vars);
+controllers/front/ParentOrderController.php:640:        $this->context->smarty->assign(
+controllers/front/ParentOrderController.php:684:            $this->context->smarty->assign(
+controllers/front/ParentOrderController.php:692:            $this->context->smarty->assign(
+controllers/front/OrderReturnController.php:76:                    $this->context->smarty->assign(
+controllers/front/OrderReturnController.php:109:        $this->context->smarty->assign(
+controllers/front/MyAccountController.php:77:        $this->context->smarty->assign(
+controllers/front/MyAccountController.php:84:        $this->context->smarty->assign('HOOK_CUSTOMER_ACCOUNT', Hook::exec('displayCustomerAccount'));
+controllers/front/IndexController.php:56:        $this->context->smarty->assign(
+controllers/front/AuthController.php:115:        $this->context->smarty->assign('genders', Gender::getGenders());
+controllers/front/AuthController.php:122:        $this->context->smarty->assign('newsletter', $newsletter);
+controllers/front/AuthController.php:123:        $this->context->smarty->assign('optin', (bool) Configuration::get('PS_CUSTOMER_OPTIN'));
+controllers/front/AuthController.php:133:            $this->context->smarty->assign('back', html_entity_decode($back));
+controllers/front/AuthController.php:135:            $this->context->smarty->assign('back', Tools::safeOutput($back));
+controllers/front/AuthController.php:145:            $this->context->smarty->assign(
+controllers/front/AuthController.php:157:            $this->context->smarty->assign('email_create', 1);
+controllers/front/AuthController.php:161:            $this->context->smarty->assign('multi_shipping', true);
+controllers/front/AuthController.php:163:            $this->context->smarty->assign('multi_shipping', false);
+controllers/front/AuthController.php:166:        $this->context->smarty->assign('field_required', $this->context->customer->validateFieldsRequiredDatabase());
+controllers/front/AuthController.php:171:        $this->context->smarty->assign(
+controllers/front/AuthController.php:183:            $this->context->smarty->assign(
+controllers/front/AuthController.php:214:        $this->context->smarty->assign(
+controllers/front/AuthController.php:241:        $this->context->smarty->assign(
+controllers/front/AuthController.php:276:            $this->context->smarty->assign(
+controllers/front/AuthController.php:394:            $this->context->smarty->assign('authentification_error', $this->errors);
+controllers/front/AuthController.php:440:            $this->context->smarty->assign('email_create', 1);
+controllers/front/AuthController.php:778:            $this->context->smarty->assign('account_error', $this->errors);
+controllers/front/AuthController.php:797:            $this->context->smarty->assign('email_create', Tools::safeOutput($email));
+controllers/front/AuthController.php:811:        $this->context->smarty->assign('confirmation', 1);
+controllers/front/CmsController.php:133:        $this->context->smarty->assign('id_current_lang', $this->context->language->id);
+controllers/front/CmsController.php:134:        $this->context->smarty->assign('home_title', $parentCat->name);
+controllers/front/CmsController.php:135:        $this->context->smarty->assign('cgv_id', Configuration::get('PS_CONDITIONS_CMS_ID'));
+controllers/front/CmsController.php:144:            $this->context->smarty->assign(
+controllers/front/CmsController.php:154:                $this->context->smarty->assign('nobots', true);
+controllers/front/CmsController.php:157:            $this->context->smarty->assign(
+controllers/front/SitemapController.php:71:        $this->context->smarty->assign('categoriesTree', Category::getRootCategory()->recurseLiteCategTree(0));
+controllers/front/SitemapController.php:72:        $this->context->smarty->assign('categoriescmsTree', CMSCategory::getRecurseCategory($this->context->language->id, 1, 1, 1));
+controllers/front/SitemapController.php:73:        $this->context->smarty->assign('voucherAllowed', (int) CartRule::isFeatureActive());
+controllers/front/SitemapController.php:77:            $this->context->smarty->assign('display_manufacturer_link', isset($blockmanufacturer->active) ? (bool) $blockmanufacturer->active : false);
+controllers/front/SitemapController.php:79:            $this->context->smarty->assign('display_manufacturer_link', 0);
+controllers/front/SitemapController.php:84:            $this->context->smarty->assign('display_supplier_link', isset($blocksupplier->active) ? (bool) $blocksupplier->active : false);
+controllers/front/SitemapController.php:86:            $this->context->smarty->assign('display_supplier_link', 0);
+controllers/front/SitemapController.php:89:        $this->context->smarty->assign('PS_DISPLAY_SUPPLIERS', Configuration::get('PS_DISPLAY_SUPPLIERS'));
+controllers/front/SitemapController.php:90:        $this->context->smarty->assign('PS_DISPLAY_BEST_SELLERS', Configuration::get('PS_DISPLAY_BEST_SELLERS'));
+controllers/front/SitemapController.php:91:        $this->context->smarty->assign('display_store', Configuration::get('PS_STORES_DISPLAY_SITEMAP'));
+controllers/front/ProductController.php:119:                    $this->context->smarty->assign('adminActionDisplay', true);
+controllers/front/ProductController.php:121:                    $this->context->smarty->assign('adminActionDisplay', false);
+controllers/front/ProductController.php:223:            $this->context->smarty->assign('virtual', ProductDownload::getIdFromIdProduct((int) $this->product->id));
+controllers/front/ProductController.php:225:            $this->context->smarty->assign('customizationFormTarget', Tools::safeOutput(urldecode($_SERVER['REQUEST_URI'])));
+controllers/front/ProductController.php:256:            $this->context->smarty->assign(
+controllers/front/ProductController.php:288:            $this->context->smarty->assign('packItems', $packItems);
+controllers/front/ProductController.php:289:            $this->context->smarty->assign('packs', Pack::getPacksTable($this->product->id, $this->context->language->id, true, 1));
+controllers/front/ProductController.php:305:            $this->context->smarty->assign(
+controllers/front/ProductController.php:467:            $this->context->smarty->assign('quantityBackup', (int) $_POST['quantityBackup']);
+controllers/front/ProductController.php:469:        $this->context->smarty->assign('customizationFormTarget', $customizationFormTarget);
+controllers/front/ProductController.php:498:            $this->context->smarty->assign(
+controllers/front/ProductController.php:510:        $this->context->smarty->assign(['HOOK_PRODUCT_FOOTER' => Hook::exec('displayFooterProduct', ['product' => $this->product, 'category' => $this->category])]);
+controllers/front/ProductController.php:533:        $this->context->smarty->assign('tax_rate', $tax);
+controllers/front/ProductController.php:568:        $this->context->smarty->assign(
+controllers/front/ProductController.php:644:            $this->context->smarty->assign('mainImage', $images[0]);
+controllers/front/ProductController.php:648:                $this->context->smarty->assign('mainImage', $image);
+controllers/front/ProductController.php:670:        $this->context->smarty->assign(
+controllers/front/ProductController.php:683:            $this->context->smarty->assign('images', $productImages);
+controllers/front/ProductController.php:779:                                $this->context->smarty->assign('mainImage', $productImages[$idImage]);
+controllers/front/ProductController.php:781:                                    $this->context->smarty->assign('images', $productImages);
+controllers/front/ProductController.php:794:                                $this->context->smarty->assign('cover', $cover);
+controllers/front/ProductController.php:828:            $this->context->smarty->assign(
+controllers/front/ProductController.php:858:        $this->context->smarty->assign(
+controllers/front/OrderSlipController.php:83:        $this->context->smarty->assign('ordersSlip', OrderSlip::getOrdersSlip((int) $this->context->cookie->id_customer));
+controllers/front/IdentityController.php:129:                    $this->context->smarty->assign('confirmation', 1);
+controllers/front/IdentityController.php:159:        $this->context->smarty->assign(
+controllers/front/IdentityController.php:173:        $this->context->smarty->assign(
+controllers/front/IdentityController.php:180:        $this->context->smarty->assign('newsletter', $newsletter);
+controllers/front/IdentityController.php:181:        $this->context->smarty->assign('optin', (bool) Configuration::get('PS_CUSTOMER_OPTIN'));
+controllers/front/IdentityController.php:183:        $this->context->smarty->assign('field_required', $this->context->customer->validateFieldsRequiredDatabase());
+controllers/front/OrderFollowController.php:127:            $this->context->smarty->assign('errorQuantity', true);
+controllers/front/OrderFollowController.php:129:            $this->context->smarty->assign(
+controllers/front/OrderFollowController.php:138:            $this->context->smarty->assign('errorDetail1', true);
+controllers/front/OrderFollowController.php:140:            $this->context->smarty->assign('errorDetail2', true);
+controllers/front/OrderFollowController.php:142:            $this->context->smarty->assign('errorNotReturnable', true);
+controllers/front/OrderFollowController.php:145:        $this->context->smarty->assign('ordersReturn', $ordersReturn);
+controllers/front/NewProductsController.php:90:        $this->context->smarty->assign(
+controllers/front/CategoryController.php:158:            $this->context->smarty->assign('compareProducts', CompareProduct::getCompareProducts((int) $this->context->cookie->id_compare));
+controllers/front/CategoryController.php:168:        $this->context->smarty->assign(
+controllers/front/CategoryController.php:197:        $this->context->smarty->assign('scenes', $scenes);
+controllers/front/CategoryController.php:209:            $this->context->smarty->assign(
+controllers/front/CategoryController.php:228:            $this->context->smarty->assign(
+controllers/front/CategoryController.php:259:            $this->context->smarty->assign('categoryNameComplement', '');
+controllers/front/CategoryController.php:285:        $this->context->smarty->assign('nb_products', $this->nbProducts);
+controllers/front/PasswordController.php:77:                        $this->context->smarty->assign(['confirmation' => 2, 'customer_email' => $customer->email]);
+controllers/front/PasswordController.php:106:                            $this->context->smarty->assign(['confirmation' => 1, 'customer_email' => $customer->email]);
+controllers/front/ContactController.php:128:                    $this->context->smarty->assign('alreadySent', 1);
+controllers/front/ContactController.php:237:                    $this->context->smarty->assign('confirmation', 1);
+controllers/front/ContactController.php:303:        $this->context->smarty->assign(
+controllers/front/ContactController.php:327:            $this->context->smarty->assign('customerThread', $customerThread);
+controllers/front/ContactController.php:330:        $this->context->smarty->assign(
+controllers/front/ContactController.php:350:            $this->context->smarty->assign('isLogged', 1);
+controllers/front/ContactController.php:373:            $this->context->smarty->assign('orderList', $orders);
+controllers/front/ContactController.php:374:            $this->context->smarty->assign('orderedProductList', $products);
+controllers/front/CompareController.php:161:                    $this->context->smarty->assign(
+controllers/front/CompareController.php:180:        $this->context->smarty->assign('hasProduct', $hasProduct);
+controllers/front/HistoryController.php:94:        $this->context->smarty->assign(
+controllers/front/AddressesController.php:118:        $this->context->smarty->assign(
+controllers/front/BestSalesController.php:67:            $this->context->smarty->assign(
+admin-dev/header.inc.php:43:Context::getContext()->smarty->assign(
+admin-dev/header.inc.php:55:Context::getContext()->smarty->assign(

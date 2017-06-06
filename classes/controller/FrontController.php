@@ -36,6 +36,8 @@
  */
 class FrontControllerCore extends Controller
 {
+    use FrontController17;
+
     /**
      * True if controller has already been initialized.
      * Prevents initializing controller more than once.
@@ -117,6 +119,8 @@ class FrontControllerCore extends Controller
     /** @var bool If true, forces display to maintenance page. */
     protected $maintenance = false;
     // @codingStandardsIgnoreEnd
+    /** @var array|bool Theme configuration. If set, it's a PS 1.7 compatible theme. */
+    public $themeConfig = false;
 
     /**
      * Controller constructor.
@@ -145,8 +149,14 @@ class FrontControllerCore extends Controller
             $useSSL = $this->ssl;
         }
 
-        if (isset($this->php_self) && is_object(Context::getContext()->theme)) {
-            $columns = Context::getContext()->theme->hasColumns($this->php_self);
+        $theme = Context::getContext()->theme;
+        if (isset($this->php_self) && is_object($theme)) {
+            $themeConfigFile = $this->getThemeDir().'config/theme.yml';
+            if (file_exists($themeConfigFile)) {
+                // It's a PS 1.7 compatible theme.
+                $this->themeConfig = Spyc::YAMLLoad($themeConfigFile);
+            } else {
+                $columns = $theme->hasColumns($this->php_self);
 
             // Don't use theme tables if not configured in DB
             if ($columns) {
@@ -154,6 +164,7 @@ class FrontControllerCore extends Controller
                 $this->display_column_right = $columns['right_column'];
             }
         }
+    }
     }
 
     /**
@@ -249,7 +260,13 @@ class FrontControllerCore extends Controller
             $this->context->cart = new Cart();
         }
 
-        if (!$this->useMobileTheme()) {
+        if ($this->is17Theme()) {
+            $this->assignGeneralPurposeVariables();
+
+            $this->context->smarty->assign([
+                'HOOK_HEADER' => Hook::exec('displayHeader'),
+            ]);
+        } elseif (!$this->useMobileTheme()) {
             // These hooks aren't used for the mobile theme.
             // Needed hooks are called in the tpl files.
 
@@ -575,18 +592,20 @@ class FrontControllerCore extends Controller
         // Added powered by for builtwith.com
         header('Powered-By: thirty bees');
         // Hooks are voluntary out the initialize array (need those variables already assigned)
-        $this->context->smarty->assign(
-            [
+        $this->context->smarty->assign([
                 'time'                  => time(),
-                'img_update_time'       => Configuration::get('PS_IMG_UPDATE_TIME'),
                 'static_token'          => Tools::getToken(false),
                 'token'                 => Tools::getToken(),
+        ]);
+        if (!$this->is17Theme()) {
+            $this->context->smarty->assign([
+                'img_update_time'       => Configuration::get('PS_IMG_UPDATE_TIME'),
                 'priceDisplayPrecision' => _PS_PRICE_DISPLAY_PRECISION_,
                 'content_only'          => (int) Tools::getValue('content_only'),
-            ]
-        );
+            ]);
 
         $this->context->smarty->assign($this->initLogoAndFavicon());
+    }
     }
 
     /**
@@ -639,9 +658,22 @@ class FrontControllerCore extends Controller
 
         $layoutDir = $this->getThemeDir();
         $layoutOverrideDir = $this->getOverrideThemeDir();
-
         $layout = false;
-        if ($entity) {
+
+        if ($this->is17Theme()) {
+            $themeSettings = $this->themeConfig['theme_settings'];
+            $customLayout = @$themeSettings['layouts'][$entity];
+            if (isset($customLayout) && $customLayout) {
+                $layoutName = $customLayout;
+            } else {
+                $layoutName = $themeSettings['default_layout'];
+            }
+
+            $layout = 'layouts/'.$layoutName.'.tpl';
+        }
+
+        if (!$layout && $entity) {
+            // It's a PS 1.6 compatible or earlier theme.
             if ($idItem > 0 && file_exists($layoutOverrideDir.'layout-'.$entity.'-'.$idItem.'.tpl')) {
                 $layout = $layoutOverrideDir.'layout-'.$entity.'-'.$idItem.'.tpl';
             } elseif (file_exists($layoutOverrideDir.'layout-'.$entity.'.tpl')) {
@@ -698,16 +730,25 @@ class FrontControllerCore extends Controller
      */
     protected function smartyOutputContent($content)
     {
-        if (!Configuration::get('TB_PAGE_CACHE_ENABLED')) {
-            parent::smartyOutputContent($content);
-
-            return;
-        }
+//        if (!Configuration::get('TB_PAGE_CACHE_ENABLED')) {
+//            parent::smartyOutputContent($content);
+//
+//            return;
+//        }
 
         $html = '';
-        $jsTag = 'js_def';
+        if (!$this->is17Theme()) {
+            $jsTag = 'js_def';
         $this->context->smarty->assign($jsTag, $jsTag);
+        }
 
+$debugArray = $this->context->smarty->tpl_vars;
+ksort($debugArray);
+ob_start();
+var_export($debugArray);
+$obContents = ob_get_contents();
+ob_end_clean();
+file_put_contents(_PS_ROOT_DIR_.'/config/debug', $obContents);
         if (is_array($content)) {
             foreach ($content as $tpl) {
                 $html .= $this->context->smarty->fetch($tpl);
@@ -717,6 +758,12 @@ class FrontControllerCore extends Controller
         }
 
         $html = trim($html);
+
+        if ($this->is17Theme()) {
+            echo $html;
+
+            return;
+        }
 
         if (in_array($this->controller_type, ['front', 'modulefront']) && !empty($html) && $this->getLayout()) {
             $liveEditContent = '';
@@ -909,31 +956,46 @@ class FrontControllerCore extends Controller
     {
         Tools::safePostVars();
 
-        // assign css_files and js_files at the very last time
-        if ((Configuration::get('PS_CSS_THEME_CACHE') || Configuration::get('PS_JS_THEME_CACHE')) && is_writable(_PS_THEME_DIR_.'cache')) {
-            // CSS compressor management
-            if (Configuration::get('PS_CSS_THEME_CACHE')) {
-                $this->css_files = Media::cccCss($this->css_files);
-            }
-            //JS compressor management
-            if (Configuration::get('PS_JS_THEME_CACHE') && !$this->useMobileTheme()) {
-                $this->js_files = Media::cccJs($this->js_files);
-            }
-        }
+// Note: PS 1.7 doesn't do this.
+//        // assign css_files and js_files at the very last time
+//        if ((Configuration::get('PS_CSS_THEME_CACHE') || Configuration::get('PS_JS_THEME_CACHE')) && is_writable(_PS_THEME_DIR_.'cache')) {
+//            // CSS compressor management
+//            if (Configuration::get('PS_CSS_THEME_CACHE')) {
+//                $this->css_files = Media::cccCss($this->css_files);
+//            }
+//            //JS compressor management
+//            if (Configuration::get('PS_JS_THEME_CACHE') && !$this->useMobileTheme()) {
+//                $this->js_files = Media::cccJs($this->js_files);
+//            }
+//        }
 
-        $this->context->smarty->assign(
-            [
+        if ($this->is17Theme()) {
+            $this->context->smarty->assign([
+                'layout'          => $this->getLayout(),
+                'stylesheets'     => $this->getStylesheets(),
+                'javascript'      => $this->getJavascript(),
+                'js_custom_vars'  => Media::getJsDef(),
+                'notifications'   => $this->prepareNotifications(),
+            ]);
+        } else {
+            // It's a PS 1.6 compatible or earlier theme.
+            $this->context->smarty->assign([
                 'css_files'      => $this->css_files,
                 'js_files'       => ($this->getLayout() && (bool) Configuration::get('PS_JS_DEFER')) ? [] : $this->js_files,
                 'js_defer'       => (bool) Configuration::get('PS_JS_DEFER'),
                 'errors'         => $this->errors,
                 'display_header' => $this->display_header,
                 'display_footer' => $this->display_footer,
-            ]
-        );
+            ]);
+        }
 
         $layout = $this->getLayout();
-        if ($layout) {
+        if ($layout && $this->is17Theme()) {
+            // @TODO: $layout this is just the boilerplate layout. Replace
+            //        it with the actually wanted one in $this->template.
+            $this->smartyOutputContent($layout);
+        } elseif ($layout) {
+            // It's a PS 1.6 compatible or earlier theme.
             if ($this->template) {
                 $template = $this->context->smarty->fetch($this->template);
             } else {
@@ -985,6 +1047,39 @@ class FrontControllerCore extends Controller
      */
     public function setMedia()
     {
+        if ($this->is17Theme()) {
+            // We can't rely on _THEME_CSS_DIR_ or _THEME_JS_DIR_ here.
+            $this->addCSS(_THEME_DIR_.'assets/css/theme.css');
+            $this->addCSS(_THEME_DIR_.'assets/css/custom.css', 'all', 0, true);
+
+            if ($this->context->language->is_rtl) {
+                $this->addCSS(_THEME_DIR_.'assets/css/rtl.css', 'all', 0, true);
+            }
+
+            $this->addJS(_THEMES_DIR_.'core.js');
+            $this->addJS(_THEME_DIR_.'assets/js/theme.js');
+            $this->addJS(_THEME_DIR_.'assets/js/custom.js', 0, true);
+
+// PrestaShop 1.7 loads a lot of additional assets here, none of which is used
+// in the default theme. For example static CSS/JS or page-specific CSS/JS.
+// See src/Core/Addon/Theme/Theme.php, getPageSpecificCss() and getPageSpecificJs().
+//
+//            $assets = $this->context->shop->theme->getPageSpecificAssets($this->php_self);
+//            if (!empty($assets)) {
+//                foreach ($assets['css'] as $css) {
+//                    $this->registerStylesheet($css['id'], $css['path'], $css);
+//                }
+//                foreach ($assets['js'] as $js) {
+//                    $this->registerJavascript($js['id'], $js['path'], $js);
+//                }
+//            }
+
+            // Execute Hook FrontController SetMedia
+            Hook::exec('actionFrontControllerSetMedia', []);
+
+            return true;
+        }
+
         /*
          * If website is accessed by mobile device
          * @see FrontControllerCore::setMobileMedia()
@@ -1181,6 +1276,10 @@ class FrontControllerCore extends Controller
      */
     public function initFooter()
     {
+        if ($this->is17Theme()) {
+            return;
+        }
+
         $hookFooter = Hook::exec('displayFooter');
         $extraJs = Configuration::get(Configuration::CUSTOMCODE_JS);
         $extraJsConf = '';
@@ -1442,7 +1541,7 @@ class FrontControllerCore extends Controller
         }
 
         // If account created with the 2 steps register process, remove 'account_created' from cookie
-        if (isset($this->context->cookie->account_created)) {
+        if (!$this->is17Theme() && isset($this->context->cookie->account_created)) {
             $this->context->smarty->assign('account_created', 1);
             unset($this->context->cookie->account_created);
         }
@@ -1580,33 +1679,17 @@ class FrontControllerCore extends Controller
             $this->context->cart = $cart;
         }
 
-        /* get page name to display it in body id */
-
-        // Are we in a payment module
-        $moduleName = '';
-        if (Validate::isModuleName(Tools::getValue('module'))) {
-            $moduleName = Tools::getValue('module');
-        }
-
-        if (!empty($this->page_name)) {
-            $pageName = $this->page_name;
-        } elseif (!empty($this->php_self)) {
-            $pageName = $this->php_self;
-        } elseif (Tools::getValue('fc') == 'module' && $moduleName != '' && (Module::getInstanceByName($moduleName) instanceof PaymentModule)) {
-            $pageName = 'module-payment-submit';
-        } elseif (preg_match('#^'.preg_quote($this->context->shop->physical_uri, '#').'modules/([a-zA-Z0-9_-]+?)/(.*)$#', $_SERVER['REQUEST_URI'], $m)) {
-            $pageName = 'module-'.$m[1].'-'.str_replace(['.php', '/'], ['', '-'], $m[2]);
-        } else {
-            $pageName = Dispatcher::getInstance()->getController();
-            $pageName = (preg_match('/^[0-9]/', $pageName) ? 'page_'.$pageName : $pageName);
-        }
-
+        $pageName = $this->getPageName();
+        if (!$this->is17Theme()) { // For PS 1.7 themes, see FrontController17.
         $this->context->smarty->assign(Meta::getMetaTags($this->context->language->id, $pageName));
+        }
         $this->context->smarty->assign('request_uri', Tools::safeOutput(urldecode($_SERVER['REQUEST_URI'])));
 
-        /* Breadcrumb */
+        /* Breadcrumb (should be deprecated) */
+        if (!$this->is17Theme()) {
         $navigationPipe = (Configuration::get('PS_NAVIGATION_PIPE') ? Configuration::get('PS_NAVIGATION_PIPE') : '>');
         $this->context->smarty->assign('navigationPipe', $navigationPipe);
+        }
 
         // Automatically redirect to the canonical URL if needed
         if (!empty($this->php_self) && !Tools::getValue('ajax')) {
@@ -1636,13 +1719,21 @@ class FrontControllerCore extends Controller
             $comparedProducts = CompareProduct::getCompareProducts($this->context->cookie->id_compare);
         }
 
-        $this->context->smarty->assign(
-            [
+        $this->context->smarty->assign([
+            // Huh? Not assigning 'link' makes loaded pages empty. Why?
+            'link'          => $this->context->link,
+            'priceDisplay'  => Product::getTaxCalculationMethod((int) $this->context->cookie->id_customer),
+            'languages'     => $languages,
+            'lang_iso'      => $this->context->language->iso_code,
+            // Deprecated
+            'logged'        => $this->context->customer->isLogged(),
+        ]);
+        if (!$this->is17Theme()) {
+            $this->context->smarty->assign([
                 // Useful for layout.tpl
                 'mobile_device'       => $this->context->getMobileDevice(),
-                'link'                => $link,
                 'cart'                => $cart,
-                'currency'            => $currency,
+                'currency'            => $currency,  // Not compatible with PS 1.7.
                 'currencyRate'        => (float) $currency->getConversationRate(),
                 'cookie'              => $this->context->cookie,
                 'page_name'           => $pageName,
@@ -1657,15 +1748,12 @@ class FrontControllerCore extends Controller
                 'tpl_uri'             => _THEME_DIR_,
                 'modules_dir'         => _MODULE_DIR_,
                 'mail_dir'            => _MAIL_DIR_,
-                'lang_iso'            => $this->context->language->iso_code,
                 'lang_id'             => (int) $this->context->language->id,
                 'language_code'       => $this->context->language->language_code ? $this->context->language->language_code : $this->context->language->iso_code,
                 'come_from'           => Tools::getHttpHost(true, true).Tools::htmlentitiesUTF8(str_replace(['\'', '\\'], '', urldecode($_SERVER['REQUEST_URI']))),
                 'cart_qties'          => (int) $cart->nbProducts(),
                 'currencies'          => Currency::getCurrencies(),
-                'languages'           => $languages,
                 'meta_language'       => implode(',', $metaLanguage),
-                'priceDisplay'        => Product::getTaxCalculationMethod((int) $this->context->cookie->id_customer),
                 'is_logged'           => (bool) $this->context->customer->isLogged(),
                 'is_guest'            => (bool) $this->context->customer->isGuest(),
                 'add_prod_display'    => (int) Configuration::get('PS_ATTRIBUTE_CATEGORY_DISPLAY'),
@@ -1687,8 +1775,7 @@ class FrontControllerCore extends Controller
                 'currencySign'        => $currency->sign, // backward compat, see global.tpl
                 'currencyFormat'      => $currency->format, // backward compat
                 'currencyBlank'       => $currency->blank, // backward compat
-            ]
-        );
+            ]);
 
         // Add the tpl files directory for mobile
         if ($this->useMobileTheme()) {
@@ -1703,7 +1790,6 @@ class FrontControllerCore extends Controller
         $this->context->smarty->assign(
             [
                 'id_currency_cookie' => (int) $currency->id,
-                'logged'             => $this->context->customer->isLogged(),
                 'customerName'       => ($this->context->customer->logged ? $this->context->cookie->customer_firstname.' '.$this->context->cookie->customer_lastname : false),
             ]
         );
@@ -1740,6 +1826,9 @@ class FrontControllerCore extends Controller
             } else {
                 $this->context->smarty->assign($assignKey, $assignValue);
             }
+        }
+        } else {
+            $this->assignRetrocompatibilityVariables();
         }
 
         /*
@@ -2241,5 +2330,48 @@ class FrontControllerCore extends Controller
     protected function redirect()
     {
         Tools::redirectLink($this->redirect_after);
+    }
+
+    /**
+     * Wether the current theme is a PrestaShop 1.7 compatible one.
+     *
+     * @return  bool
+     *
+     * @since   1.1.0
+     * @version 1.1.0 Initial version
+     */
+    public function is17Theme() {
+        return (bool) $this->themeConfig;
+    }
+
+    /**
+     * Get the name of this page.
+     *
+     * @return
+     * @since   1.1.0
+     * @version 1.1.0 Initial version
+     */
+    protected function getPageName()
+    {
+        // Are we in a payment module?
+        $moduleName = '';
+        if (Validate::isModuleName(Tools::getValue('module'))) {
+            $moduleName = Tools::getValue('module');
+        }
+
+        if (!empty($this->page_name)) {
+            $pageName = $this->page_name;
+        } elseif (!empty($this->php_self)) {
+            $pageName = $this->php_self;
+        } elseif (Tools::getValue('fc') == 'module' && $moduleName != '' && (Module::getInstanceByName($moduleName) instanceof PaymentModule)) {
+            $pageName = 'module-payment-submit';
+        } elseif (preg_match('#^'.preg_quote($this->context->shop->physical_uri, '#').'modules/([a-zA-Z0-9_-]+?)/(.*)$#', $_SERVER['REQUEST_URI'], $m)) {
+            $pageName = 'module-'.$m[1].'-'.str_replace(['.php', '/'], ['', '-'], $m[2]);
+        } else {
+            $pageName = Dispatcher::getInstance()->getController();
+            $pageName = (preg_match('/^[0-9]/', $pageName) ? 'page_'.$pageName : $pageName);
+        }
+
+        return $pageName;
     }
 }

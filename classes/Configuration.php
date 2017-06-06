@@ -901,6 +901,50 @@ class ConfigurationCore extends ObjectModel
     }
 
     /**
+     * Check if pages should be shown in catalog mode.
+     *
+     * @return bool
+     *
+     * @since   1.1.0
+     * @version 1.1.0 Initial version
+     */
+    public static function isCatalogMode()
+    {
+// @TODO: Country doesn't know about GEOLOC_CATALOG_MODE, yet. Hacking this in
+//        should be checked more carefully.
+//
+//        Also, when PS 1.7 introduced this method is got in use in many places,
+//        apparently replacing a simple check for PS_CATALOG_MODE. 30bz might
+//        want to do the same.
+//
+//        if (is_a(Context::getContext()->controller, 'FrontController')) {
+//            $isCatalogMode =
+//                Configuration::get('PS_CATALOG_MODE') ||
+//                !Configuration::showPrices() ||
+//                (Context::getContext()->controller->getRestrictedCountry() == Country::GEOLOC_CATALOG_MODE);
+//        } else {
+            $isCatalogMode =
+                Configuration::get('PS_CATALOG_MODE') ||
+                !Configuration::showPrices();
+//        }
+
+        return $isCatalogMode;
+    }
+
+    /**
+     * Check if pages should show prices.
+     *
+     * @return bool
+     *
+     * @since   1.1.0
+     * @version 1.1.0 Initial version
+     */
+    public static function showPrices()
+    {
+        return Group::isFeatureActive() ? (bool) Group::getCurrent()->show_prices : true;
+    }
+
+    /**
      * Check if configuration var is defined in given context
      *
      * @param string $key
