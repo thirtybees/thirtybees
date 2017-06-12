@@ -4498,17 +4498,20 @@ class ProductCore extends ObjectModel
 
         foreach ($categories as $newIdCateg) {
             if (!in_array($newIdCateg, $currentCategories)) {
-                $productCats[] = [
-                    'id_category' => (int) $newIdCateg,
-                    'id_product'  => (int) $this->id,
-                    'position'    => (int) $newCategoryPos[$newIdCateg],
-                ];
-                Db::getInstance()->delete('category_product', '`id_category` = '.(int) $newIdCateg);
+                // Fire and forget
+                try {
+                    Db::getInstance()->insert(
+                        'category_product', 
+                        [
+                            'id_category' => (int) $newIdCateg,
+                            'id_product'  => (int) $this->id,
+                            'position'    => (int) $newCategoryPos[$newIdCateg],
+                        ]
+                    );
+                } catch (Exception $e) {
+                }
             }
         }
-
-        // Then insert
-        Db::getInstance()->insert('category_product', $productCats);
 
         return true;
     }
