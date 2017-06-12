@@ -2761,7 +2761,7 @@ class AdminImportControllerCore extends AdminController
                         $image->id_product = (int) $product->id;
                         $image->position = Image::getHighestPosition($product->id) + 1;
                         $image->cover = (!$key && !$productHasImages) ? true : false;
-                        $alt = $product->image_alt[$key];
+                        $alt = substr($product->image_alt[$key], 0, 127); // Auto truncate
                         if (strlen($alt) > 0) {
                             $image->legend = static::createMultiLangField($alt);
                         }
