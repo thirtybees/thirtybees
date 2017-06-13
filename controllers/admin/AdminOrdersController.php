@@ -770,7 +770,7 @@ class AdminOrdersControllerCore extends AdminController
                     $orderDetailList = [];
                     $fullQuantityList = [];
                     foreach ($refunds as $idOrderDetail => $amountDetail) {
-                        $quantity = Tools::getValue('partial_refund_product_quantity');
+                        $quantity = Tools::getValue('partialRefundProductQuantity');
                         if (!$quantity[$idOrderDetail]) {
                             continue;
                         }
