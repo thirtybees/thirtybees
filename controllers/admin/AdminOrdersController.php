@@ -258,7 +258,7 @@ class AdminOrdersControllerCore extends AdminController
     /**
      * Render form
      *
-     * @return bool
+     * @return void
      *
      * @since 1.0.0
      */
@@ -277,7 +277,7 @@ class AdminOrdersControllerCore extends AdminController
             $this->errors[] = $this->l('The cart must have a customer');
         }
         if (count($this->errors)) {
-            return false;
+            return;
         }
 
         parent::renderForm();
@@ -314,8 +314,6 @@ class AdminOrdersControllerCore extends AdminController
             ]
         );
         $this->content .= $this->createTemplate('form.tpl')->fetch();
-
-        return true;
     }
 
     /**
