@@ -82,18 +82,26 @@ class LinkCore
     }
 
     /**
-     * @param mixed $property
+     * thirty bees' new coding style dictates that camelCase should be used
+     * rather than snake_case
+     * These magic methods provide backwards compatibility for modules/themes/whatevers
+     * that still access properties via their snake_case names
+     *
+     * @param string $property Property name
      *
      * @return mixed
+     *
+     * @since 1.0.1
      */
-    public function __get($property)
+    public function &__get($property)
     {
-        // FIXME: convert to camelCase
-        if (in_array($property, [
-            'category_disable_rewrite',
-        ])) {
-            return $this->$property;
+        // Property to camelCase for backwards compatibility
+        $camelCaseProperty = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $property))));
+        if (property_exists($this, $camelCaseProperty) && in_array($camelCaseProperty, ['categoryDisableRewrite'])) {
+            return $this->$camelCaseProperty;
         }
+        
+        return $this->$property;
     }
 
     /**
