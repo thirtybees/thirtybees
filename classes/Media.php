@@ -37,6 +37,13 @@ use CssSplitter\Splitter;
  */
 class MediaCore
 {
+    const FAVICON = 1;
+    const FAVICON_57 = 2;
+    const FAVICON_72 = 3;
+    const FAVICON_114 = 4;
+    const FAVICON_144 = 5;
+    const FAVICON_STORE_ICON = 6;
+
     // @codingStandardsIgnoreStart
     public static $jquery_ui_dependencies = [
         'ui.core'           => ['fileName' => 'jquery.ui.core.min.js', 'dependencies' => [], 'theme' => true],
@@ -354,6 +361,53 @@ class MediaCore
     public static function getJSPath($jsUri)
     {
         return Media::getMediaPath($jsUri);
+    }
+
+    /**
+     * @param int      $type
+     * @param int|null $idShop
+     *
+     * @return string
+     *
+     * @since 1.0.2 Introduced to effectively fix the favicon bugs
+     */
+    public static function getFaviconPath($type = self::FAVICON, $idShop = null)
+    {
+        if (!$idShop) {
+            $idShop = (int) Context::getContext()->shop->id;
+        }
+
+        $storePath = Shop::isFeatureActive() ? '-'.(int) $idShop : '';
+        switch ($type) {
+            case static::FAVICON_57:
+                $path = "favicon_57";
+                $ext = "png";
+                break;
+            case static::FAVICON_72:
+                $path = "favicon_72";
+                $ext = "png";
+                break;
+            case static::FAVICON_114:
+                $path = "favicon_114";
+                $ext = "png";
+                break;
+            case static::FAVICON_144:
+                $path = "favicon_144";
+                $ext = "png";
+                break;
+            default:
+                // Default favicon
+                $path = "favicon";
+                $ext = "ico";
+                break;
+        }
+
+        // Copy shop favicon if it does not exist
+        if (Shop::isFeatureActive() && !file_exists(_PS_IMG_DIR_."{$path}{$storePath}.{$ext}")) {
+            @copy(_PS_IMG_DIR_."{$path}.{$ext}", _PS_IMG_DIR_."{$path}{$storePath}.{$ext}");
+        }
+
+        return (string) Media::getMediaPath(_PS_IMG_DIR_."{$path}.{$ext}");
     }
 
     /**

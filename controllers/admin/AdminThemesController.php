@@ -185,7 +185,7 @@ class AdminThemesControllerCore extends AdminController
                         'type'  => 'file',
                         'name'  => 'PS_FAVICON',
                         'tab'   => 'icons',
-                        'thumb' => _PS_IMG_.Configuration::get('PS_FAVICON').(Tools::getValue('conf') ? sprintf('?%04d', rand(0, 9999)) : ''),
+                        'thumb' => Media::getMediaPath(_PS_IMG_DIR_.'favicon.ico'),
                     ],
                     'PS_FAVICON_57'   => [
                         'title' => $this->l('iPhone/iPad Favicon 57px (PNG)'),
@@ -193,7 +193,7 @@ class AdminThemesControllerCore extends AdminController
                         'type'  => 'file',
                         'name'  => 'PS_FAVICON_57',
                         'tab'   => 'icons',
-                        'thumb' => _PS_IMG_.Configuration::get('PS_FAVICON_57').(Tools::getValue('conf') ? sprintf('?%04d', rand(0, 9999)) : ''),
+                        'thumb' => Media::getMediaPath(_PS_IMG_DIR_.'favicon_57.png'),
                     ],
                     'PS_FAVICON_72'   => [
                         'title' => $this->l('iPhone/iPad Favicon 72px (PNG)'),
@@ -201,7 +201,7 @@ class AdminThemesControllerCore extends AdminController
                         'type'  => 'file',
                         'name'  => 'PS_FAVICON_72',
                         'tab'   => 'icons',
-                        'thumb' => _PS_IMG_.Configuration::get('PS_FAVICON_72').(Tools::getValue('conf') ? sprintf('?%04d', rand(0, 9999)) : ''),
+                        'thumb' => Media::getMediaPath(_PS_IMG_DIR_.'favicon_72.png'),
                     ],
                     'PS_FAVICON_114'  => [
                         'title' => $this->l('iPhone/iPad Favicon 114px (PNG)'),
@@ -209,7 +209,7 @@ class AdminThemesControllerCore extends AdminController
                         'type'  => 'file',
                         'name'  => 'PS_FAVICON_114',
                         'tab'   => 'icons',
-                        'thumb' => _PS_IMG_.Configuration::get('PS_FAVICON_114').(Tools::getValue('conf') ? sprintf('?%04d', rand(0, 9999)) : ''),
+                        'thumb' => Media::getMediaPath(_PS_IMG_DIR_.'favicon_114.png'),
                     ],
                     'PS_FAVICON_144'  => [
                         'title' => $this->l('iPhone/iPad Favicon 144px (PNG)'),
@@ -217,7 +217,7 @@ class AdminThemesControllerCore extends AdminController
                         'type'  => 'file',
                         'name'  => 'PS_FAVICON_144',
                         'tab'   => 'icons',
-                        'thumb' => _PS_IMG_.Configuration::get('PS_FAVICON_144').(Tools::getValue('conf') ? sprintf('?%04d', rand(0, 9999)) : ''),
+                        'thumb' => Media::getMediaPath(_PS_IMG_DIR_.'favicon_144.png'),
                     ],
                     'PS_STORES_ICON'  => [
                         'title' => $this->l('Store icon'),

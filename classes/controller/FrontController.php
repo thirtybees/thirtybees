@@ -254,11 +254,16 @@ class FrontControllerCore extends Controller
             // Needed hooks are called in the tpl files.
 
             $hookHeader = Hook::exec('displayHeader');
-            $hookHeader .= '
-                <link rel="shortcut icon" sizes="57x57" href="'.Media::getMediaPath(_PS_IMG_DIR_.'favicon_57.png').'">
-                <link rel="shortcut icon" sizes="72x72" href="'.Media::getMediaPath(_PS_IMG_DIR_.'favicon_72.png').'">
-                <link rel="shortcut icon" sizes="114x114" href="'.Media::getMediaPath(_PS_IMG_DIR_.'favicon_114.png').'">
-                <link rel="shortcut icon" sizes="144x144" href="'.Media::getMediaPath(_PS_IMG_DIR_.'favicon_144.png').'">';
+            foreach ([
+                         Media::FAVICON_57  => '57',
+                         Media::FAVICON_72  => '72',
+                         Media::FAVICON_114 => '114',
+                         Media::FAVICON_144 => '144',
+                     ] as $faviconType => $size) {
+                if ($path = Media::getFaviconPath($faviconType)) {
+                    $hookHeader .= '<link rel="shortcut icon" sizes="'.$size.'x'.$size.'" href="'.$path.'">';
+                }
+            }
 
             if (isset($this->php_self)) { // append some seo fields, canonical, hrefLang, rel prev/next
                 $hookHeader .= $this->getSeoFields();
