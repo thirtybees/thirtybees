@@ -705,7 +705,9 @@ class AdminMetaControllerCore extends AdminController
                 }
             } else {
                 if (preg_match('/}[a-zA-Z0-9-_]*{/', $rule)) {
-                    if (!preg_match('/:\/}[a-zA-Z0-9-_]*{/', $rule) && !preg_match('/}[a-zA-Z0-9-_]*{\/:/', $rule)) {
+                    // Two regexes can't be tied together with delimiters that can also occur in the regex itself
+                    // The only exception is the ID keyword
+                    if (!preg_match('/:\/}[a-zA-Z0-9-_]*{/', $rule) && !preg_match('/}[a-zA-Z0-9-_]*{\/:/', $rule) && !preg_match('#\{([^{}]*:)?id(:[^{}]*)?\}#', $rule)) {
                         $this->errors[] = sprintf('Route "%1$s" with rule: "%2$s" needs a correct delimiter', $route, htmlspecialchars($rule));
                     } else {
                         Configuration::updateValue('PS_ROUTE_'.$route, [(int) $idLang => $rule]);
