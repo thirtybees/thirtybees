@@ -164,14 +164,14 @@ class CartControllerCore extends FrontController
         }
 
         $qtyToCheck = $this->qty;
-        $cart_products = $this->context->cart->getProducts();
+        $cartProducts = $this->context->cart->getProducts();
 
-        if (is_array($cart_products)) {
-            foreach ($cart_products as $cart_product) {
-                if ((!isset($this->id_product_attribute) || $cart_product['id_product_attribute'] == $this->id_product_attribute) &&
-                    (isset($this->id_product) && $cart_product['id_product'] == $this->id_product)
+        if (is_array($cartProducts)) {
+            foreach ($cartProducts as $cartProduct) {
+                if ((!isset($this->id_product_attribute) || $cartProduct['id_product_attribute'] == $this->id_product_attribute) &&
+                    (isset($this->id_product) && $cartProduct['id_product'] == $this->id_product)
                 ) {
-                    $qtyToCheck = $cart_product['cart_quantity'];
+                    $qtyToCheck = $cartProduct['cart_quantity'];
 
                     if (Tools::getValue('op', 'up') == 'down') {
                         $qtyToCheck -= $this->qty;
