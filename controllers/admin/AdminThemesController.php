@@ -626,7 +626,7 @@ class AdminThemesControllerCore extends AdminController
     /**
      * Process update
      *
-     * @return bool
+     * @return void
      *
      * @since 1.0.0
      */
@@ -656,7 +656,7 @@ class AdminThemesControllerCore extends AdminController
                         $this->errors[] = $this->l('Image is not valid.');
                         $this->display = 'form';
 
-                        return false;
+                        return;
                     }
                 }
                 $theme->update();
