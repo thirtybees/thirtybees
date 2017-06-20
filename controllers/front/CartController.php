@@ -47,6 +47,7 @@ class CartControllerCore extends FrontController
     protected $id_product_attribute;
     /** @var int $id_address_delivery */
     protected $id_address_delivery;
+    /** @var int $customization_id */
     protected $customization_id;
     /** @var int $qty */
     protected $qty;
