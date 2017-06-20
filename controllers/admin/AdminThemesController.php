@@ -2352,6 +2352,8 @@ class AdminThemesControllerCore extends AdminController
         }
 
         Tools::redirectAdmin(Context::getContext()->link->getAdminLink('AdminThemes'));
+
+        return '';
     }
 
     /**
