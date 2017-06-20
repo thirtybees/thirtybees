@@ -108,6 +108,17 @@ class AdminThemesControllerCore extends AdminController
     public $table = 'theme';
     protected $toolbar_scroll = false;
     private $img_error;
+    public $can_display_themes = false;
+    public $to_install = [];
+    public $to_enable = [];
+    public $to_disable = [];
+    public $to_hook = [];
+    public $hook_list = [];
+    public $module_list = [];
+    public $native_modules = [];
+    public $user_doc = [];
+    public $image_list = [];
+    public $to_export = [];
     // @codingStandardsIgnoreEnd
 
     /**
