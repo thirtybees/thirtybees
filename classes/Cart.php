@@ -3251,68 +3251,56 @@ class CartCore extends ObjectModel
     }
 
     /**
-     * @param        $quantity
-     * @param        $idCustomization
-     * @param        $idProduct
-     * @param        $idProductAttribute
-     * @param        $idAddressDelivery
-     * @param string $operator
+     * @param int    $quantityChange     Quantity change
+     * @param int    $idCustomization    Customization ID
+     * @param int    $idProduct          Product ID
+     * @param int    $idProductAttribute Product Attribute ID
+     * @param int    $idAddressDelivery  Address ID
+     * @param string $operator           `up` or `down`
      *
      * @return bool
      *
      * @deprecated 2.0.0
      */
-    protected function _updateCustomizationQuantity($quantity, $idCustomization, $idProduct, $idProductAttribute, $idAddressDelivery, $operator = 'up')
+    protected function _updateCustomizationQuantity($quantityChange, $idCustomization, $idProduct, $idProductAttribute, $idAddressDelivery, $operator = 'up')
     {
         // Link customization to product combination when it is first added to cart
-        if (empty($idCustomization)) {
+        if (empty($idCustomization) && $operator === 'up') {
             $customization = $this->getProductCustomization($idProduct, null, true);
             foreach ($customization as $field) {
-                if ($field['quantity'] == 0) {
-                    Db::getInstance()->execute(
-                        '
-					UPDATE `'._DB_PREFIX_.'customization`
-					SET `quantity` = '.(int) $quantity.',
-						`id_product_attribute` = '.(int) $idProductAttribute.',
-						`id_address_delivery` = '.(int) $idAddressDelivery.',
-						`in_cart` = 1
-					WHERE `id_customization` = '.(int) $field['id_customization']
+                if ((int) $field['quantity'] === 0) {
+                    Db::getInstance()->update(
+                        'customization',
+                        [
+                            'quantity'             => (int) $quantityChange,
+                            'id_product'           => (int) $idProduct,
+                            'id_product_attribute' => (int) $idProductAttribute,
+                            'id_address_delivery'  => (int) $idAddressDelivery,
+                            'in_cart'              => true,
+                        ],
+                        '`id_customization` = '.(int) $field['id_customization']
                     );
                 }
             }
         }
 
-        /* Deletion */
-        if (!empty($idCustomization) && (int) $quantity < 1) {
-            return $this->_deleteCustomization((int) $idCustomization, (int) $idProduct, (int) $idProductAttribute);
-        }
-
         /* Quantity update */
         if (!empty($idCustomization)) {
-            $result = Db::getInstance()->getRow('SELECT `quantity` FROM `'._DB_PREFIX_.'customization` WHERE `id_customization` = '.(int) $idCustomization);
-            if ($result && Db::getInstance()->NumRows()) {
-                if ($operator == 'down' && (int) $result['quantity'] - (int) $quantity < 1) {
-                    return Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'customization` WHERE `id_customization` = '.(int) $idCustomization);
-                }
+            $result = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT `quantity` FROM `'._DB_PREFIX_.'customization` WHERE `id_customization` = '.(int) $idCustomization);
 
-                return Db::getInstance()->execute(
-                    '
-					UPDATE `'._DB_PREFIX_.'customization`
-					SET
-						`quantity` = `quantity` '.($operator == 'up' ? '+ ' : '- ').(int) $quantity.',
-						`id_address_delivery` = '.(int) $idAddressDelivery.',
-						`in_cart` = 1
-					WHERE `id_customization` = '.(int) $idCustomization
-                );
-            } else {
-                Db::getInstance()->execute(
-                    '
-					UPDATE `'._DB_PREFIX_.'customization`
-					SET `id_address_delivery` = '.(int) $idAddressDelivery.',
-					`in_cart` = 1
-					WHERE `id_customization` = '.(int) $idCustomization
-                );
+            if ($operator === 'down' && ((int) $result - (int) $quantityChange) < 1) {
+                return Db::getInstance()->delete('customization', '`id_customization` = '.(int) $idCustomization);
             }
+
+            return Db::getInstance()->update(
+                'customization',
+                [
+                    'quantity'            => ($operator === 'up') ? $result + $quantityChange : $result - $quantityChange,
+                    'id_address_delivery' => (int) $idAddressDelivery,
+                    'in_cart'             => true,
+                ],
+                '`id_customization` = '.(int) $idCustomization
+            );
         }
         // refresh cache of static::_products
         $this->_products = $this->getProducts(true);
