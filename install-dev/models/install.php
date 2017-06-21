@@ -970,5 +970,7 @@ class InstallModelInstall extends InstallAbstractModel
 
             return false;
         }
+
+        return true;
     }
 }
