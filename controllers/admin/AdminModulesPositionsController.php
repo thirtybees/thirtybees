@@ -656,7 +656,11 @@ class AdminModulesPositionsControllerCore extends AdminController
 
             $hookName = Tools::getValue('hook');
             $hookableModulesList = [];
-            $modules = Db::getInstance()->executeS('SELECT id_module, name FROM `'._DB_PREFIX_.'module` ');
+            $modules = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                ->select('`id_module`, `name`')
+                ->from('module')
+            );
             foreach ($modules as $module) {
                 if (!Validate::isModuleName($module['name'])) {
                     continue;
