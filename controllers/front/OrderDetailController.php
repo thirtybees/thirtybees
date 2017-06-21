@@ -74,7 +74,7 @@ class OrderDetailControllerCore extends FrontController
      */
     public function postProcess()
     {
-        if (Tools::isSubmit('submitMessage')) {
+        if (Tools::isSubmit('msgText') && Tools::isSubmit('id_order') && Tools::isSubmit('id_product')) {
             $idOrder = (int) Tools::getValue('id_order');
             $msgText = Tools::getValue('msgText');
 
