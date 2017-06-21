@@ -81,7 +81,13 @@ class PasswordControllerCore extends FrontController
                 }
             }
         } elseif (($token = Tools::getValue('token')) && ($idCustomer = (int) Tools::getValue('id_customer'))) {
-            $email = Db::getInstance()->getValue('SELECT `email` FROM '._DB_PREFIX_.'customer c WHERE c.`secure_key` = \''.pSQL($token).'\' AND c.id_customer = '.(int) $idCustomer);
+            $email = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                ->select('c.`email`')
+                ->from('customer', 'c')
+                ->where('c.`secure_key` = \''.pSQL($token).'\'')
+                ->where('c.`id_customer` = '.(int) $idCustomer)
+            );
             if ($email) {
                 $customer = new Customer();
                 $customer->getByemail($email);
