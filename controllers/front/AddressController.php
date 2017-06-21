@@ -37,20 +37,25 @@
 class AddressControllerCore extends FrontController
 {
     // @codingStandardsIgnoreStart
+    /** @var bool $auth */
     public $auth = true;
+    /** @var bool $guestAllowed */
     public $guestAllowed = true;
+    /** @var string $php_self */
     public $php_self = 'address';
+    /** @var string $authRedirection */
     public $authRedirection = 'addresses';
+    /** @var bool $ssl */
     public $ssl = true;
-    // @codingStandardsIgnoreEnd
-
     /**
      * @var Address Current address
      *
      * @since 1.0.0
      */
     protected $_address;
+    /** @var int $id_country */
     protected $id_country;
+    // @codingStandardsIgnoreEnd
 
     /**
      * Set default medias for this controller
@@ -119,6 +124,7 @@ class AddressControllerCore extends FrontController
 
     /**
      * Start forms process
+     *
      * @see FrontController::postProcess()
      *
      * @since 1.0.0
@@ -131,6 +137,63 @@ class AddressControllerCore extends FrontController
             $_POST['firstname'] = $this->context->customer->firstname;
             $_POST['lastname'] = $this->context->customer->lastname;
             $_POST['company'] = $this->context->customer->company;
+        }
+    }
+
+    /**
+     * Assign template vars related to page content
+     * @see FrontController::initContent()
+     *
+     * @since 1.0.0
+     */
+    public function initContent()
+    {
+        parent::initContent();
+
+        $this->assignCountries();
+        $this->assignVatNumber();
+        $this->assignAddressFormat();
+
+        // Assign common vars
+        $this->context->smarty->assign(
+            [
+                'address_validation' => Address::$definition['fields'],
+                'one_phone_at_least' => (int) Configuration::get('PS_ONE_PHONE_AT_LEAST'),
+                'onr_phone_at_least' => (int) Configuration::get('PS_ONE_PHONE_AT_LEAST'), //retro compat
+                'ajaxurl'            => _MODULE_DIR_,
+                'errors'             => $this->errors,
+                'token'              => Tools::getToken(false),
+                'select_address'     => (int) Tools::getValue('select_address'),
+                'address'            => $this->_address,
+                'id_address'         => (Validate::isLoadedObject($this->_address)) ? $this->_address->id : 0,
+            ]
+        );
+
+        if ($back = Tools::getValue('back')) {
+            $this->context->smarty->assign('back', Tools::safeOutput($back));
+        }
+        if ($mod = Tools::getValue('mod')) {
+            $this->context->smarty->assign('mod', Tools::safeOutput($mod));
+        }
+        if (isset($this->context->cookie->account_created)) {
+            $this->context->smarty->assign('account_created', 1);
+            unset($this->context->cookie->account_created);
+        }
+
+        $this->setTemplate(_PS_THEME_DIR_.'address.tpl');
+    }
+
+    /**
+     * @since 1.0.0
+     */
+    public function displayAjax()
+    {
+        if (count($this->errors)) {
+            $return = [
+                'hasError' => !empty($this->errors),
+                'errors'   => $this->errors,
+            ];
+            $this->ajaxDie(json_encode($return));
         }
     }
 
@@ -273,49 +336,6 @@ class AddressControllerCore extends FrontController
     }
 
     /**
-     * Assign template vars related to page content
-     * @see FrontController::initContent()
-     *
-     * @since 1.0.0
-     */
-    public function initContent()
-    {
-        parent::initContent();
-
-        $this->assignCountries();
-        $this->assignVatNumber();
-        $this->assignAddressFormat();
-
-        // Assign common vars
-        $this->context->smarty->assign(
-            [
-                'address_validation' => Address::$definition['fields'],
-                'one_phone_at_least' => (int) Configuration::get('PS_ONE_PHONE_AT_LEAST'),
-                'onr_phone_at_least' => (int) Configuration::get('PS_ONE_PHONE_AT_LEAST'), //retro compat
-                'ajaxurl'            => _MODULE_DIR_,
-                'errors'             => $this->errors,
-                'token'              => Tools::getToken(false),
-                'select_address'     => (int) Tools::getValue('select_address'),
-                'address'            => $this->_address,
-                'id_address'         => (Validate::isLoadedObject($this->_address)) ? $this->_address->id : 0,
-            ]
-        );
-
-        if ($back = Tools::getValue('back')) {
-            $this->context->smarty->assign('back', Tools::safeOutput($back));
-        }
-        if ($mod = Tools::getValue('mod')) {
-            $this->context->smarty->assign('mod', Tools::safeOutput($mod));
-        }
-        if (isset($this->context->cookie->account_created)) {
-            $this->context->smarty->assign('account_created', 1);
-            unset($this->context->cookie->account_created);
-        }
-
-        $this->setTemplate(_PS_THEME_DIR_.'address.tpl');
-    }
-
-    /**
      * Assign template vars related to countries display
      *
      * @since 1.0.0
@@ -354,7 +374,7 @@ class AddressControllerCore extends FrontController
      */
     protected function assignAddressFormat()
     {
-        $idCountry = is_null($this->_address)? (int)$this->id_country : (int)$this->_address->id_country;
+        $idCountry = is_null($this->_address) ? (int) $this->id_country : (int) $this->_address->id_country;
         $requireFormFieldsList = AddressFormat::getFieldsRequired();
         $orderedAdrFields = AddressFormat::getOrderedAddressFields($idCountry, true, true);
         $orderedAdrFields = array_unique(array_merge($orderedAdrFields, $requireFormFieldsList));
@@ -395,19 +415,5 @@ class AddressControllerCore extends FrontController
                 'vat_display'         => $vatDisplay,
             ]
         );
-    }
-
-    /**
-     * @since 1.0.0
-     */
-    public function displayAjax()
-    {
-        if (count($this->errors)) {
-            $return = [
-                'hasError' => !empty($this->errors),
-                'errors'   => $this->errors,
-            ];
-            $this->ajaxDie(json_encode($return));
-        }
     }
 }
