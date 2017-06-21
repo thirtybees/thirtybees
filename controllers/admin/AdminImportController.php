@@ -819,7 +819,7 @@ class AdminImportControllerCore extends AdminController
         $this->context->cookie->csv_selected = urlencode(Tools::getValue('csv'));
 
         $this->tpl_view_vars = [
-            'import_matchs'    => Db::getInstance()->executeS('SELECT * FROM '._DB_PREFIX_.'import_match', true, false),
+            'import_matchs'    => Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS((new DbQuery())->select('*')->from('import_match'), true, false),
             'fields_value'     => [
                 'csv'                      => Tools::getValue('csv'),
                 'entity'                   => (int) Tools::getValue('entity'),
