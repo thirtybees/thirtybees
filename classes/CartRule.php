@@ -259,29 +259,30 @@ class CartRuleCore extends ObjectModel
             return [];
         }
 
-        $sqlPart1 = '* FROM `'._DB_PREFIX_.'cart_rule` cr
-				LEFT JOIN `'._DB_PREFIX_.'cart_rule_lang` crl ON (cr.`id_cart_rule` = crl.`id_cart_rule` AND crl.`id_lang` = '.(int) $idLang.')';
-
-        $sqlPart2 = ' AND cr.date_from < "'.date('Y-m-d H:i:s').'"
-				AND cr.date_to > "'.date('Y-m-d H:i:s').'"
-				'.($active ? 'AND cr.`active` = 1' : '').'
-				'.($inStock ? 'AND cr.`quantity` > 0' : '');
-
+        $sql = (new DbQuery())
+            ->select('*')
+            ->from('cart_rule', 'cr')
+            ->leftJoin('cart_rule_lang', 'crl', 'cr.`id_cart_rule` = crl.`id_cart_rule`')
+            ->where('crl.`id_lang` = '.(int) $idLang)
+            ->where('cr.`date_from` < \''.date('Y-m-d H:i:s').'\'')
+            ->where('cr.`date_to` > \''.date('Y-m-d H:i:s').'\'');
+        if ($active) {
+            $sql->where('cr.`active` = 1');
+        }
+        if ($inStock) {
+            $sql->where('cr.`quantity` > 0');
+        }
         if ($freeShippingOnly) {
-            $sqlPart2 .= ' AND free_shipping = 1 AND carrier_restriction = 1';
+            $sql->where('`free_shipping` = 1');
+            $sql->where('`carrier_restriction` = 1');
         }
-
         if ($highlightOnly) {
-            $sqlPart2 .= ' AND highlight = 1 AND code NOT LIKE "'.pSQL(static::BO_ORDER_CODE_PREFIX).'%"';
+            $sql->where('`highlight` = 1');
+            $sql->where('`code` NOT LIKE \''.pSQL(static::BO_ORDER_CODE_PREFIX).'%\'');
         }
+        $sql->where('cr.`id_customer` = '.(int) $idCustomer.' OR cr.`group_restriction`'.($includeGeneric && (int) $idCustomer !== 0) ? 'cr.`id_customer` = 0' : '');
 
-        $sql = '(SELECT SQL_NO_CACHE '.$sqlPart1.' WHERE cr.`id_customer` = '.(int) $idCustomer.' '.$sqlPart2.')';
-        $sql .= ' UNION (SELECT '.$sqlPart1.' WHERE cr.`group_restriction` = 1 '.$sqlPart2.')';
-        if ($includeGeneric && (int) $idCustomer != 0) {
-            $sql .= ' UNION (SELECT '.$sqlPart1.' WHERE cr.`id_customer` = 0 '.$sqlPart2.')';
-        }
-
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql, true, false);
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql, true);
 
         if (empty($result)) {
             return [];
@@ -312,6 +313,26 @@ class CartRuleCore extends ObjectModel
             } else {
                 $cartRule['quantity_for_user'] = 0;
             }
+            // Backwards compatibility
+            $cartRule['id_group'] = 0;
+            if ($cartRule['free_shipping']) {
+                $cartRule['id_discount_type'] = 3;
+            } elseif ((int) $cartRule['reduction_percent'] > 0) {
+                $cartRule['id_discount_type'] = 1;
+            } elseif ((int) $cartRule['reduction_amount'] > 0) {
+                $cartRule['id_discount_type'] = 2;
+            }
+            if ((int) $cartRule['reduction_percent'] > 0) {
+                $cartRule['value'] = $cartRule['reduction_percent'];
+            } elseif ((int) $cartRule['reduction_amount'] > 0) {
+                $cartRule['value'] = $cartRule['reduction_amount'];
+            }
+            $cartRule['cumulable'] = $cartRule['cart_rule_restriction'];
+            $cartRule['cumulable_reduction'] = false;
+            $cartRule['minimal'] = $cartRule['minimum_amount'];
+            $cartRule['include_tax'] = $cartRule['reduction_tax'];
+            $cartRule['behavior_not_exhausted'] = $cartRule['partial_use'];
+            $cartRule['cart_display'] = true;
         }
         unset($cartRule);
 
