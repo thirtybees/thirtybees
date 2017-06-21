@@ -35,6 +35,8 @@ use vierbergenlars\SemVer\version as Version;
  * Class ModuleCore
  *
  * @since 1.0.0
+ *
+ * @property $confirmUninstall
  */
 abstract class ModuleCore
 {
