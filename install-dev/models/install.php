@@ -415,6 +415,9 @@ class InstallModelInstall extends InstallAbstractModel
 
             $errors = Language::downloadAndInstallLanguagePack($iso, _TB_INSTALL_VERSION_, $paramsLang);
             if (is_array($errors)) {
+                $errors[] = $this->language->l('Translations for %s not installed.', ($xml->name) ? $xml->name : $iso);
+                $this->setError($errors);
+
                 // XML is actually (almost) a language pack.
                 $xml->name = (string) $xml->name;
                 $xml->is_rtl = filter_var($xml->is_rtl, FILTER_VALIDATE_BOOLEAN);
