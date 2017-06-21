@@ -270,7 +270,6 @@ class GroupReductionCore extends ObjectModel
             return true;
         }
 
-        $query = '';
         $insert = [];
 
         foreach ($res as &$row) {
@@ -321,8 +320,10 @@ class GroupReductionCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
+    // @codingStandardsIgnoreStart
     protected function _setCache()
     {
+        // @codingStandardsIgnoreEnd
         $products = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
             ->select('cp.`id_product`')
@@ -365,8 +366,10 @@ class GroupReductionCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
+    // @codingStandardsIgnoreStart
     protected function _updateCache()
     {
+        // @codingStandardsIgnoreEnd
         $products = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
             ->select('cp.`id_product`')
