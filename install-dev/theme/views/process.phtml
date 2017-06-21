@@ -30,7 +30,8 @@ var admin = '<?php echo(file_exists('../admin-dev') ? '../admin-dev' : '../admin
 
 		<div id="error_process">
 			<h3><?php echo $this->l('An error occurred during installation...') ?></h3>
-			<p><?php echo $this->l('You can use the links on the left column to go back to the previous steps, or restart the installation process by <a href="%s">clicking here</a>.', 'index.php?restart=true') ?></p>
+			<p class="nonfatal"><?php echo $this->l('This is a non-fatal error. It can be fixed in Backoffice later. Just jot it down or make a screenshot to not forget it now, or look it up in <code>logs/</code> later.') ?></p>
+			<p class="fatal"><?php echo $this->l('You can use the links on the left column to go back to the previous steps, or restart the installation process by <a href="%s">clicking here</a>.', 'index.php?restart=true') ?></p>
 			<div class="error_log"></div>
 		</div>
 	</div>
