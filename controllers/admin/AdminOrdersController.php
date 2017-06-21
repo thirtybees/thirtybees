@@ -2574,7 +2574,14 @@ class AdminOrdersControllerCore extends AdminController
         if (is_array(Tools::getValue('product_quantity'))) {
             foreach (Tools::getValue('product_quantity') as $idCustomization => $qty) {
                 // Update quantity of each customization
-                Db::getInstance()->update('customization', ['quantity' => (int) $qty], 'id_customization = '.(int) $idCustomization);
+                Db::getInstance()->update(
+                    'customization',
+                    [
+                        'quantity' => (int) $qty,
+                    ],
+                    'id_customization = '.(int) $idCustomization,
+                    1
+                );
                 // Calculate the real quantity of the product
                 $productQuantity += $qty;
             }

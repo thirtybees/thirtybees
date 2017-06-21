@@ -3241,7 +3241,8 @@ class AdminThemesControllerCore extends AdminController
             [
                 'left_column' => 'NOT `left_column`',
             ],
-            '`id_theme_meta` = '.(int) Tools::getValue('id_theme_meta')
+            '`id_theme_meta` = '.(int) Tools::getValue('id_theme_meta'),
+            1
         );
 
         if ($result) {
