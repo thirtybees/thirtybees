@@ -298,12 +298,7 @@ class GroupReductionCore extends ObjectModel
      */
     public static function deleteCategory($idCategory)
     {
-        $query = 'DELETE FROM `'._DB_PREFIX_.'group_reduction` WHERE `id_category` = '.(int) $idCategory;
-        if (Db::getInstance()->Execute($query) === false) {
-            return false;
-        }
-
-        return true;
+        return (bool) Db::getInstance()->delete('group_reduction', '`id_category` = '.(int) $idCategory);
     }
 
     /**
@@ -329,10 +324,10 @@ class GroupReductionCore extends ObjectModel
     protected function _setCache()
     {
         $products = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            '
-			SELECT cp.`id_product`
-			FROM `'._DB_PREFIX_.'category_product` cp
-			WHERE cp.`id_category` = '.(int) $this->id_category
+            (new DbQuery())
+            ->select('cp.`id_product`')
+            ->from('category_product', 'cp')
+            ->where('cp.`id_category` = '.(int) $this->id_category)
         );
 
         $values = [];
@@ -373,11 +368,10 @@ class GroupReductionCore extends ObjectModel
     protected function _updateCache()
     {
         $products = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            '
-			SELECT cp.`id_product`
-			FROM `'._DB_PREFIX_.'category_product` cp
-			WHERE cp.`id_category` = '.(int) $this->id_category,
-            false
+            (new DbQuery())
+            ->select('cp.`id_product`')
+            ->from('category_product', 'cp')
+            ->where('cp.`id_category` = '.(int) $this->id_category)
         );
 
         $ids = [];
