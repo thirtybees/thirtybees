@@ -616,24 +616,29 @@ class AdminCarriersControllerCore extends AdminController
     }
 
     /**
-     * @param      $idCarrier
+     * @param int  $idCarrier
      * @param bool $delete
-     * 
+     *
      * @since 1.0.0
      */
     protected function changeGroups($idCarrier, $delete = true)
     {
         if ($delete) {
-            Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'carrier_group WHERE id_carrier = '.(int) $idCarrier);
+            Db::getInstance()->delete('carrier_group', '`id_carrier` = '.(int) $idCarrier);
         }
-        $groups = Db::getInstance()->executeS('SELECT id_group FROM `'._DB_PREFIX_.'group`');
+        $groups = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+            ->select('`id_group`')
+            ->from('group')
+        );
         foreach ($groups as $group) {
             if (Tools::getIsset('groupBox') && in_array($group['id_group'], Tools::getValue('groupBox'))) {
-                Db::getInstance()->execute(
-                    '
-					INSERT INTO '._DB_PREFIX_.'carrier_group (id_group, id_carrier)
-					VALUES('.(int) $group['id_group'].','.(int) $idCarrier.')
-				'
+                Db::getInstance()->insert(
+                    'carrier_group',
+                    [
+                        'id_group'   => (int) $group['id_group'],
+                        'id_carrier' => (int) $idCarrier,
+                    ]
                 );
             }
         }
