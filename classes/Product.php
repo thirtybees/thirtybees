@@ -4494,22 +4494,19 @@ class ProductCore extends ObjectModel
             $newCategoryPos[$idCategory] = isset($newCategories[$idCategory]) ? $newCategories[$idCategory] : 0;
         }
 
-        $productCats = [];
-
         foreach ($categories as $newIdCateg) {
             if (!in_array($newIdCateg, $currentCategories)) {
-                // Fire and forget
-                try {
-                    Db::getInstance()->insert(
-                        'category_product', 
-                        [
-                            'id_category' => (int) $newIdCateg,
-                            'id_product'  => (int) $this->id,
-                            'position'    => (int) $newCategoryPos[$newIdCateg],
-                        ]
-                    );
-                } catch (Exception $e) {
-                }
+                Db::getInstance()->insert(
+                    'category_product',
+                    [
+                        'id_category' => (int) $newIdCateg,
+                        'id_product'  => (int) $this->id,
+                        'position'    => (int) $newCategoryPos[$newIdCateg],
+                    ],
+                    false,
+                    true,
+                    Db::INSERT_IGNORE
+                );
             }
         }
 
