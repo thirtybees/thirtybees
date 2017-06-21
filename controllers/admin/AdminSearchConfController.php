@@ -80,7 +80,14 @@ class AdminSearchConfControllerCore extends AdminController
         // Search options
         $cronUrl = Tools::getHttpHost(true, true).__PS_BASE_URI__.basename(_PS_ADMIN_DIR_).'/searchcron.php?full=1&token='.substr(_COOKIE_KEY_, 34, 8).(Shop::getContext() == Shop::CONTEXT_SHOP ? '&id_shop='.(int) Context::getContext()->shop->id : '');
 
-        list($total, $indexed) = Db::getInstance()->getRow('SELECT COUNT(*) as "0", SUM(product_shop.indexed) as "1" FROM '._DB_PREFIX_.'product p '.Shop::addSqlAssociation('product', 'p').' WHERE product_shop.`visibility` IN ("both", "search") AND product_shop.`active` = 1');
+        list($total, $indexed) = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+            ->select('COUNT(*) as "0", SUM(product_shop.`indexed`) as "1"')
+            ->from('product', 'p')
+            ->join(Shop::addSqlAssociation('product', 'p'))
+            ->where('product_shop.`visibility` IN ("both", "search")')
+            ->where('product_shop.`active` = 1')
+        );
 
         $this->fields_options = [
             'indexation' => [
