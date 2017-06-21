@@ -455,7 +455,7 @@ class LanguageCore extends ObjectModel
         }
 
         if (!$langPackLink) {
-            $errors[] = Tools::displayError('Archive cannot be downloaded from thirtybees.com.');
+            $errors[] = Tools::displayError('Language pack cannot be downloaded from thirtybees.com.');
         } elseif (!$langPack = json_decode($langPackLink)) {
             $errors[] = Tools::displayError('Error occurred when language was checked according to your thirty bees version.');
         } elseif (isset($langPack->name)) {
@@ -473,7 +473,7 @@ class LanguageCore extends ObjectModel
             }
         }
         if (!file_exists($file)) {
-            $errors[] = Tools::displayError('No language pack is available for your version.');
+            $errors[] = Tools::displayError('No translations pack available for your version.');
         } elseif ($install) {
             $gz = new Archive_Tar($file, true);
             $fileList = AdminTranslationsController::filterTranslationFiles(Language::getLanguagePackListContent((string) $iso, $gz));
@@ -483,7 +483,7 @@ class LanguageCore extends ObjectModel
             foreach ($filePaths as $filePath) {
                 $path = dirname($filePath);
                 if (is_dir(_PS_TRANSLATIONS_DIR_.'../'.$path) && !is_writable(_PS_TRANSLATIONS_DIR_.'../'.$path) && !in_array($path, $tmpArray)) {
-                    $errors[] = (!$i++? Tools::displayError('The archive cannot be extracted.').' ' : '').Tools::displayError('The server does not have permissions for writing.').' '.sprintf(Tools::displayError('Please check rights for %s'), $path);
+                    $errors[] = (!$i++? Tools::displayError('Translation pack cannot be extracted.').' ' : '').Tools::displayError('The server does not have permissions for writing.').' '.sprintf(Tools::displayError('Please check rights for %s'), $path);
                     $tmpArray[] = $path;
                 }
             }
