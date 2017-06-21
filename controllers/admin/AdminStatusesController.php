@@ -118,7 +118,12 @@ class AdminStatusesControllerCore extends AdminController
         $this->addRowAction('delete');
 
         $unremovableOs = [];
-        $buf = Db::getInstance()->executeS('SELECT id_order_state FROM '._DB_PREFIX_.'order_state WHERE unremovable = 1');
+        $buf = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+            ->select('`id_order_state`')
+            ->from('order_state')
+            ->where('`unremovable` = 1')
+        );
         foreach ($buf as $row) {
             $unremovableOs[] = $row['id_order_state'];
         }
