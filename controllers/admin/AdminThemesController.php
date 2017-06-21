@@ -287,17 +287,23 @@ class AdminThemesControllerCore extends AdminController
             if ((int) $this->object->id > 0) {
                 $theme = new Theme((int) $this->object->id);
                 $themeMetas = Db::getInstance()->executeS(
-                    'SELECT ml.`title`, m.`page`, tm.`left_column` as `left`, tm.`right_column` as `right`, m.`id_meta`, tm.`id_theme_meta`
-					FROM '._DB_PREFIX_.'theme_meta as tm
-					LEFT JOIN '._DB_PREFIX_.'meta m ON (m.`id_meta` = tm.`id_meta`)
-					LEFT JOIN '._DB_PREFIX_.'meta_lang ml ON(ml.id_meta = m.id_meta AND ml.id_lang = '.(int) $this->context->language->id.
-                    ((int) Context::getContext()->shop->id ? ' AND id_shop = '.(int) Context::getContext()->shop->id : '').')
-					WHERE tm.`id_theme` = '.(int) $this->object->id
+                    (new DbQuery())
+                    ->select('ml.`title`, m.`page`, tm.`left_column` as `left`, tm.`right_column` as `right`, m.`id_meta`, tm.`id_theme_meta`')
+                    ->from('theme_meta', 'tm')
+                    ->leftJoin('meta', 'm', 'm.`id_meta` = tm.`id_meta`')
+                    ->leftJoin('meta_lang', 'ml', 'ml.`id_meta` = m.`id_meta`')
+                    ->where('ml.`id_lang` = '.(int) $this->context->language->id)
+                    ->where('ml.`id_shop` = '.(int) $this->context->shop->id)
+                    ->where('tm.`id_theme` = '.(int) $this->object->id)
                 );
 
                 // if no theme_meta are found, we must create them
                 if (empty($themeMetas)) {
-                    $metas = Db::getInstance()->executeS('SELECT id_meta FROM '._DB_PREFIX_.'meta');
+                    $metas = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                        (new DbQuery())
+                        ->select('`id_meta`')
+                        ->from('meta')
+                    );
                     $metasDefault = [];
                     foreach ($metas as $meta) {
                         $tmpMeta['id_meta'] = (int) $meta['id_meta'];
@@ -307,11 +313,13 @@ class AdminThemesControllerCore extends AdminController
                     }
                     $theme->updateMetas($metasDefault);
                     $themeMetas = Db::getInstance()->executeS(
-                        'SELECT ml.`title`, m.`page`, tm.`left_column` as `left`, tm.`right_column` as `right`, m.`id_meta`, tm.`id_theme_meta`
-						FROM '._DB_PREFIX_.'theme_meta as tm
-						LEFT JOIN '._DB_PREFIX_.'meta m ON (m.`id_meta` = tm.`id_meta`)
-						LEFT JOIN '._DB_PREFIX_.'meta_lang ml ON(ml.id_meta = m.id_meta AND ml.id_lang = '.(int) $this->context->language->id.')
-						WHERE tm.`id_theme` = '.(int) $this->object->id
+                        (new DbQuery())
+                        ->select('ml.`title`, m.`page`, tm.`left_column` as `left`, tm.`right_column` as `right`, m.`id_meta`, tm.`id_theme_meta`')
+                        ->from('theme_meta', 'tm')
+                        ->leftJoin('meta', 'm', 'm.`id_meta` = tm.`id_meta`')
+                        ->leftJoin('meta_lang', 'ml', 'ml.`id_meta` = m.`id_meta`')
+                        ->where('ml.`id_lang` = '.(int) $this->context->language->id)
+                        ->where('tm.`id_theme` = '.(int) $this->object->id)
                     );
                 }
 
@@ -728,10 +736,10 @@ class AdminThemesControllerCore extends AdminController
                 $name = Tools::htmlentitiesUTF8(Tools::getValue('documentationName'));
                 $this->user_doc = [$name.'¤doc/'.$filename];
 
-                $table = Db::getInstance()->executeS(
-                    '
-			SELECT name, width, height, products, categories, manufacturers, suppliers, scenes
-			FROM `'._DB_PREFIX_.'image_type`'
+                $table = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                    (new DbQuery())
+                    ->select('`name`, `width`, `products`, `categories`, `manufacturers`, `suppliers`, `scenes`')
+                    ->from('image_type')
                 );
 
                 $this->image_list = [];
@@ -744,30 +752,32 @@ class AdminThemesControllerCore extends AdminController
                         ($row['scenes'] == 1 ? 'true' : 'false');
                 }
 
-                $idShop = Db::getInstance()->getValue('SELECT `id_shop` FROM `'._DB_PREFIX_.'shop` WHERE `id_theme` = '.(int) Tools::getValue('id_theme_export'));
+                $idShop = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                    (new DbQuery())
+                    ->select('`id_shop`')
+                    ->from('shop')
+                    ->where('`id_theme` = '.(int) Tools::getValue('id_theme_export'))
+                );
 
                 // Select the list of module for this shop
-                $this->module_list = Db::getInstance()->executeS(
-                    '
-				SELECT m.`id_module`, m.`name`, m.`active`, ms.`id_shop`
-				FROM `'._DB_PREFIX_.'module` m
-				LEFT JOIN `'._DB_PREFIX_.'module_shop` ms On (m.`id_module` = ms.`id_module`)
-				WHERE ms.`id_shop` = '.(int) $idShop.'
-			'
+                $this->module_list = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                    (new DbQuery())
+                    ->select('m.`id_module`, m.`name`, m.`active`, ms.`id_shop`')
+                    ->from('module', 'm')
+                    ->leftJoin('module_shop', 'ms', 'm.`id_module` = ms.`id_module`')
+                    ->where('md.`id_shop` = '.(int) $idShop)
                 );
 
                 // Select the list of hook for this shop
-                $this->hook_list = Db::getInstance()->executeS(
-                    '
-				SELECT h.`id_hook`, h.`name` as name_hook, hm.`position`, hm.`id_module`, m.`name` as name_module, GROUP_CONCAT(hme.`file_name`, ",") as exceptions
-				FROM `'._DB_PREFIX_.'hook` h
-				LEFT JOIN `'._DB_PREFIX_.'hook_module` hm ON hm.`id_hook` = h.`id_hook`
-				LEFT JOIN `'._DB_PREFIX_.'module` m ON hm.`id_module` = m.`id_module`
-				LEFT OUTER JOIN `'._DB_PREFIX_.'hook_module_exceptions` hme ON (hme.`id_module` = hm.`id_module` AND hme.`id_hook` = h.`id_hook`)
-				WHERE hm.`id_shop` = '.(int) $idShop.'
-				GROUP BY `id_module`, `id_hook`
-				ORDER BY `name_module`
-			'
+                $this->hook_list = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                    (new DbQuery())
+                    ->select('h.`id_hook`, h.`name` as `name_hook`, hm.`position`, hm.`id_module`, m.`name` as `name_module`, GROUP_CONCAT(hme.`file_name`, ",") as `exceptions`')
+                    ->from('hook', 'h')
+                    ->leftJoin('hook_module', 'hm', 'hm.`id_hook` = h.`id_hook`')
+                    ->leftJoin('module', 'm', 'hm.`id_module` = m.`id_module`')
+                    ->where('hm.`id_shop` = '.(int) $idShop)
+                    ->groupBy('hm.`id_module`, h.`id_hook`')
+                    ->orderBy('name_module')
                 );
 
                 $this->native_modules = $this->getNativeModule();
@@ -1867,7 +1877,12 @@ class AdminThemesControllerCore extends AdminController
             $metasXml = [];
             if ($xml->metas->meta) {
                 foreach ($xml->metas->meta as $meta) {
-                    $metaId = Db::getInstance()->getValue('SELECT id_meta FROM '._DB_PREFIX_.'meta WHERE page=\''.pSQL($meta['meta_page']).'\'');
+                    $metaId = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                        (new DbQuery())
+                        ->select('`id_meta`')
+                        ->from('meta')
+                        ->where('`page` = \''.pSQL($meta['meta_page']).'\'')
+                    );
                     if ((int) $metaId > 0) {
                         $tmpMeta = [];
                         $tmpMeta['id_meta'] = (int) $metaId;
@@ -1877,13 +1892,21 @@ class AdminThemesControllerCore extends AdminController
                     }
                 }
                 $fillDefaultMeta = false;
-                if (count($xml->metas->meta) < (int) Db::getInstance()->getValue('SELECT count(*) FROM '._DB_PREFIX_.'meta')) {
+                if (count($xml->metas->meta) < (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                        (new DbQuery())
+                        ->select('COUNT(*)')
+                        ->from('meta')
+                )) {
                     $fillDefaultMeta = true;
                 }
             }
 
             if ($fillDefaultMeta == true) {
-                $metas = Db::getInstance()->executeS('SELECT id_meta FROM '._DB_PREFIX_.'meta');
+                $metas = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                    (new DbQuery())
+                    ->select('`id_meta`')
+                    ->from('meta')
+                );
                 foreach ($metas as $meta) {
                     if (!isset($metasXml[(int) $meta['id_meta']])) {
                         $tmpMeta['id_meta'] = (int) $meta['id_meta'];
@@ -3213,15 +3236,13 @@ class AdminThemesControllerCore extends AdminController
      */
     public function ajaxProcessLeftMeta()
     {
-        $themeMeta = Db::getInstance()->getRow(
-            'SELECT * FROM '._DB_PREFIX_.'theme_meta WHERE id_theme_meta = '.(int) Tools::getValue('id_theme_meta')
+        $result = Db::getInstance()->update(
+            'theme_meta',
+            [
+                'left_column' => 'NOT `left_column`',
+            ],
+            '`id_theme_meta` = '.(int) Tools::getValue('id_theme_meta')
         );
-
-        $result = false;
-        if ($themeMeta) {
-            $sql = 'UPDATE '._DB_PREFIX_.'theme_meta SET left_column='.(int) !(bool) $themeMeta['left_column'].' WHERE id_theme_meta='.(int) Tools::getValue('id_theme_meta');
-            $result = Db::getInstance()->execute($sql);
-        }
 
         if ($result) {
             echo json_encode(['success' => 1, 'text' => $this->l('The status has been updated successfully.')]);
@@ -3239,18 +3260,24 @@ class AdminThemesControllerCore extends AdminController
      */
     public function processLeftMeta()
     {
-        $themeMeta = Db::getInstance()->getRow(
-            'SELECT * FROM '._DB_PREFIX_.'theme_meta WHERE id_theme_meta = '.(int) Tools::getValue('id_theme_meta')
+        $result = Db::getInstance()->update(
+            'theme_meta',
+            [
+                'left_column' => 'NOT `left_column`',
+            ],
+            '`id_theme_meta` = '.(int) Tools::getValue('id_theme_meta'),
+            1
         );
 
-        $result = false;
-        if ($themeMeta) {
-            $sql = 'UPDATE '._DB_PREFIX_.'theme_meta SET left_column='.(int) !(bool) $themeMeta['left_column'].' WHERE id_theme_meta='.(int) Tools::getValue('id_theme_meta');
-            $result = Db::getInstance()->execute($sql);
-        }
-
         if ($result) {
-            $this->redirect_after = static::$currentIndex.'&updatetheme&id_theme='.$themeMeta['id_theme'].'&conf=5&token='.$this->token;
+            $idTheme = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                ->select('`id_theme`')
+                ->from('theme_meta')
+                ->where('`id_theme_meta` = '.(int) Tools::getValue('id_theme_meta'))
+            );
+
+            $this->redirect_after = static::$currentIndex.'&updatetheme&id_theme='.$idTheme.'&conf=5&token='.$this->token;
         } else {
             $this->errors[] = Tools::displayError('An error occurred while updating this meta.');
         }
@@ -3265,15 +3292,14 @@ class AdminThemesControllerCore extends AdminController
      */
     public function ajaxProcessRightMeta()
     {
-        $themeMeta = Db::getInstance()->getRow(
-            'SELECT * FROM '._DB_PREFIX_.'theme_meta WHERE id_theme_meta = '.(int) Tools::getValue('id_theme_meta')
+        $result = Db::getInstance()->update(
+            'theme_meta',
+            [
+                'right_column' => 'NOT `right_column`',
+            ],
+            '`id_theme_meta` = '.(int) Tools::getValue('id_theme_meta'),
+            1
         );
-
-        $result = false;
-        if ($themeMeta) {
-            $sql = 'UPDATE '._DB_PREFIX_.'theme_meta SET right_column='.(int) !(bool) $themeMeta['right_column'].' WHERE id_theme_meta='.(int) Tools::getValue('id_theme_meta');
-            $result = Db::getInstance()->execute($sql);
-        }
 
         if ($result) {
             echo json_encode(['success' => 1, 'text' => $this->l('The status has been updated successfully.')]);
@@ -3291,18 +3317,24 @@ class AdminThemesControllerCore extends AdminController
      */
     public function processRightMeta()
     {
-        $themeMeta = Db::getInstance()->getRow(
-            'SELECT * FROM '._DB_PREFIX_.'theme_meta WHERE id_theme_meta = '.(int) Tools::getValue('id_theme_meta')
+        $result = Db::getInstance()->update(
+            'theme_meta',
+            [
+                'right_column' => 'NOT `right_column`',
+            ],
+            '`id_theme_meta` = '.(int) Tools::getValue('id_theme_meta'),
+            1
         );
 
-        $result = false;
-        if ($themeMeta) {
-            $sql = 'UPDATE '._DB_PREFIX_.'theme_meta SET right_column='.(int) !(bool) $themeMeta['right_column'].' WHERE id_theme_meta='.(int) Tools::getValue('id_theme_meta');
-            $result = Db::getInstance()->execute($sql);
-        }
-
         if ($result) {
-            $this->redirect_after = static::$currentIndex.'&updatetheme&id_theme='.$themeMeta['id_theme'].'&conf=5&token='.$this->token;
+            $idTheme = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                    ->select('`id_theme`')
+                    ->from('theme_meta')
+                    ->where('`id_theme_meta` = '.(int) Tools::getValue('id_theme_meta'))
+            );
+
+            $this->redirect_after = static::$currentIndex.'&updatetheme&id_theme='.$idTheme.'&conf=5&token='.$this->token;
         } else {
             $this->errors[] = Tools::displayError('An error occurred while updating this meta.');
         }
