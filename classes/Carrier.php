@@ -234,10 +234,10 @@ class CarrierCore extends ObjectModel
         if (!Cache::isStored($key)) {
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 (new DbQuery())
-                ->select('`id_tax_rules_group`')
-                ->from('carrier_tax_rules_group_shop')
-                ->where('`id_carrier` = '.(int) $idCarrier)
-                ->where('`id_shop` = '.(int) $context->shop->id)
+                    ->select('`id_tax_rules_group`')
+                    ->from('carrier_tax_rules_group_shop')
+                    ->where('`id_carrier` = '.(int) $idCarrier)
+                    ->where('`id_shop` = '.(int) $context->shop->id)
             );
             Cache::store($key, $result);
 
@@ -278,13 +278,13 @@ class CarrierCore extends ObjectModel
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-            ->select('d.`id_'.bqSQL($rangeTable).'`, d.`id_carrier`, d.`id_zone`, d.`price`')
-            ->from('delivery', 'd')
-            ->leftJoin(bqSQL($rangeTable), 'r', 'r.`id_'.bqSQL($rangeTable).'` = d.`id_'.bqSQL($rangeTable).'`')
-            ->where('d.`id_carrier` = '.(int) $idCarrier)
-            ->where('d.`id_'.bqSQL($rangeTable).'` IS NOT NULL')
-            ->where('d.`id_'.bqSQL($rangeTable).'` != 0 '.static::sqlDeliveryRangeShop($rangeTable))
-            ->orderBy('r.`delimiter1`')
+                ->select('d.`id_'.bqSQL($rangeTable).'`, d.`id_carrier`, d.`id_zone`, d.`price`')
+                ->from('delivery', 'd')
+                ->leftJoin(bqSQL($rangeTable), 'r', 'r.`id_'.bqSQL($rangeTable).'` = d.`id_'.bqSQL($rangeTable).'`')
+                ->where('d.`id_carrier` = '.(int) $idCarrier)
+                ->where('d.`id_'.bqSQL($rangeTable).'` IS NOT NULL')
+                ->where('d.`id_'.bqSQL($rangeTable).'` != 0 '.static::sqlDeliveryRangeShop($rangeTable))
+                ->orderBy('r.`delimiter1`')
         );
     }
 
@@ -335,12 +335,12 @@ class CarrierCore extends ObjectModel
     {
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
             (new DbQuery())
-            ->select('COUNT(*) AS `n`, c.`id_tax_rules_group`')
-            ->from('carrier', 'c')
-            ->innerJoin('tax_rules_group', 'trg', 'c.`id_tax_rules_group` = trg.`id_tax_rules_group`')
-            ->groupBy('c.`id_tax_rules_group`')
-            ->orderBy('n DESC')
-            ->limit(1)
+                ->select('COUNT(*) AS `n`, c.`id_tax_rules_group`')
+                ->from('carrier', 'c')
+                ->innerJoin('tax_rules_group', 'trg', 'c.`id_tax_rules_group` = trg.`id_tax_rules_group`')
+                ->groupBy('c.`id_tax_rules_group`')
+                ->orderBy('n DESC')
+                ->limit(1)
         );
 
         return isset($result['id_tax_rules_group']) ? (int) $result['id_tax_rules_group'] : false;
@@ -367,26 +367,26 @@ class CarrierCore extends ObjectModel
 
         $states = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-            ->select('s.*')
-            ->from('state', 's')
-            ->orderBy('s.`name` ASC')
+                ->select('s.*')
+                ->from('state', 's')
+                ->orderBy('s.`name` ASC')
         );
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-            ->select('cl.*, c.*, cl.`name` as `country`, zz.`name` as `zone`')
-            ->from('country', 'c')
-            ->join(Shop::addSqlAssociation('country', 'c'))
-            ->leftJoin('country_lang', 'cl', 'cl.`id_country` = c.`id_country`')
-            ->innerJoin('carrier_zone', 'cz', 'cz.`id_zone` = c.`id_zone`')
-            ->innerJoin('carrier', 'cr', 'cr.`id_carrier` = cz.`id_carrier`')
-            ->leftJoin('zone', 'z', 'cz.`id_zone` = zz.`id_zone`')
-            ->where('cl.`id_lang` = '.(int) $idLang)
-            ->where('cr.`deleted` = 0')
-            ->where($activeCarriers ? 'cr.`active` = 1' : '')
-            ->where($activeCountries ? 'c.`active` = 1' : '')
-            ->where(!is_null($containStates) ? 'c.`contains_states` = '.(int) $containStates : '')
-            ->orderBy('cl.`name` ASC')
+                ->select('cl.*, c.*, cl.`name` as `country`, zz.`name` as `zone`')
+                ->from('country', 'c')
+                ->join(Shop::addSqlAssociation('country', 'c'))
+                ->leftJoin('country_lang', 'cl', 'cl.`id_country` = c.`id_country`')
+                ->innerJoin('carrier_zone', 'cz', 'cz.`id_zone` = c.`id_zone`')
+                ->innerJoin('carrier', 'cr', 'cr.`id_carrier` = cz.`id_carrier`')
+                ->leftJoin('zone', 'z', 'cz.`id_zone` = zz.`id_zone`')
+                ->where('cl.`id_lang` = '.(int) $idLang)
+                ->where('cr.`deleted` = 0')
+                ->where($activeCarriers ? 'cr.`active` = 1' : '')
+                ->where($activeCountries ? 'c.`active` = 1' : '')
+                ->where(!is_null($containStates) ? 'c.`contains_states` = '.(int) $containStates : '')
+                ->orderBy('cl.`name` ASC')
         );
 
         $countries = [];
@@ -448,11 +448,11 @@ class CarrierCore extends ObjectModel
     {
         $carrierData = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
             (new DbQuery())
-            ->select('*')
-            ->from('carrier')
-            ->where('`id_reference` = '.(int) $idReference)
-            ->where('`deleted` = 0')
-            ->orderBy('`id_carrier` DESC')
+                ->select('*')
+                ->from('carrier')
+                ->where('`id_reference` = '.(int) $idReference)
+                ->where('`deleted` = 0')
+                ->orderBy('`id_carrier` DESC')
         );
         if (!$carrierData) {
             return false;
@@ -638,15 +638,15 @@ class CarrierCore extends ObjectModel
         if (!Cache::isStored($cacheId)) {
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 (new DbQuery())
-                ->select('c.`id_carrier`')
-                ->from('carrier', 'c')
-                ->leftJoin('carrier_zone', 'cz', 'cz.`id_carrier` = c.`id_carrier`')
-                ->leftJoin('zone', 'z', 'z.`id_zone` = '.(int) $idZone)
-                ->where('c.`id_carrier` = '.(int) $idCarrier)
-                ->where('c.`deleted` = 0')
-                ->where('c.`active` = 1')
-                ->where('cz.`id_zone` = '.(int) $idZone)
-                ->where('z.`active` = 1')
+                    ->select('c.`id_carrier`')
+                    ->from('carrier', 'c')
+                    ->leftJoin('carrier_zone', 'cz', 'cz.`id_carrier` = c.`id_carrier`')
+                    ->leftJoin('zone', 'z', 'z.`id_zone` = '.(int) $idZone)
+                    ->where('c.`id_carrier` = '.(int) $idCarrier)
+                    ->where('c.`deleted` = 0')
+                    ->where('c.`active` = 1')
+                    ->where('cz.`id_zone` = '.(int) $idZone)
+                    ->where('z.`active` = 1')
             );
             Cache::store($cacheId, $result);
         }
@@ -881,12 +881,12 @@ class CarrierCore extends ObjectModel
         if (!Cache::isStored($cacheId)) {
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 (new DbQuery())
-                ->select('d.`price`')
-                ->from('delivery', 'd')
-                ->innerJoin('range_weight', 'w', 'd.`id_range_weight` = w.`id_range_weight`')
-                ->where('d.`id_zone` = '.(int) $idZone)
-                ->where('d.`id_carrier` = '.(int) $this->id.' '.static::sqlDeliveryRangeShop('range_weight'))
-                ->orderBy('w.`delimiter2` DESC')
+                    ->select('d.`price`')
+                    ->from('delivery', 'd')
+                    ->innerJoin('range_weight', 'w', 'd.`id_range_weight` = w.`id_range_weight`')
+                    ->where('d.`id_zone` = '.(int) $idZone)
+                    ->where('d.`id_carrier` = '.(int) $this->id.' '.static::sqlDeliveryRangeShop('range_weight'))
+                    ->orderBy('w.`delimiter2` DESC')
             );
             Cache::store($cacheId, $result);
 
@@ -910,12 +910,12 @@ class CarrierCore extends ObjectModel
         if (!Cache::isStored($cacheId)) {
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 (new DbQuery())
-                ->select('d.`price`')
-                ->from('delivery', 'd')
-                ->innerJoin('range_price', 'r', 'd.`id_range_price` = r.`id_range_price`')
-                ->where('d.`id_zone` = '.(int) $idZone)
-                ->where('d.`id_carrier` = '.(int) $this->id.' '.static::sqlDeliveryRangeShop('range_price'))
-                ->orderBy('r.`delimiter2` DESC')
+                    ->select('d.`price`')
+                    ->from('delivery', 'd')
+                    ->innerJoin('range_price', 'r', 'd.`id_range_price` = r.`id_range_price`')
+                    ->where('d.`id_zone` = '.(int) $idZone)
+                    ->where('d.`id_carrier` = '.(int) $this->id.' '.static::sqlDeliveryRangeShop('range_price'))
+                    ->orderBy('r.`delimiter2` DESC')
             );
             Cache::store($cacheId, $result);
         }
@@ -942,14 +942,14 @@ class CarrierCore extends ObjectModel
             // @codingStandardsIgnoreEnd
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
                 (new DbQuery())
-                ->select('d.`price`')
-                ->from('delivery', 'd')
-                ->leftJoin('range_weight', 'w', 'd.`id_range_weight` = w.`id_range_weight`')
-                ->where('d.`id_zone` = '.(int) $idZone)
-                ->where((float) $totalWeight.' >= w.`delimiter1`')
-                ->where((float) $totalWeight.' < w.`delimiter2`')
-                ->where('d.`id_carrier` = '.(int) $idCarrier.' '.static::sqlDeliveryRangeShop('range_weight'))
-                ->orderBy('w.`delimiter1` ASC')
+                    ->select('d.`price`')
+                    ->from('delivery', 'd')
+                    ->leftJoin('range_weight', 'w', 'd.`id_range_weight` = w.`id_range_weight`')
+                    ->where('d.`id_zone` = '.(int) $idZone)
+                    ->where((float) $totalWeight.' >= w.`delimiter1`')
+                    ->where((float) $totalWeight.' < w.`delimiter2`')
+                    ->where('d.`id_carrier` = '.(int) $idCarrier.' '.static::sqlDeliveryRangeShop('range_weight'))
+                    ->orderBy('w.`delimiter1` ASC')
             );
             // @codingStandardsIgnoreStart
             static::$price_by_weight2[$cacheKey] = (isset($result['price']));
@@ -991,14 +991,14 @@ class CarrierCore extends ObjectModel
 
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
                 (new DbQuery())
-                ->select('d.`price`')
-                ->from('delivery', 'd')
-                ->leftJoin('range_price', 'r', 'd.`id_range_price` = r.`id_range_price`')
-                ->where('d.`id_zone` = '.(int) $idZone)
-                ->where((float) $orderTotal.' >= r.`delimiter1`')
-                ->where((float) $orderTotal.' < r.`delimiter2`')
-                ->where('d.`id_carrier` = '.(int) $idCarrier.' '.static::sqlDeliveryRangeShop('range_price'))
-                ->orderBy('r.`delimiter1` ASC')
+                    ->select('d.`price`')
+                    ->from('delivery', 'd')
+                    ->leftJoin('range_price', 'r', 'd.`id_range_price` = r.`id_range_price`')
+                    ->where('d.`id_zone` = '.(int) $idZone)
+                    ->where((float) $orderTotal.' >= r.`delimiter1`')
+                    ->where((float) $orderTotal.' < r.`delimiter2`')
+                    ->where('d.`id_carrier` = '.(int) $idCarrier.' '.static::sqlDeliveryRangeShop('range_price'))
+                    ->orderBy('r.`delimiter1` ASC')
             );
             // @codingStandardsIgnoreStart
             static::$price_by_price2[$cacheKey] = (isset($result['price']));
@@ -1040,10 +1040,10 @@ class CarrierCore extends ObjectModel
 
         $carrierList = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-            ->select('`id_carrier`')
-            ->from('carrier')
-            ->where('`deleted` = 0')
-            ->where(is_array($exception) ? '`id_carrier` NOT IN ('.join(',', $exception).')' : '')
+                ->select('`id_carrier`')
+                ->from('carrier')
+                ->where('`deleted` = 0')
+                ->where(is_array($exception) ? '`id_carrier` NOT IN ('.join(',', $exception).')' : '')
         );
 
         if ($carrierList) {
@@ -1106,9 +1106,9 @@ class CarrierCore extends ObjectModel
     {
         $position = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
-            ->select('MAX(`position`)')
-            ->from('carrier')
-            ->where('`deleted` = 0')
+                ->select('MAX(`position`)')
+                ->from('carrier')
+                ->where('`deleted` = 0')
         );
 
         return (is_numeric($position)) ? $position : -1;
@@ -1147,10 +1147,10 @@ class CarrierCore extends ObjectModel
 
         $result = Db::getInstance()->executeS(
             (new DbQuery())
-            ->select('`id_carrier`')
-            ->from('carrier')
-            ->where('`deleted` = 0')
-            ->orderBy('`position` ASC')
+                ->select('`id_carrier`')
+                ->from('carrier')
+                ->where('`deleted` = 0')
+                ->orderBy('`position` ASC')
         );
 
         $i = 0;
@@ -1228,14 +1228,14 @@ class CarrierCore extends ObjectModel
             // @codingStandardsIgnoreEnd
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
                 (new DbQuery())
-                ->select('d.`price`')
-                ->from('delivery', 'd')
-                ->leftJoin('range_weight', 'w', 'd.`id_range_weight` = w.`id_range_weight`')
-                ->where('d.`id_zone` = '.(int) $idZone)
-                ->where((float) $totalWeight.' >= w.`delimiter1`')
-                ->where((float) $totalWeight.' < w.`delimiter2`')
-                ->where('d.`id_carrier` = '.(int) $idCarrier.' '.static::sqlDeliveryRangeShop('range_weight'))
-                ->orderBy('w.`delimiter1` ASC')
+                    ->select('d.`price`')
+                    ->from('delivery', 'd')
+                    ->leftJoin('range_weight', 'w', 'd.`id_range_weight` = w.`id_range_weight`')
+                    ->where('d.`id_zone` = '.(int) $idZone)
+                    ->where((float) $totalWeight.' >= w.`delimiter1`')
+                    ->where((float) $totalWeight.' < w.`delimiter2`')
+                    ->where('d.`id_carrier` = '.(int) $idCarrier.' '.static::sqlDeliveryRangeShop('range_weight'))
+                    ->orderBy('w.`delimiter1` ASC')
             );
             if (!isset($result['price'])) {
                 // @codingStandardsIgnoreStart
@@ -1284,14 +1284,14 @@ class CarrierCore extends ObjectModel
             }
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
                 (new DbQuery())
-                ->select('d.`price`')
-                ->from('delivery', 'd')
-                ->leftJoin('range_price', 'r', 'd.`id_range_price` = r.`id_range_price`')
-                ->where('d.`id_zone` = '.(int) $idZone)
-                ->where((float) $orderTotal.' >= r.`delimiter1`')
-                ->where((float) $orderTotal.' < r.`delimiter2`')
-                ->where('d.`id_carrier` = '.(int) $idCarrier.' '.static::sqlDeliveryRangeShop('range_price'))
-                ->orderBy('r.`delimiter1` ASC')
+                    ->select('d.`price`')
+                    ->from('delivery', 'd')
+                    ->leftJoin('range_price', 'r', 'd.`id_range_price` = r.`id_range_price`')
+                    ->where('d.`id_zone` = '.(int) $idZone)
+                    ->where((float) $orderTotal.' >= r.`delimiter1`')
+                    ->where((float) $orderTotal.' < r.`delimiter2`')
+                    ->where('d.`id_carrier` = '.(int) $idCarrier.' '.static::sqlDeliveryRangeShop('range_price'))
+                    ->orderBy('r.`delimiter1` ASC')
             );
             if (!isset($result['price'])) {
                 // @codingStandardsIgnoreStart
@@ -1328,10 +1328,10 @@ class CarrierCore extends ObjectModel
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-            ->select('*')
-            ->from('carrier_zone', 'cz')
-            ->leftJoin('zone', 'z', 'cz.`id_zone` = z.`id_zone`')
-            ->where('cz.`id_carrier` = '.(int) $this->id)
+                ->select('*')
+                ->from('carrier_zone', 'cz')
+                ->leftJoin('zone', 'z', 'cz.`id_zone` = z.`id_zone`')
+                ->where('cz.`id_carrier` = '.(int) $this->id)
         );
     }
 
@@ -1349,10 +1349,10 @@ class CarrierCore extends ObjectModel
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-            ->select('*')
-            ->from('carrier_zone')
-            ->where('`id_carrier` = '.(int) $this->id)
-            ->where('`id_zone` = '.(int) $idZone)
+                ->select('*')
+                ->from('carrier_zone')
+                ->where('`id_carrier` = '.(int) $this->id)
+                ->where('`id_zone` = '.(int) $idZone)
         );
     }
 
@@ -1452,9 +1452,9 @@ class CarrierCore extends ObjectModel
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-            ->select('`id_group`')
-            ->from('carrier_group')
-            ->where('`id_carrier` = '.(int) $this->id)
+                ->select('`id_group`')
+                ->from('carrier_group')
+                ->where('`id_carrier` = '.(int) $this->id)
         );
     }
 
@@ -1584,9 +1584,9 @@ class CarrierCore extends ObjectModel
         foreach (['range_price', 'range_weight'] as $range) {
             $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                 (new DbQuery())
-                ->select('`id_'.$range.'` as `id_range`, `delimiter1`, `delimiter2`')
-                ->from($range)
-                ->where('`id_carrier` = '.(int) $oldId)
+                    ->select('`id_'.$range.'` as `id_range`, `delimiter1`, `delimiter2`')
+                    ->from($range)
+                    ->where('`id_carrier` = '.(int) $oldId)
             );
             if (count($res)) {
                 foreach ($res as $val) {
@@ -1620,9 +1620,9 @@ class CarrierCore extends ObjectModel
         // Copy existing zones
         $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-            ->select('*')
-            ->from('carrier_zone')
-            ->where('`id_carrier` = '.(int) $oldId)
+                ->select('*')
+                ->from('carrier_zone')
+                ->where('`id_carrier` = '.(int) $oldId)
         );
         foreach ($res as $val) {
             Db::getInstance()->insert(
@@ -1642,9 +1642,9 @@ class CarrierCore extends ObjectModel
         // Copy reference
         $idReference = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
-            ->select('`id_reference`')
-            ->from(bqSQL(static::$definition['table']))
-            ->where('`id_carrier` = '.(int) $oldId)
+                ->select('`id_reference`')
+                ->from(bqSQL(static::$definition['table']))
+                ->where('`id_carrier` = '.(int) $oldId)
         );
         Db::getInstance()->update(
             bqSQL(static::$definition['table']),
@@ -1677,9 +1677,9 @@ class CarrierCore extends ObjectModel
     {
         $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
-            ->select('COUNT(`id_carrier`) as `total`')
-            ->from('orders')
-            ->where('`id_carrier` = '.(int) $this->id)
+                ->select('COUNT(`id_carrier`) as `total`')
+                ->from('orders')
+                ->where('`id_carrier` = '.(int) $this->id)
         );
 
         return (int) $row['total'];
@@ -1837,10 +1837,10 @@ class CarrierCore extends ObjectModel
     {
         if (!$res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-            ->select('`id_carrier`, `position`')
-            ->from('carrier')
-            ->where('`deleted` = 0')
-            ->orderBy('`position` ASC')
+                ->select('`id_carrier`, `position`')
+                ->from('carrier')
+                ->where('`deleted` = 0')
+                ->orderBy('`position` ASC')
         )) {
             return false;
         }
