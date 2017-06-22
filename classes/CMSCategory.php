@@ -46,8 +46,8 @@ class CMSCategoryCore extends ObjectModel
         'multilang'      => true,
         'multilang_shop' => true,
         'fields'         => [
-            'active'           => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true],
-            'id_parent'        => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true],
+            'active'           => ['type' => self::TYPE_BOOL, 'validate' => 'isBool',        'required' => true],
+            'id_parent'        => ['type' => self::TYPE_INT,  'validate' => 'isUnsignedInt', 'required' => true],
             'position'         => ['type' => self::TYPE_INT],
             'level_depth'      => ['type' => self::TYPE_INT],
             'date_add'         => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
@@ -149,11 +149,11 @@ class CMSCategoryCore extends ObjectModel
     }
 
     /**
-     * @param      $categories
-     * @param      $current
-     * @param int  $idCmsCategory
-     * @param int  $idSelected
-     * @param bool $isHtml
+     * @param array $categories
+     * @param array $current
+     * @param int   $idCmsCategory
+     * @param int   $idSelected
+     * @param bool  $isHtml
      *
      * @return string
      *
@@ -182,6 +182,7 @@ class CMSCategoryCore extends ObjectModel
      *
      * @param int  $idLang Language ID
      * @param bool $active return only active categories
+     * @param bool $order
      *
      * @return array Categories
      *
@@ -217,7 +218,7 @@ class CMSCategoryCore extends ObjectModel
     }
 
     /**
-     * @param $idLang
+     * @param int $idLang
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
@@ -253,8 +254,8 @@ class CMSCategoryCore extends ObjectModel
     }
 
     /**
-     * @param      $idParent
-     * @param      $idLang
+     * @param int  $idParent
+     * @param int  $idLang
      * @param bool $active
      *
      * @return array
@@ -292,7 +293,8 @@ class CMSCategoryCore extends ObjectModel
     /**
      * Check if CMSCategory can be moved in another one
      *
-     * @param int $idParent Parent candidate
+     * @param int $idCmsCategory
+     * @param int $idParent      Parent candidate
      *
      * @return bool Parent validity
      *
@@ -325,8 +327,8 @@ class CMSCategoryCore extends ObjectModel
     }
 
     /**
-     * @param $idCmsCategory
-     * @param $idLang
+     * @param int $idCmsCategory
+     * @param int $idLang
      *
      * @return bool|mixed
      *
@@ -415,7 +417,7 @@ class CMSCategoryCore extends ObjectModel
     }
 
     /**
-     * @param $idCategory
+     * @param int $idCategory
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
@@ -459,7 +461,7 @@ class CMSCategoryCore extends ObjectModel
     }
 
     /**
-     * @param $idCategoryParent
+     * @param int $idCategoryParent
      *
      * @return false|null|string
      *
@@ -549,10 +551,11 @@ class CMSCategoryCore extends ObjectModel
     /**
      * Recursive scan of subcategories
      *
-     * @param int   $maxDepth         Maximum depth of the tree (i.e. 2 => 3 levels depth)
-     * @param int   $currentDepth     specify the current depth in the tree (don't use it, only for rucursivity!)
-     * @param array $excludedIdsArray specify a list of ids to exclude of results
-     * @param int   $idLang           Specify the id of the language used
+     * @param int       $maxDepth         Maximum depth of the tree (i.e. 2 => 3 levels depth)
+     * @param int       $currentDepth     specify the current depth in the tree (don't use it, only for rucursivity!)
+     * @param int       $idLang           Specify the id of the language used
+     * @param array     $excludedIdsArray specify a list of ids to exclude of results
+     * @param Link|null $link
      *
      * @return array Subcategories lite tree
      *
@@ -647,14 +650,16 @@ class CMSCategoryCore extends ObjectModel
     /**
      * Delete several categories from database
      *
-     * return boolean Deletion result
-     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @param array $categories
+     *
+     * @return bool|int
      */
     public function deleteSelection($categories)
     {
-        $return = 1;
+        $return = true;
         foreach ($categories as $idCategoryCms) {
             $categoryCms = new CMSCategory($idCategoryCms);
             $return &= $categoryCms->delete();
@@ -791,7 +796,7 @@ class CMSCategoryCore extends ObjectModel
      *
      * @param int $idLang Language ID
      *
-     * @return array Corresponding categories
+     * @return false|array Corresponding categories
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -819,11 +824,13 @@ class CMSCategoryCore extends ObjectModel
             }
             $idCurrent = $result[0]['id_parent'];
         }
+
+        return false;
     }
 
     /**
-     * @param $way
-     * @param $position
+     * @param bool $way
+     * @param int  $position
      *
      * @return bool
      *
