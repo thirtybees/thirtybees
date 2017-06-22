@@ -2130,7 +2130,7 @@ class CartCore extends ObjectModel
                     (new DbQuery())
                         ->select('SUM((p.`weight` + pa.`weight`) * cp.`quantity`) AS `nb`')
                         ->from('cart_product', 'cp')
-                        ->leftJoin('product', 'p', 'cp.`id_product  = p.`id_product`')
+                        ->leftJoin('product', 'p', 'cp.`id_product` = p.`id_product`')
                         ->leftJoin('product_attribute', 'pa', 'cp.`id_product_attribute` = pa.`id_product_attribute`')
                         ->where('cp.`id_product_attribute` IS NOT NULL')
                         ->where('cp.`id_product_attribute` != 0')
@@ -2183,7 +2183,8 @@ class CartCore extends ObjectModel
     /**
      * Get the gift wrapping price
      *
-     * @param bool $withTaxes With or without taxes
+     * @param bool $withTaxes     With or without taxes
+     * @param int|null $idAddress Address ID
      *
      * @return float wrapping price
      *
