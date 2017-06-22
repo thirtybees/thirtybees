@@ -113,12 +113,12 @@ class CountryCore extends ObjectModel
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-            ->select('*')
-            ->from('country', 'c')
-            ->leftJoin('country_shop', 'cs', 'cs.`id_country` = c.`id_country`')
-            ->leftJoin('country_lang', 'cl', 'cl.`id_country` = c.`id_country`')
-            ->where('cs.`id_shop` = '.(int) $idShop)
-            ->where('cs.`id_lang` = '.(int) $idLang)
+                ->select('*')
+                ->from('country', 'c')
+                ->leftJoin('country_shop', 'cs', 'cs.`id_country` = c.`id_country`')
+                ->leftJoin('country_lang', 'cl', 'cl.`id_country` = c.`id_country`')
+                ->where('cs.`id_shop` = '.(int) $idShop)
+                ->where('cs.`id_lang` = '.(int) $idLang)
         );
     }
 
@@ -140,10 +140,10 @@ class CountryCore extends ObjectModel
         }
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
             (new DbQuery())
-            ->select('`id_country`')
-            ->from('country')
-            ->where('`iso_code` = \''.pSQL(strtoupper($isoCode)).'\'')
-            ->where($active ? '`active` = 1' : '')
+                ->select('`id_country`')
+                ->from('country')
+                ->where('`iso_code` = \''.pSQL(strtoupper($isoCode)).'\'')
+                ->where($active ? '`active` = 1' : '')
         );
 
         if (isset($result['id_country'])) {
@@ -173,9 +173,9 @@ class CountryCore extends ObjectModel
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
             (new DbQuery())
-            ->select('`id_zone`')
-            ->from('country')
-            ->where('`id_country` = '.(int) $idCountry)
+                ->select('`id_zone`')
+                ->from('country')
+                ->where('`id_country` = '.(int) $idCountry)
         );
 
         if (isset($result['id_zone'])) {
@@ -204,10 +204,10 @@ class CountryCore extends ObjectModel
         if (!Cache::isStored($key)) {
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 (new DbQuery())
-                ->select('`name`')
-                ->from('country_lang')
-                ->where('`id_lang` = '.(int) $idLang)
-                ->where('`id_country` = '.(int) $idCountry)
+                    ->select('`name`')
+                    ->from('country_lang')
+                    ->where('`id_lang` = '.(int) $idLang)
+                    ->where('`id_country` = '.(int) $idCountry)
             );
             Cache::store($key, $result);
 
@@ -233,9 +233,9 @@ class CountryCore extends ObjectModel
         if (!isset(Country::$cache_iso_by_id[$idCountry])) {
             Country::$cache_iso_by_id[$idCountry] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 (new DbQuery())
-                ->select('`iso_code`')
-                ->from('country')
-                ->where('`id_country` = '.(int) $idCountry)
+                    ->select('`iso_code`')
+                    ->from('country')
+                    ->where('`id_country` = '.(int) $idCountry)
             );
         }
         if (isset(Country::$cache_iso_by_id[$idCountry])) {
@@ -261,10 +261,10 @@ class CountryCore extends ObjectModel
     {
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
             (new DbQuery())
-            ->select('`id_country`')
-            ->from('country_lang')
-            ->where('`name` = \''.pSQL($country).'\'')
-            ->where($idLang ? '`id_lang` = '.(int) $idLang : '')
+                ->select('`id_country`')
+                ->from('country_lang')
+                ->where('`name` = \''.pSQL($country).'\'')
+                ->where($idLang ? '`id_lang` = '.(int) $idLang : '')
         );
 
         if (isset($result['id_country'])) {
@@ -290,9 +290,9 @@ class CountryCore extends ObjectModel
 
         return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
-            ->select('`need_zip_code`')
-            ->from('country')
-            ->where('`id_country` = '.(int) $idCountry)
+                ->select('`need_zip_code`')
+                ->from('country')
+                ->where('`id_country` = '.(int) $idCountry)
         );
     }
 
@@ -312,9 +312,9 @@ class CountryCore extends ObjectModel
 
         $zipCodeFormat = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
-            ->select('`zip_code_format`')
-            ->from('country')
-            ->where('`id_country` = '.(int) $idCountry)
+                ->select('`zip_code_format`')
+                ->from('country')
+                ->where('`id_country` = '.(int) $idCountry)
         );
 
         if (isset($zipCodeFormat) && $zipCodeFormat) {
@@ -354,13 +354,13 @@ class CountryCore extends ObjectModel
 
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-            ->select('c.*, cl.*')
-            ->from('country', 'c')
-            ->join(Shop::addSqlAssociation('country', 'c', false))
-            ->leftJoin('state', 's', 's.`id_country` = c.`id_country`')
-            ->leftJoin('country_lang', 'cl', 'c.`id_country` = cl.`id_country`')
-            ->where('c.`id_zone` = '.(int) $idZone.' OR s.`id_zone` = '.(int) $idZone)
-            ->where('cl.`id_lang` = '.(int) $idLang)
+                ->select('c.*, cl.*')
+                ->from('country', 'c')
+                ->join(Shop::addSqlAssociation('country', 'c', false))
+                ->leftJoin('state', 's', 's.`id_country` = c.`id_country`')
+                ->leftJoin('country_lang', 'cl', 'c.`id_country` = cl.`id_country`')
+                ->where('c.`id_zone` = '.(int) $idZone.' OR s.`id_zone` = '.(int) $idZone)
+                ->where('cl.`id_lang` = '.(int) $idLang)
         );
     }
 
@@ -376,9 +376,9 @@ class CountryCore extends ObjectModel
     {
         return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
-            ->select('`contains_states`')
-            ->from('country')
-            ->where('`id_country` = '.(int) $idCountry)
+                ->select('`contains_states`')
+                ->from('country')
+                ->where('`id_country` = '.(int) $idCountry)
         );
     }
 
@@ -394,7 +394,7 @@ class CountryCore extends ObjectModel
             return false;
         }
 
-        return Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'cart_rule_country WHERE id_country = '.(int) $this->id);
+        return Db::getInstance()->delete('cart_rule_country', '`id_country` = '.(int) $this->id);
     }
 
     /**
@@ -420,9 +420,9 @@ class CountryCore extends ObjectModel
     {
         return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
-            ->select('`need_identification_number`')
-            ->from('country')
-            ->where('`id_country` = '.(int) $idCountry)
+                ->select('`need_identification_number`')
+                ->from('country')
+                ->where('`id_country` = '.(int) $idCountry)
         );
     }
 
@@ -549,15 +549,15 @@ class CountryCore extends ObjectModel
         $countries = [];
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-            ->select('cl.*, c.*, cl.`name` AS `country`, z.`name` AS `zone`')
-            ->from('country', 'c')
-            ->join(Shop::addSqlAssociation('country', 'c'))
-            ->leftJoin('country_lang', 'cl', 'c.`id_country` = cl.`id_country`')
-            ->leftJoin('zone', 'z', 'z.`id_zone` = c.`id_zone`')
-            ->where('cl.`id_lang` = '.(int) $idLang)
-            ->where($active ? 'c.`active` = 1' : '')
-            ->where($containStates ? 'c.`contains_states` = '.(int) $containStates : '')
-            ->orderBy('cl.`name` ASC')
+                ->select('cl.*, c.*, cl.`name` AS `country`, z.`name` AS `zone`')
+                ->from('country', 'c')
+                ->join(Shop::addSqlAssociation('country', 'c'))
+                ->leftJoin('country_lang', 'cl', 'c.`id_country` = cl.`id_country`')
+                ->leftJoin('zone', 'z', 'z.`id_zone` = c.`id_zone`')
+                ->where('cl.`id_lang` = '.(int) $idLang)
+                ->where($active ? 'c.`active` = 1' : '')
+                ->where($containStates ? 'c.`contains_states` = '.(int) $containStates : '')
+                ->orderBy('cl.`name` ASC')
         );
         foreach ($result as $row) {
             $countries[$row['id_country']] = $row;
@@ -566,9 +566,9 @@ class CountryCore extends ObjectModel
         if ($listStates) {
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                 (new DbQuery())
-                ->select('*')
-                ->from('state')
-                ->orderBy('`name` ASC')
+                    ->select('*')
+                    ->from('state')
+                    ->orderBy('`name` ASC')
             );
             foreach ($result as $row) {
                 if (isset($countries[$row['id_country']]) && $row['active'] == 1) { /* Does not keep the state if its country has been disabled and not selected */
