@@ -35,9 +35,7 @@ global $smarty;
 $smarty = new SmartyCustom();
 $smarty->setCompileDir(_PS_CACHE_DIR_.'smarty/compile');
 $smarty->setCacheDir(_PS_CACHE_DIR_.'smarty/cache');
-if (!Tools::getSafeModeStatus()) {
-    $smarty->use_sub_dirs = true;
-}
+$smarty->use_sub_dirs = true; // Unused in community-theme-default.
 $smarty->setConfigDir(_PS_SMARTY_DIR_.'configs');
 $smarty->caching = false;
 if (Configuration::get('PS_SMARTY_CACHING_TYPE') == 'mysql') {
