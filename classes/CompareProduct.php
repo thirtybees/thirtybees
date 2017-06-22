@@ -70,12 +70,12 @@ class CompareProductCore extends ObjectModel
      */
     public static function getCompareProducts($idCompare)
     {
-        $results = Db::getInstance()->executeS(
-            '
-		SELECT DISTINCT `id_product`
-		FROM `'._DB_PREFIX_.'compare` c
-		LEFT JOIN `'._DB_PREFIX_.'compare_product` cp ON (cp.`id_compare` = c.`id_compare`)
-		WHERE cp.`id_compare` = '.(int) ($idCompare)
+        $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('DISTINCT `id_product`')
+                ->from('compare', 'c')
+                ->leftJoin('compare_product', 'cp', 'cp.`id_compare` = c.`id_compare`')
+                ->where('cp.`id_compare` = '.(int) $idCompare)
         );
 
         $compareProducts = null;
@@ -103,11 +103,11 @@ class CompareProductCore extends ObjectModel
     public static function addCompareProduct($idCompare, $idProduct)
     {
         // Check if compare row exists
-        $idCompare = Db::getInstance()->getValue(
-            '
-			SELECT `id_compare`
-			FROM `'._DB_PREFIX_.'compare`
-			WHERE `id_compare` = '.(int) $idCompare
+        $idCompare = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('`id_compare`')
+                ->from('compare')
+                ->where('`id_compare` = '.(int) $idCompare)
         );
 
         if (!$idCompare) {
@@ -115,20 +115,32 @@ class CompareProductCore extends ObjectModel
             if (Context::getContext()->customer) {
                 $idCustomer = Context::getContext()->customer->id;
             }
-            $sql = Db::getInstance()->execute(
-                '
-			INSERT INTO `'._DB_PREFIX_.'compare` (`id_compare`, `id_customer`) VALUES (NULL, "'.($idCustomer ? $idCustomer : '0').'")'
+            $sql = Db::getInstance()->insert(
+                'compare',
+                [
+                    'id_compare'  => ['type' => 'sql', 'value' => 'NULL'],
+                    'id_customer' => (int) $idCustomer,
+                ],
+                true
             );
             if ($sql) {
-                $idCompare = Db::getInstance()->getValue('SELECT MAX(`id_compare`) FROM `'._DB_PREFIX_.'compare`');
+                $idCompare = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                    (new DbQuery())
+                        ->select('MAX(`id_compare`)')
+                        ->from('compare')
+                );
                 Context::getContext()->cookie->id_compare = $idCompare;
             }
         }
 
-        return Db::getInstance()->execute(
-            '
-			INSERT IGNORE INTO `'._DB_PREFIX_.'compare_product` (`id_compare`, `id_product`, `date_add`, `date_upd`)
-			VALUES ('.(int) ($idCompare).', '.(int) ($idProduct).', NOW(), NOW())'
+        return Db::getInstance()->insert(
+            'compare_product',
+            [
+                'id_compare' => (int) $idCompare,
+                'id_product' => (int) $idProduct,
+                'date_add'   => ['type' => 'sql', 'value' => 'NOW()'],
+                'date_upd'   => ['type' => 'sql', 'value' => 'NOW()'],
+            ]
         );
     }
 
@@ -145,12 +157,9 @@ class CompareProductCore extends ObjectModel
      */
     public static function removeCompareProduct($idCompare, $idProduct)
     {
-        return Db::getInstance()->execute(
-            '
-		DELETE cp FROM `'._DB_PREFIX_.'compare_product` cp, `'._DB_PREFIX_.'compare` c
-		WHERE cp.`id_compare`=c.`id_compare`
-		AND cp.`id_product` = '.(int) $idProduct.'
-		AND c.`id_compare` = '.(int) $idCompare
+        return Db::getInstance()->delete(
+            'compare_product',
+            'cp.`id_compare`=c.`id_compare` AND cp.`id_product` = '.(int) $idProduct.' AND c.`id_compare` = '.(int) $idCompare
         );
     }
 
@@ -166,12 +175,12 @@ class CompareProductCore extends ObjectModel
      */
     public static function getNumberProducts($idCompare)
     {
-        return (int) (Db::getInstance()->getValue(
-            '
-			SELECT count(`id_compare`)
-			FROM `'._DB_PREFIX_.'compare_product`
-			WHERE `id_compare` = '.(int) ($idCompare)
-        ));
+        return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('COUNT(`id_compare`)')
+                ->from('compare_product')
+                ->where('`id_compare` = '.(int) $idCompare)
+        );
     }
 
     /**
@@ -209,11 +218,11 @@ class CompareProductCore extends ObjectModel
      */
     public static function getIdCompareByIdCustomer($idCustomer)
     {
-        return (int) Db::getInstance()->getValue(
-            '
-		SELECT `id_compare`
-		FROM `'._DB_PREFIX_.'compare`
-		WHERE `id_customer`= '.(int) $idCustomer
+        return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('`id_compare`')
+                ->from('compare')
+                ->where('`id_customer` = '.(int) $idCustomer)
         );
     }
 }
