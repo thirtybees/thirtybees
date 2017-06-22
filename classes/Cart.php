@@ -260,16 +260,41 @@ class CartCore extends ObjectModel
         $sql = new DbQuery();
 
         // Build SELECT
-        $sql->select(
-            'cp.`id_product_attribute`, cp.`id_product`, cp.`quantity` AS cart_quantity, cp.id_shop, pl.`name`, p.`is_virtual`,
-						pl.`description_short`, pl.`available_now`, pl.`available_later`, product_shop.`id_category_default`, p.`id_supplier`,
-						p.`id_manufacturer`, product_shop.`on_sale`, product_shop.`ecotax`, product_shop.`additional_shipping_cost`,
-						product_shop.`available_for_order`, product_shop.`price`, product_shop.`active`, product_shop.`unity`, product_shop.`unit_price_ratio`,
-						stock.`quantity` AS quantity_available, p.`width`, p.`height`, p.`depth`, stock.`out_of_stock`, p.`weight`,
-						p.`date_add`, p.`date_upd`, IFNULL(stock.quantity, 0) as quantity, pl.`link_rewrite`, cl.`link_rewrite` AS category,
-						CONCAT(LPAD(cp.`id_product`, 10, 0), LPAD(IFNULL(cp.`id_product_attribute`, 0), 10, 0), IFNULL(cp.`id_address_delivery`, 0)) AS unique_id, cp.id_address_delivery,
-						product_shop.advanced_stock_management, ps.product_supplier_reference supplier_reference'
-        );
+        $sql->select('cp.`id_product_attribute`');
+        $sql->select('cp.`id_product`');
+        $sql->select('cp.`quantity` AS `cart_quantity`');
+        $sql->select('cp.`id_shop`');
+        $sql->select('pl.`name`');
+        $sql->select('p.`is_virtual`');
+        $sql->select('pl.`description_short`');
+        $sql->select('pl.`available_now`');
+        $sql->select('pl.`available_later`');
+        $sql->select('product_shop.`id_category_default`');
+        $sql->select('p.`id_supplier`');
+        $sql->select('p.`id_manufacturer`');
+        $sql->select('product_shop.`on_sale`');
+        $sql->select('product_shop.`ecotax`');
+        $sql->select('product_shop.`additional_shipping_cost`');
+        $sql->select('product_shop.`available_for_order`');
+        $sql->select('product_shop.`price`');
+        $sql->select('product_shop.`active`');
+        $sql->select('product_shop.`unity`');
+        $sql->select('product_shop.`unit_price_ratio`');
+        $sql->select('stock.`quantity` AS `quantity_available`');
+        $sql->select('p.`width`');
+        $sql->select('p.`height`');
+        $sql->select('p.`depth`');
+        $sql->select('p.`weight`');
+        $sql->select('stock.`out_of_stock`');
+        $sql->select('p.`date_add`');
+        $sql->select('p.`date_upd`');
+        $sql->select('IFNULL(stock.`quantity`, 0) AS `quantity`');
+        $sql->select('pl.`link_rewrite`');
+        $sql->select('cl.`link_rewrite` AS `category`');
+        $sql->select('CONCAT(LPAD(cp.`id_product`, 10, 0), LPAD(IFNULL(cp.`id_product_attribute`, 0), 10, 0), IFNULL(cp.`id_address_delivery`, 0)) AS unique_id');
+        $sql->select('cp.`id_address_delivery`');
+        $sql->select('product_shop.`advanced_stock_management`');
+        $sql->select('ps.`product_supplier_reference` AS `supplier_reference`')
 
         // Build FROM
         $sql->from('cart_product', 'cp');
@@ -317,25 +342,21 @@ class CartCore extends ObjectModel
         }
 
         if (Combination::isFeatureActive()) {
-            $sql->select(
-                '
-				product_attribute_shop.`price` AS price_attribute, product_attribute_shop.`ecotax` AS ecotax_attr,
-				IF (IFNULL(pa.`reference`, \'\') = \'\', p.`reference`, pa.`reference`) AS reference,
-				(p.`weight`+ pa.`weight`) weight_attribute,
-				IF (IFNULL(pa.`ean13`, \'\') = \'\', p.`ean13`, pa.`ean13`) AS ean13,
-				IF (IFNULL(pa.`upc`, \'\') = \'\', p.`upc`, pa.`upc`) AS upc,
-				IFNULL(product_attribute_shop.`minimal_quantity`, product_shop.`minimal_quantity`) as minimal_quantity,
-				IF(product_attribute_shop.wholesale_price > 0,  product_attribute_shop.wholesale_price, product_shop.`wholesale_price`) wholesale_price
-			'
-            );
-
+            $sql->select('product_attribute_shop.`price` AS price_attribute, product_attribute_shop.`ecotax` AS ecotax_attr');
+            $sql->select('IF (IFNULL(pa.`reference`, \'\') = \'\', p.`reference`, pa.`reference`) AS reference');
+            $sql->select('(p.`weight`+ pa.`weight`) weight_attribute');
+            $sql->select('IF (IFNULL(pa.`ean13`, \'\') = \'\', p.`ean13`, pa.`ean13`) AS ean13');
+            $sql->select('IF (IFNULL(pa.`upc`, \'\') = \'\', p.`upc`, pa.`upc`) AS upc');
+            $sql->select('IFNULL(product_attribute_shop.`minimal_quantity`, product_shop.`minimal_quantity`) as minimal_quantity');
+            $sql->select('IF(product_attribute_shop.wholesale_price > 0,  product_attribute_shop.wholesale_price, product_shop.`wholesale_price`) wholesale_price');
             $sql->leftJoin('product_attribute', 'pa', 'pa.`id_product_attribute` = cp.`id_product_attribute`');
             $sql->leftJoin('product_attribute_shop', 'product_attribute_shop', '(product_attribute_shop.`id_shop` = cp.`id_shop` AND product_attribute_shop.`id_product_attribute` = pa.`id_product_attribute`)');
         } else {
-            $sql->select(
-                'p.`reference` AS reference, p.`ean13`,
-				p.`upc` AS upc, product_shop.`minimal_quantity` AS minimal_quantity, product_shop.`wholesale_price` wholesale_price'
-            );
+            $sql->select('p.`reference` AS `reference`');
+            $sql->select('p.`ean13`');
+            $sql->select('p.`upc` AS `upc`');
+            $sql->select('product_shop.`minimal_quantity` AS `minimal_quantity`');
+            $sql->select('product_shop.`wholesale_price` AS `wholesale_price`');
         }
 
         $sql->select('image_shop.`id_image` id_image, il.`legend`');
