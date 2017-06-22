@@ -3049,7 +3049,7 @@ class CartCore extends ObjectModel
                         'cart_product',
                         [
                             'quantity' => '`quantity` '.$qty,
-                            'date_add' => 'NOW()',
+                            'date_add' => ['type' => 'sql', 'value' => 'NOW()'],
                         ],
                         '`id_product` = '.(int) $idProduct.(!empty($idProductAttribute) ? ' AND `id_product_attribute` = '.(int) $idProductAttribute : '').' AND `id_cart` = '.(int) $this->id.(Configuration::get('PS_ALLOW_MULTISHIPPING') && $this->isMultiAddressDelivery() ? ' AND `id_address_delivery` = '.(int) $idAddressDelivery : ''),
                         1
@@ -3252,7 +3252,7 @@ class CartCore extends ObjectModel
                 $result &= Db::getInstance()->update(
                     'cart_product',
                     [
-                        'quantity' => '`quantity` - '.(int) $customization['quantity'],
+                        'quantity' => ['type' => 'sql', 'value' => '`quantity` - '.(int) $customization['quantity']],
                     ],
                     '`id_cart` = '.(int) $this->id.' AND `id_product` = '.(int) $idProduct.((int) $idProductAttribute ? ' AND `id_product_attribute` = '.(int) $idProductAttribute : '').' AND `id_address_delivery` = '.(int) $idAddressDelivery
                 );

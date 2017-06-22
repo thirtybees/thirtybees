@@ -417,7 +417,7 @@ class AttributeCore extends ObjectModel
         $res1 = Db::getInstance()->update(
             'attribute',
             [
-                'position' => '`position` '.($way ? '- 1' : '+ 1'),
+                'position' => ['type' => 'sql', 'value' => '`position` '.($way ? '- 1' : '+ 1')],
             ],
             '`position`'.($way ? '> '.(int) $movedAttribute['position'].' AND `position` <= '.(int) $position : '< '.(int) $movedAttribute['position'].' AND `position` >= '.(int) $position).' AND `id_attribute_group`='.(int) $movedAttribute['id_attribute_group']
         );

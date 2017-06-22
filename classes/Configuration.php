@@ -627,10 +627,14 @@ class ConfigurationCore extends ObjectModel
                 if (!$lang) {
                     // Update config not linked to lang
                     $result &= Db::getInstance()->update(
-                        static::$definition['table'], [
-                        'value'    => pSQL($value, $html),
-                        'date_upd' => date('Y-m-d H:i:s'),
-                    ], '`name` = \''.pSQL($key).'\''.Configuration::sqlRestriction($idShopGroup, $idShop), 1, true
+                        static::$definition['table'],
+                        [
+                            'value'    => pSQL($value, $html),
+                            'date_upd' => date('Y-m-d H:i:s'),
+                        ],
+                        '`name` = \''.pSQL($key).'\''.Configuration::sqlRestriction($idShopGroup, $idShop),
+                        1,
+                        true
                     );
                 } else {
                     // Update multi lang
