@@ -3688,14 +3688,13 @@ FileETag none
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @deprecated 1.0.3 Safe Mode was removed from PHP >= 5.4.
      */
     public static function getSafeModeStatus()
     {
-        if (!$safe_mode = @ini_get('safe_mode')) {
-            $safe_mode = '';
-        }
+        Tools::displayAsDeprecated();
 
-        return in_array(mb_strtolower($safe_mode), [1, 'on']);
+        return false;
     }
 
     /**
