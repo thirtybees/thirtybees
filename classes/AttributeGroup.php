@@ -45,9 +45,9 @@ class AttributeGroupCore extends ObjectModel
         'primary'   => 'id_attribute_group',
         'multilang' => true,
         'fields'    => [
-            'is_color_group' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'group_type'     => ['type' => self::TYPE_STRING, 'required' => true],
-            'position'       => ['type' => self::TYPE_INT, 'validate' => 'isInt'],
+            'is_color_group' => ['type' => self::TYPE_BOOL,                   'validate' => 'isBool'],
+            'group_type'     => ['type' => self::TYPE_STRING,                                                'required' => true],
+            'position'       => ['type' => self::TYPE_INT,                    'validate' => 'isInt'],
 
             /* Lang fields */
             'name'           => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128],
@@ -56,8 +56,11 @@ class AttributeGroupCore extends ObjectModel
     ];
     /** @var string Name */
     public $name;
+    /** @var bool $is_color_group */
     public $is_color_group;
+    /** @var int $position */
     public $position;
+    /** @var string $group_type */
     public $group_type;
     /** @var string Public Name */
     public $public_name;
