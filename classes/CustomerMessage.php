@@ -37,15 +37,25 @@
 class CustomerMessageCore extends ObjectModel
 {
     // @codingStandardsIgnoreStart
+    /** @var int $id_customer_thread */
     public $id_customer_thread;
+    /** @var int $id_employee */
     public $id_employee;
+    /** @var string $message */
     public $message;
+    /** @var string $file_name */
     public $file_name;
+    /** @var string $ip_address */
     public $ip_address;
+    /** @var string $user_agent */
     public $user_agent;
+    /** @var int $private */
     public $private;
+    /** @var string $date_add */
     public $date_add;
+    /** @var string $date_upd*/
     public $date_upd;
+    /** @var bool $read */
     public $read;
     // @codingStandardsIgnoreEnd
 
