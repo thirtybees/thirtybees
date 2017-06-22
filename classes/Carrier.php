@@ -182,8 +182,8 @@ class CarrierCore extends ObjectModel
          *
          * @deprecated 1.5.5
          */
-        if ($this->shipping_method == Carrier::SHIPPING_METHOD_DEFAULT) {
-            $this->shipping_method = ((int) Configuration::get('PS_SHIPPING_METHOD') ? Carrier::SHIPPING_METHOD_WEIGHT : Carrier::SHIPPING_METHOD_PRICE);
+        if ($this->shipping_method == static::SHIPPING_METHOD_DEFAULT) {
+            $this->shipping_method = ((int) Configuration::get('PS_SHIPPING_METHOD') ? static::SHIPPING_METHOD_WEIGHT : static::SHIPPING_METHOD_PRICE);
         }
 
         /**
@@ -196,7 +196,7 @@ class CarrierCore extends ObjectModel
         }
 
         if ($this->name == '0') {
-            $this->name = Carrier::getCarrierNameFromShopName();
+            $this->name = static::getCarrierNameFromShopName();
         }
 
         $this->image_dir = _PS_SHIP_IMG_DIR_;
@@ -212,7 +212,7 @@ class CarrierCore extends ObjectModel
      */
     public function getIdTaxRulesGroup(Context $context = null)
     {
-        return Carrier::getIdTaxRulesGroupByIdCarrier((int) $this->id, $context);
+        return static::getIdTaxRulesGroupByIdCarrier((int) $this->id, $context);
     }
 
     /**
@@ -538,7 +538,7 @@ class CarrierCore extends ObjectModel
         if (!empty($carriersForProduct)) {
             //the product is linked with carriers
             foreach ($carriersForProduct as $carrier) { //check if the linked carriers are available in current zone
-                if (Carrier::checkCarrierZone($carrier['id_carrier'], $idZone)) {
+                if (static::checkCarrierZone($carrier['id_carrier'], $idZone)) {
                     $carrierList[$carrier['id_carrier']] = $carrier['id_carrier'];
                 }
             }
@@ -559,7 +559,7 @@ class CarrierCore extends ObjectModel
         if (!Cache::isStored($cacheId)) {
             $customer = new Customer($cart->id_customer);
             $carrierError = [];
-            $carriers = Carrier::getCarriersForOrder($idZone, $customer->getGroups(), $cart, $carrierError);
+            $carriers = static::getCarriersForOrder($idZone, $customer->getGroups(), $cart, $carrierError);
             Cache::store($cacheId, [$carriers, $carrierError]);
         } else {
             list($carriers, $carrierError) = Cache::retrieve($cacheId);
@@ -609,12 +609,12 @@ class CarrierCore extends ObjectModel
                     || ($carrierSizes[1] > 0 && $carrierSizes[1] < $productSizes[1])
                     || ($carrierSizes[2] > 0 && $carrierSizes[2] < $productSizes[2])
                 ) {
-                    $error[$carrier->id] = Carrier::SHIPPING_SIZE_EXCEPTION;
+                    $error[$carrier->id] = static::SHIPPING_SIZE_EXCEPTION;
                     unset($carrierList[$key]);
                 }
 
                 if ($carrier->max_weight > 0 && ($carrier->max_weight < $product->weight * $cartQuantity || $carrier->max_weight < $cartWeight)) {
-                    $error[$carrier->id] = Carrier::SHIPPING_WEIGHT_EXCEPTION;
+                    $error[$carrier->id] = static::SHIPPING_WEIGHT_EXCEPTION;
                     unset($carrierList[$key]);
                 }
             }
@@ -677,24 +677,24 @@ class CarrierCore extends ObjectModel
         }
 
         if (is_array($groups) && !empty($groups)) {
-            $result = Carrier::getCarriers($idLang, true, false, (int) $idZone, $groups, static::PS_CARRIERS_AND_CARRIER_MODULES_NEED_RANGE);
+            $result = static::getCarriers($idLang, true, false, (int) $idZone, $groups, static::PS_CARRIERS_AND_CARRIER_MODULES_NEED_RANGE);
         } else {
-            $result = Carrier::getCarriers($idLang, true, false, (int) $idZone, [Configuration::get('PS_UNIDENTIFIED_GROUP')], static::PS_CARRIERS_AND_CARRIER_MODULES_NEED_RANGE);
+            $result = static::getCarriers($idLang, true, false, (int) $idZone, [Configuration::get('PS_UNIDENTIFIED_GROUP')], static::PS_CARRIERS_AND_CARRIER_MODULES_NEED_RANGE);
         }
         $resultsArray = [];
 
         foreach ($result as $k => $row) {
             $carrier = new Carrier((int) $row['id_carrier']);
             $shippingMethod = $carrier->getShippingMethod();
-            if ($shippingMethod != Carrier::SHIPPING_METHOD_FREE) {
+            if ($shippingMethod != static::SHIPPING_METHOD_FREE) {
                 // Get only carriers that are compliant with shipping method
-                if (($shippingMethod == Carrier::SHIPPING_METHOD_WEIGHT && $carrier->getMaxDeliveryPriceByWeight($idZone) === false)) {
-                    $error[$carrier->id] = Carrier::SHIPPING_WEIGHT_EXCEPTION;
+                if (($shippingMethod === static::SHIPPING_METHOD_WEIGHT && $carrier->getMaxDeliveryPriceByWeight($idZone) === false)) {
+                    $error[$carrier->id] = static::SHIPPING_WEIGHT_EXCEPTION;
                     unset($result[$k]);
                     continue;
                 }
-                if (($shippingMethod == Carrier::SHIPPING_METHOD_PRICE && $carrier->getMaxDeliveryPriceByPrice($idZone) === false)) {
-                    $error[$carrier->id] = Carrier::SHIPPING_PRICE_EXCEPTION;
+                if (($shippingMethod === static::SHIPPING_METHOD_PRICE && $carrier->getMaxDeliveryPriceByPrice($idZone) === false)) {
+                    $error[$carrier->id] = static::SHIPPING_PRICE_EXCEPTION;
                     unset($result[$k]);
                     continue;
                 }
@@ -707,27 +707,27 @@ class CarrierCore extends ObjectModel
                     }
 
                     // Get only carriers that have a range compatible with cart
-                    if ($shippingMethod == Carrier::SHIPPING_METHOD_WEIGHT
-                        && (!Carrier::checkDeliveryPriceByWeight($row['id_carrier'], $cart->getTotalWeight(), $idZone))
+                    if ($shippingMethod === static::SHIPPING_METHOD_WEIGHT
+                        && (!static::checkDeliveryPriceByWeight($row['id_carrier'], $cart->getTotalWeight(), $idZone))
                     ) {
-                        $error[$carrier->id] = Carrier::SHIPPING_WEIGHT_EXCEPTION;
+                        $error[$carrier->id] = static::SHIPPING_WEIGHT_EXCEPTION;
                         unset($result[$k]);
                         continue;
                     }
 
-                    if ($shippingMethod == Carrier::SHIPPING_METHOD_PRICE
-                        && (!Carrier::checkDeliveryPriceByPrice($row['id_carrier'], $cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING), $idZone, $idCurrency))
+                    if ($shippingMethod === static::SHIPPING_METHOD_PRICE
+                        && (!static::checkDeliveryPriceByPrice($row['id_carrier'], $cart->getOrderTotal(true, Cart::BOTH_WITHOUT_SHIPPING), $idZone, $idCurrency))
                     ) {
-                        $error[$carrier->id] = Carrier::SHIPPING_PRICE_EXCEPTION;
+                        $error[$carrier->id] = static::SHIPPING_PRICE_EXCEPTION;
                         unset($result[$k]);
                         continue;
                     }
                 }
             }
 
-            $row['name'] = (strval($row['name']) != '0' ? $row['name'] : Carrier::getCarrierNameFromShopName());
-            $row['price'] = (($shippingMethod == Carrier::SHIPPING_METHOD_FREE) ? 0 : $cart->getPackageShippingCost((int) $row['id_carrier'], true, null, null, $idZone));
-            $row['price_tax_exc'] = (($shippingMethod == Carrier::SHIPPING_METHOD_FREE) ? 0 : $cart->getPackageShippingCost((int) $row['id_carrier'], false, null, null, $idZone));
+            $row['name'] = (strval($row['name']) != '0' ? $row['name'] : static::getCarrierNameFromShopName());
+            $row['price'] = (($shippingMethod === static::SHIPPING_METHOD_FREE) ? 0 : $cart->getPackageShippingCost((int) $row['id_carrier'], true, null, null, $idZone));
+            $row['price_tax_exc'] = (($shippingMethod === static::SHIPPING_METHOD_FREE) ? 0 : $cart->getPackageShippingCost((int) $row['id_carrier'], false, null, null, $idZone));
             $row['img'] = file_exists(_PS_SHIP_IMG_DIR_.(int) $row['id_carrier'].'.jpg') ? _THEME_SHIP_DIR_.(int) $row['id_carrier'].'.jpg' : '';
 
             // If price is false, then the carrier is unavailable (carrier module)
@@ -740,11 +740,11 @@ class CarrierCore extends ObjectModel
 
         // if we have to sort carriers by price
         $prices = [];
-        if (Configuration::get('PS_CARRIER_DEFAULT_SORT') == Carrier::SORT_BY_PRICE) {
+        if (Configuration::get('PS_CARRIER_DEFAULT_SORT') === static::SORT_BY_PRICE) {
             foreach ($resultsArray as $r) {
                 $prices[] = $r['price'];
             }
-            if (Configuration::get('PS_CARRIER_DEFAULT_ORDER') == Carrier::SORT_BY_ASC) {
+            if (Configuration::get('PS_CARRIER_DEFAULT_ORDER') === static::SORT_BY_ASC) {
                 array_multisort($prices, SORT_ASC, SORT_NUMERIC, $resultsArray);
             } else {
                 array_multisort($prices, SORT_DESC, SORT_NUMERIC, $resultsArray);
@@ -834,7 +834,7 @@ class CarrierCore extends ObjectModel
 
         foreach ($carriers as $key => $carrier) {
             if ($carrier['name'] == '0') {
-                $carriers[$key]['name'] = Carrier::getCarrierNameFromShopName();
+                $carriers[$key]['name'] = static::getCarrierNameFromShopName();
             }
         }
 
@@ -850,17 +850,17 @@ class CarrierCore extends ObjectModel
     public function getShippingMethod()
     {
         if ($this->is_free) {
-            return Carrier::SHIPPING_METHOD_FREE;
+            return static::SHIPPING_METHOD_FREE;
         }
 
         $method = (int) $this->shipping_method;
 
-        if ($this->shipping_method == Carrier::SHIPPING_METHOD_DEFAULT) {
+        if ($this->shipping_method === static::SHIPPING_METHOD_DEFAULT) {
             // backward compatibility
             if ((int) Configuration::get('PS_SHIPPING_METHOD')) {
-                $method = Carrier::SHIPPING_METHOD_WEIGHT;
+                $method = static::SHIPPING_METHOD_WEIGHT;
             } else {
-                $method = Carrier::SHIPPING_METHOD_PRICE;
+                $method = static::SHIPPING_METHOD_PRICE;
             }
         }
 
@@ -914,7 +914,7 @@ class CarrierCore extends ObjectModel
                 ->from('delivery', 'd')
                 ->innerJoin('range_price', 'r', 'd.`id_range_price` = r.`id_range_price`')
                 ->where('d.`id_zone` = '.(int) $idZone)
-                ->where('d.`id_carrier` = '.(int) $this->id.' '.Carrier::sqlDeliveryRangeShop('range_price'))
+                ->where('d.`id_carrier` = '.(int) $this->id.' '.static::sqlDeliveryRangeShop('range_price'))
                 ->orderBy('r.`delimiter2` DESC')
             );
             Cache::store($cacheId, $result);
@@ -948,7 +948,7 @@ class CarrierCore extends ObjectModel
                 ->where('d.`id_zone` = '.(int) $idZone)
                 ->where((float) $totalWeight.' >= w.`delimiter1`')
                 ->where((float) $totalWeight.' < w.`delimiter2`')
-                ->where('d.`id_carrier` = '.(int) $idCarrier.' '.Carrier::sqlDeliveryRangeShop('range_weight'))
+                ->where('d.`id_carrier` = '.(int) $idCarrier.' '.static::sqlDeliveryRangeShop('range_weight'))
                 ->orderBy('w.`delimiter1` ASC')
             );
             // @codingStandardsIgnoreStart
@@ -997,7 +997,7 @@ class CarrierCore extends ObjectModel
                 ->where('d.`id_zone` = '.(int) $idZone)
                 ->where((float) $orderTotal.' >= r.`delimiter1`')
                 ->where((float) $orderTotal.' < r.`delimiter2`')
-                ->where('d.`id_carrier` = '.(int) $idCarrier.' '.Carrier::sqlDeliveryRangeShop('range_price'))
+                ->where('d.`id_carrier` = '.(int) $idCarrier.' '.static::sqlDeliveryRangeShop('range_price'))
                 ->orderBy('r.`delimiter1` ASC')
             );
             // @codingStandardsIgnoreStart
@@ -1075,7 +1075,7 @@ class CarrierCore extends ObjectModel
     public function add($autodate = true, $nullValues = false)
     {
         if ($this->position <= 0) {
-            $this->position = Carrier::getHigherPosition() + 1;
+            $this->position = static::getHigherPosition() + 1;
         }
         if (!parent::add($autodate, $nullValues) || !Validate::isLoadedObject($this)) {
             return false;
@@ -1125,7 +1125,7 @@ class CarrierCore extends ObjectModel
         if (!parent::delete()) {
             return false;
         }
-        Carrier::cleanPositions();
+        static::cleanPositions();
 
         return (Db::getInstance()->delete('cart_rule_carrier', '`id_carrier` = '.(int) $this->id)
             && Db::getInstance()->delete('module_carrier', '`id_reference` = '.(int) $this->id_reference)
@@ -1234,7 +1234,7 @@ class CarrierCore extends ObjectModel
                 ->where('d.`id_zone` = '.(int) $idZone)
                 ->where((float) $totalWeight.' >= w.`delimiter1`')
                 ->where((float) $totalWeight.' < w.`delimiter2``')
-                ->where('d.`id_carrier` = '.(int) $idCarrier.' '.Carrier::sqlDeliveryRangeShop('range_weight'))
+                ->where('d.`id_carrier` = '.(int) $idCarrier.' '.static::sqlDeliveryRangeShop('range_weight'))
                 ->orderBy('w.`delimiter1` ASC')
             );
             if (!isset($result['price'])) {
@@ -1290,7 +1290,7 @@ class CarrierCore extends ObjectModel
                 ->where('d.`id_zone` = '.(int) $idZone)
                 ->where((float) $orderTotal.' >= r.`delimiter1`')
                 ->where((float) $orderTotal.' < r.`delimiter2`')
-                ->where('d.`id_carrier` = '.(int) $idCarrier.' '.Carrier::sqlDeliveryRangeShop('range_price'))
+                ->where('d.`id_carrier` = '.(int) $idCarrier.' '.static::sqlDeliveryRangeShop('range_price'))
                 ->orderBy('r.`delimiter1` ASC')
             );
             if (!isset($result['price'])) {
@@ -1688,9 +1688,9 @@ class CarrierCore extends ObjectModel
     public function getRangeTable()
     {
         $shippingMethod = $this->getShippingMethod();
-        if ($shippingMethod === Carrier::SHIPPING_METHOD_WEIGHT) {
+        if ($shippingMethod === static::SHIPPING_METHOD_WEIGHT) {
             return 'range_weight';
-        } elseif ($shippingMethod === Carrier::SHIPPING_METHOD_PRICE) {
+        } elseif ($shippingMethod === static::SHIPPING_METHOD_PRICE) {
             return 'range_price';
         }
 
@@ -1711,9 +1711,9 @@ class CarrierCore extends ObjectModel
             $shippingMethod = $this->getShippingMethod();
         }
 
-        if ($shippingMethod === Carrier::SHIPPING_METHOD_WEIGHT) {
+        if ($shippingMethod === static::SHIPPING_METHOD_WEIGHT) {
             return new RangeWeight();
-        } elseif ($shippingMethod === Carrier::SHIPPING_METHOD_PRICE) {
+        } elseif ($shippingMethod === static::SHIPPING_METHOD_PRICE) {
             return new RangePrice();
         }
 
@@ -1734,7 +1734,7 @@ class CarrierCore extends ObjectModel
             $currency = Context::getContext()->currency;
         }
         $suffix = Configuration::get('PS_WEIGHT_UNIT');
-        if ($this->getShippingMethod() == Carrier::SHIPPING_METHOD_PRICE) {
+        if ($this->getShippingMethod() === static::SHIPPING_METHOD_PRICE) {
             $suffix = $currency->sign;
         }
 
@@ -1917,8 +1917,8 @@ class CarrierCore extends ObjectModel
             $this->id_tax_rules_group = $this->getIdTaxRulesGroup(Context::getContext());
         }
 
-        if ($this->name === '0' && Carrier::getCarrierNameFromShopName()) {
-            $this->name = Carrier::getCarrierNameFromShopName();
+        if ($this->name === '0' && static::getCarrierNameFromShopName()) {
+            $this->name = static::getCarrierNameFromShopName();
         }
     }
 }
