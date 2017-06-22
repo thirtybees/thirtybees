@@ -1917,7 +1917,7 @@ class CarrierCore extends ObjectModel
             $this->id_tax_rules_group = $this->getIdTaxRulesGroup(Context::getContext());
         }
 
-        if ($this->name == '0') {
+        if ($this->name === '0' && Carrier::getCarrierNameFromShopName()) {
             $this->name = Carrier::getCarrierNameFromShopName();
         }
     }
