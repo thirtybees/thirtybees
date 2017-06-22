@@ -183,7 +183,7 @@ class CombinationCore extends ObjectModel
             (new DbQuery())
                 ->select('product_attribute_shop.`price`')
                 ->from('product_attribute', 'pa')
-                ->join(Shop::addSqlRestriction('product_attribute', 'pa'))
+                ->join(Shop::addSqlAssociation('product_attribute', 'pa'))
                 ->where('pa.`id_product_attribute` = '.(int) $idProductAttribute)
         );
     }
