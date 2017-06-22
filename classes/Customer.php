@@ -706,27 +706,27 @@ class CustomerCore extends ObjectModel
      */
     public function getStats()
     {
-        $result = Db::getInstance()->getRow(
-            '
-		SELECT COUNT(`id_order`) AS nb_orders, SUM(`total_paid` / o.`conversion_rate`) AS total_orders
-		FROM `'._DB_PREFIX_.'orders` o
-		WHERE o.`id_customer` = '.(int) $this->id.'
-		AND o.valid = 1'
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('COUNT(`id_order`) AS `nb_orders`, SUM(`total_paid` / o.`conversion_rate`) AS `total_orders`')
+                ->from('orders', 'o')
+                ->where('o.`id_customer` = '.(int) $this->id)
+                ->where('o.`valid` = 1')
         );
 
         $result2 = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
-            '
-		SELECT MAX(c.`date_add`) AS last_visit
-		FROM `'._DB_PREFIX_.'guest` g
-		LEFT JOIN `'._DB_PREFIX_.'connections` c ON c.id_guest = g.id_guest
-		WHERE g.`id_customer` = '.(int) $this->id
+            (new DbQuery())
+                ->select('MAX(c.`date_add`) AS `last_visit`')
+                ->from('guest', 'g')
+                ->leftJoin('connections', 'c', 'c.`id_guest` = g.`id_guest`')
+                ->where('g.`id_customer` = '.(int) $this->id)
         );
 
         $result3 = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
-            '
-		SELECT (YEAR(CURRENT_DATE)-YEAR(c.`birthday`)) - (RIGHT(CURRENT_DATE, 5)<RIGHT(c.`birthday`, 5)) AS age
-		FROM `'._DB_PREFIX_.'customer` c
-		WHERE c.`id_customer` = '.(int) $this->id
+            (new DbQuery())
+                ->select('(YEAR(CURRENT_DATE)-YEAR(c.`birthday`)) - (RIGHT(CURRENT_DATE, 5) < RIGHT(c.`birthday`, 5)) AS `age`')
+                ->from('customer', 'c')
+                ->where('c.`id_customer` = '.(int) $this->id)
         );
 
         $result['last_visit'] = $result2['last_visit'];
@@ -748,13 +748,13 @@ class CustomerCore extends ObjectModel
         }
 
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            '
-		SELECT m.*, l.name AS language
-		FROM `'._DB_PREFIX_.'mail` m
-		LEFT JOIN `'._DB_PREFIX_.'lang` l ON m.id_lang = l.id_lang
-		WHERE `recipient` = "'.pSQL($this->email).'"
-		ORDER BY m.date_add DESC
-		LIMIT 10'
+            (new DbQuery())
+                ->select('m.*, l.`name` as `language`')
+                ->from('mail', 'm')
+                ->leftJoin('lang', 'l', 'm.`id_lang` = l.`id_lang`')
+                ->where('`recipient` = \''.pSQL($this->email).'\'')
+                ->orderBy('m.`date_add` DESC')
+                ->limit(10)
         );
     }
 
@@ -771,15 +771,15 @@ class CustomerCore extends ObjectModel
         }
 
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            '
-		SELECT c.id_connections, c.date_add, COUNT(cp.id_page) AS pages, TIMEDIFF(MAX(cp.time_end), c.date_add) AS time, http_referer,INET_NTOA(ip_address) AS ipaddress
-		FROM `'._DB_PREFIX_.'guest` g
-		LEFT JOIN `'._DB_PREFIX_.'connections` c ON c.id_guest = g.id_guest
-		LEFT JOIN `'._DB_PREFIX_.'connections_page` cp ON c.id_connections = cp.id_connections
-		WHERE g.`id_customer` = '.(int) $this->id.'
-		GROUP BY c.`id_connections`
-		ORDER BY c.date_add DESC
-		LIMIT 10'
+            (new DbQuery())
+                ->select('c.`id_connections`, c.`date_add`, COUNT(cp.`id_page`) AS `pages`')
+                ->select('TIMEDIFF(MAX(cp.time_end), c.date_add) AS time, http_referer,INET_NTOA(ip_address) AS ipaddress')
+                ->leftJoin('connections', 'c', 'c.`id_guest` = g.`id_guest`')
+                ->leftJoin('connections_page', 'cp', 'c.`id_connections` = cp.`id_connections`')
+                ->where('g.`id_customer` = '.(int) $this->id)
+                ->groupBy('c.`id_connections`')
+                ->orderBy('c.`date_add` DESC')
+                ->limit(10)
         );
     }
 
@@ -808,11 +808,11 @@ class CustomerCore extends ObjectModel
     {
         $cacheId = 'Customer::customerIdExistsStatic'.(int) $idCustomer;
         if (!Cache::isStored($cacheId)) {
-            $result = (int) Db::getInstance()->getValue(
-                '
-			SELECT `id_customer`
-			FROM '._DB_PREFIX_.'customer c
-			WHERE c.`id_customer` = '.(int) $idCustomer
+            $result = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                    ->select('`id_customer`')
+                    ->from('customer', 'c')
+                    ->where('c.`id_customer` = '.(int) $idCustomer)
             );
             Cache::store($cacheId, $result);
 
@@ -853,11 +853,11 @@ class CustomerCore extends ObjectModel
 
         if (!isset(static::$_customer_groups[$idCustomer])) {
             static::$_customer_groups[$idCustomer] = [];
-            $result = Db::getInstance()->executeS(
-                '
-			SELECT cg.`id_group`
-			FROM '._DB_PREFIX_.'customer_group cg
-			WHERE cg.`id_customer` = '.(int) $idCustomer
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                    ->select('cg.`id_group`')
+                    ->from('custoimer_group', 'cg')
+                    ->where('cg.`id_customer` = '.(int) $idCustomer)
             );
             foreach ($result as $group) {
                 static::$_customer_groups[$idCustomer][] = (int) $group['id_group'];
@@ -886,10 +886,12 @@ class CustomerCore extends ObjectModel
     public function getBoughtProducts()
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            '
-		SELECT * FROM `'._DB_PREFIX_.'orders` o
-		LEFT JOIN `'._DB_PREFIX_.'order_detail` od ON o.id_order = od.id_order
-		WHERE o.valid = 1 AND o.`id_customer` = '.(int) $this->id
+            (new DbQuery())
+                ->select('*')
+                ->from('orders', 'o')
+                ->leftJoin('order_detail', 'od', 'o.`id_order` = od.`id_order`')
+                ->where('o.`valid` = 1')
+                ->where('o.`id_customer` = '.(int) $this->id)
         );
     }
 
@@ -905,11 +907,12 @@ class CustomerCore extends ObjectModel
 
         /* Change status to active/inactive */
 
-        return Db::getInstance()->execute(
-            '
-		UPDATE `'._DB_PREFIX_.bqSQL($this->def['table']).'`
-		SET `date_upd` = NOW()
-		WHERE `'.bqSQL($this->def['primary']).'` = '.(int) $this->id
+        return Db::getInstance()->update(
+            bqSQL(static::$definition['table']),
+            [
+                'date_upd' => ['type' => 'sql', 'value' => 'NOW()']
+            ],
+            '`'.bqSQL(static::$definition['primary']).'` = '.(int) $this->id
         );
     }
 
@@ -1010,7 +1013,7 @@ class CustomerCore extends ObjectModel
     }
 
     /**
-     * @param $passwd
+     * @param string $passwd
      *
      * @return bool
      *
@@ -1052,6 +1055,7 @@ class CustomerCore extends ObjectModel
     /**
      * Check if customer password is the right one
      *
+     * @param int    $idCustomer
      * @param string $plaintextOrHashedPassword Password
      *
      * @return bool result
@@ -1185,22 +1189,24 @@ class CustomerCore extends ObjectModel
      */
     public function getOutstanding()
     {
-        $query = new DbQuery();
-        $query->select('SUM(oi.total_paid_tax_incl)');
-        $query->from('order_invoice', 'oi');
-        $query->leftJoin('orders', 'o', 'oi.id_order = o.id_order');
-        $query->groupBy('o.id_customer');
-        $query->where('o.id_customer = '.(int) $this->id);
-        $totalPaid = (float) Db::getInstance()->getValue($query->build());
+        $totalPaid = (float) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('SUM(oi.total_paid_tax_incl)')
+                ->from('order_invoice', 'oi')
+                ->leftJoin('orders', 'o', 'oi.id_order = o.id_order')
+                ->groupBy('o.id_customer')
+                ->where('o.id_customer = '.(int) $this->id)
+        );
 
-        $query = new DbQuery();
-        $query->select('SUM(op.amount)');
-        $query->from('order_payment', 'op');
-        $query->leftJoin('order_invoice_payment', 'oip', 'op.id_order_payment = oip.id_order_payment');
-        $query->leftJoin('orders', 'o', 'oip.id_order = o.id_order');
-        $query->groupBy('o.id_customer');
-        $query->where('o.id_customer = '.(int) $this->id);
-        $totalRest = (float) Db::getInstance()->getValue($query->build());
+        $totalRest = (float) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('SUM(op.amount)')
+                ->from('order_payment', 'op')
+                ->leftJoin('order_invoice_payment', 'oip', 'op.id_order_payment = oip.id_order_payment')
+                ->leftJoin('orders', 'o', 'oip.id_order = o.id_order')
+                ->groupBy('o.id_customer')
+                ->where('o.id_customer = '.(int) $this->id)
+        );
 
         return $totalPaid - $totalRest;
     }
@@ -1210,15 +1216,17 @@ class CustomerCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @todo Double-check the query, doesn't look right ^MD
      */
     public function getWsGroups()
     {
-        return Db::getInstance()->executeS(
-            '
-			SELECT cg.`id_group` AS id
-			FROM '._DB_PREFIX_.'customer_group cg
-			'.Shop::addSqlAssociation('group', 'cg').'
-			WHERE cg.`id_customer` = '.(int) $this->id
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('cg.`id_group` AS `id`')
+                ->from('customer_group', 'cg')
+                ->join(Shop::addSqlAssociation('group', 'cg'))
+                ->where('cg.`id_customer` = '.(int) $this->id)
         );
     }
 
