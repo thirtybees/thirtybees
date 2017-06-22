@@ -111,8 +111,8 @@ class ConfigurationKPICore extends Configuration
     }
 
     /**
-     * @param      $key
-     * @param null $idLang
+     * @param string   $key
+     * @param int|null $idLang
      *
      * @return string
      *
