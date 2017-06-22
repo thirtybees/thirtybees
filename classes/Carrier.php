@@ -1233,7 +1233,7 @@ class CarrierCore extends ObjectModel
                 ->leftJoin('range_weight', 'w', 'd.`id_range_weight` = w.`id_range_weight`')
                 ->where('d.`id_zone` = '.(int) $idZone)
                 ->where((float) $totalWeight.' >= w.`delimiter1`')
-                ->where((float) $totalWeight.' < w.`delimiter2``')
+                ->where((float) $totalWeight.' < w.`delimiter2`')
                 ->where('d.`id_carrier` = '.(int) $idCarrier.' '.static::sqlDeliveryRangeShop('range_weight'))
                 ->orderBy('w.`delimiter1` ASC')
             );
