@@ -37,14 +37,16 @@
  */
 class AttributeCore extends ObjectModel
 {
+    // @codingStandardsIgnoreStart
     /** @var int Group id which attribute belongs */
     public $id_attribute_group;
-
     /** @var string Name */
     public $name;
+    /** @var string $color */
     public $color;
+    /** @var int $position */
     public $position;
-    public $default;
+    // @codingStandardsIgnoreEnd
 
     /**
      * @see ObjectModel::$definition
@@ -54,9 +56,9 @@ class AttributeCore extends ObjectModel
         'primary'   => 'id_attribute',
         'multilang' => true,
         'fields'    => [
-            'id_attribute_group' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'id_attribute_group' => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'required' => true],
             'color'              => ['type' => self::TYPE_STRING, 'validate' => 'isColor'],
-            'position'           => ['type' => self::TYPE_INT, 'validate' => 'isInt'],
+            'position'           => ['type' => self::TYPE_INT,    'validate' => 'isInt'],
 
             /* Lang fields */
             'name'               => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128],
@@ -267,8 +269,10 @@ class AttributeCore extends ObjectModel
      * Get quantity for a given attribute combination
      * Check if quantity is enough to deserve customer
      *
-     * @param int $idProductAttribute Product attribute combination id
-     * @param int $qty                Quantity needed
+     * @param int       $idProductAttribute Product attribute combination id
+     * @param int       $qty                Quantity needed
+     *
+     * @param Shop|null $shop
      *
      * @return bool Quantity is available or not
      *
@@ -301,7 +305,7 @@ class AttributeCore extends ObjectModel
      *
      * @deprecated since 1.0.0
      *
-     * @param array &$arr
+     * @param array $arr
      *
      * @return bool
      */
@@ -373,7 +377,7 @@ class AttributeCore extends ObjectModel
     /**
      * Move an attribute inside its group
      *
-     * @param bool $way Up (1)  or Down (0)
+     * @param bool $way      Up (1)  or Down (0)
      * @param int  $position
      *
      * @return bool Update result
