@@ -294,7 +294,7 @@ class CartCore extends ObjectModel
         $sql->select('CONCAT(LPAD(cp.`id_product`, 10, 0), LPAD(IFNULL(cp.`id_product_attribute`, 0), 10, 0), IFNULL(cp.`id_address_delivery`, 0)) AS unique_id');
         $sql->select('cp.`id_address_delivery`');
         $sql->select('product_shop.`advanced_stock_management`');
-        $sql->select('ps.`product_supplier_reference` AS `supplier_reference`')
+        $sql->select('ps.`product_supplier_reference` AS `supplier_reference`');
 
         // Build FROM
         $sql->from('cart_product', 'cp');
