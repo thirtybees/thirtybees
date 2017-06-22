@@ -59,9 +59,7 @@ class AttributeGroupCore extends ObjectModel
     public $is_color_group;
     public $position;
     public $group_type;
-    // @codingStandardsIgnoreEnd
     /** @var string Public Name */
-
     public $public_name;
     protected $webserviceParameters = [
         'objectsNodeName' => 'product_options',
@@ -76,6 +74,7 @@ class AttributeGroupCore extends ObjectModel
             ],
         ],
     ];
+    // @codingStandardsIgnoreEnd
 
     /**
      * Get all attributes for a given language / group
@@ -91,16 +90,15 @@ class AttributeGroupCore extends ObjectModel
             return [];
         }
 
-        return Db::getInstance()->executeS(
-            '
-			SELECT *
-			FROM `'._DB_PREFIX_.'attribute` a
-			'.Shop::addSqlAssociation('attribute', 'a').'
-			LEFT JOIN `'._DB_PREFIX_.'attribute_lang` al
-				ON (a.`id_attribute` = al.`id_attribute` AND al.`id_lang` = '.(int) $idLang.')
-			WHERE a.`id_attribute_group` = '.(int) $idAttributeGroup.'
-			ORDER BY `position` ASC
-		'
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+            ->select('*')
+            ->from('attribute', 'a')
+            ->join(Shop::addSqlAssociation('attribute', 'a'))
+            ->leftJoin('attribute_lang', 'al', 'a.`id_attribute` = al.`id_attribute`')
+            ->where('al.`id_lang` = '.(int) $idLang)
+            ->where('a.`id_attribute_group` = '.(int) $idAttributeGroup)
+            ->orderBy('`position` ASC')
         );
     }
 
@@ -117,15 +115,14 @@ class AttributeGroupCore extends ObjectModel
             return [];
         }
 
-        return Db::getInstance()->executeS(
-            '
-			SELECT DISTINCT agl.`name`, ag.*, agl.*
-			FROM `'._DB_PREFIX_.'attribute_group` ag
-			'.Shop::addSqlAssociation('attribute_group', 'ag').'
-			LEFT JOIN `'._DB_PREFIX_.'attribute_group_lang` agl
-				ON (ag.`id_attribute_group` = agl.`id_attribute_group` AND `id_lang` = '.(int) $idLang.')
-			ORDER BY `name` ASC
-		'
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+            ->select('DISTINCT agl.`name`, ag.*, agl.*')
+            ->from('attribute_group', 'ag')
+            ->join(Shop::addSqlAssociation('attribute_group', 'ag'))
+            ->leftJoin('attribute_group_lang', 'agl', 'ag.`id_attribute_group` = agl.`id_attribute_group`')
+            ->where('agl.`id_lang` = '.(int) $idLang)
+            ->orderBy('agl.`name` ASC')
         );
     }
 
@@ -165,11 +162,17 @@ class AttributeGroupCore extends ObjectModel
      */
     public static function getHigherPosition()
     {
-        $sql = 'SELECT MAX(`position`)
-				FROM `'._DB_PREFIX_.'attribute_group`';
-        $position = DB::getInstance()->getValue($sql);
+        $position = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+            ->select('MAX(`position`')
+            ->from('attribute_group')
+        );
 
-        return (is_numeric($position)) ? $position : -1;
+        if (!$position) {
+            return -1;
+        }
+
+        return $position;
     }
 
     /**
@@ -201,6 +204,10 @@ class AttributeGroupCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @param array $selection
+     *
+     * @return bool
      */
     public function deleteSelection($selection)
     {
@@ -225,11 +232,11 @@ class AttributeGroupCore extends ObjectModel
     {
         if (!$this->hasMultishopEntries() || Shop::getContext() == Shop::CONTEXT_ALL) {
             /* Select children in order to find linked combinations */
-            $attributeIds = Db::getInstance()->executeS(
-                '
-				SELECT `id_attribute`
-				FROM `'._DB_PREFIX_.'attribute`
-				WHERE `id_attribute_group` = '.(int) $this->id
+            $attributeIds = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                ->select('`id_attribute`')
+                ->from('attribute')
+                ->where('`id_attribute_group` = '.(int) $this->id)
             );
             if ($attributeIds === false) {
                 return false;
@@ -239,12 +246,8 @@ class AttributeGroupCore extends ObjectModel
             foreach ($attributeIds as $attribute) {
                 $toRemove[] = (int) $attribute['id_attribute'];
             }
-            if (!empty($toRemove) && Db::getInstance()->execute(
-                    '
-				DELETE FROM `'._DB_PREFIX_.'product_attribute_combination`
-				WHERE `id_attribute`
-					IN ('.implode(', ', $toRemove).')'
-                ) === false
+            if (!empty($toRemove)
+                && Db::getInstance()->delete('product_attribute_combination', '`id_attribute` IN ('.implode(',', $toRemove).')') === false
             ) {
                 return false;
             }
@@ -254,17 +257,9 @@ class AttributeGroupCore extends ObjectModel
             }
             /* Also delete related attributes */
             if (count($toRemove)) {
-                if (!Db::getInstance()->execute(
-                        '
-				DELETE FROM `'._DB_PREFIX_.'attribute_lang`
-				WHERE `id_attribute`	IN ('.implode(',', $toRemove).')'
-                    ) ||
-                    !Db::getInstance()->execute(
-                        '
-				DELETE FROM `'._DB_PREFIX_.'attribute_shop`
-				WHERE `id_attribute`	IN ('.implode(',', $toRemove).')'
-                    ) ||
-                    !Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'attribute` WHERE `id_attribute_group` = '.(int) $this->id)
+                if (!Db::getInstance()->delete('attribute_lang', '`id_attribute` IN ('.implode(',', $toRemove).')')
+                    || !Db::getInstance()->delete('attribute_shop', '`id_attribute` IN ('.implode(',', $toRemove).')')
+                    || !Db::getInstance()->delete('attribute`', '`id_attribute_group` = '.(int) $this->id)
                 ) {
                     return false;
                 }
@@ -288,12 +283,10 @@ class AttributeGroupCore extends ObjectModel
     public static function cleanDeadCombinations()
     {
         $attributeCombinations = Db::getInstance()->executeS(
-            '
-			SELECT pac.`id_attribute`, pa.`id_product_attribute`
-			FROM `'._DB_PREFIX_.'product_attribute` pa
-			LEFT JOIN `'._DB_PREFIX_.'product_attribute_combination` pac
-				ON (pa.`id_product_attribute` = pac.`id_product_attribute`)
-		'
+            (new DbQuery())
+            ->select('pac.`id_attribute`, pa.`id_product_attribute`')
+            ->from('product_attribute', 'pa')
+            ->leftJoin('product_attribute_combination', 'pac', 'pa.`id_product_attribute` = pac.`id_product_attribute`')
         );
         $toRemove = [];
         foreach ($attributeCombinations as $attributeCombination) {
@@ -324,20 +317,21 @@ class AttributeGroupCore extends ObjectModel
     public static function cleanPositions()
     {
         $return = true;
-
-        $sql = '
-			SELECT `id_attribute_group`
-			FROM `'._DB_PREFIX_.'attribute_group`
-			ORDER BY `position`';
-        $result = Db::getInstance()->executeS($sql);
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+            ->select('`id_attribute_group`')
+            ->from('attribute_group')
+            ->orderBy('`position`')
+        );
 
         $i = 0;
         foreach ($result as $value) {
-            $return = Db::getInstance()->execute(
-                '
-				UPDATE `'._DB_PREFIX_.'attribute_group`
-				SET `position` = '.(int) $i++.'
-				WHERE `id_attribute_group` = '.(int) $value['id_attribute_group']
+            $return = Db::getInstance()->update(
+                'attribute_group',
+                [
+                    'position' => (int) $i++,
+                ],
+                '`id_attribute_group` = '.(int) $value['id_attribute_group']
             );
         }
 
@@ -345,7 +339,7 @@ class AttributeGroupCore extends ObjectModel
     }
 
     /**
-     * @param $values
+     * @param array $values
      *
      * @return bool
      *
@@ -358,19 +352,18 @@ class AttributeGroupCore extends ObjectModel
         foreach ($values as $value) {
             $ids[] = intval($value['id']);
         }
-        Db::getInstance()->execute(
-            '
-			DELETE FROM `'._DB_PREFIX_.'attribute`
-			WHERE `id_attribute_group` = '.(int) $this->id.'
-			AND `id_attribute` NOT IN ('.implode(',', $ids).')'
+        Db::getInstance()->delete(
+            'attribute',
+            '`id_attribute_group` = '.(int) $this->id.' AND `id_attribute` NOT IN ('.implode(',', $ids).')'
         );
         $ok = true;
         foreach ($values as $value) {
-            $result = Db::getInstance()->execute(
-                '
-				UPDATE `'._DB_PREFIX_.'attribute`
-				SET `id_attribute_group` = '.(int) $this->id.'
-				WHERE `id_attribute` = '.(int) $value['id']
+            $result = Db::getInstance()->update(
+                'attribute',
+                [
+                    '`id_attribute_group`' => (int) $this->id,
+                ],
+                '`id_attribute` = '.(int) $value['id']
             );
             if ($result === false) {
                 $ok = false;
@@ -388,12 +381,12 @@ class AttributeGroupCore extends ObjectModel
      */
     public function getWsProductOptionValues()
     {
-        $result = Db::getInstance()->executeS(
-            '
-			SELECT a.id_attribute AS id
-			FROM `'._DB_PREFIX_.'attribute` a
-			'.Shop::addSqlAssociation('attribute', 'a').'
-			WHERE a.id_attribute_group = '.(int) $this->id
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+            ->select('a.`id_attribute` AS `id`')
+            ->from('attribute', 'a')
+            ->join(Shop::addSqlAssociation('attribute', 'a'))
+            ->where('a.`id_attribute_group` = '.(int) $this->id)
         );
 
         return $result;
@@ -402,7 +395,7 @@ class AttributeGroupCore extends ObjectModel
     /**
      * Move a group attribute
      *
-     * @param bool $way Up (1)  or Down (0)
+     * @param bool $way      Up (1) or Down (0)
      * @param int  $position
      *
      * @return bool Update result
@@ -412,14 +405,13 @@ class AttributeGroupCore extends ObjectModel
      */
     public function updatePosition($way, $position)
     {
-        if (!$res = Db::getInstance()->executeS(
-            '
-			SELECT ag.`position`, ag.`id_attribute_group`
-			FROM `'._DB_PREFIX_.'attribute_group` ag
-			WHERE ag.`id_attribute_group` = '.(int) Tools::getValue('id_attribute_group', 1).'
-			ORDER BY ag.`position` ASC'
-        )
-        ) {
+        if (!$res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+            ->select('ag.`position`, ag.`id_attribute_group`')
+            ->from('attribute_group', 'ag')
+            ->where('ag.`id_attribute_group` = '.(int) Tools::getValue('id_attribute_group', 1))
+            ->orderBy('ag.`position` ASC')
+        )) {
             return false;
         }
 
@@ -435,20 +427,18 @@ class AttributeGroupCore extends ObjectModel
 
         // < and > statements rather than BETWEEN operator
         // since BETWEEN is treated differently according to databases
-        return (Db::getInstance()->execute(
-                '
-			UPDATE `'._DB_PREFIX_.'attribute_group`
-			SET `position`= `position` '.($way ? '- 1' : '+ 1').'
-			WHERE `position`
-			'.($way
-                    ? '> '.(int) $movedGroupAttribute['position'].' AND `position` <= '.(int) $position
-                    : '< '.(int) $movedGroupAttribute['position'].' AND `position` >= '.(int) $position)
-            ) && Db::getInstance()->execute(
-                '
-			UPDATE `'._DB_PREFIX_.'attribute_group`
-			SET `position` = '.(int) $position.'
-			WHERE `id_attribute_group`='.(int) $movedGroupAttribute['id_attribute_group']
-            )
+        return Db::getInstance()->update(
+            'attribute_group',
+            [
+                'position' => '`position` '.($way ? '- 1' : '+ 1'),
+            ],
+            '`position` = '.($way ? '> '.(int) $movedGroupAttribute['position'].' AND `position` <= '.(int) $position : '< '.(int) $movedGroupAttribute['position'].' AND `position` >= '.(int) $position)
+        ) && Db::getInstance()->update(
+            'attribute_group',
+            [
+                'position' => (int) $position,
+            ],
+            '`id_attribute_group` = '.(int) $movedGroupAttribute['id_attribute_group']
         );
     }
 }
