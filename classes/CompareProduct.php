@@ -48,16 +48,20 @@ class CompareProductCore extends ObjectModel
             'id_customer' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true],
         ],
     ];
+    /** @var int $id_compare */
     public $id_compare;
+    /** @var int $id_customer */
     public $id_customer;
+    /** @var string $date_add */
     public $date_add;
-    // @codingStandardsIgnoreEnd
+    /** @var string $date_upd */
     public $date_upd;
+    // @codingStandardsIgnoreEnd
 
     /**
      * Get all compare products of the customer
      *
-     * @param int $id_customer
+     * @param int $idCompare
      *
      * @return array
      *
@@ -88,7 +92,8 @@ class CompareProductCore extends ObjectModel
     /**
      * Add a compare product for the customer
      *
-     * @param int $id_customer , int $id_product
+     * @param int $idCompare
+     * @param int $idProduct
      *
      * @return bool
      *
