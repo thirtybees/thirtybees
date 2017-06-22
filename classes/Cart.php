@@ -529,8 +529,8 @@ class CartCore extends ObjectModel
     }
 
     /**
-     * @param $ipaList
-     * @param $idLang
+     * @param array $ipaList
+     * @param int   $idLang
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -554,22 +554,18 @@ class CartCore extends ObjectModel
             return;
         }
 
-        $result = Db::getInstance()->executeS(
-            '
-			SELECT pac.`id_product_attribute`, agl.`public_name` AS public_group_name, al.`name` AS attribute_name
-			FROM `'._DB_PREFIX_.'product_attribute_combination` pac
-			LEFT JOIN `'._DB_PREFIX_.'attribute` a ON a.`id_attribute` = pac.`id_attribute`
-			LEFT JOIN `'._DB_PREFIX_.'attribute_group` ag ON ag.`id_attribute_group` = a.`id_attribute_group`
-			LEFT JOIN `'._DB_PREFIX_.'attribute_lang` al ON (
-				a.`id_attribute` = al.`id_attribute`
-				AND al.`id_lang` = '.(int) $idLang.'
-			)
-			LEFT JOIN `'._DB_PREFIX_.'attribute_group_lang` agl ON (
-				ag.`id_attribute_group` = agl.`id_attribute_group`
-				AND agl.`id_lang` = '.(int) $idLang.'
-			)
-			WHERE pac.`id_product_attribute` IN ('.implode(',', $paImplode).')
-			ORDER BY ag.`position` ASC, a.`position` ASC'
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+            ->select('pac.`id_product_attribute`, agl.`public_name` AS `public_group_name`, al.`name` AS `attribute_name`')
+            ->from('product_attribute_combination', 'pac')
+            ->leftJoin('attribute', 'a', 'a.`id_attribute` = pac.`id_attribute`')
+            ->leftJoin('attribute_group', 'ag', 'ag.`id_attribute_group` = a.`id_attribute_group`')
+            ->leftJoin('attribute_lang', 'al', 'a.`id_attribute` = al.`id_attribute`')
+            ->leftJoin('attribute_group_lang', 'agl', 'ag.`id_attribute_group` = agl.`id_attribute_group`')
+            ->where('al.`id_lang` = '.(int) $idLang)
+            ->where('agl.`id_lang` = '.(int) $idLang)
+            ->where('pac.`id_product_attribute` IN ('.implode(',', $paImplode).')')
+            ->orderBy('ag.`position` ASC, a.`position` ASC')
         );
 
         foreach ($result as $row) {
@@ -640,6 +636,8 @@ class CartCore extends ObjectModel
      *
      * @param bool $withTaxes With or without taxes
      * @param int  $type      Total type
+     * @param array|null      $products
+     * @param int|null        $idCarrier
      * @param bool $useCache  Allow using cache of the method CartRule::getContextualValue
      *
      * @return float Order total
@@ -2225,20 +2223,18 @@ class CartCore extends ObjectModel
 
         $cacheKey = 'static::getCartRules_'.$this->id.'-'.$filter;
         if (!Cache::isStored($cacheKey)) {
-            $result = Db::getInstance()->executeS(
-                '
-				SELECT cr.*, crl.`id_lang`, crl.`name`, cd.`id_cart`
-				FROM `'._DB_PREFIX_.'cart_cart_rule` cd
-				LEFT JOIN `'._DB_PREFIX_.'cart_rule` cr ON cd.`id_cart_rule` = cr.`id_cart_rule`
-				LEFT JOIN `'._DB_PREFIX_.'cart_rule_lang` crl ON (
-					cd.`id_cart_rule` = crl.`id_cart_rule`
-					AND crl.id_lang = '.(int) $this->id_lang.'
-				)
-				WHERE `id_cart` = '.(int) $this->id.'
-				'.($filter == CartRule::FILTER_ACTION_SHIPPING ? 'AND free_shipping = 1' : '').'
-				'.($filter == CartRule::FILTER_ACTION_GIFT ? 'AND gift_product != 0' : '').'
-				'.($filter == CartRule::FILTER_ACTION_REDUCTION ? 'AND (reduction_percent != 0 OR reduction_amount != 0)' : '')
-                .' ORDER BY cr.priority ASC'
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                ->select('cr.*, crl.`id_lang`, crl.`name`, cd.`id_cart`')
+                ->from('cart_cart_rule', 'cd')
+                ->leftJoin('cart_rule', 'cr', 'cd.`id_cart_rule` = cr.`id_cart_rule`')
+                ->leftJoin('cart_rule_lang', 'crl', 'cd.`id_cart_rule` = crl.`id_cart_rule`')
+                ->where('crl.`id_lang` = '.(int) $this->id_lang)
+                ->where('`id_cart` = '.(int) $this->id)
+                ->where((int) $filter === CartRule::FILTER_ACTION_SHIPPING ? '`free_shipping` = 1' : '')
+                ->where((int) $filter === CartRule::FILTER_ACTION_GIFT ? '`gift_product` = 0' : '')
+                ->where((int) $filter === CartRule::FILTER_ACTION_REDUCTION ? '`reduction_percent` != 0 OR `reduction_amount` != 0' : '')
+                ->orderBy('cr.`priority` ASC')
             );
             Cache::store($cacheKey, $result);
         } else {
@@ -2356,15 +2352,14 @@ class CartCore extends ObjectModel
      */
     public static function lastNoneOrderedCart($idCustomer)
     {
-        $sql = 'SELECT c.`id_cart`
-				FROM '._DB_PREFIX_.'cart c
-				WHERE NOT EXISTS (SELECT 1 FROM '._DB_PREFIX_.'orders o WHERE o.`id_cart` = c.`id_cart`
-									AND o.`id_customer` = '.(int) $idCustomer.')
-				AND c.`id_customer` = '.(int) $idCustomer.'
-					'.Shop::addSqlRestriction(Shop::SHARE_ORDER, 'c').'
-				ORDER BY c.`date_upd` DESC';
-
-        if (!$idCart = Db::getInstance()->getValue($sql)) {
+        if (!$idCart = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+            ->select('c.`id_cart`')
+            ->from('cart', 'c')
+            ->where('NOT EXISTS (SELECT 1 FROM '._DB_PREFIX_.'orders o WHERE o.`id_cart` = c.`id_cart`AND o.`id_customer` = '.(int) $idCustomer.')')
+            ->where('c.`id_customer` = '.(int) $idCustomer.' '.Shop::addSqlRestriction(Shop::SHARE_ORDER, 'c'))
+            ->orderBy('c.`date_upd` DESC')
+        )) {
             return false;
         }
 
@@ -2409,7 +2404,7 @@ class CartCore extends ObjectModel
     }
 
     /**
-     * @param      $idCustomer
+     * @param int  $idCustomer
      * @param bool $withOrder
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
@@ -2420,18 +2415,18 @@ class CartCore extends ObjectModel
     public static function getCustomerCarts($idCustomer, $withOrder = true)
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            '
-		SELECT *
-		FROM '._DB_PREFIX_.'cart c
-		WHERE c.`id_customer` = '.(int) $idCustomer.'
-		'.(!$withOrder ? 'AND NOT EXISTS (SELECT 1 FROM '._DB_PREFIX_.'orders o WHERE o.`id_cart` = c.`id_cart`)' : '').'
-		ORDER BY c.`date_add` DESC'
+            (new DbQuery())
+            ->select('*')
+            ->from('cart', 'c')
+            ->where('c.`id_customer` = '.(int) $idCustomer)
+            ->where($withOrder ? 'NOT EXISTS (SELECT 1 FROM '._DB_PREFIX_.'orders o WHERE o.`id_cart` = c.`id_cart`)' : '')
+            ->orderBy('c.`date_add` DESC')
         );
     }
 
     /**
-     * @param $echo
-     * @param $tr
+     * @param string $echo
+     * @param mixed  $tr
      *
      * @return string
      *
@@ -2505,9 +2500,10 @@ class CartCore extends ObjectModel
         $cacheId = 'static::getAddressCollection'.(int) $this->id;
         if (!Cache::isStored($cacheId)) {
             $result = Db::getInstance()->executeS(
-                'SELECT DISTINCT `id_address_delivery`
-				FROM `'._DB_PREFIX_.'cart_product`
-				WHERE id_cart = '.(int) $this->id
+                (new DbQuery())
+                ->select('DISTINCT `id_address_delivery`')
+                ->from('cart_product')
+                ->where('`id_cart` = '.(int) $this->id)
             );
             Cache::store($cacheId, $result);
         } else {
@@ -2549,17 +2545,21 @@ class CartCore extends ObjectModel
             $this->update();
         }
 
-        $sql = 'UPDATE `'._DB_PREFIX_.'cart_product`
-		SET `id_address_delivery` = '.(int) $idAddressNew.'
-		WHERE  `id_cart` = '.(int) $this->id.'
-			AND `id_address_delivery` = '.(int) $idAddress;
-        Db::getInstance()->execute($sql);
+        Db::getInstance()->update(
+            'cart_product',
+            [
+                'id_address_delivery' => (int) $idAddressNew,
+            ],
+            '`id_cart` = '.(int) $this->id.' AND `id_address_delivery` = '.(int) $idAddress
+        );
 
-        $sql = 'UPDATE `'._DB_PREFIX_.'customization`
-			SET `id_address_delivery` = '.(int) $idAddressNew.'
-			WHERE  `id_cart` = '.(int) $this->id.'
-				AND `id_address_delivery` = '.(int) $idAddress;
-        Db::getInstance()->execute($sql);
+        Db::getInstance()->update(
+            'customization',
+            [
+                'id_address_delivery' => (int) $idAddressNew,
+            ],
+            '`id_cart` = '.(int) $this->id.' AND `id_address_delivery` = '.(int) $idAddress
+        );
     }
 
     /**
