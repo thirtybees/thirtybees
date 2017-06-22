@@ -69,8 +69,13 @@ class CookieCore
     /**
      * Get data if the cookie exists and else initialize an new one
      *
-     * @param $name string Cookie name before encrypting
-     * @param $path string
+     * @param string      $name       Cookie name before encrypting
+     * @param string      $path
+     *
+     * @param string|null $expire
+     * @param array|null  $sharedUrls
+     * @param bool        $standalone
+     * @param bool        $secure
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
