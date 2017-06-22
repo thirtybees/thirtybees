@@ -256,17 +256,21 @@ class AttachmentCore extends ObjectModel
      */
     public static function getProductAttached($idLang, $list)
     {
-        $idsAttachements = [];
+        $idAttachments = [];
         if (is_array($list)) {
-            foreach ($list as $attachement) {
-                $idsAttachements[] = $attachement['id_attachment'];
+            foreach ($list as $attachment) {
+                $idAttachments[] = $attachment['id_attachment'];
             }
 
-            $sql = 'SELECT * FROM `'._DB_PREFIX_.'product_attachment` pa
-					LEFT JOIN `'._DB_PREFIX_.'product_lang` pl ON (pa.`id_product` = pl.`id_product`'.Shop::addSqlRestrictionOnLang('pl').')
-					WHERE `id_attachment` IN ('.implode(',', array_map('intval', $idsAttachements)).')
-						AND pl.`id_lang` = '.(int) $idLang;
-            $tmp = Db::getInstance()->executeS($sql);
+            $tmp = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                ->select('*')
+                ->from('product_attachment', 'a')
+                ->leftJoin('product_lang', 'pl', 'pa.`id_product` = pl.`id_product`')
+                ->where('pa.`id_attachment` IN ('.implode(',', array_map('intval', $idAttachments)).')')
+                ->where('pl.`id_shop` = '.(int) Context::getContext()->shop->id)
+                ->where('pl.`id_lang` = '.(int) $idLang)
+            );
             $productAttachements = [];
             foreach ($tmp as $t) {
                 $productAttachements[$t['id_attachment']][] = $t['name'];
