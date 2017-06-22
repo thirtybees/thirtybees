@@ -567,16 +567,16 @@ class CartCore extends ObjectModel
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-            ->select('pac.`id_product_attribute`, agl.`public_name` AS `public_group_name`, al.`name` AS `attribute_name`')
-            ->from('product_attribute_combination', 'pac')
-            ->leftJoin('attribute', 'a', 'a.`id_attribute` = pac.`id_attribute`')
-            ->leftJoin('attribute_group', 'ag', 'ag.`id_attribute_group` = a.`id_attribute_group`')
-            ->leftJoin('attribute_lang', 'al', 'a.`id_attribute` = al.`id_attribute`')
-            ->leftJoin('attribute_group_lang', 'agl', 'ag.`id_attribute_group` = agl.`id_attribute_group`')
-            ->where('al.`id_lang` = '.(int) $idLang)
-            ->where('agl.`id_lang` = '.(int) $idLang)
-            ->where('pac.`id_product_attribute` IN ('.implode(',', $paImplode).')')
-            ->orderBy('ag.`position` ASC, a.`position` ASC')
+                ->select('pac.`id_product_attribute`, agl.`public_name` AS `public_group_name`, al.`name` AS `attribute_name`')
+                ->from('product_attribute_combination', 'pac')
+                ->leftJoin('attribute', 'a', 'a.`id_attribute` = pac.`id_attribute`')
+                ->leftJoin('attribute_group', 'ag', 'ag.`id_attribute_group` = a.`id_attribute_group`')
+                ->leftJoin('attribute_lang', 'al', 'a.`id_attribute` = al.`id_attribute`')
+                ->leftJoin('attribute_group_lang', 'agl', 'ag.`id_attribute_group` = agl.`id_attribute_group`')
+                ->where('al.`id_lang` = '.(int) $idLang)
+                ->where('agl.`id_lang` = '.(int) $idLang)
+                ->where('pac.`id_product_attribute` IN ('.implode(',', $paImplode).')')
+                ->orderBy('ag.`position` ASC, a.`position` ASC')
         );
 
         foreach ($result as $row) {
@@ -2631,11 +2631,11 @@ class CartCore extends ObjectModel
 
         $uploadedFiles = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-            ->select('cd.`value`')
-            ->from('customized_data', 'cd')
-            ->innerJoin('customization', 'c', 'cd.`id_customization` = c.`id_customization`')
-            ->where('cd.`type` = 0')
-            ->where('c.`id_cart` = '.(int) $this->id)
+                ->select('cd.`value`')
+                ->from('customized_data', 'cd')
+                ->innerJoin('customization', 'c', 'cd.`id_customization` = c.`id_customization`')
+                ->where('cd.`type` = 0')
+                ->where('c.`id_cart` = '.(int) $this->id)
         );
 
         foreach ($uploadedFiles as $mustUnlink) {
@@ -2676,9 +2676,9 @@ class CartCore extends ObjectModel
         if (!Cache::isStored($cacheId)) {
             $result = (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 (new DbQuery())
-                ->select('COUNT(*)')
-                ->from('orders')
-                ->where('`id_cart` = '.(int) $this->id)
+                    ->select('COUNT(*)')
+                    ->from('orders')
+                    ->where('`id_cart` = '.(int) $this->id)
             );
             Cache::store($cacheId, $result);
 
@@ -2777,13 +2777,13 @@ class CartCore extends ObjectModel
      */
     public function getLastProduct()
     {
-        $sql = new DbQuery();
-        $sql->select('`id_product`, `id_product_attribute`, `id_shop`');
-        $sql->from('cart_product', 'cp');
-        $sql->where('`id_cart` = '.(int) $this->id);
-        $sql->orderBy('`date_add` DESC');
-
-        $result = Db::getInstance()->getRow($sql);
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('`id_product`, `id_product_attribute`, `id_shop`')
+                ->from('cart_product', 'cp')
+                ->where('`id_cart` = '.(int) $this->id)
+                ->orderBy('`date_add` DESC')
+        );
         if ($result && isset($result['id_product']) && $result['id_product']) {
             foreach ($this->getProducts() as $product) {
                 if ($result['id_product'] == $product['id_product']
@@ -3119,9 +3119,11 @@ class CartCore extends ObjectModel
     /**
      * Delete a product from the cart
      *
-     * @param int $idProduct          Product ID
-     * @param int $idProductAttribute Attribute ID if needed
-     * @param int $idCustomization    Customization id
+     * @param int  $idProduct          Product ID
+     * @param int  $idProductAttribute Attribute ID if needed
+     * @param int  $idCustomization    Customization id
+     * @param int  $idAddressDelivery
+     * @param bool $autoAddCartRule
      *
      * @return bool result
      */
@@ -4101,12 +4103,7 @@ class CartCore extends ObjectModel
             $result &= (@unlink(_PS_UPLOAD_DIR_.$custData['value']) && @unlink(_PS_UPLOAD_DIR_.$custData['value'].'_small'));
         }
 
-        $result &= Db::getInstance()->execute(
-            'DELETE
-			FROM `'._DB_PREFIX_.'customized_data`
-			WHERE `id_customization` = '.(int) $custData['id_customization'].'
-			AND `index` = '.(int) $index
-        );
+        $result &= Db::getInstance()->delete('customized_data', '`id_customization` = '.(int) $custData['id_customization'].' AND `index` = '.(int) $index);
 
         return $result;
     }
@@ -4149,12 +4146,18 @@ class CartCore extends ObjectModel
         $success = true;
         $products = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-            ->select('*')
-            ->from('cart_product')
-            ->where('`id_cart` = '.(int) $this->id)
+                ->select('*')
+                ->from('cart_product')
+                ->where('`id_cart` = '.(int) $this->id)
         );
 
-        $productGift = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('SELECT cr.`gift_product`, cr.`gift_product_attribute` FROM `'._DB_PREFIX_.'cart_rule` cr LEFT JOIN `'._DB_PREFIX_.'order_cart_rule` ocr ON (ocr.`id_order` = '.(int) $this->id.') WHERE ocr.`id_cart_rule` = cr.`id_cart_rule`');
+        $productGift = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('cr.`gift_product`, cr.`gift_product_attribute`')
+                ->from('cart_rule', 'cr')
+                ->leftJoin('order_cart_rule', 'ocr', 'ocr.`id_cart_rule` = cr.`id_cart_rule`')
+                ->where('ocr.`id_order` = '.(int) $this->id)
+        );
 
         $idAddressDelivery = Configuration::get('PS_ALLOW_MULTISHIPPING') ? $cart->id_address_delivery : 0;
 
@@ -4290,7 +4293,7 @@ class CartCore extends ObjectModel
     }
 
     /**
-     * @param $values
+     * @param array $values
      *
      * @return bool
      *
@@ -4331,10 +4334,10 @@ class CartCore extends ObjectModel
     }
 
     /**
-     * @param $idProduct
-     * @param $idProductAttribute
-     * @param $oldIdAddressDelivery
-     * @param $newIdAddressDelivery
+     * @param int $idProduct
+     * @param int $idProductAttribute
+     * @param int $oldIdAddressDelivery
+     * @param int $newIdAddressDelivery
      *
      * @return bool
      *
@@ -4384,35 +4387,26 @@ class CartCore extends ObjectModel
         );
 
         // Changing the address
-        $sql = 'UPDATE '._DB_PREFIX_.'cart_product
-			SET `id_address_delivery` = '.(int) $newIdAddressDelivery.',
-			`quantity` = `quantity` + '.(int) $result.'
-			WHERE id_product = '.(int) $idProduct.'
-			AND id_product_attribute = '.(int) $idProductAttribute.'
-			AND id_address_delivery = '.(int) $oldIdAddressDelivery.'
-			AND id_cart = '.(int) $this->id.'
-			LIMIT 1';
-        Db::getInstance()->execute($sql);
-
-        // Changing the address of the customizations
-        $sql = 'UPDATE '._DB_PREFIX_.'customization
-			SET `id_address_delivery` = '.(int) $newIdAddressDelivery.'
-			WHERE id_product = '.(int) $idProduct.'
-			AND id_product_attribute = '.(int) $idProductAttribute.'
-			AND id_address_delivery = '.(int) $oldIdAddressDelivery.'
-			AND id_cart = '.(int) $this->id;
-        Db::getInstance()->execute($sql);
+        Db::getInstance()->update(
+            'cart_product',
+            [
+                'id_address_delivery' => (int) $newIdAddressDelivery,
+                'quantity' => ['type' => 'sql', 'value' => '`quantity` + '.(int) $result],
+            ],
+            '`id_product` = '.(int) $idProduct.' AND `id_product_attribute` = '.(int) $idProductAttribute.' AND `id_address_delivery` = '.(int) $oldIdAddressDelivery.' AND `id_cart` = '.(int) $this->id,
+            1
+        );
 
         return true;
     }
 
     /**
-     * @param      $id_product
-     * @param      $id_product_attribute
-     * @param      $id_address_delivery
-     * @param      $new_id_address_delivery
+     * @param int  $idProduct
+     * @param int  $idProductAttribute
+     * @param int  $idAddressDelivery
+     * @param int  $newIdAddressDelivery
      * @param int  $quantity
-     * @param bool $keep_quantity
+     * @param bool $keepQuantity
      *
      * @return bool
      *
@@ -4420,117 +4414,122 @@ class CartCore extends ObjectModel
      * @version 1.0.0
      */
     public function duplicateProduct(
-        $id_product,
-        $id_product_attribute,
-        $id_address_delivery,
-        $new_id_address_delivery,
+        $idProduct,
+        $idProductAttribute,
+        $idAddressDelivery,
+        $newIdAddressDelivery,
         $quantity = 1,
-        $keep_quantity = false
+        $keepQuantity = false
     ) {
         // Check address is linked with the customer
-        if (!Customer::customerHasAddress(Context::getContext()->customer->id, $new_id_address_delivery)) {
+        if (!Customer::customerHasAddress(Context::getContext()->customer->id, $newIdAddressDelivery)) {
             return false;
         }
 
         // Checking the product do not exist with the new address
-        $sql = new DbQuery();
-        $sql->select('count(*)');
-        $sql->from('cart_product', 'c');
-        $sql->where('id_product = '.(int) $id_product);
-        $sql->where('id_product_attribute = '.(int) $id_product_attribute);
-        $sql->where('id_address_delivery = '.(int) $new_id_address_delivery);
-        $sql->where('id_cart = '.(int) $this->id);
-        $result = Db::getInstance()->getValue($sql);
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('COUNT(*)')
+                ->from('cart_product', 'c')
+                ->where('id_product = '.(int) $idProduct)
+                ->where('`id_product_attribute` = '.(int) $idProductAttribute)
+                ->where('`id_address_delivery` = '.(int) $newIdAddressDelivery)
+                ->where('`id_cart` = '.(int) $this->id)
+        );
 
         if ($result > 0) {
             return false;
         }
 
-        // Duplicating cart_product line
-        $sql = 'INSERT INTO '._DB_PREFIX_.'cart_product
-			(`id_cart`, `id_product`, `id_shop`, `id_product_attribute`, `quantity`, `date_add`, `id_address_delivery`)
-			VALUES(
-				'.(int) $this->id.',
-				'.(int) $id_product.',
-				'.(int) $this->id_shop.',
-				'.(int) $id_product_attribute.',
-				'.(int) $quantity.',
-				NOW(),
-				'.(int) $new_id_address_delivery.')';
+        Db::getInstance()->insert(
+            'cart_product',
+            [
+                'id_cart'              => (int) $this->id,
+                'id_product'           => (int) $idProduct,
+                'id_shop'              => (int) $this->id_shop,
+                'id_product_attribute' => (int) $idProductAttribute,
+                'quantity'             => (int) $quantity,
+                'date_add'             => ['type' => 'sql', 'value' => 'NOW()'],
+                'id_address_delivery'  => (int) $newIdAddressDelivery,
+            ]
+        );
 
-        Db::getInstance()->execute($sql);
-
-        if (!$keep_quantity) {
-            $sql = new DbQuery();
-            $sql->select('quantity');
-            $sql->from('cart_product', 'c');
-            $sql->where('id_product = '.(int) $id_product);
-            $sql->where('id_product_attribute = '.(int) $id_product_attribute);
-            $sql->where('id_address_delivery = '.(int) $id_address_delivery);
-            $sql->where('id_cart = '.(int) $this->id);
-            $duplicatedQuantity = Db::getInstance()->getValue($sql);
+        if (!$keepQuantity) {
+            $duplicatedQuantity = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                    ->select('quantity')
+                    ->from('cart_product', 'c')
+                    ->where('id_product = '.(int) $idProduct)
+                    ->where('id_product_attribute = '.(int) $idProductAttribute)
+                    ->where('id_address_delivery = '.(int) $idAddressDelivery)
+                    ->where('id_cart = '.(int) $this->id)
+            );
 
             if ($duplicatedQuantity > $quantity) {
-                $sql = 'UPDATE '._DB_PREFIX_.'cart_product
-					SET `quantity` = `quantity` - '.(int) $quantity.'
-					WHERE id_cart = '.(int) $this->id.'
-					AND id_product = '.(int) $id_product.'
-					AND id_shop = '.(int) $this->id_shop.'
-					AND id_product_attribute = '.(int) $id_product_attribute.'
-					AND id_address_delivery = '.(int) $id_address_delivery;
-                Db::getInstance()->execute($sql);
+                Db::getInstance()->update(
+                    'cart_product',
+                    [
+                        'quantity'             => ['type' => 'sql', 'value' => '`quantity - `'.(int) $quantity],
+                        'id_cart'              => (int) $this->id,
+                        'id_product'           => (int) $idProduct,
+                        'id_shop'              => (int) $this->id_shop,
+                        'id_product_attribute' => (int) $idProductAttribute,
+                        'id_address_delivery'  => (int) $idAddressDelivery,
+                    ]
+                );
             }
         }
 
         // Checking if there is customizations
-        $sql = new DbQuery();
-        $sql->select('*');
-        $sql->from('customization', 'c');
-        $sql->where('id_product = '.(int) $id_product);
-        $sql->where('id_product_attribute = '.(int) $id_product_attribute);
-        $sql->where('id_address_delivery = '.(int) $id_address_delivery);
-        $sql->where('id_cart = '.(int) $this->id);
-        $results = Db::getInstance()->executeS($sql);
+        $results = Db::getInstance()->executeS(
+            (new DbQuery())
+                ->select('*')
+                ->from('customization', 'c')
+                ->where('id_product = '.(int) $idProduct)
+                ->where('id_product_attribute = '.(int) $idProductAttribute)
+                ->where('id_address_delivery = '.(int) $idAddressDelivery)
+                ->where('id_cart = '.(int) $this->id)
+        );
 
         foreach ($results as $customization) {
             // Duplicate customization
-            $sql = 'INSERT INTO '._DB_PREFIX_.'customization
-				(`id_product_attribute`, `id_address_delivery`, `id_cart`, `id_product`, `quantity`, `in_cart`)
-				VALUES (
-					'.(int) $customization['id_product_attribute'].',
-					'.(int) $new_id_address_delivery.',
-					'.(int) $customization['id_cart'].',
-					'.(int) $customization['id_product'].',
-					'.(int) $quantity.',
-					'.(int) $customization['in_cart'].')';
-
-            Db::getInstance()->execute($sql);
+            Db::getInstance()->insert(
+                'customization',
+                [
+                    'id_product_attribute' => (int) $customization['id_product_attribute'],
+                    'id_address_delivery'  => (int) $newIdAddressDelivery,
+                    'id_cart'              => (int) $customization['id_cart'],
+                    'id_product'           => (int) $customization['id_product'],
+                    'quantity'             => (int) $quantity,
+                    'in_cart'              => $customization['in_cart'],
+                ]
+            );
 
             // Save last insert ID before doing another query
-            $last_id = (int) Db::getInstance()->Insert_ID();
+            $lastId = (int) Db::getInstance()->Insert_ID();
 
             // Get data from duplicated customizations
-            $sql = new DbQuery();
-            $sql->select('`type`, `index`, `value`');
-            $sql->from('customized_data');
-            $sql->where('id_customization = '.$customization['id_customization']);
-            $last_row = Db::getInstance()->getRow($sql);
+            $lastRow = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                (new DbQuery())
+                    ->select('`type`, `index`, `value`')
+                    ->from('customized_data')
+                    ->where('id_customization = '.$customization['id_customization'])
+            );
 
             // Insert new copied data with new customization ID into customized_data table
-            $last_row['id_customization'] = $last_id;
-            Db::getInstance()->insert('customized_data', $last_row);
+            $lastRow['id_customization'] = $lastId;
+            Db::getInstance()->insert('customized_data', $lastRow);
         }
 
-        $customization_count = count($results);
-        if ($customization_count > 0) {
-            $sql = 'UPDATE '._DB_PREFIX_.'cart_product
-				SET `quantity` = `quantity` + '.(int) $customization_count * $quantity.'
-				WHERE id_cart = '.(int) $this->id.'
-				AND id_product = '.(int) $id_product.'
-				AND id_shop = '.(int) $this->id_shop.'
-				AND id_product_attribute = '.(int) $id_product_attribute.'
-				AND id_address_delivery = '.(int) $new_id_address_delivery;
-            Db::getInstance()->execute($sql);
+        $customizationCount = count($results);
+        if ($customizationCount > 0) {
+            Db::getInstance()->update(
+                'cart_product',
+                [
+                    'quantity' => ['type' => 'sql', 'value' => '`quantity` + '.(int) $customizationCount * $quantity],
+                ],
+                'id_cart = '.(int) $this->id.' AND id_product = '.(int) $idProduct.' AND id_shop = '.(int) $this->id_shop.' AND id_product_attribute = '.(int) $idProductAttribute.' AND id_address_delivery = '.(int) $newIdAddressDelivery
+            );
         }
 
         return true;
@@ -4547,22 +4546,27 @@ class CartCore extends ObjectModel
         $emptyCache = false;
         if (Configuration::get('PS_ALLOW_MULTISHIPPING')) {
             // Upgrading quantities
-            $sql = 'SELECT sum(`quantity`) AS quantity, id_product, id_product_attribute, count(*) AS count
-					FROM `'._DB_PREFIX_.'cart_product`
-					WHERE `id_cart` = '.(int) $this->id.'
-						AND `id_shop` = '.(int) $this->id_shop.'
-					GROUP BY id_product, id_product_attribute
-					HAVING count > 1';
+            $products = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                    ->select('SUM(`quantity`) AS `quantity`, `id_product`, `id_product_attribute`, COUNT(*) AS `count`')
+                    ->from('cart_product')
+                    ->where('`id_cart` = '.(int) $this->id)
+                    ->where('`id_shop` = '.(int) $this->id_shop)
+                    ->groupBy('`id_product`, `id_product_attribute`')
+                    ->having('`count` > 1')
+            );
 
-            foreach (Db::getInstance()->executeS($sql) as $product) {
-                $sql = 'UPDATE `'._DB_PREFIX_.'cart_product`
-					SET `quantity` = '.$product['quantity'].'
-					WHERE  `id_cart` = '.(int) $this->id.'
-						AND `id_shop` = '.(int) $this->id_shop.'
-						AND id_product = '.$product['id_product'].'
-						AND id_product_attribute = '.$product['id_product_attribute'];
-                if (Db::getInstance()->execute($sql)) {
-                    $emptyCache = true;
+            if (is_array($products)) {
+                foreach ($products as $product) {
+                    if (Db::getInstance()->update(
+                        'cart_product',
+                        [
+                            'quantity' => (int) $product['quantity'],
+                        ],
+                        '`id_cart` = '.(int) $this->id.' AND `id_shop` = '.(int) $this->id_shop.' AND id_product = '.$product['id_product'].' AND id_product_attribute = '.$product['id_product_attribute']
+                    )) {
+                        $emptyCache = true;
+                    }
                 }
             }
 
@@ -4581,31 +4585,29 @@ class CartCore extends ObjectModel
         }
 
         // Update delivery address for each product line
-        $sql = 'UPDATE `'._DB_PREFIX_.'cart_product`
-		SET `id_address_delivery` = (
-			SELECT `id_address_delivery` FROM `'._DB_PREFIX_.'cart`
-			WHERE `id_cart` = '.(int) $this->id.' AND `id_shop` = '.(int) $this->id_shop.'
-		)
-		WHERE `id_cart` = '.(int) $this->id.'
-		'.(Configuration::get('PS_ALLOW_MULTISHIPPING') ? ' AND `id_shop` = '.(int) $this->id_shop : '');
+        Db::getInstance()->update(
+            'cart_product',
+            [
+                'id_address_delivery' => ['type' => 'sql', 'value' => 'SELECT `id_address_delivery` FROM `'._DB_PREFIX_.'cart` WHERE `id_cart` = '.(int) $this->id.' AND `id_shop` = '.(int) $this->id_shop],
+            ],
+            '`id_cart` = '.(int) $this->id.' '.(Configuration::get('PS_ALLOW_MULTISHIPPING') ? ' AND `id_shop` = '.(int) $this->id_shop : '')
+        );
 
-        $cache_id = 'static::setNoMultishipping'.(int) $this->id.'-'.(int) $this->id_shop.((isset($this->id_address_delivery) && $this->id_address_delivery) ? '-'.(int) $this->id_address_delivery : '');
-        if (!Cache::isStored($cache_id)) {
+        $cacheId = 'static::setNoMultishipping'.(int) $this->id.'-'.(int) $this->id_shop.((isset($this->id_address_delivery) && $this->id_address_delivery) ? '-'.(int) $this->id_address_delivery : '');
+        if (!Cache::isStored($cacheId)) {
             if ($result = (bool) Db::getInstance()->execute($sql)) {
                 $emptyCache = true;
             }
-            Cache::store($cache_id, $result);
+            Cache::store($cacheId, $result);
         }
 
         if (Customization::isFeatureActive()) {
-            Db::getInstance()->execute(
-                '
-			UPDATE `'._DB_PREFIX_.'customization`
-			SET `id_address_delivery` = (
-				SELECT `id_address_delivery` FROM `'._DB_PREFIX_.'cart`
-				WHERE `id_cart` = '.(int) $this->id.'
-			)
-			WHERE `id_cart` = '.(int) $this->id
+            Db::getInstance()->update(
+                'customization',
+                [
+                    'id_address_delivery' => ['type' => 'sql', 'value' => 'SELECT `id_address_delivery` FROM `'._DB_PREFIX_.'cart` WHERE `id_cart` = '.(int) $this->id],
+                ],
+                '`id_cart` = '.(int) $this->id
             );
         }
 
@@ -4622,32 +4624,33 @@ class CartCore extends ObjectModel
      */
     public function autosetProductAddress()
     {
-        $id_address_delivery = 0;
         // Get the main address of the customer
         if ((int) $this->id_address_delivery > 0) {
-            $id_address_delivery = (int) $this->id_address_delivery;
+            $idAddressDelivery = (int) $this->id_address_delivery;
         } else {
-            $id_address_delivery = (int) Address::getFirstCustomerAddressId(Context::getContext()->customer->id);
+            $idAddressDelivery = (int) Address::getFirstCustomerAddressId(Context::getContext()->customer->id);
         }
 
-        if (!$id_address_delivery) {
+        if (!$idAddressDelivery) {
             return;
         }
 
         // Update
-        $sql = 'UPDATE `'._DB_PREFIX_.'cart_product`
-			SET `id_address_delivery` = '.(int) $id_address_delivery.'
-			WHERE `id_cart` = '.(int) $this->id.'
-				AND (`id_address_delivery` = 0 OR `id_address_delivery` IS NULL)
-				AND `id_shop` = '.(int) $this->id_shop;
-        Db::getInstance()->execute($sql);
+        Db::getInstance()->update(
+            'cart_product',
+            [
+                'id_address_delivery' => (int) $idAddressDelivery,
+            ],
+            '`id_cart` = '.(int) $this->id.' AND (`id_address_delivery` = 0 OR `id_address_delivery` IS NULL) AND `id_shop` = '.(int) $this->id_shop
+        );
 
-        $sql = 'UPDATE `'._DB_PREFIX_.'customization`
-			SET `id_address_delivery` = '.(int) $id_address_delivery.'
-			WHERE `id_cart` = '.(int) $this->id.'
-				AND (`id_address_delivery` = 0 OR `id_address_delivery` IS NULL)';
-
-        Db::getInstance()->execute($sql);
+        Db::getInstance()->update(
+            'customization',
+            [
+                'id_address_delivery' => (int) $idAddressDelivery,
+            ],
+            '`id_cart` = '.(int) $this->id.' AND (`id_address_delivery` = 0 OR `id_address_delivery` IS NULL)'
+        );
     }
 
     /**
