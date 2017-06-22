@@ -206,9 +206,11 @@ function install_error(step, errors, fatal = true)
 function install_success()
 {
 	$('#progress_bar .total span').hide();
-	$('.installing').html(install_is_done);
+	$('.installing').html(install_is_done).css('background', 'none');
 	is_installing = false;
-	$('#install_process_form').slideUp();
+	if ($('#error_process').not(':visible').length) {
+		$('#install_process_form').slideUp();
+	}
 	$('#install_process_success').slideDown();
 	$('.stepList li:last-child').addClass('ok');
 
