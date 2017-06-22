@@ -341,8 +341,8 @@ class ConfigurationCore extends ObjectModel
     }
 
     /**
-     * @param      $key
-     * @param null $idLang
+     * @param string   $key
+     * @param int|null $idLang
      *
      * @return string
      *
@@ -411,11 +411,17 @@ class ConfigurationCore extends ObjectModel
     {
         static::$_cache[static::$definition['table']] = [];
 
-        $sql = 'SELECT c.`name`, cl.`id_lang`, IF(cl.`id_lang` IS NULL, c.`value`, cl.`value`) AS value, c.id_shop_group, c.id_shop
-                FROM `'._DB_PREFIX_.bqSQL(static::$definition['table']).'` c
-                LEFT JOIN `'._DB_PREFIX_.bqSQL(static::$definition['table']).'_lang` cl ON (c.`'.bqSQL(static::$definition['primary']).'` = cl.`'.bqSQL(static::$definition['primary']).'`)';
-        $db = Db::getInstance();
-        $rows = (array) $db->executeS($sql);
+        $rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('c.`name`, cl.`id_lang`, IF(cl.`id_lang` IS NULL, c.`value`, cl.`value`) AS `value`, c.`id_shop_group`, c.`id_shop`')
+                ->from(bqSQL(static::$definition['table']))
+                ->leftJoin(static::$definition['table'].'_lang', 'cl', 'c.`id_configuration` = cl.`id_configuration`')
+        );
+
+        if (!is_array($rows)) {
+            return;
+        }
+
         foreach ($rows as $row) {
             $lang = ($row['id_lang']) ? $row['id_lang'] : 0;
             static::$types[$row['name']] = ($lang) ? 'lang' : 'normal';
@@ -498,7 +504,7 @@ class ConfigurationCore extends ObjectModel
     /**
      * Get a single configuration value for all shops
      *
-     * @param string $key Key wanted
+     * @param string $key    Key wanted
      * @param int    $idLang
      *
      * @return array Values for all shops
@@ -522,8 +528,8 @@ class ConfigurationCore extends ObjectModel
      *
      * @throws PrestaShopException
      *
-     * @param array $keys   Keys wanted
-     * @param int   $idLang Language ID
+     * @param array $keys        Keys wanted
+     * @param int   $idLang      Language ID
      * @param int   $idShopGroup
      * @param int   $idShop
      *
@@ -579,9 +585,9 @@ class ConfigurationCore extends ObjectModel
      *
      * @TODO    Fix saving HTML values in Configuration model
      *
-     * @param string $key    Key
-     * @param mixed  $values $values is an array if the configuration is multilingual, a single string else.
-     * @param bool   $html   Specify if html is authorized in value
+     * @param string $key        Key
+     * @param mixed  $values     $values is an array if the configuration is multilingual, a single string else.
+     * @param bool   $html       Specify if html is authorized in value
      * @param int    $idShopGroup
      * @param int    $idShop
      *
@@ -653,14 +659,13 @@ class ConfigurationCore extends ObjectModel
             } // If key does not exists, create it
             else {
                 if (!$configID = Configuration::getIdByName($key, $idShopGroup, $idShop)) {
-                    $now = date('Y-m-d H:i:s');
                     $data = [
                         'id_shop_group' => $idShopGroup ? (int) $idShopGroup : null,
                         'id_shop'       => $idShop ? (int) $idShop : null,
                         'name'          => pSQL($key),
                         'value'         => $lang ? null : pSQL($value, $html),
-                        'date_add'      => $now,
-                        'date_upd'      => $now,
+                        'date_add'      => ['type' => 'sql', 'value' => 'NOW()'],
+                        'date_upd'      => ['type' => 'sql', 'value' => 'NOW()'],
                     ];
                     $result &= Db::getInstance()->insert(static::$definition['table'], $data, true);
                     $configID = Db::getInstance()->Insert_ID();
@@ -668,7 +673,8 @@ class ConfigurationCore extends ObjectModel
 
                 if ($lang) {
                     $result &= Db::getInstance()->insert(
-                        static::$definition['table'].'_lang', [
+                        static::$definition['table'].'_lang',
+                        [
                             static::$definition['primary'] => $configID,
                             'id_lang'                    => (int) $lang,
                             'value'                      => pSQL($value, $html),
@@ -800,11 +806,7 @@ class ConfigurationCore extends ObjectModel
         )'
         );
 
-        $result2 = Db::getInstance()->execute(
-            '
-        DELETE FROM `'._DB_PREFIX_.bqSQL(static::$definition['table']).'`
-        WHERE `name` = "'.pSQL($key).'"'
-        );
+        $result2 = Db::getInstance()->execute(_DB_PREFIX_.bqSQL(static::$definition['table']), '`name` = "'.pSQL($key).'"');
 
         static::$_cache[static::$definition['table']] = null;
 
@@ -832,22 +834,20 @@ class ConfigurationCore extends ObjectModel
         }
 
         $id = Configuration::getIdByName($key, $idShopGroup, $idShop);
-        Db::getInstance()->execute(
-            '
-        DELETE FROM `'._DB_PREFIX_.bqSQL(static::$definition['table']).'`
-        WHERE `'.bqSQL(static::$definition['primary']).'` = '.(int) $id
+        Db::getInstance()->delete(
+            _DB_PREFIX_.bqSQL(static::$definition['table']),
+            bqSQL(static::$definition['primary']).'` = '.(int) $id
         );
-        Db::getInstance()->execute(
-            '
-        DELETE FROM `'._DB_PREFIX_.bqSQL(static::$definition['table']).'_lang`
-        WHERE `'.bqSQL(static::$definition['primary']).'` = '.(int) $id
+        Db::getInstance()->delete(
+            _DB_PREFIX_.bqSQL(static::$definition['table']).'_lang`',
+            bqSQL(static::$definition['primary']).'` = '.(int) $id
         );
 
         static::$_cache[static::$definition['table']] = null;
     }
 
     /**
-     * @param $key
+     * @param string $key
      *
      * @return bool
      *
@@ -897,6 +897,7 @@ class ConfigurationCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @return bool
      */
     public static function hasContext($key, $idLang, $context)
     {
@@ -940,10 +941,10 @@ class ConfigurationCore extends ObjectModel
     /**
      * This method is override to allow TranslatedConfiguration entity
      *
-     * @param $sqlJoin
-     * @param $sqlFilter
-     * @param $sqlSort
-     * @param $sqlLimit
+     * @param string $sqlJoin
+     * @param string $sqlFilter
+     * @param string $sqlSort
+     * @param string $sqlLimit
      *
      * @return array
      *
@@ -953,12 +954,12 @@ class ConfigurationCore extends ObjectModel
     public function getWebserviceObjectList($sqlJoin, $sqlFilter, $sqlSort, $sqlLimit)
     {
         $query = '
-        SELECT DISTINCT main.`'.bqSQL($this->def['primary']).'`
-        FROM `'._DB_PREFIX_.bqSQL($this->def['table']).'` main
+        SELECT DISTINCT main.`'.bqSQL(static::$definition['primary']).'`
+        FROM `'._DB_PREFIX_.bqSQL(static::$definition['table']).'` main
         '.$sqlJoin.'
         WHERE id_configuration NOT IN (
             SELECT id_configuration
-            FROM '._DB_PREFIX_.bqSQL($this->def['table']).'_lang
+            FROM '._DB_PREFIX_.bqSQL(static::$definition['table']).'_lang
         ) '.$sqlFilter.'
         '.($sqlSort != '' ? $sqlSort : '').'
         '.($sqlLimit != '' ? $sqlLimit : '');
