@@ -809,16 +809,16 @@ class CarrierCore extends ObjectModel
 
         switch ($modulesFilters) {
             case static::PS_CARRIERS_ONLY:
-                $sql .= ' AND c.is_module = 0 ';
+                $sql->where('c.`is_module` = 0');
                 break;
             case static::CARRIERS_MODULE:
-                $sql .= ' AND c.is_module = 1 ';
+                $sql->where('c.`is_module` = 1');
                 break;
             case static::CARRIERS_MODULE_NEED_RANGE:
-                $sql .= ' AND c.is_module = 1 AND c.need_range = 1 ';
+                $sql->where('c.`is_module` = 1 AND c.`need_range` = 1');
                 break;
             case static::PS_CARRIERS_AND_CARRIER_MODULES_NEED_RANGE:
-                $sql .= ' AND (c.is_module = 0 OR c.need_range = 1) ';
+                $sql->where('c.`is_module` = 0 OR c.`need_range` = 1');
                 break;
         }
         $sql->groupBy('c.`id_carrier`');
