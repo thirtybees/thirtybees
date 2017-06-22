@@ -1263,7 +1263,6 @@ class AdminImagesControllerCore extends AdminController
     {
         $this->context->smarty->assign(
             [
-                'safe_mode'         => Tools::getSafeModeStatus(),
                 'link_ppreferences' => 'index.php?tab=AdminPPreferences&token='.Tools::getAdminTokenLite('AdminPPreferences').'#PS_LEGACY_IMAGES_on',
             ]
         );
