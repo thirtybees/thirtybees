@@ -203,6 +203,34 @@ class CarrierCore extends ObjectModel
     }
 
     /**
+     * Hydrate function for the Carrier
+     *
+     * @param array    $data
+     * @param int|null $idLang
+     *
+     * @return void
+     *
+     * @since 1.0.2 Fix the hydrate function of the carrier
+     */
+    public function hydrate(array $data, $idLang = null)
+    {
+        parent::hydrate($data, $idLang);
+
+        /**
+         * keep retrocompatibility id_tax_rules_group
+         *
+         * @deprecated PS 1.5
+         */
+        if ($this->id) {
+            $this->id_tax_rules_group = $this->getIdTaxRulesGroup(Context::getContext());
+        }
+
+        if ($this->name === '0' && static::getCarrierNameFromShopName()) {
+            $this->name = static::getCarrierNameFromShopName();
+        }
+    }
+
+    /**
      * @param Context|null $context
      *
      * @return false|null|string
@@ -1900,33 +1928,5 @@ class CarrierCore extends ObjectModel
         }
 
         return Db::getInstance()->insert('carrier_group', $insert);
-    }
-
-    /**
-     * Hydrate function for the Carrier
-     *
-     * @param array    $data
-     * @param int|null $idLang
-     *
-     * @return void
-     *
-     * @since 1.0.2 Fix the hydrate function of the carrier
-     */
-    public function hydrate(array $data, $idLang = null)
-    {
-        parent::hydrate($data, $idLang);
-
-        /**
-         * keep retrocompatibility id_tax_rules_group
-         *
-         * @deprecated PS 1.5
-         */
-        if ($this->id) {
-            $this->id_tax_rules_group = $this->getIdTaxRulesGroup(Context::getContext());
-        }
-
-        if ($this->name === '0' && static::getCarrierNameFromShopName()) {
-            $this->name = static::getCarrierNameFromShopName();
-        }
     }
 }
