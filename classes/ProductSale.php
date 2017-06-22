@@ -64,21 +64,24 @@ class ProductSaleCore
      */
     public static function getNbSales()
     {
-        $sql = 'SELECT COUNT(ps.`id_product`) AS nb
-				FROM `'._DB_PREFIX_.'product_sale` ps
-				LEFT JOIN `'._DB_PREFIX_.'product` p ON p.`id_product` = ps.`id_product`
-				'.Shop::addSqlAssociation('product', 'p', false).'
-				WHERE product_shop.`active` = 1';
-
-        return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+        return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('COUNT(ps.`id_product`) AS `nb`')
+                ->from('product_sale', 'ps')
+                ->leftJoin('product', 'p', 'p.`id_product` = ps.`id_product`')
+                ->join(Shop::addSqlRestriction('product', 'p'))
+                ->where('product_shop.`active` = 1')
+        );
     }
 
     /**
      * Get required informations on best sales products
      *
-     * @param int $idLang     Language id
-     * @param int $pageNumber Start from (optional)
-     * @param int $nbProducts Number of products to return (optional)
+     * @param int         $idLang     Language id
+     * @param int         $pageNumber Start from (optional)
+     * @param int         $nbProducts Number of products to return (optional)
+     * @param string|null $orderBy
+     * @param string|null $orderWay
      *
      * @return array from Product::getProductProperties
      *
