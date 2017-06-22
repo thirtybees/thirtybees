@@ -39,13 +39,11 @@ class AddressFormatCore extends ObjectModel
     // @codingStandardsIgnoreStart
     /** @var int */
     public $id_address_format;
-
     /** @var int */
     public $id_country;
-
     /** @var string */
     public $format;
-
+    /** @var array $_errorFormatList */
     protected $_errorFormatList = [];
     // @codingStandardsIgnoreEnd
 
@@ -333,12 +331,14 @@ class AddressFormatCore extends ObjectModel
     /**
      * Returns the formatted fields with associated values
      *
-     * @address       is an instancied Address object
-     * @addressFormat is the format
-     * @return double Array
-     *
      * @since         1.0.0
      * @version       1.0.0 Initial version
+     *
+     * @param Address  $address
+     * @param array    $addressFormat
+     * @param int|null $idLang
+     *
+     * @return array
      */
     public static function getFormattedAddressFieldsValues($address, $addressFormat, $idLang = null)
     {
@@ -438,8 +438,8 @@ class AddressFormatCore extends ObjectModel
     }
 
     /**
-     * @param $params
-     * @param $smarty
+     * @param array  $params
+     * @param Smarty $smarty
      *
      * @return string
      *
@@ -491,7 +491,7 @@ class AddressFormatCore extends ObjectModel
     }
 
     /**
-     * @param $className
+     * @param string $className
      *
      * @return array
      *
@@ -644,11 +644,11 @@ class AddressFormatCore extends ObjectModel
     protected function _getFormatDB($idCountry)
     {
         if (!Cache::isStored('AddressFormat::_getFormatDB'.$idCountry)) {
-            $format = Db::getInstance()->getValue(
-                '
-			SELECT format
-			FROM `'._DB_PREFIX_.$this->def['table'].'`
-			WHERE `id_country` = '.(int) $idCountry
+            $format = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                ->select('`format`')
+                ->from(bqSQL(static::$definition['table']))
+                ->where('`id_country` = '.(int) $idCountry)
             );
             $format = trim($format);
             Cache::store('AddressFormat::_getFormatDB'.$idCountry, $format);
