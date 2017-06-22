@@ -417,7 +417,12 @@ class AddressCore extends ObjectModel
     {
         $key = 'address_exists_'.(int) $idAddress;
         if (!Cache::isStored($key)) {
-            $idAddress = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT `id_address` FROM '._DB_PREFIX_.'address a WHERE a.`id_address` = '.(int) $idAddress);
+            $idAddress = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                ->select('a.`id_address`')
+                ->from('address', 'a')
+                ->where('a.`id_address` = '.(int) $idAddress)
+            );
             Cache::store($key, (bool) $idAddress);
 
             return (bool) $idAddress;
@@ -427,7 +432,7 @@ class AddressCore extends ObjectModel
     }
 
     /**
-     * @param      $idCustomer
+     * @param int  $idCustomer
      * @param bool $active
      *
      * @return bool|int|null
@@ -443,10 +448,12 @@ class AddressCore extends ObjectModel
         $cacheId = 'Address::getFirstCustomerAddressId_'.(int) $idCustomer.'-'.(bool) $active;
         if (!Cache::isStored($cacheId)) {
             $result = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-                '
-				SELECT `id_address`
-				FROM `'._DB_PREFIX_.'address`
-				WHERE `id_customer` = '.(int) $idCustomer.' AND `deleted` = 0'.($active ? ' AND `active` = 1' : '')
+                (new DbQuery())
+                ->select('`id_address`')
+                ->from('address')
+                ->where('`id_customer` = '.(int) $idCustomer)
+                ->where('`deleted` = 0')
+                ->where($active ? '`active` = 1' : '')
             );
             Cache::store($cacheId, $result);
 
