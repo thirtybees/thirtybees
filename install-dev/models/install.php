@@ -413,11 +413,7 @@ class InstallModelInstall extends InstallAbstractModel
                 'allow_accented_chars_url' => (string) $xml->allow_accented_chars_url,
             ];
 
-            if (InstallSession::getInstance()->safe_mode) {
-                Language::checkAndAddLanguage($iso, false, true, $paramsLang);
-            } else {
-                Language::downloadAndInstallLanguagePack($iso, _TB_INSTALL_VERSION_, $paramsLang);
-            }
+            Language::downloadAndInstallLanguagePack($iso, _TB_INSTALL_VERSION_, $paramsLang);
 
             Language::loadLanguages();
             Tools::clearCache();
@@ -582,11 +578,6 @@ class InstallModelInstall extends InstallAbstractModel
 
         Context::getContext()->shop = new Shop(1);
         Configuration::loadConfiguration();
-
-        // use the old image system if the safe_mod is enabled otherwise the installer will fail with the fixtures installation
-        if (InstallSession::getInstance()->safe_mode) {
-            Configuration::updateGlobalValue('PS_LEGACY_IMAGES', 1);
-        }
 
         $idCountry = (int) Country::getByIso($data['shopCountry']);
 
