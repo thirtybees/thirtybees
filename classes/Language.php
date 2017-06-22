@@ -156,11 +156,12 @@ class LanguageCore extends ObjectModel
     {
         static::$_LANGUAGES = [];
 
-        $sql = 'SELECT l.*, ls.`id_shop`
-				FROM `'._DB_PREFIX_.'lang` l
-				LEFT JOIN `'._DB_PREFIX_.'lang_shop` ls ON (l.id_lang = ls.id_lang)';
-
-        $result = Db::getInstance()->executeS($sql);
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('l.*, ls.`id_shop`')
+                ->from('lang', 'l')
+                ->leftJoin('lang_shop', 'ls', 'l.`id_lang` = ls.`id_lang`')
+        );
         foreach ($result as $row) {
             if (!isset(static::$_LANGUAGES[(int) $row['id_lang']])) {
                 static::$_LANGUAGES[(int) $row['id_lang']] = $row;
@@ -200,7 +201,12 @@ class LanguageCore extends ObjectModel
             die(Tools::displayError('Fatal error: ISO code is not correct').' '.Tools::safeOutput($isoCode));
         }
 
-        return Db::getInstance()->getValue('SELECT `language_code` FROM `'._DB_PREFIX_.'lang` WHERE `iso_code` = \''.pSQL(strtolower($isoCode)).'\'');
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('`language_code`')
+                ->from('lang')
+                ->where('`iso_code` = \''.pSQL(strtolower($isoCode)).'\'')
+        );
     }
 
     /**
@@ -228,11 +234,12 @@ class LanguageCore extends ObjectModel
         // and sort on equality with the exact IETF code wanted.
         // That way using only one query we get either the exact wanted language
         // or a close match.
-        $idLang = Db::getInstance()->getValue(
-            'SELECT `id_lang`, IF(language_code = \''.pSQL($code).'\', 0, LENGTH(language_code)) as found
-			FROM `'._DB_PREFIX_.'lang`
-			WHERE LEFT(`language_code`,2) = \''.pSQL($lang).'\'
-			ORDER BY found ASC'
+        $idLang = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('`id_lang`, IF(language_code = \''.pSQL($code).'\', 0, LENGTH(language_code)) as found')
+                ->from('lang')
+                ->where('LEFT(`language_code`, 2) = \''.pSQL($lang).'\'')
+                ->orderBy('`found` ASC')
         );
 
         // Instantiate the Language object if we found it.
@@ -246,16 +253,21 @@ class LanguageCore extends ObjectModel
     /**
      * Return array (id_lang, iso_code)
      *
-     * @param string $isoCode Iso code
+     * @param bool $active
      *
-     * @return array  Language (id_lang, iso_code)
+     * @return array Language (id_lang, iso_code)
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @since    1.0.0
+     * @version  1.0.0 Initial version
      */
     public static function getIsoIds($active = true)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('SELECT `id_lang`, `iso_code` FROM `'._DB_PREFIX_.'lang` '.($active ? 'WHERE active = 1' : ''));
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('`id_lang`, `iso_code`')
+                ->from('lang')
+                ->where($active ? '`active` = 1' : '')
+        );
     }
 
     /**
@@ -269,14 +281,19 @@ class LanguageCore extends ObjectModel
      */
     public static function copyLanguageData($from, $to)
     {
-        $result = Db::getInstance()->executeS('SHOW TABLES FROM `'._DB_NAME_.'`');
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('SHOW TABLES FROM `'._DB_NAME_.'`');
         foreach ($result as $row) {
             if (preg_match('/_lang/', $row['Tables_in_'._DB_NAME_]) && $row['Tables_in_'._DB_NAME_] != _DB_PREFIX_.'lang') {
-                $result2 = Db::getInstance()->executeS('SELECT * FROM `'.$row['Tables_in_'._DB_NAME_].'` WHERE `id_lang` = '.(int) $from);
+                $result2 = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                    (new DbQuery())
+                        ->select('*')
+                        ->from(bqSQL($row['Tables_in_'._DB_NAME_]))
+                        ->where('`id_lang` = '.(int) $from)
+                );
                 if (!count($result2)) {
                     continue;
                 }
-                Db::getInstance()->execute('DELETE FROM `'.$row['Tables_in_'._DB_NAME_].'` WHERE `id_lang` = '.(int) $to);
+                Db::getInstance()->delete(bQSQL($row['Tables_in_'._DB_NAME_]), '`id_lang` = '.(int) $to);
                 $query = 'INSERT INTO `'.$row['Tables_in_'._DB_NAME_].'` VALUES ';
                 foreach ($result2 as $row2) {
                     $query .= '(';
@@ -306,7 +323,11 @@ class LanguageCore extends ObjectModel
     {
         if (static::$_cache_language_installation === null) {
             static::$_cache_language_installation = [];
-            $result = Db::getInstance()->executeS('SELECT `id_lang`, `iso_code` FROM `'._DB_PREFIX_.'lang`');
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                    ->select('`id_lang`, `iso_code`')
+                    ->from('lang')
+            );
             foreach ($result as $row) {
                 static::$_cache_language_installation[$row['iso_code']] = $row['id_lang'];
             }
@@ -343,12 +364,12 @@ class LanguageCore extends ObjectModel
         }
 
         if (!isset(static::$countActiveLanguages[$idShop])) {
-            static::$countActiveLanguages[$idShop] = Db::getInstance()->getValue(
-                '
-				SELECT COUNT(DISTINCT l.id_lang) FROM `'._DB_PREFIX_.'lang` l
-				JOIN '._DB_PREFIX_.'lang_shop lang_shop ON (lang_shop.id_lang = l.id_lang AND lang_shop.id_shop = '.(int) $idShop.')
-				WHERE l.`active` = 1
-			'
+            static::$countActiveLanguages[$idShop] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                    ->select('COUNT(DISTINCT l.`id_lang`)')
+                    ->from('lang', 'l')
+                    ->innerJoin('lang_shop', 'ls', 'ls.`id_lang` = l.`id_lang`')
+                    ->where('ls.`id_shop` = '.(int) $idShop)
             );
         }
 
@@ -484,6 +505,12 @@ class LanguageCore extends ObjectModel
         return count($errors) ? $errors : true;
     }
 
+    /**
+     * @param string      $iso
+     * @param Archive_Tar $tar
+     *
+     * @return array|bool|int|null
+     */
     public static function getLanguagePackListContent($iso, $tar)
     {
         $key = 'Language::getLanguagePackListContent_'.$iso;
@@ -501,10 +528,10 @@ class LanguageCore extends ObjectModel
     }
 
     /**
-     * @param string $isoCode
-     * @param bool  $langPack
-     * @param bool  $onlyAdd
-     * @param null  $paramsLang
+     * @param string        $isoCode
+     * @param Language|bool $langPack
+     * @param bool          $onlyAdd
+     * @param array|null    $paramsLang
      *
      * @return bool
      *
@@ -611,7 +638,12 @@ class LanguageCore extends ObjectModel
 
         $key = 'Language::getIdByIso_'.$isoCode;
         if ($noCache || !Cache::isStored($key)) {
-            $idLang = Db::getInstance()->getValue('SELECT `id_lang` FROM `'._DB_PREFIX_.'lang` WHERE `iso_code` = \''.pSQL(strtolower($isoCode)).'\'');
+            $idLang = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                    ->select('`id_lang`')
+                    ->from('lang')
+                    ->where('`iso_code` = \''.pSQL($isoCode).'\'')
+            );
 
             Cache::store($key, $idLang);
 
@@ -897,13 +929,13 @@ class LanguageCore extends ObjectModel
     }
 
     /**
-     * @param      $isoFrom
-     * @param      $themeFrom
-     * @param bool $isoTo
-     * @param bool $themeTo
-     * @param bool $select
-     * @param bool $check
-     * @param bool $modules
+     * @param string      $isoFrom
+     * @param string      $themeFrom
+     * @param bool|string $isoTo
+     * @param bool|string $themeTo
+     * @param bool        $select
+     * @param bool        $check
+     * @param bool        $modules
      *
      * @return array
      *
@@ -1101,17 +1133,17 @@ class LanguageCore extends ObjectModel
             $result = Db::getInstance()->executeS('SHOW TABLES FROM `'._DB_NAME_.'`');
             foreach ($result as $row) {
                 if (isset($row['Tables_in_'._DB_NAME_]) && !empty($row['Tables_in_'._DB_NAME_]) && preg_match('/'.preg_quote(_DB_PREFIX_).'_lang/', $row['Tables_in_'._DB_NAME_])) {
-                    if (!Db::getInstance()->execute('DELETE FROM `'.$row['Tables_in_'._DB_NAME_].'` WHERE `id_lang` = '.(int) $this->id)) {
+                    if (!Db::getInstance()->delete(bqSQL($row['Tables_in_'._DB_NAME_]), '`id_lang` = '.(int) $this->id)) {
                         return false;
                     }
                 }
             }
 
             // Delete tags
-            Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'tag WHERE id_lang = '.(int) $this->id);
+            Db::getInstance()->delete('tag', '`id_lang` = '.(int) $this->id);
 
             // Delete search words
-            Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'search_word WHERE id_lang = '.(int) $this->id);
+            Db::getInstance()->delete('`search_word`', '`id_lang` = '.(int) $this->id);
 
             // Files deletion
             foreach (Language::getFilesList($this->iso_code, _THEME_NAME_, false, false, false, true, true) as $key => $file) {
