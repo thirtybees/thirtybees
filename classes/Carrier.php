@@ -111,6 +111,8 @@ class CarrierCore extends ObjectModel
     public $max_weight;
     /** @var int grade of the shipping delay (0 for longest, 9 for shortest) */
     public $grade;
+    /** @var int $id_tax_rules_group */
+    public $id_tax_rules_group;
     // @codingStandardsIgnoreEnd
 
     /**
@@ -1723,43 +1725,42 @@ class CarrierCore extends ObjectModel
      *
      * @param Address $address
      *
-     * @return
+     * @return float
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function getTaxesRate(Address $address)
     {
-        $tax_calculator = $this->getTaxCalculator($address);
-
-        return $tax_calculator->getTotalRate();
+        return ($this->getTaxCalculator($address))->getTotalRate();
     }
 
     /**
      * Returns the taxes calculator associated to the carrier
      *
-     * @param Address $address
+     * @param Address  $address
+     * @param int|null $idOrder
+     * @param bool     $useAverageTaxOfProducts
      *
-     * @return
-     *
+     * @return AverageTaxOfProductsTaxCalculator|TaxCalculator
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function getTaxCalculator(Address $address, $id_order = null, $use_average_tax_of_products = false)
+    public function getTaxCalculator(Address $address, $idOrder = null, $useAverageTaxOfProducts = false)
     {
-        if ($use_average_tax_of_products) {
-            return Adapter_ServiceLocator::get('AverageTaxOfProductsTaxCalculator')->setIdOrder($id_order);
+        if ($useAverageTaxOfProducts) {
+            return Adapter_ServiceLocator::get('AverageTaxOfProductsTaxCalculator')->setIdOrder($idOrder);
         } else {
-            $tax_manager = TaxManagerFactory::getManager($address, $this->getIdTaxRulesGroup());
+            $taxManager = TaxManagerFactory::getManager($address, $this->getIdTaxRulesGroup());
 
-            return $tax_manager->getTaxCalculator();
+            return $taxManager->getTaxCalculator();
         }
     }
 
     /**
      * Moves a carrier
      *
-     * @param bool $way Up (1) or Down (0)
+     * @param bool $way      Up (1) or Down (0)
      * @param int  $position
      *
      * @return bool Update result
@@ -1769,49 +1770,46 @@ class CarrierCore extends ObjectModel
      */
     public function updatePosition($way, $position)
     {
-        if (!$res = Db::getInstance()->executeS(
-            'SELECT `id_carrier`, `position`
-			FROM `'._DB_PREFIX_.'carrier`
-			WHERE `deleted` = 0
-			ORDER BY `position` ASC'
-        )
-        ) {
+        if (!$res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+            ->select('`id_carrier`, `position`')
+            ->from('carrier')
+            ->where('`deleted` = 0')
+            ->orderBy('`position` ASC')
+        )) {
             return false;
         }
 
         foreach ($res as $carrier) {
             if ((int) $carrier['id_carrier'] == (int) $this->id) {
-                $moved_carrier = $carrier;
+                $movedCarrier = $carrier;
             }
         }
 
-        if (!isset($moved_carrier) || !isset($position)) {
+        if (!isset($movedCarrier) || !isset($position)) {
             return false;
         }
 
         // < and > statements rather than BETWEEN operator
         // since BETWEEN is treated differently according to databases
-        return (Db::getInstance()->execute(
-                '
-			UPDATE `'._DB_PREFIX_.'carrier`
-			SET `position`= `position` '.($way ? '- 1' : '+ 1').'
-			WHERE `position`
-			'.($way
-                    ? '> '.(int) $moved_carrier['position'].' AND `position` <= '.(int) $position
-                    : '< '.(int) $moved_carrier['position'].' AND `position` >= '.(int) $position.'
-			AND `deleted` = 0')
-            )
-            && Db::getInstance()->execute(
-                '
-			UPDATE `'._DB_PREFIX_.'carrier`
-			SET `position` = '.(int) $position.'
-			WHERE `id_carrier` = '.(int) $moved_carrier['id_carrier']
-            ));
+        return Db::getInstance()->update(
+            'carrier',
+            [
+                'position' => '`position` '.($way ? '- 1' : '+ 1'),
+            ],
+            '`position` '.($way ? '> '.(int) $movedCarrier['position'].' AND `position` <= '.(int) $position : '< '.(int) $movedCarrier['position'].' AND `position` >= '.(int) $position.'AND `deleted` = 0')
+        ) && Db::getInstance()->update(
+            'carrier',
+            [
+                'position' => (int) $position,
+            ],
+            '`id_carrier` = '.(int) $movedCarrier['id_carrier']
+        );
     }
 
     /**
-     * @param      $groups
-     * @param bool $delete
+     * @param array $groups
+     * @param bool  $delete
      *
      * @return bool
      *
@@ -1821,17 +1819,22 @@ class CarrierCore extends ObjectModel
     public function setGroups($groups, $delete = true)
     {
         if ($delete) {
-            Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'carrier_group WHERE id_carrier = '.(int) $this->id);
+            Db::getInstance()->delete('carrier_group', '`id_carrier` = '.(int) $this->id);
         }
         if (!is_array($groups) || !count($groups)) {
             return true;
         }
-        $sql = 'INSERT INTO '._DB_PREFIX_.'carrier_group (id_carrier, id_group) VALUES ';
-        foreach ($groups as $id_group) {
-            $sql .= '('.(int) $this->id.', '.(int) $id_group.'),';
+
+        $insert = [];
+
+        foreach ($groups as $idGroup) {
+            $insert[] = [
+                'id_carrier' => (int) $this->id,
+                'id_group'   => (int) $idGroup,
+            ];
         }
 
-        return Db::getInstance()->execute(rtrim($sql, ','));
+        return Db::getInstance()->insert('carrier_group', $insert);
     }
 
     /**
