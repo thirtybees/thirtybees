@@ -179,12 +179,13 @@ class AttachmentCore extends ObjectModel
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-            ->select('a.*')
+            ->select('a.*, al.*')
             ->from('attachment', 'a')
             ->leftJoin('attachment_lang', 'al', 'a.`id_attachment` = al.`id_attachment`')
-            ->leftJoin('product_attachment', 'pa', 'pa.`id_attachment` '.($include ? '' : '!').'= a.`id_attachment`')
+            ->leftJoin('product_attachment', 'pa', 'pa.`id_attachment` = a.`id_attachment`')
             ->where('al.`id_lang` = '.(int) $idLang)
-            ->where('pa.`id_product` = '.(int) $idProduct)
+            ->where($include ? 'pa.`id_product` = '.(int) $idProduct : '')
+            ->where('pa.`id_product` IS '.($include ? 'NOT ' : '').'NULL')
         );
     }
 
@@ -292,7 +293,7 @@ class AttachmentCore extends ObjectModel
             $tmp = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                 (new DbQuery())
                 ->select('*')
-                ->from('product_attachment', 'a')
+                ->from('product_attachment', 'pa')
                 ->leftJoin('product_lang', 'pl', 'pa.`id_product` = pl.`id_product`')
                 ->where('pa.`id_attachment` IN ('.implode(',', array_map('intval', $idAttachments)).')')
                 ->where('pl.`id_shop` = '.(int) Context::getContext()->shop->id)
