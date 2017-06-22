@@ -294,9 +294,9 @@ class CarrierCore extends ObjectModel
      * @since   1.5.0
      *
      * @param string $rangeTable
+     * @param string $alias
      *
      * @return string
-     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1338,6 +1338,8 @@ class CarrierCore extends ObjectModel
     /**
      * Get a specific zones
      *
+     * @param int $idZone
+     *
      * @return array Zone
      *
      * @since   1.0.0
@@ -1359,6 +1361,10 @@ class CarrierCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @param int $idZone
+     *
+     * @return bool
      */
     public function addZone($idZone)
     {
