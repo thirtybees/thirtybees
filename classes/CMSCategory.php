@@ -113,12 +113,14 @@ class CMSCategoryCore extends ObjectModel
             $idLang = Context::getContext()->language->id;
         }
 
-        $sql = 'SELECT c.`id_cms_category`, c.`id_parent`, c.`level_depth`, cl.`name`, cl.`link_rewrite`
-				FROM `'._DB_PREFIX_.'cms_category` c
-				JOIN `'._DB_PREFIX_.'cms_category_lang` cl ON c.`id_cms_category` = cl.`id_cms_category`
-					WHERE c.`id_cms_category` = '.(int) $current.'
-					AND `id_lang` = '.(int) $idLang;
-        $category = Db::getInstance()->getRow($sql);
+        $category = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('c.`id_cms_category`, c.`id_parent`, c.`level_depth`, cl.`name`, cl.`link_rewrite`')
+                ->from('cms_category', 'c')
+                ->innerJoin('cms_category_lang', 'cl', 'c.`id_cms_category` = cl.`id_cms_category`')
+                ->where('c.`id_cms_category` = '.(int) $current)
+                ->where('`id_lang` = '.(int) $idLang)
+        );
 
         $sql = 'SELECT c.`id_cms_category`
 				FROM `'._DB_PREFIX_.'cms_category` c
@@ -426,14 +428,14 @@ class CMSCategoryCore extends ObjectModel
      */
     public static function getUrlRewriteInformations($idCategory)
     {
-        $sql = '
-		SELECT l.`id_lang`, c.`link_rewrite`
-		FROM `'._DB_PREFIX_.'cms_category_lang` AS c
-		LEFT JOIN  `'._DB_PREFIX_.'lang` AS l ON c.`id_lang` = l.`id_lang`
-		WHERE c.`id_cms_category` = '.(int) $idCategory.'
-		AND l.`active` = 1';
-
-        return Db::getInstance()->executeS($sql);
+        return Db::getInstance()->executeS(
+            (new DbQuery())
+                ->select('l.`id_lang`, c.`link_rewrite`')
+                ->from('cms_category_lang', 'c')
+                ->leftJoin('lang', 'l', 'c.`id_lang` = l.`id_lang`')
+                ->where('c.`id_cms_category` = '.(int) $idCategory)
+                ->where('l.`active` = 1')
+        );
     }
 
     /**
@@ -470,7 +472,12 @@ class CMSCategoryCore extends ObjectModel
      */
     public static function getLastPosition($idCategoryParent)
     {
-        return (Db::getInstance()->getValue('SELECT MAX(position)+1 FROM `'._DB_PREFIX_.'cms_category` WHERE `id_parent` = '.(int) $idCategoryParent));
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('MAX(`position`)')
+                ->from('cms_category')
+                ->where('`id_parent` = '.(int) $idCategoryParent)
+        );
     }
 
     /**
@@ -501,12 +508,12 @@ class CMSCategoryCore extends ObjectModel
      */
     public static function cleanPositions($idCategoryParent)
     {
-        $result = Db::getInstance()->executeS(
-            '
-		SELECT `id_cms_category`
-		FROM `'._DB_PREFIX_.'cms_category`
-		WHERE `id_parent` = '.(int) $idCategoryParent.'
-		ORDER BY `position`'
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('`id_cms_category`')
+                ->from('cms_category')
+                ->where('`id_parent` = '.(int) $idCategoryParent)
+                ->orderBy('`position`')
         );
         $sizeof = count($result);
         for ($i = 0; $i < $sizeof; ++$i) {
@@ -534,8 +541,6 @@ class CMSCategoryCore extends ObjectModel
         if ('TB_PAGE_CACHE_ENABLED') {
             PageCache::invalidateEntity('cms_category', $this->id);
         }
-
-
 
         $this->level_depth = $this->calcLevelDepth();
         foreach ($this->name as $k => $value) {
