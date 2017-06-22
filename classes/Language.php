@@ -419,7 +419,7 @@ class LanguageCore extends ObjectModel
         $version = implode('.', array_map('intval', explode('.', $version, 3)));
 
         $langPack = false;
-        $errors = array();
+        $errors = [];
         $file = _PS_TRANSLATIONS_DIR_.(string) $iso.'.gzip';
         $guzzle = new GuzzleHttp\Client([
             'base_uri' => "https://translations.thirtybees.com/packs/{$version}/",
@@ -458,7 +458,7 @@ class LanguageCore extends ObjectModel
             $fileList = AdminTranslationsController::filterTranslationFiles(Language::getLanguagePackListContent((string) $iso, $gz));
             $filePaths = AdminTranslationsController::filesListToPaths($fileList);
             $i = 0;
-            $tmpArray = array();
+            $tmpArray = [];
             foreach ($filePaths as $filePath) {
                 $path = dirname($filePath);
                 if (is_dir(_PS_TRANSLATIONS_DIR_.'../'.$path) && !is_writable(_PS_TRANSLATIONS_DIR_.'../'.$path) && !in_array($path, $tmpArray)) {

@@ -268,14 +268,14 @@ abstract class PaymentModuleCore extends Module
      *
      * @return bool
      */
-    public function addCheckboxCarrierRestrictionsForModule(array $shops = array())
+    public function addCheckboxCarrierRestrictionsForModule(array $shops = [])
     {
         if (!$shops) {
             $shops = Shop::getShops(true, null, true);
         }
 
         $carriers = Carrier::getCarriers((int) Context::getContext()->language->id);
-        $carrierIds = array();
+        $carrierIds = [];
         foreach ($carriers as $carrier) {
             $carrierIds[] = $carrier['id_reference'];
         }

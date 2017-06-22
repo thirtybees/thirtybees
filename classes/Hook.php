@@ -301,7 +301,7 @@ class HookCore extends ObjectModel
         }
 
         if ($arrayReturn) {
-            $return = array();
+            $return = [];
         } else {
             $return = '';
         }

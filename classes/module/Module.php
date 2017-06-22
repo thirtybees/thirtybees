@@ -1666,12 +1666,12 @@ abstract class ModuleCore
             $overrideFile = file($overridePath);
             if (empty($overrideFile)) {
                 // class_index was out of sync, so we just create a new override on the fly
-                $overrideFile = array(
+                $overrideFile = [
                     "<?php\n",
                     "class {$classname} extends {$classname}Core\n",
                     "{\n",
                     "}\n",
-                );
+                ];
             }
             $overrideFile = array_diff($overrideFile, ["\n"]);
             eval(preg_replace(['#^\s*<\?(?:php)?#', '#class\s+'.$classname.'\s+extends\s+([a-z0-9_]+)(\s+implements\s+([a-z0-9_]+))?#i'], [' ', 'class '.$classname.'OverrideOriginal'.$uniq], implode('', $overrideFile)));
