@@ -63,21 +63,35 @@ class CombinationCore extends ObjectModel
             'available_date'     => ['type' => self::TYPE_DATE, 'shop' => true, 'validate' => 'isDateFormat'],
         ],
     ];
+    /** @var int $id_product */
     public $id_product;
-    public $reference;
-    public $supplier_reference;
+    /** @var string $location */
     public $location;
+    /** @var string $ean13 */
     public $ean13;
+    /** @var string $upc */
     public $upc;
-    public $wholesale_price;
-    public $price;
-    public $unit_price_impact;
-    public $ecotax;
-    public $minimal_quantity = 1;
+    /** @var int $quantity */
     public $quantity;
+    /** @var string $reference */
+    public $reference;
+    /** @var string $supplier_reference */
+    public $supplier_reference;
+    /** @var float $wholesale_price */
+    public $wholesale_price;
+    /** @var float $price */
+    public $price;
+    /** @var float $ecotax */
+    public $ecotax;
+    /** @var float $weight */
     public $weight;
-    // @codingStandardsIgnoreEnd
+    /** @var float $unit_price_impact */
+    public $unit_price_impact;
+    /** @var int $minimal_quantity */
+    public $minimal_quantity = 1;
+    /** @var bool $default_on */
     public $default_on;
+    /** @var string $available_date */
     public $available_date = '0000-00-00';
     protected $webserviceParameters = [
         'objectNodeName'  => 'combination',
@@ -90,6 +104,7 @@ class CombinationCore extends ObjectModel
             'images'                => ['resource' => 'image', 'api' => 'images/products'],
         ],
     ];
+    // @codingStandardsIgnoreEnd
 
     /**
      * This method is allow to know if a feature is active
@@ -113,8 +128,8 @@ class CombinationCore extends ObjectModel
     /**
      * This method is allow to know if a Combination entity is currently used
      *
-     * @param $table
-     * @param $hasActiveColumn
+     * @param string|null $table
+     * @param bool        $hasActiveColumn
      *
      * @return bool
      *
@@ -222,7 +237,7 @@ class CombinationCore extends ObjectModel
     }
 
     /**
-     * @param $idProduct
+     * @param int $idProduct
      *
      * @return bool
      *
@@ -295,7 +310,7 @@ class CombinationCore extends ObjectModel
     }
 
     /**
-     * @param $values
+     * @param array $values
      *
      * @return bool
      *
@@ -313,7 +328,7 @@ class CombinationCore extends ObjectModel
     }
 
     /**
-     * @param $idsAttribute
+     * @param array $idsAttribute
      *
      * @return bool
      *
@@ -377,7 +392,7 @@ class CombinationCore extends ObjectModel
     }
 
     /**
-     * @param $values
+     * @param array $values
      *
      * @return bool
      *
@@ -395,7 +410,7 @@ class CombinationCore extends ObjectModel
     }
 
     /**
-     * @param $idsImage
+     * @param array $idsImage
      *
      * @return bool
      *
@@ -433,7 +448,7 @@ class CombinationCore extends ObjectModel
     }
 
     /**
-     * @param $idLang
+     * @param int $idLang
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
