@@ -1789,7 +1789,9 @@ class CarrierCore extends ObjectModel
      */
     public function getTaxesRate(Address $address)
     {
-        return ($this->getTaxCalculator($address))->getTotalRate();
+        $taxCalculator = $this->getTaxCalculator($address);
+
+        return $taxCalculator->getTotalRate();
     }
 
     /**
