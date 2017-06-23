@@ -63,9 +63,10 @@ class AdminSlipControllerCore extends AdminController
                 'class' => 'fixed-width-md',
             ],
             'date_add'      => [
-                'title' => $this->l('Date issued'),
-                'type'  => 'date',
-                'align' => 'right',
+                'title'      => $this->l('Date issued'),
+                'type'       => 'date',
+                'align'      => 'right',
+                'filter_key' => 'a!date_add',
             ],
             'id_pdf'        => [
                 'title'          => $this->l('PDF'),
