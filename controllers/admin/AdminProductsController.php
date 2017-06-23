@@ -2109,7 +2109,7 @@ class AdminProductsControllerCore extends AdminController
                         $itemIdAttribute = 0;
                         count($array = explode('x', $line)) == 3 ? list($qty, $itemId, $itemIdAttribute) = $array : list($qty, $itemId) = $array;
                         if ($qty > 0 && isset($itemId)) {
-                            if (Pack::isPack((int) $itemId)) {
+                            if (Pack::isPack((int) $itemId || $product->id == (int) $itemId)) {
                                 $this->errors[] = Tools::displayError('You can\'t add product packs into a pack');
                             } elseif (!Pack::addItem((int) $product->id, (int) $itemId, (int) $qty, (int) $itemIdAttribute)) {
                                 $this->errors[] = Tools::displayError('An error occurred while attempting to add products to the pack.');
