@@ -39,6 +39,7 @@ class FeatureCore extends ObjectModel
     // @codingStandardsIgnoreStart
     /** @var string Name */
     public $name;
+    /** @var int $position */
     public $position;
     // @codingStandardsIgnoreEnd
 
@@ -89,7 +90,8 @@ class FeatureCore extends ObjectModel
     /**
      * Get all features for a given language
      *
-     * @param int $idLang Language id
+     * @param int  $idLang   Language id
+     * @param bool $withShop
      *
      * @return array Multiple arrays with feature's data
      *
@@ -133,12 +135,13 @@ class FeatureCore extends ObjectModel
     /**
      * Create a feature from import
      *
-     * @param int   $id_feature Feature id
-     * @param int   $id_product Product id
-     * @param array $value      Feature Value
+     * @param string $name
+     * @param bool   $position
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return int
+     *
+     * @since    1.0.0
+     * @version  1.0.0 Initial version
      */
     public static function addFeatureImport($name, $position = false)
     {
@@ -258,8 +261,8 @@ class FeatureCore extends ObjectModel
     }
 
     /**
-     * @param $listIdsProduct
-     * @param $idLang
+     * @param array $listIdsProduct
+     * @param int   $idLang
      *
      * @return array|bool|false|mysqli_result|null|PDOStatement|resource
      *
@@ -399,8 +402,9 @@ class FeatureCore extends ObjectModel
     /**
      * Move a feature
      *
-     * @param bool $way Up (1)  or Down (0)
-     * @param int  $position
+     * @param bool     $way       Up (1)  or Down (0)
+     * @param int      $position
+     * @param int|null $idFeature
      *
      * @return bool Update result
      *
