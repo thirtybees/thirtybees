@@ -1735,7 +1735,7 @@ class CartCore extends ObjectModel
             $idCarrier = (int) $this->id_carrier;
         }
 
-        $cacheId = 'getPackageShippingCost_'.(int) $this->id.'_'.(int) $addressId.'_'.(int) $idCarrier.'_'.(int) $useTax.'_'.(int) $defaultCountry->id;
+        $cacheId = 'getPackageShippingCost_'.(int) $this->id.'_'.(int) $addressId.'_'.(int) $idCarrier.'_'.(int) $useTax.'_'.(int) $defaultCountry->id.'_'.(int) $idZone;
         if ($products) {
             foreach ($products as $product) {
                 $cacheId .= '_'.(int) $product['id_product'].'_'.(int) $product['id_product_attribute'];
