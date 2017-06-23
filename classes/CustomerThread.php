@@ -37,14 +37,23 @@
 class CustomerThreadCore extends ObjectModel
 {
     // @codingStandardsIgnoreStart
+    /** @var int $id_contact */
     public $id_contact;
+    /** @var int $id_customer */
     public $id_customer;
+    /** @var int $id_order */
     public $id_order;
+    /** @var int $id_product */
     public $id_product;
+    /** @var bool $status */
     public $status;
+    /** @var string $email */
     public $email;
+    /** @var string $token */
     public $token;
+    /** @var string $date_add */
     public $date_add;
+    /** @var string $date_upd */
     public $date_upd;
     // @codingStandardsIgnoreEnd
 
@@ -95,9 +104,9 @@ class CustomerThreadCore extends ObjectModel
     ];
 
     /**
-     * @param      $idCustomer
-     * @param null $read
-     * @param null $idOrder
+     * @param int      $idCustomer
+     * @param int|null $read
+     * @param int|null $idOrder
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
