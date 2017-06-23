@@ -3245,7 +3245,7 @@ class CartCore extends ObjectModel
                 (new DbQuery())
                     ->select('*')
                     ->from('customized_data')
-                    ->from('`id_customization` = '.(int) $idCustomization)
+                    ->where('`id_customization` = '.(int) $idCustomization)
             );
 
             // Delete customization picture if necessary
