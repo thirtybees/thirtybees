@@ -186,9 +186,9 @@ class AdminStockManagementControllerCore extends AdminController
             $this->toolbar_btn = [];
 
             // overrides query
-            $this->_select = 'IFNULL(pa.ean13, a.ean13) as ean13,
-            IFNULL(pa.upc, a.upc) as upc,
-            IFNULL(pa.reference, a.reference) as reference,
+            $this->_select = 'a.ean13 as ean13,
+            a.upc as upc,
+            a.reference as reference,
             (SELECT SUM(physical_quantity) FROM `'._DB_PREFIX_.'stock` WHERE id_product = a.id_product) as physical_quantity,
             (SELECT SUM(usable_quantity) FROM `'._DB_PREFIX_.'stock` WHERE id_product = a.id_product) as usable_quantity,
             a.id_product as id, COUNT(pa.id_product_attribute) as variations';
@@ -329,6 +329,10 @@ class AdminStockManagementControllerCore extends AdminController
         for ($i = 0; $i < $nbItems; $i++) {
             $item = &$this->_list[$i];
 
+            $item['reference'] = (!empty($item['reference']) && isset($item['reference'])) ? $item['reference'] : '--';
+            $item['ean13'] = (!empty($item['ean13']) && isset($item['ean13'])) ? $item['ean13'] : '--';
+            $item['upc'] = (!empty($item['upc']) && isset($item['upc'])) ? $item['upc'] : '--';
+
             // if it's an ajax request we have to consider manipulating a product variation
             if (Tools::isSubmit('id_product')) {
                 $item['name'] = Product::getProductName($item['id_product'], empty($item['id_product_attribute']) ? null : $item['id_product_attribute']);
@@ -347,11 +351,6 @@ class AdminStockManagementControllerCore extends AdminController
                 $this->addRowActionSkipList('addstock', [$item['id']]);
                 $this->addRowActionSkipList('prepareRemovestock', [$item['id']]);
                 $this->addRowActionSkipList('prepareTransferstock', [$item['id']]);
-
-                // does not display these informaions because this product has combinations
-                $item['reference'] = '--';
-                $item['ean13'] = '--';
-                $item['upc'] = '--';
             } else {
                 //there are no variations of current product, so we don't want to show details action
                 $this->addRowActionSkipList('details', [$item['id']]);
