@@ -138,14 +138,16 @@ class ManufacturerCore extends ObjectModel
     /**
      * Return manufacturers
      *
-     * @param bool $getNbProducts [optional] return products numbers for each
-     * @param int  $idLang
-     * @param bool $active
-     * @param int  $p
-     * @param int  $n
-     * @param bool $allGroup
+     * @param bool     $getNbProducts [optional] return products numbers for each
+     * @param int      $idLang
+     * @param bool     $active
+     * @param bool|int $p
+     * @param bool|int $n
+     * @param bool     $allGroup
      *
-     * @return array Manufacturers
+     * @param bool     $groupBy
+     *
+     * @return false|array Manufacturers
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -167,7 +169,7 @@ class ManufacturerCore extends ObjectModel
                 ->innerJoin('manufacturer_lang', 'ml', 'm.`id_manufacturer` = ml.`id_manufacturer`')
                 ->where('ml.`id_lang` = '.(int) $idLang)
                 ->where($active ? 'm.`active` = 1' : '')
-                ->where($groupBy ? 'm.`id_manufacturer`' : '')
+                ->groupBy($groupBy ? 'm.`id_manufacturer`' : '')
                 ->orderBy('m.`name` ASC')
                 ->limit($p ? (int) $n : 0, $p ? ((int) $p - 1) * (int) $n : 0)
         );
@@ -227,7 +229,7 @@ class ManufacturerCore extends ObjectModel
     }
 
     /**
-     * @param $idManufacturer
+     * @param int $idManufacturer
      *
      * @return mixed
      *
@@ -238,11 +240,11 @@ class ManufacturerCore extends ObjectModel
     {
         if (!isset(static::$cacheName[$idManufacturer])) {
             static::$cacheName[$idManufacturer] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-                '
-				SELECT `name`
-				FROM `'._DB_PREFIX_.'manufacturer`
-				WHERE `id_manufacturer` = '.(int) $idManufacturer.'
-				AND `active` = 1'
+                (new DbQuery())
+                    ->select('name')
+                    ->from('manufacturer')
+                    ->where('`id_manufacturer` = '.(int) $idManufacturer)
+                    ->where('`active` = 1')
             );
         }
 
@@ -250,7 +252,7 @@ class ManufacturerCore extends ObjectModel
     }
 
     /**
-     * @param $name
+     * @param string $name
      *
      * @return bool|int
      *
@@ -274,12 +276,12 @@ class ManufacturerCore extends ObjectModel
     }
 
     /**
-     * @param              $idManufacturer
-     * @param              $idLang
-     * @param              $p
-     * @param              $n
-     * @param null         $orderBy
-     * @param null         $orderWay
+     * @param int          $idManufacturer
+     * @param int          $idLang
+     * @param int          $p
+     * @param int          $n
+     * @param string|null  $orderBy
+     * @param string|null  $orderWay
      * @param bool         $getTotal
      * @param bool         $active
      * @param bool         $activeCategory
@@ -449,6 +451,10 @@ class ManufacturerCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @param array $selection
+     *
+     * @return bool
      */
     public function deleteSelection($selection)
     {
@@ -464,26 +470,6 @@ class ManufacturerCore extends ObjectModel
         }
 
         return $result;
-    }
-
-    /**
-     * @return bool|false|null|string
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     */
-    protected function getManufacturerAddress()
-    {
-        if (!(int) $this->id) {
-            return false;
-        }
-
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-            (new DbQuery())
-                ->select('`id_address`')
-                ->from('address')
-                ->where('`id_manufacturer` = '.(int) $this->id)
-        );
     }
 
     /**
@@ -514,7 +500,7 @@ class ManufacturerCore extends ObjectModel
     }
 
     /**
-     * @param $idLang
+     * @param int $idLang
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
@@ -542,7 +528,7 @@ class ManufacturerCore extends ObjectModel
     }
 
     /**
-     * @param $idLang
+     * @param int $idLang
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
@@ -582,7 +568,7 @@ class ManufacturerCore extends ObjectModel
     }
 
     /**
-     * @param $idAddresses
+     * @param array $idAddresses
      *
      * @return bool
      *
@@ -633,5 +619,25 @@ class ManufacturerCore extends ObjectModel
         }
 
         return parent::update($nullValues);
+    }
+
+    /**
+     * @return bool|false|null|string
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    protected function getManufacturerAddress()
+    {
+        if (!(int) $this->id) {
+            return false;
+        }
+
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('`id_address`')
+                ->from('address')
+                ->where('`id_manufacturer` = '.(int) $this->id)
+        );
     }
 }
