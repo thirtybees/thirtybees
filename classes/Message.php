@@ -82,11 +82,11 @@ class MessageCore extends ObjectModel
      */
     public static function getMessageByCartId($idCart)
     {
-        return Db::getInstance()->getRow(
-            '
-			SELECT *
-			FROM `'._DB_PREFIX_.'message`
-			WHERE `id_cart` = '.(int) $idCart
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('*')
+                ->from('message')
+                ->where('`id_cart` = '.(int) $idCart)
         );
     }
 
@@ -111,21 +111,21 @@ class MessageCore extends ObjectModel
             $context = Context::getContext();
         }
 
-        return Db::getInstance()->executeS(
-            '
-			SELECT m.*, c.`firstname` AS cfirstname, c.`lastname` AS clastname, e.`firstname` AS efirstname, e.`lastname` AS elastname,
-			(COUNT(mr.id_message) = 0 AND m.id_customer != 0) AS is_new_for_me
-			FROM `'._DB_PREFIX_.'message` m
-			LEFT JOIN `'._DB_PREFIX_.'customer` c ON m.`id_customer` = c.`id_customer`
-			LEFT JOIN `'._DB_PREFIX_.'message_readed` mr
-				ON mr.`id_message` = m.`id_message`
-				AND mr.`id_employee` = '.(isset($context->employee) ? (int) $context->employee->id : '\'\'').'
-			LEFT OUTER JOIN `'._DB_PREFIX_.'employee` e ON e.`id_employee` = m.`id_employee`
-			WHERE id_order = '.(int) $idOrder.'
-			'.(!$private ? ' AND m.`private` = 0' : '').'
-			GROUP BY m.id_message
-			ORDER BY m.date_add DESC
-		'
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('m.*')
+                ->select('c.`firstname` AS `cfirstname`, c.`lastname` AS `clastname`')
+                ->select('e.`firstname` AS `efirstname`, e.`lastname` AS `elastname`')
+                ->select('(COUNT(mr.`id_message`) = 0 AND m.`id_customer` != 0) AS `is_new_for_me`')
+                ->from('message', 'm')
+                ->leftJoin('customer', 'c', 'm.`id_customer` = c.`id_customer`')
+                ->leftJoin('message_readed', 'c', 'mr.`id_message` = m.`id_message`')
+                ->leftOuterJoin('employee', 'e', 'e.`id_employee` = m.`id_employee`')
+                ->where('mr.`id_employee` = '.(isset($context->employee) ? (int) $context->employee->id : '\'\''))
+                ->where('`id_order` = '.(int) $idOrder)
+                ->where($private ? 'm.`private` = 0' : '')
+                ->groupBy('m.`id_message`')
+                ->orderBy('m.`date_add` DESC')
         );
     }
 
@@ -150,19 +150,20 @@ class MessageCore extends ObjectModel
             $context = Context::getContext();
         }
 
-        return Db::getInstance()->executeS(
-            '
-			SELECT m.*, c.`firstname` AS cfirstname, c.`lastname` AS clastname, e.`firstname` AS efirstname, e.`lastname` AS elastname,
-			(COUNT(mr.id_message) = 0 AND m.id_customer != 0) AS is_new_for_me
-			FROM `'._DB_PREFIX_.'message` m
-			LEFT JOIN `'._DB_PREFIX_.'customer` c ON m.`id_customer` = c.`id_customer`
-			LEFT JOIN `'._DB_PREFIX_.'message_readed` mr ON (mr.id_message = m.id_message AND mr.id_employee = '.(int) $context->employee->id.')
-			LEFT OUTER JOIN `'._DB_PREFIX_.'employee` e ON e.`id_employee` = m.`id_employee`
-			WHERE id_cart = '.(int) $idCart.'
-			'.(!$private ? ' AND m.`private` = 0' : '').'
-			GROUP BY m.id_message
-			ORDER BY m.date_add DESC
-		'
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('m.*')
+                ->select('c.`firstname` AS `cfirstname`, c.`lastname` AS `clastname`')
+                ->select('e.`firstname` AS `efirstname`, e.`lastname` AS `elastname`')
+                ->from('message', 'm')
+                ->leftJoin('customer', 'c', 'm.`id_customer` = c.`id_customer`')
+                ->leftJoin('message_readed', 'mr', 'mr.`id_message` = m.`id_message`')
+                ->leftOuterJoin('employee', 'e', 'e.`id_employee` = m.`id_employee`')
+                ->where('mr.`id_employee` = '.(int) $context->employee->id)
+                ->where('`id_cart` = '.(int) $idCart)
+                ->where(!$private ? 'm.`private` = 0' : '')
+                ->groupBy('m.`id_message`')
+                ->orderBy('m.`date_add` DESC')
         );
     }
 
@@ -181,11 +182,13 @@ class MessageCore extends ObjectModel
             die(Tools::displayError());
         }
 
-        $result = Db::getInstance()->execute(
-            '
-			INSERT INTO '._DB_PREFIX_.'message_readed (id_message , id_employee , date_add) VALUES
-			('.(int) $idMessage.', '.(int) $idEmployee.', NOW());
-		'
+        $result = Db::getInstance()->insert(
+            'message_readed',
+            [
+                'id_message'  => (int) $idMessage,
+                'id_employee' => (int) $idEmployee,
+                'date_add'    => ['type' => 'sql', 'value' => 'NOW()'],
+            ]
         );
 
         return $result;
