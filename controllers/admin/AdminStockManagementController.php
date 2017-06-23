@@ -65,7 +65,8 @@ class AdminStockManagementControllerCore extends AdminController
                 'filter_key' => 'a!upc',
             ],
             'name'              => [
-                'title' => $this->l('Name'),
+                'title'      => $this->l('Name'),
+                'filter_key' => 'pl!name',
             ],
             'physical_quantity' => [
                 'title'   => $this->l('Physical quantity'),
@@ -275,15 +276,17 @@ class AdminStockManagementControllerCore extends AdminController
 
         $this->_select = 'w.id_currency, a.id_product as id, (a.price_te * a.physical_quantity) as valuation, w.name as warehouse';
         $this->_join = 'INNER JOIN `'._DB_PREFIX_.'product` p ON (p.id_product = a.id_product AND p.advanced_stock_management = 1)';
-        $this->_join .= ' LEFT JOIN `'._DB_PREFIX_.'warehouse` AS w ON w.id_warehouse = a.id_warehouse';
+        $this->_join .= ' LEFT JOIN `'._DB_PREFIX_.'warehouse` AS w ON (w.id_warehouse = a.id_warehouse)';
+        $this->_join .= ' RIGHT JOIN `'._DB_PREFIX_.'product_lang` AS pl ON (pl.id_product = a.id_product)';
 
         $this->_where = 'AND a.id_product = '.(int) $idProduct.' AND a.id_product_attribute = '.(int) $idProductAttribute;
+        $this->_where .= ' AND pl.id_lang = '.(int) Context::getContext()->language->id;
 
         if ($idWarehouse != -1) {
             $this->_where .= ' AND a.id_warehouse = '.(int) $idWarehouse;
         }
 
-        $this->_orderBy = 'name';
+        $this->_orderBy = 'pl.name';
         $this->_orderWay = 'ASC';
     }
 
