@@ -2423,7 +2423,12 @@ class CartCore extends ObjectModel
      */
     public static function getCartIdByOrderId($idOrder)
     {
-        $result = Db::getInstance()->getRow('SELECT `id_cart` FROM '._DB_PREFIX_.'orders WHERE `id_order` = '.(int) $idOrder);
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('`id_cart`')
+                ->from('orders')
+                ->where('`id_order` = '.(int) $idOrder)
+        );
         if (!$result || empty($result) || !array_key_exists('id_cart', $result)) {
             return false;
         }
