@@ -415,7 +415,7 @@ class ConfigurationCore extends ObjectModel
             (new DbQuery())
                 ->select('c.`name`, cl.`id_lang`, IF(cl.`id_lang` IS NULL, c.`value`, cl.`value`) AS `value`, c.`id_shop_group`, c.`id_shop`')
                 ->from(bqSQL(static::$definition['table']), 'c')
-                ->leftJoin(static::$definition['table'].'_lang', 'cl', 'c.`id_configuration` = cl.`id_configuration`')
+                ->leftJoin(static::$definition['table'].'_lang', 'cl', 'c.`'.bqSQL(static::$definition['primary']).'` = cl.`'.bqSQL(static::$definition['primary']).'`')
         );
 
         if (!is_array($rows)) {
@@ -957,8 +957,8 @@ class ConfigurationCore extends ObjectModel
         SELECT DISTINCT main.`'.bqSQL(static::$definition['primary']).'`
         FROM `'._DB_PREFIX_.bqSQL(static::$definition['table']).'` main
         '.$sqlJoin.'
-        WHERE id_configuration NOT IN (
-            SELECT id_configuration
+        WHERE `'.bqSQL(static::$definition['primary']).'` NOT IN (
+            SELECT `'.bqSQL(static::$definition['primary']).'`
             FROM '._DB_PREFIX_.bqSQL(static::$definition['table']).'_lang
         ) '.$sqlFilter.'
         '.($sqlSort != '' ? $sqlSort : '').'
