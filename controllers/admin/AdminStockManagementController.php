@@ -291,7 +291,7 @@ class AdminStockManagementControllerCore extends AdminController
         $this->_join .= ' RIGHT JOIN `'._DB_PREFIX_.'product_lang` AS pl ON (pl.id_product = a.id_product)';
 
         $this->_where = 'AND a.id_product = '.(int) $idProduct.' AND a.id_product_attribute = '.(int) $idProductAttribute;
-        $this->_where .= ' AND pl.id_lang = '.(int) Context::getContext()->language->id;
+        $this->_where .= ' AND pl.id_lang = '.(int) Context::getContext()->language->id.' AND pl.id_shop = p.id_shop_default';
 
         if ($idWarehouse != -1) {
             $this->_where .= ' AND a.id_warehouse = '.(int) $idWarehouse;
