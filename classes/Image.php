@@ -39,6 +39,7 @@ class ImageCore extends ObjectModel
     // @codingStandardsIgnoreStart
     /** @var int access rights of created folders (octal) */
     protected static $access_rights = 0775;
+    /** @var array $_cacheGetSize */
     protected static $_cacheGetSize = [];
     /** @var int Image ID */
     public $id_image;
@@ -247,17 +248,21 @@ class ImageCore extends ObjectModel
             unlink(_PS_TMP_IMG_DIR_.'product_'.$idProduct.'.jpg');
         }
 
-        return (Db::getInstance()->execute(
-                '
-			UPDATE `'._DB_PREFIX_.'image`
-			SET `cover` = NULL
-			WHERE `id_product` = '.(int) $idProduct
+        return (Db::getInstance()->update(
+            'image',
+                [
+                    'cover' => ['type' => 'sql', 'value' => 'NULL'],
+                ],
+                '`id_product` = '.(int) $idProduct,
+                0,
+                true
             ) &&
-            Db::getInstance()->execute(
-                '
-			UPDATE `'._DB_PREFIX_.'image_shop` image_shop
-			SET image_shop.`cover` = NULL
-			WHERE image_shop.id_shop IN ('.implode(',', array_map('intval', Shop::getContextListShopID())).') AND image_shop.`id_product` = '.(int) $idProduct
+            Db::getInstance()->update(
+                'image_shop',
+                [
+                    'cover' => ['type' => 'sql', 'value' => 'NULL'],
+                ],
+                '`id_shop` IN ('.implode(',', array_map('intval', Shop::getContextListShopID())).') AND image_shop.`id_product` = '.(int) $idProduct
             ));
     }
 
@@ -273,11 +278,12 @@ class ImageCore extends ObjectModel
      */
     public static function getCover($idProduct)
     {
-        return Db::getInstance()->getRow(
-            '
-			SELECT * FROM `'._DB_PREFIX_.'image_shop` image_shop
-			WHERE image_shop.`id_product` = '.(int) $idProduct.'
-			AND image_shop.`cover`= 1'
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('*')
+                ->from('image_shop')
+                ->where('`id_product` = '.(int) $idProduct)
+                ->where('`cover` = 1')
         );
     }
 
@@ -293,20 +299,23 @@ class ImageCore extends ObjectModel
      */
     public static function getGlobalCover($idProduct)
     {
-        return Db::getInstance()->getRow(
-            '
-			SELECT * FROM `'._DB_PREFIX_.'image` i
-			WHERE i.`id_product` = '.(int) $idProduct.'
-			AND i.`cover`= 1'
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('*')
+                ->from('image', 'i')
+                ->where('i.`id_product` = '.(int) $idProduct)
+                ->where('i.`cover` = 1')
         );
     }
 
     /**
      * Copy images from a product to another
      *
-     * @param int  $idProductOld Source product ID
-     * @param bool $idProductNew Destination product ID
+     * @param int   $idProductOld      Source product ID
+     * @param bool  $idProductNew      Destination product ID
+     * @param array $combinationImages
      *
+     * @return bool
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -398,11 +407,11 @@ class ImageCore extends ObjectModel
      */
     public static function getHighestPosition($idProduct)
     {
-        $result = Db::getInstance()->getRow(
-            '
-		SELECT MAX(`position`) AS max
-		FROM `'._DB_PREFIX_.'image`
-		WHERE `id_product` = '.(int) $idProduct
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('MAX(`position`) AS `max`')
+                ->from('image')
+                ->where('`id_product` = '.(int) $idProduct)
         );
 
         return $result['max'];
@@ -502,20 +511,22 @@ class ImageCore extends ObjectModel
         if (!isset($combinationImages['new']) || !is_array($combinationImages['new'])) {
             return true;
         }
-        $query = 'INSERT INTO `'._DB_PREFIX_.'product_attribute_image` (`id_product_attribute`, `id_image`) VALUES ';
+        $insert = [];
         foreach ($combinationImages['new'] as $idProductAttribute => $imageIds) {
             foreach ($imageIds as $imageId) {
-                $query .= '('.(int) $idProductAttribute.', '.(int) $imageId.'), ';
+                $insert[] = [
+                    'id_product_attribute' => (int) $idProductAttribute,
+                    'id_image'             => (int) $imageId,
+                ];
             }
         }
-        $query = rtrim($query, ', ');
 
-        return DB::getInstance()->execute($query);
+        return DB::getInstance()->insert('product_attribute_image', $insert);
     }
 
     /**
-     * @param $params
-     * @param $smarty
+     * @param array  $params
+     * @param Smarty $smarty
      *
      * @return mixed
      *
@@ -530,7 +541,7 @@ class ImageCore extends ObjectModel
     }
 
     /**
-     * @param $type
+     * @param mixed $type
      *
      * @return mixed
      *
@@ -540,12 +551,11 @@ class ImageCore extends ObjectModel
     public static function getSize($type)
     {
         if (!isset(static::$_cacheGetSize[$type]) || static::$_cacheGetSize[$type] === null) {
-            static::$_cacheGetSize[$type] = Db::getInstance()->getRow(
-                '
-				SELECT `width`, `height`
-				FROM '._DB_PREFIX_.'image_type
-				WHERE `name` = \''.pSQL($type).'\'
-			'
+            static::$_cacheGetSize[$type] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                (new DbQuery())
+                    ->select('`width`, `height`')
+                    ->from('image_type')
+                    ->where('`name` = '.pSQL($type).'\'')
             );
         }
 
@@ -553,8 +563,8 @@ class ImageCore extends ObjectModel
     }
 
     /**
-     * @param $params
-     * @param $smarty
+     * @param array  $params
+     * @param Smarty $smarty
      *
      * @return mixed
      *
@@ -697,27 +707,27 @@ class ImageCore extends ObjectModel
      */
     public static function testFileSystem()
     {
-        $safe_mode = Tools::getSafeModeStatus();
-        if ($safe_mode) {
+        $safeMode = Tools::getSafeModeStatus();
+        if ($safeMode) {
             return false;
         }
         $folder1 = _PS_PROD_IMG_DIR_.'testfilesystem/';
-        $test_folder = $folder1.'testsubfolder/';
+        $testFolder = $folder1.'testsubfolder/';
         // check if folders are already existing from previous failed test
-        if (file_exists($test_folder)) {
-            @rmdir($test_folder);
+        if (file_exists($testFolder)) {
+            @rmdir($testFolder);
             @rmdir($folder1);
         }
-        if (file_exists($test_folder)) {
+        if (file_exists($testFolder)) {
             return false;
         }
 
-        @mkdir($test_folder, static::$access_rights, true);
-        @chmod($test_folder, static::$access_rights);
-        if (!is_writeable($test_folder)) {
+        @mkdir($testFolder, static::$access_rights, true);
+        @chmod($testFolder, static::$access_rights);
+        if (!is_writeable($testFolder)) {
             return false;
         }
-        @rmdir($test_folder);
+        @rmdir($testFolder);
         @rmdir($folder1);
         if (file_exists($folder1)) {
             return false;
@@ -783,12 +793,7 @@ class ImageCore extends ObjectModel
      */
     public function deleteProductAttributeImage()
     {
-        return Db::getInstance()->execute(
-            '
-			DELETE
-			FROM `'._DB_PREFIX_.'product_attribute_image`
-			WHERE `id_image` = '.(int) $this->id
-        );
+        return Db::getInstance()->delete('product_attribute_image', '`id_image` = '.(int) $this->id);
     }
 
     /**
@@ -956,27 +961,28 @@ class ImageCore extends ObjectModel
         // temporary position
         $highPosition = Image::getHighestPosition($this->id_product) + 1;
 
-        Db::getInstance()->execute(
-            '
-		UPDATE `'._DB_PREFIX_.'image`
-		SET `position` = '.(int) $highPosition.'
-		WHERE `id_product` = '.(int) $this->id_product.'
-		AND `position` = '.($direction ? $position - 1 : $position + 1)
+        Db::getInstance()->update(
+            'image',
+            [
+                'position' => (int) $highPosition,
+            ],
+            '`id_product` = '.(int) $this->id_product.' AND `position` = '.($direction ? $position - 1 : $position + 1)
         );
 
-        Db::getInstance()->execute(
-            '
-		UPDATE `'._DB_PREFIX_.'image`
-		SET `position` = `position`'.($direction ? '-1' : '+1').'
-		WHERE `id_image` = '.(int) $this->id
+        Db::getInstance()->update(
+            'image',
+            [
+                'position' => ['type' => 'sql', 'value' => '`position`'.($direction ? '-1' : '+1')],
+            ],
+            '`id_image` = '.(int) $this->id
         );
 
-        Db::getInstance()->execute(
-            '
-		UPDATE `'._DB_PREFIX_.'image`
-		SET `position` = '.$this->position.'
-		WHERE `id_product` = '.(int) $this->id_product.'
-		AND `position` = '.(int) $highPosition
+        Db::getInstance()->update(
+            'image',
+            [
+                'position' => (int) $this->position,
+            ],
+            '`id_product` = '.(int) $this->id_product.' AND `position` = '.(int) $highPosition
         );
     }
 
@@ -999,22 +1005,19 @@ class ImageCore extends ObjectModel
 
         // < and > statements rather than BETWEEN operator
         // since BETWEEN is treated differently according to databases
-        $result = (Db::getInstance()->execute(
-                '
-			UPDATE `'._DB_PREFIX_.'image`
-			SET `position`= `position` '.($way ? '- 1' : '+ 1').'
-			WHERE `position`
-			'.($way
-                    ? '> '.(int) $this->position.' AND `position` <= '.(int) $position
-                    : '< '.(int) $this->position.' AND `position` >= '.(int) $position).'
-			AND `id_product`='.(int) $this->id_product
-            )
-            && Db::getInstance()->execute(
-                '
-			UPDATE `'._DB_PREFIX_.'image`
-			SET `position` = '.(int) $position.'
-			WHERE `id_image` = '.(int) $this->id_image
-            ));
+        $result = Db::getInstance()->update(
+            'image',
+            [
+                'position' => ['type' => 'sql', 'value' => '`position` '.($way ? '- 1' : '+ 1')],
+            ],
+            '`position` '.($way ? '> '.(int) $this->position.' AND `position` <= '.(int) $position : '< '.(int) $this->position.' AND `position` >= '.(int) $position).' AND `id_product`='.(int) $this->id_product
+        ) && Db::getInstance()->update(
+            'image',
+            [
+                'position' => (int) $position,
+            ],
+            '`id_image` = '.(int) $this->id_image
+        );
 
         return $result;
     }
