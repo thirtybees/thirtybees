@@ -207,7 +207,7 @@ class AdminPreferencesControllerCore extends AdminController
                         'type'       => 'bool',
                     ],
                     'TB_GOOGLE_MAPS_API_KEY' => [
-                        'title' => $this->l('Google MAps API Key'),
+                        'title' => $this->l('Google Maps API Key'),
                         'desc'  => $this->l('Add an API key to display Google Maps properly'),
                         'cast'  => 'strval',
                         'type'  => 'text',
