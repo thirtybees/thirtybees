@@ -58,9 +58,10 @@ class AdminSlipControllerCore extends AdminController
                 'class' => 'fixed-width-xs',
             ],
             'id_order'      => [
-                'title' => $this->l('Order ID'),
-                'align' => 'left',
-                'class' => 'fixed-width-md',
+                'title'        => $this->l('Order ID'),
+                'align'        => 'left',
+                'class'        => 'fixed-width-md',
+                'havingFilter' => true,
             ],
             'date_add'      => [
                 'title'      => $this->l('Date issued'),
