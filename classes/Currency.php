@@ -320,7 +320,7 @@ class CurrencyCore extends ObjectModel
                 ->from('currency', 'c')
                 ->join(Shop::addSqlAssociation('currency', 'c'))
                 ->where('`deleted` = 0')
-                ->where($active ? 'c.`active`  = 1' : '')
+                ->where($active ? 'c.`active` = 1' : '')
                 ->groupBy($groupBy ? 'c.`id_currency`' : '')
                 ->orderBy('`name` ASC')
         );
