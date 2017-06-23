@@ -39,44 +39,32 @@ class OrderStateCore extends ObjectModel
     // @codingStandardsIgnoreStart
     /** @var string Name */
     public $name;
-
     /** @var string Template name if there is any e-mail to send */
     public $template;
-
     /** @var bool Send an e-mail to customer ? */
     public $send_email;
-
+    /** @var string $module_name */
     public $module_name;
-
     /** @var bool Allow customer to view and download invoice when order is at this state */
     public $invoice;
-
     /** @var string Display state in the specified color */
     public $color;
-
+    /** @var bool $unremovable */
     public $unremovable;
-
     /** @var bool Log authorization */
     public $logable;
-
     /** @var bool Delivery */
     public $delivery;
-
     /** @var bool Hidden */
     public $hidden;
-
     /** @var bool Shipped */
     public $shipped;
-
     /** @var bool Paid */
     public $paid;
-
     /** @var bool Attach PDF Invoice */
     public $pdf_invoice;
-
     /** @var bool Attach PDF Delivery Slip */
     public $pdf_delivery;
-
     /** @var bool True if carrier has been deleted (staying in database as deleted) */
     public $deleted = 0;
     // @codingStandardsIgnoreEnd
@@ -137,15 +125,20 @@ class OrderStateCore extends ObjectModel
     {
         $cacheId = 'OrderState::getOrderStates_'.(int) $idLang;
         if (!Cache::isStored($cacheId)) {
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
-			SELECT *
-			FROM `'._DB_PREFIX_.'order_state` os
-			LEFT JOIN `'._DB_PREFIX_.'order_state_lang` osl ON (os.`id_order_state` = osl.`id_order_state` AND osl.`id_lang` = '.(int) $idLang.')
-			WHERE deleted = 0
-			ORDER BY `name` ASC');
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                    ->select('*')
+                    ->from('order_state', 'os')
+                    ->leftJoin('order_state_lang', 'osl', 'os.`id_order_state` = osl.`id_order_state`')
+                    ->where('osl.`id_lang` = '.(int) $idLang)
+                    ->where('`deleted` = 0')
+                    ->orderBy('`name` ASC')
+            );
             Cache::store($cacheId, $result);
+
             return $result;
         }
+
         return Cache::retrieve($cacheId);
     }
 
@@ -163,14 +156,20 @@ class OrderStateCore extends ObjectModel
     {
         $result = false;
         if (Configuration::get('PS_INVOICE')) {
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('
-			SELECT `invoice`
-			FROM `'._DB_PREFIX_.'order_state`
-			WHERE `id_order_state` = '.(int) $idOrderState);
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                    ->select('`invoice`')
+                    ->from('order_state')
+                    ->where('`id_order_state` = '.(int) $idOrderState)
+            );
         }
+
         return (bool) $result;
     }
 
+    /**
+     * @return bool
+     */
     public function isRemovable()
     {
         return !($this->unremovable);
