@@ -62,16 +62,19 @@ class OrderReturnStateCore extends ObjectModel
     *
     * @param int $idLang Language id for status name
     * @return array Order statuses
-     *               
+     *
      * @since 1.0.0
      * @version 1.0.0 Initial version
     */
     public static function getOrderReturnStates($idLang)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
-		SELECT *
-		FROM `'._DB_PREFIX_.'order_return_state` ors
-		LEFT JOIN `'._DB_PREFIX_.'order_return_state_lang` orsl ON (ors.`id_order_return_state` = orsl.`id_order_return_state` AND orsl.`id_lang` = '.(int)$idLang.')
-		ORDER BY ors.`id_order_return_state` ASC');
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('*')
+                ->from('order_return_state', 'ors')
+                ->leftJoin('order_return_state_lang', 'orsl', 'ors.`id_order_return_state` = orsl.`id_order_return_state`')
+                ->where('orsl.`id_lang` = '.(int) $idLang)
+                ->orderBy('ors.`id_order_return_state` ASC')
+        );
     }
 }
