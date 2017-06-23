@@ -162,7 +162,7 @@ class CustomizationCore extends ObjectModel
     }
 
     /**
-     * @param $customizations
+     * @param array $customizations
      *
      * @return array
      *
@@ -180,18 +180,18 @@ class CustomizationCore extends ObjectModel
     }
 
     /**
-     * @param      $id_customization
-     * @param      $idLang
-     * @param null $idShop
+     * @param int      $idCustomization
+     * @param int      $idLang
+     * @param int|null $idShop
      *
      * @return bool|false|null|string
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function getLabel($id_customization, $idLang, $idShop = null)
+    public static function getLabel($idCustomization, $idLang, $idShop = null)
     {
-        if (!(int) $id_customization || !(int) $idLang) {
+        if (!(int) $idCustomization || !(int) $idLang) {
             return false;
         }
         if (Shop::isFeatureActive() && !(int) $idShop) {
@@ -202,7 +202,7 @@ class CustomizationCore extends ObjectModel
             (new DbQuery())
                 ->select('`name`')
                 ->from('customization_field_lang')
-                ->where('`id_customization_field` = '.(int) $id_customization)
+                ->where('`id_customization_field` = '.(int) $idCustomization)
                 ->where($idShop ? 'cfl.`id_shop` = '.(int) $idShop : '')
                 ->where('`id_lang` = '.(int) $idLang)
         );
@@ -289,8 +289,8 @@ class CustomizationCore extends ObjectModel
     /**
      * This method is allow to know if a Customization entity is currently used
      *
-     * @param $table
-     * @param $hasActiveColumn
+     * @param string|null $table
+     * @param bool        $hasActiveColumn
      *
      * @return bool
      *
@@ -351,7 +351,7 @@ class CustomizationCore extends ObjectModel
     }
 
     /**
-     * @param $values
+     * @param array $values
      *
      * @return bool
      *
