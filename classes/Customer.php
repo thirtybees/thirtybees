@@ -856,7 +856,7 @@ class CustomerCore extends ObjectModel
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                 (new DbQuery())
                     ->select('cg.`id_group`')
-                    ->from('custoimer_group', 'cg')
+                    ->from('customer_group', 'cg')
                     ->where('cg.`id_customer` = '.(int) $idCustomer)
             );
             foreach ($result as $group) {
