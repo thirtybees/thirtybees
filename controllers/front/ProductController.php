@@ -539,7 +539,6 @@ class ProductControllerCore extends FrontController
         $productPriceWithoutEcoTax = (float) $productPriceWithTax - $this->product->ecotax;
 
         $ecotaxRate = (float) Tax::getProductEcotaxRate($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
-        $ecotaxTaxAmount = Tools::ps_round($this->product->ecotax, 2);
         if (Product::$_taxCalculationMethod == PS_TAX_INC && (int) Configuration::get('PS_TAX')) {
             $ecotaxTaxAmount = Tools::ps_round($this->product->ecotax * (1 + $ecotaxRate / 100), 2);
         } else {
@@ -553,6 +552,7 @@ class ProductControllerCore extends FrontController
         $quantityDiscounts = SpecificPrice::getQuantityDiscounts($idProduct, $idShop, $idCurrency, $idCountry, $idGroup, null, true, (int) $this->context->customer->id);
         foreach ($quantityDiscounts as &$quantityDiscount) {
             if ($quantityDiscount['id_product_attribute']) {
+                $quantityDiscount['base_price'] = $this->product->getPrice(Product::$_taxCalculationMethod === PS_TAX_INC, $quantityDiscount['id_product_attribute']);
                 $combination = new Combination((int) $quantityDiscount['id_product_attribute']);
                 $attributes = $combination->getAttributesName((int) $this->context->language->id);
                 foreach ($attributes as $attribute) {
@@ -565,11 +565,10 @@ class ProductControllerCore extends FrontController
             }
         }
 
-        $productPrice = $this->product->getPrice(Product::$_taxCalculationMethod == PS_TAX_INC, false);
         $address = new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
         $this->context->smarty->assign(
             [
-                'quantity_discounts'         => $this->formatQuantityDiscounts($quantityDiscounts, $productPrice, (float) $tax, $ecotaxTaxAmount),
+                'quantity_discounts'         => $this->formatQuantityDiscounts($quantityDiscounts, (float) $tax, $ecotaxTaxAmount),
                 'ecotax_tax_inc'             => $ecotaxTaxAmount,
                 'ecotax_tax_exc'             => Tools::ps_round($this->product->ecotax, 2),
                 'ecotaxTax_rate'             => $ecotaxRate,
@@ -589,20 +588,20 @@ class ProductControllerCore extends FrontController
      * @param array $specificPrices
      * @param float $price
      * @param float $taxRate
-     * @param float $ecotax_amount
+     * @param float $ecotaxAmount
      *
      * @return mixed
      *
      * @since 1.0.0
      */
-    protected function formatQuantityDiscounts($specificPrices, $price, $taxRate, $ecotax_amount)
+    protected function formatQuantityDiscounts($specificPrices, $taxRate, $ecotaxAmount)
     {
         foreach ($specificPrices as $key => &$row) {
             $row['quantity'] = &$row['from_quantity'];
             if ($row['price'] >= 0) {
                 // The price may be directly set
 
-                $currentPrice = (!$row['reduction_tax'] ? $row['price'] : $row['price'] * (1 + $taxRate / 100)) + (float) $ecotax_amount;
+                $currentPrice = (!$row['reduction_tax'] ? $row['price'] : $row['price'] * (1 + $taxRate / 100)) + (float) $ecotaxAmount;
 
                 if ($row['reduction_type'] == 'amount') {
                     $currentPrice -= ($row['reduction_tax'] ? $row['reduction'] : $row['reduction'] / (1 + $taxRate / 100));
@@ -611,7 +610,7 @@ class ProductControllerCore extends FrontController
                     $currentPrice *= 1 - $row['reduction'];
                 }
 
-                $row['real_value'] = $price > 0 ? $price - $currentPrice : $currentPrice;
+                $row['real_value'] = $row['base_price'] > 0 ? $row['base_price'] - $currentPrice : $currentPrice;
             } else {
                 if ($row['reduction_type'] == 'amount') {
                     if (Product::$_taxCalculationMethod == PS_TAX_INC) {
