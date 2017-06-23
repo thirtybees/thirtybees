@@ -1386,7 +1386,7 @@ class AdminControllerCore extends Controller
             if (isset($def['lang']) && $def['lang']) {
                 if (isset($def['required']) && $def['required']) {
                     $value = Tools::getValue($field.'_'.$defaultLanguage->id);
-                    if (empty($value)) {
+                    if ($value === '') {
                         $this->errors[$field.'_'.$defaultLanguage->id] = sprintf(
                             Tools::displayError('The field %1$s is required at least in %2$s.'),
                             $object->displayFieldName($field, $className),
