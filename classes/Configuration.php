@@ -806,7 +806,7 @@ class ConfigurationCore extends ObjectModel
         )'
         );
 
-        $result2 = Db::getInstance()->execute(_DB_PREFIX_.bqSQL(static::$definition['table']), '`name` = "'.pSQL($key).'"');
+        $result2 = Db::getInstance()->delete(bqSQL(static::$definition['table']), '`name` = "'.pSQL($key).'"');
 
         static::$_cache[static::$definition['table']] = null;
 
