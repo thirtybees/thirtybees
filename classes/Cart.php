@@ -4585,17 +4585,15 @@ class CartCore extends ObjectModel
         }
 
         // Update delivery address for each product line
-        Db::getInstance()->update(
-            'cart_product',
-            [
-                'id_address_delivery' => ['type' => 'sql', 'value' => 'SELECT `id_address_delivery` FROM `'._DB_PREFIX_.'cart` WHERE `id_cart` = '.(int) $this->id.' AND `id_shop` = '.(int) $this->id_shop],
-            ],
-            '`id_cart` = '.(int) $this->id.' '.(Configuration::get('PS_ALLOW_MULTISHIPPING') ? ' AND `id_shop` = '.(int) $this->id_shop : '')
-        );
-
         $cacheId = 'static::setNoMultishipping'.(int) $this->id.'-'.(int) $this->id_shop.((isset($this->id_address_delivery) && $this->id_address_delivery) ? '-'.(int) $this->id_address_delivery : '');
         if (!Cache::isStored($cacheId)) {
-            if ($result = (bool) Db::getInstance()->execute($sql)) {
+            if ($result = (bool) Db::getInstance()->update(
+                'cart_product',
+                [
+                    'id_address_delivery' => ['type' => 'sql', 'value' => '(SELECT `id_address_delivery` FROM `'._DB_PREFIX_.'cart` WHERE `id_cart` = '.(int) $this->id.' AND `id_shop` = '.(int) $this->id_shop.')'],
+                ],
+                '`id_cart` = '.(int) $this->id.' '.(Configuration::get('PS_ALLOW_MULTISHIPPING') ? ' AND `id_shop` = '.(int) $this->id_shop : '')
+            )) {
                 $emptyCache = true;
             }
             Cache::store($cacheId, $result);
@@ -4605,7 +4603,7 @@ class CartCore extends ObjectModel
             Db::getInstance()->update(
                 'customization',
                 [
-                    'id_address_delivery' => ['type' => 'sql', 'value' => 'SELECT `id_address_delivery` FROM `'._DB_PREFIX_.'cart` WHERE `id_cart` = '.(int) $this->id],
+                    'id_address_delivery' => ['type' => 'sql', 'value' => '(SELECT `id_address_delivery` FROM `'._DB_PREFIX_.'cart` WHERE `id_cart` = '.(int) $this->id.')'],
                 ],
                 '`id_cart` = '.(int) $this->id
             );
