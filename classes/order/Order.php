@@ -2719,12 +2719,9 @@ class OrderCore extends ObjectModel
             }
         }
 
-        $productsTax = $this->total_products_wt - $this->total_products;
-        $discountsTax = $this->total_discounts_tax_incl - $this->total_discounts_tax_excl;
-
         // We add $free_shipping_tax because when there is free shipping, the tax that would
         // be paid if there wasn't is included in $discounts_tax.
-        $expectedTotalTax = $productsTax - $discountsTax + $freeShippingTax;
+        $expectedTotalTax = $this->total_products_wt - $this->total_products;
         $actualTotalTax = 0;
         $actualTotalBase = 0;
 
