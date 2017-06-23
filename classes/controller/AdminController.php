@@ -876,10 +876,14 @@ class AdminControllerCore extends Controller
 
         $headers = [];
         foreach ($this->fields_list as $key => $datas) {
-            if ($datas['title'] == 'PDF') {
+            if ($datas['title'] === 'PDF') {
                 unset($this->fields_list[$key]);
             } else {
-                $headers[] = Tools::htmlentitiesDecodeUTF8($datas['title']);
+                if ($datas['title'] === 'ID') {
+                    $headers[] = strtolower(Tools::htmlentitiesDecodeUTF8($datas['title']));
+                } else {
+                    $headers[] = Tools::htmlentitiesDecodeUTF8($datas['title']);
+                }
             }
         }
         $content = [];
