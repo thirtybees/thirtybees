@@ -835,12 +835,12 @@ class ConfigurationCore extends ObjectModel
 
         $id = Configuration::getIdByName($key, $idShopGroup, $idShop);
         Db::getInstance()->delete(
-            _DB_PREFIX_.bqSQL(static::$definition['table']),
-            bqSQL(static::$definition['primary']).'` = '.(int) $id
+            bqSQL(static::$definition['table']),
+            '`'.bqSQL(static::$definition['primary']).'` = '.(int) $id
         );
         Db::getInstance()->delete(
-            _DB_PREFIX_.bqSQL(static::$definition['table']).'_lang`',
-            bqSQL(static::$definition['primary']).'` = '.(int) $id
+            bqSQL(static::$definition['table']).'_lang',
+            '`'.bqSQL(static::$definition['primary']).'` = '.(int) $id
         );
 
         static::$_cache[static::$definition['table']] = null;
