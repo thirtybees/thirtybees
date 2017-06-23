@@ -53,7 +53,7 @@ class FeatureValueCore extends ObjectModel
         'primary'   => 'id_feature_value',
         'multilang' => true,
         'fields'    => [
-            'id_feature' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'id_feature' => ['type' => self::TYPE_INT,  'validate' => 'isUnsignedId', 'required' => true],
             'custom'     => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
 
             /* Lang fields */
@@ -94,6 +94,7 @@ class FeatureValueCore extends ObjectModel
      *
      * @param int  $idLang    Language id
      * @param bool $idFeature Feature id
+     * @param bool $custom
      *
      * @return array Array with feature's values
      *
@@ -158,11 +159,11 @@ class FeatureValueCore extends ObjectModel
     }
 
     /**
-     * @param      $idFeature
-     * @param      $value
-     * @param null $idProduct
-     * @param null $idLang
-     * @param bool $custom
+     * @param int      $idFeature
+     * @param string   $value
+     * @param int|null $idProduct
+     * @param int|null $idLang
+     * @param bool     $custom
      *
      * @return int
      *
