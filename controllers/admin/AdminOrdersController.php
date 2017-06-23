@@ -2350,6 +2350,9 @@ class AdminOrdersControllerCore extends AdminController
             $order->total_shipping_tax_incl = $orderInvoice->total_shipping_tax_incl;
             $order->total_shipping_tax_excl = $orderInvoice->total_shipping_tax_excl;
         }
+
+        StockAvailable::updateQuantity($orderDetail->product_id, $orderDetail->product_attribute_id, ($orderDetail->product_quantity * -1), $order->id_shop);
+
         // discount
         $order->total_discounts += (float) abs($cart->getOrderTotal(true, Cart::ONLY_DISCOUNTS));
         $order->total_discounts_tax_excl += (float) abs($cart->getOrderTotal(false, Cart::ONLY_DISCOUNTS));
@@ -2379,6 +2382,7 @@ class AdminOrdersControllerCore extends AdminController
 
         // Get the last product
         $product = end($products);
+        $product['current_stock'] = StockAvailable::getQuantityAvailableByProduct($product['product_id'], $product['product_attribute_id'], $product['id_shop']);
         $resume = OrderSlip::getProductSlipResume((int) $product['id_order_detail']);
         $product['quantity_refundable'] = $product['product_quantity'] - $resume['product_quantity'];
         $product['amount_refundable'] = $product['total_price_tax_excl'] - $resume['amount_tax_excl'];
@@ -2566,6 +2570,22 @@ class AdminOrdersControllerCore extends AdminController
             $orderInvoice = new OrderInvoice((int) Tools::getValue('product_invoice'));
         }
 
+        // If multiple product_quantity, the order details concern a product customized
+        $productQuantity = 0;
+        if (is_array(Tools::getValue('product_quantity'))) {
+            foreach (Tools::getValue('product_quantity') as $idCustomization => $qty) {
+                // Update quantity of each customization
+                Db::getInstance()->update('customization', ['quantity' => (int) $qty], 'id_customization = '.(int) $idCustomization);
+                // Calculate the real quantity of the product
+                $productQuantity += $qty;
+            }
+        } else {
+            $productQuantity = Tools::getValue('product_quantity');
+        }
+
+        $this->checkStockAvailable($orderDetail, ($productQuantity - $orderDetail->product_quantity));
+
+
         // Check fields validity
         $this->doEditProductValidation($orderDetail, $order, isset($orderInvoice) ? $orderInvoice : null);
 
@@ -2682,6 +2702,7 @@ class AdminOrdersControllerCore extends AdminController
         $products = $this->getProducts($order);
         // Get the last product
         $product = $products[$orderDetail->id];
+        $product['current_stock'] = StockAvailable::getQuantityAvailableByProduct($product['product_id'], $product['product_attribute_id'], $product['id_shop']);
         $resume = OrderSlip::getProductSlipResume($orderDetail->id);
         $product['quantity_refundable'] = $product['product_quantity'] - $resume['product_quantity'];
         $product['amount_refundable'] = $product['total_price_tax_excl'] - $resume['amount_tax_excl'];
@@ -2756,6 +2777,32 @@ class AdminOrdersControllerCore extends AdminController
             'shipping_html'       => $this->createTemplate('_shipping.tpl')->fetch(),
             'customized_product'  => is_array(Tools::getValue('product_quantity')),
         ]));
+    }
+
+    /**
+     * @param OrderDetail $orderDetail
+     * @param int         $addQuantity
+     */
+    protected function checkStockAvailable($orderDetail, $addQuantity)
+    {
+        if ($addQuantity > 0) {
+            $stockAvailable = StockAvailable::getQuantityAvailableByProduct($orderDetail->product_id, $orderDetail->product_attribute_id, $orderDetail->id_shop);
+            $product = new Product($orderDetail->product_id, true, null, $orderDetail->id_shop);
+            if (!Validate::isLoadedObject($product)) {
+                die(json_encode([
+                    'result' => false,
+                    'error'  => Tools::displayError('The Product object could not be loaded.'),
+                ]));
+            } else {
+                if (($stockAvailable < $addQuantity) && (!$product->isAvailableWhenOutOfStock((int) $product->out_of_stock))) {
+                    die(json_encode([
+                        'result' => false,
+                        'error'  => Tools::displayError('This product is no longer in stock with those attributes '),
+                    ]));
+
+                }
+            }
+        }
     }
 
     /**
