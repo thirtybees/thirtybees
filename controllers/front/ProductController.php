@@ -541,7 +541,9 @@ class ProductControllerCore extends FrontController
         $ecotaxRate = (float) Tax::getProductEcotaxRate($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
         $ecotaxTaxAmount = Tools::ps_round($this->product->ecotax, 2);
         if (Product::$_taxCalculationMethod == PS_TAX_INC && (int) Configuration::get('PS_TAX')) {
-            $ecotaxTaxAmount = Tools::ps_round($ecotaxTaxAmount * (1 + $ecotaxRate / 100), 2);
+            $ecotaxTaxAmount = Tools::ps_round($this->product->ecotax * (1 + $ecotaxRate / 100), 2);
+        } else {
+            $ecotaxTaxAmount = Tools::ps_round($this->product->ecotax, 2);
         }
 
         $idCurrency = (int) $this->context->cookie->id_currency;
