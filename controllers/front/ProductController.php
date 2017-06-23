@@ -154,17 +154,17 @@ class ProductControllerCore extends FrontController
                     && preg_match('~^.*(?<!\/content)\/([0-9]+)\-(.*[^\.])|(.*)id_(category|product)=([0-9]+)(.*)$~', $_SERVER['HTTP_REFERER'], $regs)
                 ) {
                     // If the previous page was a category and is a parent category of the product use this category as parent category
-                    $id_object = false;
+                    $idObject = false;
                     if (isset($regs[1]) && is_numeric($regs[1])) {
-                        $id_object = (int) $regs[1];
+                        $idObject = (int) $regs[1];
                     } elseif (isset($regs[5]) && is_numeric($regs[5])) {
-                        $id_object = (int) $regs[5];
+                        $idObject = (int) $regs[5];
                     }
-                    if ($id_object) {
+                    if ($idObject) {
                         $referers = [$_SERVER['HTTP_REFERER'], urldecode($_SERVER['HTTP_REFERER'])];
-                        if (in_array($this->context->link->getCategoryLink($id_object), $referers)) {
-                            $idCategory = (int) $id_object;
-                        } elseif (isset($this->context->cookie->last_visited_category) && (int) $this->context->cookie->last_visited_category && in_array($this->context->link->getProductLink($id_object), $referers)) {
+                        if (in_array($this->context->link->getCategoryLink($idObject), $referers)) {
+                            $idCategory = (int) $idObject;
+                        } elseif (isset($this->context->cookie->last_visited_category) && (int) $this->context->cookie->last_visited_category && in_array($this->context->link->getProductLink($idObject), $referers)) {
                             $idCategory = (int) $this->context->cookie->last_visited_category;
                         }
                     }
