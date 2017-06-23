@@ -109,7 +109,7 @@ class MediaCore
     // @codingStandardsIgnoreEnd
 
     /**
-     * @param $htmlContent
+     * @param string $htmlContent
      *
      * @return bool|mixed
      *
@@ -138,7 +138,7 @@ class MediaCore
     }
 
     /**
-     * @param $pregMatches
+     * @param array $pregMatches
      *
      * @return string
      *
@@ -162,7 +162,7 @@ class MediaCore
     }
 
     /**
-     * @param $htmlContent
+     * @param string $htmlContent
      *
      * @return bool|mixed
      *
@@ -173,6 +173,7 @@ class MediaCore
     {
         if (strlen($htmlContent) > 0) {
             $htmlContentCopy = $htmlContent;
+            // @codingStandardsIgnoreStart
             if (!preg_match('/'.Media::$pattern_keepinline.'/', $htmlContent)) {
                 $htmlContent = preg_replace_callback(
                     Media::$pattern_js,
@@ -180,6 +181,7 @@ class MediaCore
                     $htmlContent,
                     Media::getBackTrackLimit()
                 );
+                // @codingStandardsIgnoreEnd
 
                 // If the string is too big preg_replace return an error
                 // In this case, we don't compress the content
@@ -218,7 +220,7 @@ class MediaCore
     }
 
     /**
-     * @param $pregMatches
+     * @param array $pregMatches
      *
      * @return string
      *
@@ -240,7 +242,7 @@ class MediaCore
     }
 
     /**
-     * @param $jsContent
+     * @param string $jsContent
      *
      * @return string
      *
@@ -265,7 +267,7 @@ class MediaCore
     }
 
     /**
-     * @param $matches
+     * @param array $matches
      *
      * @return bool|string
      *
@@ -276,12 +278,14 @@ class MediaCore
     {
         if (array_key_exists(1, $matches) && array_key_exists(2, $matches)) {
             if (!preg_match('/^(?:https?:)?\/\//iUs', $matches[2])) {
-                $protocol_link = Tools::getCurrentUrlProtocolPrefix();
+                $protocolLink = Tools::getCurrentUrlProtocolPrefix();
                 $sep = '/';
+                // @codingStandardsIgnoreStart
                 $tmp = $matches[2][0] == $sep ? $matches[2] : dirname(Media::$current_css_file).$sep.ltrim($matches[2], $sep);
+                // @codingStandardsIgnoreEnd
                 $server = Tools::getMediaServer($tmp);
 
-                return $matches[1].$protocol_link.$server.$tmp;
+                return $matches[1].$protocolLink.$server.$tmp;
             } else {
                 return $matches[0];
             }
@@ -293,10 +297,11 @@ class MediaCore
     /**
      * return jquery path.
      *
-     * @param mixed $version
+     * @param mixed       $version
+     * @param string|null $folder
+     * @param bool        $minifier
      *
-     * @return string
-     *
+     * @return false|array
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -314,14 +319,14 @@ class MediaCore
 
         if ($folder === null) {
             $folder = _PS_JS_DIR_.'jquery/';
-        } //set default folder
-        //check if file exist
+        }
+        //set default folder
+        //check if file exists
         $file = $folder.'jquery-'.$version.($minifier ? '.min.js' : '.js');
 
         // remove PS_BASE_URI on _PS_ROOT_DIR_ for the following
         $urlData = parse_url($file);
         $fileUri = _PS_ROOT_DIR_.Tools::str_replace_once(__PS_BASE_URI__, DIRECTORY_SEPARATOR, $urlData['path']);
-        $fileUriHostMode = _PS_CORE_DIR_.Tools::str_replace_once(__PS_BASE_URI__, DIRECTORY_SEPARATOR, $urlData['path']);
         // check if js files exists, if not try to load query from ajax.googleapis.com
 
         $return = [];
@@ -330,15 +335,13 @@ class MediaCore
             $return[] = Media::getJSPath($file);
         } else {
             $return[] = Media::getJSPath(
-                Tools::getCurrentUrlProtocolPrefix().'ajax.googleapis.com/ajax/libs/jquery/'
-                .$version.'/jquery'.($minifier ? '.min.js' : '.js')
+                Tools::getCurrentUrlProtocolPrefix().'ajax.googleapis.com/ajax/libs/jquery/'.$version.'/jquery'.($minifier ? '.min.js' : '.js')
             );
         }
 
         if ($addNoConflict) {
             $return[] = Media::getJSPath(
-                Context::getContext()->shop->getBaseURL(true, false)._PS_JS_DIR_
-                .'jquery/jquery.noConflict.php?version='.$version
+                Context::getContext()->shop->getBaseURL(true, false)._PS_JS_DIR_.'jquery/jquery.noConflict.php?version='.$version
             );
         }
 
@@ -411,8 +414,8 @@ class MediaCore
     }
 
     /**
-     * @param      $mediaUri
-     * @param null $cssMediaType
+     * @param string      $mediaUri
+     * @param string|null $cssMediaType
      *
      * @return array|bool|mixed|string
      *
@@ -431,11 +434,9 @@ class MediaCore
         }
 
         if (!array_key_exists('host', $urlData)) {
-            $mediaUriHostMode = '/'.ltrim(str_replace(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, _PS_CORE_DIR_), __PS_BASE_URI__, $mediaUri), '/\\');
             $mediaUri = '/'.ltrim(str_replace(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, _PS_ROOT_DIR_), __PS_BASE_URI__, $mediaUri), '/\\');
             // remove PS_BASE_URI on _PS_ROOT_DIR_ for the following
             $fileUri = _PS_ROOT_DIR_.Tools::str_replace_once(__PS_BASE_URI__, DIRECTORY_SEPARATOR, $mediaUri);
-            $fileUriHostMode = _PS_CORE_DIR_.Tools::str_replace_once(__PS_BASE_URI__, DIRECTORY_SEPARATOR, Tools::str_replace_once(_PS_CORE_DIR_, '', $mediaUri));
 
             if (!@filemtime($fileUri) || @filesize($fileUri) === 0) {
                 return false;
@@ -454,10 +455,11 @@ class MediaCore
     /**
      * return jqueryUI component path.
      *
-     * @param mixed $component
+     * @param mixed  $component
+     * @param string $theme
+     * @param bool   $checkDependencies
      *
-     * @return string
-     *
+     * @return array
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -468,9 +470,10 @@ class MediaCore
         $file = 'jquery.'.$component.'.min.js';
         $urlData = parse_url($folder.$file);
         $fileUri = _PS_ROOT_DIR_.Tools::str_replace_once(__PS_BASE_URI__, DIRECTORY_SEPARATOR, $urlData['path']);
-        $fileUriHostMode = _PS_CORE_DIR_.Tools::str_replace_once(__PS_BASE_URI__, DIRECTORY_SEPARATOR, $urlData['path']);
         $uiTmp = [];
+        // @codingStandardsIgnoreStart
         if (isset(Media::$jquery_ui_dependencies[$component]) && Media::$jquery_ui_dependencies[$component]['theme'] && $checkDependencies) {
+            // @codingStandardsIgnoreEnd
             $themeCss = Media::getCSSPath($folder.'themes/'.$theme.'/jquery.ui.theme.css');
             $compCss = Media::getCSSPath($folder.'themes/'.$theme.'/jquery.'.$component.'.css');
             if (!empty($themeCss) || $themeCss) {
@@ -480,12 +483,14 @@ class MediaCore
                 $uiPath['css'] = array_merge($uiPath['css'], $compCss);
             }
         }
+        // @codingStandardsIgnoreStart
         if ($checkDependencies && array_key_exists($component, static::$jquery_ui_dependencies)) {
             foreach (static::$jquery_ui_dependencies[$component]['dependencies'] as $dependency) {
                 $uiTmp[] = Media::getJqueryUIPath($dependency, $theme, false);
                 if (static::$jquery_ui_dependencies[$dependency]['theme']) {
                     $depCss = Media::getCSSPath($folder.'themes/'.$theme.'/jquery.'.$dependency.'.css');
                 }
+                // @codingStandardsIgnoreEnd
 
                 if (isset($depCss) && (!empty($depCss) || $depCss)) {
                     $uiPath['css'] = array_merge($uiPath['css'], $depCss);
@@ -537,10 +542,10 @@ class MediaCore
     {
         // RTL Ready: search and load rtl css file if it's not originally rtl
         if ($needRtl && Context::getContext()->language->is_rtl) {
-            $css_uri_rtl = preg_replace('/(^[^.].*)(\.css)$/', '$1_rtl.css', $cssUri);
-            $rtl_media = Media::getMediaPath($css_uri_rtl, $cssMediaType);
-            if ($rtl_media != false) {
-                return $rtl_media;
+            $cssUriRtl = preg_replace('/(^[^.].*)(\.css)$/', '$1_rtl.css', $cssUri);
+            $rtlMedia = Media::getMediaPath($cssUriRtl, $cssMediaType);
+            if ($rtlMedia != false) {
+                return $rtlMedia;
             }
         }
 
@@ -551,9 +556,10 @@ class MediaCore
     /**
      * return jquery plugin path.
      *
-     * @param mixed $name
+     * @param mixed       $name
+     * @param string|null $folder
      *
-     * @return string|boolean
+     * @return array|false
      */
     public static function getJqueryPluginPath($name, $folder = null)
     {
@@ -565,7 +571,6 @@ class MediaCore
         $file = 'jquery.'.$name.'.js';
         $urlData = parse_url($folder);
         $fileUri = _PS_ROOT_DIR_.Tools::str_replace_once(__PS_BASE_URI__, DIRECTORY_SEPARATOR, $urlData['path']);
-        $fileUriHostMode = _PS_CORE_DIR_.Tools::str_replace_once(__PS_BASE_URI__, DIRECTORY_SEPARATOR, $urlData['path']);
 
         if (@file_exists($fileUri.$file)) {
             $pluginPath['js'] = Media::getJSPath($folder.$file);
@@ -582,10 +587,10 @@ class MediaCore
     /**
      * return jquery plugin css path if exist.
      *
-     * @param mixed $name
+     * @param mixed       $name
+     * @param string|null $folder
      *
-     * @return string|boolean
-     *
+     * @return bool|string
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -696,17 +701,15 @@ class MediaCore
                 $cssSplitNeedRefresh = true;
                 $cacheFilename = $cachePath.'v_'.$version.'_'.$compressedCssFilesInfos[$media]['key'].'_'.$media.'.css';
                 $compressedCssFiles[$media] = '';
-                foreach ($mediaInfos['files'] as $file_infos) {
-                    if (file_exists($file_infos['path'])) {
-                        $compressedCssFiles[$media] .= Media::minifyCSS(file_get_contents($file_infos['path']), $file_infos['uri'], $importUrl);
+                foreach ($mediaInfos['files'] as $fileInfos) {
+                    if (file_exists($fileInfos['path'])) {
+                        $compressedCssFiles[$media] .= Media::minifyCSS(file_get_contents($fileInfos['path']), $fileInfos['uri'], $importUrl);
                     } else {
-                        $compressedCssFilesNotFound[] = $file_infos['path'];
+                        $compressedCssFilesNotFound[] = $fileInfos['path'];
                     }
                 }
                 if (!empty($compressedCssFilesNotFound)) {
-                    $content = '/* WARNING ! file(s) not found : "'.
-                        implode(',', $compressedCssFilesNotFound).
-                        '" */'."\n".$compressedCssFiles[$media];
+                    $content = '/* WARNING ! file(s) not found : "'.implode(',', $compressedCssFilesNotFound).'" */'."\n".$compressedCssFiles[$media];
                 } else {
                     $content = $compressedCssFiles[$media];
                 }
@@ -733,15 +736,15 @@ class MediaCore
         if (!preg_match('/(?i)msie [1-9]/', $userAgent)) {
             return $compiledCss;
         }
-        $splitted_css = static::ieCssSplitter($compiledCss, $cachePath.'ie9', $cssSplitNeedRefresh);
+        $splittedCss = static::ieCssSplitter($compiledCss, $cachePath.'ie9', $cssSplitNeedRefresh);
 
-        return array_merge($splitted_css, $compiledCss);
+        return array_merge($splittedCss, $compiledCss);
     }
 
     /**
-     * @param       $cssContent
-     * @param bool  $fileuri
-     * @param array $importUrl
+     * @param string $cssContent
+     * @param bool   $fileuri
+     * @param array  $importUrl
      *
      * @return bool|string
      *
@@ -750,12 +753,16 @@ class MediaCore
      */
     public static function minifyCSS($cssContent, $fileuri = false, &$importUrl = [])
     {
+        // @codingStandardsIgnoreStart
         Media::$current_css_file = $fileuri;
+        // @codingStandardsIgnoreEnd
 
         if (strlen($cssContent) > 0) {
             $limit = Media::getBackTrackLimit();
             $cssContent = preg_replace('#/\*.*?\*/#s', '', $cssContent, $limit);
+            // @codingStandardsIgnoreStart
             $cssContent = preg_replace_callback(Media::$pattern_callback, ['Media', 'replaceByAbsoluteURL'], $cssContent, $limit);
+            // @codingStandardsIgnoreEnd
             $cssContent = preg_replace('#\s+#', ' ', $cssContent, $limit);
             $cssContent = str_replace(["\t", "\n", "\r"], '', $cssContent);
             $cssContent = str_replace(['; ', ': '], [';', ':'], $cssContent);
@@ -919,6 +926,7 @@ class MediaCore
         }
 
         // rebuild the original js_files array
+        $url = '';
         if (strpos($compressedJsPath, _PS_ROOT_DIR_) !== false) {
             $url = str_replace(_PS_ROOT_DIR_.'/', __PS_BASE_URI__, $compressedJsPath);
         }
@@ -966,9 +974,11 @@ class MediaCore
      */
     public static function getJsDef()
     {
+        // @codingStandardsIgnoreStart
         ksort(Media::$js_def);
 
         return Media::$js_def;
+        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -981,7 +991,9 @@ class MediaCore
      */
     public static function getInlineScript()
     {
+        // @codingStandardsIgnoreStart
         return Media::$inline_script;
+        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -998,10 +1010,14 @@ class MediaCore
     {
         if (is_array($jsDef)) {
             foreach ($jsDef as $key => $js) {
+                // @codingStandardsIgnoreStart
                 Media::$js_def[$key] = $js;
+                // @codingStandardsIgnoreEnd
             }
         } elseif ($jsDef) {
+            // @codingStandardsIgnoreStart
             Media::$js_def[] = $jsDef;
+            // @codingStandardsIgnoreEnd
         }
     }
 
@@ -1026,13 +1042,15 @@ class MediaCore
             }
 
             foreach ($params as $param) {
+                // @codingStandardsIgnoreStart
                 Media::$js_def[$param] = $content;
+                // @codingStandardsIgnoreEnd
             }
         }
     }
 
     /**
-     * @param $output
+     * @param string $output
      *
      * @return mixed
      *
@@ -1077,17 +1095,23 @@ class MediaCore
                                 if ($version != _PS_JQUERY_VERSION_) {
                                     Context::getContext()->controller->addJquery($version, null, $minifier);
                                 }
+                                // @codingStandardsIgnoreStart
                                 array_push(Media::$inline_script_src, $src);
+                                // @codingStandardsIgnoreEnd
                             }
                         }
                     }
+                    // @codingStandardsIgnoreStart
                     if (!in_array($src, Media::$inline_script_src) && !$script->getAttribute(Media::$pattern_keepinline)) {
+                        // @codingStandardsIgnoreEnd
                         Context::getContext()->controller->addJS($src);
                     }
                 }
             }
         }
+        // @codingStandardsIgnoreStart
         $output = preg_replace_callback(Media::$pattern_js, ['Media', 'deferScript'], $output);
+        // @codingStandardsIgnoreEnd
 
         return $output;
     }
@@ -1121,7 +1145,9 @@ class MediaCore
         }
 
         /* This is an inline script, add its content to inline scripts stack then remove it from content */
+        // @codingStandardsIgnoreStart
         if (!empty($inline) && preg_match(Media::$pattern_js, $original) !== false && !preg_match('/'.Media::$pattern_keepinline.'/', $original) && Media::$inline_script[] = $inline) {
+            // @codingStandardsIgnoreEnd
             return '';
         }
         /* This is an external script, if it already belongs to js_files then remove it from content */
@@ -1132,7 +1158,9 @@ class MediaCore
                 $results[1] = $protocolLink.ltrim($results[1], '/');
             }
 
+            // @codingStandardsIgnoreStart
             if (in_array($results[1], Context::getContext()->controller->js_files) || in_array($results[1], Media::$inline_script_src)) {
+                // @codingStandardsIgnoreEnd
                 return '';
             }
         }
