@@ -165,7 +165,7 @@ class MetaCore extends ObjectModel
     }
 
     /**
-     * @param $idLang
+     * @param int $idLang
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
@@ -217,8 +217,8 @@ class MetaCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      *
-     * @param        $idLang
-     * @param        $pageName
+     * @param int    $idLang
+     * @param string $pageName
      * @param string $title
      *
      * @return array
@@ -281,11 +281,11 @@ class MetaCore extends ObjectModel
     }
 
     /**
-     * @param         $metaTags
-     * @param         $defaultValue
+     * @param array   $metaTags
+     * @param string  $defaultValue
      * @param Context $context
      *
-     * @return
+     * @return array
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -331,8 +331,8 @@ class MetaCore extends ObjectModel
     }
 
     /**
-     * @param $page
-     * @param $idLang
+     * @param string $page
+     * @param int    $idLang
      *
      * @return array|bool|null|object
      *
@@ -357,9 +357,9 @@ class MetaCore extends ObjectModel
      * @param int    $idCategory
      * @param int    $idLang
      * @param string $pageName
+     * @param string $title
      *
      * @return array
-     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -419,7 +419,7 @@ class MetaCore extends ObjectModel
      */
     public static function getManufacturerMetas($idManufacturer, $idLang, $pageName)
     {
-        $page_number = (int) Tools::getValue('p');
+        $pageNumber = (int) Tools::getValue('p');
         if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
             (new DbQuery())
                 ->select('`name`, `meta_title`, `meta_description`, `meta_keywords`')
@@ -431,7 +431,7 @@ class MetaCore extends ObjectModel
             if (!empty($row['meta_description'])) {
                 $row['meta_description'] = strip_tags($row['meta_description']);
             }
-            $row['meta_title'] = ($row['meta_title'] ? $row['meta_title'] : $row['name']).(!empty($page_number) ? ' ('.$page_number.')' : '');
+            $row['meta_title'] = ($row['meta_title'] ? $row['meta_title'] : $row['name']).(!empty($pageNumber) ? ' ('.$pageNumber.')' : '');
             $row['meta_title'] .= ' - '.Configuration::get('PS_SHOP_NAME');
 
             return Meta::completeMetaTags($row, $row['meta_title']);
