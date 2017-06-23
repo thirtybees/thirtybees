@@ -555,7 +555,7 @@ class ImageCore extends ObjectModel
                 (new DbQuery())
                     ->select('`width`, `height`')
                     ->from('image_type')
-                    ->where('`name` = '.pSQL($type).'\'')
+                    ->where('`name` = \''.pSQL($type).'\'')
             );
         }
 
