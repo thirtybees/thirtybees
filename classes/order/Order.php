@@ -1500,6 +1500,7 @@ class OrderCore extends ObjectModel
 				UPDATE `'._DB_PREFIX_.'order_detail`
 				SET `id_order_invoice` = '.(int) $orderInvoice->id.'
 				WHERE `id_order` = '.(int) $orderInvoice->id_order);
+            Cache::clean('objectmodel_OrderDetail_*');
 
             // Update order payment
             if ($useExistingPayment) {
