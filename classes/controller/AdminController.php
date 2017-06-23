@@ -885,7 +885,7 @@ class AdminControllerCore extends Controller
         $content = [];
         foreach ($this->_list as $i => $row) {
             $content[$i] = [];
-            $pathToImage = false;
+//            $pathToImage = false;
             foreach ($this->fields_list as $key => $params) {
                 $fieldValue = isset($row[$key]) ? Tools::htmlentitiesDecodeUTF8(Tools::nl2br($row[$key])) : '';
                 if ($key == 'image') {
