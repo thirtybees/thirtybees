@@ -93,8 +93,9 @@ class MessageCore extends ObjectModel
     /**
      * Return messages from Order ID
      *
-     * @param int  $idOrder Order ID
-     * @param bool $private return WITH private messages
+     * @param int          $idOrder Order ID
+     * @param bool         $private return WITH private messages
+     * @param Context|null $context
      *
      * @return array Messages
      *
@@ -132,13 +133,13 @@ class MessageCore extends ObjectModel
     /**
      * Return messages from Cart ID
      *
-     * @param int  $id_order Order ID
-     * @param bool $private  return WITH private messages
+     * @param int          $idCart
+     * @param bool         $private return WITH private messages
+     * @param Context|null $context
      *
      * @return array Messages
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @since    1.0.0
+     * @version  1.0.0 Initial version
      */
     public static function getMessagesByCartId($idCart, $private = false, Context $context = null)
     {
@@ -171,10 +172,11 @@ class MessageCore extends ObjectModel
      * Registered a message 'readed'
      *
      * @param int $idMessage  Message ID
-     * @param int $id_emplyee Employee ID
+     * @param int $idEmployee Employee ID
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @return bool
      */
     public static function markAsReaded($idMessage, $idEmployee)
     {
