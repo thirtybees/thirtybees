@@ -77,13 +77,13 @@ class FeatureCore extends ObjectModel
      */
     public static function getFeature($idLang, $idFeature)
     {
-        return Db::getInstance()->getRow(
-            '
-			SELECT *
-			FROM `'._DB_PREFIX_.'feature` f
-			LEFT JOIN `'._DB_PREFIX_.'feature_lang` fl
-				ON ( f.`id_feature` = fl.`id_feature` AND fl.`id_lang` = '.(int) $idLang.')
-			WHERE f.`id_feature` = '.(int) $idFeature
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('*')
+                ->from('feature', 'f')
+                ->leftJoin('feature_lang', 'fl', 'f.`id_feature` = fl.`id_feature`')
+                ->where('fl.`id_lang` = '.(int) $idLang)
+                ->where('f.`id_feature` = '.(int) $idFeature)
         );
     }
 
@@ -100,13 +100,14 @@ class FeatureCore extends ObjectModel
      */
     public static function getFeatures($idLang, $withShop = true)
     {
-        return Db::getInstance()->executeS(
-            '
-		SELECT DISTINCT f.id_feature, f.*, fl.*
-		FROM `'._DB_PREFIX_.'feature` f
-		'.($withShop ? Shop::addSqlAssociation('feature', 'f') : '').'
-		LEFT JOIN `'._DB_PREFIX_.'feature_lang` fl ON (f.`id_feature` = fl.`id_feature` AND fl.`id_lang` = '.(int) $idLang.')
-		ORDER BY f.`position` ASC'
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('DISTINCT f.`id_feature`, f.*, fl.*')
+                ->from('feature', 'f')
+                ->join($withShop ? Shop::addSqlAssociation('feature', 'f') : '')
+                ->leftJoin('feature_lang', 'fl', 'f.`id_feature` = fl.`id_feature`')
+                ->where('fl.`id_lang` = '.(int) $idLang)
+                ->orderBy('f.`position` ASC')
         );
     }
 
@@ -122,13 +123,12 @@ class FeatureCore extends ObjectModel
      */
     public static function nbFeatures($idLang)
     {
-        return Db::getInstance()->getValue(
-            '
-		SELECT COUNT(*) AS nb
-		FROM `'._DB_PREFIX_.'feature` ag
-		LEFT JOIN `'._DB_PREFIX_.'feature_lang` agl
-		ON (ag.`id_feature` = agl.`id_feature` AND `id_lang` = '.(int) $idLang.')
-		'
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('COUNT(*) as `nb`')
+                ->from('feature', 'ag')
+                ->leftJoin('feature_lang', 'agl', 'ag.`id_feature` = agl.`id_feature`')
+                ->where('`id_lang` = '.(int) $idLang)
         );
     }
 
@@ -145,13 +145,12 @@ class FeatureCore extends ObjectModel
      */
     public static function addFeatureImport($name, $position = false)
     {
-        $rq = Db::getInstance()->getRow(
-            '
-			SELECT `id_feature`
-			FROM '._DB_PREFIX_.'feature_lang
-			WHERE `name` = \''.pSQL($name).'\'
-			GROUP BY `id_feature`
-		'
+        $rq = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('`id_feature`')
+                ->from('feature_lang')
+                ->where('`name` = \''.pSQL($name).'\'')
+                ->groupBy('`id_feature`')
         );
         if (empty($rq)) {
             // Feature doesn't exist, create it
@@ -189,9 +188,11 @@ class FeatureCore extends ObjectModel
      */
     public static function getHigherPosition()
     {
-        $sql = 'SELECT MAX(`position`)
-				FROM `'._DB_PREFIX_.'feature`';
-        $position = DB::getInstance()->getValue($sql);
+        $position = DB::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('MAX(`position`)')
+                ->from('feature')
+        );
 
         return (is_numeric($position)) ? $position : -1;
     }
@@ -238,10 +239,13 @@ class FeatureCore extends ObjectModel
                 }
             }
 
-            $sql = 'SELECT `id_lang` FROM `'.pSQL(_DB_PREFIX_.$this->def['table']).'_lang`
-					WHERE `'.$this->def['primary'].'` = '.(int) $this->id.'
-						AND `id_lang` = '.(int) $field['id_lang'];
-            $mode = Db::getInstance()->getRow($sql);
+            $mode = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                (new DbQuery())
+                ->select('`id_lang`')
+                ->from(bqSQL(static::$definition['table']).'_lang')
+                ->where('`id_feature` = '.(int) $this->id)
+                ->where('`id_lang` = '.(int) $field['id_lang'])
+            );
             $result &= (!$mode) ? Db::getInstance()->insert($this->def['table'].'_lang', $field) :
                 Db::getInstance()->update(
                     $this->def['table'].'_lang',
@@ -286,19 +290,16 @@ class FeatureCore extends ObjectModel
             return false;
         }
 
-        return Db::getInstance()->executeS(
-            '
-			SELECT f.*, fl.*
-			FROM `'._DB_PREFIX_.'feature` f
-			LEFT JOIN `'._DB_PREFIX_.'feature_product` fp
-				ON f.`id_feature` = fp.`id_feature`
-			LEFT JOIN `'._DB_PREFIX_.'feature_lang` fl
-				ON f.`id_feature` = fl.`id_feature`
-			WHERE fp.`id_product` IN ('.$ids.')
-			AND `id_lang` = '.(int) $idLang.'
-			GROUP BY f.`id_feature`
-			ORDER BY f.`position` ASC
-		'
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('f.*, fl.*')
+                ->from('feature', 'f')
+                ->leftJoin('feature_product', 'fp', 'f.`id_feature` = fp.`id_feature`')
+                ->leftJoin('feature_lang', 'fl', 'f.`id_feature` = fl.`id_feature`')
+                ->where('fp.`id_product` IN ('.$ids.')')
+                ->where('`id_lang` = '.(int) $idLang)
+                ->groupBy('f.`id_feature`')
+                ->orderBy('f.`position` ASC')
         );
     }
 
@@ -359,17 +360,9 @@ class FeatureCore extends ObjectModel
 				`'._DB_PREFIX_.'feature_value`.`id_feature` = '.(int) $this->id.'
 		'
         );
-        Db::getInstance()->execute(
-            '
-			DELETE FROM `'._DB_PREFIX_.'feature_value`
-			WHERE `id_feature` = '.(int) $this->id
-        );
+        Db::getInstance()->delete('feature_value', '`id_feature` = '.(int) $this->id);
         /* Also delete related products */
-        Db::getInstance()->execute(
-            '
-			DELETE FROM `'._DB_PREFIX_.'feature_product`
-			WHERE `id_feature` = '.(int) $this->id
-        );
+        Db::getInstance()->delete('feature_product', '`id_feature` = '.(int) $this->id);
 
         $return = parent::delete();
         if ($return) {
@@ -413,14 +406,13 @@ class FeatureCore extends ObjectModel
      */
     public function updatePosition($way, $position, $idFeature = null)
     {
-        if (!$res = Db::getInstance()->executeS(
-            '
-			SELECT `position`, `id_feature`
-			FROM `'._DB_PREFIX_.'feature`
-			WHERE `id_feature` = '.(int) ($idFeature ? $idFeature : $this->id).'
-			ORDER BY `position` ASC'
-        )
-        ) {
+        if (!$res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('`position`, `id_feature`')
+                ->from('feature')
+                ->where('`id_feature` = '.(int) ($idFeature ? $idFeature : $this->id))
+                ->orderBy('`position` ASC')
+        )) {
             return false;
         }
 
@@ -436,20 +428,19 @@ class FeatureCore extends ObjectModel
 
         // < and > statements rather than BETWEEN operator
         // since BETWEEN is treated differently according to databases
-        return (Db::getInstance()->execute(
-                '
-			UPDATE `'._DB_PREFIX_.'feature`
-			SET `position`= `position` '.($way ? '- 1' : '+ 1').'
-			WHERE `position`
-			'.($way
-                    ? '> '.(int) $movedFeature['position'].' AND `position` <= '.(int) $position
-                    : '< '.(int) $movedFeature['position'].' AND `position` >= '.(int) $position)
-            )
-            && Db::getInstance()->execute(
-                '
-			UPDATE `'._DB_PREFIX_.'feature`
-			SET `position` = '.(int) $position.'
-			WHERE `id_feature`='.(int) $movedFeature['id_feature']
-            ));
+        return (Db::getInstance()->update(
+            'feature',
+            [
+                'position' => ['type' => 'sql', 'value' => '`position` '.($way ? '- 1' : '+ 1')],
+            ],
+            '`position`'.($way ? '> '.(int) $movedFeature['position'].' AND `position` <= '.(int) $position : '< '.(int) $movedFeature['position'].' AND `position` >= '.(int) $position)
+        )
+        && Db::getInstance()->update(
+            'feature',
+            [
+                'position' => (int) $position,
+            ],
+            '`id_feature`='.(int) $movedFeature['id_feature']
+        ));
     }
 }
