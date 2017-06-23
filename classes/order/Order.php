@@ -1147,8 +1147,6 @@ class OrderCore extends ObjectModel
     }
 
     /**
-     * @deprecated 2.0.0
-     *
      * @param $dateFrom
      * @param $dateTo
      * @param $idCustomer
@@ -1161,7 +1159,6 @@ class OrderCore extends ObjectModel
      */
     public static function getOrdersIdInvoiceByDate($dateFrom, $dateTo, $idCustomer = null, $type = null)
     {
-        Tools::displayAsDeprecated();
         $sql = 'SELECT `id_order`
 				FROM `'._DB_PREFIX_.'orders`
 				WHERE DATE_ADD(invoice_date, INTERVAL -1 DAY) <= \''.pSQL($dateTo).'\' AND invoice_date >= \''.pSQL($dateFrom).'\'
@@ -1180,8 +1177,6 @@ class OrderCore extends ObjectModel
     }
 
     /**
-     * @deprecated 2.0.0
-     *
      * @param int $idOrderState
      *
      * @return array
@@ -1191,7 +1186,6 @@ class OrderCore extends ObjectModel
      */
     public static function getOrderIdsByStatus($idOrderState)
     {
-        Tools::displayAsDeprecated();
         $sql = 'SELECT id_order
 				FROM '._DB_PREFIX_.'orders o
 				WHERE o.`current_state` = '.(int) $idOrderState.'
