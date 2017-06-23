@@ -134,7 +134,18 @@ class AdminStockManagementControllerCore extends AdminController
             $this->_where = 'AND a.id_product = '.$idProduct;
             $this->_group = 'GROUP BY a.id_product_attribute';
 
-            static::$currentIndex = static::$currentIndex.'&id_product='.(int) $idProduct;
+            $this->fields_list['name'] = [
+                'title'   => $this->l('Name'),
+                'orderby' => false,
+                'filter'  => false,
+                'search'  => false,
+            ];
+
+            if (Tools::getIsset('id_product_attribute')) {
+                static::$currentIndex = static::$currentIndex.'&id_product='.(int) $idProduct;
+            } else {
+                static::$currentIndex = static::$currentIndex.'&id_product='.(int) $idProduct.'&detailsproduct';
+            }
             $this->processFilter();
 
             return parent::renderList();
@@ -391,6 +402,13 @@ class AdminStockManagementControllerCore extends AdminController
 
         if (count($this->errors)) {
             return false;
+        }
+
+        if (Tools::isSubmit('submitFilter') && Tools::getIsset('detailsproduct')) {
+            $idProduct = (int) Tools::getValue('id_product', 0);
+            $token = Tools::getValue('token') ? Tools::getValue('token') : $this->token;
+            $redirect = static::$currentIndex.'&id_product='.$idProduct.'&detailsproduct&token='.$token;
+            Tools::redirectAdmin($redirect);
         }
 
         // Global checks when add / remove / transfer product
@@ -1476,12 +1494,14 @@ class AdminStockManagementControllerCore extends AdminController
             static::$cache_lang['RemoveStock'] = $this->l('Remove stock');
         }
 
-        $this->context->smarty->assign(
-            [
-                'href'   => static::$currentIndex.'&'.$this->identifier.'='.$id.'&token='.($token != null ? $token : $this->token),
-                'action' => static::$cache_lang['RemoveStock'],
-            ]
-        );
+        if (Tools::getIsset('detailsproduct')) {
+            static::$currentIndex = str_replace('&detailsproduct', '', static::$currentIndex);
+        }
+
+        $this->context->smarty->assign([
+            'href'   => static::$currentIndex.'&'.$this->identifier.'='.$id.'&token='.($token != null ? $token : $this->token),
+            'action' => static::$cache_lang['RemoveStock'],
+        ]);
 
         return $this->context->smarty->fetch('helpers/list/list_action_removestock.tpl');
     }
