@@ -541,6 +541,10 @@ class LanguageCore extends ObjectModel
      */
     public static function checkAndAddLanguage($isoCode, $langPack = false, $onlyAdd = false, $paramsLang = null)
     {
+        if (!Validate::isLanguageIsoCode($isoCode)) {
+            return false;
+        }
+
         if (Language::getIdByIso($isoCode)) {
             return true;
         }
