@@ -466,6 +466,7 @@ class LanguageCore extends ObjectModel
             return $errors;
         }
 
+        $success = null;
         if (isset($langPack->name)) {
             try {
                 $guzzle->get("{$iso}.gzip", ['sink' => $file]);
@@ -480,6 +481,7 @@ class LanguageCore extends ObjectModel
                 }
             }
         }
+
         if (!file_exists($file)) {
             $errors[] = Tools::displayError('No translations pack available for your version.');
         } elseif ($install) {
@@ -504,6 +506,10 @@ class LanguageCore extends ObjectModel
             Language::loadLanguages();
             AdminTranslationsController::checkAndAddMailsFiles((string) $iso, $fileList);
             AdminTranslationsController::addNewTabs((string) $iso, $fileList);
+        }
+
+        if ($success) {
+            @unlink($file);
         }
 
         return count($errors) ? $errors : true;
