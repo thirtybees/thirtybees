@@ -458,7 +458,15 @@ class LanguageCore extends ObjectModel
             $errors[] = Tools::displayError('Language pack cannot be downloaded from thirtybees.com.');
         } elseif (!$langPack = json_decode($langPackLink)) {
             $errors[] = Tools::displayError('Error occurred when language was checked according to your thirty bees version.');
-        } elseif (isset($langPack->name)) {
+        } elseif (!static::checkAndAddLanguage((string) $iso, $langPack, false, $params)) {
+            $errors[] = sprintf(Tools::displayError('An error occurred while creating the language: %s'), (string) $iso);
+        }
+
+        if (!Language::getIdByIso($iso, true)) {
+            return $errors;
+        }
+
+        if (isset($langPack->name)) {
             try {
                 $guzzle->get("{$iso}.gzip", ['sink' => $file]);
                 $success = true;
@@ -492,14 +500,10 @@ class LanguageCore extends ObjectModel
             }
             // Clear smarty modules cache
             Tools::clearCache();
-            if (!static::checkAndAddLanguage((string) $iso, $langPack, false, $params)) {
-                $errors[] = sprintf(Tools::displayError('An error occurred while creating the language: %s'), (string) $iso);
-            } else {
-                // Reset cache
-                Language::loadLanguages();
-                AdminTranslationsController::checkAndAddMailsFiles((string) $iso, $fileList);
-                AdminTranslationsController::addNewTabs((string) $iso, $fileList);
-            }
+            // Reset cache
+            Language::loadLanguages();
+            AdminTranslationsController::checkAndAddMailsFiles((string) $iso, $fileList);
+            AdminTranslationsController::addNewTabs((string) $iso, $fileList);
         }
 
         return count($errors) ? $errors : true;
