@@ -741,7 +741,12 @@ class AdminPerformanceControllerCore extends AdminController
                         [
                             'id'    => 'CacheMemcache',
                             'value' => 'CacheMemcache',
-                            'label' => $this->l('Memcached via PHP::Memcache').(extension_loaded('memcache') ? '' : $warningMemcache),
+                            'label' => $this->l('Memcache via PHP::Memcache').(extension_loaded('memcache') ? '' : $warningMemcache),
+                        ],
+                        [
+                            'id'    => 'CacheMemcached',
+                            'value' => 'CacheMemcached',
+                            'label' => $this->l('Memcached via PHP::Memcached').(extension_loaded('memcached') ? '' : $warningMemcached),
                         ],
                         [
                             'id'    => 'CacheApc',
