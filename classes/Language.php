@@ -545,7 +545,7 @@ class LanguageCore extends ObjectModel
             return false;
         }
 
-        if (Language::getIdByIso($isoCode)) {
+        if (Language::getIdByIso($isoCode, true)) {
             return true;
         }
 
