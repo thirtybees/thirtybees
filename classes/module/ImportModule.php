@@ -33,6 +33,13 @@
  * Class ImportModuleCore
  *
  * @since 1.0.0
+ *
+ * @deprecated 1.0.2 Even though this class still exists in thirty bees, it cannot be used in the
+ *             same way as on PrestaShop 1.6, because thirty bees does not support the older
+ *             mysql/mysqli ways of connecting with the database. Everything is modernized to
+ *             support only the PDO mysql PHP extension. If your module does extend this class
+ *             make sure you refactor everything to directly use the `Db` class instead of the
+ *             methods of this class.
  */
 abstract class ImportModuleCore extends Module
 {
@@ -57,75 +64,52 @@ abstract class ImportModuleCore extends Module
      */
     public function __destruct()
     {
-        if ($this->_link) {
-            @mysql_close($this->_link);
-        }
     }
 
     /**
-     * @return null|resource
+     * @return null|PDO
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @since 1.0.2 Return a PDO instead of a MySQL resource, because thirty bees only support MySQL PDO
      */
     protected function initDatabaseConnection()
     {
-        if ($this->_link != null) {
-            return $this->_link;
-        }
-        if ($this->_link = mysql_connect($this->server, $this->user, $this->passwd, true)) {
-            if (!mysql_select_db($this->database, $this->_link)) {
-                die(Tools::displayError('The database selection cannot be made.'));
-            }
-            if (!mysql_query('SET NAMES \'utf8\'', $this->_link)) {
-                die(Tools::displayError('Fatal error: no UTF-8 support. Please check your server configuration.'));
-            }
-        } else {
-            die(Tools::displayError('Link to database cannot be established.'));
-        }
-
-        return $this->_link;
+        return Db::getInstance()->getLink();
     }
 
     /**
-     * @param $query
+     * @param string|DbQuery $query
      *
      * @return array
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
-    public function ExecuteS($query)
+    public function executeS($query)
     {
-        $this->initDatabaseConnection();
-        $result = mysql_query($query, $this->_link);
-        $resultArray = [];
-        if ($result !== true) {
-            while ($row = mysql_fetch_assoc($result)) {
-                $resultArray[] = $row;
-            }
-        }
-
-        return $resultArray;
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
     }
 
     /**
-     * @param $query
+     * @param string|DbQuery $query
      *
-     * @return resource
+     * @return bool
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @since 1.0.2 Just return a bool instead of a mysql resource, because thirty bees only
+     *        supports MySQL PDO.
      */
-    public function Execute($query)
+    public function execute($query)
     {
-        $this->initDatabaseConnection();
-
-        return mysql_query($query, $this->_link);
+        return (bool) Db::getInstance()->execute($query);
     }
 
     /**
-     * @param $query
+     * @param string|DbQuery $query
      *
      * @return int|mixed
      *

@@ -82,7 +82,7 @@ class HelperTreeShopsCore extends TreeCore
     }
 
     /**
-     * @param $value
+     * @param int $value
      *
      * @return $this
      *
@@ -97,7 +97,7 @@ class HelperTreeShopsCore extends TreeCore
     }
 
     /**
-     * @return mixed
+     * @return int
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -142,7 +142,7 @@ class HelperTreeShopsCore extends TreeCore
     }
 
     /**
-     * @param $value
+     * @param int[] $value
      *
      * @return $this
      * @throws PrestaShopException
@@ -157,11 +157,12 @@ class HelperTreeShopsCore extends TreeCore
         }
 
         $this->_selected_shops = $value;
+
         return $this;
     }
 
     /**
-     * @return array
+     * @return int[]
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -176,7 +177,7 @@ class HelperTreeShopsCore extends TreeCore
     }
 
     /**
-     * @return mixed
+     * @return string
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version

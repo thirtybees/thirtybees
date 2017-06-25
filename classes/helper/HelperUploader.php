@@ -60,7 +60,7 @@ class HelperUploaderCore extends Uploader
     // @codingStandardsIgnoreEnd
 
     /**
-     * @param $value
+     * @param Context $value
      *
      * @return $this
      *
@@ -70,6 +70,7 @@ class HelperUploaderCore extends Uploader
     public function setContext($value)
     {
         $this->_context = $value;
+
         return $this;
     }
 
@@ -89,7 +90,7 @@ class HelperUploaderCore extends Uploader
     }
 
     /**
-     * @param $value
+     * @param string $value
      *
      * @return $this
      *
@@ -99,11 +100,12 @@ class HelperUploaderCore extends Uploader
     public function setDropZone($value)
     {
         $this->_drop_zone = $value;
+
         return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -118,7 +120,7 @@ class HelperUploaderCore extends Uploader
     }
 
     /**
-     * @param $value
+     * @param int $value
      *
      * @return $this
      *
@@ -127,7 +129,8 @@ class HelperUploaderCore extends Uploader
      */
     public function setId($value)
     {
-        $this->_id = (string)$value;
+        $this->_id = (string) $value;
+
         return $this;
     }
 
@@ -144,7 +147,7 @@ class HelperUploaderCore extends Uploader
     }
 
     /**
-     * @param $value
+     * @param string[] $value
      *
      * @return $this
      */
@@ -156,7 +159,7 @@ class HelperUploaderCore extends Uploader
     }
 
     /**
-     * @return array
+     * @return string[]
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -171,7 +174,7 @@ class HelperUploaderCore extends Uploader
     }
 
     /**
-     * @param $value
+     * @param int $value
      *
      * @return $this
      *
@@ -186,7 +189,7 @@ class HelperUploaderCore extends Uploader
     }
 
     /**
-     * @return mixed
+     * @return int
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -197,7 +200,7 @@ class HelperUploaderCore extends Uploader
     }
 
     /**
-     * @param $value
+     * @param bool $value
      *
      * @return $this
      *
@@ -212,7 +215,7 @@ class HelperUploaderCore extends Uploader
     }
 
     /**
-     * @param $value
+     * @param string $value
      *
      * @return $this
      *
@@ -227,7 +230,7 @@ class HelperUploaderCore extends Uploader
     }
 
     /**
-     * @return mixed
+     * @return string
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -238,7 +241,7 @@ class HelperUploaderCore extends Uploader
     }
 
     /**
-     * @param $value
+     * @param int $value
      *
      * @return $this
      *
@@ -254,7 +257,7 @@ class HelperUploaderCore extends Uploader
     }
 
     /**
-     * @return mixed
+     * @return int
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -269,7 +272,7 @@ class HelperUploaderCore extends Uploader
     }
 
     /**
-     * @param $value
+     * @param string $value
      *
      * @return $this
      *
@@ -284,7 +287,7 @@ class HelperUploaderCore extends Uploader
     }
 
     /**
-     * @return mixed
+     * @return string
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -299,7 +302,7 @@ class HelperUploaderCore extends Uploader
     }
 
     /**
-     * @param $value
+     * @param string $value
      *
      * @return $this
      *
@@ -329,7 +332,7 @@ class HelperUploaderCore extends Uploader
     }
 
     /**
-     * @param $template
+     * @param string $template
      *
      * @return string
      *
@@ -343,29 +346,22 @@ class HelperUploaderCore extends Uploader
         }
 
         if ($this->getContext()->controller instanceof ModuleAdminController &&
-            file_exists($this->_normalizeDirectory($this->getContext()->controller->getTemplatePath()).$this->getTemplateDirectory().$template)) {
-            return $this->_normalizeDirectory($this->getContext()->controller->getTemplatePath())
-                .$this->getTemplateDirectory().$template;
+            file_exists($this->_normalizeDirectory($this->getContext()->controller->getTemplatePath($template)).$this->getTemplateDirectory().$template)) {
+            return $this->_normalizeDirectory($this->getContext()->controller->getTemplatePath($template)).$this->getTemplateDirectory().$template;
         } elseif ($this->getContext()->controller instanceof AdminController && isset($controllerName)
-            && file_exists($this->_normalizeDirectory($this->getContext()->smarty->getTemplateDir(0)).'controllers'
-                .DIRECTORY_SEPARATOR.$controllerName.DIRECTORY_SEPARATOR.$this->getTemplateDirectory().$template)) {
-            return $this->_normalizeDirectory($this->getContext()->smarty->getTemplateDir(0)).'controllers'
-                .DIRECTORY_SEPARATOR.$controllerName.DIRECTORY_SEPARATOR.$this->getTemplateDirectory().$template;
-        } elseif (file_exists($this->_normalizeDirectory($this->getContext()->smarty->getTemplateDir(1))
-                .$this->getTemplateDirectory().$template)) {
-            return $this->_normalizeDirectory($this->getContext()->smarty->getTemplateDir(1))
-                    .$this->getTemplateDirectory().$template;
-        } elseif (file_exists($this->_normalizeDirectory($this->getContext()->smarty->getTemplateDir(0))
-                .$this->getTemplateDirectory().$template)) {
-            return $this->_normalizeDirectory($this->getContext()->smarty->getTemplateDir(0))
-                .$this->getTemplateDirectory().$template;
+            && file_exists($this->_normalizeDirectory($this->getContext()->smarty->getTemplateDir(0)).'controllers'.DIRECTORY_SEPARATOR.$controllerName.DIRECTORY_SEPARATOR.$this->getTemplateDirectory().$template)) {
+            return $this->_normalizeDirectory($this->getContext()->smarty->getTemplateDir(0)).'controllers'.DIRECTORY_SEPARATOR.$controllerName.DIRECTORY_SEPARATOR.$this->getTemplateDirectory().$template;
+        } elseif (file_exists($this->_normalizeDirectory($this->getContext()->smarty->getTemplateDir(1)).$this->getTemplateDirectory().$template)) {
+            return $this->_normalizeDirectory($this->getContext()->smarty->getTemplateDir(1)).$this->getTemplateDirectory().$template;
+        } elseif (file_exists($this->_normalizeDirectory($this->getContext()->smarty->getTemplateDir(0)).$this->getTemplateDirectory().$template)) {
+            return $this->_normalizeDirectory($this->getContext()->smarty->getTemplateDir(0)).$this->getTemplateDirectory().$template;
         } else {
             return $this->getTemplateDirectory().$template;
         }
     }
 
     /**
-     * @param $value
+     * @param string $value
      *
      * @return $this
      *
@@ -391,7 +387,7 @@ class HelperUploaderCore extends Uploader
     }
 
     /**
-     * @param $value
+     * @param string $value
      *
      * @return $this
      *
@@ -406,7 +402,7 @@ class HelperUploaderCore extends Uploader
     }
 
     /**
-     * @return mixed
+     * @return string
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -417,7 +413,7 @@ class HelperUploaderCore extends Uploader
     }
 
     /**
-     * @param $value
+     * @param bool $value
      *
      * @return $this
      *
@@ -455,19 +451,14 @@ class HelperUploaderCore extends Uploader
         $boTheme = ((Validate::isLoadedObject($this->getContext()->employee)
             && $this->getContext()->employee->bo_theme) ? $this->getContext()->employee->bo_theme : 'default');
 
-        if (!file_exists(_PS_BO_ALL_THEMES_DIR_.$boTheme.DIRECTORY_SEPARATOR
-            .'template')) {
+        if (!file_exists(_PS_BO_ALL_THEMES_DIR_.$boTheme.DIRECTORY_SEPARATOR.'template')) {
             $boTheme = 'default';
         }
 
-        $this->getContext()->controller->addJs(__PS_BASE_URI__.$adminWebpath
-            .'/themes/'.$boTheme.'/js/jquery.iframe-transport.js');
-        $this->getContext()->controller->addJs(__PS_BASE_URI__.$adminWebpath
-            .'/themes/'.$boTheme.'/js/jquery.fileupload.js');
-        $this->getContext()->controller->addJs(__PS_BASE_URI__.$adminWebpath
-            .'/themes/'.$boTheme.'/js/jquery.fileupload-process.js');
-        $this->getContext()->controller->addJs(__PS_BASE_URI__.$adminWebpath
-            .'/themes/'.$boTheme.'/js/jquery.fileupload-validate.js');
+        $this->getContext()->controller->addJs(__PS_BASE_URI__.$adminWebpath.'/themes/'.$boTheme.'/js/jquery.iframe-transport.js');
+        $this->getContext()->controller->addJs(__PS_BASE_URI__.$adminWebpath.'/themes/'.$boTheme.'/js/jquery.fileupload.js');
+        $this->getContext()->controller->addJs(__PS_BASE_URI__.$adminWebpath.'/themes/'.$boTheme.'/js/jquery.fileupload-process.js');
+        $this->getContext()->controller->addJs(__PS_BASE_URI__.$adminWebpath.'/themes/'.$boTheme.'/js/jquery.fileupload-validate.js');
         $this->getContext()->controller->addJs(__PS_BASE_URI__.'js/vendor/spin.js');
         $this->getContext()->controller->addJs(__PS_BASE_URI__.'js/vendor/ladda.js');
 
@@ -476,7 +467,8 @@ class HelperUploaderCore extends Uploader
         }
 
         $template = $this->getContext()->smarty->createTemplate(
-            $this->getTemplateFile($this->getTemplate()), $this->getContext()->smarty
+            $this->getTemplateFile($this->getTemplate()),
+            $this->getContext()->smarty
         );
 
         $template->assign(
