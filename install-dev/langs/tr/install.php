@@ -7,9 +7,9 @@ return [
             'documentation_upgrade' => 'http://docs.thirtybees.com/display/PS16/Updating+PrestaShop',
             'forum'                 => 'http://www.thirtybees.com/forums/',
             'blog'                  => 'http://www.thirtybees.com/blog/',
-            'support'               => 'https://www.thirtybees.com/en/support',
+            'support'               => 'https://www.thirtybees.comsupport',
             'tutorial'              => 'https://www.youtube.com/watch?v=psz4aIPZZuk',
-            'tailored_help'         => 'http://addons.thirtybees.com/en/388-support',
+            'tailored_help'         => 'https://thirtybees.com/partners/partner-agencies/',
         ],
     'translations' =>
         [
@@ -192,7 +192,7 @@ return [
             'Google+'                                                                                                                                                                                                                                                                                                               => 'Google+',
             'Pinterest'                                                                                                                                                                                                                                                                                                             => 'Pinterest',
             'LinkedIn'                                                                                                                                                                                                                                                                                                              => 'LinkedIn',
-            'Check out PrestaShop Addons to add the little something extra to your store!'                                                                                                                                                                                                                                          => 'PrestaShop eklentilerinde mağazanıza ekstra bir şeyler eklemek için ödeme yapınız!',
+            'Check out thirty bees modules to add the little something extra to your store!'                                                                                                                                                                                                                                          => 'PrestaShop eklentilerinde mağazanıza ekstra bir şeyler eklemek için ödeme yapınız!',
             'We are currently checking PrestaShop compatibility with your system environment'                                                                                                                                                                                                                                       => 'Şu anda sistem ortam ile PrestaShop uyumluluğu kontrol edilir',
             'If you have any questions, please visit our <a href="%1$s" target="_blank">documentation</a> and <a href="%2$s" target="_blank">community forum</a>.'                                                                                                                                                                  => 'Herhangi bir sorunuz varsa, lütfen bizim <a href="%1$s" target="_blank">Dökümanlar</a> and <a href="%2$s" target="_blank">Topluluk Forumu</a>.',
             'PrestaShop compatibility with your system environment has been verified!'                                                                                                                                                                                                                                              => 'Sistem ortamı ile PrestaShop uyumluluğu doğrulandı!',
