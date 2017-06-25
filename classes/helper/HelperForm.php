@@ -37,27 +37,28 @@
 class HelperFormCore extends Helper
 {
     // @codingStandardsIgnoreStart
+    /** @var int $id */
     public $id;
+    /** @var bool $first_call */
     public $first_call = true;
-
     /** @var array of forms fields */
     protected $fields_form = [];
-
     /** @var array values of form fields */
     public $fields_value = [];
+    /** @var string $name_controller */
     public $name_controller = '';
-
     /** @var string if not null, a title will be added on that list */
     public $title = null;
-
     /** @var string Used to override default 'submitAdd' parameter in form action attribute */
     public $submit_action;
-
     public $token;
+    /** @var null|array $languages  */
     public $languages = null;
     public $default_form_language = null;
     public $allow_employee_form_lang = null;
+    /** @var bool $show_cancel_button */
     public $show_cancel_button = false;
+    /** @var string $back_url */
     public $back_url = '#';
     // @codingStandardsIgnoreEnd
 
@@ -75,7 +76,7 @@ class HelperFormCore extends Helper
     }
 
     /**
-     * @param $fieldsForm
+     * @param array $fieldsForm
      *
      * @return string
      *
@@ -108,7 +109,6 @@ class HelperFormCore extends Helper
         $date = true;
         $tinymce = true;
         $textareaAutosize = true;
-        $file = true;
         foreach ($this->fields_form as $fieldsetKey => &$fieldset) {
             if (isset($fieldset['form']['tabs'])) {
                 $tabs[] = $fieldset['form']['tabs'];
@@ -316,6 +316,8 @@ class HelperFormCore extends Helper
     /**
      * Return true if there are required fields
      *
+     * @return bool
+     *
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
@@ -337,24 +339,27 @@ class HelperFormCore extends Helper
     /**
      * Render an area to determinate shop association
      *
-     * @return string
+     * @param bool $disableShared
+     * @param null $templateDirectory
      *
-     * @since 1.0.0
+     * @return string
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function renderAssoShop($disableShared = false, $templateDirectory = null)
     {
         if (!Shop::isFeatureActive()) {
-            return;
+            return '';
         }
 
         $assos = [];
         if ((int) $this->id) {
-            $sql = 'SELECT `id_shop`, `'.bqSQL($this->identifier).'`
-					FROM `'._DB_PREFIX_.bqSQL($this->table).'_shop`
-					WHERE `'.bqSQL($this->identifier).'` = '.(int) $this->id;
-
-            foreach (Db::getInstance()->executeS($sql) as $row) {
+            foreach (Db::getInstance()->executeS(
+                (new DbQuery())
+                    ->select('`id_shop`, `'.bqSQL($this->identifier).'`')
+                    ->from(_DB_PREFIX_.bqSQL($this->table).'_shop')
+                    ->where('`'.bqSQL($this->identifier).'` = '.(int) $this->id)
+            ) as $row) {
                 $assos[$row['id_shop']] = $row['id_shop'];
             }
         } else {
