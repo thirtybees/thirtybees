@@ -39,6 +39,7 @@ Native modules will be refactored to remove legacy code. Code that supports prev
 * MailChimp (including e-commerce features)
 * Stripe (Credit cards, Apple Pay, AliPay, Bitcoins)
 * thirty bees blog module
+* tawkto
 
 ### Updated roadmap
 You can find the latest version of the roadmap here: https://thirtybees.com/roadmap
