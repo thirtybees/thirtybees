@@ -37,7 +37,9 @@
 class HelperKpiRowCore extends Helper
 {
     // @codingStandardsIgnoreStart
+    /** @var string $base_folder */
     public $base_folder = 'helpers/kpi/';
+    /** @var string $base_tpl */
     public $base_tpl = 'row.tpl';
     // @codingStandardsIgnoreEnd
 
