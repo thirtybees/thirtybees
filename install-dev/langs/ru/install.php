@@ -7,7 +7,7 @@ return [
         'blog'                  => 'http://www.thirtybees.com/blog/',
         'support'               => 'https://www.thirtybees.com/ru/support',
         'tutorial'              => 'https://www.youtube.com/watch?v=psz4aIPZZuk',
-        'tailored_help'         => 'http://addons.thirtybees.com/en/388-support',
+        'tailored_help'         => 'https://thirtybees.com/partners/partner-agencies/',
     ],
     'translations' => [
         'An SQL error occurred for entity <i>%1$s</i>: <i>%2$s</i>'                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         => 'Произошла ошибка SQL для записи <i>%1$s</i>: <i>%2$s</i>',

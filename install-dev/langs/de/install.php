@@ -9,7 +9,7 @@ return [
             'blog'                  => 'http://www.thirtybees.com/blog/',
             'support'               => 'https://www.thirtybees.com/de/support',
             'tutorial'              => 'https://www.youtube.com/watch?v=psz4aIPZZuk',
-            'tailored_help'         => 'http://addons.thirtybees.com/en/388-support',
+            'tailored_help'         => 'https://thirtybees.com/partners/partner-agencies/',
         ],
     'translations' =>
         [

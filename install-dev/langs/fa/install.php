@@ -5,9 +5,9 @@ return [
         'documentation_upgrade' => 'http://docs.thirtybees.com/display/PS16/Updating+PrestaShop',
         'forum'                 => 'http://www.thirtybees.com/forums/forum/164-انجمن-فارسی-persian/',
         'blog'                  => 'http://www.thirtybees.com/blog/',
-        'support'               => 'https://www.thirtybees.com/en/support',
+        'support'               => 'https://www.thirtybees.comsupport',
         'tutorial'              => 'https://www.youtube.com/watch?v=psz4aIPZZuk',
-        'tailored_help'         => 'http://addons.thirtybees.com/en/388-support',
+        'tailored_help'         => 'https://thirtybees.com/partners/partner-agencies/',
     ],
     'translations' => [
         'An SQL error occurred for entity <i>%1$s</i>: <i>%2$s</i>'                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         => 'یک خطای SQL رخ داده است برای موجودی <i>%1$s</i> : <i>%2$s</i>',

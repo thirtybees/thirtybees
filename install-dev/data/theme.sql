@@ -53,7 +53,7 @@ UPDATE `PREFIX_configuration` SET value = 'CAT3,CAT8,CAT5,LNK1' WHERE name = 'MO
 UPDATE `PREFIX_configuration` SET value = '0' WHERE name = 'MOD_BLOCKTOPMENU_SEARCH';
 UPDATE `PREFIX_configuration` SET value = 'https://www.facebook.com/thirtybees/' WHERE name = 'BLOCKSOCIAL_FACEBOOK';
 UPDATE `PREFIX_configuration` SET value = 'https://twitter.com/thethirtybees' WHERE name = 'BLOCKSOCIAL_TWITTER';
-UPDATE `PREFIX_configuration` SET value = 'http://www.thirtybees.com/blog/en/' WHERE name = 'BLOCKSOCIAL_RSS';
+UPDATE `PREFIX_configuration` SET value = 'http://www.thirtybees.com/blog' WHERE name = 'BLOCKSOCIAL_RSS';
 UPDATE `PREFIX_configuration` SET value = 'https://plus.google.com/+thirtybees' WHERE name = 'BLOCKSOCIAL_GOOGLE_PLUS';
 UPDATE `PREFIX_configuration` SET value = 'My Company' WHERE name = 'BLOCKCONTACTINFOS_COMPANY';
 UPDATE `PREFIX_configuration` SET value = '42 Bee Lane\n12345 The Hive\nThe Netherlands' WHERE name = 'BLOCKCONTACTINFOS_ADDRESS';
