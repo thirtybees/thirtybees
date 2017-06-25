@@ -31,8 +31,7 @@
     <meta_title>About us</meta_title>
     <meta_description>Learn more about us</meta_description>
     <meta_keywords>about us, informations</meta_keywords>
-    <content>&lt;h1 class=&quot;page-heading bottom-indent&quot;&gt;About us&lt;/h1&gt;
-      &lt;div class=&quot;row&quot;&gt;
+    <content>&lt;div class=&quot;row&quot;&gt;
       &lt;div class=&quot;col-xs-12 col-sm-4&quot;&gt;
       &lt;div class=&quot;cms-block&quot;&gt;
       &lt;h3 class=&quot;page-subheading&quot;&gt;Our company&lt;/h3&gt;
