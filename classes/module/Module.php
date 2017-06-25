@@ -28,6 +28,8 @@
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
+use vierbergenlars\SemVer\expression;
+use vierbergenlars\SemVer\version;
 
 /**
  * Class ModuleCore
@@ -1526,12 +1528,12 @@ abstract class ModuleCore
     public function checkCompliancy()
     {
         if (isset($this->tb_versions_compliancy) && $this->tb_versions_compliancy) {
-            $range = new vierbergenlars\SemVer\Expression($this->tb_versions_compliancy);
+            $range = new Expression($this->tb_versions_compliancy);
         }
 
         if (version_compare(_PS_VERSION_, $this->ps_versions_compliancy['min'], '<') || version_compare(_PS_VERSION_, $this->ps_versions_compliancy['max'], '>')) {
             return false;
-        } elseif (isset($range) && !$range->satisfiedBy(new vierbergenlars\SemVer\Version(_TB_VERSION_))) {
+        } elseif (isset($range) && !$range->satisfiedBy(new Version(_TB_VERSION_))) {
             return false;
         } else {
             return true;
