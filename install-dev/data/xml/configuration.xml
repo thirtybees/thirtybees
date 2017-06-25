@@ -875,7 +875,7 @@
       <value>info/{rewrite}</value>
     </configuration>
     <configuration id="PS_SHOW_CONDITION'" name="PS_SHOW_CONDITION'">
-      <value>0</value>
+      <value>1</value>
     </configuration>
   </entities>
 </entity_configuration>
