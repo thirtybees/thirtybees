@@ -404,8 +404,8 @@ class ManufacturerCore extends ObjectModel
         }
 
         $sql->where('p.`id_manufacturer` = '.(int) $idManufacturer);
-        $sql->where($active ? ' AND product_shop.`active` = 1' : '');
-        $sql->where($front ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '');
+        $sql->where($active ? '`product_shop`.`active` = 1' : '');
+        $sql->where($front ? '`product_shop`.`visibility` IN ("both", "catalog")' : '');
         $sql->groupBy('p.`id_product`');
         $sql->orderBy($aliasWithDot.'`'.bqSQL($orderBy).'` '.pSQL($orderWay));
         $sql->limit((int) $n, ((int) $p - 1) * (int) $n);
