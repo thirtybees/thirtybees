@@ -59,7 +59,7 @@ abstract class AbstractLoggerCore
      */
     public function __construct($level = self::INFO)
     {
-        if (array_key_exists((int)$level, $this->level_value)) {
+        if (array_key_exists((int) $level, $this->level_value)) {
             $this->level = $level;
         } else {
             $this->level = static::INFO;
@@ -67,21 +67,10 @@ abstract class AbstractLoggerCore
     }
 
     /**
-    * Log the message
-    *
-    * @param string message
-    * @param level
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
-    */
-    abstract protected function logMessage($message, $level);
-
-    /**
      * Check the level and log the message if needed
      *
-     * @param string message
-     * @param level
+     * @param string $message
+     * @param int    $level
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -96,7 +85,7 @@ abstract class AbstractLoggerCore
     /**
     * Log a debug message
     *
-    * @param string message
+    * @param string $message
     *
     * @since 1.0.0
     * @version 1.0.0 Initial version
@@ -109,7 +98,7 @@ abstract class AbstractLoggerCore
     /**
     * Log an info message
     *
-    * @param string message
+    * @param string $message
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -122,7 +111,7 @@ abstract class AbstractLoggerCore
     /**
     * Log a warning message
     *
-    * @param string message
+    * @param string $message
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -135,7 +124,7 @@ abstract class AbstractLoggerCore
     /**
     * Log an error message
     *
-    * @param string message
+    * @param string $message
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -144,4 +133,15 @@ abstract class AbstractLoggerCore
     {
         $this->log($message, static::ERROR);
     }
+
+    /**
+     * Log the message
+     *
+     * @param string message
+     * @param level
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
+    abstract protected function logMessage($message, $level);
 }
