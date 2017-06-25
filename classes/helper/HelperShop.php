@@ -63,10 +63,10 @@ class HelperShopCore extends Helper
         } else {
             $currentShopValue = 's-'.Shop::getContextShopID();
 
-            foreach ($tree as $group_id => $groupData) {
-                foreach ($groupData['shops'] as $shopId => $shop_data) {
+            foreach ($tree as $groupId => $groupData) {
+                foreach ($groupData['shops'] as $shopId => $shopData) {
                     if ($shopId == Shop::getContextShopID()) {
-                        $currentShopName = $shop_data['name'];
+                        $currentShopName = $shopData['name'];
                         break;
                     }
                 }

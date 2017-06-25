@@ -29,6 +29,11 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+/**
+ * Class HelperViewCore
+ *
+ * @since 1.0.0
+ */
 class HelperViewCore extends Helper
 {
     public $id;
