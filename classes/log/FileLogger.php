@@ -39,25 +39,6 @@ class FileLoggerCore extends AbstractLogger
     protected $filename = '';
 
     /**
-    * Write the message in the log file
-    *
-    * @param string message
-    * @param level
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
-    */
-    protected function logMessage($message, $level)
-    {
-        if (!is_string($message)) {
-            $message = print_r($message, true);
-        }
-        $formatted_message = '*'.$this->level_value[$level].'* '."\t".date('Y/m/d - H:i:s').': '.$message."\r\n";
-
-        return (bool) file_put_contents($this->getFilename(), $formatted_message, FILE_APPEND);
-    }
-
-    /**
     * Check if the specified filename is writable and set the filename
     *
     * @param string $filename
@@ -75,14 +56,13 @@ class FileLoggerCore extends AbstractLogger
     }
 
     /**
-    * Log the message
-    *
-    * @param string message
-    * @param level
+     * Log the message
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
-    */
+     * @return string
+     *
+     * @since    1.0.0
+     * @version  1.0.0 Initial version
+     */
     public function getFilename()
     {
         if (empty($this->filename)) {
@@ -90,5 +70,26 @@ class FileLoggerCore extends AbstractLogger
         }
 
         return $this->filename;
+    }
+
+    /**
+     * Write the message in the log file
+     *
+     * @param string $message
+     * @param int    $level
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     * @return bool
+     */
+    protected function logMessage($message, $level)
+    {
+        if (!is_string($message)) {
+            $message = print_r($message, true);
+        }
+
+        $formattedMessage = '*'.$this->level_value[$level].'* '."\t".date('Y/m/d - H:i:s').': '.$message."\r\n";
+
+        return (bool) file_put_contents($this->getFilename(), $formattedMessage, FILE_APPEND);
     }
 }
