@@ -28,8 +28,6 @@
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
-use vierbergenlars\SemVer\expression as Expression;
-use vierbergenlars\SemVer\version as Version;
 
 /**
  * Class ModuleCore
@@ -206,16 +204,12 @@ abstract class ModuleCore
 
                 static::$modules_cache = [];
                 // Join clause is done to check if the module is activated in current shop context
-                $result = Db::getInstance()->executeS(
-                    '
-				SELECT m.`id_module`, m.`name`, (
-					SELECT id_module
-					FROM `'._DB_PREFIX_.'module_shop` ms
-					WHERE m.`id_module` = ms.`id_module`
-					AND ms.`id_shop` = '.(int) $idShop.'
-					LIMIT 1
-				) as mshop
-				FROM `'._DB_PREFIX_.'module` m'
+                $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                    (new DbQuery())
+                        ->select('m.`id_module`, m.`name`, m.`id_module` AS `mshop`')
+                        ->from('module', 'm')
+                        ->leftJoin('module_shop', 'ms', 'ms.`id_module` = m.`id_module`')
+                        ->where('ms.`id_shop` = '.(int) $idShop)
                 );
                 foreach ($result as $row) {
                     static::$modules_cache[$row['name']] = $row;
@@ -1532,12 +1526,12 @@ abstract class ModuleCore
     public function checkCompliancy()
     {
         if (isset($this->tb_versions_compliancy) && $this->tb_versions_compliancy) {
-            $range = new Expression($this->tb_versions_compliancy);
+            $range = new vierbergenlars\SemVer\Expression($this->tb_versions_compliancy);
         }
 
         if (version_compare(_PS_VERSION_, $this->ps_versions_compliancy['min'], '<') || version_compare(_PS_VERSION_, $this->ps_versions_compliancy['max'], '>')) {
             return false;
-        } elseif (isset($range) && !$range->satisfiedBy(new Version(_TB_VERSION_))) {
+        } elseif (isset($range) && !$range->satisfiedBy(new vierbergenlars\SemVer\Version(_TB_VERSION_))) {
             return false;
         } else {
             return true;
@@ -2132,17 +2126,17 @@ abstract class ModuleCore
     }
 
     /**
-     * Desactivate current module.
+     * Deactivate the current module.
      *
-     * @param bool $force_all If true, disable module for all shop
+     * @param bool $forceAll If true, disable module for all shop
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function disable($force_all = false)
+    public function disable($forceAll = false)
     {
         // Disable module for all shops
-        $sql = 'DELETE FROM `'._DB_PREFIX_.'module_shop` WHERE `id_module` = '.(int) $this->id.' '.((!$force_all) ? ' AND `id_shop` IN('.implode(', ', Shop::getContextListShopID()).')' : '');
+        $sql = 'DELETE FROM `'._DB_PREFIX_.'module_shop` WHERE `id_module` = '.(int) $this->id.' '.((!$forceAll) ? ' AND `id_shop` IN('.implode(', ', Shop::getContextListShopID()).')' : '');
         Db::getInstance()->execute($sql);
     }
 
