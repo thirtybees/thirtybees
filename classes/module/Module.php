@@ -385,11 +385,12 @@ abstract class ModuleCore
      */
     public static function upgradeModuleVersion($name, $version)
     {
-        return Db::getInstance()->execute(
-            '
-			UPDATE `'._DB_PREFIX_.'module` m
-			SET m.version = \''.pSQL($version).'\'
-			WHERE m.name = \''.pSQL($name).'\''
+        return Db::getInstance()->update(
+            'module',
+            [
+                'version' => pSQL($version),
+            ],
+            '`name` = \''.pSQL($name).'\''
         );
     }
 
@@ -406,7 +407,9 @@ abstract class ModuleCore
      */
     public static function needUpgrade($module)
     {
+        // @codingStandardsIgnoreStart
         static::$modules_cache[$module->name]['upgrade']['upgraded_from'] = $module->database_version;
+        // @codingStandardsIgnoreEnd
         // Check the version of the module with the registered one and look if any upgrade file exist
         if (Tools::version_compare($module->version, $module->database_version, '>')) {
             $oldVersion = $module->database_version;
@@ -499,10 +502,17 @@ abstract class ModuleCore
             $timeEnd = microtime(true);
             $memoryEnd = memory_get_usage(true);
 
-            Db::getInstance()->execute(
-                '
-			INSERT INTO '._DB_PREFIX_.'modules_perfs (session, module, method, time_start, time_end, memory_start, memory_end)
-			VALUES ('.(int) Module::$_log_modules_perfs_session.', "'.pSQL($moduleName).'", "__construct", "'.pSQL($timeStart).'", "'.pSQL($timeEnd).'", '.(int) $memoryStart.', '.(int) $memoryEnd.')'
+            Db::getInstance()->insert(
+                'modules_perfs',
+                [
+                    'session' => (int) Module::$_log_modules_perfs_session,
+                    'module' => pSQL($moduleName),
+                    'method' => '__construct',
+                    'time_start' => pSQL($timeStart),
+                    'time_end' => pSQL($timeEnd),
+                    'memory_start' => (int) $memoryStart,
+                    'memory_end' => (int) $memoryEnd,
+                ]
             );
         }
 
@@ -710,8 +720,11 @@ abstract class ModuleCore
 
         if (is_null($id2name)) {
             $id2name = [];
-            $sql = 'SELECT `id_module`, `name` FROM `'._DB_PREFIX_.'module`';
-            if ($results = Db::getInstance()->executeS($sql)) {
+            if ($results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                    ->select('`id_module`, `name`')
+                    ->from('module')
+            )) {
                 foreach ($results as $row) {
                     $id2name[$row['id_module']] = $row['name'];
                 }
@@ -789,7 +802,9 @@ abstract class ModuleCore
     /**
      * Return available modules
      *
-     * @param bool $useConfig in order to use config.xml file in module dir
+     * @param bool     $useConfig in order to use config.xml file in module dir
+     * @param bool     $loggedOnAddons
+     * @param int|bool $idEmployee
      *
      * @return array Modules
      *
@@ -810,12 +825,13 @@ abstract class ModuleCore
         $modulesDir = Module::getModulesDirOnDisk();
 
         $modulesInstalled = [];
-        $result = Db::getInstance()->executeS(
-            '
-		SELECT m.name, m.version, mp.interest, module_shop.enable_device
-		FROM `'._DB_PREFIX_.'module` m
-		'.Shop::addSqlAssociation('module', 'm').'
-		LEFT JOIN `'._DB_PREFIX_.'module_preference` mp ON (mp.`module` = m.`name` AND mp.`id_employee` = '.(int) $idEmployee.')'
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('m.`name`, m.`version`, mp.`interest`, module_shop.`enable_device`')
+                ->from('module', '')
+                ->join(Shop::addSqlAssociation('module', 'm'))
+                ->leftJoin('module_preference', 'mp', 'mp.`module` = m.`name`')
+                ->where('mp.`id_employee` = '.(int) $idEmployee)
         );
         foreach ($result as $row) {
             $modulesInstalled[$row['name']] = $row;
@@ -984,12 +1000,12 @@ abstract class ModuleCore
         // Get modules information from database
         if (!empty($moduleNameList)) {
             $list = Shop::getContextListShopID();
-            $sql = 'SELECT m.id_module, m.name, (
-						SELECT COUNT(*) FROM '._DB_PREFIX_.'module_shop ms WHERE m.id_module = ms.id_module AND ms.id_shop IN ('.implode(',', $list).')
-					) as total
-					FROM '._DB_PREFIX_.'module m
-					WHERE LOWER(m.name) IN ('.Tools::strtolower(implode(',', $moduleNameList)).')';
-            $results = Db::getInstance()->executeS($sql);
+            $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                    ->select('m.`id_module`, m.`name`, (SELECT COUNT(*) FROM `'._DB_PREFIX_.'module_shop` ms WHERE m.`id_module` = ms.`id_module` AND ms.`id_shop` IN ('.implode(',', $list).')) AS `total`')
+                    ->from('module', 'm')
+                    ->where('LOWER(m.`name`) IN ('.Tools::strtolower(implode(',', $moduleNameList)).')')
+            );
 
             foreach ($results as $result) {
                 if (isset($modulesNameToCursor[Tools::strtolower($result['name'])])) {
@@ -1180,7 +1196,7 @@ abstract class ModuleCore
      */
     public static function getNonNativeModuleList()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('SELECT * FROM `'._DB_PREFIX_.'module`');
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS((new DbQuery())->select('*')->from('module'));
     }
 
     /**
@@ -1195,12 +1211,14 @@ abstract class ModuleCore
      */
     public static function getModulesInstalled($position = 0)
     {
-        $sql = 'SELECT m.* FROM `'._DB_PREFIX_.'module` m ';
+        $sql = (new DbQuery())
+                ->select('m.*')
+                ->from('module', 'm');
         if ($position) {
-            $sql .= 'LEFT JOIN `'._DB_PREFIX_.'hook_module` hm ON m.`id_module` = hm.`id_module`
-				 LEFT JOIN `'._DB_PREFIX_.'hook` k ON hm.`id_hook` = k.`id_hook`
-				 WHERE k.`position` = 1
-				 GROUP BY m.id_module';
+            $sql->leftJoin('hook_module', 'hm', 'm.`id_module` = hm.`id_module`');
+            $sql->leftJoin('hook', 'h', 'h.`id_hook` = hm.`id_hook`');
+            $sql->where('k.`position` = 1');
+            $sql->groupBy('m.`id_module`');
         }
 
         return Db::getInstance()->executeS($sql);
@@ -1315,7 +1333,12 @@ abstract class ModuleCore
         }
 
         $hookPayment = 'Payment';
-        if (Db::getInstance()->getValue('SELECT `id_hook` FROM `'._DB_PREFIX_.'hook` WHERE `name` = \'displayPayment\'')) {
+        if (Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('`id_hook`')
+                ->from('hook')
+                ->where('`name` = \'displayPayment\'')
+        )) {
             $hookPayment = 'displayPayment';
         }
 
@@ -1366,7 +1389,13 @@ abstract class ModuleCore
         if (!Cache::isStored('Module::isEnabled'.$moduleName)) {
             $active = false;
             $idModule = Module::getModuleIdByName($moduleName);
-            if (Db::getInstance()->getValue('SELECT `id_module` FROM `'._DB_PREFIX_.'module_shop` WHERE `id_module` = '.(int) $idModule.' AND `id_shop` = '.(int) Context::getContext()->shop->id)) {
+            if (Db::getInstance()->getValue(
+                (new DbQuery())
+                    ->select('`id_module`')
+                    ->from('module_shop')
+                    ->where('`id_module` = '.(int) $idModule)
+                    ->where('`id_shop` = '.(int) Context::getContext()->shop->id)
+            )) {
                 $active = true;
             }
             Cache::store('Module::isEnabled'.$moduleName, (bool) $active);
@@ -1389,11 +1418,12 @@ abstract class ModuleCore
      */
     public static function getAuthorizedModules($groupId)
     {
-        return Db::getInstance()->executeS(
-            '
-		SELECT m.`id_module`, m.`name` FROM `'._DB_PREFIX_.'module_group` mg
-		LEFT JOIN `'._DB_PREFIX_.'module` m ON (m.`id_module` = mg.`id_module`)
-		WHERE mg.`id_group` = '.(int) $groupId
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('m.`id_module`, m.`name`')
+                ->from('module_group', 'mg')
+                ->leftJoin('module', 'm', 'm.`id_module` = mg.`id_module`')
+                ->where('mg.`id_group` = '.(int) $groupId)
         );
     }
 
@@ -1423,7 +1453,12 @@ abstract class ModuleCore
         // Check module dependencies
         if (count($this->dependencies) > 0) {
             foreach ($this->dependencies as $dependency) {
-                if (!Db::getInstance()->getRow('SELECT `id_module` FROM `'._DB_PREFIX_.'module` WHERE LOWER(`name`) = \''.pSQL(Tools::strtolower($dependency)).'\'')) {
+                if (!Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                    (new DbQuery())
+                        ->select('`id_module`')
+                        ->from('module')
+                        ->where('LOWER(`name`) = \''.pSQL(Tools::strtolower($dependency)).'\'')
+                )) {
                     $error = Tools::displayError('Before installing this module, you have to install this/these module(s) first:').'<br />';
                     foreach ($this->dependencies as $d) {
                         $error .= '- '.$d.'<br />';
@@ -1574,7 +1609,12 @@ abstract class ModuleCore
     {
         $cacheId = 'Module::getModuleIdByName_'.pSQL($name);
         if (!Cache::isStored($cacheId)) {
-            $result = (int) Db::getInstance()->getValue('SELECT `id_module` FROM `'._DB_PREFIX_.'module` WHERE `name` = "'.pSQL($name).'"');
+            $result = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                    ->select('`id_module`')
+                    ->from('module')
+                    ->where('`name` = \''.pSQL($name).'\'')
+            );
             Cache::store($cacheId, $result);
 
             return $result;
@@ -1625,7 +1665,7 @@ abstract class ModuleCore
      * @param string $classname
      *
      * @return bool
-     *
+     * @throws Exception
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1681,8 +1721,8 @@ abstract class ModuleCore
             // Check if none of the methods already exists in the override class
             foreach ($moduleClass->getMethods() as $method) {
                 if ($overrideClass->hasMethod($method->getName())) {
-                    $method_override = $overrideClass->getMethod($method->getName());
-                    if (preg_match('/module: (.*)/ism', $overrideFile[$method_override->getStartLine() - 5], $name) && preg_match('/date: (.*)/ism', $overrideFile[$method_override->getStartLine() - 4], $date) && preg_match('/version: ([0-9.]+)/ism', $overrideFile[$method_override->getStartLine() - 3], $version)) {
+                    $methodOverride = $overrideClass->getMethod($method->getName());
+                    if (preg_match('/module: (.*)/ism', $overrideFile[$methodOverride->getStartLine() - 5], $name) && preg_match('/date: (.*)/ism', $overrideFile[$methodOverride->getStartLine() - 4], $date) && preg_match('/version: ([0-9.]+)/ism', $overrideFile[$methodOverride->getStartLine() - 3], $version)) {
                         throw new Exception(sprintf(Tools::displayError('The method %1$s in the class %2$s is already overridden by the module %3$s version %4$s at %5$s.'), $method->getName(), $classname, $name[1], $version[1], $date[1]));
                     }
                     throw new Exception(sprintf(Tools::displayError('The method %1$s in the class %2$s is already overridden.'), $method->getName(), $classname));
@@ -1985,7 +2025,12 @@ abstract class ModuleCore
         $themeMetaValue = [];
         foreach ($this->controllers as $controller) {
             $page = 'module-'.$this->name.'-'.$controller;
-            $result = Db::getInstance()->getValue('SELECT * FROM '._DB_PREFIX_.'meta WHERE page="'.pSQL($page).'"');
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                    ->select('*')
+                    ->from('meta')
+                    ->where('`page` = \''.pSQL($page).'\'')
+            );
             if ((int) $result > 0) {
                 continue;
             }
@@ -2022,6 +2067,7 @@ abstract class ModuleCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @return bool
      */
     public function enable($forceAll = false)
     {
@@ -2030,13 +2076,16 @@ abstract class ModuleCore
         if (!$this->id || !is_array($list)) {
             return false;
         }
-        $sql = 'SELECT `id_shop` FROM `'._DB_PREFIX_.'module_shop`
-				WHERE `id_module` = '.(int) $this->id.
-            ((!$forceAll) ? ' AND `id_shop` IN('.implode(', ', $list).')' : '');
 
         // Store the results in an array
         $items = [];
-        if ($results = Db::getInstance($sql)->executeS($sql)) {
+        if ($results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('`id_shop`')
+                ->from('module_shop')
+                ->where('`id_module` = '.(int) $this->id)
+                ->where((!$forceAll) ? '`id_shop` IN('.implode(', ', $list).')' : '')
+        )) {
             foreach ($results as $row) {
                 $items[] = $row['id_shop'];
             }
@@ -2138,8 +2187,10 @@ abstract class ModuleCore
     public function disable($forceAll = false)
     {
         // Disable module for all shops
-        $sql = 'DELETE FROM `'._DB_PREFIX_.'module_shop` WHERE `id_module` = '.(int) $this->id.' '.((!$forceAll) ? ' AND `id_shop` IN('.implode(', ', Shop::getContextListShopID()).')' : '');
-        Db::getInstance()->execute($sql);
+        Db::getInstance()->delete(
+            'module_shop',
+            '`id_module` = '.(int) $this->id.' '.((!$forceAll) ? ' AND `id_shop` IN('.implode(', ', Shop::getContextListShopID()).')' : '')
+        );
     }
 
     /**
@@ -2197,8 +2248,12 @@ abstract class ModuleCore
         }
 
         // Retrieve hooks used by the module
-        $sql = 'SELECT `id_hook` FROM `'._DB_PREFIX_.'hook_module` WHERE `id_module` = '.(int) $this->id;
-        $result = Db::getInstance()->executeS($sql);
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('`id_hook`')
+                ->from('hook_module')
+                ->where('`id_module` = '.(int) $this->id)
+        );
         foreach ($result as $row) {
             $this->unregisterHook((int) $row['id_hook']);
             $this->unregisterExceptions((int) $row['id_hook']);
@@ -2206,11 +2261,16 @@ abstract class ModuleCore
 
         foreach ($this->controllers as $controller) {
             $pageName = 'module-'.$this->name.'-'.$controller;
-            $meta = Db::getInstance()->getValue('SELECT id_meta FROM `'._DB_PREFIX_.'meta` WHERE page="'.pSQL($pageName).'"');
+            $meta = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                    ->select('`id_meta`')
+                    ->from('meta')
+                    ->where('`page` = \''.pSQL($pageName).'\'')
+            );
             if ((int) $meta > 0) {
-                Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'theme_meta` WHERE id_meta='.(int) $meta);
-                Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'meta_lang` WHERE id_meta='.(int) $meta);
-                Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'meta` WHERE id_meta='.(int) $meta);
+                Db::getInstance()->delete('theme_meta', '`id_meta` = '.(int) $meta);
+                Db::getInstance()->delete('meta_lang', '`id_meta` = '.(int) $meta);
+                Db::getInstance()->delete('meta', '`id_meta` = '.(int) $meta);
             }
         }
 
@@ -2218,13 +2278,13 @@ abstract class ModuleCore
         $this->disable(true);
 
         // Delete permissions module access
-        Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'module_access` WHERE `id_module` = '.(int) $this->id);
+        Db::getInstance()->delete('module_access' ,'`id_module` = '.(int) $this->id);
 
         // Remove restrictions for client groups
         Group::truncateRestrictionsByModule($this->id);
 
         // Uninstall the module
-        if (Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'module` WHERE `id_module` = '.(int) $this->id)) {
+        if (Db::getInstance()->delete('module' , '`id_module` = '.(int) $this->id)) {
             Cache::clean('Module::isInstalled'.$this->name);
             Cache::clean('Module::getModuleIdByName_'.pSQL($this->name));
 
@@ -2262,10 +2322,10 @@ abstract class ModuleCore
         Hook::exec('actionModuleUnRegisterHookBefore', ['object' => $this, 'hook_name' => $hookName]);
 
         // Unregister module on hook by id
-        $sql = 'DELETE FROM `'._DB_PREFIX_.'hook_module`
-			WHERE `id_module` = '.(int) $this->id.' AND `id_hook` = '.(int) $hookId
-            .(($shopList) ? ' AND `id_shop` IN('.implode(', ', array_map('intval', $shopList)).')' : '');
-        $result = Db::getInstance()->execute($sql);
+        $result = Db::getInstance()->delete(
+            'hook_module',
+            '`id_module` = '.(int) $this->id.' AND `id_hook` = '.(int) $hookId.(($shopList) ? ' AND `id_shop` IN('.implode(', ', array_map('intval', $shopList)).')' : '')
+        );
 
         // Clean modules position
         $this->cleanPositions($hookId, $shopList);
@@ -2287,23 +2347,26 @@ abstract class ModuleCore
      */
     public function cleanPositions($idHook, $shopList = null)
     {
-        $sql = 'SELECT `id_module`, `id_shop`
-			FROM `'._DB_PREFIX_.'hook_module`
-			WHERE `id_hook` = '.(int) $idHook.'
-			'.((!is_null($shopList) && $shopList) ? ' AND `id_shop` IN('.implode(', ', array_map('intval', $shopList)).')' : '').'
-			ORDER BY `position`';
-        $results = Db::getInstance()->executeS($sql);
+        $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('`id_module`, `id_shop`')
+                ->from('hook_module')
+                ->where('`id_hook` = '.(int) $idHook)
+                ->where((!is_null($shopList) && $shopList) ? ' AND `id_shop` IN('.implode(', ', array_map('intval', $shopList)).')' : '')
+                ->orderBy('`position`')
+        );
         $position = [];
         foreach ($results as $row) {
             if (!isset($position[$row['id_shop']])) {
                 $position[$row['id_shop']] = 1;
             }
-
-            $sql = 'UPDATE `'._DB_PREFIX_.'hook_module`
-				SET `position` = '.$position[$row['id_shop']].'
-				WHERE `id_hook` = '.(int) $idHook.'
-				AND `id_module` = '.$row['id_module'].' AND `id_shop` = '.$row['id_shop'];
-            Db::getInstance()->execute($sql);
+            Db::getInstance()->update(
+                'hook_module',
+                [
+                    'position' => $position[$row['id_shop']],
+                ],
+                '`id_hook` = '.(int) $idHook.' AND `id_module` = '.$row['id_module'].' AND `id_shop` = '.$row['id_shop']
+            );
             $position[$row['id_shop']]++;
         }
 
@@ -2320,11 +2383,10 @@ abstract class ModuleCore
      */
     public function unregisterExceptions($hookId, $shopList = null)
     {
-        $sql = 'DELETE FROM `'._DB_PREFIX_.'hook_module_exceptions`
-			WHERE `id_module` = '.(int) $this->id.' AND `id_hook` = '.(int) $hookId
-            .(($shopList) ? ' AND `id_shop` IN('.implode(', ', array_map('intval', $shopList)).')' : '');
-
-        return Db::getInstance()->execute($sql);
+        return Db::getInstance()->delete(
+            'hook_module_exceptions',
+            '`id_module` = '.(int) $this->id.' AND `id_hook` = '.(int) $hookId.(($shopList) ? ' AND `id_shop` IN('.implode(', ', array_map('intval', $shopList)).')' : '')
+        );
     }
 
     /**
@@ -2337,12 +2399,12 @@ abstract class ModuleCore
      */
     public function enableDevice($device)
     {
-        Db::getInstance()->execute(
-            '
-			UPDATE '._DB_PREFIX_.'module_shop
-			SET enable_device = enable_device + '.(int) $device.'
-			WHERE (enable_device &~ '.(int) $device.' OR enable_device = 0) AND id_module='.(int) $this->id.
-            Shop::addSqlRestriction()
+        Db::getInstance()->update(
+            'module_shop',
+            [
+                'enable_device' => ['type' => 'sql', 'value' => '`enable_device` + '.(int) $device],
+            ],
+            '(`enable_device` &~ '.(int) $device.' OR `enable_device` = 0) AND `id_module` = '.(int) $this->id.' '.Shop::addSqlRestriction()
         );
 
         return true;
@@ -2358,12 +2420,12 @@ abstract class ModuleCore
      */
     public function disableDevice($device)
     {
-        Db::getInstance()->execute(
-            '
-			UPDATE '._DB_PREFIX_.'module_shop
-			SET enable_device = enable_device - '.(int) $device.'
-			WHERE enable_device & '.(int) $device.' AND id_module='.(int) $this->id.
-            Shop::addSqlRestriction()
+        Db::getInstance()->update(
+            'module_shop',
+            [
+                'enable_device' => ['type' => 'sql', 'value' => '`enable_device` - '.(int) $device],
+            ],
+            'enable_device & '.(int) $device.' AND id_module='.(int) $this->id.Shop::addSqlRestriction()
         );
 
         return true;
@@ -2775,11 +2837,14 @@ abstract class ModuleCore
         $cache_id = 'exceptionsCache';
         if (!Cache::isStored($cache_id)) {
             $exceptions_cache = [];
-            $sql = 'SELECT * FROM `'._DB_PREFIX_.'hook_module_exceptions`
-				WHERE `id_shop` IN ('.implode(', ', Shop::getContextListShopID()).')';
-            $db = Db::getInstance();
-            $result = $db->executeS($sql, false);
-            while ($row = $db->nextRow($result)) {
+            $dbSlave = Db::getInstance(_PS_USE_SQL_SLAVE_);
+            $result = $dbSlave->executeS(
+                (new DbQuery())
+                    ->select('*')
+                    ->from('hook_module_exceptions')
+                    ->where('`id_shop` IN ('.implode(', ', Shop::getContextListShopID()).')')
+            );
+            foreach ($result as $row) {
                 if (!$row['file_name']) {
                     continue;
                 }
@@ -2828,14 +2893,15 @@ abstract class ModuleCore
      */
     public function isEnabledForShopContext()
     {
-        return (bool) Db::getInstance()->getValue(
-            '
-			SELECT COUNT(*) n
-			FROM `'._DB_PREFIX_.'module_shop`
-			WHERE id_module='.(int) $this->id.' AND id_shop IN ('.implode(',', array_map('intval', Shop::getContextListShopID())).')
-			GROUP BY id_module
-			HAVING n='.(int) count(Shop::getContextListShopID())
-        );
+        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('COUNT(*) n')
+                ->from('module_shop')
+                ->where('`id_module` = '.(int) $this->id)
+                ->where('`id_shop` IN ('.implode(',', array_map('intval', Shop::getContextListShopID())).')')
+                ->groupBy('`id_module`')
+                ->having('n = '.(int) count(Shop::getContextListShopID())
+        ));
     }
 
     /**
@@ -2852,12 +2918,14 @@ abstract class ModuleCore
             return false;
         }
 
-        $sql = 'SELECT COUNT(*)
-			FROM `'._DB_PREFIX_.'hook_module` hm
-			LEFT JOIN `'._DB_PREFIX_.'hook` h ON (h.`id_hook` = hm.`id_hook`)
-			WHERE h.`name` = \''.pSQL($hook).'\' AND hm.`id_module` = '.(int) $this->id;
-
-        return Db::getInstance()->getValue($sql);
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+            ->select('COUNT(*)')
+            ->FROM('hook_module', 'hm')
+            ->leftJoin('hook', 'h', 'h.`id_hook` = hm.`id_hook`')
+            ->where('h.`name` = \''.pSQL($hook).'\'')
+            ->where('hm.`id_module` = '.(int) $this->id)
+        );
     }
 
     /**
@@ -3159,13 +3227,13 @@ abstract class ModuleCore
                 }
             }
         }
-        $result = Db::getInstance()->getRow(
-            '
-			SELECT `position`
-			FROM `'._DB_PREFIX_.'hook_module`
-			WHERE `id_hook` = '.(int) $id_hook.'
-			AND `id_module` = '.(int) $this->id.'
-			AND `id_shop` = '.(int) Context::getContext()->shop->id
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('`position`')
+                ->from('hook_module')
+                ->where('`id_hook` = '.(int) $id_hook)
+                ->where('`id_module` = '.(int) $this->id)
+                ->where('`id_shop` = '.(int) Context::getContext()->shop->id)
         );
 
         return $result['position'];
