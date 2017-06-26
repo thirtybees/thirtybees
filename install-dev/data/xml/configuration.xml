@@ -877,5 +877,8 @@
     <configuration id="PS_SHOW_CONDITION'" name="PS_SHOW_CONDITION'">
       <value>1</value>
     </configuration>
+    <configuration id="PS_ALLOW_MULTISHIPPING" name="PS_ALLOW_MULTISHIPPING">
+      <value>1</value>
+    </configuration>
   </entities>
 </entity_configuration>
