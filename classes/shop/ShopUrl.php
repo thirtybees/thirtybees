@@ -228,18 +228,8 @@ class ShopUrlCore extends ObjectModel
 			WHERE main = 1
 			AND id_shop = '.($idShop !== null ? (int) $idShop : (int) Context::getContext()->shop->id)
             );
-
-            // Adjust automatic values.
-            if ($row['domain'] === '*automatic*') {
-                static::$main_domain[(int) $idShop] = $_SERVER['HTTP_HOST'];
-            } else {
-                static::$main_domain[(int) $idShop] = $row['domain'];
-            }
-            if ($row['domain_ssl'] === '*automatic*') {
-                static::$main_domain_ssl[(int) $idShop] = $_SERVER['HTTP_HOST'];
-            } else {
-                static::$main_domain_ssl[(int) $idShop] = $row['domain_ssl'];
-            }
+            static::$main_domain[(int) $idShop] = $row['domain'];
+            static::$main_domain_ssl[(int) $idShop] = $row['domain_ssl'];
         }
     }
 
