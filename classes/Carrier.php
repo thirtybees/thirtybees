@@ -368,6 +368,7 @@ class CarrierCore extends ObjectModel
                 ->innerJoin('tax_rules_group', 'trg', 'c.`id_tax_rules_group` = trg.`id_tax_rules_group`')
                 ->groupBy('c.`id_tax_rules_group`')
                 ->orderBy('n DESC')
+                ->limit(1)
         );
 
         return isset($result['id_tax_rules_group']) ? (int) $result['id_tax_rules_group'] : false;
@@ -1744,9 +1745,9 @@ class CarrierCore extends ObjectModel
             $shippingMethod = $this->getShippingMethod();
         }
 
-        if ((int) $shippingMethod === static::SHIPPING_METHOD_WEIGHT) {
+        if ($shippingMethod === static::SHIPPING_METHOD_WEIGHT) {
             return new RangeWeight();
-        } elseif ((int) $shippingMethod === static::SHIPPING_METHOD_PRICE) {
+        } elseif ($shippingMethod === static::SHIPPING_METHOD_PRICE) {
             return new RangePrice();
         }
 

@@ -104,5 +104,6 @@
   <tab id="CarrierWizard" name="Vervoerder"/>
   <tab id="Custom_Code" name="Aangepaste Code"/>
   <tab id="Redirects" name="Doorverwijzingen"/>
-  <tab id="Duplicate_URLs" name="Dubbele URL's"/>
+  <tab id="Duplicate_URLs" name="Duplicate URLs"/>
+  <tab id="Image_Mapping" name="Image Mapping"/>
 </entity_tab>

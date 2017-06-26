@@ -554,16 +554,15 @@ class HelperTreeCategoriesCore extends TreeCore
         }
 
         //Default bootstrap style of search is push-right, so we add this button first
-        // FIXME ^md
-//        if ($this->useSearch()) {
-//            $this->addAction(
-//                new TreeToolbarLink(
-//                    $this->getId().'-categories-search',
-//                    'Find a category:'
-//                )
-//            );
-//            $this->setAttribute('use_search', $this->useSearch());
-//        }
+        if ($this->useSearch()) {
+            $this->addAction(
+                new static(
+                    'Find a category:',
+                    $this->getId().'-categories-search'
+                )
+            );
+            $this->setAttribute('use_search', $this->useSearch());
+        }
 
         $collapseAll = new TreeToolbarLink(
             'Collapse All',
