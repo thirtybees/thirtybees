@@ -505,10 +505,10 @@ class AdminCarrierWizardControllerCore extends AdminController
         }
 
         if ($shippingMethod == Carrier::SHIPPING_METHOD_FREE) {
-            $rangeObj = $carrier->getRangeObject((int) $carrier->shipping_method);
+            $rangeObj = $carrier->getRangeObject($carrier->shipping_method);
             $priceByRange = [];
         } else {
-            $rangeObj = $carrier->getRangeObject((int) $carrier->shipping_method);
+            $rangeObj = $carrier->getRangeObject();
             $priceByRange = Carrier::getDeliveryPriceByRanges($rangeTable, (int) $carrier->id);
         }
 
