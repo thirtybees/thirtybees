@@ -217,17 +217,40 @@ function ProductTabsManager() {
         var wrongStatuses = ['abort', 'error', 'timeout'];
         var wrongStatusCodes = [400, 401, 403, 404, 405, 406, 408, 410, 413, 429, 499, 500, 502, 503, 504];
 
-        if (($.inArray(status, wrongStatuses) !== -1 || $.inArray(request.status, wrongStatusCodes)) !== -1 && !self.page_reloading) {
+        if (($.inArray(status, wrongStatuses) !== -1 || $.inArray(request.status, wrongStatusCodes) !== -1) && !self.page_reloading) {
           var currentTab = '';
           if (typeof request.responseText !== 'undefined' && request.responseText && request.responseText.length) {
-            currentTab = $(request.responseText).filter('.product-tab').attr('id').replace('product-', '');
+            currentTab = $(request.responseText)
+              .filter('.product-tab')
+              .attr('id')
+              .replace('product-', '');
+
+            currentTab = currentTab[0].toUpperCase() + currentTab.slice(1);
+            // De-Franglais the name
+            if (currentTab === 'Attachements') {
+              currentTab = 'Attachments';
+            }
           }
 
           jAlert((currentTab ? 'Tab : ' + currentTab : '') + ' (' + (request.status ? request.status + ' ' : '') + request.statusText + ')\n' + window.reload_tab_description, reload_tab_title);
-          self.page_reloading = true;
-          self.has_error_loading_tabs = true;
-          clearTimeout(tabsRunningTimeout);
-          return false;
+
+          // Only the information tab is fatal, we just block the other tabs, so the merchant can keep working with the tabs
+          // that are still available
+          if (currentTab === 'Informations') {
+            self.page_reloading = true;
+            self.has_error_loading_tabs = true;
+            clearTimeout(tabsRunningTimeout);
+
+            return false;
+          }
+
+          $('#link-' + currentTab)
+            .addClass('disabled')
+            .attr('disabled', 'disabled')
+            .attr('href', '#')
+            .off();
+
+          return true; // Because we can still continue
         } else if (!self.has_error_loading_tabs && (self.stack_done.length === self.tabs_to_preload.length)) {
           $('[name="submitAddproductAndStay"]').each(function () {
             $(this)
@@ -245,8 +268,10 @@ function ProductTabsManager() {
           });
           self.allow_hide_other_languages = true;
           clearTimeout(tabsRunningTimeout);
+
           return false;
         }
+
         return true;
       });
     }
