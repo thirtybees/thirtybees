@@ -11,6 +11,7 @@
     "document": true
   },
   "rules": {
+    "max-len": ["error", 800],
     "prefer-template": "off",
     "no-var": "off",
     /**
