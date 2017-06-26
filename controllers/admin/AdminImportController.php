@@ -573,6 +573,18 @@ class AdminImportControllerCore extends AdminController
     /**
      * @param string $field
      *
+     * @return bool
+     *
+     * @since 1.0.2
+     */
+    protected static function getBoolean($field)
+    {
+        return (bool) $field;
+    }
+
+    /**
+     * @param string $field
+     *
      * @return float
      *
      * @since 1.0.0
@@ -807,7 +819,7 @@ class AdminImportControllerCore extends AdminController
         $this->context->cookie->csv_selected = urlencode(Tools::getValue('csv'));
 
         $this->tpl_view_vars = [
-            'import_matchs'    => Db::getInstance()->executeS('SELECT * FROM '._DB_PREFIX_.'import_match', true, false),
+            'import_matchs'    => Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS((new DbQuery())->select('*')->from('import_match'), true, false),
             'fields_value'     => [
                 'csv'                      => Tools::getValue('csv'),
                 'entity'                   => (int) Tools::getValue('entity'),
@@ -2749,7 +2761,7 @@ class AdminImportControllerCore extends AdminController
                         $image->id_product = (int) $product->id;
                         $image->position = Image::getHighestPosition($product->id) + 1;
                         $image->cover = (!$key && !$productHasImages) ? true : false;
-                        $alt = $product->image_alt[$key];
+                        $alt = substr($product->image_alt[$key], 0, 127); // Auto truncate
                         if (strlen($alt) > 0) {
                             $image->legend = static::createMultiLangField($alt);
                         }

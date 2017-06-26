@@ -41,6 +41,7 @@ class ImageTypeCore extends ObjectModel
      * @var array Image types cache
      */
     protected static $images_types_cache = [];
+    /** @var array $images_types_name_cache */
     protected static $images_types_name_cache = [];
     /** @var string Name */
     public $name;
@@ -86,7 +87,7 @@ class ImageTypeCore extends ObjectModel
     /**
      * Returns image type definitions
      *
-     * @param string|null Image type
+     * @param string|null $type        Image type
      * @param bool        $orderBySize
      *
      * @return array Image type definitions
@@ -98,18 +99,20 @@ class ImageTypeCore extends ObjectModel
     public static function getImagesTypes($type = null, $orderBySize = false)
     {
         if (!isset(static::$images_types_cache[$type])) {
-            $where = 'WHERE 1';
+            $query = (new DbQuery())
+                ->select('*')
+                ->from('image_type');
             if (!empty($type)) {
-                $where .= ' AND `'.bqSQL($type).'` = 1 ';
+                $query->where('`'.bqSQL($type).'` = 1');
             }
 
             if ($orderBySize) {
-                $query = 'SELECT * FROM `'._DB_PREFIX_.'image_type` '.$where.' ORDER BY `width` DESC, `height` DESC, `name`ASC';
+                $query->orderBy('`width` DESC, `height` DESC, `name` ASC');
             } else {
-                $query = 'SELECT * FROM `'._DB_PREFIX_.'image_type` '.$where.' ORDER BY `name` ASC';
+                $query->orderBy('`name` ASC');
             }
 
-            static::$images_types_cache[$type] = Db::getInstance()->executeS($query);
+            static::$images_types_cache[$type] = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
         }
 
         return static::$images_types_cache[$type];
@@ -131,11 +134,11 @@ class ImageTypeCore extends ObjectModel
             die(Tools::displayError());
         }
 
-        Db::getInstance()->executeS(
-            '
-			SELECT `id_image_type`
-			FROM `'._DB_PREFIX_.'image_type`
-			WHERE `name` = \''.pSQL($typeName).'\''
+        Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('`id_image_type`')
+                ->from('image_type')
+                ->where('`name` = \''.pSQL($typeName).'\'')
         );
 
         return Db::getInstance()->NumRows();
@@ -174,6 +177,7 @@ class ImageTypeCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @return bool|mixed
      */
     public static function getByNameNType($name, $type = null, $order = 0)
     {

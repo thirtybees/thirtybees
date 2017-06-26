@@ -21,11 +21,11 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
@@ -38,6 +38,9 @@ class AdminFeaturesControllerCore extends AdminController
     protected $position_identifier = 'id_feature';
     protected $feature_name;
 
+    /**
+     * AdminFeaturesControllerCore constructor.
+     */
     public function __construct()
     {
         $this->table = 'feature';
@@ -50,223 +53,37 @@ class AdminFeaturesControllerCore extends AdminController
             'id_feature' => [
                 'title' => $this->l('ID'),
                 'align' => 'center',
-                'class' => 'fixed-width-xs'
-            ],
-            'name' => [
-                'title' => $this->l('Name'),
-                'width' => 'auto',
-                'filter_key' => 'b!name'
-            ],
-            'value' => [
-                'title' => $this->l('Values'),
-                'orderby' => false,
-                'search' => false,
-                'align' => 'center',
-                'class' => 'fixed-width-xs'
-            ],
-            'position' => [
-                'title' => $this->l('Position'),
-                'filter_key' => 'a!position',
-                'align' => 'center',
                 'class' => 'fixed-width-xs',
-                'position' => 'position'
-            ]
+            ],
+            'name'       => [
+                'title'      => $this->l('Name'),
+                'width'      => 'auto',
+                'filter_key' => 'b!name',
+            ],
+            'value'      => [
+                'title'   => $this->l('Values'),
+                'orderby' => false,
+                'search'  => false,
+                'align'   => 'center',
+                'class'   => 'fixed-width-xs',
+            ],
+            'position'   => [
+                'title'      => $this->l('Position'),
+                'filter_key' => 'a!position',
+                'align'      => 'center',
+                'class'      => 'fixed-width-xs',
+                'position'   => 'position',
+            ],
         ];
 
         $this->bulk_actions = [
             'delete' => [
-                'text' => $this->l('Delete selected'),
-                'icon' => 'icon-trash',
-                'confirm' => $this->l('Delete selected items?')
-            ]
+                'text'    => $this->l('Delete selected'),
+                'icon'    => 'icon-trash',
+                'confirm' => $this->l('Delete selected items?'),
+            ],
         ];
         parent::__construct();
-    }
-
-    /**
-     * AdminController::renderList() override
-     * @see AdminController::renderList()
-     */
-    public function renderList()
-    {
-        $this->addRowAction('view');
-        $this->addRowAction('edit');
-        $this->addRowAction('delete');
-
-        return parent::renderList();
-    }
-
-    /**
-     * Change object type to feature value (use when processing a feature value)
-     */
-    protected function setTypeValue()
-    {
-        $this->table = 'feature_value';
-        $this->className = 'FeatureValue';
-        $this->identifier = 'id_feature_value';
-    }
-
-    /**
-     * Change object type to feature (use when processing a feature)
-     */
-    protected function setTypeFeature()
-    {
-        $this->table = 'feature';
-        $this->className = 'Feature';
-        $this->identifier = 'id_feature';
-    }
-
-    public function renderView()
-    {
-        if (($id = Tools::getValue('id_feature'))) {
-            $this->setTypeValue();
-            $this->list_id = 'feature_value';
-            $this->lang = true;
-
-            // Action for list
-            $this->addRowAction('edit');
-            $this->addRowAction('delete');
-
-            if (!Validate::isLoadedObject($obj = new Feature((int)$id))) {
-                $this->errors[] = Tools::displayError('An error occurred while updating the status for an object.').' <b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
-                return;
-            }
-
-            $this->feature_name = $obj->name;
-            $this->toolbar_title = $this->feature_name[$this->context->employee->id_lang];
-            $this->fields_list = [
-                'id_feature_value' => [
-                    'title' => $this->l('ID'),
-                    'align' => 'center',
-                    'class' => 'fixed-width-xs'
-                ],
-                'value' => [
-                    'title' => $this->l('Value')
-                ]
-            ];
-
-            $this->_where = sprintf('AND `id_feature` = %d', (int)$id);
-            static::$currentIndex = static::$currentIndex.'&id_feature='.(int)$id.'&viewfeature';
-            $this->processFilter();
-            return parent::renderList();
-        }
-    }
-
-    /**
-     * AdminController::renderForm() override
-     * @see AdminController::renderForm()
-     */
-    public function renderForm()
-    {
-        $this->toolbar_title = $this->l('Add a new feature');
-        $this->fields_form = [
-            'legend' => [
-                'title' => $this->l('Feature'),
-                'icon' => 'icon-info-sign'
-            ],
-            'input' => [
-                [
-                    'type' => 'text',
-                    'label' => $this->l('Name'),
-                    'name' => 'name',
-                    'lang' => true,
-                    'size' => 33,
-                    'hint' => $this->l('Invalid characters:').' <>;=#{}',
-                    'required' => true
-                ]
-            ]
-        ];
-
-        if (Shop::isFeatureActive()) {
-            $this->fields_form['input'][] = [
-                'type' => 'shop',
-                'label' => $this->l('Shop association'),
-                'name' => 'checkBoxShopAsso',
-            ];
-        }
-
-        $this->fields_form['submit'] = [
-            'title' => $this->l('Save'),
-        ];
-
-        return parent::renderForm();
-    }
-
-    public function initPageHeaderToolbar()
-    {
-        if (empty($this->display)) {
-            $this->page_header_toolbar_btn['new_feature'] = [
-                'href' => static::$currentIndex.'&addfeature&token='.$this->token,
-                'desc' => $this->l('Add new feature', null, null, false),
-                'icon' => 'process-icon-new'
-            ];
-
-            $this->page_header_toolbar_btn['new_feature_value'] = [
-                'href' => static::$currentIndex.'&addfeature_value&id_feature='.(int)Tools::getValue('id_feature').'&token='.$this->token,
-                'desc' => $this->l('Add new feature value', null, null, false),
-                'icon' => 'process-icon-new'
-            ];
-        }
-
-        if ($this->display == 'view') {
-            $this->page_header_toolbar_btn['new_feature_value'] = [
-                'href' => static::$currentIndex.'&addfeature_value&id_feature='.(int)Tools::getValue('id_feature').'&token='.$this->token,
-                'desc' => $this->l('Add new feature value', null, null, false),
-                'icon' => 'process-icon-new'
-            ];
-        }
-
-        parent::initPageHeaderToolbar();
-    }
-
-    /**
-     * AdminController::initToolbar() override
-     * @see AdminController::initToolbar()
-     */
-    public function initToolbar()
-    {
-        switch ($this->display) {
-            case 'editFeatureValue':
-            case 'add':
-            case 'edit':
-                $this->toolbar_btn['save'] = [
-                    'href' => '#',
-                    'desc' => $this->l('Save')
-                ];
-
-                if ($this->display == 'editFeatureValue') {
-                    $this->toolbar_btn['save-and-stay'] = [
-                        'short' => 'SaveAndStay',
-                        'href' => '#',
-                        'desc' => $this->l('Save and add another value'),
-                        'force_desc' => true,
-                    ];
-                }
-
-                // Default cancel button - like old back link
-                $back = Tools::safeOutput(Tools::getValue('back', ''));
-                if (empty($back)) {
-                    $back = static::$currentIndex.'&token='.$this->token;
-                }
-
-                $this->toolbar_btn['back'] = [
-                    'href' => $back,
-                    'desc' => $this->l('Back to the list')
-                ];
-            break;
-            case 'view':
-                $this->toolbar_btn['newAttributes'] = [
-                    'href' => static::$currentIndex.'&addfeature_value&id_feature='.(int)Tools::getValue('id_feature').'&token='.$this->token,
-                    'desc' => $this->l('Add new feature values')
-                ];
-                $this->toolbar_btn['back'] = [
-                    'href' => static::$currentIndex.'&token='.$this->token,
-                    'desc' => $this->l('Back to the list')
-                ];
-                break;
-            default:
-                parent::initToolbar();
-        }
     }
 
     public function initToolbarTitle()
@@ -292,11 +109,11 @@ class AdminFeaturesControllerCore extends AdminController
             case 'editFeatureValue':
                 if (($id_feature_value = Tools::getValue('id_feature_value'))) {
                     if (($id = Tools::getValue('id_feature'))) {
-                        if (Validate::isLoadedObject($obj = new Feature((int)$id))) {
+                        if (Validate::isLoadedObject($obj = new Feature((int) $id))) {
                             $bread_extended[] = '<a href="'.Context::getContext()->link->getAdminLink('AdminFeatures').'&id_feature='.$id.'&viewfeature">'.$obj->name[$this->context->employee->id_lang].'</a>';
                         }
 
-                        if (Validate::isLoadedObject($obj = new FeatureValue((int)Tools::getValue('id_feature_value')))) {
+                        if (Validate::isLoadedObject($obj = new FeatureValue((int) Tools::getValue('id_feature_value')))) {
                             $bread_extended[] = sprintf($this->l('Edit: %s'), $obj->value[$this->context->employee->id_lang]);
                         }
                     } else {
@@ -316,7 +133,225 @@ class AdminFeaturesControllerCore extends AdminController
     }
 
     /**
+     * AdminController::initContent() override
+     *
+     * @see AdminController::initContent()
+     */
+    public function initContent()
+    {
+        if (Feature::isFeatureActive()) {
+            // toolbar (save, cancel, new, ..)
+            $this->initTabModuleList();
+            $this->initToolbar();
+            $this->initPageHeaderToolbar();
+            if ($this->display == 'edit' || $this->display == 'add') {
+                if (!$this->loadObject(true)) {
+                    return;
+                }
+                $this->content .= $this->renderForm();
+            } elseif ($this->display == 'view') {
+                // Some controllers use the view action without an object
+                if ($this->className) {
+                    $this->loadObject(true);
+                }
+                $this->content .= $this->renderView();
+            } elseif ($this->display == 'editFeatureValue') {
+                if (!$this->object = new FeatureValue((int) Tools::getValue('id_feature_value'))) {
+                    return;
+                }
+
+                $this->content .= $this->initFormFeatureValue();
+            } elseif (!$this->ajax) {
+                // If a feature value was saved, we need to reset the values to display the list
+                $this->setTypeFeature();
+                $this->content .= $this->renderList();
+            }
+        } else {
+            $url = '<a href="index.php?tab=AdminPerformance&token='.Tools::getAdminTokenLite('AdminPerformance').'#featuresDetachables">'.$this->l('Performance').'</a>';
+            $this->displayWarning(sprintf($this->l('This feature has been disabled. You can activate it here: %s.'), $url));
+        }
+
+        $this->context->smarty->assign(
+            [
+                'content'                   => $this->content,
+                'url_post'                  => static::$currentIndex.'&token='.$this->token,
+                'show_page_header_toolbar'  => $this->show_page_header_toolbar,
+                'page_header_toolbar_title' => $this->page_header_toolbar_title,
+                'page_header_toolbar_btn'   => $this->page_header_toolbar_btn,
+            ]
+        );
+    }
+
+    /**
+     * AdminController::initToolbar() override
+     *
+     * @see AdminController::initToolbar()
+     */
+    public function initToolbar()
+    {
+        switch ($this->display) {
+            case 'editFeatureValue':
+            case 'add':
+            case 'edit':
+                $this->toolbar_btn['save'] = [
+                    'href' => '#',
+                    'desc' => $this->l('Save'),
+                ];
+
+                if ($this->display == 'editFeatureValue') {
+                    $this->toolbar_btn['save-and-stay'] = [
+                        'short'      => 'SaveAndStay',
+                        'href'       => '#',
+                        'desc'       => $this->l('Save and add another value'),
+                        'force_desc' => true,
+                    ];
+                }
+
+                // Default cancel button - like old back link
+                $back = Tools::safeOutput(Tools::getValue('back', ''));
+                if (empty($back)) {
+                    $back = static::$currentIndex.'&token='.$this->token;
+                }
+
+                $this->toolbar_btn['back'] = [
+                    'href' => $back,
+                    'desc' => $this->l('Back to the list'),
+                ];
+                break;
+            case 'view':
+                $this->toolbar_btn['newAttributes'] = [
+                    'href' => static::$currentIndex.'&addfeature_value&id_feature='.(int) Tools::getValue('id_feature').'&token='.$this->token,
+                    'desc' => $this->l('Add new feature values'),
+                ];
+                $this->toolbar_btn['back'] = [
+                    'href' => static::$currentIndex.'&token='.$this->token,
+                    'desc' => $this->l('Back to the list'),
+                ];
+                break;
+            default:
+                parent::initToolbar();
+        }
+    }
+
+    public function initPageHeaderToolbar()
+    {
+        if (empty($this->display)) {
+            $this->page_header_toolbar_btn['new_feature'] = [
+                'href' => static::$currentIndex.'&addfeature&token='.$this->token,
+                'desc' => $this->l('Add new feature', null, null, false),
+                'icon' => 'process-icon-new',
+            ];
+
+            $this->page_header_toolbar_btn['new_feature_value'] = [
+                'href' => static::$currentIndex.'&addfeature_value&id_feature='.(int) Tools::getValue('id_feature').'&token='.$this->token,
+                'desc' => $this->l('Add new feature value', null, null, false),
+                'icon' => 'process-icon-new',
+            ];
+        }
+
+        if ($this->display == 'view') {
+            $this->page_header_toolbar_btn['new_feature_value'] = [
+                'href' => static::$currentIndex.'&addfeature_value&id_feature='.(int) Tools::getValue('id_feature').'&token='.$this->token,
+                'desc' => $this->l('Add new feature value', null, null, false),
+                'icon' => 'process-icon-new',
+            ];
+        }
+
+        parent::initPageHeaderToolbar();
+    }
+
+    /**
      * AdminController::renderForm() override
+     *
+     * @see AdminController::renderForm()
+     */
+    public function renderForm()
+    {
+        $this->toolbar_title = $this->l('Add a new feature');
+        $this->fields_form = [
+            'legend' => [
+                'title' => $this->l('Feature'),
+                'icon'  => 'icon-info-sign',
+            ],
+            'input'  => [
+                [
+                    'type'     => 'text',
+                    'label'    => $this->l('Name'),
+                    'name'     => 'name',
+                    'lang'     => true,
+                    'size'     => 33,
+                    'hint'     => $this->l('Invalid characters:').' <>;=#{}',
+                    'required' => true,
+                ],
+            ],
+        ];
+
+        if (Shop::isFeatureActive()) {
+            $this->fields_form['input'][] = [
+                'type'  => 'shop',
+                'label' => $this->l('Shop association'),
+                'name'  => 'checkBoxShopAsso',
+            ];
+        }
+
+        $this->fields_form['submit'] = [
+            'title' => $this->l('Save'),
+        ];
+
+        return parent::renderForm();
+    }
+
+    public function renderView()
+    {
+        if (($id = Tools::getValue('id_feature'))) {
+            $this->setTypeValue();
+            $this->list_id = 'feature_value';
+            $this->lang = true;
+
+            // Action for list
+            $this->addRowAction('edit');
+            $this->addRowAction('delete');
+
+            if (!Validate::isLoadedObject($obj = new Feature((int) $id))) {
+                $this->errors[] = Tools::displayError('An error occurred while updating the status for an object.').' <b>'.$this->table.'</b> '.Tools::displayError('(cannot load object)');
+
+                return;
+            }
+
+            $this->feature_name = $obj->name;
+            $this->toolbar_title = $this->feature_name[$this->context->employee->id_lang];
+            $this->fields_list = [
+                'id_feature_value' => [
+                    'title' => $this->l('ID'),
+                    'align' => 'center',
+                    'class' => 'fixed-width-xs',
+                ],
+                'value'            => [
+                    'title' => $this->l('Value'),
+                ],
+            ];
+
+            $this->_where = sprintf('AND `id_feature` = %d', (int) $id);
+            static::$currentIndex = static::$currentIndex.'&id_feature='.(int) $id.'&viewfeature';
+            $this->processFilter();
+
+            return parent::renderList();
+        }
+    }
+
+    /**
+     * Change object type to feature value (use when processing a feature value)
+     */
+    protected function setTypeValue()
+    {
+        $this->table = 'feature_value';
+        $this->className = 'FeatureValue';
+        $this->identifier = 'id_feature_value';
+    }
+
+    /**
+     * AdminController::renderForm() override
+     *
      * @see AdminController::renderForm()
      */
     public function initFormFeatureValue()
@@ -324,47 +359,47 @@ class AdminFeaturesControllerCore extends AdminController
         $this->setTypeValue();
 
         $this->fields_form[0]['form'] = [
-            'legend' => [
+            'legend'  => [
                 'title' => $this->l('Feature value'),
-                'icon' => 'icon-info-sign'
+                'icon'  => 'icon-info-sign',
             ],
-            'input' => [
+            'input'   => [
                 [
-                    'type' => 'select',
-                    'label' => $this->l('Feature'),
-                    'name' => 'id_feature',
-                    'options' => [
+                    'type'     => 'select',
+                    'label'    => $this->l('Feature'),
+                    'name'     => 'id_feature',
+                    'options'  => [
                         'query' => Feature::getFeatures($this->context->language->id),
-                        'id' => 'id_feature',
-                        'name' => 'name'
+                        'id'    => 'id_feature',
+                        'name'  => 'name',
                     ],
-                    'required' => true
+                    'required' => true,
                 ],
                 [
-                    'type' => 'text',
-                    'label' => $this->l('Value'),
-                    'name' => 'value',
-                    'lang' => true,
-                    'size' => 33,
-                    'hint' => $this->l('Invalid characters:').' <>;=#{}',
-                    'required' => true
+                    'type'     => 'text',
+                    'label'    => $this->l('Value'),
+                    'name'     => 'value',
+                    'lang'     => true,
+                    'size'     => 33,
+                    'hint'     => $this->l('Invalid characters:').' <>;=#{}',
+                    'required' => true,
                 ],
             ],
-            'submit' => [
+            'submit'  => [
                 'title' => $this->l('Save'),
             ],
             'buttons' => [
                 'save-and-stay' => [
                     'title' => $this->l('Save then add another value'),
-                    'name' => 'submitAdd'.$this->table.'AndStay',
-                    'type' => 'submit',
+                    'name'  => 'submitAdd'.$this->table.'AndStay',
+                    'type'  => 'submit',
                     'class' => 'btn btn-default pull-right',
-                    'icon' => 'process-icon-save'
-                ]
-            ]
+                    'icon'  => 'process-icon-save',
+                ],
+            ],
         ];
 
-        $this->fields_value['id_feature'] = (int)Tools::getValue('id_feature');
+        $this->fields_value['id_feature'] = (int) Tools::getValue('id_feature');
 
         // Create Object FeatureValue
         $feature_value = new FeatureValue(Tools::getValue('id_feature_value'));
@@ -404,52 +439,27 @@ class AdminFeaturesControllerCore extends AdminController
     }
 
     /**
-     * AdminController::initContent() override
-     * @see AdminController::initContent()
+     * Change object type to feature (use when processing a feature)
      */
-    public function initContent()
+    protected function setTypeFeature()
     {
-        if (Feature::isFeatureActive()) {
-            // toolbar (save, cancel, new, ..)
-            $this->initTabModuleList();
-            $this->initToolbar();
-            $this->initPageHeaderToolbar();
-            if ($this->display == 'edit' || $this->display == 'add') {
-                if (!$this->loadObject(true)) {
-                    return;
-                }
-                $this->content .= $this->renderForm();
-            } elseif ($this->display == 'view') {
-                // Some controllers use the view action without an object
-                if ($this->className) {
-                    $this->loadObject(true);
-                }
-                $this->content .= $this->renderView();
-            } elseif ($this->display == 'editFeatureValue') {
-                if (!$this->object = new FeatureValue((int)Tools::getValue('id_feature_value'))) {
-                    return;
-                }
+        $this->table = 'feature';
+        $this->className = 'Feature';
+        $this->identifier = 'id_feature';
+    }
 
-                $this->content .= $this->initFormFeatureValue();
-            } elseif (!$this->ajax) {
-                // If a feature value was saved, we need to reset the values to display the list
-                $this->setTypeFeature();
-                $this->content .= $this->renderList();
-            }
-        } else {
-            $url = '<a href="index.php?tab=AdminPerformance&token='.Tools::getAdminTokenLite('AdminPerformance').'#featuresDetachables">'.$this->l('Performance').'</a>';
-            $this->displayWarning(sprintf($this->l('This feature has been disabled. You can activate it here: %s.'), $url));
-        }
+    /**
+     * AdminController::renderList() override
+     *
+     * @see AdminController::renderList()
+     */
+    public function renderList()
+    {
+        $this->addRowAction('view');
+        $this->addRowAction('edit');
+        $this->addRowAction('delete');
 
-        $this->context->smarty->assign(
-            [
-            'content' => $this->content,
-            'url_post' => static::$currentIndex.'&token='.$this->token,
-            'show_page_header_toolbar' => $this->show_page_header_toolbar,
-            'page_header_toolbar_title' => $this->page_header_toolbar_title,
-            'page_header_toolbar_btn' => $this->page_header_toolbar_btn
-            ]
-        );
+        return parent::renderList();
     }
 
     public function initProcess()
@@ -460,7 +470,8 @@ class AdminFeaturesControllerCore extends AdminController
             || Tools::isSubmit('submitAddfeature_value')
             || Tools::isSubmit('addfeature_value')
             || Tools::isSubmit('updatefeature_value')
-            || Tools::isSubmit('submitBulkdeletefeature_value')) {
+            || Tools::isSubmit('submitBulkdeletefeature_value')
+        ) {
             $this->setTypeValue();
         }
 
@@ -486,12 +497,14 @@ class AdminFeaturesControllerCore extends AdminController
         }
 
         if ($this->table == 'feature_value' && ($this->action == 'save' || $this->action == 'delete' || $this->action == 'bulkDelete')) {
-            Hook::exec('displayFeatureValuePostProcess',
+            Hook::exec(
+                'displayFeatureValuePostProcess',
                 ['errors' => &$this->errors]
             );
         } // send errors as reference to allow displayFeatureValuePostProcess to stop saving process
         else {
-            Hook::exec('displayFeaturePostProcess',
+            Hook::exec(
+                'displayFeaturePostProcess',
                 ['errors' => &$this->errors]
             );
         } // send errors as reference to allow displayFeaturePostProcess to stop saving process
@@ -505,6 +518,7 @@ class AdminFeaturesControllerCore extends AdminController
 
     /**
      * Override processAdd to change SaveAndStay button action
+     *
      * @see classes/AdminControllerCore::processAdd()
      */
     public function processAdd()
@@ -513,7 +527,7 @@ class AdminFeaturesControllerCore extends AdminController
 
         if (Tools::isSubmit('submitAdd'.$this->table.'AndStay') && !count($this->errors)) {
             if ($this->table == 'feature_value' && ($this->display == 'edit' || $this->display == 'add')) {
-                $this->redirect_after = static::$currentIndex.'&addfeature_value&id_feature='.(int)Tools::getValue('id_feature').'&token='.$this->token;
+                $this->redirect_after = static::$currentIndex.'&addfeature_value&id_feature='.(int) Tools::getValue('id_feature').'&token='.$this->token;
             } else {
                 $this->redirect_after = static::$currentIndex.'&'.$this->identifier.'=&conf=3&update'.$this->table.'&token='.$this->token;
             }
@@ -526,6 +540,7 @@ class AdminFeaturesControllerCore extends AdminController
 
     /**
      * Override processUpdate to change SaveAndStay button action
+     *
      * @see classes/AdminControllerCore::processUpdate()
      */
     public function processUpdate()
@@ -547,13 +562,13 @@ class AdminFeaturesControllerCore extends AdminController
     public function processSave()
     {
         if ($this->table == 'feature') {
-            $id_feature = (int)Tools::getValue('id_feature');
+            $id_feature = (int) Tools::getValue('id_feature');
             // Adding last position to the feature if not exist
             if ($id_feature <= 0) {
                 $sql = 'SELECT `position`+1
 						FROM `'._DB_PREFIX_.'feature`
 						ORDER BY position DESC';
-            // set the position of the new feature in $_POST for postProcess() method
+                // set the position of the new feature in $_POST for postProcess() method
                 $_POST['position'] = DB::getInstance()->getValue($sql);
             }
             // clean \n\r characters
@@ -563,13 +578,14 @@ class AdminFeaturesControllerCore extends AdminController
                 }
             }
         }
+
         return parent::processSave();
     }
 
     /**
      * AdminController::getList() override
      *
-*@see AdminController::getList()
+     * @see AdminController::getList()
      *
      * @param int         $idLang
      * @param string|null $orderBy
@@ -596,10 +612,10 @@ class AdminFeaturesControllerCore extends AdminController
                 $query = new DbQuery();
                 $query->select('COUNT(fv.id_feature_value) as count_values');
                 $query->from('feature_value', 'fv');
-                $query->where('fv.id_feature ='.(int)$item['id_feature']);
+                $query->where('fv.id_feature ='.(int) $item['id_feature']);
                 $query->where('(fv.custom=0 OR fv.custom IS NULL)');
                 $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query);
-                $item['value'] = (int)$res;
+                $item['value'] = (int) $res;
                 unset($query);
             }
         }
@@ -608,8 +624,8 @@ class AdminFeaturesControllerCore extends AdminController
     public function ajaxProcessUpdatePositions()
     {
         if ($this->tabAccess['edit'] === '1') {
-            $way = (int)Tools::getValue('way');
-            $id_feature = (int)Tools::getValue('id');
+            $way = (int) Tools::getValue('way');
+            $id_feature = (int) Tools::getValue('id');
             $positions = Tools::getValue('feature');
 
             $new_positions = [];
@@ -622,15 +638,15 @@ class AdminFeaturesControllerCore extends AdminController
             foreach ($new_positions as $position => $value) {
                 $pos = explode('_', $value);
 
-                if (isset($pos[2]) && (int)$pos[2] === $id_feature) {
-                    if ($feature = new Feature((int)$pos[2])) {
+                if (isset($pos[2]) && (int) $pos[2] === $id_feature) {
+                    if ($feature = new Feature((int) $pos[2])) {
                         if (isset($position) && $feature->updatePosition($way, $position, $id_feature)) {
-                            echo 'ok position '.(int)$position.' for feature '.(int)$pos[1].'\r\n';
+                            echo 'ok position '.(int) $position.' for feature '.(int) $pos[1].'\r\n';
                         } else {
-                            echo '{"hasError" : true, "errors" : "Can not update feature '.(int)$id_feature.' to position '.(int)$position.' "}';
+                            echo '{"hasError" : true, "errors" : "Can not update feature '.(int) $id_feature.' to position '.(int) $position.' "}';
                         }
                     } else {
-                        echo '{"hasError" : true, "errors" : "This feature ('.(int)$id_feature.') can t be loaded"}';
+                        echo '{"hasError" : true, "errors" : "This feature ('.(int) $id_feature.') can t be loaded"}';
                     }
 
                     break;

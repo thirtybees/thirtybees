@@ -37,14 +37,23 @@
 class CustomerThreadCore extends ObjectModel
 {
     // @codingStandardsIgnoreStart
+    /** @var int $id_contact */
     public $id_contact;
+    /** @var int $id_customer */
     public $id_customer;
+    /** @var int $id_order */
     public $id_order;
+    /** @var int $id_product */
     public $id_product;
+    /** @var bool $status */
     public $status;
+    /** @var string $email */
     public $email;
+    /** @var string $token */
     public $token;
+    /** @var string $date_add */
     public $date_add;
+    /** @var string $date_upd */
     public $date_upd;
     // @codingStandardsIgnoreEnd
 
@@ -95,9 +104,9 @@ class CustomerThreadCore extends ObjectModel
     ];
 
     /**
-     * @param      $idCustomer
-     * @param null $read
-     * @param null $idOrder
+     * @param int      $idCustomer
+     * @param int|null $read
+     * @param int|null $idOrder
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
@@ -106,20 +115,20 @@ class CustomerThreadCore extends ObjectModel
      */
     public static function getCustomerMessages($idCustomer, $read = null, $idOrder = null)
     {
-        $sql = 'SELECT *
-			FROM '._DB_PREFIX_.'customer_thread ct
-			LEFT JOIN '._DB_PREFIX_.'customer_message cm
-				ON ct.id_customer_thread = cm.id_customer_thread
-			WHERE id_customer = '.(int) $idCustomer;
+        $sql = (new DbQuery())
+            ->select('*')
+            ->from('customer_thread', 'ct')
+            ->leftJoin('customer_message', 'cm', 'ct.`id_customer_thread` = cm.`id_customer_thread`')
+            ->where('`id_customer` = '.(int) $idCustomer);
 
         if ($read !== null) {
-            $sql .= ' AND cm.`read` = '.(int) $read;
+            $sql->where('cm.`read` = '.(int) $read);
         }
         if ($idOrder !== null) {
-            $sql .= ' AND ct.`id_order` = '.(int) $idOrder;
+            $sql->where('ct.`id_order` = '.(int) $idOrder);
         }
 
-        return Db::getInstance()->executeS($sql);
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
     }
 
     /**
@@ -133,13 +142,13 @@ class CustomerThreadCore extends ObjectModel
      */
     public static function getIdCustomerThreadByEmailAndIdOrder($email, $idOrder)
     {
-        return Db::getInstance()->getValue(
-            '
-			SELECT cm.id_customer_thread
-			FROM '._DB_PREFIX_.'customer_thread cm
-			WHERE cm.email = \''.pSQL($email).'\'
-				AND cm.id_shop = '.(int) Context::getContext()->shop->id.'
-				AND cm.id_order = '.(int) $idOrder
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('cm.`id_customer_thread`')
+                ->from('customer_thread', 'cm')
+                ->where('cm.`email` = \''.pSQL($email).'\'')
+                ->where('cm.`id_shop` = '.(int) Context::getContext()->shop->id)
+                ->where('cm.`id_order` = '.(int) $idOrder)
         );
     }
 
@@ -151,25 +160,18 @@ class CustomerThreadCore extends ObjectModel
      */
     public static function getContacts()
     {
-        return Db::getInstance()->executeS(
-            '
-			SELECT cl.*, COUNT(*) AS total, (
-				SELECT id_customer_thread
-				FROM '._DB_PREFIX_.'customer_thread ct2
-				WHERE status = "open" AND ct.id_contact = ct2.id_contact
-				'.Shop::addSqlRestriction().'
-				ORDER BY date_upd ASC
-				LIMIT 1
-			) AS id_customer_thread
-			FROM '._DB_PREFIX_.'customer_thread ct
-			LEFT JOIN '._DB_PREFIX_.'contact_lang cl
-				ON (cl.id_contact = ct.id_contact AND cl.id_lang = '.(int) Context::getContext()->language->id.')
-			WHERE ct.status = "open"
-				AND ct.id_contact IS NOT NULL
-				AND cl.id_contact IS NOT NULL
-				'.Shop::addSqlRestriction().'
-			GROUP BY ct.id_contact HAVING COUNT(*) > 0
-		'
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('cl.*, COUNT(*) as `total`')
+                ->select('(SELECT `id_customer_thread` FROM `'._DB_PREFIX_.'customer_thread` ct2 WHERE status = "open" AND ct.`id_contact` = ct2.`id_contact` '.Shop::addSqlRestriction().' ORDER BY `date_upd` ASC LIMIT 1) AS `id_customer_thread`')
+                ->from('customer_thread', 'ct')
+                ->leftJoin('contact_lang', 'cl', 'cl.`id_contact` = ct.`id_contact`')
+                ->where('cl.`id_lang` = '.(int) Context::getContext()->language->id)
+                ->where('ct.`status` = "open"')
+                ->where('ct.`id_contact` IS NOT NULL')
+                ->where('cl.`id_contact` IS NOT NULL '.Shop::addSqlRestriction())
+                ->groupBy('ct.`id_contact`')
+                ->having('COUNT(*) > 0')
         );
     }
 
@@ -184,18 +186,18 @@ class CustomerThreadCore extends ObjectModel
     public static function getTotalCustomerThreads($where = null)
     {
         if (is_null($where)) {
-            return (int) Db::getInstance()->getValue(
-                '
-				SELECT COUNT(*)
-				FROM '._DB_PREFIX_.'customer_thread
-				WHERE 1 '.Shop::addSqlRestriction()
+            return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                    ->select('COUNT(*)')
+                    ->from('customer_thread')
+                    ->where('1 '.Shop::addSqlRestriction())
             );
         } else {
-            return (int) Db::getInstance()->getValue(
-                '
-				SELECT COUNT(*)
-				FROM '._DB_PREFIX_.'customer_thread
-				WHERE '.$where.Shop::addSqlRestriction()
+            return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                    ->select('COUNT(*)')
+                    ->from('customer_thread')
+                    ->where('1 '.Shop::addSqlRestriction())
             );
         }
     }
@@ -210,22 +212,17 @@ class CustomerThreadCore extends ObjectModel
      */
     public static function getMessageCustomerThreads($idCustomerThread)
     {
-        return Db::getInstance()->executeS(
-            '
-			SELECT ct.*, cm.*, cl.name subject, CONCAT(e.firstname, \' \', e.lastname) employee_name,
-				CONCAT(c.firstname, \' \', c.lastname) customer_name, c.firstname
-			FROM '._DB_PREFIX_.'customer_thread ct
-			LEFT JOIN '._DB_PREFIX_.'customer_message cm
-				ON (ct.id_customer_thread = cm.id_customer_thread)
-			LEFT JOIN '._DB_PREFIX_.'contact_lang cl
-				ON (cl.id_contact = ct.id_contact AND cl.id_lang = '.(int) Context::getContext()->language->id.')
-			LEFT JOIN '._DB_PREFIX_.'employee e
-				ON e.id_employee = cm.id_employee
-			LEFT JOIN '._DB_PREFIX_.'customer c
-				ON (IFNULL(ct.id_customer, ct.email) = IFNULL(c.id_customer, c.email))
-			WHERE ct.id_customer_thread = '.(int) $idCustomerThread.'
-			ORDER BY cm.date_add ASC
-		'
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('ct.*, cm.*, cl.name subject, CONCAT(e.firstname, \' \', e.lastname) employee_name')
+                ->select('CONCAT(c.firstname, \' \', c.lastname) customer_name, c.firstname')
+            ->leftJoin('customer_message', 'cm', 'ct.`id_customer_thread` = cm.`id_customer_thread`')
+            ->leftJoin('contact_lang', 'cl', 'cl.`id_contact` = ct.`id_contact`')
+            ->leftJoin('employee', 'e', 'e.`id_employee` = cm.`id_employee`')
+            ->leftJoin('customer', 'c', '(IFNULL(ct.`id_customer`, ct.`email`) = IFNULL(c.`id_customer`, c.`email`))')
+            ->where('cl.`id_lang` = '.(int) Context::getContext()->language->id)
+            ->where('ct.`id_customer_thread` = '.(int) $idCustomerThread)
+            ->orderBy('cm.`date_add` ASC')
         );
     }
 
@@ -241,23 +238,15 @@ class CustomerThreadCore extends ObjectModel
     {
         $context = Context::getContext();
 
-        return Db::getInstance()->getValue(
-            '
-			SELECT id_customer_thread
-			FROM '._DB_PREFIX_.'customer_thread ct
-			WHERE ct.status = "open"
-			AND ct.date_upd = (
-				SELECT date_add FROM '._DB_PREFIX_.'customer_message
-				WHERE (id_employee IS NULL OR id_employee = 0)
-					AND id_customer_thread = '.(int) $idCustomerThread.'
-				ORDER BY date_add DESC LIMIT 1
-			)
-			'.($context->cookie->{'customer_threadFilter_cl!id_contact'} ?
-                'AND ct.id_contact = '.(int) $context->cookie->{'customer_threadFilter_cl!id_contact'} : '').'
-			'.($context->cookie->{'customer_threadFilter_l!id_lang'} ?
-                'AND ct.id_lang = '.(int) $context->cookie->{'customer_threadFilter_l!id_lang'} : '').
-            ' ORDER BY ct.date_upd ASC
-		'
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('`id_customer_thread`')
+                ->from('customer_thread', 'ct')
+                ->where('ct.status = "open"')
+                ->where('ct.`date_upd` = (SELECT date_add FROM '._DB_PREFIX_.'customer_message WHERE (id_employee IS NULL OR id_employee = 0) AND id_customer_thread = '.(int) $idCustomerThread.' ORDER BY date_add DESC LIMIT 1)')
+                ->where($context->cookie->{'customer_threadFilter_cl!id_contact'} ? 'ct.`id_contact` = '.(int) $context->cookie->{'customer_threadFilter_cl!id_contact'} : '')
+                ->where($context->cookie->{'customer_threadFilter_l!id_lang'} ? 'ct.`id_lang` = '.(int) $context->cookie->{'customer_threadFilter_l!id_lang'} : '')
+                ->orderBy('ct.`date_upd` ASC')
         );
     }
 
@@ -269,11 +258,11 @@ class CustomerThreadCore extends ObjectModel
      */
     public function getWsCustomerMessages()
     {
-        return Db::getInstance()->executeS(
-            '
-		SELECT `id_customer_message` id
-		FROM `'._DB_PREFIX_.'customer_message`
-		WHERE `id_customer_thread` = '.(int) $this->id
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('`id_customer_message` AS `id`')
+                ->from('customer_message')
+                ->where('`id_customer_thread` = '.(int) $this->id)
         );
     }
 
@@ -291,10 +280,10 @@ class CustomerThreadCore extends ObjectModel
 
         $return = true;
         $result = Db::getInstance()->executeS(
-            '
-			SELECT `id_customer_message`
-			FROM `'._DB_PREFIX_.'customer_message`
-			WHERE `id_customer_thread` = '.(int) $this->id
+            (new DbQuery())
+                ->select('`id_customer_message`')
+                ->from('customer_message')
+                ->where('`id_customer_thread` = '.(int) $this->id)
         );
 
         if (count($result)) {

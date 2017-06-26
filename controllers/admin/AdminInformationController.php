@@ -160,7 +160,6 @@ class AdminInformationControllerCore extends AdminController
             'CustomizableProductsDir' => $this->l('Set write permissions for the "upload" folder and subfolders.'),
             'VirtualProductsDir'      => $this->l('Set write permissions for the "download" folder and subfolders.'),
             'Fopen'                   => $this->l('Allow the PHP fopen() function on your server.'),
-            'RegisterGlobals'         => $this->l('Set PHP "register_globals" option to "Off".'),
             'Gz'                      => $this->l('Enable GZIP compression on your server.'),
             'Files'                   => $this->l('Some thirty bees files are missing from your server.'),
             'NewPhpVersion'           => sprintf($this->l('You are using PHP %s version. Soon, the oldest PHP version supported by thirty bees will be PHP 5.6. To make sure you’re ready for the future, we recommend you to upgrade to PHP 5.6 now!'), phpversion()),

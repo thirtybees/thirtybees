@@ -47,6 +47,7 @@ class CartControllerCore extends FrontController
     protected $id_product_attribute;
     /** @var int $id_address_delivery */
     protected $id_address_delivery;
+    /** @var int $customization_id */
     protected $customization_id;
     /** @var int $qty */
     protected $qty;
@@ -163,20 +164,20 @@ class CartControllerCore extends FrontController
             return;
         }
 
-        $qty_to_check = $this->qty;
-        $cart_products = $this->context->cart->getProducts();
+        $qtyToCheck = $this->qty;
+        $cartProducts = $this->context->cart->getProducts();
 
-        if (is_array($cart_products)) {
-            foreach ($cart_products as $cart_product) {
-                if ((!isset($this->id_product_attribute) || $cart_product['id_product_attribute'] == $this->id_product_attribute) &&
-                    (isset($this->id_product) && $cart_product['id_product'] == $this->id_product)
+        if (is_array($cartProducts)) {
+            foreach ($cartProducts as $cartProduct) {
+                if ((!isset($this->id_product_attribute) || $cartProduct['id_product_attribute'] == $this->id_product_attribute) &&
+                    (isset($this->id_product) && $cartProduct['id_product'] == $this->id_product)
                 ) {
-                    $qty_to_check = $cart_product['cart_quantity'];
+                    $qtyToCheck = $cartProduct['cart_quantity'];
 
                     if (Tools::getValue('op', 'up') == 'down') {
-                        $qty_to_check -= $this->qty;
+                        $qtyToCheck -= $this->qty;
                     } else {
-                        $qty_to_check += $this->qty;
+                        $qtyToCheck += $this->qty;
                     }
 
                     break;
@@ -186,8 +187,8 @@ class CartControllerCore extends FrontController
 
         // Check product quantity availability
         if ($this->id_product_attribute) {
-            if (!Product::isAvailableWhenOutOfStock($product->out_of_stock) && !Attribute::checkAttributeQty($this->id_product_attribute, $qty_to_check)) {
-                $this->errors[] = Tools::displayError('There isn\'t enough product in stock.', !Tools::getValue('ajax'));
+            if (!Product::isAvailableWhenOutOfStock($product->out_of_stock) && !Attribute::checkAttributeQty($this->id_product_attribute, $qtyToCheck)) {
+                $this->errors[] = Tools::displayError('There aren\'t enough products in stock.', !Tools::getValue('ajax'));
             }
         } elseif ($product->hasAttributes()) {
             $minimumQuantity = ($product->out_of_stock == 2) ? !Configuration::get('PS_ORDER_OUT_OF_STOCK') : !$product->out_of_stock;
@@ -195,11 +196,11 @@ class CartControllerCore extends FrontController
             // @todo do something better than a redirect admin !!
             if (!$this->id_product_attribute) {
                 Tools::redirectAdmin($this->context->link->getProductLink($product));
-            } elseif (!Product::isAvailableWhenOutOfStock($product->out_of_stock) && !Attribute::checkAttributeQty($this->id_product_attribute, $qty_to_check)) {
-                $this->errors[] = Tools::displayError('There isn\'t enough product in stock.', !Tools::getValue('ajax'));
+            } elseif (!Product::isAvailableWhenOutOfStock($product->out_of_stock) && !Attribute::checkAttributeQty($this->id_product_attribute, $qtyToCheck)) {
+                $this->errors[] = Tools::displayError('There aren\'t enough products in stock.', !Tools::getValue('ajax'));
             }
-        } elseif (!$product->checkQty($qty_to_check)) {
-            $this->errors[] = Tools::displayError('There isn\'t enough product in stock.', !Tools::getValue('ajax'));
+        } elseif (!$product->checkQty($qtyToCheck)) {
+            $this->errors[] = Tools::displayError('There aren\'t enough products in stock.', !Tools::getValue('ajax'));
         }
 
         // If no errors, process product addition
@@ -222,42 +223,42 @@ class CartControllerCore extends FrontController
             }
 
             if (!$this->errors) {
-                $cart_rules = $this->context->cart->getCartRules();
-                $available_cart_rules = CartRule::getCustomerCartRules($this->context->language->id, (isset($this->context->customer->id) ? $this->context->customer->id : 0), true, true, true, $this->context->cart, false, true);
-                $update_quantity = $this->context->cart->updateQty($this->qty, $this->id_product, $this->id_product_attribute, $this->customization_id, Tools::getValue('op', 'up'), $this->id_address_delivery);
-                if ($update_quantity < 0) {
+                $cartRules = $this->context->cart->getCartRules();
+                $availableCartRules = CartRule::getCustomerCartRules($this->context->language->id, (isset($this->context->customer->id) ? $this->context->customer->id : 0), true, true, true, $this->context->cart, false, true);
+                $updateQuantity = $this->context->cart->updateQty($this->qty, $this->id_product, $this->id_product_attribute, $this->customization_id, Tools::getValue('op', 'up'), $this->id_address_delivery);
+                if ($updateQuantity < 0) {
                     // If product has attribute, minimal quantity is set with minimal quantity of attribute
-                    $minimal_quantity = ($this->id_product_attribute) ? Attribute::getAttributeMinimalQty($this->id_product_attribute) : $product->minimal_quantity;
-                    $this->errors[] = sprintf(Tools::displayError('You must add %d minimum quantity', !Tools::getValue('ajax')), $minimal_quantity);
-                } elseif (!$update_quantity) {
+                    $minimalQuantity = ($this->id_product_attribute) ? Attribute::getAttributeMinimalQty($this->id_product_attribute) : $product->minimal_quantity;
+                    $this->errors[] = sprintf(Tools::displayError('You must add %d minimum quantity', !Tools::getValue('ajax')), $minimalQuantity);
+                } elseif (!$updateQuantity) {
                     $this->errors[] = Tools::displayError('You already have the maximum quantity available for this product.', !Tools::getValue('ajax'));
                 } elseif ((int) Tools::getValue('allow_refresh')) {
                     // If the cart rules has changed, we need to refresh the whole cart
-                    $cart_rules2 = $this->context->cart->getCartRules();
-                    if (count($cart_rules2) != count($cart_rules)) {
+                    $cartRules2 = $this->context->cart->getCartRules();
+                    if (count($cartRules2) != count($cartRules)) {
                         $this->ajax_refresh = true;
-                    } elseif (count($cart_rules2)) {
-                        $rule_list = [];
-                        foreach ($cart_rules2 as $rule) {
-                            $rule_list[] = $rule['id_cart_rule'];
+                    } elseif (count($cartRules2)) {
+                        $ruleList = [];
+                        foreach ($cartRules2 as $rule) {
+                            $ruleList[] = $rule['id_cart_rule'];
                         }
-                        foreach ($cart_rules as $rule) {
-                            if (!in_array($rule['id_cart_rule'], $rule_list)) {
+                        foreach ($cartRules as $rule) {
+                            if (!in_array($rule['id_cart_rule'], $ruleList)) {
                                 $this->ajax_refresh = true;
                                 break;
                             }
                         }
                     } else {
-                        $available_cart_rules2 = CartRule::getCustomerCartRules($this->context->language->id, (isset($this->context->customer->id) ? $this->context->customer->id : 0), true, true, true, $this->context->cart, false, true);
-                        if (count($available_cart_rules2) != count($available_cart_rules)) {
+                        $availableCartRules2 = CartRule::getCustomerCartRules($this->context->language->id, (isset($this->context->customer->id) ? $this->context->customer->id : 0), true, true, true, $this->context->cart, false, true);
+                        if (count($availableCartRules2) != count($availableCartRules)) {
                             $this->ajax_refresh = true;
-                        } elseif (count($available_cart_rules2)) {
-                            $rule_list = [];
-                            foreach ($available_cart_rules2 as $rule) {
-                                $rule_list[] = $rule['id_cart_rule'];
+                        } elseif (count($availableCartRules2)) {
+                            $ruleList = [];
+                            foreach ($availableCartRules2 as $rule) {
+                                $ruleList[] = $rule['id_cart_rule'];
                             }
-                            foreach ($cart_rules2 as $rule) {
-                                if (!in_array($rule['id_cart_rule'], $rule_list)) {
+                            foreach ($cartRules2 as $rule) {
+                                if (!in_array($rule['id_cart_rule'], $ruleList)) {
                                     $this->ajax_refresh = true;
                                     break;
                                 }

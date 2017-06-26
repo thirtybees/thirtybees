@@ -37,9 +37,11 @@
 class HelperKpiCore extends Helper
 {
     // @codingStandardsIgnoreStart
+    /** @var string $base_folder */
     public $base_folder = 'helpers/kpi/';
+    /** @var string $base_tpl */
     public $base_tpl = 'kpi.tpl';
-
+    /** @var int $id */
     public $id;
     public $icon;
     public $chart;

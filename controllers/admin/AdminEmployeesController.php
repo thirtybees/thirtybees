@@ -582,7 +582,11 @@ class AdminEmployeesControllerCore extends AdminController
 
         //if profile is super admin, manually fill checkBoxShopAsso_employee because in the form they are disabled.
         if ($_POST['id_profile'] == _PS_ADMIN_PROFILE_) {
-            $result = Db::getInstance()->executeS('SELECT id_shop FROM '._DB_PREFIX_.'shop');
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                ->select('`id_shop`')
+                ->from('shop')
+            );
             foreach ($result as $row) {
                 $key = 'checkBoxShopAsso_'.$this->table;
                 if (!isset($_POST[$key])) {

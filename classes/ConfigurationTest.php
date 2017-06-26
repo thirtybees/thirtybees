@@ -120,7 +120,6 @@ class ConfigurationTestCore
     {
         return [
             'NewPhpVersion'   => false,
-            'RegisterGlobals' => false,
             'Gz'              => false,
             'Mbstring'        => false,
             'Tlsv12'          => false,
@@ -343,17 +342,6 @@ class ConfigurationTestCore
     public static function testMaxExecutionTime()
     {
         return ini_get('max_execution_time') <= 0 || ini_get('max_execution_time') >= 30;
-    }
-
-    /**
-     * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public static function testRegisterGlobals()
-    {
-        return !ini_get('register_globals');
     }
 
     /**

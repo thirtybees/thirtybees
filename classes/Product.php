@@ -464,9 +464,7 @@ class ProductCore extends ObjectModel
 
             $this->price = Product::getPriceStatic((int) $this->id, false, null, 6, null, false, true, 1, false, null, null, null, $this->specificPrice);
             $this->unit_price = ($this->unit_price_ratio != 0 ? $this->price / $this->unit_price_ratio : 0);
-            if ($this->id) {
-                $this->tags = Tag::getProductTags((int) $this->id);
-            }
+            $this->tags = Tag::getProductTags((int) $this->id);
 
             $this->loadStockData();
         }
@@ -4376,39 +4374,39 @@ class ProductCore extends ObjectModel
     }
 
     /**
-     * Update categories to index product into
+     * Update the categories this product belongs to
      *
      * @param array $categories
-     * @param bool  $keepingCurrentPos
+     * @param bool  $keepCurrentPosition Someone thought it would be a good idea
+     *                                   to add this parameter, but it has never actually
+     *                                   done anything, so you can ignore it. Maybe we'll
+     *                                   do something with it in thirty bees 1.1, maybe
+     *                                   we don't. As for tb 1.0 we can't change its behavior
+     *                                   due to backwards compatibility.
      *
-     * @return array Update/insertion result
+     * @return bool Update/insertion result
      *
      * @since    1.0.0
      * @version  1.0.0 Initial version
      */
-    public function updateCategories($categories, $keepingCurrentPos = false)
+    public function updateCategories($categories, $keepCurrentPosition = false)
     {
         if (empty($categories)) {
             return false;
         }
 
-        $result = Db::getInstance()->executeS(
-            '
-			SELECT c.`id_category`
-			FROM `'._DB_PREFIX_.'category_product` cp
-			LEFT JOIN `'._DB_PREFIX_.'category` c ON (c.`id_category` = cp.`id_category`)
-			'.Shop::addSqlAssociation('category', 'c', true, null, true).'
-			WHERE cp.`id_category` NOT IN ('.implode(',', array_map('intval', $categories)).')
-			AND cp.id_product = '.$this->id
-        );
+        $sql = new DbQuery();
+        $sql->select('c.`id_category`');
+        $sql->from('category_product', 'cp');
+        $sql->leftJoin('category', 'c', 'c.`id_category` = cp.`id_category`');
+        $sql->where('cp.`id_category` NOT IN ('.implode(',', array_map('intval', $categories)).')');
+        $sql->where('cp.`id_product` = '.(int) $this->id);
+        $result = Db::getInstance()->executeS($sql);
 
-        // if none are found, it's an error
-        if (!is_array($result)) {
-            return false;
-        }
-
-        foreach ($result as $categToDelete) {
-            $this->deleteCategory($categToDelete['id_category']);
+        if (is_array($result)) {
+            foreach ($result as $categoryToDelete) {
+                $this->deleteCategory($categoryToDelete['id_category']);
+            }
         }
 
         if (!$this->addToCategories($categories)) {
@@ -4489,24 +4487,26 @@ class ProductCore extends ObjectModel
             $newCategories[(int) $array['id_category']] = (int) $array['newPos'];
         }
 
-        $newCategPos = [];
+        $newCategoryPos = [];
         foreach ($categories as $idCategory) {
-            $newCategPos[$idCategory] = isset($newCategories[$idCategory]) ? $newCategories[$idCategory] : 0;
+            $newCategoryPos[$idCategory] = isset($newCategories[$idCategory]) ? $newCategories[$idCategory] : 0;
         }
-
-        $productCats = [];
 
         foreach ($categories as $newIdCateg) {
             if (!in_array($newIdCateg, $currentCategories)) {
-                $productCats[] = [
-                    'id_category' => (int) $newIdCateg,
-                    'id_product'  => (int) $this->id,
-                    'position'    => (int) $newCategPos[$newIdCateg],
-                ];
+                Db::getInstance()->insert(
+                    'category_product',
+                    [
+                        'id_category' => (int) $newIdCateg,
+                        'id_product'  => (int) $this->id,
+                        'position'    => (int) $newCategoryPos[$newIdCateg],
+                    ],
+                    false,
+                    true,
+                    Db::INSERT_IGNORE
+                );
             }
         }
-
-        Db::getInstance()->insert('category_product', $productCats);
 
         return true;
     }

@@ -36,15 +36,22 @@
  */
 class AttachmentCore extends ObjectModel
 {
+    // @codingStandardsIgnoreStart
+    /** @var string $file */
     public $file;
+    /** @var string $file_name */
     public $file_name;
+    /** @var int $file_size */
     public $file_size;
+    /** @var string $name */
     public $name;
+    /** @var string $mime */
     public $mime;
+    /** @var string $description */
     public $description;
-
     /** @var int position */
     public $position;
+    // @codingStandardsIgnoreEnd
 
     /**
      * @see ObjectModel::$definition
@@ -106,14 +113,14 @@ class AttachmentCore extends ObjectModel
     {
         @unlink(_PS_DOWNLOAD_DIR_.$this->file);
 
-        $products = Db::getInstance()->executeS(
-            '
-		SELECT id_product
-		FROM '._DB_PREFIX_.'product_attachment
-		WHERE id_attachment = '.(int) $this->id
+        $products = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+            ->select('`id_product`')
+            ->from('product_attachment')
+            ->where('`id_attachment` = '.(int) $this->id)
         );
 
-        Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'product_attachment WHERE id_attachment = '.(int) $this->id);
+        Db::getInstance()->delete('product_attachment', '`id_attachment` = '.(int) $this->id);
 
         foreach ($products as $product) {
             Product::updateCacheAttachment((int) $product['id_product']);
@@ -125,16 +132,33 @@ class AttachmentCore extends ObjectModel
     /**
      * @param array $attachments
      *
-     * @return bool|int
+     * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function deleteSelection($attachments)
     {
-        $return = 1;
-        foreach ($attachments as $id_attachment) {
-            $attachment = new Attachment((int) $id_attachment);
+        if (empty($attachments)) {
+            return true;
+        }
+
+        $return = true;
+
+        $attachmentsData = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+            ->select('*')
+            ->from(bqSQL(Attachment::$definition['table']))
+            ->where('`id_attachment` IN ('.implode(',', $attachments).')')
+        );
+
+        if (empty($attachmentsData)) {
+            return true;
+        }
+
+        foreach ($attachmentsData as $attachmentData) {
+            $attachment = new Attachment();
+            $attachment->hydrate($attachmentData);
             $return &= $attachment->delete();
         }
 
@@ -144,27 +168,31 @@ class AttachmentCore extends ObjectModel
     /**
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @param int  $idLang
+     * @param int  $idProduct
+     * @param bool $include
+     *
+     * @return array|false|null|PDOStatement
      */
     public static function getAttachments($idLang, $idProduct, $include = true)
     {
-        return Db::getInstance()->executeS(
-            '
-			SELECT *
-			FROM '._DB_PREFIX_.'attachment a
-			LEFT JOIN '._DB_PREFIX_.'attachment_lang al
-				ON (a.id_attachment = al.id_attachment AND al.id_lang = '.(int) $idLang.')
-			WHERE a.id_attachment '.($include ? 'IN' : 'NOT IN').' (
-				SELECT pa.id_attachment
-				FROM '._DB_PREFIX_.'product_attachment pa
-				WHERE id_product = '.(int) $idProduct.'
-			)'
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+            ->select('a.*, al.*')
+            ->from('attachment', 'a')
+            ->leftJoin('attachment_lang', 'al', 'a.`id_attachment` = al.`id_attachment`')
+            ->leftJoin('product_attachment', 'pa', 'pa.`id_attachment` = a.`id_attachment`')
+            ->where('al.`id_lang` = '.(int) $idLang)
+            ->where($include ? 'pa.`id_product` = '.(int) $idProduct : '')
+            ->where('pa.`id_product` IS '.($include ? 'NOT ' : '').'NULL')
         );
     }
 
     /**
      * Unassociate $id_product from the current object
      *
-     * @param $idProduct int
+     * @param int $idProduct
      *
      * @return bool
      *
@@ -173,10 +201,9 @@ class AttachmentCore extends ObjectModel
      */
     public static function deleteProductAttachments($idProduct)
     {
-        $res = Db::getInstance()->execute(
-            '
-		DELETE FROM '._DB_PREFIX_.'product_attachment
-		WHERE id_product = '.(int) $idProduct
+        $res = Db::getInstance()->delete(
+            'product_attachment',
+            '`id_product` = '.(int) $idProduct
         );
 
         Product::updateCacheAttachment((int) $idProduct);
@@ -196,11 +223,12 @@ class AttachmentCore extends ObjectModel
      */
     public function attachProduct($idProduct)
     {
-        $res = Db::getInstance()->execute(
-            '
-			INSERT INTO '._DB_PREFIX_.'product_attachment
-				(id_attachment, id_product) VALUES
-				('.(int) $this->id.', '.(int) $idProduct.')'
+        $res = Db::getInstance()->insert(
+            'product_attachment',
+            [
+                'id_attachment' => (int) $this->id,
+                'id_product'    => (int) $idProduct,
+            ]
         );
 
         Product::updateCacheAttachment((int) $idProduct);
@@ -212,8 +240,8 @@ class AttachmentCore extends ObjectModel
      * Associate an array of id_attachment $array to the product $id_product
      * and remove eventual previous association
      *
-     * @param $idProduct
-     * @param $array
+     * @param int   $idProduct
+     * @param array $array
      *
      * @return bool
      *
@@ -246,8 +274,8 @@ class AttachmentCore extends ObjectModel
     }
 
     /**
-     * @param $idLang
-     * @param $list
+     * @param int   $idLang
+     * @param array $list
      *
      * @return array|bool
      *
@@ -256,23 +284,27 @@ class AttachmentCore extends ObjectModel
      */
     public static function getProductAttached($idLang, $list)
     {
-        $idsAttachements = [];
+        $idAttachments = [];
         if (is_array($list)) {
-            foreach ($list as $attachement) {
-                $idsAttachements[] = $attachement['id_attachment'];
+            foreach ($list as $attachment) {
+                $idAttachments[] = $attachment['id_attachment'];
             }
 
-            $sql = 'SELECT * FROM `'._DB_PREFIX_.'product_attachment` pa
-					LEFT JOIN `'._DB_PREFIX_.'product_lang` pl ON (pa.`id_product` = pl.`id_product`'.Shop::addSqlRestrictionOnLang('pl').')
-					WHERE `id_attachment` IN ('.implode(',', array_map('intval', $idsAttachements)).')
-						AND pl.`id_lang` = '.(int) $idLang;
-            $tmp = Db::getInstance()->executeS($sql);
-            $productAttachements = [];
+            $tmp = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                ->select('*')
+                ->from('product_attachment', 'pa')
+                ->leftJoin('product_lang', 'pl', 'pa.`id_product` = pl.`id_product`')
+                ->where('pa.`id_attachment` IN ('.implode(',', array_map('intval', $idAttachments)).')')
+                ->where('pl.`id_shop` = '.(int) Context::getContext()->shop->id)
+                ->where('pl.`id_lang` = '.(int) $idLang)
+            );
+            $productAttachments = [];
             foreach ($tmp as $t) {
-                $productAttachements[$t['id_attachment']][] = $t['name'];
+                $productAttachments[$t['id_attachment']][] = $t['name'];
             }
 
-            return $productAttachements;
+            return $productAttachments;
         } else {
             return false;
         }

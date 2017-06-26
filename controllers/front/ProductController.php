@@ -154,17 +154,17 @@ class ProductControllerCore extends FrontController
                     && preg_match('~^.*(?<!\/content)\/([0-9]+)\-(.*[^\.])|(.*)id_(category|product)=([0-9]+)(.*)$~', $_SERVER['HTTP_REFERER'], $regs)
                 ) {
                     // If the previous page was a category and is a parent category of the product use this category as parent category
-                    $id_object = false;
+                    $idObject = false;
                     if (isset($regs[1]) && is_numeric($regs[1])) {
-                        $id_object = (int) $regs[1];
+                        $idObject = (int) $regs[1];
                     } elseif (isset($regs[5]) && is_numeric($regs[5])) {
-                        $id_object = (int) $regs[5];
+                        $idObject = (int) $regs[5];
                     }
-                    if ($id_object) {
+                    if ($idObject) {
                         $referers = [$_SERVER['HTTP_REFERER'], urldecode($_SERVER['HTTP_REFERER'])];
-                        if (in_array($this->context->link->getCategoryLink($id_object), $referers)) {
-                            $idCategory = (int) $id_object;
-                        } elseif (isset($this->context->cookie->last_visited_category) && (int) $this->context->cookie->last_visited_category && in_array($this->context->link->getProductLink($id_object), $referers)) {
+                        if (in_array($this->context->link->getCategoryLink($idObject), $referers)) {
+                            $idCategory = (int) $idObject;
+                        } elseif (isset($this->context->cookie->last_visited_category) && (int) $this->context->cookie->last_visited_category && in_array($this->context->link->getProductLink($idObject), $referers)) {
                             $idCategory = (int) $this->context->cookie->last_visited_category;
                         }
                     }
@@ -336,6 +336,7 @@ class ProductControllerCore extends FrontController
                         'category-'.(isset($this->category) ? $this->category->getFieldByLang('link_rewrite') : ''),
                     ],
                     'display_discount_price'   => Configuration::get('PS_DISPLAY_DISCOUNT_PRICE'),
+                    'show_condition'           => Configuration::get('PS_SHOW_CONDITION'),
                 ]
             );
         }
@@ -539,9 +540,10 @@ class ProductControllerCore extends FrontController
         $productPriceWithoutEcoTax = (float) $productPriceWithTax - $this->product->ecotax;
 
         $ecotaxRate = (float) Tax::getProductEcotaxRate($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
-        $ecotaxTaxAmount = Tools::ps_round($this->product->ecotax, 2);
         if (Product::$_taxCalculationMethod == PS_TAX_INC && (int) Configuration::get('PS_TAX')) {
-            $ecotaxTaxAmount = Tools::ps_round($ecotaxTaxAmount * (1 + $ecotaxRate / 100), 2);
+            $ecotaxTaxAmount = Tools::ps_round($this->product->ecotax * (1 + $ecotaxRate / 100), 2);
+        } else {
+            $ecotaxTaxAmount = Tools::ps_round($this->product->ecotax, 2);
         }
 
         $idCurrency = (int) $this->context->cookie->id_currency;
@@ -551,6 +553,7 @@ class ProductControllerCore extends FrontController
         $quantityDiscounts = SpecificPrice::getQuantityDiscounts($idProduct, $idShop, $idCurrency, $idCountry, $idGroup, null, true, (int) $this->context->customer->id);
         foreach ($quantityDiscounts as &$quantityDiscount) {
             if ($quantityDiscount['id_product_attribute']) {
+                $quantityDiscount['base_price'] = $this->product->getPrice(Product::$_taxCalculationMethod === PS_TAX_INC, $quantityDiscount['id_product_attribute']);
                 $combination = new Combination((int) $quantityDiscount['id_product_attribute']);
                 $attributes = $combination->getAttributesName((int) $this->context->language->id);
                 foreach ($attributes as $attribute) {
@@ -563,11 +566,10 @@ class ProductControllerCore extends FrontController
             }
         }
 
-        $productPrice = $this->product->getPrice(Product::$_taxCalculationMethod == PS_TAX_INC, false);
         $address = new Address($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
         $this->context->smarty->assign(
             [
-                'quantity_discounts'         => $this->formatQuantityDiscounts($quantityDiscounts, $productPrice, (float) $tax, $ecotaxTaxAmount),
+                'quantity_discounts'         => $this->formatQuantityDiscounts($quantityDiscounts, null, (float) $tax, $ecotaxTaxAmount),
                 'ecotax_tax_inc'             => $ecotaxTaxAmount,
                 'ecotax_tax_exc'             => Tools::ps_round($this->product->ecotax, 2),
                 'ecotaxTax_rate'             => $ecotaxRate,
@@ -587,20 +589,20 @@ class ProductControllerCore extends FrontController
      * @param array $specificPrices
      * @param float $price
      * @param float $taxRate
-     * @param float $ecotax_amount
+     * @param float $ecotaxAmount
      *
      * @return mixed
      *
      * @since 1.0.0
      */
-    protected function formatQuantityDiscounts($specificPrices, $price, $taxRate, $ecotax_amount)
+    protected function formatQuantityDiscounts($specificPrices, $price, $taxRate, $ecotaxAmount)
     {
         foreach ($specificPrices as $key => &$row) {
             $row['quantity'] = &$row['from_quantity'];
             if ($row['price'] >= 0) {
                 // The price may be directly set
 
-                $currentPrice = (!$row['reduction_tax'] ? $row['price'] : $row['price'] * (1 + $taxRate / 100)) + (float) $ecotax_amount;
+                $currentPrice = (!$row['reduction_tax'] ? $row['price'] : $row['price'] * (1 + $taxRate / 100)) + (float) $ecotaxAmount;
 
                 if ($row['reduction_type'] == 'amount') {
                     $currentPrice -= ($row['reduction_tax'] ? $row['reduction'] : $row['reduction'] / (1 + $taxRate / 100));
@@ -609,7 +611,7 @@ class ProductControllerCore extends FrontController
                     $currentPrice *= 1 - $row['reduction'];
                 }
 
-                $row['real_value'] = $price > 0 ? $price - $currentPrice : $currentPrice;
+                $row['real_value'] = $row['base_price'] > 0 ? $row['base_price'] - $currentPrice : $currentPrice;
             } else {
                 if ($row['reduction_type'] == 'amount') {
                     if (Product::$_taxCalculationMethod == PS_TAX_INC) {
@@ -735,7 +737,7 @@ class ProductControllerCore extends FrontController
 
                 // Call getPriceStatic in order to set $combination_specific_price
                 if (!isset($combinationPricesSet[(int) $row['id_product_attribute']])) {
-                    Product::getPriceStatic((int) $this->product->id, false, $row['id_product_attribute'], 6, null, false, true, 1, false, null, null, null, $combinationSpecificPrice);
+                    Product::getPriceStatic((int) $this->product->id, false, $row['id_product_attribute'], 6, null, false, false, 1, false, null, null, null, $combinationSpecificPrice);
                     $combinationPricesSet[(int) $row['id_product_attribute']] = true;
                     $combinations[$row['id_product_attribute']]['specific_price'] = $combinationSpecificPrice;
                 }
@@ -763,7 +765,7 @@ class ProductControllerCore extends FrontController
 
                         if (is_array($combinationImages[$row['id_product_attribute']])) {
                             foreach ($combinationImages[$row['id_product_attribute']] as $tmp) {
-                                if ($tmp['id_image'] == $currentCover['id_image']) {
+                                if (isset($currentCover) && $tmp['id_image'] == $currentCover['id_image']) {
                                     $combinations[$row['id_product_attribute']]['id_image'] = $idImage = (int) $tmp['id_image'];
                                     break;
                                 }

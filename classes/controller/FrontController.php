@@ -253,28 +253,30 @@ class FrontControllerCore extends Controller
             // These hooks aren't used for the mobile theme.
             // Needed hooks are called in the tpl files.
 
-            $hook_header = Hook::exec('displayHeader');
-            $extra_favicons = '
-                <link rel="shortcut icon" sizes="57x57" href="'.$this->context->link->getMediaLink(_PS_IMG_.'favicon_57.png').'">
-                <link rel="shortcut icon" sizes="72x72" href="'.$this->context->link->getMediaLink(_PS_IMG_.'favicon_72.png').'">
-                <link rel="shortcut icon" sizes="114x114" href="'.$this->context->link->getMediaLink(_PS_IMG_.'favicon_114.png').'">
-                <link rel="shortcut icon" sizes="144x144" href="'.$this->context->link->getMediaLink(_PS_IMG_.'favicon_144.png').'">';
-                
-            $hook_header .= $extra_favicons;
-
-            if (isset($this->php_self)) { // append some seo fields, canonical, hrefLang, rel prev/next
-                $hook_header .= $this->getSeoFields();
+            $hookHeader = Hook::exec('displayHeader');
+            foreach ([
+                         Media::FAVICON_57  => '57',
+                         Media::FAVICON_72  => '72',
+                         Media::FAVICON_114 => '114',
+                         Media::FAVICON_144 => '144',
+                     ] as $faviconType => $size) {
+                if ($path = Media::getFaviconPath($faviconType)) {
+                    $hookHeader .= '<link rel="shortcut icon" sizes="'.$size.'x'.$size.'" href="'.$path.'">';
+                }
             }
 
+            if (isset($this->php_self)) { // append some seo fields, canonical, hrefLang, rel prev/next
+                $hookHeader .= $this->getSeoFields();
+            }
 
             // To be removed: append extra css and metas to the header hook
-            $extra_code = Configuration::getMultiple(['PS_CUSTOMCODE_METAS', 'PS_CUSTOMCODE_CSS']);
-            $extra_css = $extra_code['PS_CUSTOMCODE_CSS'] ? '<style>'.$extra_code['PS_CUSTOMCODE_CSS'].'</style>' : '';
-            $hook_header .= $extra_code['PS_CUSTOMCODE_METAS'].$extra_css;
+            $extraCode = Configuration::getMultiple(['PS_CUSTOMCODE_METAS', 'PS_CUSTOMCODE_CSS']);
+            $extraCss = $extraCode['PS_CUSTOMCODE_CSS'] ? '<style>'.$extraCode['PS_CUSTOMCODE_CSS'].'</style>' : '';
+            $hookHeader .= $extraCode['PS_CUSTOMCODE_METAS'].$extraCss;
 
             $this->context->smarty->assign(
                 [
-                    'HOOK_HEADER'       => $hook_header,
+                    'HOOK_HEADER'       => $hookHeader,
                     'HOOK_TOP'          => Hook::exec('displayTop'),
                     'HOOK_LEFT_COLUMN'  => ($this->display_column_left ? Hook::exec('displayLeftColumn') : ''),
                     'HOOK_RIGHT_COLUMN' => ($this->display_column_right ? Hook::exec('displayRightColumn', ['cart' => $this->context->cart]) : ''),
@@ -1659,6 +1661,7 @@ class FrontControllerCore extends Controller
                 'mail_dir'            => _MAIL_DIR_,
                 'lang_iso'            => $this->context->language->iso_code,
                 'lang_id'             => (int) $this->context->language->id,
+                'isRtl'               => $this->context->language->is_rtl,
                 'language_code'       => $this->context->language->language_code ? $this->context->language->language_code : $this->context->language->iso_code,
                 'come_from'           => Tools::getHttpHost(true, true).Tools::htmlentitiesUTF8(str_replace(['\'', '\\'], '', urldecode($_SERVER['REQUEST_URI']))),
                 'cart_qties'          => (int) $cart->nbProducts(),

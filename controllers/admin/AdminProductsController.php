@@ -2109,7 +2109,7 @@ class AdminProductsControllerCore extends AdminController
                         $itemIdAttribute = 0;
                         count($array = explode('x', $line)) == 3 ? list($qty, $itemId, $itemIdAttribute) = $array : list($qty, $itemId) = $array;
                         if ($qty > 0 && isset($itemId)) {
-                            if (Pack::isPack((int) $itemId)) {
+                            if (Pack::isPack((int) $itemId || $product->id == (int) $itemId)) {
                                 $this->errors[] = Tools::displayError('You can\'t add product packs into a pack');
                             } elseif (!Pack::addItem((int) $product->id, (int) $itemId, (int) $qty, (int) $itemIdAttribute)) {
                                 $this->errors[] = Tools::displayError('An error occurred while attempting to add products to the pack.');
@@ -5139,7 +5139,12 @@ class AdminProductsControllerCore extends AdminController
                 $data->assign('has_attribute', $obj->hasAttributes());
                 // Check if product has combination, to display the available date only for the product or for each combination
                 if (Combination::isFeatureActive()) {
-                    $data->assign('countAttributes', (int) Db::getInstance()->getValue('SELECT COUNT(id_product) FROM '._DB_PREFIX_.'product_attribute WHERE id_product = '.(int) $obj->id));
+                    $data->assign('countAttributes', (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                        (new DbQuery())
+                        ->select('COUNT(`id_product`)')
+                        ->from('product_attribute')
+                        ->where('`id_product` = '.(int) $obj->id)
+                    ));
                 } else {
                     $data->assign('countAttributes', false);
                 }
@@ -5577,7 +5582,12 @@ class AdminProductsControllerCore extends AdminController
      */
     public function initFormModules($obj)
     {
-        $idModule = Db::getInstance()->getValue('SELECT `id_module` FROM `'._DB_PREFIX_.'module` WHERE `name` = \''.pSQL($this->tab_display_module).'\'');
+        $idModule = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+            ->select('`id_module`')
+            ->from('module')
+            ->where('`name` = \''.pSQL($this->tab_display_module).'\'')
+        );
         $this->tpl_form_vars['custom_form'] = Hook::exec('displayAdminProductsExtra', [], (int) $idModule);
     }
 

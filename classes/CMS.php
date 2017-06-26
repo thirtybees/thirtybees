@@ -52,11 +52,11 @@ class CMSCore extends ObjectModel
             'active'           => ['type' => self::TYPE_BOOL],
 
             /* Lang fields */
-            'meta_description' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255],
-            'meta_keywords'    => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255],
+            'meta_description' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName',                     'size' => 255],
+            'meta_keywords'    => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName',                     'size' => 255],
             'meta_title'       => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128],
             'link_rewrite'     => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isLinkRewrite', 'required' => true, 'size' => 128],
-            'content'          => ['type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => 3999999999999],
+            'content'          => ['type' => self::TYPE_HTML,   'lang' => true, 'validate' => 'isCleanHtml',                       'size' => 3999999999999],
         ],
     ];
     /** @var string Name */
@@ -92,16 +92,16 @@ class CMSCore extends ObjectModel
             $link = Context::getContext()->link;
         }
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            '
-		SELECT c.id_cms, cl.link_rewrite, cl.meta_title
-		FROM '._DB_PREFIX_.'cms c
-		LEFT JOIN '._DB_PREFIX_.'cms_lang cl ON (c.id_cms = cl.id_cms AND cl.id_lang = '.(int) $idLang.')
-		'.Shop::addSqlAssociation('cms', 'c').'
-		WHERE 1
-		'.(($selection !== null) ? ' AND c.id_cms IN ('.implode(',', array_map('intval', $selection)).')' : '').
-            ($active ? ' AND c.`active` = 1 ' : '').
-            'GROUP BY c.id_cms
-		ORDER BY c.`position`'
+            (new DbQuery())
+                ->select('c.`id_cms`, cl.`link_rewrite`, cl.`meta_title`')
+                ->from('cms', 'c')
+                ->leftJoin('cms_lang', 'cl', 'c.`id_cms` = cl.`id_cms`')
+                ->join(Shop::addSqlRestriction('cms', 'c'))
+                ->where('cl.`id_lang` = '.(int) $idLang)
+                ->where($selection !== null ? 'c.`id_cms` IN ('.implode(',', array_map('intval', $selection)).')' : '')
+                ->where($active ? ' AND c.`active` = 1 ' : '')
+                ->groupBy('c.`id_cms`')
+                ->orderBy('c.`position`')
         );
 
         $links = [];
@@ -132,23 +132,24 @@ class CMSCore extends ObjectModel
         }
 
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            '
-		SELECT c.id_cms, l.meta_title
-		FROM  '._DB_PREFIX_.'cms c
-		JOIN '._DB_PREFIX_.'cms_lang l ON (c.id_cms = l.id_cms)
-		'.Shop::addSqlAssociation('cms', 'c').'
-		'.(($idBlock) ? 'JOIN '._DB_PREFIX_.'block_cms b ON (c.id_cms = b.id_cms)' : '').'
-		WHERE l.id_lang = '.(int) $idLang.(($idBlock) ? ' AND b.id_block = '.(int) $idBlock : '').($active ? ' AND c.`active` = 1 ' : '').'
-		GROUP BY c.id_cms
-		ORDER BY c.`position`'
+            (new DbQuery())
+                ->select('c.`id_cms`, l.`meta_title`')
+                ->from('cms', 'c')
+                ->innerJoin('cms_lang', 'l', 'c.`id_cms` = l.`id_cms`')
+                ->join($idBlock ? 'JOIN `'._DB_PREFIX_.'block_cms` b ON (c.`id_cms` = b.`id_cms`)' : '')
+                ->where('l.`id_lang` = '.(int) $idLang)
+                ->where($idBlock ? 'b.`id_block` = '.(int) $idBlock : '')
+                ->where($active ? 'c.`active` = 1' : '')
+                ->groupBy('c.`id_cms`')
+                ->orderBy('c.`position`')
         );
     }
 
     /**
-     * @param null $idLang
-     * @param null $idCmsCategory
-     * @param bool $active
-     * @param null $idShop
+     * @param int|null $idLang
+     * @param int|null $idCmsCategory
+     * @param bool     $active
+     * @param int|null $idShop
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
@@ -187,7 +188,7 @@ class CMSCore extends ObjectModel
     }
 
     /**
-     * @param $idCms
+     * @param int $idCms
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
@@ -196,13 +197,14 @@ class CMSCore extends ObjectModel
      */
     public static function getUrlRewriteInformations($idCms)
     {
-        $sql = 'SELECT l.`id_lang`, c.`link_rewrite`
-				FROM `'._DB_PREFIX_.'cms_lang` AS c
-				LEFT JOIN  `'._DB_PREFIX_.'lang` AS l ON c.`id_lang` = l.`id_lang`
-				WHERE c.`id_cms` = '.(int) $idCms.'
-				AND l.`active` = 1';
-
-        return Db::getInstance()->executeS($sql);
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('l.`id_lang`, c.`link_rewrite`')
+                ->from('cms_lang', 'c')
+                ->leftJoin('lang', 'l', 'c.`id_lang` = l.`id_lang`')
+                ->where('c.`id_cms` = '.(int) $idCms)
+                ->where('l.`active` = 1')
+        );
     }
 
     /**
@@ -224,12 +226,14 @@ class CMSCore extends ObjectModel
             $idShop = (int) Configuration::get('PS_SHOP_DEFAULT');
         }
 
-        $sql = '
-			SELECT `content`
-			FROM `'._DB_PREFIX_.'cms_lang`
-			WHERE `id_cms` = '.(int) $idCms.' AND `id_lang` = '.(int) $idLang.' AND `id_shop` = '.(int) $idShop;
-
-        return Db::getInstance()->getRow($sql);
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('`content`')
+                ->from('cms_lang')
+                ->where('`id_cms` = '.(int) $idCms)
+                ->where('`id_lang` = '.(int) $idLang)
+                ->where('`id_shop` = '.(int) $idShop)
+        );
     }
 
     /**
@@ -264,7 +268,7 @@ class CMSCore extends ObjectModel
     }
 
     /**
-     * @param $idCategory
+     * @param int $idCategory
      *
      * @return false|null|string
      *
@@ -273,12 +277,12 @@ class CMSCore extends ObjectModel
      */
     public static function getLastPosition($idCategory)
     {
-        $sql = '
-		SELECT MAX(position) + 1
-		FROM `'._DB_PREFIX_.'cms`
-		WHERE `id_cms_category` = '.(int) $idCategory;
-
-        return (Db::getInstance()->getValue($sql));
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('MAX(`position`) + 1')
+                ->from('cms')
+                ->where('`id_cms_category` = '.(int) $idCategory)
+        );
     }
 
     /**
@@ -295,8 +299,6 @@ class CMSCore extends ObjectModel
             PageCache::invalidateEntity('cms', $this->id);
         }
 
-        
-
         if (parent::update($nullValues)) {
             return $this->cleanPositions($this->id_cms_category);
         }
@@ -305,7 +307,7 @@ class CMSCore extends ObjectModel
     }
 
     /**
-     * @param $idCategory
+     * @param int $idCategory
      *
      * @return bool
      *
@@ -314,20 +316,22 @@ class CMSCore extends ObjectModel
      */
     public static function cleanPositions($idCategory)
     {
-        $sql = '
-		SELECT `id_cms`
-		FROM `'._DB_PREFIX_.'cms`
-		WHERE `id_cms_category` = '.(int) $idCategory.'
-		ORDER BY `position`';
-
-        $result = Db::getInstance()->executeS($sql);
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('`id_cms`')
+                ->from('cms')
+                ->where('`id_cms_category` = '.(int) $idCategory)
+                ->orderBy('`position`')
+        );
 
         for ($i = 0, $total = count($result); $i < $total; ++$i) {
-            $sql = 'UPDATE `'._DB_PREFIX_.'cms`
-					SET `position` = '.(int) $i.'
-					WHERE `id_cms_category` = '.(int) $idCategory.'
-						AND `id_cms` = '.(int) $result[$i]['id_cms'];
-            Db::getInstance()->execute($sql);
+            Db::getInstance()->update(
+                'cms',
+                [
+                    'position' => (int) $i,
+                ],
+                '`id_cms_category` = '.(int) $idCategory.' AND `id_cms` = '.(int) $result[$i]['id_cms']
+            );
         }
 
         return true;
@@ -353,8 +357,8 @@ class CMSCore extends ObjectModel
     }
 
     /**
-     * @param $way
-     * @param $position
+     * @param bool $way
+     * @param int  $position
      *
      * @return bool
      *
@@ -364,13 +368,12 @@ class CMSCore extends ObjectModel
     public function updatePosition($way, $position)
     {
         if (!$res = Db::getInstance()->executeS(
-            '
-			SELECT cp.`id_cms`, cp.`position`, cp.`id_cms_category`
-			FROM `'._DB_PREFIX_.'cms` cp
-			WHERE cp.`id_cms_category` = '.(int) $this->id_cms_category.'
-			ORDER BY cp.`position` ASC'
-        )
-        ) {
+            (new DbQuery())
+                ->select('cp.`id_cms`, cp.`position`, cp.`id_cms_category`')
+                ->from('cms', 'cp')
+                ->where('cp.`id_cms_category` = '.(int) $this->id_cms_category)
+                ->orderBy('cp.`position` ASC')
+        )) {
             return false;
         }
 
@@ -386,22 +389,18 @@ class CMSCore extends ObjectModel
 
         // < and > statements rather than BETWEEN operator
         // since BETWEEN is treated differently according to databases
-        return (Db::getInstance()->execute(
-                '
-			UPDATE `'._DB_PREFIX_.'cms`
-			SET `position`= `position` '.($way ? '- 1' : '+ 1').'
-			WHERE `position`
-			'.($way
-                    ? '> '.(int) $movedCms['position'].' AND `position` <= '.(int) $position
-                    : '< '.(int) $movedCms['position'].' AND `position` >= '.(int) $position).'
-			AND `id_cms_category`='.(int) $movedCms['id_cms_category']
-            )
-            && Db::getInstance()->execute(
-                '
-			UPDATE `'._DB_PREFIX_.'cms`
-			SET `position` = '.(int) $position.'
-			WHERE `id_cms` = '.(int) $movedCms['id_cms'].'
-			AND `id_cms_category`='.(int) $movedCms['id_cms_category']
-            ));
+        return (Db::getInstance()->update(
+            'cms',
+            [
+                'position' => ['type' => 'sql', 'value' => '`position` '.($way ? '- 1' : '+ 1')],
+            ],
+            '`position` '.($way ? '> '.(int) $movedCms['position'].' AND `position` <= '.(int) $position : '< '.(int) $movedCms['position'].' AND `position` >= '.(int) $position).' AND `id_cms_category`='.(int) $movedCms['id_cms_category']
+        ) && Db::getInstance()->update(
+            'cms',
+            [
+                'position' => (int) $position,
+            ],
+            '`id_cms` = '.(int) $movedCms['id_cms'].' AND `id_cms_category`='.(int) $movedCms['id_cms_category']
+        ));
     }
 }

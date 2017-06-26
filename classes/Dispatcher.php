@@ -581,12 +581,13 @@ class DispatcherCore
         // Load the custom routes prior the defaults to avoid infinite loops
         if ($this->use_routes) {
             /* Load routes from meta table */
-            $sql = 'SELECT m.page, ml.url_rewrite, ml.id_lang
-					FROM `'._DB_PREFIX_.'meta` m
-					LEFT JOIN `'._DB_PREFIX_.'meta_lang` ml
-					ON (m.id_meta = ml.id_meta'.Shop::addSqlRestrictionOnLang('ml', $idShop).')
-					ORDER BY LENGTH(ml.url_rewrite) DESC';
-            if ($results = Db::getInstance()->executeS($sql)) {
+            if ($results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                    ->select('m.`page`, ml.`url_rewrite`, ml.`id_lang`')
+                    ->from('meta', 'm')
+                    ->leftJoin('meta_lang', 'ml', 'm.`id_meta` = ml.`id_meta` '.Shop::addSqlRestrictionOnLang('ml', $idShop))
+                    ->orderBy('LENGTH(ml.`url_rewrite`) DESC')
+            )) {
                 foreach ($results as $row) {
                     if ($row['url_rewrite']) {
                         $this->addRoute(

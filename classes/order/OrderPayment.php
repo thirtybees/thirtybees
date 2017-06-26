@@ -84,8 +84,10 @@ class OrderPaymentCore extends ObjectModel
     {
         if (parent::add($autodate, $nullValues)) {
             Hook::exec('actionPaymentCCAdd', ['paymentCC' => $this]);
+
             return true;
         }
+
         return false;
     }
 
@@ -94,16 +96,19 @@ class OrderPaymentCore extends ObjectModel
      *
      * @param int $idOrder
      *
-*@return array
-     *
-     * @deprecated 2.0.0
+     * @return array
      */
     public static function getByOrderId($idOrder)
     {
-        Tools::displayAsDeprecated();
-        $order = new Order($idOrder);
-
-        return OrderPayment::getByOrderReference($order->reference);
+        return ObjectModel::hydrateCollection(
+            'OrderPayment',
+            Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                    ->select('*')
+                    ->from('order_payment')
+                    ->where('`id_order` = '.(int) $idOrder)
+            )
+        );
     }
 
     /**
@@ -118,11 +123,14 @@ class OrderPaymentCore extends ObjectModel
      */
     public static function getByOrderReference($orderReference)
     {
-        return ObjectModel::hydrateCollection('OrderPayment',
-            Db::getInstance()->executeS('
-			SELECT *
-			FROM `'._DB_PREFIX_.'order_payment`
-			WHERE `order_reference` = \''.pSQL($orderReference).'\'')
+        return ObjectModel::hydrateCollection(
+            'OrderPayment',
+            Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                    ->select('*')
+                    ->from('order_payment')
+                    ->where('`order_reference` = \''.pSQL($orderReference).'\'')
+            )
         );
     }
 
@@ -135,9 +143,14 @@ class OrderPaymentCore extends ObjectModel
      */
     public static function getByInvoiceId($idInvoice)
     {
-        $payments = Db::getInstance()->executeS('SELECT id_order_payment FROM `'._DB_PREFIX_.'order_invoice_payment` WHERE id_order_invoice = '.(int) $idInvoice);
+        $payments = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('`id_order_payment`')
+                ->from('order_invoice_payment')
+                ->where('`id_order_invoice` = '.(int) $idInvoice)
+        );
         if (!$payments) {
-            return [];
+            return new PrestaShopCollection('OrderPayment');
         }
 
         $paymentList = [];
@@ -147,6 +160,7 @@ class OrderPaymentCore extends ObjectModel
 
         $payments = new PrestaShopCollection('OrderPayment');
         $payments->where('id_order_payment', 'IN', $paymentList);
+
         return $payments;
     }
 
@@ -155,15 +169,17 @@ class OrderPaymentCore extends ObjectModel
      *
      * @param int $idOrder Order Id
      *
-     * @since 1.5.0.13
+     * @return bool|OrderInvoice
      */
     public function getOrderInvoice($idOrder)
     {
-        $res = Db::getInstance()->getValue('
-		SELECT id_order_invoice
-		FROM `'._DB_PREFIX_.'order_invoice_payment`
-		WHERE id_order_payment = '.(int) $this->id.'
-		AND id_order = '.(int) $idOrder);
+        $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('`id_order_invoice`')
+                ->from('order_invoice_payment')
+                ->where('`id_order_payment` = '.(int) $this->id)
+                ->where('`id_order` = '.(int) $idOrder)
+        );
 
         if (!$res) {
             return false;

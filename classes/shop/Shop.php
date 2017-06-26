@@ -1248,23 +1248,23 @@ class ShopCore extends ObjectModel
      */
     public static function addSqlAssociation($table, $alias, $innerJoin = true, $on = null, $forceNotDefault = false)
     {
-        $table_alias = $table.'_shop';
+        $tableAlias = $table.'_shop';
         if (strpos($table, '.') !== false) {
-            list($table_alias, $table) = explode('.', $table);
+            list($tableAlias, $table) = explode('.', $table);
         }
 
-        $asso_table = Shop::getAssoTable($table);
-        if ($asso_table === false || $asso_table['type'] != 'shop') {
+        $assoTable = Shop::getAssoTable($table);
+        if ($assoTable === false || $assoTable['type'] != 'shop') {
             return;
         }
-        $sql = (($innerJoin) ? ' INNER' : ' LEFT').' JOIN '._DB_PREFIX_.$table.'_shop '.$table_alias.'
-		ON ('.$table_alias.'.id_'.$table.' = '.$alias.'.id_'.$table;
+        $sql = (($innerJoin) ? ' INNER' : ' LEFT').' JOIN '._DB_PREFIX_.$table.'_shop '.$tableAlias.'
+		ON ('.$tableAlias.'.id_'.$table.' = '.$alias.'.id_'.$table;
         if ((int) static::$context_id_shop) {
-            $sql .= ' AND '.$table_alias.'.id_shop = '.(int) static::$context_id_shop;
+            $sql .= ' AND '.$tableAlias.'.id_shop = '.(int) static::$context_id_shop;
         } elseif (Shop::checkIdShopDefault($table) && !$forceNotDefault) {
-            $sql .= ' AND '.$table_alias.'.id_shop = '.$alias.'.id_shop_default';
+            $sql .= ' AND '.$tableAlias.'.id_shop = '.$alias.'.id_shop_default';
         } else {
-            $sql .= ' AND '.$table_alias.'.id_shop IN ('.implode(', ', Shop::getContextListShopID()).')';
+            $sql .= ' AND '.$tableAlias.'.id_shop IN ('.implode(', ', Shop::getContextListShopID()).')';
         }
         $sql .= (($on) ? ' AND '.$on : '').')';
 

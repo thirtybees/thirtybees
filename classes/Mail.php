@@ -214,12 +214,14 @@ class MailCore extends ObjectModel
                     return false;
                 }
 
-                if (is_array($toName) && $toName && is_array($toName) && Validate::isGenericName($toName[$key])) {
-                    $toName = $toName[$key];
+                if (is_array($toName) && isset($toName[$key])) {
+                    $addrName = $toName[$key];
+                } else {
+                    $addrName = $toName;
                 }
 
-                $toName = (($toName == null || $toName == $addr) ? '' : static::mimeEncode($toName));
-                $message->addTo($addr, $toName);
+                $addrName = (($addrName == null || $addrName == $addr || !Validate::isGenericName($addrName)) ? '' : self::mimeEncode($addrName));
+                $message->addTo($addr, $addrName);
             }
             $toPlugin = $to[0];
         } else {
@@ -228,7 +230,18 @@ class MailCore extends ObjectModel
             $toName = (($toName == null || $toName == $to) ? '' : static::mimeEncode($toName));
             $message->addTo($to, $toName);
         }
-        if (isset($bcc)) {
+
+        if (isset($bcc) && is_array($bcc)) {
+            foreach ($bcc as $addr) {
+                $addr = trim($addr);
+                if (!Validate::isEmail($addr)) {
+                    Tools::dieOrLog(Tools::displayError('Error: invalid e-mail address'), $die);
+
+                    return false;
+                }
+                $message->addBcc($addr);
+            }
+        } elseif (isset($bcc)) {
             $message->addBcc($bcc);
         }
 

@@ -72,3 +72,6 @@ composer.lock
 /tests/_output/*
 /c3.php
 /config/json/files.json
+codeception.yml
+Vagrantfile
+/vagrant/*

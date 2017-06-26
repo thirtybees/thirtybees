@@ -36,8 +36,11 @@
  */
 class AliasCore extends ObjectModel
 {
+    /** @var string $alias */
     public $alias;
+    /** @var string $search */
     public $search;
+    /** @var bool $active */
     public $active = true;
 
     /**
@@ -77,10 +80,11 @@ class AliasCore extends ObjectModel
                 $this->search = trim($search);
             } else {
                 $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
-                    '
-				SELECT a.id_alias, a.search, a.alias
-				FROM `'._DB_PREFIX_.'alias` a
-				WHERE `alias` = \''.pSQL($alias).'\' AND `active` = 1'
+                    (new DbQuery())
+                    ->select('a.`id_alias`, a.`search`, a.`alias`')
+                    ->from('alias', 'a')
+                    ->where('`alias` = \''.pSQL($alias).'\'')
+                    ->where('`active` = 1')
                 );
 
                 if ($row) {
@@ -138,6 +142,7 @@ class AliasCore extends ObjectModel
     }
 
     /**
+     * @return string
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -148,11 +153,11 @@ class AliasCore extends ObjectModel
             return '';
         }
 
-        $aliases = Db::getInstance()->executeS(
-            '
-		SELECT a.alias
-		FROM `'._DB_PREFIX_.'alias` a
-		WHERE `search` = \''.pSQL($this->search).'\''
+        $aliases = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+            ->select('a.`alias`')
+            ->from('alias', 'a')
+            ->where('a.`search` = \''.pSQL($this->search).'\'')
         );
 
         $aliases = array_map('implode', $aliases);
@@ -176,8 +181,9 @@ class AliasCore extends ObjectModel
     /**
      * This method is allow to know if a alias exist for AdminImportController
      *
-     * @return bool
+     * @param int $idAlias
      *
+     * @return bool
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -187,11 +193,11 @@ class AliasCore extends ObjectModel
             return false;
         }
 
-        $row = Db::getInstance()->getRow(
-            '
-			SELECT `id_alias`
-			FROM '._DB_PREFIX_.'alias a
-			WHERE a.`id_alias` = '.(int) $idAlias
+        $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+            ->select('`id_alias`')
+            ->from('alias', 'a')
+            ->where('a.`id_alias` = '.(int) $idAlias)
         );
 
         return isset($row['id_alias']);

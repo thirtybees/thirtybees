@@ -1815,7 +1815,7 @@ class CategoryCore extends ObjectModel
         $idSupplier = (int) Tools::getValue('id_supplier');
 
         $subcats = $this->getAllSubcategories();
-        $cats_to_search_in = array($this->id);
+        $cats_to_search_in = [$this->id];
         if($subcats && $this->display_from_sub)
         {
             foreach ($subcats as $scat) {

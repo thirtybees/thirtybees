@@ -37,15 +37,25 @@
 class CustomerMessageCore extends ObjectModel
 {
     // @codingStandardsIgnoreStart
+    /** @var int $id_customer_thread */
     public $id_customer_thread;
+    /** @var int $id_employee */
     public $id_employee;
+    /** @var string $message */
     public $message;
+    /** @var string $file_name */
     public $file_name;
+    /** @var string $ip_address */
     public $ip_address;
+    /** @var string $user_agent */
     public $user_agent;
+    /** @var int $private */
     public $private;
+    /** @var string $date_add */
     public $date_add;
+    /** @var string $date_upd*/
     public $date_upd;
+    /** @var bool $read */
     public $read;
     // @codingStandardsIgnoreEnd
 
@@ -91,26 +101,22 @@ class CustomerMessageCore extends ObjectModel
      */
     public static function getMessagesByOrderId($idOrder, $private = true)
     {
-        return Db::getInstance()->executeS(
-            '
-			SELECT cm.*,
-				c.`firstname` AS cfirstname,
-				c.`lastname` AS clastname,
-				e.`firstname` AS efirstname,
-				e.`lastname` AS elastname,
-				(COUNT(cm.id_customer_message) = 0 AND ct.id_customer != 0) AS is_new_for_me
-			FROM `'._DB_PREFIX_.'customer_message` cm
-			LEFT JOIN `'._DB_PREFIX_.'customer_thread` ct
-				ON ct.`id_customer_thread` = cm.`id_customer_thread`
-			LEFT JOIN `'._DB_PREFIX_.'customer` c
-				ON ct.`id_customer` = c.`id_customer`
-			LEFT OUTER JOIN `'._DB_PREFIX_.'employee` e
-				ON e.`id_employee` = cm.`id_employee`
-			WHERE ct.id_order = '.(int) $idOrder.'
-			'.(!$private ? 'AND cm.`private` = 0' : '').'
-			GROUP BY cm.id_customer_message
-			ORDER BY cm.date_add DESC
-		'
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('cm.*')
+                ->select('c.`firstname` AS `cfirstname`')
+                ->select('c.`lastname` AS `clastname`')
+                ->select('e.`firstname` AS `efirstname`')
+                ->select('e.`lastname` AS `elastname`')
+                ->select('(COUNT(cm.id_customer_message) = 0 AND ct.id_customer != 0) AS is_new_for_me')
+                ->from('customer_message', 'cm')
+                ->leftJoin('customer_thread', 'ct', 'ct.`id_customer_thread` = cm.`id_customer_thread`')
+                ->leftJoin('customer', 'c', 'ct.`id_customer` = c.`id_customer`')
+                ->leftOuterJoin('employee', 'e', 'e.`id_employee` = cm.`id_employee`')
+                ->where('ct.`id_order` = '.(int) $idOrder)
+                ->where($private ? 'cm.`private` = 0' : '')
+                ->groupBy('cm.`id_customer_message`')
+                ->orderBy('cm.`date_add` DESC')
         );
     }
 
@@ -125,20 +131,20 @@ class CustomerMessageCore extends ObjectModel
     public static function getTotalCustomerMessages($where = null)
     {
         if (is_null($where)) {
-            return (int) Db::getInstance()->getValue(
-                '
-				SELECT COUNT(*)
-				FROM '._DB_PREFIX_.'customer_message
-				LEFT JOIN `'._DB_PREFIX_.'customer_thread` ct ON (cm.`id_customer_thread` = ct.`id_customer_thread`)
-				WHERE 1'.Shop::addSqlRestriction()
+            return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                    ->select('COUNT(*)')
+                    ->from('customer_message')
+                    ->leftJoin('customer_thread', 'ct', 'cm.`id_customer_thread` = ct.`id_customer_thread`')
+                    ->where('1 '.Shop::addSqlRestriction())
             );
         } else {
             return (int) Db::getInstance()->getValue(
-                '
-				SELECT COUNT(*)
-				FROM '._DB_PREFIX_.'customer_message cm
-				LEFT JOIN `'._DB_PREFIX_.'customer_thread` ct ON (cm.`id_customer_thread` = ct.`id_customer_thread`)
-				WHERE '.$where.Shop::addSqlRestriction()
+                (new DbQuery())
+                    ->select('COUNT(*)')
+                    ->from('customer_message', 'cm')
+                    ->leftJoin('customer_thread', 'ct', 'cm.`id_customer_thread` = ct.`id_customer_thread`')
+                    ->where($where.Shop::addSqlRestriction())
             );
         }
     }

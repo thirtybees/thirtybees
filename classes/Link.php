@@ -82,18 +82,26 @@ class LinkCore
     }
 
     /**
-     * @param mixed $property
+     * thirty bees' new coding style dictates that camelCase should be used
+     * rather than snake_case
+     * These magic methods provide backwards compatibility for modules/themes/whatevers
+     * that still access properties via their snake_case names
+     *
+     * @param string $property Property name
      *
      * @return mixed
+     *
+     * @since 1.0.1
      */
-    public function __get($property)
+    public function &__get($property)
     {
-        // FIXME: convert to camelCase
-        if (in_array($property, [
-            'category_disable_rewrite',
-        ])) {
-            return $this->$property;
+        // Property to camelCase for backwards compatibility
+        $camelCaseProperty = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $property))));
+        if (property_exists($this, $camelCaseProperty) && in_array($camelCaseProperty, ['categoryDisableRewrite'])) {
+            return $this->$camelCaseProperty;
         }
+        
+        return $this->$property;
     }
 
     /**
@@ -114,7 +122,25 @@ class LinkCore
         return $url.((strpos($url, '?')) ? '&' : '?').'deletePicture='.$idPicture;
     }
 
-    public function getProductLink($product, $alias = null, $category = null, $ean13 = null, $idLang = null, $idShop = null, $ipa = 0, $forceRoutes = false, $relativeProtocol = false, $addAnchor = false, $extraParams = array())
+    /**
+     * @param int|Product $product
+     * @param string|null $alias
+     * @param int|null    $category
+     * @param string|null $ean13
+     * @param int|null    $idLang
+     * @param int|null    $idShop
+     * @param int         $ipa
+     * @param bool        $forceRoutes
+     * @param bool        $relativeProtocol
+     * @param bool        $addAnchor
+     * @param array       $extraParams
+     *
+     * @return string
+     * @throws PrestaShopException
+     *
+     * @since 1.0.0
+     */
+    public function getProductLink($product, $alias = null, $category = null, $ean13 = null, $idLang = null, $idShop = null, $ipa = 0, $forceRoutes = false, $relativeProtocol = false, $addAnchor = false, $extraParams = [])
     {
         $dispatcher = Dispatcher::getInstance();
 
@@ -135,7 +161,7 @@ class LinkCore
         }
 
         // Set available keywords
-        $params = array();
+        $params = [];
         $params['id'] = $product->id;
         $params['rewrite'] = (!$alias) ? $product->getFieldByLang('link_rewrite') : $alias;
 
@@ -169,7 +195,7 @@ class LinkCore
 
         if ($dispatcher->hasKeyword('product_rule', $idLang, 'categories', $idShop)) {
             $params['category'] = (!$category) ? $product->category : $category;
-            $cats = array();
+            $cats = [];
             $categoryDisableRewrite = static::$categoryDisableRewrite;
             foreach ($product->getParentCategories($idLang) as $cat) {
                 if (!in_array($cat['id_category'], $categoryDisableRewrite)) {
@@ -423,12 +449,12 @@ class LinkCore
             $category = new Category($category, $idLang);
         }
         // Set available keywords
-        $params = array();
+        $params = [];
         $params['id'] = $category->id;
         $params['rewrite'] = (!$alias) ? $category->link_rewrite : $alias;
         $params['meta_keywords'] =    Tools::str2url($category->getFieldByLang('meta_keywords'));
         $params['meta_title'] = Tools::str2url($category->getFieldByLang('meta_title'));
-        $cats = array();
+        $cats = [];
         $categoryDisableRewrite = static::$categoryDisableRewrite;
 
         foreach ($category->getParentsCategories($idLang) as $cat) {
@@ -555,7 +581,7 @@ class LinkCore
             $cms = new CMS($cms, $idLang);
         }
         // Set available keywords
-        $params = array();
+        $params = [];
         $params['id'] = $cms->id;
         $params['rewrite'] = (!$alias) ? (is_array($cms->link_rewrite) ? $cms->link_rewrite[(int) $idLang] : $cms->link_rewrite) : $alias;
         $params['meta_keywords'] = '';
@@ -646,7 +672,7 @@ class LinkCore
             $cmsCategory->meta_title = $cmsCategory->meta_title[(int) $idLang];
         }
         // Set available keywords
-        $params = array();
+        $params = [];
         $params['id'] = $cmsCategory->id;
         $params['rewrite'] = (!$alias) ? $cmsCategory->link_rewrite : $alias;
         $params['meta_keywords'] = Tools::str2url($cmsCategory->meta_keywords);

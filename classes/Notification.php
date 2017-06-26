@@ -60,14 +60,12 @@ class NotificationCore
      */
     public function getLastElements()
     {
-        global $cookie;
-
         $notifications = [];
         $employeeInfos = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
-            '
-		SELECT id_last_order, id_last_customer_message, id_last_customer
-		FROM `'._DB_PREFIX_.'employee`
-		WHERE `id_employee` = '.(int) $cookie->id_employee
+            (new DbQuery())
+                ->select('`id_last_order`, `id_last_customer_message`, `id_last_customer`')
+                ->from('employee')
+                ->where('`id_employee` = '.(int) Context::getContext()->cookie->id_employee)
         );
 
         foreach ($this->types as $type) {
@@ -93,35 +91,34 @@ class NotificationCore
     {
         switch ($type) {
             case 'order':
-                $sql = '
-					SELECT SQL_CALC_FOUND_ROWS o.`id_order`, o.`id_customer`, o.`total_paid`, o.`id_currency`, o.`date_upd`, c.`firstname`, c.`lastname`
-					FROM `'._DB_PREFIX_.'orders` AS o
-					LEFT JOIN `'._DB_PREFIX_.'customer` AS c ON (c.`id_customer` = o.`id_customer`)
-					WHERE `id_order` > '.(int) $idLastElement.
-                    Shop::addSqlRestriction(false, 'o').'
-					ORDER BY `id_order` DESC
-					LIMIT 5';
+                $sql = (new DbQuery())
+                    ->select('SQL_CALC_FOUND_ROWS o.`id_order`, o.`id_customer`, o.`total_paid`')
+                    ->select('o.`id_currency`, o.`date_upd`, c.`firstname`, c.`lastname`')
+                    ->leftJoin('customer', 'c', 'c.`id_customer` = o.`id_customer`')
+                    ->where('`id_order` > '.(int) $idLastElement.' '.Shop::addSqlRestriction(false, 'o'))
+                    ->orderBy('`id_order` DESC')
+                    ->limit(5);
                 break;
 
             case 'customer_message':
-                $sql = '
-					SELECT SQL_CALC_FOUND_ROWS c.`id_customer_message`, ct.`id_customer`, ct.`id_customer_thread`, ct.`email`, c.`date_add` AS date_upd
-					FROM `'._DB_PREFIX_.'customer_message` AS c
-					LEFT JOIN `'._DB_PREFIX_.'customer_thread` AS ct ON (c.`id_customer_thread` = ct.`id_customer_thread`)
-					WHERE c.`id_customer_message` > '.(int) $idLastElement.'
-						AND c.`id_employee` = 0
-						AND ct.id_shop IN ('.implode(', ', Shop::getContextListShopID()).')
-					ORDER BY c.`id_customer_message` DESC
-					LIMIT 5';
+                $sql = (new DbQuery())
+                    ->select('SQL_CALC_FOUND_ROWS c.`id_customer_message`, ct.`id_customer`, ct.`id_customer_thread`')
+                    ->select('ct.`email`, c.`date_add` AS `date_upd`')
+                    ->leftJoin('customer_thread', 'ct', 'c.`id_customer_thread` = ct.`id_customer_thread`')
+                    ->where('c.`id_customer_message` > '.(int) $idLastElement)
+                    ->where('c.`id_employee` = 0')
+                    ->where('ct.`id_shop` IN ('.implode(', ', Shop::getContextListShopID()).')')
+                    ->orderBy('c.`id_customer_message` DESC')
+                    ->limit(5);
                 break;
             default:
-                $sql = '
-					SELECT SQL_CALC_FOUND_ROWS t.`id_'.bqSQL($type).'`, t.*
-					FROM `'._DB_PREFIX_.bqSQL($type).'` t
-					WHERE t.`deleted` = 0 AND t.`id_'.bqSQL($type).'` > '.(int) $idLastElement.
-                    Shop::addSqlRestriction(false, 't').'
-					ORDER BY t.`id_'.bqSQL($type).'` DESC
-					LIMIT 5';
+                $sql = (new DbQuery())
+                    ->select('SQL_CALC_FOUND_ROWS t.`id_'.bqSQL($type).'`, t.*')
+                    ->from('`'._DB_PREFIX_.bqSQL($type).'`', 't')
+                    ->where('t.`deleted` = 0')
+                    ->where('t.`id_'.bqSQL($type).'` > '.(int) $idLastElement.' '.Shop::addSqlRestriction(false, 't'))
+                    ->orderBy('t.`id_'.bqSQL($type).'` DESC')
+                    ->limit(5);
                 break;
         }
 
@@ -168,14 +165,12 @@ class NotificationCore
 
         if (in_array($type, $this->types)) {
             // We update the last item viewed
-            return Db::getInstance()->execute(
-                '
-			UPDATE `'._DB_PREFIX_.'employee`
-			SET `id_last_'.bqSQL($type).'` = (
-				SELECT IFNULL(MAX(`id_'.$type.'`), 0)
-				FROM `'._DB_PREFIX_.(($type == 'order') ? bqSQL($type).'s' : bqSQL($type)).'`
-			)
-			WHERE `id_employee` = '.(int) $cookie->id_employee
+            return Db::getInstance()->update(
+                'employee',
+                [
+                    '`id_last'.bqSQL($type).'`' => ['type' => 'sql', 'value' => '(SELECT IFNULL(MAX(`id_'.$type.'`), 0) FROM `'._DB_PREFIX_.(($type == 'order') ? bqSQL($type).'s' : bqSQL($type)).'`)'],
+                ],
+                '`id_employee` = '.(int) $cookie->id_employee
             );
         }
 

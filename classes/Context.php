@@ -98,15 +98,14 @@ class ContextCore
     // @codingStandardsIgnoreEnd
 
     /**
-     * @param $test_instance Context
-     *                       Unit testing purpose only
+     * @param Context $testInstance Unit testing purpose only
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function setInstanceForTesting($test_instance)
+    public static function setInstanceForTesting($testInstance)
     {
-        static::$instance = $test_instance;
+        static::$instance = $testInstance;
     }
 
     /**
@@ -161,41 +160,6 @@ class ContextCore
     }
 
     /**
-     * Checks if mobile context is possible
-     *
-     * @return bool
-     * @throws PrestaShopException
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     */
-    protected function checkMobileContext()
-    {
-        // Check mobile context
-        if (Tools::isSubmit('no_mobile_theme')) {
-            Context::getContext()->cookie->no_mobile = true;
-            if (Context::getContext()->cookie->id_guest) {
-                $guest = new Guest(Context::getContext()->cookie->id_guest);
-                $guest->mobile_theme = false;
-                $guest->update();
-            }
-        } elseif (Tools::isSubmit('mobile_theme_ok')) {
-            Context::getContext()->cookie->no_mobile = false;
-            if (Context::getContext()->cookie->id_guest) {
-                $guest = new Guest(Context::getContext()->cookie->id_guest);
-                $guest->mobile_theme = true;
-                $guest->update();
-            }
-        }
-
-        return isset($_SERVER['HTTP_USER_AGENT'])
-            && isset(Context::getContext()->cookie)
-            && (bool) Configuration::get('PS_ALLOW_MOBILE_DEVICE')
-            && @filemtime(_PS_THEME_MOBILE_DIR_)
-            && !Context::getContext()->cookie->no_mobile;
-    }
-
-    /**
      * Get a singleton instance of Context object
      *
      * @return Context
@@ -223,8 +187,8 @@ class ContextCore
     public function isMobile()
     {
         if ($this->is_mobile === null) {
-            $mobile_detect = $this->getMobileDetect();
-            $this->is_mobile = $mobile_detect->isMobile();
+            $mobileDetect = $this->getMobileDetect();
+            $this->is_mobile = $mobileDetect->isMobile();
         }
 
         return $this->is_mobile;
@@ -258,8 +222,8 @@ class ContextCore
     public function isTablet()
     {
         if ($this->is_tablet === null) {
-            $mobile_detect = $this->getMobileDetect();
-            $this->is_tablet = $mobile_detect->isTablet();
+            $mobileDetect = $this->getMobileDetect();
+            $this->is_tablet = $mobileDetect->isTablet();
         }
 
         return $this->is_tablet;
@@ -301,5 +265,40 @@ class ContextCore
     public function cloneContext()
     {
         return clone($this);
+    }
+
+    /**
+     * Checks if mobile context is possible
+     *
+     * @return bool
+     * @throws PrestaShopException
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    protected function checkMobileContext()
+    {
+        // Check mobile context
+        if (Tools::isSubmit('no_mobile_theme')) {
+            Context::getContext()->cookie->no_mobile = true;
+            if (Context::getContext()->cookie->id_guest) {
+                $guest = new Guest(Context::getContext()->cookie->id_guest);
+                $guest->mobile_theme = false;
+                $guest->update();
+            }
+        } elseif (Tools::isSubmit('mobile_theme_ok')) {
+            Context::getContext()->cookie->no_mobile = false;
+            if (Context::getContext()->cookie->id_guest) {
+                $guest = new Guest(Context::getContext()->cookie->id_guest);
+                $guest->mobile_theme = true;
+                $guest->update();
+            }
+        }
+
+        return isset($_SERVER['HTTP_USER_AGENT'])
+            && isset(Context::getContext()->cookie)
+            && (bool) Configuration::get('PS_ALLOW_MOBILE_DEVICE')
+            && @filemtime(_PS_THEME_MOBILE_DIR_)
+            && !Context::getContext()->cookie->no_mobile;
     }
 }

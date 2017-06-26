@@ -459,7 +459,7 @@ class AdminCarriersControllerCore extends AdminController
     /**
      * Overload the property $fields_value
      *
-     * @param object $obj
+     * @param ObjectModel $obj
      *
      * @since 1.0.0
      */
@@ -601,7 +601,7 @@ class AdminCarriersControllerCore extends AdminController
                 // Delete from the reference_id and not from the carrier id
                 $carrier = new Carrier((int) $id);
                 Warehouse::removeCarrier($carrier->id_reference);
-            } elseif (Tools::isSubmit($this->table.'Box') && count(Tools::isSubmit($this->table.'Box')) > 0) {
+            } elseif (Tools::isSubmit($this->table.'Box') && count(Tools::getValue($this->table.'Box')) > 0) {
                 $ids = Tools::getValue($this->table.'Box');
                 array_walk($ids, 'intval');
                 foreach ($ids as $id) {
@@ -616,24 +616,29 @@ class AdminCarriersControllerCore extends AdminController
     }
 
     /**
-     * @param      $idCarrier
+     * @param int  $idCarrier
      * @param bool $delete
-     * 
+     *
      * @since 1.0.0
      */
     protected function changeGroups($idCarrier, $delete = true)
     {
         if ($delete) {
-            Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'carrier_group WHERE id_carrier = '.(int) $idCarrier);
+            Db::getInstance()->delete('carrier_group', '`id_carrier` = '.(int) $idCarrier);
         }
-        $groups = Db::getInstance()->executeS('SELECT id_group FROM `'._DB_PREFIX_.'group`');
+        $groups = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+            ->select('`id_group`')
+            ->from('group')
+        );
         foreach ($groups as $group) {
             if (Tools::getIsset('groupBox') && in_array($group['id_group'], Tools::getValue('groupBox'))) {
-                Db::getInstance()->execute(
-                    '
-					INSERT INTO '._DB_PREFIX_.'carrier_group (id_group, id_carrier)
-					VALUES('.(int) $group['id_group'].','.(int) $idCarrier.')
-				'
+                Db::getInstance()->insert(
+                    'carrier_group',
+                    [
+                        'id_group'   => (int) $group['id_group'],
+                        'id_carrier' => (int) $idCarrier,
+                    ]
                 );
             }
         }
@@ -749,13 +754,11 @@ class AdminCarriersControllerCore extends AdminController
                 static::$cache_lang['Edit'] = $this->l('Edit', 'Helper');
             }
 
-            $tpl->assign(
-                [
-                    'href'   => $this->context->link->getAdminLink('AdminCarrierWizard').'&id_carrier='.(int) $id,
-                    'action' => static::$cache_lang['Edit'],
-                    'id'     => $id,
-                ]
-            );
+            $tpl->assign([
+                'href'   => $this->context->link->getAdminLink('AdminCarrierWizard').'&id_carrier='.(int) $id,
+                'action' => static::$cache_lang['Edit'],
+                'id'     => $id,
+            ]);
 
             return $tpl->fetch();
         } else {

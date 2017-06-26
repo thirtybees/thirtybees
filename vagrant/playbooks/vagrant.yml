@@ -1,0 +1,18 @@
+---
+- hosts: all
+  become: true
+  vars:
+    document_root: /vagrant
+    www_user: vagrant
+    www_group: vagrant
+  pre_tasks:
+    - name: update apt cache
+      apt: update_cache=yes cache_valid_time=3600
+  roles:
+    - base
+    - nginx
+    - mysql
+    - php
+    - php-devtools
+    - php-fpm
+    - thirty-bees

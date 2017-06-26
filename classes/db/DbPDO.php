@@ -90,7 +90,7 @@ class DbPDOCore extends Db
     public static function createDatabase($host, $user, $password, $dbname, $dropit = false)
     {
         try {
-            $link = DbPDO::_getPDO($host, $user, $password, false);
+            $link = static::_getPDO($host, $user, $password, false);
             $success = $link->exec('CREATE DATABASE `'.str_replace('`', '\\`', $dbname).'`');
             if ($dropit && ($link->exec('DROP DATABASE `'.str_replace('`', '\\`', $dbname).'`') !== false)) {
                 return true;
@@ -120,11 +120,21 @@ class DbPDOCore extends Db
         }
 
         // UTF-8 support
-        if ($this->link->exec('SET NAMES \'utf8\'') === false) {
+        if ($this->link->exec('SET NAMES \'utf8mb4\'') === false) {
             die(Tools::displayError('thirty bees Fatal error: no UTF-8 support. Please check your server configuration.'));
         }
 
         $this->link->exec('SET SESSION sql_mode = \'\'');
+
+        // Synchronize MySQL timezone with current PHP timezone
+        $now = new DateTime();
+        $minutes = $now->getOffset() / 60;
+        $sign = ($minutes < 0 ? -1 : 1);
+        $minutes = abs($minutes);
+        $hours = floor($minutes / 60);
+        $minutes -= $hours * 60;
+        $offset = sprintf('%+d:%02d', $hours * $sign, $minutes);
+        $this->link->exec("SET time_zone='$offset'");
 
         return $this->link;
     }
@@ -347,7 +357,7 @@ class DbPDOCore extends Db
     public static function hasTableWithSamePrefix($server, $user, $pwd, $db, $prefix)
     {
         try {
-            $link = DbPDO::_getPDO($server, $user, $pwd, $db, 5);
+            $link = static::_getPDO($server, $user, $pwd, $db, 5);
         } catch (PDOException $e) {
             return false;
         }
@@ -376,7 +386,7 @@ class DbPDOCore extends Db
     public static function checkCreatePrivilege($server, $user, $pwd, $db, $prefix, $engine = null)
     {
         try {
-            $link = DbPDO::_getPDO($server, $user, $pwd, $db, 5);
+            $link = static::_getPDO($server, $user, $pwd, $db, 5);
         } catch (PDOException $e) {
             return false;
         }
@@ -420,7 +430,7 @@ class DbPDOCore extends Db
     public static function tryToConnect($server, $user, $pwd, $db, $newDbLink = true, $engine = null, $timeout = 5)
     {
         try {
-            $link = DbPDO::_getPDO($server, $user, $pwd, $db, $timeout);
+            $link = static::_getPDO($server, $user, $pwd, $db, $timeout);
         } catch (PDOException $e) {
             // hhvm wrongly reports error status 42000 when the database does not exist - might change in the future
             return ($e->getCode() == 1049 || (defined('HHVM_VERSION') && $e->getCode() == 42000)) ? 2 : 1;
@@ -485,7 +495,7 @@ class DbPDOCore extends Db
     public static function tryUTF8($server, $user, $pwd)
     {
         try {
-            $link = DbPDO::_getPDO($server, $user, $pwd, false, 5);
+            $link = static::_getPDO($server, $user, $pwd, false, 5);
         } catch (PDOException $e) {
             return false;
         }
@@ -509,7 +519,7 @@ class DbPDOCore extends Db
     public static function checkAutoIncrement($server, $user, $pwd)
     {
         try {
-            $link = DbPDO::_getPDO($server, $user, $pwd, false, 5);
+            $link = static::_getPDO($server, $user, $pwd, false, 5);
         } catch (PDOException $e) {
             return false;
         }

@@ -65,7 +65,8 @@ class AdminStockManagementControllerCore extends AdminController
                 'filter_key' => 'a!upc',
             ],
             'name'              => [
-                'title' => $this->l('Name'),
+                'title'      => $this->l('Name'),
+                'filter_key' => 'pl!name',
             ],
             'physical_quantity' => [
                 'title'   => $this->l('Physical quantity'),
@@ -111,7 +112,7 @@ class AdminStockManagementControllerCore extends AdminController
             $this->addRowAction('addstock');
             $this->addRowAction('prepareRemovestock');
 
-            if (count(Warehouse::getWarehouses()) > 1) {
+            if (count(Warehouse::getWarehouses(true)) > 1) {
                 $this->addRowAction('prepareTransferstock');
             }
 
@@ -133,7 +134,18 @@ class AdminStockManagementControllerCore extends AdminController
             $this->_where = 'AND a.id_product = '.$idProduct;
             $this->_group = 'GROUP BY a.id_product_attribute';
 
-            static::$currentIndex = static::$currentIndex.'&id_product='.(int) $idProduct;
+            $this->fields_list['name'] = [
+                'title'   => $this->l('Name'),
+                'orderby' => false,
+                'filter'  => false,
+                'search'  => false,
+            ];
+
+            if (Tools::getIsset('id_product_attribute')) {
+                static::$currentIndex = static::$currentIndex.'&id_product='.(int) $idProduct;
+            } else {
+                static::$currentIndex = static::$currentIndex.'&id_product='.(int) $idProduct.'&detailsproduct';
+            }
             $this->processFilter();
 
             return parent::renderList();
@@ -163,7 +175,7 @@ class AdminStockManagementControllerCore extends AdminController
             $this->addRowAction('addstock');
             $this->addRowAction('prepareRemovestock');
 
-            if (count(Warehouse::getWarehouses()) > 1) {
+            if (count(Warehouse::getWarehouses(true)) > 1) {
                 $this->addRowAction('prepareTransferstock');
             }
 
@@ -174,9 +186,9 @@ class AdminStockManagementControllerCore extends AdminController
             $this->toolbar_btn = [];
 
             // overrides query
-            $this->_select = 'IFNULL(pa.ean13, a.ean13) as ean13,
-            IFNULL(pa.upc, a.upc) as upc,
-            IFNULL(pa.reference, a.reference) as reference,
+            $this->_select = 'a.ean13 as ean13,
+            a.upc as upc,
+            a.reference as reference,
             (SELECT SUM(physical_quantity) FROM `'._DB_PREFIX_.'stock` WHERE id_product = a.id_product) as physical_quantity,
             (SELECT SUM(usable_quantity) FROM `'._DB_PREFIX_.'stock` WHERE id_product = a.id_product) as usable_quantity,
             a.id_product as id, COUNT(pa.id_product_attribute) as variations';
@@ -260,7 +272,7 @@ class AdminStockManagementControllerCore extends AdminController
         // sets actions5
         $this->addRowAction('removestock');
 
-        if (count(Warehouse::getWarehouses()) > 1) {
+        if (count(Warehouse::getWarehouses(true)) > 1) {
             $this->addRowAction('transferstock');
         }
 
@@ -275,15 +287,17 @@ class AdminStockManagementControllerCore extends AdminController
 
         $this->_select = 'w.id_currency, a.id_product as id, (a.price_te * a.physical_quantity) as valuation, w.name as warehouse';
         $this->_join = 'INNER JOIN `'._DB_PREFIX_.'product` p ON (p.id_product = a.id_product AND p.advanced_stock_management = 1)';
-        $this->_join .= ' LEFT JOIN `'._DB_PREFIX_.'warehouse` AS w ON w.id_warehouse = a.id_warehouse';
+        $this->_join .= ' LEFT JOIN `'._DB_PREFIX_.'warehouse` AS w ON (w.id_warehouse = a.id_warehouse)';
+        $this->_join .= ' RIGHT JOIN `'._DB_PREFIX_.'product_lang` AS pl ON (pl.id_product = a.id_product)';
 
         $this->_where = 'AND a.id_product = '.(int) $idProduct.' AND a.id_product_attribute = '.(int) $idProductAttribute;
+        $this->_where .= ' AND pl.id_lang = '.(int) Context::getContext()->language->id.' AND pl.id_shop = p.id_shop_default';
 
         if ($idWarehouse != -1) {
             $this->_where .= ' AND a.id_warehouse = '.(int) $idWarehouse;
         }
 
-        $this->_orderBy = 'name';
+        $this->_orderBy = 'pl.name';
         $this->_orderWay = 'ASC';
     }
 
@@ -315,6 +329,10 @@ class AdminStockManagementControllerCore extends AdminController
         for ($i = 0; $i < $nbItems; $i++) {
             $item = &$this->_list[$i];
 
+            $item['reference'] = (!empty($item['reference']) && isset($item['reference'])) ? $item['reference'] : '--';
+            $item['ean13'] = (!empty($item['ean13']) && isset($item['ean13'])) ? $item['ean13'] : '--';
+            $item['upc'] = (!empty($item['upc']) && isset($item['upc'])) ? $item['upc'] : '--';
+
             // if it's an ajax request we have to consider manipulating a product variation
             if (Tools::isSubmit('id_product')) {
                 $item['name'] = Product::getProductName($item['id_product'], empty($item['id_product_attribute']) ? null : $item['id_product_attribute']);
@@ -333,11 +351,6 @@ class AdminStockManagementControllerCore extends AdminController
                 $this->addRowActionSkipList('addstock', [$item['id']]);
                 $this->addRowActionSkipList('prepareRemovestock', [$item['id']]);
                 $this->addRowActionSkipList('prepareTransferstock', [$item['id']]);
-
-                // does not display these informaions because this product has combinations
-                $item['reference'] = '--';
-                $item['ean13'] = '--';
-                $item['upc'] = '--';
             } else {
                 //there are no variations of current product, so we don't want to show details action
                 $this->addRowActionSkipList('details', [$item['id']]);
@@ -388,6 +401,13 @@ class AdminStockManagementControllerCore extends AdminController
 
         if (count($this->errors)) {
             return false;
+        }
+
+        if (Tools::isSubmit('submitFilter') && Tools::getIsset('detailsproduct')) {
+            $idProduct = (int) Tools::getValue('id_product', 0);
+            $token = Tools::getValue('token') ? Tools::getValue('token') : $this->token;
+            $redirect = static::$currentIndex.'&id_product='.$idProduct.'&detailsproduct&token='.$token;
+            Tools::redirectAdmin($redirect);
         }
 
         // Global checks when add / remove / transfer product
@@ -909,7 +929,7 @@ class AdminStockManagementControllerCore extends AdminController
         }
 
         //get currencies list
-        $currencies = Currency::getCurrencies();
+        $currencies = Currency::getCurrencies(false, true, true);
         if (1 < count($currencies)) {
             array_unshift($currencies, '-');
         }
@@ -1473,12 +1493,14 @@ class AdminStockManagementControllerCore extends AdminController
             static::$cache_lang['RemoveStock'] = $this->l('Remove stock');
         }
 
-        $this->context->smarty->assign(
-            [
-                'href'   => static::$currentIndex.'&'.$this->identifier.'='.$id.'&token='.($token != null ? $token : $this->token),
-                'action' => static::$cache_lang['RemoveStock'],
-            ]
-        );
+        if (Tools::getIsset('detailsproduct')) {
+            static::$currentIndex = str_replace('&detailsproduct', '', static::$currentIndex);
+        }
+
+        $this->context->smarty->assign([
+            'href'   => static::$currentIndex.'&'.$this->identifier.'='.$id.'&token='.($token != null ? $token : $this->token),
+            'action' => static::$cache_lang['RemoveStock'],
+        ]);
 
         return $this->context->smarty->fetch('helpers/list/list_action_removestock.tpl');
     }

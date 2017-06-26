@@ -1,0 +1,10 @@
+---
+- name: Install MySQL
+  apt: name=mysql-server state=present
+
+- name: Copy the MySQL config for thirty bees
+  template:
+    src=mysqld.cnf
+    dest=/etc/mysql/mysql.conf.d/mysqld.cnf
+  notify:
+    - restart mysql

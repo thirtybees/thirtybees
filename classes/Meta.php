@@ -78,7 +78,7 @@ class MetaCore extends ObjectModel
     {
         $selectedPages = [];
         if (!$files = Tools::scandir(_PS_CORE_DIR_.DIRECTORY_SEPARATOR.'controllers'.DIRECTORY_SEPARATOR.'front'.DIRECTORY_SEPARATOR, 'php', '', true)) {
-            die(Tools::displayError('Cannot scan "root" directory'));
+            die(Tools::displayError('Cannot scan root directory'));
         }
 
         if (!$overrideFiles = Tools::scandir(_PS_CORE_DIR_.DIRECTORY_SEPARATOR.'override'.DIRECTORY_SEPARATOR.'controllers'.DIRECTORY_SEPARATOR.'front'.DIRECTORY_SEPARATOR, 'php', '', true)) {
@@ -156,11 +156,16 @@ class MetaCore extends ObjectModel
      */
     public static function getMetas()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('SELECT * FROM '._DB_PREFIX_.'meta ORDER BY page ASC');
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('*')
+                ->from('meta')
+                ->orderBy('`page` ASC')
+        );
     }
 
     /**
-     * @param $idLang
+     * @param int $idLang
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
@@ -170,13 +175,12 @@ class MetaCore extends ObjectModel
     public static function getMetasByIdLang($idLang)
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            '
-		SELECT *
-		FROM `'._DB_PREFIX_.'meta` m
-		LEFT JOIN `'._DB_PREFIX_.'meta_lang` ml ON m.`id_meta` = ml.`id_meta`
-		WHERE ml.`id_lang` = '.(int) $idLang
-            .Shop::addSqlRestrictionOnLang('ml').
-            'ORDER BY PAGE ASC'
+            (new DbQuery())
+                ->select('*')
+                ->from('meta', 'm')
+                ->leftJoin('meta_lang', 'ml', 'm.`id_meta` = ml.`id_meta`')
+                ->where('ml.`id_lang` = '.(int) $idLang.' '.Shop::addSqlRestrictionOnLang('ml'))
+                ->orderBy('`page` ASC')
         );
     }
 
@@ -192,18 +196,20 @@ class MetaCore extends ObjectModel
      */
     public static function getEquivalentUrlRewrite($newIdLang, $idLang, $urlRewrite)
     {
-        return Db::getInstance()->getValue(
-            '
-		SELECT url_rewrite
-		FROM `'._DB_PREFIX_.'meta_lang`
-		WHERE id_meta = (
-			SELECT id_meta
-			FROM `'._DB_PREFIX_.'meta_lang`
-			WHERE url_rewrite = \''.pSQL($urlRewrite).'\' AND id_lang = '.(int) $idLang.'
-			AND id_shop = '.Context::getContext()->shop->id.'
-		)
-		AND id_lang = '.(int) $newIdLang.'
-		AND id_shop = '.Context::getContext()->shop->id
+        $metaSql = (new DbQuery())
+            ->select('`id_meta`')
+            ->from('meta_lang')
+            ->where('`url_rewrite` = \''.pSQL($urlRewrite).'\'')
+            ->where('`id_lang` = '.(int) $idLang)
+            ->where('`id_shop` = '.(int) Context::getContext()->shop->id);
+
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('url_rewrite')
+                ->from('meta_lang')
+                ->where('id_meta = ('.$metaSql->build().')')
+                ->where('`id_lang` = '.(int) $newIdLang)
+                ->where('`id_shop` = '.(int) Context::getContext()->shop->id)
         );
     }
 
@@ -211,8 +217,8 @@ class MetaCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      *
-     * @param        $idLang
-     * @param        $pageName
+     * @param int    $idLang
+     * @param string $pageName
      * @param string $title
      *
      * @return array
@@ -255,14 +261,15 @@ class MetaCore extends ObjectModel
      */
     public static function getProductMetas($idProduct, $idLang, $pageName)
     {
-        $sql = 'SELECT `name`, `meta_title`, `meta_description`, `meta_keywords`, `description_short`
-				FROM `'._DB_PREFIX_.'product` p
-				LEFT JOIN `'._DB_PREFIX_.'product_lang` pl ON (pl.`id_product` = p.`id_product`'.Shop::addSqlRestrictionOnLang('pl').')
-				'.Shop::addSqlAssociation('product', 'p').'
-				WHERE pl.id_lang = '.(int) $idLang.'
-					AND pl.id_product = '.(int) $idProduct.'
-					AND product_shop.active = 1';
-        if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql)) {
+        if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('`name`, `meta_title`, `meta_description`, `meta_keywords`, `description_short`')
+                ->from('product', 'p')
+                ->leftJoin('product_lang', 'pl', 'pl.`id_product` = p.`id_product` '.Shop::addSqlRestrictionOnLang('pl'))
+                ->where('pl.`id_lang` = '.(int) $idLang)
+                ->where('pl.`id_product` = '.(int) $idProduct)
+            ->where('product_shop.`active` = 1')
+        )) {
             if (empty($row['meta_description'])) {
                 $row['meta_description'] = strip_tags($row['description_short']);
             }
@@ -274,11 +281,11 @@ class MetaCore extends ObjectModel
     }
 
     /**
-     * @param         $metaTags
-     * @param         $defaultValue
+     * @param array   $metaTags
+     * @param string  $defaultValue
      * @param Context $context
      *
-     * @return
+     * @return array
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -324,8 +331,8 @@ class MetaCore extends ObjectModel
     }
 
     /**
-     * @param $page
-     * @param $idLang
+     * @param string $page
+     * @param int    $idLang
      *
      * @return array|bool|null|object
      *
@@ -335,16 +342,12 @@ class MetaCore extends ObjectModel
     public static function getMetaByPage($page, $idLang)
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
-            '
-		SELECT *
-		FROM '._DB_PREFIX_.'meta m
-		LEFT JOIN '._DB_PREFIX_.'meta_lang ml ON m.id_meta = ml.id_meta
-		WHERE (
-			m.page = "'.pSQL($page).'"
-			OR m.page = "'.pSQL(str_replace('-', '', strtolower($page))).'"
-		)
-		AND ml.id_lang = '.(int) $idLang.'
-		'.Shop::addSqlRestrictionOnLang('ml')
+            (new DbQuery())
+                ->select('*')
+                ->from('meta', 'm')
+                ->leftJoin('meta_lang', 'ml', 'm.`id_meta` = ml.`id_meta`')
+                ->where('m.`page` = \''.pSQL($page).'\' OR m.`page` = \''.pSQL(str_replace('_', '', strtolower($page))).'\'')
+                ->where('ml.`id_lang` = '.(int) $idLang.' '.Shop::addSqlRestrictionOnLang('ml'))
         );
     }
 
@@ -354,9 +357,9 @@ class MetaCore extends ObjectModel
      * @param int    $idCategory
      * @param int    $idLang
      * @param string $pageName
+     * @param string $title
      *
      * @return array
-     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -366,14 +369,15 @@ class MetaCore extends ObjectModel
             $title = ' - '.$title;
         }
         $pageNumber = (int) Tools::getValue('p');
-        $sql = 'SELECT `name`, `meta_title`, `meta_description`, `meta_keywords`, `description`
-				FROM `'._DB_PREFIX_.'category_lang` cl
-				WHERE cl.`id_lang` = '.(int) $idLang.'
-					AND cl.`id_category` = '.(int) $idCategory.Shop::addSqlRestrictionOnLang('cl');
-
         $cacheId = 'Meta::getCategoryMetas'.(int) $idCategory.'-'.(int) $idLang;
         if (!Cache::isStored($cacheId)) {
-            if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql)) {
+            if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                (new DbQuery())
+                    ->select('`name`, `meta_title`, `meta_description`, `meta_keywords`, `description`')
+                    ->from('category_lang', 'cl')
+                    ->where('cl.`id_lang` = '.(int) $idLang)
+                    ->where('cl.`id_category` = '.(int) $idCategory.' '.Shop::addSqlRestrictionOnLang('cl'))
+            )) {
                 if (empty($row['meta_description'])) {
                     $row['meta_description'] = strip_tags($row['description']);
                 }
@@ -415,17 +419,19 @@ class MetaCore extends ObjectModel
      */
     public static function getManufacturerMetas($idManufacturer, $idLang, $pageName)
     {
-        $page_number = (int) Tools::getValue('p');
-        $sql = 'SELECT `name`, `meta_title`, `meta_description`, `meta_keywords`
-				FROM `'._DB_PREFIX_.'manufacturer_lang` ml
-				LEFT JOIN `'._DB_PREFIX_.'manufacturer` m ON (ml.`id_manufacturer` = m.`id_manufacturer`)
-				WHERE ml.id_lang = '.(int) $idLang.'
-					AND ml.id_manufacturer = '.(int) $idManufacturer;
-        if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql)) {
+        $pageNumber = (int) Tools::getValue('p');
+        if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('`name`, `meta_title`, `meta_description`, `meta_keywords`')
+                ->from('manufacturer_lang', 'ml')
+                ->leftJoin('manufacturer', 'm', 'ml.`idmanufacturer` = m.`id_manufacturer`')
+                ->where('ml.`id_lang` = '.(int) $idLang)
+                ->where('ml.`id_manufacturer` = '.(int) $idManufacturer)
+        )) {
             if (!empty($row['meta_description'])) {
                 $row['meta_description'] = strip_tags($row['meta_description']);
             }
-            $row['meta_title'] = ($row['meta_title'] ? $row['meta_title'] : $row['name']).(!empty($page_number) ? ' ('.$page_number.')' : '');
+            $row['meta_title'] = ($row['meta_title'] ? $row['meta_title'] : $row['name']).(!empty($pageNumber) ? ' ('.$pageNumber.')' : '');
             $row['meta_title'] .= ' - '.Configuration::get('PS_SHOP_NAME');
 
             return Meta::completeMetaTags($row, $row['meta_title']);
@@ -448,12 +454,14 @@ class MetaCore extends ObjectModel
      */
     public static function getSupplierMetas($idSupplier, $idLang, $pageName)
     {
-        $sql = 'SELECT `name`, `meta_title`, `meta_description`, `meta_keywords`
-				FROM `'._DB_PREFIX_.'supplier_lang` sl
-				LEFT JOIN `'._DB_PREFIX_.'supplier` s ON (sl.`id_supplier` = s.`id_supplier`)
-				WHERE sl.id_lang = '.(int) $idLang.'
-					AND sl.id_supplier = '.(int) $idSupplier;
-        if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql)) {
+        if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('`name`, `meta_title`, `meta_description`, `meta_keywords`')
+            ->from('supplier_lang', 'sl')
+            ->leftJoin('supplier', 's', 'sl.`id_supplier` = s.`id_supplier`')
+            ->where('sl.`id_lang` = '.(int) $idLang)
+            ->where('sl.`id_supplier` = '.(int) $idSupplier)
+        )) {
             if (!empty($row['meta_description'])) {
                 $row['meta_description'] = strip_tags($row['meta_description']);
             }
@@ -481,14 +489,14 @@ class MetaCore extends ObjectModel
      */
     public static function getCmsMetas($idCms, $idLang, $pageName)
     {
-        $sql = 'SELECT `meta_title`, `meta_description`, `meta_keywords`
-				FROM `'._DB_PREFIX_.'cms_lang`
-				WHERE id_lang = '.(int) $idLang.'
-					AND id_cms = '.(int) $idCms.
-            ((int) Context::getContext()->shop->id ?
-                ' AND id_shop = '.(int) Context::getContext()->shop->id : '');
-
-        if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql)) {
+        if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('`meta_title`, `meta_description`, `meta_keywords`')
+                ->from('cms_lang')
+                ->where('`id_lang` = '.(int) $idLang)
+                ->where('`id_cms` = '.(int) $idCms)
+                ->where(Context::getContext()->shop->id ? '`id_shop` = '.(int) Context::getContext()->shop->id : '')
+        )) {
             $row['meta_title'] = $row['meta_title'].' - '.Configuration::get('PS_SHOP_NAME');
 
             return Meta::completeMetaTags($row, $row['meta_title']);
@@ -511,13 +519,14 @@ class MetaCore extends ObjectModel
      */
     public static function getCmsCategoryMetas($idCmsCategory, $idLang, $pageName)
     {
-        $sql = 'SELECT `meta_title`, `meta_description`, `meta_keywords`
-				FROM `'._DB_PREFIX_.'cms_category_lang`
-				WHERE id_lang = '.(int) $idLang.'
-					AND id_cms_category = '.(int) $idCmsCategory.
-            ((int) Context::getContext()->shop->id ?
-                ' AND id_shop = '.(int) Context::getContext()->shop->id : '');
-        if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql)) {
+        if ($row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('`meta_title`, `meta_description`, `meta_keywords`')
+            ->from('cms_category_lang')
+            ->where('`id_lang` = '.(int) $idLang)
+            ->where('`id_cms_category` = '.(int) $idCmsCategory)
+            ->where(Context::getContext()->shop->id ? ' AND id_shop = '.(int) Context::getContext()->shop->id : '')
+        )) {
             $row['meta_title'] = $row['meta_title'].' - '.Configuration::get('PS_SHOP_NAME');
 
             return Meta::completeMetaTags($row, $row['meta_title']);

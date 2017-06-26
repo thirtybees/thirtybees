@@ -12,15 +12,14 @@
     <meta_title>Rättsligt meddelande</meta_title>
     <meta_description>Regler och villkor</meta_description>
     <meta_keywords>tillkännagivande, laglig,</meta_keywords>
-    <content>&lt;h2&gt;Legal&lt;/h2&gt;&lt;h3&gt;Credits&lt;/h3&gt;&lt;p&gt;Concept and production:&lt;/p&gt;&lt;p&gt;This Online store was created using &lt;a href="http://www.thirtybees.com"&gt;Prestashop Shopping Cart Software&lt;/a&gt;,check out PrestaShop's &lt;a href="http://www.thirtybees.com/blog/en/"&gt;ecommerce blog&lt;/a&gt; for news and advices about selling online and running your ecommerce website.&lt;/p&gt;</content>
+    <content>&lt;h2&gt;Legal&lt;/h2&gt;&lt;h3&gt;Credits&lt;/h3&gt;&lt;p&gt;Concept and production:&lt;/p&gt;&lt;p&gt;This Online store was created using &lt;a href="http://www.thirtybees.com"&gt;thirty bees e-commerce Software&lt;/a&gt;,check out thirty bees &lt;a href="http://www.thirtybees.com/blog"&gt;ecommerce blog&lt;/a&gt; for news and advices about selling online and running your ecommerce website.&lt;/p&gt;</content>
     <link_rewrite>legal-notice</link_rewrite>
   </cms>
   <cms id="Terms_and_conditions_of_use">
     <meta_title>Regler och villkor för användning</meta_title>
     <meta_description>Våra villkor för användning</meta_description>
     <meta_keywords>villkor, termer, användning, sälja</meta_keywords>
-    <content>&lt;h1 class=&quot;page-heading&quot;&gt;Terms and conditions of use&lt;/h1&gt;
-      &lt;h3 class=&quot;page-subheading&quot;&gt;Rule 1&lt;/h3&gt;
+    <content>&lt;h3 class=&quot;page-subheading&quot;&gt;Rule 1&lt;/h3&gt;
       &lt;p class=&quot;bottom-indent&quot;&gt;Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.&lt;/p&gt;
       &lt;h3 class=&quot;page-subheading&quot;&gt;Rule 2&lt;/h3&gt;
       &lt;p class=&quot;bottom-indent&quot;&gt;Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam&amp;#1102;&lt;/p&gt;
@@ -32,8 +31,7 @@
     <meta_title>Om oss</meta_title>
     <meta_description>Läs mer om oss</meta_description>
     <meta_keywords>om oss, information</meta_keywords>
-    <content>&lt;h1 class=&quot;page-heading bottom-indent&quot;&gt;About us&lt;/h1&gt;
-      &lt;div class=&quot;row&quot;&gt;
+    <content>&lt;div class=&quot;row&quot;&gt;
       &lt;div class=&quot;col-xs-12 col-sm-4&quot;&gt;
       &lt;div class=&quot;cms-block&quot;&gt;
       &lt;h3 class=&quot;page-subheading&quot;&gt;Our company&lt;/h3&gt;

@@ -313,10 +313,21 @@ class AdminCartsControllerCore extends AdminController
             }
             $image = [];
             if (isset($product['id_product_attribute']) && (int) $product['id_product_attribute']) {
-                $image = Db::getInstance()->getRow('SELECT id_image FROM '._DB_PREFIX_.'product_attribute_image WHERE id_product_attribute = '.(int) $product['id_product_attribute']);
+                $image = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                    (new DbQuery())
+                    ->select('`id_image`')
+                    ->from('product_attribute_image')
+                    ->where('`id_product_attribute` = '.(int) $product['id_product_attribute'])
+                );
             }
             if (!isset($image['id_image'])) {
-                $image = Db::getInstance()->getRow('SELECT id_image FROM '._DB_PREFIX_.'image WHERE id_product = '.(int) $product['id_product'].' AND cover = 1');
+                $image = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                    (new DbQuery())
+                    ->select('`id_image`')
+                    ->from('image')
+                    ->where('`id_product` = '.(int) $product['id_product'])
+                    ->where('`cover` = 1')
+                );
             }
 
             $product['qty_in_stock'] = StockAvailable::getQuantityAvailableByProduct($product['id_product'], isset($product['id_product_attribute']) ? $product['id_product_attribute'] : null, (int) $idShop);
@@ -854,13 +865,13 @@ class AdminCartsControllerCore extends AdminController
     {
         if ($this->tabAccess['edit'] === '1') {
             $errors = [];
-            if (!($idCartRule = Tools::getValue('id_cart_rule')) || !$cart_rule = new CartRule((int) $idCartRule)) {
+            if (!($idCartRule = Tools::getValue('id_cart_rule')) || !$cartRule = new CartRule((int) $idCartRule)) {
                 $errors[] = Tools::displayError('Invalid voucher.');
-            } elseif ($err = $cart_rule->checkValidity($this->context)) {
+            } elseif ($err = $cartRule->checkValidity($this->context)) {
                 $errors[] = $err;
             }
-            if (!count($errors)) {
-                if (!$this->context->cart->addCartRule((int) $cart_rule->id)) {
+            if (!count($errors) && isset($cartRule)) {
+                if (!$this->context->cart->addCartRule((int) $cartRule->id)) {
                     $errors[] = Tools::displayError('Can\'t add the voucher.');
                 }
             }

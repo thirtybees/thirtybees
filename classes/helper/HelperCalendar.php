@@ -65,7 +65,7 @@ class HelperCalendarCore extends Helper
     }
 
     /**
-     * @param $value
+     * @param Traversable[] $value
      *
      * @return $this
      * @throws PrestaShopException
@@ -100,7 +100,7 @@ class HelperCalendarCore extends Helper
     }
 
     /**
-     * @param $value
+     * @param Traversable[] $value
      *
      * @return $this
      * @throws PrestaShopException
@@ -135,7 +135,7 @@ class HelperCalendarCore extends Helper
     }
 
     /**
-     * @param $value
+     * @param string $value
      *
      * @return $this
      *
@@ -150,7 +150,7 @@ class HelperCalendarCore extends Helper
     }
 
     /**
-     * @return mixed
+     * @return string
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -161,7 +161,7 @@ class HelperCalendarCore extends Helper
     }
 
     /**
-     * @param $value
+     * @param string $value
      *
      * @return $this
      *
@@ -176,7 +176,7 @@ class HelperCalendarCore extends Helper
     }
 
     /**
-     * @return mixed
+     * @return string
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -187,7 +187,7 @@ class HelperCalendarCore extends Helper
     }
 
     /**
-     * @param $value
+     * @param int $value
      *
      * @return $this
      *
@@ -197,6 +197,7 @@ class HelperCalendarCore extends Helper
     public function setCompareOption($value)
     {
         $this->_compare_date_option = (int) $value;
+
         return $this;
     }
 
@@ -216,7 +217,7 @@ class HelperCalendarCore extends Helper
     }
 
     /**
-     * @param $value
+     * @param string $value
      *
      * @return $this
      * @throws PrestaShopException
@@ -251,7 +252,7 @@ class HelperCalendarCore extends Helper
     }
 
     /**
-     * @param $value
+     * @param string $value
      *
      * @return $this
      * @throws PrestaShopException
@@ -290,7 +291,7 @@ class HelperCalendarCore extends Helper
     }
 
     /**
-     * @param $value
+     * @param string $value
      *
      * @return $this
      * @throws PrestaShopException
@@ -329,7 +330,7 @@ class HelperCalendarCore extends Helper
     }
 
     /**
-     * @param $value
+     * @param bool $value
      *
      * @return $this
      *
@@ -339,11 +340,12 @@ class HelperCalendarCore extends Helper
     public function setRTL($value)
     {
         $this->_rtl = (bool) $value;
+
         return $this;
     }
 
     /**
-     * @param $action
+     * @param string $action
      *
      * @return $this
      *
@@ -362,7 +364,7 @@ class HelperCalendarCore extends Helper
     }
 
     /**
-     * @param $action
+     * @param string $action
      *
      * @return $this
      *

@@ -682,19 +682,17 @@ class TreeCore
         //Adding tree.js
         $adminWebpath = str_ireplace(_PS_CORE_DIR_, '', _PS_ADMIN_DIR_);
         $adminWebpath = preg_replace('/^'.preg_quote(DIRECTORY_SEPARATOR, '/').'/', '', $adminWebpath);
-        $bo_theme = ((Validate::isLoadedObject($this->getContext()->employee)
+        $boTheme = ((Validate::isLoadedObject($this->getContext()->employee)
             && $this->getContext()->employee->bo_theme) ? $this->getContext()->employee->bo_theme : 'default');
 
-        if (!file_exists(_PS_BO_ALL_THEMES_DIR_.$bo_theme.DIRECTORY_SEPARATOR.'template')) {
-            $bo_theme = 'default';
+        if (!file_exists(_PS_BO_ALL_THEMES_DIR_.$boTheme.DIRECTORY_SEPARATOR.'template')) {
+            $boTheme = 'default';
         }
 
-        $jsPath = __PS_BASE_URI__.$adminWebpath.'/themes/'.$bo_theme.'/js/tree.js';
+        $jsPath = __PS_BASE_URI__.$adminWebpath.'/themes/'.$boTheme.'/js/tree.js?v='._TB_VERSION_;
         if ($this->getContext()->controller->ajax) {
             if (!$this->_no_js) {
-                $html = '<script type="text/javascript">
-                    $(function(){ $.getScript(\''.$jsPath.'\'); });
-                </script>';
+                $html = '<script type="text/javascript">$(function(){ $.ajax({url: "'.$jsPath.'",cache:true,dataType: "script"})});</script>';
             }
         } else {
             $this->getContext()->controller->addJs($jsPath);

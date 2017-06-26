@@ -8,7 +8,7 @@ account.
 
 E-MAIL ADDRESS: {email}
 
-PASSWORD: {passwd} 		 
+PASSWORD: ******
 
 Please be careful when sharing these login details with others. 
 

@@ -56,7 +56,7 @@ class ContactCore extends ObjectModel
         'multilang' => true,
         'fields'    => [
             'email'            => ['type' => self::TYPE_STRING, 'validate' => 'isEmail', 'size' => 128],
-            'customer_service' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'customer_service' => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'],
 
             /* Lang fields */
             'name'             => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 32],
@@ -73,17 +73,17 @@ class ContactCore extends ObjectModel
      */
     public static function getContacts($idLang)
     {
-        $shopIds = Shop::getContextListShopID();
-        $sql = 'SELECT *
-				FROM `'._DB_PREFIX_.'contact` c
-				'.Shop::addSqlAssociation('contact', 'c', false).'
-				LEFT JOIN `'._DB_PREFIX_.'contact_lang` cl ON (c.`id_contact` = cl.`id_contact`)
-				WHERE cl.`id_lang` = '.(int) $idLang.'
-				AND contact_shop.`id_shop` IN ('.implode(', ', array_map('intval', $shopIds)).')
-				GROUP BY c.`id_contact`
-				ORDER BY `name` ASC';
-
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('*')
+                ->from('contact', 'c')
+                ->join(Shop::addSqlAssociation('contact', 'c', false))
+                ->leftJoin('contact_lang', 'cl', 'c.`id_contact` = cl.`id_contact`')
+                ->where('cl.`id_lang` = '.(int) $idLang)
+                ->where('contact_shop.`id_shop` IN ('.implode(', ', array_map('intval', Shop::getContextListShopID())).')')
+                ->groupBy('c.`id_contact`')
+                ->orderBy('`name` ASC')
+        );
     }
 
     /**
@@ -96,19 +96,16 @@ class ContactCore extends ObjectModel
      */
     public static function getCategoriesContacts()
     {
-        $shopIds = Shop::getContextListShopID();
-
-        return Db::getInstance()->executeS(
-            '
-			SELECT cl.*
-			FROM '._DB_PREFIX_.'contact ct
-			'.Shop::addSqlAssociation('contact', 'ct', false).'
-			LEFT JOIN '._DB_PREFIX_.'contact_lang cl
-				ON (cl.id_contact = ct.id_contact AND cl.id_lang = '.(int) Context::getContext()->language->id.')
-			WHERE ct.customer_service = 1
-			AND contact_shop.`id_shop` IN ('.implode(', ', array_map('intval', $shopIds)).')
-			GROUP BY ct.`id_contact`
-		'
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('cl.*')
+                ->from('contact', 'ct')
+                ->join(Shop::addSqlAssociation('contact', 'ct', false))
+                ->leftJoin('contact_lang', 'cl', 'cl.`id_contact` = ct.`id_contact`')
+                ->where('cl.`id_lang` = '.(int) Context::getContext()->language->id)
+                ->where('ct.`customer_service` = 1')
+                ->where('contact_shop.`id_shop` IN ('.implode(', ', array_map('intval', Shop::getContextListShopID())).')')
+                ->groupBy('ct.`id_contact`')
         );
     }
 }

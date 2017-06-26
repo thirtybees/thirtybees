@@ -301,7 +301,7 @@ class HookCore extends ObjectModel
         }
 
         if ($arrayReturn) {
-            $return = array();
+            $return = [];
         } else {
             $return = '';
         }
@@ -732,8 +732,8 @@ class HookCore extends ObjectModel
         if (!Cache::isStored($cacheId)) {
             // Get all hook ID by name and alias
             $hookIds = [];
-            $db = Db::getInstance();
-            $result = $db->ExecuteS(
+            $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
+            $result = $db->executeS(
                 '
 			SELECT `id_hook`, `name`
 			FROM `'._DB_PREFIX_.'hook`
@@ -754,9 +754,9 @@ class HookCore extends ObjectModel
     }
 
     /**
-     * @param $module
-     * @param $method
-     * @param $params
+     * @param Module $module
+     * @param string $method
+     * @param array  $params
      *
      * @return mixed
      *
@@ -789,19 +789,26 @@ class HookCore extends ObjectModel
         $timeEnd = microtime(true);
         $memoryEnd = memory_get_usage(true);
 
-        Db::getInstance()->execute(
-            '
-		INSERT INTO '._DB_PREFIX_.'modules_perfs (session, module, method, time_start, time_end, memory_start, memory_end)
-		VALUES ('.(int) Module::$_log_modules_perfs_session.', "'.pSQL($module->name).'", "'.pSQL($method).'", "'.pSQL($timeStart).'", "'.pSQL($timeEnd).'", '.(int) $memoryStart.', '.(int) $memoryEnd.')'
+        Db::getInstance()->insert(
+            'modules_perfs',
+            [
+                'session'      => (int) Module::$_log_modules_perfs_session,
+                'module'       => pSQL($module->name),
+                'method'       => pSQL($method),
+                'time_start'   => pSQL($timeStart),
+                'time_end'     => pSQL($timeEnd),
+                'memory_start' => pSQL($memoryStart),
+                'memory_end'   => pSQL($memoryEnd),
+            ]
         );
 
         return $r;
     }
 
     /**
-     * @param $display
-     * @param $moduleInstance
-     * @param $idHook
+     * @param string $display
+     * @param Module $moduleInstance
+     * @param int    $idHook
      *
      * @return string
      *
@@ -873,15 +880,15 @@ class HookCore extends ObjectModel
     /**
      * @deprecated 1.0.0
      *
-     * @param $idOrder
-     * @param $id_module
+     * @param int $idOrder
+     * @param int $idModule
      *
      * @return bool|string
      */
-    public static function paymentReturn($idOrder, $id_module)
+    public static function paymentReturn($idOrder, $idModule)
     {
         Tools::displayAsDeprecated();
-        if (Validate::isUnsignedId($idOrder) && Validate::isUnsignedId($id_module)) {
+        if (Validate::isUnsignedId($idOrder) && Validate::isUnsignedId($idModule)) {
             $params = [];
             $order = new Order((int) ($idOrder));
             $currency = new Currency((int) ($order->id_currency));
@@ -893,7 +900,7 @@ class HookCore extends ObjectModel
                 $params['objOrder'] = $order;
                 $params['currencyObj'] = $currency;
 
-                return Hook::exec('paymentReturn', $params, (int) ($id_module));
+                return Hook::exec('paymentReturn', $params, (int) ($idModule));
             }
         }
 
@@ -903,25 +910,25 @@ class HookCore extends ObjectModel
     /**
      * @deprecated 1.0.0
      *
-     * @param $pdf
-     * @param $id_order
+     * @param mixed $pdf
+     * @param int   $idOrder
      *
      * @return bool|string
      */
-    public static function PDFInvoice($pdf, $id_order)
+    public static function PDFInvoice($pdf, $idOrder)
     {
         Tools::displayAsDeprecated();
-        if (!is_object($pdf) || !Validate::isUnsignedId($id_order)) {
+        if (!is_object($pdf) || !Validate::isUnsignedId($idOrder)) {
             return false;
         }
 
-        return Hook::exec('PDFInvoice', ['pdf' => $pdf, 'id_order' => $id_order]);
+        return Hook::exec('PDFInvoice', ['pdf' => $pdf, 'id_order' => $idOrder]);
     }
 
     /**
      * @deprecated 1.0.0
      *
-     * @param $module
+     * @param string $module
      *
      * @return string
      */
@@ -936,8 +943,8 @@ class HookCore extends ObjectModel
     /**
      * @deprecated 1.0.0
      *
-     * @param $idCarrier
-     * @param $carrier
+     * @param int     $idCarrier
+     * @param Carrier $carrier
      *
      * @return bool|string
      */
@@ -987,11 +994,11 @@ class HookCore extends ObjectModel
             die(Tools::displayError());
         }
 
-        $result = Db::getInstance()->getRow(
-            '
-		SELECT `id_hook`, `name`
-		FROM `'._DB_PREFIX_.'hook`
-		WHERE `name` = \''.pSQL($hookName).'\''
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('`id_hook`, `name`')
+                ->from('hook')
+                ->where('`name` = \''.pSQL($hookName).'\'')
         );
 
         return ($result ? $result['id_hook'] : false);
@@ -1006,7 +1013,7 @@ class HookCore extends ObjectModel
      * @param Order    $order
      * @param Customer $customer
      * @param Currency $currency
-     * @param          $orderStatus
+     * @param int      $orderStatus
      *
      * @throws PrestaShopException
      *
@@ -1030,8 +1037,8 @@ class HookCore extends ObjectModel
     /**
      * @deprecated 1.0.0
      *
-     * @param      $product
-     * @param null $order
+     * @param Product    $product
+     * @param Order|null $order
      *
      * @return string
      */
@@ -1045,8 +1052,8 @@ class HookCore extends ObjectModel
     /**
      * @deprecated 1.0.0
      *
-     * @param $product
-     * @param $category
+     * @param Product  $product
+     * @param Category $category
      *
      * @return string
      */
@@ -1060,7 +1067,7 @@ class HookCore extends ObjectModel
     /**
      * @deprecated 1.0.0
      *
-     * @param $product
+     * @param Product $product
      *
      * @return string
      */
@@ -1074,7 +1081,7 @@ class HookCore extends ObjectModel
     /**
      * @deprecated 1.0.0
      *
-     * @param $product
+     * @param Product $product
      *
      * @return string
      */
@@ -1088,7 +1095,7 @@ class HookCore extends ObjectModel
     /**
      * @deprecated 1.0.0
      *
-     * @param $product
+     * @param Product $product
      *
      * @return string
      */
@@ -1102,7 +1109,7 @@ class HookCore extends ObjectModel
     /**
      * @deprecated 1.0.0
      *
-     * @param $product
+     * @param Product $product
      *
      * @return string
      */

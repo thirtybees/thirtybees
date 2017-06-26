@@ -64,6 +64,8 @@ class DiscountControllerCore extends FrontController
         foreach ($cartRules as $key => &$discount) {
             if ($discount['quantity_for_user'] === 0) {
                 unset($cartRules[$key]);
+
+                continue;
             }
 
             $discount['value'] = Tools::convertPriceFull(

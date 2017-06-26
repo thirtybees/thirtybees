@@ -74,7 +74,7 @@ class OrderDetailControllerCore extends FrontController
      */
     public function postProcess()
     {
-        if (Tools::isSubmit('submitMessage')) {
+        if (Tools::isSubmit('msgText') && Tools::isSubmit('id_order') && Tools::isSubmit('id_product')) {
             $idOrder = (int) Tools::getValue('id_order');
             $msgText = Tools::getValue('msgText');
 
@@ -148,10 +148,18 @@ class OrderDetailControllerCore extends FrontController
                             ],
                             $to,
                             $toName,
-                            $customer->email,
-                            $customer->firstname.' '.$customer->lastname
+                            strval(Configuration::get('PS_SHOP_EMAIL')),
+                            $customer->firstname.' '.$customer->lastname,
+                            null,
+                            null,
+                            _PS_MAIL_DIR_,
+                            false,
+                            null,
+                            null,
+                            $customer->email
                         );
                     }
+
 
                     if (Tools::getValue('ajax') != 'true') {
                         Tools::redirect('index.php?controller=order-detail&id_order='.(int) $idOrder);

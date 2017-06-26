@@ -766,11 +766,11 @@ class AdminCarrierWizardControllerCore extends AdminController
         $carrier = $this->loadObject(true);
         $carrier->shipping_method = $shippingMethod;
 
-        $tpl_vars = [];
+        $tplVars = [];
         $fieldsValue = $this->getStepThreeFieldsValues($carrier);
-        $this->getTplRangesVarsAndValues($carrier, $tpl_vars, $fieldsValue);
+        $this->getTplRangesVarsAndValues($carrier, $tplVars, $fieldsValue);
         $template = $this->createTemplate('controllers/carrier_wizard/helpers/form/form_ranges.tpl');
-        $template->assign($tpl_vars);
+        $template->assign($tplVars);
         $template->assign('change_ranges', 1);
 
         $template->assign('fields_value', $fieldsValue);
@@ -832,8 +832,6 @@ class AdminCarrierWizardControllerCore extends AdminController
         if (!$this->tabAccess['edit']) {
             die('<return result="error" message="'.Tools::displayError('You do not have permission to use this wizard.').'" />');
         }
-
-        $allowedExtensions = ['jpeg', 'gif', 'png', 'jpg'];
 
         $logo = (isset($_FILES['carrier_logo_input']) ? $_FILES['carrier_logo_input'] : false);
         if ($logo && !empty($logo['tmp_name']) && $logo['tmp_name'] != 'none'

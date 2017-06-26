@@ -176,8 +176,9 @@ class StoresControllerCore extends FrontController
         $this->addCSS(_THEME_CSS_DIR_.'stores.css');
 
         if (!Configuration::get('PS_STORES_SIMPLIFIED')) {
+            $apiKey = (Configuration::get('TB_GOOGLE_MAPS_API_KEY')) ? 'key='.Configuration::get('TB_GOOGLE_MAPS_API_KEY').'&' : '';
             $defaultCountry = new Country((int) Tools::getCountry());
-            $this->addJS('http'.((Configuration::get('PS_SSL_ENABLED') && Configuration::get('PS_SSL_ENABLED_EVERYWHERE')) ? 's' : '').'://maps.google.com/maps/api/js?region='.substr($defaultCountry->iso_code, 0, 2));
+            $this->addJS('http'.((Configuration::get('PS_SSL_ENABLED') && Configuration::get('PS_SSL_ENABLED_EVERYWHERE')) ? 's' : '').'://maps.google.com/maps/api/js?'.$apiKey.'region='.substr($defaultCountry->iso_code, 0, 2));
             $this->addJS(_THEME_JS_DIR_.'stores.js');
         }
     }

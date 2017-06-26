@@ -86,7 +86,7 @@ class GuestCore extends ObjectModel
     ];
 
     /**
-     * @param $cookie
+     * @param Cookie $cookie
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -100,7 +100,7 @@ class GuestCore extends ObjectModel
     }
 
     /**
-     * @param $idCustomer
+     * @param int $idCustomer
      *
      * @return bool
      *
@@ -225,10 +225,10 @@ class GuestCore extends ObjectModel
         foreach ($browserArray as $k => $value) {
             if (strstr($userAgent, $value)) {
                 $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
-                    '
-				SELECT `id_web_browser`
-				FROM `'._DB_PREFIX_.'web_browser` wb
-				WHERE wb.`name` = \''.pSQL($k).'\''
+                    (new DbQuery())
+                        ->select('`id_web_browser`')
+                        ->from('web_browser', 'wb')
+                        ->where('wb.`name` = \''.pSQL($k).'\'')
                 );
 
                 return $result['id_web_browser'];
@@ -239,8 +239,8 @@ class GuestCore extends ObjectModel
     }
 
     /**
-     * @param $idGuest
-     * @param $idCustomer
+     * @param int $idGuest
+     * @param int $idCustomer
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -248,11 +248,12 @@ class GuestCore extends ObjectModel
     public function mergeWithCustomer($idGuest, $idCustomer)
     {
         // Since the guests are merged, the guest id in the connections table must be changed too
-        Db::getInstance()->execute(
-            '
-		UPDATE `'._DB_PREFIX_.'connections` c
-		SET c.`id_guest` = '.(int) ($idGuest).'
-		WHERE c.`id_guest` = '.(int) ($this->id)
+        Db::getInstance()->update(
+            'connections',
+            [
+                'id_guest' => (int) $idGuest,
+            ],
+            '`id_guest` = '.(int) $this->id
         );
 
         // The current guest is removed from the database

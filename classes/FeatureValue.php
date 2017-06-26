@@ -53,7 +53,7 @@ class FeatureValueCore extends ObjectModel
         'primary'   => 'id_feature_value',
         'multilang' => true,
         'fields'    => [
-            'id_feature' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'id_feature' => ['type' => self::TYPE_INT,  'validate' => 'isUnsignedId', 'required' => true],
             'custom'     => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
 
             /* Lang fields */
@@ -82,10 +82,10 @@ class FeatureValueCore extends ObjectModel
     public static function getFeatureValues($idFeature)
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            '
-			SELECT *
-			FROM `'._DB_PREFIX_.'feature_value`
-			WHERE `id_feature` = '.(int) $idFeature
+            (new DbQuery())
+                ->select('*')
+                ->from('feature_value')
+                ->where('`id_feature` = '.(int) $idFeature)
         );
     }
 
@@ -94,6 +94,7 @@ class FeatureValueCore extends ObjectModel
      *
      * @param int  $idLang    Language id
      * @param bool $idFeature Feature id
+     * @param bool $custom
      *
      * @return array Array with feature's values
      *
@@ -102,16 +103,15 @@ class FeatureValueCore extends ObjectModel
      */
     public static function getFeatureValuesWithLang($idLang, $idFeature, $custom = false)
     {
-        return Db::getInstance()->executeS(
-            '
-			SELECT *
-			FROM `'._DB_PREFIX_.'feature_value` v
-			LEFT JOIN `'._DB_PREFIX_.'feature_value_lang` vl
-				ON (v.`id_feature_value` = vl.`id_feature_value` AND vl.`id_lang` = '.(int) $idLang.')
-			WHERE v.`id_feature` = '.(int) $idFeature.'
-				'.(!$custom ? 'AND (v.`custom` IS NULL OR v.`custom` = 0)' : '').'
-			ORDER BY vl.`value` ASC
-		'
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('*')
+                ->from('feature_value', 'v')
+                ->leftJoin('feature_value_lang', 'vl', 'v.`id_feature_value` = vl.`id_feature_value`')
+                ->where('vl.`id_lang` = '.(int) $idLang)
+                ->where('v.`id_feature` = '.(int) $idFeature)
+                ->where(!$custom ? 'v.`custom` IS NULL OR v.`custom` = 0' : '')
+                ->orderBy('vl.`value` ASC')
         );
     }
 
@@ -127,13 +127,12 @@ class FeatureValueCore extends ObjectModel
      */
     public static function getFeatureValueLang($idFeatureValue)
     {
-        return Db::getInstance()->executeS(
-            '
-			SELECT *
-			FROM `'._DB_PREFIX_.'feature_value_lang`
-			WHERE `id_feature_value` = '.(int) $idFeatureValue.'
-			ORDER BY `id_lang`
-		'
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('*')
+                ->from('feature_value_lang')
+                ->where('`id_feature_value` = '.(int) $idFeatureValue)
+                ->orderBy('`id_lang`')
         );
     }
 
@@ -158,11 +157,11 @@ class FeatureValueCore extends ObjectModel
     }
 
     /**
-     * @param      $idFeature
-     * @param      $value
-     * @param null $idProduct
-     * @param null $idLang
-     * @param bool $custom
+     * @param int      $idFeature
+     * @param string   $value
+     * @param int|null $idProduct
+     * @param int|null $idLang
+     * @param bool     $custom
      *
      * @return int
      *
@@ -173,38 +172,37 @@ class FeatureValueCore extends ObjectModel
     {
         $idFeatureValue = false;
         if (!is_null($idProduct) && $idProduct) {
-            $idFeatureValue = Db::getInstance()->getValue(
-                '
-				SELECT fp.`id_feature_value`
-				FROM '._DB_PREFIX_.'feature_product fp
-				INNER JOIN '._DB_PREFIX_.'feature_value fv USING (`id_feature_value`)
-				WHERE fp.`id_feature` = '.(int) $idFeature.'
-				AND fv.`custom` = '.(int) $custom.'
-				AND fp.`id_product` = '.(int) $idProduct
+            $idFeatureValue = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                    ->select('fp.`id_feature_value`')
+                    ->from('feature_product', 'fp')
+                    ->innerJoin('feature_value', 'fv', 'fv.`id_feature_value` = fp.`id_feature_value`')
+                    ->where('fp.`id_feature` = '.(int) $idFeature)
+                    ->where('fv.`custom` = '.(int) $custom)
+                    ->where('fp.`id_product` = '.(int) $idProduct)
             );
 
             if ($custom && $idFeatureValue && !is_null($idLang) && $idLang) {
-                Db::getInstance()->execute(
-                    '
-				UPDATE '._DB_PREFIX_.'feature_value_lang
-				SET `value` = \''.pSQL($value).'\'
-				WHERE `id_feature_value` = '.(int) $idFeatureValue.'
-				AND `value` != \''.pSQL($value).'\'
-				AND `id_lang` = '.(int) $idLang
+                Db::getInstance()->update(
+                    'feature_value_lang',
+                    [
+                        'value' => pSQL($value),
+                    ],
+                    '`id_feature_value` = '.(int) $idFeatureValue.' AND `value` != \''.pSQL($value).'\' AND `id_lang` = '.(int) $idLang
                 );
             }
         }
 
         if (!$custom) {
-            $idFeatureValue = Db::getInstance()->getValue(
-                '
-				SELECT fv.`id_feature_value`
-				FROM '._DB_PREFIX_.'feature_value fv
-				LEFT JOIN '._DB_PREFIX_.'feature_value_lang fvl ON (fvl.`id_feature_value` = fv.`id_feature_value` AND fvl.`id_lang` = '.(int) $idLang.')
-				WHERE `value` = \''.pSQL($value).'\'
-				AND fv.`id_feature` = '.(int) $idFeature.'
-				AND fv.`custom` = 0
-				GROUP BY fv.`id_feature_value`'
+            $idFeatureValue = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                    ->select('fv.`id_feature_value`')
+                    ->from('feature_value', 'fv')
+                    ->leftJoin('feature_value_lang', 'fvl', 'fvl.`id_feature_value` = fv.`id_feature_value`')
+                    ->where('fvl.`id_lang` = '.(int) $idLang)
+                    ->where('fv.`id_feature` = '.(int) $idFeature)
+                    ->where('fv.`custom` = 0')
+                    ->groupBy('fv.`id_feature_value`')
             );
         }
 
@@ -250,11 +248,7 @@ class FeatureValueCore extends ObjectModel
     public function delete()
     {
         /* Also delete related products */
-        Db::getInstance()->execute(
-            '
-			DELETE FROM `'._DB_PREFIX_.'feature_product`
-			WHERE `id_feature_value` = '.(int) $this->id
-        );
+        Db::getInstance()->delete('feature_product', '`id_feature_value` = '.(int) $this->id);
         $return = parent::delete();
 
         if ($return) {

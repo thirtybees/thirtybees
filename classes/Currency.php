@@ -132,13 +132,13 @@ class CurrencyCore extends ObjectModel
      */
     public static function getCurrenciesByIdShop($idShop = 0)
     {
-        return Db::getInstance()->executeS(
-            '
-		SELECT *
-		FROM `'._DB_PREFIX_.'currency` c
-		LEFT JOIN `'._DB_PREFIX_.'currency_shop` cs ON (cs.`id_currency` = c.`id_currency`)
-		'.($idShop ? ' WHERE cs.`id_shop` = '.(int) $idShop : '').'
-		ORDER BY `name` ASC'
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('*')
+                ->from('currency', 'c')
+                ->leftJoin('currency_shop', 'cs', 'cs.`id_currency` = c.`id_currency`')
+                ->where($idShop ? 'cs.`id_shop` = '.(int) $idShop : '')
+                ->orderBy('`name` ASC')
         );
     }
 
@@ -157,12 +157,13 @@ class CurrencyCore extends ObjectModel
             $idShop = Context::getContext()->shop->id;
         }
 
-        $sql = 'SELECT *
-				FROM '._DB_PREFIX_.'module_currency
-				WHERE id_module = '.(int) $idModule.'
-					AND id_shop ='.(int) $idShop;
-
-        return Db::getInstance()->getRow($sql);
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('*')
+                ->from('module_currency')
+                ->where('`id_module` = '.(int) $idModule)
+                ->where('`id_shop` = '.(int) $idShop)
+        );
     }
 
     /**
@@ -180,16 +181,17 @@ class CurrencyCore extends ObjectModel
             $idShop = Context::getContext()->shop->id;
         }
 
-        $sql = 'SELECT c.*
-				FROM `'._DB_PREFIX_.'module_currency` mc
-				LEFT JOIN `'._DB_PREFIX_.'currency` c ON c.`id_currency` = mc.`id_currency`
-				WHERE c.`deleted` = 0
-					AND mc.`id_module` = '.(int) $idModule.'
-					AND c.`active` = 1
-					AND mc.id_shop = '.(int) $idShop.'
-				ORDER BY c.`name` ASC';
-
-        return Db::getInstance()->executeS($sql);
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('c.*')
+                ->from('module_currency', 'mc')
+                ->leftJoin('currency', 'c', 'c.`id_currency` = mc.`id_currency`')
+                ->where('c.`deleted` = 0')
+                ->where('mc.`id_module` = '.(int) $idModule)
+                ->where('c.`active` = 1')
+                ->where('mc.`id_shop` = '.(int) $idShop)
+                ->orderBy('c.`name` ASC')
+        );
     }
 
     /**
@@ -211,12 +213,13 @@ class CurrencyCore extends ObjectModel
             $idShop = Context::getContext()->shop->id;
         }
 
-        $sql = 'SELECT *
-				FROM `'._DB_PREFIX_.'module_currency`
-				WHERE `id_module` = '.(int) $idModule.'
-					AND `id_shop` = '.(int) $idShop;
-
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('*')
+                ->from('module_currency')
+                ->where('`id_module` = '.(int) $idModule)
+                ->where('`id_shop` = '.(int) $idShop)
+        );
     }
 
     /**
@@ -230,11 +233,11 @@ class CurrencyCore extends ObjectModel
     public static function getCurrency($idCurrency)
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
-            '
-		SELECT *
-		FROM `'._DB_PREFIX_.'currency`
-		WHERE `deleted` = 0
-		AND `id_currency` = '.(int) ($idCurrency)
+            (new DbQuery())
+                ->select('*')
+                ->from('currency')
+                ->where('`deleted` = 0')
+                ->where('`id_currency` = '.(int) $idCurrency)
         );
     }
 
@@ -251,6 +254,10 @@ class CurrencyCore extends ObjectModel
         }
 
         $currencyRates = CurrencyRateModule::getCurrencyRateInfo();
+        if (!is_array($currencyRates)) {
+            return null;
+        }
+        $currencyRates = array_filter($currencyRates);
         $moduleRates = [];
         foreach ($currencyRates as $currency => $module) {
             if (Tools::strtoupper($currency) === Tools::strtoupper($defaultCurrency->iso_code)) {
@@ -265,6 +272,9 @@ class CurrencyCore extends ObjectModel
 
         foreach ($moduleRates as $idModule => $currencies) {
             $response = Hook::exec('actionRetrieveCurrencyRates', ['currencies' => $currencies, 'baseCurrency' => Tools::strtoupper($defaultCurrency->iso_code)], $idModule, true);
+            if (!is_array($response)) {
+                continue;
+            }
             foreach ($response as $rates) {
                 foreach ($rates as $isoCode => $rate) {
                     $currency = Currency::getCurrencyInstance(Currency::getIdByIsoCode($isoCode));
@@ -304,15 +314,15 @@ class CurrencyCore extends ObjectModel
      */
     public static function getCurrencies($object = false, $active = true, $groupBy = false)
     {
-        $tab = Db::getInstance()->executeS(
-            '
-		SELECT *
-		FROM `'._DB_PREFIX_.'currency` c
-		'.Shop::addSqlAssociation('currency', 'c').
-            ' WHERE `deleted` = 0'.
-            ($active ? ' AND c.`active` = 1' : '').
-            ($groupBy ? ' GROUP BY c.`id_currency`' : '').
-            ' ORDER BY `name` ASC'
+        $tab = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('*')
+                ->from('currency', 'c')
+                ->join(Shop::addSqlAssociation('currency', 'c'))
+                ->where('`deleted` = 0')
+                ->where($active ? 'c.`active` = 1' : '')
+                ->groupBy($groupBy ? 'c.`id_currency`' : '')
+                ->orderBy('`name` ASC')
         );
         if ($object) {
             foreach ($tab as $key => $currency) {
@@ -432,12 +442,13 @@ class CurrencyCore extends ObjectModel
         }
 
         if (!isset(static::$countActiveCurrencies[$idShop])) {
-            static::$countActiveCurrencies[$idShop] = Db::getInstance()->getValue(
-                '
-				SELECT COUNT(DISTINCT c.id_currency) FROM `'._DB_PREFIX_.'currency` c
-				LEFT JOIN '._DB_PREFIX_.'currency_shop cs ON (cs.id_currency = c.id_currency AND cs.id_shop = '.(int) $idShop.')
-				WHERE c.`active` = 1
-			'
+            static::$countActiveCurrencies[$idShop] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                ->select('COUNT(DISTINCT c.`id_currency`)')
+                ->from('currency', 'c')
+                ->leftJoin('currency_shop', 'cs', 'cs.`id_currency` = c.`id_currency`')
+                ->where('cs.`id_shop` = '.(int) $idShop)
+                ->where('c.`active` = 1')
             );
         }
 
@@ -598,7 +609,13 @@ class CurrencyCore extends ObjectModel
     public function delete()
     {
         if ($this->id == Configuration::get('PS_CURRENCY_DEFAULT')) {
-            $result = Db::getInstance()->getRow('SELECT `id_currency` FROM '._DB_PREFIX_.'currency WHERE `id_currency` != '.(int) ($this->id).' AND `deleted` = 0');
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                (new DbQuery())
+                    ->select('`id_currency`')
+                    ->from('currency')
+                    ->where('`id_currency` != '.(int) $this->id)
+                    ->where('`deleted` = 0')
+            );
             if (!$result['id_currency']) {
                 return false;
             }

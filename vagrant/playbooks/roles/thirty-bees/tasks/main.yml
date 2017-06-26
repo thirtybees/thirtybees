@@ -1,0 +1,43 @@
+---
+- name: Create MySQL database for thirtybees
+  mysql_db: name=thirtybees state=present
+
+- name: Create MySQL user for thirtybees
+  mysql_user: name=thirtybees password=thirtybees priv=*.*:ALL state=present host=%
+
+- name: Install thirty bees project dependencies
+  shell: COMPOSER_PROCESS_TIMEOUT={{composer_process_timeout}} composer install --no-dev
+  become: true
+  become_user: "{{ www_user }}"
+  args:
+    chdir: /vagrant
+    creates: /vagrant/vendor
+
+- name: Install thirty bees itself
+  shell: php ./install-dev/index_cli.php --domain=thirty.bees --db_server=thirty.bees --db_user=thirtybees --db_password=thirtybees --db_name=thirtybees --db_create --name="thirty bees" --firstname=thirty --lastname=bees --email=test@thirty.bees --password=thirtybees --newsletter=0
+  become: true
+  become_user: "{{ www_user }}"
+  args:
+    chdir: /vagrant
+
+- name: Copy across new php-fpm pool config for thirtybees
+  template:
+    src=php-fpm.conf.j2
+    dest=/etc/php/{{ php_version }}/fpm/pool.d/thirtybees.conf
+  notify:
+    - restart php-fpm
+
+- name: Copy across new virtual host for thirtybees
+  template:
+    src=nginx.conf.j2
+    dest=/etc/nginx/sites-available/thirtybees.conf
+  notify:
+    - restart nginx
+
+- name: Enable new vagrant virtual host for thirtybees
+  file:
+    src=/etc/nginx/sites-available/thirtybees.conf
+    dest=/etc/nginx/sites-enabled/thirtybees.conf
+    state=link
+  notify:
+    - restart nginx

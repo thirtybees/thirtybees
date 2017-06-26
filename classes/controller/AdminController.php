@@ -577,7 +577,7 @@ class AdminControllerCore extends Controller
                 }
 
                 if (isset($_POST) && count($_POST) && (int) Tools::getValue('submitFilter'.$this->list_id) || Tools::isSubmit('submitReset'.$this->list_id)) {
-                    $this->setRedirectAfter(static::$currentIndex.'&token='.$this->token.(Tools::isSubmit('submitFilter'.$this->list_id) ? '&submitFilter'.$this->list_id.'='.(int) Tools::getValue('submitFilter'.$this->list_id) : ''));
+                    $this->setRedirectAfter(static::$currentIndex.'&token='.$this->token.(Tools::isSubmit('submitFilter'.$this->list_id) ? '&submitFilter'.$this->list_id.'='.(int) Tools::getValue('submitFilter'.$this->list_id) : '').(isset($_GET['id_'.$this->list_id]) ? '&id_'.$this->list_id.'='.(int) $_GET['id_'.$this->list_id] : ''));
                 }
 
                 // If the method named after the action exists, call "before" hooks, then call action method, then call "after" hooks
@@ -876,16 +876,20 @@ class AdminControllerCore extends Controller
 
         $headers = [];
         foreach ($this->fields_list as $key => $datas) {
-            if ($datas['title'] == 'PDF') {
+            if ($datas['title'] === 'PDF') {
                 unset($this->fields_list[$key]);
             } else {
-                $headers[] = Tools::htmlentitiesDecodeUTF8($datas['title']);
+                if ($datas['title'] === 'ID') {
+                    $headers[] = strtolower(Tools::htmlentitiesDecodeUTF8($datas['title']));
+                } else {
+                    $headers[] = Tools::htmlentitiesDecodeUTF8($datas['title']);
+                }
             }
         }
         $content = [];
         foreach ($this->_list as $i => $row) {
             $content[$i] = [];
-            $pathToImage = false;
+//            $pathToImage = false;
             foreach ($this->fields_list as $key => $params) {
                 $fieldValue = isset($row[$key]) ? Tools::htmlentitiesDecodeUTF8(Tools::nl2br($row[$key])) : '';
                 if ($key == 'image') {
@@ -1382,7 +1386,7 @@ class AdminControllerCore extends Controller
             if (isset($def['lang']) && $def['lang']) {
                 if (isset($def['required']) && $def['required']) {
                     $value = Tools::getValue($field.'_'.$defaultLanguage->id);
-                    if (empty($value)) {
+                    if ($value === '') {
                         $this->errors[$field.'_'.$defaultLanguage->id] = sprintf(
                             Tools::displayError('The field %1$s is required at least in %2$s.'),
                             $object->displayFieldName($field, $className),

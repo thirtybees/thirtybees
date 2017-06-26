@@ -741,7 +741,7 @@ class AdminPerformanceControllerCore extends AdminController
                         [
                             'id'    => 'CacheMemcache',
                             'value' => 'CacheMemcache',
-                            'label' => $this->l('Memcached via PHP::Memcache').(extension_loaded('memcache') ? '' : $warningMemcache),
+                            'label' => $this->l('Memcache via PHP::Memcache').(extension_loaded('memcache') ? '' : $warningMemcache),
                         ],
                         [
                             'id'    => 'CacheMemcached',
@@ -774,7 +774,7 @@ class AdminPerformanceControllerCore extends AdminController
         ];
         $depth = Configuration::get('PS_CACHEFS_DIRECTORY_DEPTH');
         $this->fields_value['TB_CACHE_ENABLED'] = (bool) Configuration::get('TB_CACHE_ENABLED');
-        $this->fields_value['TB_CACHE_SYSTEM'] = Configuration::get('TB_CACHE_SYSTEM');
+        $this->fields_value['TB_CACHE_SYSTEM'] = Configuration::get('TB_CACHE_SYSTEM') ?: 'CacheFs';
         $this->fields_value['ps_cache_fs_directory_depth'] = $depth ? $depth : 1;
         $this->tpl_form_vars['memcached_servers'] = CacheMemcache::getMemcachedServers();
         $this->tpl_form_vars['redis_servers'] = CacheRedis::getRedisServers();

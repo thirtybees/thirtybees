@@ -328,8 +328,8 @@ class HelperOptionsCore extends Helper
     }
 
     /**
-     * @param $key
-     * @param $field
+     * @param string $key
+     * @param array  $field
      *
      * @return string
      *
@@ -346,6 +346,7 @@ class HelperOptionsCore extends Helper
         if (isset($field['defaultValue']) && !$value) {
             $value = $field['defaultValue'];
         }
+
         return Tools::purifyHTML($value);
     }
 }

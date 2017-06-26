@@ -192,11 +192,11 @@ class EmployeeCore extends ObjectModel
             die(Tools::displayError());
         }
 
-        return (bool) Db::getInstance()->getValue(
-            '
-		SELECT `id_employee`
-		FROM `'._DB_PREFIX_.'employee`
-		WHERE `email` = \''.pSQL($email).'\''
+        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('`id_employee`')
+                ->from('employee')
+                ->where('`email` = \''.pSQL($email).'\'')
         );
     }
 
@@ -232,12 +232,12 @@ class EmployeeCore extends ObjectModel
      */
     public static function setLastConnectionDate($idEmployee)
     {
-        return Db::getInstance()->execute(
-            '
-			UPDATE `'._DB_PREFIX_.'employee`
-			SET `last_connection_date` = CURRENT_DATE()
-			WHERE `id_employee` = '.(int) $idEmployee.' AND `last_connection_date`< CURRENT_DATE()
-		'
+        return Db::getInstance()->update(
+            bqSQL(static::$definition['table']),
+            [
+                'last_connection_date' => ['type' => 'sql', 'value' => 'CURRENT_DATE()'],
+            ],
+            '`id_employee` = '.(int) $idEmployee.' AND `last_connection_date` < CURRENT_DATE()'
         );
     }
 
@@ -573,11 +573,13 @@ class EmployeeCore extends ObjectModel
      */
     public function favoriteModulesList()
     {
-        return Db::getInstance()->executeS(
-            '
-			SELECT `module`
-			FROM `'._DB_PREFIX_.'module_preference`
-			WHERE `id_employee` = '.(int) $this->id.' AND `favorite` = 1 AND (`interest` = 1 OR `interest` IS NULL)'
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('module')
+                ->from('module_preference')
+                ->where('`id_employee` = '.(int) $this->id)
+                ->where('`favorite` = 1')
+                ->where('`interest` = 1 OR `interest` IS NULL')
         );
     }
 
@@ -664,10 +666,10 @@ class EmployeeCore extends ObjectModel
     public function getLastElementsForNotify($element)
     {
         $element = bqSQL($element);
-        $max = Db::getInstance()->getValue(
-            '
-			SELECT MAX(`id_'.$element.'`) as `id_'.$element.'`
-			FROM `'._DB_PREFIX_.$element.($element == 'order' ? 's' : '').'`'
+        $max = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('MAX(`id_'.bqSQL($element).'`) as `id_'.bqSQL($element).'`')
+                ->from(bqSQL($element).($element == 'order' ? 's' : ''))
         );
 
         // if no rows in table, set max to 0

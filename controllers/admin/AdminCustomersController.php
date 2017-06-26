@@ -816,11 +816,23 @@ class AdminCustomersControllerCore extends AdminController
         $genderImage = $gender->getImage();
 
         $customerStats = $customer->getStats();
-        $sql = 'SELECT SUM(total_paid_real) FROM '._DB_PREFIX_.'orders WHERE id_customer = %d AND valid = 1';
-        if ($total_customer = Db::getInstance()->getValue(sprintf($sql, $customer->id))) {
-            $sql = 'SELECT SQL_CALC_FOUND_ROWS COUNT(*) FROM '._DB_PREFIX_.'orders WHERE valid = 1 AND id_customer != '.(int) $customer->id.' GROUP BY id_customer HAVING SUM(total_paid_real) > %d';
-            Db::getInstance()->getValue(sprintf($sql, (int) $total_customer));
-            $countBetterCustomers = (int) Db::getInstance()->getValue('SELECT FOUND_ROWS()') + 1;
+        if ($total_customer = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+            ->select('SUM(`total_paid_real`)')
+            ->from('orders')
+            ->where('`id_customer` = '.(int) $customer->id)
+            ->where('`valid` = 1')
+        )) {
+            Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                ->select('SQL_CALC_FOUND_ROWS COUNT(*)')
+                ->from('orders')
+                ->where('`valid` = 1')
+                ->where('`id_customer` != '.(int) $customer->id)
+                ->groupBy('id_customer')
+                ->having('SUM(`total_paid_real`) > '.(int) $total_customer)
+            );
+            $countBetterCustomers = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT FOUND_ROWS()') + 1;
         } else {
             $countBetterCustomers = '-';
         }

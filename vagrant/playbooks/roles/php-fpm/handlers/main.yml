@@ -1,0 +1,2 @@
+- name: restart php-fpm
+  service: name=php{{ php_version }}-fpm state=restarted

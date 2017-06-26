@@ -111,9 +111,6 @@ class InstallControllerHttpProcess extends InstallControllerHttp
             if (Tools::getValue('restart')) {
                 $this->session->processValidated = [];
                 $this->session->databaseClear = true;
-                if (Tools::getSafeModeStatus()) {
-                    $this->session->safeMode = true;
-                }
             } elseif (!Tools::getValue('submitNext')) {
                 $this->session->step = 'configure';
                 $this->session->lastStep = 'configure';
@@ -138,10 +135,10 @@ class InstallControllerHttpProcess extends InstallControllerHttp
         );
 
         if (!$success) {
-            $this->ajaxJsonAnswer(false);
+            $this->ajaxJsonAnswer(false, $this->modelInstall->getErrors());
         }
         $this->session->processValidated = array_merge($this->session->processValidated, ['generateSettingsFile' => true]);
-        $this->ajaxJsonAnswer(true);
+        $this->ajaxJsonAnswer(true, $this->modelInstall->getErrors());
     }
 
     /**
@@ -150,11 +147,11 @@ class InstallControllerHttpProcess extends InstallControllerHttp
      */
     public function processInstallDatabase()
     {
-        if (!$this->modelInstall->installDatabase($this->session->databaseClear) || $this->modelInstall->getErrors()) {
+        if (!$this->modelInstall->installDatabase($this->session->databaseClear)) {
             $this->ajaxJsonAnswer(false, $this->modelInstall->getErrors());
         }
         $this->session->processValidated = array_merge($this->session->processValidated, ['installDatabase' => true]);
-        $this->ajaxJsonAnswer(true);
+        $this->ajaxJsonAnswer(true, $this->modelInstall->getErrors());
     }
 
     /**
@@ -166,10 +163,10 @@ class InstallControllerHttpProcess extends InstallControllerHttp
         // @todo remove true in populateDatabase for 1.5.0 RC version
         $result = $this->modelInstall->installDefaultData($this->session->shopName, $this->session->shopCountry, false, true);
 
-        if (!$result || $this->modelInstall->getErrors()) {
+        if (!$result) {
             $this->ajaxJsonAnswer(false, $this->modelInstall->getErrors());
         }
-        $this->ajaxJsonAnswer(true);
+        $this->ajaxJsonAnswer(true, $this->modelInstall->getErrors());
     }
 
     /**
@@ -182,12 +179,12 @@ class InstallControllerHttpProcess extends InstallControllerHttp
 
         $this->modelInstall->xmlLoaderIds = $this->session->xmlLoaderIds;
         $result = $this->modelInstall->populateDatabase(Tools::getValue('entity'));
-        if (!$result || $this->modelInstall->getErrors()) {
+        if (!$result) {
             $this->ajaxJsonAnswer(false, $this->modelInstall->getErrors());
         }
         $this->session->xmlLoaderIds = $this->modelInstall->xmlLoaderIds;
         $this->session->processValidated = array_merge($this->session->processValidated, ['populateDatabase' => true]);
-        $this->ajaxJsonAnswer(true);
+        $this->ajaxJsonAnswer(true, $this->modelInstall->getErrors());
     }
 
     public function initializeContext()
@@ -232,12 +229,12 @@ class InstallControllerHttpProcess extends InstallControllerHttp
             ]
         );
 
-        if (!$success || $this->modelInstall->getErrors()) {
+        if (!$success) {
             $this->ajaxJsonAnswer(false, $this->modelInstall->getErrors());
         }
 
         $this->session->processValidated = array_merge($this->session->processValidated, ['configureShop' => true]);
-        $this->ajaxJsonAnswer(true);
+        $this->ajaxJsonAnswer(true, $this->modelInstall->getErrors());
     }
 
     /**
@@ -249,12 +246,12 @@ class InstallControllerHttpProcess extends InstallControllerHttp
         $this->initializeContext();
 
         $this->modelInstall->xmlLoaderIds = $this->session->xmlLoaderIds;
-        if (!$this->modelInstall->installFixtures(Tools::getValue('entity', null), ['shopActivity' => $this->session->shopActivity, 'shopCountry' => $this->session->shopCountry]) || $this->modelInstall->getErrors()) {
+        if (!$this->modelInstall->installFixtures(Tools::getValue('entity', null), ['shopActivity' => $this->session->shopActivity, 'shopCountry' => $this->session->shopCountry])) {
             $this->ajaxJsonAnswer(false, $this->modelInstall->getErrors());
         }
         $this->session->xmlLoaderIds = $this->modelInstall->xmlLoaderIds;
         $this->session->processValidated = array_merge($this->session->processValidated, ['installFixtures' => true]);
-        $this->ajaxJsonAnswer(true);
+        $this->ajaxJsonAnswer(true, $this->modelInstall->getErrors());
     }
 
     /**
@@ -266,11 +263,11 @@ class InstallControllerHttpProcess extends InstallControllerHttp
         $this->initializeContext();
 
         $result = $this->modelInstall->installModules(Tools::getValue('module'));
-        if (!$result || $this->modelInstall->getErrors()) {
+        if (!$result) {
             $this->ajaxJsonAnswer(false, $this->modelInstall->getErrors());
         }
         $this->session->processValidated = array_merge($this->session->processValidated, ['installModules' => true]);
-        $this->ajaxJsonAnswer(true);
+        $this->ajaxJsonAnswer(true, $this->modelInstall->getErrors());
     }
 
     /**
@@ -281,13 +278,13 @@ class InstallControllerHttpProcess extends InstallControllerHttp
     {
         $this->initializeContext();
 
-        $this->modelInstall->installTheme();
-        if ($this->modelInstall->getErrors()) {
+        $result = $this->modelInstall->installTheme();
+        if (!$result) {
             $this->ajaxJsonAnswer(false, $this->modelInstall->getErrors());
         }
 
         $this->session->processValidated = array_merge($this->session->processValidated, ['installTheme' => true]);
-        $this->ajaxJsonAnswer(true);
+        $this->ajaxJsonAnswer(true, $this->modelInstall->getErrors());
     }
 
     /**

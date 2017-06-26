@@ -72,10 +72,20 @@ class ValidateCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @since 1.0.2 For validation we now use a new `Swift_Message` instance
+     *        to automatically check for RFC 2822 compliance, because
+     *        that is the only RFC supported by thirty bees
      */
     public static function isEmail($email)
     {
-        return !empty($email) && preg_match(Tools::cleanNonUnicodeSupport('/^[a-z\p{L}0-9!#$%&\'*+\/=?^`{}|~_-]+[.a-z\p{L}0-9!#$%&\'*+\/=?^`{}|~_-]*@[a-z\p{L}0-9]+(?:[.]?[_a-z\p{L}0-9-])*\.[a-z\p{L}0-9]+$/ui'), $email);
+        try {
+            \Swift_Message::newInstance()->setFrom($email);
+
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     /**

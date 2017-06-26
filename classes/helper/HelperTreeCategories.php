@@ -43,6 +43,7 @@ class HelperTreeCategoriesCore extends TreeCore
     // @codingStandardsIgnoreStart
     protected $_disabled_categories;
     protected $_input_name;
+    /** @var int $_lang */
     protected $_lang;
     protected $_root_category;
     protected $_selected_categories;
@@ -57,11 +58,11 @@ class HelperTreeCategoriesCore extends TreeCore
     /**
      * HelperTreeCategoriesCore constructor.
      *
-     * @param      $id
-     * @param null $title
-     * @param null $rootCategory
-     * @param null $lang
-     * @param bool $useShopRestriction
+     * @param int         $id
+     * @param string|null $title
+     * @param int|null    $rootCategory
+     * @param int|null    $lang
+     * @param bool        $useShopRestriction
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -173,7 +174,7 @@ class HelperTreeCategoriesCore extends TreeCore
     }
 
     /**
-     * @param $value
+     * @param mixed $value
      *
      * @return $this
      *
@@ -188,7 +189,7 @@ class HelperTreeCategoriesCore extends TreeCore
     }
 
     /**
-     * @param $value
+     * @param mixed $value
      *
      * @return $this
      *
@@ -214,7 +215,7 @@ class HelperTreeCategoriesCore extends TreeCore
     }
 
     /**
-     * @param $value
+     * @param mixed $value
      *
      * @return $this
      *
@@ -240,7 +241,7 @@ class HelperTreeCategoriesCore extends TreeCore
     }
 
     /**
-     * @param $value
+     * @param mixed $value
      *
      * @return $this
      *
@@ -270,7 +271,7 @@ class HelperTreeCategoriesCore extends TreeCore
     }
 
     /**
-     * @param $value
+     * @param int $value
      *
      * @return $this
      *
@@ -285,7 +286,7 @@ class HelperTreeCategoriesCore extends TreeCore
     }
 
     /**
-     * @return mixed
+     * @return int
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -330,7 +331,7 @@ class HelperTreeCategoriesCore extends TreeCore
     }
 
     /**
-     * @param $value
+     * @param int $value
      *
      * @return $this
      * @throws PrestaShopException
@@ -361,7 +362,7 @@ class HelperTreeCategoriesCore extends TreeCore
     }
 
     /**
-     * @param $value
+     * @param array $value
      *
      * @return $this
      * @throws PrestaShopException
@@ -396,7 +397,7 @@ class HelperTreeCategoriesCore extends TreeCore
     }
 
     /**
-     * @param $value
+     * @param Shop $value
      *
      * @return $this
      *
@@ -411,7 +412,7 @@ class HelperTreeCategoriesCore extends TreeCore
     }
 
     /**
-     * @return mixed
+     * @return Shop
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -464,7 +465,7 @@ class HelperTreeCategoriesCore extends TreeCore
     }
 
     /**
-     * @param $value
+     * @param bool $value
      *
      * @return $this
      *
@@ -479,7 +480,7 @@ class HelperTreeCategoriesCore extends TreeCore
     }
 
     /**
-     * @param $value
+     * @param bool $value
      *
      * @return $this
      *
@@ -555,7 +556,7 @@ class HelperTreeCategoriesCore extends TreeCore
         //Default bootstrap style of search is push-right, so we add this button first
         if ($this->useSearch()) {
             $this->addAction(
-                new TreeToolbarSearchCategories(
+                new static(
                     'Find a category:',
                     $this->getId().'-categories-search'
                 )

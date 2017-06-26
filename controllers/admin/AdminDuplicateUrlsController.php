@@ -109,13 +109,13 @@ class AdminDuplicateUrlsControllerCore extends AdminController
      *
      * @param int $idLang
      *
-     * @return array|bool
+     * @return array
      * @throws PrestaShopException
      */
     private function getProductUrls($idLang)
     {
         if (empty($idLang)) {
-            return false;
+            return [];
         }
         $context = Context::getContext();
         $productUrls = [];
@@ -135,20 +135,20 @@ class AdminDuplicateUrlsControllerCore extends AdminController
      *
      * @param int $idLang
      *
-     * @return array|bool
+     * @return array
      * @throws PrestaShopDatabaseException
      */
     private function getCategoryUrls($idLang)
     {
         if (empty($idLang)) {
-            return false;
+            return [];
         }
         $categoryUrls = [];
         $context = Context::getContext();
         $sql = 'SELECT `id_category` FROM `'._DB_PREFIX_.'category` WHERE `active` = 1';
         $categories = Db::getInstance()->executeS($sql);
         if (empty($categories)) {
-            return false;
+            return [];
         }
         foreach ($categories as $category) {
             $categoryInfo = [
@@ -166,20 +166,20 @@ class AdminDuplicateUrlsControllerCore extends AdminController
      *
      * @param $idLang
      *
-     * @return array|bool
+     * @return array
      * @throws PrestaShopDatabaseException
      */
     private function getCmsUrls($idLang)
     {
         if (empty($idLang)) {
-            return false;
+            return [];
         }
         $cmsUrls = [];
         $context = Context::getContext();
         $sql = 'SELECT `id_cms` FROM `'._DB_PREFIX_.'cms`';
         $cmss = Db::getInstance()->executeS($sql);
         if (empty($cmss)) {
-            return false;
+            return [];
         }
         foreach ($cmss as $cms) {
             $cmsInfo = [
@@ -197,20 +197,20 @@ class AdminDuplicateUrlsControllerCore extends AdminController
      *
      * @param $idLang
      *
-     * @return array|bool
+     * @return array
      * @throws PrestaShopDatabaseException
      */
     private function getCmsCategoryUrls($idLang)
     {
         if (empty($idLang)) {
-            return false;
+            return [];
         }
         $categoryUrls = [];
         $context = Context::getContext();
         $sql = 'SELECT `id_cms_category` FROM `'._DB_PREFIX_.'cms_category`';
         $categories = Db::getInstance()->executeS($sql);
         if (empty($categories)) {
-            return false;
+            return [];
         }
         foreach ($categories as $category) {
             $categoryInfo = [
@@ -228,20 +228,20 @@ class AdminDuplicateUrlsControllerCore extends AdminController
      *
      * @param $idLang
      *
-     * @return array|bool
+     * @return array
      * @throws PrestaShopDatabaseException
      */
     private function getSupplierUrls($idLang)
     {
         if (empty($idLang)) {
-            return false;
+            return [];
         }
         $supplierUrls = [];
         $context = Context::getContext();
         $sql = 'SELECT `id_supplier` FROM `'._DB_PREFIX_.'supplier`';
         $suppliers = Db::getInstance()->executeS($sql);
         if (empty($suppliers)) {
-            return false;
+            return [];
         }
         foreach ($suppliers as $supplier) {
             $supplierInfo = [
@@ -259,20 +259,20 @@ class AdminDuplicateUrlsControllerCore extends AdminController
      *
      * @param int $idLang
      *
-     * @return array|bool
+     * @return array
      * @throws PrestaShopDatabaseException
      */
     private function getManufacturerUrls($idLang)
     {
         if (empty($idLang)) {
-            return false;
+            return [];
         }
         $manufacturerUrls = [];
         $context = Context::getContext();
         $sql = 'SELECT `id_manufacturer` FROM `'._DB_PREFIX_.'manufacturer`';
         $manufacturers = Db::getInstance()->executeS($sql);
         if (empty($manufacturers)) {
-            return false;
+            return [];
         }
         foreach ($manufacturers as $manufacturer) {
             $manufacturerInfo = [

@@ -112,8 +112,8 @@ class AdminConfigurationPagesCest
         $I->amOnPage('/admin-dev/index.php');
         $I->waitForElementVisible(['css' => '#email']);
 
-        $I->fillField(['css' => '#email'], 'test@test.test');
-        $I->fillField(['css' => '#passwd'], 'testtest');
+        $I->fillField(['css' => '#email'], 'test@thirty.bees');
+        $I->fillField(['css' => '#passwd'], 'thirtybees');
         $I->click('Log in');
     }
 

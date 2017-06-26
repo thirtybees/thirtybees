@@ -313,7 +313,7 @@ class AdminPaymentControllerCore extends AdminController
                 'icon'       => 'icon-globe',
             ],
             [
-                'items'      => Carrier::getCarriers($this->context->language->id),
+                'items'      => Carrier::getCarriers($this->context->language->id, false, false, false, null, Carrier::ALL_CARRIERS),
                 'title'      => $this->l('Carrier restrictions'),
                 'desc'       => $this->l('Please mark each checkbox for the carrier, or carrier, for which you want the payment module(s) to be available.'),
                 'name_id'    => 'reference',

@@ -170,23 +170,17 @@ class SupplierCore extends ObjectModel
             }
 
             $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-                '
-					SELECT  ps.`id_supplier`, COUNT(DISTINCT ps.`id_product`) AS nb_products
-					FROM `'._DB_PREFIX_.'product_supplier` ps
-					JOIN `'._DB_PREFIX_.'product` p ON (ps.`id_product`= p.`id_product`)
-					'.Shop::addSqlAssociation('product', 'p').'
-					LEFT JOIN `'._DB_PREFIX_.'supplier` AS m ON (m.`id_supplier`= p.`id_supplier`)
-					WHERE ps.id_product_attribute = 0'.
-                ($active ? ' AND product_shop.`active` = 1' : '').
-                ' AND product_shop.`visibility` NOT IN ("none")'.
-                ($allGroups ? '' : '
-					AND ps.`id_product` IN (
-						SELECT cp.`id_product`
-						FROM `'._DB_PREFIX_.'category_group` cg
-						LEFT JOIN `'._DB_PREFIX_.'category_product` cp ON (cp.`id_category` = cg.`id_category`)
-						WHERE cg.`id_group` '.$sqlGroups.'
-					)').'
-					GROUP BY ps.`id_supplier`'
+                (new DbQuery())
+                    ->select('ps.`id_supplier`, COUNT(DISTINCT ps.`id_product`) AS nb_products')
+                    ->from('product_supplier', 'ps')
+                    ->innerJoin('product', 'p', 'ps.`id_product` = p.`id_product`')
+                    ->join(Shop::addSqlAssociation('product', 'p'))
+                    ->leftJoin('supplier', 'm', 'm.`id_supplier` = p.`id_supplier`')
+                    ->where('ps.`id_product_attribute` = 0')
+                    ->where($active ? 'product_shop.`active` = 1' : '')
+                    ->where('product_shop.`visibility` NOT IN ("none")')
+                    ->where($allGroups ? 'ps.`id_product` IN (SELECT cp.`id_product` FROM `'._DB_PREFIX_.'category_group` cg LEFT JOIN `'._DB_PREFIX_.'category_product` cp ON (cp.`id_category` = cg.`id_category`) WHERE cg.`id_group` '.$sqlGroups.')' : '')
+                    ->groupBy('ps.`id_supplier`')
             );
 
             $counts = [];
@@ -243,6 +237,9 @@ class SupplierCore extends ObjectModel
         return parent::update($nullValues);
     }
 
+    /**
+     * @return bool
+     */
     public function delete()
     {
         if ('TB_PAGE_CACHE_ENABLED') {
@@ -262,18 +259,22 @@ class SupplierCore extends ObjectModel
      */
     public static function getNameById($idSupplier)
     {
+        // @codingStandardsIgnoreStart
         if (!isset(static::$cache_name[$idSupplier])) {
             static::$cache_name[$idSupplier] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-                '
-			SELECT `name` FROM `'._DB_PREFIX_.'supplier` WHERE `id_supplier` = '.(int) $idSupplier
+                (new DbQuery())
+                    ->select('`name`')
+                    ->from('supplier')
+                    ->where('`id_supplier` = '.(int) $idSupplier)
             );
         }
 
         return static::$cache_name[$idSupplier];
+        // @codingStandardsIgnoreEnd
     }
 
     /**
-     * @param $name
+     * @param string $name
      *
      * @return bool|int
      *
@@ -282,11 +283,11 @@ class SupplierCore extends ObjectModel
      */
     public static function getIdByName($name)
     {
-        $result = Db::getInstance()->getRow(
-            '
-		SELECT `id_supplier`
-		FROM `'._DB_PREFIX_.'supplier`
-		WHERE `name` = \''.pSQL($name).'\''
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('`id_supplier`')
+                ->from('supplier')
+                ->where('`name` = \''.pSQL($name).'\'')
         );
 
         if (isset($result['id_supplier'])) {
@@ -297,20 +298,20 @@ class SupplierCore extends ObjectModel
     }
 
     /**
-     * @param      $idSupplier
-     * @param      $idLang
-     * @param      $p
-     * @param      $n
-     * @param null $orderBy
-     * @param null $orderWay
-     * @param bool $getTotal
-     * @param bool $active
-     * @param bool $active_category
+     * @param int         $idSupplier
+     * @param int         $idLang
+     * @param int         $p
+     * @param int         $n
+     * @param string|null $orderBy
+     * @param string|null $orderWay
+     * @param bool        $getTotal
+     * @param bool        $active
+     * @param bool        $activeCategory
      *
      * @return array|bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @since    1.0.0
+     * @version  1.0.0 Initial version
      */
     public static function getProducts(
         $idSupplier,
@@ -346,28 +347,29 @@ class SupplierCore extends ObjectModel
         $sqlGroups = '';
         if (Group::isFeatureActive()) {
             $groups = FrontController::getCurrentCustomerGroups();
-            $sqlGroups = 'WHERE cg.`id_group` '.(count($groups) ? 'IN ('.implode(',', $groups).')' : '= 1');
+            $sqlGroups = 'cg.`id_group` '.(count($groups) ? 'IN ('.implode(',', $groups).')' : '= 1');
         }
 
         /* Return only the number of products */
         if ($getTotal) {
+                $sql = (new DbQuery())
+                    ->select('cp.`id_product`')
+                    ->from('category_product', 'cp')
+                    ->join(Group::isFeatureActive() ? 'LEFT JOIN `'._DB_PREFIX_.'category_group` cg ON (cp.`id_category` = cg.`id_category`)' : '')
+                    ->join($activeCategory ? ' INNER JOIN `'._DB_PREFIX_.'category` ca ON cp.`id_category` = ca.`id_category` AND ca.`active` = 1' : '')
+                    ->where($sqlGroups);
+
             return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-                '
-			SELECT COUNT(DISTINCT ps.`id_product`)
-			FROM `'._DB_PREFIX_.'product_supplier` ps
-			JOIN `'._DB_PREFIX_.'product` p ON (ps.`id_product`= p.`id_product`)
-			'.Shop::addSqlAssociation('product', 'p').'
-			WHERE ps.`id_supplier` = '.(int) $idSupplier.'
-			AND ps.id_product_attribute = 0
-			'.($active ? ' AND product_shop.`active` = 1' : '').'
-			'.($front ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '').'
-			AND p.`id_product` IN (
-				SELECT cp.`id_product`
-				FROM `'._DB_PREFIX_.'category_product` cp
-				'.(Group::isFeatureActive() ? 'LEFT JOIN `'._DB_PREFIX_.'category_group` cg ON (cp.`id_category` = cg.`id_category`)' : '').'
-				'.($activeCategory ? ' INNER JOIN `'._DB_PREFIX_.'category` ca ON cp.`id_category` = ca.`id_category` AND ca.`active` = 1' : '').'
-				'.$sqlGroups.'
-			)'
+                (new DbQuery())
+                    ->select('COUNT(DISTINCT ps.`id_product`)')
+                    ->from('product_supplier', 'ps')
+                    ->innerJoin('product', 'p', 'ps.`id_product` = p.`id_product`')
+                    ->join(Shop::addSqlAssociation('product', 'p'))
+                    ->where('ps.`id_supplier` = '.(int) $idSupplier)
+                    ->where('ps.`id_product_attribute` = 0')
+                    ->where($active ? ' AND product_shop.`active` = 1' : '')
+                    ->where($front ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '')
+                    ->where('p.`id_product` IN ('.$sql->build().')')
             );
         }
 
@@ -458,11 +460,12 @@ class SupplierCore extends ObjectModel
      */
     public static function supplierExists($idSupplier)
     {
-        $query = new DbQuery();
-        $query->select('id_supplier');
-        $query->from('supplier');
-        $query->where('id_supplier = '.(int) $idSupplier);
-        $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query);
+        $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('id_supplier')
+                ->from('supplier')
+                ->where('id_supplier = '.(int) $idSupplier)
+        );
 
         return ($res > 0);
     }
@@ -476,24 +479,27 @@ class SupplierCore extends ObjectModel
      * @param int $idProduct
      * @param int $idProductAttribute
      *
-     * @return array
+     * @return false|array
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function getProductInformationsBySupplier($idSupplier, $idProduct, $idProductAttribute = 0)
     {
-        $query = new DbQuery();
-        $query->select('product_supplier_reference, product_supplier_price_te, id_currency');
-        $query->from('product_supplier');
-        $query->where('id_supplier = '.(int) $idSupplier);
-        $query->where('id_product = '.(int) $idProduct);
-        $query->where('id_product_attribute = '.(int) $idProductAttribute);
-        $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+        $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('product_supplier_reference, product_supplier_price_te, id_currency')
+                ->from('product_supplier')
+                ->where('id_supplier = '.(int) $idSupplier)
+                ->where('id_product = '.(int) $idProduct)
+                ->where('id_product_attribute = '.(int) $idProductAttribute)
+        );
 
         if (count($res)) {
             return $res[0];
         }
+
+        return false;
     }
 
     /**
@@ -512,23 +518,18 @@ class SupplierCore extends ObjectModel
             $front = false;
         }
 
-        $sql = '
-			SELECT p.`id_product`,
-				   pl.`name`
-			FROM `'._DB_PREFIX_.'product` p
-			'.Shop::addSqlAssociation('product', 'p').'
-			LEFT JOIN `'._DB_PREFIX_.'product_lang` pl ON (
-				p.`id_product` = pl.`id_product`
-				AND pl.`id_lang` = '.(int) $idLang.'
-			)
-			INNER JOIN `'._DB_PREFIX_.'product_supplier` ps ON (
-				ps.`id_product` = p.`id_product`
-				AND ps.`id_supplier` = '.(int) $this->id.'
-			)
-			'.($front ? ' WHERE product_shop.`visibility` IN ("both", "catalog")' : '').'
-			GROUP BY p.`id_product`';
-
-        $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('p.`id_product`, pl.`name`')
+                ->from('product', 'p')
+                ->join(Shop::addSqlAssociation('product', 'p'))
+                ->leftJoin('product_lang', 'pl', 'p.`id_product` = pl.`id_product`')
+                ->innerJoin('product_supplier', 'ps', 'p.`id_product` = ps.`id_product`')
+                ->where('pl.`id_lang` = '.(int) $idLang)
+                ->where('ps.`id_supplier` = '.(int) $this->id)
+                ->where($front ? 'product_shop.`visibility` IN ("both", "catalog")': '')
+                ->groupBy('p.`id_product`')
+        );
 
         return $res;
     }

@@ -107,17 +107,14 @@ class ProductSupplierCore extends ObjectModel
      */
     public static function getProductSupplierReference($idProduct, $idProductAttribute, $idSupplier)
     {
-        // build query
-        $query = new DbQuery();
-        $query->select('ps.product_supplier_reference');
-        $query->from('product_supplier', 'ps');
-        $query->where(
-            'ps.id_product = '.(int) $idProduct.'
-			AND ps.id_product_attribute = '.(int) $idProductAttribute.'
-			AND ps.id_supplier = '.(int) $idSupplier
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('ps.`product_supplier_reference`')
+                ->from('product_supplier', 'ps')
+                ->where('ps.`id_product` = '.(int) $idProduct)
+                ->where('ps.`id_product_attribute` = '.(int) $idProductAttribute)
+                ->where('ps.`id_supplier` = '.(int) $idSupplier)
         );
-
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query);
     }
 
     /**
@@ -128,7 +125,7 @@ class ProductSupplierCore extends ObjectModel
      * @param int  $idSupplier
      * @param bool $withCurrency       Optional
      *
-     * @return array
+     * @return int|array
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -149,7 +146,7 @@ class ProductSupplierCore extends ObjectModel
         );
 
         if (!$withCurrency) {
-            return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query);
+            return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query);
         }
 
         $res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
@@ -167,24 +164,21 @@ class ProductSupplierCore extends ObjectModel
      * @param int $idProductAttribute
      * @param int $idSupplier
      *
-     * @return array
+     * @return int
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function getIdByProductAndSupplier($idProduct, $idProductAttribute, $idSupplier)
     {
-        // build query
-        $query = new DbQuery();
-        $query->select('ps.id_product_supplier');
-        $query->from('product_supplier', 'ps');
-        $query->where(
-            'ps.id_product = '.(int) $idProduct.'
-			AND ps.id_product_attribute = '.(int) $idProductAttribute.'
-			AND ps.id_supplier = '.(int) $idSupplier
+        return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('ps.id_product_supplier')
+                ->from('product_supplier', 'ps')
+                ->where('ps.id_product = '.(int) $idProduct)
+                ->where('ps.id_product_attribute = '.(int) $idProductAttribute)
+                ->where('ps.id_supplier = '.(int) $idSupplier)
         );
-
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($query);
     }
 
     /**
@@ -193,9 +187,9 @@ class ProductSupplierCore extends ObjectModel
      * @param int  $idSupplier
      * @param int  $idProduct
      * @param int  $idProductAttribute Optional
-     * @param bool $convertedPrice     Optional
+     * @param bool $convertedPrice     Optional, only return the converted price
      *
-     * @return array keys: price_te, id_currency
+     * @return false|float|array keys: price_te, id_currency
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -203,16 +197,16 @@ class ProductSupplierCore extends ObjectModel
     public static function getProductPrice($idSupplier, $idProduct, $idProductAttribute = 0, $convertedPrice = false)
     {
         if (is_null($idSupplier) || is_null($idProduct)) {
-            return;
+            return false;
         }
 
-        $query = new DbQuery();
-        $query->select('product_supplier_price_te as price_te, id_currency');
-        $query->from('product_supplier');
-        $query->where('id_product = '.(int) $idProduct.' AND id_product_attribute = '.(int) $idProductAttribute);
-        $query->where('id_supplier = '.(int) $idSupplier);
-
-        $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($query);
+        $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('product_supplier_price_te as price_te, id_currency')
+                ->from('product_supplier')
+                ->where('id_product = '.(int) $idProduct.' AND id_product_attribute = '.(int) $idProductAttribute)
+                ->where('id_supplier = '.(int) $idSupplier)
+        );
         if ($convertedPrice) {
             return Tools::convertPrice($row['price_te'], $row['id_currency']);
         }
@@ -246,8 +240,8 @@ class ProductSupplierCore extends ObjectModel
     /**
      * For a given product, retrieves its suppliers
      *
-     * @param int $idProduct
-     * @param int $groupBySupplier
+     * @param int  $idProduct
+     * @param bool $groupBySupplier
      *
      * @return PrestaShopCollection Collection of ProductSupplier
      *

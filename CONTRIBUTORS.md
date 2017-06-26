@@ -92,7 +92,7 @@ GitHub contributors:
 - Davide
 - Davy Rolink
 - Debusschere Alexandre
-- Denver Prophit Jr.
+- [Denver Prophit Jr.](https://github.com/inetbiz/ "Github Profile of Denver Prophit Jr.")
 - Desbouche Christophe
 - DevNet
 - Dh42
@@ -138,7 +138,7 @@ GitHub contributors:
 - fram
 - Francois Gaillard
 - Francois-Marie de Jouvencel
-- Fran�ois Gaillard
+- François Gaillard
 - Frederic BENOIST
 - Gabriel Arama
 - Gabriel Schwardy
@@ -158,7 +158,7 @@ GitHub contributors:
 - Guillaume Lafarge
 - Guillaume Leseur
 - Gytis
-- Gytis Skėma
+- Gytis SkÄ—ma
 - Ha!*!*y
 - ha99y
 - hadjedjvincent
@@ -185,7 +185,7 @@ GitHub contributors:
 - Jerome Nadaud
 - jeromenadaud
 - jessylenne
-- Jérôme Nadaud
+- JeÌroÌ‚me Nadaud
 - Joan
 - Joan Juvanteny
 - joce
@@ -206,7 +206,7 @@ GitHub contributors:
 - julienbourdeau
 - julvernois
 - Jachym Tousek
-- Kamil Szymański
+- Kamil SzymaÅ„ski
 - Karel Faille
 - Kelly Karnetsky
 - kermes
@@ -306,7 +306,7 @@ GitHub contributors:
 - Pierre
 - Pierre-Olivier Vares
 - Piotr Kaczor
-- Piotr Moćko
+- Piotr MoÄ‡ko
 - Presta Module
 - PrestaEdit
 - PrestaLab
@@ -338,7 +338,7 @@ GitHub contributors:
 - Rimas Kudelis
 - robert
 - roja45
-- Roland Schütz
+- Roland SchuÌˆtz
 - romainberger
 - Roy
 - runningz
@@ -429,7 +429,7 @@ GitHub contributors:
 - zimmi1
 - ZiZuu.com
 - Zollner Robert
-- Sarūnas Jonusas
+- SarÅ«nas Jonusas
 
 SVN contributors:
 --------------------------------

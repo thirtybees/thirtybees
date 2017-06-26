@@ -2203,6 +2203,9 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             if ($fieldName === $definition['primary']) {
                 continue;
             }
+            if (isset($field['lang']) && $field['lang'] || isset($field['shop']) && $field['shop']) {
+                continue;
+            }
             $sql .= '`'.$fieldName.'` '.$field['db_type'];
             if (isset($field['required'])) {
                 $sql .= ' NOT NULL';
@@ -2379,7 +2382,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * require an extra parameter, with the type of the column in the database.
      *
      * @param string      $name             Column name
-     * @param string      $columnDefinition Column type definition
+     * @param array       $columnDefinition Column type definition
      * @param string|null $className        Class name
      *
      * @return bool Indicates whether the column was successfully created

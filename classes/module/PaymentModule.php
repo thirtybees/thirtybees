@@ -268,14 +268,14 @@ abstract class PaymentModuleCore extends Module
      *
      * @return bool
      */
-    public function addCheckboxCarrierRestrictionsForModule(array $shops = array())
+    public function addCheckboxCarrierRestrictionsForModule(array $shops = [])
     {
         if (!$shops) {
             $shops = Shop::getShops(true, null, true);
         }
 
         $carriers = Carrier::getCarriers((int) Context::getContext()->language->id);
-        $carrierIds = array();
+        $carrierIds = [];
         foreach ($carriers as $carrier) {
             $carrierIds[] = $carrier['id_reference'];
         }
@@ -836,7 +836,7 @@ abstract class PaymentModuleCore extends Module
                         $customerMessage->id_customer_thread = $customerThread->id;
                         $customerMessage->id_employee = 0;
                         $customerMessage->message = $updateMessage->message;
-                        $customerMessage->private = 0;
+                        $customerMessage->private = 1;
 
                         if (!$customerMessage->add()) {
                             $this->errors[] = Tools::displayError('An error occurred while saving message');
