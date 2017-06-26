@@ -309,8 +309,5 @@
     <tab id="Custom_Code" id_parent="Preferences" active="1" hide_host_mode="0">
       <class_name>AdminCustomCode</class_name>
     </tab>
-    <tab id="Image_Mapping" id_parent="Catalog" active="1" hide_host_mode="0">
-      <class_name>AdminScenes</class_name>
-    </tab>
   </entities>
 </entity_tab>

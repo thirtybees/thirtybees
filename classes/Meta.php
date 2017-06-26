@@ -265,10 +265,11 @@ class MetaCore extends ObjectModel
             (new DbQuery())
                 ->select('`name`, `meta_title`, `meta_description`, `meta_keywords`, `description_short`')
                 ->from('product', 'p')
+                ->join(Shop::addSqlAssociation('product', 'p'))
                 ->leftJoin('product_lang', 'pl', 'pl.`id_product` = p.`id_product` '.Shop::addSqlRestrictionOnLang('pl'))
                 ->where('pl.`id_lang` = '.(int) $idLang)
                 ->where('pl.`id_product` = '.(int) $idProduct)
-            ->where('product_shop.`active` = 1')
+                ->where('product_shop.`active` = 1')
         )) {
             if (empty($row['meta_description'])) {
                 $row['meta_description'] = strip_tags($row['description_short']);

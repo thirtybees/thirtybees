@@ -8,9 +8,9 @@ thirty bees is an open-source fork of PrestaShop 1.6. Our aim with this fork is 
 ![thirty bees screenshot](https://cloud.githubusercontent.com/assets/6775736/22063185/c5ef8e3c-dd7d-11e6-923c-4b62ac404c86.png)
 
 
-## Roadmap for thirty bees version 1.1.x
+## Roadmap for thirty bees version 1.0.x
 
-**New Features being added into v1.1.x of thirty bees:**
+**Overview of the general goal:**
 
 No ideas, yet. Would you mind helping us with that? https://thirtybees.com/feature-request/
 
@@ -20,7 +20,7 @@ You can find the latest version of the roadmap here: https://thirtybees.com/road
 ## Requirements
 **General server requirements:**
 
-- PHP 5.6 - PHP 7.1
+- PHP 5.5 - PHP 7.1
 - Apache, nginx or IIS
 - Windows, Linux or OS X
 - MySQL 5.5.3+ or MariaDB 5.5+
