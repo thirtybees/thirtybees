@@ -828,7 +828,7 @@ abstract class ModuleCore
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
                 ->select('m.`name`, m.`version`, mp.`interest`, module_shop.`enable_device`')
-                ->from('module', '')
+                ->from('module', 'm')
                 ->join(Shop::addSqlAssociation('module', 'm'))
                 ->leftJoin('module_preference', 'mp', 'mp.`module` = m.`name`')
                 ->where('mp.`id_employee` = '.(int) $idEmployee)
