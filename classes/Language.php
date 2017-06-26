@@ -455,10 +455,19 @@ class LanguageCore extends ObjectModel
         }
 
         if (!$langPackLink) {
-            $errors[] = Tools::displayError('Archive cannot be downloaded from thirtybees.com.');
+            $errors[] = Tools::displayError('Language pack cannot be downloaded from thirtybees.com.');
         } elseif (!$langPack = json_decode($langPackLink)) {
             $errors[] = Tools::displayError('Error occurred when language was checked according to your thirty bees version.');
-        } elseif (isset($langPack->name)) {
+        } elseif (!static::checkAndAddLanguage((string) $iso, $langPack, false, $params)) {
+            $errors[] = sprintf(Tools::displayError('An error occurred while creating the language: %s'), (string) $iso);
+        }
+
+        if (!Language::getIdByIso($iso, true)) {
+            return $errors;
+        }
+
+        $success = null;
+        if (isset($langPack->name)) {
             try {
                 $guzzle->get("{$iso}.gzip", ['sink' => $file]);
                 $success = true;
@@ -472,8 +481,9 @@ class LanguageCore extends ObjectModel
                 }
             }
         }
+
         if (!file_exists($file)) {
-            $errors[] = Tools::displayError('No language pack is available for your version.');
+            $errors[] = Tools::displayError('No translations pack available for your version.');
         } elseif ($install) {
             $gz = new Archive_Tar($file, true);
             $fileList = AdminTranslationsController::filterTranslationFiles(Language::getLanguagePackListContent((string) $iso, $gz));
@@ -483,7 +493,7 @@ class LanguageCore extends ObjectModel
             foreach ($filePaths as $filePath) {
                 $path = dirname($filePath);
                 if (is_dir(_PS_TRANSLATIONS_DIR_.'../'.$path) && !is_writable(_PS_TRANSLATIONS_DIR_.'../'.$path) && !in_array($path, $tmpArray)) {
-                    $errors[] = (!$i++? Tools::displayError('The archive cannot be extracted.').' ' : '').Tools::displayError('The server does not have permissions for writing.').' '.sprintf(Tools::displayError('Please check rights for %s'), $path);
+                    $errors[] = (!$i++? Tools::displayError('Translation pack cannot be extracted.').' ' : '').Tools::displayError('The server does not have permissions for writing.').' '.sprintf(Tools::displayError('Please check rights for %s'), $path);
                     $tmpArray[] = $path;
                 }
             }
@@ -492,14 +502,14 @@ class LanguageCore extends ObjectModel
             }
             // Clear smarty modules cache
             Tools::clearCache();
-            if (!static::checkAndAddLanguage((string) $iso, $langPack, false, $params)) {
-                $errors[] = sprintf(Tools::displayError('An error occurred while creating the language: %s'), (string) $iso);
-            } else {
-                // Reset cache
-                Language::loadLanguages();
-                AdminTranslationsController::checkAndAddMailsFiles((string) $iso, $fileList);
-                AdminTranslationsController::addNewTabs((string) $iso, $fileList);
-            }
+            // Reset cache
+            Language::loadLanguages();
+            AdminTranslationsController::checkAndAddMailsFiles((string) $iso, $fileList);
+            AdminTranslationsController::addNewTabs((string) $iso, $fileList);
+        }
+
+        if ($success) {
+            @unlink($file);
         }
 
         return count($errors) ? $errors : true;
@@ -541,7 +551,11 @@ class LanguageCore extends ObjectModel
      */
     public static function checkAndAddLanguage($isoCode, $langPack = false, $onlyAdd = false, $paramsLang = null)
     {
-        if (Language::getIdByIso($isoCode)) {
+        if (!Validate::isLanguageIsoCode($isoCode)) {
+            return false;
+        }
+
+        if (Language::getIdByIso($isoCode, true)) {
             return true;
         }
 

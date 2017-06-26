@@ -336,6 +336,7 @@ class ProductControllerCore extends FrontController
                         'category-'.(isset($this->category) ? $this->category->getFieldByLang('link_rewrite') : ''),
                     ],
                     'display_discount_price'   => Configuration::get('PS_DISPLAY_DISCOUNT_PRICE'),
+                    'show_condition'           => Configuration::get('PS_SHOW_CONDITION'),
                 ]
             );
         }

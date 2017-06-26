@@ -66,6 +66,9 @@ function process_install(step)
 			// No error during this step
 			if (json && json.success === true)
 			{
+				if (json.message.length) {
+					install_error(step, json.message, false);
+				}
 				$('#process_step_'+step.key).show().addClass('success');
 				current_step++;
 				if (current_step >= process_steps.length)
@@ -158,16 +161,21 @@ function process_install_subtask(step, current_subtask)
 	});
 }
 
-function install_error(step, errors)
+function install_error(step, errors, fatal = true)
 {
-	current_step = 0;
-	is_installing = false;
+	if (fatal) {
+		is_installing = false;
 
-	$('#error_process').show();
-	$('#process_step_'+step.key).show().addClass('fail');
-	$('#progress_bar .total .progress').stop();
-	$('#progress_bar .installing').hide();
-	$('.stepList li:last-child').addClass('ko');
+		$('#process_step_'+step.key).show().addClass('fail');
+		$('#progress_bar .total .progress').stop();
+		$('#progress_bar .installing').hide();
+		$('.stepList li:last-child').addClass('ko');
+		$('#error_process .fatal').show();
+		$('#error_process .nonfatal').hide();
+	} else {
+		$('#error_process .fatal').hide();
+		$('#error_process .nonfatal').show();
+	}
 
 	if (errors)
 	{
@@ -182,15 +190,13 @@ function install_error(step, errors)
 
 		$.each(list_errors, function(k, v)
 		{
-			if (typeof psuser_assistance != 'undefined')
-				psuser_assistance.setStep('install_process_error', {'error':v});
 			display += '<li>' + v + '</li>';
 		});
 		display += '</ol>';
 		$('#error_process .error_log').html(display).show();
 	}
-	if (typeof psuser_assistance != 'undefined')
-		psuser_assistance.setStep('install_process_error');
+
+	$('#error_process').show();
 
 	$('#tabs li a').each(function() {
 		 this.href=this.rel;
@@ -200,13 +206,13 @@ function install_error(step, errors)
 function install_success()
 {
 	$('#progress_bar .total span').hide();
-	$('.installing').html(install_is_done);
+	$('.installing').html(install_is_done).css('background', 'none');
 	is_installing = false;
-	$('#install_process_form').slideUp();
+	if ($('#error_process').not(':visible').length) {
+		$('#install_process_form').slideUp();
+	}
 	$('#install_process_success').slideDown();
 	$('.stepList li:last-child').addClass('ok');
-	if (typeof psuser_assistance != 'undefined')
-		psuser_assistance.setStep('install_process_success');
 
 	$('#tabs li a').each(function() {
 		 this.href=this.rel;

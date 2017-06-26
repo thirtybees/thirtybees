@@ -28,16 +28,5 @@
 	<li><a href="https://www.thirtybees.com/<?php echo $this->language->getLanguageIso() ?>/contact-us" title="<?php echo $this->l('Contact us'); ?>" target="_blank"><?php echo $this->l('Contact us'); ?></a> | </li>
 	<li>&copy; 2007-<?php echo date('Y'); ?></li>
 </ul>
-<script type="text/javascript">
-	if (typeof psuser_assistance !== 'undefined') {
-		var errors = [];
-		$.each($('li.fail'), function(i, item){
-			errors.push($(this).text().trim());
-		});
-		psuser_assistance.setStep('install_<?php echo addslashes($this->step) ?>', {'error':errors});
-		if (errors.length)
-			$('#iframe_help').attr('src', $('#iframe_help').attr('src') + '&errors=' + encodeURI(errors.join(', ')));
-	}
-</script>
 </body>
 </html>

@@ -413,10 +413,39 @@ class InstallModelInstall extends InstallAbstractModel
                 'allow_accented_chars_url' => (string) $xml->allow_accented_chars_url,
             ];
 
-            if (InstallSession::getInstance()->safe_mode) {
-                Language::checkAndAddLanguage($iso, false, true, $paramsLang);
-            } else {
-                Language::downloadAndInstallLanguagePack($iso, _TB_INSTALL_VERSION_, $paramsLang);
+            $errors = Language::downloadAndInstallLanguagePack($iso, _TB_INSTALL_VERSION_, $paramsLang);
+            if (is_array($errors)) {
+                $installed = false;
+                $name = ($xml->name) ? $xml->name : $iso;
+
+                $this->setError($this->language->l('Translations for %s and thirty bees version %s not found.', $name, _TB_INSTALL_VERSION_));
+
+                $version = array_map('intval', explode('.', _TB_INSTALL_VERSION_, 3));
+                if (isset($version[2]) && $version[2] > 0) {
+                    $version[2]--;
+                    $version = implode('.', $version);
+
+                    $errors = Language::downloadAndInstallLanguagePack($iso, $version, $paramsLang);
+                    if (is_array($errors)) {
+                        $this->setError($this->language->l('Translations for thirty bees version %s not found either.', $version));
+                    } else {
+                        $installed = true;
+                        $this->setError($this->language->l('Installed translations for thirty bees version %s instead.', $version));
+                    }
+                }
+
+                if (!$installed) {
+                    $this->setError($this->language->l('Translations for %s not installed.', $name));
+                    foreach ($errors as $error) {
+                        $this->setError($errors[0]);
+                    }
+
+                    // XML is actually (almost) a language pack.
+                    $xml->name = (string) $xml->name;
+                    $xml->is_rtl = filter_var($xml->is_rtl, FILTER_VALIDATE_BOOLEAN);
+
+                    Language::checkAndAddLanguage($iso, $xml, true, $paramsLang);
+                }
             }
 
             Language::loadLanguages();
@@ -582,11 +611,6 @@ class InstallModelInstall extends InstallAbstractModel
 
         Context::getContext()->shop = new Shop(1);
         Configuration::loadConfiguration();
-
-        // use the old image system if the safe_mod is enabled otherwise the installer will fail with the fixtures installation
-        if (InstallSession::getInstance()->safe_mode) {
-            Configuration::updateGlobalValue('PS_LEGACY_IMAGES', 1);
-        }
 
         $idCountry = (int) Country::getByIso($data['shopCountry']);
 
@@ -972,5 +996,7 @@ class InstallModelInstall extends InstallAbstractModel
 
             return false;
         }
+
+        return true;
     }
 }
