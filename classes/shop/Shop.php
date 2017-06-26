@@ -250,16 +250,8 @@ class ShopCore extends ObjectModel
         $this->theme_directory = $row['directory'];
         $this->physical_uri = $row['physical_uri'];
         $this->virtual_uri = $row['virtual_uri'];
-        if ($row['domain'] === '*automatic*') {
-            $this->domain = $_SERVER['HTTP_HOST'];
-        } else {
-            $this->domain = $row['domain'];
-        }
-        if ($row['domain_ssl'] === '*automatic*') {
-            $this->domain_ssl = $_SERVER['HTTP_HOST'];
-        } else {
-            $this->domain_ssl = $row['domain'];
-        }
+        $this->domain = $row['domain'];
+        $this->domain_ssl = $row['domain_ssl'];
 
         return true;
     }
@@ -479,30 +471,6 @@ class ShopCore extends ObjectModel
                 }
             }
         } else {
-            // Handle automatic shop URLs.
-            if (!$idShop) {
-                // The whole purpose of this block is to find out wether
-                // we should load the default shop with or without redirection.
-                // Keeping $idShop at false means with redirection.
-                $idDefaultShop = Configuration::get('PS_SHOP_DEFAULT');
-
-                // Get this directly from the database to see '*automatic*'.
-                $sql = 'SELECT domain, domain_ssl
-                        FROM '._DB_PREFIX_.'shop_url
-                        WHERE id_shop = \''.pSQL($idDefaultShop).'\'';
-                $result = Db::getInstance()->executeS($sql);
-
-                if (Configuration::get('PS_SSL_ENABLED')) {
-                    if ($result[0]['domain_ssl'] === '*automatic*') {
-                        $idShop = $idDefaultShop;
-                    }
-                } else {
-                    if ($result[0]['domain'] === '*automatic*') {
-                        $idShop = $idDefaultShop;
-                    }
-                }
-            }
-
             $shop = new Shop($idShop);
             if (!Validate::isLoadedObject($shop) || !$shop->active) {
                 // No shop found ... too bad, let's redirect to default shop
