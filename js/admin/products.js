@@ -80,11 +80,13 @@ function ProductTabsManager() {
    * @return {undefined}
    */
   this.init = function () {
-    for (var tabName in this.product_tabs) {
-      if (typeof this.product_tabs[tabName].onReady !== 'undefined' && this.product_tabs[tabName] !== this.product_tabs.Pack) {
-        this.onLoad(tabName, this.product_tabs[tabName].onReady);
+    var self = this;
+
+    $.each(this.product_tabs, function (index, tabName) {
+      if (typeof self.product_tabs[tabName].onReady !== 'undefined' && self.product_tabs[tabName] !== self.product_tabs.Pack) {
+        self.onLoad(tabName, self.product_tabs[tabName].onReady);
       }
-    }
+    });
 
     $('.shopList.chzn-done').on('change', function () {
       if (self.current_request) {
@@ -253,6 +255,9 @@ function ProductTabsManager() {
   };
 }
 
+/**
+ * Load pack data
+ */
 function loadPack() {
   var idProduct = $('input[name=id_product]').first().val();
   $.ajax({
@@ -387,6 +392,12 @@ window.product_tabs.Combinations = new function () {
     });
   };
 
+  /**
+   * Delete a product attribute
+   *
+   * @param {string} url
+   * @param {object} parent
+   */
   this.deleteProductAttribute = function (url, parent) {
     $.ajax({
       url: url,
@@ -418,6 +429,9 @@ window.product_tabs.Combinations = new function () {
     });
   };
 
+  /**
+   * Bind to the delete button
+   */
   this.bindDelete = function () {
     $('table.configuration').delegate('a.delete', 'click', function (e) {
       e.preventDefault();
@@ -425,6 +439,11 @@ window.product_tabs.Combinations = new function () {
     });
   };
 
+  /**
+   * Remove a combination button
+   *
+   * @return {undefined}
+   */
   this.removeButtonCombination = function () {
     $('#add_new_combination').show();
     var $descProductNewCombination = $('#desc-product-newCombination');
@@ -435,6 +454,11 @@ window.product_tabs.Combinations = new function () {
     self.init_elems();
   };
 
+  /**
+   * Add a combination button
+   *
+   * @return {undefined}
+   */
   this.addButtonCombination = function () {
     $('#add_new_combination').hide();
     var $descProductNewCombination = $('#desc-product-newCombination');
@@ -443,6 +467,11 @@ window.product_tabs.Combinations = new function () {
     $descProductNewCombination.children('span').first().html(msg_new_combination);
   };
 
+  /**
+   * Bind toggle add combination button
+   *
+   * @return {undefined}
+   */
   this.bindToggleAddCombination = function () {
     $('#desc-product-newCombination').click(function (e) {
       e.preventDefault();
@@ -456,6 +485,27 @@ window.product_tabs.Combinations = new function () {
     });
   };
 
+  /**
+   * Fill the combination table
+   *
+   * @param {number}    wholesalePrice
+   * @param {number}    priceImpact
+   * @param {number}    weightImpact
+   * @param {number}    unitImpact
+   * @param {string}    reference
+   * @param {string}    ean
+   * @param {number}    quantity
+   * @param {undefined} image
+   * @param {number}    oldAttr
+   * @param {number}    idProductAttribute
+   * @param {number}    defaultAttribute
+   * @param {float}     ecoTax
+   * @param {string}    upc
+   * @param {number}    minimalQuantity
+   * @param {string}    availableDate
+   *
+   * @return {undefined}
+   */
   this.fillCombination = function (
     wholesalePrice,
     priceImpact,
@@ -637,7 +687,7 @@ function disableSave() {
  *
  * @access public
  *
- * @return {void}
+ * @return {undefined}
  */
 function enableSave() {
   $('button[name="submitAddproduct"]').show();
@@ -660,7 +710,6 @@ function handleSaveButtons() {
   $disableSaveMessage.remove();
 
   if (!$('#name_' + parseInt(window.id_lang_default, 10)).val() && (!window.display_multishop_checkboxes || $('input[name=\'multishop_check[name][' + window.id_lang_default + ']\']').prop('checked'))) {
-
     window.msg.push(window.empty_name_msg);
   } else if (!$('#link_rewrite_' + parseInt(window.id_lang_default, 10)).val() && (!window.display_multishop_checkboxes || $('input[name=\'link_rewrite[name][' + window.id_lang_default + ']\']').prop('checked'))) {
     // check friendly_url_[defaultlangid] only if name is ok
@@ -737,7 +786,7 @@ window.product_tabs.Prices = new function () {
    * Ajax call to delete a specific price
    *
    * @param {string} url
-   * @param {object} parent
+   * @param {Object} parent
    *
    * @return {undefined}
    */
@@ -832,6 +881,15 @@ window.product_tabs.Associations = new function () {
     return window.id_product + ',' + $('#inputAccessories').val().replace(/\-/g, ',');
   };
 
+  /**
+   * Add accesory
+   *
+   * @param {Object}    event
+   * @param {Array}     data
+   * @param {undefined} formatted
+   *
+   * @return {undefined}
+   */
   this.addAccessory = function (event, data, formatted) {
     if (typeof data !== 'undefined') {
       return;
@@ -854,7 +912,8 @@ window.product_tabs.Associations = new function () {
   };
 
   /**
-   * @param {int} id
+   *
+   * @param {number} id
    *
    * @return {undefined}
    */
@@ -1780,7 +1839,7 @@ window.ProductMultishop = new function () {
     window.ProductMultishop.checkField($('input[name=\'multishop_check[show_price]\']').prop('checked'), 'show_price', 'show_price');
     window.ProductMultishop.checkField($('input[name=\'multishop_check[online_only]\']').prop('checked'), 'online_only');
     window.ProductMultishop.checkField($('input[name=\'multishop_check[condition]\']').prop('checked'), 'condition');
-    $.each(languages, function (k, v) {
+    $.each(window.languages, function (k, v) {
       window.ProductMultishop.checkField($('input[name=\'multishop_check[name][' + v.id_lang + ']\']').prop('checked'), 'name_' + v.id_lang);
       window.ProductMultishop.checkField($('input[name=\'multishop_check[description_short][' + v.id_lang + ']\']').prop('checked'), 'description_short_' + v.id_lang, 'tinymce');
       window.ProductMultishop.checkField($('input[name=\'multishop_check[description][' + v.id_lang + ']\']').prop('checked'), 'description_' + v.id_lang, 'tinymce');
@@ -1797,7 +1856,7 @@ window.ProductMultishop = new function () {
   };
 
   this.checkAllSeo = function () {
-    $.each(languages, function (k, v) {
+    $.each(window.languages, function (k, v) {
       window.ProductMultishop.checkField($('input[name=\'multishop_check[meta_title][' + v.id_lang + ']\']').prop('checked'), 'meta_title_' + v.id_lang);
       window.ProductMultishop.checkField($('input[name=\'multishop_check[meta_description][' + v.id_lang + ']\']').prop('checked'), 'meta_description_' + v.id_lang);
       window.ProductMultishop.checkField($('input[name=\'multishop_check[meta_keywords][' + v.id_lang + ']\']').prop('checked'), 'meta_keywords_' + v.id_lang);
@@ -1806,7 +1865,7 @@ window.ProductMultishop = new function () {
   };
 
   this.checkAllQuantities = function () {
-    $.each(languages, function (k, v) {
+    $.each(window.languages, function (k, v) {
       window.ProductMultishop.checkField($('input[name=\'multishop_check[minimal_quantity]\']').prop('checked'), 'minimal_quantity');
       window.ProductMultishop.checkField($('input[name=\'multishop_check[available_later][' + v.id_lang + ']\']').prop('checked'), 'available_later_' + v.id_lang);
       window.ProductMultishop.checkField($('input[name=\'multishop_check[available_now][' + v.id_lang + ']\']').prop('checked'), 'available_now_' + v.id_lang);
