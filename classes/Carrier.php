@@ -368,7 +368,6 @@ class CarrierCore extends ObjectModel
                 ->innerJoin('tax_rules_group', 'trg', 'c.`id_tax_rules_group` = trg.`id_tax_rules_group`')
                 ->groupBy('c.`id_tax_rules_group`')
                 ->orderBy('n DESC')
-                ->limit(1)
         );
 
         return isset($result['id_tax_rules_group']) ? (int) $result['id_tax_rules_group'] : false;
