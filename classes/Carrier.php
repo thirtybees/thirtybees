@@ -1745,9 +1745,9 @@ class CarrierCore extends ObjectModel
             $shippingMethod = $this->getShippingMethod();
         }
 
-        if ($shippingMethod === static::SHIPPING_METHOD_WEIGHT) {
+        if ((int) $shippingMethod === static::SHIPPING_METHOD_WEIGHT) {
             return new RangeWeight();
-        } elseif ($shippingMethod === static::SHIPPING_METHOD_PRICE) {
+        } elseif ((int) $shippingMethod === static::SHIPPING_METHOD_PRICE) {
             return new RangePrice();
         }
 
