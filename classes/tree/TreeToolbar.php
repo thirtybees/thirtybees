@@ -274,7 +274,7 @@ class TreeToolbarCore implements ITreeToolbarCore
 
         $reflection = new ReflectionClass($action);
 
-        if (!($action instanceof HelperTreeCategories) && !$reflection->implementsInterface('ITreeToolbarButtonCore')) {
+        if (!$reflection->implementsInterface('ITreeToolbarButtonCore')) {
             throw new PrestaShopException('Action class must implements ITreeToolbarButtonCore interface');
         }
 
