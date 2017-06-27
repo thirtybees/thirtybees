@@ -161,7 +161,7 @@
     // http://eslint.org/docs/rules/no-octal
     "no-octal-escape": "error",
     // http://eslint.org/docs/rules/no-octal-escape
-    "no-param-reassign": "error",
+    "no-param-reassign": "off",
     // http://eslint.org/docs/rules/no-param-reassign
     "no-process-exit": "error",
     // http://eslint.org/docs/rules/no-process-exit
