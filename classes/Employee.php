@@ -648,10 +648,6 @@ class EmployeeCore extends ObjectModel
      */
     public function getImage()
     {
-        if (!Validate::isLoadedObject($this)) {
-            return Tools::getAdminImageUrl('bee-avatar.png');
-        }
-
         return 'https://www.gravatar.com/avatar/'.md5(Tools::strtolower(trim($this->email))).'?s=200&d=mm';
     }
 
