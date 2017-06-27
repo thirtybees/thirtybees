@@ -157,33 +157,6 @@ class AdminCarriersControllerCore extends AdminController
     }
 
     /**
-     * @return string
-     *
-     * @since 1.0.0
-     */
-    public function renderView()
-    {
-        $this->initTabModuleList();
-        $this->filterTabModuleList();
-        $this->context->smarty->assign('panel_title', $this->l('Use one of our recommended carrier modules'));
-        $this->tpl_view_vars = ['modules_list' => $this->renderModulesList()];
-        unset($this->page_header_toolbar_btn['modules-list']);
-
-        return parent::renderView();
-    }
-
-    /**
-     * @since 1.0.0
-     */
-    protected function initTabModuleList()
-    {
-        if (Tools::isSubmit('onboarding_carrier')) {
-            parent::initTabModuleList();
-            $this->filter_modules_list = $this->tab_modules_list['default_list'] = $this->tab_modules_list['slider_list'];
-        }
-    }
-
-    /**
      * @return false|string
      *
      * @since 1.0.0
