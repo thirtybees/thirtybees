@@ -69,7 +69,7 @@ class ProductSaleCore
                 ->select('COUNT(ps.`id_product`) AS `nb`')
                 ->from('product_sale', 'ps')
                 ->leftJoin('product', 'p', 'p.`id_product` = ps.`id_product`')
-                ->join(Shop::addSqlRestriction('product', 'p'))
+                ->join(Shop::addSqlAssociation('product', 'p'))
                 ->where('product_shop.`active` = 1')
         );
     }
