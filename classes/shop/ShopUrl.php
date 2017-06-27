@@ -37,15 +37,23 @@
 class ShopUrlCore extends ObjectModel
 {
     // @codingStandardsIgnoreStart
+    /** @var int $id_shop */
     public $id_shop;
+    /** @var string $domain */
     public $domain;
+    /** @var string $domain_ssl */
     public $domain_ssl;
+    /** @var string $physical_uri */
     public $physical_uri;
+    /** @var string $virtual_uri */
     public $virtual_uri;
+    /** @var bool $main */
     public $main;
+    /** @var bool $active */
     public $active;
-
+    /** @var array $main_domain */
     protected static $main_domain = [];
+    /** @var array $main_domain_ssl */
     protected static $main_domain_ssl = [];
     // @codingStandardsIgnoreEnd
 
@@ -177,10 +185,10 @@ class ShopUrlCore extends ObjectModel
     }
 
     /**
-     * @param $domain
-     * @param $domainSsl
-     * @param $physicalUri
-     * @param $virtualUri
+     * @param string $domain
+     * @param string $domainSsl
+     * @param string $physicalUri
+     * @param string $virtualUri
      *
      * @return false|null|string
      *
@@ -202,35 +210,38 @@ class ShopUrlCore extends ObjectModel
             $virtualUri = preg_replace('#/+#', '/', trim($virtualUri, '/')).'/';
         }
 
-        $sql = 'SELECT id_shop_url
-				FROM '._DB_PREFIX_.'shop_url
-				WHERE physical_uri = \''.pSQL($physicalUri).'\'
-					AND virtual_uri = \''.pSQL($virtualUri).'\'
-					AND (domain = \''.pSQL($domain).'\' '.(($domainSsl) ? ' OR domain_ssl = \''.pSQL($domainSsl).'\'' : '').')'
-            .($this->id ? ' AND id_shop_url != '.(int) $this->id : '');
-
-        return Db::getInstance()->getValue($sql);
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('`id_shop_url`')
+                ->from('shop_url')
+                ->where('`physical_uri` = \''.pSQL($physicalUri).'\'')
+                ->where('`virtual_uri` = \''.pSQL($virtualUri).'\'')
+                ->where('`domain` = \''.pSQL($domain).'\''.(($domainSsl) ? ' OR domain_ssl = \''.pSQL($domainSsl).'\'' : ''))
+                ->where($this->id ? '`id_shop_url` != '.(int) $this->id : '')
+        );
     }
 
     /**
-     * @param $idShop
+     * @param int $idShop
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function cacheMainDomainForShop($idShop)
     {
+        // @codingStandardsIgnoreStart
         if (!isset(static::$main_domain_ssl[(int) $idShop]) || !isset(static::$main_domain[(int) $idShop])) {
             $row = Db::getInstance()->getRow(
-                '
-			SELECT domain, domain_ssl
-			FROM '._DB_PREFIX_.'shop_url
-			WHERE main = 1
-			AND id_shop = '.($idShop !== null ? (int) $idShop : (int) Context::getContext()->shop->id)
+                (new DbQuery())
+                    ->select('`domain`, `domain_ssl`')
+                    ->from('shop_url')
+                    ->where('`main` = 1')
+                    ->where('`id_shop` = '.($idShop !== null ? (int) $idShop : (int) Context::getContext()->shop->id))
             );
             static::$main_domain[(int) $idShop] = $row['domain'];
             static::$main_domain_ssl[(int) $idShop] = $row['domain_ssl'];
         }
+        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -239,8 +250,10 @@ class ShopUrlCore extends ObjectModel
      */
     public static function resetMainDomainCache()
     {
+        // @codingStandardsIgnoreStart
         static::$main_domain = [];
         static::$main_domain_ssl = [];
+        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -253,9 +266,11 @@ class ShopUrlCore extends ObjectModel
      */
     public static function getMainShopDomain($idShop = null)
     {
-        ShopUrl::cacheMainDomainForShop($idShop);
+        static::cacheMainDomainForShop($idShop);
 
+        // @codingStandardsIgnoreStart
         return static::$main_domain[(int) $idShop];
+        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -268,8 +283,10 @@ class ShopUrlCore extends ObjectModel
      */
     public static function getMainShopDomainSSL($idShop = null)
     {
-        ShopUrl::cacheMainDomainForShop($idShop);
+        static::cacheMainDomainForShop($idShop);
 
+        // @codingStandardsIgnoreStart
         return static::$main_domain_ssl[(int) $idShop];
+        // @codingStandardsIgnoreEnd
     }
 }
