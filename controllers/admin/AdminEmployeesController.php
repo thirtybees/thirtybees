@@ -584,8 +584,8 @@ class AdminEmployeesControllerCore extends AdminController
         if ($_POST['id_profile'] == _PS_ADMIN_PROFILE_) {
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                 (new DbQuery())
-                ->select('`id_shop`')
-                ->from('shop')
+                    ->select('`id_shop`')
+                    ->from('shop')
             );
             foreach ($result as $row) {
                 $key = 'checkBoxShopAsso_'.$this->table;
