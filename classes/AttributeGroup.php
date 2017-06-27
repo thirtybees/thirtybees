@@ -45,9 +45,9 @@ class AttributeGroupCore extends ObjectModel
         'primary'   => 'id_attribute_group',
         'multilang' => true,
         'fields'    => [
-            'is_color_group' => ['type' => self::TYPE_BOOL,                   'validate' => 'isBool'],
-            'group_type'     => ['type' => self::TYPE_STRING,                                                'required' => true],
-            'position'       => ['type' => self::TYPE_INT,                    'validate' => 'isInt'],
+            'is_color_group' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'group_type'     => ['type' => self::TYPE_STRING, 'required' => true],
+            'position'       => ['type' => self::TYPE_INT, 'validate' => 'isInt'],
 
             /* Lang fields */
             'name'           => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128],
@@ -95,13 +95,13 @@ class AttributeGroupCore extends ObjectModel
 
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-            ->select('*')
-            ->from('attribute', 'a')
-            ->join(Shop::addSqlAssociation('attribute', 'a'))
-            ->leftJoin('attribute_lang', 'al', 'a.`id_attribute` = al.`id_attribute`')
-            ->where('al.`id_lang` = '.(int) $idLang)
-            ->where('a.`id_attribute_group` = '.(int) $idAttributeGroup)
-            ->orderBy('`position` ASC')
+                ->select('*')
+                ->from('attribute', 'a')
+                ->join(Shop::addSqlAssociation('attribute', 'a'))
+                ->leftJoin('attribute_lang', 'al', 'a.`id_attribute` = al.`id_attribute`')
+                ->where('al.`id_lang` = '.(int) $idLang)
+                ->where('a.`id_attribute_group` = '.(int) $idAttributeGroup)
+                ->orderBy('`position` ASC')
         );
     }
 
@@ -120,12 +120,12 @@ class AttributeGroupCore extends ObjectModel
 
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-            ->select('DISTINCT agl.`name`, ag.*, agl.*')
-            ->from('attribute_group', 'ag')
-            ->join(Shop::addSqlAssociation('attribute_group', 'ag'))
-            ->leftJoin('attribute_group_lang', 'agl', 'ag.`id_attribute_group` = agl.`id_attribute_group`')
-            ->where('agl.`id_lang` = '.(int) $idLang)
-            ->orderBy('agl.`name` ASC')
+                ->select('DISTINCT agl.`name`, ag.*, agl.*')
+                ->from('attribute_group', 'ag')
+                ->join(Shop::addSqlAssociation('attribute_group', 'ag'))
+                ->leftJoin('attribute_group_lang', 'agl', 'ag.`id_attribute_group` = agl.`id_attribute_group`')
+                ->where('agl.`id_lang` = '.(int) $idLang)
+                ->orderBy('agl.`name` ASC')
         );
     }
 
@@ -167,8 +167,8 @@ class AttributeGroupCore extends ObjectModel
     {
         $position = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
-            ->select('MAX(`position`')
-            ->from('attribute_group')
+                ->select('MAX(`position`')
+                ->from('attribute_group')
         );
 
         if (!$position) {
@@ -237,9 +237,9 @@ class AttributeGroupCore extends ObjectModel
             /* Select children in order to find linked combinations */
             $attributeIds = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                 (new DbQuery())
-                ->select('`id_attribute`')
-                ->from('attribute')
-                ->where('`id_attribute_group` = '.(int) $this->id)
+                    ->select('`id_attribute`')
+                    ->from('attribute')
+                    ->where('`id_attribute_group` = '.(int) $this->id)
             );
             if ($attributeIds === false) {
                 return false;
@@ -287,9 +287,9 @@ class AttributeGroupCore extends ObjectModel
     {
         $attributeCombinations = Db::getInstance()->executeS(
             (new DbQuery())
-            ->select('pac.`id_attribute`, pa.`id_product_attribute`')
-            ->from('product_attribute', 'pa')
-            ->leftJoin('product_attribute_combination', 'pac', 'pa.`id_product_attribute` = pac.`id_product_attribute`')
+                ->select('pac.`id_attribute`, pa.`id_product_attribute`')
+                ->from('product_attribute', 'pa')
+                ->leftJoin('product_attribute_combination', 'pac', 'pa.`id_product_attribute` = pac.`id_product_attribute`')
         );
         $toRemove = [];
         foreach ($attributeCombinations as $attributeCombination) {
@@ -322,9 +322,9 @@ class AttributeGroupCore extends ObjectModel
         $return = true;
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-            ->select('`id_attribute_group`')
-            ->from('attribute_group')
-            ->orderBy('`position`')
+                ->select('`id_attribute_group`')
+                ->from('attribute_group')
+                ->orderBy('`position`')
         );
 
         $i = 0;
@@ -386,10 +386,10 @@ class AttributeGroupCore extends ObjectModel
     {
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-            ->select('a.`id_attribute` AS `id`')
-            ->from('attribute', 'a')
-            ->join(Shop::addSqlAssociation('attribute', 'a'))
-            ->where('a.`id_attribute_group` = '.(int) $this->id)
+                ->select('a.`id_attribute` AS `id`')
+                ->from('attribute', 'a')
+                ->join(Shop::addSqlAssociation('attribute', 'a'))
+                ->where('a.`id_attribute_group` = '.(int) $this->id)
         );
 
         return $result;
@@ -410,11 +410,12 @@ class AttributeGroupCore extends ObjectModel
     {
         if (!$res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-            ->select('ag.`position`, ag.`id_attribute_group`')
-            ->from('attribute_group', 'ag')
-            ->where('ag.`id_attribute_group` = '.(int) Tools::getValue('id_attribute_group', 1))
-            ->orderBy('ag.`position` ASC')
-        )) {
+                ->select('ag.`position`, ag.`id_attribute_group`')
+                ->from('attribute_group', 'ag')
+                ->where('ag.`id_attribute_group` = '.(int) Tools::getValue('id_attribute_group', 1))
+                ->orderBy('ag.`position` ASC')
+        )
+        ) {
             return false;
         }
 
