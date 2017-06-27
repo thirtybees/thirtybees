@@ -98,6 +98,8 @@ class ShopGroupCore extends ObjectModel
     }
 
     /**
+     * @param bool $active
+     *
      * @return int Total of shop groups
      *
      * @since   1.0.0
@@ -136,7 +138,7 @@ class ShopGroupCore extends ObjectModel
     }
 
     /**
-     * @param $idGroup
+     * @param int $idGroup
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
