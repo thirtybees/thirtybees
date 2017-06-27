@@ -47,15 +47,6 @@
 		</div>
 	</div>
 </div>
-{if is_null($modules_list)}
-<div class="panel">
-	<h3>{l s="Use one of our recommended carrier modules"}</h3>
-	<p>{l s="It seems there are no recommended carriers for your country."}</p>
-	<p><a href="https://www.thirtybees.com/en/contact-us">{l s="Do you think there should be one? Let us know!"}</a></p>
-</div>
-{else}
-	{$modules_list}
-{/if}
 
 
 
