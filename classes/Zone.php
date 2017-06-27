@@ -44,7 +44,7 @@ class ZoneCore extends ObjectModel
         'primary' => 'id_zone',
         'fields'  => [
             'name'   => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 64],
-            'active' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'active' => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'],
         ],
     ];
     /** @var string Name */
@@ -68,12 +68,11 @@ class ZoneCore extends ObjectModel
         $cacheId = 'Zone::getZones_'.(bool) $active;
         if (!Cache::isStored($cacheId)) {
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-                '
-				SELECT *
-				FROM `'._DB_PREFIX_.'zone`
-				'.($active ? 'WHERE active = 1' : '').'
-				ORDER BY `name` ASC
-			'
+                (new DbQuery())
+                    ->select('*')
+                    ->from('zone')
+                    ->where($active ? '`active` = 1' : '')
+                    ->orderBy('`name` ASC')
             );
             Cache::store($cacheId, $result);
 
@@ -96,11 +95,10 @@ class ZoneCore extends ObjectModel
     public static function getIdByName($name)
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-            '
-			SELECT `id_zone`
-			FROM `'._DB_PREFIX_.'zone`
-			WHERE `name` = \''.pSQL($name).'\'
-		'
+            (new DbQuery())
+                ->select('`id_zone`')
+                ->from('zone')
+                ->where('`name` = \''.pSQL($name).'\'')
         );
     }
 
