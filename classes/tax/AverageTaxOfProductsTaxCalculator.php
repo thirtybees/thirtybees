@@ -68,17 +68,19 @@ class AverageTaxOfProductsTaxCalculator
     {
         $prefix = $this->configuration->get('_DB_PREFIX_');
 
-        $sql = 'SELECT t.id_tax, t.rate, od.total_price_tax_excl FROM '.$prefix.'orders o
-                INNER JOIN '.$prefix.'order_detail od ON od.id_order = o.id_order
-                INNER JOIN '.$prefix.'order_detail_tax odt ON odt.id_order_detail = od.id_order_detail
-                INNER JOIN '.$prefix.'tax t ON t.id_tax = odt.id_tax
-                WHERE o.id_order = '.(int) $this->id_order;
-
-        return $this->db->select($sql);
+        return $this->db->select(
+            (new DbQuery())
+                ->select('t.`id_tax`, t.rate, od.total_price_tax_excl')
+                ->from('orders', 'o')
+                ->innerJoin('order_detail', 'od', 'od.`id_order` = o.`id_order`')
+                ->innerJoin('order_detail_tax', 'odt', 'odt.`id_order_detail` = od.`id_order_detail`')
+                ->innerJoin('tax', 't', 't.`id_tax` = odt.`id_tax`')
+                ->where('o.`id_order` = '.(int) $this->id_order)
+        );
     }
 
     /**
-     * @param $idOrder
+     * @param int $idOrder
      *
      * @return $this
      *
@@ -93,10 +95,10 @@ class AverageTaxOfProductsTaxCalculator
     }
 
     /**
-     * @param      $priceBeforeTax
-     * @param null $priceAfterTax
-     * @param int  $roundPrecision
-     * @param null $roundMode
+     * @param float      $priceBeforeTax
+     * @param float|null $priceAfterTax
+     * @param int        $roundPrecision
+     * @param int|null   $roundMode
      *
      * @return array
      *
