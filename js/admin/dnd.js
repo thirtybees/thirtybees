@@ -143,8 +143,7 @@ function initTableDnD(table) {
         $.ajax({
           type: 'POST',
           headers: { 'cache-control': 'no-cache' },
-          async: false,
-          url: window.currentIndex + '&token=' + window.token + '&' + 'rand=' + new Date().getTime(),
+          url: window.currentIndex + '&token=' + window.token + '&rand=' + new Date().getTime(),
           data: data + '&' + objToString(params),
           success: function () {
             var nodragLines = $(tableDrag).find('tr:not(".nodrag")');
@@ -161,7 +160,6 @@ function initTableDnD(table) {
                 reg = /_[0-9]$/g;
               }
 
-              var upReg = new RegExp('position=[-]?[0-9]+&');
               nodragLines.each(function (i) {
                 if (params.page > 1) {
                   newPos = i + ((params.page - 1) * params.selected_pagination);
