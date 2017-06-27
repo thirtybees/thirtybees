@@ -1522,8 +1522,8 @@ class ShopCore extends ObjectModel
                 ->from(bqSQL($entity).'_shop', 'es')
                 ->leftJoin(bqSQL($entity), 'entity', 'entity.`id_'.bqSQL($entity).'` = es.`id_'.bqSQL($entity).'`')
                 ->where('es.`id_shop` = '.(int) $idShop)
-                ->where($active ? ' AND entity.`active` = 1' : '')
-                ->where($delete ? ' AND entity.deleted = 0' : '')
+                ->where($active ? 'entity.`active` = 1' : '')
+                ->where($delete ? 'entity.`deleted` = 0' : '')
         );
     }
 }
