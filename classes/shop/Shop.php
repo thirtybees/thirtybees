@@ -326,15 +326,15 @@ class ShopCore extends ObjectModel
             $host = Tools::getHttpHost();
             $requestUri = rawurldecode($_SERVER['REQUEST_URI']);
 
-            $sql = 'SELECT s.id_shop, CONCAT(su.physical_uri, su.virtual_uri) AS uri, su.domain, su.main
-					FROM '._DB_PREFIX_.'shop_url su
-					LEFT JOIN '._DB_PREFIX_.'shop s ON (s.id_shop = su.id_shop)
-					WHERE (su.domain = \''.pSQL($host).'\' OR su.domain_ssl = \''.pSQL($host).'\')
-						AND s.active = 1
-						AND s.deleted = 0
-					ORDER BY LENGTH(CONCAT(su.physical_uri, su.virtual_uri)) DESC';
-
-            $result = Db::getInstance()->executeS($sql);
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                    ->select('s.`id_shop`, CONCAT(su.`physical_uri`, su.`virtual_uri`) AS `uri`, su.`domain`, su.`main`')
+                    ->from('shop_url', 'su')
+                    ->leftJoin('shop', 's', 's.`id_shop` = su.`id_shop`')
+                    ->where('su.domain = \''.pSQL($host).'\' OR su.domain_ssl = \''.pSQL($host).'\'')
+                    ->where('s.`active` = 1')
+                    ->where('s.`deleted` = 0')
+            );
 
             $through = false;
             foreach ($result as $row) {
@@ -500,8 +500,8 @@ class ShopCore extends ObjectModel
     /**
      * Get shop URL
      *
-     * @param string $autoSecureMode if set to true, secure mode will be checked
-     * @param string $addBaseUri     if set to true, shop base uri will be added
+     * @param bool|string $autoSecureMode if set to true, secure mode will be checked
+     * @param bool|string $addBaseUri     if set to true, shop base uri will be added
      *
      * @return string complete base url of current shop
      *
@@ -565,12 +565,13 @@ class ShopCore extends ObjectModel
      */
     public function getUrls()
     {
-        $sql = 'SELECT *
-				FROM '._DB_PREFIX_.'shop_url
-				WHERE active = 1
-					AND id_shop = '.(int) $this->id;
-
-        return Db::getInstance()->executeS($sql);
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('*')
+                ->from('shop_url')
+                ->where('`active` = 1')
+                ->where('`id_shop` = '.(int) $this->id)
+        );
     }
 
     /**
@@ -589,8 +590,9 @@ class ShopCore extends ObjectModel
     /**
      * Get the associated table if available
      *
-     * @return array
+     * @param string $table
      *
+     * @return false|array
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -600,14 +602,17 @@ class ShopCore extends ObjectModel
             Shop::init();
         }
 
+        // @codingStandardsIgnoreStart
         return (isset(Shop::$asso_tables[$table]) ? Shop::$asso_tables[$table] : false);
+        // @codingStandardsIgnoreEnd
     }
 
     /**
      * check if the table has an id_shop_default
      *
-     * @return bool
+     * @param string $table
      *
+     * @return bool
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -617,7 +622,9 @@ class ShopCore extends ObjectModel
             Shop::init();
         }
 
+        // @codingStandardsIgnoreStart
         return in_array($table, static::$id_shop_default_tables);
+        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -634,27 +641,31 @@ class ShopCore extends ObjectModel
             Shop::init();
         }
 
+        // @codingStandardsIgnoreStart
         return Shop::$asso_tables;
+        // @codingStandardsIgnoreEnd
     }
 
     /**
      * Add table associated to shop
      *
-     * @param string $table_name
-     * @param array  $table_details
+     * @param string $tableName
+     * @param array  $tableDetails
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function addTableAssociation($table_name, $table_details)
+    public static function addTableAssociation($tableName, $tableDetails)
     {
-        if (!isset(Shop::$asso_tables[$table_name])) {
-            Shop::$asso_tables[$table_name] = $table_details;
+        // @codingStandardsIgnoreStart
+        if (!isset(Shop::$asso_tables[$tableName])) {
+            Shop::$asso_tables[$tableName] = $tableDetails;
         } else {
             return false;
         }
+        // @codingStandardsIgnoreEnd
 
         return true;
     }
@@ -675,7 +686,9 @@ class ShopCore extends ObjectModel
             Shop::init();
         }
 
+        // @codingStandardsIgnoreStart
         return isset(Shop::$asso_tables[$table]) && Shop::$asso_tables[$table]['type'] == 'shop';
+        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -696,26 +709,23 @@ class ShopCore extends ObjectModel
 
         $employee = Context::getContext()->employee;
 
-        $from = $where = '';
+        $sql = (new DbQuery())
+            ->select('gs.*, s.*, gs.`name` AS `group_name`, s.`name` AS `shop_name`, s.`active`')
+            ->select('su.`domain`, su.`domain_ssl`, su.`physical_uri`, su.`virtual_uri`')
+            ->leftJoin('shop', 's', 's.`id_shop_group` = gs.`id_shop_group`')
+            ->leftJoin('shop_url', 'su', 's.`id_shop` = su.`id_shop` AND su.`main` = 1')
+            ->where('s.`deleted` = 0')
+            ->where('gs.`deleted` = 0')
+            ->orderBy('gs.`name`, s.`name`')
+        ;
+
         // If the profile isn't a superAdmin
         if (Validate::isLoadedObject($employee) && $employee->id_profile != _PS_ADMIN_PROFILE_) {
-            $from .= 'LEFT JOIN '._DB_PREFIX_.'employee_shop es ON es.id_shop = s.id_shop';
-            $where .= 'AND es.id_employee = '.(int) $employee->id;
+            $sql->leftJoin('employee_shop', 'es', 'es.`id_shop` = s.`id_shop`');
+            $sql->where('es.`id_employee` = '.(int) $employee->id);
         }
 
-        $sql = 'SELECT gs.*, s.*, gs.name AS group_name, s.name AS shop_name, s.active, su.domain, su.domain_ssl, su.physical_uri, su.virtual_uri
-				FROM '._DB_PREFIX_.'shop_group gs
-				LEFT JOIN '._DB_PREFIX_.'shop s
-					ON s.id_shop_group = gs.id_shop_group
-				LEFT JOIN '._DB_PREFIX_.'shop_url su
-					ON s.id_shop = su.id_shop AND su.main = 1
-				'.$from.'
-				WHERE s.deleted = 0
-					AND gs.deleted = 0
-					'.$where.'
-				ORDER BY gs.name, s.name';
-
-        if ($results = Db::getInstance()->executeS($sql)) {
+        if ($results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql)) {
             foreach ($results as $row) {
                 if (!isset(static::$shops[$row['id_shop_group']])) {
                     static::$shops[$row['id_shop_group']] = [
@@ -754,8 +764,7 @@ class ShopCore extends ObjectModel
         $cacheId = 'Shop::getCompleteListOfShopsID';
         if (!Cache::isStored($cacheId)) {
             $list = [];
-            $sql = 'SELECT id_shop FROM '._DB_PREFIX_.'shop';
-            foreach (Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql) as $row) {
+            foreach (Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS((new DbQuery())->select('`id_shop`')->from('shop')) as $row) {
                 $list[] = $row['id_shop'];
             }
 
@@ -784,13 +793,13 @@ class ShopCore extends ObjectModel
         Shop::cacheShops();
 
         $results = [];
-        foreach (static::$shops as $group_id => $group_data) {
-            foreach ($group_data['shops'] as $id => $shop_data) {
-                if ((!$active || $shop_data['active']) && (!$idShopGroup || $idShopGroup == $group_id)) {
+        foreach (static::$shops as $idGroup => $groupData) {
+            foreach ($groupData['shops'] as $id => $shopData) {
+                if ((!$active || $shopData['active']) && (!$idShopGroup || $idShopGroup == $idGroup)) {
                     if ($getAsListId) {
                         $results[$id] = $id;
                     } else {
-                        $results[$id] = $shop_data;
+                        $results[$id] = $shopData;
                     }
                 }
             }
