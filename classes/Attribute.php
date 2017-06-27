@@ -103,9 +103,9 @@ class AttributeCore extends ObjectModel
         if (!$this->hasMultishopEntries() || Shop::getContext() == Shop::CONTEXT_ALL) {
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                 (new DbQuery())
-                ->select('`id_product_attribute`')
-                ->from('product_attribute_combination')
-                ->where('`id_attribute` = '.(int) $this->id)
+                    ->select('`id_product_attribute`')
+                    ->from('product_attribute_combination')
+                    ->where('`id_attribute` = '.(int) $this->id)
             );
             $products = [];
 
@@ -113,9 +113,9 @@ class AttributeCore extends ObjectModel
                 $combination = new Combination($row['id_product_attribute']);
                 $newRequest = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                     (new DbQuery())
-                    ->select('`id_product`, `default_on`')
-                    ->from('product_attribute')
-                    ->where('`id_product_attribute` = '.(int) $row['id_product_attribute'])
+                        ->select('`id_product`, `default_on`')
+                        ->from('product_attribute')
+                        ->where('`id_product_attribute` = '.(int) $row['id_product_attribute'])
                 );
                 foreach ($newRequest as $value) {
                     if ($value['default_on'] == 1) {
@@ -128,9 +128,9 @@ class AttributeCore extends ObjectModel
             foreach ($products as $product) {
                 $idProductAttribute = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                     (new DbQuery())
-                    ->select('`id_product_attribute`')
-                    ->from('product_attribute')
-                    ->where('`id_product` = '.(int) $product)
+                        ->select('`id_product_attribute`')
+                        ->from('product_attribute')
+                        ->where('`id_product` = '.(int) $product)
                 );
 
                 if (Validate::isLoadedObject($product = new Product((int) $product))) {
