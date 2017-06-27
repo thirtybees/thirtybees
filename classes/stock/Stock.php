@@ -39,28 +39,20 @@ class StockCore extends ObjectModel
     // @codingStandardsIgnoreStart
     /** @var int identifier of the warehouse */
     public $id_warehouse;
-
     /** @var int identifier of the product */
     public $id_product;
-
     /** @var int identifier of the product attribute if necessary */
     public $id_product_attribute;
-
     /** @var string Product reference */
     public $reference;
-
     /** @var int Product EAN13 */
     public $ean13;
-
     /** @var string UPC */
     public $upc;
-
     /** @var int the physical quantity in stock for the current product in the current warehouse */
     public $physical_quantity;
-
     /** @var int the usable quantity (for sale) of the current physical quantity */
     public $usable_quantity;
-
     /** @var int the unit price without tax forthe current product */
     public $price_te;
     // @codingStandardsIgnoreEnd
@@ -98,10 +90,14 @@ class StockCore extends ObjectModel
     ];
 
     /**
-     * @see ObjectModel::update()
+     * @see     ObjectModel::update()
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @param bool $nullValues
+     *
+     * @return bool
      */
     public function update($nullValues = false)
     {
@@ -111,16 +107,83 @@ class StockCore extends ObjectModel
     }
 
     /**
-     * @see ObjectModel::add()
+     * @see     ObjectModel::add()
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     *
+     * @param bool $autoDate
+     * @param bool $nullValues
+     *
+     * @return bool
+     */
+    public function add($autoDate = true, $nullValues = false)
+    {
+        $this->getProductInformations();
+
+        return parent::add($autoDate, $nullValues);
+    }
+
+    /**
+     * Webservice : used to get the real quantity of a product
+     *
+     * @return int
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function getWsRealQuantity()
     {
-        $this->getProductInformations();
+        $manager = StockManagerFactory::getManager();
+        $quantity = $manager->getProductRealQuantities($this->id_product, $this->id_product_attribute, $this->id_warehouse, true);
 
-        return parent::add($autodate, $nullValues);
+        return $quantity;
+    }
+
+    /**
+     * @param int|null $idProduct
+     * @param int|null $idProductAttribute
+     *
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function deleteStockByIds($idProduct = null, $idProductAttribute = null)
+    {
+        if (!$idProduct || !$idProductAttribute) {
+            return false;
+        }
+
+        return Db::getInstance()->delete('stock', '`id_product` = '.(int) $idProduct.' AND `id_product_attribute` = '.(int) $idProductAttribute);
+    }
+
+    /**
+     * @param int $idProduct
+     * @param int $idProductAttribute
+     * @param int $idWarehouse
+     *
+     * @return bool
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function productIsPresentInStock($idProduct = 0, $idProductAttribute = 0, $idWarehouse = 0)
+    {
+        if (!(int) $idProduct && !is_int($idProductAttribute) && !(int) $idWarehouse) {
+            return false;
+        }
+
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('`id_stock`')
+                ->from('stock')
+                ->where('`id_warehouse` = '.(int) $idWarehouse)
+                ->where('`id_product` = '.(int) $idProduct)
+                ->where((int) $idProductAttribute ? ' AND `id_product_attribute` = '.$idProductAttribute : '')
+        );
+
+        return (is_array($result) && !empty($result) ? true : false);
     }
 
     /**
@@ -134,12 +197,13 @@ class StockCore extends ObjectModel
     {
         // if combinations
         if ((int) $this->id_product_attribute > 0) {
-            $query = new DbQuery();
-            $query->select('reference, ean13, upc');
-            $query->from('product_attribute');
-            $query->where('id_product = '.(int) $this->id_product);
-            $query->where('id_product_attribute = '.(int) $this->id_product_attribute);
-            $rows = Db::getInstance()->executeS($query);
+            $rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                    ->select('reference, ean13, upc')
+                    ->from('product_attribute')
+                    ->where('id_product = '.(int) $this->id_product)
+                    ->where('id_product_attribute = '.(int) $this->id_product_attribute)
+            );
 
             if (!is_array($rows)) {
                 return;
@@ -160,61 +224,5 @@ class StockCore extends ObjectModel
                 $this->upc = $product->upc;
             }
         }
-    }
-
-    /**
-     * Webservice : used to get the real quantity of a product
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public function getWsRealQuantity()
-    {
-        $manager = StockManagerFactory::getManager();
-        $quantity = $manager->getProductRealQuantities($this->id_product, $this->id_product_attribute, $this->id_warehouse, true);
-
-        return $quantity;
-    }
-
-    /**
-     * @param null $idProduct
-     * @param null $idProductAttribute
-     *
-     * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public static function deleteStockByIds($idProduct = null, $idProductAttribute = null)
-    {
-        if (!$idProduct || !$idProductAttribute) {
-            return false;
-        }
-
-        return Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'stock WHERE `id_product` = '.(int) $idProduct.' AND `id_product_attribute` = '.(int) $idProductAttribute);
-    }
-
-    /**
-     * @param int $idProduct
-     * @param int $idProductAttribute
-     * @param int $idWarehouse
-     *
-     * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public static function productIsPresentInStock($idProduct = 0, $idProductAttribute = 0, $idWarehouse = 0)
-    {
-        if (!(int) $idProduct && !is_int($idProductAttribute) && !(int) $idWarehouse) {
-            return false;
-        }
-
-        $result = Db::getInstance()->executeS(
-            'SELECT `id_stock` FROM '._DB_PREFIX_.'stock
-			WHERE `id_warehouse` = '.(int) $idWarehouse.' AND `id_product` = '.(int) $idProduct.((int) $idProductAttribute ? ' AND `id_product_attribute` = '.$idProductAttribute : '')
-        );
-
-        return (is_array($result) && !empty($result) ? true : false);
     }
 }
