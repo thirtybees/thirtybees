@@ -66,16 +66,20 @@ class ProfileCore extends ObjectModel
     public static function getProfiles($idLang)
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            '
-		SELECT p.`id_profile`, `name`
-		FROM `'._DB_PREFIX_.'profile` p
-		LEFT JOIN `'._DB_PREFIX_.'profile_lang` pl ON (p.`id_profile` = pl.`id_profile` AND `id_lang` = '.(int) $idLang.')
-		ORDER BY `id_profile` ASC'
+            (new DbQuery())
+                ->select('p.`id_profile`, `name`')
+                ->from('profile', 'p')
+                ->leftJoin('profile_lang', 'pl', 'p.`id_profile` = pl.`id_profile`')
+                ->where('`id_lang` = '.(int) $idLang)
+                ->orderBy('`id_profile` ASC')
         );
     }
 
     /**
      * Get the current profile name
+     *
+     * @param int      $idProfile
+     * @param int|null $idLang
      *
      * @return string Profile
      *
@@ -89,18 +93,18 @@ class ProfileCore extends ObjectModel
         }
 
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
-            '
-			SELECT `name`
-			FROM `'._DB_PREFIX_.'profile` p
-			LEFT JOIN `'._DB_PREFIX_.'profile_lang` pl ON (p.`id_profile` = pl.`id_profile`)
-			WHERE p.`id_profile` = '.(int) $idProfile.'
-			AND pl.`id_lang` = '.(int) $idLang
+            (new DbQuery())
+                ->select('`name`')
+                ->from('profile', 'p')
+                ->leftJoin('profile_lang', 'pl', 'p.`id_profile` = pl.`id_profile`')
+                ->where('p.`id_profile` = '.(int) $idProfile)
+                ->where('pl.`id_lang` = '.(int) $idLang)
         );
     }
 
     /**
-     * @param $idProfile
-     * @param $idTab
+     * @param int $idProfile
+     * @param int $idTab
      *
      * @return bool
      *
@@ -116,7 +120,7 @@ class ProfileCore extends ObjectModel
     }
 
     /**
-     * @param        $idProfile
+     * @param int    $idProfile
      * @param string $type
      *
      * @return bool
@@ -130,10 +134,10 @@ class ProfileCore extends ObjectModel
             return false;
         }
 
+        // @codingStandardsIgnoreStart
         if (!isset(static::$_cache_accesses[$idProfile])) {
             static::$_cache_accesses[$idProfile] = [];
         }
-
         if (!isset(static::$_cache_accesses[$idProfile][$type])) {
             static::$_cache_accesses[$idProfile][$type] = [];
             // Super admin profile has full auth
@@ -150,12 +154,12 @@ class ProfileCore extends ObjectModel
                     ];
                 }
             } else {
-                $result = Db::getInstance()->executeS(
-                    '
-				SELECT *
-				FROM `'._DB_PREFIX_.'access` a
-				LEFT JOIN `'._DB_PREFIX_.'tab` t ON t.id_tab = a.id_tab
-				WHERE `id_profile` = '.(int) $idProfile
+                $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                    (new DbQuery())
+                        ->select('*')
+                        ->from('access', 'a')
+                        ->leftJoin('tab', 't', 't.`id_tab` = a.`id_tab`')
+                        ->where('`id_profile` = '.(int) $idProfile)
                 );
 
                 foreach ($result as $row) {
@@ -165,6 +169,7 @@ class ProfileCore extends ObjectModel
         }
 
         return static::$_cache_accesses[$idProfile][$type];
+        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -204,8 +209,8 @@ class ProfileCore extends ObjectModel
     {
         if (parent::delete()) {
             return (
-                Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'access` WHERE `id_profile` = '.(int) $this->id)
-                && Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'module_access` WHERE `id_profile` = '.(int) $this->id)
+                Db::getInstance()->delete('access', '`id_profile` = '.(int) $this->id)
+                && Db::getInstance()->delete('module_access', '`id_profile` = '.(int) $this->id)
             );
         }
 
