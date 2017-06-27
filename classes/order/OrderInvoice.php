@@ -139,7 +139,7 @@ class OrderInvoiceCore extends ObjectModel
     ];
 
     /**
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
@@ -147,7 +147,7 @@ class OrderInvoiceCore extends ObjectModel
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
         $order = new Order($this->id_order);
 

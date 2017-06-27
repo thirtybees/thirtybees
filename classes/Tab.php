@@ -477,7 +477,7 @@ class TabCore extends ObjectModel
      * - generate a new position
      * - add access for admin profile
      *
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return int id_tab
@@ -485,7 +485,7 @@ class TabCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
         // @retrocompatibility with old menu (before 1.5.0.9)
         $retro = [
@@ -509,7 +509,7 @@ class TabCore extends ObjectModel
         $this->module = Tools::strtolower($this->module);
 
         // Add tab
-        if (parent::add($autodate, $nullValues)) {
+        if (parent::add($autoDate, $nullValues)) {
             //forces cache to be reloaded
             static::$_getIdFromClassName = null;
 

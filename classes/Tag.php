@@ -156,7 +156,7 @@ class TagCore extends ObjectModel
     }
 
     /**
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
@@ -164,9 +164,9 @@ class TagCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
-        if (!parent::add($autodate, $nullValues)) {
+        if (!parent::add($autoDate, $nullValues)) {
             return false;
         } elseif (isset($_POST['products'])) {
             return $this->setProducts(Tools::getValue('products'));

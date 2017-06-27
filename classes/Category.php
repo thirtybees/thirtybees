@@ -1181,7 +1181,7 @@ class CategoryCore extends ObjectModel
     }
 
     /**
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
@@ -1189,7 +1189,7 @@ class CategoryCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
         if (!isset($this->level_depth)) {
             $this->level_depth = $this->calcLevelDepth();
@@ -1199,7 +1199,7 @@ class CategoryCore extends ObjectModel
             $this->id_parent = $idRootCategory;
         }
 
-        $ret = parent::add($autodate, $nullValues);
+        $ret = parent::add($autoDate, $nullValues);
 
         if (Tools::isSubmit('checkBoxShopAsso_category')) {
             foreach (Tools::getValue('checkBoxShopAsso_category') as $idShop => $value) {

@@ -942,7 +942,7 @@ class OrderDetailCore extends ObjectModel
     }
 
     /**
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
@@ -950,7 +950,7 @@ class OrderDetailCore extends ObjectModel
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
         foreach ($this->def['fields'] as $field => $data) {
             if (!empty($data['required']) || !empty($data['lang'])) {
@@ -963,7 +963,7 @@ class OrderDetailCore extends ObjectModel
 
         $this->original_wholesale_price = $this->getWholeSalePrice();
 
-        return parent::add($autodate = true, $nullValues = false);
+        return parent::add($autoDate = true, $nullValues = false);
     }
 
     /**

@@ -270,7 +270,7 @@ class EmployeeCore extends ObjectModel
     }
 
     /**
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
@@ -278,13 +278,13 @@ class EmployeeCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = true)
+    public function add($autoDate = true, $nullValues = true)
     {
         $this->last_passwd_gen = date('Y-m-d H:i:s', strtotime('-'.Configuration::get('PS_PASSWD_TIME_BACK').'minutes'));
         $this->saveOptin();
         $this->updateTextDirection();
 
-        return parent::add($autodate, $nullValues);
+        return parent::add($autoDate, $nullValues);
     }
 
     /**

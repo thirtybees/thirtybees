@@ -472,7 +472,7 @@ class CountryCore extends ObjectModel
     }
 
     /**
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
@@ -480,9 +480,9 @@ class CountryCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
-        $return = parent::add($autodate, $nullValues) && static::addModuleRestrictions([], [['id_country' => $this->id]], []);
+        $return = parent::add($autoDate, $nullValues) && static::addModuleRestrictions([], [['id_country' => $this->id]], []);
 
         return $return;
     }

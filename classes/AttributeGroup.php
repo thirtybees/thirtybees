@@ -130,7 +130,7 @@ class AttributeGroupCore extends ObjectModel
     }
 
     /**
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
@@ -138,7 +138,7 @@ class AttributeGroupCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
         if ($this->group_type == 'color') {
             $this->is_color_group = 1;
@@ -150,7 +150,7 @@ class AttributeGroupCore extends ObjectModel
             $this->position = AttributeGroup::getHigherPosition() + 1;
         }
 
-        $return = parent::add($autodate, true);
+        $return = parent::add($autoDate, true);
         Hook::exec('actionAttributeGroupSave', ['id_attribute_group' => $this->id]);
 
         return $return;

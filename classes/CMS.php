@@ -248,7 +248,7 @@ class CMSCore extends ObjectModel
     }
 
     /**
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
@@ -256,11 +256,11 @@ class CMSCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
         $this->position = CMS::getLastPosition((int) $this->id_cms_category);
 
-        if (!parent::add($autodate, true)) {
+        if (!parent::add($autoDate, true)) {
             return false;
         }
 

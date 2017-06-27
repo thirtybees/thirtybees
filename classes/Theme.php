@@ -274,20 +274,20 @@ class ThemeCore extends ObjectModel
      * add only theme if the directory exists
      *
      * @param bool $nullValues
-     * @param bool $autodate
+     * @param bool $autoDate
      *
      * @return bool Insertion result
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
         if (!is_dir(_PS_ALL_THEMES_DIR_.$this->directory)) {
             return false;
         }
 
-        return parent::add($autodate, $nullValues);
+        return parent::add($autoDate, $nullValues);
     }
 
     /**

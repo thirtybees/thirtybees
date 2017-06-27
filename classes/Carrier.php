@@ -1091,7 +1091,7 @@ class CarrierCore extends ObjectModel
     }
 
     /**
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
@@ -1099,12 +1099,12 @@ class CarrierCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
         if ($this->position <= 0) {
             $this->position = static::getHigherPosition() + 1;
         }
-        if (!parent::add($autodate, $nullValues) || !Validate::isLoadedObject($this)) {
+        if (!parent::add($autoDate, $nullValues) || !Validate::isLoadedObject($this)) {
             return false;
         }
         if (!$count = Db::getInstance()->getValue('SELECT count(`id_carrier`) FROM `'._DB_PREFIX_.$this->def['table'].'` WHERE `deleted` = 0')) {

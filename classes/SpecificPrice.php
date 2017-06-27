@@ -764,7 +764,7 @@ class SpecificPriceCore extends ObjectModel
     }
 
     /**
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
@@ -772,9 +772,9 @@ class SpecificPriceCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
-        if (parent::add($autodate, $nullValues)) {
+        if (parent::add($autoDate, $nullValues)) {
             // Flush cache when we adding a new specific price
             $this->flushCache();
             // Set cache of feature detachable to true

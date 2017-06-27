@@ -374,7 +374,7 @@ class SceneCore extends ObjectModel
     }
 
     /**
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
@@ -382,7 +382,7 @@ class SceneCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
         if (!empty($this->zones)) {
             $this->addZoneProducts($this->zones);
@@ -391,7 +391,7 @@ class SceneCore extends ObjectModel
             $this->addCategories($this->categories);
         }
 
-        if (parent::add($autodate, $nullValues)) {
+        if (parent::add($autoDate, $nullValues)) {
             // Put cache of feature detachable only if this new scene is active else we keep the old value
             if ($this->active) {
                 Configuration::updateGlobalValue('PS_SCENE_FEATURE_ACTIVE', '1');
