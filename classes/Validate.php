@@ -40,7 +40,7 @@ class ValidateCore
     const PASSWORD_LENGTH = 5;
 
     /**
-     * @param $ip
+     * @param string $ip
      *
      * @return int
      *
@@ -1152,7 +1152,7 @@ class ValidateCore
     }
 
     /**
-     * @param $unit
+     * @param string $unit
      *
      * @return int
      *
