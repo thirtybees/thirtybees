@@ -950,14 +950,14 @@ class ShopCore extends ObjectModel
      * @param int $type   Shop::SHARE_CUSTOMER | Shop::SHARE_ORDER
      *
      * @return array
-     *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function getSharedShops($shopId, $type)
     {
         if (!in_array($type, [Shop::SHARE_CUSTOMER, Shop::SHARE_ORDER, SHOP::SHARE_STOCK])) {
-            die('Wrong argument ($type) in Shop::getSharedShops() method');
+            throw new PrestaShopException('Wrong argument ($type) in Shop::getSharedShops() method');
         }
 
         Shop::cacheShops();
@@ -973,7 +973,7 @@ class ShopCore extends ObjectModel
     /**
      * Get a list of ID concerned by the shop context (E.g. if context is shop group, get list of children shop ID)
      *
-     * @param string $share If false, dont check share datas from group. Else can take a Shop::SHARE_* constant value
+     * @param bool|string $share If false, dont check share datas from group. Else can take a Shop::SHARE_* constant value
      *
      * @return array
      *
