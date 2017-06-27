@@ -37,26 +37,47 @@
 class SpecificPriceCore extends ObjectModel
 {
     // @codingStandardsIgnoreStart
+    /** @var array $_specificPriceCache */
     protected static $_specificPriceCache = [];
+    /** @var array $_filterOutCache */
     protected static $_filterOutCache = [];
+    /** @var array $_cache_priorities */
     protected static $_cache_priorities = [];
+    /** @var array $_no_specific_values */
     protected static $_no_specific_values = [];
+    /** @var int $id_product */
     public $id_product;
+    /** @var int $id_specific_price_rule */
     public $id_specific_price_rule = 0;
+    /** @var int $id_cart */
     public $id_cart = 0;
+    /** @var int $id_product_attribute */
     public $id_product_attribute;
+    /** @var int $id_shop */
     public $id_shop;
+    /** @var int $id_shop_group */
     public $id_shop_group;
+    /** @var int $id_currency */
     public $id_currency;
+    /** @var int $id_country */
     public $id_country;
+    /** @var int $id_group */
     public $id_group;
+    /** @var int $id_customer */
     public $id_customer;
+    /** @var float $price */
     public $price;
+    /** @var int $from_quantity */
     public $from_quantity;
+    /** @var string $reduction */
     public $reduction;
+    /** @var int $reduction_tax */
     public $reduction_tax = 1;
+    /** @var string $reduction_type */
     public $reduction_type;
+    /** @var string $from */
     public $from;
+    /** @var string $to */
     public $to;
     // @codingStandardsIgnoreEnd
 
@@ -115,12 +136,12 @@ class SpecificPriceCore extends ObjectModel
     public static function getByProductId($idProduct, $idProductAttribute = false, $idCart = false)
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            '
-			SELECT *
-			FROM `'._DB_PREFIX_.'specific_price`
-			WHERE `id_product` = '.(int) $idProduct.
-            ($idProductAttribute ? ' AND id_product_attribute = '.(int) $idProductAttribute : '').'
-			AND id_cart = '.(int) $idCart
+            (new DbQuery())
+                ->select('*')
+                ->from('specific_price')
+                ->where('`id_product` = '.(int) $idProduct)
+                ->where($idProductAttribute ? '`id_product_attribute` = '.(int) $idProductAttribute : '')
+                ->where('`id_cart` = '.(int) $idCart)
         );
     }
 
@@ -136,11 +157,9 @@ class SpecificPriceCore extends ObjectModel
      */
     public static function deleteByIdCart($idCart, $idProduct = false, $idProductAttribute = false)
     {
-        return Db::getInstance()->execute(
-            '
-			DELETE FROM `'._DB_PREFIX_.'specific_price`
-			WHERE id_cart='.(int) $idCart.
-            ($idProduct ? ' AND id_product='.(int) $idProduct.' AND id_product_attribute='.(int) $idProductAttribute : '')
+        return Db::getInstance()->delete(
+            'specific_price',
+            (int) $idCart.($idProduct ? ' AND `id_product` = '.(int) $idProduct.' AND `id_product_attribute` = '.(int) $idProductAttribute : '')
         );
     }
 
@@ -157,12 +176,12 @@ class SpecificPriceCore extends ObjectModel
     public static function getIdsByProductId($idProduct, $idProductAttribute = false, $idCart = 0)
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            '
-			SELECT `id_specific_price`
-			FROM `'._DB_PREFIX_.'specific_price`
-			WHERE `id_product` = '.(int) $idProduct.'
-			AND id_product_attribute='.(int) $idProductAttribute.'
-			AND id_cart='.(int) $idCart
+            (new DbQuery())
+                ->select('`id_specific_price`')
+                ->from('specific_price')
+                ->where('`id_product` = '.(int) $idProduct)
+                ->where('`id_product_attrbute` = '.(int) $idProductAttribute)
+                ->where('`id_cart` = '.(int) $idCart)
         );
     }
 
@@ -283,12 +302,18 @@ class SpecificPriceCore extends ObjectModel
         if ($ending == $now && $beginning == $now) {
             $key = __FUNCTION__.'-'.$firstDate.'-'.$lastDate;
             if (!array_key_exists($key, static::$_filterOutCache)) {
-                $queryFromCount = 'SELECT 1 FROM `'._DB_PREFIX_.'specific_price` WHERE `from` BETWEEN \''.$firstDate.'\' AND \''.$lastDate.'\'';
-                $fromSpecificCount = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($queryFromCount);
-
-                $queryToCount = 'SELECT 1 FROM `'._DB_PREFIX_.'specific_price` WHERE `to` BETWEEN \''.$firstDate.'\' AND \''.$lastDate.'\'';
-
-                $toSpecificCount = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($queryToCount);
+                $fromSpecificCount = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                    (new DbQuery())
+                        ->select('1')
+                        ->from('specific_price')
+                        ->where('`from` BETWEEN \''.$firstDate.'\' AND \''.$lastDate.'\'')
+                );
+                $toSpecificCount = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                    (new DbQuery())
+                        ->select('1')
+                        ->from('specific_price')
+                        ->where('`to` BETWEEN \''.$firstDate.'\' AND \''.$lastDate.'\'')
+                );
                 static::$_filterOutCache[$key] = [$fromSpecificCount, $toSpecificCount];
             } else {
                 list($fromSpecificCount, $toSpecificCount) = static::$_filterOutCache[$key];
@@ -302,8 +327,7 @@ class SpecificPriceCore extends ObjectModel
             $ending = $beginning = $firstDate;
         }
 
-        $queryExtra .= ' AND (`from` = \'0000-00-00 00:00:00\' OR \''.$beginning.'\' >= `from`)'
-            .' AND (`to` = \'0000-00-00 00:00:00\' OR \''.$ending.'\' <= `to`)';
+        $queryExtra .= ' AND (`from` = \'0000-00-00 00:00:00\' OR \''.$beginning.'\' >= `from`) AND (`to` = \'0000-00-00 00:00:00\' OR \''.$ending.'\' <= `to`)';
 
         return $queryExtra;
     }
@@ -324,16 +348,20 @@ class SpecificPriceCore extends ObjectModel
     protected static function filterOutField($fieldName, $fieldValue, $threshold = 1000)
     {
         $queryExtra = 'AND `'.$fieldName.'` = 0 ';
+        // @codingStandardsIgnoreStart
         if ($fieldValue == 0 || array_key_exists($fieldName, static::$_no_specific_values)) {
             return $queryExtra;
         }
+        // @codingStandardsIgnoreEnd
         $keyCache = __FUNCTION__.'-'.$fieldName.'-'.$threshold;
         $specificList = [];
         if (!array_key_exists($keyCache, static::$_filterOutCache)) {
             $queryCount = 'SELECT COUNT(DISTINCT `'.$fieldName.'`) FROM `'._DB_PREFIX_.'specific_price` WHERE `'.$fieldName.'` != 0';
             $specificCount = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($queryCount);
             if ($specificCount == 0) {
+                // @codingStandardsIgnoreStart
                 static::$_no_specific_values[$fieldName] = true;
+                // @codingStandardsIgnoreEnd
 
                 return $queryExtra;
             }
@@ -400,7 +428,7 @@ class SpecificPriceCore extends ObjectModel
     }
 
     /**
-     * @param $idProduct
+     * @param int $idProduct
      *
      * @return array
      *
@@ -413,18 +441,20 @@ class SpecificPriceCore extends ObjectModel
             return explode(';', Configuration::get('PS_SPECIFIC_PRICE_PRIORITIES'));
         }
 
+        // @codingStandardsIgnoreStart
         if (!isset(static::$_cache_priorities[(int) $idProduct])) {
             static::$_cache_priorities[(int) $idProduct] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-                '
-				SELECT `priority`, `id_specific_price_priority`
-				FROM `'._DB_PREFIX_.'specific_price_priority`
-				WHERE `id_product` = '.(int) $idProduct.'
-				ORDER BY `id_specific_price_priority` DESC
-			'
+                (new DbQuery())
+                    ->select('`priority`, `id_specific_price_priority`')
+                    ->from('specific_price_priority')
+                    ->where('`id_product` = '.(int) $idProduct)
+                    ->orderBy('`id_specific_price_priority` DESC')
+
             );
         }
 
         $priority = static::$_cache_priorities[(int) $idProduct];
+        // @codingStandardsIgnoreEnd
 
         if (!$priority) {
             $priority = Configuration::get('PS_SPECIFIC_PRICE_PRIORITIES');
@@ -464,16 +494,12 @@ class SpecificPriceCore extends ObjectModel
      */
     public static function deletePriorities()
     {
-        return Db::getInstance()->execute(
-            '
-		TRUNCATE `'._DB_PREFIX_.'specific_price_priority`
-		'
-        );
+        return Db::getInstance()->execute('TRUNCATE `'._DB_PREFIX_.'specific_price_priority`');
     }
 
     /**
-     * @param $idProduct
-     * @param $priorities
+     * @param int   $idProduct
+     * @param array $priorities
      *
      * @return bool
      *
@@ -642,7 +668,7 @@ class SpecificPriceCore extends ObjectModel
      */
     public static function deleteByProductId($idProduct)
     {
-        if (Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'specific_price` WHERE `id_product` = '.(int) $idProduct)) {
+        if (Db::getInstance()->delete('specific_price', '`id_product` = '.(int) $idProduct)) {
             // Refresh cache of feature detachable
             Configuration::updateGlobalValue('PS_SPECIFIC_PRICE_FEATURE_ACTIVE', static::isCurrentlyUsed('specific_price'));
 
@@ -718,11 +744,13 @@ class SpecificPriceCore extends ObjectModel
      */
     protected function flushCache()
     {
+        // @codingStandardsIgnoreStart
         static::$_specificPriceCache = [];
         static::$_filterOutCache = [];
         static::$_cache_priorities = [];
         static::$_no_specific_values = [];
         Product::flushPriceCache();
+        // @codingStandardsIgnoreEnd
     }
 
     /**
