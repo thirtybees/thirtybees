@@ -36,6 +36,8 @@
  */
 class TranslatedConfigurationCore extends Configuration
 {
+    public $value = [];
+
     public static $definition = [
         'table'     => 'configuration',
         'primary'   => 'id_configuration',
@@ -74,11 +76,12 @@ class TranslatedConfigurationCore extends Configuration
         // Check if the id configuration is set in the configuration_lang table.
         // Otherwise configuration is not set as translated configuration.
         if ($id !== null) {
-            $idTranslated = Db::getInstance()->executeS(
-                '				SELECT `'.bqSQL($this->def['primary']).'`
-				FROM `'.bqSQL(_DB_PREFIX_.$this->def['table']).'_lang`
-				WHERE `'.bqSQL($this->def['primary']).'`='.(int) $id.' LIMIT 0,1
-			'
+            $idTranslated = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                    ->select(bqSQL(static::$definition['primary']))
+                    ->from(bqSQL(static::$definition['table']).'_lang')
+                    ->where('`'.bqSQL(static::$definition['primary']).'` = '.(int) $id)
+                    ->limit(1, 0)
             );
 
             if (empty($idTranslated)) {
@@ -102,6 +105,11 @@ class TranslatedConfigurationCore extends Configuration
         return $this->update($nullValues);
     }
 
+    /**
+     * @param bool $nullValues
+     *
+     * @return bool
+     */
     public function update($nullValues = false)
     {
         $ishtml = false;
@@ -113,11 +121,11 @@ class TranslatedConfigurationCore extends Configuration
         }
         Configuration::updateValue($this->name, $this->value, $ishtml);
 
-        $lastInsert = Db::getInstance()->getRow(
-            '
-			SELECT `id_configuration` AS id
-			FROM `'._DB_PREFIX_.'configuration`
-			WHERE `name` = \''.pSQL($this->name).'\''
+        $lastInsert = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('`id_configuration` AS `id`')
+                ->from('configuration')
+                ->where('`name` = \''.pSQL($this->name).'\'')
         );
         if ($lastInsert) {
             $this->id = $lastInsert['id'];
