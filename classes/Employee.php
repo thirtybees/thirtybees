@@ -649,6 +649,7 @@ class EmployeeCore extends ObjectModel
     public function getImage()
     {
         if (!Validate::isLoadedObject($this)) {
+            return Tools::getAdminImageUrl('bee-avatar.png');
             return Tools::getAdminImageUrl('thirty-bees-avatar.png');
         }
 
