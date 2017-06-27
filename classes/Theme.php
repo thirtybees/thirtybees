@@ -39,6 +39,8 @@ class ThemeCore extends ObjectModel
     const CACHE_FILE_CUSTOMER_THEMES_LIST = '/config/xml/customer_themes_list.xml';
     const CACHE_FILE_MUST_HAVE_THEMES_LIST = '/config/xml/must_have_themes_list.xml';
     const UPLOADED_THEME_DIR_NAME = 'uploaded';
+
+    // @codingStandardsIgnoreStart
     /** @var int access rights of created folders (octal) */
     public static $access_rights = 0775;
     /**
@@ -56,12 +58,19 @@ class ThemeCore extends ObjectModel
             'product_per_page'     => ['type' => self::TYPE_INT, 'validate' => 'isInt'],
         ],
     ];
+    /** @var string $name */
     public $name;
+    /** @var string $directory */
     public $directory;
+    /** @var bool $responsive */
     public $responsive;
+    /** @var int $default_left_column */
     public $default_left_column;
+    /** @var int $default_right_column */
     public $default_right_column;
+    /** @var int $product_per_page */
     public $product_per_page;
+    // @codingStandardsIgnoreEnd
 
     /**
      * @param bool $excludedIds
@@ -105,6 +114,7 @@ class ThemeCore extends ObjectModel
             }
         }
 
+        $themesDir = [];
         if ($installedOnly) {
             $themes = Theme::getThemes();
             foreach ($themes as $themeObj) {
@@ -151,7 +161,12 @@ class ThemeCore extends ObjectModel
     public static function getByDirectory($directory)
     {
         if (is_string($directory) && strlen($directory) > 0 && file_exists(_PS_ALL_THEMES_DIR_.$directory) && is_dir(_PS_ALL_THEMES_DIR_.$directory)) {
-            $idTheme = (int) Db::getInstance()->getValue('SELECT id_theme FROM '._DB_PREFIX_.'theme WHERE directory="'.pSQL($directory).'"');
+            $idTheme = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                    ->select('`id_theme`')
+                    ->from('theme')
+                    ->where('`directory` = \''.pSQL($directory).'\'')
+            );
 
             return $idTheme ? new Theme($idTheme) : false;
         }
@@ -246,7 +261,11 @@ class ThemeCore extends ObjectModel
     public static function getInstalledThemeDirectories()
     {
         $list = [];
-        $tmp = Db::getInstance()->executeS('SELECT `directory` FROM '._DB_PREFIX_.'theme');
+        $tmp = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('`directory`')
+                ->from('theme')
+        );
         foreach ($tmp as $t) {
             $list[] = $t['directory'];
         }
@@ -264,17 +283,19 @@ class ThemeCore extends ObjectModel
      */
     public function isUsed()
     {
-        return Db::getInstance()->getValue(
-            'SELECT count(*)
-			FROM '._DB_PREFIX_.'shop WHERE id_theme = '.(int) $this->id
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('COUNT(*)')
+                ->from('shop')
+                ->where('`id_theme` = '.(int) $this->id)
         );
     }
 
     /**
      * add only theme if the directory exists
      *
-     * @param bool $nullValues
      * @param bool $autoDate
+     * @param bool $nullValues
      *
      * @return bool Insertion result
      *
@@ -324,7 +345,7 @@ class ThemeCore extends ObjectModel
     }
 
     /**
-     * @param $page
+     * @param string $page
      *
      * @return array|bool|null|object
      *
@@ -333,18 +354,19 @@ class ThemeCore extends ObjectModel
      */
     public function hasColumns($page)
     {
-        return Db::getInstance()->getRow(
-            '
-		SELECT IFNULL(left_column, default_left_column) AS left_column, IFNULL(right_column, default_right_column) AS right_column
-		FROM '._DB_PREFIX_.'theme t
-		LEFT JOIN '._DB_PREFIX_.'theme_meta tm ON (t.id_theme = tm.id_theme)
-		LEFT JOIN '._DB_PREFIX_.'meta m ON (m.id_meta = tm.id_meta)
-		WHERE t.id_theme ='.(int) $this->id.' AND m.page = "'.pSQL($page).'"'
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('IFNULL(`left_column`, `default_left_column`) AS `left_column`, IFNULL(`right_column`, `default_right_column`) AS `right_column`')
+                ->from('theme', 't')
+                ->leftJoin('theme_meta', 'tm', 't.`id_theme` = tm.`id_theme`')
+                ->leftJoin('meta', 'm', 'm.`id_meta` = tm.`id_meta`')
+                ->where('t.`id_theme` = '.(int) $this->id)
+                ->where('m.`page` = \''.pSQL($page).'\'')
         );
     }
 
     /**
-     * @param $page
+     * @param string $page
      *
      * @return bool
      *
@@ -353,13 +375,14 @@ class ThemeCore extends ObjectModel
      */
     public function hasColumnsSettings($page)
     {
-        return (bool) Db::getInstance()->getValue(
-            '
-		SELECT m.`id_meta`
-		FROM '._DB_PREFIX_.'theme t
-		LEFT JOIN '._DB_PREFIX_.'theme_meta tm ON (t.id_theme = tm.id_theme)
-		LEFT JOIN '._DB_PREFIX_.'meta m ON (m.id_meta = tm.id_meta)
-		WHERE t.id_theme ='.(int) $this->id.' AND m.page = "'.pSQL($page).'"'
+        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('m.`id_meta`')
+                ->from('theme', 't')
+                ->leftJoin('theme_meta', 'tm', 't.`id_theme` = tm.`id_theme`')
+                ->leftJoin('meta', 'm', 'm.`id_meta` = tm.`id_meta`')
+                ->where('t.`id_theme` = '.(int) $this->id)
+                ->where('m.`page` = \''.pSQL($page).'\'')
         );
     }
 
@@ -373,18 +396,19 @@ class ThemeCore extends ObjectModel
      */
     public function hasLeftColumn($page = null)
     {
-        return (bool) Db::getInstance()->getValue(
-            'SELECT IFNULL(
-			(
-				SELECT left_column
-				FROM '._DB_PREFIX_.'theme t
-				LEFT JOIN '._DB_PREFIX_.'theme_meta tm ON ( t.id_theme = tm.id_theme )
-				LEFT JOIN '._DB_PREFIX_.'meta m ON ( m.id_meta = tm.id_meta )
-				WHERE t.id_theme ='.(int) $this->id.'
-				AND m.page = "'.pSQL($page).'" ) , default_left_column
-			)
-			FROM '._DB_PREFIX_.'theme
-			WHERE id_theme ='.(int) $this->id
+        $leftColumnSql = (new DbQuery())
+            ->select('`left_column`')
+            ->from('theme', 't')
+            ->leftJoin('theme_meta', 'tm', 't.`id_theme` = tm.`id_theme`')
+            ->leftJoin('meta', 'm', 'm.`id_meta` = tm.`id_meta`')
+            ->where('t.`id_theme` = '.(int) $this->id)
+            ->where('m.`page` = \''.pSQL($page).'\'');
+
+        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('IFNULL('.$leftColumnSql->build().', `default_left_column`)')
+                ->from('theme')
+                ->where('`id_theme` = '.(int) $this->id)
         );
     }
 
@@ -398,18 +422,19 @@ class ThemeCore extends ObjectModel
      */
     public function hasRightColumn($page = null)
     {
-        return (bool) Db::getInstance()->getValue(
-            'SELECT IFNULL(
-			(
-				SELECT right_column
-				FROM '._DB_PREFIX_.'theme t
-				LEFT JOIN '._DB_PREFIX_.'theme_meta tm ON ( t.id_theme = tm.id_theme )
-				LEFT JOIN '._DB_PREFIX_.'meta m ON ( m.id_meta = tm.id_meta )
-				WHERE t.id_theme ='.(int) $this->id.'
-				AND m.page = "'.pSQL($page).'" ) , default_right_column
-			)
-			FROM '._DB_PREFIX_.'theme
-			WHERE id_theme ='.(int) $this->id
+        $rightColumnSql = (new DbQuery())
+            ->select('`right_column`')
+            ->from('theme', 't')
+            ->leftJoin('theme_meta', 'tm', 't.`id_theme` = tm.`id_theme`')
+            ->leftJoin('meta', 'm', 'm.`id_meta` = tm.`id_meta`')
+            ->where('t.`id_theme` = '.(int) $this->id)
+            ->where('m.`page` = \''.pSQL($page).'\'');
+
+        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('IFNULL('.$rightColumnSql->build().', `default_right_column`)')
+                ->from('theme')
+                ->where('`id_theme` = '.(int) $this->id)
         );
     }
 
@@ -425,7 +450,12 @@ class ThemeCore extends ObjectModel
             return false;
         }
 
-        return Db::getInstance()->executeS('SELECT * FROM '._DB_PREFIX_.'theme_meta WHERE id_theme = '.(int) $this->id);
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('*')
+                ->from('theme_meta')
+                ->where('`id_theme` = '.(int) $this->id)
+        );
     }
 
     /**
@@ -453,7 +483,7 @@ class ThemeCore extends ObjectModel
     public function toggleResponsive()
     {
         // Object must have a variable called 'responsive'
-        if (!array_key_exists('responsive', $this)) {
+        if (!method_exists($this, 'responsive')) {
             throw new PrestaShopException('property "responsive" is missing in object '.get_class($this));
         }
 
@@ -476,7 +506,7 @@ class ThemeCore extends ObjectModel
      */
     public function toggleDefaultLeftColumn()
     {
-        if (!array_key_exists('default_left_column', $this)) {
+        if (!method_exists($this, 'default_left_column')) {
             throw new PrestaShopException('property "default_left_column" is missing in object '.get_class($this));
         }
 
@@ -496,7 +526,7 @@ class ThemeCore extends ObjectModel
      */
     public function toggleDefaultRightColumn()
     {
-        if (!array_key_exists('default_right_column', $this)) {
+        if (!method_exists($this, 'default_right_column')) {
             throw new PrestaShopException('property "default_right_column" is missing in object '.get_class($this));
         }
 
