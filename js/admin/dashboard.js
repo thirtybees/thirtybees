@@ -1,4 +1,8 @@
-/*
+/**
+ * 2007-2016 PrestaShop
+ *
+ * Thirty Bees is an extension to the PrestaShop e-commerce software developed by PrestaShop SA
+ * Copyright (C) 2017 Thirty Bees
  *
  * NOTICE OF LICENSE
  *
@@ -8,25 +12,26 @@
  * http://opensource.org/licenses/osl-3.0.php
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
- * to license@prestashop.com so we can send you a copy immediately.
+ * to license@thirtybees.com so we can send you a copy immediately.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to http://www.prestashop.com for more information.
+ * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author PrestaShop SA <contact@prestashop.com>
- *  @copyright  2007-2016 PrestaShop SA
- *  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
- *  International Registered Trademark & Property of PrestaShop SA
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
 // These variables are defined in the dashboard view.tpl
 /* global window, jQuery, $, jAlert, dashboard_ajax_url, adminstats_ajax_url, no_results_translation, dashboard_use_push, read_more */
 
 function refreshDashboard(moduleName, usePush, extra) {
-  var self = this;
   var moduleList = [];
   this.getWidget = function (idModule) {
     $.ajax({
@@ -44,8 +49,8 @@ function refreshDashboard(moduleName, usePush, extra) {
       global: false,
       dataType: 'json',
       success: function (widgets) {
-        $.each(widgets, function (index, widgetName) {
-          $.each(widgets[widgetName], function (key, dataType) {
+        $.each(widgets, function (widgetName) {
+          $.each(widgets[widgetName], function (dataType) {
             window[dataType](widgetName, widgets[widgetName][dataType]);
           });
         });
@@ -56,7 +61,6 @@ function refreshDashboard(moduleName, usePush, extra) {
       contentType: 'application/json'
     });
   };
-
   if (moduleName === false) {
     $('.widget').each(function () {
       moduleList.push($(this).attr('id'));
@@ -72,8 +76,7 @@ function refreshDashboard(moduleName, usePush, extra) {
       });
     }
   }
-
-  $.each(moduleList, function (index, idModule) {
+  $.each(moduleList, function (idModule) {
     if (usePush && !$('#' + moduleList[idModule]).hasClass('allow_push')) {
       return;
     }
@@ -94,7 +97,8 @@ function setDashboardDateRange(action) {
         refreshDashboard(false, false);
         $('#datepickerFrom').val(jsonData.date_from);
         $('#datepickerTo').val(jsonData.date_to);
-      } else {
+      }
+      else {
         $('#datepickerFrom, #datepickerTo').parent('.input-group').addClass('has-error');
       }
     }
@@ -102,14 +106,18 @@ function setDashboardDateRange(action) {
 }
 
 function data_value(widgetName, data) {
-  $.each(data, function (index, idData) {
+  $.each(data, function (idData) {
     $('#' + idData + ' ').html(data[idData]);
     $('#' + idData + ', #' + widgetName).closest('section').removeClass('loading');
   });
 }
 
 function data_trends(widgetName, data) {
-  $.each(data, function (index, idData) {
+  if (!$.isArray(data)) {
+    return;
+  }
+
+  $.each(data, function (idData) {
     this.el = $('#' + idData);
     this.el.html(data[idData].value);
     if (data[idData].way === 'up') {
@@ -124,15 +132,19 @@ function data_trends(widgetName, data) {
 }
 
 function data_table(widgetName, data) {
-  $.each(data, function (index, idData) {
+  if (!$.isArray(data)) {
+    return;
+  }
+
+  $.each(data, function (idData) {
     // fill header
     var tr = '<tr>';
-    $.each(data[idData].header, function (key, header) {
+    $.each(data[idData].header, function (header) {
       var head = data[idData].header[header];
-      var th = '<th ' + (head.class ? ' class="' + head.class + '" ' : '') + ' ' + (head.id ? ' id="' + head.id + '" ' : '') + '>';
-      th += (head.wrapper_start ? ' ' + head.wrapper_start + ' ' : '');
+      var th = '<th ' + (head.class ? ' class="' + head.class + '" ' : '' ) + ' ' + (head.id ? ' id="' + head.id + '" ' : '' ) + '>';
+      th += (head.wrapper_start ? ' ' + head.wrapper_start + ' ' : '' );
       th += head.title;
-      th += (head.wrapper_stop ? ' ' + head.wrapper_stop + ' ' : '');
+      th += (head.wrapper_stop ? ' ' + head.wrapper_stop + ' ' : '' );
       th += '</th>';
       tr += th;
     });
@@ -140,45 +152,42 @@ function data_table(widgetName, data) {
     $('#' + idData + ' thead').html(tr);
 
     // fill body
-    var $idDataBody = $('#' + idData + ' tbody');
-    $idDataBody.html('');
+    $('#' + idData + ' tbody').html('');
 
     if (typeof data[idData].body === 'string') {
-      $idDataBody.html('<tr><td class="text-center" colspan="' + data[idData].header.length + '"><br/>' + data[idData].body + '</td></tr>');
+      $('#' + idData + ' tbody').html('<tr><td class="text-center" colspan="' + data[idData].header.length + '"><br/>' + data[idData].body + '</td></tr>');
     } else if (data[idData].body.length) {
-      $.each(data[idData].body, function (index2, idBodyContent) {
+      $.each(data[idData].body, function (idBodyContent) {
         tr = '<tr>';
-        $.each(data[idData].body[idBodyContent], function (i, bodyContent) {
+        $.each(data[idData].body[idBodyContent], function (bodyContent) {
           var body = data[idData].body[idBodyContent][bodyContent];
-          var td = '<td ' + (body.class ? ' class="' + body.class + '" ' : '' ) + ' ' + (body.id ? ' id="' + body.id + '" ' : '' ) + '>';
-          td += (body.wrapper_start ? ' ' + body.wrapper_start + ' ' : '' );
+          var td = '<td ' + (body.class ? ' class="' + body.class + '" ' : '') + ' ' + (body.id ? ' id="' + body.id + '" ' : '') + '>';
+          td += (body.wrapper_start ? ' ' + body.wrapper_start + ' ' : '');
           td += body.value;
-          td += (body.wrapper_stop ? ' ' + body.wrapper_stop + ' ' : '' );
+          td += (body.wrapper_stop ? ' ' + body.wrapper_stop + ' ' : '');
           td += '</td>';
           tr += td;
         });
-
         tr += '</tr>';
-        $idDataBody.append(tr);
+        $('#' + idData + ' tbody').append(tr);
       });
     } else {
-      $idDataBody.html('<tr><td class="text-center" colspan="' + data[idData].header.length + '">' + window.no_results_translation + '</td></tr>');
+      $('#' + idData + ' tbody').html('<tr><td class="text-center" colspan="' + data[idData].header.length + '">' + window.no_results_translation + '</td></tr>');
     }
   });
 }
 
 function data_chart(widgetName, charts) {
-  $.each(charts, function (index, idChart) {
+  $.each(charts, function (idChart) {
     window[charts[idChart].chart_type](widgetName, charts[idChart]);
   });
 }
 
 function data_list_small(widgetName, data) {
-  $.each(data, function (index, idData) {
-    var $idData = $('#' + idData);
-    $idData.html('');
-    $.each(data[idData], function (index2, item) {
-      $idData.append('<li><span class="data_label">' + item + '</span><span class="data_value size_s">' + data[idData][item] + '</span></li>');
+  $.each(data, function (idData) {
+    $('#' + idData).html('');
+    $.each(data[idData], function (item) {
+      $('#' + idData).append('<li><span class="data_label">' + item + '</span><span class="data_value size_s">' + data[idData][item] + '</span></li>');
     });
     $('#' + idData + ', #' + widgetName).closest('section').removeClass('loading');
   });
@@ -194,7 +203,7 @@ function getBlogRss() {
     dataType: 'json',
     success: function (jsonData) {
       if (typeof jsonData !== 'undefined' && jsonData !== null && !jsonData.has_errors) {
-        $.each(jsonData.rss, function (index, article) {
+        $.each(jsonData.rss, function (article) {
           var articleHtml = '<article><h4><a href="' + jsonData.rss[article].link + '" class="_blank" onclick="return !window.open(this.href);">' + jsonData.rss[article].title + '</a></h4><span class="dash-news-date text-muted">' + jsonData.rss[article].date + '</span><p>' + jsonData.rss[article].short_desc + ' <a href="' + jsonData.rss[article].link + '">' + read_more + '</a><p></article><hr/>';
           $('.dash_news .dash_news_content').append(articleHtml);
         });
@@ -210,16 +219,15 @@ function toggleDashConfig(widget) {
   if ($('#' + widget + ' section.dash_config').hasClass('hide')) {
     $('#' + widget + ' section').not('.dash_config').slideUp(500, function () {
       $('#' + widget + ' section.dash_config').fadeIn(500).removeClass('hide');
-      if (typeof window[funcName] === 'function') {
+      if (typeof window[funcName] !== 'undefined') {
         window[funcName]();
       }
     });
-  }
-  else {
+  } else {
     $('#' + widget + ' section.dash_config').slideUp(500, function () {
       $('#' + widget + ' section').not('.dash_config').slideDown(500).removeClass('hide');
       $('#' + widget + ' section.dash_config').addClass('hide');
-      if (typeof window[funcName] === 'function') {
+      if (typeof window[funcName] !== 'undefined') {
         window[funcName]();
       }
     });
@@ -259,7 +267,7 @@ function saveDashConfig(widgetName) {
     data: data,
     dataType: 'json',
     error: function (XMLHttpRequest, textStatus) {
-      jAlert('TECHNICAL ERROR: \n\nDetails:\nError thrown: ' + XMLHttpRequest + '\nText status: ' + textStatus);
+      jAlert('TECHNICAL ERROR: \n\nDetails:\nError thrown: ' + XMLHttpRequest + '\n Text status: ' + textStatus);
     },
     success: function (jsonData) {
       if (!jsonData.has_errors) {
@@ -270,11 +278,10 @@ function saveDashConfig(widgetName) {
         toggleDashConfig(widgetName);
       } else {
         window.errors_str = '<div class="alert alert-danger" id="' + widgetName + '_errors">';
-        $.each(jsonData.errors, function (index, error) {
+        $.each(jsonData.errors, function (error) {
           window.errors_str += jsonData.errors[error] + '<br/>';
           $('#' + error).closest('.form-group').addClass('has-error');
         });
-
         window.errors_str += '</div>';
         $('section#' + widgetName + '_config header').after(window.errors_str);
         window.errors_str += '</div>';
