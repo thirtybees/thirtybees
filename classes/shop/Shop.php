@@ -804,9 +804,6 @@ class ShopCore extends ObjectModel
 
         static::$shops = [];
 
-        $from = '';
-        $where = '';
-
         $employee = Context::getContext()->employee;
 
         $sql = (new DbQuery())
@@ -865,7 +862,6 @@ class ShopCore extends ObjectModel
         $cacheId = 'Shop::getCompleteListOfShopsID';
         if (!Cache::isStored($cacheId)) {
             $list = [];
-            $sql = 'SELECT id_shop FROM '._DB_PREFIX_.'shop';
             foreach (Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                 (new DbQuery())
                     ->select('`id_shop`')
