@@ -108,7 +108,8 @@ class ProductDownloadCore extends ObjectModel
     /**
      * Return the id_product_download from an id_product
      *
-     * @param int $idProduct Product the id
+     * @param int  $idProduct Product the id
+     * @param bool $active
      *
      * @return int Product the id for this virtual product
      *
@@ -123,13 +124,13 @@ class ProductDownloadCore extends ObjectModel
         if (array_key_exists((int) $idProduct, static::$_productIds)) {
             return static::$_productIds[$idProduct];
         }
-        static::$_productIds[$idProduct] = (int) Db::getInstance()->getValue(
-            '
-		SELECT `id_product_download`
-		FROM `'._DB_PREFIX_.'product_download`
-		WHERE `id_product` = '.(int) $idProduct.'
-		'.($active ? ' AND `active` = 1' : '').'
-		ORDER BY `id_product_download` DESC'
+        static::$_productIds[$idProduct] = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('`id_product_download`')
+                ->from('product_download')
+                ->where('`id_product` = '.(int) $idProduct)
+                ->where($active ? '`active` = 1' : '')
+                ->orderBy('`id_product_download` DESC')
         );
 
         return static::$_productIds[$idProduct];
@@ -162,10 +163,10 @@ class ProductDownloadCore extends ObjectModel
     public static function getIdFromFilename($filename)
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-            '
-		SELECT `id_product_download`
-		FROM `'._DB_PREFIX_.'product_download`
-		WHERE `filename` = \''.pSQL($filename).'\''
+            (new DbQuery())
+                ->select('`id_product_download`')
+                ->from('product_downloade')
+                ->where('`filename` = \''.pSQL($filename).'\'')
         );
     }
 
@@ -182,12 +183,11 @@ class ProductDownloadCore extends ObjectModel
     public static function getFilenameFromIdProduct($idProduct)
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-            '
-			SELECT `filename`
-			FROM `'._DB_PREFIX_.'product_download`
-			WHERE `id_product` = '.(int) $idProduct.'
-				AND `active` = 1
-		'
+            (new DbQuery())
+                ->select('`filename`')
+                ->from('product_download')
+                ->where('`id_product` = '.(int) $idProduct)
+                ->where('`active` = 1')
         );
     }
 
@@ -204,10 +204,10 @@ class ProductDownloadCore extends ObjectModel
     public static function getFilenameFromFilename($filename)
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-            '
-		SELECT `display_filename`
-		FROM `'._DB_PREFIX_.'product_download`
-		WHERE `filename` = \''.pSQL($filename).'\''
+            (new DbQuery())
+                ->select('`display_filename`')
+                ->from('product_download')
+                ->where('`filename` = \''.pSQL($filename).'\'')
         );
     }
 
@@ -337,9 +337,9 @@ class ProductDownloadCore extends ObjectModel
     /**
      * Return html link
      *
-     * @param string $class CSS selector
-     * @param bool   $admin specific to backend
-     * @param bool   $hash  hash code in table order detail
+     * @param bool|string $class CSS selector
+     * @param bool        $admin specific to backend
+     * @param bool|bool   $hash  hash code in table order detail
      *
      * @return string Html all the code for print a link to the file
      *
@@ -361,9 +361,8 @@ class ProductDownloadCore extends ObjectModel
     /**
      * Return html link
      *
-     * @param string $class CSS selector (optionnal)
-     * @param bool   $admin specific to backend (optionnal)
-     * @param string $hash  hash code in table order detail (optionnal)
+     * @param bool        $admin specific to backend (optional)
+     * @param bool|string $hash  hash code in table order detail (optional)
      *
      * @return string Html all the code for print a link to the file
      *
