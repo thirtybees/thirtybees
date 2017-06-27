@@ -64,6 +64,8 @@ class QuickAccessCore extends ObjectModel
     /**
      * Get all available quick_accesses
      *
+     * @param int $idLang
+     *
      * @return array QuickAccesses
      *
      * @since   1.0.0
@@ -72,11 +74,12 @@ class QuickAccessCore extends ObjectModel
     public static function getQuickAccesses($idLang)
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            '
-		SELECT *
-		FROM `'._DB_PREFIX_.'quick_access` qa
-		LEFT JOIN `'._DB_PREFIX_.'quick_access_lang` qal ON (qa.`id_quick_access` = qal.`id_quick_access` AND qal.`id_lang` = '.(int) $idLang.')
-		ORDER BY `name` ASC'
+            (new DbQuery())
+                ->select('*')
+                ->from(bqSQL(static::$definition['table']), 'qa')
+                ->leftJoin(bqSQL(static::$definition['table']).'_lang', 'qal', 'qa.`'.bqSQL(static::$definition['primary']).'` = qal.`'.bqSQL(static::$definition['primary']).'`')
+                ->orderBy('`name` ASC')
+                ->where('qal.`id_lang` = '.(int) $idLang)
         );
     }
 
