@@ -896,7 +896,7 @@ class ShopCore extends ObjectModel
      *
      * @param int $shopId
      *
-     * @return array
+     * @return false|array
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -904,7 +904,7 @@ class ShopCore extends ObjectModel
     public static function getShop($shopId)
     {
         Shop::cacheShops();
-        foreach (static::$shops as $group_id => $groupData) {
+        foreach (static::$shops as $idGroup => $groupData) {
             if (array_key_exists($shopId, $groupData['shops'])) {
                 return $groupData['shops'][$shopId];
             }
@@ -927,9 +927,9 @@ class ShopCore extends ObjectModel
     {
         Shop::cacheShops();
         foreach (static::$shops as $groupData) {
-            foreach ($groupData['shops'] as $shop_id => $shopData) {
+            foreach ($groupData['shops'] as $idShop => $shopData) {
                 if (Tools::strtolower($shopData['name']) == Tools::strtolower($name)) {
-                    return $shop_id;
+                    return $idShop;
                 }
             }
         }
@@ -954,7 +954,8 @@ class ShopCore extends ObjectModel
     /**
      * Retrieve group ID of a shop
      *
-     * @param int $shopId Shop ID
+     * @param int  $shopId Shop ID
+     * @param bool $asId
      *
      * @return int Group ID
      *
@@ -977,7 +978,7 @@ class ShopCore extends ObjectModel
      * If the shop group has the option $type activated, get all shops ID of this group, else get current shop ID
      *
      * @param int $shopId
-     * @param int $type Shop::SHARE_CUSTOMER | Shop::SHARE_ORDER
+     * @param int $type   Shop::SHARE_CUSTOMER | Shop::SHARE_ORDER
      *
      * @return array
      *
@@ -1037,11 +1038,11 @@ class ShopCore extends ObjectModel
      */
     public static function getShopById($id, $identifier, $table)
     {
-        return Db::getInstance()->executeS(
-            '
-			SELECT `id_shop`, `'.bqSQL($identifier).'`
-			FROM `'._DB_PREFIX_.bqSQL($table).'_shop`
-			WHERE `'.bqSQL($identifier).'` = '.(int) $id
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('`id_shop`, `'.bqSQL($identifier).'`')
+                ->from(bqSQL($table))
+                ->where('`'.bqSQL($identifier).'` = '.(int) $id)
         );
     }
 
@@ -1098,8 +1099,9 @@ class ShopCore extends ObjectModel
     /**
      * Get current ID of shop if context is CONTEXT_SHOP
      *
-     * @return int
+     * @param bool $nullValueWithoutMultishop
      *
+     * @return int
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1117,8 +1119,9 @@ class ShopCore extends ObjectModel
     /**
      * Get current ID of shop group if context is CONTEXT_SHOP or CONTEXT_GROUP
      *
-     * @return int
+     * @param bool $nullValueWithoutMultishop
      *
+     * @return int
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1137,7 +1140,9 @@ class ShopCore extends ObjectModel
     {
         static $contextShopGroup = null;
         if ($contextShopGroup === null) {
+            // @codingStandardsIgnoreStart
             $contextShopGroup = new ShopGroup((int) static::$context_id_shop_group);
+            // @codingStandardsIgnoreEnd
         }
 
         return $contextShopGroup;
@@ -1151,6 +1156,7 @@ class ShopCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @return string
      */
     public static function addSqlRestriction($share = false, $alias = null)
     {
@@ -1190,18 +1196,19 @@ class ShopCore extends ObjectModel
 
         $assoTable = Shop::getAssoTable($table);
         if ($assoTable === false || $assoTable['type'] != 'shop') {
-            return;
+            return '';
         }
         $sql = (($innerJoin) ? ' INNER' : ' LEFT').' JOIN '._DB_PREFIX_.$table.'_shop '.$tableAlias.'
 		ON ('.$tableAlias.'.id_'.$table.' = '.$alias.'.id_'.$table;
-        if ((int) static::$context_id_shop) {
-            $sql .= ' AND '.$tableAlias.'.id_shop = '.(int) static::$context_id_shop;
+        // @codingStandardsIgnoreStart
+        if ((int) static::$context_id_shop) {$sql .= ' AND '.$tableAlias.'.id_shop = '.(int) static::$context_id_shop;
         } elseif (Shop::checkIdShopDefault($table) && !$forceNotDefault) {
             $sql .= ' AND '.$tableAlias.'.id_shop = '.$alias.'.id_shop_default';
         } else {
             $sql .= ' AND '.$tableAlias.'.id_shop IN ('.implode(', ', Shop::getContextListShopID()).')';
         }
         $sql .= (($on) ? ' AND '.$on : '').')';
+        // @codingStandardsIgnoreEnd
 
         return $sql;
     }
@@ -1209,13 +1216,13 @@ class ShopCore extends ObjectModel
     /**
      * Add a restriction on id_shop for multishop lang table
      *
-     * @param string  $alias
-     * @param Context $context
+     * @param string $alias
+     * @param null   $idShop
      *
      * @return string
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @since    1.0.0
+     * @version  1.0.0 Initial version
      */
     public static function addSqlRestrictionOnLang($alias = null, $idShop = null)
     {
@@ -1263,7 +1270,7 @@ class ShopCore extends ObjectModel
     }
 
     /**
-     * @param      $oldId
+     * @param int  $oldId
      * @param bool $tablesImport
      * @param bool $deleted
      *
@@ -1375,10 +1382,10 @@ class ShopCore extends ObjectModel
     }
 
     /**
-     * @param int $id
+     * @param int  $id
+     * @param bool $onlyId
      *
      * @return array
-     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
