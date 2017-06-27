@@ -460,7 +460,7 @@ class CustomerCore extends ObjectModel
     }
 
     /**
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
@@ -468,7 +468,7 @@ class CustomerCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = true)
+    public function add($autoDate = true, $nullValues = true)
     {
         $this->id_shop = ($this->id_shop) ? $this->id_shop : Context::getContext()->shop->id;
         $this->id_shop_group = ($this->id_shop_group) ? $this->id_shop_group : Context::getContext()->shop->id_shop_group;
@@ -493,7 +493,7 @@ class CustomerCore extends ObjectModel
         if ($this->is_guest && !Configuration::get('PS_GUEST_CHECKOUT_ENABLED')) {
             return false;
         }
-        $success = parent::add($autodate, $nullValues);
+        $success = parent::add($autoDate, $nullValues);
         $this->updateGroup($this->groupBox);
 
         return $success;

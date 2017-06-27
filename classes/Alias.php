@@ -100,7 +100,7 @@ class AliasCore extends ObjectModel
     }
 
     /**
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
@@ -108,12 +108,12 @@ class AliasCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
         $this->alias = Tools::replaceAccentedChars($this->alias);
         $this->search = Tools::replaceAccentedChars($this->search);
 
-        if (parent::add($autodate, $nullValues)) {
+        if (parent::add($autoDate, $nullValues)) {
             // Set cache of feature detachable to true
             Configuration::updateGlobalValue('PS_ALIAS_FEATURE_ACTIVE', '1');
 

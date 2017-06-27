@@ -64,10 +64,10 @@ class PaymentCCCore extends OrderPayment
      * @deprecated 1.5.0.2
      * @see OrderPaymentCore
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
         Tools::displayAsDeprecated();
-        return parent::add($autodate, $nullValues);
+        return parent::add($autoDate, $nullValues);
     }
 
     /**

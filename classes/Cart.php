@@ -4259,7 +4259,7 @@ class CartCore extends ObjectModel
     }
 
     /**
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
@@ -4267,7 +4267,7 @@ class CartCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
         if (!$this->id_lang) {
             $this->id_lang = Configuration::get('PS_LANG_DEFAULT');
@@ -4276,7 +4276,7 @@ class CartCore extends ObjectModel
             $this->id_shop = Context::getContext()->shop->id;
         }
 
-        $return = parent::add($autodate, $nullValues);
+        $return = parent::add($autoDate, $nullValues);
         Hook::exec('actionCartSave');
 
         return $return;

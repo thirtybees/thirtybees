@@ -331,7 +331,7 @@ class OrderCore extends ObjectModel
     }
 
     /**
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
@@ -339,9 +339,9 @@ class OrderCore extends ObjectModel
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = true)
+    public function add($autoDate = true, $nullValues = true)
     {
-        if (parent::add($autodate, $nullValues)) {
+        if (parent::add($autoDate, $nullValues)) {
             return SpecificPrice::deleteByIdCart($this->id_cart);
         }
 

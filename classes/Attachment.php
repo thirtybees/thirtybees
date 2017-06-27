@@ -73,7 +73,7 @@ class AttachmentCore extends ObjectModel
     ];
 
     /**
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
@@ -81,11 +81,11 @@ class AttachmentCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
         $this->file_size = filesize(_PS_DOWNLOAD_DIR_.$this->file);
 
-        return parent::add($autodate, $nullValues);
+        return parent::add($autoDate, $nullValues);
     }
 
     /**

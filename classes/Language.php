@@ -668,7 +668,7 @@ class LanguageCore extends ObjectModel
     }
 
     /**
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      * @param bool $onlyAdd
      *
@@ -677,9 +677,9 @@ class LanguageCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false, $onlyAdd = false)
+    public function add($autoDate = true, $nullValues = false, $onlyAdd = false)
     {
-        if (!parent::add($autodate, $nullValues)) {
+        if (!parent::add($autoDate, $nullValues)) {
             return false;
         }
 

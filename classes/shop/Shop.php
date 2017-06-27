@@ -258,14 +258,14 @@ class ShopCore extends ObjectModel
     /**
      * Add a shop, and clear the cache
      *
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
-        $res = parent::add($autodate, $nullValues);
+        $res = parent::add($autoDate, $nullValues);
         // Set default language routes
         $langs = Language::getLanguages(false, $this->id, true);
         // @codingStandardsIgnoreStart

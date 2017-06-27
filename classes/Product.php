@@ -7392,7 +7392,7 @@ class ProductCore extends ObjectModel
     }
 
     /**
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
@@ -7400,9 +7400,9 @@ class ProductCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
-        if (!parent::add($autodate, $nullValues)) {
+        if (!parent::add($autoDate, $nullValues)) {
             return false;
         }
 

@@ -305,7 +305,7 @@ class ReferrerCore extends ObjectModel
     }
 
     /**
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
@@ -313,9 +313,9 @@ class ReferrerCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
-        if (!($result = parent::add($autodate, $nullValues))) {
+        if (!($result = parent::add($autoDate, $nullValues))) {
             return false;
         }
         Referrer::refreshCache([['id_referrer' => $this->id]]);

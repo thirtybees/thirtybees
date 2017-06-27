@@ -1131,7 +1131,7 @@ class HookCore extends ObjectModel
     }
 
     /**
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
@@ -1139,10 +1139,10 @@ class HookCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
         Cache::clean('hook_idsbyname');
 
-        return parent::add($autodate, $nullValues);
+        return parent::add($autoDate, $nullValues);
     }
 }

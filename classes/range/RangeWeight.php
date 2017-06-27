@@ -71,7 +71,7 @@ class RangeWeightCore extends ObjectModel
      *
      * @see classes/ObjectModelCore::add()
      *
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool Insertion result
@@ -79,9 +79,9 @@ class RangeWeightCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
-        if (!parent::add($autodate, $nullValues) || !Validate::isLoadedObject($this)) {
+        if (!parent::add($autoDate, $nullValues) || !Validate::isLoadedObject($this)) {
             return false;
         }
         if (defined('TB_INSTALLATION_IN_PROGRESS')) {

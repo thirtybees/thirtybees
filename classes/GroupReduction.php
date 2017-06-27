@@ -301,7 +301,7 @@ class GroupReductionCore extends ObjectModel
     }
 
     /**
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
@@ -309,9 +309,9 @@ class GroupReductionCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
-        return (parent::add($autodate, $nullValues) && $this->_setCache());
+        return (parent::add($autoDate, $nullValues) && $this->_setCache());
     }
 
     /**

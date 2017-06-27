@@ -217,11 +217,11 @@ class SupplyOrderDetailCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
         $this->calculatePrices();
 
-        parent::add($autodate, $nullValues);
+        parent::add($autoDate, $nullValues);
     }
 
     /**

@@ -411,7 +411,7 @@ class GroupCore extends ObjectModel
     }
 
     /**
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
@@ -419,10 +419,10 @@ class GroupCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
         Configuration::updateGlobalValue('PS_GROUP_FEATURE_ACTIVE', '1');
-        if (parent::add($autodate, $nullValues)) {
+        if (parent::add($autoDate, $nullValues)) {
             Category::setNewGroupForHome((int) $this->id);
             Carrier::assignGroupToAllCarriers((int) $this->id);
 

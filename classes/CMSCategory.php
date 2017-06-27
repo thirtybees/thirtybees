@@ -439,7 +439,7 @@ class CMSCategoryCore extends ObjectModel
     }
 
     /**
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
@@ -447,7 +447,7 @@ class CMSCategoryCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
         $this->position = CMSCategory::getLastPosition((int) $this->id_parent);
         $this->level_depth = $this->calcLevelDepth();
@@ -456,7 +456,7 @@ class CMSCategoryCore extends ObjectModel
                 $this->name[$k] = '0'.$value;
             }
         }
-        $ret = parent::add($autodate, $nullValues);
+        $ret = parent::add($autoDate, $nullValues);
         $this->cleanPositions($this->id_parent);
 
         return $ret;

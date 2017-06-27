@@ -1154,13 +1154,13 @@ class CartRuleCore extends ObjectModel
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
         if (!$this->reduction_currency) {
             $this->reduction_currency = (int) Configuration::get('PS_CURRENCY_DEFAULT');
         }
 
-        if (!parent::add($autodate, $nullValues)) {
+        if (!parent::add($autoDate, $nullValues)) {
             return false;
         }
 

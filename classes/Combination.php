@@ -250,7 +250,7 @@ class CombinationCore extends ObjectModel
     }
 
     /**
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
@@ -258,7 +258,7 @@ class CombinationCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
         if ($this->default_on) {
             $this->default_on = 1;
@@ -266,7 +266,7 @@ class CombinationCore extends ObjectModel
             $this->default_on = null;
         }
 
-        if (!parent::add($autodate, $nullValues)) {
+        if (!parent::add($autoDate, $nullValues)) {
             return false;
         }
 

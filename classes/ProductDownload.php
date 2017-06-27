@@ -246,7 +246,7 @@ class ProductDownloadCore extends ObjectModel
     }
 
     /**
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
@@ -254,9 +254,9 @@ class ProductDownloadCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
-        return (bool) parent::add($autodate, $nullValues);
+        return (bool) parent::add($autoDate, $nullValues);
     }
 
     /**

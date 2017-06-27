@@ -173,7 +173,7 @@ class ProfileCore extends ObjectModel
     }
 
     /**
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
@@ -181,9 +181,9 @@ class ProfileCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
-        if (parent::add($autodate, true)) {
+        if (parent::add($autoDate, true)) {
             $result = Db::getInstance()->execute('INSERT INTO '._DB_PREFIX_.'access (SELECT '.(int) $this->id.', id_tab, 0, 0, 0, 0 FROM '._DB_PREFIX_.'tab)');
             $result &= Db::getInstance()->execute(
                 '

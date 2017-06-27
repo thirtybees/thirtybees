@@ -174,7 +174,7 @@ class AttributeCore extends ObjectModel
     }
 
     /**
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
@@ -182,13 +182,13 @@ class AttributeCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
         if ($this->position <= 0) {
             $this->position = Attribute::getHigherPosition($this->id_attribute_group) + 1;
         }
 
-        $return = parent::add($autodate, $nullValues);
+        $return = parent::add($autoDate, $nullValues);
 
         if ($return) {
             Hook::exec('actionAttributeSave', ['id_attribute' => $this->id]);

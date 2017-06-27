@@ -221,7 +221,7 @@ class FeatureValueCore extends ObjectModel
     }
 
     /**
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
@@ -229,9 +229,9 @@ class FeatureValueCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
-        $return = parent::add($autodate, $nullValues);
+        $return = parent::add($autoDate, $nullValues);
         if ($return) {
             Hook::exec('actionFeatureValueSave', ['id_feature_value' => $this->id]);
         }

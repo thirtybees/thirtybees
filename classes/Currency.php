@@ -464,7 +464,7 @@ class CurrencyCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
         if ((float) $this->conversion_rate <= 0) {
             return false;
@@ -474,7 +474,7 @@ class CurrencyCore extends ObjectModel
             return false;
         }
 
-        parent::add($autodate, $nullValues);
+        parent::add($autoDate, $nullValues);
 
         CurrencyRateModule::scanMissingCurrencyRateModules($this->iso_code);
 

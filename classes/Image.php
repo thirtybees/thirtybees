@@ -372,7 +372,7 @@ class ImageCore extends ObjectModel
     }
 
     /**
-     * @param bool $autodate
+     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
@@ -380,7 +380,7 @@ class ImageCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function add($autodate = true, $nullValues = false)
+    public function add($autoDate = true, $nullValues = false)
     {
         if ($this->position <= 0) {
             $this->position = Image::getHighestPosition($this->id_product) + 1;
@@ -392,7 +392,7 @@ class ImageCore extends ObjectModel
             $this->cover = null;
         }
 
-        return parent::add($autodate, $nullValues);
+        return parent::add($autoDate, $nullValues);
     }
 
     /**
