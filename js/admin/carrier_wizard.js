@@ -27,54 +27,79 @@
  *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
+/* global window, getE, toggle, jAlert */
 
-/* global window, jQuery, $, jAlert */
+$(document).ready(function () {
+  bind_inputs();
+  initCarrierWizard();
 
-function resizeWizard() {
-  // @TODO: should be:
-  //resizeInterval = setInterval(function (){$("#carrier_wizard").smartWizard('fixHeight'); clearInterval(resizeInterval)}, 100);
-
-  // Because helpers/form/form.tpl adds inline scripts (ouch, this gives us
-  // 4 times the same script node) and jQuery gives script nodes a height
-  // (see https://bugs.jquery.com/ticket/10159), the above doesn't work
-  // properly. Instead:
-  $('#carrier_wizard').find('.step_container:visible').each(function () {
-    var container = $(this);
-    var height = 0;
-    container.children().not('script, style').each(function () {
-      height += $(this).outerHeight(true);
-    });
-    container.height(height + 5);
-    container.parent().height(height + 20);
+  $('#attachement_fileselectbutton').click(function () {
+    $('#carrier_logo_input').trigger('click');
   });
-}
 
-function displayError(errors, stepNumber) {
-  var $wizardError = $('.wizard_error');
-  $wizardError.remove();
-  var strError = '<div class="error wizard_error" style="display:none"><ul>';
-  $.each(errors, function (index, error) {
-    $('input[name="' + error + '"]').closest('div.input-group').addClass('has-error');
-    strError += '<li>' + errors[error] + '</li>';
+  $('#attachement_filename').click(function () {
+    $('#carrier_logo_input').trigger('click');
   });
-  $('#step-' + stepNumber).prepend(strError + '</ul></div>');
-  $wizardError.fadeIn('fast');
-  resizeWizard();
-}
 
-function hideFees() {
-  $('#zone_ranges .range_inf td input, #zone_ranges .range_sup td input, #zone_ranges .fees_all td input, #zone_ranges .fees td input').attr('disabled', 'disabled');
-}
+  $('#carrier_logo_input').change(function () {
+    var name = '';
+    if (typeof $(this)[0].files !== 'undefined') {
+      var files = $(this)[0].files;
 
-function showFees() {
-  $('#zone_ranges .range_inf td input, #zone_ranges .range_sup td input, #zone_ranges .fees_all td input').removeAttr('disabled');
-  $('#zone_ranges .fees td input:checkbox').each(function () {
-    var checkbox = $(this);
-    checkbox.removeAttr('disabled');
-    if (checkbox.prop('checked')) {
-      checkbox.closest('tr').find('input:text').removeAttr('disabled');
+      $.each(files, function (index, value) {
+        name += value.name + ', ';
+      });
+
+      $('#attachement_filename').val(name.slice(0, -2));
+    } else {
+      // Internet Explorer 9 Compatibility
+      name = $(this).val().split(/[\\/]/);
+      $('#attachement_filename').val(name[name.length - 1]);
     }
   });
+
+  $('#carrier_logo_remove').click(function () {
+    $('#attachement_filename').val('');
+  });
+
+  var $isFreeOn = $('#is_free_on');
+  var $shippingHandlingOn = $('#shipping_handling_on');
+  var $shippingHandlingOff = $('#shipping_handling_off');
+  if ($isFreeOn.prop('checked') === true) {
+    $shippingHandlingOff.prop('checked', true).prop('disabled', true);
+    $shippingHandlingOn.prop('disabled', true).prop('checked', false);
+    hideFees();
+  }
+
+  $isFreeOn.click(function () {
+    $shippingHandlingOff.prop('checked', true).prop('disabled', true);
+    $shippingHandlingOn.prop('disabled', true).prop('checked', false);
+    hideFees();
+  });
+
+  $('#is_free_off').click(function () {
+    if ($shippingHandlingOff.prop('disabled') === true) {
+      $shippingHandlingOff.prop('disabled', false).prop('checked', false);
+      $shippingHandlingOn.prop('disabled', false).prop('checked', true);
+    }
+    showFees();
+  });
+});
+
+function initCarrierWizard() {
+  $('#carrier_wizard').smartWizard({
+    labelNext: window.labelNext,
+    labelPrevious: window.labelPrevious,
+    labelFinish: window.labelFinish,
+    fixHeight: 1,
+    onShowStep: onShowStepCallback,
+    onLeaveStep: onLeaveStepCallback,
+    onFinish: onFinishCallback,
+    transitionEffect: 'slideleft',
+    enableAllSteps: window.enableAllSteps,
+    keyNavigation: false
+  });
+  displayRangeType();
 }
 
 function displayRangeType() {
@@ -93,110 +118,6 @@ function displayRangeType() {
 
 function onShowStepCallback() {
   resizeWizard();
-}
-
-
-function validateStep(step) {
-  var ok = true;
-  $('.wizard_error').remove();
-
-  // The ranges step is the only one we validate here.
-  var rangesZone;
-  $('#step-' + step + ':visible #zone_ranges').each(function () {
-    rangesZone = $(this);
-  });
-
-  if (typeof rangesZone !== 'undefined' && !$('#is_free_on').prop('checked')) {
-    // Test individual values.
-    rangesZone.find('.range_inf, .range_sup, .fees').find('input:text:enabled').each(function () {
-      checkFieldIsNumeric($(this));
-    });
-    rangesZone.find('.has-error').each(function () {
-      ok = false;
-    });
-    if (!ok) {
-      displayError([window.invalid_value], step);
-      return false;
-    }
-    // Test for at least one activated zone.
-    ok = false;
-
-    rangesZone.find('.fees input:checkbox:checked').each(function () {
-      ok = true;
-    });
-    if (!ok) {
-      displayError([window.select_at_least_one_zone], step);
-      return false;
-    }
-    var nbrRanges = 0;
-
-    rangesZone.find('.range_inf .input-group').each(function () {
-      nbrRanges += 1;
-    });
-    // Test against negative and zero-sized ranges.
-
-    var rangeInf;
-    var rangeSup;
-    for (var i = 0; i < nbrRanges; i += 1) {
-      rangeInf = rangesZone.find('.range_inf .input-group:eq(' + i + ') input:text');
-      rangeSup = rangesZone.find('.range_sup .input-group:eq(' + i + ') input:text');
-      if (parseFloat(rangeInf.val()) < 0 ||
-        parseFloat(rangeInf.val()) >= parseFloat(rangeSup.val())) {
-        ok = false;
-        rangeInf.closest('.input-group').addClass('has-error');
-        rangeSup.closest('.input-group').addClass('has-error');
-      }
-    }
-    if (!ok) {
-      displayError([window.negative_range], step);
-      return false;
-    }
-    // Test for a continuous series of ranges.
-
-    for (i = 0; nbrRanges > 1 && i < nbrRanges - 1; i += 1) {
-      rangeSup = rangesZone.find('.range_sup .input-group:eq(' + i + ') input:text');
-      rangeInf = rangesZone.find('.range_inf .input-group:eq(' + (i + 1) + ') input:text');
-      if (parseFloat(rangeSup.val()) !== parseFloat(rangeInf.val())) {
-        ok = false;
-        rangeSup.closest('.input-group').addClass('has-error');
-        rangeInf.closest('.input-group').addClass('has-error');
-      }
-    }
-    if (!ok) {
-      displayError([window.overlapping_range], step);
-      return false;
-    }
-  }
-  // All steps get validated by a POST request.
-  ok = ajaxRequest(step,
-    $('#carrier_wizard #step-' + step + ' form').serialize() +
-    '&step_number=' + step + '&action=validate_step&ajax=1');
-
-  return ok;
-
-}
-
-function ajaxRequest(step, data) {
-  var success = false;
-
-  $.ajax({
-    type: 'POST',
-    url: window.validate_url,
-    dataType: 'json',
-    data: data,
-    success: function (datas) {
-      if (datas.has_error) {
-        displayError(datas.errors, step);
-      } else {
-        success = true;
-      }
-    },
-    error: function (XMLHttpRequest, textStatus) {
-      jAlert('TECHNICAL ERROR: \n\nDetails:\nError thrown: ' + XMLHttpRequest + '\nText status: ' + textStatus);
-    }
-  });
-
-  return success;
 }
 
 function onFinishCallback(obj, context) {
@@ -220,22 +141,6 @@ function onLeaveStepCallback(obj, context) {
   // Return false to stay on step and true to continue navigation.
 
   return validateStep(context.fromStep);
-}
-
-function initCarrierWizard() {
-  $('#carrier_wizard').smartWizard({
-    labelNext: window.labelNext,
-    labelPrevious: window.labelPrevious,
-    labelFinish: window.labelFinish,
-    fixHeight: 1,
-    onShowStep: onShowStepCallback,
-    onLeaveStep: onLeaveStepCallback,
-    onFinish: onFinishCallback,
-    transitionEffect: 'slideleft',
-    enableAllSteps: window.enableAllSteps,
-    keyNavigation: false
-  });
-  displayRangeType();
 }
 
 function displaySummary() {
@@ -334,6 +239,140 @@ function displaySummary() {
   });
 }
 
+function validateStep(step) {
+  var ok = true;
+
+  $('.wizard_error').remove();
+
+  // The ranges step is the only one we validate here.
+  var rangesZone;
+  $('#step-' + step + ':visible #zone_ranges').each(function () {
+    rangesZone = $(this);
+  });
+
+  if (rangesZone !== undefined && !$('#is_free_on').prop('checked')) {
+    // Test individual values.
+    rangesZone.find('.range_inf, .range_sup, .fees').find('input:text:enabled').each(function () {
+      checkFieldIsNumeric($(this));
+    });
+    rangesZone.find('.has-error').each(function () {
+      ok = false;
+    });
+    if (!ok) {
+      displayError([invalid_value], step);
+      return false;
+    }
+
+    // Test for at least one activated zone.
+    ok = false;
+    rangesZone.find('.fees input:checkbox:checked').each(function () {
+      ok = true;
+    });
+    if (!ok) {
+      displayError([select_at_least_one_zone], step);
+      return false;
+    }
+
+    var nbrRanges = 0;
+    rangesZone.find('.range_inf .input-group').each(function () {
+      nbrRanges++;
+    });
+
+    // Test against negative and zero-sized ranges.
+    for (var i = 0; i < nbrRanges; i++) {
+      var rangeInf = rangesZone.find('.range_inf .input-group:eq(' + i + ') input:text');
+      var rangeSup = rangesZone.find('.range_sup .input-group:eq(' + i + ') input:text');
+      if (parseFloat(rangeInf.val()) < 0 ||
+        parseFloat(rangeInf.val()) >= parseFloat(rangeSup.val())) {
+        ok = false;
+        rangeInf.closest('.input-group').addClass('has-error');
+        rangeSup.closest('.input-group').addClass('has-error');
+      }
+    }
+    if (!ok) {
+      displayError([negative_range], step);
+      return false;
+    }
+
+    // Test for a continuous series of ranges.
+    for (var j = 0; nbrRanges > 1 && j < nbrRanges - 1; j += 1) {
+      rangeSup = rangesZone.find('.range_sup .input-group:eq(' + j + ') input:text');
+      rangeInf = rangesZone.find('.range_inf .input-group:eq(' + (j + 1) + ') input:text');
+      if (parseFloat(rangeSup.val()) !== parseFloat(rangeInf.val())) {
+        ok = false;
+        rangeSup.closest('.input-group').addClass('has-error');
+        rangeInf.closest('.input-group').addClass('has-error');
+      }
+    }
+    if (!ok) {
+      displayError([overlapping_range], step);
+      return false;
+    }
+  }
+
+  // All steps get validated by a POST request.
+  ok = ajaxRequest(step,
+    $('#carrier_wizard #step-' + step + ' form').serialize() +
+    '&step_number=' + step + '&action=validate_step&ajax=1');
+
+  return ok;
+}
+
+function ajaxRequest(step, data) {
+  var success = false;
+
+  $.ajax({
+    type: "POST",
+    url: validate_url,
+    async: false,
+    dataType: 'json',
+    data: data,
+    success: function (datas) {
+      if (datas.has_error) {
+        displayError(datas.errors, step);
+      } else {
+        success = true;
+      }
+    },
+    error: function (XMLHttpRequest, textStatus, errorThrown) {
+      jAlert("TECHNICAL ERROR: \n\nDetails:\nError thrown: " + XMLHttpRequest + "\nText status: " + textStatus);
+    }
+  });
+
+  return success;
+}
+
+function displayError(errors, step_number) {
+  $('.wizard_error').remove();
+  str_error = '<div class="error wizard_error" style="display:none"><ul>';
+  for (var error in errors) {
+    $('input[name="' + error + '"]').closest('div.input-group').addClass('has-error');
+    str_error += '<li>' + errors[error] + '</li>';
+  }
+  $('#step-' + step_number).prepend(str_error + '</ul></div>');
+  $('.wizard_error').fadeIn('fast');
+  resizeWizard();
+}
+
+function resizeWizard() {
+  // @TODO: should be:
+  //resizeInterval = setInterval(function (){$("#carrier_wizard").smartWizard('fixHeight'); clearInterval(resizeInterval)}, 100);
+
+  // Because helpers/form/form.tpl adds inline scripts (ouch, this gives us
+  // 4 times the same script node) and jQuery gives script nodes a height
+  // (see https://bugs.jquery.com/ticket/10159), the above doesn't work
+  // properly. Instead:
+  $('#carrier_wizard').find('.step_container:visible').each(function () {
+    var container = $(this);
+    var height = 0;
+    container.children().not('script, style').each(function () {
+      height += $(this).outerHeight(true);
+    });
+    container.height(height + 5);
+    container.parent().height(height + 20);
+  });
+}
+
 function bind_inputs() {
   $('#zone_ranges .fees td input:checkbox').off('change').on('change', function () {
     var priceField = $(this).closest('tr').find('input:text');
@@ -384,6 +423,21 @@ function bind_inputs() {
 
   $('#zones_table td input[type=text]').off('change').on('change', function () {
     checkFieldIsNumeric($(this));
+  });
+}
+
+function hideFees() {
+  $('#zone_ranges .range_inf td input,#zone_ranges .range_sup td input,#zone_ranges .fees_all td input,#zone_ranges .fees td input').attr('disabled', 'disabled');
+}
+
+function showFees() {
+  $('#zone_ranges .range_inf td input,#zone_ranges .range_sup td input,#zone_ranges .fees_all td input').removeAttr('disabled');
+  $('#zone_ranges .fees td input:checkbox').each(function () {
+    var checkbox = $(this);
+    checkbox.removeAttr('disabled');
+    if (checkbox.prop('checked')) {
+      checkbox.closest('tr').find('input:text').removeAttr('disabled');
+    }
   });
 }
 
@@ -464,60 +518,3 @@ function checkAllZones(elem) {
     $('#zone_ranges .fees div.input-group input:text').attr('disabled', 'disabled');
   }
 }
-
-$(document).ready(function () {
-  bind_inputs();
-  initCarrierWizard();
-
-  $('#attachement_fileselectbutton').click(function () {
-    $('#carrier_logo_input').trigger('click');
-  });
-
-  $('#attachement_filename').click(function () {
-    $('#carrier_logo_input').trigger('click');
-  });
-
-  $('#carrier_logo_input').change(function () {
-    var name = '';
-    if (typeof $(this)[0].files !== 'undefined') {
-      var files = $(this)[0].files;
-
-      $.each(files, function (index, value) {
-        name += value.name + ', ';
-      });
-
-      $('#attachement_filename').val(name.slice(0, -2));
-    } else {
-      // Internet Explorer 9 Compatibility
-      name = $(this).val().split(/[\\/]/);
-      $('#attachement_filename').val(name[name.length - 1]);
-    }
-  });
-
-  $('#carrier_logo_remove').click(function () {
-    $('#attachement_filename').val('');
-  });
-
-  var $isFreeOn = $('#is_free_on');
-  var $shippingHandlingOn = $('#shipping_handling_on');
-  var $shippingHandlingOff = $('#shipping_handling_off');
-  if ($isFreeOn.prop('checked') === true) {
-    $shippingHandlingOff.prop('checked', true).prop('disabled', true);
-    $shippingHandlingOn.prop('disabled', true).prop('checked', false);
-    hideFees();
-  }
-
-  $isFreeOn.click(function () {
-    $shippingHandlingOff.prop('checked', true).prop('disabled', true);
-    $shippingHandlingOn.prop('disabled', true).prop('checked', false);
-    hideFees();
-  });
-
-  $('#is_free_off').click(function () {
-    if ($shippingHandlingOff.prop('disabled') === true) {
-      $shippingHandlingOff.prop('disabled', false).prop('checked', false);
-      $shippingHandlingOn.prop('disabled', false).prop('checked', true);
-    }
-    showFees();
-  });
-});
