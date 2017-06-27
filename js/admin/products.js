@@ -58,7 +58,7 @@ function handleSaveButtonsForPack() {
  */
 function ProductTabsManager() {
   var self = this;
-  this.product_tabs = [];
+  this.product_tabs = {};
   this.tabs_to_preload = [];
   // this.current_request;
   this.stack_done = [];
@@ -80,11 +80,9 @@ function ProductTabsManager() {
    * @return {undefined}
    */
   this.init = function () {
-    var self = this;
-
-    $.each(this.product_tabs, function (index, tabName) {
-      if (typeof self.product_tabs[tabName].onReady !== 'undefined' && self.product_tabs[tabName] !== self.product_tabs.Pack) {
-        self.onLoad(tabName, self.product_tabs[tabName].onReady);
+    $.each(self.product_tabs, function (tabName, tab) {
+      if (typeof tab.onReady === 'function' && tab !== self.product_tabs.Pack) {
+        self.onLoad(tabName, tab.onReady);
       }
     });
 
@@ -300,7 +298,7 @@ function loadPack() {
 
 // array of product tab objects containing methods and dom bindings
 // The ProductTabsManager instance will make sure the onReady() methods of each tabs are executed once the tab has loaded
-window.product_tabs = [];
+window.product_tabs = {};
 
 window.product_tabs.Customization = new function () {
   this.onReady = function () {
@@ -1555,7 +1553,7 @@ window.product_tabs.Quantities = new function () {
       }
     });
 
-    $('.advanced_stock_management').click(function (e) {
+    $('.advanced_stock_management').click(function () {
       var val = 0;
       if ($(this).prop('checked')) {
         val = 1;
