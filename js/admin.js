@@ -1005,7 +1005,6 @@ function display_action_details(row_id, controller, token, action, params) {
       dataType: 'json',
       cache: false,
       context: current_element,
-      async: false,
       success: function (data) {
         if (typeof(data.use_parent_structure) == 'undefined' || (data.use_parent_structure == true)) {
           if (current_element.parent().parent().hasClass('alt_row')) {
