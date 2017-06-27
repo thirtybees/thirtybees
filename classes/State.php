@@ -83,11 +83,11 @@ class StateCore extends ObjectModel
     public static function getStates($idLang = false, $active = false)
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            '
-		SELECT `id_state`, `id_country`, `id_zone`, `iso_code`, `name`, `active`
-		FROM `'._DB_PREFIX_.'state`
-		'.($active ? 'WHERE active = 1' : '').'
-		ORDER BY `name` ASC'
+            (new DbQuery())
+                ->select('`id_state`, `id_country`, `id_zone`, `iso_code`, `name`, `active`')
+                ->from('state')
+                ->where($active ? 'WHERE active = 1' : '')
+                ->orderBy('`name` ASC')
         );
     }
 
@@ -109,10 +109,10 @@ class StateCore extends ObjectModel
         $cacheId = 'State::getNameById_'.(int) $idState;
         if (!Cache::isStored($cacheId)) {
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-                '
-				SELECT `name`
-				FROM `'._DB_PREFIX_.'state`
-				WHERE `id_state` = '.(int) $idState
+                (new DbQuery())
+                    ->select('`name`')
+                    ->from('state')
+                    ->where('`id_state` = '.(int) $idState)
             );
             Cache::store($cacheId, $result);
 
@@ -125,9 +125,9 @@ class StateCore extends ObjectModel
     /**
      * Get a state id with its name
      *
-     * @param string $id_state Country ID
+     * @param string $state State name
      *
-     * @return int state id
+     * @return int State ID
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -140,11 +140,10 @@ class StateCore extends ObjectModel
         $cacheId = 'State::getIdByName_'.pSQL($state);
         if (!Cache::isStored($cacheId)) {
             $result = (int) Db::getInstance()->getValue(
-                '
-				SELECT `id_state`
-				FROM `'._DB_PREFIX_.'state`
-				WHERE `name` = \''.pSQL($state).'\'
-			'
+                (new DbQuery())
+                    ->select('`id_state`')
+                    ->from('state')
+                    ->where('`name` = \''.pSQL($state).'\'')
             );
             Cache::store($cacheId, $result);
 
@@ -157,7 +156,8 @@ class StateCore extends ObjectModel
     /**
      * Get a state id with its iso code
      *
-     * @param string $isoCode Iso code
+     * @param string     $isoCode   Iso code
+     * @param int|null   $idCountry
      *
      * @return int state id
      *
@@ -166,12 +166,12 @@ class StateCore extends ObjectModel
      */
     public static function getIdByIso($isoCode, $idCountry = null)
     {
-        return Db::getInstance()->getValue(
-            '
-		SELECT `id_state`
-		FROM `'._DB_PREFIX_.'state`
-		WHERE `iso_code` = \''.pSQL($isoCode).'\'
-		'.($idCountry ? 'AND `id_country` = '.(int) $idCountry : '')
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('`id_state`')
+                ->from('state')
+                ->where('`iso_code` = \''.pSQL($isoCode).'\'')
+                ->where($idCountry ? '`id_country` = '.(int) $idCountry : '')
         );
     }
 
@@ -189,11 +189,11 @@ class StateCore extends ObjectModel
             die(Tools::displayError());
         }
 
-        return Db::getInstance()->executeS(
-            '
-			SELECT *
-			FROM `'._DB_PREFIX_.'state` s
-			WHERE s.`id_country` = '.(int) $idCountry
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('*')
+                ->from('state', 's')
+                ->where('s.`id_country` = '.(int) $idCountry)
         );
     }
 
@@ -225,10 +225,10 @@ class StateCore extends ObjectModel
         }
 
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-            '
-			SELECT `id_zone`
-			FROM `'._DB_PREFIX_.'state`
-			WHERE `id_state` = '.(int) $idState
+            (new DbQuery())
+                ->select('`id_zone`')
+                ->from('state')
+                ->where('`id_state` = '.(int) $idState)
         );
     }
 
@@ -284,18 +284,18 @@ class StateCore extends ObjectModel
     public function countUsed()
     {
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-            '
-			SELECT COUNT(*)
-			FROM `'._DB_PREFIX_.'address`
-			WHERE `'.$this->def['primary'].'` = '.(int) $this->id
+            (new DbQuery())
+                ->select('COUNT(*)')
+                ->from('address')
+                ->where('`'.bqSQL(static::$definition['primary']).'` = '.(int) $this->id)
         );
 
         return $result;
     }
 
     /**
-     * @param int $idsStates
-     * @param int $idZone
+     * @param array $idsStates
+     * @param int   $idZone
      *
      * @return bool
      *
@@ -307,10 +307,12 @@ class StateCore extends ObjectModel
         // cast every array values to int (security)
         $idsStates = array_map('intval', $idsStates);
 
-        return Db::getInstance()->execute(
-            '
-		UPDATE `'._DB_PREFIX_.'state` SET `id_zone` = '.(int) $idZone.' WHERE `id_state` IN ('.implode(',', $idsStates).')
-		'
+        return Db::getInstance()->update(
+            'state',
+            [
+                'id_zone' => (int) $idZone,
+            ],
+            'id_state` IN ('.implode(',', $idsStates).')'
         );
     }
 }
