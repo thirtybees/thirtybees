@@ -346,9 +346,10 @@ class SpecificPriceRuleCore extends ObjectModel
     public function deleteConditions()
     {
         $idsConditionGroup = Db::getInstance()->executeS(
-            'SELECT id_specific_price_rule_condition_group
-																		 FROM '._DB_PREFIX_.'specific_price_rule_condition_group
-																		 WHERE id_specific_price_rule='.(int) $this->id
+            (new DbQuery())
+                ->select('`id_specific_price_rule_condition_group`')
+                ->from('specific_price_rule_condition_group')
+                ->where('`id_specific_price_rule` = '.(int) $this->id)
         );
         if ($idsConditionGroup) {
             foreach ($idsConditionGroup as $row) {
