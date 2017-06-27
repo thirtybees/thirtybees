@@ -83,7 +83,7 @@ class ProductSaleCore
      * @param string|null $orderBy
      * @param string|null $orderWay
      *
-     * @return array from Product::getProductProperties
+     * @return false| array from Product::getProductProperties
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -117,51 +117,35 @@ class ProductSaleCore
 
         // no group by needed : there's only one attribute with default_on=1 for a given id_product + shop
         // same for image with cover=1
-        $sql = 'SELECT p.*, product_shop.*, stock.out_of_stock, IFNULL(stock.quantity, 0) as quantity,
-					'.(Combination::isFeatureActive() ? 'product_attribute_shop.minimal_quantity AS product_attribute_minimal_quantity,IFNULL(product_attribute_shop.id_product_attribute,0) id_product_attribute,' : '').'
-					pl.`description`, pl.`description_short`, pl.`link_rewrite`, pl.`meta_description`,
-					pl.`meta_keywords`, pl.`meta_title`, pl.`name`, pl.`available_now`, pl.`available_later`,
-					m.`name` AS manufacturer_name, p.`id_manufacturer` as id_manufacturer,
-					image_shop.`id_image` id_image, il.`legend`,
-					ps.`quantity` AS sales, t.`rate`, pl.`meta_keywords`, pl.`meta_title`, pl.`meta_description`,
-					DATEDIFF(p.`date_add`, DATE_SUB("'.date('Y-m-d').' 00:00:00",
-					INTERVAL '.(int) $interval.' DAY)) > 0 AS new'
-            .' FROM `'._DB_PREFIX_.'product_sale` ps
-				LEFT JOIN `'._DB_PREFIX_.'product` p ON ps.`id_product` = p.`id_product`
-				'.Shop::addSqlAssociation('product', 'p', false);
-        if (Combination::isFeatureActive()) {
-            $sql .= ' LEFT JOIN `'._DB_PREFIX_.'product_attribute_shop` product_attribute_shop
-							ON (p.`id_product` = product_attribute_shop.`id_product` AND product_attribute_shop.`default_on` = 1 AND product_attribute_shop.id_shop='.(int) $context->shop->id.')';
-        }
-
-        $sql .= ' LEFT JOIN `'._DB_PREFIX_.'product_lang` pl
-					ON p.`id_product` = pl.`id_product`
-					AND pl.`id_lang` = '.(int) $idLang.Shop::addSqlRestrictionOnLang('pl').'
-				LEFT JOIN `'._DB_PREFIX_.'image_shop` image_shop
-					ON (image_shop.`id_product` = p.`id_product` AND image_shop.cover=1 AND image_shop.id_shop='.(int) $context->shop->id.')
-				LEFT JOIN `'._DB_PREFIX_.'image_lang` il ON (image_shop.`id_image` = il.`id_image` AND il.`id_lang` = '.(int) $idLang.')
-				LEFT JOIN `'._DB_PREFIX_.'manufacturer` m ON (m.`id_manufacturer` = p.`id_manufacturer`)
-				LEFT JOIN `'._DB_PREFIX_.'tax_rule` tr ON (product_shop.`id_tax_rules_group` = tr.`id_tax_rules_group`)
-					AND tr.`id_country` = '.(int) $context->country->id.'
-					AND tr.`id_state` = 0
-				LEFT JOIN `'._DB_PREFIX_.'tax` t ON (t.`id_tax` = tr.`id_tax`)
-				'.Product::sqlStock('p', 0);
-
-        $sql .= '
-				WHERE product_shop.`active` = 1
-					AND p.`visibility` != \'none\'';
-
-        if (Group::isFeatureActive()) {
-            $groups = FrontController::getCurrentCustomerGroups();
-            $sql .= ' AND EXISTS(SELECT 1 FROM `'._DB_PREFIX_.'category_product` cp
-					JOIN `'._DB_PREFIX_.'category_group` cg ON (cp.id_category = cg.id_category AND cg.`id_group` '.(count($groups) ? 'IN ('.implode(',', $groups).')' : '= 1').')
-					WHERE cp.`id_product` = p.`id_product`)';
-        }
+        $sql = (new DbQuery())
+            ->select('p.*, product_shop.*, stock.`out_of_stock`, IFNULL(stock.quantity, 0) as quantity')
+            ->select(Combination::isFeatureActive() ? 'product_attribute_shop.minimal_quantity AS product_attribute_minimal_quantity,IFNULL(product_attribute_shop.id_product_attribute,0) id_product_attribute,' : '')
+            ->select('pl.`description`, pl.`description_short`, pl.`link_rewrite`, pl.`meta_description`')
+            ->select('pl.`meta_keywords`, pl.`meta_title`, pl.`name`, pl.`available_now`, pl.`available_later`')
+            ->select('m.`name` AS manufacturer_name, p.`id_manufacturer` as id_manufacturer')
+            ->select('image_shop.`id_image` id_image, il.`legend`')
+            ->select('ps.`quantity` AS sales, t.`rate`, pl.`meta_keywords`, pl.`meta_title`, pl.`meta_description`')
+            ->select('DATEDIFF(p.`date_add`, DATE_SUB("'.date('Y-m-d').' 00:00:00"')
+            ->select('INTERVAL '.(int) $interval.' DAY)) > 0 AS new')
+            ->from('product_sale', 'ps')
+            ->leftJoin('product', 'p', 'ps.`id_product` = p.`id_product`')
+            ->join(Shop::addSqlAssociation('product', 'p', false))
+            ->join(Combination::isFeatureActive() ? 'LEFT JOIN `'._DB_PREFIX_.'product_attribute_shop` product_attribute_shop ON (p.`id_product` = product_attribute_shop.`id_product` AND product_attribute_shop.`default_on` = 1 AND product_attribute_shop.id_shop='.(int) $context->shop->id.')' : '')
+            ->leftJoin('product_lang', 'pl', 'p.`id_product` = pl.`id_product`')
+            ->leftJoin('image_shop', 'image_shop', 'image_shop.`id_product` = p.`id_product` AND image_shop.`cover` = 1 AND image_shop.`id_shop` = '.(int) $context->shop->id)
+            ->leftJoin('image_lang', 'il', 'image_shop.`id_image` = il.`id_image`')
+            ->leftJoin('manufacturer', 'm', 'm.`id_manufacturer` = p.`id_manufacturer`')
+            ->leftJoin('tax_rule', 'tr', 'product_shop.`id_tax_rules_group` = tr.`id_tax_rules_group` AND tr.`id_country` = '.(int) $context->country->id.' AND tr.`id_state` = 0')
+            ->leftJoin('tax', 't', 't.`id_tax` = tr.`id_tax` '.Product::sqlStock('p', 0))
+            ->where('pl.`id_lang` = '.(int) $idLang.Shop::addSqlRestrictionOnLang('pl'))
+            ->where('il.`id_lang` = '.(int) $idLang)
+            ->where('product_shop.`active` = 1')
+            ->where('p.`visibility` != \'none\'')
+            ->where('EXISTS(SELECT 1 FROM `'._DB_PREFIX_.'category_product` cp JOIN `'._DB_PREFIX_.'category_group` cg ON (cp.id_category = cg.id_category AND cg.`id_group` '.(count(FrontController::getCurrentCustomerGroups()) ? 'IN ('.implode(',', FrontController::getCurrentCustomerGroups()).')' : '= 1').') WHERE cp.`id_product` = p.`id_product`)');
 
         if ($finalOrderBy != 'price') {
-            $sql .= '
-					ORDER BY '.(!empty($orderTable) ? '`'.pSQL($orderTable).'`.' : '').'`'.pSQL($orderBy).'` '.pSQL($orderWay).'
-					LIMIT '.(int) ($pageNumber * $nbProducts).', '.(int) $nbProducts;
+            $sql->orderBy((!empty($orderTable) ? '`'.pSQL($orderTable).'`.' : '').'`'.pSQL($orderBy).'` '.pSQL($orderWay));
+            $sql->limit((int) $nbProducts, (int) ($pageNumber * $nbProducts));
         }
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
