@@ -744,6 +744,7 @@ class ShopCore extends ObjectModel
         $sql = (new DbQuery())
             ->select('gs.*, s.*, gs.`name` AS `group_name`, s.`name` AS `shop_name`, s.`active`')
             ->select('su.`domain`, su.`domain_ssl`, su.`physical_uri`, su.`virtual_uri`')
+            ->from('shop_group', 'gs')
             ->leftJoin('shop', 's', 's.`id_shop_group` = gs.`id_shop_group`')
             ->leftJoin('shop_url', 'su', 's.`id_shop` = su.`id_shop` AND su.`main` = 1')
             ->where('s.`deleted` = 0')
