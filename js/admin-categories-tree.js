@@ -53,7 +53,6 @@ function buildTreeView() {
     },
     ajax: {
       type: 'POST',
-      async: false,
       data: {
         getChildrenCategories: true,
         use_shop_context: use_shop_context,
