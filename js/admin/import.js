@@ -47,7 +47,6 @@ $(document).ready(function () {
       $.ajax({
         type: 'POST',
         url: 'index.php',
-        async: false,
         cache: false,
         dataType: 'json',
         data: 'ajax=1&action=saveImportMatchs&tab=AdminImport&token=' + window.token + '&skip=' + $('input[name=skip]').attr('value') + '&newImportMatchs=' + newImportMatchs + matchFields,
@@ -68,7 +67,6 @@ $(document).ready(function () {
     $.ajax({
       type: 'POST',
       url: 'index.php',
-      async: false,
       cache: false,
       dataType: 'json',
       data: 'ajax=1&action=loadImportMatchs&tab=AdminImport&token=' + window.token + '&idImportMatchs=' + idToLoad,
