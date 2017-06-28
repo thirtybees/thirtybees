@@ -36,6 +36,14 @@ require_once _TB_INSTALL_PATH_.'classes/datas.php';
 ini_set('memory_limit', '128M');
 try {
     require_once _TB_INSTALL_PATH_.'classes/controllerConsole.php';
+
+    $tests = ConfigurationTest::check(ConfigurationTest::getDefaultTests());
+    foreach ($tests as $test => $result) {
+        if ($result !== 'ok') {
+            die("Installation failed: test `$test` failed");
+        }
+    }
+
     InstallControllerConsole::execute($argc, $argv);
     echo '-- Installation successfull! --'."\n";
 } catch (PrestashopInstallerException $e) {
