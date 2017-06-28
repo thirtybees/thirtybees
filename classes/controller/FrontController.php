@@ -1004,6 +1004,7 @@ class FrontControllerCore extends Controller
         $this->addJS(_PS_JS_DIR_.'tools.js');
         $this->addJS(_THEME_JS_DIR_.'global.js');
 
+        // @since 1.0.2
         Media::addJsDef(['currencyModes' => Currency::getModes()]);
 
         // Automatically add js files from js/autoload directory in the template
