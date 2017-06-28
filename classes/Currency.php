@@ -61,6 +61,8 @@ class CurrencyCore extends ObjectModel
     public $decimals;
     /** @var int bool active */
     public $active;
+    /** @var bool $auto_format */
+    public $auto_format;
     /**
      * contains the sign to display before price, according to its format
      *
@@ -120,6 +122,8 @@ class CurrencyCore extends ObjectModel
         if (!$this->conversion_rate) {
             $this->conversion_rate = 1;
         }
+
+        $this->auto_format = $this->getMode();
     }
 
     /**
@@ -691,5 +695,39 @@ class CurrencyCore extends ObjectModel
     public function getConversationRate()
     {
         return $this->id != (int) Configuration::get('PS_CURRENCY_DEFAULT') ? $this->conversion_rate : 1;
+    }
+
+    /**
+     * Should the currency be automatically formatted?
+     *
+     * @return bool
+     *
+     * @since 1.0.2
+     */
+    public function getMode()
+    {
+        return !Configuration::get('TB_NO_AUTO_FORMAT_'.(int) $this->id);
+    }
+
+    /**
+     * Get the modes for all currencies
+     * NOTE: the keys in this array are the uppercased ISO codes
+     *
+     * @return array
+     *
+     * @since 1.0.2
+     */
+    public static function getModes()
+    {
+        $modes = [];
+        foreach (static::getCurrencies(false, false) as $currency) {
+            $currencyInstance = Currency::getCurrencyInstance((int) $currency['id_currency']);
+
+            $modes[] = [
+                strtoupper($currency['iso_code']) => $currencyInstance->getMode(),
+            ];
+        }
+
+        return $modes;
     }
 }

@@ -65,17 +65,6 @@ function formatNumber(value, numberOfDecimal, thousenSeparator, virgule) {
 
 function formatCurrency(price, currencyFormat, currencySign, currencyBlank) {
   // if you modified this function, don't forget to modify the PHP function displayPrice (in the Tools.php class)
-  price = parseFloat(price).toFixed(10);
-  price = ps_round(price, priceDisplayPrecision);
-  var locale = document.documentElement.lang;
-  if (locale.length === 5) {
-    locale = locale.substring(0, 2).toLowerCase() + '-' + locale.substring(3, 5).toUpperCase();
-  } else if (typeof window.full_language_code !== 'undefined' && window.full_language_code.length === 5) {
-    locale = window.full_language_code.substring(0, 2).toLowerCase() + '-' + window.full_language_code.substring(3, 5).toUpperCase();
-  } else if (getBrowserLocale().length === 5) {
-    locale = getBrowserLocale().substring(0, 2).toLowerCase() + '-' + getBrowserLocale().substring(3, 5).toUpperCase();
-  }
-
   var currency = 'EUR';
   if (typeof window.currency_iso_code !== 'undefined' && window.currency_iso_code.length === 3) {
     // Should be exposed in Back Office
@@ -85,12 +74,49 @@ function formatCurrency(price, currencyFormat, currencySign, currencyBlank) {
     currency = window.currency.iso_code;
   }
 
-  var formattedCurrency = price.toLocaleString(locale, { style: 'currency', currency: 'USD', currencyDisplay: 'code' });
-  if (currencySign) {
-    formattedCurrency = formattedCurrency.replace('USD', currencySign);
+  if (typeof window.currencyModes[currency] !== 'undefined' && typeof window.currencyModes[currency]) {
+    price = parseFloat(price).toFixed(10);
+    price = ps_round(price, priceDisplayPrecision);
+    var locale = document.documentElement.lang;
+    if (locale.length === 5) {
+      locale = locale.substring(0, 2).toLowerCase() + '-' + locale.substring(3, 5).toUpperCase();
+    } else if (typeof window.full_language_code !== 'undefined' && window.full_language_code.length === 5) {
+      locale = window.full_language_code.substring(0, 2).toLowerCase() + '-' + window.full_language_code.substring(3, 5).toUpperCase();
+    } else if (getBrowserLocale().length === 5) {
+      locale = getBrowserLocale().substring(0, 2).toLowerCase() + '-' + getBrowserLocale().substring(3, 5).toUpperCase();
+    }
+
+    var formattedCurrency = price.toLocaleString(locale, { style: 'currency', currency: 'USD', currencyDisplay: 'code' });
+    if (currencySign) {
+      formattedCurrency = formattedCurrency.replace('USD', currencySign);
+    }
+
+    return formattedCurrency;
   }
 
-  return formattedCurrency;
+  var blank = '';
+  price = parseFloat(price).toFixed(10);
+  price = ps_round(price, priceDisplayPrecision);
+  if (currencyBlank > 0) {
+    blank = ' ';
+  }
+  if (currencyFormat == 1) {
+    return currencySign + blank + formatNumber(price, priceDisplayPrecision, ',', '.');
+  }
+  if (currencyFormat == 2) {
+    return (formatNumber(price, priceDisplayPrecision, ' ', ',') + blank + currencySign);
+  }
+  if (currencyFormat == 3) {
+    return (currencySign + blank + formatNumber(price, priceDisplayPrecision, '.', ','));
+  }
+  if (currencyFormat == 4) {
+    return (formatNumber(price, priceDisplayPrecision, ',', '.') + blank + currencySign);
+  }
+  if (currencyFormat == 5) {
+    return (currencySign + blank + formatNumber(price, priceDisplayPrecision, '\'', '.'));
+  }
+
+  return price;
 }
 
 function ps_round_helper(value, mode) {
