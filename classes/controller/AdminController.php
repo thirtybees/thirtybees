@@ -3785,6 +3785,7 @@ class AdminControllerCore extends Controller
         $this->addJqueryUI(['ui.slider', 'ui.datepicker']);
 
         Media::addJsDef(['host_mode' => false]);
+        // @since 1.0.2
         Media::addJsDef(['currencyModes' => Currency::getModes()]);
 
         $this->addJS(
