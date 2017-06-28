@@ -167,10 +167,23 @@ class AdminCurrenciesControllerCore extends AdminController
                     'hint'      => $this->l('Exchange rates are calculated from one unit of your shop\'s default currency. For example, if the default currency is euros and your chosen currency is dollars, type "1.20" (1&euro; = $1.20).'),
                 ],
                 [
-                    'type'          => 'hidden',
-                    'label'         => $this->l('Currency format'),
-                    'name'          => 'format',
-                    'default_value' => 1,
+                    'type'      => 'select',
+                    'label'     => $this->l('Currency format'),
+                    'name'      => 'format',
+                    'maxlength' => 11,
+                    'required'  => true,
+                    'hint'      => $this->l('Applies to all prices (e.g. $1,240.15).'),
+                    'options'   => [
+                        'query' => [
+                            ['key' => 1, 'name' => 'X0,000.00 ('.$this->l('Such as with Dollars').')'],
+                            ['key' => 2, 'name' => '0 000,00X ('.$this->l('Such as with Euros').')'],
+                            ['key' => 3, 'name' => 'X0.000,00'],
+                            ['key' => 4, 'name' => '0,000.00X'],
+                            ['key' => 5, 'name' => '0\'000.00X'],
+                        ],
+                        'name'  => 'name',
+                        'id'    => 'key',
+                    ],
                 ],
                 [
                     'type'     => 'switch',
@@ -193,9 +206,43 @@ class AdminCurrenciesControllerCore extends AdminController
                     ],
                 ],
                 [
-                    'type'     => 'hidden',
+                    'type'     => 'switch',
+                    'label'    => $this->l('Spacing'),
                     'name'     => 'blank',
-                    'value'    => 0,
+                    'required' => false,
+                    'is_bool'  => true,
+                    'hint'     => $this->l('Include a space between symbol and price (e.g. $1,240.15 -> $ 1,240.15).'),
+                    'values'   => [
+                        [
+                            'id'    => 'blank_on',
+                            'value' => 1,
+                            'label' => $this->l('Enabled'),
+                        ],
+                        [
+                            'id'    => 'blank_off',
+                            'value' => 0,
+                            'label' => $this->l('Disabled'),
+                        ],
+                    ],
+                ],
+                [
+                    'type'     => 'switch',
+                    'label'    => $this->l('Auto format'),
+                    'name'     => 'auto_format',
+                    'required' => false,
+                    'is_bool'  => true,
+                    'values'   => [
+                        [
+                            'id'    => 'active_on',
+                            'value' => 1,
+                            'label' => $this->l('Enabled'),
+                        ],
+                        [
+                            'id'    => 'active_off',
+                            'value' => 0,
+                            'label' => $this->l('Disabled'),
+                        ],
+                    ],
                 ],
                 [
                     'type'     => 'switch',
@@ -231,7 +278,29 @@ class AdminCurrenciesControllerCore extends AdminController
             'title' => $this->l('Save'),
         ];
 
+        $this->object->auto_format = !Configuration::get('TB_NO_AUTO_FORMAT_'.(int) $this->object->id);
+
         return parent::renderForm();
+    }
+
+    /**
+     * Process Add
+     */
+    public function processAdd()
+    {
+        parent::processAdd();
+
+        Configuration::updateValue('TB_NO_AUTO_FORMAT_'.(int) $this->object->id, !Tools::getValue('auto_format'));
+    }
+
+    /**
+     * Process update
+     */
+    public function processUpdate()
+    {
+        parent::processUpdate();
+
+        Configuration::updateValue('TB_NO_AUTO_FORMAT_'.(int) $this->object->id, !Tools::getValue('auto_format'));
     }
 
     /**
