@@ -1187,7 +1187,8 @@ class AdminModulesControllerCore extends AdminController
      */
     protected function extractArchive($file, $redirect = true)
     {
-        $zipFolders = [];
+        $oldUmask = @umask(0000);
+
         $tmpFolder = _PS_MODULE_DIR_.md5(time());
 
         $success = false;
@@ -1197,6 +1198,7 @@ class AdminModulesControllerCore extends AdminController
             $dirs = [];
             for ($i = 0; $i < $zip->numFiles; $i++) {
                 $filePath = explode(DIRECTORY_SEPARATOR, $zip->getNameIndex($i));
+
                 if (!empty($filePath)) {
                     $dirs[] = $filePath[0];
                 }
@@ -1211,8 +1213,17 @@ class AdminModulesControllerCore extends AdminController
                     }
                 }
             }
+
+            // Set permissions to the default 0777
             if (Tools::ZipExtract($file, _PS_MODULE_DIR_)) {
                 $success = true;
+
+                for ($i = 0; $i < $zip->numFiles; $i++) {
+                    @chmod(_PS_MODULE_DIR_.$zip->getNameIndex($i), 0777);
+                }
+                foreach ($zipFolders as $zipFolder) {
+                    @chmod(_PS_MODULE_DIR_.$zipFolder, 0777);
+                }
             }
         } else {
             $archive = new Archive_Tar($file);
@@ -1236,6 +1247,13 @@ class AdminModulesControllerCore extends AdminController
             }
             if ($archive->extract(_PS_MODULE_DIR_)) {
                 $success = true;
+
+                for ($i = 0; $i < count($dirs); $i++) {
+                    @chmod(_PS_MODULE_DIR_.$dirs[$i], 0777);
+                }
+                foreach ($zipFolders as $zipFolder) {
+                    @chmod(_PS_MODULE_DIR_.$zipFolder, 0777);
+                }
             }
         }
 
@@ -1253,6 +1271,8 @@ class AdminModulesControllerCore extends AdminController
 
         @unlink($file);
         $this->recursiveDeleteOnDisk($tmpFolder);
+
+        @umask($oldUmask);
 
         if ($success && $redirect && isset($folder)) {
             Tools::redirectAdmin(static::$currentIndex.'&conf=8&anchor='.ucfirst($folder).'&token='.$this->token);
