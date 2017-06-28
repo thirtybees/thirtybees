@@ -70,22 +70,27 @@ class AdminTaxesControllerCore extends AdminController
             $ecotaxDesc = $this->l('If you disable the ecotax, the ecotax for all your products will be set to 0.');
         }
 
+        $availableTaxes = Tax::getTaxes((int) Context::getContext()->language->id, false);
+        $availableTaxes[] = [
+            'name'   => $this->l('None'),
+            'id_tax' => 0,
+        ];
         $this->fields_options = [
             'general' => [
                 'title'  => $this->l('Tax options'),
                 'fields' => [
-                    'PS_TAX'              => [
+                    'PS_TAX'                             => [
                         'title' => $this->l('Enable tax'),
                         'desc'  => $this->l('Select whether or not to include tax on purchases.'),
                         'cast'  => 'intval', 'type' => 'bool',
                     ],
-                    'PS_TAX_DISPLAY'      => [
+                    'PS_TAX_DISPLAY'                     => [
                         'title' => $this->l('Display tax in the shopping cart'),
                         'desc'  => $this->l('Select whether or not to display tax on a distinct line in the cart.'),
                         'cast'  => 'intval',
                         'type'  => 'bool',
                     ],
-                    'PS_TAX_ADDRESS_TYPE' => [
+                    'PS_TAX_ADDRESS_TYPE'                => [
                         'title'      => $this->l('Based on'),
                         'cast'       => 'pSQL',
                         'type'       => 'select',
@@ -101,7 +106,16 @@ class AdminTaxesControllerCore extends AdminController
                         ],
                         'identifier' => 'id',
                     ],
-                    'PS_USE_ECOTAX'       => [
+                    'TB_DEFAULT_SPECIFIC_PRICE_RULE_TAX' => [
+                        'title'      => $this->l('Default tax for specific price rules'),
+                        'desc'       => $this->l('This is the default tax that applies to specific price rules. If you enter a specific price rule with tax and the customer can checkout without paying taxes, then this tax will be subtracted from the specific price rule amount. Does not apply to percentage discounts.'),
+                        'validation' => 'isInt',
+                        'cast'       => 'intval',
+                        'type'       => 'select',
+                        'list'       => $availableTaxes,
+                        'identifier' => 'id_tax',
+                    ],
+                    'PS_USE_ECOTAX'                      => [
                         'title'      => $this->l('Use ecotax'),
                         'desc'       => $ecotaxDesc,
                         'validation' => 'isBool',

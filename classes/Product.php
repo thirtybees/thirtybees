@@ -908,9 +908,15 @@ class ProductCore extends ObjectModel
                 $specificPriceReduction = $reductionAmount;
 
                 // Adjust taxes if required
-
                 if (!$useTax && $specificPrice['reduction_tax']) {
-                    $specificPriceReduction = $productTaxCalculator->removeTaxes($specificPriceReduction);
+                    if (!$productTaxCalculator->getTotalRate()) {
+                        $tax = new Tax(Configuration::get('TB_DEFAULT_SPECIFIC_PRICE_RULE_TAX'));
+                        if (Validate::isLoadedObject($tax)) {
+                            $specificPriceReduction = $specificPriceReduction / (1 + (float) $tax->rate / 100);
+                        }
+                    } else {
+                        $specificPriceReduction = $productTaxCalculator->removeTaxes($specificPriceReduction);
+                    }
                 }
                 if ($useTax && !$specificPrice['reduction_tax']) {
                     $specificPriceReduction = $productTaxCalculator->addTaxes($specificPriceReduction);
