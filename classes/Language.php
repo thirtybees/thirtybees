@@ -824,15 +824,38 @@ class LanguageCore extends ObjectModel
     }
 
     /**
-     * @param $id
+     * @param int        $id
+     * @param int|string $iso
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @since 1.0.2 Made public
+     *        Accept an ID or ISO, ID has a higher priority
      */
-    protected static function _copyNoneFlag($id)
+    public static function _copyNoneFlag($id, $iso = null)
     {
+        if ($id) {
+            if ($databaseIso = Language::getIsoById($id)) {
+                $iso = $databaseIso;
+            }
+        }
+
+        if ($iso) {
+            if (file_exists(_PS_ROOT_DIR_.'/img/flags/'.strtolower($iso).'.png')) {
+                return ImageManager::resize(
+                    _PS_ROOT_DIR_.'/img/flags/'.strtolower($iso).'.png',
+                    _PS_ROOT_DIR_.'/img/l/'.$id.'.jpg',
+                    null,
+                    null,
+                    'jpg',
+                    true
+                );
+            }
+        }
+
         return copy(_PS_ROOT_DIR_.'/img/l/none.jpg', _PS_ROOT_DIR_.'/img/l/'.$id.'.jpg');
     }
 
