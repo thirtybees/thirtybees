@@ -2839,12 +2839,12 @@ class AdminThemesControllerCore extends AdminController
             }
 
             $ext = ($fieldName == 'PS_STORES_ICON') ? '.gif' : '.jpg';
-            $logoName = urlencode(Tools::link_rewrite(Context::getContext()->shop->name)).'-'.$logoPrefix.'-'.(int) Configuration::get('PS_IMG_UPDATE_TIME').(int) $idShop.$ext;
+            $logoName = str_replace('%', '', urlencode(Tools::link_rewrite(Context::getContext()->shop->name))).'-'.$logoPrefix.'-'.(int) Configuration::get('PS_IMG_UPDATE_TIME').(int) $idShop.$ext;
 
             if (Context::getContext()->shop->getContext() == Shop::CONTEXT_ALL || $idShop == 0
                 || Shop::isFeatureActive() == false
             ) {
-                $logoName = urlencode(Tools::link_rewrite(Context::getContext()->shop->name)).'-'.$logoPrefix.'-'.(int) Configuration::get('PS_IMG_UPDATE_TIME').$ext;
+                $logoName = str_replace('%', '', urlencode(Tools::link_rewrite(Context::getContext()->shop->name))).'-'.$logoPrefix.'-'.(int) Configuration::get('PS_IMG_UPDATE_TIME').$ext;
             }
 
             if ($fieldName == 'PS_STORES_ICON') {
