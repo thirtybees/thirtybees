@@ -1192,37 +1192,50 @@ class AdminModulesControllerCore extends AdminController
 
         $success = false;
         if (substr($file, -4) == '.zip') {
-            if (Tools::ZipExtract($file, $tmpFolder)) {
-                $zipFolders = scandir($tmpFolder);
-                foreach ($zipFolders as $zipFolder) {
-                    if (!in_array($zipFolder, ['.', '..', '.svn', '.git', '__MACOSX'])) {
-                        if (file_exists(_PS_MODULE_DIR_.$zipFolder) && !ConfigurationTest::testDir(_PS_MODULE_DIR_.$zipFolder, true, $report, true)) {
-                            $this->errors[] = $this->l('There was an error while extracting the module.').' '.$report;
+            $zip = new ZipArchive();
+            $zip->open($file);
+            $dirs = [];
+            for ($i = 0; $i < $zip->numFiles; $i++) {
+                $filePath = explode(DIRECTORY_SEPARATOR, $zip->getNameIndex($i));
+                if (!empty($filePath)) {
+                    $dirs[] = $filePath[0];
+                }
+            }
+            $zipFolders = array_unique($dirs);
+            foreach ($zipFolders as $zipFolder) {
+                if (!in_array($zipFolder, ['.', '..', '.svn', '.git', '__MACOSX'])) {
+                    if (file_exists(_PS_MODULE_DIR_.$zipFolder) && !ConfigurationTest::testDir(_PS_MODULE_DIR_.$zipFolder, true, $report, true)) {
+                        $this->errors[] = $this->l('There was an error while extracting the module.').' '.$report;
 
-                            return false;
-                        }
+                        return false;
                     }
                 }
-                if (Tools::ZipExtract($file, _PS_MODULE_DIR_)) {
-                    $success = true;
-                }
+            }
+            if (Tools::ZipExtract($file, _PS_MODULE_DIR_)) {
+                $success = true;
             }
         } else {
             $archive = new Archive_Tar($file);
-            if ($archive->extract($tmpFolder)) {
-                $zipFolders = scandir($tmpFolder);
-                foreach ($zipFolders as $zipFolder) {
-                    if (!in_array($zipFolder, ['.', '..', '.svn', '.git', '__MACOSX'])) {
-                        if (file_exists(_PS_MODULE_DIR_.$zipFolder) && !ConfigurationTest::testDir(_PS_MODULE_DIR_.$zipFolder, true, $report, true)) {
-                            $this->errors[] = $this->l('There was an error while extracting the module.').' '.$report;
+            $dirs = $archive->listContent();
+            $zipFolders = [];
+            for ($i = 0; $i < count($dirs); $i++) {
+                $filePath = explode(DIRECTORY_SEPARATOR, $dirs[$i]);
+                if (!empty($filePath)) {
+                    $zipFolders[] = $filePath[0];
+                }
+            }
+            $zipFolders = array_unique($dirs);
+            foreach ($zipFolders as $zipFolder) {
+                if (!in_array($zipFolder, ['.', '..', '.svn', '.git', '__MACOSX'])) {
+                    if (file_exists(_PS_MODULE_DIR_.$zipFolder) && !ConfigurationTest::testDir(_PS_MODULE_DIR_.$zipFolder, true, $report, true)) {
+                        $this->errors[] = $this->l('There was an error while extracting the module.').' '.$report;
 
-                            return false;
-                        }
+                        return false;
                     }
                 }
-                if ($archive->extract(_PS_MODULE_DIR_)) {
-                    $success = true;
-                }
+            }
+            if ($archive->extract(_PS_MODULE_DIR_)) {
+                $success = true;
             }
         }
 
