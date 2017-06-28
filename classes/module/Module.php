@@ -811,7 +811,7 @@ abstract class ModuleCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function getModulesOnDisk($useConfig = false, $loggedOnAddons = false, $idEmployee = false)
+    public static function getModulesOnDisk($useConfig = true, $loggedOnAddons = false, $idEmployee = false)
     {
         global $_MODULES;
 
@@ -985,6 +985,7 @@ abstract class ModuleCore
                     if (!$xmlExist || $needNewConfigFile) {
                         // @codingStandardsIgnoreStart
                         static::$_generate_config_xml_mode = true;
+                        /** @var Module $tmpModule */
                         $tmpModule->_generateConfigXml();
                         static::$_generate_config_xml_mode = false;
                         // @codingStandardsIgnoreEnd
@@ -3398,10 +3399,10 @@ abstract class ModuleCore
         $xml = '<?xml version="1.0" encoding="UTF-8" ?>
 <module>
 	<name>'.$this->name.'</name>
-	<displayName><![CDATA['.str_replace('&amp;', '&', Tools::htmlentitiesUTF8($this->displayName)).']]></displayName>
+	<displayName><![CDATA['.str_replace(']]>', '', html_entity_decode($this->displayName)).']]></displayName>
 	<version><![CDATA['.$this->version.']]></version>
-	<description><![CDATA['.str_replace('&amp;', '&', Tools::htmlentitiesUTF8($this->description)).']]></description>
-	<author><![CDATA['.str_replace('&amp;', '&', Tools::htmlentitiesUTF8($this->author)).']]></author>'
+	<description><![CDATA['.str_replace(']]>' , '', html_entity_decode($this->description)).']]></description>
+	<author><![CDATA['.str_replace(']]>' , '', html_entity_decode($this->author)).']]></author>'
             .$author_uri.'
 	<tab><![CDATA['.Tools::htmlentitiesUTF8($this->tab).']]></tab>'.(isset($this->confirmUninstall) ? "\n\t".'<confirmUninstall><![CDATA['.$this->confirmUninstall.']]></confirmUninstall>' : '').'
 	<is_configurable>'.(isset($this->is_configurable) ? (int) $this->is_configurable : 0).'</is_configurable>
