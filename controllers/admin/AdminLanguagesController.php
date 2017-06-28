@@ -215,14 +215,15 @@ class AdminLanguagesControllerCore extends AdminController
                     'type'     => 'file',
                     'label'    => $this->l('Flag'),
                     'name'     => 'flag',
-                    'required' => true,
+                    'required' => false,
                     'hint'     => $this->l('Upload the country flag from your computer.'),
                 ],
                 [
-                    'type'  => 'file',
-                    'label' => $this->l('"No-picture" image'),
-                    'name'  => 'no_picture',
-                    'hint'  => $this->l('Image is displayed when "no picture is found".'),
+                    'type'     => 'file',
+                    'label'    => $this->l('"No-picture" image'),
+                    'name'     => 'no_picture',
+                    'hint'     => $this->l('Image is displayed when "no picture is found".'),
+                    'required' => false,
                 ],
                 [
                     'type'     => 'switch',
@@ -481,11 +482,15 @@ class AdminLanguagesControllerCore extends AdminController
                 $this->copyNoPictureImage(strtolower(Tools::getValue('iso_code')));
             }
             unset($_FILES['no_picture']);
-        } else {
-            $this->errors[] = Tools::displayError('Flag and "No picture" image fields are required.');
         }
 
-        return parent::processAdd();
+        $success = parent::processAdd();
+
+        if (empty($_FILES['flag']['tmp_name'])) {
+            Language::_copyNoneFlag($this->object->id, $_POST['iso_code']);
+        }
+
+        return $success;
     }
 
     /**
