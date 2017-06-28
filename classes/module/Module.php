@@ -811,7 +811,7 @@ abstract class ModuleCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function getModulesOnDisk($useConfig = true, $loggedOnAddons = false, $idEmployee = false)
+    public static function getModulesOnDisk($useConfig = false, $loggedOnAddons = false, $idEmployee = false)
     {
         global $_MODULES;
 
