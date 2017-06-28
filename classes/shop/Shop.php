@@ -1010,7 +1010,7 @@ class ShopCore extends ObjectModel
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
                 ->select('`id_shop`, `'.bqSQL($identifier).'`')
-                ->from(bqSQL($table))
+                ->from(bqSQL($table).'_shop')
                 ->where('`'.bqSQL($identifier).'` = '.(int) $id)
         );
     }
