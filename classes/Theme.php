@@ -396,19 +396,14 @@ class ThemeCore extends ObjectModel
      */
     public function hasLeftColumn($page = null)
     {
-        $leftColumnSql = (new DbQuery())
-            ->select('`left_column`')
-            ->from('theme', 't')
-            ->leftJoin('theme_meta', 'tm', 't.`id_theme` = tm.`id_theme`')
-            ->leftJoin('meta', 'm', 'm.`id_meta` = tm.`id_meta`')
-            ->where('t.`id_theme` = '.(int) $this->id)
-            ->where('m.`page` = \''.pSQL($page).'\'');
-
         return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
-                ->select('IFNULL('.$leftColumnSql->build().', `default_left_column`)')
-                ->from('theme')
-                ->where('`id_theme` = '.(int) $this->id)
+                ->select('IFNULL(`left_column`, `default_left_column`)')
+                ->from('theme', 't')
+                ->leftJoin('theme_meta', 'tm', 't.`id_theme` = tm.`id_theme`')
+                ->leftJoin('meta', 'm', 'm.`id_meta` = tm.`id_meta`')
+                ->where('t.`id_theme` = '.(int) $this->id)
+                ->where('m.`page` = \''.pSQL($page).'\'')
         );
     }
 
@@ -422,19 +417,14 @@ class ThemeCore extends ObjectModel
      */
     public function hasRightColumn($page = null)
     {
-        $rightColumnSql = (new DbQuery())
-            ->select('`right_column`')
-            ->from('theme', 't')
-            ->leftJoin('theme_meta', 'tm', 't.`id_theme` = tm.`id_theme`')
-            ->leftJoin('meta', 'm', 'm.`id_meta` = tm.`id_meta`')
-            ->where('t.`id_theme` = '.(int) $this->id)
-            ->where('m.`page` = \''.pSQL($page).'\'');
-
         return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
-                ->select('IFNULL('.$rightColumnSql->build().', `default_right_column`)')
-                ->from('theme')
-                ->where('`id_theme` = '.(int) $this->id)
+                ->select('IFNULL(`right_column`, `default_right_column`)')
+                ->from('theme', 't')
+                ->leftJoin('theme_meta', 'tm', 't.`id_theme` = tm.`id_theme`')
+                ->leftJoin('meta', 'm', 'm.`id_meta` = tm.`id_meta`')
+                ->where('t.`id_theme` = '.(int) $this->id)
+                ->where('m.`page` = \''.pSQL($page).'\'')
         );
     }
 
