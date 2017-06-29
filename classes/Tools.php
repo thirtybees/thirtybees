@@ -2624,7 +2624,7 @@ class ToolsCore
      */
     public static function file_exists_no_cache($filename)
     {
-        clearstatcache(null, $filename);
+        clearstatcache(true, $filename);
 
         return file_exists($filename);
     }
