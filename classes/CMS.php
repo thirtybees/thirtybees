@@ -96,7 +96,7 @@ class CMSCore extends ObjectModel
                 ->select('c.`id_cms`, cl.`link_rewrite`, cl.`meta_title`')
                 ->from('cms', 'c')
                 ->leftJoin('cms_lang', 'cl', 'c.`id_cms` = cl.`id_cms`')
-                ->join(Shop::addSqlRestriction('cms', 'c'))
+                ->join(Shop::addSqlAssociation('cms', 'c'))
                 ->where('cl.`id_lang` = '.(int) $idLang)
                 ->where($selection !== null ? 'c.`id_cms` IN ('.implode(',', array_map('intval', $selection)).')' : '')
                 ->where($active ? ' AND c.`active` = 1 ' : '')
