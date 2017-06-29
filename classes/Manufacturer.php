@@ -187,7 +187,7 @@ class ManufacturerCore extends ObjectModel
             $categoryGroupSql = (new DbQuery())
                 ->select('1')
                 ->from('category_group', 'cg')
-                ->leftJoin('category_product', 'cp', 'cp.`id_category` = cg.`id_category')
+                ->leftJoin('category_product', 'cp', 'cp.`id_category` = cg.`id_category`')
                 ->where('p.`id_product` = cp.`id_product`')
                 ->where('cg.`id_group` '.$sqlGroups);
             $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
