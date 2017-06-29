@@ -5,7 +5,7 @@ return [
         'documentation_upgrade' => 'http://docs.thirtybees.com/',
         'forum'                 => 'https://forum.thirtybees.com/',
         'blog'                  => 'http://www.thirtbees.com/blog/',
-        'support'               => 'http://www.thirtybees.com/forums/',
+        'support'               => 'https://thirtybees.com/forums/',
         'tutorial'              => 'http://docs.thirtybees.com/',
         'tailored_help'         => 'http://docs.thirtybees.com/',
     ],

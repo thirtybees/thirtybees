@@ -4,7 +4,7 @@ return [
         'documentation'         => 'https://docs.thirtybees.com/',
         'documentation_upgrade' => 'https://docs.thirtybees.com/pages/viewpage.action?pageId=23069387',
         'forum'                 => 'https://forum.thirtybees.com/forum/18-forum-francophone/',
-        'blog'                  => 'http://www.thirtybees.com/blog/fr/',
+        'blog'                  => 'https://thirtybees.com/blog/fr/',
         'support'               => 'https://www.thirtybees.com/fr/support',
         'tutorial'              => '#',
         'tailored_help'         => 'http://addons.thirtybees.com/fr/388-support',

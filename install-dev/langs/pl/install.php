@@ -4,8 +4,8 @@ return [
     'informations' => [
         'documentation'         => 'https://docs.thirtybees.com/display/PS16/Instalacja+thirty bees',
         'documentation_upgrade' => 'https://docs.thirtybees.com/display/PS16/Aktualizacja+thirty bees',
-        'forum'                 => 'http://www.thirtybees.com/forums',
-        'blog'                  => 'http://www.thirtybees.com/blog/pl/',
+        'forum'                 => 'https://thirtybees.com/forums',
+        'blog'                  => 'https://thirtybees.com/blog/pl/',
         'support'               => 'https://www.thirtybees.com/pl/support',
         'tutorial'              => '#',
         'tailored_help'         => 'http://addons.thirtybees.com/pl/388-support',

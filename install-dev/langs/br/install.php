@@ -4,7 +4,7 @@ return [
         'documentation'         => 'https://docs.thirtybees.com/',
         'documentation_upgrade' => 'https://docs.thirtybees.com/',
         'forum'                 => 'https://forum.thirtybees.com/forum/203-forum-brasileiro/',
-        'blog'                  => 'http://www.thirtybees.com/blog/pt/',
+        'blog'                  => 'https://thirtybees.com/blog/pt/',
         'support'               => 'https://www.thirtybees.com/pt/support',
         'tutorial'              => '#',
         'tailored_help'         => 'http://addons.thirtybees.com/pt/388-support',

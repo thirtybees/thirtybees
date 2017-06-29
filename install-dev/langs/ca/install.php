@@ -4,7 +4,7 @@ return [
         'documentation'         => 'https://docs.thirtybees.com/pages/viewpage.action?pageId=28016773',
         'documentation_upgrade' => 'https://docs.thirtybees.com/',
         'forum'                 => 'https://forum.thirtybees.com/',
-        'blog'                  => 'http://www.thirtybees.com/blog/',
+        'blog'                  => 'https://thirtybees.com/blog/',
         'support'               => 'https://forums.thirtybees.com/',
         'tutorial'              => '#',
         'tailored_help'         => 'https://thirtybees.com/partners/partner-agencies/',

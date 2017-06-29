@@ -629,7 +629,7 @@
       <value>1</value>
     </configuration>
     <configuration id="BLOCKADVERT_LINK" name="BLOCKADVERT_LINK">
-      <value>http://www.thirtybees.com</value>
+      <value>https://thirtybees.com</value>
     </configuration>
     <configuration id="BLOCKSTORE_IMG" name="BLOCKSTORE_IMG">
       <value>store.jpg</value>
@@ -650,7 +650,7 @@
       <value>http://www.twitter.com/thethirtybees</value>
     </configuration>
     <configuration id="blocksocial_rss" name="BLOCKSOCIAL_RSS">
-      <value>http://www.thirtybees.com/blogfeed/</value>
+      <value>https://thirtybees.com/blogfeed/</value>
     </configuration>
     <configuration id="blockcontactinfos_company" name="BLOCKCONTACTINFOS_COMPANY">
       <value>Your company</value>

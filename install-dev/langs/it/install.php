@@ -4,7 +4,7 @@ return [
         'documentation'         => 'https://docs.thirtybees.com/',
         'documentation_upgrade' => 'https://docs.thirtybees.com/',
         'forum'                 => 'https://forum.thirtybees.com/',
-        'blog'                  => 'http://www.thirtybees.com/blog/it/',
+        'blog'                  => 'https://thirtybees.com/blog/it/',
         'support'               => 'http://addons.thirtybees.com/it/388-supporto',
         'tutorial'              => '#',
         'tailored_help'         => 'http://addons.thirtybees.com/it/388-supporto',
