@@ -334,11 +334,7 @@ abstract class ControllerCore
                 foreach ($hookInfo as $idModule => $hookArray) {
                     if (is_array($hookArray)) {
                         foreach ($hookArray as $hookName => $value) {
-                            try {
-                                $hookContent = Hook::execWithoutCache($hookName, [], $idModule, false, true, false, null);
-                            } catch (Exception $e) {
-                                $hookContent = sprintf(Tools::displayError('Error while displaying module "%s"'), Module::getInstanceById($idModule)->displayName);
-                            }
+                            $hookContent = Hook::execWithoutCache($hookName, [], $idModule, false, true, false, null);
 
                             $pattern = "/<!--\[hook $hookName\] \[id\_module $idModule\]-->.*?<!--\[hook $hookName\] \[id\_module $idModule\]-->/s";
 
@@ -352,7 +348,7 @@ abstract class ControllerCore
                         }
                     }
                 }
-            } 
+            }
 
             if (Configuration::get('PS_TOKEN_ENABLE')) {
                 $newToken = Tools::getToken(false);
