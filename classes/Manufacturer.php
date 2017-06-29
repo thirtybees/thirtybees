@@ -204,8 +204,10 @@ class ManufacturerCore extends ObjectModel
             );
 
             $counts = [];
-            foreach ($results as $result) {
-                $counts[(int) $result['id_manufacturer']] = (int) $result['nb_products'];
+            if (is_array($results) && !empty($results)) {
+                foreach ($results as $result) {
+                    $counts[(int) $result['id_manufacturer']] = (int) $result['nb_products'];
+                }
             }
 
             if (count($counts)) {
