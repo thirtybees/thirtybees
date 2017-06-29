@@ -192,7 +192,7 @@ class ManufacturerCore extends ObjectModel
                 ->where('cg.`id_group` '.$sqlGroups);
             $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                 (new DbQuery())
-                    ->select('p.`id_manufacturer`, COUNT(DISTINCT p.`id_product`) AS `nb_product`')
+                    ->select('p.`id_manufacturer`, COUNT(DISTINCT p.`id_product`) AS `nb_products`')
                     ->from('product', 'p')
                     ->join(Shop::addSqlAssociation('product', 'p'))
                     ->leftJoin('manufacturer', 'm', 'm.`id_manufacturer` = p.`id_manufacturer`')
