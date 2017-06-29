@@ -379,7 +379,7 @@ class TagCore extends ObjectModel
                 ->leftJoin('product_lang', 'pl', 'p.`id_product` = pl.`id_product`'.Shop::addSqlRestrictionOnLang('pl'))
                 ->where('pl.`id_lang` = '.(int) $idLang)
                 ->where('product_shop.`active` = 1')
-                ->where($this->id ? ('AND p.id_product '.$in.' (SELECT pt.id_product FROM `'._DB_PREFIX_.'product_tag` pt WHERE pt.id_tag = '.(int) $this->id.')') : '')
+                ->where($this->id ? ('p.`id_product` '.$in.' (SELECT pt.`id_product` FROM `'._DB_PREFIX_.'product_tag` pt WHERE pt.`id_tag` = '.(int) $this->id.')') : '')
                 ->orderBy('pl.`name`')
         );
     }
