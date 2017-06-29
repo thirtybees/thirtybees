@@ -4389,7 +4389,7 @@ class CartCore extends ObjectModel
         // Removing similar products with this new address delivery
         Db::getInstance()->delete(
             'cart_product',
-            'WHERE id_product = '.(int) $idProduct.' AND id_product_attribute = '.(int) $idProductAttribute.' AND id_address_delivery = '.(int) $newIdAddressDelivery.' AND id_cart = '.(int) $this->id,
+            'id_product = '.(int) $idProduct.' AND id_product_attribute = '.(int) $idProductAttribute.' AND id_address_delivery = '.(int) $newIdAddressDelivery.' AND id_cart = '.(int) $this->id,
             1
         );
 

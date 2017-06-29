@@ -526,7 +526,7 @@ class MetaCore extends ObjectModel
             ->from('cms_category_lang')
             ->where('`id_lang` = '.(int) $idLang)
             ->where('`id_cms_category` = '.(int) $idCmsCategory)
-            ->where(Context::getContext()->shop->id ? ' AND id_shop = '.(int) Context::getContext()->shop->id : '')
+            ->where(Context::getContext()->shop->id ? '`id_shop` = '.(int) Context::getContext()->shop->id : '')
         )) {
             $row['meta_title'] = $row['meta_title'].' - '.Configuration::get('PS_SHOP_NAME');
 
