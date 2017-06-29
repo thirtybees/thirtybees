@@ -413,7 +413,7 @@ class ConfigurationCore extends ObjectModel
 
         $rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-                ->select('c.`name`, cl.`id_lang`, IF(cl.`id_lang` IS NULL, c.`value`, cl.`value`) AS `value`, c.`id_shop_group`, c.`id_shop`')
+                ->select('c.`name`, cl.`id_lang`, IFNULL(cl.`value`, c.`value`) AS `value`, c.`id_shop_group`, c.`id_shop`')
                 ->from(bqSQL(static::$definition['table']), 'c')
                 ->leftJoin(static::$definition['table'].'_lang', 'cl', 'c.`'.bqSQL(static::$definition['primary']).'` = cl.`'.bqSQL(static::$definition['primary']).'`')
         );
