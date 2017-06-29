@@ -99,7 +99,7 @@ class CMSCore extends ObjectModel
                 ->join(Shop::addSqlAssociation('cms', 'c'))
                 ->where('cl.`id_lang` = '.(int) $idLang)
                 ->where($selection !== null ? 'c.`id_cms` IN ('.implode(',', array_map('intval', $selection)).')' : '')
-                ->where($active ? ' AND c.`active` = 1 ' : '')
+                ->where($active ? 'c.`active` = 1 ' : '')
                 ->groupBy('c.`id_cms`')
                 ->orderBy('c.`position`')
         );
