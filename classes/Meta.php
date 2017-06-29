@@ -425,7 +425,7 @@ class MetaCore extends ObjectModel
             (new DbQuery())
                 ->select('`name`, `meta_title`, `meta_description`, `meta_keywords`')
                 ->from('manufacturer_lang', 'ml')
-                ->leftJoin('manufacturer', 'm', 'ml.`idmanufacturer` = m.`id_manufacturer`')
+                ->leftJoin('manufacturer', 'm', 'ml.`id_manufacturer` = m.`id_manufacturer`')
                 ->where('ml.`id_lang` = '.(int) $idLang)
                 ->where('ml.`id_manufacturer` = '.(int) $idManufacturer)
         )) {
