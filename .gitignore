@@ -21,6 +21,7 @@ composer.lock
 
 /cache/*
 /download/*
+/img/*
 /log/*
 /upload/*
 /vendor/*
