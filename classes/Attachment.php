@@ -61,10 +61,10 @@ class AttachmentCore extends ObjectModel
         'primary'   => 'id_attachment',
         'multilang' => true,
         'fields'    => [
-            'file'        => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 40],
-            'mime'        => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'required' => true, 'size' => 128],
-            'file_name'   => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'size' => 128],
-            'file_size'   => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
+            'file'        => ['type' => self::TYPE_STRING,                 'validate' => 'isGenericName',                 'required' => true, 'size' => 40],
+            'mime'        => ['type' => self::TYPE_STRING,                 'validate' => 'isCleanHtml',                   'required' => true, 'size' => 128],
+            'file_name'   => ['type' => self::TYPE_STRING,                 'validate' => 'isGenericName',                                     'size' => 128],
+            'file_size'   => ['type' => self::TYPE_INT,                    'validate' => 'isUnsignedId'],
 
             /* Lang fields */
             'name'        => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 32],
@@ -115,9 +115,9 @@ class AttachmentCore extends ObjectModel
 
         $products = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-            ->select('`id_product`')
-            ->from('product_attachment')
-            ->where('`id_attachment` = '.(int) $this->id)
+                ->select('`id_product`')
+                ->from('product_attachment')
+                ->where('`id_attachment` = '.(int) $this->id)
         );
 
         Db::getInstance()->delete('product_attachment', '`id_attachment` = '.(int) $this->id);
@@ -147,9 +147,9 @@ class AttachmentCore extends ObjectModel
 
         $attachmentsData = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-            ->select('*')
-            ->from(bqSQL(Attachment::$definition['table']))
-            ->where('`id_attachment` IN ('.implode(',', $attachments).')')
+                ->select('*')
+                ->from(bqSQL(Attachment::$definition['table']))
+                ->where('`id_attachment` IN ('.implode(',', $attachments).')')
         );
 
         if (empty($attachmentsData)) {
@@ -179,13 +179,13 @@ class AttachmentCore extends ObjectModel
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-            ->select('a.*, al.*')
-            ->from('attachment', 'a')
-            ->leftJoin('attachment_lang', 'al', 'a.`id_attachment` = al.`id_attachment`')
-            ->leftJoin('product_attachment', 'pa', 'pa.`id_attachment` = a.`id_attachment`')
-            ->where('al.`id_lang` = '.(int) $idLang)
-            ->where($include ? 'pa.`id_product` = '.(int) $idProduct : '')
-            ->where('pa.`id_product` IS '.($include ? 'NOT ' : '').'NULL')
+                ->select('a.*, al.*')
+                ->from('attachment', 'a')
+                ->leftJoin('attachment_lang', 'al', 'a.`id_attachment` = al.`id_attachment`')
+                ->leftJoin('product_attachment', 'pa', 'pa.`id_attachment` = a.`id_attachment`')
+                ->where('al.`id_lang` = '.(int) $idLang)
+                ->where($include ? 'pa.`id_product` = '.(int) $idProduct : '')
+                ->where('pa.`id_product` IS '.($include ? 'NOT ' : '').'NULL')
         );
     }
 
@@ -292,12 +292,12 @@ class AttachmentCore extends ObjectModel
 
             $tmp = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                 (new DbQuery())
-                ->select('*')
-                ->from('product_attachment', 'pa')
-                ->leftJoin('product_lang', 'pl', 'pa.`id_product` = pl.`id_product`')
-                ->where('pa.`id_attachment` IN ('.implode(',', array_map('intval', $idAttachments)).')')
-                ->where('pl.`id_shop` = '.(int) Context::getContext()->shop->id)
-                ->where('pl.`id_lang` = '.(int) $idLang)
+                    ->select('*')
+                    ->from('product_attachment', 'pa')
+                    ->leftJoin('product_lang', 'pl', 'pa.`id_product` = pl.`id_product`')
+                    ->where('pa.`id_attachment` IN ('.implode(',', array_map('intval', $idAttachments)).')')
+                    ->where('pl.`id_shop` = '.(int) Context::getContext()->shop->id)
+                    ->where('pl.`id_lang` = '.(int) $idLang)
             );
             $productAttachments = [];
             foreach ($tmp as $t) {

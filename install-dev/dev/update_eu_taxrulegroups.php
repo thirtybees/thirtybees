@@ -66,7 +66,7 @@
 $localizationPacksRoot = realpath(dirname(__FILE__) . '/../../localization');
 
 if (!$localizationPacksRoot) {
-    die("Could not find the folder containing the localization files (should be 'localization' at the root of the PrestaShop folder).\n");
+    die("Could not find the folder containing the localization files (should be 'localization' at the root of the thirty bees folder).\n");
 }
 
 $euLocalizationFiles = [];

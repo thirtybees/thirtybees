@@ -32,8 +32,8 @@
 ob_start();
 
 // Check PHP version
-if (version_compare(preg_replace('/[^0-9.]/', '', PHP_VERSION), '5.2', '<')) {
-    die('You need at least PHP 5.2 to run PrestaShop. Your current PHP version is '.PHP_VERSION);
+if (version_compare(preg_replace('/[^0-9.]/', '', PHP_VERSION), '5.5', '<')) {
+    die('You need at least PHP 5.5 to run thirty bees. Your current PHP version is '.PHP_VERSION);
 }
 
 // we check if theses constants are defined
