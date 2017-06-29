@@ -36,7 +36,7 @@
 
 	<div class="col-sm-2 hidden-xs">
 		<div class="social-networks">
-			<a class="link-social link-twitter _blank" href="https://twitter.com/thirtybees" title="Twitter">
+			<a class="link-social link-twitter _blank" href="https://twitter.com/thethirtybees" title="Twitter">
 				<i class="icon-twitter"></i>
 			</a>
 			<a class="link-social link-facebook _blank" href="https://www.facebook.com/thirtybees" title="Facebook">
@@ -48,21 +48,24 @@
 			<a class="link-social link-google _blank" href="https://plus.google.com/+thirtybees/" title="Google">
 				<i class="icon-google-plus"></i>
 			</a>
+			<a class="link-social link-reddit _blank" href="https://www.reddit.com/r/thirtybees/" title="Reddit">
+				<i class="icon-reddit"></i>
+			</a>
 		</div>
 	</div>
 	<div class="col-sm-5">
 		<div class="footer-contact">
-			<a href="http://www.thirtybees.com/en/contact_us?utm_source=back-office&amp;utm_medium=footer&amp;utm_campaign=back-office-{$lang_iso|upper}&amp;utm_content=download" class="footer_link _blank">
+			<a href="https://thirtybees.com/contact/?utm_source=back-office&amp;utm_medium=footer&amp;utm_campaign=back-office-{$lang_iso|upper}&amp;utm_content=download" class="footer_link _blank">
 				<i class="icon-envelope"></i>
 				{l s='Contact'}
 			</a>
 			/&nbsp;
-			<a href="http://www.thirtybees.com/bug-tracker/?utm_source=back-office&amp;utm_medium=footer&amp;utm_campaign=back-office-{$lang_iso|upper}&amp;utm_content=download" class="footer_link _blank">
+			<a href="https://forum.thirtybees.com/category/10/bug-reports/?utm_source=back-office&amp;utm_medium=footer&amp;utm_campaign=back-office-{$lang_iso|upper}&amp;utm_content=download" class="footer_link _blank">
 				<i class="icon-bug"></i>
 				{l s='Bug Tracker'}
 			</a>
 			/&nbsp;
-			<a href="http://www.thirtybees.com/forums/?utm_source=back-office&amp;utm_medium=footer&amp;utm_campaign=back-office-{$lang_iso|upper}&amp;utm_content=download" class="footer_link _blank">
+			<a href="https://forum.thirtybees.com/?utm_source=back-office&amp;utm_medium=footer&amp;utm_campaign=back-office-{$lang_iso|upper}&amp;utm_content=download" class="footer_link _blank">
 				<i class="icon-comments"></i>
 				{l s='Forum'}
 			</a>
