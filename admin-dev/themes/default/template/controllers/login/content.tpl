@@ -76,7 +76,7 @@
 					<div class="form-group">
 						<div id="remind-me" class="checkbox pull-left">
 							<label for="stay_logged_in">
-								<input name="stay_logged_in" type="checkbox" id="stay_logged_in" value="1"	tabindex="3"/>
+								<input name="stay_logged_in" type="checkbox" id="stay_logged_in" value="1"	tabindex="3" checked="checked"/>
 								{l s='Stay logged in'}
 							</label>
 						</div>
