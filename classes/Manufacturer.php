@@ -523,7 +523,7 @@ class ManufacturerCore extends ObjectModel
                 ->leftJoin('product_lang', 'pl', 'p.`id_product` = pl.`id_product`')
                 ->where('pl.`id_lang` = '.(int) $idLang.$context->shop->addSqlRestrictionOnLang('pl'))
                 ->where('p.`id_manufacturer` = '.(int) $this->id)
-                ->where($front ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '')
+                ->where($front ? 'product_shop.`visibility` IN ("both", "catalog")' : '')
         );
     }
 
