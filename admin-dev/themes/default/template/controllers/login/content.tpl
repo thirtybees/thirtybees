@@ -25,7 +25,7 @@
 <div id="login-panel">
 	<div id="login-header">
 		<h1 class="text-center">
-			<img id="logo" src="{$img_dir}thirty-bees@2x.png" width="123px" height="24px" alt="PrestaShop" />
+			<img id="logo" src="{$img_dir}thirty-bees@2x.png" width="155px" height="39px" alt="PrestaShop" />
 		</h1>
 		<div class="text-center">{$ps_version}</div>
 		<div id="error" class="hide alert alert-danger">
@@ -49,7 +49,7 @@
 		<div class="alert alert-warning">{$warningSslMessage}</div>
 		{/if}
 	</div>
-	<div id="shop-img"><img src="{$img_dir}bee-avatar.png" alt="{$shop_name}" width="69.5px" height="118.5px" /></div>
+	<div id="shop-img"><img src="{$img_dir}bee-avatar.png" alt="{$shop_name}" width="68px" height="68px" /></div>
 	<div class="flip-container">
 		<div class="flipper">
 			<div class="front panel">
