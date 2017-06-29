@@ -49,7 +49,6 @@
 		<div class="alert alert-warning">{$warningSslMessage}</div>
 		{/if}
 	</div>
-	<div id="shop-img"><img src="{$img_dir}bee-avatar.png" alt="{$shop_name}" width="68px" height="68px" /></div>
 	<div class="flip-container">
 		<div class="flipper">
 			<div class="front panel">
