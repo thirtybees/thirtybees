@@ -139,7 +139,7 @@
 			</a>
 		</p>
 		<p class="text-center">
-			<a class="link-social link-twitter _blank" href="https://twitter.com/thirtybees" title="Twitter">
+			<a class="link-social link-twitter _blank" href="https://twitter.com/thethirtybees" title="Twitter">
 				<i class="icon-twitter"></i>
 			</a>
 			<a class="link-social link-facebook _blank" href="https://www.facebook.com/thirtybees" title="Facebook">
@@ -150,6 +150,9 @@
 			</a>
 			<a class="link-social link-google _blank" href="https://plus.google.com/+thirtybees/" title="Google">
 				<i class="icon-google-plus"></i>
+			</a>
+			<a class="link-social link-reddit _blank" href="https://www.reddit.com/r/thirtybees/" title="Reddit">
+				<i class="icon-reddit"></i>
 			</a>
 		</p>
 	</div>
