@@ -230,6 +230,15 @@ abstract class ModuleCore
                     }
                 }
                 $this->_path = __PS_BASE_URI__.'modules/'.$this->name.'/';
+            } else {
+                // Get the module id from the database
+                $this->id = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                    (new DbQuery())
+                        ->select('`id_module`')
+                        ->from('module')
+                        ->where('`name` = \''.pSQL($this->name).'\'')
+                );
+
             }
             if (!$this->context->controller instanceof Controller) {
                 static::$modules_cache = null;
