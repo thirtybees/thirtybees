@@ -308,11 +308,7 @@ class HookCore extends ObjectModel
 
         if (!$idModule) {
             foreach ($moduleList as $m) {
-                try {
-                    $data = static::execWithoutCache($hookName, $hookArgs, $m['id_module'], $arrayReturn, $checkExceptions, $usePush, $idShop);
-                } catch (Exception $e) {
-                    $data = sprintf(Tools::displayError('Error while displaying module "%s"'), Module::getInstanceById($m['id_module'])->displayName);
-                }
+                $data = static::execWithoutCache($hookName, $hookArgs, $m['id_module'], $arrayReturn, $checkExceptions, $usePush, $idShop);
                 if (is_array($data)) {
                     $data = array_shift($data);
                 }
@@ -333,11 +329,7 @@ class HookCore extends ObjectModel
                 }
             }
         } else {
-            try {
-                $return = static::execWithoutCache($hookName, $hookArgs, $idModule, $arrayReturn, $checkExceptions, $usePush, $idShop);
-            } catch (Exception $e) {
-                $return = sprintf(Tools::displayError('Error while displaying module "%s"'), Module::getInstanceById($idModule)->displayName);
-            }
+            $return = static::execWithoutCache($hookName, $hookArgs, $idModule, $arrayReturn, $checkExceptions, $usePush, $idShop);
         }
 
         return $return;
