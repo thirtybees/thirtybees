@@ -770,32 +770,28 @@ product_tabs['Prices'] = new function(){
 		self.deleteSpecificPrice();
 		self.bindDelete();
 
-		$('#sp_id_shop').change(function() {
-			self.loadInformations('#sp_id_group','getGroupsOptions');
-			self.loadInformations('#spm_currency_0', 'getCurrenciesOptions');
-			self.loadInformations('#sp_id_country', 'getCountriesOptions');
-		});
-		if (display_multishop_checkboxes)
-			ProductMultishop.checkAllPrices();
-	};
-}
+  this.getAccessoriesIds = function () {
+    if (!$('#inputAccessories').val()) {
+      return window.id_product;
+    }
+    return window.id_product + ',' + $('#inputAccessories').val().replace(/\-/g, ',');
+  };
 
-product_tabs['Associations'] = new function(){
-	var self = this;
-	this.initAccessoriesAutocomplete = function (){
-		$('#product_autocomplete_input')
-			.autocomplete('ajax_products_list.php?exclude_packs=0&excludeVirtuals=0', {
-				minChars: 1,
-				autoFill: true,
-				max:20,
-				matchContains: true,
-				mustMatch:false,
-				scroll:false,
-				cacheLength:0,
-				formatItem: function(item) {
-					return item[1]+' - '+item[0];
-				}
-			}).result(self.addAccessory);
+  /**
+   * Add accesory
+   *
+   * @param {Object}    event
+   * @param {Array}     data
+   * @param {undefined} formatted
+   *
+   * @return {undefined}
+   */
+  this.addAccessory = function (event, data, formatted) {
+    if (typeof data === 'undefined') {
+      return;
+    }
+    var productId = data[1];
+    var productName = data[0];
 
 		$('#product_autocomplete_input').setOptions({
 			extraParams: {
