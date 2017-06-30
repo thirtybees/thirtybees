@@ -661,11 +661,11 @@ function getStorageAvailable() {
 }
 
 function getBrowserLocale() {
-  if (navigator.languages != undefined) {
+  if (typeof navigator.languages !== 'undefined') {
     return navigator.languages[0];
-  } else {
-    return navigator.language;
   }
+
+  return navigator.language;
 }
 
 $(document).ready(function () {
