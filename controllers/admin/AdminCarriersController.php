@@ -123,7 +123,7 @@ class AdminCarriersControllerCore extends AdminController
         parent::__construct();
 
         if (Tools::isSubmit('onboarding_carrier')) {
-            $this->display = 'view';
+            Tools::redirectAdmin($this->context->link->getAdminLink('AdminCarrierWizard'));
         }
     }
 
@@ -147,7 +147,7 @@ class AdminCarriersControllerCore extends AdminController
         $this->page_header_toolbar_title = $this->l('Carriers');
         if ($this->display != 'view') {
             $this->page_header_toolbar_btn['new_carrier'] = [
-                'href' => $this->context->link->getAdminLink('AdminCarriers').'&onboarding_carrier',
+                'href' => $this->context->link->getAdminLink('AdminCarrierWizard'),
                 'desc' => $this->l('Add new carrier', null, null, false),
                 'icon' => 'process-icon-new',
             ];
