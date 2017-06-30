@@ -613,7 +613,7 @@ class OrderDetailCore extends ObjectModel
                 (new DbQuery())
                     ->select('DISTINCT od.`product_id`, p.`id_product`, pl.`name`, pl.`link_rewrite`, p.`reference`, i.`id_image`, product_shop.`show_price`')
                     ->select('cl.`link_rewrite` AS `category`, p.`ean13`, p.`out_of_stock`, p.`id_category_default`')
-                    ->select(Combination::isFeatureActive() ? ', IFNULL(product_attribute_shop.id_product_attribute,0) id_product_attribute' : '')
+                    ->select(Combination::isFeatureActive() ? 'IFNULL(`product_attribute_shop`.`id_product_attribute`, 0) id_product_attribute' : '')
                     ->from('order_detail', 'od')
                     ->leftJoin('product', 'p', 'p.`id_product` = od.`product_id`')
                     ->join(Shop::addSqlAssociation('product', 'p'))
