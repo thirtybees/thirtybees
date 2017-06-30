@@ -2009,10 +2009,10 @@ class CartCore extends ObjectModel
         }
 
         if (Configuration::get('PS_ATCP_SHIPWRAP')) {
-            if (!$useTax) {
-                // With PS_ATCP_SHIPWRAP, we deduce the pre-tax price from the post-tax
-                // price. This is on purpose and required in Germany.
-                $shippingCost /= (1 + $this->getAverageProductsTaxRate());
+            if ($useTax) {
+                // With PS_ATCP_SHIPWRAP, we apply the proportionate tax rate to the shipping
+                // costs. This is on purpose and required in many countries in the European Union.
+                $shippingCost *= (1 + $this->getAverageProductsTaxRate());
             }
         } else {
             // Apply tax
@@ -2173,12 +2173,44 @@ class CartCore extends ObjectModel
         $cartAmountTaxIncluded = $this->getOrderTotal(true, static::ONLY_PRODUCTS);
         $cartAmountTaxExcluded = $this->getOrderTotal(false, static::ONLY_PRODUCTS);
 
-        $cartVatAmount = $cartAmountTaxIncluded - $cartAmountTaxExcluded;
+        // Get the rate according to the applied rounding method
+        $roundingMethod = (int) Configuration::get('PS_ATCP_SHIPWRAP_ROUNDING');
+        if ($roundingMethod === 0) {
+            $roundingMethod = (int) Configuration::get('PS_ROUND_TYPE');
+        }
 
-        if ($cartVatAmount == 0 || $cartAmountTaxExcluded == 0) {
-            return 0;
-        } else {
-            return Tools::ps_round($cartVatAmount / $cartAmountTaxExcluded, 3);
+        switch ($roundingMethod) {
+            case Order::ROUND_ITEM:
+                $total = 0;
+                $totalTax = 0;
+                foreach ($this->getProducts() as $product) {
+                    $appliedTaxRate = $product['price_wt'] / $product['price'] - 1;
+
+                    $total += ($product['price'] * $product['quantity']);
+                    $totalTax += $appliedTaxRate * $product['price'] * $product['quantity'];
+                }
+
+                return $totalTax / $total;
+            case Order::ROUND_LINE:
+                $total = 0;
+                $totalTax = 0;
+                foreach ($this->getProducts() as $product) {
+                    $appliedTaxRate = $product['total_wt'] / $product['total'] - 1;
+
+                    $total += $product['total'];
+                    $totalTax += $appliedTaxRate * $product['total'];
+                }
+
+                return $totalTax / $total;
+            default:
+                $cartVatAmount = $cartAmountTaxIncluded - $cartAmountTaxExcluded;
+
+                if ($cartVatAmount == 0 || $cartAmountTaxExcluded == 0) {
+                    return 0;
+                } else {
+                    return Tools::ps_round($cartVatAmount / $cartAmountTaxExcluded, 3);
+                }
+                break;
         }
     }
 
