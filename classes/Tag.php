@@ -272,7 +272,7 @@ class TagCore extends ObjectModel
                     ->select('t.`name`, `counter` AS `times`')
                     ->from('tag_count', 'pt')
                     ->leftJoin('tag', 't', 't.`id_tag` = pt.`id_tag`')
-                    ->where('pt.`id_group` = '.(count($groups) ? 'IN ('.implode(',', $groups).')' : '= 1'))
+                    ->where('pt.`id_group` '.(count($groups) ? 'IN ('.implode(',', $groups).')' : '= 1'))
                     ->where('pt.`id_lang` = '.(int) $idLang)
                     ->where('pt.`id_shop` = '.(int) $context->shop->id)
                     ->orderBy('`times` DESC')
