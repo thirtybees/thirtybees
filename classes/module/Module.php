@@ -829,8 +829,7 @@ abstract class ModuleCore
                 ->select('m.`name`, m.`version`, mp.`interest`, module_shop.`enable_device`')
                 ->from('module', '')
                 ->join(Shop::addSqlAssociation('module', 'm'))
-                ->leftJoin('module_preference', 'mp', 'mp.`module` = m.`name`')
-                ->where('mp.`id_employee` = '.(int) $idEmployee)
+                ->leftJoin('module_preference', 'mp', 'mp.`module` = m.`name` AND mp.`id_employee` = '.(int) $idEmployee)
         );
         foreach ($result as $row) {
             $modulesInstalled[$row['name']] = $row;
