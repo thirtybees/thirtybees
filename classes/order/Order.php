@@ -1575,7 +1575,9 @@ class OrderCore extends ObjectModel
     /**
      * This method allows to fulfill the object order_invoice with sales figures
      *
-     * @since 1.0.0
+     * @param OrderInvoice $orderInvoice
+     *
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     protected function setInvoiceDetails($orderInvoice)
@@ -1584,9 +1586,9 @@ class OrderCore extends ObjectModel
             return;
         }
 
-        $address = new Address((int)$this->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
-        $carrier = new Carrier((int)$this->id_carrier);
-        $tax_calculator = $carrier->getTaxCalculator($address);
+        $address = new Address((int) $this->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
+        $carrier = new Carrier((int) $this->id_carrier);
+
         $orderInvoice->total_discount_tax_excl = $this->total_discounts_tax_excl;
         $orderInvoice->total_discount_tax_incl = $this->total_discounts_tax_incl;
         $orderInvoice->total_paid_tax_excl = $this->total_paid_tax_excl;
@@ -1595,20 +1597,27 @@ class OrderCore extends ObjectModel
         $orderInvoice->total_products_wt = $this->total_products_wt;
         $orderInvoice->total_shipping_tax_excl = $this->total_shipping_tax_excl;
         $orderInvoice->total_shipping_tax_incl = $this->total_shipping_tax_incl;
-        $orderInvoice->shipping_tax_computation_method = $tax_calculator->computation_method;
+        $orderInvoice->shipping_tax_computation_method = $taxCalculator->computation_method;
         $orderInvoice->total_wrapping_tax_excl = $this->total_wrapping_tax_excl;
         $orderInvoice->total_wrapping_tax_incl = $this->total_wrapping_tax_incl;
         $orderInvoice->save();
 
+
         if (Configuration::get('PS_ATCP_SHIPWRAP')) {
+            /** @var AverageTaxOfProductsTaxCalculator $wrappingTaxCalculator */
             $wrappingTaxCalculator = Adapter_ServiceLocator::get('AverageTaxOfProductsTaxCalculator')->setIdOrder($this->id);
+            /** @var AverageTaxOfProductsTaxCalculator $taxCalculator */
+            $taxCalculator = Adapter_ServiceLocator::get('AverageTaxOfProductsTaxCalculator')->setIdOrder($this->id);
         } else {
-            $wrappingTaxManager = TaxManagerFactory::getManager($address, (int)Configuration::get('PS_GIFT_WRAPPING_TAX_RULES_GROUP'));
+            $wrappingTaxManager = TaxManagerFactory::getManager($address, (int) Configuration::get('PS_GIFT_WRAPPING_TAX_RULES_GROUP'));
+            /** @var TaxCalculator $wrappingTaxCalculator */
             $wrappingTaxCalculator = $wrappingTaxManager->getTaxCalculator();
+            /** @var TaxCalculator $taxCalculator */
+            $taxCalculator = $carrier->getTaxCalculator($address);
         }
 
         $orderInvoice->saveCarrierTaxCalculator(
-            $tax_calculator->getTaxesAmount(
+            $taxCalculator->getTaxesAmount(
                 $orderInvoice->total_shipping_tax_excl,
                 $orderInvoice->total_shipping_tax_incl,
                 _PS_PRICE_COMPUTE_PRECISION_,
