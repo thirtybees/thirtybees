@@ -63,7 +63,10 @@ class PageCacheCore
                     'id_shop'     => (int) $idShop,
                     'entity_type' => pSQL($entityType),
                     'id_entity'   => (int) $idEntity,
-                ]
+                ],
+                false,
+                true,
+                Db::ON_DUPLICATE_KEY
             );
         } catch (Exception $e) {
             // Hash already inserted
@@ -138,6 +141,18 @@ class PageCacheCore
     }
 
     /**
+     * Flush all data
+     *
+     * @since 1.0.0
+     */
+    public static function flush()
+    {
+        Cache::getInstance()->flush();
+
+        Db::getInstance()->delete('page_cache');
+    }
+
+    /**
      * Get keys to invalidate
      *
      * @param string   $entityType
@@ -163,17 +178,5 @@ class PageCacheCore
         }
 
         return array_column($results, 'cache_hash');
-    }
-
-    /**
-     * Flush all data
-     *
-     * @since 1.0.0
-     */
-    public static function flush()
-    {
-        Cache::getInstance()->flush();
-
-        Db::getInstance()->delete('page_cache');
     }
 }
