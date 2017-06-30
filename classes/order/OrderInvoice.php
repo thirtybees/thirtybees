@@ -167,7 +167,7 @@ class OrderInvoiceCore extends ObjectModel
                 ->from('order_invoice', 'oi')
                 ->leftJoin('orders', 'o', 'o.`id_order` = oi.`id_order`')
                 ->where('DATE_ADD(oi.`date_add`, INTERVAL -1 DAY) <= \''.pSQL($dateTo).'\'')
-                ->where('od.`date_add` >= \''.pSQL($dateFrom).'\' '.Shop::addSqlRestriction(Shop::SHARE_ORDER, 'o'))
+                ->where('oi.`date_add` >= \''.pSQL($dateFrom).'\' '.Shop::addSqlRestriction(Shop::SHARE_ORDER, 'o'))
                 ->where('oi.`number` > 0')
                 ->orderBy('oi.`date_add` ASC')
         );
