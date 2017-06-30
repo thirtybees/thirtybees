@@ -774,6 +774,7 @@ class CustomerCore extends ObjectModel
             (new DbQuery())
                 ->select('c.`id_connections`, c.`date_add`, COUNT(cp.`id_page`) AS `pages`')
                 ->select('TIMEDIFF(MAX(cp.time_end), c.date_add) AS time, http_referer,INET_NTOA(ip_address) AS ipaddress')
+	            ->from('guest', 'g')
                 ->leftJoin('connections', 'c', 'c.`id_guest` = g.`id_guest`')
                 ->leftJoin('connections_page', 'cp', 'c.`id_connections` = cp.`id_connections`')
                 ->where('g.`id_customer` = '.(int) $this->id)
