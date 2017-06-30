@@ -898,7 +898,7 @@ window.product_tabs.Associations = new function () {
   };
 
   this.getAccessoriesIds = function () {
-    if ($('#inputAccessories').val()) {
+    if (!$('#inputAccessories').val()) {
       return window.id_product;
     }
     return window.id_product + ',' + $('#inputAccessories').val().replace(/\-/g, ',');
@@ -914,7 +914,7 @@ window.product_tabs.Associations = new function () {
    * @return {undefined}
    */
   this.addAccessory = function (event, data, formatted) {
-    if (typeof data !== 'undefined') {
+    if (typeof data === 'undefined') {
       return;
     }
     var productId = data[1];
