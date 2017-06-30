@@ -294,7 +294,7 @@ class OrderDetailCore extends ObjectModel
         return Db::getInstance()->update(
             'order_detail',
             [
-                'download_nb' => ['type' => 'sql', 'value' => '`download_db` + '.(int) $increment],
+                'download_nb' => ['type' => 'sql', 'value' => '`download_nb` + '.(int) $increment],
             ],
             '`id_order_detail` = '.(int) $idOrderDetail
         );
