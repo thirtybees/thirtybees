@@ -723,9 +723,7 @@ class CurrencyCore extends ObjectModel
         foreach (static::getCurrencies(false, false) as $currency) {
             $currencyInstance = Currency::getCurrencyInstance((int) $currency['id_currency']);
 
-            $modes[] = [
-                strtoupper($currency['iso_code']) => $currencyInstance->getMode(),
-            ];
+            $modes[strtoupper($currency['iso_code'])] = $currencyInstance->getMode();
         }
 
         return $modes;
