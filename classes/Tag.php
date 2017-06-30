@@ -376,7 +376,7 @@ class TagCore extends ObjectModel
             (new DbQuery())
                 ->select('pl.`name`, pl.`id_product`')
                 ->from('product', 'p')
-                ->leftJoin('product_lang', 'pl', 'p.`id_product` = pl.`id_product`'.Shop::addSqlRestrictionOnLang('pl'))
+                ->leftJoin('product_lang', 'pl', 'p.`id_product` = pl.`id_product`'.Shop::addSqlRestrictionOnLang('pl').Shop::addSqlAssociation('product', 'p'))
                 ->where('pl.`id_lang` = '.(int) $idLang)
                 ->where('product_shop.`active` = 1')
                 ->where($this->id ? ('p.`id_product` '.$in.' (SELECT pt.`id_product` FROM `'._DB_PREFIX_.'product_tag` pt WHERE pt.`id_tag` = '.(int) $this->id.')') : '')
