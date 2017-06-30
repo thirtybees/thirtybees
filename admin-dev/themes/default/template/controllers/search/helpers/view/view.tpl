@@ -157,7 +157,7 @@ $(function() {
 	<div class="col-lg-4">
 		<div class="panel">
 			<h3>{l s='Search thirty bees forum'}</h3>
-			<a href="https://www.google.com/search?q=site%3Athirtybees.com%2Fforums%2F+{$query}" class="btn btn-default _blank">{l s='Go to the Forum'}</a>
+			<a href="https://www.google.com/search?q=site%3Ahttps://forum.thirtybees.com+{$query}" class="btn btn-default _blank">{l s='Go to the Forum'}</a>
 		</div>
 	</div>
 </div>
