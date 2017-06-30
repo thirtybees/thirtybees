@@ -2178,9 +2178,39 @@ class CartCore extends ObjectModel
         if ($roundingMethod === 0) {
             $roundingMethod = (int) Configuration::get('PS_ROUND_TYPE');
         }
+        $precision = (int) Configuration::get('PS_PRICE_DISPLAY_PRECISION');
 
         switch ($roundingMethod) {
             case Order::ROUND_ITEM:
+                // Round on item
+                $total = 0;
+                $totalTax = 0;
+                foreach ($this->getProducts() as $product) {
+                    $price = Tools::ps_round($product['price'], $precision);
+                    $priceWithTax = Tools::ps_round($product['price_wt'], $precision);
+                    $appliedTaxRate = $priceWithTax / $price - 1;
+
+                    $total += $price * $product['quantity'];
+                    $totalTax += $appliedTaxRate * $price * $product['quantity'];
+                }
+
+                return $totalTax / $total;
+            case Order::ROUND_LINE:
+                // Round on cart line
+                $total = 0;
+                $totalTax = 0;
+                foreach ($this->getProducts() as $product) {
+                    $lineTotal = Tools::ps_round($product['total'], $precision);
+                    $lineTotalWithTax = Tools::ps_round($product['total_wt'], $precision);
+                    $appliedTaxRate = $lineTotalWithTax / $lineTotal - 1;
+
+                    $total += $lineTotal;
+                    $totalTax += $appliedTaxRate * $lineTotal;
+                }
+
+                return $totalTax / $total;
+            case 4:
+                // No rounding
                 $total = 0;
                 $totalTax = 0;
                 foreach ($this->getProducts() as $product) {
@@ -2191,24 +2221,14 @@ class CartCore extends ObjectModel
                 }
 
                 return $totalTax / $total;
-            case Order::ROUND_LINE:
-                $total = 0;
-                $totalTax = 0;
-                foreach ($this->getProducts() as $product) {
-                    $appliedTaxRate = $product['total_wt'] / $product['total'] - 1;
-
-                    $total += $product['total'];
-                    $totalTax += $appliedTaxRate * $product['total'];
-                }
-
-                return $totalTax / $total;
             default:
+                // Round on total
                 $cartVatAmount = $cartAmountTaxIncluded - $cartAmountTaxExcluded;
 
                 if ($cartVatAmount == 0 || $cartAmountTaxExcluded == 0) {
                     return 0;
                 } else {
-                    return Tools::ps_round($cartVatAmount / $cartAmountTaxExcluded, 3);
+                    return $cartVatAmount / $cartAmountTaxExcluded;
                 }
                 break;
         }
