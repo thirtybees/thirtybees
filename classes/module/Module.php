@@ -208,10 +208,9 @@ abstract class ModuleCore
                 // Join clause is done to check if the module is activated in current shop context
                 $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                     (new DbQuery())
-                        ->select('m.`id_module`, m.`name`, m.`id_module` AS `mshop`')
+                        ->select('m.`id_module`, m.`name`, ms.`id_module` AS `mshop`')
                         ->from('module', 'm')
-                        ->leftJoin('module_shop', 'ms', 'ms.`id_module` = m.`id_module`')
-                        ->where('ms.`id_shop` = '.(int) $idShop)
+                        ->leftJoin('module_shop', 'ms', 'ms.`id_module` = m.`id_module` AND ms.`id_shop` = '.(int) $idShop)
                 );
                 foreach ($result as $row) {
                     static::$modules_cache[$row['name']] = $row;
@@ -230,15 +229,6 @@ abstract class ModuleCore
                     }
                 }
                 $this->_path = __PS_BASE_URI__.'modules/'.$this->name.'/';
-            } else {
-                // Get the module id from the database
-                $this->id = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-                    (new DbQuery())
-                        ->select('`id_module`')
-                        ->from('module')
-                        ->where('`name` = \''.pSQL($this->name).'\'')
-                );
-
             }
             if (!$this->context->controller instanceof Controller) {
                 static::$modules_cache = null;
