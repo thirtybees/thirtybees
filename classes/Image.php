@@ -262,7 +262,7 @@ class ImageCore extends ObjectModel
                 [
                     'cover' => ['type' => 'sql', 'value' => 'NULL'],
                 ],
-                '`id_shop` IN ('.implode(',', array_map('intval', Shop::getContextListShopID())).') AND image_shop.`id_product` = '.(int) $idProduct
+                '`id_shop` IN ('.implode(',', array_map('intval', Shop::getContextListShopID())).') AND `id_product` = '.(int) $idProduct
             ));
     }
 
