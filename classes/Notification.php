@@ -170,7 +170,7 @@ class NotificationCore
             return Db::getInstance()->update(
                 'employee',
                 [
-                    '`id_last'.bqSQL($type).'`' => ['type' => 'sql', 'value' => '(SELECT IFNULL(MAX(`id_'.$type.'`), 0) FROM `'._DB_PREFIX_.(($type == 'order') ? bqSQL($type).'s' : bqSQL($type)).'`)'],
+                    'id_last_'.bqSQL($type) => ['type' => 'sql', 'value' => '(SELECT IFNULL(MAX(`id_'.$type.'`), 0) FROM `'._DB_PREFIX_.(($type == 'order') ? bqSQL($type).'s' : bqSQL($type)).'`)'],
                 ],
                 '`id_employee` = '.(int) $cookie->id_employee
             );
