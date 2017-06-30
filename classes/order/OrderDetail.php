@@ -882,12 +882,7 @@ class OrderDetailCore extends ObjectModel
             (int) $this->customer->id_default_group,
             (int) $product['cart_quantity'],
             false,
-            null,
-            null,
-            $null,
-            true,
-            true,
-            $this->context
+            null
         );
 
         $unitPrice = Product::getPriceStatic(
