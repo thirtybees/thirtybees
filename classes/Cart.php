@@ -2276,13 +2276,15 @@ class CartCore extends ObjectModel
                 $taxCalculator = $taxManager->getTaxCalculator();
                 $wrappingFees = $taxCalculator->addTaxes($wrappingFees);
             }
-        } elseif (Configuration::get('PS_ATCP_SHIPWRAP')) {
-            // With PS_ATCP_SHIPWRAP, wrapping fee is by default tax included, so we convert it
-            // when asked for the pre tax price.
-            $wrappingFees = Tools::ps_round(
-                $wrappingFees / (1 + $this->getAverageProductsTaxRate()),
-                _PS_PRICE_COMPUTE_PRECISION_
-            );
+
+            if (Configuration::get('PS_ATCP_SHIPWRAP')) {
+                // With PS_ATCP_SHIPWRAP, wrapping fee is by default tax included, so we convert it
+                // when asked for the pre tax price.
+                $wrappingFees = Tools::ps_round(
+                    $wrappingFees * (1 + $this->getAverageProductsTaxRate()),
+                    _PS_PRICE_COMPUTE_PRECISION_
+                );
+            }
         }
 
         return $wrappingFees;
