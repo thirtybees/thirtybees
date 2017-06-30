@@ -467,13 +467,13 @@ function init() {
       go = false;
     }
 
-    if (!$('input#add_product_product_price_excl').val()) {
+    if (!$('input#add_product_product_price_tax_excl').val()) {
       jAlert(window.txt_add_product_no_product_price);
       go = false;
     }
 
     if (go) {
-      if (parseInt($('input#add_product_product_quantity').val(), 10) > parseInt($('#add_product_product_stock').html()), 10) {
+      if (parseInt($('input#add_product_product_quantity').val(), 10) > parseInt($('#add_product_product_stock').html(), 10)) {
         go = confirm(window.txt_add_product_stock_issue);
       }
 
