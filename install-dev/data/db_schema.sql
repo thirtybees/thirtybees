@@ -3395,15 +3395,8 @@ CREATE TABLE `PREFIX_page_cache` (
   `id_shop`       INT(11) UNSIGNED,
   `entity_type`   VARCHAR(12)      NOT NULL,
   `id_entity`     INT(11) UNSIGNED,
-  UNIQUE KEY `cache_combo` (`cache_hash`, `id_currency`, `id_language`, `id_country`, `id_shop`),
   PRIMARY KEY (`cache_hash`),
-  INDEX (`cache_hash`),
-  INDEX (`id_currency`),
-  INDEX (`id_language`),
-  INDEX (`id_country`),
-  INDEX (`id_shop`),
-  INDEX (`entity_type`),
-  INDEX (`id_entity`)
+  INDEX `cache_combo` (`cache_hash`, `id_currency`, `id_language`, `id_country`, `id_shop`)
 )
   ENGINE = InnoDB
   DEFAULT CHARSET=utf8mb4
