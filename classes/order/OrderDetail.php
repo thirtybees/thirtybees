@@ -656,6 +656,8 @@ class OrderDetailCore extends ObjectModel
                 return Product::getProductsProperties($idLang, $orderProducts);
             }
         }
+
+        return false;
     }
 
     /**
