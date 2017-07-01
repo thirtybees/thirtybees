@@ -74,7 +74,6 @@ class PrestaShopExceptionCore extends Exception
      */
     public function displayMessage()
     {
-        // FIXME 1.0.1: Improve the error page
         header('HTTP/1.1 500 Internal Server Error');
 
         if (_PS_MODE_DEV_ || getenv('CI')) {
@@ -91,7 +90,7 @@ class PrestaShopExceptionCore extends Exception
 				#psException pre .selected{color: #F20000; font-weight: bold;}
 			</style>';
             echo '<div id="psException">';
-            echo '<h2>['.get_class($this).']</h2>';
+            echo '<h2>['.str_replace('PrestaShop', 'ThirtyBees', get_class($this)).']</h2>';
             echo $this->getExtendedMessage();
 
             echo $this->displayFileDebug($this->file, $this->line);
@@ -126,7 +125,7 @@ class PrestaShopExceptionCore extends Exception
             header('Content-Type: text/plain; charset=UTF-8');
             // Display error message
             $markdown = '';
-            $markdown .= '## '.get_class($this).'  ';
+            $markdown .= '## '.str_replace('PrestaShop', 'ThirtyBees', get_class($this)).'  ';
             $markdown .= $this->getExtendedMessageMarkdown();
 
             $markdown .= $this->displayFileDebug($this->file, $this->line, null, true);
