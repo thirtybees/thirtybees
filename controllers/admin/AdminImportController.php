@@ -2700,7 +2700,7 @@ class AdminImportControllerCore extends AdminController
                     $tags = Tag::getProductTags($product->id);
                     if (is_array($tags) && count($tags)) {
                         if (!empty($product->tags)) {
-                            $product->tags = explode($this->multiple_value_separator, $product->tags);
+                            $product->tags = $this->fieldExplode($product->tags);
                         }
                         if (is_array($product->tags) && count($product->tags)) {
                             foreach ($product->tags as $key => $tag) {
@@ -2715,8 +2715,8 @@ class AdminImportControllerCore extends AdminController
                 }
                 // Delete tags for this id product, for no duplicating error
                 Tag::deleteTagsForProduct($product->id);
-                if (!is_array($product->tags) && !empty($product->tags)) {
-                    $isTagAdded = Tag::addTags($idLang, $product->id, $product->tags, $this->multiple_value_separator);
+                if (!is_array($product->tags)) {
+                    $isTagAdded = Tag::addTags($idLang, $product->id, $this->fieldExplode($product->tags));
                     if (!$isTagAdded) {
                         $this->addProductWarning(Tools::safeOutput($info['name']), $product->id, $this->l('Tags list is invalid'));
                     }
@@ -5181,4 +5181,32 @@ class AdminImportControllerCore extends AdminController
             );
         }
     }
+
+    /**
+     * Explode a field by multi-value separators. This is a bit more tricky
+     * than a simple explode(), see https://www.ietf.org/rfc/rfc4180.txt and
+     * https://en.wikipedia.org/wiki/Comma-separated_values.
+     *
+     * @param string $field Field to explode.
+     *
+     * @return array Array with single values as strings.
+     *
+     * @TODO While this is usable for seperating other fields than tags, escape
+     *       sequences are ignored so far.
+     *
+     * @since 1.0.2
+     */
+    protected function fieldExplode($field)
+    {
+        if (!is_string($field)) {
+            return [];
+        }
+
+        $field = trim($field, '"');
+        $field = str_replace([$this->separator, $this->multiple_value_separator],
+                             $this->separator, $field);
+
+        return explode($this->separator, $field);
+    }
+
 }
