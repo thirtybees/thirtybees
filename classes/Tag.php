@@ -99,7 +99,8 @@ class TagCore extends ObjectModel
      * @param int          $idLang    Language id
      * @param int          $idProduct Product id to link tags with
      * @param string|array $tagList   List of tags, as array or as a string with comas
-     * @param string       $separator
+     * @param string       $separator Separator to split a given string inot an array.
+     *                                Not needed if $tagList is an array already.
      *
      * @return bool Operation success
      *
@@ -113,7 +114,7 @@ class TagCore extends ObjectModel
         }
 
         if (!is_array($tagList)) {
-            $tagList = array_filter(array_unique(array_map('trim', preg_split('#\\'.$separator.'#', $tagList, null, PREG_SPLIT_NO_EMPTY))));
+            $tagList = explode($separator, $tagList);
         }
 
         $list = [];
