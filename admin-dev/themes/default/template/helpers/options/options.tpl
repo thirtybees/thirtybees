@@ -184,7 +184,15 @@
 										</div>
 									{elseif $field['type'] == 'text'}
 										<div class="col-lg-9">{if isset($field['suffix'])}<div class="input-group{if isset($field.class)} {$field.class}{/if}">{/if}
-											<input class="form-control {if isset($field['class'])}{$field['class']}{/if}" type="{$field['type']}"{if isset($field['id'])} id="{$field['id']}"{/if} size="{if isset($field['size'])}{$field['size']|intval}{else}5{/if}" name="{$key}" value="{if isset($field['no_escape']) && $field['no_escape']}{$field['value']|escape:'UTF-8'}{else}{$field['value']|escape:'html':'UTF-8'}{/if}" {if isset($field['autocomplete']) && !$field['autocomplete']}autocomplete="off"{/if}/>
+											<input class="form-control {if isset($field['class'])}{$field['class']}{/if}"
+												   type="{$field['type']}"{if isset($field['id'])}
+												   id="{$field['id']}"{/if}
+												   size="{if isset($field['size'])}{$field['size']|intval}{else}5{/if}"
+												   name="{$key}"
+												   value="{if isset($field['no_escape']) && $field['no_escape']}{$field['value']|escape:'UTF-8'}{else}{$field['value']|escape:'html':'UTF-8'}{/if}"
+												   {if isset($field['placeholder']) && $field['placeholder']}placeholder="{$field['placeholder']|escape:'htmlall':'UTF-8'}"{/if}
+												   {if isset($field['autocomplete']) && !$field['autocomplete']}autocomplete="off"{/if}
+												/>
 											{if isset($field['suffix'])}
 											<span class="input-group-addon">
 												{$field['suffix']|strval}
@@ -252,7 +260,12 @@
 										<div class="col-lg-9">
 											<div class="input-group fixed-width-lg">
 												<span class="input-group-addon">{$currency_left_sign}{$currency_right_sign} {l s='(tax excl.)'}</span>
-												<input type="text" size="{if isset($field['size'])}{$field['size']|intval}{else}5{/if}" name="{$key}" value="{$field['value']|escape:'html':'UTF-8'}" />
+													<input type="text"
+													   size="{if isset($field['size'])}{$field['size']|intval}{else}5{/if}"
+													   name="{$key}"
+													   value="{$field['value']|escape:'html':'UTF-8'}"
+													   {if isset($field['placeholder']) && $field['placeholder']}placeholder="{$field['placeholder']|escape:'htmlall':'UTF-8'}"{/if}
+													/>
 											</div>
 										</div>
 									{elseif $field['type'] == 'textLang' || $field['type'] == 'textareaLang' || $field['type'] == 'selectLang'}
