@@ -205,7 +205,7 @@ class ReferrerCore extends ObjectModel
                 ->leftJoin('connections_source', 'cs', 'rc.`id_connections_source` = cs.`id_connections_source`')
                 ->leftJoin('connections', 's', 'cs.`id_connections` = c.`id_connections`')
                 ->leftJoin('connections_page', 'cp', 'cp.`id_connections` = c.`id_connections`')
-                ->where((isset($employee->stats_date_from) && isset($employee->stats_date_to)) ? ' AND cs.date_add BETWEEN \''.pSQL($employee->stats_date_from).' 00:00:00\' AND \''.pSQL($employee->stats_date_to).' 23:59:59\'' : '')
+                ->where((isset($employee->stats_date_from) && isset($employee->stats_date_to)) ? 'cs.`date_add` BETWEEN \''.pSQL($employee->stats_date_from).' 00:00:00\' AND \''.pSQL($employee->stats_date_to).' 23:59:59\'' : '')
                 ->where('1 '.Shop::addSqlRestriction(false, 'rs'))
                 ->where('1 '.Shop::addSqlRestriction(false, 'c'))
                 ->where('rc.`id_referrer` = '.(int) $this->id)

@@ -142,9 +142,9 @@ class RangeWeightCore extends ObjectModel
                 ->select('COUNT(*)')
                 ->from('range_weight', 'rw')
                 ->join((is_null($idCarrier) && $idReference ? ' INNER JOIN `'._DB_PREFIX_.'carrier` c on (rw.`id_carrier` = c.`id_carrier`)' : ''))
-                ->where($idCarrier ? ' `id_carrier` = '.(int) $idCarrier : '')
-                ->where((is_null($idCarrier) && $idReference ? ' c.`id_reference` = '.(int) $idReference : ''))
-                ->where((is_null($idCarrier) && $idReference ? ' c.`id_reference` = '.(int) $idReference : ''))
+                ->where($idCarrier ? '`id_carrier` = '.(int) $idCarrier : '')
+                ->where((is_null($idCarrier) && $idReference ? 'c.`id_reference` = '.(int) $idReference : ''))
+                ->where((is_null($idCarrier) && $idReference ? 'c.`id_reference` = '.(int) $idReference : ''))
                 ->where('`delimiter1` = '.(float) $delimiter1)
                 ->where('`delimiter2` = '.(float) $delimiter2)
         );

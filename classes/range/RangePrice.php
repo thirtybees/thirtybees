@@ -168,7 +168,7 @@ class RangePriceCore extends ObjectModel
                 ->from('range_price')
                 ->where('`id_carrier` = '.(int) $idCarrier)
                 ->where('((`delimiter1` >= '.(float) $delimiter1.' AND `delimiter1` < '.(float) $delimiter2.') OR (`delimiter2` > '.(float) $delimiter1.' AND `delimiter2` < '.(float) $delimiter2.') OR ('.(float) $delimiter1.' > `delimiter1` AND '.(float) $delimiter1.' < `delimiter2`) OR ('.(float) $delimiter2.' < `delimiter1` AND '.(float) $delimiter2.' > `delimiter2`)')
-                ->where(!is_null($idRang) ? ' AND `id_range_price` != '.(int) $idRang : '')
+                ->where(!is_null($idRang) ? '`id_range_price` != '.(int) $idRang : '')
         );
     }
 }
