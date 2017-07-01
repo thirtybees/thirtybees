@@ -2722,23 +2722,16 @@ class AdminImportControllerCore extends AdminController
                     }
                 } else {
                     foreach ($product->tags as $key => $tags) {
-                        $str = '';
-                        foreach ($tags as $oneTag) {
-                            $str .= $oneTag.$this->multiple_value_separator;
-                        }
-                        $str = rtrim($str, $this->multiple_value_separator);
-
-                        $isTagAdded = Tag::addTags($key, $product->id, $str, $this->multiple_value_separator);
+                        $isTagAdded = Tag::addTags($key, $product->id, $tags);
                         if (!$isTagAdded) {
                             $this->addProductWarning(
                                 Tools::safeOutput($info['name']),
                                 (int) $product->id,
                                 sprintf(
                                     $this->l('Invalid tag(s) (%s)'),
-                                    $str
+                                    implode(', ', $tags)
                                 )
                             );
-                            break;
                         }
                     }
                 }
