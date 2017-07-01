@@ -577,7 +577,7 @@ class OrderDetailCore extends ObjectModel
      * @param int $idLang
      * @param int $limit
      *
-     * @return array|false
+     * @return array
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -585,7 +585,7 @@ class OrderDetailCore extends ObjectModel
     public static function getCrossSells($idProduct, $idLang, $limit = 12)
     {
         if (!$idProduct || !$idLang) {
-            return false;
+            return [];
         }
 
         $front = true;
@@ -657,7 +657,7 @@ class OrderDetailCore extends ObjectModel
             }
         }
 
-        return false;
+        return [];
     }
 
     /**
