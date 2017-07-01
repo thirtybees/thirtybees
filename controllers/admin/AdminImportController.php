@@ -2710,13 +2710,9 @@ class AdminImportControllerCore extends AdminController
                 // Delete tags for this id product, for no duplicating error
                 Tag::deleteTagsForProduct($product->id);
                 if (!is_array($product->tags) && !empty($product->tags)) {
-                    $product->tags = static::createMultiLangField($product->tags);
-                    foreach ($product->tags as $key => $tags) {
-                        $isTagAdded = Tag::addTags($key, $product->id, $tags, $this->multiple_value_separator);
-                        if (!$isTagAdded) {
-                            $this->addProductWarning(Tools::safeOutput($info['name']), $product->id, $this->l('Tags list is invalid'));
-                            break;
-                        }
+                    $isTagAdded = Tag::addTags($idLang, $product->id, $product->tags, $this->multiple_value_separator);
+                    if (!$isTagAdded) {
+                        $this->addProductWarning(Tools::safeOutput($info['name']), $product->id, $this->l('Tags list is invalid'));
                     }
                 } else {
                     foreach ($product->tags as $key => $tags) {
@@ -4472,7 +4468,7 @@ class AdminImportControllerCore extends AdminController
             );
         }
         $this->closeCsvFile($handle);
-        
+
         return $lineCount;
     }
 
