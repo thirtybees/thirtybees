@@ -551,10 +551,10 @@ class CarrierCore extends ObjectModel
             $query->innerJoin(
                 'carrier',
                 'c',
-                'c.id_reference = pc.id_carrier_reference AND c.deleted = 0 AND c.active = 1'
+                'c.`id_reference` = pc.`id_carrier_reference` AND c.`deleted` = 0 AND c.`active` = 1'
             );
-            $query->where('pc.id_product = '.(int) $product->id);
-            $query->where('pc.id_shop = '.(int) $idShop);
+            $query->where('pc.`id_product` = '.(int) $product->id);
+            $query->where('pc.`id_shop` = '.(int) $idShop);
 
             $carriersForProduct = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
             Cache::store($cacheId, $carriersForProduct);

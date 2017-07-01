@@ -164,22 +164,22 @@ class CMSCore extends ObjectModel
 
         if ($idLang) {
             if ($idShop) {
-                $sql->innerJoin('cms_lang', 'l', 'c.id_cms = l.id_cms AND l.id_lang = '.(int) $idLang.' AND l.id_shop = '.(int) $idShop);
+                $sql->innerJoin('cms_lang', 'l', 'c.`id_cms` = l.`id_cms` AND l.`id_lang` = '.(int) $idLang.' AND l.`id_shop` = '.(int) $idShop);
             } else {
-                $sql->innerJoin('cms_lang', 'l', 'c.id_cms = l.id_cms AND l.id_lang = '.(int) $idLang);
+                $sql->innerJoin('cms_lang', 'l', 'c.`id_cms` = l.`id_cms` AND l.`id_lang` = '.(int) $idLang);
             }
         }
 
         if ($idShop) {
-            $sql->innerJoin('cms_shop', 'cs', 'c.id_cms = cs.id_cms AND cs.id_shop = '.(int) $idShop);
+            $sql->innerJoin('cms_shop', 'cs', 'c.`id_cms` = cs.`id_cms` AND cs.`id_shop` = '.(int) $idShop);
         }
 
         if ($active) {
-            $sql->where('c.active = 1');
+            $sql->where('c.`active` = 1');
         }
 
         if ($idCmsCategory) {
-            $sql->where('c.id_cms_category = '.(int) $idCmsCategory);
+            $sql->where('c.`id_cms_category` = '.(int) $idCmsCategory);
         }
 
         $sql->orderBy('position');
