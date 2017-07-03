@@ -39,16 +39,12 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
     // @codingStandardsIgnoreStart
     /** @var SupplyOrder $supply_order */
     public $supply_order;
-
     /** @var Warehouse $warehouse */
     public $warehouse;
-
     /** @var Address $address_warehouse */
     public $address_warehouse;
-
     /** @var Address $address_supplier */
     public $address_supplier;
-
     /** @var Context $context */
     public $context;
     // @codingStandardsIgnoreEnd
