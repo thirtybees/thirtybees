@@ -39,7 +39,6 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
     // @codingStandardsIgnoreStart
     /** @var Order $order */
     public $order;
-
     /** @var OrderSlip $order_slip */
     public $order_slip;
     // @codingStandardsIgnoreEnd
@@ -68,7 +67,7 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
         // header informations
         $this->date = Tools::displayDate($this->order_slip->date_add);
         $prefix = Configuration::get('PS_CREDIT_SLIP_PREFIX', Context::getContext()->language->id);
-        $this->title = sprintf(HTMLTemplateOrderSlip::l('%1$s%2$06d'), $prefix, (int) $this->order_slip->id);
+        $this->title = sprintf(static::l('%1$s%2$06d'), $prefix, (int) $this->order_slip->id);
 
         $this->shop = new Shop((int) $this->order->id_shop);
     }
@@ -86,7 +85,7 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
         $this->assignCommonHeaderData();
         $this->smarty->assign(
             [
-                'header' => HTMLTemplateOrderSlip::l('Credit slip'),
+                'header' => static::l('Credit slip'),
             ]
         );
 
@@ -121,11 +120,12 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
                 $product['total_price_tax_incl'] = $product['unit_price_tax_incl'] * $product['product_quantity'];
 
                 if ($this->order_slip->partial == 1) {
-                    $orderSlipDetail = Db::getInstance()->getRow(
-                        '
-						SELECT * FROM `'._DB_PREFIX_.'order_slip_detail`
-						WHERE `id_order_slip` = '.(int) $this->order_slip->id.'
-						AND `id_order_detail` = '.(int) $product['id_order_detail']
+                    $orderSlipDetail = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                        (new DbQuery())
+                            ->select('*')
+                            ->from('order_slip_detail')
+                            ->where('`id_order_slip` = '.(int) $this->order_slip->id)
+                            ->where('`id_order_detail` = '.(int) $product['id_order_detail'])
                     );
 
                     $product['total_price_tax_excl'] = $orderSlipDetail['amount_tax_excl'];
@@ -160,7 +160,7 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
         $this->order->total_paid_tax_excl += $this->order->total_shipping_tax_excl;
 
         $totalCartRule = 0;
-        if ($this->order_slip->order_slip_type == 1 && is_array($cartRules = $this->order->getCartRules($this->order_invoice->id))) {
+        if ($this->order_slip->order_slip_type == 1 && is_array($cartRules = $this->order->getCartRules())) {
             foreach ($cartRules as $cartRule) {
                 if ($taxExcludedDisplay) {
                     $totalCartRule += $cartRule['value_tax_excl'];
@@ -175,7 +175,7 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
                 'order'                => $this->order,
                 'order_slip'           => $this->order_slip,
                 'order_details'        => $this->order->products,
-                'cart_rules'           => $this->order_slip->order_slip_type == 1 ? $this->order->getCartRules($this->order_invoice->id) : false,
+                'cart_rules'           => $this->order_slip->order_slip_type == 1 ? $this->order->getCartRules() : false,
                 'amount_choosen'       => $this->order_slip->order_slip_type == 2 ? true : false,
                 'delivery_address'     => $formattedDeliveryAddress,
                 'invoice_address'      => $formattedInvoiceAddress,
@@ -236,13 +236,13 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
     public function getTaxTabContent()
     {
         $address = new Address((int) $this->order->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
-        $tax_exempt = Configuration::get('VATNUMBER_MANAGEMENT')
+        $taxExempt = Configuration::get('VATNUMBER_MANAGEMENT')
             && !empty($address->vat_number)
             && $address->id_country != Configuration::get('VATNUMBER_COUNTRY');
 
         $this->smarty->assign(
             [
-                'tax_exempt'                      => $tax_exempt,
+                'tax_exempt'                      => $taxExempt,
                 'product_tax_breakdown'           => $this->getProductTaxesBreakdown(),
                 'shipping_tax_breakdown'          => $this->getShippingTaxesBreakdown(),
                 'order'                           => $this->order,
