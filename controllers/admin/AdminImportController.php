@@ -867,7 +867,7 @@ class AdminImportControllerCore extends AdminController
         }
 
         if (!$handle) {
-            $this->errors[] = $this->l('Cannot read the .CSV file');
+            $this->errors[] = $this->l('Cannot read the spreadsheet file');
 
             return null; // error case
         }
