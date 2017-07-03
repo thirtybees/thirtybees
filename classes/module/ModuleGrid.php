@@ -38,28 +38,20 @@ abstract class ModuleGridCore extends Module
 {
     // @codingStandardsIgnoreStart
     protected $_employee;
-
     /** @var array of strings graph data */
     protected $_values = [];
-
     /** @var int total number of values **/
     protected $_totalCount = 0;
-
     /**@var string graph titles */
     protected $_title;
-
     /**@var int start */
     protected $_start;
-
     /**@var int limit */
     protected $_limit;
-
     /**@var string column name on which to sort */
     protected $_sort = null;
-
     /**@var string sort direction DESC/ASC */
     protected $_direction = null;
-
     /** @var ModuleGridEngine grid engine */
     protected $_render;
     // @codingStandardsIgnoreEnd
@@ -73,7 +65,7 @@ abstract class ModuleGridCore extends Module
     abstract protected function getData();
 
     /**
-     * @param $idEmployee
+     * @param int $idEmployee
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -84,7 +76,7 @@ abstract class ModuleGridCore extends Module
     }
 
     /**
-     * @param $idLang
+     * @param int $idLang
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -142,7 +134,7 @@ abstract class ModuleGridCore extends Module
     }
 
     /**
-     * @param $params
+     * @param array $params
      *
      * @return mixed
      *
