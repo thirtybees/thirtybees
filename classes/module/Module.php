@@ -1344,20 +1344,19 @@ abstract class ModuleCore
         $list = Shop::getContextListShopID();
 
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            'SELECT DISTINCT m.`id_module`, h.`id_hook`, m.`name`, hm.`position`
-		FROM `'._DB_PREFIX_.'module` m
-		'.($frontend ? 'LEFT JOIN `'._DB_PREFIX_.'module_country` mc ON (m.`id_module` = mc.`id_module` AND mc.id_shop = '.(int) $context->shop->id.')' : '').'
-		'.($frontend && $useGroups ? 'INNER JOIN `'._DB_PREFIX_.'module_group` mg ON (m.`id_module` = mg.`id_module` AND mg.id_shop = '.(int) $context->shop->id.')' : '').'
-		'.($frontend && isset($context->customer) && $useGroups ? 'INNER JOIN `'._DB_PREFIX_.'customer_group` cg on (cg.`id_group` = mg.`id_group`AND cg.`id_customer` = '.(int) $context->customer->id.')' : '').'
-		LEFT JOIN `'._DB_PREFIX_.'hook_module` hm ON hm.`id_module` = m.`id_module`
-		LEFT JOIN `'._DB_PREFIX_.'hook` h ON hm.`id_hook` = h.`id_hook`
-		WHERE h.`name` = \''.pSQL($hookPayment).'\'
-		'.(isset($billing) && $frontend ? 'AND mc.id_country = '.(int) $billing->id_country : '').'
-		AND (SELECT COUNT(*) FROM '._DB_PREFIX_.'module_shop ms WHERE ms.id_module = m.id_module AND ms.id_shop IN('.implode(', ', $list).')) = '.count($list).'
-		AND hm.id_shop IN('.implode(', ', $list).')
-		'.((count($groups) && $frontend && $useGroups) ? 'AND (mg.`id_group` IN ('.implode(', ', $groups).'))' : '').'
-		GROUP BY hm.id_hook, hm.id_module
-		ORDER BY hm.`position`, m.`name` DESC'
+            (new DbQuery())
+                ->select('DISTINCT m.`id_module`, h.`id_hook`, m.`name`, hm.`position`')
+                ->from('module', 'm')
+                ->join($frontend ? 'LEFT JOIN `'._DB_PREFIX_.'module_country` mc ON (m.`id_module` = mc.`id_module` AND mc.id_shop = '.(int) $context->shop->id.')' : '')
+                ->join($frontend && $useGroups ? 'INNER JOIN `'._DB_PREFIX_.'module_group` mg ON (m.`id_module` = mg.`id_module` AND mg.id_shop = '.(int) $context->shop->id.')' : '')
+                ->join(isset($context->customer) && $useGroups ? 'INNER JOIN `'._DB_PREFIX_.'customer_group` cg on (cg.`id_group` = mg.`id_group`AND cg.`id_customer` = '.(int) $context->customer->id.')' : '')
+                ->where('h.`name` = \''.pSQL($hookPayment).'\'')
+                ->where((isset($billing) && $frontend ? 'AND mc.id_country = '.(int) $billing->id_country : ''))
+                ->where('(SELECT COUNT(*) FROM '._DB_PREFIX_.'module_shop ms WHERE ms.id_module = m.id_module AND ms.id_shop IN('.implode(', ', $list).')) = '.count($list))
+                ->where('hm.`id_shop` IN('.implode(', ', $list).')')
+                ->where((count($groups) && $frontend && $useGroups) ? 'AND (mg.`id_group` IN ('.implode(', ', $groups).'))' : '')
+                ->groupBy('hm.`id_hook`, hm.`id_module`')
+                ->orderBy('hm.`position`, m.`name` DESC')
         );
     }
 
@@ -1376,7 +1375,7 @@ abstract class ModuleCore
     }
 
     /**
-     * @param $moduleName
+     * @param string $moduleName
      *
      * @return bool|null
      *
@@ -1428,6 +1427,8 @@ abstract class ModuleCore
 
     /**
      * Insert module into datable
+     *
+     * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
