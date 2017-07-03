@@ -36,7 +36,9 @@
  */
 class ConfigurationKPICore extends Configuration
 {
+    // @codingStandardsIgnoreStart
     public static $definition_backup;
+    // @codingStandardsIgnoreEnd
 
     /**
      * @since   1.0.0
@@ -44,7 +46,9 @@ class ConfigurationKPICore extends Configuration
      */
     public static function setKpiDefinition()
     {
+        // @codingStandardsIgnoreStart
         ConfigurationKPI::$definition_backup = Configuration::$definition;
+        // @codingStandardsIgnoreEnd
         Configuration::$definition['table'] = 'configuration_kpi';
         Configuration::$definition['primary'] = 'id_configuration_kpi';
     }
@@ -55,7 +59,9 @@ class ConfigurationKPICore extends Configuration
      */
     public static function unsetKpiDefinition()
     {
+        // @codingStandardsIgnoreStart
         Configuration::$definition = ConfigurationKPI::$definition_backup;
+        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -84,10 +90,8 @@ class ConfigurationKPICore extends Configuration
     public static function loadConfiguration()
     {
         ConfigurationKPI::setKpiDefinition();
-        $r = parent::loadConfiguration();
+        parent::loadConfiguration();
         ConfigurationKPI::unsetKpiDefinition();
-
-        return $r;
     }
 
     /**
@@ -199,10 +203,8 @@ class ConfigurationKPICore extends Configuration
     public static function set($key, $values, $idShopGroup = null, $idShop = null)
     {
         ConfigurationKPI::setKpiDefinition();
-        $r = parent::set($key, $values, $idShopGroup, $idShop);
+        parent::set($key, $values, $idShopGroup, $idShop);
         ConfigurationKPI::unsetKpiDefinition();
-
-        return $r;
     }
 
     /**
@@ -271,10 +273,8 @@ class ConfigurationKPICore extends Configuration
     public static function deleteFromContext($key)
     {
         ConfigurationKPI::setKpiDefinition();
-        $r = parent::deleteFromContext($key);
+        parent::deleteFromContext($key);
         ConfigurationKPI::unsetKpiDefinition();
-
-        return $r;
     }
 
     /**
@@ -297,7 +297,7 @@ class ConfigurationKPICore extends Configuration
     }
 
     /**
-     * @param $key
+     * @param string $key
      *
      * @return bool
      *
