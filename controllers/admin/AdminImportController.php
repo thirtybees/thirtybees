@@ -924,14 +924,10 @@ class AdminImportControllerCore extends AdminController
                     return false;
                 }
 
+                /** @var PHPExcel_Writer_CSV $csvWriter */
                 $csvWriter = PHPExcel_IOFactory::createWriter($excelFile, 'CSV');
+                $csvWriter->setSheetIndex(0);
 
-                if (method_exists($csvWriter, 'setSheetIndex')) {
-                    $csvWriter->setSheetIndex(0);
-                }
-                if (method_exists($csvWriter, 'setDelimiter')) {
-                    $csvWriter->setDelimiter(';');
-                }
                 $csvWriter->save($destFile);
             }
         }
