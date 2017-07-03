@@ -257,48 +257,6 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
     }
 
     /**
-     * Returns different tax breakdown elements
-     *
-     * @return array Different tax breakdown elements
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     */
-    protected function getTaxBreakdown()
-    {
-        $breakdowns = [
-            'product_tax'  => $this->getProductTaxesBreakdown(),
-            'shipping_tax' => $this->getShippingTaxesBreakdown(),
-            'ecotax_tax'   => $this->order_slip->getEcoTaxTaxesBreakdown(),
-        ];
-
-        foreach ($breakdowns as $type => $bd) {
-            if (empty($bd)) {
-                unset($breakdowns[$type]);
-            }
-        }
-
-        if (empty($breakdowns)) {
-            $breakdowns = false;
-        }
-
-        if (isset($breakdowns['product_tax'])) {
-            foreach ($breakdowns['product_tax'] as &$bd) {
-                $bd['total_tax_excl'] = $bd['total_price_tax_excl'];
-            }
-        }
-
-        if (isset($breakdowns['ecotax_tax'])) {
-            foreach ($breakdowns['ecotax_tax'] as &$bd) {
-                $bd['total_tax_excl'] = $bd['ecotax_tax_excl'];
-                $bd['total_amount'] = $bd['ecotax_tax_incl'] - $bd['ecotax_tax_excl'];
-            }
-        }
-
-        return $breakdowns;
-    }
-
-    /**
      * @return array
      *
      * @since   1.0.0
@@ -372,5 +330,47 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
         }
 
         return $taxesBreakdown;
+    }
+
+    /**
+     * Returns different tax breakdown elements
+     *
+     * @return array Different tax breakdown elements
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    protected function getTaxBreakdown()
+    {
+        $breakdowns = [
+            'product_tax'  => $this->getProductTaxesBreakdown(),
+            'shipping_tax' => $this->getShippingTaxesBreakdown(),
+            'ecotax_tax'   => $this->order_slip->getEcoTaxTaxesBreakdown(),
+        ];
+
+        foreach ($breakdowns as $type => $bd) {
+            if (empty($bd)) {
+                unset($breakdowns[$type]);
+            }
+        }
+
+        if (empty($breakdowns)) {
+            $breakdowns = false;
+        }
+
+        if (isset($breakdowns['product_tax'])) {
+            foreach ($breakdowns['product_tax'] as &$bd) {
+                $bd['total_tax_excl'] = $bd['total_price_tax_excl'];
+            }
+        }
+
+        if (isset($breakdowns['ecotax_tax'])) {
+            foreach ($breakdowns['ecotax_tax'] as &$bd) {
+                $bd['total_tax_excl'] = $bd['ecotax_tax_excl'];
+                $bd['total_amount'] = $bd['ecotax_tax_incl'] - $bd['ecotax_tax_excl'];
+            }
+        }
+
+        return $breakdowns;
     }
 }
