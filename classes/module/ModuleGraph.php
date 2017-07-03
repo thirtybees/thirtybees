@@ -37,33 +37,20 @@
 abstract class ModuleGraphCore extends Module
 {
     // @codingStandardsIgnoreStart
+    /** @var Employee $_employee */
     protected $_employee;
-
-    /** @var array of integers graph data */
+    /** @var int[] graph data */
     protected $_values = [];
-
-    /** @var array of strings graph legends (X axis) */
+    /** @var string[] graph legends (X axis) */
     protected $_legend = [];
-
-    /**@var array string graph titles */
+    /**@var string[] graph titles */
     protected $_titles = ['main' => null, 'x' => null, 'y' => null];
-
     /** @var ModuleGraphEngine graph engine */
     protected $_render;
     // @codingStandardsIgnoreEnd
 
     /**
-     * @param $layers
-     *
-     * @return mixed
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
-     */
-    abstract protected function getData($layers);
-
-    /**
-     * @param $idEmployee
+     * @param int $idEmployee
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -95,7 +82,7 @@ abstract class ModuleGraphCore extends Module
     {
         // Get dates in a manageable format
         $fromArray = getdate(strtotime($this->_employee->stats_date_from));
-        $to_array = getdate(strtotime($this->_employee->stats_date_to));
+        $toArray = getdate(strtotime($this->_employee->stats_date_to));
 
         // If the granularity is inferior to 1 day
         if ($this->_employee->stats_date_from == $this->_employee->stats_date_to) {
@@ -114,14 +101,13 @@ abstract class ModuleGraphCore extends Module
             if (is_callable([$this, 'setDayValues'])) {
                 $this->setDayValues($layers);
             }
-        }
-        // If the granularity is inferior to 1 month
-        // @TODO : change to manage 28 to 31 days
-        elseif (strtotime($this->_employee->stats_date_to) - strtotime($this->_employee->stats_date_from) <= 2678400) {
+        } elseif (strtotime($this->_employee->stats_date_to) - strtotime($this->_employee->stats_date_from) <= 2678400) {
+            // If the granularity is inferior to 1 month
+            // @TODO : change to manage 28 to 31 days
             if ($legend) {
                 $days = [];
-                if ($fromArray['mon'] == $to_array['mon']) {
-                    for ($i = $fromArray['mday']; $i <= $to_array['mday']; ++$i) {
+                if ($fromArray['mon'] == $toArray['mon']) {
+                    for ($i = $fromArray['mday']; $i <= $toArray['mday']; ++$i) {
                         $days[] = $i;
                     }
                 } else {
@@ -129,7 +115,7 @@ abstract class ModuleGraphCore extends Module
                     for ($i = $fromArray['mday']; $i <= $imax; ++$i) {
                         $days[] = $i;
                     }
-                    for ($i = 1; $i <= $to_array['mday']; ++$i) {
+                    for ($i = 1; $i <= $toArray['mday']; ++$i) {
                         $days[] = $i;
                     }
                 }
@@ -147,20 +133,19 @@ abstract class ModuleGraphCore extends Module
             if (is_callable([$this, 'setMonthValues'])) {
                 $this->setMonthValues($layers);
             }
-        }
-        // If the granularity is less than 1 year
-        elseif (strtotime('-1 year', strtotime($this->_employee->stats_date_to)) < strtotime($this->_employee->stats_date_from)) {
+        } elseif (strtotime('-1 year', strtotime($this->_employee->stats_date_to)) < strtotime($this->_employee->stats_date_from)) {
+            // If the granularity is less than 1 year
             if ($legend) {
                 $months = [];
-                if ($fromArray['year'] == $to_array['year']) {
-                    for ($i = $fromArray['mon']; $i <= $to_array['mon']; ++$i) {
+                if ($fromArray['year'] == $toArray['year']) {
+                    for ($i = $fromArray['mon']; $i <= $toArray['mon']; ++$i) {
                         $months[] = $i;
                     }
                 } else {
                     for ($i = $fromArray['mon']; $i <= 12; ++$i) {
                         $months[] = $i;
                     }
-                    for ($i = 1; $i <= $to_array['mon']; ++$i) {
+                    for ($i = 1; $i <= $toArray['mon']; ++$i) {
                         $months[] = $i;
                     }
                 }
@@ -178,12 +163,11 @@ abstract class ModuleGraphCore extends Module
             if (is_callable([$this, 'setYearValues'])) {
                 $this->setYearValues($layers);
             }
-        }
-        // If the granularity is greater than 1 year
-        else {
+        } else {
+            // If the granularity is greater than 1 year
             if ($legend) {
                 $years = [];
-                for ($i = $fromArray['year']; $i <= $to_array['year']; ++$i) {
+                for ($i = $fromArray['year']; $i <= $toArray['year']; ++$i) {
                     $years[] = $i;
                 }
                 foreach ($years as $i) {
@@ -292,11 +276,11 @@ abstract class ModuleGraphCore extends Module
     }
 
     /**
-     * @param $render
-     * @param $type
-     * @param $width
-     * @param $height
-     * @param $layers
+     * @param mixed $render
+     * @param mixed $type
+     * @param mixed $width
+     * @param mixed $height
+     * @param mixed $layers
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -329,8 +313,8 @@ abstract class ModuleGraphCore extends Module
     }
 
     /**
-     * @param     $option
-     * @param int $layers
+     * @param mixed $option
+     * @param int   $layers
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -340,7 +324,7 @@ abstract class ModuleGraphCore extends Module
     }
 
     /**
-     * @param $params
+     * @param array $params
      *
      * @return array|mixed|string
      *
@@ -461,4 +445,14 @@ abstract class ModuleGraphCore extends Module
     {
         return $this->_id_lang;
     }
+
+    /**
+     * @param $layers
+     *
+     * @return mixed
+     *
+     * @since 1.0.0
+     * @version 1.0.0 Initial version
+     */
+    abstract protected function getData($layers);
 }
