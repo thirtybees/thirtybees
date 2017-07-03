@@ -1731,8 +1731,10 @@ class AdminImportControllerCore extends AdminController
         if (isset($category->parent) && is_numeric($category->parent)) {
             // Validation for parenting itself
             if ($validateOnly && ($category->parent == $category->id) || (isset($info['id']) && $category->parent == (int) $info['id'])) {
-                $this->errors[] = sprintf($this->l(
-                    'The category ID must be unique. It can\'t be the same as the one for the parent category (ID: %1$s).'),
+                $this->errors[] = sprintf(
+                    $this->l(
+                        'The category ID must be unique. It can\'t be the same as the one for the parent category (ID: %1$s).'
+                    ),
                     [(isset($info['id']) && !empty($info['id'])) ? $info['id'] : 'null']
                 );
 
@@ -1876,9 +1878,9 @@ class AdminImportControllerCore extends AdminController
         if (!$res) {
             $this->errors[] = sprintf(
                 $this->l('%1$s (ID: %2$s) cannot be %3$s'),
-                    (isset($info['name']) && !empty($info['name'])) ? Tools::safeOutput($info['name']) : 'No Name',
-                    (isset($info['id']) && !empty($info['id'])) ? Tools::safeOutput($info['id']) : 'No ID',
-                    ($validateOnly ? 'validated' : 'saved')
+                (isset($info['name']) && !empty($info['name'])) ? Tools::safeOutput($info['name']) : 'No Name',
+                (isset($info['id']) && !empty($info['id'])) ? Tools::safeOutput($info['id']) : 'No ID',
+                ($validateOnly ? 'validated' : 'saved')
             );
             $errorTmp = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').Db::getInstance()->getMsgError();
             if ($errorTmp != '') {
@@ -2245,6 +2247,74 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
+     * Gets a list of IDs from a list of IDs/Refs. The result will avoid duplicates, and checks if given IDs/Refs exists in DB.
+     * Useful when a product list should be checked before a bulk operation on them (Only 1 query => performances).
+     *
+     * @param int|int[]|string|string[] $idsOrRefs
+     *
+     * @return array|false The IDs list, without duplicates and only existing ones.
+     *
+     * @since 1.0.1
+     */
+    protected static function getExistingIdsFromIdsOrRefs($idsOrRefs)
+    {
+        // separate IDs and Refs
+        $ids = [];
+        $refs = [];
+        $whereStatements = [];
+        foreach ((is_array($idsOrRefs) ? $idsOrRefs : [$idsOrRefs]) as $idOrRef) {
+            if (is_numeric($idOrRef)) {
+                $ids[] = (int) $idOrRef;
+            } elseif (is_string($idOrRef)) {
+                $refs[] = '\''.pSQL($idOrRef).'\'';
+            }
+        }
+        // construct WHERE statement with OR combination
+        if (count($ids) > 0) {
+            $whereStatements[] = ' p.id_product IN ('.implode(',', $ids).') ';
+        }
+        if (count($refs) > 0) {
+            $whereStatements[] = ' p.reference IN ('.implode(',', $refs).') ';
+        }
+        if (!count($whereStatements)) {
+            return false;
+        }
+        $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('DISTINCT `id_product`')
+                ->from('product', 'p')
+                ->where(implode(' OR ', $whereStatements))
+        );
+        // simplify array since there is 1 useless dimension.
+        $results = array_column($results, 'id_product');
+
+        return $results;
+    }
+
+    /**
+     * Link accessories with product. No need to inflate a full Product (better performances).
+     *
+     * @param array $accessoriesId Accessories ids
+     * @param int   $productId     The product ID to link accessories on.
+     *
+     * @return void
+     *
+     * @since 1.0.1
+     */
+    protected static function changeAccessoriesForProduct($accessoriesId, $productId)
+    {
+        foreach ($accessoriesId as $idProduct2) {
+            Db::getInstance()->insert(
+                'accessory',
+                [
+                    'id_product_1' => (int) $productId,
+                    'id_product_2' => (int) $idProduct2,
+                ]
+            );
+        }
+    }
+
+    /**
      * @param      $info
      * @param      $idDefaultLanguage
      * @param      $idLang
@@ -2265,13 +2335,12 @@ class AdminImportControllerCore extends AdminController
         if ($forceIds && isset($info['id']) && (int) $info['id']) {
             $product = new Product((int) $info['id']);
         } elseif ($matchRef && array_key_exists('reference', $info)) {
-            $datas = Db::getInstance()->getRow(
-                '
-					SELECT p.`id_product`
-					FROM `'._DB_PREFIX_.'product` p
-					'.Shop::addSqlAssociation('product', 'p').'
-					WHERE p.`reference` = "'.pSQL($info['reference']).'"
-				',
+            $datas = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                (new DbQuery())
+                    ->select('p.`id_product`')
+                    ->from('product', 'p')
+                    ->join(Shop::addSqlAssociation('product', 'p'))
+                    ->where('p.`reference` = \''.pSQL($info['reference']).'\''),
                 false
             );
             if (isset($datas['id_product']) && $datas['id_product']) {
@@ -2447,8 +2516,7 @@ class AdminImportControllerCore extends AdminController
                                 );
                             }
                             if ($fieldError !== true || isset($langFieldError) && $langFieldError !== true) {
-                                $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').
-                                    Db::getInstance()->getMsgError();
+                                $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').Db::getInstance()->getMsgError();
                             }
                         }
                     }
@@ -2541,25 +2609,26 @@ class AdminImportControllerCore extends AdminController
 
             // If match ref is specified && ref product && ref product already in base, trying to update
             if ($matchRef && $product->reference && $product->existsRefInDatabase($product->reference)) {
-                $datas = Db::getInstance()->getRow(
-                    '
-					SELECT product_shop.`date_add`, p.`id_product`
-					FROM `'._DB_PREFIX_.'product` p
-					'.Shop::addSqlAssociation('product', 'p').'
-					WHERE p.`reference` = "'.pSQL($product->reference).'"
-				', false
+                $datas = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                    (new DbQuery())
+                        ->select('`product_shop`.`date_add`, p.`id_product`')
+                        ->from('product', 'p')
+                        ->join(Shop::addSqlAssociation('product', 'p'))
+                        ->where('p.`reference` = \''.pSQL($product->reference).'\''),
+                    false
                 );
                 $product->id = (int) $datas['id_product'];
                 $product->date_add = pSQL($datas['date_add']);
                 $res = ($validateOnly || $product->update());
             } // Else If id product && id product already in base, trying to update
             elseif ($productExistsInDatabase) {
-                $datas = Db::getInstance()->getRow(
-                    '
-					SELECT product_shop.`date_add`
-					FROM `'._DB_PREFIX_.'product` p
-					'.Shop::addSqlAssociation('product', 'p').'
-					WHERE p.`id_product` = '.(int) $product->id, false
+                $datas = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                    (new DbQuery())
+                        ->select('`product_shop`.`date_add`')
+                        ->from('product', 'p')
+                        ->join(shop::addSqlAssociation('product', 'p'))
+                        ->where('p.`id_product` = '.(int) $product->id),
+                    false
                 );
                 $product->date_add = pSQL($datas['date_add']);
                 $res = ($validateOnly || $product->update());
@@ -2947,6 +3016,33 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
+     * Explode a field by multi-value separators. This is a bit more tricky
+     * than a simple explode(), see https://www.ietf.org/rfc/rfc4180.txt and
+     * https://en.wikipedia.org/wiki/Comma-separated_values.
+     *
+     * @param string $field Field to explode.
+     *
+     * @return array Array with single values as strings.
+     *
+     * @since 1.0.2
+     */
+    protected function fieldExplode($field)
+    {
+        if (!is_string($field)) {
+            return [];
+        }
+
+        $field = trim($field, '"');
+        $field = str_replace(
+            [$this->separator, $this->multiple_value_separator],
+            $this->separator,
+            $field
+        );
+
+        return explode($this->separator, $field);
+    }
+
+    /**
      * @param bool $offset
      * @param bool $limit
      * @param bool $validateOnly
@@ -3148,7 +3244,7 @@ class AdminImportControllerCore extends AdminController
                     foreach ($idGroup as $key => $id) {
                         $customer->id_shop = (int) $key;
                         $customer->id_shop_group = (int) $id;
-                        if ($customerExist && (isset($currentIdShopGroup) && (int) $currentIdShopGroup == (int) $id || isset($currentIdShop) && in_array($currentIdShop, ShopGroup::getShopsFromGroup($id)))) {
+                        if (isset($currentIdCustomer) && $customerExist && (isset($currentIdShopGroup) && (int) $currentIdShopGroup == (int) $id || isset($currentIdShop) && in_array($currentIdShop, ShopGroup::getShopsFromGroup($id)))) {
                             $customer->id = (int) $currentIdCustomer;
                             $res &= ($validateOnly || $customer->update());
                         } else {
@@ -3205,7 +3301,8 @@ class AdminImportControllerCore extends AdminController
         }
 
         if (!$res) {
-            $this->errors[] = sprintf($this->l('%1$s (ID: %2$s) cannot be %3$s'),
+            $this->errors[] = sprintf(
+                $this->l('%1$s (ID: %2$s) cannot be %3$s'),
                 $info['email'],
                 (isset($info['id']) && !empty($info['id'])) ? $info['id'] : 'null',
                 ($validateOnly ? 'validated' : 'saved')
@@ -3226,7 +3323,6 @@ class AdminImportControllerCore extends AdminController
     public function addressImport($offset = false, $limit = false, $validateOnly = false)
     {
         $this->receiveTab();
-        $defaultLanguageId = (int) Configuration::get('PS_LANG_DEFAULT');
         $handle = $this->openCsvFile($offset);
         if (!$handle) {
             return false;
@@ -3330,7 +3426,7 @@ class AdminImportControllerCore extends AdminController
                 $state = new State();
                 $state->active = 1;
                 $state->name = $address->state;
-                $state->id_country = isset($country->id) ? (int) $country->id : 0;
+                $state->id_country = isset($country) && isset($country->id) ? (int) $country->id : 0;
                 $state->id_zone = 0; // Default zone for state to create
                 $state->iso_code = Tools::strtoupper(Tools::substr($address->state, 0, 2)); // Default iso for state to create
                 $state->tax_behavior = 0;
@@ -3612,13 +3708,12 @@ class AdminImportControllerCore extends AdminController
         if (isset($info['id_product']) && $info['id_product']) {
             $product = new Product((int) $info['id_product'], false, $defaultLanguage);
         } elseif (Tools::getValue('match_ref') && isset($info['product_reference']) && $info['product_reference']) {
-            $datas = Db::getInstance()->getRow(
-                '
-				SELECT p.`id_product`
-				FROM `'._DB_PREFIX_.'product` p
-				'.Shop::addSqlAssociation('product', 'p').'
-				WHERE p.`reference` = "'.pSQL($info['product_reference']).'"
-			    ',
+            $datas = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                (new DbQuery())
+                    ->select('p.`id_product`')
+                    ->from('product', 'p')
+                    ->join(Shop::addSqlAssociation('product', 'p'))
+                    ->where('p.`reference` = \''.pSQL($info['product_reference']).'\''),
                 false
             );
             if (isset($datas['id_product']) && $datas['id_product']) {
@@ -3924,10 +4019,15 @@ class AdminImportControllerCore extends AdminController
                 }
 
                 foreach ($attributesToAdd as $attributeToAdd) {
-                    Db::getInstance()->execute(
-                        '
-						INSERT IGNORE INTO '._DB_PREFIX_.'product_attribute_combination (id_attribute, id_product_attribute)
-						VALUES ('.(int) $attributeToAdd.','.(int) $idProductAttribute.')', false
+                    Db::getInstance()->insert(
+                        'product_attribute_combination',
+                        [
+                            'id_attribute' => (int) $attributeToAdd,
+                            'id_product_attribute' => (int) $idProductAttribute,
+                        ],
+                        false,
+                        false,
+                        Db::INSERT_IGNORE
                     );
                 }
             }
@@ -3941,7 +4041,7 @@ class AdminImportControllerCore extends AdminController
                 } elseif (!$validateOnly) {
                     $product->setAdvancedStockManagement($info['advanced_stock_management']);
                 }
-                // automaticly disable depends on stock, if a_s_m set to disabled
+                // automatically disable depends on stock, if a_s_m set to disabled
                 if (!$validateOnly && StockAvailable::dependsOnStock($product->id) == 1 && $info['advanced_stock_management'] == 0) {
                     StockAvailable::setProductDependsOnStock($product->id, 0, null, $idProductAttribute);
                 }
@@ -4162,10 +4262,9 @@ class AdminImportControllerCore extends AdminController
             if (!$validateOnly && $res) {
                 // Associate supplier to group shop
                 if ($shopIsFeatureActive && $manufacturer->shop) {
-                    Db::getInstance()->execute(
-                        '
-						DELETE FROM '._DB_PREFIX_.'manufacturer_shop
-						WHERE id_manufacturer = '.(int) $manufacturer->id
+                    Db::getInstance()->delete(
+                        'manufacturer_shop',
+                        'id_manufacturer = '.(int) $manufacturer->id
                     );
                     $manufacturer->shop = explode($this->multiple_value_separator, $manufacturer->shop);
                     $shops = [];
@@ -4599,6 +4698,25 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
+     * This method checks if a store exists
+     *
+     * @param int $idStore Store ID
+     *
+     * @return bool
+     *
+     * @since 1.0.1
+     */
+    protected static function storeExists($idStore)
+    {
+        $sql = new DbQuery();
+        $sql->select('`id_store`');
+        $sql->from('store');
+        $sql->where('`id_store` = '.(int) $idStore);
+
+        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
+    }
+
+    /**
      * @param bool $offset
      * @param bool $limit
      * @param bool $validateOnly
@@ -4819,7 +4937,7 @@ class AdminImportControllerCore extends AdminController
             $this->errors[] = sprintf($this->l('Supply Order (%s) could not be loaded (at line %d).'), $info['supply_order_reference'], $currentLine + 1);
         }
 
-        if (empty($this->errors)) {
+        if (empty($this->errors) && isset($supplyOrder)) {
             // sets parameters
             $idProduct = (int) $info['id_product'];
             if (!$info['id_product_attribute']) {
@@ -4897,13 +5015,9 @@ class AdminImportControllerCore extends AdminController
 
                 // gets ean13 / ref / upc
                 $query = new DbQuery();
-                $query->select(
-                    '
-					IFNULL(pa.reference, IFNULL(p.reference, \'\')) as reference,
-					IFNULL(pa.ean13, IFNULL(p.ean13, \'\')) as ean13,
-					IFNULL(pa.upc, IFNULL(p.upc, \'\')) as upc
-				'
-                );
+                $query->select('IFNULL(pa.reference, IFNULL(p.reference, \'\')) as reference');
+                $query->select('IFNULL(pa.ean13, IFNULL(p.ean13, \'\')) as ean13');
+                $query->select('IFNULL(pa.upc, IFNULL(p.upc, \'\')) as upc');
                 $query->from('product', 'p');
                 $query->leftJoin('product_attribute', 'pa', 'pa.id_product = p.id_product AND id_product_attribute = '.(int) $idProductAttribute);
                 $query->where('p.id_product = '.(int) $idProduct);
@@ -4957,7 +5071,10 @@ class AdminImportControllerCore extends AdminController
     {
         if ($this->tabAccess['edit'] === '1') {
             $return = Db::getInstance()->executeS(
-                'SELECT * FROM `'._DB_PREFIX_.'import_match` WHERE `id_import_match` = '.(int) Tools::getValue('idImportMatchs'),
+                (new DbQuery())
+                    ->select('*')
+                    ->from('import_match')
+                    ->where('`id_import_match` = '.(int) Tools::getValue('idImportMatchs')),
                 true,
                 false
             );
@@ -5086,120 +5203,6 @@ class AdminImportControllerCore extends AdminController
         }
 
         return ($a['label'] < $b['label']) ? -1 : 1;
-    }
-
-    /**
-     * This method checks if a store exists
-     *
-     * @param int $idStore Store ID
-     *
-     * @return bool
-     *
-     * @since 1.0.1
-     */
-    protected static function storeExists($idStore)
-    {
-        $sql = new DbQuery();
-        $sql->select('`id_store`');
-        $sql->from('store');
-        $sql->where('`id_store` = '.(int) $idStore);
-
-        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue($sql);
-    }
-
-    /**
-     * Gets a list of IDs from a list of IDs/Refs. The result will avoid duplicates, and checks if given IDs/Refs exists in DB.
-     * Useful when a product list should be checked before a bulk operation on them (Only 1 query => performances).
-     *
-     * @return false|array The IDs list, whithout duplicate and only existing ones.
-     *
-     * @since 1.0.1
-     */
-    protected static function getExistingIdsFromIdsOrRefs($idsOrRefs)
-    {
-        // separate IDs and Refs
-        $ids = array();
-        $refs = array();
-        $whereStatements = array();
-        foreach ((is_array($idsOrRefs) ? $idsOrRefs : array($idsOrRefs)) as $idOrRef) {
-            if (is_numeric($idOrRef)) {
-                $ids[] = (int) $idOrRef;
-            } elseif (is_string($idOrRef)) {
-                $refs[] = '\''.pSQL($idOrRef).'\'';
-            }
-        }
-        // construct WHERE statement with OR combination
-        if (count($ids) > 0) {
-            $whereStatements[] = ' p.id_product IN ('.implode(',', $ids).') ';
-        }
-        if (count($refs) > 0) {
-            $whereStatements[] = ' p.reference IN ('.implode(',', $refs).') ';
-        }
-        if (!count($whereStatements)) {
-            return false;
-        }
-        $results = Db::getInstance()->executeS('
-            SELECT DISTINCT `id_product`
-            FROM `'._DB_PREFIX_.'product` p
-            WHERE '.implode(' OR ', $whereStatements)
-        );
-        // simplify array since there is 1 useless dimension.
-        // FIXME : find a better way to avoid this, directly in SQL?
-        foreach ($results as $k => $v) {
-            $results[$k] = (int) $v['id_product'];
-        }
-
-        return $results;
-    }
-
-    /**
-     * Link accessories with product. No need to inflate a full Product (better performances).
-     *
-     * @param array $accessoriesId Accessories ids
-     * @param int   $productId     The product ID to link accessories on.
-     *
-     * @return void
-     *
-     * @since 1.0.1
-     */
-    protected static function changeAccessoriesForProduct($accessoriesId, $productId)
-    {
-        foreach ($accessoriesId as $idProduct2) {
-            Db::getInstance()->insert(
-                'accessory',
-                [
-                    'id_product_1' => (int) $productId,
-                    'id_product_2' => (int) $idProduct2,
-                ]
-            );
-        }
-    }
-
-    /**
-     * Explode a field by multi-value separators. This is a bit more tricky
-     * than a simple explode(), see https://www.ietf.org/rfc/rfc4180.txt and
-     * https://en.wikipedia.org/wiki/Comma-separated_values.
-     *
-     * @param string $field Field to explode.
-     *
-     * @return array Array with single values as strings.
-     *
-     * @TODO While this is usable for seperating other fields than tags, escape
-     *       sequences are ignored so far.
-     *
-     * @since 1.0.2
-     */
-    protected function fieldExplode($field)
-    {
-        if (!is_string($field)) {
-            return [];
-        }
-
-        $field = trim($field, '"');
-        $field = str_replace([$this->separator, $this->multiple_value_separator],
-                             $this->separator, $field);
-
-        return explode($this->separator, $field);
     }
 
 }
