@@ -39,7 +39,6 @@ class HTMLTemplateOrderReturnCore extends HTMLTemplate
     // @codingStandardsIgnoreStart
     /** @var OrderReturn $order_return */
     public $order_return;
-
     /** @var Order $order */
     public $order;
     // @codingStandardsIgnoreEnd
@@ -105,7 +104,7 @@ class HTMLTemplateOrderReturnCore extends HTMLTemplate
             'conditions_tab' => $this->smarty->fetch($this->getTemplate('order-return.conditions-tab')),
         ];
         $this->smarty->assign($tpls);
-        
+
         return $this->smarty->fetch($this->getTemplate('order-return'));
     }
 
