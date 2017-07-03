@@ -4070,7 +4070,7 @@ class AdminProductsControllerCore extends AdminController
         foreach ($this->_languages as $language) {
             $rewrittenLinks[(int) $language['id_lang']] = explode(
                 '[REWRITE]',
-                rtrim($context->link->getCategoryLink($product->id_category_default, null, (int) $language['id_lang']), '/').'/'
+                $context->link->getProductLink($product->id, '[REWRITE]', (int) $product->id_category_default)
             );
         }
 
