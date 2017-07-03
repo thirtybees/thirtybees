@@ -799,6 +799,10 @@ class AdminImportControllerCore extends AdminController
         $this->addJS(_PS_JS_DIR_.'admin/import.js');
 
         $handle = $this->openCsvFile();
+        if (!$handle) {
+            return '';
+        }
+
         $nbColumn = $this->getNbrColumn($handle, $this->separator);
         $nbTable = ceil($nbColumn / static::MAX_COLUMNS);
 
@@ -907,12 +911,18 @@ class AdminImportControllerCore extends AdminController
             }
 
             if (!is_file($destFile)) {
+                /** @var PHPExcel_Reader_IReader $readerExcel */
                 $readerExcel = PHPExcel_IOFactory::createReaderForFile($csvFolder.$filename);
-                /** @var PHPExcel_Reader_IReader */
                 if (method_exists($readerExcel, 'setReadDataOnly')) {
                     $readerExcel->setReadDataOnly(true);
                 }
-                $excelFile = $readerExcel->load($csvFolder.$filename);
+                try {
+                    $excelFile = $readerExcel->load($csvFolder.$filename);
+                } catch (PHPExcel_Exception $e) {
+                    $this->errors[] = $e->getMessage();
+
+                    return false;
+                }
 
                 $csvWriter = PHPExcel_IOFactory::createWriter($excelFile, 'CSV');
 
