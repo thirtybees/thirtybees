@@ -80,7 +80,7 @@ class RequestSqlCore extends ObjectModel
         'primary' => 'id_request_sql',
         'fields'  => [
             'name' => ['type' => self::TYPE_STRING, 'validate' => 'isString', 'required' => true, 'size' => 200],
-            'sql'  => ['type' => self::TYPE_SQL, 'validate' => 'isString', 'required' => true],
+            'sql'  => ['type' => self::TYPE_SQL,    'validate' => 'isString', 'required' => true],
         ],
     ];
 
@@ -94,7 +94,12 @@ class RequestSqlCore extends ObjectModel
      */
     public static function getRequestSql()
     {
-        if (!$result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('SELECT * FROM `'._DB_PREFIX_.'request_sql` ORDER BY `id_request_sql`')) {
+        if (!$result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new Dbquery())
+                ->select('*')
+                ->from(bqSQL(static::$definition['table']))
+                ->orderBy('`'.bqSQL(static::$definition['primary']).'`')
+        )) {
             return false;
         }
 
@@ -118,14 +123,19 @@ class RequestSqlCore extends ObjectModel
      */
     public static function getRequestSqlById($id)
     {
-        return Db::getInstance()->executeS('SELECT `sql` FROM `'._DB_PREFIX_.'request_sql` WHERE `id_request_sql` = '.(int) $id);
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('`sql`')
+                ->from(bqSQL(static::$definition['table']))
+                ->where('`'.bqSQL(static::$definition['primary']).'` = '.(int) $id)
+        );
     }
 
     /**
      * Call the parserSQL() method in Tools class
      * Cut the request in table for check it
      *
-     * @param $sql
+     * @param string $sql
      *
      * @return bool
      *
@@ -140,9 +150,9 @@ class RequestSqlCore extends ObjectModel
     /**
      * Check if the parsing of the SQL request is good or not
      *
-     * @param      $tab
-     * @param bool $in
-     * @param      $sql
+     * @param array  $tab
+     * @param bool   $in
+     * @param string $sql
      *
      * @return bool
      *
@@ -170,9 +180,9 @@ class RequestSqlCore extends ObjectModel
     /**
      * Cut the request for check each cutting
      *
-     * @param $tab
-     * @param $in
-     * @param $sql
+     * @param array  $tab
+     * @param bool   $in
+     * @param string $sql
      *
      * @return bool
      *
@@ -221,7 +231,7 @@ class RequestSqlCore extends ObjectModel
     /**
      * Check if all required sentence existing
      *
-     * @param $tab
+     * @param array $tab
      *
      * @return bool
      *
@@ -244,7 +254,7 @@ class RequestSqlCore extends ObjectModel
     /**
      * Check if an unauthorized existing in an array
      *
-     * @param $tab
+     * @param array $tab
      *
      * @return bool
      *
@@ -267,7 +277,7 @@ class RequestSqlCore extends ObjectModel
     /**
      * Check a "FROM" sentence
      *
-     * @param $from
+     * @param string $from
      *
      * @return bool
      *
@@ -321,6 +331,7 @@ class RequestSqlCore extends ObjectModel
      */
     public function getTables()
     {
+        $tables = [];
         $results = Db::getInstance()->executeS('SHOW TABLES');
         foreach ($results as $result) {
             $key = array_keys($result);
@@ -333,8 +344,8 @@ class RequestSqlCore extends ObjectModel
     /**
      * Cut an join sentence
      *
-     * @param $attrs
-     * @param $from
+     * @param array  $attrs
+     * @param string $from
      *
      * @return array|bool
      */
@@ -357,8 +368,8 @@ class RequestSqlCore extends ObjectModel
     /**
      * Cut an attribute with or without the alias
      *
-     * @param $attr
-     * @param $from
+     * @param array  $attr
+     * @param string $from
      *
      * @return array|bool
      */
@@ -392,10 +403,11 @@ class RequestSqlCore extends ObjectModel
     /**
      * Get name of table by alias
      *
-     * @param bool $alias
-     * @param      $tables
+     * @param bool   $alias
+     * @param array  $tables
+     * @param string $attr
      *
-     * @return array|bool
+     * @return array|false
      */
     public function returnNameTable($alias = false, $tables, $attr = null)
     {
@@ -429,13 +441,15 @@ class RequestSqlCore extends ObjectModel
 
             return $tab;
         }
+
+        return false;
     }
 
     /**
      * Check if an attributes existe in an table
      *
-     * @param $attr
-     * @param $table
+     * @param string $attr
+     * @param string $table
      *
      * @return bool
      *
@@ -463,7 +477,7 @@ class RequestSqlCore extends ObjectModel
     /**
      * Get list of all attributes by an table
      *
-     * @param $table
+     * @param string $table
      *
      * @return array
      *
@@ -478,9 +492,9 @@ class RequestSqlCore extends ObjectModel
     /**
      * Check a "SELECT" sentence
      *
-     * @param      $select
-     * @param      $from
-     * @param bool $in
+     * @param string[] $select
+     * @param string[] $from
+     * @param bool     $in
      *
      * @return bool
      *
@@ -491,6 +505,7 @@ class RequestSqlCore extends ObjectModel
     {
         $nb = count($select);
         for ($i = 0; $i < $nb; $i++) {
+            /** @var string[] $attribut */
             $attribut = $select[$i];
             if ($attribut['base_expr'] != '*' && !preg_match('/\.*$/', $attribut['base_expr'])) {
                 if ($attribut['expr_type'] == 'colref') {
@@ -525,9 +540,9 @@ class RequestSqlCore extends ObjectModel
     /**
      * Check a "WHERE" sentence
      *
-     * @param $where
-     * @param $from
-     * @param $sql
+     * @param array  $where
+     * @param array  $from
+     * @param string $sql
      *
      * @return bool
      *
@@ -576,8 +591,8 @@ class RequestSqlCore extends ObjectModel
     /**
      * Check a "HAVING" sentence
      *
-     * @param $having
-     * @param $from
+     * @param string[] $having
+     * @param string   $from
      *
      * @return bool
      *
@@ -624,8 +639,8 @@ class RequestSqlCore extends ObjectModel
     /**
      * Check a "ORDER" sentence
      *
-     * @param $order
-     * @param $from
+     * @param string[] $order
+     * @param string   $from
      *
      * @return bool
      *
@@ -661,8 +676,8 @@ class RequestSqlCore extends ObjectModel
     /**
      * Check a "GROUP BY" sentence
      *
-     * @param $group
-     * @param $from
+     * @param array  $group
+     * @param string $from
      *
      * @return bool
      *
@@ -698,7 +713,7 @@ class RequestSqlCore extends ObjectModel
     /**
      * Check a "LIMIT" sentence
      *
-     * @param $limit
+     * @param string[] $limit
      *
      * @return bool
      *
