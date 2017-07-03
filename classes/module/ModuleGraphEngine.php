@@ -76,28 +76,29 @@ abstract class ModuleGraphEngineCore extends Module
      */
     public static function getGraphEngines()
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
-	    	SELECT m.`name`
-	    	FROM `'._DB_PREFIX_.'module` m
-	    	LEFT JOIN `'._DB_PREFIX_.'hook_module` hm ON hm.`id_module` = m.`id_module`
-	    	LEFT JOIN `'._DB_PREFIX_.'hook` h ON hm.`id_hook` = h.`id_hook`
-	    	WHERE h.`name` = \'displayAdminStatsGraphEngine\'
-	    ');
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('m.`name`')
+                ->from('module', 'm')
+                ->leftJoin('hook_module', 'hm', 'hm.`id_module` = m.`id_module`')
+                ->leftJoin('hook', 'h', 'hm.`id_hook` = h.`id_hook`')
+                ->where('h.`name` = \'displayAdminStatsGraphEngine\'')
+        );
 
-        $array_engines = [];
+        $arrayEngines = [];
         foreach ($result as $module) {
             $instance = Module::getInstanceByName($module['name']);
             if (!$instance) {
                 continue;
             }
-            $array_engines[$module['name']] = [$instance->displayName, $instance->description];
+            $arrayEngines[$module['name']] = [$instance->displayName, $instance->description];
         }
 
-        return $array_engines;
+        return $arrayEngines;
     }
 
     /**
-     * @param $values
+     * @param mixed $values
      *
      * @return mixed
      *
@@ -107,8 +108,8 @@ abstract class ModuleGraphEngineCore extends Module
     abstract public function createValues($values);
 
     /**
-     * @param $width
-     * @param $height
+     * @param mixed $width
+     * @param mixed $height
      *
      * @return mixed
      *
@@ -118,7 +119,7 @@ abstract class ModuleGraphEngineCore extends Module
     abstract public function setSize($width, $height);
 
     /**
-     * @param $legend
+     * @param mixed $legend
      *
      * @return mixed
      *
@@ -128,7 +129,7 @@ abstract class ModuleGraphEngineCore extends Module
     abstract public function setLegend($legend);
 
     /**
-     * @param $titles
+     * @param mixed $titles
      *
      * @return mixed
      * @since 1.0.0
