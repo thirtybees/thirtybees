@@ -52,10 +52,10 @@ class PDFCore
     const TEMPLATE_SUPPLY_ORDER_FORM = 'SupplyOrderForm';
 
     /**
-     * @param        $objects
-     * @param        $template
-     * @param        $smarty
-     * @param string $orientation
+     * @param array        $objects
+     * @param HTMLTemplate $template
+     * @param Smarty       $smarty
+     * @param string       $orientation
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -81,7 +81,7 @@ class PDFCore
      *
      * @param bool $display
      *
-     * @return mixed
+     * @return string
      * @throws PrestaShopException
      *
      * @since   1.0.0
@@ -125,6 +125,8 @@ class PDFCore
 
             return $this->pdf_renderer->render($this->filename, $display);
         }
+
+        return '';
     }
 
     /**
