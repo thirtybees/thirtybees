@@ -37,14 +37,6 @@
 class RangePriceCore extends ObjectModel
 {
     // @codingStandardsIgnoreStart
-    /** @var int $id_carrier */
-    public $id_carrier;
-    /** @var float $delimiter1 */
-    public $delimiter1;
-    /** @var float $delimiter2 */
-    public $delimiter2;
-    // @codingStandardsIgnoreEnd
-
     /**
      * @see ObjectModel::$definition
      */
@@ -52,12 +44,17 @@ class RangePriceCore extends ObjectModel
         'table'   => 'range_price',
         'primary' => 'id_range_price',
         'fields'  => [
-            'id_carrier' => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'required' => true],
+            'id_carrier' => ['type' => self::TYPE_INT,   'validate' => 'isInt',           'required' => true],
             'delimiter1' => ['type' => self::TYPE_FLOAT, 'validate' => 'isUnsignedFloat', 'required' => true],
             'delimiter2' => ['type' => self::TYPE_FLOAT, 'validate' => 'isUnsignedFloat', 'required' => true],
         ],
     ];
-
+    /** @var int $id_carrier */
+    public $id_carrier;
+    /** @var float $delimiter1 */
+    public $delimiter1;
+    /** @var float $delimiter2 */
+    public $delimiter2;
     protected $webserviceParameters = [
         'objectsNodeName' => 'price_ranges',
         'objectNodeName'  => 'price_range',
@@ -65,43 +62,7 @@ class RangePriceCore extends ObjectModel
             'id_carrier' => ['xlink_resource' => 'carriers'],
         ],
     ];
-
-    /**
-     * Override add to create delivery value for all zones
-     *
-     * @see     classes/ObjectModelCore::add()
-     *
-     * @param bool $autoDate
-     * @param bool $nullValues
-     *
-     * @return bool Insertion result
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public function add($autoDate = true, $nullValues = false)
-    {
-        if (!parent::add($autoDate, $nullValues) || !Validate::isLoadedObject($this)) {
-            return false;
-        }
-        if (defined('TB_INSTALLATION_IN_PROGRESS')) {
-            return true;
-        }
-        $carrier = new Carrier((int) $this->id_carrier);
-        $priceList = [];
-        foreach ($carrier->getZones() as $zone) {
-            $priceList[] = [
-                'id_range_price'  => (int) $this->id,
-                'id_range_weight' => null,
-                'id_carrier'      => (int) $this->id_carrier,
-                'id_zone'         => (int) $zone['id_zone'],
-                'price'           => 0,
-            ];
-        }
-        $carrier->addDeliveryPrice($priceList);
-
-        return true;
-    }
+    // @codingStandardsIgnoreEnd
 
     /**
      * Get all available price ranges
@@ -170,5 +131,42 @@ class RangePriceCore extends ObjectModel
                 ->where('((`delimiter1` >= '.(float) $delimiter1.' AND `delimiter1` < '.(float) $delimiter2.') OR (`delimiter2` > '.(float) $delimiter1.' AND `delimiter2` < '.(float) $delimiter2.') OR ('.(float) $delimiter1.' > `delimiter1` AND '.(float) $delimiter1.' < `delimiter2`) OR ('.(float) $delimiter2.' < `delimiter1` AND '.(float) $delimiter2.' > `delimiter2`)')
                 ->where(!is_null($idRang) ? '`id_range_price` != '.(int) $idRang : '')
         );
+    }
+
+    /**
+     * Override add to create delivery value for all zones
+     *
+     * @see     classes/ObjectModelCore::add()
+     *
+     * @param bool $autoDate
+     * @param bool $nullValues
+     *
+     * @return bool Insertion result
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public function add($autoDate = true, $nullValues = false)
+    {
+        if (!parent::add($autoDate, $nullValues) || !Validate::isLoadedObject($this)) {
+            return false;
+        }
+        if (defined('TB_INSTALLATION_IN_PROGRESS')) {
+            return true;
+        }
+        $carrier = new Carrier((int) $this->id_carrier);
+        $priceList = [];
+        foreach ($carrier->getZones() as $zone) {
+            $priceList[] = [
+                'id_range_price'  => (int) $this->id,
+                'id_range_weight' => null,
+                'id_carrier'      => (int) $this->id_carrier,
+                'id_zone'         => (int) $zone['id_zone'],
+                'price'           => 0,
+            ];
+        }
+        $carrier->addDeliveryPrice($priceList);
+
+        return true;
     }
 }
