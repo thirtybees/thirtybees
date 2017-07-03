@@ -117,7 +117,6 @@ class ModuleFrontControllerCore extends FrontController
     {
         if (Tools::isSubmit('module') && Tools::getValue('controller') == 'payment') {
             $currency = Currency::getCurrency((int) $this->context->cart->id_currency);
-            $orderTotal = $this->context->cart->getOrderTotal();
             $minimalPurchase = Tools::convertPrice((float) Configuration::get('PS_PURCHASE_MINIMUM'), $currency);
             if ($this->context->cart->getOrderTotal(false, Cart::ONLY_PRODUCTS) < $minimalPurchase) {
                 Tools::redirect('index.php?controller=order&step=1');
