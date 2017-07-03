@@ -34,21 +34,17 @@
  *
  * @since 1.0.0
  */
-// @codingStandardsIgnoreStart
 abstract class HTMLTemplateCore
 {
+    // @codingStandardsIgnoreStart
     /** @var string $title */
     public $title;
-
     /** @var string $date */
     public $date;
-
     /** @var bool $available_in_your_account */
     public $available_in_your_account = true;
-
     /** @var Smarty */
     public $smarty;
-
     /** @var Shop */
     public $shop;
     // @codingStandardsIgnoreEnd
