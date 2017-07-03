@@ -37,8 +37,8 @@
 abstract class CarrierModuleCore extends Module
 {
     /**
-     * @param $params
-     * @param $shippingCost
+     * @param array $params
+     * @param float|false $shippingCost
      *
      * @return mixed
      *
@@ -48,7 +48,7 @@ abstract class CarrierModuleCore extends Module
     abstract public function getOrderShippingCost($params, $shippingCost);
 
     /**
-     * @param $params
+     * @param array $params
      *
      * @return mixed
      *
