@@ -76,13 +76,14 @@ abstract class ModuleGridEngineCore extends Module
      */
     public static function getGridEngines()
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
-	    	SELECT m.`name`
-	    	FROM `'._DB_PREFIX_.'module` m
-	    	LEFT JOIN `'._DB_PREFIX_.'hook_module` hm ON hm.`id_module` = m.`id_module`
-	    	LEFT JOIN `'._DB_PREFIX_.'hook` h ON hm.`id_hook` = h.`id_hook`
-	    	WHERE h.`name` = \'displayAdminStatsGridEngine\'
-	    ');
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('m.`name`')
+                ->from('module', 'm')
+                ->leftJoin('module', 'm')
+                ->leftJoin('hook', 'h', 'hm.`id_hook` = h.`id_hook`')
+                ->where('h.`name` = \'displayAdminStatsGridEngine\'')
+        );
 
         $arrayEngines = [];
         foreach ($result as $module) {
@@ -97,7 +98,7 @@ abstract class ModuleGridEngineCore extends Module
     }
 
     /**
-     * @param $values
+     * @param mixed $values
      *
      * @return mixed
      *
@@ -107,7 +108,7 @@ abstract class ModuleGridEngineCore extends Module
     abstract public function setValues($values);
 
     /**
-     * @param $title
+     * @param mixed $title
      *
      * @return mixed
      *
@@ -117,8 +118,8 @@ abstract class ModuleGridEngineCore extends Module
     abstract public function setTitle($title);
 
     /**
-     * @param $width
-     * @param $height
+     * @param mixed $width
+     * @param mixed $height
      *
      * @return mixed
      *
@@ -128,7 +129,7 @@ abstract class ModuleGridEngineCore extends Module
     abstract public function setSize($width, $height);
 
     /**
-     * @param $totalCount
+     * @param mixed $totalCount
      *
      * @return mixed
      *
@@ -138,8 +139,8 @@ abstract class ModuleGridEngineCore extends Module
     abstract public function setTotalCount($totalCount);
 
     /**
-     * @param $start
-     * @param $limit
+     * @param mixed $start
+     * @param mixed $limit
      *
      * @return mixed
      *
