@@ -58,7 +58,7 @@ abstract class PaymentModuleCore extends Module
      */
     public static function addCurrencyPermissions($idCurrency, array $idModuleList = [])
     {
-        $values = '';
+        $values = [];
         if (count($idModuleList) == 0) {
             // fetch all installed module ids
             $modules = PaymentModuleCore::getInstalledPaymentModules();
@@ -68,15 +68,14 @@ abstract class PaymentModuleCore extends Module
         }
 
         foreach ($idModuleList as $idModule) {
-            $values .= '('.(int) $idModule.','.(int) $idCurrency.'),';
+            $values[] = [
+                'id_module' => (int) $idModule,
+                'id_currency' => (int) $idCurrency,
+            ];
         }
 
         if (!empty($values)) {
-            return Db::getInstance()->execute(
-                '
-			INSERT INTO `'._DB_PREFIX_.'module_currency` (`id_module`, `id_currency`)
-			VALUES '.rtrim($values, ',')
-            );
+            return Db::getInstance()->insert('module_currency', $values);
         }
 
         return true;
@@ -95,19 +94,23 @@ abstract class PaymentModuleCore extends Module
     public static function getInstalledPaymentModules()
     {
         $hookPayment = 'Payment';
-        if (Db::getInstance()->getValue('SELECT `id_hook` FROM `'._DB_PREFIX_.'hook` WHERE `name` = \'displayPayment\'')) {
+        if (Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('`id_hook`')
+                ->from('hook')
+                ->where('`name` = \'displayPayment\'')
+        )) {
             $hookPayment = 'displayPayment';
         }
 
-        return Db::getInstance()->executeS(
-            '
-		SELECT DISTINCT m.`id_module`, h.`id_hook`, m.`name`, hm.`position`
-		FROM `'._DB_PREFIX_.'module` m
-		LEFT JOIN `'._DB_PREFIX_.'hook_module` hm ON hm.`id_module` = m.`id_module`'
-            .Shop::addSqlRestriction(false, 'hm').'
-		LEFT JOIN `'._DB_PREFIX_.'hook` h ON hm.`id_hook` = h.`id_hook`
-		INNER JOIN `'._DB_PREFIX_.'module_shop` ms ON (m.`id_module` = ms.`id_module` AND ms.id_shop='.(int) Context::getContext()->shop->id.')
-		WHERE h.`name` = \''.pSQL($hookPayment).'\''
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('DISTINCT m.`id_module`, h.`id_hook`, m.`name`, hm.`position`')
+                ->from('module', 'm')
+                ->leftJoin('hook_module', 'hm', 'hm.`id_module` = m.`id_module`')
+                ->leftJoin('hook', 'h', 'hm.`id_hook` = h.`id_hook`')
+                ->innerJoin('module_shop', 'ms', 'm.`id_module` = ms.`id_module` AND ms.`id_shop` = '.(int) Context::getContext()->shop->id)
+                ->where('h.`name` = \''.pSQL($hookPayment).'\'')
         );
     }
 
@@ -124,9 +127,9 @@ abstract class PaymentModuleCore extends Module
             return false;
         }
 
-        if (($module_instance = Module::getInstanceByName($moduleName))) {
-            /** @var PaymentModule $module_instance */
-            if (!$module_instance->currencies || ($module_instance->currencies && count(Currency::checkPaymentCurrencies($module_instance->id)))) {
+        if (($moduleInstance = Module::getInstanceByName($moduleName))) {
+            /** @var PaymentModule $moduleInstance */
+            if (!$moduleInstance->currencies || ($moduleInstance->currencies && count(Currency::checkPaymentCurrencies($moduleInstance->id)))) {
                 return true;
             }
         }
@@ -198,12 +201,14 @@ abstract class PaymentModuleCore extends Module
         }
 
         foreach ($shops as $s) {
-            if (!Db::getInstance()->execute(
-                '
-					INSERT INTO `'._DB_PREFIX_.'module_currency` (`id_module`, `id_shop`, `id_currency`)
-					SELECT '.(int) $this->id.', "'.(int) $s.'", `id_currency` FROM `'._DB_PREFIX_.'currency` WHERE deleted = 0'
-            )
-            ) {
+            if (!Db::getInstance()->insert(
+                'module_currency',
+                [
+                    'id_module' => (int) $this->id,
+                    'id_shop' => (int) $s,
+                    'id_currency' => ['type' => 'sql', 'value' => '(SELECT `id_currency` FROM `'._DB_PREFIX_.'currency` WHERE `deleted` = 0)'],
+                ]
+            )) {
                 return false;
             }
         }
@@ -228,11 +233,14 @@ abstract class PaymentModuleCore extends Module
         }
 
         foreach ($shops as $s) {
-            if (!Db::getInstance()->execute(
-                'INSERT INTO `'._DB_PREFIX_.'module_currency` (`id_module`, `id_shop`, `id_currency`)
-				VALUES ('.(int) $this->id.', "'.(int) $s.'", -2)'
-            )
-            ) {
+            if (!Db::getInstance()->insert(
+                'module_currency',
+                [
+                    'id_module' => (int) $this->id,
+                    'id_shop' => (int) $s,
+                    'id_currency' => '-2',
+                ]
+            )) {
                 return false;
             }
         }
@@ -282,11 +290,14 @@ abstract class PaymentModuleCore extends Module
 
         foreach ($shops as $s) {
             foreach ($carrierIds as $idCarrier) {
-                if (!Db::getInstance()->execute(
-                    'INSERT INTO `'._DB_PREFIX_.'module_carrier` (`id_module`, `id_shop`, `id_reference`)
- 				VALUES ('.(int) $this->id.', "'.(int) $s.'", '.(int) $idCarrier.')'
-                )
-                ) {
+                if (!Db::getInstance()->insert(
+                    'module_carrier',
+                    [
+                        'id_module' => (int) $this->id,
+                        'id_shop' => (int) $s,
+                        'id_reference' => (int) $idCarrier,
+                    ]
+                )) {
                     return false;
                 }
             }
@@ -303,10 +314,10 @@ abstract class PaymentModuleCore extends Module
      */
     public function uninstall()
     {
-        if (!Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'module_country` WHERE id_module = '.(int) $this->id)
-            || !Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'module_currency` WHERE id_module = '.(int) $this->id)
-            || !Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'module_group` WHERE id_module = '.(int) $this->id)
-            || !Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'module_carrier` WHERE id_module = '.(int) $this->id)
+        if (!Db::getInstance()->delete('module_country', '`id_module` = '.(int) $this->id)
+            || !Db::getInstance()->delete('module_currency', '`id_module`` = '.(int) $this->id)
+            || !Db::getInstance()->delete('module_group', '`id_module` = '.(int) $this->id)
+            || !Db::getInstance()->delete('module_carrier', '`id_module` = '.(int) $this->id)
         ) {
             return false;
         }
@@ -320,9 +331,9 @@ abstract class PaymentModuleCore extends Module
      *
      * @param int    $idCart
      * @param int    $idOrderState
-     * @param float  $amountPaid    Amount really paid by customer (in the default currency)
-     * @param string $paymentMethod Payment method (eg. 'Credit card')
-     * @param null   $message       Message to attach to order
+     * @param float  $amountPaid      Amount really paid by customer (in the default currency)
+     * @param string $paymentMethod   Payment method (eg. 'Credit card')
+     * @param null   $message         Message to attach to order
      * @param array  $extraVars
      * @param null   $currencySpecial
      * @param bool   $dontTouchAmount
