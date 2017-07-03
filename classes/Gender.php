@@ -35,11 +35,6 @@
 class GenderCore extends ObjectModel
 {
     // @codingStandardsIgnoreStart
-    public $id_gender;
-    public $name;
-    public $type;
-    // @codingStandardsIgnoreEnd
-
     /**
      * @see ObjectModel::$definition
      */
@@ -54,6 +49,10 @@ class GenderCore extends ObjectModel
             'name' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isString', 'required' => true, 'size' => 20],
         ],
     ];
+    public $id_gender;
+    public $name;
+    // @codingStandardsIgnoreEnd
+    public $type;
 
     /**
      * GenderCore constructor.
@@ -92,7 +91,7 @@ class GenderCore extends ObjectModel
     }
 
     /**
-     * @param bool $use_unknown
+     * @param bool $useUnknown
      *
      * @return string
      *
