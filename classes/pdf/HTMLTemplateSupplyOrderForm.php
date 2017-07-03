@@ -68,7 +68,7 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
         $this->date = Tools::displayDate($supplyOrder->date_add);
         $this->title = HTMLTemplateSupplyOrderForm::l('Supply order form');
 
-        $this->shop = new Shop((int) $this->order->id_shop);
+        $this->shop = new Shop((int) $this->supply_order->id_shop);
     }
 
     /**
