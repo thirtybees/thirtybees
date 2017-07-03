@@ -1003,4 +1003,17 @@ class AdminAttributesGroupsControllerCore extends AdminController
             }
         }
     }
+
+    /**
+     * @param string $url
+     */
+    public function setRedirectAfter($url)
+    {
+        $addUrl = '';
+        if (Tools::isSubmit('view'.AttributeGroup::$definition['table']) && Tools::getValue(AttributeGroup::$definition['primary'])) {
+            $addUrl = '&view'.AttributeGroup::$definition['table'].'&'.AttributeGroup::$definition['primary'].'='.Tools::getValue(AttributeGroup::$definition['primary']);
+        }
+
+        $this->redirect_after = $url.$addUrl;
+    }
 }
