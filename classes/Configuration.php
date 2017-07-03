@@ -357,8 +357,10 @@ class ConfigurationCore extends ObjectModel
     /**
      * Get a single configuration value (in one language only)
      *
-     * @param string $key    Key wanted
-     * @param int    $idLang Language ID
+     * @param string   $key    Key wanted
+     * @param int      $idLang Language ID
+     * @param int|null $idShopGroup
+     * @param int|null $idShop
      *
      * @return string Value
      *
@@ -375,7 +377,12 @@ class ConfigurationCore extends ObjectModel
         if (!isset(static::$_cache[static::$definition['table']])) {
             Configuration::loadConfiguration();
             if (!static::$_cache[static::$definition['table']]) {
-                return Db::getInstance()->getValue('SELECT `value` FROM `'._DB_PREFIX_.bqSQL(static::$definition['table']).'` WHERE `name` = "'.pSQL($key).'"');
+                return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                    (new DbQuery())
+                        ->select('`value`')
+                        ->from(bqSQL(static::$definition['table']))
+                        ->where('`name` = "'.pSQL($key).'"')
+                );
             }
         }
         $idLang = (int) $idLang;
@@ -482,7 +489,7 @@ class ConfigurationCore extends ObjectModel
     /**
      * Get a single configuration value (in multiple languages)
      *
-     * @param string $key Key wanted
+     * @param string $key         Key wanted
      * @param int    $idShopGroup
      * @param int    $idShop
      *
@@ -585,9 +592,9 @@ class ConfigurationCore extends ObjectModel
      *
      * @TODO    Fix saving HTML values in Configuration model
      *
-     * @param string $key        Key
-     * @param mixed  $values     $values is an array if the configuration is multilingual, a single string else.
-     * @param bool   $html       Specify if html is authorized in value
+     * @param string $key         Key
+     * @param mixed  $values      $values is an array if the configuration is multilingual, a single string else.
+     * @param bool   $html        Specify if html is authorized in value
      * @param int    $idShopGroup
      * @param int    $idShop
      *
@@ -744,8 +751,8 @@ class ConfigurationCore extends ObjectModel
     /**
      * Set TEMPORARY a single configuration value (in one language only)
      *
-     * @param string $key    Key wanted
-     * @param mixed  $values $values is an array if the configuration is multilingual, a single string else.
+     * @param string $key         Key wanted
+     * @param mixed  $values      $values is an array if the configuration is multilingual, a single string else.
      * @param int    $idShopGroup
      * @param int    $idShop
      *
