@@ -119,7 +119,7 @@ class ProductSaleCore
         // same for image with cover=1
         $sql = (new DbQuery())
             ->select('p.*, product_shop.*, stock.`out_of_stock`, IFNULL(stock.quantity, 0) as quantity')
-            ->select(Combination::isFeatureActive() ? 'product_attribute_shop.minimal_quantity AS product_attribute_minimal_quantity,IFNULL(product_attribute_shop.id_product_attribute,0) id_product_attribute,' : '')
+            ->select(Combination::isFeatureActive() ? 'product_attribute_shop.minimal_quantity AS product_attribute_minimal_quantity, IFNULL(product_attribute_shop.id_product_attribute,0) id_product_attribute' : '')
             ->select('pl.`description`, pl.`description_short`, pl.`link_rewrite`, pl.`meta_description`')
             ->select('pl.`meta_keywords`, pl.`meta_title`, pl.`name`, pl.`available_now`, pl.`available_later`')
             ->select('m.`name` AS manufacturer_name, p.`id_manufacturer` as id_manufacturer')
