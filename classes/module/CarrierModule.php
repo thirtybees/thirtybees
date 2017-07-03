@@ -37,7 +37,7 @@
 abstract class CarrierModuleCore extends Module
 {
     /**
-     * @param array $params
+     * @param array       $params
      * @param float|false $shippingCost
      *
      * @return mixed
