@@ -612,7 +612,7 @@ class CustomerCore extends ObjectModel
                     ->from('address', 'a')
                     ->leftJoin('country', 'c', 'a.`id_country` = c.`id_country`')
                     ->leftJoin('country_lang', 'cl', 'c.`id_country` = cl.`id_country`')
-                    ->leftJoin('state', 'sd', 's.`id_state` = a.`id_state`')
+                    ->leftJoin('state', 's', 's.`id_state` = a.`id_state`')
                     ->join($shareOrder ? '' : Shop::addSqlAssociation('country', 'c'))
                     ->where('cl.`id_lang` = '.(int) $idLang)
                     ->where('a.`id_customer` = '.(int) $this->id)
