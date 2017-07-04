@@ -315,7 +315,7 @@ abstract class PaymentModuleCore extends Module
     public function uninstall()
     {
         if (!Db::getInstance()->delete('module_country', '`id_module` = '.(int) $this->id)
-            || !Db::getInstance()->delete('module_currency', '`id_module`` = '.(int) $this->id)
+            || !Db::getInstance()->delete('module_currency', '`id_module` = '.(int) $this->id)
             || !Db::getInstance()->delete('module_group', '`id_module` = '.(int) $this->id)
             || !Db::getInstance()->delete('module_carrier', '`id_module` = '.(int) $this->id)
         ) {
