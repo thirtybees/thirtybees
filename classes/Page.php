@@ -84,10 +84,12 @@ class PageCore extends ObjectModel
             $insertData['id_object'] = (int) $objectId;
         }
 
-        $sql = 'SELECT `id_page`
-				FROM `'._DB_PREFIX_.'page`
-				WHERE `id_page_type` = '.(int) $pageTypeId.$where;
-        $result = Db::getInstance()->getRow($sql);
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('`id_page`')
+                ->from('page')
+                ->where('`id_page_type` = '.(int) $pageTypeId.$where)
+        );
         if ($result['id_page']) {
             return $result['id_page'];
         }
@@ -104,16 +106,16 @@ class PageCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @return false|int|null|string
      */
     public static function getPageTypeByName($name)
     {
-        if ($value = Db::getInstance()->getValue(
-            '
-				SELECT id_page_type
-				FROM '._DB_PREFIX_.'page_type
-				WHERE name = \''.pSQL($name).'\''
-        )
-        ) {
+        if ($value = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('`id_page_type`')
+                ->from('page_type')
+                ->where('`name` = \''.pSQL($name).'\'')
+        )) {
             return $value;
         }
 
@@ -123,7 +125,7 @@ class PageCore extends ObjectModel
     }
 
     /**
-     * @param $idPage
+     * @param int $idPage
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -144,7 +146,8 @@ class PageCore extends ObjectModel
         // If no one has seen the page in this date range, it is added
         if (Db::getInstance()->Affected_Rows() == 0) {
             Db::getInstance()->insert(
-                'page_viewed', [
+                'page_viewed',
+                [
                     'id_date_range' => (int) $idDateRange,
                     'id_page'       => (int) $idPage,
                     'counter'       => 1,
