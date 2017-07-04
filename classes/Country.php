@@ -524,7 +524,7 @@ class CountryCore extends ObjectModel
         }
 
         if (!empty($insert)) {
-            return Db::getInstance()->insert('module_country', $insert);
+            return Db::getInstance()->insert('module_country', $insert, false, true, Db::INSERT_IGNORE);
         } else {
             return true;
         }
