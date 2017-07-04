@@ -98,6 +98,7 @@ class ImageTypeCore extends ObjectModel
      */
     public static function getImagesTypes($type = null, $orderBySize = false)
     {
+        // @codingStandardsIgnoreStart
         if (!isset(static::$images_types_cache[$type])) {
             $query = (new DbQuery())
                 ->select('*')
@@ -116,6 +117,7 @@ class ImageTypeCore extends ObjectModel
         }
 
         return static::$images_types_cache[$type];
+        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -183,8 +185,9 @@ class ImageTypeCore extends ObjectModel
     {
         static $isPassed = false;
 
+        // @codingStandardsIgnoreStart
         if (!isset(static::$images_types_name_cache[$name.'_'.$type.'_'.$order]) && !$isPassed) {
-            $results = Db::getInstance()->ExecuteS('SELECT * FROM `'._DB_PREFIX_.'image_type`');
+            $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('SELECT * FROM `'._DB_PREFIX_.'image_type`');
 
             $types = ['products', 'categories', 'manufacturers', 'suppliers', 'scenes', 'stores'];
             $total = count($types);
@@ -204,6 +207,7 @@ class ImageTypeCore extends ObjectModel
         if (isset(static::$images_types_name_cache[$name.'_'.$type.'_'.$order])) {
             $return = static::$images_types_name_cache[$name.'_'.$type.'_'.$order];
         }
+        // @codingStandardsIgnoreEnd
 
         return $return;
     }
