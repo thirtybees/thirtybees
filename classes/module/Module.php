@@ -1351,10 +1351,10 @@ abstract class ModuleCore
                 ->join($frontend && $useGroups ? 'INNER JOIN `'._DB_PREFIX_.'module_group` mg ON (m.`id_module` = mg.`id_module` AND mg.id_shop = '.(int) $context->shop->id.')' : '')
                 ->join(isset($context->customer) && $useGroups ? 'INNER JOIN `'._DB_PREFIX_.'customer_group` cg on (cg.`id_group` = mg.`id_group`AND cg.`id_customer` = '.(int) $context->customer->id.')' : '')
                 ->where('h.`name` = \''.pSQL($hookPayment).'\'')
-                ->where((isset($billing) && $frontend ? 'AND mc.id_country = '.(int) $billing->id_country : ''))
+                ->where((isset($billing) && $frontend ? 'mc.`id_country` = '.(int) $billing->id_country : ''))
                 ->where('(SELECT COUNT(*) FROM '._DB_PREFIX_.'module_shop ms WHERE ms.id_module = m.id_module AND ms.id_shop IN('.implode(', ', $list).')) = '.count($list))
                 ->where('hm.`id_shop` IN('.implode(', ', $list).')')
-                ->where((count($groups) && $frontend && $useGroups) ? 'AND (mg.`id_group` IN ('.implode(', ', $groups).'))' : '')
+                ->where((count($groups) && $frontend && $useGroups) ? '(mg.`id_group` IN ('.implode(', ', $groups).'))' : '')
                 ->groupBy('hm.`id_hook`, hm.`id_module`')
                 ->orderBy('hm.`position`, m.`name` DESC')
         );
