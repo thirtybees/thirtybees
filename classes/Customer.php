@@ -606,15 +606,18 @@ class CustomerCore extends ObjectModel
         $shareOrder = (bool) Context::getContext()->shop->getGroup()->share_order;
         $cacheId = 'Customer::getAddresses'.(int) $this->id.'-'.(int) $idLang.'-'.$shareOrder;
         if (!Cache::isStored($cacheId)) {
-            $sql = 'SELECT DISTINCT a.*, cl.`name` AS country, s.name AS state, s.iso_code AS state_iso
-					FROM `'._DB_PREFIX_.'address` a
-					LEFT JOIN `'._DB_PREFIX_.'country` c ON (a.`id_country` = c.`id_country`)
-					LEFT JOIN `'._DB_PREFIX_.'country_lang` cl ON (c.`id_country` = cl.`id_country`)
-					LEFT JOIN `'._DB_PREFIX_.'state` s ON (s.`id_state` = a.`id_state`)
-					'.($shareOrder ? '' : Shop::addSqlAssociation('country', 'c')).'
-					WHERE `id_lang` = '.(int) $idLang.' AND `id_customer` = '.(int) $this->id.' AND a.`deleted` = 0';
-
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                    ->select('DISTINCT a.*, cl.`name` AS `country`, s.`name` AS `state`, s.`iso_code` AS `state_iso`')
+                    ->from('address', 'a')
+                    ->leftJoin('country', 'c', 'a.`id_country` = c.`id_country`')
+                    ->leftJoin('country_lang', 'cl', 'c.`id_country` = cl.`id_country`')
+                    ->leftJoin('state', 'sd', 's.`id_state` = a.`id_state`')
+                    ->join($shareOrder ? '' : Shop::addSqlAssociation('country', 'c'))
+                    ->where('cl.`id_lang` = '.(int) $idLang)
+                    ->where('a.`id_customer` = '.(int) $this->id)
+                    ->where('a.`deleted` = 0')
+            );
             Cache::store($cacheId, $result);
 
             return $result;
@@ -649,6 +652,7 @@ class CustomerCore extends ObjectModel
         if ($ignoreGuest) {
             $sql->where('`is_guest` = 0');
         }
+
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
         if ($plainTextPassword && !password_verify($plainTextPassword, $result['passwd'])) {
             if (!$plainTextPassword) {
@@ -774,7 +778,7 @@ class CustomerCore extends ObjectModel
             (new DbQuery())
                 ->select('c.`id_connections`, c.`date_add`, COUNT(cp.`id_page`) AS `pages`')
                 ->select('TIMEDIFF(MAX(cp.time_end), c.date_add) AS time, http_referer,INET_NTOA(ip_address) AS ipaddress')
-	            ->from('guest', 'g')
+                ->from('guest', 'g')
                 ->leftJoin('connections', 'c', 'c.`id_guest` = g.`id_guest`')
                 ->leftJoin('connections_page', 'cp', 'c.`id_connections` = cp.`id_connections`')
                 ->where('g.`id_customer` = '.(int) $this->id)
@@ -835,7 +839,7 @@ class CustomerCore extends ObjectModel
     }
 
     /**
-     * @param $idCustomer
+     * @param int $idCustomer
      *
      * @return array|mixed
      *
@@ -848,6 +852,7 @@ class CustomerCore extends ObjectModel
             return [Configuration::get('PS_CUSTOMER_GROUP')];
         }
 
+        // @codingStandardsIgnoreStart
         if ($idCustomer == 0) {
             static::$_customer_groups[$idCustomer] = [(int) Configuration::get('PS_UNIDENTIFIED_GROUP')];
         }
@@ -866,10 +871,13 @@ class CustomerCore extends ObjectModel
         }
 
         return static::$_customer_groups[$idCustomer];
+        // @codingStandardsIgnoreEnd
     }
 
     /**
      * @deprecated since 1.0.0
+     *
+     * @return false
      */
     public function isUsed()
     {
@@ -911,7 +919,7 @@ class CustomerCore extends ObjectModel
         return Db::getInstance()->update(
             bqSQL(static::$definition['table']),
             [
-                'date_upd' => ['type' => 'sql', 'value' => 'NOW()']
+                'date_upd' => ['type' => 'sql', 'value' => 'NOW()'],
             ],
             '`'.bqSQL(static::$definition['primary']).'` = '.(int) $this->id
         );
@@ -1192,21 +1200,21 @@ class CustomerCore extends ObjectModel
     {
         $totalPaid = (float) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
-                ->select('SUM(oi.total_paid_tax_incl)')
+                ->select('SUM(oi.`total_paid_tax_incl`)')
                 ->from('order_invoice', 'oi')
-                ->leftJoin('orders', 'o', 'oi.id_order = o.id_order')
-                ->groupBy('o.id_customer')
-                ->where('o.id_customer = '.(int) $this->id)
+                ->leftJoin('orders', 'o', 'oi.`id_order` = o.`id_order`')
+                ->groupBy('o.`id_customer`')
+                ->where('o.`id_customer` = '.(int) $this->id)
         );
 
         $totalRest = (float) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
-                ->select('SUM(op.amount)')
+                ->select('SUM(op.`amount`)')
                 ->from('order_payment', 'op')
-                ->leftJoin('order_invoice_payment', 'oip', 'op.id_order_payment = oip.id_order_payment')
-                ->leftJoin('orders', 'o', 'oip.id_order = o.id_order')
-                ->groupBy('o.id_customer')
-                ->where('o.id_customer = '.(int) $this->id)
+                ->leftJoin('order_invoice_payment', 'oip', 'op.`id_order_payment` = oip.`id_order_payment`')
+                ->leftJoin('orders', 'o', 'oip.`id_order` = o.`id_order`')
+                ->groupBy('o.`id_customer`')
+                ->where('o.`id_customer` = '.(int) $this->id)
         );
 
         return $totalPaid - $totalRest;
