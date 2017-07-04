@@ -698,7 +698,7 @@ class CartRuleCore extends ObjectModel
     }
 
     /**
-     * @param $name
+     * @param string $name
      *
      * @return bool
      *
@@ -720,7 +720,7 @@ class CartRuleCore extends ObjectModel
     }
 
     /**
-     * @param $idCustomer
+     * @param int $idCustomer
      *
      * @return bool
      *
