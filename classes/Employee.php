@@ -418,6 +418,10 @@ class EmployeeCore extends ObjectModel
             }
         }
 
+        if (!$result) {
+            return false;
+        }
+
         $this->id = $result['id_employee'];
         $this->id_profile = $result['id_profile'];
         foreach ($result as $key => $value) {
