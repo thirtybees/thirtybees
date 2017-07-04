@@ -2502,8 +2502,8 @@ abstract class ModuleCore
     /**
      * Connect module to a hook
      *
-     * @param string $hookName Hook name
-     * @param array  $shopList List of shop linked to the hook (if null, link hook to all shops)
+     * @param string|string[] $hookName Hook name or an array with hook names
+     * @param array           $shopList List of shop linked to the hook (if null, link hook to all shops)
      *
      * @return bool result
      * @throws PrestaShopException
