@@ -110,17 +110,15 @@ class ImageCore extends ObjectModel
         $cacheId = 'Image::getBestImageAttribute'.'-'.(int) $idProduct.'-'.(int) $idProductAttribute.'-'.(int) $idLang.'-'.(int) $idShop;
 
         if (!Cache::isStored($cacheId)) {
-            $row = Db::getInstance()->getRow(
-                '
-					SELECT image_shop.`id_image` id_image, il.`legend`
-					FROM `'._DB_PREFIX_.'image` i
-					INNER JOIN `'._DB_PREFIX_.'image_shop` image_shop
-						ON (i.id_image = image_shop.id_image AND image_shop.id_shop = '.(int) $idShop.')
-						INNER JOIN `'._DB_PREFIX_.'product_attribute_image` pai
-						ON (pai.`id_image` = i.`id_image` AND pai.`id_product_attribute` = '.(int) $idProductAttribute.')
-					LEFT JOIN `'._DB_PREFIX_.'image_lang` il
-						ON (image_shop.`id_image` = il.`id_image` AND il.`id_lang` = '.(int) $idLang.')
-					WHERE i.`id_product` = '.(int) $idProduct.' ORDER BY i.`position` ASC'
+            $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                (new DbQuery())
+                    ->select('image_shop.`id_image` id_image, il.`legend`')
+                    ->from('image', 'i')
+                    ->innerJoin('image_shop', 'image_shop', 'i.`id_image` = image_shop.`id_image` AND image_shop.`id_shop` = '.(int) $idShop)
+                    ->innerJoin('product_attribute_image', 'pai', 'pai.`id_image` = i.`id_image` AND pai.`id_product_attribute` = '.(int) $idProductAttribute)
+                    ->leftJoin('image_lang', 'il', 'image_shop.`id_image` = il.`id_image` AND il.`id_lang` = '.(int) $idLang)
+                    ->where('i.`id_product` = '.(int) $idProduct)
+                    ->orderBy('i.`position` ASC')
             );
 
             Cache::store($cacheId, $row);
@@ -198,11 +196,11 @@ class ImageCore extends ObjectModel
      */
     public static function getAllImages()
     {
-        return Db::getInstance()->executeS(
-            '
-		SELECT `id_image`, `id_product`
-		FROM `'._DB_PREFIX_.'image`
-		ORDER BY `id_image` ASC'
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('`id_image`, `id_product`')
+                ->from('image')
+                ->orderBy('`id_image` ASC')
         );
     }
 
@@ -218,11 +216,11 @@ class ImageCore extends ObjectModel
      */
     public static function getImagesTotal($idProduct)
     {
-        $result = Db::getInstance()->getRow(
-            '
-		SELECT COUNT(`id_image`) AS total
-		FROM `'._DB_PREFIX_.'image`
-		WHERE `id_product` = '.(int) $idProduct
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('COUNT(`id_image`) AS `total`')
+                ->from('image')
+                ->where('`id_product` = '.(int) $idProduct)
         );
 
         return $result['total'];
@@ -249,21 +247,21 @@ class ImageCore extends ObjectModel
         }
 
         return (Db::getInstance()->update(
-            'image',
-                [
-                    'cover' => ['type' => 'sql', 'value' => 'NULL'],
-                ],
-                '`id_product` = '.(int) $idProduct,
-                0,
-                true
-            ) &&
-            Db::getInstance()->update(
-                'image_shop',
-                [
-                    'cover' => ['type' => 'sql', 'value' => 'NULL'],
-                ],
-                '`id_shop` IN ('.implode(',', array_map('intval', Shop::getContextListShopID())).') AND `id_product` = '.(int) $idProduct
-            ));
+        'image',
+            [
+                'cover' => ['type' => 'sql', 'value' => 'NULL'],
+            ],
+            '`id_product` = '.(int) $idProduct,
+            0,
+            true
+        ) &&
+        Db::getInstance()->update(
+            'image_shop',
+            [
+                'cover' => ['type' => 'sql', 'value' => 'NULL'],
+            ],
+            '`id_shop` IN ('.implode(',', array_map('intval', Shop::getContextListShopID())).') AND `id_product` = '.(int) $idProduct
+        ));
     }
 
     /**
@@ -322,11 +320,11 @@ class ImageCore extends ObjectModel
     public static function duplicateProductImages($idProductOld, $idProductNew, $combinationImages)
     {
         $imageTypes = ImageType::getImagesTypes('products');
-        $result = Db::getInstance()->executeS(
-            '
-		SELECT `id_image`
-		FROM `'._DB_PREFIX_.'image`
-		WHERE `id_product` = '.(int) $idProductOld
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('`id_image`')
+                ->from('image')
+                ->where('`id_product` = '.(int) $idProductOld)
         );
         foreach ($result as $row) {
             $imageOld = new Image($row['id_image']);
@@ -459,8 +457,10 @@ class ImageCore extends ObjectModel
 
         if (!file_exists(_PS_PROD_IMG_DIR_.$this->getImgFolder())) {
             // Apparently sometimes mkdir cannot set the rights, and sometimes chmod can't. Trying both.
+            // @codingStandardsIgnoreStart
             $success = @mkdir(_PS_PROD_IMG_DIR_.$this->getImgFolder(), static::$access_rights, true);
             $chmod = @chmod(_PS_PROD_IMG_DIR_.$this->getImgFolder(), static::$access_rights);
+            // @codingStandardsIgnoreEnd
 
             // Create an index.php file in the new folder
             if (($success || $chmod)
@@ -487,10 +487,10 @@ class ImageCore extends ObjectModel
         if (!isset($combinationImages['new']) || !is_array($combinationImages['new'])) {
             return;
         }
-        foreach ($combinationImages['new'] as $id_product_attribute => $imageIds) {
+        foreach ($combinationImages['new'] as $idProductAttribute => $imageIds) {
             foreach ($imageIds as $key => $imageId) {
                 if ((int) $imageId == (int) $savedId) {
-                    $combinationImages['new'][$id_product_attribute][$key] = (int) $idImage;
+                    $combinationImages['new'][$idProductAttribute][$key] = (int) $idImage;
                 }
             }
         }
@@ -499,7 +499,7 @@ class ImageCore extends ObjectModel
     /**
      * Duplicate product attribute image associations
      *
-     * @param int $id_product_attribute_old
+     * @param array $combinationImages
      *
      * @return bool
      *
@@ -675,11 +675,13 @@ class ImageCore extends ObjectModel
                     $newPath = _PS_PROD_IMG_DIR_.$image->getImgPath().(isset($matches[3]) ? $matches[3] : '').'.jpg';
                     if (file_exists($newPath)) {
                         if (!file_exists(_PS_PROD_IMG_DIR_.$tmpFolder)) {
+                            // @codingStandardsIgnoreStart
                             @mkdir(_PS_PROD_IMG_DIR_.$tmpFolder, static::$access_rights);
                             @chmod(_PS_PROD_IMG_DIR_.$tmpFolder, static::$access_rights);
                         }
                         $tmp_path = _PS_PROD_IMG_DIR_.$tmpFolder.basename($file);
                         if (!@rename($newPath, $tmp_path) || !file_exists($tmp_path)) {
+                            // @codingStandardsIgnoreEnd
                             return false;
                         }
                     }
@@ -722,8 +724,10 @@ class ImageCore extends ObjectModel
             return false;
         }
 
+        // @codingStandardsIgnoreStart
         @mkdir($testFolder, static::$access_rights, true);
         @chmod($testFolder, static::$access_rights);
+        // @codingStandardsIgnoreEnd
         if (!is_writeable($testFolder)) {
             return false;
         }
@@ -788,6 +792,8 @@ class ImageCore extends ObjectModel
     /**
      * Delete Image - Product attribute associations for this image
      *
+     * @return bool
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -802,6 +808,10 @@ class ImageCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @param bool $forceDelete
+     *
+     * @return bool
      */
     public function deleteImage($forceDelete = false)
     {
@@ -861,7 +871,7 @@ class ImageCore extends ObjectModel
     /**
      * Returns image path in the old or in the new filesystem
      *
-     * @ returns string image path
+     * @return string image path
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
