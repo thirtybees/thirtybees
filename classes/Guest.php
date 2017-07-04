@@ -112,11 +112,11 @@ class GuestCore extends ObjectModel
         if (!Validate::isUnsignedId($idCustomer)) {
             return false;
         }
-        $result = Db::getInstance()->getRow(
-            '
-		SELECT `id_guest`
-		FROM `'._DB_PREFIX_.'guest`
-		WHERE `id_customer` = '.(int) ($idCustomer)
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('`id_guest`')
+                ->from('guest')
+                ->where('`id_customer` = '.(int) $idCustomer)
         );
 
         return $result['id_guest'];
@@ -186,10 +186,10 @@ class GuestCore extends ObjectModel
         foreach ($osArray as $k => $value) {
             if (strstr($userAgent, $value)) {
                 $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
-                    '
-				SELECT `id_operating_system`
-				FROM `'._DB_PREFIX_.'operating_system` os
-				WHERE os.`name` = \''.pSQL($k).'\''
+                    (new DbQuery())
+                        ->select('`id_operating_system`')
+                        ->from('operating_system', 'os')
+                        ->where('os.`name` = \''.pSQL($k).'\'')
                 );
 
                 return $result['id_operating_system'];
