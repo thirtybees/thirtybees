@@ -186,12 +186,12 @@ class SpecificPriceCore extends ObjectModel
     }
 
     /**
-     * @param      $idProduct
-     * @param      $idShop
-     * @param      $idCurrency
-     * @param      $idCountry
-     * @param      $idGroup
-     * @param      $quantity
+     * @param int  $idProduct
+     * @param int  $idShop
+     * @param int  $idCurrency
+     * @param int  $idCountry
+     * @param int  $idGroup
+     * @param int  $quantity
      * @param null $idProductAttribute
      * @param int  $idCustomer
      * @param int  $idCart
