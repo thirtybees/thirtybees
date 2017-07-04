@@ -52,7 +52,7 @@ class SearchEngineCore extends ObjectModel
     ];
 
     /**
-     * @param $url
+     * @param string $url
      *
      * @return bool|string
      *
