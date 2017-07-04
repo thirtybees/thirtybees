@@ -71,7 +71,7 @@ class LocalizationPackCore
             if ($idCountry) {
                 $country = new Country($idCountry);
             }
-            if (!$idCountry || !Validate::isLoadedObject($country)) {
+            if (!$idCountry || !isset($country) || !Validate::isLoadedObject($country)) {
                 $this->_errors[] = Tools::displayError(sprintf('Cannot load country : %1d', $idCountry));
 
                 return false;
@@ -241,8 +241,8 @@ class LocalizationPackCore
 
             foreach ($xml->taxes->taxRulesGroup as $group) {
                 /** @var SimpleXMLElement $group */
-                $group_attributes = $group->attributes();
-                if (!Validate::isGenericName($group_attributes['name'])) {
+                $groupAttributes = $group->attributes();
+                if (!Validate::isGenericName($groupAttributes['name'])) {
                     continue;
                 }
 
@@ -458,8 +458,8 @@ class LocalizationPackCore
             if (isset($attributes['price_display_method']) && in_array((int) $attributes['price_display_method'], [0, 1])) {
                 Configuration::updateValue('PRICE_DISPLAY_METHOD', (int) $attributes['price_display_method']);
 
-                foreach ([(int) Configuration::get('PS_CUSTOMER_GROUP'), (int) Configuration::get('PS_GUEST_GROUP'), (int) Configuration::get('PS_UNIDENTIFIED_GROUP')] as $id_group) {
-                    $group = new Group((int) $id_group);
+                foreach ([(int) Configuration::get('PS_CUSTOMER_GROUP'), (int) Configuration::get('PS_GUEST_GROUP'), (int) Configuration::get('PS_UNIDENTIFIED_GROUP')] as $idGroup) {
+                    $group = new Group((int) $idGroup);
                     $group->price_display_method = (int) $attributes['price_display_method'];
                     if (!$group->save()) {
                         $this->_errors[] = Tools::displayError('An error occurred during the default group update');
