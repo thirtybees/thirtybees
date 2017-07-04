@@ -617,12 +617,14 @@ class OrderCore extends ObjectModel
      */
     public function getProductsDetail()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
-		SELECT *
-		FROM `'._DB_PREFIX_.'order_detail` od
-		LEFT JOIN `'._DB_PREFIX_.'product` p ON (p.id_product = od.product_id)
-		LEFT JOIN `'._DB_PREFIX_.'product_shop` ps ON (ps.id_product = p.id_product AND ps.id_shop = od.id_shop)
-		WHERE od.`id_order` = '.(int) $this->id);
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('*')
+                ->from('order_detail', 'od')
+                ->leftJoin('product', 'p', 'p.`id_product` = od.`id_product`')
+                ->leftJoin('product_shop', 'ps', 'ps.`id_product` = od.`id_product` AND ps.`id_shop` = od.`id_shop`')
+                ->where('od.`id_order` = '.(int) $this->id)
+        );
     }
 
     /**

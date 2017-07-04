@@ -1356,7 +1356,7 @@ abstract class ModuleCore
                 ->where((isset($billing) && $frontend ? 'mc.`id_country` = '.(int) $billing->id_country : ''))
                 ->where('(SELECT COUNT(*) FROM '._DB_PREFIX_.'module_shop ms WHERE ms.id_module = m.id_module AND ms.id_shop IN('.implode(', ', $list).')) = '.count($list))
                 ->where('hm.`id_shop` IN('.implode(', ', $list).')')
-                ->where((count($groups) && $frontend && $useGroups) ? '(mg.`id_group` IN ('.implode(', ', $groups).'))' : '')
+                ->where((count($groups) && $frontend && $useGroups) ? 'mg.`id_group` IN ('.implode(', ', $groups).')' : '')
                 ->groupBy('hm.`id_hook`, hm.`id_module`')
                 ->orderBy('hm.`position`, m.`name` DESC')
         );
