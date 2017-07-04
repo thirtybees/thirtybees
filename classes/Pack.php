@@ -116,10 +116,15 @@ class PackCore extends Product
         return Configuration::get('PS_PACK_FEATURE_ACTIVE');
     }
 
-    public static function noPackWholesalePrice($id_product)
+    /**
+     * @param int $idProduct
+     *
+     * @return int
+     */
+    public static function noPackWholesalePrice($idProduct)
     {
         $sum = 0;
-        $items = Pack::getItems($id_product, Configuration::get('PS_LANG_DEFAULT'));
+        $items = Pack::getItems($idProduct, Configuration::get('PS_LANG_DEFAULT'));
         foreach ($items as $item) {
             $sum += $item->wholesale_price * $item->pack_quantity;
         }
@@ -127,13 +132,18 @@ class PackCore extends Product
         return $sum;
     }
 
-    public static function isInStock($id_product)
+    /**
+     * @param int $idProduct
+     *
+     * @return bool
+     */
+    public static function isInStock($idProduct)
     {
         if (!Pack::isFeatureActive()) {
             return true;
         }
 
-        $items = Pack::getItems((int) $id_product, Configuration::get('PS_LANG_DEFAULT'));
+        $items = Pack::getItems((int) $idProduct, Configuration::get('PS_LANG_DEFAULT'));
 
         foreach ($items as $item) {
             /** @var Product $item */
@@ -146,7 +156,14 @@ class PackCore extends Product
         return true;
     }
 
-    public static function getItemTable($id_product, $id_lang, $full = false)
+    /**
+     * @param int  $idProduct
+     * @param int  $idLang
+     * @param bool $full
+     *
+     * @return array|false|null|PDOStatement
+     */
+    public static function getItemTable($idProduct, $idLang, $full = false)
     {
         if (!Pack::isFeatureActive()) {
             return [];
@@ -159,16 +176,16 @@ class PackCore extends Product
 				LEFT JOIN `'._DB_PREFIX_.'product` p ON p.id_product = a.id_product_item
 				LEFT JOIN `'._DB_PREFIX_.'product_lang` pl
 					ON p.id_product = pl.id_product
-					AND pl.`id_lang` = '.(int) $id_lang.Shop::addSqlRestrictionOnLang('pl').'
+					AND pl.`id_lang` = '.(int) $idLang.Shop::addSqlRestrictionOnLang('pl').'
 				LEFT JOIN `'._DB_PREFIX_.'image_shop` image_shop
 					ON (image_shop.`id_product` = p.`id_product` AND image_shop.cover=1 AND image_shop.id_shop='.(int) $context->shop->id.')
-				LEFT JOIN `'._DB_PREFIX_.'image_lang` il ON (image_shop.`id_image` = il.`id_image` AND il.`id_lang` = '.(int) $id_lang.')
+				LEFT JOIN `'._DB_PREFIX_.'image_lang` il ON (image_shop.`id_image` = il.`id_image` AND il.`id_lang` = '.(int) $idLang.')
 				'.Shop::addSqlAssociation('product', 'p').'
 				LEFT JOIN `'._DB_PREFIX_.'category_lang` cl
 					ON product_shop.`id_category_default` = cl.`id_category`
-					AND cl.`id_lang` = '.(int) $id_lang.Shop::addSqlRestrictionOnLang('cl').'
+					AND cl.`id_lang` = '.(int) $idLang.Shop::addSqlRestrictionOnLang('cl').'
 				WHERE product_shop.`id_shop` = '.(int) $context->shop->id.'
-				AND a.`id_product_pack` = '.(int) $id_product.'
+				AND a.`id_product_pack` = '.(int) $idProduct.'
 				GROUP BY a.`id_product_item`, a.`id_product_attribute_item`';
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
@@ -190,13 +207,13 @@ class PackCore extends Product
 				GROUP BY pa.`id_product_attribute`, ag.`id_attribute_group`
 				ORDER BY pa.`id_product_attribute`';
 
-                $attr_name = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+                $attrName = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
 
-                if (isset($attr_name[0]['id_product_attribute_image']) && $attr_name[0]['id_product_attribute_image']) {
-                    $line['id_image'] = $attr_name[0]['id_product_attribute_image'];
+                if (isset($attrName[0]['id_product_attribute_image']) && $attrName[0]['id_product_attribute_image']) {
+                    $line['id_image'] = $attrName[0]['id_product_attribute_image'];
                 }
                 $line['name'] .= "\n";
-                foreach ($attr_name as $value) {
+                foreach ($attrName as $value) {
                     $line['name'] .= ' '.$value['group_name'].'-'.$value['attribute_name'];
                 }
             }
@@ -207,15 +224,15 @@ class PackCore extends Product
             return $result;
         }
 
-        $array_result = [];
+        $arrayResult = [];
         foreach ($result as $prow) {
             if (!Pack::isPack($prow['id_product'])) {
                 $prow['id_product_attribute'] = (int) $prow['id_product_attribute_item'];
-                $array_result[] = Product::getProductProperties($id_lang, $prow);
+                $arrayResult[] = Product::getProductProperties($idLang, $prow);
             }
         }
 
-        return $array_result;
+        return $arrayResult;
     }
 
     /**
@@ -243,7 +260,15 @@ class PackCore extends Product
         return static::$cacheIsPack[$idProduct];
     }
 
-    public static function getPacksTable($id_product, $idLang, $full = false, $limit = null)
+    /**
+     * @param int  $idProduct
+     * @param int  $idLang
+     * @param bool $full
+     * @param null $limit
+     *
+     * @return array|false|null|PDOStatement
+     */
+    public static function getPacksTable($idProduct, $idLang, $full = false, $limit = null)
     {
         if (!Pack::isFeatureActive()) {
             return [];
@@ -253,7 +278,7 @@ class PackCore extends Product
             '
 		SELECT GROUP_CONCAT(a.`id_product_pack`)
 		FROM `'._DB_PREFIX_.'pack` a
-		WHERE a.`id_product_item` = '.(int) $id_product
+		WHERE a.`id_product_item` = '.(int) $idProduct
         );
 
         if (!(int) $packs) {
@@ -299,8 +324,8 @@ class PackCore extends Product
      * If $id_product_attribute specified, then will restrict search on the given combination,
      * else this method will match a product if at least one of all its combination is in a pack.
      *
-     * @param int $idProduct
-     * @param int $idProductAttribute Optional combination of the product
+     * @param int      $idProduct
+     * @param bool|int $idProductAttribute Optional combination of the product
      *
      * @return bool
      */
