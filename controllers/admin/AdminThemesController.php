@@ -230,6 +230,14 @@ class AdminThemesControllerCore extends AdminController
                         'tab'   => 'icons',
                         'thumb' => Media::getMediaPath(_PS_IMG_DIR_.'favicon_144.png'),
                     ],
+                    'PS_FAVICON_192'  => [
+                        'title' => $this->l('Android Chrome Favicon 192 (PNG)'),
+                        'hint'  => $this->l('Will appear in the address bar of your web browser.'),
+                        'type'  => 'file',
+                        'name'  => 'PS_FAVICON_192',
+                        'tab'   => 'icons',
+                        'thumb' => Media::getMediaPath(_PS_IMG_DIR_.'favicon_192.png'),
+                    ],
                     'PS_STORES_ICON'  => [
                         'title' => $this->l('Store icon'),
                         'hint'  => $this->l('Will appear on the store locator (inside Google Maps).').'<br />'.$this->l('Suggested size: 30x30, transparent GIF.'),

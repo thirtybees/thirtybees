@@ -42,6 +42,8 @@ class MediaCore
     const FAVICON_72 = 3;
     const FAVICON_114 = 4;
     const FAVICON_144 = 5;
+    /** @since 1.0.2 Browsers update so fast, we have added this one for Android Chrome during a PATCH version */
+    const FAVICON_192 = 7;
     const FAVICON_STORE_ICON = 6;
 
     // @codingStandardsIgnoreStart
@@ -396,6 +398,10 @@ class MediaCore
                 break;
             case static::FAVICON_144:
                 $path = "favicon_144";
+                $ext = "png";
+                break;
+            case static::FAVICON_192:
+                $path = "favicon_192";
                 $ext = "png";
                 break;
             default:
