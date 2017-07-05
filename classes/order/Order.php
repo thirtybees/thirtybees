@@ -2331,7 +2331,7 @@ class OrderCore extends ObjectModel
                 ->select('SUM(`total_paid_tax_incl`)')
                 ->from('orders')
                 ->where('`reference` = \''.pSQL($this->reference).'\'')
-                ->where('`id_cart` = '.(int) $this->cart)
+                ->where('`id_cart` = '.(int) $this->id_cart)
         );
     }
 
