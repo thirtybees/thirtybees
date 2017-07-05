@@ -180,7 +180,7 @@ class SpecificPriceCore extends ObjectModel
                 ->select('`id_specific_price`')
                 ->from('specific_price')
                 ->where('`id_product` = '.(int) $idProduct)
-                ->where('`id_product_attrbute` = '.(int) $idProductAttribute)
+                ->where('`id_product_attribute` = '.(int) $idProductAttribute)
                 ->where('`id_cart` = '.(int) $idCart)
         );
     }
