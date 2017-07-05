@@ -702,7 +702,7 @@ class OrderCore extends ObjectModel
                 ->from('orders', 'o')
                 ->leftJoin('order_detail', 'od', 'o.`id_order` = od.`id_order`')
                 ->where('o.`id_customer` = '.(int) $idCustomer)
-                ->where('od.`id_product` = '.(int) $idProduct)
+                ->where('od.`product_id` = '.(int) $idProduct)
                 ->orderBy('o.`date_add` DESC')
         );
     }
