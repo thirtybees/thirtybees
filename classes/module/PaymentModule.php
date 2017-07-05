@@ -212,17 +212,24 @@ abstract class PaymentModuleCore extends Module
         if (!$shops) {
             $shops = Shop::getShops(true, null, true);
         }
+        
+        $currencies = Currency::getCurrencies();
 
-        foreach ($shops as $s) {
-            if (!Db::getInstance()->insert(
-                'module_currency',
-                [
-                    'id_module' => (int) $this->id,
-                    'id_shop' => (int) $s,
-                    'id_currency' => ['type' => 'sql', 'value' => '(SELECT `id_currency` FROM `'._DB_PREFIX_.'currency` WHERE `deleted` = 0)'],
-                ]
-            )) {
-                return false;
+        foreach ($shops as $idShop) {
+            foreach ($currencies as $currency) {
+                if (!Db::getInstance()->insert(
+                    'module_currency',
+                    [
+                        'id_module'   => (int) $this->id,
+                        'id_shop'     => (int) $idShop,
+                        'id_currency' => (int) $currency['id_currency'],
+                    ],
+                    false,
+                    true,
+                    Db::INSERT_IGNORE
+                )) {
+                    return false;
+                }
             }
         }
 
