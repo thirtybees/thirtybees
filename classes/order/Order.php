@@ -1056,7 +1056,7 @@ class OrderCore extends ObjectModel
                     ->leftJoin('order_state', 'os', 'os.`id_order_state` = oh.`id_order_state`')
                     ->innerJoin('order_state_lang', 'osl', 'os.`id_order_state` = osl.`id_order_state` AND osl.`id_lang` = '.(int) $context->language->id)
                     ->where('oh.`id_order` = '.(int) $val['id_order'])
-                    ->where(!$showHiddenStatus ? 'os.`hidden` = != 1' : '')
+                    ->where(!$showHiddenStatus ? 'os.`hidden` != 1' : '')
                     ->orderBy('oh.`date_add` DESC, oh.`id_order_history` DESC')
                     ->limit(1)
             );
