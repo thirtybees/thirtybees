@@ -4651,7 +4651,7 @@ class CartCore extends ObjectModel
             if ($result = (bool) Db::getInstance()->update(
                 'cart_product',
                 [
-                    'id_address_delivery' => ['type' => 'sql', 'value' => '(SELECT `id_address_delivery` FROM `'._DB_PREFIX_.'cart` WHERE `id_cart` = '.(int) $this->id.' AND `id_shop` = '.(int) $this->id_shop.')'],
+                    'id_address_delivery' => ['type' => 'sql', 'value' => '(SELECT `id_address_delivery` FROM `'._DB_PREFIX_.'cart` WHERE `id_cart` = '.(int) $this->id.' AND `id_shop` = '.(int) $this->id_shop.' LIMIT 1)'],
                 ],
                 '`id_cart` = '.(int) $this->id.' '.(Configuration::get('PS_ALLOW_MULTISHIPPING') ? ' AND `id_shop` = '.(int) $this->id_shop : '')
             )) {
@@ -4664,7 +4664,7 @@ class CartCore extends ObjectModel
             Db::getInstance()->update(
                 'customization',
                 [
-                    'id_address_delivery' => ['type' => 'sql', 'value' => '(SELECT `id_address_delivery` FROM `'._DB_PREFIX_.'cart` WHERE `id_cart` = '.(int) $this->id.')'],
+                    'id_address_delivery' => ['type' => 'sql', 'value' => '(SELECT `id_address_delivery` FROM `'._DB_PREFIX_.'cart` WHERE `id_cart` = '.(int) $this->id.' LIMIT 1)'],
                 ],
                 '`id_cart` = '.(int) $this->id
             );
