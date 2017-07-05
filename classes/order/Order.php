@@ -738,15 +738,15 @@ class OrderCore extends ObjectModel
      */
     public static function getIdOrderProduct($idCustomer, $idProduct)
     {
-        return (int) Db::getInstance()->getValue('
-			SELECT o.id_order
-			FROM '._DB_PREFIX_.'orders o
-			LEFT JOIN '._DB_PREFIX_.'order_detail od
-				ON o.id_order = od.id_order
-			WHERE o.id_customer = '.(int) $idCustomer.'
-				AND od.product_id = '.(int) $idProduct.'
-			ORDER BY o.date_add DESC
-		');
+        return (int) Db::getInstance()->getValue(
+            (new DbQuery())
+            ->select('o.`id_order`')
+                ->from('orders', 'o')
+                ->leftJoin('order_detail', 'od', 'o.`id_order` = od.`id_order`')
+                ->where('o.`id_customer` = '.(int) $idCustomer)
+                ->where('od.`product_id` = '.(int) $idProduct)
+                ->orderBy('o.`date_add` DESC')
+        );
     }
 
     /**
