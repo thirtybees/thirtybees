@@ -263,9 +263,10 @@ class FrontControllerCore extends Controller
                          Media::FAVICON_57  => '57',
                          Media::FAVICON_72  => '72',
                          Media::FAVICON_114 => '114',
+                         Media::FAVICON_192 => '192',
                      ] as $faviconType => $size) {
                 if ($path = Media::getFaviconPath($faviconType)) {
-                    $hookHeader .= '<link rel="icon" type="image/png" sizes="'.$size.'x'.$size.'" href="'.$path.'">';
+                    $hookHeader .= '<link rel="icon" sizes="'.$size.'x'.$size.'" href="'.$path.'">';
                 }
             }
             if ($path = Media::getFaviconPath(Media::FAVICON_144)) {
