@@ -749,7 +749,7 @@ class OrderCore extends ObjectModel
     {
         return (int) Db::getInstance()->getValue(
             (new DbQuery())
-            ->select('o.`id_order`')
+                ->select('o.`id_order`')
                 ->from('orders', 'o')
                 ->leftJoin('order_detail', 'od', 'o.`id_order` = od.`id_order`')
                 ->where('o.`id_customer` = '.(int) $idCustomer)
