@@ -43,16 +43,34 @@
           </li>
           <li class="divider"></li>
           {foreach $bulk_actions as $key => $params}
-            <li{if $params.text == 'divider'} class="divider"{/if}>
-              {if $params.text != 'divider'}
-                <a href="#" onclick="{if isset($params.confirm)}if (confirm('{$params.confirm}')){/if}sendBulkAction($(this).closest('form').get(0), 'submitBulk{$key}{$table}');">
-                  {if isset($params.icon)}<i class="{$params.icon}"></i>{/if}&nbsp;{$params.text}
-                </a>
-              {/if}
-            </li>
+            {if $key !== 'affectzone'}
+              <li{if $params.text == 'divider'} class="divider"{/if}>
+                {if $params.text != 'divider'}
+                  <a href="#" onclick="{if isset($params.confirm)}if (confirm('{$params.confirm}')){/if}sendBulkAction($(this).closest('form').get(0), 'submitBulk{$key}{$table}');">
+                    {if isset($params.icon)}<i class="{$params.icon}"></i>{/if}&nbsp;{$params.text}
+                  </a>
+                {/if}
+              </li>
+            {/if}
           {/foreach}
         </ul>
       </div>
+      {foreach $bulk_actions as $key => $params}
+        {if $key === 'affectzone'}
+          <div class="form-group bulk-actions">
+            <div class="col-lg-6">
+                <select id="zone_to_affect" name="zone_to_affect">
+                  {foreach $zones as $z}
+                    <option value="{$z['id_zone']}">{$z['name']}</option>
+                  {/foreach}
+                </select>
+            </div>
+            <div class="col-lg-6">
+              <input type="submit" class="btn btn-default" name="submitBulk{$key}{$table}" value="{$params.text}" {if isset($params.confirm)}onclick="return confirm('{$params.confirm}');"{/if} />
+            </div>
+          </div>
+        {/if}
+      {/foreach}
     {/if}
   </div>
   {if !$simple_header && $list_total > 20}
