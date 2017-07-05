@@ -36,7 +36,6 @@ class AdminConfigurationPagesCest
         'AdminPriceRule' => [
             'AdminCartRules',
             'AdminSpecificPriceRule',
-            'AdminMarketing',
         ],
         'AdminParentModules' => [
             'AdminModules',
