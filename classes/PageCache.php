@@ -102,25 +102,25 @@ class PageCacheCore
                 if ($product) {
                     $categories = $product->getCategories();
                     foreach ($categories as $idCategory) {
-                        Db::getInstance()->delete(
-                            'page_cache',
-                            '`entity_type` = \'category\' AND `id_entity` = '.(int) $idCategory
-                        );
                         $keysToInvalidate = array_merge(
                             $keysToInvalidate,
                             static::getKeysToInvalidate('category', $idCategory)
+                        );
+                        Db::getInstance()->delete(
+                            'page_cache',
+                            '`entity_type` = \'category\' AND `id_entity` = '.(int) $idCategory
                         );
                     }
                 }
             } else {
                 // Invalidate all parent categories
-                Db::getInstance()->delete(
-                    'page_cache',
-                    '`entity_type` = \'category\''
-                );
                 $keysToInvalidate = array_merge(
                     $keysToInvalidate,
                     static::getKeysToInvalidate('category')
+                );
+                 Db::getInstance()->delete(
+                    'page_cache',
+                    '`entity_type` = \'category\''
                 );
             }
         }
