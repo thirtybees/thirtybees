@@ -263,11 +263,13 @@ class FrontControllerCore extends Controller
                          Media::FAVICON_57  => '57',
                          Media::FAVICON_72  => '72',
                          Media::FAVICON_114 => '114',
-                         Media::FAVICON_144 => '144',
                      ] as $faviconType => $size) {
                 if ($path = Media::getFaviconPath($faviconType)) {
-                    $hookHeader .= '<link rel="shortcut icon" sizes="'.$size.'x'.$size.'" href="'.$path.'">';
+                    $hookHeader .= '<link rel="icon" type="image/png" sizes="'.$size.'x'.$size.'" href="'.$path.'">';
                 }
+            }
+            if ($path = Media::getFaviconPath(Media::FAVICON_144)) {
+                $hookHeader .= '<link rel="apple-touch-icon" sizes="144x144" href="'.$path.'">';
             }
 
             if (isset($this->php_self)) { // append some seo fields, canonical, hrefLang, rel prev/next
