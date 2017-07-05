@@ -621,8 +621,8 @@ class OrderCore extends ObjectModel
             (new DbQuery())
                 ->select('*')
                 ->from('order_detail', 'od')
-                ->leftJoin('product', 'p', 'p.`id_product` = od.`id_product`')
-                ->leftJoin('product_shop', 'ps', 'ps.`id_product` = od.`id_product` AND ps.`id_shop` = od.`id_shop`')
+                ->leftJoin('product', 'p', 'p.`id_product` = od.`product_id`')
+                ->leftJoin('product_shop', 'ps', 'ps.`id_product` = od.`product_id` AND ps.`id_shop` = od.`id_shop`')
                 ->where('od.`id_order` = '.(int) $this->id)
         );
     }
