@@ -301,15 +301,18 @@ abstract class PaymentModuleCore extends Module
             $carrierIds[] = $carrier['id_reference'];
         }
 
-        foreach ($shops as $s) {
+        foreach ($shops as $idShop) {
             foreach ($carrierIds as $idCarrier) {
                 if (!Db::getInstance()->insert(
                     'module_carrier',
                     [
-                        'id_module' => (int) $this->id,
-                        'id_shop' => (int) $s,
+                        'id_module'    => (int) $this->id,
+                        'id_shop'      => (int) $idShop,
                         'id_reference' => (int) $idCarrier,
-                    ]
+                    ],
+                    false,
+                    true,
+                    Db::INSERT_IGNORE
                 )) {
                     return false;
                 }
