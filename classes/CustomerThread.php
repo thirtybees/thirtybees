@@ -216,13 +216,14 @@ class CustomerThreadCore extends ObjectModel
             (new DbQuery())
                 ->select('ct.*, cm.*, cl.name subject, CONCAT(e.firstname, \' \', e.lastname) employee_name')
                 ->select('CONCAT(c.firstname, \' \', c.lastname) customer_name, c.firstname')
-            ->leftJoin('customer_message', 'cm', 'ct.`id_customer_thread` = cm.`id_customer_thread`')
-            ->leftJoin('contact_lang', 'cl', 'cl.`id_contact` = ct.`id_contact`')
-            ->leftJoin('employee', 'e', 'e.`id_employee` = cm.`id_employee`')
-            ->leftJoin('customer', 'c', '(IFNULL(ct.`id_customer`, ct.`email`) = IFNULL(c.`id_customer`, c.`email`))')
-            ->where('cl.`id_lang` = '.(int) Context::getContext()->language->id)
-            ->where('ct.`id_customer_thread` = '.(int) $idCustomerThread)
-            ->orderBy('cm.`date_add` ASC')
+                ->from('customer_thread', 'ct')
+                ->leftJoin('customer_message', 'cm', 'ct.`id_customer_thread` = cm.`id_customer_thread`')
+                ->leftJoin('contact_lang', 'cl', 'cl.`id_contact` = ct.`id_contact`')
+                ->leftJoin('employee', 'e', 'e.`id_employee` = cm.`id_employee`')
+                ->leftJoin('customer', 'c', '(IFNULL(ct.`id_customer`, ct.`email`) = IFNULL(c.`id_customer`, c.`email`))')
+                ->where('cl.`id_lang` = '.(int) Context::getContext()->language->id)
+                ->where('ct.`id_customer_thread` = '.(int) $idCustomerThread)
+                ->orderBy('cm.`date_add` ASC')
         );
     }
 
