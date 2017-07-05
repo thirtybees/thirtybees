@@ -314,7 +314,7 @@ class StateCore extends ObjectModel
             [
                 'id_zone' => (int) $idZone,
             ],
-            'id_state` IN ('.implode(',', $idsStates).')'
+            '`id_state` IN ('.implode(',', $idsStates).')'
         );
     }
 }
