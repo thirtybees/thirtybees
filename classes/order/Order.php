@@ -2299,11 +2299,13 @@ class OrderCore extends ObjectModel
      */
     public function getOrdersTotalPaid()
     {
-        return Db::getInstance()->getValue('
-			SELECT SUM(total_paid_tax_incl)
-			FROM `'._DB_PREFIX_.'orders`
-			WHERE `reference` = \''.pSQL($this->reference).'\'
-			AND `id_cart` = '.(int)$this->id_cart);
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('SUM(`total_paid_tax_incl`)')
+                ->from('orders')
+                ->where('`reference` = \''.pSQL($this->reference).'\'')
+                ->where('`id_cart` = '.(int) $this->id_cart)
+        );
     }
 
     /**
