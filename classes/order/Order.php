@@ -1070,14 +1070,17 @@ class OrderCore extends ObjectModel
         }
 
         foreach ($res as $key => $val) {
-            $res2 = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
-				SELECT os.`id_order_state`, osl.`name` AS order_state, os.`invoice`, os.`color` as order_state_color
-				FROM `'._DB_PREFIX_.'order_history` oh
-				LEFT JOIN `'._DB_PREFIX_.'order_state` os ON (os.`id_order_state` = oh.`id_order_state`)
-				INNER JOIN `'._DB_PREFIX_.'order_state_lang` osl ON (os.`id_order_state` = osl.`id_order_state` AND osl.`id_lang` = '.(int) $context->language->id.')
-			WHERE oh.`id_order` = '.(int)$val['id_order'].(!$showHiddenStatus ? ' AND os.`hidden` != 1' : '').'
-				ORDER BY oh.`date_add` DESC, oh.`id_order_history` DESC
-			LIMIT 1');
+            $res2 = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                    ->select('os.`id_order_state`, osl.`name` AS `order_state`, os.`invoice`, os.`color` AS `order_state_color`')
+                    ->from('order_history', 'oh')
+                    ->leftJoin('order_state', 'os', 'os.`id_order_state` = oh.`id_order_state`')
+                    ->innerJoin('order_state_lang', 'osl', 'os.`id_order_state` = osl.`id_order_state` AND osl.`id_lang` = '.(int) $context->language->id)
+                    ->where('oh.`id_order` = '.(int) $val['id_order'])
+                    ->where(!$showHiddenStatus ? 'os.`hidden` != 1' : '')
+                    ->orderBy('oh.`date_add` DESC, oh.`id_order_history` DESC')
+                    ->limit(1)
+            );
 
             if ($res2) {
                 $res[$key] = array_merge($res[$key], $res2[0]);
