@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <entity_tab>
   <fields id="name" ordersql="a.id_parent, a.position" image="t">
-    <field name="id_parent" relation="tab"/>
-    <field name="class_name"/>
-    <field name="active"/>
+    <field name="id_parent" relation="tab" />
+    <field name="class_name" />
+    <field name="active" />
   </fields>
   <entities>
     <tab id="Dashboard" id_parent="" active="1" hide_host_mode="0">
@@ -144,12 +144,9 @@
     <tab id="Catalog_Price_Rules" id_parent="Price_Rules" active="1" hide_host_mode="0">
       <class_name>AdminSpecificPriceRule</class_name>
     </tab>
-    <tab id="Marketing" id_parent="Price_Rules" active="1" hide_host_mode="0">
-      <class_name>AdminMarketing</class_name>
-    </tab>
-	<tab id="Carriers" id_parent="Shipping" active="1" hide_host_mode="0">
+    <tab id="Carriers" id_parent="Shipping" active="1" hide_host_mode="0">
       <class_name>AdminCarriers</class_name>
-	</tab>
+    </tab>
     <tab id="Shipping_1" id_parent="Shipping" active="1" hide_host_mode="0">
       <class_name>AdminShipping</class_name>
     </tab>
