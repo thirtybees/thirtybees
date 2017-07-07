@@ -1005,7 +1005,10 @@ window.product_tabs.Associations = new function () {
         $('select#id_manufacturer').chosen({ width: '250px' }).append(options).trigger('chosen:updated');
       },
       error: function (XMLHttpRequest, textStatus) {
-        $('select#id_manufacturer').replaceWith('<p id="id_manufacturer">[TECHNICAL ERROR] ajaxProductManufacturers: ' + textStatus + '</p>');
+        var $selectManufacturer = $('select#id_manufacturer');
+        if ($selectManufacturer.length) {
+          $selectManufacturer.replaceWith('<p id="id_manufacturer">[TECHNICAL ERROR] ajaxProductManufacturers: ' + textStatus + '</p>');
+        }
       }
     });
   };
