@@ -2246,6 +2246,10 @@ class AdminProductsControllerCore extends AdminController
     {
         $idLang = Configuration::get('PS_LANG_DEFAULT', null, null, Context::getContext()->shop->id);
 
+        if (!Validate::isLoadedObject($product) || !$product->id_category_default) {
+            return $this->l('Unable to determine the preview URL. This product has not been linked with a category, yet.');
+        }
+
         if (!ShopUrl::getMainShopDomain()) {
             return false;
         }
