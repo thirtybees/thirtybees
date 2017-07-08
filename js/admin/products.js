@@ -218,12 +218,25 @@ function ProductTabsManager() {
         if (($.inArray(status, wrongStatuses) !== -1 || $.inArray(request.status, wrongStatusCodes) !== -1) && !self.page_reloading) {
           var currentTab = '';
           if (typeof request.responseText !== 'undefined' && request.responseText && request.responseText.length) {
-            currentTab = $(request.responseText)
-              .filter('.product-tab')
-              .attr('id')
-              .replace('product-', '');
+            currentTab = $(request.responseText);
+            if (currentTab) {
+              currentTab = currentTab
+                .filter('.product-tab')
+                .attr('id');
+            }
+            if (currentTab) {
+              currentTab.replace('product-', '');
+            }
 
-            currentTab = currentTab[0].toUpperCase() + currentTab.slice(1);
+            if (typeof currentTab === 'undefined' || !currentTab) {
+              var urlRegex = /action=([a-zA-Z]+)/g;
+              var data = urlRegex.exec(this.url);
+
+              currentTab = data[1];
+            } else {
+              currentTab = currentTab[0].toUpperCase() + currentTab.slice(1);
+            }
+
             // De-Franglais the name
             if (currentTab === 'Attachements') {
               currentTab = 'Attachments';
