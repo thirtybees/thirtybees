@@ -851,16 +851,38 @@ product_tabs['Prices'] = new function(){
 			if (!inputCut[i] || !nameCut[i])
 				continue ;
 
-			// Add to hidden fields no selected products OR add to select field selected product
-			if (inputCut[i] != id)
-			{
-				input.value += inputCut[i] + '-';
-				name.value += nameCut[i] + '¤';
-				div.innerHTML += '<div class="form-control-static"><button type="button" class="delAccessory btn btn-default" name="' + inputCut[i] +'"><i class="icon-remove text-danger"></i></button>&nbsp;' + nameCut[i] + '</div>';
-			}
-			else
-				$('#selectAccessories').append('<option selected="selected" value="' + inputCut[i] + '-' + nameCut[i] + '">' + inputCut[i] + ' - ' + nameCut[i] + '</option>');
-		}
+  /**
+   * Update the manufacturer select element with the list of existing manufacturers
+   */
+  this.getManufacturers = function () {
+    $.ajax({
+      url: 'ajax-tab.php',
+      cache: false,
+      dataType: 'json',
+      data: {
+        ajaxProductManufacturers: '1',
+        ajax: '1',
+        token: token,
+        controller: 'AdminProducts',
+        action: 'productManufacturers'
+      },
+      success: function (j) {
+        var options = '';
+        if (j) {
+          for (var i = 0; i < j.length; i += 1) {
+            options += '<option value="' + j[i].optionValue + '">' + j[i].optionDisplay + '</option>';
+          }
+        }
+        $('select#id_manufacturer').chosen({ width: '250px' }).append(options).trigger('chosen:updated');
+      },
+      error: function (XMLHttpRequest, textStatus) {
+        var $selectManufacturer = $('select#id_manufacturer');
+        if ($selectManufacturer.length) {
+          $selectManufacturer.replaceWith('<p id="id_manufacturer">[TECHNICAL ERROR] ajaxProductManufacturers: ' + textStatus + '</p>');
+        }
+      }
+    });
+  };
 
 		$('#product_autocomplete_input').setOptions({
 			extraParams: {excludeIds : self.getAccessoriesIds()}
