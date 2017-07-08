@@ -4069,8 +4069,6 @@ class AdminProductsControllerCore extends AdminController
 
         $data = $this->createTemplate($this->tpl_form);
 
-
-
         $context = Context::getContext();
         $rewrittenLinks = [];
         if (!Validate::isLoadedObject($product) || !$product->id_category_default) {
