@@ -4069,13 +4069,21 @@ class AdminProductsControllerCore extends AdminController
 
         $data = $this->createTemplate($this->tpl_form);
 
+
+
         $context = Context::getContext();
         $rewrittenLinks = [];
-        foreach ($this->_languages as $language) {
-            $rewrittenLinks[(int) $language['id_lang']] = explode(
-                '[REWRITE]',
-                $context->link->getProductLink($product->id, '[REWRITE]', (int) $product->id_category_default)
-            );
+        if (!Validate::isLoadedObject($product) || !$product->id_category_default) {
+            foreach ($this->_languages as $language) {
+                $rewrittenLinks[(int) $language['id_lang']] = [$this->l('Unable to determine the preview URL. This product has not been linked with a category, yet.')];
+            }
+        } else {
+            foreach ($this->_languages as $language) {
+                $rewrittenLinks[(int) $language['id_lang']] = explode(
+                    '[REWRITE]',
+                    $context->link->getProductLink($product->id, '[REWRITE]', (int) $product->id_category_default)
+                );
+            }
         }
 
         $data->assign(
