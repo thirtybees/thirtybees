@@ -2330,9 +2330,12 @@ class CartCore extends ObjectModel
         $virtualContext->cart = $this;
 
         foreach ($result as &$row) {
-            $row['obj'] = new CartRule($row['id_cart_rule'], (int) $this->id_lang);
-            $row['value_real'] = $row['obj']->getContextualValue(true, $virtualContext, $filter);
-            $row['value_tax_exc'] = $row['obj']->getContextualValue(false, $virtualContext, $filter);
+            $cartRule = new CartRule();
+            $cartRule->hydrate($row);
+
+            $row['obj'] = $cartRule;
+            $row['value_real'] = $cartRule->getContextualValue(true, $virtualContext, $filter);
+            $row['value_tax_exc'] = $cartRule->getContextualValue(false, $virtualContext, $filter);
             // Retro compatibility < 1.5.0.2
             $row['id_discount'] = $row['id_cart_rule'];
             $row['description'] = $row['name'];
