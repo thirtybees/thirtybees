@@ -284,6 +284,8 @@ class OrderCore extends ObjectModel
     }
 
     /**
+     * Add this Order
+     *
      * @param bool $autoDate
      * @param bool $nullValues
      *
@@ -291,14 +293,49 @@ class OrderCore extends ObjectModel
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @since 1.0.2 Amounts are rounded before being saved to db
      */
     public function add($autoDate = true, $nullValues = true)
     {
+        $this->roundAmounts();
+
         if (parent::add($autoDate, $nullValues)) {
             return SpecificPrice::deleteByIdCart($this->id_cart);
         }
 
         return false;
+    }
+
+    /**
+     * Update this Order
+     *
+     * @param bool $autoDate
+     * @param bool $nullValues
+     *
+     * @return bool
+     *
+     * @since 1.0.2 Amounts are rounded before being saved to db
+     */
+    public function update($autoDate = true, $nullValues = true)
+    {
+        $this->roundAmounts();
+
+        return parent::update($autoDate, $nullValues);
+    }
+
+    /**
+     * This function rounds all the decimal properties of this Object
+     *
+     * @since 1.0.2
+     */
+    public function roundAmounts()
+    {
+        foreach (static::$definition['fields'] as $fieldName => $field) {
+            if ($field['type'] === static::TYPE_FLOAT && isset($this->$fieldName)) {
+                $this->$fieldName = Tools::ps_round($this->$fieldName, _PS_PRICE_COMPUTE_PRECISION_);
+            }
+        }
     }
 
     /**
@@ -1482,7 +1519,6 @@ class OrderCore extends ObjectModel
             }
 
             // Save Order invoice
-
             $this->setInvoiceDetails($orderInvoice);
 
             if (Configuration::get('PS_INVOICE')) {
@@ -1505,39 +1541,57 @@ class OrderCore extends ObjectModel
             }
 
             // Update order detail
-            Db::getInstance()->execute('
-				UPDATE `'._DB_PREFIX_.'order_detail`
-				SET `id_order_invoice` = '.(int) $orderInvoice->id.'
-				WHERE `id_order` = '.(int) $orderInvoice->id_order);
+            Db::getInstance()->update(
+                'order_detail',
+                [
+                    'id_order_invoice' => (int) $orderInvoice->id,
+                ],
+                '`id_order` = '.(int) $orderInvoice->id_order
+            );
             Cache::clean('objectmodel_OrderDetail_*');
 
-            // Update order payment
-            if ($useExistingPayment) {
-                $idOrderPayments = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-                    (new DbQuery())
-                        ->select('DISTINCT op.`id_order_payment`')
-                        ->from('order_payment', 'op')
-                        ->innerJoin('orders', 'o', 'o.`reference` = op.`order_reference`')
-                        ->leftJoin('order_invoice_payment', 'oip', 'oip.`id_order_payment` = op.`id_order_payment`')
-                        ->where('oip.`id_order` != '.(int) $orderInvoice->id_order.' OR oip.`id_order` IS NULL')
-                        ->where('o.`id_order` = '.(int) $orderInvoice->id_order)
-                );
+            $idOrderPayments = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                    ->select('DISTINCT op.`id_order_payment`')
+                    ->from('order_payment', 'op')
+                    ->innerJoin('orders', 'o', 'o.`reference` = op.`order_reference` AND o.`id_order` = '.(int) $orderInvoice->id_order)
+                    ->leftJoin('order_invoice_payment', 'oip', 'oip.`id_order_payment` = op.`id_order_payment` AND oip.`id_order` = '.(int) $orderInvoice->id_order)
+            );
 
-                if (count($idOrderPayments)) {
-                    foreach ($idOrderPayments as $orderPayment) {
-                        Db::getInstance()->insert(
-                            'order_invoice_payment',
-                            [
-                                'id_order_invoice' => (int) $orderInvoice->id,
-                                'id_order_payment' => (int) $orderPayment['id_order_payment'],
-                                'id_order' => (int) $orderInvoice->id_order,
-                            ]
-                        );
-                    }
-                    // Clear cache
-                    Cache::clean('order_invoice_paid_*');
+            // Update order payment
+            if ($useExistingPayment && !empty($idOrderPayments)) {
+                foreach ($idOrderPayments as $orderPayment) {
+                    Db::getInstance()->insert(
+                        'order_invoice_payment',
+                        [
+                            'id_order_invoice' => (int) $orderInvoice->id,
+                            'id_order_payment' => (int) $orderPayment['id_order_payment'],
+                            'id_order'         => (int) $orderInvoice->id_order,
+                        ]
+                    );
                 }
+            } else {
+                // Since an invoice always requires an existing order payment, we are going to add one
+                $orderPayment = new OrderPayment();
+                $orderPayment->order_reference = $this->reference;
+                $orderPayment->id_currency = $this->id_currency;
+                $orderPayment->amount = $this->total_paid_tax_incl;
+                $orderPayment->payment_method = $this->payment;
+                $orderPayment->conversion_rate = $this->conversion_rate;
+
+                $orderPayment->add();
+
+                Db::getInstance()->insert(
+                    'order_invoice_payment',
+                    [
+                        'id_order_invoice' => (int) $orderInvoice->id,
+                        'id_order_payment' => (int) $orderPayment->id,
+                        'id_order'         => (int) $orderInvoice->id_order,
+                    ]
+                );
             }
+            // Clear cache
+            Cache::clean('order_invoice_paid_*');
 
             // Update order cart rule
             Db::getInstance()->update(

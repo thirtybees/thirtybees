@@ -37,16 +37,27 @@
 class OrderPaymentCore extends ObjectModel
 {
     // @codingStandardsIgnoreStart
+    /** @var string $order_reference */
     public $order_reference;
+    /** @var int $id_currency */
     public $id_currency;
+    /** @var float $amount */
     public $amount;
+    /** @var string $payment_method */
     public $payment_method;
+    /** @var float $conversion_rate */
     public $conversion_rate;
+    /** @var string $transaction_id */
     public $transaction_id;
+    /** @var string $card_number */
     public $card_number;
+    /** @var string $card_brand */
     public $card_brand;
+    /** @var string $card_expiration */
     public $card_expiration;
+    /** @var string $card_holder */
     public $card_holder;
+    /** @var string $date_add */
     public $date_add;
     // @codingStandardsIgnoreEnd
 

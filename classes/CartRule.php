@@ -1272,11 +1272,12 @@ class CartRuleCore extends ObjectModel
      *
      * @param bool    $useTax
      * @param Context $context
+     * @param null    $filter
+     * @param null    $package
      * @param bool    $useCache Allow using cache to avoid multiple free gift using multishipping
      *
      * @return float|int|string
-     *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function getContextualValue($useTax, Context $context = null, $filter = null, $package = null, $useCache = true)
@@ -1290,6 +1291,7 @@ class CartRuleCore extends ObjectModel
         if (!$filter) {
             $filter = static::FILTER_ACTION_ALL;
         }
+        $roundType = (int) Configuration::get('PS_ROUND_TYPE');
 
         $allProducts = $context->cart->getProducts();
         $packageProducts = (is_null($package) ? $allProducts : $package['products']);
@@ -1338,7 +1340,14 @@ class CartRuleCore extends ObjectModel
                 // Do not give a reduction on free products!
                 $orderTotal = $context->cart->getOrderTotal($useTax, Cart::ONLY_PRODUCTS, $packageProducts);
                 foreach ($context->cart->getCartRules(static::FILTER_ACTION_GIFT) as $cartRule) {
-                    $orderTotal -= Tools::ps_round($cartRule['obj']->getContextualValue($useTax, $context, static::FILTER_ACTION_GIFT, $package), _PS_PRICE_COMPUTE_PRECISION_);
+                    if (in_array($roundType, [1])) {
+                        // Round item
+                        $orderTotal -= Tools::ps_round($cartRule['obj']->getContextualValue($useTax, $context, static::FILTER_ACTION_GIFT, $package), _PS_PRICE_COMPUTE_PRECISION_);
+                    } else {
+                        // Round line - deferring
+                        // Round total
+                        $orderTotal -= $cartRule['obj']->getContextualValue($useTax, $context, static::FILTER_ACTION_GIFT, $package);
+                    }
                 }
 
                 $reductionValue += $orderTotal * $this->reduction_percent / 100;
@@ -1518,6 +1527,11 @@ class CartRuleCore extends ObjectModel
 
                     $reductionValue = min($reductionValue, $currentCartAmount);
                 }
+            }
+
+            if ($roundType === 2) {
+                // Round line
+                $reductionValue = Tools::ps_round($reductionValue, _PS_PRICE_DISPLAY_PRECISION_);
             }
         }
 

@@ -490,8 +490,7 @@ class AdminOrdersControllerCore extends AdminController
                                 // Since we have an order there should already be a payment
                                 // If there is no payment and the order status is `logable`
                                 // then the order payment will be generated automatically
-                                $useExistingPayment = !$order->hasInvoice();
-                                $history->changeIdOrderState((int) $orderState->id, $order, $useExistingPayment);
+                                $history->changeIdOrderState((int) $orderState->id, $order, !$order->hasInvoice());
 
                                 $carrier = new Carrier($order->id_carrier, $order->id_lang);
                                 $templateVars = [];

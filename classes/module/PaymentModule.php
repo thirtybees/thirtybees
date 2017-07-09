@@ -445,7 +445,7 @@ abstract class PaymentModuleCore extends Module
             $this->currentOrderReference = $reference;
 
             $orderCreationFailed = false;
-            $cartTotalPaid = (float) Tools::ps_round((float) $this->context->cart->getOrderTotal(true, Cart::BOTH), 2);
+            $cartTotalPaid = (float) Tools::ps_round((float) $this->context->cart->getOrderTotal(true, Cart::BOTH), _PS_PRICE_DISPLAY_PRECISION_);
 
             foreach ($cartDeliveryOption as $idAddress => $keyCarriers) {
                 foreach ($deliveryOptionList[$idAddress][$keyCarriers]['carrier_list'] as $idCarrier => $data) {
@@ -521,7 +521,7 @@ abstract class PaymentModuleCore extends Module
                     $order->gift_message = $this->context->cart->gift_message;
                     $order->mobile_theme = $this->context->cart->mobile_theme;
                     $order->conversion_rate = $this->context->currency->conversion_rate;
-                    $amountPaid = !$dontTouchAmount ? Tools::ps_round((float) $amountPaid, 2) : $amountPaid;
+                    $amountPaid = !$dontTouchAmount ? Tools::ps_round((float) $amountPaid, _PS_PRICE_DISPLAY_PRECISION_) : $amountPaid;
                     $order->total_paid_real = 0;
 
                     $order->total_products = (float) $this->context->cart->getOrderTotal(false, Cart::ONLY_PRODUCTS, $order->product_list, $idCarrier);
@@ -542,8 +542,8 @@ abstract class PaymentModuleCore extends Module
                     $order->total_wrapping_tax_incl = (float) abs($this->context->cart->getOrderTotal(true, Cart::ONLY_WRAPPING, $order->product_list, $idCarrier));
                     $order->total_wrapping = $order->total_wrapping_tax_incl;
 
-                    $order->total_paid_tax_excl = (float) Tools::ps_round((float) $this->context->cart->getOrderTotal(false, Cart::BOTH, $order->product_list, $idCarrier), _PS_PRICE_COMPUTE_PRECISION_);
-                    $order->total_paid_tax_incl = (float) Tools::ps_round((float) $this->context->cart->getOrderTotal(true, Cart::BOTH, $order->product_list, $idCarrier), _PS_PRICE_COMPUTE_PRECISION_);
+                    $order->total_paid_tax_excl = (float) (float) $this->context->cart->getOrderTotal(false, Cart::BOTH, $order->product_list, $idCarrier);
+                    $order->total_paid_tax_incl = (float) (float) $this->context->cart->getOrderTotal(true, Cart::BOTH, $order->product_list, $idCarrier);
                     $order->total_paid = $order->total_paid_tax_incl;
                     $order->round_mode = Configuration::get('PS_PRICE_ROUND_MODE');
                     $order->round_type = Configuration::get('PS_ROUND_TYPE');
@@ -673,9 +673,9 @@ abstract class PaymentModuleCore extends Module
                     $productVarTplList = [];
                     foreach ($order->product_list as $product) {
                         $price = Product::getPriceStatic((int) $product['id_product'], false, ($product['id_product_attribute'] ? (int) $product['id_product_attribute'] : null), 6, null, false, true, $product['cart_quantity'], false, (int) $order->id_customer, (int) $order->id_cart, (int) $order->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
-                        $priceTaxIncluded = Product::getPriceStatic((int) $product['id_product'], true, ($product['id_product_attribute'] ? (int) $product['id_product_attribute'] : null), 2, null, false, true, $product['cart_quantity'], false, (int) $order->id_customer, (int) $order->id_cart, (int) $order->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
+                        $priceTaxIncluded = Product::getPriceStatic((int) $product['id_product'], true, ($product['id_product_attribute'] ? (int) $product['id_product_attribute'] : null), _PS_PRICE_DISPLAY_PRECISION_, null, false, true, $product['cart_quantity'], false, (int) $order->id_customer, (int) $order->id_cart, (int) $order->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
 
-                        $productPrice = Product::getTaxCalculationMethod() == PS_TAX_EXC ? Tools::ps_round($price, 2) : $priceTaxIncluded;
+                        $productPrice = Product::getTaxCalculationMethod() == PS_TAX_EXC ? Tools::ps_round($price, _PS_PRICE_DISPLAY_PRECISION_) : $priceTaxIncluded;
 
                         $productVarTpl = [
                             'reference'     => $product['reference'],
