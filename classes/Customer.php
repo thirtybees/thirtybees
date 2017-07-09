@@ -611,10 +611,9 @@ class CustomerCore extends ObjectModel
                     ->select('DISTINCT a.*, cl.`name` AS `country`, s.`name` AS `state`, s.`iso_code` AS `state_iso`')
                     ->from('address', 'a')
                     ->leftJoin('country', 'c', 'a.`id_country` = c.`id_country`')
-                    ->leftJoin('country_lang', 'cl', 'c.`id_country` = cl.`id_country`')
+                    ->leftJoin('country_lang', 'cl', 'c.`id_country` = cl.`id_country` AND cl.`id_lang` = '.(int) $idLang)
                     ->leftJoin('state', 's', 's.`id_state` = a.`id_state`')
                     ->join($shareOrder ? '' : Shop::addSqlAssociation('country', 'c'))
-                    ->where('cl.`id_lang` = '.(int) $idLang)
                     ->where('a.`id_customer` = '.(int) $this->id)
                     ->where('a.`deleted` = 0')
             );

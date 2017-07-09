@@ -207,8 +207,7 @@ class TabCore extends ObjectModel
                 (new DbQuery())
                     ->select('t.*, tl.`name`')
                     ->from('tab', 't')
-                    ->leftJoin('tab_lang', 'tl', 't.`id_tab` = tl.`id_tab`')
-                    ->where('tl.`id_lang` = '.(int) $idLang)
+                    ->leftJoin('tab_lang', 'tl', 't.`id_tab` = tl.`id_tab` AND tl.`id_lang` = '.(int) $idLang)
                     ->orderBy('t.`position` ASC')
             );
 
@@ -403,9 +402,8 @@ class TabCore extends ObjectModel
                 (new DbQuery())
                     ->select('*')
                     ->from('tab', 't')
-                    ->leftJoin('tab_lang', 'tl', 't.`id_tab` = tl.`id_tab`')
+                    ->leftJoin('tab_lang', 'tl', 't.`id_tab` = tl.`id_tab` AND tl.`id_lang` = '.(int) $idLang)
                     ->where('t.`id_tab` = '.(int) $idTab)
-                    ->where('tl.`id_lang` = '.(int) $idLang)
             );
             Cache::store($cacheId, $result);
 
@@ -431,8 +429,7 @@ class TabCore extends ObjectModel
                 ->select('t.`id_tab`, t.`id_parent`, tl.`name`, a.`id_profile`')
                 ->from('tab', 't')
                 ->leftJoin('access', 'a', 'a.`id_tab` = t.`id_tab`')
-                ->leftJoin('tab_lang', 'tl', 't.`id_tab` = tl.`id_tab`')
-                ->where('tl.`id_lang` = '.(int) Context::getContext()->language->id)
+                ->leftJoin('tab_lang', 'tl', 't.`id_tab` = tl.`id_tab` AND tl.`id_lang` = '.(int) Context::getContext()->language->id)
                 ->where('a.`id_profile` = '.(int) $idProfile)
                 ->where('t.`id_parent` = '.(int) $idParent)
                 ->where('a.`view` = 1')

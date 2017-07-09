@@ -969,8 +969,7 @@ class OrderCore extends ObjectModel
             (new DbQuery())
                 ->select('os.`id_order_state`, osl.`name`, os.`logable`, os.`shipped`')
                 ->from('order_state', 'os')
-                ->leftJoin('order_state_lang', 'osl', 'osl.`id_order_state` = os.`id_order_state`')
-                ->where('osl.`id_lang` = '.(int) $idLang)
+                ->leftJoin('order_state_lang', 'osl', 'osl.`id_order_state` = os.`id_order_state` AND osl.`id_lang` = '.(int) $idLang)
                 ->where('os.`id_order_state` = '.(int) $this->current_state)
         );
     }

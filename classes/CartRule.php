@@ -274,8 +274,7 @@ class CartRuleCore extends ObjectModel
         $sql = (new DbQuery())
             ->select('*')
             ->from('cart_rule', 'cr')
-            ->leftJoin('cart_rule_lang', 'crl', 'cr.`id_cart_rule` = crl.`id_cart_rule`')
-            ->where('crl.`id_lang` = '.(int) $idLang)
+            ->leftJoin('cart_rule_lang', 'crl', 'cr.`id_cart_rule` = crl.`id_cart_rule` AND crl.`id_lang` = '.(int) $idLang)
             ->where('cr.`date_from` < \''.date('Y-m-d H:i:s').'\'')
             ->where('cr.`date_to` > \''.date('Y-m-d H:i:s').'\'');
         if ($active) {

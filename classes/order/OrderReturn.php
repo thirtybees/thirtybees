@@ -129,8 +129,7 @@ class OrderReturnCore extends ObjectModel
                 ->select('`product_quantity`, `date_add`, orsl.`name` AS `state`')
                 ->from('order_return_detail', 'ord')
                 ->leftJoin('order_return', 'o', 'o.`id_order_return` = ord.`id_order_return`')
-                ->leftJoin('order_return_state_lang', 'orsl', 'orsl.`id_order_return_state` = o.`state`')
-                ->where('orsl.`id_lang` = '.(int) Context::getContext()->language->id)
+                ->leftJoin('order_return_state_lang', 'orsl', 'orsl.`id_order_return_state` = o.`state` AND orsl.`id_lang` = '.(int) Context::getContext()->language->id)
                 ->where('ord.`id_order_detail` = '.(int) $idOrderDetail)
         );
     }
