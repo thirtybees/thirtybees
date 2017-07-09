@@ -1316,13 +1316,13 @@ class CartRuleCore extends ObjectModel
             if (!$this->carrier_restriction) {
                 $reductionValue += $context->cart->getOrderTotal($useTax, Cart::ONLY_SHIPPING, is_null($package) ? null : $package['products'], is_null($package) ? null : $package['id_carrier']);
             } else {
-                $data = Db::getInstance()->executeS(
-                    '
-					SELECT crc.id_cart_rule, c.id_carrier
-					FROM '._DB_PREFIX_.'cart_rule_carrier crc
-					INNER JOIN '._DB_PREFIX_.'carrier c ON (c.id_reference = crc.id_carrier AND c.deleted = 0)
-					WHERE crc.id_cart_rule = '.(int) $this->id.'
-					AND c.id_carrier = '.(int) $context->cart->id_carrier
+                $data = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                    (new DbQuery())
+                        ->select('crc.`id_cart_rule`, c.`id_carrier`')
+                        ->from('cart_rule_carrier', 'crc')
+                        ->innerJoin('carrier', 'c', 'c.`id_reference` = crc.`id_carrier` AND c.`deleted` = 0')
+                        ->where('crc.`id_cart_rule` = '.(int) $this->id)
+                        ->where('c.`id_carrier` = '.(int) $context->cart->id_carrier)
                 );
 
                 if ($data) {
@@ -1368,9 +1368,7 @@ class CartRuleCore extends ObjectModel
                 foreach ($allProducts as $product) {
                     $price = $product['price'];
                     if ($useTax) {
-                        // since later on we won't be able to know the product the cart rule was applied to,
-                        // use average cart VAT for price_wt
-                        $price *= (1 + $context->cart->getAverageProductsTaxRate());
+                        $price *= (1 + (float) ($product['rate'] / 100));
                     }
 
                     if ($price > 0 && ($minPrice === false || $minPrice > $price)) {
@@ -1402,9 +1400,7 @@ class CartRuleCore extends ObjectModel
                         ) {
                             $price = $product['price'];
                             if ($useTax) {
-                                $infos = Product::getTaxesInformations($product, $context);
-                                $taxRate = $infos['rate'] / 100;
-                                $price *= (1 + $taxRate);
+                                $price *= (1 + (float) ($product['rate'] / 100));
                             }
 
                             $selectedProductsReduction += $price * $product['cart_quantity'];
