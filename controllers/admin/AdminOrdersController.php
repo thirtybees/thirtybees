@@ -487,7 +487,10 @@ class AdminOrdersControllerCore extends AdminController
                                 $history->id_order = $order->id;
                                 $history->id_employee = (int) $this->context->employee->id;
 
-                                $useExistingPayment = $order->hasInvoice();
+                                // Since we have an order there should already be a payment
+                                // If there is no payment and the order status is `logable`
+                                // then the order payment will be generated automatically
+                                $useExistingPayment = !$order->hasInvoice();
                                 $history->changeIdOrderState((int) $orderState->id, $order, $useExistingPayment);
 
                                 $carrier = new Carrier($order->id_carrier, $order->id_lang);
@@ -635,10 +638,10 @@ class AdminOrdersControllerCore extends AdminController
                         $history->id_order = $order->id;
                         $history->id_employee = (int) $this->context->employee->id;
 
-                        $useExistingPayment = false;
-                        if ($order->hasInvoice()) {
-                            $useExistingPayment = true;
-                        }
+                        // Since we have an order there should already be a payment
+                        // If there is no payment and the order status is `logable`
+                        // then the order payment will be generated automatically
+                        $useExistingPayment = !$order->hasInvoice();
                         $history->changeIdOrderState((int) $orderState->id, $order, $useExistingPayment);
 
                         $carrier = new Carrier($order->id_carrier, $order->id_lang);
