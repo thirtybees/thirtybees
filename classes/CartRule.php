@@ -187,31 +187,38 @@ class CartRuleCore extends ObjectModel
             );
             $idProductRuleGroupDestination = Db::getInstance()->Insert_ID();
 
-            $productsRulesSource = Db::getInstance()->ExecuteS(
-                '
-			SELECT id_product_rule,type FROM `'._DB_PREFIX_.'cart_rule_product_rule`
-			WHERE `id_product_rule_group` = '.(int) $productRuleGroupSource['id_product_rule_group'].' '
+            $productsRulesSource = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                    ->select('`id_product_rule`, `type`')
+                    ->from('cart_rule_product_rule')
+                    ->where('`id_product_rule_group` = '.(int) $productsRulesGroupSource['id_product_rule_group'])
             );
 
             foreach ($productsRulesSource as $productRuleSource) {
-                Db::getInstance()->execute(
-                    '
-				INSERT INTO `'._DB_PREFIX_.'cart_rule_product_rule` (`id_product_rule_group`, `type`)
-				VALUES ('.(int) $idProductRuleGroupDestination.',"'.pSQL($productRuleSource['type']).'")'
+                Db::getInstance()->insert(
+                    'cart_rule_product_rule',
+                    [
+                        'id_product_rule_group' => (int) $idProductRuleGroupDestination,
+                        'type'                  => pSQL($productsRulesSource['type']),
+                    ]
                 );
                 $idProductRuleDestination = Db::getInstance()->Insert_ID();
 
-                $productsRulesValuesSource = Db::getInstance()->ExecuteS(
-                    '
-				SELECT id_item FROM `'._DB_PREFIX_.'cart_rule_product_rule_value`
-				WHERE `id_product_rule` = '.(int) $productRuleSource['id_product_rule'].' '
+                $productsRulesValuesSource = Db::getInstance()->executeS(
+                    (new DbQuery())
+                        ->select('`id_item`')
+                        ->from('cart_rule_product_rule_value')
+                        ->where('`id_product_rule` = '.(int) $productsRulesSource['id_product_rule'])
                 );
 
                 foreach ($productsRulesValuesSource as $productRuleValueSource) {
-                    Db::getInstance()->execute(
-                        '
-					INSERT INTO `'._DB_PREFIX_.'cart_rule_product_rule_value` (`id_product_rule`, `id_item`)
-					VALUES ('.(int) $idProductRuleDestination.','.(int) $productRuleValueSource['id_item'].')'
+                    Db::getInstance()->insert(
+                        'cart_rule_product_rule_value',
+                        [
+                            'id_product_rule' => (int) $idProductRuleDestination,
+                            'id_item' => (int) $productsRulesValuesSource['id_item'],
+
+                        ]
                     );
                 }
             }
@@ -234,7 +241,12 @@ class CartRuleCore extends ObjectModel
             return false;
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT `id_cart_rule` FROM `'._DB_PREFIX_.'cart_rule` WHERE `code` = \''.pSQL($code).'\'');
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('`id_cart_rule`')
+                ->from('cart_rule')
+                ->where('`code` = \''.pSQL($code).'\'')
+        );
     }
 
     /**
@@ -293,7 +305,12 @@ class CartRuleCore extends ObjectModel
 
         foreach ($result as $key => $cartRule) {
             if ($cartRule['group_restriction']) {
-                $cartRuleGroups = Db::getInstance()->executeS('SELECT id_group FROM '._DB_PREFIX_.'cart_rule_group WHERE id_cart_rule = '.(int) $cartRule['id_cart_rule']);
+                $cartRuleGroups = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                    (new DbQuery())
+                        ->select('`id_group`')
+                        ->from('cart_rule_group')
+                        ->where('id_cart_rule = '.(int) $cartRule['id_cart_rule'])
+                );
                 foreach ($cartRuleGroups as $cartRuleGroup) {
                     if (in_array($cartRuleGroup['id_group'], $customerGroups)) {
                         continue 2;
@@ -338,7 +355,12 @@ class CartRuleCore extends ObjectModel
 
         foreach ($result as $key => $cartRule) {
             if ($cartRule['shop_restriction']) {
-                $cartRuleShops = Db::getInstance()->executeS('SELECT id_shop FROM '._DB_PREFIX_.'cart_rule_shop WHERE id_cart_rule = '.(int) $cartRule['id_cart_rule']);
+                $cartRuleShops = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                    (new DbQuery())
+                        ->select('`id_shop`')
+                        ->from('cart_rule_shop')
+                        ->where('`id_cart_rule` = '.(int) $cartRule['id_cart_rule'])
+                );
                 foreach ($cartRuleShops as $cartRuleShop) {
                     if (Shop::isFeatureActive() && ($cartRuleShop['id_shop'] == Context::getContext()->shop->id)) {
                         continue 2;
@@ -367,22 +389,22 @@ class CartRuleCore extends ObjectModel
         foreach ($resultBak as $key => $cartRule) {
             if ($cartRule['country_restriction']) {
                 $countryRestriction = true;
-                $countries = Db::getInstance()->ExecuteS(
-                    '
-                    SELECT `id_country`
-                    FROM `'._DB_PREFIX_.'address`
-                    WHERE `id_customer` = '.(int) $idCustomer.'
-                    AND `deleted` = 0'
+                $countries = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS(
+                    (new DbQuery())
+                        ->select('`id_country`')
+                        ->from('address')
+                        ->where('`id_customer` = '.(int) $idCustomer)
+                        ->where('`deleted` = 0')
                 );
 
-                if (is_array($countries) && count($countries)) {
+                if (is_array($countries) && !empty($countries)) {
                     foreach ($countries as $country) {
-                        $idCartRule = (bool) Db::getInstance()->getValue(
-                            '
-                            SELECT crc.id_cart_rule
-                            FROM '._DB_PREFIX_.'cart_rule_country crc
-                            WHERE crc.id_cart_rule = '.(int) $cartRule['id_cart_rule'].'
-                            AND crc.id_country = '.(int) $country['id_country']
+                        $idCartRule = (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                            (new DbQuery())
+                                ->select('crc.`id_cart_rule`')
+                                ->from('cart_rule_country', 'crc')
+                                ->where('crc.`id_cart_rule` = '.(int) $cartRule['id_cart_rule'])
+                                ->where('crc.`id_country` = '.(int) $country['id_country'])
                         );
                         if ($idCartRule) {
                             $result[] = $resultBak[$key];
@@ -451,14 +473,14 @@ class CartRuleCore extends ObjectModel
                 foreach ($productRules as $productRule) {
                     switch ($productRule['type']) {
                         case 'attributes':
-                            $cartAttributes = Db::getInstance()->executeS(
-                                '
-							SELECT cp.quantity, cp.`id_product`, pac.`id_attribute`, cp.`id_product_attribute`
-							FROM `'._DB_PREFIX_.'cart_product` cp
-							LEFT JOIN `'._DB_PREFIX_.'product_attribute_combination` pac ON cp.id_product_attribute = pac.id_product_attribute
-							WHERE cp.`id_cart` = '.(int) $context->cart->id.'
-							AND cp.`id_product` IN ('.implode(',', array_map('intval', $eligibleProductsList)).')
-							AND cp.id_product_attribute > 0'
+                            $cartAttributes = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                                (new DbQuery())
+                                    ->select('cp.`quantity`, cp.`id_product`, pac.`id_attribute`, cp.`id_product_attribute`')
+                                    ->from('cart_product', 'cp')
+                                    ->leftJoin('product_attribute_combination', 'pac', 'cp.`id_product_attrbute` = pac.`id_product_attribute`')
+                                    ->where('cp.`id_cart` = '.(int) $context->cart->id)
+                                    ->where('cp.`id_product` IN ('.implode(',', array_map('intval', $eligibleProductsList)).')')
+                                    ->where('cp.`id_product_attribute` > 0')
                             );
                             $countMatchingProducts = 0;
                             $matchingProductsList = [];
@@ -479,12 +501,12 @@ class CartRuleCore extends ObjectModel
                             $eligibleProductsList = static::array_uintersect($eligibleProductsList, $matchingProductsList);
                             break;
                         case 'products':
-                            $cartProducts = Db::getInstance()->executeS(
-                                '
-							SELECT cp.quantity, cp.`id_product`
-							FROM `'._DB_PREFIX_.'cart_product` cp
-							WHERE cp.`id_cart` = '.(int) $context->cart->id.'
-							AND cp.`id_product` IN ('.implode(',', array_map('intval', $eligibleProductsList)).')'
+                            $cartProducts = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                                (new DbQuery())
+                                    ->select('cp.`quantity`, cp.`id_product`')
+                                    ->from('cart_product', 'cp')
+                                    ->where('cp.`id_cart` = '.(int) $context->cart->id)
+                                    ->where('cp.`id_product` IN ('.implode(',', array_map('intval', $eligibleProductsList)).')')
                             );
                             $countMatchingProducts = 0;
                             $matchingProductsList = [];
@@ -503,14 +525,14 @@ class CartRuleCore extends ObjectModel
                             $eligibleProductsList = static::array_uintersect($eligibleProductsList, $matchingProductsList);
                             break;
                         case 'categories':
-                            $cartCategories = Db::getInstance()->executeS(
-                                '
-							SELECT cp.quantity, cp.`id_product`, cp.`id_product_attribute`, catp.`id_category`
-							FROM `'._DB_PREFIX_.'cart_product` cp
-							LEFT JOIN `'._DB_PREFIX_.'category_product` catp ON cp.id_product = catp.id_product
-							WHERE cp.`id_cart` = '.(int) $context->cart->id.'
-							AND cp.`id_product` IN ('.implode(',', array_map('intval', $eligibleProductsList)).')
-							AND cp.`id_product` <> '.(int) $this->gift_product
+                            $cartCategories = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                                (new DbQuery())
+                                    ->select('cp.quantity, cp.`id_product`, cp.`id_product_attribute`, catp.`id_category`')
+                                    ->from('cart_product', 'cp')
+                                    ->leftJoin('category_product', 'catp', 'cp.`id_product` = catp.`id_product`')
+                                    ->where('cp.`id_cart` = '.(int) $context->cart->id)
+                                    ->where('cp.`id_product` IN ('.implode(',', array_map('intval', $eligibleProductsList)).')')
+                                    ->where('cp.`id_product` <> '.(int) $this->gift_product)
                             );
                             $countMatchingProducts = 0;
                             $matchingProductsList = [];
@@ -536,13 +558,13 @@ class CartRuleCore extends ObjectModel
                             $eligibleProductsList = static::array_uintersect($eligibleProductsList, $matchingProductsList);
                             break;
                         case 'manufacturers':
-                            $cartManufacturers = Db::getInstance()->executeS(
-                                '
-							SELECT cp.quantity, cp.`id_product`, p.`id_manufacturer`
-							FROM `'._DB_PREFIX_.'cart_product` cp
-							LEFT JOIN `'._DB_PREFIX_.'product` p ON cp.id_product = p.id_product
-							WHERE cp.`id_cart` = '.(int) $context->cart->id.'
-							AND cp.`id_product` IN ('.implode(',', array_map('intval', $eligibleProductsList)).')'
+                            $cartManufacturers = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                                (new DbQuery())
+                                    ->select('cp.quantity, cp.`id_product`, p.`id_manufacturer`')
+                                    ->from('cart_product', 'cp')
+                                    ->leftJoin('product', 'p', 'cp.`id_product` = p.`id_product`')
+                                    ->where('cp.`id_cart` = '.(int) $context->cart->id)
+                                    ->where('cp.`id_product` IN ('.implode(',', array_map('intval', $eligibleProductsList)).')')
                             );
                             $countMatchingProducts = 0;
                             $matchingProductsList = [];
@@ -558,13 +580,13 @@ class CartRuleCore extends ObjectModel
                             $eligibleProductsList = static::array_uintersect($eligibleProductsList, $matchingProductsList);
                             break;
                         case 'suppliers':
-                            $cartSuppliers = Db::getInstance()->executeS(
-                                '
-							SELECT cp.quantity, cp.`id_product`, p.`id_supplier`
-							FROM `'._DB_PREFIX_.'cart_product` cp
-							LEFT JOIN `'._DB_PREFIX_.'product` p ON cp.id_product = p.id_product
-							WHERE cp.`id_cart` = '.(int) $context->cart->id.'
-							AND cp.`id_product` IN ('.implode(',', array_map('intval', $eligibleProductsList)).')'
+                            $cartSuppliers = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                                (new DbQuery())
+                                    ->select('cp.`quantity`, cp.`id_product`, p.`id_supplier`')
+                                    ->from('cart_product', 'cp')
+                                    ->leftJoin('product', 'p', 'cp.`id_product` = p.`id_product`')
+                                    ->where('cp.`id_cart` = '.(int) $context->cart->id)
+                                    ->where('cp.`id_product` IN ('.implode(',', array_map('intval', $eligibleProductsList)).')')
                             );
                             $countMatchingProducts = 0;
                             $matchingProductsList = [];
@@ -609,7 +631,12 @@ class CartRuleCore extends ObjectModel
         }
 
         $productRuleGroups = [];
-        $result = Db::getInstance()->executeS('SELECT * FROM '._DB_PREFIX_.'cart_rule_product_rule_group WHERE id_cart_rule = '.(int) $this->id);
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('*')
+                ->from('cart_rule_product_rule_group')
+                ->where('`id_cart_rule` = '.(int) $this->id)
+        );
         foreach ($result as $row) {
             if (!isset($productRuleGroups[$row['id_product_rule_group']])) {
                 $productRuleGroups[$row['id_product_rule_group']] = ['id_product_rule_group' => $row['id_product_rule_group'], 'quantity' => $row['quantity']];
@@ -632,12 +659,12 @@ class CartRuleCore extends ObjectModel
         }
 
         $productRules = [];
-        $results = Db::getInstance()->executeS(
-            '
-		SELECT *
-		FROM '._DB_PREFIX_.'cart_rule_product_rule pr
-		LEFT JOIN '._DB_PREFIX_.'cart_rule_product_rule_value prv ON pr.id_product_rule = prv.id_product_rule
-		WHERE pr.id_product_rule_group = '.(int) $idProductRuleGroup
+        $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('*')
+                ->from('cart_rule_product_rule', 'pr')
+                ->leftJoin('cart_rule_product_rule_value', 'prv', 'pr.`id_product_rule` = prv.`id_product_rule`')
+                ->where('pr.`id_product_rule_group` = '.(int) $idProductRuleGroup)
         );
         foreach ($results as $row) {
             if (!isset($productRules[$row['id_product_rule']])) {
@@ -711,11 +738,11 @@ class CartRuleCore extends ObjectModel
             return false;
         }
 
-        return (bool) Db::getInstance()->getValue(
-            '
-		SELECT `id_cart_rule`
-		FROM `'._DB_PREFIX_.'cart_rule`
-		WHERE `code` = \''.pSQL($name).'\''
+        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('`id_cart_rule`')
+                ->from('cart_rule')
+                ->where('`code` = \''.pSQL($name).'\'')
         );
     }
 
@@ -890,15 +917,14 @@ class CartRuleCore extends ObjectModel
         }
 
         if ($context->cart->id_customer) {
-            $quantityUsed = Db::getInstance()->getValue(
-                '
-			SELECT count(*)
-			FROM '._DB_PREFIX_.'orders o
-			LEFT JOIN '._DB_PREFIX_.'order_cart_rule od ON o.id_order = od.id_order
-			WHERE o.id_customer = '.$context->cart->id_customer.'
-			AND od.id_cart_rule = '.(int) $this->id.'
-			AND '.(int) Configuration::get('PS_OS_ERROR').' != o.current_state
-			'
+            $quantityUsed = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                    ->select('COUNT(*)')
+                    ->from('orders', 'o')
+                    ->leftJoin('order_cart_rule', 'od', 'o.`id_order` = o.`id_order`')
+                    ->where('o.`id_customer` = '.(int) $context->cart->id_customer)
+                    ->where('od.`id_cart_rule` = '.(int) $this->id)
+                    ->where('o.`current_state` != '.(int) Configuration::get('PS_OS_ERROR'))
             );
             if ($quantityUsed + 1 > $this->quantity_per_user) {
                 return (!$displayError) ? false : Tools::displayError('You cannot use this voucher anymore (usage limit reached)');
@@ -907,12 +933,12 @@ class CartRuleCore extends ObjectModel
 
         // Get an intersection of the customer groups and the cart rule groups (if the customer is not logged in, the default group is Visitors)
         if ($this->group_restriction) {
-            $idCartRule = (int) Db::getInstance()->getValue(
-                '
-			SELECT crg.id_cart_rule
-			FROM '._DB_PREFIX_.'cart_rule_group crg
-			WHERE crg.id_cart_rule = '.(int) $this->id.'
-			AND crg.id_group '.($context->cart->id_customer ? 'IN (SELECT cg.id_group FROM '._DB_PREFIX_.'customer_group cg WHERE cg.id_customer = '.(int) $context->cart->id_customer.')' : '= '.(int) Configuration::get('PS_UNIDENTIFIED_GROUP'))
+            $idCartRule = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                    ->select('crg.`id_cart_rule`')
+                    ->from('cart_rule_group', 'crg')
+                    ->where('crg.`id_cart_rule` = '.(int) $this->id)
+                    ->where('crg.`id_group` = '.($context->cart->id_customer ? 'IN (SELECT cg.id_group FROM '._DB_PREFIX_.'customer_group cg WHERE cg.id_customer = '.(int) $context->cart->id_customer.')' : '= '.(int) Configuration::get('PS_UNIDENTIFIED_GROUP')))
             );
             if (!$idCartRule) {
                 return (!$displayError) ? false : Tools::displayError('You cannot use this voucher');
