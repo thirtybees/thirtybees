@@ -636,7 +636,7 @@ class AdminOrdersControllerCore extends AdminController
                         $history->id_employee = (int) $this->context->employee->id;
 
                         $useExistingPayment = false;
-                        if (!$order->hasInvoice()) {
+                        if ($order->hasInvoice()) {
                             $useExistingPayment = true;
                         }
                         $history->changeIdOrderState((int) $orderState->id, $order, $useExistingPayment);
