@@ -81,8 +81,7 @@ class FeatureCore extends ObjectModel
             (new DbQuery())
                 ->select('*')
                 ->from('feature', 'f')
-                ->leftJoin('feature_lang', 'fl', 'f.`id_feature` = fl.`id_feature`')
-                ->where('fl.`id_lang` = '.(int) $idLang)
+                ->leftJoin('feature_lang', 'fl', 'f.`id_feature` = fl.`id_feature` AND fl.`id_lang` = '.(int) $idLang)
                 ->where('f.`id_feature` = '.(int) $idFeature)
         );
     }
@@ -105,8 +104,7 @@ class FeatureCore extends ObjectModel
                 ->select('DISTINCT f.`id_feature`, f.*, fl.*')
                 ->from('feature', 'f')
                 ->join($withShop ? Shop::addSqlAssociation('feature', 'f') : '')
-                ->leftJoin('feature_lang', 'fl', 'f.`id_feature` = fl.`id_feature`')
-                ->where('fl.`id_lang` = '.(int) $idLang)
+                ->leftJoin('feature_lang', 'fl', 'f.`id_feature` = fl.`id_feature` And fl.`id_lang` = '.(int) $idLang)
                 ->orderBy('f.`position` ASC')
         );
     }
@@ -127,8 +125,7 @@ class FeatureCore extends ObjectModel
             (new DbQuery())
                 ->select('COUNT(*) as `nb`')
                 ->from('feature', 'ag')
-                ->leftJoin('feature_lang', 'agl', 'ag.`id_feature` = agl.`id_feature`')
-                ->where('`id_lang` = '.(int) $idLang)
+                ->leftJoin('feature_lang', 'agl', 'ag.`id_feature` = agl.`id_feature` AND `id_lang` = '.(int) $idLang)
         );
     }
 
@@ -295,9 +292,8 @@ class FeatureCore extends ObjectModel
                 ->select('f.*, fl.*')
                 ->from('feature', 'f')
                 ->leftJoin('feature_product', 'fp', 'f.`id_feature` = fp.`id_feature`')
-                ->leftJoin('feature_lang', 'fl', 'f.`id_feature` = fl.`id_feature`')
+                ->leftJoin('feature_lang', 'fl', 'f.`id_feature` = fl.`id_feature` AND fl.`id_lang` = '.(int) $idLang)
                 ->where('fp.`id_product` IN ('.$ids.')')
-                ->where('`id_lang` = '.(int) $idLang)
                 ->groupBy('f.`id_feature`')
                 ->orderBy('f.`position` ASC')
         );

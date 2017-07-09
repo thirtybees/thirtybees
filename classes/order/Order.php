@@ -991,11 +991,13 @@ class OrderCore extends ObjectModel
      */
     public function getCurrentStateFull($idLang)
     {
-        return Db::getInstance()->getRow('
-			SELECT os.`id_order_state`, osl.`name`, os.`logable`, os.`shipped`
-			FROM `'._DB_PREFIX_.'order_state` os
-			LEFT JOIN `'._DB_PREFIX_.'order_state_lang` osl ON (osl.`id_order_state` = os.`id_order_state`)
-			WHERE osl.`id_lang` = '.(int) $idLang.' AND os.`id_order_state` = '.(int) $this->current_state);
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('os.`id_order_state`, osl.`name`, os.`logable`, os.`shipped`')
+                ->from('order_state', 'os')
+                ->leftJoin('order_state_lang', 'osl', 'osl.`id_order_state` = os.`id_order_state` AND osl.`id_lang` = '.(int) $idLang)
+                ->where('os.`id_order_state` = '.(int) $this->current_state)
+        );
     }
 
     /**
