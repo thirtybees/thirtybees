@@ -820,8 +820,7 @@ class CartCore extends ObjectModel
 
                 case Order::ROUND_ITEM:
                 default:
-                    $productPrice = /*$with_taxes ? $tax_calculator->addTaxes($price) : */
-                        $price;
+                    $productPrice = $price;
                     $productsTotal[$idTaxRulesGroup] += Tools::ps_round($productPrice, $computePrecision) * (int) $product['cart_quantity'];
                     break;
             }
@@ -885,7 +884,7 @@ class CartCore extends ObjectModel
                 $cartRuleObject = $cartRule['obj'];
                 // If the cart rule offers free shipping, add the shipping cost
                 if (($withShipping || $type == static::ONLY_DISCOUNTS) && $cartRuleObject->free_shipping && !$flag) {
-                    $orderShippingDiscount = (float) Tools::ps_round($cartRuleObject->getContextualValue($withTaxes, $virtualContext, CartRule::FILTER_ACTION_SHIPPING, ($paramProduct ? $package : null), $useCache), $computePrecision);
+                    $orderShippingDiscount = (float) $cartRuleObject->getContextualValue($withTaxes, $virtualContext, CartRule::FILTER_ACTION_SHIPPING, ($paramProduct ? $package : null), $useCache);
                     $flag = true;
                 }
 
@@ -909,10 +908,10 @@ class CartCore extends ObjectModel
 
                 // If the cart rule offers a reduction, the amount is prorated (with the products in the package)
                 if ($cartRuleObject->reduction_percent > 0 || $cartRuleObject->reduction_amount > 0) {
-                    $orderTotalDiscount += Tools::ps_round($cartRuleObject->getContextualValue($withTaxes, $virtualContext, CartRule::FILTER_ACTION_REDUCTION, $package, $useCache), $computePrecision);
+                    $orderTotalDiscount += $cartRuleObject->getContextualValue($withTaxes, $virtualContext, CartRule::FILTER_ACTION_REDUCTION, $package, $useCache);
                 }
             }
-            $orderTotalDiscount = min(Tools::ps_round($orderTotalDiscount, 2), (float) $orderTotalProducts) + (float) $orderShippingDiscount;
+            $orderTotalDiscount = min($orderTotalDiscount, (float) $orderTotalProducts) + (float) $orderShippingDiscount;
             $orderTotal -= $orderTotalDiscount;
         }
 
@@ -1819,7 +1818,7 @@ class CartCore extends ObjectModel
                     continue;
                 }
 
-                // If out-of-range behavior carrier is set on "Desactivate carrier"
+                // If out-of-range behavior carrier is set to "Deactivate carrier"
                 if ($row['range_behavior']) {
                     $checkDeliveryPriceByWeight = Carrier::checkDeliveryPriceByWeight($row['id_carrier'], $this->getTotalWeight(), (int) $idZone);
 
@@ -3861,8 +3860,8 @@ class CartCore extends ObjectModel
                         $totalProducts = Tools::ps_round($totalProducts - $product['price'], (int) $context->currency->decimals * _PS_PRICE_COMPUTE_PRECISION_);
 
                         // Update total discounts
-                        $totalDiscounts = Tools::ps_round($totalDiscounts - $product['price_wt'], (int) $context->currency->decimals * _PS_PRICE_COMPUTE_PRECISION_);
-                        $totalDiscountsTaxExc = Tools::ps_round($totalDiscountsTaxExc - $product['price'], (int) $context->currency->decimals * _PS_PRICE_COMPUTE_PRECISION_);
+                        $totalDiscounts = $totalDiscounts - $product['price_wt'];
+                        $totalDiscountsTaxExc = $totalDiscountsTaxExc - $product['price'];
 
                         // Update cart rule value
                         $cartRule['value_real'] = Tools::ps_round($cartRule['value_real'] - $product['price_wt'], (int) $context->currency->decimals * _PS_PRICE_COMPUTE_PRECISION_);
@@ -4082,10 +4081,10 @@ class CartCore extends ObjectModel
             Db::getInstance()->insert(
                 'customization',
                 [
-                    'id_cart' => (int) $this->id,
-                    'id_product' => (int) $idProduct,
+                    'id_cart'              => (int) $this->id,
+                    'id_product'           => (int) $idProduct,
                     'id_product_attribute' => (int) $idProductAttribute,
-                    'quantity' => (int) $quantity,
+                    'quantity'             => (int) $quantity,
                 ]
             );
             $idCustomization = Db::getInstance()->Insert_ID();
