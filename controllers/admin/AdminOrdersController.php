@@ -487,7 +487,7 @@ class AdminOrdersControllerCore extends AdminController
                                 $history->id_order = $order->id;
                                 $history->id_employee = (int) $this->context->employee->id;
 
-                                $useExistingPayment = !$order->hasInvoice();
+                                $useExistingPayment = $order->hasInvoice();
                                 $history->changeIdOrderState((int) $orderState->id, $order, $useExistingPayment);
 
                                 $carrier = new Carrier($order->id_carrier, $order->id_lang);
