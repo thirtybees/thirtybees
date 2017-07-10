@@ -2850,7 +2850,18 @@ class OrderCore extends ObjectModel
 
         $expectedTotalBase = $this->total_products - $this->total_discounts_tax_excl;
 
+        // We add $free_shipping_tax because when there is free shipping, the tax that would
+        // be paid if there wasn't is included in $discounts_tax.
+        $expectedTotalTax = $this->total_products_wt - $this->total_products;
+        $actualTotalTax = 0;
+        $actualTotalBase = 0;
+
+        $orderDetailTaxRows = [];
+
+        $breakdown = [];
+
         foreach ($this->getCartRules() as $orderCartRule) {
+            $expectedTotalTax -= ($orderCartRule['value'] - $orderCartRule['value_tax_excl']);
             if ($orderCartRule['free_shipping'] && $freeShippingTax === 0) {
                 $freeShippingTax = $this->total_shipping_tax_incl - $this->total_shipping_tax_excl;
                 $orderDiscountTaxExcl -= $this->total_shipping_tax_excl;
@@ -2867,16 +2878,6 @@ class OrderCore extends ObjectModel
                 $orderDiscountTaxExcl -= $orderCartRule['value_tax_excl'];
             }
         }
-
-        // We add $free_shipping_tax because when there is free shipping, the tax that would
-        // be paid if there wasn't is included in $discounts_tax.
-        $expectedTotalTax = $this->total_products_wt - $this->total_products;
-        $actualTotalTax = 0;
-        $actualTotalBase = 0;
-
-        $orderDetailTaxRows = [];
-
-        $breakdown = [];
 
         // Get order_details
         $orderDetails = $limitToOrderDetails ? $limitToOrderDetails : $this->getOrderDetailList();
@@ -2909,7 +2910,6 @@ class OrderCore extends ObjectModel
             }
 
             foreach ($taxCalculator->getTaxesAmount($discountedPriceTaxExcl) as $idTax => $unitAmount) {
-                $expectedTotalTax -= ($unitAmount * (1 + $taxCalculator->getTotalRate() / 100.0));
                 $totalTaxBase = 0;
                 $totalAmount = 0;
                 switch ($roundType) {
