@@ -159,8 +159,6 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
                 default:
                     break;
             }
-
-//            ddd($orderDetail);
         }
         unset($taxTemp);
         unset($orderDetail);
