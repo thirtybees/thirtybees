@@ -67,7 +67,7 @@
 						{/if}
 					</td>
 
-					<td class="center white">
+					<td class="right white">
 						{$line.rate|floatval} %
 					</td>
 
