@@ -544,10 +544,10 @@ class OrderInvoiceCore extends ObjectModel
             $details = $groupedDetails;
         }
 
-        $language = new Language(Context::getContext()->language->id);
-        $currency = new Currency($order->id_currency);
+//        $language = new Language(Context::getContext()->language->id);
+//        $currency = new Currency($order->id_currency);
         foreach ($details as $row) {
-            $rate = number_format($row['tax_rate'], 3, Tools::findDecimalPoint($language, $currency), Tools::findThousandSeparator($language, $currency));
+            $rate = (float) round($row['tax_rate'], 3);
             if (!isset($breakdown[$rate])) {
                 $breakdown[$rate] = [
                     'total_price_tax_excl' => 0,
