@@ -36,6 +36,7 @@
  */
 class SpecificPriceRuleCore extends ObjectModel
 {
+    // @codingStandardsIgnoreStart
     /**
      * @see ObjectModel::$definition
      */
@@ -43,33 +44,47 @@ class SpecificPriceRuleCore extends ObjectModel
         'table'   => 'specific_price_rule',
         'primary' => 'id_specific_price_rule',
         'fields'  => [
-            'name'           => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true],
-            'id_shop'        => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'id_country'     => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'id_currency'    => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'id_group'       => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'from_quantity'  => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true],
-            'price'          => ['type' => self::TYPE_FLOAT, 'validate' => 'isNegativePrice', 'required' => true],
-            'reduction'      => ['type' => self::TYPE_FLOAT, 'validate' => 'isPrice', 'required' => true],
-            'reduction_tax'  => ['type' => self::TYPE_INT, 'validate' => 'isBool', 'required' => true],
+            'name'           => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName',   'required' => true],
+            'id_shop'        => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',    'required' => true],
+            'id_country'     => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',    'required' => true],
+            'id_currency'    => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',    'required' => true],
+            'id_group'       => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',    'required' => true],
+            'from_quantity'  => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt',   'required' => true],
+            'price'          => ['type' => self::TYPE_FLOAT,  'validate' => 'isNegativePrice', 'required' => true],
+            'reduction'      => ['type' => self::TYPE_FLOAT,  'validate' => 'isPrice',         'required' => true],
+            'reduction_tax'  => ['type' => self::TYPE_INT,    'validate' => 'isBool',          'required' => true],
             'reduction_type' => ['type' => self::TYPE_STRING, 'validate' => 'isReductionType', 'required' => true],
-            'from'           => ['type' => self::TYPE_DATE, 'validate' => 'isDateFormat', 'required' => false],
-            'to'             => ['type' => self::TYPE_DATE, 'validate' => 'isDateFormat', 'required' => false],
+            'from'           => ['type' => self::TYPE_DATE,   'validate' => 'isDateFormat',    'required' => false],
+            'to'             => ['type' => self::TYPE_DATE,   'validate' => 'isDateFormat',    'required' => false],
         ],
     ];
+    /** @var bool $rules_application_enable */
     protected static $rules_application_enable = true;
+    /** @var string $name */
     public $name;
+    /** @var int $id_shop */
     public $id_shop;
+    /** @var int $id_currency */
     public $id_currency;
+    /** @var int $id_country */
     public $id_country;
+    /** @var int $id_group */
     public $id_group;
+    /** @var int $from_quantity */
     public $from_quantity;
+    /** @var float $price */
     public $price;
+    /** @var float $reduction */
     public $reduction;
+    /** @var int $reduction_tax */
     public $reduction_tax;
+    /** @var string $reduction_type */
     public $reduction_type;
+    /** @var string $from */
     public $from;
+    /** @var string $to */
     public $to;
+    /** @var array $webserviceParameters */
     protected $webserviceParameters = [
         'objectsNodeName' => 'specific_price_rules',
         'objectNodeName'  => 'specific_price_rule',
@@ -80,6 +95,7 @@ class SpecificPriceRuleCore extends ObjectModel
             'id_group'    => ['xlink_resource' => 'groups', 'required' => true],
         ],
     ];
+    // @codingStandardsIgnoreEnd
 
     /**
      * @since   1.0.0
@@ -87,7 +103,9 @@ class SpecificPriceRuleCore extends ObjectModel
      */
     public static function disableAnyApplication()
     {
-        SpecificPriceRule::$rules_application_enable = false;
+        // @codingStandardsIgnoreStart
+        static::$rules_application_enable = false;
+        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -96,7 +114,9 @@ class SpecificPriceRuleCore extends ObjectModel
      */
     public static function enableAnyApplication()
     {
-        SpecificPriceRule::$rules_application_enable = true;
+        // @codingStandardsIgnoreStart
+        static::$rules_application_enable = true;
+        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -107,9 +127,11 @@ class SpecificPriceRuleCore extends ObjectModel
      */
     public static function applyAllRules($products = false)
     {
-        if (!SpecificPriceRule::$rules_application_enable) {
+        // @codingStandardsIgnoreStart
+        if (!static::$rules_application_enable) {
             return;
         }
+        // @codingStandardsIgnoreEnd
 
         $rules = new PrestaShopCollection('SpecificPriceRule');
         foreach ($rules as $rule) {
@@ -126,14 +148,16 @@ class SpecificPriceRuleCore extends ObjectModel
      */
     public function apply($products = false)
     {
-        if (!SpecificPriceRule::$rules_application_enable) {
+        // @codingStandardsIgnoreStart
+        if (!static::$rules_application_enable) {
             return;
         }
+        // @codingStandardsIgnoreEnd
 
         $this->resetApplication($products);
         $products = $this->getAffectedProducts($products);
         foreach ($products as $product) {
-            SpecificPriceRule::applyRuleToProduct((int) $this->id, (int) $product['id_product'], (int) $product['id_product_attribute']);
+            static::applyRuleToProduct((int) $this->id, (int) $product['id_product'], (int) $product['id_product_attribute']);
         }
     }
 
@@ -152,7 +176,7 @@ class SpecificPriceRuleCore extends ObjectModel
             $where .= ' AND id_product IN ('.implode(', ', array_map('intval', $products)).')';
         }
 
-        return Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'specific_price WHERE id_specific_price_rule='.(int) $this->id.$where);
+        return Db::getInstance()->delete('specific_price', '`id_specific_price_rule` = '.(int) $this->id.$where);
     }
 
     /**
@@ -173,11 +197,12 @@ class SpecificPriceRuleCore extends ObjectModel
         if ($conditionsGroup) {
             foreach ($conditionsGroup as $idConditionGroup => $conditionGroup) {
                 // Base request
-                $query = new DbQuery();
-                $query->select('p.`id_product`')
+                $query = (new DbQuery())
+                    ->select('p.`id_product`')
                     ->from('product', 'p')
                     ->leftJoin('product_shop', 'ps', 'p.`id_product` = ps.`id_product`')
-                    ->where('ps.id_shop = '.(int) $currentShopId);
+                    ->where('ps.id_shop = '.(int) $currentShopId)
+                ;
 
                 $attributesJoinAdded = false;
 
@@ -271,14 +296,14 @@ class SpecificPriceRuleCore extends ObjectModel
                 if ($condition['type'] == 'attribute') {
                     $condition['id_attribute_group'] = Db::getInstance()->getValue(
                         'SELECT id_attribute_group
-																										FROM '._DB_PREFIX_.'attribute
-																										WHERE id_attribute='.(int) $condition['value']
+							 FROM '._DB_PREFIX_.'attribute
+							 WHERE id_attribute='.(int) $condition['value']
                     );
                 } elseif ($condition['type'] == 'feature') {
                     $condition['id_feature'] = Db::getInstance()->getValue(
                         'SELECT id_feature
-																								FROM '._DB_PREFIX_.'feature_value
-																								WHERE id_feature_value='.(int) $condition['value']
+							 FROM '._DB_PREFIX_.'feature_value
+							 WHERE id_feature_value='.(int) $condition['value']
                     );
                 }
                 $conditionsGroup[(int) $condition['id_specific_price_rule_condition_group']][] = $condition;
@@ -300,7 +325,7 @@ class SpecificPriceRuleCore extends ObjectModel
      */
     public static function applyRuleToProduct($idRule, $idProduct, $idProductAttribute = null)
     {
-        $rule = new SpecificPriceRule((int) $idRule);
+        $rule = new static((int) $idRule);
         if (!Validate::isLoadedObject($rule) || !Validate::isUnsignedInt($idProduct)) {
             return false;
         }
@@ -334,7 +359,7 @@ class SpecificPriceRuleCore extends ObjectModel
     public function delete()
     {
         $this->deleteConditions();
-        Db::getInstance()->execute('DELETE FROM '._DB_PREFIX_.'specific_price WHERE id_specific_price_rule='.(int) $this->id);
+        Db::getInstance()->delete('specific_price', '`id_specific_price_rule` = '.(int) $this->id);
 
         return parent::delete();
     }
