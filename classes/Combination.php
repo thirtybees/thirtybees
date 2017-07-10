@@ -344,7 +344,7 @@ class CombinationCore extends ObjectModel
                 ];
             }
 
-            $result = Db::getInstance()->execute('product_attribute_combination', $sqlValues);
+            $result = Db::getInstance()->insert('product_attribute_combination', $sqlValues);
         }
 
         return $result;
