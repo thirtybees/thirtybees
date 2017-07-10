@@ -2778,7 +2778,7 @@ class OrderCore extends ObjectModel
      */
     public function getProductTaxesDetails($limitToOrderDetails = false)
     {
-        $roundType = $this->round_type;
+        $roundType = (int) $this->round_type;
         if ($roundType == 0) {
             // if this is 0, it means the field did not exist
             // at the time the order was made.
@@ -2824,18 +2824,12 @@ class OrderCore extends ObjectModel
 
         // Get order_details
         $orderDetails = $limitToOrderDetails ? $limitToOrderDetails : $this->getOrderDetailList();
-
         $orderEcotaxTax = 0;
-
         $taxRates = [];
-
         foreach ($orderDetails as $orderDetail) {
             $idOrderDetail = $orderDetail['id_order_detail'];
             $taxCalculator = OrderDetail::getTaxCalculatorStatic($idOrderDetail);
 
-            // TODO: probably need to make an ecotax tax breakdown here instead,
-            // but it seems unlikely there will be different tax rates applied to the
-            // ecotax in the same order in the real world
             $unitEcotaxTax = $orderDetail['ecotax'] * $orderDetail['ecotax_tax_rate'] / 100.0;
             $orderEcotaxTax += $orderDetail['product_quantity'] * $unitEcotaxTax;
 
@@ -2859,7 +2853,9 @@ class OrderCore extends ObjectModel
             }
 
             foreach ($taxCalculator->getTaxesAmount($discountedPriceTaxExcl) as $idTax => $unitAmount) {
-                $total_tax_base = 0;
+                $expectedTotalTax -= ($unitAmount * (1 + $taxCalculator->getTotalRate() / 100.0));
+                $totalTaxBase = 0;
+                $totalAmount = 0;
                 switch ($roundType) {
                     case Order::ROUND_ITEM:
                         $totalTaxBase = $quantity * Tools::ps_round($discountedPriceTaxExcl, _PS_PRICE_DISPLAY_PRECISION_, $this->round_mode);
