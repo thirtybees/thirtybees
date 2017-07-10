@@ -653,8 +653,6 @@ class CartCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     *
-     * @todo Check the undefined variables ^MD
      */
     public function getOrderTotal($withTaxes = true, $type = self::BOTH, $products = null, $idCarrier = null, $useCache = true)
     {
@@ -669,7 +667,6 @@ class CartCore extends ObjectModel
         $psTaxAddressType = $configuration->get('PS_TAX_ADDRESS_TYPE');
         $psUseEcotax = $configuration->get('PS_USE_ECOTAX');
         $psRoundType = $configuration->get('PS_ROUND_TYPE');
-//        $psEcotaxTaxRulesGroupId = $configuration->get('PS_ECOTAX_TAX_RULES_GROUP_ID');
         $displayPrecision = $configuration->get('_PS_PRICE_DISPLAY_PRECISION_');
 
         if (!$this->id) {
@@ -752,7 +749,6 @@ class CartCore extends ObjectModel
         }
 
         $productsTotal = [];
-//        $ecotaxTotal = 0;
 
         foreach ($products as $product) {
             // products refer to the cart details
@@ -792,11 +788,8 @@ class CartCore extends ObjectModel
                 $virtualContext
             );
 
-//            $address = $addressFactory->findOrCreate($idAddress, true);
-
             if ($withTaxes) {
                 $idTaxRulesGroup = Product::getIdTaxRulesGroupByIdProduct((int) $product['id_product'], $virtualContext);
-//                $taxCalculator = TaxManagerFactory::getManager($address, $idTaxRulesGroup)->getTaxCalculator();
             } else {
                 $idTaxRulesGroup = 0;
             }
