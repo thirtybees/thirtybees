@@ -796,8 +796,10 @@ class CartRuleCore extends ObjectModel
 
         static $errors = [];
         foreach ($context->cart->getCartRules() as $cartRule) {
-            if ($error = $cartRule['obj']->checkValidity($context, true)) {
-                $context->cart->removeCartRule($cartRule['obj']->id);
+            /** @var CartRule $cartRuleObject */
+            $cartRuleObject = $cartRule['obj'];
+            if ($error = $cartRuleObject->checkValidity($context, true)) {
+                $context->cart->removeCartRule($cartRuleObject->id);
                 $context->cart->update();
                 $errors[] = $error;
             }
@@ -949,12 +951,12 @@ class CartRuleCore extends ObjectModel
             if (!$context->cart->id_address_delivery) {
                 return (!$displayError) ? false : Tools::displayError('You must choose a delivery address before applying this voucher to your order');
             }
-            $idCartRule = (int) Db::getInstance()->getValue(
-                '
-			SELECT crc.id_cart_rule
-			FROM '._DB_PREFIX_.'cart_rule_country crc
-			WHERE crc.id_cart_rule = '.(int) $this->id.'
-			AND crc.id_country = (SELECT a.id_country FROM '._DB_PREFIX_.'address a WHERE a.id_address = '.(int) $context->cart->id_address_delivery.' LIMIT 1)'
+            $idCartRule = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                    ->select('crc.`id_cart_rule`')
+                    ->from('cart_rule_country', 'crc')
+                    ->where('crc.`id_cart_rule` = '.(int) $this->id)
+                    ->where('crc.`id_country`  = (SELECT a.id_country FROM '._DB_PREFIX_.'address a WHERE a.id_address = '.(int) $context->cart->id_address_delivery.' LIMIT 1)')
             );
             if (!$idCartRule) {
                 return (!$displayError) ? false : Tools::displayError('You cannot use this voucher in your country of delivery');
@@ -966,13 +968,13 @@ class CartRuleCore extends ObjectModel
             if (!$context->cart->id_carrier) {
                 return (!$displayError) ? false : Tools::displayError('You must choose a carrier before applying this voucher to your order');
             }
-            $idCartRule = (int) Db::getInstance()->getValue(
-                '
-			SELECT crc.id_cart_rule
-			FROM '._DB_PREFIX_.'cart_rule_carrier crc
-			INNER JOIN '._DB_PREFIX_.'carrier c ON (c.id_reference = crc.id_carrier AND c.deleted = 0)
-			WHERE crc.id_cart_rule = '.(int) $this->id.'
-			AND c.id_carrier = '.(int) $context->cart->id_carrier
+            $idCartRule = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                    ->select('crc.`id_cart_rule`')
+                    ->from('cart_rule_carrier', 'crc')
+                    ->innerJoin('carrier', 'c', 'c.`id_reference` = crc.`id_carrier` AND c.`deleted` = 0')
+                    ->where('crc.`id_cart_rule` = '.(int) $this->id)
+                    ->where('c.`id_carrier` = '.(int) $context->cart->id_carrier)
             );
             if (!$idCartRule) {
                 return (!$displayError) ? false : Tools::displayError('You cannot use this voucher with this carrier');
@@ -981,12 +983,12 @@ class CartRuleCore extends ObjectModel
 
         // Check if the cart rules appliy to the shop browsed by the customer
         if ($this->shop_restriction && $context->shop->id && Shop::isFeatureActive()) {
-            $idCartRule = (int) Db::getInstance()->getValue(
-                '
-			SELECT crs.id_cart_rule
-			FROM '._DB_PREFIX_.'cart_rule_shop crs
-			WHERE crs.id_cart_rule = '.(int) $this->id.'
-			AND crs.id_shop = '.(int) $context->shop->id
+            $idCartRule = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                    ->select('crs.`id_cart_rule`')
+                    ->from('cart_rule_shop', 'crs')
+                    ->where('crs.`id_cart_rule` = '.(int) $this->id)
+                    ->where('crs.`id_shop` = '.(int) $context->shop->id)
             );
             if (!$idCartRule) {
                 return (!$displayError) ? false : Tools::displayError('You cannot use this voucher');
@@ -1153,8 +1155,8 @@ class CartRuleCore extends ObjectModel
     }
 
     /**
-     * @param $name
-     * @param $idLang
+     * @param string $name
+     * @param int    $idLang
      *
      * @return array
      *
