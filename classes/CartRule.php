@@ -442,7 +442,7 @@ class CartRuleCore extends ObjectModel
         foreach ($resultBak as $key => $cartRule) {
             if ($cartRule['country_restriction']) {
                 $countryRestriction = true;
-                $countries = Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS(
+                $countries = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                     (new DbQuery())
                         ->select('`id_country`')
                         ->from('address')
@@ -1677,7 +1677,7 @@ class CartRuleCore extends ObjectModel
             if ($type == 'cart_rule') {
                 $array = $this->getCartRuleCombinations($offset, $limit, $searchCartRuleName);
             } else {
-                $resource = Db::getInstance()->query(
+                $resource = Db::getInstance()->executeS(
                     '
 				SELECT t.*'.($i18n ? ', tl.*' : '').', IF(crt.id_'.$type.' IS NULL, 0, 1) as selected
 				FROM `'._DB_PREFIX_.$type.'` t
@@ -1691,7 +1691,7 @@ class CartRuleCore extends ObjectModel
                     $sqlLimit,
                     false
                 );
-                while ($row = Db::getInstance()->nextRow($resource)) {
+                foreach ($resource as $row) {
                     $array[($row['selected'] || $this->{$type.'_restriction'} == 0) ? 'selected' : 'unselected'][] = $row;
                 }
             }
