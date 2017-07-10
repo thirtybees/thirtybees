@@ -99,6 +99,8 @@ class HelperListCore extends Helper
     protected $content_tpl = 'list_content.tpl';
     /** @var Smarty_Internal_Template|string */
     protected $footer_tpl = 'list_footer.tpl';
+    /** @var string $shopLinkType */
+    public $shopLinkType;
     // @codingStandardsIgnoreEnd
 
     /**
