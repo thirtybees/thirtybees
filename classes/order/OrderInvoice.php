@@ -535,7 +535,6 @@ class OrderInvoiceCore extends ObjectModel
         }
 
         foreach ($details as $row) {
-//            ddd($row);
             $rate = number_format($row['tax_rate'], _PS_PRICE_DISPLAY_PRECISION_);
             if (!isset($breakdown[$rate])) {
                 $breakdown[$rate] = [
