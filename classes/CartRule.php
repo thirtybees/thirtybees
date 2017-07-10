@@ -1367,7 +1367,14 @@ class CartRuleCore extends ObjectModel
             if ($this->reduction_percent && $this->reduction_product == -1) {
                 $minPrice = false;
                 $cheapestProduct = null;
+                $selectedProducts = $this->checkProductRestrictions($context, true);
                 foreach ($allProducts as $product) {
+                    if (!is_array($selectedProducts) ||
+                        (!in_array($product['id_product'].'-'.$product['id_product_attribute'], $selectedProducts) && !in_array($product['id_product'].'-0', $selectedProducts))
+                    ) {
+                        continue;
+                    }
+
                     $price = $product['price'];
                     if ($useTax) {
                         $price *= (1 + (float) ($product['rate'] / 100));
