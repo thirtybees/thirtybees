@@ -1258,13 +1258,13 @@ class CartRuleCore extends ObjectModel
      */
     public function usedByCustomer($idCustomer)
     {
-        return (bool) Db::getInstance()->getValue(
-            '
-		SELECT id_cart_rule
-		FROM `'._DB_PREFIX_.'order_cart_rule` ocr
-		LEFT JOIN `'._DB_PREFIX_.'orders` o ON ocr.`id_order` = o.`id_order`
-		WHERE ocr.`id_cart_rule` = '.(int) $this->id.'
-		AND o.`id_customer` = '.(int) $idCustomer
+        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('`id_cart_rule`')
+                ->from('order_cart_rule', 'ocr')
+                ->leftJoin('orders', 'o', 'ocr.`id_order` = o.`id_order`')
+                ->where('ocr.`id_cart_rule` = '.(int) $this->id)
+                ->where('o.`id_customer` = '.(int) $idCustomer)
         );
     }
 
@@ -1679,17 +1679,20 @@ class CartRuleCore extends ObjectModel
 		) ORDER BY cr.id_cart_rule'.$sqlLimit
         );
 
-        $array['unselected'] = Db::getInstance()->executeS(
-            '
-		SELECT cr.*, crl.*, 1 AS selected
-		FROM '._DB_PREFIX_.'cart_rule cr
-		INNER JOIN '._DB_PREFIX_.'cart_rule_lang crl ON (cr.id_cart_rule = crl.id_cart_rule AND crl.id_lang = '.(int) Context::getContext()->language->id.')
-		LEFT JOIN '._DB_PREFIX_.'cart_rule_combination crc1 ON (cr.id_cart_rule = crc1.id_cart_rule_1 AND crc1.id_cart_rule_2 = '.(int) $this->id.')
-		LEFT JOIN '._DB_PREFIX_.'cart_rule_combination crc2 ON (cr.id_cart_rule = crc2.id_cart_rule_2 AND crc2.id_cart_rule_1 = '.(int) $this->id.')
-		WHERE cr.cart_rule_restriction = 1
-		AND cr.id_cart_rule != '.(int) $this->id.($search ? ' AND crl.name LIKE "%'.pSQL($search).'%"' : '').'
-		AND crc1.id_cart_rule_1 IS NULL
-		AND crc2.id_cart_rule_1 IS NULL  ORDER BY cr.id_cart_rule'.$sqlLimit
+        $array['unselected'] = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('cr.*, crl.*, 1 AS `selected`')
+                ->from('cart_rule', 'cr')
+                ->innerJoin('cart_rule_lang', 'crl', 'cr.`id_cart_rule` = crl.`id_cart_rule` AND crl.`id_lang` = '.(int) Context::getContext()->language->id)
+                ->leftJoin('cart_rule_combination', 'crc1', 'cr.`id_cart_rule` = crc1.`id_cart_rule_1` AND crc1.`id_cart_rule_2` = '.(int) $this->id)
+                ->leftJoin('cart_rule_combination', 'crc2', 'cr.`id_cart_rule` = crc2.`id_cart_rule_2` AND crc2.`id_cart_rule_1` = '.(int) $this->id)
+                ->where('cr.`cart_rule_restriction` = 1')
+                ->where('cr.`id_cart_rule` != '.(int) $this->id)
+                ->where($search ? 'crl.`name` LIKE "%'.pSQL($search).'%"' : '')
+                ->where('crc1.`id_cart_rule_1` IS NULL')
+                ->where('crc2.`id_cart_rule_1` IS NULL')
+                ->orderBy('cr.`id_cart_rule`')
+                ->limit($limit, $offset)
         );
 
         return $array;
