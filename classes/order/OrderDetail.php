@@ -389,12 +389,12 @@ class OrderDetailCore extends ObjectModel
             $unitAmount = $totalAmount = 0;
             switch ((int) Configuration::get('PS_ROUND_TYPE')) {
                 case Order::ROUND_ITEM:
-                    $unitAmount = (float) Tools::ps_round($amount, _PS_PRICE_COMPUTE_PRECISION_);
+                    $unitAmount = (float) Tools::ps_round($amount, _PS_PRICE_DISPLAY_PRECISION_);
                     $totalAmount = $unitAmount * $this->product_quantity;
                     break;
                 case Order::ROUND_LINE:
                     $unitAmount = $amount;
-                    $totalAmount = Tools::ps_round($unitAmount * $this->product_quantity, _PS_PRICE_COMPUTE_PRECISION_);
+                    $totalAmount = Tools::ps_round($unitAmount * $this->product_quantity, _PS_PRICE_DISPLAY_PRECISION_);
                     break;
                 case Order::ROUND_TOTAL:
                     $unitAmount = $amount;
@@ -829,9 +829,9 @@ class OrderDetailCore extends ObjectModel
 
                     if ($this->specificPrice['reduction_tax']) {
                         $this->reduction_amount_tax_incl = $this->reduction_amount;
-                        $this->reduction_amount_tax_excl = Tools::ps_round($this->tax_calculator->removeTaxes($this->reduction_amount), _PS_PRICE_COMPUTE_PRECISION_);
+                        $this->reduction_amount_tax_excl = Tools::ps_round($this->tax_calculator->removeTaxes($this->reduction_amount), _TB_PRICE_DATABASE_PRECISION_);
                     } else {
-                        $this->reduction_amount_tax_incl = Tools::ps_round($this->tax_calculator->addTaxes($this->reduction_amount), _PS_PRICE_COMPUTE_PRECISION_);
+                        $this->reduction_amount_tax_incl = Tools::ps_round($this->tax_calculator->addTaxes($this->reduction_amount), _TB_PRICE_DATABASE_PRECISION_);
                         $this->reduction_amount_tax_excl = $this->reduction_amount;
                     }
                     break;
@@ -887,7 +887,7 @@ class OrderDetailCore extends ObjectModel
             (int) $product['id_product'],
             true,
             ($product['id_product_attribute'] ? intval($product['id_product_attribute']) : null),
-            2,
+            _TB_PRICE_DATABASE_PRECISION_,
             null,
             false,
             true,
@@ -905,7 +905,7 @@ class OrderDetailCore extends ObjectModel
         if ($quantityDiscount) {
             $this->product_quantity_discount = $unitPrice;
             if (Product::getTaxCalculationMethod((int) $order->id_customer) == PS_TAX_EXC) {
-                $this->product_quantity_discount = Tools::ps_round($unitPrice, 2);
+                $this->product_quantity_discount = Tools::ps_round($unitPrice, _TB_PRICE_DATABASE_PRECISION_);
             }
 
             if (isset($this->tax_calculator)) {

@@ -120,6 +120,7 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
         $carrier = new Carrier((int) $this->order->id_carrier);
 
         $orderDetails = $this->order_invoice->getProducts();
+        $order = new Order($this->order_invoice->id_order);
 
         $hasDiscount = false;
         foreach ($orderDetails as $id => &$orderDetail) {
@@ -142,6 +143,24 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
 
             $orderDetail['order_detail_tax'] = $taxes;
             $orderDetail['order_detail_tax_label'] = implode(', ', $taxTemp);
+
+            // Apply rounding types
+            switch ((int) $order->round_type) {
+                case Order::ROUND_ITEM:
+                    $orderDetail['unit_price_tax_excl'] = Tools::ps_round($orderDetail['unit_price_tax_excl'], _PS_PRICE_DISPLAY_PRECISION_);
+                    $orderDetail['total_price_tax_excl'] = $orderDetail['unit_price_tax_excl'] * $orderDetail['product_quantity'];
+                    $orderDetail['unit_price_tax_excl_including_ecotax'] = Tools::ps_round($orderDetail['unit_price_tax_excl'] + $orderDetail['ecotax'], _PS_PRICE_DISPLAY_PRECISION_);
+                    $orderDetail['total_price_tax_excl_including_ecotax'] = $orderDetail['unit_price_tax_excl_including_ecotax'] * $orderDetail['product_quantity'];
+                    break;
+                case Order::ROUND_LINE:
+                    $orderDetail['total_price_tax_excl'] = Tools::ps_round($orderDetail['total_price_tax_excl'], _PS_PRICE_DISPLAY_PRECISION_);
+                    $orderDetail['total_price_tax_excl_including_ecotax'] = Tools::ps_round($orderDetail['unit_price_tax_excl_including_ecotax'], _PS_PRICE_DISPLAY_PRECISION_);
+                    break;
+                default:
+                    break;
+            }
+
+//            ddd($orderDetail);
         }
         unset($taxTemp);
         unset($orderDetail);
@@ -235,7 +254,7 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
         ];
 
         foreach ($footer as $key => $value) {
-            $footer[$key] = Tools::ps_round($value, _PS_PRICE_COMPUTE_PRECISION_, $this->order->round_mode);
+            $footer[$key] = Tools::ps_round($value, _TB_PRICE_DATABASE_PRECISION_, $this->order->round_mode);
         }
 
         /**
@@ -282,7 +301,7 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
             'tax_tab'                    => $this->getTaxTabContent(),
             'customer'                   => $customer,
             'footer'                     => $footer,
-            'ps_price_compute_precision' => _PS_PRICE_COMPUTE_PRECISION_,
+            'ps_price_compute_precision' => _TB_PRICE_DATABASE_PRECISION_,
             'round_type'                 => $roundType,
             'legal_free_text'            => $legalFreeText,
         ];
@@ -489,6 +508,8 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
         if (empty($breakdowns)) {
             $breakdowns = false;
         }
+
+//        ddd($breakdowns['product_tax']);
 
         if (isset($breakdowns['product_tax'])) {
             foreach ($breakdowns['product_tax'] as &$bd) {

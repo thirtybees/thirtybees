@@ -63,7 +63,9 @@ define('_PS_INSTALL_CONTROLLERS_PATH_', _TB_INSTALL_PATH_.'controllers/');
 define('_PS_INSTALL_MODELS_PATH_', _TB_INSTALL_PATH_.'models/');
 define('_PS_INSTALL_LANGS_PATH_', _TB_INSTALL_PATH_.'langs/');
 define('_PS_INSTALL_FIXTURES_PATH_', _TB_INSTALL_PATH_.'fixtures/');
-define('_PS_PRICE_COMPUTE_PRECISION_', 6);
+define('_PS_PRICE_DISPLAY_PRECISION_', 2);
+define('_PS_PRICE_COMPUTE_PRECISION_', _PS_PRICE_DISPLAY_PRECISION_);
+define('_TB_PRICE_DATABASE_PRECISION_', 6);
 
 require_once(_TB_INSTALL_PATH_.'install_version.php');
 

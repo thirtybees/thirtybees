@@ -567,7 +567,7 @@ abstract class PaymentModuleCore extends Module
                     // We don't use the following condition to avoid the float precision issues : http://www.php.net/manual/en/language.types.float.php
                     // if ($order->total_paid != $order->total_paid_real)
                     // We use number_format in order to compare two string
-                    if ($orderStatus->logable && number_format($cartTotalPaid, _PS_PRICE_COMPUTE_PRECISION_) != number_format($amountPaid, _PS_PRICE_COMPUTE_PRECISION_)) {
+                    if ($orderStatus->logable && number_format($cartTotalPaid, _TB_PRICE_DATABASE_PRECISION_) != number_format($amountPaid, _TB_PRICE_DATABASE_PRECISION_)) {
                         $idOrderState = Configuration::get('PS_OS_ERROR');
                     }
 
