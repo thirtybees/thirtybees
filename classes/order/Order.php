@@ -310,18 +310,17 @@ class OrderCore extends ObjectModel
     /**
      * Update this Order
      *
-     * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool
      *
      * @since 1.0.2 Amounts are rounded before being saved to db
      */
-    public function update($autoDate = true, $nullValues = true)
+    public function update($nullValues = true)
     {
         $this->roundAmounts();
 
-        return parent::update($autoDate, $nullValues);
+        return parent::update($nullValues);
     }
 
     /**
@@ -333,7 +332,7 @@ class OrderCore extends ObjectModel
     {
         foreach (static::$definition['fields'] as $fieldName => $field) {
             if ($field['type'] === static::TYPE_FLOAT && isset($this->$fieldName)) {
-                $this->$fieldName = Tools::ps_round($this->$fieldName, _PS_PRICE_COMPUTE_PRECISION_);
+                $this->$fieldName = Tools::ps_round($this->$fieldName, _TB_PRICE_DATABASE_PRECISION_);
             }
         }
     }
@@ -471,9 +470,7 @@ class OrderCore extends ObjectModel
         }
 
         /* Prevent from floating precision issues */
-        foreach ($fields as $field) {
-            $this->{$field} = number_format($this->{$field}, _PS_PRICE_COMPUTE_PRECISION_, '.', '');
-        }
+        $this->roundAmounts();
 
         /* Update order detail */
         $orderDetail->product_quantity -= (int) $quantity;
@@ -1673,7 +1670,7 @@ class OrderCore extends ObjectModel
             $taxCalculator->getTaxesAmount(
                 $orderInvoice->total_shipping_tax_excl,
                 $orderInvoice->total_shipping_tax_incl,
-                _PS_PRICE_COMPUTE_PRECISION_,
+                _TB_PRICE_DATABASE_PRECISION_,
                 $this->round_mode
             )
         );
@@ -1681,7 +1678,7 @@ class OrderCore extends ObjectModel
             $wrappingTaxCalculator->getTaxesAmount(
                 $orderInvoice->total_wrapping_tax_excl,
                 $orderInvoice->total_wrapping_tax_incl,
-                _PS_PRICE_COMPUTE_PRECISION_,
+                _TB_PRICE_DATABASE_PRECISION_,
                 $this->round_mode
             )
         );
@@ -2825,10 +2822,10 @@ class OrderCore extends ObjectModel
 
     /**
      * By default this function was made for invoice, to compute tax amounts and balance delta (because of computation made on round values).
-     * If you provide $limitToOrderDetails, only these item will be taken into account. This option is usefull for order slip for example,
-     * where only sublist of the order is refunded.
+     * If you provide $limitToOrderDetails, only these item will be taken into account. This option is useful for order slips for example,
+     * where only a sublist of the order is refunded.
      *
-     * @param array $limitToOrderDetails Optional array of OrderDetails to take into account. False by default to take all OrderDetails from the current Order.
+     * @param bool|array $limitToOrderDetails Optional array of OrderDetails to take into account. False by default to take all OrderDetails from the current Order.
      *
      * @return array A list of tax rows applied to the given OrderDetails (or all OrderDetails linked to the current Order).
      *
@@ -2922,12 +2919,12 @@ class OrderCore extends ObjectModel
                 $totalAmount = 0;
                 switch ($roundType) {
                     case Order::ROUND_ITEM:
-                        $totalTaxBase = $quantity * Tools::ps_round($discountedPriceTaxExcl, _PS_PRICE_COMPUTE_PRECISION_, $this->round_mode);
-                        $totalAmount = $quantity * Tools::ps_round($unitAmount, _PS_PRICE_COMPUTE_PRECISION_, $this->round_mode);
+                        $totalTaxBase = $quantity * Tools::ps_round($discountedPriceTaxExcl, _PS_PRICE_DISPLAY_PRECISION_, $this->round_mode);
+                        $totalAmount = $quantity * Tools::ps_round($unitAmount, _PS_PRICE_DISPLAY_PRECISION_, $this->round_mode);
                         break;
                     case Order::ROUND_LINE:
-                        $totalTaxBase = Tools::ps_round($quantity * $discountedPriceTaxExcl, _PS_PRICE_COMPUTE_PRECISION_, $this->round_mode);
-                        $totalAmount = Tools::ps_round($quantity * $unitAmount, _PS_PRICE_COMPUTE_PRECISION_, $this->round_mode);
+                        $totalTaxBase = Tools::ps_round($quantity * $discountedPriceTaxExcl, _PS_PRICE_DISPLAY_PRECISION_, $this->round_mode);
+                        $totalAmount = Tools::ps_round($quantity * $unitAmount, _PS_PRICE_DISPLAY_PRECISION_, $this->round_mode);
                         break;
                     case Order::ROUND_TOTAL:
                         $totalTaxBase = $quantity * $discountedPriceTaxExcl;
@@ -2957,20 +2954,20 @@ class OrderCore extends ObjectModel
 
         if (!empty($orderDetailTaxRows)) {
             foreach ($breakdown as $data) {
-                $actualTotalTax += Tools::ps_round($data['tax_amount'], _PS_PRICE_COMPUTE_PRECISION_, $this->round_mode);
-                $actualTotalBase += Tools::ps_round($data['tax_base'], _PS_PRICE_COMPUTE_PRECISION_, $this->round_mode);
+                $actualTotalTax += Tools::ps_round($data['tax_amount'], _TB_PRICE_DATABASE_PRECISION_, $this->round_mode);
+                $actualTotalBase += Tools::ps_round($data['tax_base'], _TB_PRICE_DATABASE_PRECISION_, $this->round_mode);
             }
 
-            $orderEcotaxTax = Tools::ps_round($orderEcotaxTax, _PS_PRICE_COMPUTE_PRECISION_, $this->round_mode);
+            $orderEcotaxTax = Tools::ps_round($orderEcotaxTax, _TB_PRICE_DATABASE_PRECISION_, $this->round_mode);
 
             $taxRoundingError = $expectedTotalTax - $actualTotalTax - $orderEcotaxTax;
             if ($taxRoundingError !== 0) {
-                Tools::spreadAmount($taxRoundingError, _PS_PRICE_COMPUTE_PRECISION_, $orderDetailTaxRows, 'total_amount');
+                Tools::spreadAmount($taxRoundingError, _TB_PRICE_DATABASE_PRECISION_, $orderDetailTaxRows, 'total_amount');
             }
 
             $baseRoundingError = $expectedTotalBase - $actualTotalBase;
             if ($baseRoundingError !== 0) {
-                Tools::spreadAmount($baseRoundingError, _PS_PRICE_COMPUTE_PRECISION_, $orderDetailTaxRows, 'total_tax_base');
+                Tools::spreadAmount($baseRoundingError, _TB_PRICE_DATABASE_PRECISION_, $orderDetailTaxRows, 'total_tax_base');
             }
         }
 

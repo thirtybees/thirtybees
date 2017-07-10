@@ -1030,7 +1030,7 @@ class CartRuleCore extends ObjectModel
                 if ($cartRule['gift_product']) {
                     foreach ($products as $key => &$product) {
                         if (empty($product['gift']) && $product['id_product'] == $cartRule['gift_product'] && $product['id_product_attribute'] == $cartRule['gift_product_attribute']) {
-                            $cartTotal = Tools::ps_round($cartTotal - $product[$this->minimum_amount_tax ? 'price_wt' : 'price'], (int) $context->currency->decimals * _PS_PRICE_COMPUTE_PRECISION_);
+                            $cartTotal = Tools::ps_round($cartTotal - $product[$this->minimum_amount_tax ? 'price_wt' : 'price'], (int) $context->currency->decimals * _TB_PRICE_DATABASE_PRECISION_);
                         }
                     }
                 }
@@ -1341,7 +1341,7 @@ class CartRuleCore extends ObjectModel
                 foreach ($context->cart->getCartRules(static::FILTER_ACTION_GIFT) as $cartRule) {
                     if (in_array($roundType, [1])) {
                         // Round item
-                        $orderTotal -= Tools::ps_round($cartRule['obj']->getContextualValue($useTax, $context, static::FILTER_ACTION_GIFT, $package), _PS_PRICE_COMPUTE_PRECISION_);
+                        $orderTotal -= Tools::ps_round($cartRule['obj']->getContextualValue($useTax, $context, static::FILTER_ACTION_GIFT, $package), _TB_PRICE_DATABASE_PRECISION_);
                     } else {
                         // Round line - deferring
                         // Round total
@@ -1434,7 +1434,7 @@ class CartRuleCore extends ObjectModel
 
                     // Then we convert the voucher value in the default currency into the cart currency
                     $reductionAmount *= $context->currency->conversion_rate;
-                    $reductionAmount = Tools::ps_round($reductionAmount, _PS_PRICE_COMPUTE_PRECISION_);
+                    $reductionAmount = Tools::ps_round($reductionAmount, _TB_PRICE_DATABASE_PRECISION_);
                 }
 
                 // If it has the same tax application that you need, then it's the right value, whatever the product!

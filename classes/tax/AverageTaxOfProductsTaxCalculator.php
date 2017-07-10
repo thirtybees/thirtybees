@@ -37,16 +37,21 @@
  */
 class AverageTaxOfProductsTaxCalculator
 {
+    // @codingStandardsIgnoreStart
+    /** @var int $id_order */
     protected $id_order;
+    /** @var Core_Business_ConfigurationInterface $configuration */
     protected $configuration;
+    /** @var Core_Foundation_Database_DatabaseInterface $db */
     protected $db;
-
+    /** @var string $computation_method */
     public $computation_method = 'average_tax_of_products';
+    // @codingStandardsIgnoreEnd
 
     /**
      * AverageTaxOfProductsTaxCalculator constructor.
      *
-     * @param Core_Foundation_Database_DatabaseInterface $db
+     * @param Core_Foundation_Database_DatabaseInterface $db            Making sure we stay connected to the same db instance
      * @param Core_Business_ConfigurationInterface       $configuration
      *
      * @since   1.0.0
@@ -56,27 +61,6 @@ class AverageTaxOfProductsTaxCalculator
     {
         $this->db = $db;
         $this->configuration = $configuration;
-    }
-
-    /**
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     */
-    protected function getProductTaxes()
-    {
-        $prefix = $this->configuration->get('_DB_PREFIX_');
-
-        return $this->db->select(
-            (new DbQuery())
-                ->select('t.`id_tax`, t.rate, od.total_price_tax_excl')
-                ->from('orders', 'o')
-                ->innerJoin('order_detail', 'od', 'od.`id_order` = o.`id_order`')
-                ->innerJoin('order_detail_tax', 'odt', 'odt.`id_order_detail` = od.`id_order_detail`')
-                ->innerJoin('tax', 't', 't.`id_tax` = odt.`id_tax`')
-                ->where('o.`id_order` = '.(int) $this->id_order)
-        );
     }
 
     /**
@@ -105,7 +89,7 @@ class AverageTaxOfProductsTaxCalculator
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function getTaxesAmount($priceBeforeTax, $priceAfterTax = null, $roundPrecision = 2, $roundMode = null)
+    public function getTaxesAmount($priceBeforeTax, $priceAfterTax = null, $roundPrecision = _PS_PRICE_DISPLAY_PRECISION_, $roundMode = null)
     {
         $amounts = [];
         $totalBase = 0;
@@ -143,5 +127,24 @@ class AverageTaxOfProductsTaxCalculator
         }
 
         return $amounts;
+    }
+
+    /**
+     * @return mixed
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    protected function getProductTaxes()
+    {
+        return $this->db->select(
+            (new DbQuery())
+                ->select('t.`id_tax`, t.rate, od.total_price_tax_excl')
+                ->from('orders', 'o')
+                ->innerJoin('order_detail', 'od', 'od.`id_order` = o.`id_order`')
+                ->innerJoin('order_detail_tax', 'odt', 'odt.`id_order_detail` = od.`id_order_detail`')
+                ->innerJoin('tax', 't', 't.`id_tax` = odt.`id_tax`')
+                ->where('o.`id_order` = '.(int) $this->id_order)
+        );
     }
 }

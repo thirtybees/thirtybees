@@ -1183,7 +1183,7 @@ class ToolsCore
             $amount *= $currencyTo->conversion_rate;
         }
         if ($round) {
-            $amount = Tools::ps_round($amount, _PS_PRICE_COMPUTE_PRECISION_);
+            $amount = Tools::ps_round($amount, _TB_PRICE_DATABASE_PRECISION_);
         }
 
         return $amount;
