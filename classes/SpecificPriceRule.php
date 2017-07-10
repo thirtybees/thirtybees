@@ -378,8 +378,8 @@ class SpecificPriceRuleCore extends ObjectModel
         );
         if ($idsConditionGroup) {
             foreach ($idsConditionGroup as $row) {
-                Db::getInstance()->delete('specific_price_rule_condition_group', 'id_specific_price_rule_condition_group='.(int) $row['id_specific_price_rule_condition_group']);
-                Db::getInstance()->delete('specific_price_rule_condition', 'id_specific_price_rule_condition_group='.(int) $row['id_specific_price_rule_condition_group']);
+                Db::getInstance()->delete('specific_price_rule_condition_group', '`id_specific_price_rule_condition_group` = '.(int) $row['id_specific_price_rule_condition_group']);
+                Db::getInstance()->delete('specific_price_rule_condition', '`id_specific_price_rule_condition_group` = '.(int) $row['id_specific_price_rule_condition_group']);
             }
         }
     }
