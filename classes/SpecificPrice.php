@@ -159,7 +159,7 @@ class SpecificPriceCore extends ObjectModel
     {
         return Db::getInstance()->delete(
             'specific_price',
-            (int) $idCart.($idProduct ? ' AND `id_product` = '.(int) $idProduct.' AND `id_product_attribute` = '.(int) $idProductAttribute : '')
+            '`id_cart` = '.(int) $idCart.($idProduct ? ' AND `id_product` = '.(int) $idProduct.' AND `id_product_attribute` = '.(int) $idProductAttribute : '')
         );
     }
 
