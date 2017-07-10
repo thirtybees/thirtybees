@@ -744,8 +744,8 @@ class OrderInvoiceCore extends ObjectModel
                 ->where('`id_order_invoice` = '.(int) $this->id)
         );
 
-        $roundMode = (int) $this->order->round_mode;
-        $roundType = (int) $this->order->round_type;
+        $roundMode = (int) $this->getOrder()->round_mode;
+        $roundType = (int) $this->getOrder()->round_type;
         $taxes = [];
         foreach ($result as $row) {
             if ($row['ecotax_tax_excl'] > 0) {
