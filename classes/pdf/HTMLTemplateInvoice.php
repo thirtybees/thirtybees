@@ -121,6 +121,8 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
 
         $orderDetails = $this->order_invoice->getProducts();
         $order = new Order($this->order_invoice->id_order);
+        $currency = new Currency($order->id_currency);
+        $language = new Language(Context::getContext()->language->id);
 
         $hasDiscount = false;
         foreach ($orderDetails as $id => &$orderDetail) {
@@ -138,7 +140,7 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
             $taxTemp = [];
             foreach ($taxes as $tax) {
                 $obj = new Tax($tax['id_tax']);
-                $taxTemp[] = sprintf($this->l('%1$s%2$s%%'), ($obj->rate + 0), '&nbsp;');
+                $taxTemp[] = sprintf($this->l('%1$s%2$s%%'), number_format($obj->rate, 3, Tools::findDecimalPoint($language, $currency), Tools::findDecimalPoint($language, $currency)), '&nbsp;');
             }
 
             $orderDetail['order_detail_tax'] = $taxes;
@@ -424,7 +426,7 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
             'reference'           => ['width' => 15],
             'product'             => ['width' => 40],
             'quantity'            => ['width' => 8],
-            'tax_code'            => ['width' => 8],
+            'tax_code'            => ['width' => 12],
             'unit_price_tax_excl' => ['width' => 0],
             'total_tax_excl'      => ['width' => 0],
         ];
@@ -506,8 +508,6 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
         if (empty($breakdowns)) {
             $breakdowns = false;
         }
-
-//        ddd($breakdowns['product_tax']);
 
         if (isset($breakdowns['product_tax'])) {
             foreach ($breakdowns['product_tax'] as &$bd) {
