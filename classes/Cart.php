@@ -402,8 +402,8 @@ class CartCore extends ObjectModel
             return [];
         }
 
-//        $ecotax_rate = (float) Tax::getProductEcotaxRate($this->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
-//        $apply_eco_tax = Product::$_taxCalculationMethod == PS_TAX_INC && (int) Configuration::get('PS_TAX');
+        $ecotaxRate = (float) Tax::getProductEcotaxRate($this->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
+        $applyEcoTax = Product::$_taxCalculationMethod == PS_TAX_INC && (int) Configuration::get('PS_TAX');
         $cartShopContext = Context::getContext()->cloneContext();
 
         foreach ($result as &$row) {
@@ -432,9 +432,9 @@ class CartCore extends ObjectModel
                 $cartShopContext->shop = new Shop((int) $row['id_shop']);
             }
 
-//            $address = Address::initialize($addressId, true);
-//            $idTaxRulesGroup = Product::getIdTaxRulesGroupByIdProduct((int) $row['id_product'], $cartShopContext);
-//            $taxCalculator = TaxManagerFactory::getManager($address, $idTaxRulesGroup)->getTaxCalculator();
+            $address = Address::initialize($addressId, true);
+            $idTaxRulesGroup = Product::getIdTaxRulesGroupByIdProduct((int) $row['id_product'], $cartShopContext);
+            $taxCalculator = TaxManagerFactory::getManager($address, $idTaxRulesGroup)->getTaxCalculator();
 
             $row['price_without_reduction'] = Product::getPriceStatic(
                 (int) $row['id_product'],
