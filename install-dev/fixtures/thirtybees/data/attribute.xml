@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity_attribute>
+  <fields id="name" class="Attribute">
+    <field name="id_attribute_group" relation="attribute_group"/>
+    <field name="color"/>
+  </fields>
+  <entities>
+    <attribute id="12_oz" id_attribute_group="Size" color=""/>
+    <attribute id="16_oz" id_attribute_group="Size" color=""/>
+    <attribute id="24_oz" id_attribute_group="Size" color=""/>
+    <attribute id="Yellow" id_attribute_group="Color" color="#fad629"/>
+    <attribute id="White" id_attribute_group="Color" color="#ffffff"/>
+    <attribute id="Black" id_attribute_group="Color" color="#000000"/>
+    <attribute id="Espresso" id_attribute_group="Color" color="#1a1c1e"/>
+    <attribute id="Natural" id_attribute_group="Color" color="#e3e5c0"/>
+    <attribute id="Mocha" id_attribute_group="Color" color="#3d2a11"/>
+    <attribute id="Hair_of_the_Dog" id_attribute_group="Flavor" color=""/>
+    <attribute id="Mean_Bean" id_attribute_group="Flavor" color=""/>
+    <attribute id="Busy_Bean" id_attribute_group="Flavor" color=""/>
+    <attribute id="Turning_Leaf" id_attribute_group="Flavor" color=""/>
+    <attribute id="Wild_Poppy" id_attribute_group="Flavor" color=""/>
+    <attribute id="Prickly_Pear" id_attribute_group="Flavor" color=""/>
+    <attribute id="Nether_Leaf" id_attribute_group="Flavor" color=""/>
+    <attribute id="Olde_Number_1.6" id_attribute_group="Flavor" color=""/>
+    <attribute id="Body_Wash" id_attribute_group="Product" color=""/>
+    <attribute id="Shampoo" id_attribute_group="Product" color=""/>
+    <attribute id="Conditioner" id_attribute_group="Product" color=""/>
+    <attribute id="Puffin" id_attribute_group="Scent" color=""/>
+    <attribute id="Honey" id_attribute_group="Scent" color=""/>
+  </entities>
+</entity_attribute>

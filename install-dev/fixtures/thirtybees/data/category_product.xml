@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity_category_product>
+  <fields primary="id_category, id_product">
+    <field name="id_category" relation="category"/>
+    <field name="id_product" relation="product"/>
+    <field name="position"/>
+  </fields>
+  <entities>
+    <category_product id="category_product_2_1" id_category="2" id_product="Candle" position="0"/>
+    <category_product id="category_product_2_2" id_category="2" id_product="Soap" position="1"/>
+    <category_product id="category_product_2_3" id_category="2" id_product="Coffee" position="2"/>
+    <category_product id="category_product_2_4" id_category="2" id_product="Tin_Cup" position="3"/>
+    <category_product id="category_product_2_5" id_category="2" id_product="Picture_Frame" position="4"/>
+    <category_product id="category_product_2_6" id_category="2" id_product="Mug" position="5"/>
+    <category_product id="category_product_2_7" id_category="2" id_product="Tea" position="6"/>
+    <category_product id="category_product_2_8" id_category="2" id_product="Honey" position="7"/>
+    <category_product id="category_product_3_3" id_category="coffee_and_tea" id_product="Coffee" position="0"/>
+    <category_product id="category_product_3_4" id_category="coffee_and_tea" id_product="Tin_Cup" position="1"/>
+    <category_product id="category_product_3_6" id_category="coffee_and_tea" id_product="Mug" position="2"/>
+    <category_product id="category_product_3_7" id_category="coffee_and_tea" id_product="Tea" position="3"/>
+    <category_product id="category_product_3_8" id_category="coffee_and_tea" id_product="Honey" position="4"/>
+    <category_product id="category_product_4_3" id_category="coffee" id_product="Coffee" position="0"/>
+    <category_product id="category_product_4_6" id_category="coffee" id_product="Mug" position="1"/>
+    <category_product id="category_product_5_7" id_category="tea" id_product="Tea" position="0"/>
+    <category_product id="category_product_5_4" id_category="tea" id_product="Tin_Cup" position="1"/>
+    <category_product id="category_product_5_8" id_category="tea" id_product="Honey" position="2"/>
+    <category_product id="category_product_6_2" id_category="gifts" id_product="Soap" position="0"/>
+    <category_product id="category_product_6_4" id_category="gifts" id_product="Tin_Cup" position="1"/>
+    <category_product id="category_product_6_5" id_category="gifts" id_product="Picture_Frame" position="2"/>
+    <category_product id="category_product_6_6" id_category="gifts" id_product="Mug" position="3"/>
+    <category_product id="category_product_6_8" id_category="gifts" id_product="Honey" position="4"/>
+    <category_product id="category_product_6_1" id_category="gifts" id_product="Candle" position="5"/>
+    <category_product id="category_product_7_4" id_category="office" id_product="Tin_Cup" position="0"/>
+    <category_product id="category_product_7_5" id_category="office" id_product="Picture_Frame" position="1"/>
+    <category_product id="category_product_7_6" id_category="office" id_product="Mug" position="2"/>
+    <category_product id="category_product_7_1" id_category="office" id_product="Candle" position="3"/>
+    <category_product id="category_product_7_2" id_category="office" id_product="Soap" position="4"/>
+  </entities>
+</entity_category_product>

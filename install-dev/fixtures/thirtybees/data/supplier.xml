@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity_supplier>
+  <fields id="name" class="Supplier" image="su">
+    <field name="name"/>
+    <field name="active"/>
+  </fields>
+  <entities>
+    <supplier id="thirty_bees" active="1">
+      <name>thirty bees</name>
+    </supplier>
+  </entities>
+</entity_supplier>

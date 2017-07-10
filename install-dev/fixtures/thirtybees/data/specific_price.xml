@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<entity_specific_price>
+  <fields class="SpecificPrice">
+    <field name="id_cart" relation="cart"/>
+    <field name="id_product" relation="product"/>
+    <field name="id_shop"/>
+    <field name="id_shop_group"/>
+    <field name="id_currency"/>
+    <field name="id_country" relation="country"/>
+    <field name="id_group" relation="group"/>
+    <field name="id_customer" relation="customer"/>
+    <field name="id_product_attribute" relation="product_attribute"/>
+    <field name="price"/>
+    <field name="from_quantity"/>
+    <field name="reduction"/>
+    <field name="reduction_tax"/>
+    <field name="reduction_type"/>
+    <field name="from"/>
+    <field name="to"/>
+  </fields>
+  <entities>
+  </entities>
+</entity_specific_price>

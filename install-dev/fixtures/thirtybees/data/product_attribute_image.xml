@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<entity_product_attribute_image>
+  <fields primary="id_product_attribute, id_image">
+    <field name="id_product_attribute" relation="product_attribute"/>
+    <field name="id_image" relation="image"/>
+  </fields>
+  <entities>
+    <product_attribute_image id="product_attribute_image_1_1" id_product_attribute="product_attribute_1" id_image="image_2"/>
+    <product_attribute_image id="product_attribute_image_1_1" id_product_attribute="product_attribute_1" id_image="image_2"/>
+    <product_attribute_image id="product_attribute_image_2_2" id_product_attribute="product_attribute_2" id_image="image_1"/>
+    <product_attribute_image id="product_attribute_image_2_2" id_product_attribute="product_attribute_2" id_image="image_1"/>
+    <product_attribute_image id="product_attribute_image_3_1" id_product_attribute="product_attribute_3" id_image="image_2"/>
+    <product_attribute_image id="product_attribute_image_3_1" id_product_attribute="product_attribute_3" id_image="image_2"/>
+    <product_attribute_image id="product_attribute_image_4_2" id_product_attribute="product_attribute_4" id_image="image_1"/>
+    <product_attribute_image id="product_attribute_image_4_2" id_product_attribute="product_attribute_4" id_image="image_1"/>
+    <product_attribute_image id="product_attribute_image_5_1" id_product_attribute="product_attribute_5" id_image="image_2"/>
+    <product_attribute_image id="product_attribute_image_5_1" id_product_attribute="product_attribute_5" id_image="image_2"/>
+    <product_attribute_image id="product_attribute_image_6_2" id_product_attribute="product_attribute_6" id_image="image_1"/>
+    <product_attribute_image id="product_attribute_image_6_2" id_product_attribute="product_attribute_6" id_image="image_1"/>
+    <product_attribute_image id="product_attribute_image_7_3" id_product_attribute="product_attribute_7" id_image="image_3"/>
+    <product_attribute_image id="product_attribute_image_8_4" id_product_attribute="product_attribute_8" id_image="image_4"/>
+    <product_attribute_image id="product_attribute_image_9_5" id_product_attribute="product_attribute_9" id_image="image_5"/>
+    <product_attribute_image id="product_attribute_image_10_6" id_product_attribute="product_attribute_10" id_image="image_6"/>
+    <product_attribute_image id="product_attribute_image_11_7" id_product_attribute="product_attribute_11" id_image="image_7"/>
+    <product_attribute_image id="product_attribute_image_12_8" id_product_attribute="product_attribute_12" id_image="image_8"/>
+    <product_attribute_image id="product_attribute_image_13_9" id_product_attribute="product_attribute_13" id_image="image_9"/>
+    <product_attribute_image id="product_attribute_image_14_10" id_product_attribute="product_attribute_14" id_image="image_10"/>
+    <product_attribute_image id="product_attribute_image_15_11" id_product_attribute="product_attribute_15" id_image="image_11"/>
+    <product_attribute_image id="product_attribute_image_16_12" id_product_attribute="product_attribute_16" id_image="image_12"/>
+    <product_attribute_image id="product_attribute_image_17_13" id_product_attribute="product_attribute_17" id_image="image_13"/>
+    <product_attribute_image id="product_attribute_image_18_14" id_product_attribute="product_attribute_18" id_image="image_14"/>
+    <product_attribute_image id="product_attribute_image_19_15" id_product_attribute="product_attribute_19" id_image="image_15"/>
+    <product_attribute_image id="product_attribute_image_20_16" id_product_attribute="product_attribute_20" id_image="image_16"/>
+    <product_attribute_image id="product_attribute_image_21_17" id_product_attribute="product_attribute_21" id_image="image_17"/>
+    <product_attribute_image id="product_attribute_image_22_18" id_product_attribute="product_attribute_22" id_image="image_18"/>
+    <product_attribute_image id="product_attribute_image_23_19" id_product_attribute="product_attribute_23" id_image="image_19"/>
+    <product_attribute_image id="product_attribute_image_24_20" id_product_attribute="product_attribute_24" id_image="image_20"/>
+    <product_attribute_image id="product_attribute_image_25_21" id_product_attribute="product_attribute_25" id_image="image_21"/>
+  </entities>
+</entity_product_attribute_image>

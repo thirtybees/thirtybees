@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity_product_attribute_combination>
+  <fields primary="id_attribute, id_product_attribute">
+    <field name="id_attribute" relation="attribute"/>
+    <field name="id_product_attribute" relation="product_attribute"/>
+  </fields>
+  <entities>
+    <product_attribute_combination id="product_attribute_combination_1_1" id_attribute="12_oz" id_product_attribute="product_attribute_1"/>
+    <product_attribute_combination id="product_attribute_combination_21_1" id_attribute="Honey" id_product_attribute="product_attribute_1"/>
+    <product_attribute_combination id="product_attribute_combination_1_2" id_attribute="12_oz" id_product_attribute="product_attribute_2"/>
+    <product_attribute_combination id="product_attribute_combination_22_2" id_attribute="Puffin" id_product_attribute="product_attribute_2"/>
+    <product_attribute_combination id="product_attribute_combination_2_3" id_attribute="16_oz" id_product_attribute="product_attribute_3"/>
+    <product_attribute_combination id="product_attribute_combination_21_3" id_attribute="Honey" id_product_attribute="product_attribute_3"/>
+    <product_attribute_combination id="product_attribute_combination_2_4" id_attribute="16_oz" id_product_attribute="product_attribute_4"/>
+    <product_attribute_combination id="product_attribute_combination_22_4" id_attribute="Puffin" id_product_attribute="product_attribute_4"/>
+    <product_attribute_combination id="product_attribute_combination_3_5" id_attribute="24_oz" id_product_attribute="product_attribute_5"/>
+    <product_attribute_combination id="product_attribute_combination_21_5" id_attribute="Honey" id_product_attribute="product_attribute_5"/>
+    <product_attribute_combination id="product_attribute_combination_3_6" id_attribute="24_oz" id_product_attribute="product_attribute_6"/>
+    <product_attribute_combination id="product_attribute_combination_22_6" id_attribute="Puffin" id_product_attribute="product_attribute_6"/>
+    <product_attribute_combination id="product_attribute_combination_18_7" id_attribute="Body_Wash" id_product_attribute="product_attribute_7"/>
+    <product_attribute_combination id="product_attribute_combination_19_8" id_attribute="Shampoo" id_product_attribute="product_attribute_8"/>
+    <product_attribute_combination id="product_attribute_combination_20_9" id_attribute="Conditioner" id_product_attribute="product_attribute_9"/>
+    <product_attribute_combination id="product_attribute_combination_10_10" id_attribute="Hair_of_the_Dog" id_product_attribute="product_attribute_10"/>
+    <product_attribute_combination id="product_attribute_combination_11_11" id_attribute="Mean_Bean" id_product_attribute="product_attribute_11"/>
+    <product_attribute_combination id="product_attribute_combination_12_12" id_attribute="Busy_Bean" id_product_attribute="product_attribute_12"/>
+    <product_attribute_combination id="product_attribute_combination_4_13" id_attribute="Yellow" id_product_attribute="product_attribute_13"/>
+    <product_attribute_combination id="product_attribute_combination_6_14" id_attribute="Black" id_product_attribute="product_attribute_14"/>
+    <product_attribute_combination id="product_attribute_combination_7_15" id_attribute="Espresso" id_product_attribute="product_attribute_15"/>
+    <product_attribute_combination id="product_attribute_combination_8_16" id_attribute="Mocha" id_product_attribute="product_attribute_16"/>
+    <product_attribute_combination id="product_attribute_combination_9_17" id_attribute="Natural" id_product_attribute="product_attribute_17"/>
+    <product_attribute_combination id="product_attribute_combination_5_18" id_attribute="White" id_product_attribute="product_attribute_18"/>
+    <product_attribute_combination id="product_attribute_combination_4_19" id_attribute="Yellow" id_product_attribute="product_attribute_19"/>
+    <product_attribute_combination id="product_attribute_combination_6_20" id_attribute="Black" id_product_attribute="product_attribute_20"/>
+    <product_attribute_combination id="product_attribute_combination_13_21" id_attribute="Turning_Leaf" id_product_attribute="product_attribute_21"/>
+    <product_attribute_combination id="product_attribute_combination_14_22" id_attribute="Wild_Poppy" id_product_attribute="product_attribute_22"/>
+    <product_attribute_combination id="product_attribute_combination_15_23" id_attribute="Prickly_Pear" id_product_attribute="product_attribute_23"/>
+    <product_attribute_combination id="product_attribute_combination_16_24" id_attribute="Nether_Leaf" id_product_attribute="product_attribute_24"/>
+    <product_attribute_combination id="product_attribute_combination_17_25" id_attribute="Olde_Number_1.6" id_product_attribute="product_attribute_25"/>
+  </entities>
+</entity_product_attribute_combination>

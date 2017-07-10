@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity_category>
+  <fields id="name" class="Category" sql="a.id_category &gt; 2" image="c">
+    <field name="id_parent" relation="category"/>
+    <field name="active"/>
+  </fields>
+  <entities>
+    <category id="coffee_and_tea" id_parent="Home" active="1"/>
+    <category id="coffee" id_parent="coffee_and_tea" active="1"/>
+    <category id="tea" id_parent="coffee_and_tea" active="1"/>
+    <category id="gifts" id_parent="Home" active="1"/>
+    <category id="office" id_parent="Home" active="1"/>
+  </entities>
+</entity_category>

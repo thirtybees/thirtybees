@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity_image>
+  <fields id="legend" class="Image" image="p">
+    <field name="id_product" relation="product"/>
+    <field name="cover"/>
+  </fields>
+  <entities>
+    <image id="image_1" id_product="Candle" cover="1"/>
+    <image id="image_2" id_product="Candle" cover="0"/>
+    <image id="image_3" id_product="Soap" cover="1"/>
+    <image id="image_4" id_product="Soap" cover="0"/>
+    <image id="image_5" id_product="Soap" cover="0"/>
+    <image id="image_6" id_product="Coffee" cover="1"/>
+    <image id="image_7" id_product="Coffee" cover="0"/>
+    <image id="image_8" id_product="Coffee" cover="0"/>
+    <image id="image_9" id_product="Tin _Cup" cover="0"/>
+    <image id="image_10" id_product="Tin_Cup" cover="1"/>
+    <image id="image_11" id_product="Picture_Frame" cover="1"/>
+    <image id="image_12" id_product="Picture_Frame" cover="0"/>
+    <image id="image_13" id_product="Picture_Frame" cover="0"/>
+    <image id="image_14" id_product="Mug" cover="0"/>
+    <image id="image_15" id_product="Mug" cover="1"/>
+    <image id="image_16" id_product="Mug" cover="0"/>
+    <image id="image_17" id_product="Tea" cover="1"/>
+    <image id="image_18" id_product="Tea" cover="0"/>
+    <image id="image_19" id_product="Tea" cover="0"/>
+    <image id="image_20" id_product="Tea" cover="0"/>
+    <image id="image_21" id_product="Tea" cover="0"/>
+    <image id="image_22" id_product="Honey" cover="1"/>
+    <image id="image_23" id_product="Honey" cover="0"/>
+    <image id="image_24" id_product="Honey" cover="0"/>
+  </entities>
+</entity_image>

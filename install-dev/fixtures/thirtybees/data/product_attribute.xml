@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity_product_attribute>
+  <fields class="Combination">
+    <field name="id_product" relation="product"/>
+    <field name="reference"/>
+    <field name="supplier_reference"/>
+    <field name="location"/>
+    <field name="ean13"/>
+    <field name="upc"/>
+    <field name="wholesale_price"/>
+    <field name="price"/>
+    <field name="ecotax"/>
+    <field name="quantity"/>
+    <field name="weight"/>
+    <field name="unit_price_impact"/>
+    <field name="default_on"/>
+    <field name="minimal_quantity"/>
+    <field name="available_date"/>
+  </fields>
+  <entities>
+    <product_attribute id="product_attribute_1" id_product="Candle" reference="" supplier_reference="" ean13="" upc="" wholesale_price="0.000000" price="0.000000" ecotax="0.000000" quantity="100" weight="0.000000" unit_price_impact="0.00" default_on="1" minimal_quantity="1" available_date="0000-00-00">
+      <location/>
+    </product_attribute>
+    <product_attribute id="product_attribute_2" id_product="Candle" reference="" supplier_reference="" ean13="" upc="" wholesale_price="0.000000" price="0.000000" ecotax="0.000000" quantity="100" weight="0.000000" unit_price_impact="0.00" default_on="0" minimal_quantity="1" available_date="0000-00-00">
+      <location/>
+    </product_attribute>
+    <product_attribute id="product_attribute_3" id_product="Candle" reference="" supplier_reference="" ean13="" upc="" wholesale_price="0.000000" price="4.000000" ecotax="0.000000" quantity="100" weight="0.000000" unit_price_impact="4.00" default_on="0" minimal_quantity="1" available_date="0000-00-00">
+      <location/>
+    </product_attribute>
+    <product_attribute id="product_attribute_4" id_product="Candle" reference="" supplier_reference="" ean13="" upc="" wholesale_price="0.000000" price="4.000000" ecotax="0.000000" quantity="100" weight="0.000000" unit_price_impact="4.00" default_on="0" minimal_quantity="1" available_date="0000-00-00">
+      <location/>
+    </product_attribute>
+    <product_attribute id="product_attribute_5" id_product="Candle" reference="" supplier_reference="" ean13="" upc="" wholesale_price="0.000000" price="6.000000" ecotax="0.000000" quantity="100" weight="0.000000" unit_price_impact="6.00" default_on="0" minimal_quantity="1" available_date="0000-00-00">
+      <location/>
+    </product_attribute>
+    <product_attribute id="product_attribute_6" id_product="Candle" reference="" supplier_reference="" ean13="" upc="" wholesale_price="0.000000" price="6.000000" ecotax="0.000000" quantity="100" weight="0.000000" unit_price_impact="6.00" default_on="0" minimal_quantity="1" available_date="0000-00-00">
+      <location/>
+    </product_attribute>
+    <product_attribute id="product_attribute_7" id_product="Soap" reference="" supplier_reference="" ean13="" upc="" wholesale_price="0.000000" price="0.000000" ecotax="0.000000" quantity="100" weight="0.000000" unit_price_impact="0.00" default_on="1" minimal_quantity="1" available_date="0000-00-00">
+      <location/>
+    </product_attribute>
+    <product_attribute id="product_attribute_8" id_product="Soap" reference="" supplier_reference="" ean13="" upc="" wholesale_price="0.000000" price="2.000000" ecotax="0.000000" quantity="100" weight="0.000000" unit_price_impact="2.00" default_on="0" minimal_quantity="1" available_date="0000-00-00">
+      <location/>
+    </product_attribute>
+    <product_attribute id="product_attribute_9" id_product="Soap" reference="" supplier_reference="" ean13="" upc="" wholesale_price="0.000000" price="4.000000" ecotax="0.000000" quantity="100" weight="0.000000" unit_price_impact="4.00" default_on="0" minimal_quantity="1" available_date="0000-00-00">
+      <location/>
+    </product_attribute>
+    <product_attribute id="product_attribute_10" id_product="Coffee" reference="" supplier_reference="" ean13="" upc="" wholesale_price="0.000000" price="0.000000" ecotax="0.000000" quantity="100" weight="0.000000" unit_price_impact="0.00" default_on="1" minimal_quantity="1" available_date="0000-00-00">
+      <location/>
+    </product_attribute>
+    <product_attribute id="product_attribute_11" id_product="Coffee" reference="" supplier_reference="" ean13="" upc="" wholesale_price="0.000000" price="2.000000" ecotax="0.000000" quantity="100" weight="0.000000" unit_price_impact="2.00" default_on="0" minimal_quantity="1" available_date="0000-00-00">
+      <location/>
+    </product_attribute>
+    <product_attribute id="product_attribute_12" id_product="Coffee" reference="" supplier_reference="" ean13="" upc="" wholesale_price="0.000000" price="1.000000" ecotax="0.000000" quantity="100" weight="0.000000" unit_price_impact="1.00" default_on="0" minimal_quantity="1" available_date="0000-00-00">
+      <location/>
+    </product_attribute>
+    <product_attribute id="product_attribute_13" id_product="Tin_Cup" reference="" supplier_reference="" ean13="" upc="" wholesale_price="0.000000" price="0.000000" ecotax="0.000000" quantity="100" weight="0.000000" unit_price_impact="0.00" default_on="1" minimal_quantity="1" available_date="0000-00-00">
+      <location/>
+    </product_attribute>
+    <product_attribute id="product_attribute_14" id_product="Tin_Cup" reference="" supplier_reference="" ean13="" upc="" wholesale_price="0.000000" price="2.000000" ecotax="0.000000" quantity="100" weight="0.000000" unit_price_impact="2.00" default_on="0" minimal_quantity="1" available_date="0000-00-00">
+      <location/>
+    </product_attribute>
+    <product_attribute id="product_attribute_15" id_product="Picture_Frame" reference="" supplier_reference="" ean13="" upc="" wholesale_price="0.000000" price="0.000000" ecotax="0.000000" quantity="100" weight="0.000000" unit_price_impact="0.00" default_on="1" minimal_quantity="1" available_date="0000-00-00">
+      <location/>
+    </product_attribute>
+    <product_attribute id="product_attribute_16" id_product="Picture_Frame" reference="" supplier_reference="" ean13="" upc="" wholesale_price="0.000000" price="0.000000" ecotax="0.000000" quantity="100" weight="0.000000" unit_price_impact="0.00" default_on="0" minimal_quantity="1" available_date="0000-00-00">
+      <location/>
+    </product_attribute>
+    <product_attribute id="product_attribute_17" id_product="Picture_Frame" reference="" supplier_reference="" ean13="" upc="" wholesale_price="0.000000" price="0.000000" ecotax="0.000000" quantity="100" weight="0.000000" unit_price_impact="0.00" default_on="0" minimal_quantity="1" available_date="0000-00-00">
+      <location/>
+    </product_attribute>
+    <product_attribute id="product_attribute_18" id_product="Mug" reference="" supplier_reference="" ean13="" upc="" wholesale_price="0.000000" price="0.000000" ecotax="0.000000" quantity="100" weight="0.000000" unit_price_impact="0.00" default_on="1" minimal_quantity="1" available_date="0000-00-00">
+      <location/>
+    </product_attribute>
+    <product_attribute id="product_attribute_19" id_product="Mug" reference="" supplier_reference="" ean13="" upc="" wholesale_price="0.000000" price="0.000000" ecotax="0.000000" quantity="100" weight="0.000000" unit_price_impact="0.00" default_on="0" minimal_quantity="1" available_date="0000-00-00">
+      <location/>
+    </product_attribute>
+    <product_attribute id="product_attribute_20" id_product="Mug" reference="" supplier_reference="" ean13="" upc="" wholesale_price="0.000000" price="2.000000" ecotax="0.000000" quantity="100" weight="0.000000" unit_price_impact="2.00" default_on="0" minimal_quantity="1" available_date="0000-00-00">
+      <location/>
+    </product_attribute>
+    <product_attribute id="product_attribute_21" id_product="Tea" reference="" supplier_reference="" ean13="" upc="" wholesale_price="0.000000" price="0.000000" ecotax="0.000000" quantity="100" weight="0.000000" unit_price_impact="0.00" default_on="1" minimal_quantity="1" available_date="0000-00-00">
+      <location/>
+    </product_attribute>
+    <product_attribute id="product_attribute_22" id_product="Tea" reference="" supplier_reference="" ean13="" upc="" wholesale_price="0.000000" price="6.000000" ecotax="0.000000" quantity="100" weight="0.000000" unit_price_impact="6.00" default_on="0" minimal_quantity="1" available_date="0000-00-00">
+      <location/>
+    </product_attribute>
+    <product_attribute id="product_attribute_23" id_product="Tea" reference="" supplier_reference="" ean13="" upc="" wholesale_price="0.000000" price="0.000000" ecotax="0.000000" quantity="100" weight="0.000000" unit_price_impact="0.00" default_on="0" minimal_quantity="1" available_date="0000-00-00">
+      <location/>
+    </product_attribute>
+    <product_attribute id="product_attribute_24" id_product="Tea" reference="" supplier_reference="" ean13="" upc="" wholesale_price="0.000000" price="1.000000" ecotax="0.000000" quantity="100" weight="0.000000" unit_price_impact="1.00" default_on="0" minimal_quantity="1" available_date="0000-00-00">
+      <location/>
+    </product_attribute>
+    <product_attribute id="product_attribute_25" id_product="Tea" reference="" supplier_reference="" ean13="" upc="" wholesale_price="0.000000" price="10.000000" ecotax="0.000000" quantity="100" weight="0.000000" unit_price_impact="10.00" default_on="0" minimal_quantity="1" available_date="0000-00-00">
+      <location/>
+    </product_attribute>
+  </entities>
+</entity_product_attribute>
