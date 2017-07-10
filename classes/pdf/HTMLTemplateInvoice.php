@@ -121,8 +121,6 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
 
         $orderDetails = $this->order_invoice->getProducts();
         $order = new Order($this->order_invoice->id_order);
-        $currency = new Currency($order->id_currency);
-        $language = new Language(Context::getContext()->language->id);
 
         $hasDiscount = false;
         foreach ($orderDetails as $id => &$orderDetail) {
@@ -140,7 +138,7 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
             $taxTemp = [];
             foreach ($taxes as $tax) {
                 $obj = new Tax($tax['id_tax']);
-                $taxTemp[] = sprintf($this->l('%1$s%2$s%%'), number_format($obj->rate, 3, Tools::findDecimalPoint($language, $currency), Tools::findDecimalPoint($language, $currency)), '&nbsp;');
+                $taxTemp[] = sprintf($this->l('%1$s%2$s%%'), (float) round($obj->rate, 3), '&nbsp;');
             }
 
             $orderDetail['order_detail_tax'] = $taxes;
@@ -347,15 +345,21 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
         $carrier = new Carrier($this->order->id_carrier);
 
         $taxBreakdowns = $this->getTaxBreakdown();
+        $shippingTaxBreakdowns = $this->order_invoice->getShippingTaxesBreakdown($this->order);
+        $ecoTaxBreakdowns = $this->order_invoice->getEcoTaxTaxesBreakdown();
+        $wrappingTaxBreakdowns = $this->order_invoice->getWrappingTaxesBreakdown();
+        foreach (array_merge($shippingTaxBreakdowns, $ecoTaxBreakdowns, $wrappingTaxBreakdowns) as &$breakdown) {
+            $breakdown['rate'] = (float) round($breakdown['rate'], 3);
+        }
 
         $data = [
             'tax_exempt'                      => $taxExempt,
             'use_one_after_another_method'    => $this->order_invoice->useOneAfterAnotherTaxComputationMethod(),
             'display_tax_bases_in_breakdowns' => $this->order_invoice->displayTaxBasesInProductTaxesBreakdown(),
             'product_tax_breakdown'           => $this->order_invoice->getProductTaxesBreakdown($this->order),
-            'shipping_tax_breakdown'          => $this->order_invoice->getShippingTaxesBreakdown($this->order),
-            'ecotax_tax_breakdown'            => $this->order_invoice->getEcoTaxTaxesBreakdown(),
-            'wrapping_tax_breakdown'          => $this->order_invoice->getWrappingTaxesBreakdown(),
+            'shipping_tax_breakdown'          => $shippingTaxBreakdowns,
+            'ecotax_tax_breakdown'            => $ecoTaxBreakdowns,
+            'wrapping_tax_breakdown'          => $wrappingTaxBreakdowns,
             'tax_breakdowns'                  => $taxBreakdowns,
             'order'                           => $debug ? null : $this->order,
             'order_invoice'                   => $debug ? null : $this->order_invoice,
