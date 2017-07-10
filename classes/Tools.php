@@ -718,12 +718,10 @@ class ToolsCore
     }
 
     /**
-     * @param $number
-     * @param $currency
+     * @param float    $number
+     * @param Currency $currency
      *
      * @return string
-     *
-     * @todo    : move to intl
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -4701,42 +4699,6 @@ exit;
             $params['separator'] = ',';
 
         return implode($params['value'], $params['separator']);
-    }
-
-    /**
-     * Finds the decimal point used in a language
-     * If a `Currency` is passed, it will check if this currency is set to
-     * "Auto format" and if it isn't it will use the currency display
-     * to find the decimal point.
-     *
-     * @param Language      $language
-     * @param Currency|null $currency
-     *
-     * @return string
-     *
-     * @todo: implement
-     */
-    public static function findDecimalPoint(Language $language, Currency $currency = null)
-    {
-        return '.';
-    }
-
-    /**
-     * Finds thousand separator used in a language
-     * If a `Currency` is passed, it will check if this currency is set to
-     * "Auto format" and if it isn't it will use the currency display
-     * to find the decimal point.
-     *
-     * @param Language      $language
-     * @param Currency|null $currency
-     *
-     * @return string
-     *
-     * @todo: implement
-     */
-    public static function findThousandSeparator(Language $language, Currency $currency = null)
-    {
-        return ',';
     }
 }
 
