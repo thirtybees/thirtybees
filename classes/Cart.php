@@ -2173,10 +2173,7 @@ class CartCore extends ObjectModel
         $cartAmountTaxExcluded = $this->getOrderTotal(false, static::ONLY_PRODUCTS);
 
         // Get the rate according to the applied rounding method
-        $roundingMethod = (int) Configuration::get('PS_ATCP_SHIPWRAP_ROUNDING');
-        if ($roundingMethod === 0) {
-            $roundingMethod = (int) Configuration::get('PS_ROUND_TYPE');
-        }
+        $roundingMethod = (int) Configuration::get('PS_ROUND_TYPE');
         $precision = _PS_PRICE_DISPLAY_PRECISION_;
 
         switch ($roundingMethod) {
@@ -2209,22 +2206,6 @@ class CartCore extends ObjectModel
 
                     $total += $lineTotal;
                     $totalTax += $appliedTaxRate * $lineTotal;
-                }
-
-                if ($total <= 0) {
-                    return $total;
-                }
-
-                return $totalTax / $total;
-            case 4:
-                // No rounding
-                $total = 0;
-                $totalTax = 0;
-                foreach ($this->getProducts() as $product) {
-                    $appliedTaxRate = $product['price_wt'] / $product['price'] - 1;
-
-                    $total += ($product['price'] * $product['quantity']);
-                    $totalTax += $appliedTaxRate * $product['price'] * $product['quantity'];
                 }
 
                 if ($total <= 0) {
