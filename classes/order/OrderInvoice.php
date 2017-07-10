@@ -394,17 +394,27 @@ class OrderInvoiceCore extends ObjectModel
             $row['id_address_delivery'] = $order->id_address_delivery;
 
             /* Ecotax */
-            $roundMode = $order->round_mode;
+            $roundMode = (int) $order->round_mode;
+            $roundType = (int) $order->round_type;
 
-            $row['ecotax_tax_excl'] = $row['ecotax']; // alias for coherence
+            if ($roundType === Order::ROUND_ITEM) {
+                $row['ecotax_tax_excl'] = Tools::ps_round($row['ecotax'], _PS_PRICE_DISPLAY_PRECISION_, $roundMode); // alias for coherence
+            } else {
+                $row['ecotax_tax_excl'] = $row['ecotax'];
+            }
             $row['ecotax_tax_incl'] = $row['ecotax'] * (100 + $row['ecotax_tax_rate']) / 100;
             $row['ecotax_tax'] = $row['ecotax_tax_incl'] - $row['ecotax_tax_excl'];
 
-            if ($roundMode == Order::ROUND_ITEM) {
-                $row['ecotax_tax_incl'] = Tools::ps_round($row['ecotax_tax_incl'], _TB_PRICE_DATABASE_PRECISION_, $roundMode);
+            if ($roundType === Order::ROUND_ITEM) {
+                $row['ecotax_tax_incl'] = Tools::ps_round($row['ecotax_tax_incl'], _PS_PRICE_DISPLAY_PRECISION_, $roundMode);
             }
 
-            $row['total_ecotax_tax_excl'] = $row['ecotax_tax_excl'] * $row['product_quantity'];
+            if ($roundType === Order::ROUND_LINE) {
+                $row['total_ecotax_tax_excl'] = Tools::ps_round($row['ecotax_tax_excl'] * $row['product_quantity'], _PS_PRICE_DISPLAY_PRECISION_, $roundMode);
+            } else {
+                $row['total_ecotax_tax_excl'] = $row['ecotax_tax_excl'] * $row['product_quantity'];
+            }
+
             $row['total_ecotax_tax_incl'] = $row['ecotax_tax_incl'] * $row['product_quantity'];
 
             $row['total_ecotax_tax'] = $row['total_ecotax_tax_incl'] - $row['total_ecotax_tax_excl'];
@@ -417,7 +427,7 @@ class OrderInvoiceCore extends ObjectModel
                          'total_ecotax_tax_incl',
                          'total_ecotax_tax',
                      ] as $ecotaxField) {
-                $row[$ecotaxField] = Tools::ps_round($row[$ecotaxField], _TB_PRICE_DATABASE_PRECISION_, $roundMode);
+                $row[$ecotaxField] = Tools::ps_round($row[$ecotaxField], _PS_PRICE_DISPLAY_PRECISION_, $roundMode);
             }
 
             // Aliases
@@ -728,23 +738,40 @@ class OrderInvoiceCore extends ObjectModel
     {
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-                ->select('`ecotax_tax_rate` AS `rate`, SUM(`ecotax` * `product_quantity`) AS `ecotax_tax_excl`, SUM(`ecotax` * `product_quantity`) AS `ecotax_tax_incl`')
+                ->select('`ecotax_tax_rate` AS `rate`, `ecotax` AS `ecotax_tax_excl`, `product_quantity`')
                 ->from('order_detail')
                 ->where('`id_order` = '.(int) $this->id_order)
                 ->where('`id_order_invoice` = '.(int) $this->id)
-                ->groupBy('`ecotax_tax_rate`')
         );
 
+        $roundMode = (int) $this->order->round_mode;
+        $roundType = (int) $this->order->round_type;
         $taxes = [];
         foreach ($result as $row) {
             if ($row['ecotax_tax_excl'] > 0) {
-                $row['ecotax_tax_incl'] = Tools::ps_round($row['ecotax_tax_excl'] + ($row['ecotax_tax_excl'] * $row['rate'] / 100), _PS_PRICE_DISPLAY_PRECISION_);
-                $row['ecotax_tax_excl'] = Tools::ps_round($row['ecotax_tax_excl'], _PS_PRICE_DISPLAY_PRECISION_);
-                $taxes[] = $row;
+                if ($roundType === Order::ROUND_ITEM) {
+                    $row['ecotax_tax_excl'] = Tools::ps_round($row['ecotax_tax_excl'], _PS_PRICE_DISPLAY_PRECISION_, $roundMode); // alias for coherence
+                }
+                $row['ecotax_tax_incl'] = $row['ecotax_tax_excl'] * (100 + $row['rate']) / 100;
+
+                if ($roundType === Order::ROUND_ITEM) {
+                    $row['ecotax_tax_incl'] = Tools::ps_round($row['ecotax_tax_incl'], _PS_PRICE_DISPLAY_PRECISION_, $roundMode);
+                }
+
+                $row['ecotax_tax_excl'] *= $row['product_quantity'];
+                $row['ecotax_tax_incl'] *= $row['product_quantity'];
+
+                if (isset($taxes[$row['rate']])) {
+                    $oldRow = $taxes[$row['rate']];
+                    $oldRow['ecotax_tax_excl'] += $row['ecotax_tax_excl'];
+                    $oldRow['ecotax_tax_incl'] += $row['ecotax_tax_incl'];
+                } else {
+                    $taxes[$row['rate']] = $row;
+                }
             }
         }
 
-        return $taxes;
+        return array_values($taxes);
     }
 
     /**
