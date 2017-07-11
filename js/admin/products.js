@@ -637,7 +637,8 @@ window.product_tabs.Combinations = new function () {
 
     for (var j = 0; j < oldAttr.length; j += 1) {
       var opt = document.createElement('option');
-      opt.text = oldAttr[j += 1];
+      opt.text = oldAttr[j];
+      j += 1;
       opt.value = oldAttr[j];
       try {
         elem.add(opt, null);
