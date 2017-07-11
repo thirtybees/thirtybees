@@ -2,9 +2,7 @@
 <entity_category>
   <category id="coffee_and_tea" id_shop="1">
     <name>Coffee and Tea</name>
-    <description>&lt;p&gt;&lt;strong&gt;You will find here all woman fashion collections.&lt;/strong&gt;&lt;/p&gt;&#xD;
-&lt;p&gt;This category includes all the basics of your wardrobe and much more:&lt;/p&gt;&#xD;
-&lt;p&gt;shoes, accessories, printed t-shirts, feminine dresses, women's jeans!&lt;/p&gt;</description>
+    <description>The best coffee and tea in the world. Our coffees and teas will be the best you have ever put in your mouth: we even have stylish cups and mugs so you can drink in style.</description>
     <link_rewrite>coffee-and-tea</link_rewrite>
     <meta_title/>
     <meta_keywords/>
@@ -12,8 +10,7 @@
   </category>
   <category id="coffee" id_shop="1">
     <name>Coffee</name>
-    <description>&lt;p&gt;Choose from t-shirts, tops, blouses, short sleeves, long sleeves, tank tops, 3/4 sleeves and more.&lt;/p&gt;&#xD;
-&lt;p&gt;Find the cut that suits you the best!&lt;/p&gt;</description>
+    <description>Organic slow roasted coffee with low acid content, we only use fair trade coffee. Try the best locally sourced coffee!</description>
     <link_rewrite>Coffee</link_rewrite>
     <meta_title/>
     <meta_keywords/>
@@ -21,8 +18,7 @@
   </category>
   <category id="tea" id_shop="1">
     <name>Tea</name>
-    <description>&lt;p&gt;The must have of your wardrobe, take a look at our different colors,&lt;/p&gt;&#xD;
-&lt;p&gt;shapes and style of our collection!&lt;/p&gt;</description>
+    <description>Our tea leaves are picked at the height of the growing season, to maximize freshness!</description>
     <link_rewrite>tea</link_rewrite>
     <meta_title/>
     <meta_keywords/>
@@ -30,7 +26,7 @@
   </category>
   <category id="gifts" id_shop="1">
     <name>Gifts</name>
-    <description>Choose the top that best suits you from the wide variety of tops we have. </description>
+    <description>Shopping for a gift? We have several nice gifts for any occasion.</description>
     <link_rewrite>gifts</link_rewrite>
     <meta_title/>
     <meta_keywords/>
@@ -38,7 +34,7 @@
   </category>
   <category id="office" id_shop="1">
     <name>Office</name>
-    <description>Match your favorites blouses with the right accessories for the perfect look.</description>
+    <description>Like having stylish accessories in your office? Try one of our coffee mugs or picture frames.</description>
     <link_rewrite>office</link_rewrite>
     <meta_title/>
     <meta_keywords/>
