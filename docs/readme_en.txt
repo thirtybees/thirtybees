@@ -14,20 +14,22 @@ DISCLAIMER
 
 Do not edit or add to this file if you wish to upgrade PrestaShop to newer
 versions in the future. If you wish to customize PrestaShop for your
-needs please refer to http://www.prestashop.com for more information.
+needs please refer to http://www.thirtybees.com for more information.
 
 @author PrestaShop SA <contact@prestashop.com>
+@author thirt bees <info@thirtybees.com>
 @copyright 2007-2016 PrestaShop SA
+@copyright 2017 thirty bees
 @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
 International Registered Trademark & Property of PrestaShop SA
 
-NAME: Prestashop 1.6.1.11
-VERSION: 1.6.1.11
+NAME: thirtybees 1.0.2-beta.1
+VERSION: 1.0.2-beta.1
 
 PREPARATION
 ===========
 
-To install PrestaShop, you need a remote web server or on your computer (MAMP), with access to a database like MySQL.
+To install thirty bees, you need a remote web server or on your computer (MAMP), with access to a database like MySQL.
 You'll need access to phpMyAdmin to create a database and to indicate the information in the database in the installer.
 
 If you do not host and unable to create your store, we offer a turnkey store, which lets you create your online store in less than 10 minutes without any technical knowledge.
@@ -36,7 +38,7 @@ We invite you to visit: http://www.prestabox.com/
 INSTALLATION
 ============
 
-Simply go to your PrestaShop web directory and use installer :-)
+Simply go to your thirty bees web directory and use installer :-)
 
 If you have any PHP error, perhaps you don't have PHP5 or you need to activate it on your web host.
 Please go to our forum to find pre-installation settings (PHP 5, htaccess) for certain hosting services (1&1, Free, Lycos, OVH, Infomaniak, Amen, GoDaddy, etc).
