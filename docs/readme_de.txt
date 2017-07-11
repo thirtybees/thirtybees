@@ -1,4 +1,5 @@
 2007-2016 PrestaShop
+2017 thirty bees
 
 NOTICE OF LICENSE
 
@@ -8,26 +9,28 @@ It is also available through the world-wide-web at this URL:
 http://opensource.org/licenses/osl-3.0.php
 If you did not receive a copy of the license and are unable to
 obtain it through the world-wide-web, please send an email
-to license@prestashop.com so we can send you a copy immediately.
+to info@thirtybees.com so we can send you a copy immediately.
 
 DISCLAIMER
 
-Do not edit or add to this file if you wish to upgrade PrestaShop to newer
-versions in the future. If you wish to customize PrestaShop for your
-needs please refer to http://www.prestashop.com for more information.
+Do not edit or add to this file if you wish to upgrade thirty bees to newer
+versions in the future. If you wish to customize thirty bees for your
+needs please refer to http://www.thirtybees.com for more information.
 
 @author PrestaShop SA <contact@prestashop.com>
-@copyright 2007-2011 PrestaShop SA
+@author thirty bees <info@thirtybees.com>
+@copyright 2007-2016 PrestaShop SA
+@copyright 2017 thirty bees
 @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
 International Registered Trademark & Property of PrestaShop SA
 
-NAME: Prestashop 1.6.1.11
-VERSION: 1.6.1.11
+NAME: thirtybees 1.0.2-beta.1
+VERSION: 1.0.2-beta.1
 
 VORBEREITUNG
 ===========
 
-Zur Installation von PrestaShop benötigen Sie einen Remote-Web-Server oder
+Zur Installation von thirty bees benötigen Sie einen Remote-Web-Server oder
 Ihren Computer (MAMP) mit Zugriff auf eine Datenbank wie MySQL.
 Sie benötigen Zugriff auf phpMyAdmin, um eine Datenbank zu erstellen und die
 Informationen in der Datenbank im Installer anzuzeigen.
@@ -37,12 +40,12 @@ können, bieten wir einen schlüsselfertigen Shop, mit dem Sie Ihren eigenen
 Online-Shop in weniger als 10 Minuten ohne jegliche technische Kenntnisse
 erstellen können.
 Besuchen Sie:
-	http://www.prestabox.com/
+	hhttps://thirtybees.com/blog/thirty-bees-on-cloudways/
 
 INSTALLATION
 ============
 
-Gehen Sie einfach zu Ihrem PrestaShop Web-Verzeichnis und verwenden Sie den
+Gehen Sie einfach zu Ihrem thirty bees Web-Verzeichnis und verwenden Sie den
 Installer :-)
 
 Falls ein PHP-Fehler auftritt, haben Sie vielleicht kein PHP5 oder müssen es
@@ -52,12 +55,11 @@ Hosting-Dienste (1&1, Free, Lycos, OVH, Infomaniak, Amen, GoDaddy, etc.)
 finden Sie in unserem Forum.
 
 Spezifische englische Webhosting-Einstellungen:
-	http://www.prestashop.com/forums/viewthread/2946/installation_configuration___upgrade/preinstallation_settings_php_5_htaccess_for_certain_hosting_servi
-ces
+	https://docs.thirtybees.com/installation/#server-requirements
 
 Wenn Sie keine Lösung zum Starten des Installers finden, posten Sie bitte
 Ihr Problem in unserem Forum:
-	http://www.prestashop.com/forums/viewforum/7/installation_configuration___upgrade
+	https://forum.thirtybees.com/category/5/installation
 
 Es gibt immer Lösungen für Ihre Fragen ;-)
 
@@ -65,18 +67,13 @@ DOKUMENTATION
 =============
 
 Für zusätzliche Benutzerhinweise (how-to), lesen Sie bitte unser Wiki:
-	http://doc.prestashop.com
+	https://docs.thirtybees.com/
 
 FOREN
 ======
 
-Sie können außerdem mit der PrestaShop Community in unseren Foren
+Sie können außerdem mit der thirty bees Community in unseren Foren
 diskutieren, Hilfe finden und eigene Beiträge liefern unter:
-	http://www.prestashop.com/forums/
+	https://forum.thirtybees.com/
 
-Danke für Ihren Download und die Nutzung der PrestaShop E-Commerce-Open-Source-Lösung!
-
-==========================
-=     The PrestaTeam'    =
-=   www.PrestaShop.com   =
-==========================
+Danke für Ihren Download und die Nutzung der thirty bees E-Commerce-Open-Source-Lösung!
