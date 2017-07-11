@@ -581,8 +581,6 @@ class FrontControllerCore extends Controller
      */
     public function initHeader()
     {
-        /* @see P3P Policies (http://www.w3.org/TR/2002/REC-P3P-20020416/#compact_policies) */
-        header('P3P: CP="IDC DSP COR CURa ADMa OUR IND PHY ONL COM STA"');
         // Added powered by for builtwith.com
         header('Powered-By: thirty bees');
         // Hooks are voluntary out the initialize array (need those variables already assigned)
