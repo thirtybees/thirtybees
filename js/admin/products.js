@@ -573,19 +573,18 @@ product_tabs['Combinations'] = new function(){
 
 		var elem = getE('product_att_list');
 
-		for (var i = 0; i < old_attr.length; i++)
-		{
-			var opt = document.createElement('option');
-			opt.text = old_attr[i++];
-			opt.value = old_attr[i];
-			try {
-				elem.add(opt, null);
-			}
-			catch(ex) {
-				elem.add(opt);
-			}
-		}
-		getE('id_product_attribute').value = id_product_attribute;
+    for (var j = 0; j < oldAttr.length; j += 1) {
+      var opt = document.createElement('option');
+      opt.text = oldAttr[j];
+      j += 1;
+      opt.value = oldAttr[j];
+      try {
+        elem.add(opt, null);
+      } catch (ex) {
+        elem.add(opt);
+      }
+    }
+    getE('id_product_attribute').value = idProductAttribute;
 
 		$('#available_date_attribute').val(available_date);
 	};
