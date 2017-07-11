@@ -820,6 +820,45 @@ abstract class PaymentModuleCore extends Module
                             $values['tax_incl'] = $order->total_products_wt - $totalReductionValueTaxIncluded;
                             $values['tax_excl'] = $order->total_products - $totalReductionValueTaxExcluded;
                         }
+
+                        // Copy a cart rule in case the cheapest product that meets the requirements gets a discount
+                        // The copied cart rule is converted into a product specific cart rule
+                        if ($cartRule['obj']->product_restriction) {
+                            // Create a new voucher from the original
+                            $voucher = new CartRule((int) $cartRule['obj']->id); // We need to instantiate the CartRule without lang parameter to allow saving it
+                            if ($cheapestProduct = $voucher->findCheapestProduct($package)) {
+                                unset($voucher->id);
+
+                                // Set a new voucher code
+                                $voucher->code = empty($voucher->code) ? substr(md5($order->id.'-'.$order->id_customer.'-'.$cartRule['obj']->id), 0, 16) : $voucher->code.'-2';
+                                if (preg_match('/\-([0-9]{1,2})\-([0-9]{1,2})$/', $voucher->code, $matches) && $matches[1] == $matches[2]) {
+                                    $voucher->code = preg_replace('/'.$matches[0].'$/', '-'.(intval($matches[1]) + 1), $voucher->code);
+                                }
+
+                                if ($this->context->customer->isGuest()) {
+                                    $voucher->id_customer = 0;
+                                } else {
+                                    $voucher->id_customer = $order->id_customer;
+                                }
+
+                                $cheapestProduct = explode('-', $cheapestProduct);
+                                $voucher->reduction_currency = $order->id_currency;
+                                $voucher->quantity = 0;
+                                $voucher->quantity_per_user = 0;
+                                $voucher->active = 0;
+                                $voucher->product_restriction = 1;
+                                $voucher->reduction_product = 0;
+                                $voucher->description = json_encode([
+                                    'id_product'           => $cheapestProduct[0],
+                                    'id_product_attribute' => $cheapestProduct[1],
+                                    'type'                 => 'cheapest_product',
+                                ]);
+                                $voucher->add();
+
+                                $cartRule['obj'] = $voucher;
+                            }
+                        }
+
                         $totalReductionValueTaxIncluded += $values['tax_incl'];
                         $totalReductionValueTaxExcluded += $values['tax_excl'];
 
@@ -883,7 +922,8 @@ abstract class PaymentModuleCore extends Module
 
                     // Hook validate order
                     Hook::exec(
-                        'actionValidateOrder', [
+                        'actionValidateOrder',
+                        [
                             'cart'        => $this->context->cart,
                             'order'       => $order,
                             'customer'    => $this->context->customer,

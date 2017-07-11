@@ -543,8 +543,6 @@ class OrderInvoiceCore extends ObjectModel
             $details = $groupedDetails;
         }
 
-//        $language = new Language(Context::getContext()->language->id);
-//        $currency = new Currency($order->id_currency);
         foreach ($details as $row) {
             $rate = (float) round($row['tax_rate'], 3);
             if (!isset($breakdown[$rate])) {
