@@ -12,13 +12,13 @@
   <feature id="Weight">
     <name>Weight</name>
   </feature>
-  <feature id="Compositions">
-    <name>Compositions</name>
+  <feature id="Organic">
+    <name>Organic</name>
   </feature>
-  <feature id="Styles">
-    <name>Styles</name>
+  <feature id="Vegan">
+    <name>Vegan</name>
   </feature>
-  <feature id="Properties">
-    <name>Properties</name>
+  <feature id="Exclusive_Buy">
+    <name>Exclusive Buy</name>
   </feature>
 </entity_feature>

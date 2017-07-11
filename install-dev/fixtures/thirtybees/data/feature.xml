@@ -8,8 +8,8 @@
     <feature id="Width" position="1"/>
     <feature id="Depth" position="2"/>
     <feature id="Weight" position="3"/>
-    <feature id="Compositions" position="4"/>
-    <feature id="Styles" position="5"/>
-    <feature id="Properties" position="6"/>
+    <feature id="Organic" position="4"/>
+    <feature id="Vegan" position="5"/>
+    <feature id="Exclusive_Buy" position="6"/>
   </entities>
 </entity_feature>
