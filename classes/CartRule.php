@@ -46,40 +46,94 @@ class CartRuleCore extends ObjectModel
     const BO_ORDER_CODE_PREFIX = 'BO_ORDER_';
 
     // @codingStandardsIgnoreStart
-    /* This variable controls that a free gift is offered only once, even when multi-shipping is activated and the same product is delivered in both addresses */
+    /**
+     * This variable controls that a free gift is offered only once, even when multi-shipping is activated and the same product is delivered in both addresses
+     *
+     * @var array
+     */
     protected static $onlyOneGift = [];
+    /** @var int $id */
     public $id;
+    /** @var string $name */
     public $name;
+    /** @var int $id_customer */
     public $id_customer;
+    /** @var string $date_from */
     public $date_from;
+    /** @var string $date_to */
     public $date_to;
+    /**
+     * @FIXME: with 1.0.x the cart rule cannot register the calculated
+     *       cheapest product in case it is converted into an order.
+     *       The copied cart rule is then injected with this information
+     *       in the `description` field and looks like this:
+     *       {
+     *         "type": "cheapest_product",
+     *         "id_product": "7",
+     *         "id_product_attribute": "0"
+     *       }
+     *
+     *       In the AdminCartRulesController, the field is then disabled to prevent the user from changing it
+     *
+     *       When making an update script for 1.1.x, don't forget to clean this field up and convert it to
+     *       a proper database table.
+     *
+     * @var string $description
+     */
     public $description;
+    /** @var int $quantity */
     public $quantity = 1;
+    /** @var int $quantity_per_user */
     public $quantity_per_user = 1;
+    /** @var int $priority */
     public $priority = 1;
+    /** @var int $partial_use */
     public $partial_use = 1;
+    /** @var string $code */
     public $code;
+    /** @var float $minimum_amount */
     public $minimum_amount;
+    /** @var bool $minimum_amount_tax */
     public $minimum_amount_tax;
+    /** @var int $minimum_amount_currency */
     public $minimum_amount_currency;
+    /** @var bool $minimum_amount_shipping */
     public $minimum_amount_shipping;
+    /** @var bool $country_restriction */
     public $country_restriction;
+    /** @var bool $carrier_restriction */
     public $carrier_restriction;
+    /** @var bool $group_restriction */
     public $group_restriction;
+    /** @var bool $cart_rule_restriction */
     public $cart_rule_restriction;
+    /** @var bool $product_restriction */
     public $product_restriction;
+    /** @var bool $shop_restriction */
     public $shop_restriction;
+    /** @var bool $free_shipping */
     public $free_shipping;
+    /** @var float $reduction_percent */
     public $reduction_percent;
+    /** @var float $reduction_amount */
     public $reduction_amount;
+    /** @var bool $reduction_tax */
     public $reduction_tax;
+    /** @var bool $reduction_currency */
     public $reduction_currency;
+    /** @var int $reduction_product */
     public $reduction_product;
+    /** @var int $gift_product */
     public $gift_product;
+    /** @var int $gift_product_attribute */
     public $gift_product_attribute;
+    /** @var bool $highlight */
     public $highlight;
+    /** @var int $active */
     public $active = 1;
+    /** @var string $date_add */
     public $date_add;
+    /** @var string $date_upd */
     public $date_upd;
     // @codingStandardsIgnoreEnd
 
@@ -91,37 +145,37 @@ class CartRuleCore extends ObjectModel
         'primary'   => 'id_cart_rule',
         'multilang' => true,
         'fields'    => [
-            'id_customer'             => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
-            'date_from'               => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'required' => true],
-            'date_to'                 => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'required' => true],
+            'id_customer'             => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId'],
+            'date_from'               => ['type' => self::TYPE_DATE,   'validate' => 'isDate', 'required' => true],
+            'date_to'                 => ['type' => self::TYPE_DATE,   'validate' => 'isDate', 'required' => true],
             'description'             => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 65534],
-            'quantity'                => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
-            'quantity_per_user'       => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
-            'priority'                => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
-            'partial_use'             => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'quantity'                => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt'],
+            'quantity_per_user'       => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt'],
+            'priority'                => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt'],
+            'partial_use'             => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'],
             'code'                    => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 254],
-            'minimum_amount'          => ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat'],
-            'minimum_amount_tax'      => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'minimum_amount_currency' => ['type' => self::TYPE_INT, 'validate' => 'isInt'],
-            'minimum_amount_shipping' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'country_restriction'     => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'carrier_restriction'     => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'group_restriction'       => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'cart_rule_restriction'   => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'product_restriction'     => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'shop_restriction'        => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'free_shipping'           => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'reduction_percent'       => ['type' => self::TYPE_FLOAT, 'validate' => 'isPercentage'],
-            'reduction_amount'        => ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat'],
-            'reduction_tax'           => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'reduction_currency'      => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
-            'reduction_product'       => ['type' => self::TYPE_INT, 'validate' => 'isInt'],
-            'gift_product'            => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
-            'gift_product_attribute'  => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
-            'highlight'               => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'active'                  => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'date_add'                => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
-            'date_upd'                => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+            'minimum_amount'          => ['type' => self::TYPE_FLOAT,  'validate' => 'isFloat'],
+            'minimum_amount_tax'      => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'],
+            'minimum_amount_currency' => ['type' => self::TYPE_INT,    'validate' => 'isInt'],
+            'minimum_amount_shipping' => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'],
+            'country_restriction'     => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'],
+            'carrier_restriction'     => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'],
+            'group_restriction'       => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'],
+            'cart_rule_restriction'   => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'],
+            'product_restriction'     => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'],
+            'shop_restriction'        => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'],
+            'free_shipping'           => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'],
+            'reduction_percent'       => ['type' => self::TYPE_FLOAT,  'validate' => 'isPercentage'],
+            'reduction_amount'        => ['type' => self::TYPE_FLOAT,  'validate' => 'isFloat'],
+            'reduction_tax'           => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'],
+            'reduction_currency'      => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId'],
+            'reduction_product'       => ['type' => self::TYPE_INT,    'validate' => 'isInt'],
+            'gift_product'            => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId'],
+            'gift_product_attribute'  => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId'],
+            'highlight'               => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'],
+            'active'                  => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'],
+            'date_add'                => ['type' => self::TYPE_DATE,   'validate' => 'isDate'],
+            'date_upd'                => ['type' => self::TYPE_DATE,   'validate' => 'isDate'],
 
             /* Lang fields */
             'name'                    => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCleanHtml', 'required' => true, 'size' => 254],
@@ -182,7 +236,7 @@ class CartRuleCore extends ObjectModel
                 'cart_rule_product_rule_group',
                 [
                     'id_cart_rule' => (int) $idCartRuleDestination,
-                    'quantity' => (int) $productsRulesGroupSource['quantity'],
+                    'quantity'     => (int) $productRuleGroupSource['quantity'],
                 ]
             );
             $idProductRuleGroupDestination = Db::getInstance()->Insert_ID();
@@ -199,7 +253,7 @@ class CartRuleCore extends ObjectModel
                     'cart_rule_product_rule',
                     [
                         'id_product_rule_group' => (int) $idProductRuleGroupDestination,
-                        'type'                  => pSQL($productsRulesSource['type']),
+                        'type'                  => pSQL($productRuleSource['type']),
                     ]
                 );
                 $idProductRuleDestination = Db::getInstance()->Insert_ID();
@@ -216,7 +270,7 @@ class CartRuleCore extends ObjectModel
                         'cart_rule_product_rule_value',
                         [
                             'id_product_rule' => (int) $idProductRuleDestination,
-                            'id_item' => (int) $productsRulesValuesSource['id_item'],
+                            'id_item'         => (int) $productRuleValueSource['id_item'],
 
                         ]
                     );
@@ -1644,6 +1698,42 @@ class CartRuleCore extends ObjectModel
         }
 
         return $array;
+    }
+
+    /**
+     * Find the cheapest product
+     *
+     * @param array $package
+     *
+     * @return null|string
+     *
+     * @since 1.0.2
+     */
+    public function findCheapestProduct($package)
+    {
+        $context = Context::getContext();
+        $cheapestProduct = null;
+        $allProducts = $package['products'];
+
+        if ($this->reduction_percent && $this->reduction_product == -1) {
+            $minPrice = false;
+            $selectedProducts = $this->checkProductRestrictions($context, true);
+            foreach ($allProducts as $product) {
+                if (!is_array($selectedProducts) ||
+                    (!in_array($product['id_product'].'-'.$product['id_product_attribute'], $selectedProducts) && !in_array($product['id_product'].'-0', $selectedProducts))
+                ) {
+                    continue;
+                }
+
+                $price = $product['price'];
+                if ($price > 0 && ($minPrice === false || $minPrice > $price)) {
+                    $minPrice = $price;
+                    $cheapestProduct = $product['id_product'].'-'.$product['id_product_attribute'];
+                }
+            }
+        }
+
+        return $cheapestProduct;
     }
 
     /**

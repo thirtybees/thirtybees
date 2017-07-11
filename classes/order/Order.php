@@ -2847,6 +2847,7 @@ class OrderCore extends ObjectModel
 
         $freeShippingTax = 0;
         $productSpecificDiscounts = [];
+        $cheapestProductDiscounts = [];
 
         $expectedTotalBase = $this->total_products - $this->total_discounts_tax_excl;
 
@@ -2869,13 +2870,21 @@ class OrderCore extends ObjectModel
             }
 
             $cartRule = new CartRule($orderCartRule['id_cart_rule']);
-            if ($cartRule->reduction_product > 0) {
-                if (empty($productSpecificDiscounts[$cartRule->reduction_product])) {
-                    $productSpecificDiscounts[$cartRule->reduction_product] = 0;
+            if ($cartRule->product_restriction) {
+                if (!isset($productSpecificDiscounts[(int) $cartRule->reduction_product]) || empty($productSpecificDiscounts[(int) $cartRule->reduction_product])) {
+                    $productSpecificDiscounts[(int) $cartRule->reduction_product] = 0;
                 }
 
-                $productSpecificDiscounts[$cartRule->reduction_product] += $orderCartRule['value_tax_excl'];
+                $productSpecificDiscounts[(int) $cartRule->reduction_product] += $orderCartRule['value_tax_excl'];
                 $orderDiscountTaxExcl -= $orderCartRule['value_tax_excl'];
+            }
+            if ($cheapestProduct = json_decode($cartRule->description)) {
+                if (!isset($cheapestProductDiscounts[(int) $cheapestProduct->id_product]) || empty($cheapestProductDiscounts[(int) $cheapestProduct->id_product])) {
+                    $cheapestProductDiscounts[(int) $cheapestProduct->id_product] = ['tax_amount' => 0, 'tax_base'  => 0];
+                }
+
+                $cheapestProductDiscounts[(int) $cheapestProduct->id_product]['tax_amount'] += ($orderCartRule['value'] - $orderCartRule['value_tax_excl']);
+                $cheapestProductDiscounts[(int) $cheapestProduct->id_product]['tax_base'] += ($orderCartRule['value_tax_excl']);
             }
         }
 
@@ -2916,14 +2925,35 @@ class OrderCore extends ObjectModel
                     case Order::ROUND_ITEM:
                         $totalTaxBase = $quantity * Tools::ps_round($discountedPriceTaxExcl, _PS_PRICE_DISPLAY_PRECISION_, $this->round_mode);
                         $totalAmount = $quantity * Tools::ps_round($unitAmount, _PS_PRICE_DISPLAY_PRECISION_, $this->round_mode);
+
+                        if (isset($cheapestProductDiscounts[$orderDetail['product_id']]['tax_base'])) {
+                            $totalTaxBase -= Tools::ps_round($cheapestProductDiscounts[$orderDetail['product_id']]['tax_base'], _PS_PRICE_DISPLAY_PRECISION_, $this->round_mode);
+                            $totalAmount -= Tools::ps_round($cheapestProductDiscounts[$orderDetail['product_id']]['tax_amount'], _PS_PRICE_DISPLAY_PRECISION_, $this->round_mode);
+                        }
+
                         break;
                     case Order::ROUND_LINE:
-                        $totalTaxBase = Tools::ps_round($quantity * $discountedPriceTaxExcl, _PS_PRICE_DISPLAY_PRECISION_, $this->round_mode);
-                        $totalAmount = Tools::ps_round($quantity * $unitAmount, _PS_PRICE_DISPLAY_PRECISION_, $this->round_mode);
+                        $totalTaxBase = $quantity * $discountedPriceTaxExcl;
+                        $totalAmount = $quantity * $unitAmount;
+
+                        if (isset($cheapestProductDiscounts[$orderDetail['product_id']]['tax_base'])) {
+                            $totalTaxBase -= $cheapestProductDiscounts[$orderDetail['product_id']]['tax_base'];
+                            $totalAmount -= $cheapestProductDiscounts[$orderDetail['product_id']]['tax_amount'];
+                        }
+
+                        $totalTaxBase = Tools::ps_round($totalTaxBase, _PS_PRICE_DISPLAY_PRECISION_, $this->round_mode);
+                        $totalAmount = Tools::ps_round($totalAmount, _PS_PRICE_DISPLAY_PRECISION_, $this->round_mode);
+
                         break;
                     case Order::ROUND_TOTAL:
                         $totalTaxBase = $quantity * $discountedPriceTaxExcl;
                         $totalAmount = $quantity * $unitAmount;
+
+                        if (isset($cheapestProductDiscounts[$orderDetail['product_id']]['tax_base'])) {
+                            $totalTaxBase -= $cheapestProductDiscounts[$orderDetail['product_id']]['tax_base'];
+                            $totalAmount -= $cheapestProductDiscounts[$orderDetail['product_id']]['tax_amount'];
+                        }
+
                         break;
                 }
 
