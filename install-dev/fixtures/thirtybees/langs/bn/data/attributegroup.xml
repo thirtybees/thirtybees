@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<list_attributegroup>
+	<attributegroup id="Flavor">
+		<name><![CDATA[Flavor]]></name>
+	</attributegroup>
+	<attributegroup id="Product">
+		<name><![CDATA[Product]]></name>
+	</attributegroup>
+	<attributegroup id="Color">
+		<name><![CDATA[Color]]></name>
+	</attributegroup>
+	<attributegroup id="Size">
+		<name><![CDATA[Size]]></name>
+	</attributegroup>
+	<attributegroup id="Scent">
+		<name><![CDATA[Scent]]></name>
+	</attributegroup>
+</list_attributegroup>

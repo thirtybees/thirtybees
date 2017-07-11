@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<entity_attribute>
+  <attribute id="12_oz">
+    <name>12 oz</name>
+  </attribute>
+  <attribute id="16_oz">
+    <name>16 oz</name>
+  </attribute>
+  <attribute id="24_oz">
+    <name>24 oz</name>
+  </attribute>
+  <attribute id="Yellow">
+    <name>Yellow</name>
+  </attribute>
+  <attribute id="White">
+    <name>White</name>
+  </attribute>
+  <attribute id="Black">
+    <name>Black</name>
+  </attribute>
+  <attribute id="Espresso">
+    <name>Espresso</name>
+  </attribute>
+  <attribute id="Natural">
+    <name>Natural</name>
+  </attribute>
+  <attribute id="Mocha">
+    <name>Mocha</name>
+  </attribute>
+  <attribute id="Hair_of_the_Dog">
+    <name>Hair of the Dog</name>
+  </attribute>
+  <attribute id="Mean_Bean">
+    <name>Mean Bean</name>
+  </attribute>
+  <attribute id="Busy_Bean">
+    <name>Busy Bean</name>
+  </attribute>
+  <attribute id="Turning_Leaf">
+    <name>Turning Leaf</name>
+  </attribute>
+  <attribute id="Wild_Poppy">
+    <name>Wild Poppy</name>
+  </attribute>
+  <attribute id="Prickly_Pear">
+    <name>Prickly Pear</name>
+  </attribute>
+  <attribute id="Nether_Leaf">
+    <name>Nether Leaf</name>
+  </attribute>
+  <attribute id="Olde_Number_1.6">
+    <name>Olde Number 1.6</name>
+  </attribute>
+  <attribute id="Body_Wash">
+    <name>Body Wash</name>
+  </attribute>
+  <attribute id="Shampoo">
+    <name>Shampoo</name>
+  </attribute>
+  <attribute id="Conditioner">
+    <name>Conditioner</name>
+  </attribute>
+  <attribute id="Puffin">
+    <name>Puffin</name>
+  </attribute>
+  <attribute id="Honey">
+    <name>Honey</name>
+  </attribute>
+</entity_attribute>

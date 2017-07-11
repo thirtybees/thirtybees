@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<list_featurevalue>
+	<featurevalue id="Yes_Organic">
+		<value><![CDATA[Yes]]></value>
+	</featurevalue>
+	<featurevalue id="No_Organic">
+		<value><![CDATA[No]]></value>
+	</featurevalue>
+	<featurevalue id="Yes_Vegan">
+		<value><![CDATA[Yes]]></value>
+	</featurevalue>
+	<featurevalue id="No_Vegan">
+		<value><![CDATA[No]]></value>
+	</featurevalue>
+	<featurevalue id="Yes_Exclusive">
+		<value><![CDATA[Yes]]></value>
+	</featurevalue>
+	<featurevalue id="No_Exclusive">
+		<value><![CDATA[No]]></value>
+	</featurevalue>
+</list_featurevalue>

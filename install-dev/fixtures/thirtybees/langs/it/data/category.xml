@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<entity_category>
+  <category id="coffee_and_tea" id_shop="1">
+    <name>Coffee and Tea</name>
+    <description>The best coffee and tea in the world. Our coffees and teas will be the best you have ever put in your mouth: we even have stylish cups and mugs so you can drink in style.</description>
+    <link_rewrite>coffee-and-tea</link_rewrite>
+    <meta_title/>
+    <meta_keywords/>
+    <meta_description/>
+  </category>
+  <category id="coffee" id_shop="1">
+    <name>Coffee</name>
+    <description>Organic slow roasted coffee with low acid content, we only use fair trade coffee. Try the best locally sourced coffee!</description>
+    <link_rewrite>Coffee</link_rewrite>
+    <meta_title/>
+    <meta_keywords/>
+    <meta_description/>
+  </category>
+  <category id="tea" id_shop="1">
+    <name>Tea</name>
+    <description>Our tea leaves are picked at the height of the growing season, to maximize freshness!</description>
+    <link_rewrite>tea</link_rewrite>
+    <meta_title/>
+    <meta_keywords/>
+    <meta_description/>
+  </category>
+  <category id="gifts" id_shop="1">
+    <name>Gifts</name>
+    <description>Shopping for a gift? We have several nice gifts for any occasion.</description>
+    <link_rewrite>gifts</link_rewrite>
+    <meta_title/>
+    <meta_keywords/>
+    <meta_description/>
+  </category>
+  <category id="office" id_shop="1">
+    <name>Office</name>
+    <description>Like having stylish accessories in your office? Try one of our coffee mugs or picture frames.</description>
+    <link_rewrite>office</link_rewrite>
+    <meta_title/>
+    <meta_keywords/>
+    <meta_description/>
+  </category>
+</entity_category>
