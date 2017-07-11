@@ -1,4 +1,5 @@
 2007-2016 PrestaShop
+2017 thirty bees
 
 NOTICE OF LICENSE
 
@@ -41,7 +42,7 @@ INSTALLATION
 Simply go to your thirty bees web directory and use installer :-)
 
 If you have any PHP error, perhaps you don't have PHP5 or you need to activate it on your web host.
-Please go to our forum to find pre-installation settings (PHP 5, htaccess) for certain hosting services (1&1, Free, Lycos, OVH, Infomaniak, Amen, GoDaddy, etc).
+Please go to our forum to find pre-installation settings (PHP 5, .htaccess) for certain hosting services (1&1, Free, Lycos, OVH, Infomaniak, Amen, GoDaddy, etc).
 
 REQUIREMENTS
 ============
@@ -64,4 +65,4 @@ FORUMS
 You can also discuss, help and contribute with thirty bees community on our forums:
 https://forum.thirtybees.com/
 
-Thanks for downloading and using PrestaShop e-commerce Open-source solution!
+Thanks for downloading and using thirty bees e-commerce Open-source solution!
