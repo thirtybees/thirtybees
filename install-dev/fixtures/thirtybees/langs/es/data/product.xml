@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<entity_product>
+  <product id="Candle" id_shop="1">
+    <description>Our candles are made with the finest quality paraffin in the world. We also use solid beech wood for the wicks creating a unique sound when the candle is burning. The scents of the candles come from the best Parisian suppliers in the world.</description>
+    <description_short>Our flagship candle is offered in 3 sizes and two scents to accommodate any needs</description_short>
+    <link_rewrite>candle</link_rewrite>
+    <meta_description/>
+    <meta_keywords/>
+    <meta_title/>
+    <name>Candle</name>
+    <available_now>In stock</available_now>
+    <available_later/>
+  </product>
+  <product id="Soap" id_shop="1">
+    <description>We use only the finest ingredients in our soaps. They are produced by hand in small batches, the old fashioned way to maintain quality and consistency. All of our soaps are hypo-allergenic.</description>
+    <description_short>Our soaps come in body wash, shampoo, and conditioner.</description_short>
+    <link_rewrite>soap</link_rewrite>
+    <meta_description/>
+    <meta_keywords/>
+    <meta_title/>
+    <name>Soap</name>
+    <available_now>In stock</available_now>
+    <available_later/>
+  </product>
+  <product id="Coffee" id_shop="1">
+    <description>Our coffee is our most famous product. It is slow roasted to reduce acid giving the coffee a nice, crisp, nutty taste. We only source our beans from growers that are compensated fair market value for their beans. We believe in sustainable coffee practices.</description>
+    <description_short>We offer three of the most popular roasts of coffee, light, dark, and blonde.</description_short>
+    <link_rewrite>coffee-beans</link_rewrite>
+    <meta_description/>
+    <meta_keywords/>
+    <meta_title/>
+    <name>Coffee</name>
+    <available_now>In stock</available_now>
+    <available_later/>
+  </product>
+  <product id="Tin_Cup" id_shop="1">
+    <description>Our thirty bees tin cups are the perfect cup for drinking either coffee or tea. They are durable with a powder coated finish. Did we also mention how stylish and versatile they are? Throw it in your bag and take it camping with you!</description>
+    <description_short>The stylish thirty bees logo tin cup, perfect for tea.</description_short>
+    <link_rewrite>tin-cup</link_rewrite>
+    <meta_description/>
+    <meta_keywords/>
+    <meta_title/>
+    <name>Tin Cup</name>
+    <available_now>In stock</available_now>
+    <available_later/>
+  </product>
+  <product id="Picture_Frame" id_shop="1">
+    <description>Your walls need art, that is why you will love our picture frame. It comes in three different woods to match any decor, give them the gift they will love, a thirty bees picture frame.</description>
+    <description_short>Our stylish, modern, minimal picture frame in 3 colors.</description_short>
+    <link_rewrite>picture-frame</link_rewrite>
+    <meta_description/>
+    <meta_keywords/>
+    <meta_title/>
+    <name>Picture Frame</name>
+    <available_now>In stock</available_now>
+    <available_later/>
+  </product>
+  <product id="Mug" id_shop="1">
+    <description>The thirty bees coffee mug is the perfect mug to enjoy our flagship beverage out of. The mug comes in three different colors so you can enjoy our coffee no matter what your style is.</description>
+    <description_short>Do you love coffee mugs? If so, you will love this one.</description_short>
+    <link_rewrite>mug</link_rewrite>
+    <meta_description/>
+    <meta_keywords/>
+    <meta_title/>
+    <name>Mug</name>
+    <available_now>In stock</available_now>
+    <available_later/>
+  </product>
+  <product id="Tea" id_shop="1">
+    <description>Our tea is all hand picked and hand dried at the farm. We do not believe in using machines with our tea, each leaf is hand examined for blemishes and only 25% of picked leaves are accepted to become a leaf in thirty bees tea. We have five different flavors, one for every taste.</description>
+    <description_short>Tea time? Any time is tea time with one of our 5 teas.</description_short>
+    <link_rewrite>tea-cans</link_rewrite>
+    <meta_description/>
+    <meta_keywords/>
+    <meta_title/>
+    <name>Tea</name>
+    <available_now>In stock</available_now>
+    <available_later/>
+  </product>
+  <product id="Honey" id_shop="1">
+    <description>Our honey set if the perfect way to sweeten your coffee or tea. Our honey is made from the hardest working bees in the universe. We literally never give our bees a break. They love producing honey so people around the world can enjoy their product.</description>
+    <description_short>Our honey set comes with three different grades of honey, one for every taste.</description_short>
+    <link_rewrite>honey</link_rewrite>
+    <meta_description/>
+    <meta_keywords/>
+    <meta_title/>
+    <name>Honey</name>
+    <available_now>In stock</available_now>
+    <available_later/>
+  </product>
+</entity_product>
