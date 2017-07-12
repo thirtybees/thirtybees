@@ -150,7 +150,7 @@ class ConfigurationTestCore
      * @param string $ptr
      * @param int    $arg
      *
-     * @return string
+     * @return string 'ok' on success, 'fail' on failure.
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -394,7 +394,7 @@ class ConfigurationTestCore
         }
 
         if (!file_exists($absoluteDir)) {
-            $fullReport = sprintf('Directory %s does not exist or is not writable', $absoluteDir);
+            $fullReport = sprintf('Directory %s does not exist', $absoluteDir);
 
             return false;
         }

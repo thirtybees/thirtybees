@@ -148,8 +148,10 @@ class InstallControllerHttpSystem extends InstallControllerHttp
 
         foreach ($this->testsRender['required'] as &$category) {
             foreach ($category['checks'] as $id => $check) {
-                if ($this->tests['required']['checks'][$id] != 'ok') {
+                $result = $this->tests['required']['checks'][$id];
+                if ($result != 'ok') {
                     $category['success'] = 0;
+                    $category['checks'][$id] .= ': '.$result;
                 }
             }
         }

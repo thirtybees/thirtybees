@@ -16,12 +16,14 @@ $this->displayTemplate('header')
 <?php foreach ($this->testsRender as $type => $categories): ?>
 	<ul id="<?php echo $type ?>">
 	<?php foreach ($categories as $category): ?>
-		<li class="title <?php if ($category['success'] == 1): ?>ok<?php endif;?>"><?php echo $category['title'] ?></li>
-		<?php $i = 0; foreach ($category['checks'] as $id => $lang): ?>
-			<li class="required <?php if ($i == 0): ?>first<?php endif;?> <?php echo $this->tests[$type]['checks'][$id] ?>">
-				<?php echo $lang ?>
-			</li>
-		<?php $i++; endforeach; ?>
+        <?php if ($category['success'] == 0) { ?>
+            <li class="title"><?php echo $category['title'] ?></li>
+            <?php foreach ($category['checks'] as $id => $lang) { ?>
+                <?php if ($this->tests[$type]['checks'][$id] != 'ok') { ?>
+                    <li class="required fail"><?php echo $lang ?></li>
+                <?php } ?>
+            <?php } ?>
+        <?php } ?>
 	<?php endforeach; ?>
 	</ul>
 <?php endforeach; ?>
