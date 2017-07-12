@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <entity_order_message>
   <order_message id="Delay">
-    <name>Delay</name>
-    <message>Hi,
+    <name>Vertraging</name>
+    <message>Hallo,
 
-Unfortunately, an item on your order is currently out of stock. This may cause a slight delay in delivery.
-Please accept our apologies and rest assured that we are working hard to rectify this.
+Hellaas is een enkel item van uw bestelling momenteel niet op voorraad. Dit kan zorgen voor een kleine vertraging.
+Onze excuses voor het ongemak. We zullen er alles aan doen om het zo spoedig mogelijk alsnog te leveren.
 
-Best regards,</message>
+Met vriendelijke groeten,</message>
   </order_message>
 </entity_order_message>

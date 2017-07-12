@@ -1,41 +1,41 @@
 <?xml version="1.0"?>
 <entity_category>
   <category id="coffee_and_tea" id_shop="1">
-    <name>Coffee and Tea</name>
-    <description>The best coffee and tea in the world. Our coffees and teas will be the best you have ever put in your mouth: we even have stylish cups and mugs so you can drink in style.</description>
-    <link_rewrite>coffee-and-tea</link_rewrite>
+    <name>Koffie en thee</name>
+    <description>De beste koffie en thee in de wereld. Onze koffie en thee is het beste wat je kunt drinken: we hebben zelfs trendy kopjes en mokken, zodat je kunt drinken in stijl.</description>
+    <link_rewrite>koffie-en-thee</link_rewrite>
     <meta_title/>
     <meta_keywords/>
     <meta_description/>
   </category>
   <category id="coffee" id_shop="1">
     <name>Coffee</name>
-    <description>Organic slow roasted coffee with low acid content, we only use fair trade coffee. Try the best locally sourced coffee!</description>
-    <link_rewrite>Coffee</link_rewrite>
+    <description>Biologische, langzaam geroosterde koffiebonen als basis en een lage zuurgraad; we gebruiken alleen fair trade-koffie. Proef de beste lokale koffie!</description>
+    <link_rewrite>koffie</link_rewrite>
     <meta_title/>
     <meta_keywords/>
     <meta_description/>
   </category>
   <category id="tea" id_shop="1">
-    <name>Tea</name>
-    <description>Our tea leaves are picked at the height of the growing season, to maximize freshness!</description>
-    <link_rewrite>tea</link_rewrite>
+    <name>Thee</name>
+    <description>Onze theeblaadjes zijn gedurende het hoofdseizoen geplukt, voor de beste smaak!</description>
+    <link_rewrite>thee</link_rewrite>
     <meta_title/>
     <meta_keywords/>
     <meta_description/>
   </category>
   <category id="gifts" id_shop="1">
-    <name>Gifts</name>
-    <description>Shopping for a gift? We have several nice gifts for any occasion.</description>
-    <link_rewrite>gifts</link_rewrite>
+    <name>Cadeaus</name>
+    <description>Op zoek naar een cadeau? We hebben enkele mooie cadeaus, voor elke gelegenheid.</description>
+    <link_rewrite>cadeaus</link_rewrite>
     <meta_title/>
     <meta_keywords/>
     <meta_description/>
   </category>
   <category id="office" id_shop="1">
-    <name>Office</name>
-    <description>Like having stylish accessories in your office? Try one of our coffee mugs or picture frames.</description>
-    <link_rewrite>office</link_rewrite>
+    <name>Kantoor</name>
+    <description>Op zoek naar design-accessoires voor op kantoor? Bekijk onze koffiemokken of fotolijstjes.</description>
+    <link_rewrite>kantoor</link_rewrite>
     <meta_title/>
     <meta_keywords/>
     <meta_description/>
