@@ -917,16 +917,18 @@ class DispatcherCore
                                     $_GET['id_cms'] = $idCms;
                                 }
                             }
+                            $isModule = isset($route['params']['fc']) && $route['params']['fc'] === 'module';
                             foreach ($m as $k => $v) {
-                                // We might have us an external module page here, so just set whatever we can
-                                if (!is_numeric($k)
-                                    && $k !== 'id'
-                                    && $k !== 'ipa'
-                                    && $k !== 'rewrite'
-                                    && $k !== 'cms_rewrite'
-                                    && $k !== 'cms_cat_rewrite'
-                                ) {
-                                    $_GET[$k] = $v;
+                                // We might have us an external module page here, in that case we set whatever we can
+                                if (!is_numeric($k) &&
+                                    ($isModule
+                                        || $k !== 'id'
+                                        && $k !== 'ipa'
+                                        && $k !== 'rewrite'
+                                        && $k !== 'cms_rewrite'
+                                        && $k !== 'cms_cat_rewrite'
+                                    )) {
+                                        $_GET[$k] = $v;
                                 }
                             }
                             $controller = $route['controller'] ? $route['controller'] : $_GET['controller'];
