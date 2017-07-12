@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity_feature_value>
+  <fields id="value" class="FeatureValue">
+    <field name="id_feature"/>
+    <field name="custom"/>
+  </fields>
+  <entities>
+    <feature_value id="Yes_Organic" id_feature="5" custom="0"/>
+    <feature_value id="No_Organic" id_feature="5" custom="0"/>
+    <feature_value id="Yes_Vegan" id_feature="6" custom="0"/>
+    <feature_value id="No_Vegan" id_feature="6" custom="0"/>
+    <feature_value id="Yes_Exclusive" id_feature="7" custom="0"/>
+    <feature_value id="No_Exclusive" id_feature="7" custom="0"/>
+  </entities>
+</entity_feature_value>
