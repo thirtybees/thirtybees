@@ -150,18 +150,24 @@ class ConfigurationTestCore
      * @param string $ptr
      * @param int    $arg
      *
-     * @return string 'ok' on success, 'fail' on failure.
+     * @return string 'ok' on success, 'fail' or error message on failure.
      *
+     * @since   1.0.2 Also report error message.
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function run($ptr, $arg = 0)
     {
-        if (call_user_func(['ConfigurationTest', 'test'.$ptr], $arg)) {
-            return 'ok';
+        $report = '';
+        $result = call_user_func_array(['ConfigurationTest', 'test'.$ptr], [$arg, &$report]);
+
+        if (strlen($report)) {
+            return $report;
+        } elseif (!$result) {
+            return 'fail';
         }
 
-        return 'fail';
+        return 'ok';
     }
 
     /**
@@ -364,12 +370,13 @@ class ConfigurationTestCore
      *
      * @return bool
      *
+     * @since   1.0.2 Add $report.
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function testConfigDir($dir)
+    public static function testConfigDir($dir, &$report = null)
     {
-        return ConfigurationTest::testDir($dir);
+        return ConfigurationTest::testDir($dir, false, $report);
     }
 
     /**
@@ -394,13 +401,13 @@ class ConfigurationTestCore
         }
 
         if (!file_exists($absoluteDir)) {
-            $fullReport = sprintf('Directory %s does not exist', $absoluteDir);
+            $fullReport = sprintf('Directory %s does not exist.', $absoluteDir);
 
             return false;
         }
 
         if (!is_writable($absoluteDir)) {
-            $fullReport = sprintf('Directory %s is not writable', $absoluteDir);
+            $fullReport = sprintf('Directory %s is not writable.', $absoluteDir);
 
             return false;
         }
@@ -413,7 +420,7 @@ class ConfigurationTestCore
                 }
 
                 if (!is_writable($file)) {
-                    $fullReport = sprintf('File %s is not writable', $file);
+                    $fullReport = sprintf('File %s is not writable.', $file);
 
                     return false;
                 }
@@ -456,12 +463,13 @@ class ConfigurationTestCore
      *
      * @return bool
      *
+     * @since   1.0.2 Add $report.
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function testRootDir($dir)
+    public static function testRootDir($dir, &$report = null)
     {
-        return ConfigurationTest::testDir($dir);
+        return ConfigurationTest::testDir($dir, false, $report);
     }
 
     /**
@@ -469,12 +477,13 @@ class ConfigurationTestCore
      *
      * @return bool
      *
+     * @since   1.0.2 Add $report.
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function testLogDir($dir)
+    public static function testLogDir($dir, &$report = null)
     {
-        return ConfigurationTest::testDir($dir);
+        return ConfigurationTest::testDir($dir, false, $report);
     }
 
     /**
@@ -482,12 +491,13 @@ class ConfigurationTestCore
      *
      * @return bool
      *
+     * @since   1.0.2 Add $report.
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function testAdminDir($dir)
+    public static function testAdminDir($dir, &$report = null)
     {
-        return ConfigurationTest::testDir($dir);
+        return ConfigurationTest::testDir($dir, false, $report);
     }
 
     /**
@@ -495,12 +505,13 @@ class ConfigurationTestCore
      *
      * @return bool
      *
+     * @since   1.0.2 Add $report.
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function testImgDir($dir)
+    public static function testImgDir($dir, &$report = null)
     {
-        return ConfigurationTest::testDir($dir, true);
+        return ConfigurationTest::testDir($dir, true, $report);
     }
 
     /**
@@ -508,12 +519,13 @@ class ConfigurationTestCore
      *
      * @return bool
      *
+     * @since   1.0.2 Add $report.
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function testModuleDir($dir)
+    public static function testModuleDir($dir, &$report = null)
     {
-        return ConfigurationTest::testDir($dir, true);
+        return ConfigurationTest::testDir($dir, true, $report);
     }
 
     /**
@@ -521,12 +533,13 @@ class ConfigurationTestCore
      *
      * @return bool
      *
+     * @since   1.0.2 Add $report.
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function testCacheDir($dir)
+    public static function testCacheDir($dir, &$report = null)
     {
-        return ConfigurationTest::testDir($dir, true);
+        return ConfigurationTest::testDir($dir, true, $report);
     }
 
     /**
@@ -534,12 +547,13 @@ class ConfigurationTestCore
      *
      * @return bool
      *
+     * @since   1.0.2 Add $report.
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function testToolsV2Dir($dir)
+    public static function testToolsV2Dir($dir, &$report = null)
     {
-        return ConfigurationTest::testDir($dir);
+        return ConfigurationTest::testDir($dir, false, $report);
     }
 
     /**
@@ -547,12 +561,13 @@ class ConfigurationTestCore
      *
      * @return bool
      *
+     * @since   1.0.2 Add $report.
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function testCacheV2Dir($dir)
+    public static function testCacheV2Dir($dir, &$report = null)
     {
-        return ConfigurationTest::testDir($dir);
+        return ConfigurationTest::testDir($dir, false, $report);
     }
 
     /**
@@ -560,12 +575,13 @@ class ConfigurationTestCore
      *
      * @return bool
      *
+     * @since   1.0.2 Add $report.
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function testDownloadDir($dir)
+    public static function testDownloadDir($dir, &$report = null)
     {
-        return ConfigurationTest::testDir($dir);
+        return ConfigurationTest::testDir($dir, false, $report);
     }
 
     /**
@@ -573,12 +589,13 @@ class ConfigurationTestCore
      *
      * @return bool
      *
+     * @since   1.0.2 Add $report.
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function testMailsDir($dir)
+    public static function testMailsDir($dir, &$report = null)
     {
-        return ConfigurationTest::testDir($dir, true);
+        return ConfigurationTest::testDir($dir, true, $report);
     }
 
     /**
@@ -586,12 +603,13 @@ class ConfigurationTestCore
      *
      * @return bool
      *
+     * @since   1.0.2 Add $report.
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function testTranslationsDir($dir)
+    public static function testTranslationsDir($dir, &$report = null)
     {
-        return ConfigurationTest::testDir($dir, true);
+        return ConfigurationTest::testDir($dir, true, $report);
     }
 
     /**
@@ -599,17 +617,18 @@ class ConfigurationTestCore
      *
      * @return bool
      *
+     * @since   1.0.2 Add $report.
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function testThemeLangDir($dir)
+    public static function testThemeLangDir($dir, &$report = null)
     {
         $absoluteDir = rtrim(_PS_ROOT_DIR_, '\\/').DIRECTORY_SEPARATOR.trim($dir, '\\/');
         if (!file_exists($absoluteDir)) {
             return false;
         }
 
-        return ConfigurationTest::testDir($dir, true);
+        return ConfigurationTest::testDir($dir, true, $report);
     }
 
     /**
@@ -617,17 +636,18 @@ class ConfigurationTestCore
      *
      * @return bool
      *
+     * @since   1.0.2 Add $report.
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function testThemePdfLangDir($dir)
+    public static function testThemePdfLangDir($dir, &$report = null)
     {
         $absoluteDir = rtrim(_PS_ROOT_DIR_, '\\/').DIRECTORY_SEPARATOR.trim($dir, '\\/');
         if (!file_exists($absoluteDir)) {
             return true;
         }
 
-        return ConfigurationTest::testDir($dir, true);
+        return ConfigurationTest::testDir($dir, true, $report);
     }
 
     /**
@@ -635,17 +655,18 @@ class ConfigurationTestCore
      *
      * @return bool
      *
+     * @since   1.0.2 Add $report.
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function testThemeCacheDir($dir)
+    public static function testThemeCacheDir($dir, &$report = null)
     {
         $absoluteDir = rtrim(_PS_ROOT_DIR_, '\\/').DIRECTORY_SEPARATOR.trim($dir, '\\/');
         if (!file_exists($absoluteDir)) {
             return true;
         }
 
-        return ConfigurationTest::testDir($dir, true);
+        return ConfigurationTest::testDir($dir, true, $report);
     }
 
     /**
@@ -653,12 +674,13 @@ class ConfigurationTestCore
      *
      * @return bool
      *
+     * @since   1.0.2 Add $report.
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function testCustomizableProductsDir($dir)
+    public static function testCustomizableProductsDir($dir, &$report = null)
     {
-        return ConfigurationTest::testDir($dir);
+        return ConfigurationTest::testDir($dir, false, $report);
     }
 
     /**
@@ -666,12 +688,13 @@ class ConfigurationTestCore
      *
      * @return bool
      *
+     * @since   1.0.2 Add $report.
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function testVirtualProductsDir($dir)
+    public static function testVirtualProductsDir($dir, &$report = null)
     {
-        return ConfigurationTest::testDir($dir);
+        return ConfigurationTest::testDir($dir, false, $report);
     }
 
     /**
