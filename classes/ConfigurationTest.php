@@ -314,13 +314,15 @@ class ConfigurationTestCore
      *
      * @return bool
      *
+     * @since   1.0.2 Add $report.
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function testSystem($funcs)
+    public static function testSystem($funcs, &$report = null)
     {
         foreach ($funcs as $func) {
             if (!function_exists($func)) {
+                $report = 'Function '.$func.'() does not exist.';
                 return false;
             }
         }
