@@ -415,15 +415,22 @@ class ConfigurationTestCore
         }
 
         if ($recursive) {
-            foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($absoluteDir)) as $file) {
-                /** @var SplFileInfo $file */
-                if (in_array($file->getFilename(), ['.', '..']) || $file->isLink()) {
+            foreach (scandir($absoluteDir, SCANDIR_SORT_NONE) as $item) {
+                $path = $absoluteDir.DIRECTORY_SEPARATOR.$item;
+
+                if (in_array($item, ['.', '..'])
+                    || is_link($path)) {
                     continue;
                 }
 
-                if (!is_writable($file)) {
-                    $fullReport = sprintf('File %s is not writable.', $file);
+                if (is_dir($path)) {
+                    if (!ConfigurationTest::testDir($path, $recursive, $fullReport, true)) {
+                        return false;
+                    }
+                }
 
+                if (!is_writable($path)) {
+                    $fullReport = sprintf('File %s is not writable.', $path);
                     return false;
                 }
             }
