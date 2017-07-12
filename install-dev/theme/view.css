@@ -629,11 +629,6 @@ ul#optional li {
 	border-bottom: 1px solid #ccc;
 }
 
-ul#required li.ok,
-ul#optional li.ok {
-	display: none
-}
-
 ul#required li.fail,
 ul#optional li.fail {
 	background: #f8eba8 url(img/pict_error.png) no-repeat 99% 8px;
