@@ -1,8 +1,4 @@
-/**
- * 2007-2016 PrestaShop
- *
- * Thirty Bees is an extension to the PrestaShop e-commerce software developed by PrestaShop SA
- * Copyright (C) 2017 Thirty Bees
+/*
  *
  * NOTICE OF LICENSE
  *
@@ -12,30 +8,32 @@
  * http://opensource.org/licenses/osl-3.0.php
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
- * to license@thirtybees.com so we can send you a copy immediately.
+ * to license@prestashop.com so we can send you a copy immediately.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://www.thirtybees.com for more information.
+ * needs please refer to http://www.prestashop.com for more information.
  *
- * @author    Thirty Bees <contact@thirtybees.com>
- * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2017 Thirty Bees
- * @copyright 2007-2016 PrestaShop SA
- * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
- *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
+ *  @author PrestaShop SA <contact@prestashop.com>
+ *  @copyright  2007-2016 PrestaShop SA
+ *  @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ *  International Registered Trademark & Property of PrestaShop SA
  */
 
-// These variables are defined in the dashboard view.tpl
-/* global window, jQuery, $, jAlert, dashboard_ajax_url, adminstats_ajax_url, no_results_translation, dashboard_use_push, read_more */
+// This variables are defined in the dashboard view.tpl
+// dashboard_ajax_url
+// adminstats_ajax_url
+// no_results_translation
+// dashboard_use_push
+// read_more
 
 function refreshDashboard(moduleName, usePush, extra) {
   var moduleList = [];
   this.getWidget = function (idModule) {
     $.ajax({
-      url: dashboard_ajax_url,
+      url: window.dashboard_ajax_url,
       data: {
         ajax: true,
         action: 'refreshDashboard',
@@ -44,17 +42,17 @@ function refreshDashboard(moduleName, usePush, extra) {
         extra: extra
       },
       // Ensure to get fresh data
-      headers: { 'cache-control': 'no-cache' },
+      headers: { "cache-control": "no-cache" },
       cache: false,
       global: false,
       dataType: 'json',
       success: function (widgets) {
-        $.each(widgets, function (widgetName) {
-          $.each(widgets[widgetName], function (dataType) {
-            window[dataType](widgetName, widgets[widgetName][dataType]);
-          });
-        });
-        if (parseInt(dashboard_use_push, 10) === 1) {
+        for (var widget_name in widgets) {
+          for (var data_type in widgets[widget_name]) {
+            window[data_type](widget_name, widgets[widget_name][data_type]);
+          }
+        }
+        if (parseInt(dashboard_use_push) === 1) {
           refreshDashboard(false, true);
         }
       },
@@ -68,7 +66,8 @@ function refreshDashboard(moduleName, usePush, extra) {
         $(this).addClass('loading');
       }
     });
-  } else {
+  }
+  else {
     moduleList.push(moduleName);
     if (!usePush) {
       $('#' + moduleName + ' section').each(function () {
@@ -76,19 +75,19 @@ function refreshDashboard(moduleName, usePush, extra) {
       });
     }
   }
-  $.each(moduleList, function (idModule) {
-    if (usePush && !$('#' + moduleList[idModule]).hasClass('allow_push')) {
-      return;
+  for (var module_id in moduleList) {
+    if (usePush && !$('#' + moduleList[module_id]).hasClass('allow_push')) {
+      continue;
     }
-    self.getWidget(idModule);
-  });
+    this.getWidget(module_id);
+  }
 }
 
 function setDashboardDateRange(action) {
   $('#datepickerFrom, #datepickerTo').parent('.input-group').removeClass('has-error');
   var data = 'ajax=true&action=setDashboardDateRange&submitDatePicker=true&' + $('#calendar_form').serialize() + '&' + action + '=1';
   $.ajax({
-    url: adminstats_ajax_url,
+    url: window.adminstats_ajax_url,
     data: data,
     dataType: 'json',
     type: 'POST',
@@ -106,91 +105,85 @@ function setDashboardDateRange(action) {
 }
 
 function data_value(widgetName, data) {
-  $.each(data, function (idData) {
-    $('#' + idData + ' ').html(data[idData]);
-    $('#' + idData + ', #' + widgetName).closest('section').removeClass('loading');
-  });
+  for (var dataId in data) {
+    $('#' + dataId + ' ').html(data[dataId]);
+    $('#' + dataId + ', #' + widgetName).closest('section').removeClass('loading');
+  }
 }
 
-function data_trends(widgetName, data) {
-  if (!$.isArray(data)) {
-    return;
-  }
-
-  $.each(data, function (idData) {
-    this.el = $('#' + idData);
-    this.el.html(data[idData].value);
-    if (data[idData].way === 'up') {
+function data_trends(widget_name, data) {
+  for (var dataId in data) {
+    this.el = $('#' + dataId);
+    this.el.html(data[dataId].value);
+    if (data[dataId].way === 'up') {
       this.el.parent().removeClass('dash_trend_down').removeClass('dash_trend_right').addClass('dash_trend_up');
-    } else if (data[idData].way === 'down') {
+    } else if (data[dataId].way === 'down') {
       this.el.parent().removeClass('dash_trend_up').removeClass('dash_trend_right').addClass('dash_trend_down');
     } else {
       this.el.parent().removeClass('dash_trend_down').removeClass('dash_trend_up').addClass('dash_trend_right');
     }
     this.el.closest('section').removeClass('loading');
-  });
+  }
 }
 
 function data_table(widgetName, data) {
-  if (!$.isArray(data)) {
-    return;
-  }
-
-  $.each(data, function (idData) {
-    // fill header
+  for (var dataId in data) {
+    //fill header
     var tr = '<tr>';
-    $.each(data[idData].header, function (header) {
-      var head = data[idData].header[header];
+    for (var header in data[dataId].header) {
+      var head = data[dataId].header[header];
       var th = '<th ' + (head.class ? ' class="' + head.class + '" ' : '' ) + ' ' + (head.id ? ' id="' + head.id + '" ' : '' ) + '>';
       th += (head.wrapper_start ? ' ' + head.wrapper_start + ' ' : '' );
       th += head.title;
       th += (head.wrapper_stop ? ' ' + head.wrapper_stop + ' ' : '' );
       th += '</th>';
       tr += th;
-    });
+    }
     tr += '</tr>';
-    $('#' + idData + ' thead').html(tr);
+    $('#' + dataId + ' thead').html(tr);
 
-    // fill body
-    $('#' + idData + ' tbody').html('');
+    //fill body
+    $('#' + dataId + ' tbody').html('');
 
-    if (typeof data[idData].body === 'string') {
-      $('#' + idData + ' tbody').html('<tr><td class="text-center" colspan="' + data[idData].header.length + '"><br/>' + data[idData].body + '</td></tr>');
-    } else if (data[idData].body.length) {
-      $.each(data[idData].body, function (idBodyContent) {
+    if (typeof data[dataId].body === 'string') {
+      $('#' + dataId + ' tbody').html('<tr><td class="text-center" colspan="' + data[dataId].header.length + '"><br/>' + data[dataId].body + '</td></tr>');
+    }
+    else if (data[dataId].body.length) {
+      for (var bodyContentId in data[dataId].body) {
         tr = '<tr>';
-        $.each(data[idData].body[idBodyContent], function (bodyContent) {
-          var body = data[idData].body[idBodyContent][bodyContent];
-          var td = '<td ' + (body.class ? ' class="' + body.class + '" ' : '') + ' ' + (body.id ? ' id="' + body.id + '" ' : '') + '>';
-          td += (body.wrapper_start ? ' ' + body.wrapper_start + ' ' : '');
+        for (var bodyContent in data[dataId].body[bodyContentId]) {
+          var body = data[dataId].body[bodyContentId][bodyContent];
+          var td = '<td ' + (body.class ? ' class="' + body.class + '" ' : '' ) + ' ' + (body.id ? ' id="' + body.id + '" ' : '' ) + '>';
+          td += (body.wrapper_start ? ' ' + body.wrapper_start + ' ' : '' );
           td += body.value;
-          td += (body.wrapper_stop ? ' ' + body.wrapper_stop + ' ' : '');
+          td += (body.wrapper_stop ? ' ' + body.wrapper_stop + ' ' : '' );
           td += '</td>';
           tr += td;
-        });
+        }
         tr += '</tr>';
-        $('#' + idData + ' tbody').append(tr);
-      });
-    } else {
-      $('#' + idData + ' tbody').html('<tr><td class="text-center" colspan="' + data[idData].header.length + '">' + window.no_results_translation + '</td></tr>');
+        $('#' + dataId + ' tbody').append(tr);
+      }
     }
-  });
+    else {
+      $('#' + dataId + ' tbody').html('<tr><td class="text-center" colspan="' + data[dataId].header.length + '">' + window.no_results_translation + '</td></tr>');
+    }
+  }
 }
 
 function data_chart(widgetName, charts) {
-  $.each(charts, function (idChart) {
-    window[charts[idChart].chart_type](widgetName, charts[idChart]);
-  });
+  for (var chartId in charts) {
+    window[charts[chartId].chart_type](widgetName, charts[chartId]);
+  }
 }
 
 function data_list_small(widgetName, data) {
-  $.each(data, function (idData) {
-    $('#' + idData).html('');
-    $.each(data[idData], function (item) {
-      $('#' + idData).append('<li><span class="data_label">' + item + '</span><span class="data_value size_s">' + data[idData][item] + '</span></li>');
-    });
-    $('#' + idData + ', #' + widgetName).closest('section').removeClass('loading');
-  });
+  for (var dataId in data) {
+    $('#' + dataId).html('');
+    for (var item in data[dataId]) {
+      $('#' + dataId).append('<li><span class="data_label">' + item + '</span><span class="data_value size_s">' + data[dataId][item] + '</span></li>');
+    }
+    $('#' + dataId + ', #' + widgetName).closest('section').removeClass('loading');
+  }
 }
 
 function getBlogRss() {
@@ -203,10 +196,10 @@ function getBlogRss() {
     dataType: 'json',
     success: function (jsonData) {
       if (typeof jsonData !== 'undefined' && jsonData !== null && !jsonData.has_errors) {
-        $.each(jsonData.rss, function (article) {
+        for (var article in jsonData.rss) {
           var articleHtml = '<article><h4><a href="' + jsonData.rss[article].link + '" class="_blank" onclick="return !window.open(this.href);">' + jsonData.rss[article].title + '</a></h4><span class="dash-news-date text-muted">' + jsonData.rss[article].date + '</span><p>' + jsonData.rss[article].short_desc + ' <a href="' + jsonData.rss[article].link + '">' + read_more + '</a><p></article><hr/>';
           $('.dash_news .dash_news_content').append(articleHtml);
-        });
+        }
       } else {
         $('.dash_news').hide();
       }
@@ -251,7 +244,7 @@ function bindCancelDashConfig() {
 function saveDashConfig(widgetName) {
   $('section#' + widgetName + ' .form-group').removeClass('has-error');
   $('#' + widgetName + '_errors').remove();
-  var configs = '';
+  configs = '';
 
   $('#' + widgetName + ' form input, #' + widgetName + ' form textarea , #' + widgetName + ' form select').each(function () {
     if ($(this).attr('type') === 'radio' && !$(this).attr('checked')) {
@@ -260,31 +253,32 @@ function saveDashConfig(widgetName) {
     configs += '&configs[' + $(this).attr('name') + ']=' + $(this).val();
   });
 
-  var data = 'ajax=true&action=saveDashConfig&module=' + widgetName + configs + '&hook=' + $('#' + widgetName).closest('[id^=hook]').attr('id');
+  data = 'ajax=true&action=saveDashConfig&module=' + widgetName + configs + '&hook=' + $('#' + widgetName).closest('[id^=hook]').attr('id');
 
   $.ajax({
-    url: dashboard_ajax_url,
+    url: window.dashboard_ajax_url,
     data: data,
     dataType: 'json',
-    error: function (XMLHttpRequest, textStatus) {
-      jAlert('TECHNICAL ERROR: \n\nDetails:\nError thrown: ' + XMLHttpRequest + '\n Text status: ' + textStatus);
+    error: function (XMLHttpRequest, textStatus, errorThrown) {
+      jAlert("TECHNICAL ERROR: \n\nDetails:\nError thrown: " + XMLHttpRequest + "\n" + 'Text status: ' + textStatus);
     },
     success: function (jsonData) {
+
       if (!jsonData.has_errors) {
-        var $widgetName = $('#' + widgetName);
-        $widgetName.find('section').not('.dash_config').remove();
-        $widgetName.append($(jsonData.widget_html).find('section').not('.dash_config'));
+        $('#' + widgetName).find('section').not('.dash_config').remove();
+        $('#' + widgetName).append($(jsonData.widget_html).find('section').not('.dash_config'));
         refreshDashboard(widgetName);
         toggleDashConfig(widgetName);
-      } else {
-        window.errors_str = '<div class="alert alert-danger" id="' + widgetName + '_errors">';
-        $.each(jsonData.errors, function (error) {
-          window.errors_str += jsonData.errors[error] + '<br/>';
+      }
+      else {
+        errors_str = '<div class="alert alert-danger" id="' + widgetName + '_errors">';
+        for (error in jsonData.errors) {
+          errors_str += jsonData.errors[error] + '<br/>';
           $('#' + error).closest('.form-group').addClass('has-error');
-        });
-        window.errors_str += '</div>';
-        $('section#' + widgetName + '_config header').after(window.errors_str);
-        window.errors_str += '</div>';
+        }
+        errors_str += '</div>';
+        $('section#' + widgetName + '_config header').after(errors_str);
+        errors_str += '</div>';
       }
     }
   });
@@ -301,15 +295,15 @@ $(document).ready(function () {
   bindSubmitDashConfig();
   bindCancelDashConfig();
 
-  $('#page-header-desc-configuration-switch_demo').tooltip().click(function () {
+  $('#page-header-desc-configuration-switch_demo').tooltip().click(function (e) {
     $.ajax({
-      url: dashboard_ajax_url,
+      url: window.dashboard_ajax_url,
       data: {
         ajax: true,
         action: 'setSimulationMode',
         PS_DASHBOARD_SIMULATION: $(this).find('i').hasClass('process-icon-toggle-on') ? 0 : 1
       },
-      success: function () {
+      success: function (result) {
         if ($('#page-header-desc-configuration-switch_demo i').hasClass('process-icon-toggle-on')) {
           $('#page-header-desc-configuration-switch_demo i').removeClass('process-icon-toggle-on').addClass('process-icon-toggle-off');
         } else {
