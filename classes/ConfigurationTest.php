@@ -437,12 +437,18 @@ class ConfigurationTestCore
      *
      * @return bool
      *
+     * @since   1.0.2 Add $report.
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function testSitemap($dir)
+    public static function testSitemap($dir, &$report = null)
     {
-        return ConfigurationTest::testFile($dir);
+        if (!ConfigurationTest::testFile($dir)) {
+            $report = 'File or directory '.$dir.' is not writable.';
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -450,14 +456,25 @@ class ConfigurationTestCore
      *
      * @return bool
      *
+     * @since   1.0.2 Add $report.
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function testFile($fileRelative)
+    public static function testFile($fileRelative, &$report = null)
     {
         $file = _PS_ROOT_DIR_.DIRECTORY_SEPARATOR.$fileRelative;
 
-        return (file_exists($file) && is_writable($file));
+        if (!file_exists($file)) {
+            $report = 'File or directory '.$file.' does not exist.';
+            return false;
+        }
+
+        if (!is_writable($file)) {
+            $report = 'File or directory '.$file.' is not writable.';
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -750,6 +767,9 @@ class ConfigurationTestCore
     }
 
     /**
+     * Test the set of files defined above. Not used by the installer, but by
+     * AdminInformationController.
+     *
      * @param bool $full
      *
      * @return array|bool
