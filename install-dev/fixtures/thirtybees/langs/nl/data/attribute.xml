@@ -1,28 +1,28 @@
 <?xml version="1.0"?>
 <entity_attribute>
   <attribute id="12_oz">
-    <name>12 oz</name>
+    <name>400 gram</name>
   </attribute>
   <attribute id="16_oz">
-    <name>16 oz</name>
+    <name>450 gram</name>
   </attribute>
   <attribute id="24_oz">
-    <name>24 oz</name>
+    <name>680 gram</name>
   </attribute>
   <attribute id="Yellow">
-    <name>Yellow</name>
+    <name>Geel</name>
   </attribute>
   <attribute id="White">
-    <name>White</name>
+    <name>Wit</name>
   </attribute>
   <attribute id="Black">
-    <name>Black</name>
+    <name>Zwart</name>
   </attribute>
   <attribute id="Espresso">
     <name>Espresso</name>
   </attribute>
   <attribute id="Natural">
-    <name>Natural</name>
+    <name>Naturel</name>
   </attribute>
   <attribute id="Mocha">
     <name>Mocha</name>
