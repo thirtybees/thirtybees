@@ -1884,7 +1884,7 @@ class OrderCore extends ObjectModel
                 ->leftJoin('customer', 'c', 'c.`id_customer` = o.`id_customer`')
                 ->where('o.`id_order` = '.(int) $this->id)
                 ->where('c.`email` = \''.pSQL($email).'\'')
-                ->where('c.`id_guest` = 1 '.Shop::addSqlRestriction(false, 'c'))
+                ->where('c.`is_guest` = 1 '.Shop::addSqlRestriction(false, 'c'))
         );
     }
 

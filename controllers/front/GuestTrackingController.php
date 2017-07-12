@@ -102,7 +102,7 @@ class GuestTrackingControllerCore extends FrontController
             } elseif (Customer::customerExists($email, false, true)) {
                 $this->errors[] = Tools::displayError('This page is for guest accounts only. Since your guest account has already been transformed into a customer account, you can no longer view your order here. Please log in to your customer account to view this order');
                 $this->context->smarty->assign('show_login_link', true);
-            } elseif (!count($orderCollection)) {
+            } elseif (empty($orderCollection->getResults())) {
                 $this->errors[] = Tools::displayError('Invalid order reference');
             } elseif (!$orderCollection->getFirst()->isAssociatedAtGuest($email)) {
                 $this->errors[] = Tools::displayError('Invalid order reference');
@@ -115,7 +115,6 @@ class GuestTrackingControllerCore extends FrontController
                     } elseif (!Tools::getValue('password')) {
                         $this->errors[] = Tools::displayError('Invalid password.');
                     } elseif (!$customer->transformToCustomer($this->context->language->id, Tools::getValue('password'))) {
-                        // @todo clarify error message
                         $this->errors[] = Tools::displayError('An error occurred while transforming a guest into a registered customer.');
                     } else {
                         $this->context->smarty->assign('transformSuccess', true);
