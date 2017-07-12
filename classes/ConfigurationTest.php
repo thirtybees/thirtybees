@@ -418,7 +418,7 @@ class ConfigurationTestCore
             foreach (scandir($absoluteDir, SCANDIR_SORT_NONE) as $item) {
                 $path = $absoluteDir.DIRECTORY_SEPARATOR.$item;
 
-                if (in_array($item, ['.', '..'])
+                if (in_array($item, ['.', '..', '.git'])
                     || is_link($path)) {
                     continue;
                 }
