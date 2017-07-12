@@ -1887,7 +1887,15 @@ class OrderCore extends ObjectModel
 					AND c.`is_guest` = 1
 					'.Shop::addSqlRestriction(false, 'c');
 
-        return (bool) Db::getInstance()->getValue($sql);
+        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('COUNT(*)')
+                ->from('orders', 'o')
+                ->leftJoin('customer', 'c', 'c.`id_customer` = o.`id_customer`')
+                ->where('o.`id_order` = '.(int) $this->id)
+                ->where('c.`email` = \''.pSQL($email).'\'')
+                ->where('c.`is_guest` = 1 '.Shop::addSqlRestriction(false, 'c'))
+        );
     }
 
     /**
