@@ -104,7 +104,7 @@ class InstallXmlLoader
     public function setFixturesPath($path = null)
     {
         if ($path === null) {
-            $path = _PS_INSTALL_FIXTURES_PATH_.'fashion/';
+            $path = _PS_INSTALL_FIXTURES_PATH_.'thirtybees/';
         }
 
         $this->path_type = 'fixture';
