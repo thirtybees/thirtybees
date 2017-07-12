@@ -2,7 +2,7 @@
 <entity_product>
   <product id="Candle" id_shop="1">
     <description>Onze kaarsen zijn gemaakt van de hoogste kwaliteit paraffine in de wereld. We gebruiken ook stevige berkhoutsoorten voor het omhulsel waardoor er een uniek geluid ontstaat als de kaars brandt. De geur van de kaarsen wordt verzorgd door de beste Parijse leveranciers in de wereld.</description>
-    <description_short>Our flagship candle is offered in 3 sizes and two scents to accommodate any needs</description_short>
+    <description_short>Onze bekende kaarsen komen in drie maten en twee verschillende geuren, voor ieder wat wils.</description_short>
     <link_rewrite>kaars</link_rewrite>
     <meta_description/>
     <meta_keywords/>
@@ -24,7 +24,7 @@
   </product>
   <product id="Coffee" id_shop="1">
     <description>Onze koffie is ons bekendste product. Het wordt langzaam geroosterd om de zuurgraad laag te houden, waardoor onze koffie zijn fijne, frisse en noot-achtige smaak krijgt. We gebruiken alleen de bonen die afkomstig van boeren die een eerlijke bedrag krijgen voor hun bonen. Wij geloven in een duurzame koffiehandel.</description>
-    <description_short>We offer three of the most popular roasts of coffee, light, dark, and blonde.</description_short>
+    <description_short>Onze koffie is beschikbaar in drie varianten: light, dark, en blonde.</description_short>
     <link_rewrite>koffiebonen</link_rewrite>
     <meta_description/>
     <meta_keywords/>
