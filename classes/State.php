@@ -86,9 +86,7 @@ class StateCore extends ObjectModel
             (new DbQuery())
                 ->select('`id_state`, `id_country`, `id_zone`, `iso_code`, `name`, `active`')
                 ->from('state', 's')
-                ->innerJoin('state_lang', 'sl', 'sl.`id_state` = s.`id_state`')
                 ->where($active ? '`active` = 1' : '')
-                ->where('sl.`id_lang` = '.(int) $idLang)
                 ->orderBy('`name` ASC')
         );
     }
