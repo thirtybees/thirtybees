@@ -393,11 +393,11 @@ class AdminOrdersControllerCore extends AdminController
 
         $this->addJqueryUI('ui.datepicker');
         $this->addJS(_PS_JS_DIR_.'vendor/d3.v3.min.js');
-        $apiKey = (Configuration::get('TB_GOOGLE_MAPS_API_KEY')) ? 'key='.Configuration::get('TB_GOOGLE_MAPS_API_KEY').'&' : '';
-        $protocol = (Configuration::get('PS_SSL_ENABLED') && Configuration::get('PS_SSL_ENABLED_EVERYWHERE')) ? 'https' : 'http';
-        $this->addJS($protocol.'://maps.google.com/maps/api/js?'.$apiKey);
 
         if ($this->tabAccess['edit'] == 1 && $this->display == 'view') {
+	        $apiKey = (Configuration::get('TB_GOOGLE_MAPS_API_KEY')) ? 'key='.Configuration::get('TB_GOOGLE_MAPS_API_KEY').'&' : '';
+	        $protocol = (Configuration::get('PS_SSL_ENABLED') && Configuration::get('PS_SSL_ENABLED_EVERYWHERE')) ? 'https' : 'http';
+	        $this->addJS($protocol.'://maps.google.com/maps/api/js?'.$apiKey);
             $this->addJS(_PS_JS_DIR_.'admin/orders.js');
             $this->addJS(_PS_JS_DIR_.'tools.js');
             $this->addJqueryPlugin('autocomplete');
