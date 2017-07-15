@@ -278,9 +278,9 @@ class FrontControllerCore extends Controller
             }
 
             // To be removed: append extra css and metas to the header hook
-            $extraCode = Configuration::getMultiple(['PS_CUSTOMCODE_METAS', 'PS_CUSTOMCODE_CSS']);
-            $extraCss = $extraCode['PS_CUSTOMCODE_CSS'] ? '<style>'.$extraCode['PS_CUSTOMCODE_CSS'].'</style>' : '';
-            $hookHeader .= $extraCode['PS_CUSTOMCODE_METAS'].$extraCss;
+            $extraCode = Configuration::getMultiple([Configuration::CUSTOMCODE_METAS, Configuration::CUSTOMCODE_CSS]);
+            $extraCss = $extraCode[Configuration::CUSTOMCODE_CSS] ? '<style>'.$extraCode[Configuration::CUSTOMCODE_CSS].'</style>' : '';
+            $hookHeader .= $extraCode[Configuration::CUSTOMCODE_METAS].$extraCss;
 
             $this->context->smarty->assign(
                 [
