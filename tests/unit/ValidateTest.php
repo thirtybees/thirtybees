@@ -367,4 +367,9 @@ class ValidateTest extends \Codeception\TestCase\Test
     {
         $this->assertSame($expected, Validate::isAbsoluteUrl($input));
     }
+    
+    public function testisPriceTrue()
+    {
+        $this->assertEquals(true, Validate::isPrice(6.00));
+    }    
 }
