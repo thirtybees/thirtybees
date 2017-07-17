@@ -345,9 +345,9 @@ class DbPDOCore extends Db
      *
      * @see Db::hasTableWithSamePrefix()
      * @param string $server Server address
-     * @param string $user Login for database connection
-     * @param string $pwd Password for database connection
-     * @param string $db Database name
+     * @param string $user   Login for database connection
+     * @param string $pwd    Password for database connection
+     * @param string $db     Database name
      * @param string $prefix Tables prefix
      * @return bool
      *
@@ -392,7 +392,7 @@ class DbPDOCore extends Db
         }
 
         if ($engine === null) {
-            $engine = 'MyISAM';
+            $engine = 'InnoDB';
         }
 
         $result = $link->query('
@@ -450,32 +450,7 @@ class DbPDOCore extends Db
      */
     public function getBestEngine()
     {
-        $value = 'InnoDB';
-
-        $sql = 'SHOW VARIABLES WHERE Variable_name = \'have_innodb\'';
-        $result = $this->link->query($sql);
-        if (!$result) {
-            $value = 'MyISAM';
-        } else {
-            $row = $result->fetch();
-            if (!$row || strtolower($row['Value']) != 'yes') {
-                $value = 'MyISAM';
-            }
-        }
-
-        /* MySQL >= 5.6 */
-        $sql = 'SHOW ENGINES';
-        $result = $this->link->query($sql);
-        while ($row = $result->fetch()) {
-            if ($row['Engine'] == 'InnoDB') {
-                if (in_array($row['Support'], ['DEFAULT', 'YES'])) {
-                    $value = 'InnoDB';
-                }
-                break;
-            }
-        }
-
-        return $value;
+        return 'InnoDB';
     }
 
     /**
@@ -499,7 +474,7 @@ class DbPDOCore extends Db
         } catch (PDOException $e) {
             return false;
         }
-        $result = $link->exec('SET NAMES \'utf8\'');
+        $result = $link->exec('SET NAMES \'utf8mb4\'');
         unset($link);
 
         return ($result === false) ? false : true;
