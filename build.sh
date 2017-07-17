@@ -46,6 +46,7 @@ EXCLUDE_FILE+=("architecture.md")
 EXCLUDE_FILE+=("build.sh")
 EXCLUDE_FILE+=("codeception.yml")
 EXCLUDE_FILE+=("composer.lock")
+EXCLUDE_FILE+=("Vagrantfile")
 
 # Directories not needed in the release package.
 EXCLUDE_DIR=("docs")
@@ -54,6 +55,7 @@ EXCLUDE_DIR+=("Examples")
 EXCLUDE_DIR+=("tests")
 EXCLUDE_DIR+=("Tests")
 EXCLUDE_DIR+=("unitTests")
+EXCLUDE_DIR+=("vagrant")
 
 # As always, there are some exceptions :-)
 KEEP=("lib/Twig/Node/Expression/Test")
