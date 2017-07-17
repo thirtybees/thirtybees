@@ -128,29 +128,4 @@ done
 mv "${DIR}"/$(basename "${DIR}").zip .
 echo "Created $(basename "${DIR}").zip successfully."
 
-# Make the core package.
-(
-  echo -n "Creating package ... "
-  cd "${DIR}"
-  php ./tools/generatemd5list.php
-  zip -r -q $(basename "${DIR}")-core.zip .
-  zip --delete $(basename "${DIR}")-core.zip "vendor/*"
-  echo "done."
-)
-
-mv "${DIR}"/$(basename "${DIR}")-core.zip .
-echo "Created $(basename "${DIR}")-core.zip successfully."
-
-# Make the vendor package.
-(
-  echo -n "Creating package ... "
-  cd "${DIR}"
-  php ./tools/generatemd5list.php
-  zip -r -q $(basename "${DIR}")-extra.zip vendor/
-  echo "done."
-)
-
-mv "${DIR}"/$(basename "${DIR}")-extra.zip .
-echo "Created $(basename "${DIR}")-extra.zip successfully."
-
 exit 0
