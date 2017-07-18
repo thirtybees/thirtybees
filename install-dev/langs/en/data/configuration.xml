@@ -28,7 +28,7 @@
   <configuration id="PS_ROUTE_category_rule">
     <value>{rewrite}</value>
   </configuration>
-  <configuration id="PS_ROUTE_category_rule" name="PS_ROUTE_layered_rule">
+  <configuration id="PS_ROUTE_layered_rule" name="PS_ROUTE_layered_rule">
     <value>{rewrite}{/:selected_filters}</value>
   </configuration>
   <configuration id="PS_ROUTE_supplier_rule">
