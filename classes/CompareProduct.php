@@ -157,10 +157,11 @@ class CompareProductCore extends ObjectModel
      */
     public static function removeCompareProduct($idCompare, $idProduct)
     {
-        return Db::getInstance()->delete(
-            'compare_product',
-            'cp.`id_compare`=c.`id_compare` AND cp.`id_product` = '.(int) $idProduct.' AND c.`id_compare` = '.(int) $idCompare
-        );
+        return Db::getInstance()->execute('
+            DELETE cp FROM `'._DB_PREFIX_.'compare_product` cp, `'._DB_PREFIX_.'compare` c
+            WHERE cp.`id_compare`=c.`id_compare`
+            AND cp.`id_product` = '.(int) $idProduct.'
+            AND c.`id_compare` = '.(int) $idCompare);
     }
 
     /**
