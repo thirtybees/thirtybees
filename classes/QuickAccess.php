@@ -37,7 +37,7 @@
 class QuickAccessCore extends ObjectModel
 {
     // @codingStandardsIgnoreStart
-    /** @var string Name */
+    /** @var string|string[] Name */
     public $name;
     /** @var string Link */
     public $link;
@@ -53,9 +53,8 @@ class QuickAccessCore extends ObjectModel
         'primary'   => 'id_quick_access',
         'multilang' => true,
         'fields'    => [
-            'link'       => ['type' => self::TYPE_STRING, 'validate' => 'isUrl', 'required' => true, 'size' => 255],
-            'new_window' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true],
-
+            'link'       => ['type' => self::TYPE_STRING,                 'validate' => 'isUrl',       'required' => true, 'size' => 255],
+            'new_window' => ['type' => self::TYPE_BOOL,                   'validate' => 'isBool',      'required' => true],
             /* Lang fields */
             'name'       => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCleanHtml', 'required' => true, 'size' => 32],
         ],
