@@ -357,7 +357,7 @@ class HelperFormCore extends Helper
             foreach (Db::getInstance()->executeS(
                 (new DbQuery())
                     ->select('`id_shop`, `'.bqSQL($this->identifier).'`')
-                    ->from(_DB_PREFIX_.bqSQL($this->table).'_shop')
+                    ->from(bqSQL($this->table).'_shop')
                     ->where('`'.bqSQL($this->identifier).'` = '.(int) $this->id)
             ) as $row) {
                 $assos[$row['id_shop']] = $row['id_shop'];
