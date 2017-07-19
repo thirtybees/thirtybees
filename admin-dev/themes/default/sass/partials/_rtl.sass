@@ -152,30 +152,28 @@ html
 					border-left: 0 !important
 					left: 2px
 					right: auto !important
-		a.disabled
-			.chevron:after
-				border-right: 14px solid #ccc
-				border-left: 0 !important
-		a.selected
-			.chevron:after
-				border-right: 14px solid $main-color
-				border-left: 0 !important
-		a.done
-			.chevron:after
-				border-right: 14px solid $brand-success
-				border-left: 0 !important
-	.msgBox
-		float: right !important
-		margin: 4px 5px 0 0 !important
-		.content
+			&.disabled
+				.chevron:after
+					border-right: 14px solid #ccc
+					border-left: 0 !important
+			&.selected
+				.chevron:after
+					border-right: 14px solid $main-color
+					border-left: 0 !important
+			&.done
+				.chevron:after
+					border-right: 14px solid $brand-success
+					border-left: 0 !important
+	.actionBar
+		.msgBox
 			float: right !important
-	#carrier_logo_block
-		left: 10px
-		right: auto !important
-	.actionBar a
-		float: left !important
-		margin-left: 10px
-		margin-right: 0 !important
+			margin: 4px 5px 0 0 !important
+			.content
+				float: right !important
+		a
+			float: left !important
+			margin-left: 10px
+			margin-right: 0 !important
 
 // Tinymce
 .mce-container
@@ -201,3 +199,8 @@ html
 	*
 		text-align: right
 		direction: rtl
+
+// Header
+#employee_links.dropdown-menu
+	left: 0 !important
+	right: auto !important
