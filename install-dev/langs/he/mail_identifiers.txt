@@ -7,4 +7,4 @@
 
 {shop_name} - {shop_url}
 
-{shop_url} מופעל באמצעות פרסטהשופ™
+{shop_url} מופעל באמצעות thirty bees™
