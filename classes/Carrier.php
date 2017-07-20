@@ -402,13 +402,13 @@ class CarrierCore extends ObjectModel
 
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-                ->select('cl.*, c.*, cl.`name` as `country`, zz.`name` as `zone`')
+                ->select('cl.*, c.*, cl.`name` as `country`, z.`name` as `zone`')
                 ->from('country', 'c')
                 ->join(Shop::addSqlAssociation('country', 'c'))
                 ->leftJoin('country_lang', 'cl', 'cl.`id_country` = c.`id_country` AND cl.`id_lang` = '.(int) $idLang)
                 ->innerJoin('carrier_zone', 'cz', 'cz.`id_zone` = c.`id_zone`')
                 ->innerJoin('carrier', 'cr', 'cr.`id_carrier` = cz.`id_carrier`')
-                ->leftJoin('zone', 'z', 'cz.`id_zone` = zz.`id_zone`')
+                ->leftJoin('zone', 'z', 'cz.`id_zone` = z.`id_zone`')
                 ->where('cr.`deleted` = 0')
                 ->where($activeCarriers ? 'cr.`active` = 1' : '')
                 ->where($activeCountries ? 'c.`active` = 1' : '')
