@@ -434,7 +434,7 @@ class AttributeGroupCore extends ObjectModel
             [
                 'position' => ['type' => 'sql', 'value' => '`position` '.($way ? '- 1' : '+ 1')],
             ],
-            '`position` = '.($way ? '> '.(int) $movedGroupAttribute['position'].' AND `position` <= '.(int) $position : '< '.(int) $movedGroupAttribute['position'].' AND `position` >= '.(int) $position)
+            '`position` '.($way ? '> '.(int) $movedGroupAttribute['position'].' AND `position` <= '.(int) $position : '< '.(int) $movedGroupAttribute['position'].' AND `position` >= '.(int) $position)
         ) && Db::getInstance()->update(
             'attribute_group',
             [
