@@ -31,7 +31,7 @@
 /* global jQuery, $, window, showSuccessMessage, showErrorMessage, ps_round, priceDisplayPrecision */
 
 function getTax() {
-  if (typeof window.noTax !== 'undefined' && window.noTax) {
+  if (typeof window.noTax !== 'undefined' && window.noTax || window.taxesArray === 'undefined') {
     return 0;
   }
 
@@ -41,8 +41,8 @@ function getTax() {
 }
 
 function getTaxes() {
-  if (typeof window.noTax !== 'undefined' && window.noTax) {
-    return window.taxesArray[window.taxId];
+  if (typeof window.noTax !== 'undefined' && window.noTax || window.taxesArray === 'undefined') {
+    return 0;
   }
 
   var selectedTax = document.getElementById('id_tax_rules_group');
