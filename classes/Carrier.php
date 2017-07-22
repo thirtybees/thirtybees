@@ -1888,7 +1888,7 @@ class CarrierCore extends ObjectModel
             [
                 'position' => ['type' => 'sql', 'value' => '`position` '.($way ? '- 1' : '+ 1')],
             ],
-            '`position` '.($way ? '> '.(int) $movedCarrier['position'].' AND `position` <= '.(int) $position : '< '.(int) $movedCarrier['position'].' AND `position` >= '.(int) $position.'AND `deleted` = 0')
+            '`position` '.($way ? '> '.(int) $movedCarrier['position'].' AND `position` <= '.(int) $position : '< '.(int) $movedCarrier['position'].' AND `position` >= '.(int) $position.' AND `deleted` = 0')
         ) && Db::getInstance()->update(
             'carrier',
             [
