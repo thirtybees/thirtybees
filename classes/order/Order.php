@@ -1158,7 +1158,7 @@ class OrderCore extends ObjectModel
 
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-                ->select('*, ('.$stateNameSql->build().')')
+                ->select('*, ('.$stateNameSql->build().') AS `state_name`, o.`date_add` AS `date_add`, o.`date_upd` AS `date_upd`')
                 ->from('orders', 'o')
                 ->leftJoin('customer', 'c', 'c.`id_customer` = o.`id_customer`')
                 ->where('1'.' '.Shop::addSqlRestriction(false, 'o'))
