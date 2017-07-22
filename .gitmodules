@@ -203,6 +203,11 @@
 	url = https://github.com/thirtybees/homeslider.git
 	branch = master
 	ignore = dirty
+[submodule "modules/mailalerts"]
+	path = modules/mailalerts
+	url = https://github.com/thirtybees/mailalerts.git
+	branch = master
+	ignore = dirty
 [submodule "modules/pagesnotfound"]
 	path = modules/pagesnotfound
 	url = https://github.com/thirtybees/pagesnotfound.git
