@@ -1194,6 +1194,7 @@ window.product_tabs.Informations = new function () {
   };
 
   this.switchProductType = function () {
+    window.product_type = parseInt(window.product_type, 10);
     if (window.product_type === window.product_type_pack) {
       $('#pack_product').attr('checked', true);
     } else if (window.product_type === window.product_type_virtual) {
@@ -1204,7 +1205,7 @@ window.product_tabs.Informations = new function () {
       $('#simple_product').attr('checked', true);
     }
 
-    $('input[name="type_product"]').on('click', function (e) {
+    $('input[name="type_product"]').on('click', function(e) {
       // Reset settings
       $('a[id*="VirtualProduct"]').hide();
 
@@ -1212,11 +1213,11 @@ window.product_tabs.Informations = new function () {
 
       $('div.is_virtual_good').hide();
       $('#is_virtual').val(0);
-      window.tabs_manager.onLoad('VirtualProduct', function () {
+      window.tabs_manager.onLoad('VirtualProduct', function(){
         $('#is_virtual_good').removeAttr('checked');
       });
 
-      window.product_type = $(this).val();
+      window.product_type = parseInt($(this).val(), 10);
       $('#warn_virtual_combinations').hide();
       $('#warn_pack_combinations').hide();
       // until a product is added in the pack
@@ -1228,10 +1229,10 @@ window.product_tabs.Informations = new function () {
         } else {
           $('#product-pack-container').show();
           // If the pack tab has not finished loaded the changes will be made when the loading event is triggered
-          $('#product-tab-content-Pack').bind('loaded', function () {
+          $('#product-tab-content-Pack').on('loaded', function () {
             $('#ppack').val(1).attr('checked', true).attr('disabled', true);
           });
-          $('#product-tab-content-Quantities').bind('loaded', function () {
+          $('#product-tab-content-Quantities').on('loaded', function () {
             $('.stockForVirtualProduct').show();
           });
 
@@ -1251,19 +1252,19 @@ window.product_tabs.Informations = new function () {
           $('a[id*="VirtualProduct"]').show();
           $('#is_virtual').val(1);
 
-          window.tabs_manager.onLoad('VirtualProduct', function () {
+          window.tabs_manager.onLoad('VirtualProduct', function() {
             $('#is_virtual_good').attr('checked', true);
             $('#virtual_good').show();
           });
 
-          window.tabs_manager.onLoad('Quantities', function () {
+          window.tabs_manager.onLoad('Quantities', function() {
             $('.stockForVirtualProduct').hide();
           });
 
           $('a[id*="Combinations"]').hide();
           $('a[id*="Shipping"]').hide();
 
-          window.tabs_manager.onLoad('Informations', function () {
+          window.tabs_manager.onLoad('Informations', function() {
             $('#condition').attr('disabled', true);
             $('#condition option[value=refurbished]').removeAttr('selected');
             $('#condition option[value=used]').removeAttr('selected');
@@ -1281,6 +1282,7 @@ window.product_tabs.Informations = new function () {
       handleSaveButtons();
     });
   };
+
   this.onReady = function () {
     loadPack();
     self.bindAvailableForOrder();
@@ -1378,10 +1380,10 @@ window.product_tabs.Pack = new function () {
       });
 
     function addPackItem() {
-      if (window.selectedProduct) {
+      if (selectedProduct) {
         var $curPackItemQty = $('#curPackItemQty');
-        window.selectedProduct.qty = $curPackItemQty.val();
-        if (!window.selectedProduct.id || !window.selectedProduct.name && $curPackItemQty.valid()) {
+        selectedProduct.qty = $curPackItemQty.val();
+        if ((!selectedProduct.id || !selectedProduct.name) && $curPackItemQty.valid()) {
           window.error_modal(window.error_heading_msg, window.msg_select_one);
 
           return false;
@@ -1424,7 +1426,7 @@ window.product_tabs.Pack = new function () {
         $('#curPackItemName').select2('val', '');
         $('.pack-empty-warning').hide();
       } else {
-        window.error_modal(error_heading_msg, msg_select_one);
+        window.error_modal(window.error_heading_msg, window.msg_select_one);
 
         return false;
       }
