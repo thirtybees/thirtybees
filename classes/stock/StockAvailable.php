@@ -644,7 +644,7 @@ class StockAvailableCore extends ObjectModel
 
         $res = Db::getInstance()->delete(
             'stock_available',
-            'id_product = '.(int) $idProduct.($idProductAttribute ? '`id_product_attribute` = '.(int) $idProductAttribute : '').static::addSqlShopRestriction(null, $shop)
+            'id_product = '.(int) $idProduct.($idProductAttribute ? 'AND `id_product_attribute` = '.(int) $idProductAttribute : '').static::addSqlShopRestriction(null, $shop)
         );
 
         if ($idProductAttribute) {
