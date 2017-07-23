@@ -1,9 +1,6 @@
 /**
  * 2007-2016 PrestaShop
  *
- * Thirty Bees is an extension to the PrestaShop e-commerce software developed by PrestaShop SA
- * Copyright (C) 2017 Thirty Bees
- *
  * NOTICE OF LICENSE
  *
  * This source file is subject to the Open Software License (OSL 3.0)
@@ -12,186 +9,53 @@
  * http://opensource.org/licenses/osl-3.0.php
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
- * to license@thirtybees.com so we can send you a copy immediately.
+ * to license@prestashop.com so we can send you a copy immediately.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
  * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://www.thirtybees.com for more information.
+ * needs please refer to http://www.prestashop.com for more information.
  *
- *  @author    Thirty Bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 Thirty Bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
- *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * International Registered Trademark & Property of PrestaShop SA
  */
-
-/* global jQuery, $, window, showSuccessMessage, showErrorMessage, jAlert, getE, toggle */
 
 var importCancelRequest = false;
 var importContinueRequest = false;
 
-$(document).ready(function () {
-  $('#saveImportMatchs').unbind('click').click(function () {
-
-    var newImportMatchs = $('#newImportMatchs').attr('value');
-    if (newImportMatchs === '') {
-      jAlert(window.errorEmpty);
-    } else {
-      var matchFields = '';
-      $('.type_value').each(function () {
-        matchFields += '&' + $(this).attr('id') + '=' + $(this).attr('value');
-      });
-      $.ajax({
-        type: 'POST',
-        url: 'index.php',
-        cache: false,
-        dataType: 'json',
-        data: 'ajax=1&action=saveImportMatchs&tab=AdminImport&token=' + window.token + '&skip=' + $('input[name=skip]').attr('value') + '&newImportMatchs=' + newImportMatchs + matchFields,
-        success: function (jsonData) {
-          $('#valueImportMatchs').append('<option id="' + jsonData.id + '" value="' + matchFields + '" selected="selected">' + newImportMatchs + '</option>');
-          $('#selectDivImportMatchs').fadeIn('slow');
-        },
-        error: function (XMLHttpRequest) {
-          jAlert('TECHNICAL ERROR Details: ' + window.html_escape(XMLHttpRequest.responseText));
-        }
-      });
-    }
-  });
-
-  $('#loadImportMatchs').unbind('click').click(function () {
-
-    var idToLoad = $('select#valueImportMatchs option:selected').attr('id');
-    $.ajax({
-      type: 'POST',
-      url: 'index.php',
-      cache: false,
-      dataType: 'json',
-      data: 'ajax=1&action=loadImportMatchs&tab=AdminImport&token=' + window.token + '&idImportMatchs=' + idToLoad,
-      success: function (jsonData) {
-        var matchs = jsonData.matchs.split('|');
-        $('input[name=skip]').val(jsonData.skip);
-        for (var i = 0; i < matchs.length; i += 1) {
-          $('#type_value\\[' + i + '\\]').val(matchs[i]).attr('selected', true);
-        }
-      },
-      error: function (XMLHttpRequest) {
-        jAlert('TECHNICAL ERROR Details: ' + window.html_escape(XMLHttpRequest.responseText));
-
-      }
-    });
-  });
-
-  $('#deleteImportMatchs').unbind('click').click(function () {
-    var idToDelete = parseInt($('select#valueImportMatchs option:selected').attr('id'), 10);
-    $.ajax({
-      type: 'POST',
-      url: 'index.php',
-      async: false,
-      cache: false,
-      dataType: 'json',
-      data: 'ajax=1&action=deleteImportMatchs&tab=AdminImport&token=' + window.token + '&idImportMatchs=' + idToDelete,
-      success: function () {
-        $('select#valueImportMatchs option[id=\'' + idToDelete + '\']').remove();
-        if ($('select#valueImportMatchs option').length === 0) {
-          $('#selectDivImportMatchs').fadeOut();
-        }
-      },
-      error: function (XMLHttpRequest) {
-        jAlert('TECHNICAL ERROR Details: ' + window.html_escape(XMLHttpRequest.responseText));
-      }
-    });
-
-  });
-
-  $('#import_stop_button').unbind('click').click(function () {
-    if (importContinueRequest) {
-      $('#importProgress').modal('hide');
-      importContinueRequest = false;
-      window.location.href = window.location.href.split('#')[0]; // reload same URL but do not POST again (so in GET without param)
-    } else {
-      importCancelRequest = true;
-      $('#import_details_progressing').hide();
-      $('#import_details_finished').hide();
-      $('#import_details_stop').show();
-      $('#import_stop_button').hide();
-      $('#import_close_button').hide();
-    }
-  });
-
-  $('#import_continue_button').unbind('click').click(function () {
-    $('#import_continue_button').hide();
-    importContinueRequest = false;
-    $('#import_progress_div').show();
-    $('#import_details_warning ul, #import_details_info ul').html('');
-    $('#import_details_warning, #import_details_info').hide();
-    importNow(0, 5, -1, false, {}, 0);
-  });
-});
-
-function validateImportation(mandatory) {
-  var selectedValues = [];
-  var elem;
-
-  window.toggle(getE('error_duplicate_type'), false);
-  window.toggle(getE('required_column'), false);
-  for (var i = 0; elem = getE('type_value[' + i + ']'); i += 1) {
-    if (selectedValues[elem.options[elem.selectedIndex].value]) {
-      scroll(0, 0);
-      toggle(getE('error_duplicate_type'), true);
-      return false;
-    } else if (elem.options[elem.selectedIndex].value !== 'no') {
-      selectedValues[elem.options[elem.selectedIndex].value] = true;
-    }
-  }
-  $.each(mandatory, function (needed) {
-    if (!selectedValues[mandatory[needed]]) {
-      scroll(0, 0);
-      toggle(getE('required_column'), true);
-      getE('missing_column').innerHTML = mandatory[needed];
-      elem = getE('type_value[0]');
-      for (var j = 0; j < elem.length; j = 1) {
-        if (elem.options[j].value === mandatory[needed]) {
-          getE('missing_column').innerHTML = elem.options[j].innerHTML;
-          break;
-        }
-      }
-
-      return false;
-    }
-  });
-
-  importNow(0, 5, -1, true, {}, 0); // starts with 5 elements to import, but the limit will be adapted for next calls automatically.
-
-  return false; // We return false to avoid form to be posted on the old Controller::postProcess() action
+function html_escape(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 }
 
 function importNow(offset, limit, total, validateOnly, crossStepsVariables, moreStep) {
-  if (parseInt(offset, 10) === 0 && validateOnly) {
+  if (offset == 0 && validateOnly) {
     updateProgressionInit();
   } // first step only, in validation mode
-  if (parseInt(offset, 10) == 0 && !validateOnly) {
+  if (offset == 0 && !validateOnly) {
     updateProgression(0, total, limit, false, moreStep, null);
   }
 
   var data = $('form#import_form').serializeArray();
-  data.push({
-    name: 'crossStepsVars',
-    value: JSON.stringify(crossStepsVariables)
-  });
+  data.push({ 'name': 'crossStepsVars', 'value': JSON.stringify(crossStepsVariables) });
 
   var startingTime = new Date().getTime();
   $.ajax({
     type: 'POST',
     url: 'index.php?ajax=1&action=import&tab=AdminImport&offset=' + offset + '&limit=' + limit + '&token=' + token + (validateOnly ? '&validateOnly=1' : '') + ((moreStep > 0) ? '&moreStep=' + moreStep : ''),
     cache: false,
-    dataType: 'json',
+    dataType: "json",
     data: data,
     success: function (jsonData) {
       if (jsonData.totalCount) {
-        window.total = jsonData.totalCount;
+        total = jsonData.totalCount;
       }
 
       if (jsonData.informations && jsonData.informations.length > 0) {
@@ -214,7 +78,7 @@ function importNow(offset, limit, total, validateOnly, crossStepsVariables, more
       }
 
       // Here, no errors returned
-      if (!jsonData.isFinished) {
+      if (!jsonData.isFinished == true) {
         // compute time taken by previous call to adapt amount of elements by call.
         var previousDelay = new Date().getTime() - startingTime;
         var targetDelay = 5000; // try to keep around 5 seconds by call
@@ -230,7 +94,7 @@ function importNow(offset, limit, total, validateOnly, crossStepsVariables, more
           updateProgression(jsonData.doneCount, total, jsonData.doneCount + newLimit, false, moreStep, jsonData.moreStepLabel);
         }
 
-        if (importCancelRequest) {
+        if (importCancelRequest == true) {
           $('#importProgress').modal('hide');
           importCancelRequest = false;
           window.location.href = window.location.href.split('#')[0]; // reload same URL but do not POST again (so in GET without param)
@@ -242,9 +106,9 @@ function importNow(offset, limit, total, validateOnly, crossStepsVariables, more
 
         // checks if we could go over post_max_size setting. Warns when reach 90% of the actual setting
         if (jsonData.nextPostSize >= jsonData.postSizeLimit * 0.9) {
-          var progressionDone = (jsonData.doneCount * 100) / total;
-          var increase = Math.max(7, parseInt(jsonData.postSizeLimit / (progressionDone * 1024 * 1024)), 10) + 1; // min 8MB
-          $('#import_details_post_limit_value').html(increase + ' MB');
+          var progressionDone = jsonData.doneCount * 100 / total;
+          var increase = Math.max(7, parseInt(jsonData.postSizeLimit / (progressionDone * 1024 * 1024))) + 1; // min 8MB
+          $('#import_details_post_limit_value').html(increase + " MB");
           $('#import_details_post_limit').show();
         }
 
@@ -252,7 +116,7 @@ function importNow(offset, limit, total, validateOnly, crossStepsVariables, more
         if (validateOnly) {
           // update validation bar and process real import
           updateValidation(total, total, total);
-          if (!$('#import_details_warning').is(':visible')) {
+          if (!$('#import_details_warning').is(":visible")) {
             // no warning, directly import now
             $('#import_progress_div').show();
             importNow(0, 5, total, false, {}, 0);
@@ -261,16 +125,19 @@ function importNow(offset, limit, total, validateOnly, crossStepsVariables, more
             importContinueRequest = true;
             $('#import_continue_button').show();
           }
-        } else if (jsonData.oneMoreStep > moreStep) {
-          updateProgression(total, total, total, false, false, null); // do not close now
-          importNow(0, 5, total, false, jsonData.crossStepsVariables, jsonData.oneMoreStep);
         } else {
-          updateProgression(total, total, total, true, moreStep, jsonData.moreStepLabel);
+          if (jsonData.oneMoreStep > moreStep) {
+            updateProgression(total, total, total, false, false, null); // do not close now
+            importNow(0, 5, total, false, jsonData.crossStepsVariables, jsonData.oneMoreStep);
+          } else {
+            updateProgression(total, total, total, true, moreStep, jsonData.moreStepLabel);
+          }
+
         }
       }
     },
-    error: function (XMLHttpRequest, textStatus) {
-      if (textStatus === 'parsererror') {
+    error: function (XMLHttpRequest, textStatus, errorThrown) {
+      if (textStatus == 'parsererror') {
         textStatus = 'Technical error: Unexpected response returned by server. Import stopped.';
       }
       if (validateOnly) {
@@ -282,13 +149,48 @@ function importNow(offset, limit, total, validateOnly, crossStepsVariables, more
   });
 }
 
+function validateImportation(mandatory) {
+  var settedValue = [];
+  var elem;
+
+  window.toggle(window.getE('error_duplicate_type'), false);
+  window.toggle(window.getE('required_column'), false);
+  for (var i = 0; elem = window.getE('type_value[' + i + ']'); i += 1) {
+    if (settedValue[elem.options[elem.selectedIndex].value]) {
+      scroll(0, 0);
+      window.toggle(window.getE('error_duplicate_type'), true);
+
+      return false;
+    } else if (elem.options[elem.selectedIndex].value !== 'no') {
+      settedValue[elem.options[elem.selectedIndex].value] = true;
+    }
+  }
+  for (var needed in mandatory) {
+    if (!settedValue[mandatory[needed]]) {
+      scroll(0, 0);
+      window.toggle(window.getE('required_column'), true);
+      window.getE('missing_column').innerHTML = mandatory[needed];
+      elem = window.getE('type_value[0]');
+      for (var j = 0; j < elem.length; j += 1) {
+        if (elem.options[j].value === mandatory[needed]) {
+          window.getE('missing_column').innerHTML = elem.options[j].innerHTML;
+          break;
+        }
+      }
+      return false;
+    }
+  }
+
+  importNow(0, 5, -1, true, {}, 0); // starts with 5 elements to import, but the limit will be adapted for next calls automatically.
+  return false; // We return false to avoid form to be posted on the old Controller::postProcess() action
+}
+
 function updateProgressionInit() {
-  var $importProgress = $('#importProgress');
-  $importProgress.modal({ backdrop: 'static', keyboard: false, closable: false });
-  $importProgress.modal('show');
-  $importProgress.on('hidden.bs.modal', function () {
+  $('#importProgress').modal({ backdrop: 'static', keyboard: false, closable: false });
+  $('#importProgress').modal('show');
+  $('#importProgress').on('hidden.bs.modal', function () {
     window.location.href = window.location.href.split('#')[0]; // reload same URL but do not POST again (so in GET without param)
-  });
+  })
 
   $('#import_details_progressing').show();
   $('#import_details_finished').hide();
@@ -299,29 +201,23 @@ function updateProgressionInit() {
   $('#import_details_error ul').html('');
   $('#import_details_warning ul, #import_details_info ul').html('');
 
-  var $importValidationDetails = $('#import_validation_details');
-  $importValidationDetails.html($importValidationDetails.attr('default-value'));
-  $('#validate_progressbar_done')
-    .width('0%').parent()
-    .addClass('active progress-striped');
+  $('#import_validation_details').html($('#import_validation_details').attr('default-value'));
+  $('#validate_progressbar_done').width('0%');
+  $('#validate_progressbar_done').parent().addClass('active progress-striped');
   $('#validate_progression_done').html('0');
   $('#validate_progressbar_done2').width('0%');
-  $('#validate_progressbar_next')
-    .width('0%')
-    .removeClass('progress-bar-danger')
-    .addClass('progress-bar-info');
+  $('#validate_progressbar_next').width('0%');
+  $('#validate_progressbar_next').removeClass('progress-bar-danger');
+  $('#validate_progressbar_next').addClass('progress-bar-info');
 
   $('#import_progress_div').hide();
   $('#import_progression_details').html($('#import_progression_details').attr('default-value'));
-  $('#import_progressbar_done')
-    .width('0%')
-    .parent().
-    addClass('active progress-striped');
+  $('#import_progressbar_done').width('0%');
+  $('#import_progressbar_done').parent().addClass('active progress-striped');
   $('#import_progression_done').html('0');
-  $('#import_progressbar_next')
-    .width('0%')
-    .removeClass('progress-bar-danger')
-    .addClass('progress-bar-success');
+  $('#import_progressbar_next').width('0%');
+  $('#import_progressbar_next').removeClass('progress-bar-danger');
+  $('#import_progressbar_next').addClass('progress-bar-success');
 
   $('#import_stop_button').show();
   $('#import_close_button').hide();
@@ -343,11 +239,11 @@ function updateValidation(currentPosition, total, nextPosition) {
     $('#import_validate_div').show();
     $('#import_validation_details').html(currentPosition + '/' + total);
     $('#validate_progressbar_done').width(progressionDone + '%');
-    $('#validate_progression_done').html(parseInt(progressionDone), 10);
+    $('#validate_progression_done').html(parseInt(progressionDone));
     $('#validate_progressbar_next').width((progressionNext - progressionDone) + '%');
   }
 
-  if (currentPosition === total && total === nextPosition) {
+  if (currentPosition == total && total == nextPosition) {
     $('#validate_progressbar_done').parent().removeClass('active progress-striped');
   }
 }
@@ -360,15 +256,15 @@ function updateProgression(currentPosition, total, nextPosition, finish, moreSte
     nextPosition = total;
   }
 
-  var progressionDone = currentPosition * 100 / total;
-  var progressionNext = nextPosition * 100 / total;
+  var progressionDone = (currentPosition * 100) / total;
+  var progressionNext = (nextPosition * 100) / total;
 
   if (total > 0) {
     $('#import_progress_div').show();
     $('#import_progression_details').html(currentPosition + '/' + total);
     if (parseInt(moreStep, 10) === 0) {
       $('#import_progressbar_done').width(progressionDone + '%');
-      $('#import_progression_done').html(parseInt(progressionDone), 10);
+      $('#import_progression_done').html(parseInt(progressionDone, 10));
       $('#import_progressbar_next').width((progressionNext - progressionDone) + '%');
     } else {
       $('#import_progressbar_next').width('0%');
@@ -434,11 +330,100 @@ function updateProgressionError(message, forWarnings) {
   }
 }
 
-function html_escape(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-}
+
+$(document).ready(function () {
+  $('#saveImportMatchs').unbind('click').click(function () {
+    var newImportMatchs = $('#newImportMatchs').val();
+    if (!newImportMatchs) {
+      window.jAlert(errorEmpty);
+    } else {
+      var matchFields = '';
+      $('.type_value').each(function () {
+        matchFields += '&' + $(this).attr('id') + '=' + $(this).attr('value');
+      });
+      $.ajax({
+        type: 'POST',
+        url: 'index.php',
+        async: false,
+        cache: false,
+        dataType: 'json',
+        data: 'ajax=1&action=saveImportMatchs&tab=AdminImport&token=' + window.token + '&skip=' + $('input[name=skip]').attr('value') + '&newImportMatchs=' + newImportMatchs + matchFields,
+        success: function (jsonData) {
+          $('#valueImportMatchs').append('<option id="' + jsonData.id + '" value="' + matchFields + '" selected="selected">' + newImportMatchs + '</option>');
+          $('#selectDivImportMatchs').fadeIn('slow');
+        },
+        error: function (XMLHttpRequest) {
+          window.jAlert('TECHNICAL ERROR Details: ' + window.html_escape(XMLHttpRequest.responseText));
+        }
+      });
+    }
+  });
+
+  $('#loadImportMatchs').unbind('click').click(function () {
+
+    var idToLoad = $('select#valueImportMatchs option:selected').attr('id');
+    $.ajax({
+      type: 'POST',
+      url: 'index.php',
+      async: false,
+      cache: false,
+      dataType: 'json',
+      data: 'ajax=1&action=loadImportMatchs&tab=AdminImport&token=' + window.token + '&idImportMatchs=' + idToLoad,
+      success: function (jsonData) {
+        var matchs = jsonData.matchs.split('|');
+        $('input[name=skip]').val(jsonData.skip);
+        for (var i = 0; i < matchs.length; i += 1) {
+          $('#type_value\\[' + i + '\\]').val(matchs[i]).attr('selected', true);
+        }
+      },
+      error: function (XMLHttpRequest) {
+        window.jAlert('TECHNICAL ERROR Details: ' + window.html_escape(XMLHttpRequest.responseText));
+      }
+    });
+  });
+
+  $('#deleteImportMatchs').unbind('click').click(function () {
+    var idToDelete = $('select#valueImportMatchs option:selected').attr('id');
+    $.ajax({
+      type: 'POST',
+      url: 'index.php',
+      async: false,
+      cache: false,
+      dataType: 'json',
+      data: 'ajax=1&action=deleteImportMatchs&tab=AdminImport&token=' + window.token + '&idImportMatchs=' + idToDelete,
+      success: function () {
+        $('select#valueImportMatchs option[id=\'' + idToDelete + '\']').remove();
+        if ($('select#valueImportMatchs option').length <= 0) {
+          $('#selectDivImportMatchs').fadeOut();
+        }
+      },
+      error: function (XMLHttpRequest) {
+        window.jAlert('TECHNICAL ERROR Details: ' + window.html_escape(XMLHttpRequest.responseText));
+      }
+    });
+  });
+
+  $('#import_stop_button').unbind('click').click(function () {
+    if (importContinueRequest) {
+      $('#importProgress').modal('hide');
+      importContinueRequest = false;
+      window.location.href = window.location.href.split('#')[0]; // reload same URL but do not POST again (so in GET without param)
+    } else {
+      importCancelRequest = true;
+      $('#import_details_progressing').hide();
+      $('#import_details_finished').hide();
+      $('#import_details_stop').show();
+      $('#import_stop_button').hide();
+      $('#import_close_button').hide();
+    }
+  });
+
+  $('#import_continue_button').unbind('click').click(function () {
+    $('#import_continue_button').hide();
+    importContinueRequest = false;
+    $('#import_progress_div').show();
+    $('#import_details_warning ul, #import_details_info ul').html('');
+    $('#import_details_warning, #import_details_info').hide();
+    window.importNow(0, 5, -1, false, {}, 0);
+  });
+});
