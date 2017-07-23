@@ -2647,12 +2647,23 @@ class AdminThemesControllerCore extends AdminController
 
         foreach ($moduleHooks as $hooks) {
             foreach ($hooks as $hook) {
+                $idHook = (int) Hook::getIdByName($hook['hook']);
+	            // Create new hook if module hook is not registered
+	            if (!$idHook) {
+		            $newHook = new Hook();
+		            $newHook->name = pSQL($hook['hook']);
+		            $newHook->title = pSQL($hook['hook']);
+		            $newHook->live_edit = (bool) preg_match('/^display/i', $newHook->name);
+		            $newHook->position = (bool) $newHook->live_edit;
+		            $newHook->add();
+		            $idHook = (int) $newHook->id;
+	            }
                 $sqlHookModule = 'INSERT INTO `'._DB_PREFIX_.'hook_module` (`id_module`, `id_shop`, `id_hook`, `position`)
-									VALUES ('.(int) $idModule.', '.(int) $shop.', '.(int) Hook::getIdByName($hook['hook']).', '.(int) $hook['position'].')';
+									VALUES ('.(int) $idModule.', '.(int) $shop.', '.$idHook.', '.(int) $hook['position'].')';
 
                 if (count($hook['exceptions']) > 0) {
                     foreach ($hook['exceptions'] as $exception) {
-                        $sqlHookModuleExcept = 'INSERT INTO `'._DB_PREFIX_.'hook_module_exceptions` (`id_module`, `id_hook`, `file_name`) VALUES ('.(int) $idModule.', '.(int) Hook::getIdByName($hook['hook']).', "'.pSQL($exception).'")';
+                        $sqlHookModuleExcept = 'INSERT INTO `'._DB_PREFIX_.'hook_module_exceptions` (`id_module`, `id_hook`, `file_name`) VALUES ('.(int) $idModule.', '.$idHook.', "'.pSQL($exception).'")';
                         Db::getInstance()->execute($sqlHookModuleExcept);
                     }
                 }
