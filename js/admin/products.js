@@ -1126,50 +1126,51 @@ product_tabs['Informations'] = new function(){
 			changeTagImage();
 		});
 
-		var i = 0;
-		$('.addImageDescription').click(function(){
-			if (i == 0){
-				$('#createImageDescription').animate({
-					opacity: 1, height: 'toggle'
-					}, 500);
-				i = 1;
-			}else{
-				$('#createImageDescription').animate({
-					opacity: 0, height: 'toggle'
-					}, 500);
-				i = 0;
-			}
-		});
-	};
+  this.switchProductType = function () {
+    window.product_type = parseInt(window.product_type, 10);
+    if (window.product_type === window.product_type_pack) {
+      $('#pack_product').attr('checked', true);
+    } else if (window.product_type === window.product_type_virtual) {
+      $('#virtual_product').attr('checked', true);
+      $('#condition').attr('disabled', true);
+      $('#condition option[value=new]').attr('selected', true);
+    } else {
+      $('#simple_product').attr('checked', true);
+    }
 
-	this.switchProductType = function(){
-		if (product_type == product_type_pack)
-		{
-			$('#pack_product').attr('checked', true);
-		}
-		else if (product_type == product_type_virtual)
-		{
-			$('#virtual_product').attr('checked', true);
-			$('#condition').attr('disabled', true);
-			$('#condition option[value=new]').attr('selected', true);
-		}
-		else
-		{
-			$('#simple_product').attr('checked', true);
-		}
+    $('input[name="type_product"]').on('click', function(e) {
+      // Reset settings
+      $('a[id*="VirtualProduct"]').hide();
 
 		$('input[name="type_product"]').on('click', function(e)
 		{
 			// Reset settings
 			$('a[id*="VirtualProduct"]').hide();
 
-			$('#product-pack-container').hide();
+      $('div.is_virtual_good').hide();
+      $('#is_virtual').val(0);
+      window.tabs_manager.onLoad('VirtualProduct', function(){
+        $('#is_virtual_good').removeAttr('checked');
+      });
 
-			$('div.is_virtual_good').hide();
-			$('#is_virtual').val(0);
-			tabs_manager.onLoad('VirtualProduct', function(){
-				$('#is_virtual_good').removeAttr('checked');
-			});
+      window.product_type = parseInt($(this).val(), 10);
+      $('#warn_virtual_combinations').hide();
+      $('#warn_pack_combinations').hide();
+      // until a product is added in the pack
+      // if product is PTYPE_PACK, save buttons will be disabled
+      if (window.product_type === window.product_type_pack) {
+        if (window.has_combinations) {
+          $('#simple_product').attr('checked', true);
+          $('#warn_pack_combinations').show();
+        } else {
+          $('#product-pack-container').show();
+          // If the pack tab has not finished loaded the changes will be made when the loading event is triggered
+          $('#product-tab-content-Pack').on('loaded', function () {
+            $('#ppack').val(1).attr('checked', true).attr('disabled', true);
+          });
+          $('#product-tab-content-Quantities').on('loaded', function () {
+            $('.stockForVirtualProduct').show();
+          });
 
 			product_type = $(this).val();
 			$('#warn_virtual_combinations').hide();
@@ -1197,35 +1198,43 @@ product_tabs['Informations'] = new function(){
 					$('a[id*="Combinations"]').hide();
 					$('a[id*="Shipping"]').show();
 
-					$('#condition').removeAttr('disabled');
-					$('#condition option[value=new]').removeAttr('selected');
-					$('.stockForVirtualProduct').show();
-					// if pack is enabled, if you choose pack, automatically switch to pack page
-				}
-			}
-			else if (product_type == product_type_virtual)
-			{
-				if (has_combinations)
-				{
-					$('#simple_product').attr('checked', true);
-					$('#warn_virtual_combinations').show();
-				}
-				else
-				{
-					$('a[id*="VirtualProduct"]').show();
-					$('#is_virtual').val(1);
+          window.tabs_manager.onLoad('VirtualProduct', function() {
+            $('#is_virtual_good').attr('checked', true);
+            $('#virtual_good').show();
+          });
 
-					tabs_manager.onLoad('VirtualProduct', function(){
-						$('#is_virtual_good').attr('checked', true);
-						$('#virtual_good').show();
-					});
+          window.tabs_manager.onLoad('Quantities', function() {
+            $('.stockForVirtualProduct').hide();
+          });
 
 					tabs_manager.onLoad('Quantities', function(){
 						$('.stockForVirtualProduct').hide();
 					});
 
-					$('a[id*="Combinations"]').hide();
-					$('a[id*="Shipping"]').hide();
+          window.tabs_manager.onLoad('Informations', function() {
+            $('#condition').attr('disabled', true);
+            $('#condition option[value=refurbished]').removeAttr('selected');
+            $('#condition option[value=used]').removeAttr('selected');
+          });
+        }
+      } else {
+        // 3rd case : product_type is PTYPE_SIMPLE (0)
+        $('a[id*="Combinations"]').show();
+        $('a[id*="Shipping"]').show();
+        $('#condition').removeAttr('disabled');
+        $('#condition option[value=new]').removeAttr('selected');
+        $('.stockForVirtualProduct').show();
+      }
+      // this handle the save button displays and warnings
+      handleSaveButtons();
+    });
+  };
+
+  this.onReady = function () {
+    loadPack();
+    self.bindAvailableForOrder();
+    self.bindTagImage();
+    self.switchProductType();
 
 					tabs_manager.onLoad('Informations', function(){
 						$('#condition').attr('disabled', true);
@@ -1302,50 +1311,12 @@ product_tabs['Pack'] = new function() {
 			return item.name;
 		}
 
-		var selectedProduct;
-		$('#curPackItemName').select2({
-			placeholder: search_product_msg,
-			minimumInputLength: 2,
-			width: '100%',
-			dropdownCssClass: "bootstrap",
-			ajax: {
-				url: "ajax_products_list.php",
-				dataType: 'json',
-				data: function (term) {
-					return {
-						q: term,
-						packItself: $('input[name=\'id_product\']').val()
-					};
-				},
-				results: function (data) {
-					var excludeIds = getSelectedIds();
-					var returnIds = new Array();
-					if (data) {
-						for (var i = data.length - 1; i >= 0; i--) {
-							var is_in = 0;
-							for (var j = 0; j < excludeIds.length; j ++) {
-								if (data[i].id == excludeIds[j][0] && (typeof data[i].id_product_attribute == 'undefined' || data[i].id_product_attribute == excludeIds[j][1]))
-									is_in = 1;
-							}
-							if (!is_in)
-								returnIds.push(data[i]);
-						}
-						return {
-							results: returnIds
-						}
-					} else {
-						return {
-							results: []
-						}
-					}
-				}
-			},
-			formatResult: productFormatResult,
-			formatSelection: productFormatSelection,
-		})
-		.on("select2-selecting", function(e) {
-			selectedProduct = e.object
-		});
+    function addPackItem() {
+      if (selectedProduct) {
+        var $curPackItemQty = $('#curPackItemQty');
+        selectedProduct.qty = $curPackItemQty.val();
+        if ((!selectedProduct.id || !selectedProduct.name) && $curPackItemQty.valid()) {
+          window.error_modal(window.error_heading_msg, window.msg_select_one);
 
 		$('#add_pack_item').on('click', addPackItem);
 
@@ -1379,9 +1350,16 @@ product_tabs['Pack'] = new function() {
 				var line = selectedProduct.qty + 'x' + selectedProduct.id + 'x' + selectedProduct.id_product_attribute;
 				var lineDisplay = selectedProduct.qty + 'x ' + selectedProduct.name;
 
-				$('#divPackItems').html(divContent);
-				$('#inputPackItems').val($('#inputPackItems').val() + line  + '-');
-				$('#namePackItems').val($('#namePackItems').val() + lineDisplay + '¤');
+        $('.delPackItem').on('click', function (e) {
+          e.preventDefault();
+          e.stopPropagation();
+          window.delPackItem($(this).data('delete'), $(this).data('delete-attr'));
+        });
+        selectedProduct = null;
+        $('#curPackItemName').select2('val', '');
+        $('.pack-empty-warning').hide();
+      } else {
+        window.error_modal(window.error_heading_msg, window.msg_select_one);
 
 				$('.delPackItem').on('click', function(e){
 					e.preventDefault();
