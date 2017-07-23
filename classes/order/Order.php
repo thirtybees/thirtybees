@@ -1184,7 +1184,15 @@ class OrderCore extends ObjectModel
 				ORDER BY o.`date_add` DESC
 				'.((int) $limit ? 'LIMIT 0, '.(int) $limit : '');
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('*, ('.$stateNameSql->build().') AS `state_name`, o.`date_add` AS `date_add`, o.`date_upd` AS `date_upd`')
+                ->from('orders', 'o')
+                ->leftJoin('customer', 'c', 'c.`id_customer` = o.`id_customer`')
+                ->where('1'.' '.Shop::addSqlRestriction(false, 'o'))
+                ->orderBy('o.`date_add` DESC')
+                ->limit((int) $limit ? (int) $limit : 0)
+        );
     }
 
     /**
