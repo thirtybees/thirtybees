@@ -102,4 +102,5 @@
   <tab id="CarrierWizard" name="מובילים"/>
   <tab id="Custom_Code" name="קוד מותאם אישית"/>
   <tab id="Duplicate_URLs" name="כתובות זהות"/>
+  <tab id="Image_Mapping" name="Image Mapping"/>
 </entity_tab>

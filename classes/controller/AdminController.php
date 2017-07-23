@@ -2707,9 +2707,7 @@ class AdminControllerCore extends Controller
 
         $this->addPageHeaderToolBarModulesListButton();
 
-        $this->context->smarty->assign(
-            'help_link', 'http://help.prestashop.com/'.Language::getIsoById($this->context->employee->id_lang).'/doc/'.Tools::getValue('controller').'?version='._PS_VERSION_.'&country='.Language::getIsoById($this->context->employee->id_lang)
-        );
+        $this->context->smarty->assign('help_link', '');
     }
 
     /**
