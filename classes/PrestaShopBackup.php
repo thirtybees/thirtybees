@@ -292,7 +292,7 @@ class PrestaShopBackupCore
 
             if (!in_array($schema[0]['Table'], $ignoreInsertTable)) {
                 $data = Db::getInstance()->query('SELECT * FROM `'.$schema[0]['Table'].'`');
-                $sizeof = DB::getInstance()->NumRows();
+                $sizeof = Db::getInstance()->query('SELECT COUNT(*) FROM `'.$schema[0]['Table'].'`');
                 $lines = explode("\n", $schema[0]['Create Table']);
 
                 if ($data && $sizeof > 0) {
