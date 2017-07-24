@@ -751,6 +751,18 @@ abstract class DbCore
      */
     public function numRows()
     {
+        if (!$this->last_cached && $this->result) {
+            $nrows = $this->_numRows($this->result);
+            if ($this->is_cache_enabled) {
+                Cache::getInstance()->set($this->last_query_hash.'_nrows', $nrows);
+            }
+
+            return $nrows;
+        } elseif ($this->is_cache_enabled && $this->last_cached) {
+            return Cache::getInstance()->get($this->last_query_hash.'_nrows');
+        }
+
+        return 0;
     }
 
     /**
