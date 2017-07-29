@@ -370,6 +370,7 @@ class LanguageCore extends ObjectModel
                     ->from('lang', 'l')
                     ->innerJoin('lang_shop', 'ls', 'ls.`id_lang` = l.`id_lang`')
                     ->where('ls.`id_shop` = '.(int) $idShop)
+                    ->where('l.`active` = 1')
             );
         }
 
