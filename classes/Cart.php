@@ -2000,13 +2000,7 @@ class CartCore extends ObjectModel
             }
         }
 
-        if (Configuration::get('PS_ATCP_SHIPWRAP')) {
-            if ($useTax) {
-                // With PS_ATCP_SHIPWRAP, we apply the proportionate tax rate to the shipping
-                // costs. This is on purpose and required in many countries in the European Union.
-                $shippingCost *= (1 + $this->getAverageProductsTaxRate());
-            }
-        } else {
+        if (!Configuration::get('PS_ATCP_SHIPWRAP')) {
             // Apply tax
             if ($useTax && isset($carrierTax)) {
                 $shippingCost *= 1 + ($carrierTax / 100);
