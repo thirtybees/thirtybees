@@ -645,9 +645,9 @@ abstract class DbCore
     /**
      * Executes return the result of $sql as array
      *
-     * @param string|DbQuery $sql   Query to execute
-     * @param bool           $array Return an array instead of a result object (deprecated since 1.5.0.1, use query method instead)
-     * @param bool           $useCache
+     * @param string|DbQuery $sql      Query to execute
+     * @param bool           $array    Return an array instead of a result object (deprecated since 1.5.0.1, use query method instead)
+     * @param bool           $useCache Deprecated, the internal query cache is no longer used
      *
      * @return array|false|null|PDOStatement
      * @throws PrestaShopDatabaseException
@@ -676,7 +676,6 @@ abstract class DbCore
             $result = false;
         } else {
             if (!$array) {
-                $useCache = false;
                 $result = $this->result;
             } else {
                 $result = $this->getAll($this->result);
@@ -693,7 +692,7 @@ abstract class DbCore
      * This function automatically adds "LIMIT 1" to the query
      *
      * @param string|DbQuery $sql      the select query (without "LIMIT 1")
-     * @param bool           $useCache Find it in cache first
+     * @param bool           $useCache Deprecated, the internal query cache is no longer used
      *
      * @return array|bool|object|null
      */
@@ -727,7 +726,7 @@ abstract class DbCore
      * Returns a value from the first row, first column of a SELECT query
      *
      * @param string|DbQuery $sql
-     * @param bool           $useCache
+     * @param bool           $useCache Deprecated, the internal query cache is no longer used
      *
      * @return string|false|null
      */
@@ -769,7 +768,7 @@ abstract class DbCore
      * Executes a query
      *
      * @param string|DbQuery $sql
-     * @param bool           $useCache
+     * @param bool           $useCache Deprecated, the internal query cache is no longer used
      *
      * @return bool|PDOStatement
      * @throws PrestaShopDatabaseException
@@ -818,6 +817,7 @@ abstract class DbCore
      *
      * @param string $string SQL data which will be injected into SQL query
      * @param bool   $htmlOk Does data contain HTML code ? (optional)
+     * @param bool   $bqSql  Escape backquotes
      *
      * @return string Sanitized data
      */
