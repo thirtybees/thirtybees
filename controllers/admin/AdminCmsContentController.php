@@ -129,10 +129,7 @@ class AdminCmsContentControllerCore extends AdminController
         } elseif ($this->display == 'view_page') {
             $fixme = 'fixme'; // FIXME
         } else {
-            $idCmsCategory = (int) Tools::getValue('id_cms_category');
-            if (!$idCmsCategory) {
-                $idCmsCategory = 1;
-            }
+            $idCmsCategory = (int) Tools::getValue('id_cms_category', 1);
 
             // CMS categories breadcrumb
             $cmsTabs = ['cms_category', 'cms'];
