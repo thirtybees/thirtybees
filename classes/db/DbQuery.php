@@ -110,7 +110,7 @@ class DbQueryCore
     public function from($table, $alias = null)
     {
         if (!empty($table)) {
-            if (!preg_match('#^'._DB_PREFIX_.'#i', $table)) {
+            if (strncmp(_DB_PREFIX_, $table, 3) !== 0) {
                 $table = _DB_PREFIX_.$table;
             }
 
@@ -157,7 +157,7 @@ class DbQueryCore
      */
     public function leftJoin($table, $alias = null, $on = null)
     {
-        if (!preg_match('#^'._DB_PREFIX_.'#i', $table)) {
+        if (strncmp(_DB_PREFIX_, $table, 3) !== 0) {
             $table = _DB_PREFIX_.$table;
         }
 
@@ -179,7 +179,7 @@ class DbQueryCore
      */
     public function innerJoin($table, $alias = null, $on = null)
     {
-        if (!preg_match('#^'._DB_PREFIX_.'#i', $table)) {
+        if (strncmp(_DB_PREFIX_, $table, 3) !== 0) {
             $table = _DB_PREFIX_.$table;
         }
 
@@ -200,7 +200,7 @@ class DbQueryCore
      */
     public function leftOuterJoin($table, $alias = null, $on = null)
     {
-        if (!preg_match('#^'._DB_PREFIX_.'#i', $table)) {
+        if (strncmp(_DB_PREFIX_, $table, 3) !== 0) {
             $table = _DB_PREFIX_.$table;
         }
 
@@ -220,7 +220,7 @@ class DbQueryCore
      */
     public function naturalJoin($table, $alias = null)
     {
-        if (!preg_match('#^'._DB_PREFIX_.'#i', $table)) {
+        if (strncmp(_DB_PREFIX_, $table, 3) !== 0) {
             $table = _DB_PREFIX_.$table;
         }
 
@@ -241,7 +241,7 @@ class DbQueryCore
      */
     public function rightJoin($table, $alias = null, $on = null)
     {
-        if (!preg_match('#^'._DB_PREFIX_.'#i', $table)) {
+        if (strncmp(_DB_PREFIX_, $table, 3) !== 0) {
             $table = _DB_PREFIX_.$table;
         }
 
