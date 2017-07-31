@@ -110,10 +110,14 @@ class DbQueryCore
     public function from($table, $alias = null)
     {
         if (!empty($table)) {
+            if (!preg_match('#^'._DB_PREFIX_.'#i', $table)) {
+                $table = _DB_PREFIX_.$table;
+            }
+
             if (empty($this->query['from'])) {
                 $this->query['from'] = [];
             }
-            $this->query['from'][] = '`'._DB_PREFIX_.$table.'`'.($alias ? ' '.$alias : '');
+            $this->query['from'][] = '`'.bqSQL($table).'`'.($alias ? ' '.$alias : '');
         }
 
         return $this;
@@ -153,7 +157,11 @@ class DbQueryCore
      */
     public function leftJoin($table, $alias = null, $on = null)
     {
-        return $this->join('LEFT JOIN `'._DB_PREFIX_.bqSQL($table).'`'.($alias ? ' `'.pSQL($alias).'`' : '').($on ? ' ON '.$on : ''));
+        if (!preg_match('#^'._DB_PREFIX_.'#i', $table)) {
+            $table = _DB_PREFIX_.$table;
+        }
+
+        return $this->join('LEFT JOIN `'.bqSQL($table).'`'.($alias ? ' `'.pSQL($alias).'`' : '').($on ? ' ON '.$on : ''));
     }
 
     /**
@@ -171,7 +179,11 @@ class DbQueryCore
      */
     public function innerJoin($table, $alias = null, $on = null)
     {
-        return $this->join('INNER JOIN `'._DB_PREFIX_.bqSQL($table).'`'.($alias ? ' '.pSQL($alias) : '').($on ? ' ON '.$on : ''));
+        if (!preg_match('#^'._DB_PREFIX_.'#i', $table)) {
+            $table = _DB_PREFIX_.$table;
+        }
+
+        return $this->join('INNER JOIN `'.bqSQL($table).'`'.($alias ? ' '.pSQL($alias) : '').($on ? ' ON '.$on : ''));
     }
 
     /**
@@ -188,7 +200,11 @@ class DbQueryCore
      */
     public function leftOuterJoin($table, $alias = null, $on = null)
     {
-        return $this->join('LEFT OUTER JOIN `'._DB_PREFIX_.bqSQL($table).'`'.($alias ? ' '.pSQL($alias) : '').($on ? ' ON '.$on : ''));
+        if (!preg_match('#^'._DB_PREFIX_.'#i', $table)) {
+            $table = _DB_PREFIX_.$table;
+        }
+
+        return $this->join('LEFT OUTER JOIN `'.bqSQL($table).'`'.($alias ? ' '.pSQL($alias) : '').($on ? ' ON '.$on : ''));
     }
 
     /**
@@ -204,7 +220,11 @@ class DbQueryCore
      */
     public function naturalJoin($table, $alias = null)
     {
-        return $this->join('NATURAL JOIN `'._DB_PREFIX_.bqSQL($table).'`'.($alias ? ' '.pSQL($alias) : ''));
+        if (!preg_match('#^'._DB_PREFIX_.'#i', $table)) {
+            $table = _DB_PREFIX_.$table;
+        }
+
+        return $this->join('NATURAL JOIN `'.bqSQL($table).'`'.($alias ? ' '.pSQL($alias) : ''));
     }
 
     /**
@@ -221,7 +241,11 @@ class DbQueryCore
      */
     public function rightJoin($table, $alias = null, $on = null)
     {
-        return $this->join('RIGHT JOIN `'._DB_PREFIX_.bqSQL($table).'`'.($alias ? ' `'.pSQL($alias).'`' : '').($on ? ' ON '.$on : ''));
+        if (!preg_match('#^'._DB_PREFIX_.'#i', $table)) {
+            $table = _DB_PREFIX_.$table;
+        }
+
+        return $this->join('RIGHT JOIN `'.bqSQL($table).'`'.($alias ? ' `'.pSQL($alias).'`' : '').($on ? ' ON '.$on : ''));
     }
 
     /**
