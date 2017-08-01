@@ -81,6 +81,12 @@ class AdminWarehousesControllerCore extends AdminController
                 'filter'  => false,
                 'search'  => false,
             ],
+            'is_store'        => [
+                'title'   => $this->l('Store'),
+                'orderby' => false,
+                'filter'  => false,
+                'search'  => false,
+            ],
         ];
 
         $this->bulk_actions = [
@@ -206,6 +212,22 @@ class AdminWarehousesControllerCore extends AdminController
                 [
                     'type' => 'hidden',
                     'name' => 'id_address',
+                ],
+                [
+                    'type'   => 'switch',
+                    'label'     => $this->l('In-Store stock'),
+                    'name'   => 'is_store',
+                    'hint'      => $this->l('Set to yes if this warehouse represents your store\'s stock.'),
+                    'values' => [
+                        [
+                            'id'    => 'is_store_on',
+                            'value' => 1,
+                        ],
+                        [
+                            'id'    => 'is_store_off',
+                            'value' => 0,
+                        ],
+                    ]
                 ],
                 [
                     'type'      => 'text',
