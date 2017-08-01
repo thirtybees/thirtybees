@@ -768,6 +768,16 @@ class AdminProductsControllerCore extends AdminController
             ) {
                 if ($product->hasAttributes()) {
                     Product::updateDefaultAttribute($product->id);
+                } else {
+	                // Set stock quantity
+	                $quantityAttributeOld = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+		                (new DbQuery())
+			                ->select('`quantity`')
+			                ->from('stock_available')
+			                ->where('`id_product` = '.(int) $idProductOld)
+			                ->where('`id_product_attribute` = 0')
+	                );
+	                StockAvailable::setQuantity((int) $product->id, 0, (int) $quantityAttributeOld);
                 }
 
                 if (!Tools::getValue('noimage') && !Image::duplicateProductImages($idProductOld, $product->id, $combinationImages)) {

@@ -2644,7 +2644,14 @@ class ProductCore extends ObjectModel
 
         foreach ($result as $row) {
             $idProductAttributeOld = (int) $row['id_product_attribute'];
-            if (!isset($combinations[$idProductAttributeOld])) {
+	        $quantityAttributeOld = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+		        (new DbQuery())
+			        ->select('`quantity`')
+			        ->from('stock_available')
+			        ->where('`id_product` = '.(int) $idProductOld)
+			        ->where('`id_product_attribute` = '.(int) $row['id_product_attribute'])
+	        );
+	        if (!isset($combinations[$idProductAttributeOld])) {
                 $idCombination = null;
                 $idShop = null;
                 $result2 = Db::getInstance()->executeS(
@@ -2671,6 +2678,9 @@ class ProductCore extends ObjectModel
             $return &= $combination->save();
 
             $idProductAttributeNew = (int) $combination->id;
+
+	        // Set stock quantity
+	        StockAvailable::setQuantity((int) $idProductNew, $idProductAttributeNew, (int) $quantityAttributeOld, $idShop);
 
             if ($resultImages = Product::_getAttributeImageAssociations($idProductAttributeOld)) {
                 $combinationImages['old'][$idProductAttributeOld] = $resultImages;
@@ -5547,13 +5557,15 @@ class ProductCore extends ObjectModel
             return 0;
         }
 
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-            '
-			SELECT COUNT(*)
-			FROM `'._DB_PREFIX_.'product_attribute` pa
-			'.Shop::addSqlAssociation('product_attribute', 'pa').'
-			WHERE pa.`id_product` = '.(int) $this->id
-        );
+	    $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+		    (new DbQuery())
+			    ->select('COUNT(*)')
+			    ->from('product_attribute', 'pa')
+			    ->join(Shop::addSqlAssociation('product_attribute', 'pa'))
+			    ->where('pa.`id_product` = '.(int) $this->id)
+	    );
+
+        return (int) $result;
     }
 
     /**
