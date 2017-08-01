@@ -2934,6 +2934,7 @@ CREATE TABLE `PREFIX_warehouse` (
   `name`            VARCHAR(45)                 NOT NULL,
   `management_type` ENUM ('WA', 'FIFO', 'LIFO') NOT NULL DEFAULT 'WA',
   `deleted`         TINYINT(1) UNSIGNED         NOT NULL DEFAULT '0',
+  `is_store`        TINYINT(1) UNSIGNED         NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_warehouse`)
 )
   ENGINE = InnoDB

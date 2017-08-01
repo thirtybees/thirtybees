@@ -58,6 +58,10 @@ class WarehouseCore extends ObjectModel
     /** @var bool True if warehouse has been deleted (hence, no deletion in DB) */
     public $deleted = 0;
 
+    /** @var bool True it is store type */
+    public $is_store = 0;
+
+
     /**
      * Describes the way a Warehouse is managed
      *
@@ -80,6 +84,7 @@ class WarehouseCore extends ObjectModel
             'management_type' => ['type' => self::TYPE_STRING, 'validate' => 'isStockManagement', 'required' => true              ],
             'id_currency'     => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',      'required' => true              ],
             'deleted'         => ['type' => self::TYPE_BOOL],
+            'is_store'        => ['type' => self::TYPE_BOOL],
         ],
     ];
 
