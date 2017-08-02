@@ -485,7 +485,7 @@ abstract class DbCore
             return true;
         }
 
-        if ($addPrefix && _DB_PREFIX_ && !preg_match('#^'._DB_PREFIX_.'#i', $table)) {
+        if ($addPrefix && _DB_PREFIX_ && strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
             $table = _DB_PREFIX_.$table;
         }
 
@@ -572,7 +572,7 @@ abstract class DbCore
             return true;
         }
 
-        if ($addPrefix && !preg_match('#^'._DB_PREFIX_.'#i', $table)) {
+        if ($addPrefix && strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
             $table = _DB_PREFIX_.$table;
         }
 
@@ -612,7 +612,7 @@ abstract class DbCore
      */
     public function delete($table, $where = '', $limit = 0, $useCache = true, $addPrefix = true)
     {
-        if ($addPrefix && !preg_match('#^'._DB_PREFIX_.'#i', $table)) {
+        if ($addPrefix && strncmp(_DB_PREFIX_, $table, strlen(_DB_PREFIX_)) !== 0) {
             $table = _DB_PREFIX_.$table;
         }
 
