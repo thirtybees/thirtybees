@@ -3229,7 +3229,7 @@ class CartCore extends ObjectModel
         }
 
         /* If the product still possesses customization it does not have to be deleted */
-        if (Db::getInstance()->NumRows() && (int) $result['quantity']) {
+        if (Db::getInstance()->NumRows() && isset($result['quantity']) && (int) $result['quantity']) {
             return Db::getInstance()->update(
                 'cart_product',
                 [
