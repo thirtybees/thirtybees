@@ -508,6 +508,7 @@ class AdminThemesControllerCore extends AdminController
             $helperList->tpl_vars['show_filters'] = false;
             $helperList->currentIndex = $this->context->link->getAdminLink('AdminThemes', false);
             $helperList->token = Tools::getAdminTokenLite('AdminThemes');
+
             $list = $helperList->generateList($formatedMetas, $fieldsList);
         }
 
@@ -3255,10 +3256,11 @@ class AdminThemesControllerCore extends AdminController
      */
     public function ajaxProcessLeftMeta()
     {
+
         $result = Db::getInstance()->update(
             'theme_meta',
             [
-                'left_column' => 'NOT `left_column`',
+                'left_column' => ['type' => 'sql', 'value' => 'IF(left_column, 0, 1)'],
             ],
             '`id_theme_meta` = '.(int) Tools::getValue('id_theme_meta'),
             1
