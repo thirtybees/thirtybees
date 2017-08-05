@@ -165,7 +165,7 @@ class ProductDownloadCore extends ObjectModel
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
                 ->select('`id_product_download`')
-                ->from('product_downloade')
+                ->from('product_download')
                 ->where('`filename` = \''.pSQL($filename).'\'')
         );
     }
