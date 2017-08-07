@@ -3260,7 +3260,7 @@ class AdminThemesControllerCore extends AdminController
         $result = Db::getInstance()->update(
             'theme_meta',
             [
-                'left_column' => ['type' => 'sql', 'value' => 'IF(left_column, 0, 1)'],
+                'left_column' => ['type' => 'sql', 'value' => 'NOT `left_column`'],
             ],
             '`id_theme_meta` = '.(int) Tools::getValue('id_theme_meta'),
             1
@@ -3285,7 +3285,7 @@ class AdminThemesControllerCore extends AdminController
         $result = Db::getInstance()->update(
             'theme_meta',
             [
-                'left_column' => 'NOT `left_column`',
+                'left_column' => ['type' => 'sql', 'value' => 'NOT `left_column`'],
             ],
             '`id_theme_meta` = '.(int) Tools::getValue('id_theme_meta'),
             1
@@ -3317,7 +3317,7 @@ class AdminThemesControllerCore extends AdminController
         $result = Db::getInstance()->update(
             'theme_meta',
             [
-                'right_column' => 'NOT `right_column`',
+                'right_column' => ['type' => 'sql', 'value' => 'NOT `right_column`'],
             ],
             '`id_theme_meta` = '.(int) Tools::getValue('id_theme_meta'),
             1
@@ -3342,7 +3342,7 @@ class AdminThemesControllerCore extends AdminController
         $result = Db::getInstance()->update(
             'theme_meta',
             [
-                'right_column' => 'NOT `right_column`',
+                'right_column' => ['type' => 'sql', 'value' => 'NOT `right_column`'],
             ],
             '`id_theme_meta` = '.(int) Tools::getValue('id_theme_meta'),
             1
