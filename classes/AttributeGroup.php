@@ -165,7 +165,7 @@ class AttributeGroupCore extends ObjectModel
     {
         $position = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
-                ->select('MAX(`position`')
+                ->select('MAX(`position`)')
                 ->from('attribute_group')
         );
 
