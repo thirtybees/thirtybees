@@ -38,7 +38,9 @@ class ProductDownloadCore extends ObjectModel
 {
     // @codingStandardsIgnoreStart
 
+    /** @deprecated 1.0.2 This cache is no longer used. */
     protected static $_productIds = [];
+
     /** @var int Product id which download belongs */
     public $id_product;
     /** @var string DisplayFilename the name which appear */
@@ -106,13 +108,16 @@ class ProductDownloadCore extends ObjectModel
     }
 
     /**
-     * Return the id_product_download from an id_product
+     * Find a product's download. As class Product doesn't maintain it's
+     * download, that's the way to find out wether there's a download and
+     * which one it is.
      *
-     * @param int  $idProduct Product the id
-     * @param bool $active
+     * @param int  $idProduct Product ID.
+     * @param bool $active    Wether only an active download or any download.
      *
-     * @return int Product the id for this virtual product
+     * @return int ID of the product download or 0 if there's none.
      *
+     * @since   1.0.2 Removed caching, which ignored $active.
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -121,10 +126,8 @@ class ProductDownloadCore extends ObjectModel
         if (!ProductDownload::isFeatureActive()) {
             return false;
         }
-        if (array_key_exists((int) $idProduct, static::$_productIds)) {
-            return static::$_productIds[$idProduct];
-        }
-        static::$_productIds[$idProduct] = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+
+        $id = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
                 ->select('`id_product_download`')
                 ->from('product_download')
@@ -133,7 +136,10 @@ class ProductDownloadCore extends ObjectModel
                 ->orderBy('`id_product_download` DESC')
         );
 
-        return static::$_productIds[$idProduct];
+        // @deprecated 1.0.2
+        static::$_productIds[$idProduct] = $id;
+
+        return $id;
     }
 
     /**
