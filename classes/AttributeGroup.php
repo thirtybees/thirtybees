@@ -260,7 +260,7 @@ class AttributeGroupCore extends ObjectModel
             if (count($toRemove)) {
                 if (!Db::getInstance()->delete('attribute_lang', '`id_attribute` IN ('.implode(',', $toRemove).')')
                     || !Db::getInstance()->delete('attribute_shop', '`id_attribute` IN ('.implode(',', $toRemove).')')
-                    || !Db::getInstance()->delete('attribute`', '`id_attribute_group` = '.(int) $this->id)
+                    || !Db::getInstance()->delete('attribute', '`id_attribute_group` = '.(int) $this->id)
                 ) {
                     return false;
                 }
