@@ -153,7 +153,7 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
                     $orderDetail['total_price_tax_excl_including_ecotax'] = $orderDetail['unit_price_tax_excl_including_ecotax'] * $orderDetail['product_quantity'];
                     break;
                 case Order::ROUND_LINE:
-                    $orderDetail['total_price_tax_excl'] = Tools::ps_round(($orderDetail['total_price_tax_excl'] * $orderDetail['product_quantity']), _PS_PRICE_DISPLAY_PRECISION_);
+                    $orderDetail['total_price_tax_excl'] = Tools::ps_round(($orderDetail['total_price_tax_excl']), _PS_PRICE_DISPLAY_PRECISION_);
                     $orderDetail['total_price_tax_excl_including_ecotax'] = Tools::ps_round(($orderDetail['unit_price_tax_excl_including_ecotax'] * $orderDetail['product_quantity']), _PS_PRICE_DISPLAY_PRECISION_);
                     break;
                 default:
