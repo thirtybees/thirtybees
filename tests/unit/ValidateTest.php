@@ -452,6 +452,280 @@ class ValidateTest extends \Codeception\TestCase\Test
 		$this->assertSame($expected, Validate::isImageTypeName($input));
 	}
 
+	public function isPriceDataProvider()
+	{
+		return [
+			[true, '1'],
+			[true, '000'],
+			[true, '9999999999'],
+			[true, '1.0'],
+			[true, '99.999999999'],
+			[true, '1000000000.999999999'],
+			[false, ''],
+			[false, ' '],
+			[false, '10000000000'],
+			[false, '1.'],
+			[false, '1,'],
+			[false, '1,0'],
+			[false, '99.9999999999'],
+			[false, '10000000000.999999999'],
+			[false, 'ABC'],
+			[false, '1 0'],
+			[false, '-123'],
+			[false, '-123.00'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isPriceDataProvider
+	 */
+	public function testIsPrice($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isPrice($input));
+	}
+
+	public function isNegativePriceDataProvider()
+	{
+		return [
+			[true, '1'],
+			[true, '000'],
+			[true, '9999999999'],
+			[true, '1.0'],
+			[true, '99.999999999'],
+			[true, '-1000000000.999999999'],
+			[true, '-0'],
+			[true, '-123'],
+			[true, '-123.00'],
+			[false, ''],
+			[false, ' '],
+			[false, '10000000000'],
+			[false, '1.'],
+			[false, '1,'],
+			[false, '1,0'],
+			[false, '99.9999999999'],
+			[false, '10000000000.999999999'],
+			[false, 'ABC'],
+			[false, '1 0'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isNegativePriceDataProvider
+	 */
+	public function testIsNegativePrice($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isNegativePrice($input));
+	}
+
+	public function isLanguageIsoCodeDataProvider()
+	{
+		return [
+			[true, 'US'],
+			[true, 'USA'],
+			[false, ''],
+			[false, ' '],
+			[false, 'U'],
+			[false, 'U.S'],
+			[false, '12'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isLanguageIsoCodeDataProvider
+	 */
+	public function testIsLanguageIsoCode($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isLanguageIsoCode($input));
+	}
+
+	public function isLanguageCodeDataProvider()
+	{
+		return [
+			[true, 'us'],
+			[true, 'us-US'],
+			[true, 'en-gb'],
+			[false, ''],
+			[false, ' '],
+			[false, 'u'],
+			[false, 'GBR'],
+			[false, 'usUS'],
+			[false, 'us US'],
+			[false, 'us_US'],
+			[false, '123'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isLanguageCodeDataProvider
+	 */
+	public function testIsLanguageCode($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isLanguageCode($input));
+	}
+
+	public function isStateIsoCodeDataProvider()
+	{
+		return [
+			[true, 't'],
+			[true, 'T'],
+			[true, 'tn'],
+			[true, 'tn-TN'],
+			[true, 'TN'],
+			[true, 't-t'],
+			[true, 'WTON'],
+			[true, 'WTON-WTON'],
+			[true, 'T1-9'],
+			[true, '0-1'],
+			[false, ''],
+			[false, ' '],
+			[false, 'TN-'],
+			[false, 'TN TN'],
+			[false, 'WTONG-WTON'],
+			[false, 'WTON-WTONG'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isStateIsoCodeDataProvider
+	 */
+	public function testIsStateIsoCode($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isStateIsoCode($input));
+	}
+
+	public function isNumericIsoCodeDataProvider()
+	{
+		return [
+			[true, '00'],
+			[true, '123'],
+			[false, ''],
+			[false, '.'],
+			[false, ' '],
+			[false, 'ABC'],
+			[false, '0'],
+			[false, '1234'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isNumericIsoCodeDataProvider
+	 */
+	public function testIsNumericIsoCode($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isNumericIsoCode($input));
+	}
+
+	public function isDiscountNameDataProvider()
+	{
+		return [
+			[true, 'dsc'],
+			[true, 'summer sale'],
+			[true, 'season4'],
+			[true, 'great®'],
+			[true, 'summer sale is here until the 13'],
+			[false, ''],
+			[false, ' '],
+			[false, 'dn'],
+			[false, 'summer sale is here until the end'],
+			[false, '!<>,;?=+()@"°{}_$%:'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isDiscountNameDataProvider
+	 */
+	public function testIsDiscountName($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isDiscountName($input));
+	}
+
+	public function isCatalogNameDataProvider()
+	{
+		return [
+			[true, ' '],
+			[true, 'featured'],
+			[true, 'FEATURED [summer]'],
+			[false, '<>;=#{}'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isCatalogNameDataProvider
+	 */
+	public function testIsCatalogName($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isCatalogName($input));
+	}
+
+	public function isMessageDataProvider()
+	{
+		return [
+			[true, ''],
+			[true, ' '],
+			[true, 'My name is John and I will help you through your shopping experience.'],
+			[false, 'My name is <b>John</b> and I will help you through your shopping experience.'],
+			[false, 'My name is {$EMPLOYEE_NAME} and I will help you through your shopping experience.'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isMessageDataProvider
+	 */
+	public function testIsMessage($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isMessage($input));
+	}
+
+	public function isCountryNameDataProvider()
+	{
+		return [
+			[true, ' '],
+			[true, 'United States'],
+			[true, 'Uran-Uran'],
+			[false, ''],
+			[false, 'U.S.'],
+			[false, '3rd District'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isCountryNameDataProvider
+	 */
+	public function testIsCountryName($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isCountryName($input));
+	}
+
 	public function isDateProvider()
     {
         return [
