@@ -303,7 +303,156 @@ class ValidateTest extends \Codeception\TestCase\Test
 		$this->assertSame($expected, Validate::isName($input));
 	}
 
-    public function isDateProvider()
+    public function isHookNameDataProvider()
+    {
+    	return [
+		    [true, 'hookDisplayHeader'],
+		    [true, 'hookFooter3'],
+		    [true, 'hookBottom-3'],
+		    [false, 'hookDesc.'],
+    		[true, '123456'],
+	    ];
+    }
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isHookNameDataProvider
+	 */
+	public function testIsHookName($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isHookName($input));
+	}
+
+    public function isMailNameDataProvider()
+    {
+    	return [
+		    [true, 'John Doe'],
+		    [true, 'Carl\'s Jr.'],
+		    [true, 'Henry the 5th'],
+		    [true, '123456'],
+		    [true, '    Attic@! '],
+		    [true, '$%^&*()+¡™£¢∞§¶•ªº–≠'],
+		    [true, 'éåáıíìæ'],
+		    [false, '#hashtag'],
+		    [false, '<script>'],
+		    [false, 'me;you'],
+		    [false, 'bridg='],
+		    [false, 'func{}'],
+		    [true, '[@_@]'],
+	    ];
+    }
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isMailNameDataProvider
+	 */
+	public function testIsMailName($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isMailName($input));
+	}
+
+    public function isMailSubjectDataProvider()
+    {
+    	return [
+		    [true, 'Full fathom five thy father lies, of his bones are coral made. Those are pearls that were his eyes. Nothing of him that doth fade, but doth suffer a sea-change into something rich and strange.'],
+		    [true, '‘Life’s but a walking shadow, a poor player, that struts and frets his hour upon the stage, and then is heard no more; it is a tale told by an idiot, full of sound and fury, signifying nothing.’'],
+		    [true, 'Srp5BDkcZb8n2Wqwv7nK kVEJTqMA5AJ1NeO7I5Ce lP5MWUXM3TPMpQcd0edf xUmHBLSRqpxG7Pol5JKu'],
+		    [true, 'JohnDoe'],
+		    [false, '‘<i>Friends</i>, <b>Romans</b>, countrymen, lend me your ears: I come to bury Caesar, not to praise him.’'],
+	    ];
+    }
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isMailSubjectDataProvider
+	 */
+	public function testIsMailSubject($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isMailSubject($input));
+	}
+
+	public function isModuleNameDataProvider()
+	{
+		return [
+			[true, 'MailChimp'],
+			[true, 'yvcyXdjlKYxztxUUEq3E'],
+			[true, 'thirtybeesv2'],
+			[true, 'RICH_TEXT'],
+			[true, 'checkout-master'],
+			[false, 'thirtybeesv2.1'],
+			[false, 'duplicate~finder'],
+			[false, 'some module'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isModuleNameDataProvider
+	 */
+	public function testIsModuleName($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isModuleName($input));
+	}
+
+	public function isTplNameDataProvider()
+	{
+		return [
+			[true, 'header'],
+			[true, 'header2'],
+			[true, 'FOOTER'],
+			[true, 'FOOTER_1'],
+			[true, 'FOOTER-2'],
+			[false, 'header2.tpl'],
+			[false, 'header2(2)'],
+			[false, 'header 2'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isTplNameDataProvider
+	 */
+	public function testIsTplName($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isTplName($input));
+	}
+
+	public function isImageTypeNameDataProvider()
+	{
+		return [
+			[true, 'type'],
+			[true, 'type2'],
+			[true, 'type 2'],
+			[true, 'TYPE'],
+			[true, 'TYPE_1'],
+			[true, 'TYPE-2'],
+			[false, 'type2.ext'],
+			[false, 'type(2)'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isImageTypeNameDataProvider
+	 */
+	public function testIsImageTypeName($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isImageTypeName($input));
+	}
+
+	public function isDateProvider()
     {
         return [
             [true,  '1991-04-19'],
