@@ -278,6 +278,31 @@ class ValidateTest extends \Codeception\TestCase\Test
         $this->assertSame($expected, Validate::isImageSize($input));
     }
 
+    public function isNameDataProvider()
+    {
+    	return [
+		    [true, 'John'],
+		    [true, 'Anthony Jr.'],
+		    [true, 'Carl\'s Jr.'],
+		    [true, 'VII. Henry'],
+		    [false, '5. Henry'],
+		    [false, 'Henry The 5th'],
+    		[false, 'Attica!'],
+    		[true, '~Smith^&*¡£¢∞§¶•ª–ª'],
+	    ];
+    }
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isNameDataProvider
+	 */
+	public function testIsName($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isName($input));
+	}
+
     public function isDateProvider()
     {
         return [
