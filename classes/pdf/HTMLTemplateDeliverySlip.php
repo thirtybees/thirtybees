@@ -44,14 +44,14 @@ class HTMLTemplateDeliverySlipCore extends HTMLTemplate
     // @codingStandardsIgnoreEnd
 
     /**
-     * @param OrderInvoice $orderInvoice
-     * @param Smarty       $smarty
-     * @param bool         $bulkMode
+     * @param OrderInvoiceCore $orderInvoice
+     * @param Smarty           $smarty
+     * @param bool             $bulkMode
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function __construct(OrderInvoice $orderInvoice, Smarty $smarty, $bulkMode = false)
+    public function __construct(OrderInvoiceCore $orderInvoice, Smarty $smarty, $bulkMode = false)
     {
         $this->order_invoice = $orderInvoice;
         $this->order = new Order($this->order_invoice->id_order);

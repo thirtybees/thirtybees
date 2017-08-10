@@ -39,7 +39,7 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
     // @codingStandardsIgnoreStart
     /** @var Order $order */
     public $order;
-    /** @var OrderSlip $order_slip */
+    /** @var OrderSlipCore $order_slip */
     public $order_slip;
     // @codingStandardsIgnoreEnd
 
@@ -52,7 +52,7 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function __construct(OrderSlip $orderSlip, Smarty $smarty)
+    public function __construct(OrderSlipCore $orderSlip, Smarty $smarty)
     {
         $this->order_slip = $orderSlip;
         $this->order = new Order((int) $orderSlip->id_order);

@@ -50,12 +50,12 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
     // @codingStandardsIgnoreEnd
 
     /**
-     * @param SupplyOrder $supplyOrder
-     * @param Smarty      $smarty
+     * @param SupplyOrderCore $supplyOrder
+     * @param Smarty          $smarty
      *
      * @throws PrestaShopException
      */
-    public function __construct(SupplyOrder $supplyOrder, Smarty $smarty)
+    public function __construct(SupplyOrderCore $supplyOrder, Smarty $smarty)
     {
         $this->supply_order = $supplyOrder;
         $this->smarty = $smarty;
