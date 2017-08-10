@@ -726,6 +726,90 @@ class ValidateTest extends \Codeception\TestCase\Test
 		$this->assertSame($expected, Validate::isCountryName($input));
 	}
 
+	public function isLinkRewriteDataProvider()
+	{
+		// TODO
+		// Find a string that is valid for the first case and not the second
+		if (Configuration::get('PS_ALLOW_ACCENTED_CHARS_URL')) {
+			return [
+				[true, 'home'],
+				[true, 'contact-us'],
+				[true, 'our_story'],
+				[true, 'since-2005'],
+				[false, ''],
+				[false, ' '],
+				[false, '#home'],
+			];
+		} else {
+			return [
+				[true, 'home'],
+				[true, 'contact-us'],
+				[true, 'our_story'],
+				[true, 'since-2005'],
+				[false, ''],
+				[false, ' '],
+				[false, '#home'],
+			];
+		}
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isLinkRewriteDataProvider
+	 */
+	public function testIsLinkRewrite($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isLinkRewrite($input));
+	}
+
+	public function isRoutePatternDataProvider()
+	{
+		// TODO
+		// Find a string that is valid for the first case and not the second
+		if (Configuration::get('PS_ALLOW_ACCENTED_CHARS_URL')) {
+			return [
+				[true, 'home'],
+				[true, 'contact-us'],
+				[true, 'our_story'],
+				[true, 'since-2005'],
+				[true, 'google.com(sale)'],
+				[true, 'node{3}'],
+				[true, '/:usr/'],
+				[false, ''],
+				[false, ' '],
+				[false, '#home'],
+				[false, 'parent\\child'],
+			];
+		} else {
+			return [
+				[true, 'home'],
+				[true, 'contact-us'],
+				[true, 'our_story'],
+				[true, 'since-2005'],
+				[true, 'google.com(sale)'],
+				[true, 'node{3}'],
+				[true, '/:usr/'],
+				[false, ''],
+				[false, ' '],
+				[false, '#home'],
+				[false, 'parent\\child'],
+			];
+		}
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isRoutePatternDataProvider
+	 */
+	public function testIsRoutePattern($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isRoutePattern($input));
+	}
+
 	public function isDateProvider()
     {
         return [
