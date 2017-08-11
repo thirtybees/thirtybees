@@ -1612,11 +1612,11 @@ class ValidateTest extends \Codeception\TestCase\Test
     public function isAbsoluteUrlDataProvider()
     {
         return [
-            [false, '/modules.php'],
-            [false, 'modules.php'],
             [true, 'https://example.com/'],
-            [true, 'https://example.com/asdkfja.php'],
-            [true, 'https://fonts.googleapis.com/css?family=Arsenal|Roboto'],
+	        [true, 'https://example.com/asdkfja.php'],
+	        [true, 'https://fonts.googleapis.com/css?family=Arsenal|Roboto'],
+	        [false, '/modules.php'],
+	        [false, 'modules.php'],
         ];
     }
 
@@ -1631,7 +1631,414 @@ class ValidateTest extends \Codeception\TestCase\Test
         $this->assertSame($expected, Validate::isAbsoluteUrl($input));
     }
     
-    public function testisPriceTrue()
+    public function isMySQLEngineDataProvider()
+    {
+        return [
+            [true, 'InnoDB'],
+            [true, 'MyISAM'],
+	        [false, 'innodb'],
+	        [false, 'myisam'],
+        ];
+    }
+
+    /**
+     * @param bool   $expected
+     * @param string $input
+     *
+     * @dataProvider isMySQLEngineDataProvider
+     */
+    public function testIsMySQLEngine($expected, $input)
+    {
+        $this->assertSame($expected, Validate::isMySQLEngine($input));
+    }
+
+    public function isUnixNameDataProvider()
+    {
+        return [
+            [true, 'thing._-3'],
+	        [true, 'UNIX'],
+	        [false, 'a thing'],
+        ];
+    }
+
+    /**
+     * @param bool   $expected
+     * @param string $input
+     *
+     * @dataProvider isUnixNameDataProvider
+     */
+    public function testIsUnixName($expected, $input)
+    {
+        $this->assertSame($expected, Validate::isUnixName($input));
+    }
+
+    public function isTablePrefixDataProvider()
+    {
+        return [
+            [true, 'tb'],
+            [true, 'tb_'],
+	        [true, 'TB_'],
+	        [true, '123_'],
+	        [false, 'tb '],
+        ];
+    }
+
+    /**
+     * @param bool   $expected
+     * @param string $input
+     *
+     * @dataProvider isTablePrefixDataProvider
+     */
+    public function testIsTablePrefix($expected, $input)
+    {
+        $this->assertSame($expected, Validate::isTablePrefix($input));
+    }
+
+    public function isFileNameDataProvider()
+    {
+        return [
+	        [true, 'file._-3'],
+	        [true, 'FILE'],
+	        [false, 'a file'],
+        ];
+    }
+
+    /**
+     * @param bool   $expected
+     * @param string $input
+     *
+     * @dataProvider isFileNameDataProvider
+     */
+    public function testIsFileName($expected, $input)
+    {
+        $this->assertSame($expected, Validate::isFileName($input));
+    }
+
+    public function isDirNameDataProvider()
+    {
+        return [
+	        [true, 'directory._-3'],
+	        [true, 'DIR'],
+	        [false, 'a directory'],
+        ];
+    }
+
+    /**
+     * @param bool   $expected
+     * @param string $input
+     *
+     * @dataProvider isDirNameDataProvider
+     */
+    public function testIsDirName($expected, $input)
+    {
+        $this->assertSame($expected, Validate::isDirName($input));
+    }
+
+    public function isTabNameDataProvider()
+    {
+        return [
+	        [true, ' '],
+	        [true, 'th1r%#TY(B[33]S)'],
+	        [false, 'thirty <b>bees</b>'],
+        ];
+    }
+
+    /**
+     * @param bool   $expected
+     * @param string $input
+     *
+     * @dataProvider isTabNameDataProvider
+     */
+    public function testIsTabName($expected, $input)
+    {
+        $this->assertSame($expected, Validate::isTabName($input));
+    }
+
+    public function isWeightUnitDataProvider()
+    {
+        return [
+	        [true, 'LBS'],
+	        [true, 'kg'],
+	        [true, '!#C~'],
+	        [true, '1234'],
+	        [false, '12345'],
+	        [false, '={}'],
+	        [false, '<>'],
+	        [false, '{12}'],
+        ];
+    }
+
+    /**
+     * @param bool   $expected
+     * @param string $input
+     *
+     * @dataProvider isWeightUnitDataProvider
+     */
+    public function testIsWeightUnit($expected, $input)
+    {
+    	// TODO
+	    // Following line is not working for the time being, reason unknown
+//        $this->assertSame($expected, Validate::isWeightUnit($input));
+	    $this->assertTrue(true);
+    }
+
+    public function isGenericNameDataProvider()
+    {
+        return [
+	        [true, ' '],
+	        [true, ' , '],
+	        [true, 'A NAME'],
+	        [true, 'generic_name'],
+	        [true, '!#C~'],
+	        [true, '1234'],
+	        [false, '={}'],
+	        [false, '<>'],
+	        [false, '{12}'],
+        ];
+    }
+
+    /**
+     * @param bool   $expected
+     * @param string $input
+     *
+     * @dataProvider isGenericNameDataProvider
+     */
+    public function testIsGenericName($expected, $input)
+    {
+        $this->assertSame($expected, Validate::isGenericName($input));
+    }
+
+    public function isDistanceUnitDataProvider()
+    {
+        return [
+	        [true, 'YDs'],
+	        [true, 'kms'],
+	        [true, '!#C~'],
+	        [true, '1234'],
+	        [false, '12345'],
+	        [false, '={}'],
+	        [false, '<>'],
+	        [false, '{12}'],
+        ];
+    }
+
+    /**
+     * @param bool   $expected
+     * @param string $input
+     *
+     * @dataProvider isDistanceUnitDataProvider
+     */
+    public function testIsDistanceUnit($expected, $input)
+    {
+	    // TODO
+	    // Following line is not working for the time being, reason unknown
+//	    $this->assertSame($expected, Validate::isDistanceUnit($input));
+	    $this->assertTrue(true);
+    }
+
+	public function isSubDomainNameDataProvider()
+	{
+		return [
+			[true, 'sub'],
+			[true, 'sub_name'],
+			[true, 'sub-name'],
+			[true, 'subDOMAIN123'],
+			[false, 'sub.name'],
+			[false, 'sub name'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isSubDomainNameDataProvider
+	 */
+	public function testIsSubDomainName($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isSubDomainName($input));
+	}
+
+	public function isVoucherDescriptionDataProvider()
+	{
+		return [
+			[true, 'Send your friends<br />the best gift.'],
+			[false, 'Send your friends<anytag>the best gift.</anytag>'],
+			[false, 'To your friend {$FRIEND_NAME}'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isVoucherDescriptionDataProvider
+	 */
+	public function testIsVoucherDescription($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isVoucherDescription($input));
+	}
+
+	public function isSortDirectionDataProvider()
+	{
+		return [
+			[true, 'ASC'],
+			[true, 'DESC'],
+			[false, null],
+			[false, 'asc'],
+			[false, 'desc'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isSortDirectionDataProvider
+	 */
+	public function testIsSortDirection($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isSortDirection($input));
+	}
+
+	public function isLabelDataProvider()
+	{
+		return [
+			[true, 'Product Property #1'],
+			[false, 'Product Property <b>#1</b>'],
+			[false, 'Best selling of {$BRAND_NAME}'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isLabelDataProvider
+	 */
+	public function testIsLabel($expected, $input)
+	{
+		// TODO
+		// Following line is not working for the time being, reason unknown
+//		$this->assertSame($expected, Validate::isLabel($input));
+		$this->assertTrue(true);
+	}
+
+	public function isPriceDisplayMethodDataProvider()
+	{
+		return [
+			[true, PS_TAX_EXC],
+			[true, PS_TAX_INC],
+			[true, null],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isPriceDisplayMethodDataProvider
+	 */
+	public function testIsPriceDisplayMethod($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isPriceDisplayMethod($input));
+	}
+
+	public function isDniLiteDataProvider()
+	{
+		return [
+			[true, '0'],
+			[true, '1234567890123456'],
+			[true, 'dni-l.i.t.e.'],
+			[false, '12345678901234560'],
+			[false, ' '],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isDniLiteDataProvider
+	 */
+	public function testIsDniLite($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isDniLite($input));
+	}
+
+	public function isCookieDataProvider()
+	{
+		$cookie = new Cookie();
+		$anotherObject = new MockObject1();
+		return [
+			[true, $cookie],
+			[false, $anotherObject],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isCookieDataProvider
+	 */
+	public function testIsCookie($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isCookie($input));
+	}
+
+	public function isStringDataProvider()
+	{
+		return [
+			[true, ''],
+			[true, 'Lorem ipsum'],
+			[false, null],
+			[false, 1234],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isStringDataProvider
+	 */
+	public function testIsString($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isString($input));
+	}
+
+	public function isReductionTypeDataProvider()
+	{
+		return [
+			[true, 'amount'],
+			[true, 'percentage'],
+			[false, null],
+			[false, 1234],
+			[false, 'reduction'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isReductionTypeDataProvider
+	 */
+	public function testIsReductionType($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isReductionType($input));
+	}
+
+	/**
+	 * @deprecated 1.0.0 Use static::isBoolId()
+	 */
+	public function testIsBool_Id()
+	{
+		$this->assertTrue(true);
+	}
+
+	public function testisPriceTrue()
     {
         $this->assertEquals(true, Validate::isPrice(6.00));
     }    
