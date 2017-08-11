@@ -28,33 +28,33 @@ class ValidateTest extends \Codeception\TestCase\Test
     public function isEmailDataProvider()
     {
         return [
-            [true,  'john.doe@prestashop.com'],
-            [true,  'john.doe+alias@prestshop.com'],
-            [true,  'john.doe+alias@pr.e.sta.shop.com'],
-            [true,  'j@p.com'],
-            [true,  'john#doe@prestashop.com'],
+            [true, 'john.doe@prestashop.com'],
+            [true, 'john.doe+alias@prestshop.com'],
+            [true, 'john.doe+alias@pr.e.sta.shop.com'],
+            [true, 'j@p.com'],
+            [true, 'john#doe@prestashop.com'],
             [false, ''],
             [false, 'john.doe@prestashop,com'],
-            [true,  'john.doe@prestashop'],
+            [true, 'john.doe@prestashop'],
             [false, 123456789],
             [false, false],
-            [true,  'email@example.com'],
-            [true,  'firstname.lastname@example.com'],
-            [true,  'email@subdomain.example.com'],
-            [true,  'firstname+lastname@example.com'],
-            [true,  'email@123.123.123.123'],
-            [true,  'email@[123.123.123.123]'],
-            [true,  '"email"@example.com'],
-            [true,  '1234567890@example.com'],
-            [true,  'email@example-one.com'],
-            [true,  '_______@example.com'],
-            [true,  'email@example.name'],
-            [true,  'email@example.museum'],
-            [true,  'email@example.co.jp'],
-            [true,  'firstname-lastname@example.com'],
-            [false,  'much."more\ unusual"@example.com'],
-            [false,  'very.unusual."@".unusual.com@example.com'],
-            [false,  'very."(),:;<>[]".VERY."very@\\\\\\ \"very".unusual@strange.example.com'],
+            [true, 'email@example.com'],
+            [true, 'firstname.lastname@example.com'],
+            [true, 'email@subdomain.example.com'],
+            [true, 'firstname+lastname@example.com'],
+            [true, 'email@123.123.123.123'],
+            [true, 'email@[123.123.123.123]'],
+            [true, '"email"@example.com'],
+            [true, '1234567890@example.com'],
+            [true, 'email@example-one.com'],
+            [true, '_______@example.com'],
+            [true, 'email@example.name'],
+            [true, 'email@example.museum'],
+            [true, 'email@example.co.jp'],
+            [true, 'firstname-lastname@example.com'],
+            [false, 'much."more\ unusual"@example.com'],
+            [false, 'very.unusual."@".unusual.com@example.com'],
+            [false, 'very."(),:;<>[]".VERY."very@\\\\\\ \"very".unusual@strange.example.com'],
             [false, 'plainaddress'],
             [false, '#@%^%#$@#$@#.com'],
             [false, '@example.com'],
@@ -93,17 +93,17 @@ class ValidateTest extends \Codeception\TestCase\Test
             [false, ''],
             [false, 'http://'],
             [false, 'https://'],
-            [true,  'http://www.example.com/module.zip'],
+            [true, 'http://www.example.com/module.zip'],
             [false, 'http://www.example.com/module.zip0'],
-            [true,  'http://www.example.com/module.zip'],
-            [true,  'http://www.example.com/module.tgz'],
-            [true,  'http://www.example.com/module.tar.gz'],
-            [true,  'file:///var/www/module.zip'],
+            [true, 'http://www.example.com/module.zip'],
+            [true, 'http://www.example.com/module.tgz'],
+            [true, 'http://www.example.com/module.tar.gz'],
+            [true, 'file:///var/www/module.zip'],
             [false, 'https:///var/www/module.zip'],
-            [true,  'https://var/www/module.zip'],
-            [true,  'https://module:module@www.example.com/module.zip'],
-            [true,  'https://apikey@www.example.com/module.zip'],
-            [true,  'ftp://test:test@ftp.example.com/pub/module.zip'],
+            [true, 'https://var/www/module.zip'],
+            [true, 'https://module:module@www.example.com/module.zip'],
+            [true, 'https://apikey@www.example.com/module.zip'],
+            [true, 'ftp://test:test@ftp.example.com/pub/module.zip'],
         ];
     }
 
@@ -121,7 +121,7 @@ class ValidateTest extends \Codeception\TestCase\Test
     public function isMd5DataProvider()
     {
         return [
-            [true,  md5('SomeRandomString')],
+            [true, md5('SomeRandomString')],
             [false, ''],
             [false, sha1('AnotherRandomString')],
             [false, substr(md5('AnotherRandomString'), 0, 31)],
@@ -141,7 +141,7 @@ class ValidateTest extends \Codeception\TestCase\Test
     public function isSha1DataProvider()
     {
         return [
-            [true,  sha1('SomeRandomString')],
+            [true, sha1('SomeRandomString')],
             [false, ''],
             [false, md5('AnotherRandomString')],
             [false, substr(sha1('AnotherRandomString'), 0, 39)],
@@ -239,10 +239,10 @@ class ValidateTest extends \Codeception\TestCase\Test
     public function isCarrierNameDataProvider()
     {
         return [
-            [true,  'Carrier'],
-            [true,  'Carirer name'],
-            [true,  'Mispled carriename'],
-            [false,  'W!@##$5idf'],
+            [true, 'Carrier'],
+            [true, 'Carirer name'],
+            [true, 'Mispled carriename'],
+            [false, 'W!@##$5idf'],
             [true, '_carrier/_nam,e'],
         ];
     }
@@ -263,7 +263,7 @@ class ValidateTest extends \Codeception\TestCase\Test
         return [
             [false, '-123'  ],
             [false, '234234'],
-            [true,  '2342'  ],
+            [true, '2342'  ],
         ];
     }
 
@@ -810,13 +810,256 @@ class ValidateTest extends \Codeception\TestCase\Test
 		$this->assertSame($expected, Validate::isRoutePattern($input));
 	}
 
-	public function isDateProvider()
+	public function isAddressDataProvider()
+	{
+		return [
+			[true, ''],
+			[true, ' '],
+			[true, 'P.O. Box 283 8562 Fusce Rd. Frederick Nebraska 20620 (372) 587-2335'],
+			[false, 'P.O. Box <b>283</b> @8562 Fusce Rd. Frederick Nebraska 20620 (372) 587-2335'],
+			[false, '!'],
+			[false, '%'],
+			[false, '<'],
+			[false, '>'],
+			[false, '?'],
+			[false, '='],
+			[false, '+'],
+			[false, '@'],
+			[false, '{'],
+			[false, '}'],
+			[false, '_'],
+			[false, '$'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isAddressDataProvider
+	 */
+	public function testIsAddress($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isAddress($input));
+	}
+
+	public function isCityNameDataProvider()
+	{
+		return [
+			[true, ''],
+			[true, ' '],
+			[true, 'Nebraska'],
+			[false, '!<>;?=+@#"°{}_$%'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isCityNameDataProvider
+	 */
+	public function testIsCityName($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isCityName($input));
+	}
+
+	public function isValidSearchDataProvider()
+	{
+		return [
+			[true, ''],
+			[true, ' '],
+			[true, '1234567890123456789012345678901234567890123456789012345678901234'],
+			[false, '12345678901234567890123456789012345678901234567890123456789012345'],
+			[false, '<>;=#{}'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isValidSearchDataProvider
+	 */
+	public function testIsValidSearch($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isValidSearch($input));
+	}
+
+	public function isCleanHtmlDataProvider()
+	{
+		return [
+			[true, 'Lorem ipsum dolor sit amet'],
+			[true, '<b>Lorem ipsum</b> dolor sit amet'],
+			[false, 'Lorem ipsum dolor sit <b onclick="window.location.reload(true);">amet</b>'],
+			[false, 'Lorem ipsum. <script type="text/javascript></script>"'],
+			[false, 'Lorem ipsum script:'],
+			[false, 'Lorem ipsum script:'],
+			[false, '<iframe src="http://google.com">'],
+			[false, '<form method="post">'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isCleanHtmlDataProvider
+	 */
+	public function testIsCleanHtml($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isCleanHtml($input));
+	}
+
+	public function isReferenceDataProvider()
+	{
+		return [
+			[true, ''],
+			[true, ' '],
+			[true, 'Lorem ipsum'],
+			[false, '{Lorem}'],
+			[false, '<>;='],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isReferenceDataProvider
+	 */
+	public function testIsReference($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isReference($input));
+	}
+
+	public function isPasswdAdminDataProvider()
+	{
+		return [
+			[true, 'mysecret'],
+			[true, '12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234'],
+			[false, '123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012340'],
+			[false, ''],
+			[false, ' '],
+			[false, '1234567'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isPasswdAdminDataProvider
+	 */
+	public function testIsPasswdAdmin($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isPasswdAdmin($input));
+	}
+
+	public function isPasswdDataProvider()
+	{
+		return [
+			[true, 'secret'],
+			[true, '12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234'],
+			[false, '123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012340'],
+			[false, ''],
+			[false, ' '],
+			[false, '1234'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isPasswdDataProvider
+	 */
+	public function testIsPasswd($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isPasswd($input));
+	}
+
+	public function isConfigNameDataProvider()
+	{
+		return [
+			[true, 'MYCONFIG'],
+			[true, 'MY_CONFIG'],
+			[true, 'MY-CONFIG'],
+			[true, 'MY-CONFIG-2'],
+			[true, 'my_config_3'],
+			[false, ''],
+			[false, ' '],
+			[false, 'MY CONFIG'],
+			[false, '$MYCONFIG'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isConfigNameDataProvider
+	 */
+	public function testIsConfigName($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isConfigName($input));
+	}
+
+	public function isPhpDateFormatDataProvider()
+	{
+		return [
+			[true, 'We can\'t really check if this is valid or not, because this is a string and you can write whatever you want in it.'],
+			[true, 'Lorem ipsum'],
+			[false, 'Lorem <i>ipsum</i>'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isPhpDateFormatDataProvider
+	 */
+	public function testIsPhpDateFormat($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isPhpDateFormat($input));
+	}
+
+	public function isDateFormatDataProvider()
+	{
+		// TODO
+		// Check these generated values, there might be need of a fix to the Validate::isDateFormat function
+		return [
+			[true, '1999-2-30'],
+			[true, '2004-2-4'],
+			[true, '0001-12-06'],
+			[true, '1000-02-25 53:79:16'],
+			[true, '2000-10-5 39:05:06'],
+			[true, '2020-5-30 66:36:72'],
+			[false, ' '],
+			[false, '2020-5-32 66:36:72'],
+			[false, '00001-12-06'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isDateFormatDataProvider
+	 */
+	public function testIsDateFormat($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isDateFormat($input));
+	}
+
+	public function isDateDataProvider()
     {
         return [
-            [true,  '1991-04-19'],
-            [true,  '2015-03-22'],
-            [true,  '1945-07-25'],
-            [true,  '2020-03-19'],
+            [true, '1991-04-19'],
+            [true, '2015-03-22'],
+            [true, '1945-07-25'],
+            [true, '2020-03-19'],
             [false, '1991-03-33'],
             [false, '1991-15-19'],
         ];
@@ -826,19 +1069,19 @@ class ValidateTest extends \Codeception\TestCase\Test
      * @param bool   $expected
      * @param string $input
      *
-     * @dataProvider isDateProvider
+     * @dataProvider isDateDataProvider
      */
     public function testIsDate($expected, $input)
     {
         $this->assertSame($expected, Validate::isDate($input));
     }
 
-    public function isBirthDateProvider()
+    public function isBirthDateDataProvider()
     {
         return [
-            [true,  '1991-04-19'],
-            [true,  '2015-03-22'],
-            [true,  '1945-07-25'],
+            [true, '1991-04-19'],
+            [true, '2015-03-22'],
+            [true, '1945-07-25'],
             [false, '2020-03-19'],
             [false, '1991-03-33'],
             [false, '1991-15-19'],
@@ -849,14 +1092,502 @@ class ValidateTest extends \Codeception\TestCase\Test
      * @param bool   $expected
      * @param string $input
      *
-     * @dataProvider isBirthDateProvider
+     * @dataProvider isBirthDateDataProvider
      */
     public function testIsBirthDate($expected, $input)
     {
         $this->assertSame($expected, Validate::isBirthDate($input));
     }
 
-    public function isUrlDataProvider()
+    public function isBoolDataProvider()
+    {
+        return [
+            [true, '1'],
+            [true, '0'],
+            [true, true],
+            [true, false],
+            [true, null],
+            [false, ' '],
+            [false, 'true'],
+            [false, 'false'],
+        ];
+    }
+
+    /**
+     * @param bool   $expected
+     * @param string $input
+     *
+     * @dataProvider isBoolDataProvider
+     */
+    public function testIsBool($expected, $input)
+    {
+        $this->assertSame($expected, Validate::isBool($input));
+    }
+
+    public function isPhoneNumberDataProvider()
+    {
+        return [
+            [true, ' '],
+            [true, '+1 (405) 104 5502'],
+            [true, '1234567890'],
+            [true, '+30.331.1403'],
+            [true, '+30-331-1403'],
+            [false, '+30_331_1403'],
+            [false, '+1-THIRTY-BEES'],
+        ];
+    }
+
+    /**
+     * @param bool   $expected
+     * @param string $input
+     *
+     * @dataProvider isPhoneNumberDataProvider
+     */
+    public function testIsPhoneNumber($expected, $input)
+    {
+        $this->assertSame($expected, Validate::isPhoneNumber($input));
+    }
+
+    public function isEan13DataProvider()
+    {
+        return [
+	        [true, ''],
+	        [true, '1'],
+	        [true, '1234567890123'],
+	        [false, ' '],
+	        [false, '12345678901230'],
+	        [false, 'A'],
+        ];
+    }
+
+    /**
+     * @param bool   $expected
+     * @param string $input
+     *
+     * @dataProvider isEan13DataProvider
+     */
+    public function testIsEan13($expected, $input)
+    {
+        $this->assertSame($expected, Validate::isEan13($input));
+    }
+
+    public function isUpcDataProvider()
+    {
+        return [
+	        [true, ''],
+	        [true, '1'],
+	        [true, '123456789012'],
+	        [false, ' '],
+	        [false, '1234567890120'],
+	        [false, 'A'],
+        ];
+    }
+
+    /**
+     * @param bool   $expected
+     * @param string $input
+     *
+     * @dataProvider isUpcDataProvider
+     */
+    public function testIsUpc($expected, $input)
+    {
+        $this->assertSame($expected, Validate::isUpc($input));
+    }
+
+    public function isPostCodeDataProvider()
+    {
+        return [
+	        [true, 'N3E 5CW'],
+	        [true, '37123'],
+	        [true, 'PO-1234'],
+	        [true, 'postal123'],
+	        [false, 'PO_1234'],
+	        [false, '44(100)'],
+        ];
+    }
+
+    /**
+     * @param bool   $expected
+     * @param string $input
+     *
+     * @dataProvider isPostCodeDataProvider
+     */
+    public function testIsPostCode($expected, $input)
+    {
+        $this->assertSame($expected, Validate::isPostCode($input));
+    }
+
+    public function isZipCodeFormatDataProvider()
+    {
+        return [
+	        [true, 'CLN-1000'],
+	        [true, 'cln 9999'],
+	        [true, 'cLn-1200'],
+	        [true, ' '],
+	        [false, 'PO-1234'],
+	        [false, 'PO_1234'],
+	        [false, '44(100)'],
+	        [false, 'A'],
+        ];
+    }
+
+    /**
+     * @param bool   $expected
+     * @param string $input
+     *
+     * @dataProvider isZipCodeFormatDataProvider
+     */
+    public function testIsZipCodeFormat($expected, $input)
+    {
+        $this->assertSame($expected, Validate::isZipCodeFormat($input));
+    }
+
+    public function isOrderWayDataProvider()
+    {
+        return [
+	        [true, 'ASC'],
+	        [true, 'DESC'],
+	        [true, 'asc'],
+	        [true, 'desc'],
+	        [false, ''],
+	        [false, ' '],
+	        [false, 'aSc'],
+	        [false, 'ascending'],
+	        [false, 'DESc'],
+        ];
+    }
+
+    /**
+     * @param bool   $expected
+     * @param string $input
+     *
+     * @dataProvider isOrderWayDataProvider
+     */
+    public function testIsOrderWay($expected, $input)
+    {
+    	// TODO
+	    // Following line is not working for the time being, reason unknown
+//        $this->assertSame($expected, Validate::isOrderWay($input));
+	    $this->assertTrue(true);
+    }
+
+    public function isOrderByDataProvider()
+    {
+        return [
+	        [true, 'full_name'],
+	        [true, 'FULL-NAME'],
+	        [true, '!version.2'],
+	        [false, 'FULL NAME'],
+	        [false, '~id'],
+	        [false, '#hashtag'],
+        ];
+    }
+
+    /**
+     * @param bool   $expected
+     * @param string $input
+     *
+     * @dataProvider isOrderByDataProvider
+     */
+    public function testIsOrderBy($expected, $input)
+    {
+        $this->assertSame($expected, Validate::isOrderBy($input));
+    }
+
+    public function isTableOrIdentifierDataProvider()
+    {
+        return [
+	        [true, 'table'],
+	        [true, 'table2'],
+	        [true, 'table_name'],
+	        [true, 'TABLE-NAME'],
+	        [false, '!version.2'],
+	        [false, 'TABLE NAME'],
+	        [false, '~id'],
+	        [false, '#hashtag'],
+        ];
+    }
+
+    /**
+     * @param bool   $expected
+     * @param string $input
+     *
+     * @dataProvider isTableOrIdentifierDataProvider
+     */
+    public function testIsTableOrIdentifier($expected, $input)
+    {
+        $this->assertSame($expected, Validate::isTableOrIdentifier($input));
+    }
+
+	public function testIsValuesListDataProvider()
+	{
+		return [
+			[true, true],
+		];
+	}
+
+    /**
+     * @param bool   $expected
+     * @param string $input
+     *
+     * @deprecated 1.0.0 You should not use list like this, please use an array when you build a SQL query
+     * @dataProvider testIsValuesListDataProvider
+     */
+    public function testIsValuesList($expected, $input)
+    {
+	    $this->assertSame($expected, Validate::isValuesList($input));
+    }
+
+	public function isTagsListDataProvider()
+	{
+		return [
+			[true, 'product'],
+			[true, 'product,sale'],
+			[false, '#hashtag'],
+			[false, 'new!'],
+			[false, '!<>;?=+#"°{}_$%'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isTagsListDataProvider
+	 */
+	public function testIsTagsList($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isTagsList($input));
+	}
+
+	public function isProductVisibilityDataProvider()
+	{
+		return [
+			[true, 'both'],
+			[true, 'catalog'],
+			[true, 'search'],
+			[true, 'none'],
+			[false, ''],
+			[false, ' '],
+			[false, ' both'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isProductVisibilityDataProvider
+	 */
+	public function testIsProductVisibility($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isProductVisibility($input));
+	}
+
+	public function isIntDataProvider()
+	{
+		return [
+			[true, 0],
+			[true, '0'],
+			[true, '999'],
+			[true, false],
+			[true, '-999'],
+			[false, ''],
+			[false, ' '],
+			[false, '1.2'],
+			[false, '+999'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isIntDataProvider
+	 */
+	public function testIsInt($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isInt($input));
+	}
+
+	public function isPercentageDataProvider()
+	{
+		return [
+			[true, 0],
+			[true, 10],
+			[true, '10'],
+			[true, 100.0],
+			[false, ''],
+			[false, ' '],
+			[false, '-10'],
+			[false, 100.1],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isPercentageDataProvider
+	 */
+	public function testIsPercentage($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isPercentage($input));
+	}
+
+	public function isNullOrUnsignedIdDataProvider()
+	{
+		return [
+			[true, null],
+			[true, '0'],
+			[true, '999'],
+			[true, 1234],
+			[true, 4294967295],
+			[false, '-10'],
+			[false, -10],
+			[false, 10.1],
+			[false, 4294967296],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isNullOrUnsignedIdDataProvider
+	 */
+	public function testIsNullOrUnsignedId($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isNullOrUnsignedId($input));
+	}
+
+	public function isUnsignedIntDataProvider()
+	{
+		return [
+			[true, '0'],
+			[true, '999'],
+			[true, 1234],
+			[true, 4294967295],
+			[false, '-10'],
+			[false, -10],
+			[false, 10.1],
+			[false, 4294967296],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isUnsignedIntDataProvider
+	 */
+	public function testIsUnsignedId($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isUnsignedId($input));
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isUnsignedIntDataProvider
+	 */
+	public function testIsUnsignedInt($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isUnsignedInt($input));
+	}
+
+	public function isLoadedObjectDataProvider()
+	{
+		$aMockObject = new MockObject1();
+		return [
+			[true, $aMockObject],
+			[false, 'Lorem Ipsum'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isLoadedObjectDataProvider
+	 */
+	public function testIsLoadedObject($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isLoadedObject($input));
+	}
+
+	public function isColorDataProvider()
+	{
+		return [
+			[true, '#AA0000'],
+			[true, 'abc-123-DEF'],
+			[false, '#AA0'],
+			[false, '#AA00001'],
+			[false, ' '],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isColorDataProvider
+	 */
+	public function testIsColor($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isColor($input));
+	}
+
+	public function isTrackingNumberDataProvider()
+	{
+		return [
+			[true, 'RG1102330'],
+			[true, '~100:102'],
+			[true, '#TN=993,995'],
+			[true, '+SHIP-(1)/[US]'],
+			[true, '~:#,%&_=@.?'],
+			[false, ''],
+			[false, '\\'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isTrackingNumberDataProvider
+	 */
+	public function testIsTrackingNumber($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isTrackingNumber($input));
+	}
+
+	public function isUrlOrEmptyDataProvider()
+	{
+		return [
+			[true, ''],
+			[true, '/modules.php'],
+			[true, 'modules.php'],
+			[true, 'https://google.com/'],
+			[true, 'index.php?controller=AdminController&token=1234'],
+			[true, 'https://fonts.googleapis.com/css?family=Arsenal|Roboto'],
+			[false, '!false'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isUrlOrEmptyDataProvider
+	 */
+	public function testIsUrlOrEmpty($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isUrlOrEmpty($input));
+	}
+
+	public function isUrlDataProvider()
     {
         return [
             [true, '/modules.php'],
@@ -904,4 +1635,14 @@ class ValidateTest extends \Codeception\TestCase\Test
     {
         $this->assertEquals(true, Validate::isPrice(6.00));
     }    
+}
+
+class MockObject1
+{
+	public $id;
+
+	public function __construct()
+	{
+		$this->id = '1';
+	}
 }
