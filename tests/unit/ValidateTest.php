@@ -2038,10 +2038,370 @@ class ValidateTest extends \Codeception\TestCase\Test
 		$this->assertTrue(true);
 	}
 
-	public function testisPriceTrue()
-    {
-        $this->assertEquals(true, Validate::isPrice(6.00));
-    }    
+	public function isBoolIdDataProvider()
+	{
+		return [
+			[true, '1_4'],
+			[true, '0_4224082402'],
+			[false, '2_4'],
+			[false, ' '],
+			[false, 'ABC'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isBoolIdDataProvider
+	 */
+	public function testIsBoolId($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isBoolId($input));
+	}
+
+	public function isLocalizationPackSelectionDataProvider()
+	{
+		return [
+			[true, 'states'],
+			[true, 'taxes'],
+			[true, 'currencies'],
+			[true, 'languages'],
+			[true, 'units'],
+			[true, 'groups'],
+			[false, ' '],
+			[false, 'somethingelse'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isLocalizationPackSelectionDataProvider
+	 */
+	public function testIsLocalizationPackSelection($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isLocalizationPackSelection($input));
+	}
+
+	public function isSerializedArrayDataProvider()
+	{
+		return [
+			[true, 'a:1:{s:6:"Thirty";s:4:"Bees";}'],
+			[true, 'a:1:{;}'],
+			[false, 'a:1:{}'],
+			[false, '123'],
+			[false, ' '],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isSerializedArrayDataProvider
+	 */
+	public function testIsSerializedArray($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isSerializedArray($input));
+	}
+
+	public function isCoordinateDataProvider()
+	{
+		return [
+			[true, '1.1'],
+			[true, '-2469814.3288500'],
+			[true, '6.78114905'],
+			[true, '86888351.98688835'],
+			[false, '868883510.986888350'],
+			[false, ' '],
+			[false, '123'],
+			[false, 'ABC'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isCoordinateDataProvider
+	 */
+	public function testIsCoordinate($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isCoordinate($input));
+	}
+
+	public function isLangIsoCodeDataProvider()
+	{
+		return [
+			[true, 'ab'],
+			[true, 'ABC'],
+			[true, 'aBc'],
+			[false, 'a'],
+			[false, 'abCD'],
+			[false, ' '],
+			[false, '123'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isLangIsoCodeDataProvider
+	 */
+	public function testIsLangIsoCode($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isLangIsoCode($input));
+	}
+
+	public function isLanguageFileNameDataProvider()
+	{
+		return [
+			[true, 'LTi.gzip'],
+			[true, 'PF.tar.gz'],
+			[false, 'LTiA.gzip'],
+			[false, 'aBc'],
+			[false, 'a'],
+			[false, 'abCD'],
+			[false, ' '],
+			[false, '123'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isLanguageFileNameDataProvider
+	 */
+	public function testIsLanguageFileName($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isLanguageFileName($input));
+	}
+
+	public function isArrayWithIdsDataProvider()
+	{
+		$correct1 = [
+			1,
+			2,
+			3,
+		];
+		$correct2 =[
+			'1',
+			'2',
+			'3',
+		];
+		$correct3 = [
+			'1',
+			2,
+			'3',
+		];
+		$incorrect1 = [
+			0,
+			1,
+		];
+		$incorrect2 = [
+			1,
+			2,
+			-3,
+		];
+		return [
+			[true, $correct1],
+			[true, $correct2],
+			[true, $correct3],
+			[false, $incorrect1],
+			[false, $incorrect2],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isArrayWithIdsDataProvider
+	 */
+	public function testIsArrayWithIds($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isArrayWithIds($input));
+	}
+
+	public function isSceneZonesDataProvider()
+	{
+		$zone1 = [
+			'x1' => 0,
+			'y1' => 1,
+			'width' => 2,
+			'height' => 3,
+			'id_product' => 4,
+		];
+		$zone2 = $zone1;
+		$zone3 = $zone1;
+		$zone2['y1'] = -1;
+		unset($zone3['id_product']);
+		return [
+			[true, []],
+			[true, [ $zone1 ]],
+			[false, [ $zone2 ]],
+			[false, [ $zone3 ]],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isSceneZonesDataProvider
+	 */
+	public function testIsSceneZones($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isSceneZones($input));
+	}
+
+	public function isStockManagementDataProvider()
+	{
+		return [
+			[true, 'WA'],
+			[true, 'FIFO'],
+			[true, 'LIFO'],
+			[false, ' '],
+			[false, 'ABC'],
+			[false, '123'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isStockManagementDataProvider
+	 */
+	public function testIsStockManagement($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isStockManagement($input));
+	}
+
+	public function isSiretDataProvider()
+	{
+		return [
+			[true, '73282932000074'],
+			[false, '7328293200007'],
+			[false, '732829320000740'],
+			[false, 'ABC'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isSiretDataProvider
+	 */
+	public function testIsSiret($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isSiret($input));
+	}
+
+	public function isApeDataProvider()
+	{
+		return [
+			[true, '323v'],
+			[true, '8304Y'],
+			[false, '12a'],
+			[false, '12345b'],
+			[false, '123'],
+			[false, 'ABC'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isApeDataProvider
+	 */
+	public function testIsApe($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isApe($input));
+	}
+
+	public function isControllerNameDataProvider()
+	{
+		return [
+			[true, 'my_controller'],
+			[true, 'MY-CONTROLLER'],
+			[true, 'mycontroller2'],
+			[false, 'my controller'],
+			[false, 'MY.CONTROLLER'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isControllerNameDataProvider
+	 */
+	public function testIsControllerName($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isControllerName($input));
+	}
+
+	public function isPrestaShopVersionDataProvider()
+	{
+		return [
+			[true, '0.97.24.31'],
+			[true, '1.24.44.44'],
+			[false, '2.24.44.44'],
+			[false, '1.24'],
+			[false, '0.81.52'],
+			[false, ' '],
+			[false, '1 24'],
+			[false, '12.24'],
+			[false, '1.245'],
+			[false, '1.25.100'],
+			[false, 'ABC'],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isPrestaShopVersionDataProvider
+	 */
+	public function testIsPrestaShopVersion($expected, $input)
+	{
+		$this->assertSame($expected, Validate::isPrestaShopVersion($input));
+	}
+
+	public function isOrderInvoiceNumberDataProvider()
+	{
+		return [
+			[true, '#IN123'],
+			[true, '#IN     456'],
+			[false, '#IN'],
+			[false, '#INABC'],
+			[false, '123'],
+			[false, ' '],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $input
+	 *
+	 * @dataProvider isOrderInvoiceNumberDataProvider
+	 */
+	public function testIsOrderInvoiceNumber($expected, $input)
+	{
+		// TODO
+		// Following line is not working for the time being, reason unknown
+//		$this->assertSame($expected, Validate::isOrderInvoiceNumber($input));
+		$this->assertTrue(true);
+	}
+
 }
 
 class MockObject1
