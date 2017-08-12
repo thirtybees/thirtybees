@@ -1968,7 +1968,7 @@ class ValidateTest extends \Codeception\TestCase\Test
 
 	public function isCookieDataProvider()
 	{
-		$cookie = new Cookie();
+		$cookie = new Cookie('');
 		$anotherObject = new MockObject1();
 		return [
 			[true, $cookie],
