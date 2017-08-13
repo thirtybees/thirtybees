@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__.'/validate/MockObject1.php';
+
 class ValidateTest extends \Codeception\TestCase\Test
 {
     public $tester;
@@ -2402,14 +2404,4 @@ class ValidateTest extends \Codeception\TestCase\Test
 		$this->assertTrue(true);
 	}
 
-}
-
-class MockObject1
-{
-	public $id;
-
-	public function __construct()
-	{
-		$this->id = '1';
-	}
 }
