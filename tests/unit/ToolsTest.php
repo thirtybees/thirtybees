@@ -349,6 +349,33 @@ class ToolsTest extends \Codeception\TestCase\Test
 		$this->assertEquals($expected, Tools::getAllValues());
 	}
 
+	public function getIssetDataProvider()
+	{
+		return [
+			[false, null, []],
+			[true, 'key', ['key' => 'value']],
+		];
+	}
+
+	/**
+	 * @param bool       $expected
+	 * @param string     $key
+	 * @param array      $post
+	 *
+	 * @dataProvider getIssetDataProvider
+	 */
+	public function testGetIsset($expected, $key, $post)
+	{
+		if ($key === null) { // in order to test both get and post arrays
+			$_POST = $post;
+		} else {
+			$_GET = $post;
+		}
+		$this->assertEquals($expected, Tools::getIsset($key));
+	}
+
+
+
     public function testGetValueBaseCase()
     {
         $_GET = [
