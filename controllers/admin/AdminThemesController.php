@@ -3092,6 +3092,29 @@ class AdminThemesControllerCore extends AdminController
     }
 
     /**
+     * Update PS_FAVICON_192
+     *
+     * @since 1.0.0
+     */
+    public function updateOptionPsFavicon_192()
+    {
+        $idShop = Context::getContext()->shop->id;
+
+        if ($idShop == Configuration::get('PS_SHOP_DEFAULT')) {
+            $this->uploadIco('PS_FAVICON_192', _PS_IMG_DIR_.'favicon_192.png');
+        }
+        if ($this->uploadIco('PS_FAVICON_192', _PS_IMG_DIR_.'favicon_192-'.(int) $idShop.'.png')) {
+            Configuration::updateValue('PS_FAVICON_192', 'favicon_192-'.(int) $idShop.'.png');
+        }
+
+        Configuration::updateGlobalValue('PS_FAVICON_192', 'favicon_192.png');
+
+        if (!$this->errors) {
+            $this->redirect_after = static::$currentIndex.'&token='.$this->token;
+        }
+    }
+
+    /**
      * Update theme for current shop
      *
      * @return void
