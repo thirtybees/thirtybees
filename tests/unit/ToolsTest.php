@@ -18,6 +18,337 @@ class ToolsTest extends \Codeception\TestCase\Test
     {
     }
 
+    // FIXME
+	public function testPasswdGen()
+	{
+		$this->assertTrue(true);
+	}
+
+	public function getBytesDataProvider()
+	{
+		return [
+			[0],
+		];
+	}
+
+	// FIXME
+	/**
+	 * @param int $length
+	 *
+	 * @dataProvider getBytesDataProvider()
+	 */
+	public function testGetBytes($length)
+	{
+		$this->assertTrue(true);
+	}
+
+	public function redirectDataProvider()
+	{
+		return [
+			[''],
+		];
+	}
+
+	// FIXME
+	/**
+	 * @param string $url
+	 *
+	 * @dataProvider redirectDataProvider()
+	 */
+	public function testRedirect($url)
+	{
+		$this->assertTrue(true);
+	}
+
+	public function strReplaceFirstDataProvider()
+	{
+		return [
+			['google.com', '.net', '.com', 'google.net', null],
+			['google.com', '.net', '.com', 'google.net', 0],
+			['google.com', '.net', '.com', 'google.net', 1],
+			['google.net', 'bing', '', 'google.net', 1],
+		];
+	}
+
+	/**
+	 * @param string  $expected
+	 * @param string  $search
+	 * @param string  $replace
+	 * @param string  $string
+	 * @param int     $cursor
+	 *
+	 * @dataProvider strReplaceFirstDataProvider
+	 */
+	public function testStrReplaceFirst($expected, $search, $replace, $string, $cursor = 0)
+	{
+		$this->assertEquals($expected, Tools::strReplaceFirst($search, $replace, $string, $cursor));
+	}
+
+	// FIXME
+	public function testRedirectLink()
+	{
+		$this->assertTrue(true);
+	}
+
+	// FIXME
+	public function testRedirectAdmin()
+	{
+		$this->assertTrue(true);
+	}
+
+	public function getShopProtocolDataProvider()
+	{
+		return [
+			[(Configuration::get('PS_SSL_ENABLED') || (!empty($_SERVER['HTTPS'])
+					&& Tools::strtolower($_SERVER['HTTPS']) != 'off')) ? 'https://' : 'http://']
+		];
+	}
+
+	/**
+	 * @param string $expected
+	 *
+	 * @dataProvider getShopProtocolDataProvider
+	 */
+	public function testGetShopProtocol($expected)
+	{
+		$this->assertEquals($expected, Tools::getShopProtocol());
+	}
+
+	public function strtolowerDataProvider()
+	{
+		return [
+			['thirty bees', 'THIRTY BEES'],
+			['thirty bees', 'Thirty Bees'],
+			['thirty bees', 'thirty bees'],
+		];
+	}
+
+	/**
+	 * @param string $expected
+	 * @param string $str
+	 *
+	 * @dataProvider strtolowerDataProvider
+	 */
+	public function testStrtolower($expected, $str)
+	{
+		$this->assertEquals($expected, Tools::strtolower($str));
+	}
+
+	public function getProtocolDataProvider()
+	{
+		return [
+			['https://', true],
+			['http://', false],
+			['http://', null],
+		];
+	}
+
+	/**
+	 * @param string $expected
+	 * @param bool   $useSsl
+	 *
+	 * @dataProvider getProtocolDataProvider
+	 */
+	public function testGetProtocol($expected, $useSsl)
+	{
+		$this->assertEquals($expected, Tools::getProtocol($useSsl));
+	}
+
+	// FIXME
+	public function testGetRemoteAddr()
+	{
+		$this->assertTrue(true);
+	}
+
+	public function getCurrentUrlProtocolPrefixDataProvider()
+	{
+		if (Tools::usingSecureMode()) {
+			return [
+				['https://'],
+			];
+		} else {
+			return [
+				['http://'],
+			];
+		}
+	}
+
+	/**
+	 * @param string $expected
+	 *
+	 * @dataProvider getCurrentUrlProtocolPrefixDataProvider
+	 */
+	public function testGetCurrentUrlProtocolPrefix($expected)
+	{
+		$this->assertEquals($expected, Tools::getCurrentUrlProtocolPrefix());
+	}
+
+	public function usingSecureModeDataProvider()
+	{
+		$server1_1 = [
+			'HTTPS' => 'On',
+		];
+		$server1_2 = [
+			'HTTPS' => 1,
+		];
+		$server1_3 = [
+			'HTTPS' => '',
+		];
+		$server2_1 = [
+			'SSL' => 'On',
+		];
+		$server2_2 = [
+			'SSL' => 1,
+		];
+		$server2_3 = [
+			'SSL' => '',
+		];
+		$server3_1 = [
+			'REDIRECT_HTTPS' => 'On',
+		];
+		$server3_2 = [
+			'REDIRECT_HTTPS' => 1,
+		];
+		$server3_3 = [
+			'REDIRECT_HTTPS' => '',
+		];
+		$server4_1 = [
+			'HTTP_SSL' => 'On',
+		];
+		$server4_2 = [
+			'HTTP_SSL' => 1,
+		];
+		$server4_3 = [
+			'HTTP_SSL' => '',
+		];
+		$server5_1 = [
+			'HTTP_X_FORWARDED_PROTO' => 'HTTPS',
+		];
+		$server5_2 = [
+			'HTTP_X_FORWARDED_PROTO' => 'https',
+		];
+		$server5_3 = [
+			'HTTP_X_FORWARDED_PROTO' => 'http',
+		];
+		return [
+			[true, $server1_1],
+			[true, $server1_2],
+			[false, $server1_3],
+			[true, $server2_1],
+			[true, $server2_2],
+			[false, $server2_3],
+			[true, $server3_1],
+			[true, $server3_2],
+			[false, $server3_3],
+			[true, $server4_1],
+			[true, $server4_2],
+			[false, $server4_3],
+			[true, $server5_1],
+			[true, $server5_2],
+			[false, $server5_3],
+		];
+	}
+
+	/**
+	 * @param bool    $expected
+	 * @param array   $server
+	 *
+	 * @dataProvider usingSecureModeDataProvider
+	 */
+	public function testUsingSecureMode($expected, $server)
+	{
+		$_SERVER = $server;
+		$this->assertEquals($expected, Tools::usingSecureMode());
+	}
+
+	public function secureReferrerDataProvider()
+	{
+		return [
+			['http://server.domain/', 'http://server.domain/'],
+			['https://server.domain:443/', 'https://server.domain:443/'],
+			['https://server.domain:443/contact-us/', 'https://server.domain:443/contact-us/'],
+			['server.domain', 'loremipsum'],
+		];
+	}
+
+	/**
+	 * @param string $expected
+	 * @param string $referrer
+	 *
+	 * @dataProvider secureReferrerDataProvider
+	 */
+	public function testSecureReferrer($expected, $referrer)
+	{
+		$_SERVER = [
+			'SERVER_NAME' => 'server.domain',
+		];
+		if (!defined('_PS_SSL_PORT_')) {
+			define('_PS_SSL_PORT_', 443);
+		}
+		if (!defined('__PS_BASE_URI__')) {
+			define('__PS_BASE_URI__', 'server.domain');
+		}
+		$this->assertEquals($expected, Tools::secureReferrer($referrer));
+	}
+
+	public function getServerNameDataProvider()
+	{
+		$server1 = [
+			'HTTP_X_FORWARDED_SERVER' => 'http://server.domain',
+		];
+		$server2 = [
+			'SERVER_NAME' => 'https://server.domain',
+		];
+		return [
+			['http://server.domain', $server1],
+			['https://server.domain', $server2],
+		];
+	}
+
+	/**
+	 * @param string $expected
+	 * @param array  $server
+	 *
+	 * @dataProvider getServerNameDataProvider
+	 */
+	public function testGetServerName($expected, $server)
+	{
+		$_SERVER = $server;
+		$this->assertEquals($expected, Tools::getServerName());
+	}
+
+	public function getAllValuesDataProvider()
+	{
+		return [
+			[
+				[
+					'key1' => 'value1',
+					'key2' => 'value2',
+					'key3' => 'value3',
+					'key4' => 'value4',
+				]
+			],
+		];
+	}
+
+	/**
+	 * @param array $expected
+	 *
+	 * @dataProvider getAllValuesDataProvider
+	 */
+	public function testGetAllValues($expected)
+	{
+		$_POST = array(
+			'key1' => 'value1',
+			'key2' => 'value2',
+		);
+		$_GET = array(
+			'key3' => 'value3',
+			'key4' => 'value4',
+		);
+		$this->assertEquals($expected, Tools::getAllValues());
+	}
+
     public function testGetValueBaseCase()
     {
         $_GET = [
