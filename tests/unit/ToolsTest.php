@@ -9,7 +9,6 @@ class ToolsTest extends \Codeception\TestCase\Test
     protected $tester;
 
 	protected $preserveGlobalState = FALSE;
-	protected $runTestInSeparateProcess = TRUE;
 
     protected function _before()
     {
