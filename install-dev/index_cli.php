@@ -29,6 +29,30 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+// Checks
+// Check compatibility
+$errors = array();
+if (version_compare(PHP_VERSION, '5.5.0', '<')) {
+    $errors[] = 'Make sure your PHP version is at least 5.5.';
+}
+// Check geoip module
+if (extension_loaded('geoip')) {
+    $errors[] = 'The <code>geoip</code> PHP extension is loaded. This causes conflicts with thirty bees. We recommend to disable the PHP extension.';
+}
+
+// Check if composer packages are available
+if (!file_exists(dirname(__FILE__).'/../vendor/autoload.php')) {
+    $errors[] = 'The composer packages are not available. Make sure you have copied the <code>vendor</code> folder or have run the <code>composer install --no-dev</code> command.';
+}
+
+if (!empty($errors)) {
+    foreach ($errors as $error) {
+        $error = strip_tags($error);
+        echo "$error\n";
+    }
+    die();
+}
+
 /* Redefine REQUEST_URI */
 $_SERVER['REQUEST_URI'] = '/install/index_cli.php';
 require_once dirname(__FILE__).'/init.php';
