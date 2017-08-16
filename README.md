@@ -32,8 +32,8 @@ Native modules will be refactored to remove legacy code. Code that supports prev
 
 **Rewritten modules:**
 
-* PayPal will totally be rewritten
-* Authorize.net will be refactored
+* PayPal has been rewritten
+* Authorize.net has been refactored
 
 **New native modules:**
 
@@ -80,8 +80,10 @@ $ composer install
 ```
 - Then install the software as usual, using either a web browser (https://example.com/install-dev) 
 - Or install via command line 
-``` php /install-dev/index_cli.php```
-    - Arguments available:
+```shell
+$  php install-dev/index_cli.php --newsletter=1 --language=en --country=us --domain=thirty.bees:8888 --db_name=thirtybees --db_create=1 --name=thirtybees --email=test@thirty.bees --firstname=thirty --lastname=bees --password=thirtybees
+```
+- Arguments available:
 ```
 --step          all / database,fixtures,theme,modules,addons_modules    (Default: all)
 --language      Language iso code                                       (Default: en)
