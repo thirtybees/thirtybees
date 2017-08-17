@@ -134,7 +134,7 @@ class DbPDOCore extends Db
                 $timezone = 'UTC';
             }
         }
-        $now = new DateTime('now', $timezone);
+        $now = new DateTime('now', new DateTimeZone($timezone));
         $minutes = $now->getOffset() / 60;
         $sign = ($minutes < 0 ? -1 : 1);
         $minutes = abs($minutes);
