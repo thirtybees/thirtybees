@@ -1,6 +1,10 @@
 <?php
 use AspectMock\Test as test;
 
+require_once __DIR__.'/tools/MockAddress.php';
+require_once __DIR__.'/tools/MockCurrency.php';
+require_once __DIR__.'/tools/MockLanguage.php';
+
 class ToolsTest extends \Codeception\Test\Unit
 {
 	/**
@@ -371,11 +375,203 @@ class ToolsTest extends \Codeception\Test\Unit
 	// FIXME
 	public function testSetCookieLanguage()
 	{
-//		$cookie = new Cookie('mockCookie', null, null, null, true);
-//		$cookie->id_lang = Configuration::get('PS_LANG_DEFAULT');
-//		$_SERVER['HTTP_HOST'] = 'server.domain';
-//		$this->assertEquals('', Tools::setCookieLanguage($cookie));
 		$this->assertTrue(true);
+	}
+
+	public function getValueDataProvider()
+	{
+		return [
+			[false, null, null],
+			['one', '1', null],
+			['two', '2', null],
+			[null, '3', 'three'],
+		];
+	}
+
+	/**
+	 * @param mixed  $expected
+	 * @param string $key
+	 * @param mixed  $defaultValue
+	 *
+	 * @dataProvider getValueDataProvider
+	 */
+	public function testGetValue($expected, $key, $defaultValue)
+	{
+		if ($key == '1') {
+			$_POST[$key] = $expected;
+		} else if ($key == '2') {
+			$_GET[$key] = $expected;
+		} else {
+			$expected = $defaultValue;
+		}
+		$this->assertEquals($expected, Tools::getValue($key, $defaultValue));
+	}
+
+	// FIXME
+	public function testSwitchLanguage()
+	{
+		$this->assertTrue(true);
+	}
+
+	public function getCountryDataProvider()
+	{
+		$anAddress = new MockAddress();
+		$anAddress->id_country = 2;
+		return [
+			[1, 1, null],
+			[2, null, $anAddress],
+			[Configuration::get('PS_COUNTRY_DEFAULT'), null, null],
+		];
+	}
+
+	/**
+	 * @param int       $expected
+	 * @param int       $idCountry
+	 * @param Address   $address
+	 *
+	 * @dataProvider getCountryDataProvider
+	 */
+	public function testGetCountry($expected, $idCountry, $address)
+	{
+		if (isset($idCountry)) {
+			$_POST['id_country'] = $idCountry;
+		}
+		$this->assertEquals($expected, Tools::getCountry($address));
+	}
+
+	// FIXME
+	public function testSetCurrency()
+	{
+		$this->assertTrue(true);
+	}
+
+	public function isSubmitDataProvider()
+	{
+		return [
+			[true, 'aKey', 1],
+			[true, 'aKey', 2],
+			[true, 'aKey', 3],
+			[true, 'aKey', 4],
+			[true, 'aKey', 5],
+			[true, 'aKey', 6],
+			[false, 'aKey', 7],
+		];
+	}
+
+	/**
+	 * @param bool   $expected
+	 * @param string $submit
+	 * @param int    $case
+	 *
+	 * @dataProvider isSubmitDataProvider
+	 */
+	public function testIsSubmit($expected, $submit, $case)
+	{
+		switch ($case) {
+			case 1:
+				$_POST[$submit] = true;
+				break;
+			case 2:
+				$_POST[$submit.'_x'] = true;
+				break;
+			case 3:
+				$_POST[$submit.'_y'] = true;
+				break;
+			case 4:
+				$_GET[$submit] = true;
+				break;
+			case 5:
+				$_GET[$submit.'_x'] = true;
+				break;
+			case 6:
+				$_GET[$submit.'_y'] = true;
+				break;
+		}
+		$this->assertEquals($expected, Tools::isSubmit($submit));
+	}
+
+	public function displayNumberDataProvider()
+	{
+		$aCurrency = new MockCurrency();
+		$aCurrency->format = 1;
+		return [
+			['500', 500, $aCurrency],
+			['1 000', 1000, ['format' => 2]],
+			['999', 999, ['format' => 3]],
+			['99,999', 99999, ['format' => 4]],
+		];
+	}
+
+	/**
+	 * @param string   $expected
+	 * @param float    $number
+	 * @param mixed    $currency
+	 *
+	 * @dataProvider displayNumberDataProvider
+	 */
+	public function testDisplayNumber($expected, $number, $currency)
+	{
+		$this->assertEquals($expected, Tools::displayNumber($number, $currency));
+	}
+
+	// FIXME
+	public function testDisplayPriceSmarty()
+	{
+		$this->assertTrue(true);
+	}
+
+	public function displayPriceDataProvider()
+	{
+		$context1 = new Context();
+		$context2 = new Context();
+		$context3 = new Context();
+		$context4 = new Context();
+
+		$currency1 = new MockCurrency();
+		$currency1->iso_code = 'USD';
+		$currency1->sign = '$';
+		$currency1->format = 1;
+		$currency1->decimals = 1;
+		$currency1->blank = true;
+		$context1->currency = $currency1;
+
+		$lang = new MockLanguage();
+		$lang->language_code = 'en-us';
+		$context1->language = $lang;
+		$context4->language = $lang;
+
+		$currency2 = [
+			'iso_code' => 'USD',
+			'sign' => '$',
+			'format' => '1',
+			'decimals' => '1',
+			'blank' => true,
+		];
+
+		return [
+			['not_numeric', 'not_numeric', null, null, null, null],
+			['$7.99', 7.99, null, null, $context1, null],
+			// ['$400', 400, $currency2, null, $context2, null], // untestable, fatal error
+			['$120,000.00', 120000, $currency1, null, $context4, null],
+		];
+	}
+
+	/**
+	 * @param string         $expected
+	 * @param mixed          $price
+	 * @param mixed          $tbCurrency
+	 * @param bool           $noUtf8
+	 * @param Context        $context
+	 * @param bool           $auto
+	 *
+	 * @dataProvider displayPriceDataProvider
+	 */
+	public function testDisplayPrice($expected, $price, $tbCurrency, $noUtf8, $context, $auto)
+	{
+		if (!defined('_PS_PRICE_DISPLAY_PRECISION_')) {
+			define('_PS_PRICE_DISPLAY_PRECISION_', 2);
+		}
+		$this->assertEquals($expected, Tools::displayPrice($price, $tbCurrency, $noUtf8, $context, $auto));
 	}
 
 	public function testGetValueBaseCase()
