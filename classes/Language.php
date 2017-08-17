@@ -839,6 +839,7 @@ class LanguageCore extends ObjectModel
     public static function _copyNoneFlag($id, $iso = null)
     {
         if ($id) {
+            static::loadLanguages();
             if ($databaseIso = Language::getIsoById($id)) {
                 $iso = $databaseIso;
             }
