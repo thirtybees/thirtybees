@@ -11,6 +11,7 @@ class ToolsTest extends \Codeception\Test\Unit
 	 * @var \UnitTester
 	 */
 	protected $tester;
+	protected $preserveGlobalState = FALSE;
 
 	protected function _before()
 	{
