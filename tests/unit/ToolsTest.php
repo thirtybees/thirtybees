@@ -579,6 +579,30 @@ class ToolsTest extends \Codeception\Test\Unit
 		*/
 	}
 
+	public function ps_roundDataProvider()
+	{
+		return [
+			[5, 4.1, 0, PS_ROUND_UP],
+			[4, 4.9, 0, PS_ROUND_DOWN],
+			[4, 4.5, 0, PS_ROUND_HALF_EVEN],
+			[5, 4.5, 0, PS_ROUND_HALF_ODD],
+			[5, 4.5, 0, PS_ROUND_HALF_UP],
+		];
+	}
+
+	/**
+	 * @param     $expected
+	 * @param     $value
+	 * @param int $precision
+	 * @param int $roundMode
+	 *
+	 * @dataProvider ps_roundDataProvider
+	 */
+	public function testPs_round($expected, $value, $precision, $roundMode)
+	{
+		$this->assertEquals($expected, Tools::ps_round($value, $precision, $roundMode));
+	}
+
 	public function testGetValueBaseCase()
 	{
 		$_GET = [
