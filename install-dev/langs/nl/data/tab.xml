@@ -13,7 +13,7 @@
   <tab id="Customers" name="Klanten"/>
   <tab id="Price_Rules" name="Prijsregels"/>
   <tab id="Shipping" name="Verzending"/>
-  <tab id="Localization" name="Localisatie"/>
+  <tab id="Localization" name="Lokalisatie"/>
   <tab id="Modules" name="Modules"/>
   <tab id="Preferences" name="Instellingen"/>
   <tab id="Advanced_Parameters" name="Geavanceerde Instellingen"/>
