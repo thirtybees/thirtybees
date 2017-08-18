@@ -11,7 +11,6 @@ class ToolsTest extends \Codeception\Test\Unit
 	 * @var \UnitTester
 	 */
 	protected $tester;
-	protected $preserveGlobalState = FALSE;
 
 	protected function _before()
 	{
@@ -569,9 +568,6 @@ class ToolsTest extends \Codeception\Test\Unit
 	 */
 	public function testDisplayPrice($expected, $price, $tbCurrency, $noUtf8, $context, $auto)
 	{
-		if (!defined('_PS_PRICE_DISPLAY_PRECISION_')) {
-			define('_PS_PRICE_DISPLAY_PRECISION_', 2);
-		}
 		$this->assertEquals($expected, Tools::displayPrice($price, $tbCurrency, $noUtf8, $context, $auto));
 	}
 
