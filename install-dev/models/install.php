@@ -561,7 +561,12 @@ class InstallModelInstall extends InstallAbstractModel
                 continue;
             }
 
-            copy($imgPath.$iso.'.jpg', $dstPath.$iso.'.jpg');
+            if (file_exists(_PS_IMG_DIR_."/flags/$iso.png")) {
+                $src = _PS_IMG_DIR_."/flags/$iso.png";
+            } else {
+                $src = _PS_INSTALL_LANGS_PATH_."$iso/flag.jpg";
+            }
+            copy($src, $dstPath.$iso.'.jpg');
 
             $types = ImageType::getImagesTypes($cat);
             foreach ($types as $type) {
