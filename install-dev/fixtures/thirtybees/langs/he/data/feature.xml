@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<entity_feature>
+  <feature id="Height">
+    <name>גובה</name>
+  </feature>
+  <feature id="Width">
+    <name>רוחב</name>
+  </feature>
+  <feature id="Depth">
+    <name>עומק</name>
+  </feature>
+  <feature id="Weight">
+    <name>משקל</name>
+  </feature>
+  <feature id="Organic">
+    <name>אורגני</name>
+  </feature>
+  <feature id="Vegan">
+    <name>טבעוני</name>
+  </feature>
+  <feature id="Exclusive_Buy">
+    <name>קניה אקסקלוסיבית</name>
+  </feature>
+</entity_feature>

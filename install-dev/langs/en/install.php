@@ -3,13 +3,13 @@
 return array (
   'informations' => 
   array (
-    'documentation' => 'http://docs.thirtybees.com/',
-    'documentation_upgrade' => 'http://docs.thirtybees.com/',
-    'forum' => 'http://www.thirtybees.com/forums/',
-    'blog' => 'http://www.thirtbees.com/blog/',
-    'support' => 'http://www.thirtybees.com/forums/',
-    'tutorial' => 'http://docs.thirtybees.com/',
-    'tailored_help' => 'http://docs.thirtybees.com/',
+    'documentation' => 'https://docs.thirtybees.com/',
+    'documentation_upgrade' => 'https://docs.thirtybees.com/',
+    'forum' => 'https://forum.thirtybees.com/',
+    'blog' => 'https://www.thirtbees.com/blog/',
+    'support' => 'https://forum.thirtybees.com/',
+    'tutorial' => 'https://docs.thirtybees.com/',
+    'tailored_help' => 'https://docs.thirtybees.com/',
   ),
   'translations' => 
   array (

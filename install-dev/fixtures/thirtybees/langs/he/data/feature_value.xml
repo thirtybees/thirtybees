@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<entity_feature_value>
+  <feature_value id="Yes_Organic">
+    <value>כן</value>
+  </feature_value>
+  <feature_value id="No_Organic">
+    <value>לא</value>
+  </feature_value>
+  <feature_value id="Yes_Vegan">
+    <value>כן</value>
+  </feature_value>
+  <feature_value id="No_Vegan">
+    <value>לא</value>
+  </feature_value>
+  <feature_value id="Yes_Exclusive">
+    <value>כן</value>
+  </feature_value>
+  <feature_value id="No_Exclusive">
+    <value>לא</value>
+  </feature_value>
+</entity_feature_value>

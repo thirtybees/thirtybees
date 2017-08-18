@@ -3,13 +3,13 @@
 return array (
   'informations' => 
   array (
-    'documentation' => 'http://doc.prestashop.com/display/PS16/Installing+PrestaShop',
-    'documentation_upgrade' => 'http://docs.prestashop.com/display/PS16/Updating+PrestaShop',
+    'documentation' => 'https://docs.thirtybees.com/',
+    'documentation_upgrade' => 'https://docs.thirtybees.com/',
     'forum' => 'https://forum.thirtybees.com/',
-    'blog' => 'http://www.prestashop.com/blog/',
+    'blog' => 'https://www.thirtbees.com/blog/',
     'support' => 'https://forum.thirtybees.com/',
-    'tutorial' => 'https://www.youtube.com/watch?v=psz4aIPZZuk',
-    'tailored_help' => 'http://addons.prestashop.com/en/388-support',
+    'tutorial' => 'https://docs.thirtybees.com/',
+    'tailored_help' => 'https://docs.thirtybees.com/',
   ),
   'translations' => 
   array (
@@ -143,7 +143,7 @@ return array (
     'Next' => 'הבא',
     'Back' => 'חזרה',
     'If you need some assistance, you can <a href="%1$s" onclick="return !window.open(this.href);">get tailored help</a> from our support team. <a href="%2$s" onclick="return !window.open(this.href);">The official documentation</a> is also here to guide you.' => 'אם אתה זקוק לעזרה, באפשרותך <a href="%1$s" onclick="return!window.open(this.href);"> לקבל עזרה מותאם</a> צוות התמיכה שלנו. <a href="%2$s" onclick="return!window.open(this.href);"> התיעוד הרשמי</a> הוא גם כאן כדי להדריך אותך.',
-    'Official forum' => 'פורום פרסטהשופ',
+    'Official forum' => 'פורום thirty bees',
     'Support' => 'תמיכה',
     'Documentation' => 'תיעוד',
     'Contact us' => 'צור קשר',

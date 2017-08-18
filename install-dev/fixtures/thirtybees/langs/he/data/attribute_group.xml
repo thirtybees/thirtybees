@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<entity_attribute_group>
+  <attribute_group id="Flavor">
+    <name>טעם</name>
+    <public_name>טעם</public_name>
+  </attribute_group>
+  <attribute_group id="Product">
+    <name>מוצר</name>
+    <public_name>מוצר</public_name>
+  </attribute_group>
+  <attribute_group id="Color">
+    <name>צבע</name>
+    <public_name>צבע</public_name>
+  </attribute_group>
+  <attribute_group id="Size">
+    <name>מידה</name>
+    <public_name>מידה</public_name>
+  </attribute_group>
+  <attribute_group id="Scent">
+    <name>ריח</name>
+    <public_name>ריח</public_name>
+  </attribute_group>
+</entity_attribute_group>

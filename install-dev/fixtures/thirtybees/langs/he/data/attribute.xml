@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<entity_attribute>
+  <attribute id="12_oz">
+    <name>12 oz</name>
+  </attribute>
+  <attribute id="16_oz">
+    <name>16 oz</name>
+  </attribute>
+  <attribute id="24_oz">
+    <name>24 oz</name>
+  </attribute>
+  <attribute id="Yellow">
+    <name>צהוב</name>
+  </attribute>
+  <attribute id="White">
+    <name>לבן</name>
+  </attribute>
+  <attribute id="Black">
+    <name>שחור</name>
+  </attribute>
+  <attribute id="Espresso">
+    <name>אספרסו</name>
+  </attribute>
+  <attribute id="Natural">
+    <name>טבעי</name>
+  </attribute>
+  <attribute id="Mocha">
+    <name>מוקה</name>
+  </attribute>
+  <attribute id="Hair_of_the_Dog">
+    <name>שיער הכלב</name>
+  </attribute>
+  <attribute id="Mean_Bean">
+    <name>שעועית מרושעת</name>
+  </attribute>
+  <attribute id="Busy_Bean">
+    <name>שעועית עסוקה</name>
+  </attribute>
+  <attribute id="Turning_Leaf">
+    <name>עלה מתחלף</name>
+  </attribute>
+  <attribute id="Wild_Poppy">
+    <name>כלבלב שובב</name>
+  </attribute>
+  <attribute id="Prickly_Pear">
+    <name>אגס דוקרני</name>
+  </attribute>
+  <attribute id="Nether_Leaf">
+    <name>עלה עליון</name>
+  </attribute>
+  <attribute id="Olde_Number_1.6">
+    <name>מספר 1.6 ישן</name>
+  </attribute>
+  <attribute id="Body_Wash">
+    <name>תחליב רחצה</name>
+  </attribute>
+  <attribute id="Shampoo">
+    <name>שמפו</name>
+  </attribute>
+  <attribute id="Conditioner">
+    <name>מרכך</name>
+  </attribute>
+  <attribute id="Puffin">
+    <name>יַסעוּר</name>
+  </attribute>
+  <attribute id="Honey">
+    <name>דבש</name>
+  </attribute>
+</entity_attribute>

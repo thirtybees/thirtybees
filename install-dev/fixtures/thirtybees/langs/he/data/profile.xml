@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<entity_profile>
+  <profile id="Logistician">
+    <name>מחסנאי</name>
+  </profile>
+  <profile id="Translator">
+    <name>מתורגמן</name>
+  </profile>
+  <profile id="Salesman">
+    <name>איש מכירות</name>
+  </profile>
+</entity_profile>

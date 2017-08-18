@@ -4,27 +4,29 @@
     <meta_title>אריזה ושילוח</meta_title>
     <meta_description>תנאי השימוש והערות בקשר לאריזה ושילוח</meta_description>
     <meta_keywords>תנאי, אריזה, שילוח, משלוח, משלוחים, תנאים</meta_keywords>
-    <content>&lt;h2&gt;Shipments and returns&lt;/h2&gt;&lt;h3&gt;Your pack shipment&lt;/h3&gt;&lt;p&gt;Packages are generally dispatched within 2 days after receipt of payment and are shipped via UPS with tracking and drop-off without signature. If you prefer delivery by UPS Extra with required signature, an additional cost will be applied, so please contact us before choosing this method. Whichever shipment choice you make, we will provide you with a link to track your package online.&lt;/p&gt;&lt;p&gt;Shipping fees include handling and packing fees as well as postage costs. Handling fees are fixed, whereas transport fees vary according to total weight of the shipment. We advise you to group your items in one order. We cannot group two distinct orders placed separately, and shipping fees
-      will apply to each of them. Your package will be dispatched at your own risk, but special care is taken to protect fragile objects.&lt;br /&gt;&lt;br /&gt;Boxes are amply sized and your items are well-protected.&lt;/p&gt;</content>
+    <content><h2>משלוחים והחזרות</h2>
+      <h3>אריזת המשלוח שלך</h3>
+      <p>חבילות נשלחות בדרך כלל בתוך 2 ימים לאחר קבלת תשלום ונשלחים באמצעות דואר ישראל עם מספר מעקב. אם אתה מעדיף לשלוח באמצעות דואר רשום עם אישור חתימה נדרש, תחול עלות נוספת, לכן פנה אלינו לפני שתבחר בשיטה זו. לפי בחירת המשלוח שתבצע, אנו נספק לך קישור כדי לעקוב אחר החבילה שלך באינטרנט.</p>
+      <p>דמי המשלוח כוללים דמי טיפול ואריזה וכן עלויות דמי משלוח. דמי הטיפול קבועים, ואילו דמי ההובלה משתנים בהתאם למשקל הכולל של המשלוח. אנו ממליצים לך לקבץ את הפריטים שלך בסדר אחד. לא ניתן לקבץ שתי הזמנות נפרדות בנפרד, ודמי משלוח יחולו על כל אחת מהן. החבילה שלך תישלח על אחריותך בלבד, אך טיפול מיוחד נעשה כדי להגן על חפצים שבירים.</p></content>
     <link_rewrite>אריזה-ושילוח</link_rewrite>
   </cms>
   <cms id="Legal_Notice">
     <meta_title>הבהרות משפטיות</meta_title>
     <meta_description>הבהרות משפטיות</meta_description>
     <meta_keywords>הבהרות, משפט, חוק, אשראי, זכויות</meta_keywords>
-    <content>&lt;h2&gt;Legal&lt;/h2&gt;&lt;h3&gt;Credits&lt;/h3&gt;&lt;p&gt;Concept and production:&lt;/p&gt;&lt;p&gt;This Online store was created using &lt;a href="https://thirtybees.com"&gt;thirty bees e-commerce Software&lt;/a&gt;,check out thirty bees &lt;a href="https://thirtybees.com/blog"&gt;ecommerce blog&lt;/a&gt; for news and advices about selling online and running your ecommerce website.&lt;/p&gt;</content>
+    <content>&lt;h2&gt;משפטי&lt;/h2&gt;&lt;h3&gt;זכויות&lt;/h3&gt;&lt;p&gt;הבהרות:&lt;/p&gt;&lt;p&gt;חנות מקוונת זו נוצרה באמצעות <a href="https://thirtybees.com">thirty bees תוכנת מסחר אלקטרוני</a>, בדוק אל ה<a href="https://thirtybees.com/blog">בלוג שלנו</a> עבור חדשות וייעוץ על מכירת מקוון והפעלת אתר מסחר אלקטרוני שלך.&lt;/p&gt;</content>
     <link_rewrite>הבהרות-משפטיות</link_rewrite>
   </cms>
   <cms id="Terms_and_conditions_of_use">
     <meta_title>מדיניות שימוש באתר החזרות וביטולי מוצרים</meta_title>
     <meta_description>מדיניות שימוש באתר החזרות וביטולי מוצרים ועוד</meta_description>
     <meta_keywords>תנאי, תנאים, שימוש, הערות, מדיניות, החזרות, ביטולים, ביטול עיסקה</meta_keywords>
-    <content>&lt;h3 class=&quot;page-subheading&quot;&gt;Rule 1&lt;/h3&gt;
-      &lt;p class=&quot;bottom-indent&quot;&gt;Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.&lt;/p&gt;
-      &lt;h3 class=&quot;page-subheading&quot;&gt;Rule 2&lt;/h3&gt;
-      &lt;p class=&quot;bottom-indent&quot;&gt;Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam&amp;#1102;&lt;/p&gt;
-      &lt;h3 class=&quot;page-subheading&quot;&gt;Rule 3&lt;/h3&gt;
-      &lt;p class=&quot;bottom-indent&quot;&gt;Tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam&amp;#1102;&lt;/p&gt;</content>
+    <content>&lt;h3 class=&quot;page-subheading&quot;&gt;חוק 1&lt;/h3&gt;
+      &lt;p class=&quot;bottom-indent&quot;&gt;להאמית קרהשק סכעיט דז מא, מנכם למטכין נשואי מנורךגולר מונפרר סוברט לורם שבצק יהול, לכנוץ בעריר גק ליץ, ושבעגט. לורם איפסום דולור סיט אמט, קונסקטורר אדיפיסינג אלית. סת אלמנקום ניסי נון ניבאה. דס איאקוליס וולופטה דיאם. וסטיבולום אט דולור, קראס אגת לקטוס וואל אאוגו וסטיבולום סוליסי טידום בעליק. נולום ארווס סאפיאן - פוסיליס קוויס, אקווזמן קוואזי במר מודוף. אודיפו בלאסטיק מונופץ קליר, בנפת נפקט למסון בלרק - וענוף מוסן מנת.&lt;/p&gt;
+      &lt;h3 class=&quot;page-subheading&quot;&gt;חוק 2&lt;/h3&gt;
+      &lt;p class=&quot;bottom-indent&quot;&gt;הועניב היושבב שערש שמחויט - שלושע ותלברו חשלו שעותלשך וחאית נובש ערששף. זותה מנק הבקיץ אפאח דלאמת יבש, כאנה ניצאחו נמרגי שהכים תוק, הדש שנרא התידם הכייר וק&lt;/p&gt;
+      &lt;h3 class=&quot;page-subheading&quot;&gt;חוק 3&lt;/h3&gt;
+      &lt;p class=&quot;bottom-indent&quot;&gt;לורם איפסום דולור סיט אמט, קונסקטורר אדיפיסינג אלית קולורס מונפרד אדנדום סילקוף, מרגשי ומרגשח. עמחליף סחטיר בלובק. תצטנפל בלינדו למרקל אס לכימפו, דול, צוט ומעיוט - לפתיעם ברשג - ולתיעם גדדיש. קוויז דומור ליאמום בלינך רוגצה. לפמעט מוסן מנת. סחטיר בלובק. תצטנפל בלינדו למרקל אס לכימפו, דול, צוט ומעיוט - לפתיעם ברשג - ולתיעם גדדיש. קוויז דומור ליאמום בלינך רוגצה. לפמעט מוסן מנת. גולר מונפרר סוברט לורם שבצק יהול, לכנוץ בעריר גק ליץ, ושבעגט ליבם סולגק. בראיט ולחת צורק מונחף, בגורמי מגמש&lt;/p&gt;</content>
     <link_rewrite>תנאים-הגבלים-והערות</link_rewrite>
   </cms>
   <cms id="About_us">
@@ -34,35 +36,35 @@
     <content>&lt;div class=&quot;row&quot;&gt;
       &lt;div class=&quot;col-xs-12 col-sm-4&quot;&gt;
       &lt;div class=&quot;cms-block&quot;&gt;
-      &lt;h3 class=&quot;page-subheading&quot;&gt;Our company&lt;/h3&gt;
-      &lt;p&gt;&lt;strong class=&quot;dark&quot;&gt;Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod tempor incididun.&lt;/strong&gt;&lt;/p&gt;
-      &lt;p&gt;Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam. Lorem ipsum dolor sit amet conse ctetur adipisicing elit.&lt;/p&gt;
+      &lt;h3 class=&quot;page-subheading&quot;&gt;החברה שלנו&lt;/h3&gt;
+      &lt;p&gt;&lt;strong class=&quot;dark&quot;&gt;קונדימנטום קורוס בליקרה, נונסטי קלובר בריקנה סטום, לפריקך תצטריק לרטי.&lt;/strong&gt;&lt;/p&gt;
+      &lt;p&gt;קולהע צופעט למרקוח איבן איף, ברומץ כלרשט מיחוצים. קלאצי קוואזי במר מודוף. אודיפו בלאסטיק מונופץ קליר, בנפת נפקט למסון בלרק - וענוף לפרומי בלוף קינץ תתיח לרעח. לת צשחמי צש בליא, מנסוטו צמלח לביקו ננבי, צמוקו בלוקריה שיצמה ברורק.&lt;/p&gt;
       &lt;ul class=&quot;list-1&quot;&gt;
-      &lt;li&gt;&lt;em class=&quot;icon-ok&quot;&gt;&lt;/em&gt;Top quality products&lt;/li&gt;
-      &lt;li&gt;&lt;em class=&quot;icon-ok&quot;&gt;&lt;/em&gt;Best customer service&lt;/li&gt;
-      &lt;li&gt;&lt;em class=&quot;icon-ok&quot;&gt;&lt;/em&gt;30-days money back guarantee&lt;/li&gt;
+      &lt;li&gt;&lt;em class=&quot;icon-ok&quot;&gt;&lt;/em&gt;מוצרים משובחים&lt;/li&gt;
+      &lt;li&gt;&lt;em class=&quot;icon-ok&quot;&gt;&lt;/em&gt;שירות לקוחות אדיב&lt;/li&gt;
+      &lt;li&gt;&lt;em class=&quot;icon-ok&quot;&gt;&lt;/em&gt;אפשרות החזרה עד 14 ימים&lt;/li&gt;
       &lt;/ul&gt;
       &lt;/div&gt;
       &lt;/div&gt;
       &lt;div class=&quot;col-xs-12 col-sm-4&quot;&gt;
       &lt;div class=&quot;cms-box&quot;&gt;
-      &lt;h3 class=&quot;page-subheading&quot;&gt;Our team&lt;/h3&gt;
+      &lt;h3 class=&quot;page-subheading&quot;&gt;הצוות שלנו&lt;/h3&gt;
       &lt;img title=&quot;cms-img&quot; src=&quot;../img/cms/cms-img.jpg&quot; alt=&quot;cms-img&quot; width=&quot;370&quot; height=&quot;192&quot; /&gt;
-      &lt;p&gt;&lt;strong class=&quot;dark&quot;&gt;Lorem set sint occaecat cupidatat non &lt;/strong&gt;&lt;/p&gt;
-      &lt;p&gt;Eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.&lt;/p&gt;
+      &lt;p&gt;&lt;strong class=&quot;dark&quot;&gt;מוסן מנת. להאמית קרהשק סכעיט דז מא, מנכם למטכין נשואי מנורך &lt;/strong&gt;&lt;/p&gt;
+      &lt;p&gt;צש בליא, מנסוטו צמלח לביקו ננבי, צמוקו בלוקריה שיצמה ברורק. קונסקטורר אדיפיסינג אלית. סת אלמנקום ניסי נון ניבאה. דס איאקוליס וולופטה דיאם. וסטיבולום אט דולור, קראס אגת לקטוס וואל אאוגו וסטיבולום סוליסי טידום בעליק.&lt;/p&gt;
       &lt;/div&gt;
       &lt;/div&gt;
       &lt;div class=&quot;col-xs-12 col-sm-4&quot;&gt;
       &lt;div class=&quot;cms-box&quot;&gt;
-      &lt;h3 class=&quot;page-subheading&quot;&gt;Testimonials&lt;/h3&gt;
+      &lt;h3 class=&quot;page-subheading&quot;&gt;לקוחות מספרים&lt;/h3&gt;
       &lt;div class=&quot;testimonials&quot;&gt;
-      &lt;div class=&quot;inner&quot;&gt;&lt;span class=&quot;before&quot;&gt;“&lt;/span&gt;Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim.&lt;span class=&quot;after&quot;&gt;”&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;inner&quot;&gt;&lt;span class=&quot;before&quot;&gt;“&lt;/span&gt;קוויז דומור ליאמום בלינך רוגצה. לפמעט מוסן מנת. להאמית קרהשק סכעיט דז מא, מנכם למטכין נשואי מנורך. הועניב היושבב שערש שמחויט - שלושע ותלברו חשלו שעותלשך וחאית נובש ערששף.&lt;span class=&quot;after&quot;&gt;”&lt;/span&gt;&lt;/div&gt;
       &lt;/div&gt;
-      &lt;p&gt;&lt;strong class=&quot;dark&quot;&gt;Lorem ipsum dolor sit&lt;/strong&gt;&lt;/p&gt;
+      &lt;p&gt;&lt;strong class=&quot;dark&quot;&gt;לורם איפסום דולור סיט אמט&lt;/strong&gt;&lt;/p&gt;
       &lt;div class=&quot;testimonials&quot;&gt;
-      &lt;div class=&quot;inner&quot;&gt;&lt;span class=&quot;before&quot;&gt;“&lt;/span&gt;Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet conse ctetur adipisicing elit. Lorem ipsum dolor sit amet conse ctetur adipisicing elit, sed do eiusmod.&lt;span class=&quot;after&quot;&gt;”&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;inner&quot;&gt;&lt;span class=&quot;before&quot;&gt;“&lt;/span&gt;צש בליא, מנסוטו צמלח לביקו ננבי, צמוקו בלוקריה שיצמה ברורק. קונסקטורר אדיפיסינג אלית. סת אלמנקום ניסי נון ניבאה. דס איאקוליס וולופטה דיאם. וסטיבולום אט דולור, קראס אגת לקטוס וואל אאוגו וסטיבולום סוליסי טידום בעליק. קונדימנטום קורוס בליקרה, נונסטי קלובר בריקנה סטום, לפריקך תצטריק לרטי.&lt;span class=&quot;after&quot;&gt;”&lt;/span&gt;&lt;/div&gt;
       &lt;/div&gt;
-      &lt;p&gt;&lt;strong class=&quot;dark&quot;&gt;Ipsum dolor sit&lt;/strong&gt;&lt;/p&gt;
+      &lt;p&gt;&lt;strong class=&quot;dark&quot;&gt;לורם איפסום דולור סיט אמט&lt;/strong&gt;&lt;/p&gt;
       &lt;/div&gt;
       &lt;/div&gt;
       &lt;/div&gt;</content>
@@ -72,9 +74,9 @@
     <meta_title>תשלום מאובטח</meta_title>
     <meta_description>אצלנו בתשלום מאובטח אנו מתכוונים אל</meta_description>
     <meta_keywords>ויזה, מאסטרכארד, פייפאל, SSL</meta_keywords>
-    <content>&lt;h2&gt;Secure payment&lt;/h2&gt;&#xD;
-      &lt;h3&gt;Our secure payment&lt;/h3&gt;&lt;p&gt;With SSL&lt;/p&gt;&#xD;
-      &lt;h3&gt;Using Visa/Mastercard/Paypal&lt;/h3&gt;&lt;p&gt;About this services&lt;/p&gt;</content>
+    <content>&lt;h2&gt;תשלום מאובטח&lt;/h2&gt;&#xD;
+      &lt;h3&gt;התשלום שלנו מאובטח&lt;/h3&gt;&lt;p&gt;עם SSL&lt;/p&gt;&#xD;
+      &lt;h3&gt;שלם בויזה/מסטרקארד/פייפל&lt;/h3&gt;&lt;p&gt;אודות השירותים&lt;/p&gt;</content>
     <link_rewrite>תשלום-מאובטח</link_rewrite>
   </cms>
 </entity_cms>
