@@ -890,8 +890,10 @@ $(document).ready(function () {
 });
 
 function checkPartialRefundProductQuantity(it) {
-  if (parseInt($(it).val(), 10) > parseInt($(it).closest('td').find('.partialRefundProductQuantity').val()), 10) {
-    $(it).val($(it).closest('td').find('.partialRefundProductQuantity').val());
+  var entered = parseInt($(it).val());
+  var max = parseInt($(it).next().text().match(/\d+/)[0], 10);
+  if (entered > max) {
+    $(it).val(max);
   }
   if (window.order_discount_price) {
     actualizeRefundVoucher();
@@ -899,12 +901,7 @@ function checkPartialRefundProductQuantity(it) {
 }
 
 function checkPartialRefundProductAmount(it) {
-  var oldPrice = $(it).closest('td').find('.partialRefundProductAmount').val();
-  if (typeof $(it).val() !== 'undefined' && typeof new_price !== 'undefined' &&
-    parseFloat($(it).val()) > parseFloat(oldPrice)) {
-    $(it).val(oldPrice);
-  }
-
+  // TODO: find a way to restore the limit
   if (window.order_discount_price) {
     actualizeRefundVoucher();
   }
