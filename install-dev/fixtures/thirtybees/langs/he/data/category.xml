@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<entity_category>
+  <category id="coffee_and_tea" id_shop="1">
+    <name>קפה ותה</name>
+    <description>קפה ותה הטובים ביותר בעולם. הקפה והתה שלנו יהיו הכי טעימים שאי פעם טעמת: יש לנו אפילו כוסות וספלים מסוגננים, כך שאתה יכול לשתות בסטייל.</description>
+    <link_rewrite>קפה-ותה</link_rewrite>
+    <meta_title/>
+    <meta_keywords/>
+    <meta_description/>
+  </category>
+  <category id="coffee" id_shop="1">
+    <name>קפה</name>
+    <description>קפה קלוי אורגני, אנו משתמשים רק בפולי קפה טרי. נסה את הקפה הטוב ביותר בישראל!</description>
+    <link_rewrite>קפה</link_rewrite>
+    <meta_title/>
+    <meta_keywords/>
+    <meta_description/>
+  </category>
+  <category id="tea" id_shop="1">
+    <name>תה</name>
+    <description>עלי התה שלנו נקטפים בשיא העונה, כדי למקסם את הרעננות!</description>
+    <link_rewrite>תה</link_rewrite>
+    <meta_title/>
+    <meta_keywords/>
+    <meta_description/>
+  </category>
+  <category id="gifts" id_shop="1">
+    <name>מתנות</name>
+    <description>מחפש מתנה? יש לנו כמה מתנות נחמדות לכל אירוע.</description>
+    <link_rewrite>מתנות</link_rewrite>
+    <meta_title/>
+    <meta_keywords/>
+    <meta_description/>
+  </category>
+  <category id="office" id_shop="1">
+    <name>משרד</name>
+    <description>כמו שיש אביזרים לעיצוב במשרד שלך? נסה אחד מספלי הקפה שלנו או מסגרות לתמונה.</description>
+    <link_rewrite>משרד</link_rewrite>
+    <meta_title/>
+    <meta_keywords/>
+    <meta_description/>
+  </category>
+</entity_category>

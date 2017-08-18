@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<entity_product>
+  <product id="Candle" id_shop="1">
+    <description>הנרות שלנו מיוצרים עם פרפין איכותי ביותר. כמו כן אנו משתמשים בעץ אשור מוצק עבור פתילות יצירת צליל ייחודי כאשר הנר דולק. ניחוחות הנרות מגיעים מהספקים הפריזאיים הטובים ביותר בעולם.</description>
+    <description_short>נר הדגל שלנו מוצע ב 3 גדלים ושני ריחות כדי להתאים לכל הצרכים</description_short>
+    <link_rewrite>נר</link_rewrite>
+    <meta_description/>
+    <meta_keywords/>
+    <meta_title/>
+    <name>נר</name>
+    <available_now>במלאי</available_now>
+    <available_later/>
+  </product>
+  <product id="Soap" id_shop="1">
+    <description>אנו משתמשים רק בחומרים הטובים ביותר בסבונים שלנו. הם מיוצרים ביד, בקבוצות קטנות, הדרך המיושנת לשמור על איכות ועקביות. כל הסבונים שלנו הם אנטי אלרגי.</description>
+    <description_short>הסבונים שלנו באים בתחליב רחצה, שמפו, ומרכך.</description_short>
+    <link_rewrite>סבון</link_rewrite>
+    <meta_description/>
+    <meta_keywords/>
+    <meta_title/>
+    <name>סבון</name>
+    <available_now>במלאי</available_now>
+    <available_later/>
+  </product>
+  <product id="Coffee" id_shop="1">
+    <description>הקפה שלנו הוא המוצר המפורסם ביותר שלנו. הקפה שלנו נקלה כדי להפחית את רמת החומציות מה שנותן קפה פריך עם טעם מטורף. אנחנו רוכשים את פולי הקפה שלנו ממגדלים מובחרים בשוק. אנו מאמינים בשיטות קפה בר קיימא.</description>
+    <description_short>אנו מציעים שלושה מהסוגים הפופולריים ביותר של הקפה, אור, כהה, בלונדיני.</description_short>
+    <link_rewrite>פולי-קפה</link_rewrite>
+    <meta_description/>
+    <meta_keywords/>
+    <meta_title/>
+    <name>קפה</name>
+    <available_now>במלאי</available_now>
+    <available_later/>
+  </product>
+  <product id="Tin_Cup" id_shop="1">
+    <description>הכוסות שלנו הם הכוס המושלמת לשתיית קפה או תה. הם עמיד בחום. האם גם הזכרנו עד כמה הם מסוגננים ורבגוניים? לזרוק אותו לתיק שלך ולקחת אותו למחנאות איתך!</description>
+    <description_short>כוס דקה עם לוגו thirty bees המסוגנן, מושלם לתה.</description_short>
+    <link_rewrite>כוס-דקה</link_rewrite>
+    <meta_description/>
+    <meta_keywords/>
+    <meta_title/>
+    <name>כוס דקה</name>
+    <available_now>במלאי</available_now>
+    <available_later/>
+  </product>
+  <product id="Picture_Frame" id_shop="1">
+    <description>הקירות שלך צריכים אומנות, ולכן אתה אוהב את מסגרת התמונה שלנו. זה מגיע בשלושה צבעים שונים כדי להתאים לכל תפאורה, לתת להם את המתנה שהם יאהבו, מסגרת תמונה של thirty bees.</description>
+    <description_short>מסגרת תמונה אופנתית, מודרנית מגיעה בשלושה צבעים.</description_short>
+    <link_rewrite>מסגרת-לתמונה</link_rewrite>
+    <meta_description/>
+    <meta_keywords/>
+    <meta_title/>
+    <name>מסגרת לתמונה</name>
+    <available_now>במלאי</available_now>
+    <available_later/>
+  </product>
+  <product id="Mug" id_shop="1">
+    <description>ספל הקפה של thirty bees הוא הספל המושלם. הספל מגיע בשלושה צבעים שונים, כך שתוכל ליהנות מהקפה שלנו לא משנה מה הסגנון שלך.</description>
+    <description_short>האם אתה אוהב ספלי קפה? אם כן, אתה תאהב את זה.</description_short>
+    <link_rewrite>ספל</link_rewrite>
+    <meta_description/>
+    <meta_keywords/>
+    <meta_title/>
+    <name>ספל</name>
+    <available_now>במלאי</available_now>
+    <available_later/>
+  </product>
+  <product id="Tea" id_shop="1">
+    <description>התה שלנו נקטף ביד בחוות הגידול שלנו. אנחנו לא מאמינים בשימוש במכונות עם התה שלנו, כל עלה ביד נבדק עבור פגמים ורק 25% נקלטים להיות עלה של thirty bees. יש לנו חמש טעמים שונים.</description>
+    <description_short>שעת תה? כל שעה היא שעת תה עם אחד מחמשת סוגי התה שלנו.</description_short>
+    <link_rewrite>צנצנת-תה</link_rewrite>
+    <meta_description/>
+    <meta_keywords/>
+    <meta_title/>
+    <name>תה</name>
+    <available_now>במלאי</available_now>
+    <available_later/>
+  </product>
+  <product id="Honey" id_shop="1">
+    <description>הדבש שלנו קובע אם הדרך המושלמת להמתיק קפה או תה. הדבש שלנו הוא עשוי מהדבורים החרוצים ביותר בעולם. אנחנו ממש לא נותנים לדבורים שלנו הפסקה. הם אוהבים לייצר דבש כדי שאנשים ברחבי העולם יכולים ליהנות מהמוצר שלהם.</description>
+    <description_short>ערכת הדבש שלנו מגיעה עם שלוש דרגות שונות של דבש, אחת לכל טעם.</description_short>
+    <link_rewrite>דבש</link_rewrite>
+    <meta_description/>
+    <meta_keywords/>
+    <meta_title/>
+    <name>דבד</name>
+    <available_now>במלאי</available_now>
+    <available_later/>
+  </product>
+</entity_product>

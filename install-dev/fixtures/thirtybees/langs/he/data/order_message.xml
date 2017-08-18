@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<entity_order_message>
+  <order_message id="Delay">
+    <name>עיכוב</name>
+    <message>הי,
+
+      לצערנו, פריט מההזמנה שלך לא נמצא כרגע במלאי. דבר זה עלול לגרום לעיכוב קל במשלוח.
+      אנא קבל את התנצלותינו והיה בטוח כי אנו עובדים קשה כדי לסדר זאת.
+
+בתודה,</message>
+  </order_message>
+</entity_order_message>

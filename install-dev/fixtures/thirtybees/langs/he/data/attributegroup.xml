@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<list_attributegroup>
+	<attributegroup id="Flavor">
+		<name><![CDATA[טעם]]></name>
+	</attributegroup>
+	<attributegroup id="Product">
+		<name><![CDATA[מוצר]]></name>
+	</attributegroup>
+	<attributegroup id="Color">
+		<name><![CDATA[צבע]]></name>
+	</attributegroup>
+	<attributegroup id="Size">
+		<name><![CDATA[מידה]]></name>
+	</attributegroup>
+	<attributegroup id="Scent">
+		<name><![CDATA[ריח]]></name>
+	</attributegroup>
+</list_attributegroup>
