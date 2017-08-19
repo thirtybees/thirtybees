@@ -1560,20 +1560,22 @@ class FrontControllerCore extends Controller
                 $cart->update();
             }
             /* Select an address if not set */
-            if (isset($cart) && (!isset($cart->id_address_delivery) || $cart->id_address_delivery == 0 ||
-                    !isset($cart->id_address_invoice) || $cart->id_address_invoice == 0) && $this->context->cookie->id_customer
-            ) {
-                $toUpdate = false;
-                if (!isset($cart->id_address_delivery) || $cart->id_address_delivery == 0) {
-                    $toUpdate = true;
-                    $cart->id_address_delivery = (int) Address::getFirstCustomerAddressId($cart->id_customer);
-                }
-                if (!isset($cart->id_address_invoice) || $cart->id_address_invoice == 0) {
-                    $toUpdate = true;
-                    $cart->id_address_invoice = (int) Address::getFirstCustomerAddressId($cart->id_customer);
-                }
-                if ($toUpdate) {
-                    $cart->update();
+            if (isset($cart) && $this->context->cookie->id_customer
+                && (!$cart->id_address_delivery || !$cart->id_address_invoice)) {
+                $idFirstAddress = (int) Address::getFirstCustomerAddressId($cart->id_customer);
+                if ($idFirstAddress) {
+                    $toUpdate = false;
+                    if (!$cart->id_address_delivery) {
+                        $toUpdate = true;
+                        $cart->id_address_delivery = $idFirstAddress;
+                    }
+                    if (!$cart->id_address_invoice) {
+                        $toUpdate = true;
+                        $cart->id_address_invoice = $idFirstAddress;
+                    }
+                    if ($toUpdate) {
+                        $cart->update();
+                    }
                 }
             }
         }
