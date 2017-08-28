@@ -836,8 +836,9 @@ class AdminTranslationsControllerCore extends AdminController
                 $sandbox = _PS_CACHE_DIR_.'sandbox'.DIRECTORY_SEPARATOR.$uniqid.DIRECTORY_SEPARATOR;
                 if ($gz->extractList($filesPaths, $sandbox)) {
                     foreach ($filesList as $file2check) {
-                        //don't validate index.php, will be overwrite when extract in translation directory
-                        if (pathinfo($file2check['filename'], PATHINFO_BASENAME) == 'index.php') {
+                        // Don't validate index.php, will be overwritten when extract in translation directory
+                        // Also skip directories
+                        if (pathinfo($file2check['filename'], PATHINFO_BASENAME) === 'index.php' || empty(pathinfo($file2check['filename'], PATHINFO_EXTENSION))) {
                             continue;
                         }
 
