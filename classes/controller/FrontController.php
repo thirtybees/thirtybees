@@ -386,6 +386,19 @@ class FrontControllerCore extends Controller
                 }
 
                 break;
+
+            case 'cms':
+	            $idCms = Tools::getValue('id_cms');
+	            $idCmsCategory = Tools::getValue('id_cms_category');
+	            if ($idCms) {
+		            $canonical = $this->context->link->getCMSLink((int) $idCms);
+		            $hreflang = $this->getHrefLang('cms', (int) $idCms, $languages, $defaultLang);
+	            } else {
+		            $canonical = $this->context->link->getCMSCategoryLink((int) $idCmsCategory);
+		            $hreflang = $this->getHrefLang('cms_category', (int) $idCmsCategory, $languages, $defaultLang);
+	            }
+
+                break;
             default:
                 $canonical = $this->context->link->getPageLink($this->php_self);
                 $hreflang = $this->getHrefLang($this->php_self, 0, $languages, $defaultLang);
@@ -425,7 +438,6 @@ class FrontControllerCore extends Controller
                 case 'product':
                     $lnk = $this->context->link->getProductLink((int) $idItem, null, null, null, $lang['id_lang']);
                     break;
-
                 case 'category':
                     $lnk = $this->context->link->getCategoryLink((int) $idItem, null, $lang['id_lang']);
                     break;
@@ -443,6 +455,12 @@ class FrontControllerCore extends Controller
                         $lnk = $this->context->link->getSupplierLink((int) $idItem, null, $lang['id_lang']);
                     }
                     break;
+	            case 'cms':
+		            $lnk = $this->context->link->getCMSLink((int) $idItem, null, null, $lang['id_lang']);
+		            break;
+	            case 'cms_category':
+		            $lnk = $this->context->link->getCMSCategoryLink((int) $idItem, null, $lang['id_lang']);
+		            break;
                 default:
                     $lnk = $this->context->link->getPageLink($entity, null, $lang['id_lang']);
                     break;
