@@ -2175,6 +2175,8 @@ class CartCore extends ObjectModel
                 $total = 0;
                 $totalTax = 0;
                 foreach ($this->getProducts() as $product) {
+		    if(!$product['price'])
+                        continue;
                     $price = Tools::ps_round($product['price'], $precision);
                     $priceWithTax = Tools::ps_round($product['price_wt'], $precision);
                     $appliedTaxRate = $priceWithTax / $price - 1;
