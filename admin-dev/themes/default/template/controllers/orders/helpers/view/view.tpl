@@ -395,7 +395,7 @@
           {l s="Payment"} <span class="badge">{$order->getOrderPayments()|@count}</span>
         </div>
         {if count($order->getOrderPayments()) > 0}
-          <p class="alert alert-danger"{if Tools::ps_round($orders_total_paid_tax_incl, $smarty.const._PS_PRICE_DISPLAY_PRECISION_) === Tools::ps_round($total_paid, $smarty.const._PS_PRICE_DISPLAY_PRECISION_) || (isset($currentState) && $currentState->id == Configuration::get('PS_OS_CANCELED'))} style="display: none;"{/if}>
+          <p class="alert alert-danger"{if Tools::ps_round($orders_total_paid_tax_incl, $smarty.const._PS_PRICE_DISPLAY_PRECISION_) == Tools::ps_round($total_paid, $smarty.const._PS_PRICE_DISPLAY_PRECISION_) || (isset($currentState) && $currentState->id == Configuration::get('PS_OS_CANCELED'))} style="display: none;"{/if}>
             {l s='Warning'}
             <strong>{displayPrice price=$total_paid currency=$currency->id}</strong>
             {l s='paid instead of'}
