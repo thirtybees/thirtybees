@@ -1311,8 +1311,8 @@ window.product_tabs.Pack = new function () {
   var self = this;
 
   this.bindPackEvents = function () {
-    $('.delPackItem').on('click', function () {
-      window.delPackItem($(this).data('delete'), $(this).data('delete-attr'));
+    $('body').on('click', '.delPackItem', function () {
+      delPackItem($(this).data('delete'), $(this).data('delete-attr'));
     });
 
     function productFormatResult(item) {
@@ -1373,7 +1373,7 @@ window.product_tabs.Pack = new function () {
         }
       },
       formatResult: productFormatResult,
-      formatSelection: productFormatSelection,
+      formatSelection: productFormatSelection
     })
       .on('select2-selecting', function (e) {
         selectedProduct = e.object;
@@ -1417,11 +1417,6 @@ window.product_tabs.Pack = new function () {
         $('#inputPackItems').val($('#inputPackItems').val() + line + '-');
         $('#namePackItems').val($('#namePackItems').val() + lineDisplay + '¤');
 
-        $('.delPackItem').on('click', function (e) {
-          e.preventDefault();
-          e.stopPropagation();
-          window.delPackItem($(this).data('delete'), $(this).data('delete-attr'));
-        });
         selectedProduct = null;
         $('#curPackItemName').select2('val', '');
         $('.pack-empty-warning').hide();
@@ -1439,19 +1434,19 @@ window.product_tabs.Pack = new function () {
       var regx = new RegExp('x', 'g');
 
       var input = $('#inputPackItems');
-      var name = $('#namePackItems');
+      var namePack = $('#namePackItems');
 
       var inputCut = input.val().split(reg);
-      var nameCut = name.val().split(new RegExp('¤', 'g'));
+      var nameCut = namePack.val().split(new RegExp('¤', 'g'));
 
       input.val(null);
-      name.val(null);
+      namePack.val(null);
       for (var i = 0; i < inputCut.length; i += 1) {
         if (inputCut[i]) {
           var inputQty = inputCut[i].split(regx);
-          if (inputQty[1] !== id || inputQty[2] !== idAttribute) {
+          if (inputQty[1] != id || inputQty[2] != idAttribute) {
             input.val(input.val() + inputCut[i] + '-');
-            name.val(name.val() + nameCut[i] + '¤');
+            namePack.val(namePack.val() + nameCut[i] + '¤');
           }
         }
       }
