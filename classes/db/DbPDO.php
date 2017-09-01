@@ -127,7 +127,7 @@ class DbPDOCore extends Db
         $this->link->exec('SET SESSION sql_mode = \'\'');
 
         // Synchronize MySQL timezone with current PHP timezone
-        $timezone = date_default_timezone_get();
+        $timezone = @date_default_timezone_get();
         if (!in_array($timezone, DateTimeZone::listIdentifiers())) {
             $timezone = ini_get('date.timezone');
             if (!in_array($timezone, DateTimeZone::listIdentifiers())) {
