@@ -3048,6 +3048,7 @@ class OrderCore extends ObjectModel
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
                 ->select('od.`id_tax_rules_group`, od.`product_quantity`, odt.*, t.*')
+                ->from('orders', 'o')
                 ->innerJoin('order_detail', 'od', 'od.`id_order` = o.`id_order`')
                 ->innerJoin('order_detail_tax', 'odt', 'odt.`id_order_detail` = od.`id_order_detail`')
                 ->innerJoin('tax', 't', 't.`id_tax` = odt.`id_tax`')
