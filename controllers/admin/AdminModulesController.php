@@ -263,8 +263,6 @@ class AdminModulesControllerCore extends AdminController
             return;
         }
 
-        $this->meta_title = 'Modules';
-
         // If we are on a module configuration, no need to load all modules
         if (Tools::getValue('configure') != '') {
             $this->context->smarty->assign(['maintenance_mode' => !(bool) Configuration::Get('PS_SHOP_ENABLE')]);
