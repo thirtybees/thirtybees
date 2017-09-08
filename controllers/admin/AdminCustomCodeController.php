@@ -76,18 +76,7 @@ class AdminCustomCodeControllerCore extends AdminController
             ],
             'order_confirmation' => [
                 'title'       => $this->l('Order Confirmation Page'),
-                'description' => $this->l('Available variables:').'<br/>
-                                bought_products '.$this->l('(List of products in JSON format)').'<br/>
-                                total_products_tax_incl<br/>
-                                total_products_tax_excl<br/>
-                                total_shipping_tax_incl<br/>
-                                total_shipping_tax_excl<br/>
-                                total_discounts_tax_incl<br/>
-                                total_discounts_tax_excl<br/>
-                                total_paid_tax_incl<br/>
-                                total_paid_tax_excl<br/>
-                                id_customer<br/>
-                                currency.iso_code',
+                'description' => $this->l('Available variables:').'<br/>bought_products '.$this->l('(List of products in JSON format)').'<br/>total_products_tax_incl<br/>total_products_tax_excl<br/>total_shipping_tax_incl<br/>total_shipping_tax_excl<br/>total_discounts_tax_incl<br/>total_discounts_tax_excl<br/>total_paid_tax_incl<br/>total_paid_tax_excl<br/>id_customer<br/>currency.iso_code',
                 'icon'        => 'icon-cogs',
                 'fields'      => $fields2,
                 'submit'      => ['title' => $this->l('Save')],
