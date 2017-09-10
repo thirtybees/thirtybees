@@ -2096,7 +2096,7 @@ class AdminProductsControllerCore extends AdminController
     }
 
     /**
-     * delete all items in pack, then check if type_product value is 2.
+     * delete all items in pack, then check if type_product value is PTYPE_PACK.
      * if yes, add the pack items from input "inputPackItems"
      *
      * @param Product $product
@@ -4278,12 +4278,8 @@ class AdminProductsControllerCore extends AdminController
         $product->productDownload->nb_days_accessible = ($product->productDownload->id > 0) ? $product->productDownload->nb_days_accessible : htmlentities(Tools::getValue('virtual_product_nb_days'), ENT_COMPAT, 'UTF-8');
         $product->productDownload->is_shareable = $product->productDownload->id > 0 && $product->productDownload->is_shareable;
 
-        $isoTinyMce = $this->context->language->iso_code;
-        $isoTinyMce = (file_exists(_PS_JS_DIR_.'tiny_mce/langs/'.$isoTinyMce.'.js') ? $isoTinyMce : 'en');
         $data->assign(
             [
-                'ad'                            => __PS_BASE_URI__.basename(_PS_ADMIN_DIR_),
-                'iso_tiny_mce'                  => $isoTinyMce,
                 'product'                       => $product,
                 'token'                         => $this->token,
                 'currency'                      => $currency,
