@@ -2197,7 +2197,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         }
 
         $definition = static::getDefinition($className);
-
         $sql = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.bqSQL($definition['table']).'` (';
         $sql .= '`'.$definition['primary'].'` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,';
         foreach ($definition['fields'] as $fieldName => $field) {
@@ -2218,8 +2217,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         }
         $sql = trim($sql, ',');
         $sql .= ')';
-
-Tools::p($sql);
 
         try {
             $success &= Db::getInstance()->execute($sql);
@@ -2259,8 +2256,6 @@ Tools::p($sql);
 
             $sql .= ')';
 
-Tools::p( $sql );
-
             try {
                 $success &= Db::getInstance()->execute($sql);
             } catch (\PrestaShopDatabaseException $exception) {
@@ -2295,8 +2290,6 @@ Tools::p( $sql );
             $sql .= 'PRIMARY KEY (`'.bqSQL($definition['primary']).'`, `id_shop`)';
 
             $sql .= ')';
-
-Tools::p( $sql );
 
             try {
                 $success &= Db::getInstance()->execute($sql);
