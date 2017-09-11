@@ -2245,10 +2245,10 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             }
 
             // Lang field
-            $sql .= '`id_lang` INT(11) DEFAULT NULL,';
+            $sql .= '`id_lang` INT(11) NOT NULL,';
 
             if (isset($definition['multilang_shop']) && $definition['multilang_shop']) {
-                $sql .= '`id_shop` INT(11) DEFAULT NULL,';
+                $sql .= '`id_shop` INT(11) NOT NULL,';
             }
 
             // Primary key
@@ -2284,7 +2284,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             }
 
             // Shop field
-            $sql .= '`id_shop` INT(11) DEFAULT NULL,';
+            $sql .= '`id_shop` INT(11) NOT NULL,';
 
             // Primary key
             $sql .= 'PRIMARY KEY (`'.bqSQL($definition['primary']).'`, `id_shop`)';
