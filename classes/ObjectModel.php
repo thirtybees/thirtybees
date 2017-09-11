@@ -2197,6 +2197,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         }
 
         $definition = static::getDefinition($className);
+
         $sql = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.bqSQL($definition['table']).'` (';
         $sql .= '`'.$definition['primary'].'` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,';
         foreach ($definition['fields'] as $fieldName => $field) {
@@ -2217,6 +2218,8 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         }
         $sql = trim($sql, ',');
         $sql .= ')';
+
+Tools::p($sql);
 
         try {
             $success &= Db::getInstance()->execute($sql);
@@ -2245,16 +2248,18 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             }
 
             // Lang field
-            $sql .= '`id_lang` INT(11) DEFAULT NULL,';
+            $sql .= '`id_lang` INT(11) NOT NULL,';
 
             if (isset($definition['multilang_shop']) && $definition['multilang_shop']) {
-                $sql .= '`id_shop` INT(11) DEFAULT NULL,';
+                $sql .= '`id_shop` INT(11) NOT NULL,';
             }
 
             // Primary key
             $sql .= 'PRIMARY KEY (`'.bqSQL($definition['primary']).'`, `id_lang`)';
 
             $sql .= ')';
+
+Tools::p( $sql );
 
             try {
                 $success &= Db::getInstance()->execute($sql);
@@ -2284,12 +2289,14 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             }
 
             // Shop field
-            $sql .= '`id_shop` INT(11) DEFAULT NULL,';
+            $sql .= '`id_shop` INT(11) NOT NULL,';
 
             // Primary key
             $sql .= 'PRIMARY KEY (`'.bqSQL($definition['primary']).'`, `id_shop`)';
 
             $sql .= ')';
+
+Tools::p( $sql );
 
             try {
                 $success &= Db::getInstance()->execute($sql);
