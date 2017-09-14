@@ -70,7 +70,7 @@ class AdminCustomCodeControllerCore extends AdminController
             'general' => [
                 'title'       => $this->l('General'),
                 'icon'        => 'icon-cogs',
-                'description' => $this->l('On this page you can add extra HTML between the <head> tags, extra CSS or JavaScript to your pages. JavaScript should NOT be enclosed with <script> tags. This is done by thirty bees already.').((Configuration::get('PS_USE_HTMLPURIFIER') ? '<br><strong>'.$this->l('Note that the HTMLPurifier library has been activated. Not all HTML tags will be accepted.').'</strong>' : '')),
+                'description' => $this->l('On this page you can add extra HTML between the &lt;head&gt; tags, extra CSS or JavaScript to your pages. JavaScript should NOT be enclosed with &lt;script&gt; tags. This is done by thirty bees already.').((Configuration::get('PS_USE_HTMLPURIFIER') ? '<br><strong>'.$this->l('Note that the HTMLPurifier library has been activated. Not all HTML tags will be accepted.').'</strong>' : '')),
                 'fields'      => $fields,
                 'submit'      => ['title' => $this->l('Save')],
             ],
