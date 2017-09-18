@@ -27,11 +27,7 @@
 	<input type="hidden" name="submitted_tabs[]" value="VirtualProduct" />
 	<input type="hidden" id="virtual_product_filename" name="virtual_product_filename" value="{$product->productDownload->filename}" />
 	<h3>{l s='Virtual Product (services, booking or downloadable products)'}</h3>
-	<div class="is_virtual_good" class="form-group">
-		<input type="checkbox" id="is_virtual_good" name="is_virtual_good" value="true" {if $product->is_virtual && $product->productDownload->active}checked="checked"{/if} />
-		<label for="is_virtual_good" class="t bold">{l s='Is this a virtual product?'}</label>
-	</div>
-	<div id="virtual_good" {if !$product->productDownload->id || $product->productDownload->active}style="display:none"{/if} class="form-group">
+	<div id="virtual_good" class="form-group">
 		<div class="form-group">
 			<label class="control-label col-lg-3">{l s='Does this product have an associated file?'}</label>
 			<div class="col-lg-2">
