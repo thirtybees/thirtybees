@@ -1662,12 +1662,6 @@ window.product_tabs.VirtualProduct = new function () {
       dateFormat: 'yy-mm-dd'
     });
 
-    if ($('input[name=is_virtual_file]:checked').val() == 1) {
-      $('#is_virtual_file_product').show();
-    } else {
-      $('#is_virtual_file_product').hide();
-    }
-
     $('input[name=is_virtual_file]').on('change', function (e) {
       if ($(this).val()) {
         $('#is_virtual_file_product').show();
