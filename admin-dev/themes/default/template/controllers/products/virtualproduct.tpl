@@ -40,7 +40,7 @@
 				</span>
 			</div>
 		</div>
-		<div id="is_virtual_file_product" style="display:none;">
+		<div id="is_virtual_file_product"{if !$product_download} style="display:none;"{/if}>
 			{if $download_product_file_missing}
 			<div class="form-group">
 				<div class="col-lg-push-3 col-lg-9">
