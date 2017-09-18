@@ -1211,11 +1211,7 @@ window.product_tabs.Informations = new function () {
 
       $('#product-pack-container').hide();
 
-      $('div.is_virtual_good').hide();
       $('#is_virtual').val(0);
-      window.tabs_manager.onLoad('VirtualProduct', function(){
-        $('#is_virtual_good').removeAttr('checked');
-      });
 
       window.product_type = parseInt($(this).val(), 10);
       $('#warn_virtual_combinations').hide();
@@ -1253,7 +1249,6 @@ window.product_tabs.Informations = new function () {
           $('#is_virtual').val(1);
 
           window.tabs_manager.onLoad('VirtualProduct', function() {
-            $('#is_virtual_good').attr('checked', true);
             $('#virtual_good').show();
           });
 
@@ -1666,12 +1661,6 @@ window.product_tabs.VirtualProduct = new function () {
       nextText: '',
       dateFormat: 'yy-mm-dd'
     });
-
-    if ($('#is_virtual_good').prop('checked')) {
-      $('#virtual_good').show();
-    }
-
-    $('.is_virtual_good').hide();
 
     if ($('input[name=is_virtual_file]:checked').val() == 1) {
       $('#is_virtual_file_product').show();
