@@ -1662,12 +1662,11 @@ window.product_tabs.VirtualProduct = new function () {
       dateFormat: 'yy-mm-dd'
     });
 
-    $('input[name=is_virtual_file]').on('change', function (e) {
-      if ($(this).val()) {
-        $('#is_virtual_file_product').show();
-      } else {
-        $('#is_virtual_file_product').hide();
-      }
+    $('#is_virtual_file_on').on('click', function () {
+      $('#is_virtual_file_product').show();
+    });
+    $('#is_virtual_file_off').on('click', function () {
+      $('#is_virtual_file_product').hide();
     });
 
     // Bind file deletion
