@@ -35,7 +35,7 @@
 		<div class="form-group">
 			<label class="control-label col-lg-3">{l s='Does this product have an associated file?'}</label>
 			<div class="col-lg-2">
-				<span class="switch prestashop-switch">
+				<span class="switch prestashop-switch fixed-width-lg">
 					<input type="radio" name="is_virtual_file" id="is_virtual_file_on" value="1" {if $product_download} checked="checked"{/if} />
 					<label for="is_virtual_file_on">{l s='Yes'}</label>
 					<input type="radio" name="is_virtual_file" id="is_virtual_file_off" value="0" {if !$product_download} checked="checked"{/if} />
