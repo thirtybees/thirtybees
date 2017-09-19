@@ -2135,14 +2135,24 @@ class AdminProductsControllerCore extends AdminController
      * Update product download
      *
      * @param Product $product
-     * @param int     $edit
+     * @param int     $edit     Deprecated in favor of autodetection.
      *
      * @return bool
      *
+     * @since 1.0.3 Deprecate $edit in favor of autodetection.
      * @since 1.0.0
      */
-    public function updateDownloadProduct($product, $edit = 0)
+    public function updateDownloadProduct($product, $edit = 999)
     {
+        if ($edit !== 999) {
+            Tools::displayParameterAsDeprecated('edit');
+        }
+
+        $idProductDownload = (int) ProductDownload::getIdFromIdProduct((int) $product->id, false);
+        if (!$idProductDownload) {
+            $idProductDownload = (int) Tools::getValue('virtual_product_id');
+        }
+
         if ((int) Tools::getValue('is_virtual_file') == 1) {
             if (isset($_FILES['virtual_product_file_uploader']) && $_FILES['virtual_product_file_uploader']['size'] > 0) {
                 $virtualProductFilename = ProductDownload::getNewFilename();
@@ -2160,16 +2170,6 @@ class AdminProductsControllerCore extends AdminController
 
                     return false;
                 }
-            }
-
-            // Trick's
-            if ($edit == 1) {
-                $idProductDownload = (int) ProductDownload::getIdFromIdProduct((int) $product->id, false);
-                if (!$idProductDownload) {
-                    $idProductDownload = (int) Tools::getValue('virtual_product_id');
-                }
-            } else {
-                $idProductDownload = Tools::getValue('virtual_product_id');
             }
 
             $isShareable = Tools::getValue('virtual_product_is_shareable');
@@ -2193,15 +2193,6 @@ class AdminProductsControllerCore extends AdminController
             }
         } else {
             /* unactive download product if checkbox not checked */
-            if ($edit == 1) {
-                $idProductDownload = (int) ProductDownload::getIdFromIdProduct((int) $product->id);
-                if (!$idProductDownload) {
-                    $idProductDownload = (int) Tools::getValue('virtual_product_id');
-                }
-            } else {
-                $idProductDownload = ProductDownload::getIdFromIdProduct($product->id);
-            }
-
             if (!empty($idProductDownload)) {
                 $productDownload = new ProductDownload((int) $idProductDownload);
                 $productDownload->date_expiration = date('Y-m-d H:i:s', time() - 1);
@@ -2422,7 +2413,7 @@ class AdminProductsControllerCore extends AdminController
                         if ($productTypeBefore == Product::PTYPE_SIMPLE && $object->getType() == Product::PTYPE_PACK) {
                             StockAvailable::setProductDependsOnStock((int) $object->id, false);
                         }
-                        $this->updateDownloadProduct($object, 1);
+                        $this->updateDownloadProduct($object);
                         $this->updateTags(Language::getLanguages(false), $object);
 
                         if ($this->isProductFieldUpdated('category_box') && !$object->updateCategories(Tools::getValue('categoryBox'))) {
