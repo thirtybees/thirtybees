@@ -286,21 +286,22 @@ class ProductDownloadCore extends ObjectModel
     }
 
     /**
-     * @param bool $deleteFile
+     * @param bool $deleteFile Deprecated. File gets always deleted.
      *
-     * @return bool
+     * @return bool True on successful deletion of file and DB entry.
      *
+     * @since   1.0.3 Deprecate $deleteFile in favor of always deleting it. A
+     *                file without matching DB entry means just a leaked file.
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function delete($deleteFile = false)
+    public function delete($deleteFile = 999)
     {
-        $result = parent::delete();
-        if ($result && $deleteFile) {
-            return $this->deleteFile();
+        if ($deleteFile !== 999) {
+            Tools::displayParameterAsDeprecated('deleteFile');
         }
 
-        return $result;
+        return $this->deleteFile() && parent::delete();
     }
 
     /**
