@@ -309,19 +309,39 @@ class ProductDownloadCore extends ObjectModel
      *
      * @param int $idProductDownload : if we need to delete a specific product attribute file
      *
-     * @return bool
+     * @return bool True if file didn't exist or was deleted successfully.
+     *              False if the existing file couldn't get deleted.
      *
+     * @since   1.0.3 Deprecate, but still handle $idProductDownload. Code
+     *                wanting to also delete the DB entry should use delete().
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function deleteFile($idProductDownload = null)
+    public function deleteFile($idProductDownload = 999)
     {
-        if (!$this->checkFile()) {
-            return false;
+        if ($idProductDownload !== 999) {
+            Tools::displayParameterAsDeprecated('idProductDownload');
+
+            // Retrocompatibility.
+            if ($idProductDownload) {
+                $download = new ProductDownload($idProductDownload);
+                return $download->delete();
+            }
         }
 
-        return unlink(_PS_DOWNLOAD_DIR_.$this->filename)
-            && Db::getInstance()->delete('product_download', 'id_product_download = '.(int) $idProductDownload);
+        $result = !$this->checkFile();
+
+        if (!$result) {
+            $result = @unlink(_PS_DOWNLOAD_DIR_.$this->filename);
+            if ($result) {
+                $this->filename = '';
+                $this->display_filename = '';
+                $this->date_expiration = date('Y-m-d H:i:s'); // @TODO: remove this.
+                $this->update();
+            }
+        }
+
+        return $result;
     }
 
     /**
