@@ -2178,7 +2178,7 @@ class AdminProductsControllerCore extends AdminController
             $virtualProductNbDownloable = Tools::getValue('virtual_product_nb_downloable');
             $virtualProductExpirationDate = Tools::getValue('virtual_product_expiration_date');
 
-            $download = new ProductDownload((int) $idProductDownload);
+            $download = new ProductDownload($idProductDownload);
             $download->id_product = (int) $product->id;
             $download->display_filename = $virtualProductName;
             $download->filename = $virtualProductFilename;
@@ -2192,13 +2192,11 @@ class AdminProductsControllerCore extends AdminController
                 return true;
             }
         } else {
-            /* unactive download product if checkbox not checked */
-            if (!empty($idProductDownload)) {
-                $productDownload = new ProductDownload((int) $idProductDownload);
-                $productDownload->date_expiration = date('Y-m-d H:i:s', time() - 1);
-                $productDownload->active = 0;
+            // Delete the download and its file.
+            if ($idProductDownload) {
+                $productDownload = new ProductDownload($idProductDownload);
 
-                return $productDownload->save();
+                return $productDownload->delete(true);
             }
         }
 
