@@ -2156,12 +2156,13 @@ class AdminProductsControllerCore extends AdminController
             Tools::displayParameterAsDeprecated('edit');
         }
 
-        $idProductDownload = (int) ProductDownload::getIdFromIdProduct((int) $product->id, false);
+        $idProductDownload = ProductDownload::getIdFromIdProduct($product->id, false);
         if (!$idProductDownload) {
             $idProductDownload = (int) Tools::getValue('virtual_product_id');
         }
 
-        if ((int) Tools::getValue('is_virtual_file') == 1) {
+        if (Tools::getValue('type_product') == Product::PTYPE_VIRTUAL
+            && Tools::getValue('is_virtual_file') == 1) {
             if (isset($_FILES['virtual_product_file_uploader']) && $_FILES['virtual_product_file_uploader']['size'] > 0) {
                 $virtualProductFilename = ProductDownload::getNewFilename();
                 $helper = new HelperUploader('virtual_product_file_uploader');
@@ -2171,14 +2172,7 @@ class AdminProductsControllerCore extends AdminController
                 $virtualProductFilename = Tools::getValue('virtual_product_filename', ProductDownload::getNewFilename());
             }
 
-            $product->setDefaultAttribute(0);//reset cache_default_attribute
-            if (Tools::getValue('virtual_product_expiration_date') && !Validate::isDate(Tools::getValue('virtual_product_expiration_date'))) {
-                if (!Tools::getValue('virtual_product_expiration_date')) {
-                    $this->errors[] = Tools::displayError('The expiration-date attribute is required.');
-
-                    return false;
-                }
-            }
+            $product->setDefaultAttribute(0); //reset cache_default_attribute
 
             $isShareable = Tools::getValue('virtual_product_is_shareable');
             $virtualProductName = Tools::getValue('virtual_product_name');
@@ -2204,7 +2198,7 @@ class AdminProductsControllerCore extends AdminController
             if ($idProductDownload) {
                 $productDownload = new ProductDownload($idProductDownload);
 
-                return $productDownload->delete(true);
+                return $productDownload->delete();
             }
         }
 
@@ -4256,7 +4250,7 @@ class AdminProductsControllerCore extends AdminController
             [
                 'download_product_file_missing' => $msg,
                 'download_dir_writable'         => ProductDownload::checkWritableDir(),
-                'up_filename'                   => strval(Tools::getValue('virtual_product_filename')),
+                'up_filename'                   => Tools::getValue('virtual_product_filename'),
             ]
         );
 
