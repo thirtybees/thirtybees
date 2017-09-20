@@ -1090,14 +1090,22 @@ class AdminProductsControllerCore extends AdminController
     public function initProcess()
     {
         if (Tools::isSubmit('submitAddproductAndStay') || Tools::isSubmit('submitAddproduct')) {
-            $this->id_object = (int) Tools::getValue('id_product');
-            $this->object = new Product($this->id_object);
+            // Clean up possible product type changes.
+            $typeProduct = (int) Tools::getValue('type_product');
+            $idProduct = (int) Tools::getValue('id_product');
 
-            if ($this->isTabSubmitted('Informations') && $this->object->is_virtual && (int) Tools::getValue('type_product') != 2) {
-                if ($idProductDownload = (int) ProductDownload::getIdFromIdProduct($this->id_object)) {
+            if ($typeProduct !== Product::PTYPE_PACK) {
+                if (!Pack::deleteItems($idProduct)) {
+                    $this->errors[] = Tools::displayError('Cannot delete product pack items.');
+                };
+            }
+            if ($typeProduct !== Product::PTYPE_VIRTUAL) {
+                $idProductDownload = ProductDownload::getIdFromIdProduct($idProduct, false);
+
+                if ($idProductDownload) {
                     $productDownload = new ProductDownload($idProductDownload);
-                    if (!$productDownload->deleteFile($idProductDownload)) {
-                        $this->errors[] = Tools::displayError('Cannot delete file');
+                    if (!$productDownload->delete()) {
+                        $this->errors[] = Tools::displayError('Cannot delete product download.');
                     }
                 }
             }
