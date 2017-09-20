@@ -25,5 +25,10 @@
         "phpunit/phpunit": "~4.8 || ~5.7",
         "codeception/codeception": "2.2.9",
         "codeception/aspect-mock": "^1.0 || ^2.0"
+    },
+    "config": {
+        "platform": {
+            "php": "5.6"
+        }
     }
 }
