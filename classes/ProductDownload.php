@@ -235,23 +235,6 @@ class ProductDownloadCore extends ObjectModel
     }
 
     /**
-     * @see     ObjectModel::getFields()
-     * @return array
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public function getFields()
-    {
-        $fields = parent::getFields();
-        if (!$fields['date_expiration']) {
-            $fields['date_expiration'] = '0000-00-00 00:00:00';
-        }
-
-        return $fields;
-    }
-
-    /**
      * @param bool $nullValues
      *
      * @return bool
