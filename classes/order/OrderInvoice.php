@@ -545,7 +545,7 @@ class OrderInvoiceCore extends ObjectModel
         }
 
         foreach ($details as $row) {
-            $rate = (float) round($row['tax_rate'], 3);
+            $rate = sprintf('%.3f', $row['tax_rate']);
             if (!isset($breakdown[$rate])) {
                 $breakdown[$rate] = [
                     'total_price_tax_excl' => 0,
