@@ -693,7 +693,12 @@ class ValidateCore
             return false;
         }
 
-        return checkdate((int) $matches[2], (int) $matches[3], (int) $matches[1]);
+        foreach ([1, 2, 3] as $i) {
+            $matches[$i] = (int) $matches[$i];
+        }
+
+        return ($matches[1] === 0 && $matches[2] === 0 && $matches[3] === 0)
+               || checkdate($matches[2], $matches[3], $matches[1]);
     }
 
     /**
