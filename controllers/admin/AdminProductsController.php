@@ -2175,6 +2175,7 @@ class AdminProductsControllerCore extends AdminController
 
             $product->setDefaultAttribute(0); //reset cache_default_attribute
 
+            $active = Tools::getValue('virtual_product_active');
             $isShareable = Tools::getValue('virtual_product_is_shareable');
             $name = Tools::getValue('virtual_product_name');
             $nbDays = Tools::getValue('virtual_product_nb_days');
@@ -2199,7 +2200,7 @@ class AdminProductsControllerCore extends AdminController
             $download->date_expiration = $expirationDate;
             $download->nb_days_accessible = (int) $nbDays;
             $download->nb_downloadable = (int) $nbDownloable;
-            $download->active = 1;
+            $download->active = (int) $active;
             $download->is_shareable = (int) $isShareable;
             if ($download->save()) {
                 return true;
@@ -4220,7 +4221,7 @@ class AdminProductsControllerCore extends AdminController
 
         $currency = $this->context->currency;
 
-        $idProductDownload = ProductDownload::getIdFromIdProduct($product->id);
+        $idProductDownload = ProductDownload::getIdFromIdProduct($product->id, false);
         // This might give an empty record, which is fine.
         $productDownload = new ProductDownload($idProductDownload);
 
