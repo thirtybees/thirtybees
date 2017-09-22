@@ -32,34 +32,15 @@
 			<label class="control-label col-lg-3">{l s='Does this product have an associated file?'}</label>
 			<div class="col-lg-2">
 				<span class="switch prestashop-switch fixed-width-lg">
-					<input type="radio" name="is_virtual_file" id="is_virtual_file_on" value="1" {if $product_download} checked="checked"{/if} />
+					<input type="radio" name="is_virtual_file" id="is_virtual_file_on" value="1" {if $product->productDownload->id} checked="checked"{/if} />
 					<label for="is_virtual_file_on">{l s='Yes'}</label>
-					<input type="radio" name="is_virtual_file" id="is_virtual_file_off" value="0" {if !$product_download} checked="checked"{/if} />
+					<input type="radio" name="is_virtual_file" id="is_virtual_file_off" value="0" {if !$product->productDownload->id} checked="checked"{/if} />
 					<label for="is_virtual_file_off">{l s='No'}</label>
 					<a class="slide-button btn"></a>
 				</span>
 			</div>
 		</div>
-		<div id="is_virtual_file_product"{if !$product_download} style="display:none;"{/if}>
-			{if $download_product_file_missing}
-			<div class="form-group">
-				<div class="col-lg-push-3 col-lg-9">
-					<div class="alert alert-danger" id="file_missing">
-						{$download_product_file_missing} :<br/>
-						<strong>{l s='Server file name : %s'|sprintf:$product->productDownload->filename}</strong>
-					</div>
-				</div>
-			</div>
-			{/if}
-			{if !$download_dir_writable}
-			<div class="form-group">
-				<div class="col-lg-push-3 col-lg-9">
-					<div class="alert alert-danger">
-						{l s='Your download repository is not writable.'}
-					</div>
-				</div>
-			</div>
-			{/if}
+		<div id="is_virtual_file_product"{if !$product->productDownload->id} style="display:none;"{/if}>
 			{* Don't display file form if the product has combinations *}
 			{if empty($product->cache_default_attribute)}
 				{if $product->productDownload->id}

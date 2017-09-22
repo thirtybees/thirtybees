@@ -4220,35 +4220,32 @@ class AdminProductsControllerCore extends AdminController
 
         $currency = $this->context->currency;
 
-        /*
-        * Form for adding a virtual product like software, mp3, etc...
-        */
-        $productDownload = new ProductDownload();
-        if ($idProductDownload = $productDownload->getIdFromIdProduct($this->getFieldValue($product, 'id'))) {
-            $productDownload = new ProductDownload($idProductDownload);
-        }
-        $product->productDownload = $productDownload;
+        $idProductDownload = ProductDownload::getIdFromIdProduct($product->id);
+        // This might give an empty record, which is fine.
+        $productDownload = new ProductDownload($idProductDownload);
 
-        if ($product->productDownload->id && empty($product->productDownload->display_filename)) {
-            $this->errors[] = Tools::displayError('A file name is required in order to associate a file');
+        if (!ProductDownload::checkWritableDir()) {
+            $this->errors[] = Tools::displayError('Download repository is not writable.');
             $this->tab_display = 'VirtualProduct';
         }
 
-        // @todo handle is_virtual with the value of the product
-        $existsFile = realpath(_PS_DOWNLOAD_DIR_).'/'.$product->productDownload->filename;
-        $data->assign('product_download', $product->productDownload->id);
-
-        if (!file_exists($existsFile)
-            && !empty($product->productDownload->display_filename)
-            && empty($product->cache_default_attribute)
-        ) {
-            $msg = sprintf(
-                Tools::displayError('File "%s" is missing'),
-                $product->productDownload->display_filename
-            );
-        } else {
-            $msg = '';
+        if ($productDownload->id) {
+            if (!$productDownload->filename) {
+                $this->errors[] = Tools::displayError('A downloadable file is missing.');
+                $this->tab_display = 'VirtualProduct';
+            } else {
+                if (!$productDownload->display_filename) {
+                    $this->errors[] = Tools::displayError('A file name is required.');
+                    $this->tab_display = 'VirtualProduct';
+                }
+                if (!$productDownload->checkFile()) {
+                    $this->errors[] = Tools::displayError('File on the server is missing, should be').' '._PS_DOWNLOAD_DIR_.$productDownload->filename.'.';
+                    $this->tab_display = 'VirtualProduct';
+                }
+            }
         }
+
+        $product->productDownload = $productDownload;
 
         $virtualProductFileUploader = new HelperUploader('virtual_product_file_uploader');
         $virtualProductFileUploader->setMultiple(false)->setUrl(
@@ -4256,14 +4253,6 @@ class AdminProductsControllerCore extends AdminController
             .'&action=AddVirtualProductFile'
         )->setPostMaxSize(Tools::getOctets(ini_get('upload_max_filesize')))
             ->setTemplate('virtual_product.tpl');
-
-        $data->assign(
-            [
-                'download_product_file_missing' => $msg,
-                'download_dir_writable'         => ProductDownload::checkWritableDir(),
-                'up_filename'                   => Tools::getValue('virtual_product_filename'),
-            ]
-        );
 
         $product->productDownload->nb_downloadable = ($product->productDownload->id > 0) ? $product->productDownload->nb_downloadable : htmlentities(Tools::getValue('virtual_product_nb_downloable'), ENT_COMPAT, 'UTF-8');
 
@@ -4866,7 +4855,6 @@ class AdminProductsControllerCore extends AdminController
                         'token'               => $this->token,
                         'table'               => $this->table,
                         'max_image_size'      => $this->max_image_size / 1024 / 1024,
-                        'up_filename'         => (string) Tools::getValue('virtual_product_filename_attribute'),
                         'currency'            => $this->context->currency,
                         'current_shop_id'     => $currentShopId,
                         'languages'           => $this->_languages,
