@@ -2164,30 +2164,30 @@ class AdminProductsControllerCore extends AdminController
         if (Tools::getValue('type_product') == Product::PTYPE_VIRTUAL
             && Tools::getValue('is_virtual_file') == 1) {
             if (isset($_FILES['virtual_product_file_uploader']) && $_FILES['virtual_product_file_uploader']['size'] > 0) {
-                $virtualProductFilename = ProductDownload::getNewFilename();
+                $filename = ProductDownload::getNewFilename();
                 $helper = new HelperUploader('virtual_product_file_uploader');
                 $helper->setPostMaxSize(Tools::getOctets(ini_get('upload_max_filesize')))
-                    ->setSavePath(_PS_DOWNLOAD_DIR_)->upload($_FILES['virtual_product_file_uploader'], $virtualProductFilename);
+                    ->setSavePath(_PS_DOWNLOAD_DIR_)->upload($_FILES['virtual_product_file_uploader'], $filename);
             } else {
-                $virtualProductFilename = Tools::getValue('virtual_product_filename', ProductDownload::getNewFilename());
+                $filename = Tools::getValue('virtual_product_filename', ProductDownload::getNewFilename());
             }
 
             $product->setDefaultAttribute(0); //reset cache_default_attribute
 
             $isShareable = Tools::getValue('virtual_product_is_shareable');
-            $virtualProductName = Tools::getValue('virtual_product_name');
-            $virtualProductNbDays = Tools::getValue('virtual_product_nb_days');
-            $virtualProductNbDownloable = Tools::getValue('virtual_product_nb_downloable');
-            $virtualProductExpirationDate = Tools::getValue('virtual_product_expiration_date');
+            $name = Tools::getValue('virtual_product_name');
+            $nbDays = Tools::getValue('virtual_product_nb_days');
+            $nbDownloable = Tools::getValue('virtual_product_nb_downloable');
+            $expirationDate = Tools::getValue('virtual_product_expiration_date');
 
             $download = new ProductDownload($idProductDownload);
             $download->id_product = (int) $product->id;
-            $download->display_filename = $virtualProductName;
-            $download->filename = $virtualProductFilename;
+            $download->display_filename = $name;
+            $download->filename = $filename;
             $download->date_add = date('Y-m-d H:i:s');
-            $download->date_expiration = $virtualProductExpirationDate ? $virtualProductExpirationDate.' 23:59:59' : '';
-            $download->nb_days_accessible = (int) $virtualProductNbDays;
-            $download->nb_downloadable = (int) $virtualProductNbDownloable;
+            $download->date_expiration = $expirationDate ? $expirationDate.' 23:59:59' : '';
+            $download->nb_days_accessible = (int) $nbDays;
+            $download->nb_downloadable = (int) $nbDownloable;
             $download->active = 1;
             $download->is_shareable = (int) $isShareable;
             if ($download->save()) {
