@@ -38,9 +38,26 @@
 					<label for="is_virtual_file_off">{l s='No'}</label>
 					<a class="slide-button btn"></a>
 				</span>
+                {if $product->productDownload->id}
+                    <p class="help-block">{l s='Turning this off also removes related data and the downloadable file.'}</p>
+                {/if}
 			</div>
 		</div>
 		<div id="is_virtual_file_product"{if !$product->productDownload->id} style="display:none;"{/if}>
+            <hr>
+            <div class="form-group">
+                <label class="control-label col-lg-3">{l s='Is this file active?'}</label>
+                <div class="col-lg-2">
+                    <span class="switch prestashop-switch fixed-width-lg">
+                        <input type="radio" name="virtual_product_active" id="virtual_product_active_on" value="1" {if $product->productDownload->active} checked="checked"{/if} />
+                        <label for="virtual_product_active_on">{l s='Yes'}</label>
+                        <input type="radio" name="virtual_product_active" id="virtual_product_active_off" value="0" {if !$product->productDownload->active} checked="checked"{/if} />
+                        <label for="virtual_product_active_off">{l s='No'}</label>
+                        <a class="slide-button btn"></a>
+                    </span>
+                    <p class="help-block">{l s='Deactivating the download makes it inaccessible to customers, but keeps related data and the file on disk.'}</p>
+                </div>
+            </div>
 			{* Don't display file form if the product has combinations *}
 			{if empty($product->cache_default_attribute)}
 				{if $product->productDownload->id}
