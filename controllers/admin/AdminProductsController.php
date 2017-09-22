@@ -4263,7 +4263,7 @@ class AdminProductsControllerCore extends AdminController
                 $product->productDownload->date_expiration = '';
             }
         } else {
-            $product->productDownload->date_expiration = htmlentities((string) Tools::getValue('virtual_product_expiration_date'), ENT_COMPAT, 'UTF-8');
+            $product->productDownload->date_expiration = Tools::getValue('virtual_product_expiration_date');
         }
 
         $product->productDownload->nb_days_accessible = ($product->productDownload->id > 0) ? $product->productDownload->nb_days_accessible : htmlentities(Tools::getValue('virtual_product_nb_days'), ENT_COMPAT, 'UTF-8');
