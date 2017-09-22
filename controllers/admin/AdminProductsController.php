@@ -2179,13 +2179,24 @@ class AdminProductsControllerCore extends AdminController
             $nbDays = Tools::getValue('virtual_product_nb_days');
             $nbDownloable = Tools::getValue('virtual_product_nb_downloable');
             $expirationDate = Tools::getValue('virtual_product_expiration_date');
+            // This whould allow precision up to the second, not supported by
+            // the datepicker in the GUI, yet.
+            //if ($expirationDate
+            //    && !preg_match('/\d{1,2}\:\d{1,2}/', $expirationDate)) {
+            //    // No time given should mean the end of the day.
+            //    $dateExpiration .= ' 23:59:59';
+            //}
+            if ($expirationDate) {
+                // We want the end of the given day.
+                $expirationDate .= ' 23:59:59';
+            }
 
             $download = new ProductDownload($idProductDownload);
             $download->id_product = (int) $product->id;
             $download->display_filename = $name;
             $download->filename = $filename;
             $download->date_add = date('Y-m-d H:i:s');
-            $download->date_expiration = $expirationDate ? $expirationDate.' 23:59:59' : '';
+            $download->date_expiration = $expirationDate;
             $download->nb_days_accessible = (int) $nbDays;
             $download->nb_downloadable = (int) $nbDownloable;
             $download->active = 1;
