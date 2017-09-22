@@ -82,11 +82,7 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="control-label col-lg-3">
-						<span class="label-tooltip" data-toggle="tooltip" title="" data-original-title="{l s='Format: YYYY-MM-DD.'}">
-							{l s='Expiration date'}
-						</span>
-					</label>
+					<label class="control-label col-lg-3">{l s='Expiration date'}</label>
 					<div class="col-lg-5">
 						<input class="datepicker" type="text" id="virtual_product_expiration_date" name="virtual_product_expiration_date" value="{$product->productDownload->date_expiration}" size="11" maxlength="10" autocomplete="off" />
 						<p class="help-block">{l s='If set, the file will not be downloadable after this date. Leave blank if you do not wish to attach an expiration date.'}</p>

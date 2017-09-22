@@ -4254,20 +4254,11 @@ class AdminProductsControllerCore extends AdminController
         )->setPostMaxSize(Tools::getOctets(ini_get('upload_max_filesize')))
             ->setTemplate('virtual_product.tpl');
 
-        $product->productDownload->nb_downloadable = ($product->productDownload->id > 0) ? $product->productDownload->nb_downloadable : htmlentities(Tools::getValue('virtual_product_nb_downloable'), ENT_COMPAT, 'UTF-8');
-
-        if (isset($product->productDownload) && $product->productDownload->id) {
-            if (!empty($product->productDownload->date_expiration) && $product->productDownload->date_expiration != '0000-00-00 00:00:00') {
-                $product->productDownload->date_expiration = date('Y-m-d', strtotime($product->productDownload->date_expiration));
-            } else {
-                $product->productDownload->date_expiration = '';
-            }
+        if ($productDownload->date_expiration !== '0000-00-00 00:00:00') {
+            $productDownload->date_expiration = substr($productDownload->date_expiration, 0, 10);
         } else {
-            $product->productDownload->date_expiration = Tools::getValue('virtual_product_expiration_date');
+            $productDownload->date_expiration = '';
         }
-
-        $product->productDownload->nb_days_accessible = ($product->productDownload->id > 0) ? $product->productDownload->nb_days_accessible : htmlentities(Tools::getValue('virtual_product_nb_days'), ENT_COMPAT, 'UTF-8');
-        $product->productDownload->is_shareable = $product->productDownload->id > 0 && $product->productDownload->is_shareable;
 
         $data->assign(
             [
