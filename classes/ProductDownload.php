@@ -305,7 +305,6 @@ class ProductDownloadCore extends ObjectModel
             if ($result) {
                 $this->filename = '';
                 $this->display_filename = '';
-                $this->date_expiration = date('Y-m-d H:i:s'); // @TODO: remove this.
                 $this->update();
             }
         }
