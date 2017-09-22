@@ -583,15 +583,16 @@ class AdminProductsControllerCore extends AdminController
      */
     public function processDeleteVirtualProduct()
     {
-        if (!($idProductDownload = ProductDownload::getIdFromIdProduct((int) Tools::getValue('id_product')))) {
-            $this->errors[] = Tools::displayError('Cannot retrieve file');
-        } else {
-            $productDownload = new ProductDownload((int) $idProductDownload);
+        $idProduct = (int) Tools::getValue('id_product');
+        $idProductDownload = ProductDownload::getIdFromIdProduct($idProduct);
 
-            if (!$productDownload->deleteFile((int) $idProductDownload)) {
-                $this->errors[] = Tools::displayError('Cannot delete file');
+        if ($idProductDownload) {
+            $productDownload = new ProductDownload($idProductDownload);
+
+            if (!$productDownload->deleteFile()) {
+                $this->errors[] = Tools::displayError('Cannot delete file.');
             } else {
-                $this->redirect_after = static::$currentIndex.'&id_product='.(int) Tools::getValue('id_product').'&updateproduct&key_tab=VirtualProduct&conf=1&token='.$this->token;
+                $this->redirect_after = static::$currentIndex.'&id_product='.$idProduct.'&updateproduct&key_tab=VirtualProduct&conf=1&token='.$this->token;
             }
         }
 
