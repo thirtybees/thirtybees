@@ -2195,7 +2195,6 @@ class AdminProductsControllerCore extends AdminController
             $download->id_product = (int) $product->id;
             $download->display_filename = $name;
             $download->filename = $filename;
-            $download->date_add = date('Y-m-d H:i:s');
             $download->date_expiration = $expirationDate;
             $download->nb_days_accessible = (int) $nbDays;
             $download->nb_downloadable = (int) $nbDownloable;
