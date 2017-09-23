@@ -42,19 +42,19 @@ class ProductDownloadCore extends ObjectModel
     protected static $_productIds = [];
 
     /** @var int Product id which download belongs */
-    public $id_product;
+    public $id_product = 0;
     /** @var string DisplayFilename the name which appear */
-    public $display_filename;
+    public $display_filename = '';
     /** @var string PhysicallyFilename the name of the file on hard disk */
-    public $filename;
+    public $filename = '';
     /** @var string DateDeposit when the file is upload */
-    public $date_add;
+    public $date_add = '0000-00-00 00:00:00';
     /** @var string DateExpiration deadline of the file */
-    public $date_expiration;
+    public $date_expiration = '0000-00-00 00:00:00';
     /** @var string NbDaysAccessible how many days the customer can access to file */
-    public $nb_days_accessible;
+    public $nb_days_accessible = 0;
     /** @var string NbDownloadable how many time the customer can download the file */
-    public $nb_downloadable;
+    public $nb_downloadable = 0;
     /** @var bool Active if file is accessible or not */
     public $active = 1;
     /** @var bool is_shareable indicates whether the product can be shared */
