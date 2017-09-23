@@ -123,10 +123,6 @@ class ProductDownloadCore extends ObjectModel
      */
     public static function getIdFromIdProduct($idProduct, $active = true)
     {
-        if (!ProductDownload::isFeatureActive()) {
-            return false;
-        }
-
         $id = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
                 ->select('`id_product_download`')
