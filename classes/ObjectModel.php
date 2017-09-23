@@ -2206,7 +2206,28 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             if (isset($field['lang']) && $field['lang'] || isset($field['shop']) && $field['shop']) {
                 continue;
             }
-            $sql .= '`'.$fieldName.'` '.$field['db_type'];
+
+            switch ($field['type']) {
+                case '1':
+                    $sql .= '`'.$fieldName.'` INT(11) UNSIGNED';
+                    break;
+                case '2':
+                    $sql .= '`'.$fieldName.'` TINYINT(1)';
+                    break;
+                case '3':
+                    (isset($field['size']) && $field['size'] > 256) ? $sql .= '`'.$fieldName.'` VARCHAR(256)' : $sql .= '`'.$fieldName.'` VARCHAR(512)';
+                    break;
+                case '4':
+                    $sql .= '`'.$fieldName.'` DECIMAL(20,6)';
+                    break;
+                case '5':
+                    $sql .= '`'.$fieldName.'` DATETIME';
+                    break;
+                case '6':
+                    $sql .= '`'.$fieldName.'` TEXT';
+                    break;
+            }
+
             if (isset($field['required'])) {
                 $sql .= ' NOT NULL';
             }
