@@ -592,6 +592,8 @@ class AdminProductsControllerCore extends AdminController
             if (!$productDownload->deleteFile()) {
                 $this->errors[] = Tools::displayError('Cannot delete file.');
             } else {
+                $productDownload->active = false;
+                $productDownload->update();
                 $this->redirect_after = static::$currentIndex.'&id_product='.$idProduct.'&updateproduct&key_tab=VirtualProduct&conf=1&token='.$this->token;
             }
         }
@@ -4231,18 +4233,28 @@ class AdminProductsControllerCore extends AdminController
         }
 
         if ($productDownload->id) {
+            // Check the downloadable file.
+            $fileNotRight = false;
             if (!$productDownload->filename) {
                 $this->errors[] = Tools::displayError('A downloadable file is missing.');
-                $this->tab_display = 'VirtualProduct';
+                $fileNotRight = true;
             } else {
                 if (!$productDownload->display_filename) {
                     $this->errors[] = Tools::displayError('A file name is required.');
-                    $this->tab_display = 'VirtualProduct';
+                    $fileNotRight = true;
                 }
                 if (!$productDownload->checkFile()) {
                     $this->errors[] = Tools::displayError('File on the server is missing, should be').' '._PS_DOWNLOAD_DIR_.$productDownload->filename.'.';
-                    $this->tab_display = 'VirtualProduct';
+                    $fileNotRight = true;
                 }
+            }
+            if ($fileNotRight) {
+                if ($productDownload->active) {
+                    $productDownload->active = false;
+                    $productDownload->update();
+                }
+
+                $this->tab_display = 'VirtualProduct';
             }
         }
 
