@@ -143,7 +143,7 @@ class AdminModulesControllerCore extends AdminController
             if (Module::isInstalled('tbupdater')) {
                 $this->warnings[] = $this->l('The thirty bees updater module has not been enabled. Make sure you enable the module to keep thirty bees updated.');
             } else {
-                $this->warnings[] = sprintf($this->l('The thirty bees updater module has not been install. Install the %sthirty bees updater%s to keep thirty bees updated.'), '<a href="https://thirtybees.com/updates" target="_blank">', '</a>');
+                $this->warnings[] = sprintf($this->l('The thirty bees updater module has not been installed. Install the %sthirty bees updater%s to keep thirty bees updated.'), '<a href="https://thirtybees.com/updates" target="_blank">', '</a>');
             }
         }
     }
