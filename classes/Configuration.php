@@ -425,6 +425,9 @@ class ConfigurationCore extends ObjectModel
                 ->leftJoin(static::$definition['table'].'_lang', 'cl', 'c.`'.bqSQL(static::$definition['primary']).'` = cl.`'.bqSQL(static::$definition['primary']).'`')
         );
 
+        // Backwards compatible keys
+
+
         if (!is_array($rows)) {
             return;
         }
