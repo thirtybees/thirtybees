@@ -1673,6 +1673,18 @@ class ProductCore extends ObjectModel
         }
 
         // Datas
+        if (!isset($row['id_category_default']) && $row['id_category_default']) {
+            $row['id_category_default'] = (int) Db::getInstance()->getValue(
+                (new DbQuery())
+                    ->select('product_shop.`id_category_default`')
+                    ->from('product', 'p')
+                    ->join(Shop::addSqlAssociation('product', 'p'))
+                    ->where('p.`id_product` = '.(int) $row['id_product'])
+            );
+            if (!$row['id_category_default']) {
+                $row['id_category_default'] = Context::getContext()->shop->id_category;
+            }
+        }
         $row['category'] = Category::getLinkRewrite((int) $row['id_category_default'], (int) $idLang);
         $row['link'] = $context->link->getProductLink((int) $row['id_product'], $row['link_rewrite'], $row['category'], $row['ean13']);
 
