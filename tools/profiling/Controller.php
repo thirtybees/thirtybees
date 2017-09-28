@@ -454,12 +454,12 @@ abstract class Controller extends ControllerCore
         echo '
 		<div class="col-4">
 			<table class="table table-condensed">
-				<tr><td>Load Time</td><td>'.$this->getLoadTimeColor($this->profiler[count($this->profiler) - 1]['time'] - $start_time, true).'</td></tr>
-				<tr><td>Querying Time</td><td>'.$this->getTotalQueriyingTimeColor(round(1000 * $this->total_query_time)).' ms</span>
+				<tr><td>Load time</td><td>'.$this->getLoadTimeColor($this->profiler[count($this->profiler) - 1]['time'] - $start_time, true).'</td></tr>
+				<tr><td>Querying time</td><td>'.$this->getTotalQueriyingTimeColor(round(1000 * $this->total_query_time)).' ms</span>
 				<tr><td>Queries</td><td>'.$this->getNbQueriesColor(count($this->array_queries)).'</td></tr>
-				<tr><td>Memory Peak Usage</td><td>'.$this->getPeakMemoryColor($this->profiler[count($this->profiler) - 1]['peak_memory_usage']).' Mb</td></tr>
-				<tr><td>Included Files</td><td>'.count(get_included_files()).' files - '.$this->getMemoryColor($this->total_filesize).' Mb</td></tr>
-				<tr><td>PrestaShop Cache</td><td>'.$this->getMemoryColor($this->total_cache_size).' Mb</td></tr>
+				<tr><td>Memory peak usage</td><td>'.$this->getPeakMemoryColor($this->profiler[count($this->profiler) - 1]['peak_memory_usage']).' Mb</td></tr>
+				<tr><td>Included files</td><td>'.count(get_included_files()).' files - '.$this->getMemoryColor($this->total_filesize).' Mb</td></tr>
+				<tr><td>thirty bees cache</td><td>'.$this->getMemoryColor($this->total_cache_size).' Mb</td></tr>
 				<tr><td><a href="javascript:void(0);" onclick="$(\'.global_vars_detail\').toggle();">Global vars</a></td><td>'.$this->getMemoryColor($this->total_global_var_size).' Mb</td></tr>';
         foreach ($this->global_var_size as $global => $size) {
             echo '<tr class="global_vars_detail" style="display:none"><td>- global $'.$global.'</td><td>'.$size.'k</td></tr>';
@@ -474,12 +474,13 @@ abstract class Controller extends ControllerCore
         echo '
 		<div class="col-4">
 			<table class="table table-condensed">
-				<tr><td>PrestaShop Version</td><td>'._PS_VERSION_.'</td></tr>
-				<tr><td>PHP Version</td><td>'.$this->getPhpVersionColor(phpversion()).'</td></tr>
-				<tr><td>MySQL Version</td><td>'.$this->getMySQLVersionColor(Db::getInstance()->getVersion()).'</td></tr>
-				<tr><td>Memory Limit</td><td>'.ini_get('memory_limit').'</td></tr>
-				<tr><td>Max Execution Time</td><td>'.ini_get('max_execution_time').'s</td></tr>
-				<tr><td>Smarty Cache</td><td><span style="color:'.(Configuration::get('PS_SMARTY_CACHE') ? 'green">enabled' : 'red">disabled').'</td></tr>
+				<tr><td>thirty bees version</td><td>'._PS_VERSION_.'</td></tr>
+				<tr><td>PrestaShop compatibility version</td><td>'._PS_VERSION_.'</td></tr>
+				<tr><td>PHP version</td><td>'.$this->getPhpVersionColor(phpversion()).'</td></tr>
+				<tr><td>MySQL version</td><td>'.$this->getMySQLVersionColor(Db::getInstance()->getVersion()).'</td></tr>
+				<tr><td>Memory limit</td><td>'.ini_get('memory_limit').'</td></tr>
+				<tr><td>Max execution time</td><td>'.ini_get('max_execution_time').'s</td></tr>
+				<tr><td>Smarty cache</td><td><span style="color:'.(Configuration::get('PS_SMARTY_CACHE') ? 'green">enabled' : 'red">disabled').'</td></tr>
 				<tr><td>Smarty Compilation</td><td><span style="color:'.(Configuration::get('PS_SMARTY_FORCE_COMPILE') == 0 ? 'green">never recompile' : (Configuration::get('PS_SMARTY_FORCE_COMPILE') == 1 ? '#EF8B00">auto' : 'red">force compile')).'</td></tr>
 			</table>
 		</div>';
