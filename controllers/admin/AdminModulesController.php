@@ -1195,7 +1195,8 @@ class AdminModulesControllerCore extends AdminController
             $zip->open($file);
             $dirs = [];
             for ($i = 0; $i < $zip->numFiles; $i++) {
-                $filePath = explode(DIRECTORY_SEPARATOR, $zip->getNameIndex($i));
+                // Zip = *NIX style
+                $filePath = explode('/', $zip->getNameIndex($i));
 
                 if (!empty($filePath)) {
                     $dirs[] = $filePath[0];
