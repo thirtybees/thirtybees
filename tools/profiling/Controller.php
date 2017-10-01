@@ -474,7 +474,7 @@ abstract class Controller extends ControllerCore
         echo '
 		<div class="col-4">
 			<table class="table table-condensed">
-				<tr><td>thirty bees version</td><td>'._PS_VERSION_.'</td></tr>
+				<tr><td>thirty bees version</td><td>'._TB_VERSION_.'</td></tr>
 				<tr><td>PrestaShop compatibility version</td><td>'._PS_VERSION_.'</td></tr>
 				<tr><td>PHP version</td><td>'.$this->getPhpVersionColor(phpversion()).'</td></tr>
 				<tr><td>MySQL version</td><td>'.$this->getMySQLVersionColor(Db::getInstance()->getVersion()).'</td></tr>
