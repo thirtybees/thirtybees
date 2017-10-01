@@ -147,7 +147,9 @@ class PageCacheCore
      */
     public static function flush()
     {
-        Cache::getInstance()->flush();
+        if (defined('_PS_CACHE_ENABLED_') && _PS_CACHE_ENABLED_) {
+            Cache::getInstance()->flush();
+        }
 
         Db::getInstance()->delete('page_cache');
     }
