@@ -155,8 +155,6 @@ class SearchCore
         foreach ($words as $key => $word) {
             if (!empty($word) && strlen($word) >= (int) Configuration::get('PS_SEARCH_MINWORDLEN')) {
                 $word = str_replace(['%', '_'], ['\\%', '\\_'], $word);
-                $startSearch = Configuration::get('PS_SEARCH_START') ? '%' : '';
-                $endSearch = Configuration::get('PS_SEARCH_END') ? '' : '%';
 
                 $intersectArray[] = 'SELECT DISTINCT si.id_product
 					FROM '._DB_PREFIX_.'search_word sw
@@ -165,12 +163,12 @@ class SearchCore
 						AND sw.id_shop = '.$context->shop->id.'
 						AND sw.word LIKE
 					'.($word[0] == '-'
-                        ? ' \''.$startSearch.pSQL(Tools::substr($word, 1, PS_SEARCH_MAX_WORD_LENGTH)).$endSearch.'\''
-                        : ' \''.$startSearch.pSQL(Tools::substr($word, 0, PS_SEARCH_MAX_WORD_LENGTH)).$endSearch.'\''
+                        ? ' \'%'.$startSearch.pSQL(Tools::substr($word, 1, PS_SEARCH_MAX_WORD_LENGTH)).$endSearch.'\''
+                        : ' \'%'.$startSearch.pSQL(Tools::substr($word, 0, PS_SEARCH_MAX_WORD_LENGTH)).$endSearch.'\''
                     );
 
                 if ($word[0] != '-') {
-                    $scoreArray[] = 'sw.word LIKE \''.$startSearch.pSQL(Tools::substr($word, 0, PS_SEARCH_MAX_WORD_LENGTH)).$endSearch.'\'';
+                    $scoreArray[] = 'sw.word LIKE \''.$startSearch.pSQL(Tools::substr($word, 0, PS_SEARCH_MAX_WORD_LENGTH)).$endSearch.'%\'';
                 }
             } else {
                 unset($words[$key]);
