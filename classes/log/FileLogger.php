@@ -39,9 +39,9 @@ class FileLoggerCore extends AbstractLogger
     protected $filename = '';
 
     /**
-    * Check if the specified filename is writable and set the filename
-    *
-    * @param string $filename
+     * Check if the specified filename is writable and set the filename
+     *
+     * @param string $filename
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -51,7 +51,7 @@ class FileLoggerCore extends AbstractLogger
         if (is_writable(dirname($filename))) {
             $this->filename = $filename;
         } else {
-            die('Directory '.dirname($filename).' is not writable');
+            $this->filename = '';
         }
     }
 
@@ -65,10 +65,6 @@ class FileLoggerCore extends AbstractLogger
      */
     public function getFilename()
     {
-        if (empty($this->filename)) {
-            die('Filename is empty.');
-        }
-
         return $this->filename;
     }
 
@@ -78,9 +74,10 @@ class FileLoggerCore extends AbstractLogger
      * @param string $message
      * @param int    $level
      *
+     * @return bool True on success, false on failure.
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @return bool
      */
     protected function logMessage($message, $level)
     {
@@ -90,6 +87,12 @@ class FileLoggerCore extends AbstractLogger
 
         $formattedMessage = '*'.$this->level_value[$level].'* '."\t".date('Y/m/d - H:i:s').': '.$message."\r\n";
 
-        return (bool) file_put_contents($this->getFilename(), $formattedMessage, FILE_APPEND);
+        $result = false;
+        $path = $this->getFilename();
+        if ($path) {
+            $result = (bool) file_put_contents($path, $formattedMessage, FILE_APPEND);
+        }
+
+        return $result;
     }
 }
