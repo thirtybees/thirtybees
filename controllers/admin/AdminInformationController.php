@@ -171,19 +171,25 @@ class AdminInformationControllerCore extends AdminController
         $paramsOptionalResults = ConfigurationTest::check(ConfigurationTest::getDefaultTestsOp());
 
         $failRequired = false;
-        foreach ($paramsRequiredResults as $result) {
+        foreach ($paramsRequiredResults as $key => $result) {
             if ($result !== 'ok') {
                 $failRequired = true;
+                $testsErrors[$key] = $result;
+                // Establish retrocompatibility with templates.
+                $paramsRequiredResults[$key] = 'fail';
             }
         }
         $failOptional = false;
-        foreach ($paramsOptionalResults as $result) {
+        foreach ($paramsOptionalResults as $key => $result) {
             if ($result !== 'ok') {
                 $failOptional = true;
+                $testsErrors[$key] = $result;
+                // Establish retrocompatibility with templates.
+                $paramsOptionalResults[$key] = 'fail';
             }
         }
 
-        if ($failRequired && $paramsRequiredResults['Files'] != 'ok') {
+        if ($failRequired && $paramsRequiredResults['Files'] !== 'ok') {
             $tmp = ConfigurationTest::testFiles(true);
             if (is_array($tmp) && count($tmp)) {
                 $testsErrors['Files'] = $testsErrors['Files'].'<br/>('.implode(', ', $tmp).')';
