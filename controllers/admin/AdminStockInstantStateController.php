@@ -196,7 +196,7 @@ class AdminStockInstantStateControllerCore extends AdminController
 			a.id_product = pl.id_product
 			AND pl.id_lang = '.(int) $this->context->language->id.'
 		)';
-        $this->_join .= ' LEFT JOIN `'._DB_PREFIX_.'product_attribute_combination` pac ON (pac.id_product_attribute = a.id_product_attribute)';
+        $this->_join .= ' LEFT JOIN `'._DB_PREFIX_.'product_attribute_combination` pac ON (pac.id_product_attribute = a.id_product_attribute AND a.id_product_attribute!=0)';
         $this->_join .= ' LEFT JOIN `'._DB_PREFIX_.'product_attribute` pa ON (pa.id_product_attribute = a.id_product_attribute)';
         $this->_join .= ' LEFT JOIN `'._DB_PREFIX_.'attribute` atr ON (atr.id_attribute = pac.id_attribute)';
         $this->_join .= ' LEFT JOIN `'._DB_PREFIX_.'attribute_lang` al ON (
