@@ -66,7 +66,7 @@ class AdminStockManagementControllerCore extends AdminController
             ],
             'name'              => [
                 'title'      => $this->l('Name'),
-                'filter_key' => 'pl!name',
+                'filter_key' => 'b!name',
             ],
             'physical_quantity' => [
                 'title'   => $this->l('Physical quantity'),
