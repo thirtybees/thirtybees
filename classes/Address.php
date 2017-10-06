@@ -260,9 +260,13 @@ class AddressCore extends ObjectModel
         if (!Configuration::get('VATNUMBER_MANAGEMENT') || !Configuration::get('VATNUMBER_CHECKING')) {
             return $errors;
         }
-        include_once(_PS_MODULE_DIR_.'vatnumber/vatnumber.php');
-        if (class_exists('VatNumber', false)) {
-            return array_merge($errors, VatNumber::WebServiceCheck($this->vat_number));
+
+        if (file_exists(_PS_MODULE_DIR_.'vatnumber/vatnumber.php')) {
+            include_once(_PS_MODULE_DIR_.'vatnumber/vatnumber.php');
+
+            if (class_exists('VatNumber', false)) {
+                return array_merge($errors, VatNumber::WebServiceCheck($this->vat_number));
+            }
         }
 
         return $errors;
