@@ -296,7 +296,8 @@ class AdminStockManagementControllerCore extends AdminController
         if ($idWarehouse != -1) {
             $this->_where .= ' AND a.id_warehouse = '.(int) $idWarehouse;
         }
-
+	
+	$this->_filter = '';
         $this->_orderBy = 'pl.name';
         $this->_orderWay = 'ASC';
     }
