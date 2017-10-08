@@ -172,7 +172,10 @@ function data_table(widgetName, data) {
 
 function data_chart(widgetName, charts) {
   for (var chartId in charts) {
-    window[charts[chartId].chart_type](widgetName, charts[chartId]);
+    // First check if the module exists
+    if (typeof window[charts[chartId].chart_type] === 'function') {
+      window[charts[chartId].chart_type](widgetName, charts[chartId]);
+    }
   }
 }
 
