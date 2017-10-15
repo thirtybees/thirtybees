@@ -169,6 +169,8 @@ table {
 // will display normally.
 
 .table-responsive {
+  min-height: .01%;
+  overflow-x: auto;
   @media screen and (max-width: $screen-xs-max) {
     width: 100%;
     margin-bottom: ($line-height-computed * 0.75);
