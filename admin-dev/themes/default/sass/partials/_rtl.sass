@@ -204,3 +204,28 @@ html
 #employee_links.dropdown-menu
 	left: 0 !important
 	right: auto !important
+
+// Date range picker
+#datepicker
+	.daterangepicker
+		td
+			&.start-selected:not(.old):not(.new):not(.end-selected)
+				@include border-left-radius(0)
+				@include border-right-radius(15px)
+				&.range-compare
+					@include border-right-radius(0)
+			&.end-selected:not(.old):not(.new):not(.start-selected)
+				@include border-right-radius(0)
+				@include border-left-radius(15px)
+				&.range-compare
+					@include border-left-radius(0)
+			&.start-selected-compare:not(.old):not(.new):not(.end-selected-compare)
+				@include border-left-radius(0)
+				@include border-right-radius(15px)
+				&.range
+					@include border-right-radius(0)
+			&.end-selected-compare:not(.old):not(.new):not(.start-selected-compare)
+				@include border-right-radius(0)
+				@include border-left-radius(15px)
+				&.range
+					@include border-left-radius(0)
