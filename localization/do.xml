@@ -5,36 +5,95 @@
               iso_code="DOP"
               iso_code_num="214"
               sign="RD$"
-              blank="1"
-              conversion_rate="50.0426"
-              format="2"
-              decimals="1" />
+              blank="0"
+              conversion_rate="47.3150"
+              format="1"
+              decimals="0" />
   </currencies>
   <languages>
-    <currency name="Boliviano"
-              iso_code="BOB"
-              iso_code_num="068"
-              sign="$b"
-              blank="1"
-              conversion_rate="9.57620"
-              format="2"
-              decimals="1" />
+    <language iso_code="es" />
   </languages>
   <taxes>
-    <tax id="1" name="ITBIS DO 16%" rate="16" />
-    <tax id="2" name="ITBIS DO 12%" rate="12" />
-    <taxRulesGroup name="DO Standard Rate (16%)">
+    <tax id="1" name="ITBIS DO 18%" rate="18" />
+    <tax id="2" name="ITBIS DO 16%" rate="16" />
+    <taxRulesGroup name="DO Standard Rate (18%)">
       <taxRule iso_code_country="do" id_tax="1" />
     </taxRulesGroup>
-    <taxRulesGroup name="DO Reduced Rate (12%)">
+    <taxRulesGroup name="DO Reduced Rate (16%)">
       <taxRule iso_code_country="do" id_tax="2" />
     </taxRulesGroup>
   </taxes>
   <units>
-    <unit type="weight" value="kg" />
+    <unit type="weight" value="lb" />
     <unit type="volume" value="L" />
     <unit type="short_distance" value="cm" />
     <unit type="base_distance" value="m" />
     <unit type="long_distance" value="km" />
   </units>
+  <states>
+    <state name="Distrito Nacional" iso_code="0100" country="DO" zone="DISTRITO NACIONAL" />
+    <state name="Santo Domingo Este" iso_code="0201" country="DO" zone="SANTO DOMINGO" />
+    <state name="Santo Domingo Oeste" iso_code="0202" country="DO" zone="SANTO DOMINGO" />
+    <state name="Santo Domingo Norte" iso_code="0203" country="DO" zone="SANTO DOMINGO" />
+    <state name="Azua" iso_code="1800" country="DO" zone="AZUA" />
+    <state name="Bani" iso_code="1901" country="DO" zone="PERAVIA" />
+    <state name="Barahona" iso_code="2300" country="DO" zone="BARAHONA" />
+    <state name="Bavaro - Plaza Rivieras (Friusa)" iso_code="2908" country="DO" zone="LA ALTAGRACIA" />
+    <state name="Boca Chica" iso_code="0301" country="DO" zone="SANTO DOMINGO AFUERA" />
+    <state name="Bonao" iso_code="0901" country="DO" zone="MONSEÑOR NOUEL" />
+    <state name="Cabrera" iso_code="1104" country="DO" zone="MARIA TRINIDAD SANCHEZ" />
+    <state name="Castillo" iso_code="1005" country="DO" zone="DUARTE" />
+    <state name="Castañuelas" iso_code="1501" country="DO" zone="MONTE CRISTI" />
+    <state name="Copey" iso_code="1503" country="DO" zone="MONTE CRISTI" />
+    <state name="Cotui" iso_code="0801" country="DO" zone="SANCHEZ RAMIREZ" />
+    <state name="Cruce de Esperanza" iso_code="1704" country="DO" zone="VALVERDE" />
+    <state name="Cruce de Imbert" iso_code="0505" country="DO" zone="PUERTO PLATA" />
+    <state name="Dajabon" iso_code="1400" country="DO" zone="DAJABON" />
+    <state name="El Seibo" iso_code="2800" country="DO" zone="EL SEIBO" />
+    <state name="Esperanza" iso_code="1706" country="DO" zone="VALVERDE" />
+    <state name="Guayubin" iso_code="1504" country="DO" zone="MONTE CRISTI" />
+    <state name="Haina" iso_code="2006" country="DO" zone="SAN CRISTOBAL" />
+    <state name="Hato Mayor" iso_code="3300" country="DO" zone="HATO MAYOR" />
+    <state name="Higuey" iso_code="2901" country="DO" zone="LA ALTAGRACIA" />
+    <state name="Imbert" iso_code="0510" country="DO" zone="PUERTO PLATA" />
+    <state name="Jarabacoa" iso_code="0705" country="DO" zone="LA VEGA" />
+    <state name="Juan Dolio" iso_code="0304" country="DO" zone="SANTO DOMINGO AFUERA" />
+    <state name="La Romana" iso_code="3000" country="DO" zone="LA ROMANA" />
+    <state name="La Vega" iso_code="0700" country="DO" zone="LA VEGA" />
+    <state name="Las Matas de Santa Cruz" iso_code="1506" country="DO" zone="MONTE CRISTI" />
+    <state name="Licey Al Medio" iso_code="0619" country="DO" zone="SANTIAGO" />
+    <state name="Loma de Cabrera" iso_code="1404" country="DO" zone="DAJABON" />
+    <state name="Manzanillo" iso_code="1508" country="DO" zone="MONTE CRISTI" />
+    <state name="Mao" iso_code="1701" country="DO" zone="VALVERDE" />
+    <state name="Marina Casa de Campo" iso_code="3002" country="DO" zone="LA ROMANA" />
+    <state name="Moca" iso_code="0401" country="DO" zone="ESPAILLAT" />
+    <state name="Monte Cristi" iso_code="1500" country="DO" zone="MONTE CRISTI" />
+    <state name="Monte Plata" iso_code="3200" country="DO" zone="MONTE PLATA" />
+    <state name="Nagua" iso_code="1101" country="DO" zone="MARIA TRINIDAD SANCHEZ" />
+    <state name="Neyba" iso_code="2201" country="DO" zone="BAHORUCO" />
+    <state name="Partido" iso_code="1406" country="DO" zone="DAJABON" />
+    <state name="Piedra Blanca" iso_code="0908" country="DO" zone="MONSEÑOR NOUEL" />
+    <state name="Pimentel" iso_code="1015" country="DO" zone="DUARTE" />
+    <state name="Punta Cana-Cruce Cabeza de Toro" iso_code="2906" country="DO" zone="LA ALTAGRACIA" />
+    <state name="Puerto Plata" iso_code="0500" country="DO" zone="PUERTO PLATA" />
+    <state name="Rio San Juan" iso_code="1109" country="DO" zone="MARIA TRINIDAD SANCHEZ" />
+    <state name="Salcedo" iso_code="1201" country="DO" zone="HERMANAS MIRABAL" />
+    <state name="Samana" iso_code="1300" country="DO" zone="SAMANA" />
+    <state name="San Cristobal" iso_code="2000" country="DO" zone="SAN CRISTOBAL" />
+    <state name="San Francisco de Macoris" iso_code="1001" country="DO" zone="DUARTE" />
+    <state name="San Juan de la Maguana" iso_code="2700" country="DO" zone="SAN JUAN DE LA MAGUANA" />
+    <state name="San Pedro de Macoris" iso_code="3100" country="DO" zone="SAN PEDRO DE MACORIS" />
+    <state name="Sanchez" iso_code="1305" country="DO" zone="SAMANA" />
+    <state name="Sanchez Ramirez" iso_code="0800" country="DO" zone="SANCHEZ RAMIREZ" />
+    <state name="Santiago - La Fuente" iso_code="0615" country="DO" zone="SANTIAGO" />
+    <state name="Santiago - Las Colinas" iso_code="0616" country="DO" zone="SANTIAGO" />
+    <state name="Santiago - Los Jardines" iso_code="0620" country="DO" zone="SANTIAGO" />
+    <state name="Santiago Rodriguez" iso_code="1600" country="DO" zone="SANTIAGO RODRIGUEZ" />
+    <state name="Sosua" iso_code="0519" country="DO" zone="PUERTO PLATA" />
+    <state name="Tamboril" iso_code="0626" country="DO" zone="SANTIAGO" />
+    <state name="Tenares" iso_code="1204" country="DO" zone="HERMANAS MIRABAL" />
+    <state name="Villa Altagracia" iso_code="2013" country="DO" zone="SAN CRISTOBAL" />
+    <state name="Villa Tapia" iso_code="1205" country="DO" zone="HERMANAS MIRABAL" />
+    <state name="Villa Vasquez" iso_code="1510" country="DO" zone="MONTE CRISTI" />
+  </states>
 </localizationPack>
