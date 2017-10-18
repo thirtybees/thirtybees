@@ -125,13 +125,13 @@ class ProductCore extends ObjectModel
     public $supplier_reference;
     /** @var string Location */
     public $location;
-    /** @var string Width in default width unit */
+    /** @var float Width in default width unit */
     public $width = 0;
-    /** @var string Height in default height unit */
+    /** @var float Height in default height unit */
     public $height = 0;
-    /** @var string Depth in default depth unit */
+    /** @var float Depth in default depth unit */
     public $depth = 0;
-    /** @var string Weight in default weight unit */
+    /** @var float Weight in default weight unit */
     public $weight = 0;
     /** @var string Ean-13 barcode */
     public $ean13;
