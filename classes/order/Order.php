@@ -1210,7 +1210,7 @@ class OrderCore extends ObjectModel
     {
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
-                ->select('`id_orer`')
+                ->select('`id_order`')
                 ->from('orders', 'o')
                 ->where('o.`current_state` = '.(int) $idOrderState.' '.Shop::addSqlRestriction(false, 'o'))
                 ->orderBy('`invoice_date` ASC')
