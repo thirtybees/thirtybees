@@ -513,12 +513,12 @@ class AdminRequestSqlControllerCore extends AdminController
                 $results = Db::getInstance()->executeS($sql[0]['sql']);
                 foreach (array_keys($results[0]) as $key) {
                     $tabKey[] = $key;
-                    fputs($csv, $key.';');
+                    fputs($csv, $key.',');
                 }
                 foreach ($results as $result) {
                     fputs($csv, "\n");
                     foreach ($tabKey as $name) {
-                        fputs($csv, '"'.strip_tags($result[$name]).'";');
+                        fputs($csv, '"'.strip_tags($result[$name]).'",');
                     }
                 }
                 if (file_exists($exportDir.$file)) {
