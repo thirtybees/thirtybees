@@ -142,7 +142,7 @@ class AdminPerformanceControllerCore extends AdminController
     {
         $this->fields_form[0]['form'] = [
             'legend' => [
-                'title' => $this->l('Smarty'),
+                'title' => $this->l('Smarty - Application Cache'),
                 'icon'  => 'icon-briefcase',
             ],
             'input'  => [
@@ -701,7 +701,7 @@ class AdminPerformanceControllerCore extends AdminController
         $warningFs = ' '.sprintf($this->l('(the directory %s must be writable)'), realpath(_PS_CACHEFS_DIRECTORY_));
         $this->fields_form[6]['form'] = [
             'legend'           => [
-                'title' => $this->l('Caching'),
+                'title' => $this->l('Server Side Caching'),
                 'icon'  => 'icon-desktop',
             ],
             'input'            => [
