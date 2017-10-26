@@ -423,12 +423,12 @@ abstract class InstallControllerHttp
     /**
      * Send AJAX response in JSON format {success: bool, message: string}
      *
-     * @param bool   $success
-     * @param string $message
+     * @param bool  $success
+     * @param array $message Messages array
      *
      * @since 1.0.0
      */
-    public function ajaxJsonAnswer($success, $message = '')
+    public function ajaxJsonAnswer($success, $message = [])
     {
         if (!$success && empty($message)) {
             $message = print_r(@error_get_last(), true);
