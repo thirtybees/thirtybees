@@ -1445,62 +1445,65 @@ abstract class ModuleCore
             return false;
         }
 
-        // Check PS version compliancy
-        if (!$this->checkCompliancy()) {
-            $this->_errors[] = Tools::displayError('The version of your module is not compliant with your thirty bees version.');
+        // Check tb version compliancy
+        if (!defined('TB_INSTALLATION_IN_PROGRESS') || !TB_INSTALLATION_IN_PROGRESS) {
+            if (!$this->checkCompliancy()) {
+                $this->_errors[] = Tools::displayError('The version of your module is not compliant with your thirty bees version.');
 
-            return false;
-        }
+                return false;
+            }
 
-        // Check module dependencies
-        if (count($this->dependencies) > 0) {
-            foreach ($this->dependencies as $dependency) {
-                if (!Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
-                    (new DbQuery())
-                        ->select('`id_module`')
-                        ->from('module')
-                        ->where('LOWER(`name`) = \''.pSQL(Tools::strtolower($dependency)).'\'')
-                )) {
-                    $error = Tools::displayError('Before installing this module, you have to install this/these module(s) first:').'<br />';
-                    foreach ($this->dependencies as $d) {
-                        $error .= '- '.$d.'<br />';
+            // Check module dependencies
+            if (count($this->dependencies) > 0) {
+                foreach ($this->dependencies as $dependency) {
+                    if (!Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                        (new DbQuery())
+                            ->select('`id_module`')
+                            ->from('module')
+                            ->where('LOWER(`name`) = \''.pSQL(Tools::strtolower($dependency)).'\'')
+                    )) {
+                        $error = Tools::displayError('Before installing this module, you have to install this/these module(s) first:').'<br />';
+                        foreach ($this->dependencies as $d) {
+                            $error .= '- '.$d.'<br />';
+                        }
+                        $this->_errors[] = $error;
+
+                        return false;
                     }
-                    $this->_errors[] = $error;
-
-                    return false;
                 }
+            }
+
+            // Check if module is installed
+            $result = Module::isInstalled($this->name);
+            if ($result) {
+                $this->_errors[] = Tools::displayError('This module has already been installed.');
+
+                return false;
+            }
+
+            // Invalidate opcache
+            if (function_exists('opcache_invalidate') && file_exists(_PS_MODULE_DIR_.$this->name)) {
+                foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_PS_MODULE_DIR_.$this->name)) as $file) {
+                    /** @var SplFileInfo $file */
+                    if (substr($file->getFilename(), -4) !== '.php' || $file->isLink()) {
+                        continue;
+                    }
+
+                    opcache_invalidate($file->getPathname());
+                }
+            }
+
+            // Install overrides
+            try {
+                $this->installOverrides();
+            } catch (Exception $e) {
+                $this->_errors[] = sprintf(Tools::displayError('Unable to install override: %s'), $e->getMessage());
+                $this->uninstallOverrides();
+
+                return false;
             }
         }
 
-        // Check if module is installed
-        $result = Module::isInstalled($this->name);
-        if ($result) {
-            $this->_errors[] = Tools::displayError('This module has already been installed.');
-
-            return false;
-        }
-
-        // Invalidate opcache
-        if (function_exists('opcache_invalidate') && file_exists(_PS_MODULE_DIR_.$this->name)) {
-            foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_PS_MODULE_DIR_.$this->name)) as $file) {
-                /** @var SplFileInfo $file */
-                if (substr($file->getFilename(), -4) !== '.php' || $file->isLink()) {
-                    continue;
-                }
-
-                opcache_invalidate($file->getPathname());
-            }
-        }
-
-        // Install overrides
-        try {
-            $this->installOverrides();
-        } catch (Exception $e) {
-            $this->_errors[] = sprintf(Tools::displayError('Unable to install override: %s'), $e->getMessage());
-            $this->uninstallOverrides();
-
-            return false;
-        }
 
         if (!$this->installControllers()) {
             return false;
@@ -1547,11 +1550,13 @@ abstract class ModuleCore
         Group::addRestrictionsForModule($this->id, Shop::getShops(true, null, true));
         Hook::exec('actionModuleInstallAfter', ['object' => $this]);
 
-        // @codingStandardsIgnoreStart
-        if (Module::$update_translations_after_install) {
-            $this->updateModuleTranslations();
+        if (!defined('TB_INSTALLATION_IN_PROGRESS') || !TB_INSTALLATION_IN_PROGRESS) {
+            // @codingStandardsIgnoreStart
+            if (Module::$update_translations_after_install) {
+                $this->updateModuleTranslations();
+            }
+            // @codingStandardsIgnoreEnd
         }
-        // @codingStandardsIgnoreEnd
 
         return true;
     }
