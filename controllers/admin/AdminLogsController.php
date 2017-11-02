@@ -36,6 +36,11 @@
  */
 class AdminLogsControllerCore extends AdminController
 {
+    // @codingStandardsIgnoreStart
+    /** @var string $_defaultOrderWay */
+    protected $_defaultOrderWay = 'DESC';
+    // @codingStandardsIgnoreEnd
+
     /**
      * AdminLogsControllerCore constructor.
      *
