@@ -1108,7 +1108,7 @@ class FrontControllerCore extends Controller
      */
     public function addJS($jsUri, $checkPath = true)
     {
-        return static::addMedia($jsUri, null, null, false, $checkPath);
+        return $this->addMedia($jsUri, null, null, false, $checkPath);
     }
 
     /**
@@ -1206,7 +1206,7 @@ class FrontControllerCore extends Controller
      */
     public function addCSS($cssUri, $cssMediaType = 'all', $offset = null, $checkPath = true)
     {
-        return static::addMedia($cssUri, $cssMediaType, $offset = null, false, $checkPath);
+        return $this->addMedia($cssUri, $cssMediaType, $offset = null, false, $checkPath);
     }
 
     /**
@@ -2088,7 +2088,7 @@ class FrontControllerCore extends Controller
      */
     public function removeCSS($cssUri, $cssMediaType = 'all', $checkPath = true)
     {
-        return static::removeMedia($cssUri, $cssMediaType, $checkPath);
+        return $this->removeMedia($cssUri, $cssMediaType, $checkPath);
     }
 
     /**
@@ -2104,7 +2104,7 @@ class FrontControllerCore extends Controller
      */
     public function removeMedia($mediaUri, $cssMediaType = null, $checkPath = true)
     {
-        static::addMedia($mediaUri, $cssMediaType, null, true, $checkPath);
+        $this->addMedia($mediaUri, $cssMediaType, null, true, $checkPath);
     }
 
     /**
@@ -2119,7 +2119,7 @@ class FrontControllerCore extends Controller
      */
     public function removeJS($jsUri, $checkPath = true)
     {
-        return static::removeMedia($jsUri, null, $checkPath);
+        return $this->removeMedia($jsUri, null, $checkPath);
     }
 
     /**
