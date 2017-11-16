@@ -602,8 +602,8 @@ class TabCore extends ObjectModel
                 ->from('profile')
                 ->where('`id_profile` != 1')
         );
-        if (!$profiles || empty($profiles)) {
-            return true;
+        if (!$profiles) {
+            return false;
         }
 
         /* Query definition */
