@@ -607,7 +607,8 @@ class TabCore extends ObjectModel
         }
 
         /* Query definition */
-        $replace = [
+        $replace = [];
+        $replace[] = [
             'id_profile' => 1,
             'id_tab'     => (int) $idTab,
             'view'       => 1,
@@ -617,10 +618,10 @@ class TabCore extends ObjectModel
         ];
         foreach ($profiles as $profile) {
             $rights = $profile['id_profile'] == $context->employee->id_profile ? 1 : 0;
-            $replace = [
+            $replace[] = [
                 'id_profile' => (int) $profile['id_profile'],
                 'id_tab'     => (int) $idTab,
-                'view'       => (int) (int) $rights,
+                'view'       => (int) $rights,
                 'add'        => (int) $rights,
                 'edit'       => (int) $rights,
                 'delete'     => (int) $rights,
