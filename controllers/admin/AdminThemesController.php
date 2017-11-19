@@ -702,7 +702,7 @@ class AdminThemesControllerCore extends AdminController
 
                     return false;
                 }
-                $themes = array();
+                $themes = [];
                 foreach (Theme::getThemes() as $theme) {
                     /** @var Theme $theme */
                     if ($theme->id != $obj->id) {
@@ -711,10 +711,6 @@ class AdminThemesControllerCore extends AdminController
                 }
                 if (is_dir(_PS_ALL_THEMES_DIR_.$obj->directory) && !in_array($obj->directory, $themes)) {
                     Tools::deleteDirectory(_PS_ALL_THEMES_DIR_.$obj->directory.'/');
-                }
-                $idsThemes = unserialize(Configuration::get('PS_ADDONS_THEMES_IDS'));
-                if (array_key_exists($obj->directory, $idsThemes)) {
-                    unset($idsThemes[$obj->directory]);
                 }
                 $obj->removeMetas();
             } elseif ($obj === false && $themeDir = Tools::getValue('theme_dir')) {
