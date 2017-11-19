@@ -181,7 +181,7 @@ class PrestaShopExceptionCore extends Exception
      */
     protected function displayFileDebug($file, $line, $id = null, $markdown = false)
     {
-        $lines = file($file);
+        $lines = (array) file($file);
         $offset = $line - 6;
         $total = 11;
         if ($offset < 0) {
