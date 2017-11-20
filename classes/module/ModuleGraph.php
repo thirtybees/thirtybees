@@ -381,7 +381,7 @@ abstract class ModuleGraphCore extends Module
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
-    protected static function getEmployee($employee = null, Context $context = null)
+    public static function getEmployee($employee = null, Context $context = null)
     {
         if (!Validate::isLoadedObject($employee)) {
             if (!$context) {
