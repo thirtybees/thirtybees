@@ -556,8 +556,8 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
         }
 
         $this->output .= $this->objOutput->getObjectRender()->renderNodeHeader('image_types', []);
-        foreach ($normalImageSizes as $image_size) {
-            $this->output .= $this->objOutput->getObjectRender()->renderNodeHeader('image_type', [], ['id' => $image_size['id_image_type'], 'name' => $image_size['name'], 'xlink_resource' => $this->wsObject->wsUrl.'image_types/'.$image_size['id_image_type']], false);
+        foreach ($normalImageSizes as $imageSize) {
+            $this->output .= $this->objOutput->getObjectRender()->renderNodeHeader('image_type', [], ['id' => $imageSize['id_image_type'], 'name' => $imageSize['name'], 'xlink_resource' => $this->wsObject->wsUrl.'image_types/'.$imageSize['id_image_type']], false);
         }
         $this->output .= $this->objOutput->getObjectRender()->renderNodeFooter('image_types', []);
         $this->output .= $this->objOutput->getObjectRender()->renderNodeHeader('images', []);
@@ -779,6 +779,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
         $normalImageSizes = ImageType::getImagesTypes($this->imageType);
         if (empty($this->wsObject->urlSegment[2])) {
             $results = Db::getInstance()->executeS('SELECT DISTINCT `id_cart` FROM `'._DB_PREFIX_.'customization`');
+            $ids = [];
             foreach ($results as $result) {
                 $ids[] = $result['id_cart'];
             }
@@ -801,10 +802,12 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
             return true;
         } elseif (empty($this->wsObject->urlSegment[4])) {
             if ($this->wsObject->method == 'GET') {
-                $results = Db::getInstance()->executeS(
-                    'SELECT *
-					FROM `'._DB_PREFIX_.'customized_data`
-					WHERE id_customization = '.(int) $this->wsObject->urlSegment[3].' AND type = 0'
+                $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                    (new DbQuery())
+                        ->select('*')
+                        ->from('customized_data')
+                        ->where('`id_customization` = '.(int) $this->wsObject->urlSegment[3])
+                        ->where('`type` = 0')
                 );
 
                 $this->output .= $this->objOutput->getObjectRender()->renderNodeHeader('images', []);
@@ -817,11 +820,12 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
             }
         } else {
             if ($this->wsObject->method == 'GET') {
-                $results = Db::getInstance()->executeS(
-                    'SELECT *
-					FROM `'._DB_PREFIX_.'customized_data`
-					WHERE id_customization = '.(int) $this->wsObject->urlSegment[3].'
-					AND `index` = '.(int) $this->wsObject->urlSegment[4]
+                $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                    (new DbQuery())
+                        ->select('*')
+                        ->from('customized_data')
+                        ->where('`id_customization` = '.(int) $this->wsObject->urlSegment[3])
+                        ->where('`index` = '.(int) $this->wsObject->urlSegment[4])
                 );
                 if (empty($results[0]) || empty($results[0]['value'])) {
                     throw new WebserviceException('This image does not exist on disk', [61, 500]);
@@ -835,21 +839,23 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
                 if (!in_array((int) $this->wsObject->urlSegment[3], $customizations)) {
                     throw new WebserviceException('Customization does not exist', [61, 500]);
                 }
-                $results = Db::getInstance()->executeS(
-                    'SELECT id_customization_field
-					FROM `'._DB_PREFIX_.'customization_field`
-					WHERE id_customization_field = '.(int) $this->wsObject->urlSegment[4].'
-					AND type = 0'
+                $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                    (new DbQuery())
+                        ->select('`id_customization_field`')
+                        ->from('customization_field')
+                        ->where('`id_customization_field` = '.(int) $this->wsObject->urlSegment[4])
+                        ->where('`type` = 0')
                 );
                 if (empty($results)) {
                     throw new WebserviceException('Customization field does not exist.', [61, 500]);
                 }
-                $results = Db::getInstance()->executeS(
-                    'SELECT *
-					FROM `'._DB_PREFIX_.'customized_data`
-					WHERE id_customization = '.(int) $this->wsObject->urlSegment[3].'
-					AND `index` = '.(int) $this->wsObject->urlSegment[4].'
-					AND type = 0'
+                $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                    (new DbQuery())
+                        ->select('*')
+                        ->from('customized_data')
+                        ->where('`id_customization` = '.(int) $this->wsObject->urlSegment[3])
+                        ->where('`index` = '.(int) $this->wsObject->urlSegment[4])
+                        ->where('`type` = 0')
                 );
                 if (!empty($results)) { // customization field exists and has no value
                     throw new WebserviceException('Customization field already have a value, please use PUT method.', [61, 500]);
@@ -857,19 +863,20 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
 
                 return $this->manageDeclinatedImagesCRUD(false, '', $normalImageSizes, _PS_UPLOAD_DIR_);
             }
-            $results = Db::getInstance()->executeS(
-                'SELECT *
-				FROM `'._DB_PREFIX_.'customized_data`
-				WHERE id_customization = '.(int) $this->wsObject->urlSegment[3].'
-				AND `index` = '.(int) $this->wsObject->urlSegment[4]
+            $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                    ->select('*')
+                    ->from('customized_data')
+                    ->where('`id_customization` = '.(int) $this->wsObject->urlSegment[3])
+                    ->where('`index` = '.(int) $this->wsObject->urlSegment[4])
             );
             if (empty($results[0]) || empty($results[0]['value'])) {
                 throw new WebserviceException('This image does not exist on disk', [61, 500]);
             }
             $this->imgToDisplay = _PS_UPLOAD_DIR_.$results[0]['value'];
-            $filename_exists = file_exists($this->imgToDisplay);
+            $filenameExists = file_exists($this->imgToDisplay);
 
-            return $this->manageDeclinatedImagesCRUD($filename_exists, $this->imgToDisplay, $normalImageSizes, _PS_UPLOAD_DIR_);
+            return $this->manageDeclinatedImagesCRUD($filenameExists, $this->imgToDisplay, $normalImageSizes, _PS_UPLOAD_DIR_);
         }
     }
 
@@ -948,7 +955,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
                     }
                 }
                 break;
-            default :
+            default:
                 throw new WebserviceException('This method is not allowed', [67, 405]);
         }
     }
@@ -973,13 +980,13 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
             @unlink($filePath);
             // Delete declinated image if needed
             if ($imageTypes) {
-                foreach ($imageTypes as $image_type) {
+                foreach ($imageTypes as $imageType) {
                     if ($this->defaultImage) { // @todo products images too !!
-                        $declination_path = $parentPath.$this->wsObject->urlSegment[3].'-default-'.$image_type['name'].'.jpg';
+                        $declinationPath = $parentPath.$this->wsObject->urlSegment[3].'-default-'.$imageType['name'].'.jpg';
                     } else {
-                        $declination_path = $parentPath.$this->wsObject->urlSegment[2].'-'.$image_type['name'].'.jpg';
+                        $declinationPath = $parentPath.$this->wsObject->urlSegment[2].'-'.$imageType['name'].'.jpg';
                     }
-                    if (!@unlink($declination_path)) {
+                    if (!@unlink($declinationPath)) {
                         $this->objOutput->setStatus(204);
 
                         return false;
@@ -1059,8 +1066,7 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
         $borderHeight = (int) (($destHeight - $nextHeight) / 2);
 
         // Build the image
-        if (
-            !($destImage = imagecreatetruecolor($destWidth, $destHeight)) ||
+        if (!($destImage = imagecreatetruecolor($destWidth, $destHeight)) ||
             !($white = imagecolorallocate($destImage, 255, 255, 255)) ||
             !imagefill($destImage, 0, 0, $white) ||
             !imagecopyresampled($destImage, $sourceImage, $borderWidth, $borderHeight, 0, 0, $nextWidth, $nextHeight, $sourceWidth, $sourceHeight) ||
@@ -1281,10 +1287,15 @@ class WebserviceSpecificManagementImagesCore implements WebserviceSpecificManage
                         }
                         @unlink(_PS_TMP_IMG_DIR_.$tmpName);
 
-                        $query = 'INSERT INTO `'._DB_PREFIX_.'customized_data` (`id_customization`, `type`, `index`, `value`)
-							VALUES ('.(int) $this->wsObject->urlSegment[3].', 0, '.(int) $this->wsObject->urlSegment[4].', \''.$filename.'\')';
-
-                        if (!Db::getInstance()->execute($query)) {
+                        if (!Db::getInstance()->insert(
+                            'customized_data',
+                            [
+                                'id_customization' => (int) $this->wsObject->urlSegment[3],
+                                'type'             => 0,
+                                'index'            => (int) $this->wsObject->urlSegment[4],
+                                'value'            => pSQL($filename),
+                            ]
+                        )) {
                             return false;
                         }
                     }
