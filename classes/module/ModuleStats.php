@@ -118,8 +118,7 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
         $modules = $this->getModules();
         $moduleInstance = [];
         foreach ($modules as $m => $module) {
-            if($module['name'] == 'statsmodule')
-            {
+            if ($module['name'] == 'statsmodule') {
                 unset($modules[$m]);
                 continue;
             }
@@ -132,12 +131,10 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
 
                 $statsModuleInstance = Module::getInstanceByName('statsModule');
 
-                if($statsModuleInstance->active && in_array($module['name'], $statsModuleInstance->modules))
-                {
+                if ($statsModuleInstance->active && in_array($module['name'], $statsModuleInstance->modules)) {
                     $moduleInstance[$module['name']] = $statsModuleInstance->executeStatsInstance($module['name']);
-                    $modules[$m]['displayName'] =$moduleInstance[$module['name']]->displayName;
-                }
-                else {
+                    $modules[$m]['displayName'] = $moduleInstance[$module['name']]->displayName;
+                } else {
                     unset($moduleInstance[$module['name']]);
                     unset($modules[$m]);
                 }
@@ -176,18 +173,20 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
 					AND m.`active` = 1
 				GROUP BY hm.id_module
 				ORDER BY hm.`position`';
-        // nemo
 
         $modules = Db::getInstance()->executeS($sql);
-        if($modules)
+        if ($modules) {
             foreach ($modules as $module) {
                 if ($module['name'] == 'statsmodule') {
                     $statsModule = Module::getInstanceByName('statsmodule');
                     $statsModulesList = $statsModule->getStatsModulesList();
-                    if($statsModulesList)
+                    if ($statsModulesList) {
                         $modules = array_merge($modules, $statsModulesList);
+                    }
                 }
             }
+        }
+
         return $modules;
     }
 
@@ -215,12 +214,12 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
     /**
      * Display calendar form
      *
-     * @param      $translations
-     * @param      $token
-     * @param null $action
-     * @param null $table
-     * @param null $identifier
-     * @param null $id
+     * @param array       $translations
+     * @param string      $token
+     * @param string|null $action
+     * @param string|null $table
+     * @param string|null $identifier
+     * @param string|null $id
      *
      * @return string
      *
@@ -290,8 +289,7 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
                 $hook = Hook::exec('displayAdminStatsModules', null, $moduleInstance->id);
             } else { // check if it's part of the stats module by nemo
                 $moduleInstance = Module::getInstanceByName('statsModule');
-                if($moduleInstance->active && in_array($moduleName, $moduleInstance->modules))
-                {
+                if ($moduleInstance->active && in_array($moduleName, $moduleInstance->modules)) {
                     $hook = $moduleInstance->executeStatsInstance($moduleName, true);
                 }
             }

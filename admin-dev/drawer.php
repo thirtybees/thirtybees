@@ -2,8 +2,8 @@
 /**
  * 2007-2016 PrestaShop
  *
- * thirty bees is an extension to the PrestaShop e-commerce software developed by PrestaShop SA
- * Copyright (C) 2017 thirty bees
+ * Thirty Bees is an extension to the PrestaShop e-commerce software developed by PrestaShop SA
+ * Copyright (C) 2017 Thirty Bees
  *
  * NOTICE OF LICENSE
  *
@@ -21,11 +21,11 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- *  @author    thirty bees <contact@thirtybees.com>
- *  @author    PrestaShop SA <contact@prestashop.com>
- *  @copyright 2017 thirty bees
- *  @copyright 2007-2016 PrestaShop SA
- *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @author    Thirty Bees <contact@thirtybees.com>
+ * @author    PrestaShop SA <contact@prestashop.com>
+ * @copyright 2017 Thirty Bees
+ * @copyright 2007-2016 PrestaShop SA
+ * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
@@ -44,17 +44,24 @@ $height = Tools::getValue('height');
 $id_employee = Tools::getValue('id_employee');
 $id_lang = Tools::getValue('id_lang');
 
-if (!isset($cookie->id_employee) || !$cookie->id_employee  || $cookie->id_employee != $id_employee) {
+if (!isset($cookie->id_employee) || !$cookie->id_employee || $cookie->id_employee != $id_employee) {
     die(Tools::displayError());
 }
-    
+
 if (!Validate::isModuleName($module)) {
     die(Tools::displayError());
 }
 
-if (!file_exists($module_path = _PS_ROOT_DIR_.'/modules/'.$module.'/'.$module.'.php')) {
-    die(Tools::displayError());
+$statsModuleInstance = Module::getInstanceByName('statsModule');
+
+if ($statsModuleInstance->active && in_array($module, $statsModuleInstance->modules)) {
+    $module_path = _PS_ROOT_DIR_.'/modules/statsmodule/stats/'.$module.'.php';
+} else {
+    if (!file_exists($module_path = _PS_ROOT_DIR_.'/modules/'.$module.'/'.$module.'.php')) {
+        die(Tools::displayError());
+    }
 }
+
 
 $shop_id = '';
 Shop::setContext(Shop::CONTEXT_ALL);
@@ -103,6 +110,6 @@ $graph->setLang($id_lang);
 if ($option) {
     $graph->setOption($option, $layers);
 }
-
-$graph->create($render, $type, $width, $height, $layers);
+call_user_func_array([$graph, 'create'.Tools::getValue('engine')], [$render, $type, $width, $height, $layers]);
+// $graph->create($render, $type, $width, $height, $layers);
 $graph->draw();
