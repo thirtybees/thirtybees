@@ -90,7 +90,7 @@ class CookieCore
         }
 
         $this->_domain = $this->getDomain($sharedUrls);
-        $this->_name = 'thirtybees-'.md5(($this->_standalone ? '' : _TB_VERSION_).$name.$this->_domain);
+        $this->_name = 'thirtybees-'.md5($name.$this->_domain);
         $this->_allow_writing = true;
         $this->_salt = $this->_standalone ? str_pad('', 8, md5('ps'.__FILE__)) : _COOKIE_IV_;
         if ($this->_standalone) {
