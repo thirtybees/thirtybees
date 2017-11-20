@@ -2,8 +2,8 @@
 /**
  * 2007-2016 PrestaShop
  *
- * thirty bees is an extension to the PrestaShop e-commerce software developed by PrestaShop SA
- * Copyright (C) 2017 thirty bees
+ * Thirty Bees is an extension to the PrestaShop e-commerce software developed by PrestaShop SA
+ * Copyright (C) 2017 Thirty Bees
  *
  * NOTICE OF LICENSE
  *
@@ -21,9 +21,9 @@
  * versions in the future. If you wish to customize PrestaShop for your
  * needs please refer to https://www.thirtybees.com for more information.
  *
- * @author    thirty bees <contact@thirtybees.com>
+ * @author    Thirty Bees <contact@thirtybees.com>
  * @author    PrestaShop SA <contact@prestashop.com>
- * @copyright 2017 thirty bees
+ * @copyright 2017 Thirty Bees
  * @copyright 2007-2016 PrestaShop SA
  * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
@@ -118,14 +118,27 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
         $modules = $this->getModules();
         $moduleInstance = [];
         foreach ($modules as $m => $module) {
+            if ($module['name'] == 'statsmodule') {
+                unset($modules[$m]);
+                continue;
+            }
+
+
             if ($moduleInstance[$module['name']] = Module::getInstanceByName($module['name'])) {
                 $modules[$m]['displayName'] = $moduleInstance[$module['name']]->displayName;
             } else {
-                unset($moduleInstance[$module['name']]);
-                unset($modules[$m]);
+                $statsModuleInstance = Module::getInstanceByName('statsModule');
+
+                if ($statsModuleInstance->active && in_array($module['name'], $statsModuleInstance->modules)) {
+                    $moduleInstance[$module['name']] = $statsModuleInstance->executeStatsInstance($module['name']);
+                    $modules[$m]['displayName'] = $moduleInstance[$module['name']]->displayName;
+                } else {
+                    unset($moduleInstance[$module['name']]);
+                    unset($modules[$m]);
+                }
+
             }
         }
-
         uasort($modules, [$this, 'checkModulesNames']);
 
         $tpl->assign(
@@ -158,8 +171,20 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
 					AND m.`active` = 1
 				GROUP BY hm.id_module
 				ORDER BY hm.`position`';
+        $modules = Db::getInstance()->executeS($sql);
+        if ($modules) {
+            foreach ($modules as $module) {
+                if ($module['name'] == 'statsmodule') {
+                    $statsModule = Module::getInstanceByName('statsmodule');
+                    $statsModulesList = $statsModule->getStatsModulesList();
+                    if ($statsModulesList) {
+                        $modules = array_merge($modules, $statsModulesList);
+                    }
+                }
+            }
+        }
 
-        return Db::getInstance()->executeS($sql);
+        return $modules;
     }
 
     /**
@@ -248,6 +273,7 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
             $moduleName = 'statsforecast';
         }
 
+
         if ($moduleName) {
             $_GET['module'] = $moduleName;
 
@@ -255,9 +281,16 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
                 $moduleInstance = Module::getInstanceByName($moduleName);
             }
 
+
             if ($moduleInstance && $moduleInstance->active) {
                 $hook = Hook::exec('displayAdminStatsModules', null, $moduleInstance->id);
+            } else { // check if it's part of the stats module by nemo
+                $moduleInstance = Module::getInstanceByName('statsModule');
+                if ($moduleInstance->active && in_array($moduleName, $moduleInstance->modules)) {
+                    $hook = $moduleInstance->executeStatsInstance($moduleName, true);
+                }
             }
+
         }
 
         $tpl->assign(
