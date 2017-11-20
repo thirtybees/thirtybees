@@ -383,3 +383,7 @@
 	url = https://github.com/thirtybees/blocktopmenu.git
 	branch = master
 	ignore = dirty
+[submodule "statsmodule"]
+	path = statsmodule
+	url = https://github.com/thirtybees/statsmodule
+	branch = master
