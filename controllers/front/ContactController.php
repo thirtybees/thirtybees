@@ -257,17 +257,12 @@ class ContactControllerCore extends FrontController
     protected function getOrder()
     {
         $idOrder = false;
-        if (!is_numeric($reference = Tools::getValue('id_order'))) {
-            $reference = ltrim($reference, '#');
-            $orders = Order::getByReference($reference);
-            if ($orders) {
-                foreach ($orders as $order) {
-                    $idOrder = (int) $order->id;
-                    break;
-                }
+        $orders = Order::getByReference(Tools::getValue('id_order'));
+        if ($orders) {
+            foreach ($orders as $order) {
+                $idOrder = (int) $order->id;
+                break;
             }
-        } elseif (Order::getCartIdStatic((int) Tools::getValue('id_order'))) {
-            $idOrder = (int) Tools::getValue('id_order');
         }
 
         return (int) $idOrder;
