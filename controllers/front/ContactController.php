@@ -92,7 +92,7 @@ class ContactControllerCore extends FrontController
                 ) {
                     $fields = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                         (new DbQuery())
-                            ->select('ct.`id_customer_thread`, ct.`id_contact`, ct.`id_customer`, ct.`id_order`, ct.`id_product`, ct.`id_email`')
+                            ->select('ct.`id_customer_thread`, ct.`id_contact`, ct.`id_customer`, ct.`id_order`, ct.`id_product`, ct.`email`')
                             ->from('customer_thread', 'ct')
                             ->where('ct.`email` = \''.pSQL($from).'\'')
                             ->where('cm.`id_shop` = '.(int) $this->context->shop->id)
