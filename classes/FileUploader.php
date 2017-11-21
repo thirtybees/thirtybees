@@ -80,10 +80,16 @@ class FileUploaderCore
         $val = trim($str);
         $last = strtolower($str[strlen($str) - 1]);
         switch ($last) {
-            case 'g': $val *= 1024;
-            case 'm': $val *= 1024;
-            case 'k': $val *= 1024;
+            case 'g':
+                $val *= 1024;
+                // Fall though allowed
+            case 'm':
+                $val *= 1024;
+                // Fall through allowed
+            case 'k':
+                $val *= 1024;
         }
+
         return $val;
     }
 
@@ -141,13 +147,13 @@ class QqUploadedFileForm
             return ['error' => Tools::displayError('Cannot add image because product creation failed.')];
         } else {
             $image = new Image();
-            $image->id_product = (int)$product->id;
+            $image->id_product = (int) $product->id;
             $image->position = Image::getHighestPosition($product->id) + 1;
             $legends = Tools::getValue('legend');
             if (is_array($legends)) {
                 foreach ($legends as $key => $legend) {
                     if (Validate::isGenericName($legend)) {
-                        $image->legend[(int)$key] = $legend;
+                        $image->legend[(int) $key] = $legend;
                     } else {
                         return ['error' => sprintf(Tools::displayError('Error on image caption: "%1s" is not a valid caption.'), Tools::safeOutput($legend))];
                     }
@@ -171,8 +177,8 @@ class QqUploadedFileForm
     }
 
     /**
-     * @param        $idProduct
-     * @param        $idImage
+     * @param int    $idProduct
+     * @param int    $idImage
      * @param string $method
      *
      * @return array
@@ -205,6 +211,7 @@ class QqUploadedFileForm
             return ['error' => Tools::displayError('Error while updating status')];
         }
         $img = ['id_image' => $image->id, 'position' => $image->position, 'cover' => $image->cover, 'name' => $this->getName(), 'legend' => $image->legend];
+
         return ['success' => $img];
     }
 
@@ -239,6 +246,9 @@ class QqUploadedFileXhr
 {
     /**
      * Save the file to the specified path
+     *
+     * @param string $path
+     *
      * @return bool TRUE on success
      */
     public function upload($path)
@@ -270,13 +280,13 @@ class QqUploadedFileXhr
             return ['error' => Tools::displayError('Cannot add image because product creation failed.')];
         } else {
             $image = new Image();
-            $image->id_product = (int)($product->id);
+            $image->id_product = (int) $product->id;
             $image->position = Image::getHighestPosition($product->id) + 1;
             $legends = Tools::getValue('legend');
             if (is_array($legends)) {
                 foreach ($legends as $key => $legend) {
                     if (Validate::isGenericName($legend)) {
-                        $image->legend[(int)$key] = $legend;
+                        $image->legend[(int) $key] = $legend;
                     } else {
                         return ['error' => sprintf(Tools::displayError('Error on image caption: "%1s" is not a valid caption.'), Tools::safeOutput($legend))];
                     }
@@ -300,8 +310,8 @@ class QqUploadedFileXhr
     }
 
     /**
-     * @param        $idProduct
-     * @param        $idImage
+     * @param int    $idProduct
+     * @param int    $idImage
      * @param string $method
      *
      * @return array
@@ -339,6 +349,7 @@ class QqUploadedFileXhr
             return ['error' => Tools::displayError('Error while updating status')];
         }
         $img = ['id_image' => $image->id, 'position' => $image->position, 'cover' => $image->cover, 'name' => $this->getName(), 'legend' => $image->legend];
+
         return ['success' => $img];
     }
 
@@ -363,11 +374,12 @@ class QqUploadedFileXhr
     {
         if (isset($_SERVER['CONTENT_LENGTH']) || isset($_SERVER['HTTP_CONTENT_LENGTH'])) {
             if (isset($_SERVER['HTTP_CONTENT_LENGTH'])) {
-                return (int)$_SERVER['HTTP_CONTENT_LENGTH'];
+                return (int) $_SERVER['HTTP_CONTENT_LENGTH'];
             } else {
-                return (int)$_SERVER['CONTENT_LENGTH'];
+                return (int) $_SERVER['CONTENT_LENGTH'];
             }
         }
+
         return false;
     }
 }
