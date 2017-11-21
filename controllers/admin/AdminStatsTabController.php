@@ -123,12 +123,11 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
                 continue;
             }
 
-
             if ($moduleInstance[$module['name']] = Module::getInstanceByName($module['name'])) {
                 $modules[$m]['displayName'] = $moduleInstance[$module['name']]->displayName;
             } else {
-                $statsModuleInstance = Module::getInstanceByName('statsModule');
-
+                /** @var StatsModule $statsModuleInstance */
+                $statsModuleInstance = Module::getInstanceByName('statsmodule');
                 if ($statsModuleInstance->active && in_array($module['name'], $statsModuleInstance->modules)) {
                     $moduleInstance[$module['name']] = $statsModuleInstance->executeStatsInstance($module['name']);
                     $modules[$m]['displayName'] = $moduleInstance[$module['name']]->displayName;
