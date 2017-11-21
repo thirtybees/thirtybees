@@ -120,7 +120,7 @@ class GroupCore extends ObjectModel
     }
 
     /**
-     * @param null $idCustomer
+     * @param int|null $idCustomer
      *
      * @return mixed
      *
@@ -129,12 +129,14 @@ class GroupCore extends ObjectModel
      */
     public static function getReduction($idCustomer = null)
     {
+        // @codingStandardsIgnoreStart
         if (!isset(static::$cache_reduction['customer'][(int) $idCustomer])) {
             $idGroup = $idCustomer ? Customer::getDefaultGroupId((int) $idCustomer) : (int) Group::getCurrent()->id;
             static::$cache_reduction['customer'][(int) $idCustomer] = Group::getReductionByIdGroup($idGroup);
         }
 
         return static::$cache_reduction['customer'][(int) $idCustomer];
+        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -191,16 +193,18 @@ class GroupCore extends ObjectModel
      */
     public static function getReductionByIdGroup($idGroup)
     {
+        // @codingStandardsIgnoreStart
         if (!isset(static::$cache_reduction['group'][$idGroup])) {
             static::$cache_reduction['group'][$idGroup] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-                '
-			SELECT `reduction`
-			FROM `'._DB_PREFIX_.'group`
-			WHERE `id_group` = '.(int) $idGroup
+                (new DbQuery())
+                    ->select('`reduction`')
+                    ->from('group')
+                    ->where('`id_group` = '.(int) $idGroup)
             );
         }
 
         return static::$cache_reduction['group'][$idGroup];
+        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -215,7 +219,7 @@ class GroupCore extends ObjectModel
     }
 
     /**
-     * @param $idGroup
+     * @param int $idGroup
      *
      * @return mixed
      *
@@ -224,16 +228,18 @@ class GroupCore extends ObjectModel
      */
     public static function getPriceDisplayMethod($idGroup)
     {
+        // @codingStandardsIgnoreStart
         if (!isset(Group::$group_price_display_method[$idGroup])) {
             static::$group_price_display_method[$idGroup] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-                '
-			SELECT `price_display_method`
-			FROM `'._DB_PREFIX_.'group`
-			WHERE `id_group` = '.(int) $idGroup
+                (new DbQuery())
+                    ->select('`price_display_method`')
+                    ->from('group')
+                    ->where('`id_group` = '.(int) $idGroup)
             );
         }
 
         return static::$group_price_display_method[$idGroup];
+        // @codingStandardsIgnoreEnd
     }
 
     /**
