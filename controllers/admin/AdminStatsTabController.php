@@ -128,7 +128,7 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
             } else {
                 /** @var StatsModule $statsModuleInstance */
                 $statsModuleInstance = Module::getInstanceByName('statsmodule');
-                if ($statsModuleInstance->active && in_array($module['name'], $statsModuleInstance->modules)) {
+                if (Validate::isLoadedObject($statsModuleInstance) && $statsModuleInstance->active && in_array($module['name'], $statsModuleInstance->modules)) {
                     $moduleInstance[$module['name']] = $statsModuleInstance->executeStatsInstance($module['name']);
                     $modules[$m]['displayName'] = $moduleInstance[$module['name']]->displayName;
                 } else {
@@ -280,12 +280,12 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
                 $moduleInstance = Module::getInstanceByName($moduleName);
             }
 
-
-            if ($moduleInstance && $moduleInstance->active) {
+            if (Validate::isLoadedObject($moduleInstance) && $moduleInstance && $moduleInstance->active) {
                 $hook = Hook::exec('displayAdminStatsModules', null, $moduleInstance->id);
-            } else { // check if it's part of the stats module by nemo
-                $moduleInstance = Module::getInstanceByName('statsModule');
-                if ($moduleInstance->active && in_array($moduleName, $moduleInstance->modules)) {
+            } else {
+                /** @var StatsModule $moduleInstance */
+                $moduleInstance = Module::getInstanceByName('statsmodule');
+                if (Validate::isLoadedObject($moduleInstance) && $moduleInstance->active && in_array($moduleName, $moduleInstance->modules)) {
                     $hook = $moduleInstance->executeStatsInstance($moduleName, true);
                 }
             }
