@@ -344,8 +344,8 @@ class AuthControllerCore extends FrontController
                 // Add customer to the context
                 $this->context->customer = $customer;
 
-                if (Configuration::get('PS_CART_FOLLOWING') && (empty($this->context->cookie->id_cart) || Cart::getNbProducts($this->context->cookie->id_cart) == 0) && $id_cart = (int) Cart::lastNoneOrderedCart($this->context->customer->id)) {
-                    $this->context->cart = new Cart($id_cart);
+                if (Configuration::get('PS_CART_FOLLOWING') && (empty($this->context->cookie->id_cart) || Cart::getNbProducts($this->context->cookie->id_cart) == 0) && $idCart = (int) Cart::lastNoneOrderedCart($this->context->customer->id)) {
+                    $this->context->cart = new Cart($idCart);
                 } else {
                     $idCarrier = (int) $this->context->cart->id_carrier;
                     $this->context->cart->id_carrier = 0;
@@ -357,8 +357,8 @@ class AuthControllerCore extends FrontController
                 $this->context->cart->secure_key = $customer->secure_key;
 
                 if ($this->ajax && isset($idCarrier) && $idCarrier && Configuration::get('PS_ORDER_PROCESS_TYPE')) {
-                    $delivery_option = [$this->context->cart->id_address_delivery => $idCarrier.','];
-                    $this->context->cart->setDeliveryOption($delivery_option);
+                    $deliveryOption = [$this->context->cart->id_address_delivery => $idCarrier.','];
+                    $this->context->cart->setDeliveryOption($deliveryOption);
                 }
 
                 $this->context->cart->save();
