@@ -78,20 +78,25 @@ class ContactControllerCore extends FrontController
 
                 if (!((
                         ($idCustomerThread = (int) Tools::getValue('id_customer_thread'))
-                        && (int) Db::getInstance()->getValue(
-                            '
-						SELECT cm.id_customer_thread FROM '._DB_PREFIX_.'customer_thread cm
-						WHERE cm.id_customer_thread = '.(int) $idCustomerThread.' AND cm.id_shop = '.(int) $this->context->shop->id.' AND token = \''.pSQL(Tools::getValue('token')).'\''
+                        && (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                            (new DbQuery())
+                                ->select('cm.`id_customer_thread`')
+                                ->from('customer_thread', 'cm')
+                                ->where('cm.`id_customer_thread` = '.(int) $idCustomerThread)
+                                ->where('cm.`id_shop` = '.(int) $this->context->shop->id)
+                                ->where('cm.`token` = \''.pSQL(Tools::getValue('token')).'\'')
                         )
                     ) || (
                     $idCustomerThread = CustomerThread::getIdCustomerThreadByEmailAndIdOrder($from, $idOrder)
                     ))
                 ) {
-                    $fields = Db::getInstance()->executeS(
-                        '
-					SELECT cm.id_customer_thread, cm.id_contact, cm.id_customer, cm.id_order, cm.id_product, cm.email
-					FROM '._DB_PREFIX_.'customer_thread cm
-					WHERE email = \''.pSQL($from).'\' AND cm.id_shop = '.(int) $this->context->shop->id.' AND ('.($customer->id ? 'id_customer = '.(int) $customer->id.' OR ' : '').' id_order = '.(int) $idOrder.')'
+                    $fields = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                        (new DbQuery())
+                            ->select('ct.`id_customer_thread`, ct.`id_contact`, ct.`id_customer`, ct.`id_order`, ct.`id_product`, ct.`id_email`')
+                            ->from('customer_thread', 'ct')
+                            ->where('ct.`email` = \''.pSQL($from).'\'')
+                            ->where('cm.`id_shop` = '.(int) $this->context->shop->id)
+                            ->where('('.($customer->id ? 'id_customer = '.(int) $customer->id.' OR ' : '').' id_order = '.(int) $idOrder.')')
                     );
                     $score = 0;
                     foreach ($fields as $key => $row) {
@@ -117,12 +122,14 @@ class ContactControllerCore extends FrontController
                         }
                     }
                 }
-                $oldMessage = Db::getInstance()->getValue(
-                    '
-					SELECT cm.message FROM '._DB_PREFIX_.'customer_message cm
-					LEFT JOIN '._DB_PREFIX_.'customer_thread cc on (cm.id_customer_thread = cc.id_customer_thread)
-					WHERE cc.id_customer_thread = '.(int) $idCustomerThread.' AND cc.id_shop = '.(int) $this->context->shop->id.'
-					ORDER BY cm.date_add DESC'
+                $oldMessage = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                    (new DbQuery())
+                        ->select('cm.`message`')
+                        ->from('customer_message', 'cm')
+                        ->leftJoin('customer_thread', 'cc', 'cm.`id_customer_thread` = cc.`id_customer_thread`')
+                        ->where('cc.`id_customer_thread` = '.(int) $idCustomerThread)
+                        ->where('cc.`id_shop` = '.(int) $this->context->shop->id)
+                        ->orderBy('cm.`date_add` DESC')
                 );
                 if ($oldMessage == $message) {
                     $this->context->smarty->assign('alreadySent', 1);
@@ -310,14 +317,13 @@ class ContactControllerCore extends FrontController
         );
 
         if (($idCustomerThread = (int) Tools::getValue('id_customer_thread')) && $token = Tools::getValue('token')) {
-            $customerThread = Db::getInstance()->getRow(
-                '
-				SELECT cm.*
-				FROM '._DB_PREFIX_.'customer_thread cm
-				WHERE cm.id_customer_thread = '.(int) $idCustomerThread.'
-				AND cm.id_shop = '.(int) $this->context->shop->id.'
-				AND token = \''.pSQL($token).'\'
-			'
+            $customerThread = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                (new DbQuery())
+                    ->select('cm.*')
+                    ->from('customer_thread', 'cm')
+                    ->where('cm.`id_customer_thread` = '.(int) $idCustomerThread)
+                    ->where('cm.`id_shop` = '.(int) $this->context->shop->id)
+                    ->where('cm.`token` = \''.pSQL($token).'\'')
             );
 
             $order = new Order((int) $customerThread['id_order']);
@@ -350,11 +356,12 @@ class ContactControllerCore extends FrontController
             $this->context->smarty->assign('isLogged', 1);
 
             $products = [];
-            $result = Db::getInstance()->executeS(
-                '
-			SELECT id_order
-			FROM '._DB_PREFIX_.'orders
-			WHERE id_customer = '.(int) $this->context->customer->id.Shop::addSqlRestriction(Shop::SHARE_ORDER).' ORDER BY date_add'
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                    ->select('`id_order`')
+                    ->from('orders')
+                    ->where('`id_customer` = '.(int) $this->context->customer->id.Shop::addSqlRestriction(Shop::SHARE_ORDER))
+                    ->orderBy('`date_add`')
             );
 
             $orders = [];
