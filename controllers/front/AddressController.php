@@ -108,7 +108,7 @@ class AddressControllerCore extends FrontController
                         }
                         if ($this->context->cart->id_address_delivery == $this->_address->id) {
                             unset($this->context->cart->id_address_delivery);
-                            $this->context->cart->updateAddressId($this->_address->id, (int) Address::getFirstCustomerAddressId(Context::getContext()->customer->id));
+                            $this->context->cart->updateAddressId($this->_address->id, (int) Address::getFirstCustomerAddressId($this->context->customer->id));
                         }
                         Tools::redirect('index.php?controller=addresses');
                     }

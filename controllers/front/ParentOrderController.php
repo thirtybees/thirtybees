@@ -355,7 +355,7 @@ class ParentOrderControllerCore extends FrontController
             Product::addCustomizationPrice($summary['products'], $customizedDatas);
         }
 
-        $cartProductContext = Context::getContext()->cloneContext();
+        $cartProductContext = $this->context->cloneContext();
         foreach ($summary['products'] as $key => &$product) {
             $product['quantity'] = $product['cart_quantity'];// for compatibility with 1.2 themes
 

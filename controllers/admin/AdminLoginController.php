@@ -45,7 +45,6 @@ class AdminLoginControllerCore extends AdminController
     {
         $this->bootstrap = true;
         $this->errors = [];
-        $this->context = Context::getContext();
         $this->display_header = false;
         $this->display_footer = false;
         $this->meta_title = $this->l('Administration panel');
