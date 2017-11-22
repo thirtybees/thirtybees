@@ -50,7 +50,6 @@ class AdminPatternsControllerCore extends AdminController
     {
         $this->bootstrap = true;
         $this->show_toolbar = false;
-        $this->context = Context::getContext();
 
         parent::__construct();
     }
@@ -349,7 +348,7 @@ class AdminPatternsControllerCore extends AdminController
                     'name'    => 'type_select_chosen',
                     'class'   => 'chosen',
                     'options' => [
-                        'query' => Country::getCountries((int) Context::getContext()->cookie->id_lang),
+                        'query' => Country::getCountries((int) $this->context->cookie->id_lang),
                         'id'    => 'id_zone',
                         'name'  => 'name',
                     ],
@@ -361,7 +360,7 @@ class AdminPatternsControllerCore extends AdminController
                     'class'    => 'chosen',
                     'multiple' => true,
                     'options'  => [
-                        'query' => Country::getCountries((int) Context::getContext()->cookie->id_lang),
+                        'query' => Country::getCountries((int) $this->context->cookie->id_lang),
                         'id'    => 'id_zone',
                         'name'  => 'name',
                     ],
@@ -459,7 +458,7 @@ class AdminPatternsControllerCore extends AdminController
                     'type'   => 'group',
                     'label'  => 'group',
                     'name'   => 'type_group',
-                    'values' => Group::getGroups(Context::getContext()->language->id),
+                    'values' => Group::getGroups($this->context->language->id),
                 ],
                 [
                     'type'  => 'categories',

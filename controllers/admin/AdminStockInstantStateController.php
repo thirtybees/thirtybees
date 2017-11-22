@@ -121,7 +121,7 @@ class AdminStockInstantStateControllerCore extends AdminController
 
         if ($this->display == 'details') {
             $this->page_header_toolbar_btn['back_to_list'] = [
-                'href' => Context::getContext()->link->getAdminLink('AdminStockInstantState').(Tools::getValue('id_warehouse') ? '&id_warehouse='.Tools::getValue('id_warehouse') : ''),
+                'href' => $this->context->link->getAdminLink('AdminStockInstantState').(Tools::getValue('id_warehouse') ? '&id_warehouse='.Tools::getValue('id_warehouse') : ''),
                 'desc' => $this->l('Back to list', null, null, false),
                 'icon' => 'process-icon-back',
             ];

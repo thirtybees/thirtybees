@@ -52,6 +52,7 @@ class AdminCmsControllerCore extends AdminController
     public function __construct()
     {
         $this->bootstrap = true;
+        $this->context = Context::getContext();
         $this->table = 'cms';
         $this->list_id = 'cms';
         $this->className = 'CMS';
@@ -86,7 +87,7 @@ class AdminCmsControllerCore extends AdminController
         $this->tpl_list_vars['icon'] = 'icon-folder-close';
         $this->tpl_list_vars['title'] = sprintf(
             $this->l('Pages in category "%s"'),
-            $this->_category->name[Context::getContext()->employee->id_lang]
+            $this->_category->name[$this->context->employee->id_lang]
         );
         $this->_join = '
 		LEFT JOIN `'._DB_PREFIX_.'cms_category` c ON (c.`id_cms_category` = a.`id_cms_category`)';

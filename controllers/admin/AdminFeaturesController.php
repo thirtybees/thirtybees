@@ -110,7 +110,7 @@ class AdminFeaturesControllerCore extends AdminController
                 if (($id_feature_value = Tools::getValue('id_feature_value'))) {
                     if (($id = Tools::getValue('id_feature'))) {
                         if (Validate::isLoadedObject($obj = new Feature((int) $id))) {
-                            $bread_extended[] = '<a href="'.Context::getContext()->link->getAdminLink('AdminFeatures').'&id_feature='.$id.'&viewfeature">'.$obj->name[$this->context->employee->id_lang].'</a>';
+                            $bread_extended[] = '<a href="'.$this->context->link->getAdminLink('AdminFeatures').'&id_feature='.$id.'&viewfeature">'.$obj->name[$this->context->employee->id_lang].'</a>';
                         }
 
                         if (Validate::isLoadedObject($obj = new FeatureValue((int) Tools::getValue('id_feature_value')))) {

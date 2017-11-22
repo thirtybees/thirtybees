@@ -583,7 +583,7 @@ class AdminAttributesGroupsControllerCore extends AdminController
                 if ($this->id_attribute) {
                     if (($id = Tools::getValue('id_attribute_group'))) {
                         if (Validate::isLoadedObject($obj = new AttributeGroup((int) $id))) {
-                            $breadExtended[] = '<a href="'.Context::getContext()->link->getAdminLink('AdminAttributesGroups').'&id_attribute_group='.$id.'&viewattribute_group">'.$obj->name[$this->context->employee->id_lang].'</a>';
+                            $breadExtended[] = '<a href="'.$this->context->link->getAdminLink('AdminAttributesGroups').'&id_attribute_group='.$id.'&viewattribute_group">'.$obj->name[$this->context->employee->id_lang].'</a>';
                         }
                         if (Validate::isLoadedObject($obj = new Attribute((int) $this->id_attribute))) {
                             $breadExtended[] = sprintf($this->l('Edit: %s'), $obj->name[$this->context->employee->id_lang]);

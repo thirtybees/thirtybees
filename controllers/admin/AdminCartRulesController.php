@@ -117,7 +117,7 @@ class AdminCartRulesControllerCore extends AdminController
                     $i++;
                 }
                 if ($i == $limit) {
-                    $nextLink = Context::getContext()->link->getAdminLink('AdminCartRules').'&ajaxMode=1&ajax=1&id_cart_rule='.(int) $idCartRule.'&action=loadCartRules&limit='.(int) $limit.'&type=selected&count='.($count - 1 + count($cartRules['selected']).'&search='.urlencode($search));
+                    $nextLink = $this->context->link->getAdminLink('AdminCartRules').'&ajaxMode=1&ajax=1&id_cart_rule='.(int) $idCartRule.'&action=loadCartRules&limit='.(int) $limit.'&type=selected&count='.($count - 1 + count($cartRules['selected']).'&search='.urlencode($search));
                 }
             } else {
                 $i = 1;
@@ -129,7 +129,7 @@ class AdminCartRulesControllerCore extends AdminController
                     $i++;
                 }
                 if ($i == $limit) {
-                    $nextLink = Context::getContext()->link->getAdminLink('AdminCartRules').'&ajaxMode=1&ajax=1&id_cart_rule='.(int) $idCartRule.'&action=loadCartRules&limit='.(int) $limit.'&type=unselected&count='.($count - 1 + count($cartRules['unselected']).'&search='.urlencode($search));
+                    $nextLink = $this->context->link->getAdminLink('AdminCartRules').'&ajaxMode=1&ajax=1&id_cart_rule='.(int) $idCartRule.'&action=loadCartRules&limit='.(int) $limit.'&type=unselected&count='.($count - 1 + count($cartRules['unselected']).'&search='.urlencode($search));
                 }
             }
         }
@@ -325,7 +325,7 @@ class AdminCartRulesControllerCore extends AdminController
         }
         // Both product filter (free product and product discount) search for products
         if (Tools::isSubmit('giftProductFilter') || Tools::isSubmit('reductionProductFilter')) {
-            $products = Product::searchByName(Context::getContext()->language->id, trim(Tools::getValue('q')));
+            $products = Product::searchByName($this->context->language->id, trim(Tools::getValue('q')));
             die(json_encode($products));
         }
     }
@@ -342,7 +342,7 @@ class AdminCartRulesControllerCore extends AdminController
      */
     public function getProductRuleDisplay($productRuleGroupId, $productRuleId, $productRuleType, $selected = [])
     {
-        Context::getContext()->smarty->assign(
+        $this->context->smarty->assign(
             [
                 'product_rule_group_id' => (int) $productRuleGroupId,
                 'product_rule_id'       => (int) $productRuleId,
@@ -358,16 +358,16 @@ class AdminCartRulesControllerCore extends AdminController
 				SELECT CONCAT(agl.name, " - ", al.name) as name, a.id_attribute as id
 				FROM '._DB_PREFIX_.'attribute_group_lang agl
 				LEFT JOIN '._DB_PREFIX_.'attribute a ON a.id_attribute_group = agl.id_attribute_group
-				LEFT JOIN '._DB_PREFIX_.'attribute_lang al ON (a.id_attribute = al.id_attribute AND al.id_lang = '.(int) Context::getContext()->language->id.')
-				WHERE agl.id_lang = '.(int) Context::getContext()->language->id.'
+				LEFT JOIN '._DB_PREFIX_.'attribute_lang al ON (a.id_attribute = al.id_attribute AND al.id_lang = '.(int) $this->context->language->id.')
+				WHERE agl.id_lang = '.(int) $this->context->language->id.'
 				ORDER BY agl.name, al.name'
                 );
                 foreach ($results as $row) {
                     $attributes[in_array($row['id'], $selected) ? 'selected' : 'unselected'][] = $row;
                 }
-                Context::getContext()->smarty->assign('product_rule_itemlist', $attributes);
+                $this->context->smarty->assign('product_rule_itemlist', $attributes);
                 $chooseContent = $this->createTemplate('controllers/cart_rules/product_rule_itemlist.tpl')->fetch();
-                Context::getContext()->smarty->assign('product_rule_choose_content', $chooseContent);
+                $this->context->smarty->assign('product_rule_choose_content', $chooseContent);
                 break;
             case 'products':
                 $products = ['selected' => [], 'unselected' => []];
@@ -377,17 +377,17 @@ class AdminCartRulesControllerCore extends AdminController
 				FROM '._DB_PREFIX_.'product p
 				LEFT JOIN `'._DB_PREFIX_.'product_lang` pl
 					ON (p.`id_product` = pl.`id_product`
-					AND pl.`id_lang` = '.(int) Context::getContext()->language->id.Shop::addSqlRestrictionOnLang('pl').')
+					AND pl.`id_lang` = '.(int) $this->context->language->id.Shop::addSqlRestrictionOnLang('pl').')
 				'.Shop::addSqlAssociation('product', 'p').'
-				WHERE id_lang = '.(int) Context::getContext()->language->id.'
+				WHERE id_lang = '.(int) $this->context->language->id.'
 				ORDER BY name'
                 );
                 foreach ($results as $row) {
                     $products[in_array($row['id'], $selected) ? 'selected' : 'unselected'][] = $row;
                 }
-                Context::getContext()->smarty->assign('product_rule_itemlist', $products);
+                $this->context->smarty->assign('product_rule_itemlist', $products);
                 $chooseContent = $this->createTemplate('product_rule_itemlist.tpl')->fetch();
-                Context::getContext()->smarty->assign('product_rule_choose_content', $chooseContent);
+                $this->context->smarty->assign('product_rule_choose_content', $chooseContent);
                 break;
             case 'manufacturers':
                 $products = ['selected' => [], 'unselected' => []];
@@ -400,9 +400,9 @@ class AdminCartRulesControllerCore extends AdminController
                 foreach ($results as $row) {
                     $products[in_array($row['id'], $selected) ? 'selected' : 'unselected'][] = $row;
                 }
-                Context::getContext()->smarty->assign('product_rule_itemlist', $products);
+                $this->context->smarty->assign('product_rule_itemlist', $products);
                 $chooseContent = $this->createTemplate('product_rule_itemlist.tpl')->fetch();
-                Context::getContext()->smarty->assign('product_rule_choose_content', $chooseContent);
+                $this->context->smarty->assign('product_rule_choose_content', $chooseContent);
                 break;
             case 'suppliers':
                 $products = ['selected' => [], 'unselected' => []];
@@ -415,9 +415,9 @@ class AdminCartRulesControllerCore extends AdminController
                 foreach ($results as $row) {
                     $products[in_array($row['id'], $selected) ? 'selected' : 'unselected'][] = $row;
                 }
-                Context::getContext()->smarty->assign('product_rule_itemlist', $products);
+                $this->context->smarty->assign('product_rule_itemlist', $products);
                 $chooseContent = $this->createTemplate('product_rule_itemlist.tpl')->fetch();
-                Context::getContext()->smarty->assign('product_rule_choose_content', $chooseContent);
+                $this->context->smarty->assign('product_rule_choose_content', $chooseContent);
                 break;
             case 'categories':
                 $categories = ['selected' => [], 'unselected' => []];
@@ -427,21 +427,21 @@ class AdminCartRulesControllerCore extends AdminController
 				FROM '._DB_PREFIX_.'category c
 				LEFT JOIN `'._DB_PREFIX_.'category_lang` cl
 					ON (c.`id_category` = cl.`id_category`
-					AND cl.`id_lang` = '.(int) Context::getContext()->language->id.Shop::addSqlRestrictionOnLang('cl').')
+					AND cl.`id_lang` = '.(int) $this->context->language->id.Shop::addSqlRestrictionOnLang('cl').')
 				'.Shop::addSqlAssociation('category', 'c').'
-				WHERE id_lang = '.(int) Context::getContext()->language->id.'
+				WHERE id_lang = '.(int) $this->context->language->id.'
 				ORDER BY name'
                 );
                 foreach ($results as $row) {
                     $categories[in_array($row['id'], $selected) ? 'selected' : 'unselected'][] = $row;
                 }
-                Context::getContext()->smarty->assign('product_rule_itemlist', $categories);
+                $this->context->smarty->assign('product_rule_itemlist', $categories);
                 $chooseContent = $this->createTemplate('product_rule_itemlist.tpl')->fetch();
-                Context::getContext()->smarty->assign('product_rule_choose_content', $chooseContent);
+                $this->context->smarty->assign('product_rule_choose_content', $chooseContent);
                 break;
             default:
-                Context::getContext()->smarty->assign('product_rule_itemlist', ['selected' => [], 'unselected' => []]);
-                Context::getContext()->smarty->assign('product_rule_choose_content', '');
+                $this->context->smarty->assign('product_rule_itemlist', ['selected' => [], 'unselected' => []]);
+                $this->context->smarty->assign('product_rule_choose_content', '');
         }
 
         return $this->createTemplate('product_rule.tpl')->fetch();
@@ -458,9 +458,9 @@ class AdminCartRulesControllerCore extends AdminController
      */
     public function getProductRuleGroupDisplay($productRuleGroupId, $productRuleGroupQuantity = 1, $productRules = null)
     {
-        Context::getContext()->smarty->assign('product_rule_group_id', $productRuleGroupId);
-        Context::getContext()->smarty->assign('product_rule_group_quantity', $productRuleGroupQuantity);
-        Context::getContext()->smarty->assign('product_rules', $productRules);
+        $this->context->smarty->assign('product_rule_group_id', $productRuleGroupId);
+        $this->context->smarty->assign('product_rule_group_quantity', $productRuleGroupQuantity);
+        $this->context->smarty->assign('product_rules', $productRules);
 
         return $this->createTemplate('product_rule_group.tpl')->fetch();
     }

@@ -114,7 +114,7 @@ class AdminTabsControllerCore extends AdminController
 
         if ($this->display == 'details') {
             $this->page_header_toolbar_btn['back_to_list'] = [
-                'href' => Context::getContext()->link->getAdminLink('AdminTabs'),
+                'href' => $this->context->link->getAdminLink('AdminTabs'),
                 'desc' => $this->l('Back to list', null, null, false),
                 'icon' => 'process-icon-back',
             ];

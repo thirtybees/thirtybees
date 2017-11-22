@@ -697,7 +697,7 @@ class AdminModulesPositionsControllerCore extends AdminController
             $hooksList = explode(',', Tools::getValue('hooks_list'));
             $idShop = (int) Tools::getValue('id_shop');
             if (!$idShop) {
-                $idShop = Context::getContext()->shop->id;
+                $idShop = $this->context->shop->id;
             }
 
             $res = true;

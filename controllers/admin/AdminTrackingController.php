@@ -262,7 +262,7 @@ class AdminTrackingControllerCore extends AdminController
      */
     public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
-        parent::getList($idLang, $orderBy, $orderWay, $start, $limit, Context::getContext()->shop->id);
+        parent::getList($idLang, $orderBy, $orderWay, $start, $limit, $this->context->shop->id);
     }
 
     /**

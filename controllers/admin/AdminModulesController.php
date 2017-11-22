@@ -414,7 +414,7 @@ class AdminModulesControllerCore extends AdminController
 
             // Assign warnings
             if ($module->active && isset($module->warning) && !empty($module->warning) && !$this->ajax) {
-                $href = Context::getContext()->link->getAdminLink('AdminModules', true).'&module_name='.$module->name.'&tab_module='.$module->tab.'&configure='.$module->name;
+                $href = $this->context->link->getAdminLink('AdminModules', true).'&module_name='.$module->name.'&tab_module='.$module->tab.'&configure='.$module->name;
                 $this->context->smarty->assign('text', sprintf($this->l('%1$s: %2$s'), $module->displayName, $module->warning));
                 $this->context->smarty->assign('module_link', $href);
                 $this->displayWarning($this->context->smarty->fetch('controllers/modules/warning_module.tpl'));
@@ -1479,7 +1479,7 @@ class AdminModulesControllerCore extends AdminController
 
         // Get the list of installed module ans prepare it for ajax call.
         if (($list = Tools::getValue('installed_modules'))) {
-            Context::getContext()->smarty->assign('installed_modules', json_encode(explode('|', $list)));
+            $this->context->smarty->assign('installed_modules', json_encode(explode('|', $list)));
         }
 
         // If redirect parameter is present and module already installed, we redirect on configuration module page
@@ -1616,10 +1616,10 @@ class AdminModulesControllerCore extends AdminController
                     } else {
                         // If we install a module, force temporary global context for multishop
                         if (Shop::isFeatureActive() && Shop::getContext() != Shop::CONTEXT_ALL && $method != 'getContent') {
-                            $shopId = (int) Context::getContext()->shop->id;
-                            Context::getContext()->tmpOldShop = clone(Context::getContext()->shop);
+                            $shopId = (int) $this->context->shop->id;
+                            $this->context->tmpOldShop = clone($this->context->shop);
                             if ($shopId) {
-                                Context::getContext()->shop = new Shop($shopId);
+                                $this->context->shop = new Shop($shopId);
                             }
                         }
                         //retrocompatibility
@@ -1706,9 +1706,9 @@ class AdminModulesControllerCore extends AdminController
                                     'multishop_context' => Shop::CONTEXT_ALL | Shop::CONTEXT_GROUP | Shop::CONTEXT_SHOP,
                                 ]
                             );
-                            if (Shop::isFeatureActive() && isset(Context::getContext()->tmpOldShop)) {
-                                Context::getContext()->shop = clone(Context::getContext()->tmpOldShop);
-                                unset(Context::getContext()->tmpOldShop);
+                            if (Shop::isFeatureActive() && isset($this->context->tmpOldShop)) {
+                                $this->context->shop = clone($this->context->tmpOldShop);
+                                unset($this->context->tmpOldShop);
                             }
                             // Display module configuration
                             $header = $this->context->smarty->fetch('controllers/modules/configure.tpl');
@@ -1724,9 +1724,9 @@ class AdminModulesControllerCore extends AdminController
                         } elseif ($echo === false) {
                             $moduleErrors[] = ['name' => $name, 'message' => $module->getErrors()];
                         }
-                        if (Shop::isFeatureActive() && Shop::getContext() != Shop::CONTEXT_ALL && isset(Context::getContext()->tmpOldShop)) {
-                            Context::getContext()->shop = clone(Context::getContext()->tmpOldShop);
-                            unset(Context::getContext()->tmpOldShop);
+                        if (Shop::isFeatureActive() && Shop::getContext() != Shop::CONTEXT_ALL && isset($this->context->tmpOldShop)) {
+                            $this->context->shop = clone($this->context->tmpOldShop);
+                            unset($this->context->tmpOldShop);
                         }
                     }
                     if ($key != 'configure' && Tools::getIsset('bpay')) {

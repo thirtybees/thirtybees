@@ -54,7 +54,6 @@ class AdminAccessControllerCore extends AdminController
         $this->className = 'Profile';
         $this->multishop_context = Shop::CONTEXT_ALL;
         $this->lang = false;
-        $this->context = Context::getContext();
 
         // Blacklist AdminLogin
         $this->accesses_black_list[] = Tab::getIdFromClassName('AdminLogin');

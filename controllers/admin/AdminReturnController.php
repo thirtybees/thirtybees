@@ -236,7 +236,6 @@ class AdminReturnControllerCore extends AdminController
      */
     public function postProcess()
     {
-        $this->context = Context::getContext();
         if (Tools::isSubmit('deleteorder_return_detail')) {
             if ($this->tabAccess['delete'] === '1') {
                 if (($idOrderDetail = (int) (Tools::getValue('id_order_detail'))) && Validate::isUnsignedId($idOrderDetail)) {

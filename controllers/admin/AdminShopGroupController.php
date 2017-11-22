@@ -52,8 +52,6 @@ class AdminShopGroupControllerCore extends AdminController
         $this->addRowAction('edit');
         $this->addRowAction('delete');
 
-        $this->context = Context::getContext();
-
         if (!Tools::getValue('realedit')) {
             $this->deleted = false;
         }

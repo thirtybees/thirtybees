@@ -78,7 +78,7 @@ class AdminSearchConfControllerCore extends AdminController
         ];
 
         // Search options
-        $cronUrl = Tools::getHttpHost(true, true).__PS_BASE_URI__.basename(_PS_ADMIN_DIR_).'/searchcron.php?full=1&token='.substr(_COOKIE_KEY_, 34, 8).(Shop::getContext() == Shop::CONTEXT_SHOP ? '&id_shop='.(int) Context::getContext()->shop->id : '');
+        $cronUrl = Tools::getHttpHost(true, true).__PS_BASE_URI__.basename(_PS_ADMIN_DIR_).'/searchcron.php?full=1&token='.substr(_COOKIE_KEY_, 34, 8).(Shop::getContext() == Shop::CONTEXT_SHOP ? '&id_shop='.(int) $this->context->shop->id : '');
 
         list($total, $indexed) = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
             (new DbQuery())
@@ -101,11 +101,11 @@ class AdminSearchConfControllerCore extends AdminController
 						'.$this->l('Building the product index may take a few minutes.').'
 						'.$this->l('If your server stops before the process ends, you can resume the indexing by clicking "Add missing products to the index".').'
 					</p>
-					<a href="searchcron.php?token='.substr(_COOKIE_KEY_, 34, 8).'&amp;redirect=1'.(Shop::getContext() == Shop::CONTEXT_SHOP ? '&id_shop='.(int) Context::getContext()->shop->id : '').'" class="btn-link">
+					<a href="searchcron.php?token='.substr(_COOKIE_KEY_, 34, 8).'&amp;redirect=1'.(Shop::getContext() == Shop::CONTEXT_SHOP ? '&id_shop='.(int) $this->context->shop->id : '').'" class="btn-link">
 						<i class="icon-external-link-sign"></i>
 						'.$this->l('Add missing products to the index').'
 					</a><br />
-					<a href="searchcron.php?full=1&amp;token='.substr(_COOKIE_KEY_, 34, 8).'&amp;redirect=1'.(Shop::getContext() == Shop::CONTEXT_SHOP ? '&id_shop='.(int) Context::getContext()->shop->id : '').'" class="btn-link">
+					<a href="searchcron.php?full=1&amp;token='.substr(_COOKIE_KEY_, 34, 8).'&amp;redirect=1'.(Shop::getContext() == Shop::CONTEXT_SHOP ? '&id_shop='.(int) $this->context->shop->id : '').'" class="btn-link">
 						<i class="icon-external-link-sign"></i>
 						'.$this->l('Re-build the entire index').'
 					</a><br /><br />

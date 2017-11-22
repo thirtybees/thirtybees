@@ -248,7 +248,7 @@ class AdminOrdersControllerCore extends AdminController
             unset($this->page_header_toolbar_btn['save']);
         }
 
-        if (Context::getContext()->shop->getContext() != Shop::CONTEXT_SHOP && isset($this->page_header_toolbar_btn['new_order'])
+        if ($this->context->shop->getContext() != Shop::CONTEXT_SHOP && isset($this->page_header_toolbar_btn['new_order'])
             && Shop::isFeatureActive()
         ) {
             unset($this->page_header_toolbar_btn['new_order']);
@@ -264,7 +264,7 @@ class AdminOrdersControllerCore extends AdminController
      */
     public function renderForm()
     {
-        if (Context::getContext()->shop->getContext() != Shop::CONTEXT_SHOP && Shop::isFeatureActive()) {
+        if ($this->context->shop->getContext() != Shop::CONTEXT_SHOP && Shop::isFeatureActive()) {
             $this->errors[] = $this->l('You have to select a shop before creating new orders.');
         }
 
@@ -300,10 +300,10 @@ class AdminOrdersControllerCore extends AdminController
                 'recyclable_pack'      => (int) Configuration::get('PS_RECYCLABLE_PACK'),
                 'gift_wrapping'        => (int) Configuration::get('PS_GIFT_WRAPPING'),
                 'cart'                 => $cart,
-                'currencies'           => Currency::getCurrenciesByIdShop(Context::getContext()->shop->id),
-                'langs'                => Language::getLanguages(true, Context::getContext()->shop->id),
+                'currencies'           => Currency::getCurrenciesByIdShop($this->context->shop->id),
+                'langs'                => Language::getLanguages(true, $this->context->shop->id),
                 'payment_modules'      => $paymentModules,
-                'order_states'         => OrderState::getOrderStates((int) Context::getContext()->language->id),
+                'order_states'         => OrderState::getOrderStates((int) $this->context->language->id),
                 'defaults_order_state' => $defaultsOrderState,
                 'show_toolbar'         => $this->show_toolbar,
                 'toolbar_btn'          => $this->toolbar_btn,
@@ -373,7 +373,7 @@ class AdminOrdersControllerCore extends AdminController
             }
         }
         $res = parent::initToolbar();
-        if (Context::getContext()->shop->getContext() != Shop::CONTEXT_SHOP && isset($this->toolbar_btn['new']) && Shop::isFeatureActive()) {
+        if ($this->context->shop->getContext() != Shop::CONTEXT_SHOP && isset($this->toolbar_btn['new']) && Shop::isFeatureActive()) {
             unset($this->toolbar_btn['new']);
         }
 
@@ -1291,8 +1291,8 @@ class AdminOrdersControllerCore extends AdminController
                 }
 
                 $cart = new Cart((int) $idCart);
-                Context::getContext()->currency = new Currency((int) $cart->id_currency);
-                Context::getContext()->customer = new Customer((int) $cart->id_customer);
+                $this->context->currency = new Currency((int) $cart->id_currency);
+                $this->context->customer = new Customer((int) $cart->id_customer);
 
                 if (($badDelivery = !Address::isCountryActiveById((int) $cart->id_address_delivery))
                     || !Address::isCountryActiveById((int) $cart->id_address_invoice)
@@ -1303,7 +1303,7 @@ class AdminOrdersControllerCore extends AdminController
                         $this->errors[] = Tools::displayError('This invoice address country is not active.');
                     }
                 } else {
-                    $employee = new Employee((int) Context::getContext()->cookie->id_employee);
+                    $employee = new Employee((int) $this->context->cookie->id_employee);
                     $paymentModule->validateOrder(
                         (int) $cart->id,
                         (int) $idOrderState,
@@ -1547,7 +1547,7 @@ class AdminOrdersControllerCore extends AdminController
                                 foreach ($orderInvoicesCollection as $orderInvoice) {
                                     /** @var OrderInvoice $orderInvoice */
                                     if ($discountValue > $orderInvoice->total_paid_tax_incl) {
-                                        $this->errors[] = Tools::displayError('The discount value is greater than the order invoice total.').$orderInvoice->getInvoiceNumberFormatted(Context::getContext()->language->id, (int) $order->id_shop).')';
+                                        $this->errors[] = Tools::displayError('The discount value is greater than the order invoice total.').$orderInvoice->getInvoiceNumberFormatted($this->context->language->id, (int) $order->id_shop).')';
                                     } else {
                                         $cartRules[$orderInvoice->id]['value_tax_incl'] = Tools::ps_round($discountValue, 2);
                                         $cartRules[$orderInvoice->id]['value_tax_excl'] = Tools::ps_round($discountValue / (1 + ($order->getTaxesAverageUsed() / 100)), 2);
@@ -1982,7 +1982,7 @@ class AdminOrdersControllerCore extends AdminController
      */
     public function ajaxProcessSearchProducts()
     {
-        Context::getContext()->customer = new Customer((int) Tools::getValue('id_customer'));
+        $this->context->customer = new Customer((int) Tools::getValue('id_customer'));
         $currency = new Currency((int) Tools::getValue('id_currency'));
         if ($products = Product::searchByName((int) $this->context->language->id, pSQL(Tools::getValue('product_search')))) {
             foreach ($products as &$product) {
@@ -2074,7 +2074,7 @@ class AdminOrdersControllerCore extends AdminController
                 $customer = new Customer((int) $cart->id_customer);
                 if (Validate::isLoadedObject($customer)) {
                     $mailVars = [
-                        '{order_link}' => Context::getContext()->link->getPageLink('order', false, (int) $cart->id_lang, 'step=3&recover_cart='.(int) $cart->id.'&token_cart='.md5(_COOKIE_KEY_.'recover_cart_'.(int) $cart->id)),
+                        '{order_link}' => $this->context->link->getPageLink('order', false, (int) $cart->id_lang, 'step=3&recover_cart='.(int) $cart->id.'&token_cart='.md5(_COOKIE_KEY_.'recover_cart_'.(int) $cart->id)),
                         '{firstname}'  => $customer->firstname,
                         '{lastname}'   => $customer->lastname,
                     ];
@@ -2123,7 +2123,7 @@ class AdminOrdersControllerCore extends AdminController
             );
         }
 
-        $oldCartRules = Context::getContext()->cart->getCartRules();
+        $oldCartRules = $this->context->cart->getCartRules();
 
         if ($order->hasBeenShipped()) {
             die(
@@ -2413,7 +2413,7 @@ class AdminOrdersControllerCore extends AdminController
         $invoiceArray = [];
         foreach ($invoiceCollection as $invoice) {
             /** @var OrderInvoice $invoice */
-            $invoice->name = $invoice->getInvoiceNumberFormatted(Context::getContext()->language->id, (int) $order->id_shop);
+            $invoice->name = $invoice->getInvoiceNumberFormatted($this->context->language->id, (int) $order->id_shop);
             $invoiceArray[] = $invoice;
         }
 
@@ -2425,15 +2425,15 @@ class AdminOrdersControllerCore extends AdminController
                 'currency'            => new Currency($order->id_currency),
                 'can_edit'            => $this->tabAccess['edit'],
                 'invoices_collection' => $invoiceCollection,
-                'current_id_lang'     => Context::getContext()->language->id,
-                'link'                => Context::getContext()->link,
+                'current_id_lang'     => $this->context->language->id,
+                'link'                => $this->context->link,
                 'current_index'       => static::$currentIndex,
                 'display_warehouse'   => (int) Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT'),
             ]
         );
 
         $this->sendChangedNotification($order);
-        $newCartRules = Context::getContext()->cart->getCartRules();
+        $newCartRules = $this->context->cart->getCartRules();
         sort($oldCartRules);
         sort($newCartRules);
         $result = array_diff($newCartRules, $oldCartRules);
@@ -2732,7 +2732,7 @@ class AdminOrdersControllerCore extends AdminController
         $invoiceArray = [];
         foreach ($invoiceCollection as $invoice) {
             /** @var OrderInvoice $invoice */
-            $invoice->name = $invoice->getInvoiceNumberFormatted(Context::getContext()->language->id, (int) $order->id_shop);
+            $invoice->name = $invoice->getInvoiceNumberFormatted($this->context->language->id, (int) $order->id_shop);
             $invoiceArray[] = $invoice;
         }
 
@@ -2744,8 +2744,8 @@ class AdminOrdersControllerCore extends AdminController
                 'currency'            => new Currency($order->id_currency),
                 'can_edit'            => $this->tabAccess['edit'],
                 'invoices_collection' => $invoiceCollection,
-                'current_id_lang'     => Context::getContext()->language->id,
-                'link'                => Context::getContext()->link,
+                'current_id_lang'     => $this->context->language->id,
+                'link'                => $this->context->link,
                 'current_index'       => static::$currentIndex,
                 'display_warehouse'   => (int) Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT'),
             ]
@@ -2870,7 +2870,7 @@ class AdminOrdersControllerCore extends AdminController
         $invoiceArray = [];
         foreach ($invoiceCollection as $invoice) {
             /** @var OrderInvoice $invoice */
-            $invoice->name = $invoice->getInvoiceNumberFormatted(Context::getContext()->language->id, (int) $order->id_shop);
+            $invoice->name = $invoice->getInvoiceNumberFormatted($this->context->language->id, (int) $order->id_shop);
             $invoiceArray[] = $invoice;
         }
 
@@ -2879,8 +2879,8 @@ class AdminOrdersControllerCore extends AdminController
             'order'               => $order,
             'currency'            => new Currency($order->id_currency),
             'invoices_collection' => $invoiceCollection,
-            'current_id_lang'     => Context::getContext()->language->id,
-            'link'                => Context::getContext()->link,
+            'current_id_lang'     => $this->context->language->id,
+            'link'                => $this->context->link,
             'current_index'       => static::$currentIndex,
         ]);
 

@@ -56,7 +56,6 @@ class AdminSearchControllerCore extends AdminController
      */
     public function postProcess()
     {
-        $this->context = Context::getContext();
         $this->query = trim(Tools::getValue('bo_query'));
         $searchType = (int) Tools::getValue('bo_search_type');
         /* Handle empty search field */
@@ -224,7 +223,7 @@ class AdminSearchControllerCore extends AdminController
                 if (!isset($this->_list['features'][$tabs[$key]])) {
                     $this->_list['features'][$tabs[$key]] = [];
                 }
-                $this->_list['features'][$tabs[$key]][] = ['link' => Context::getContext()->link->getAdminLink($keyMatch[$key]), 'value' => Tools::safeOutput($value)];
+                $this->_list['features'][$tabs[$key]][] = ['link' => $this->context->link->getAdminLink($keyMatch[$key]), 'value' => Tools::safeOutput($value)];
             }
         }
     }
@@ -242,7 +241,6 @@ class AdminSearchControllerCore extends AdminController
      */
     public function searchCatalog()
     {
-        $this->context = Context::getContext();
         $this->_list['products'] = Product::searchByName($this->context->language->id, $this->query);
         $this->_list['categories'] = Category::searchByName($this->context->language->id, $this->query);
     }
@@ -286,7 +284,7 @@ class AdminSearchControllerCore extends AdminController
     public function searchModule()
     {
         $this->_list['modules'] = [];
-        $allModules = Module::getModulesOnDisk(true, true, Context::getContext()->employee->id);
+        $allModules = Module::getModulesOnDisk(true, true, $this->context->employee->id);
         foreach ($allModules as $module) {
             if (stripos($module->name, $this->query) !== false || stripos($module->displayName, $this->query) !== false || stripos($module->description, $this->query) !== false) {
                 $module->linkto = 'index.php?tab=AdminModules&tab_module='.$module->tab.'&module_name='.$module->name.'&anchor='.ucfirst($module->name).'&token='.Tools::getAdminTokenLite('AdminModules');

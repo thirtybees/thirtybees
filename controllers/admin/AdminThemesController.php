@@ -678,7 +678,7 @@ class AdminThemesControllerCore extends AdminController
                 }
                 $theme->update();
             }
-            Tools::redirectAdmin(Context::getContext()->link->getAdminLink('AdminThemes').'&conf=29');
+            Tools::redirectAdmin($this->context->link->getAdminLink('AdminThemes').'&conf=29');
         }
     }
 
@@ -716,7 +716,7 @@ class AdminThemesControllerCore extends AdminController
             } elseif ($obj === false && $themeDir = Tools::getValue('theme_dir')) {
                 $themeDir = basename($themeDir);
                 if (Tools::deleteDirectory(_PS_ALL_THEMES_DIR_.$themeDir.'/')) {
-                    Tools::redirectAdmin(Context::getContext()->link->getAdminLink('AdminThemes').'&conf=2');
+                    Tools::redirectAdmin($this->context->link->getAdminLink('AdminThemes').'&conf=2');
                 } else {
                     $this->errors[] = Tools::displayError('The folder cannot be deleted');
                 }
@@ -1689,7 +1689,7 @@ class AdminThemesControllerCore extends AdminController
                 if (count($this->errors) > 0) {
                     $this->display = 'importtheme';
                 } else {
-                    Tools::redirectAdmin(Context::getContext()->link->getAdminLink('AdminThemes').'&conf=18');
+                    Tools::redirectAdmin($this->context->link->getAdminLink('AdminThemes').'&conf=18');
                 }
             } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 //method is POST but no uplad info -> there is post error
@@ -1777,7 +1777,7 @@ class AdminThemesControllerCore extends AdminController
         }
         if (!count($this->errors)) {
             if ($redirect) {
-                Tools::redirectAdmin(Context::getContext()->link->getAdminLink('AdminThemes').'&conf=18');
+                Tools::redirectAdmin($this->context->link->getAdminLink('AdminThemes').'&conf=18');
             } else {
                 return true;
             }
@@ -2310,7 +2310,7 @@ class AdminThemesControllerCore extends AdminController
                 $shops = Shop::getShops();
             }
 
-            $currentShop = Context::getContext()->shop->id;
+            $currentShop = $this->context->shop->id;
 
             foreach ($shops as $shop) {
                 $shopTheme = new Theme((int) $shop['id_theme']);
@@ -2390,7 +2390,7 @@ class AdminThemesControllerCore extends AdminController
             return $helper->generateForm([$fieldsForm]);
         }
 
-        Tools::redirectAdmin(Context::getContext()->link->getAdminLink('AdminThemes'));
+        Tools::redirectAdmin($this->context->link->getAdminLink('AdminThemes'));
 
         return '';
     }
@@ -2683,8 +2683,8 @@ class AdminThemesControllerCore extends AdminController
             'theme_name'     => $this->theme_name,
             'img_error'      => $this->img_error,
             'modules_errors' => $this->modules_errors,
-            'back_link'      => Context::getContext()->link->getAdminLink('AdminThemes'),
-            'image_link'     => Context::getContext()->link->getAdminLink('AdminImages'),
+            'back_link'      => $this->context->link->getAdminLink('AdminThemes'),
+            'image_link'     => $this->context->link->getAdminLink('AdminImages'),
         ];
 
         return parent::renderView();
@@ -2841,7 +2841,7 @@ class AdminThemesControllerCore extends AdminController
     protected function updateLogo($fieldName, $logoPrefix)
     {
 
-        $idShop = Context::getContext()->shop->id;
+        $idShop = $this->context->shop->id;
         if (isset($_FILES[$fieldName]['tmp_name']) && $_FILES[$fieldName]['tmp_name'] && $_FILES[$fieldName]['size']) {
             if ($error = ImageManager::validateUpload($_FILES[$fieldName], Tools::getMaxUploadSize())) {
                 $this->errors[] = $error;
@@ -2855,12 +2855,12 @@ class AdminThemesControllerCore extends AdminController
             }
 
             $ext = ($fieldName == 'PS_STORES_ICON') ? '.gif' : '.jpg';
-            $logoName = str_replace('%', '', urlencode(Tools::link_rewrite(Context::getContext()->shop->name))).'-'.$logoPrefix.'-'.(int) Configuration::get('PS_IMG_UPDATE_TIME').(int) $idShop.$ext;
+            $logoName = str_replace('%', '', urlencode(Tools::link_rewrite($this->context->shop->name))).'-'.$logoPrefix.'-'.(int) Configuration::get('PS_IMG_UPDATE_TIME').(int) $idShop.$ext;
 
-            if (Context::getContext()->shop->getContext() == Shop::CONTEXT_ALL || $idShop == 0
+            if ($this->context->shop->getContext() == Shop::CONTEXT_ALL || $idShop == 0
                 || Shop::isFeatureActive() == false
             ) {
-                $logoName = str_replace('%', '', urlencode(Tools::link_rewrite(Context::getContext()->shop->name))).'-'.$logoPrefix.'-'.(int) Configuration::get('PS_IMG_UPDATE_TIME').$ext;
+                $logoName = str_replace('%', '', urlencode(Tools::link_rewrite($this->context->shop->name))).'-'.$logoPrefix.'-'.(int) Configuration::get('PS_IMG_UPDATE_TIME').$ext;
             }
 
             if ($fieldName == 'PS_STORES_ICON') {
@@ -2952,7 +2952,7 @@ class AdminThemesControllerCore extends AdminController
      */
     public function updateOptionPsFavicon()
     {
-        $idShop = Context::getContext()->shop->id;
+        $idShop = $this->context->shop->id;
 
         if ($idShop == Configuration::get('PS_SHOP_DEFAULT')) {
             $this->uploadIco('PS_FAVICON', _PS_IMG_DIR_.'favicon.ico');
@@ -3002,7 +3002,7 @@ class AdminThemesControllerCore extends AdminController
      */
     public function updateOptionPsFavicon_57()
     {
-        $idShop = Context::getContext()->shop->id;
+        $idShop = $this->context->shop->id;
 
         if ($idShop == Configuration::get('PS_SHOP_DEFAULT')) {
             $this->uploadIco('PS_FAVICON_57', _PS_IMG_DIR_.'favicon_57.png');
@@ -3025,7 +3025,7 @@ class AdminThemesControllerCore extends AdminController
      */
     public function updateOptionPsFavicon_72()
     {
-        $idShop = Context::getContext()->shop->id;
+        $idShop = $this->context->shop->id;
 
         if ($idShop == Configuration::get('PS_SHOP_DEFAULT')) {
             $this->uploadIco('PS_FAVICON_72', _PS_IMG_DIR_.'favicon_72.png');
@@ -3048,7 +3048,7 @@ class AdminThemesControllerCore extends AdminController
      */
     public function updateOptionPsFavicon_114()
     {
-        $idShop = Context::getContext()->shop->id;
+        $idShop = $this->context->shop->id;
 
         if ($idShop == Configuration::get('PS_SHOP_DEFAULT')) {
             $this->uploadIco('PS_FAVICON_114', _PS_IMG_DIR_.'favicon_114.png');
@@ -3071,7 +3071,7 @@ class AdminThemesControllerCore extends AdminController
      */
     public function updateOptionPsFavicon_144()
     {
-        $idShop = Context::getContext()->shop->id;
+        $idShop = $this->context->shop->id;
 
         if ($idShop == Configuration::get('PS_SHOP_DEFAULT')) {
             $this->uploadIco('PS_FAVICON_144', _PS_IMG_DIR_.'favicon_144.png');
@@ -3094,7 +3094,7 @@ class AdminThemesControllerCore extends AdminController
      */
     public function updateOptionPsFavicon_192()
     {
-        $idShop = Context::getContext()->shop->id;
+        $idShop = $this->context->shop->id;
 
         if ($idShop == Configuration::get('PS_SHOP_DEFAULT')) {
             $this->uploadIco('PS_FAVICON_192', _PS_IMG_DIR_.'favicon_192.png');
@@ -3444,7 +3444,7 @@ class AdminThemesControllerCore extends AdminController
         }
 
         if (!count($this->errors)) {
-            Tools::redirectAdmin(Context::getContext()->link->getAdminLink('AdminThemes').'&conf=6');
+            Tools::redirectAdmin($this->context->link->getAdminLink('AdminThemes').'&conf=6');
         }
     }
 

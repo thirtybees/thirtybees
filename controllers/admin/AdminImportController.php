@@ -1244,7 +1244,7 @@ class AdminImportControllerCore extends AdminController
         if (!$shopIsFeatureActive) {
             $categoryToCreate->id_shop_default = 1;
         } else {
-            $categoryToCreate->id_shop_default = (int) Context::getContext()->shop->id;
+            $categoryToCreate->id_shop_default = (int) $this->context->shop->id;
         }
         $categoryToCreate->name = static::createMultiLangField(trim($categoryName));
         $categoryToCreate->active = 1;
@@ -1897,7 +1897,7 @@ class AdminImportControllerCore extends AdminController
         if (!$shopIsFeatureActive) {
             $category->id_shop_default = 1;
         } else {
-            $category->id_shop_default = (int) Context::getContext()->shop->id;
+            $category->id_shop_default = (int) $this->context->shop->id;
         }
 
         $bak = $category->link_rewrite[$idDefaultLanguage];
@@ -2509,7 +2509,7 @@ class AdminImportControllerCore extends AdminController
         if (!$shopIsFeatureActive) {
             $product->id_shop_default = (int) Configuration::get('PS_SHOP_DEFAULT');
         } else {
-            $product->id_shop_default = (int) Context::getContext()->shop->id;
+            $product->id_shop_default = (int) $this->context->shop->id;
         }
 
         // link product to shops
