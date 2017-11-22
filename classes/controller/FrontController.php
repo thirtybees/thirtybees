@@ -145,8 +145,8 @@ class FrontControllerCore extends Controller
             $useSSL = $this->ssl;
         }
 
-        if (isset($this->php_self) && is_object(Context::getContext()->theme)) {
-            $columns = Context::getContext()->theme->hasColumns($this->php_self);
+        if (isset($this->php_self) && is_object($this->context->theme)) {
+            $columns = $this->context->theme->hasColumns($this->php_self);
 
             // Don't use theme tables if not configured in DB
             if ($columns) {
@@ -1357,8 +1357,6 @@ class FrontControllerCore extends Controller
     {
         if (!static::$initialized) {
             $this->init();
-        } elseif (!$this->context) {
-            $this->context = Context::getContext();
         }
 
         // Retrieve the default number of products per page and the other available selections
@@ -2023,7 +2021,7 @@ class FrontControllerCore extends Controller
             }
 
             // Don't send any cookie
-            Context::getContext()->cookie->disallowWriting();
+            $this->context->cookie->disallowWriting();
 
             if (defined('_PS_MODE_DEV_') && _PS_MODE_DEV_ && $_SERVER['REQUEST_URI'] != __PS_BASE_URI__) {
                 die('[Debug] This page has moved<br />Please use the following URL instead: <a href="'.$finalUrl.'">'.$finalUrl.'</a>');
@@ -2242,7 +2240,7 @@ class FrontControllerCore extends Controller
                     [
                         'id_product'  => $product['id_product'],
                         'colors_list' => $colors[$product['id_product']],
-                        'link'        => Context::getContext()->link,
+                        'link'        => $this->context->link,
                         'img_col_dir' => _THEME_COL_DIR_,
                         'col_img_dir' => _PS_COL_IMG_DIR_,
                     ]
