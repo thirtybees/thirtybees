@@ -129,7 +129,7 @@ class AdminStockCoverControllerCore extends AdminController
 
         if ($this->display == 'details') {
             $this->page_header_toolbar_btn['back_to_list'] = [
-                'href' => Context::getContext()->link->getAdminLink('AdminStockCover')
+                'href' => $this->context->link->getAdminLink('AdminStockCover')
                     .(Tools::getValue('coverage_period') ? '&coverage_period='.Tools::getValue('coverage_period') : '')
                     .(Tools::getValue('warn_days') ? '&warn_days='.Tools::getValue('warn_days') : '')
                     .(Tools::getValue('id_warehouse') ? '&id_warehouse='.Tools::getValue('id_warehouse') : ''),

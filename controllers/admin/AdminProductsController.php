@@ -434,7 +434,7 @@ class AdminProductsControllerCore extends AdminController
             $context->shop = clone($context->shop);
             /* update product final price */
             for ($i = 0; $i < $nb; $i++) {
-                if (Context::getContext()->shop->getContext() != Shop::CONTEXT_SHOP) {
+                if ($this->context->shop->getContext() != Shop::CONTEXT_SHOP) {
                     $context->shop = new Shop((int) $this->_list[$i]['id_shop_default']);
                 }
 
@@ -1728,7 +1728,7 @@ class AdminProductsControllerCore extends AdminController
         static $shopContext = null;
 
         if ($context == null && $shopContext == null) {
-            $context = Context::getContext();
+            $context = $this->context;
         }
 
         if ($shopContext == null) {
@@ -2259,7 +2259,7 @@ class AdminProductsControllerCore extends AdminController
      */
     public function getPreviewUrl(Product $product)
     {
-        $idLang = Configuration::get('PS_LANG_DEFAULT', null, null, Context::getContext()->shop->id);
+        $idLang = Configuration::get('PS_LANG_DEFAULT', null, null, $this->context->shop->id);
 
         if (!Validate::isLoadedObject($product) || !$product->id_category_default) {
             return $this->l('Unable to determine the preview URL. This product has not been linked with a category, yet.');
@@ -2276,7 +2276,7 @@ class AdminProductsControllerCore extends AdminController
             Category::getLinkRewrite($this->getFieldValue($product, 'id_category_default'), $this->context->language->id),
             null,
             $idLang,
-            (int) Context::getContext()->shop->id,
+            (int) $this->context->shop->id,
             0,
             $isRewriteActive
         );
@@ -3219,7 +3219,7 @@ class AdminProductsControllerCore extends AdminController
             $helper->source = $this->context->link->getAdminLink('AdminStats').'&ajax=1&action=getKpi&kpi=percent_product_out_of_stock';
             $helper->tooltip = $this->l('X% of your products for sale are out of stock.', null, null, false);
             $helper->refresh = (bool) (ConfigurationKPI::get('PERCENT_PRODUCT_OUT_OF_STOCK_EXPIRE') < $time);
-            $helper->href = Context::getContext()->link->getAdminLink('AdminProducts').'&productFilter_sav!quantity=0&productFilter_active=1&submitFilterproduct=1';
+            $helper->href = $this->context->link->getAdminLink('AdminProducts').'&productFilter_sav!quantity=0&productFilter_active=1&submitFilterproduct=1';
             $kpis[] = $helper->generate();
         }
 
@@ -3249,7 +3249,7 @@ class AdminProductsControllerCore extends AdminController
         $helper->tooltip = $this->l('X% of your references have been purchased for the past 30 days', null, null, false);
         $helper->refresh = (bool) (ConfigurationKPI::get('8020_SALES_CATALOG_EXPIRE') < $time);
         if (Module::isInstalled('statsbestproducts')) {
-            $helper->href = Context::getContext()->link->getAdminLink('AdminStats').'&module=statsbestproducts&datepickerFrom='.date('Y-m-d', strtotime('-30 days')).'&datepickerTo='.date('Y-m-d');
+            $helper->href = $this->context->link->getAdminLink('AdminStats').'&module=statsbestproducts&datepickerFrom='.date('Y-m-d', strtotime('-30 days')).'&datepickerTo='.date('Y-m-d');
         }
         $kpis[] = $helper->generate();
 
@@ -3265,7 +3265,7 @@ class AdminProductsControllerCore extends AdminController
         $helper->source = $this->context->link->getAdminLink('AdminStats').'&ajax=1&action=getKpi&kpi=disabled_products';
         $helper->refresh = (bool) (ConfigurationKPI::get('DISABLED_PRODUCTS_EXPIRE') < $time);
         $helper->tooltip = $this->l('X% of your products are disabled and not visible to your customers', null, null, false);
-        $helper->href = Context::getContext()->link->getAdminLink('AdminProducts').'&productFilter_active=0&submitFilterproduct=1';
+        $helper->href = $this->context->link->getAdminLink('AdminProducts').'&productFilter_active=0&submitFilterproduct=1';
         $kpis[] = $helper->generate();
 
         $helper = new HelperKpiRow();
@@ -3615,7 +3615,7 @@ class AdminProductsControllerCore extends AdminController
         $data = $this->createTemplate($this->tpl_form);
         // Prepare Categories tree for display in Associations tab
         $root = Category::getRootCategory();
-        $defaultCategory = $this->context->cookie->id_category_products_filter ? $this->context->cookie->id_category_products_filter : Context::getContext()->shop->id_category;
+        $defaultCategory = $this->context->cookie->id_category_products_filter ? $this->context->cookie->id_category_products_filter : $this->context->shop->id_category;
         if (!$product->id || !$product->isAssociatedToShop()) {
             $selectedCat = Category::getCategoryInformations(Tools::getValue('categoryBox', [$defaultCategory]), $this->default_form_language);
         } else {
@@ -4084,7 +4084,7 @@ class AdminProductsControllerCore extends AdminController
 
         $data = $this->createTemplate($this->tpl_form);
 
-        $context = Context::getContext();
+        $context = $this->context;
         $rewrittenLinks = [];
         if (!Validate::isLoadedObject($product) || !$product->id_category_default) {
             foreach ($this->_languages as $language) {
@@ -4197,8 +4197,8 @@ class AdminProductsControllerCore extends AdminController
                     $packItems[$i]['name'] = $packItem->name;
                     $packItems[$i]['reference'] = $packItem->reference;
                     $packItems[$i]['id_product_attribute'] = isset($packItem->id_pack_product_attribute) && $packItem->id_pack_product_attribute ? $packItem->id_pack_product_attribute : 0;
-                    $cover = $packItem->id_pack_product_attribute ? Product::getCombinationImageById($packItem->id_pack_product_attribute, Context::getContext()->language->id) : Product::getCover($packItem->id);
-                    $packItems[$i]['image'] = Context::getContext()->link->getImageLink($packItem->link_rewrite, $cover['id_image'], 'home_default');
+                    $cover = $packItem->id_pack_product_attribute ? Product::getCombinationImageById($packItem->id_pack_product_attribute, $this->context->language->id) : Product::getCover($packItem->id);
+                    $packItems[$i]['image'] = $this->context->link->getImageLink($packItem->link_rewrite, $cover['id_image'], 'home_default');
                     // @todo: don't rely on 'home_default'
                     //$path_to_image = _PS_IMG_DIR_.'p/'.Image::getImgFolderStatic($cover['id_image']).(int)$cover['id_image'].'.jpg';
                     //$pack_items[$i]['image'] = ImageManager::thumbnail($path_to_image, 'pack_mini_'.$pack_item->id.'_'.$this->context->shop->id.'.jpg', 120);
@@ -4262,7 +4262,7 @@ class AdminProductsControllerCore extends AdminController
 
         $virtualProductFileUploader = new HelperUploader('virtual_product_file_uploader');
         $virtualProductFileUploader->setMultiple(false)->setUrl(
-            Context::getContext()->link->getAdminLink('AdminProducts').'&ajax=1&id_product='.(int) $product->id
+            $this->context->link->getAdminLink('AdminProducts').'&ajax=1&id_product='.(int) $product->id
             .'&action=AddVirtualProductFile'
         )->setPostMaxSize(Tools::getOctets(ini_get('upload_max_filesize')))
             ->setTemplate('virtual_product.tpl');
@@ -4460,7 +4460,7 @@ class AdminProductsControllerCore extends AdminController
                 $attachmentUploader
                     ->setMultiple(false)
                     ->setUseAjax(true)
-                    ->setUrl(Context::getContext()->link->getAdminLink('AdminProducts').'&ajax=1&id_product='.(int) $obj->id.'&action=AddAttachment')
+                    ->setUrl($this->context->link->getAdminLink('AdminProducts').'&ajax=1&id_product='.(int) $obj->id.'&action=AddAttachment')
                     ->setPostMaxSize((Configuration::get('PS_ATTACHMENT_MAXIMUM_SIZE') * 1024 * 1024))
                     ->setTemplate('attachment_ajax.tpl');
 
@@ -4847,7 +4847,7 @@ class AdminProductsControllerCore extends AdminController
                 $languages = Language::getLanguages(true);
                 $imageUploader = new HelperImageUploader('file');
                 $imageUploader->setMultiple(!(Tools::getUserBrowser() == 'Apple Safari' && Tools::getUserPlatform() == 'Windows'))
-                    ->setUseAjax(true)->setUrl(Context::getContext()->link->getAdminLink('AdminProducts').'&ajax=1&id_product='.(int) $obj->id.'&action=addProductImage');
+                    ->setUseAjax(true)->setUrl($this->context->link->getAdminLink('AdminProducts').'&ajax=1&id_product='.(int) $obj->id.'&action=addProductImage');
 
                 $data->assign(
                     [
@@ -5626,14 +5626,14 @@ class AdminProductsControllerCore extends AdminController
             $search = Tools::getValue('q');
             $id_lang = Tools::getValue('id_lang');
             $limit = Tools::getValue('limit');
-            if (Context::getContext()->shop->getContext() != Shop::CONTEXT_SHOP) {
+            if ($this->context->shop->getContext() != Shop::CONTEXT_SHOP) {
                 $result = false;
             } else {
                 $result = Db::getInstance()->executeS(
                     '
 					SELECT DISTINCT pl.`name`, p.`id_product`, pl.`id_shop`
 					FROM `'._DB_PREFIX_.'product` p
-					LEFT JOIN `'._DB_PREFIX_.'product_shop` ps ON (ps.id_product = p.id_product AND ps.id_shop ='.(int) Context::getContext()->shop->id.')
+					LEFT JOIN `'._DB_PREFIX_.'product_shop` ps ON (ps.id_product = p.id_product AND ps.id_shop ='.(int) $this->context->shop->id.')
 					LEFT JOIN `'._DB_PREFIX_.'product_lang` pl
 						ON (pl.`id_product` = p.`id_product` AND pl.`id_lang` = '.(int) $id_lang.')
 					WHERE pl.`name` LIKE "%'.pSQL($search).'%" AND ps.id_product IS NULL

@@ -173,7 +173,6 @@ class AdminStoresControllerCore extends AdminController
      */
     protected function _getDefaultFieldsContent()
     {
-        $this->context = Context::getContext();
         $countryList = [];
         $countryList[] = ['id' => '0', 'name' => $this->l('Choose your country')];
         foreach (Country::getCountries($this->context->language->id) as $country) {

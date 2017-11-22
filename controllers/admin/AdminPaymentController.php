@@ -52,7 +52,7 @@ class AdminPaymentControllerCore extends AdminController
         $this->bootstrap = true;
         parent::__construct();
 
-        $idShop = Context::getContext()->shop->id;
+        $idShop = $this->context->shop->id;
 
         /* Get all modules then select only payment ones */
         $modules = Module::getModulesOnDisk(true);
@@ -199,7 +199,7 @@ class AdminPaymentControllerCore extends AdminController
 
         Db::getInstance()->execute('
 			DELETE FROM `'._DB_PREFIX_.'module_'.bqSQL($type).'`
-			WHERE id_shop = '.Context::getContext()->shop->id.'
+			WHERE id_shop = '.$this->context->shop->id.'
 			AND `id_module` IN ('.implode(', ', $modules).')'
         );
 
@@ -209,7 +209,7 @@ class AdminPaymentControllerCore extends AdminController
             foreach ($this->payment_modules as $module) {
                 if ($module->active && isset($_POST[$module->name.'_reference'])) {
                     foreach ($_POST[$module->name.'_reference'] as $selected) {
-                        $values[] = '('.(int) $module->id.', '.(int) Context::getContext()->shop->id.', '.(int) $selected.')';
+                        $values[] = '('.(int) $module->id.', '.(int) $this->context->shop->id.', '.(int) $selected.')';
                     }
                 }
             }
@@ -225,7 +225,7 @@ class AdminPaymentControllerCore extends AdminController
             foreach ($this->payment_modules as $module) {
                 if ($module->active && isset($_POST[$module->name.'_'.$type.''])) {
                     foreach ($_POST[$module->name.'_'.$type.''] as $selected) {
-                        $values[] = '('.(int) $module->id.', '.(int) Context::getContext()->shop->id.', '.(int) $selected.')';
+                        $values[] = '('.(int) $module->id.', '.(int) $this->context->shop->id.', '.(int) $selected.')';
                     }
                 }
             }

@@ -176,7 +176,7 @@ class AdminCategoriesControllerCore extends AdminController
 
         // we add restriction for shop
         if (Shop::getContext() == Shop::CONTEXT_SHOP && Shop::isFeatureActive()) {
-            $this->_where = ' AND sa.`id_shop` = '.(int) Context::getContext()->shop->id;
+            $this->_where = ' AND sa.`id_shop` = '.(int) $this->context->shop->id;
         }
 
         // if we are not in a shop context, we remove the position column
@@ -254,7 +254,7 @@ class AdminCategoriesControllerCore extends AdminController
      */
     public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
-        parent::getList($idLang, $orderBy, $orderWay, $start, $limit, Context::getContext()->shop->id);
+        parent::getList($idLang, $orderBy, $orderWay, $start, $limit, $this->context->shop->id);
         // Check each row to see if there are combinations and get the correct action in consequence
 
         $nbItems = count($this->_list);
@@ -506,7 +506,7 @@ class AdminCategoriesControllerCore extends AdminController
 
         /** @var Category $obj */
         $obj = $this->loadObject(true);
-        $context = Context::getContext();
+        $context = $this->context;
         $idShop = $context->shop->id;
         $selectedCategories = [(isset($obj->id_parent) && $obj->isParentCategoryAvailable($idShop)) ? (int) $obj->id_parent : (int) Tools::getValue('id_parent', Category::getRootCategory()->id)];
         $unidentified = new Group(Configuration::get('PS_UNIDENTIFIED_GROUP'));
@@ -682,7 +682,7 @@ class AdminCategoriesControllerCore extends AdminController
                     'type'              => 'group',
                     'label'             => $this->l('Group access'),
                     'name'              => 'groupBox',
-                    'values'            => Group::getGroups(Context::getContext()->language->id),
+                    'values'            => Group::getGroups($this->context->language->id),
                     'info_introduction' => $this->l('You now have three default customer groups.'),
                     'unidentified'      => $unidentifiedGroupInformation,
                     'guest'             => $guestGroupInformation,

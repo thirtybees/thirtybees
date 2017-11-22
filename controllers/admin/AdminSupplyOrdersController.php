@@ -602,7 +602,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
                 return;
             }
 
-            $idLang = Context::getContext()->language->id;
+            $idLang = $this->context->language->id;
             $orders = new PrestaShopCollection('SupplyOrder', $idLang);
             $orders->where('is_template', '=', false);
             $orders->where('id_supply_order', 'in', $ids);
@@ -829,7 +829,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
     {
         if ($this->display == 'details') {
             $this->page_header_toolbar_btn['back'] = [
-                'href' => Context::getContext()->link->getAdminLink('AdminSupplyOrders'),
+                'href' => $this->context->link->getAdminLink('AdminSupplyOrders'),
                 'desc' => $this->l('Back to list', null, null, false),
                 'icon' => 'process-icon-back',
             ];
@@ -2059,7 +2059,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
         $idCurrency = (int) Tools::getValue('id_currency', false);
 
         // get lang from context
-        $idLang = (int) Context::getContext()->language->id;
+        $idLang = (int) $this->context->language->id;
 
         $query = new DbQuery();
         $query->select(

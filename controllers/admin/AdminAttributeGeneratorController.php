@@ -167,7 +167,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
                 if ($this->product->depends_on_stock == 0) {
                     $attributes = Product::getProductAttributesIds($this->product->id, true);
                     foreach ($attributes as $attribute) {
-                        StockAvailable::removeProductFromStockAvailable($this->product->id, $attribute['id_product_attribute'], Context::getContext()->shop);
+                        StockAvailable::removeProductFromStockAvailable($this->product->id, $attribute['id_product_attribute'], $this->context->shop);
                     }
                 }
 
@@ -241,7 +241,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
         $this->initPageHeaderToolbar();
         $this->initGroupTable();
 
-        $attributes = Attribute::getAttributes(Context::getContext()->language->id, true);
+        $attributes = Attribute::getAttributes($this->context->language->id, true);
         $attributeJs = [];
 
         foreach ($attributes as $k => $attribute) {

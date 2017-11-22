@@ -237,7 +237,7 @@ class AdminCarriersControllerCore extends AdminController
                     'type'   => 'group',
                     'label'  => $this->l('Group access'),
                     'name'   => 'groupBox',
-                    'values' => Group::getGroups(Context::getContext()->language->id),
+                    'values' => Group::getGroups($this->context->language->id),
                     'hint'   => $this->l('Mark the groups that are allowed access to this carrier.'),
                 ],
                 [

@@ -179,7 +179,7 @@ class AdminLogsControllerCore extends AdminController
     public function processDelete()
     {
         if (Logger::eraseAllLogs()) {
-            Tools::redirectAdmin(Context::getContext()->link->getAdminLink('AdminLogs'));
+            Tools::redirectAdmin($this->context->link->getAdminLink('AdminLogs'));
         }
     }
 

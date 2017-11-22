@@ -44,7 +44,6 @@ class AdminStockManagementControllerCore extends AdminController
     public function __construct()
     {
         $this->bootstrap = true;
-        $this->context = Context::getContext();
         $this->table = 'product';
         $this->list_id = 'product';
         $this->className = 'Product';
@@ -264,7 +263,7 @@ class AdminStockManagementControllerCore extends AdminController
         $this->identifier = 'id_stock';
 
         $this->page_header_toolbar_btn['back_to_list'] = [
-            'href' => Context::getContext()->link->getAdminLink('AdminStockManagement'),
+            'href' => $this->context->link->getAdminLink('AdminStockManagement'),
             'desc' => $this->l('Back to list', null, null, false),
             'icon' => 'process-icon-back',
         ];
@@ -291,12 +290,12 @@ class AdminStockManagementControllerCore extends AdminController
         $this->_join .= ' RIGHT JOIN `'._DB_PREFIX_.'product_lang` AS pl ON (pl.id_product = a.id_product)';
 
         $this->_where = 'AND a.id_product = '.(int) $idProduct.' AND a.id_product_attribute = '.(int) $idProductAttribute;
-        $this->_where .= ' AND pl.id_lang = '.(int) Context::getContext()->language->id.' AND pl.id_shop = p.id_shop_default';
+        $this->_where .= ' AND pl.id_lang = '.(int) $this->context->language->id.' AND pl.id_shop = p.id_shop_default';
 
         if ($idWarehouse != -1) {
             $this->_where .= ' AND a.id_warehouse = '.(int) $idWarehouse;
         }
-	
+
 	$this->_filter = '';
         $this->_orderBy = 'pl.name';
         $this->_orderWay = 'ASC';
@@ -1391,7 +1390,7 @@ class AdminStockManagementControllerCore extends AdminController
     {
         if ($this->display == 'details') {
             $this->page_header_toolbar_btn['back_to_list'] = [
-                'href' => Context::getContext()->link->getAdminLink('AdminStockManagement'),
+                'href' => $this->context->link->getAdminLink('AdminStockManagement'),
                 'desc' => $this->l('Back to list', null, null, false),
                 'icon' => 'process-icon-back',
             ];

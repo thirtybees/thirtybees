@@ -104,7 +104,7 @@ class AdminGroupsControllerCore extends AdminController
 		AND jcg.`id_group` = a.`id_group`) AS nb';
         $this->_use_found_rows = false;
 
-        $groups = Group::getGroups(Context::getContext()->language->id, true);
+        $groups = Group::getGroups($this->context->language->id, true);
         if (Shop::isFeatureActive()) {
             $this->fields_options = [
                 'general' => [
@@ -199,7 +199,6 @@ class AdminGroupsControllerCore extends AdminController
 
     public function renderView()
     {
-        $this->context = Context::getContext();
         if (!($group = $this->loadObject(true))) {
             return;
         }
@@ -380,7 +379,7 @@ class AdminGroupsControllerCore extends AdminController
             }
 
             $category_reductions[(int)$category['id_category']] = [
-                'path' => getPath(Context::getContext()->link->getAdminLink('AdminCategories'), (int)$category['id_category']),
+                'path' => getPath($this->context->link->getAdminLink('AdminCategories'), (int)$category['id_category']),
                 'reduction' => (float)$category['reduction'] * 100,
                 'id_category' => (int)$category['id_category']
             ];
@@ -390,7 +389,7 @@ class AdminGroupsControllerCore extends AdminController
             foreach ($category_reduction as $key => $val) {
                 if (!array_key_exists($key, $category_reductions)) {
                     $category_reductions[(int)$key] = [
-                        'path' => getPath(Context::getContext()->link->getAdminLink('AdminCategories'), $key),
+                        'path' => getPath($this->context->link->getAdminLink('AdminCategories'), $key),
                         'reduction' => (float)$val * 100,
                         'id_category' => (int)$key
                     ];
@@ -616,7 +615,7 @@ class AdminGroupsControllerCore extends AdminController
         $href = static::$currentIndex.'&'.$this->identifier.'='.$id.'&update'.$this->table.'&token='.($token != null ? $token : $this->token);
 
         if ($this->display == 'view') {
-            $href = Context::getContext()->link->getAdminLink('AdminCustomers').'&id_customer='.(int)$id.'&updatecustomer&back='.urlencode($href);
+            $href = $this->context->link->getAdminLink('AdminCustomers').'&id_customer='.(int)$id.'&updatecustomer&back='.urlencode($href);
         }
 
         $tpl->assign(

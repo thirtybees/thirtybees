@@ -50,13 +50,13 @@ class AdminStatusesControllerCore extends AdminController
         $this->deleted = false;
         $this->colorOnBackground = false;
         $this->bulk_actions = ['delete' => ['text' => $this->l('Delete selected'), 'confirm' => $this->l('Delete selected items?')]];
-        $this->context = Context::getContext();
         $this->multishop_context = Shop::CONTEXT_ALL;
         $this->imageType = 'gif';
         $this->fieldImageSettings = [
             'name' => 'icon',
             'dir'  => 'os',
         ];
+
         parent::__construct();
     }
 

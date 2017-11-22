@@ -35,7 +35,7 @@ class AdminDuplicateUrlsControllerCore extends AdminController
     public function __construct()
     {
         $this->bootstrap = true;
-        $this->context = Context::getContext();
+
         parent::__construct();
     }
 
@@ -66,7 +66,7 @@ class AdminDuplicateUrlsControllerCore extends AdminController
     public function getDuplicates()
     {
         $urls = [];
-        $languages = Language::getLanguages(true, Context::getContext()->shop->id, true);
+        $languages = Language::getLanguages(true, $this->context->shop->id, true);
         foreach ($languages as $idLang) {
             $urls[(int) $idLang] = [];
             $urls[(int) $idLang] = array_merge($urls[(int) $idLang], $this->getProductUrls($idLang));
@@ -117,12 +117,12 @@ class AdminDuplicateUrlsControllerCore extends AdminController
         if (empty($idLang)) {
             return [];
         }
-        $context = Context::getContext();
+
         $productUrls = [];
         foreach (Product::getProducts($idLang, 0, 0, 'id_product', 'DESC') as $product) {
             $productInfo = [
                 'id_product' => $product['id_product'],
-                'url'        => $context->link->getProductLink($product['id_product'], null, null, null, $idLang),
+                'url'        => $this->context->link->getProductLink($product['id_product'], null, null, null, $idLang),
             ];
             $productUrls[] = $productInfo;
         }
@@ -143,17 +143,18 @@ class AdminDuplicateUrlsControllerCore extends AdminController
         if (empty($idLang)) {
             return [];
         }
-        $categoryUrls = [];
-        $context = Context::getContext();
+
         $sql = 'SELECT `id_category` FROM `'._DB_PREFIX_.'category` WHERE `active` = 1';
         $categories = Db::getInstance()->executeS($sql);
         if (empty($categories)) {
             return [];
         }
+
+        $categoryUrls = [];
         foreach ($categories as $category) {
             $categoryInfo = [
                 'id_category' => $category['id_category'],
-                'url'         => $context->link->getCategoryLink($category['id_category'], null, $idLang),
+                'url'         => $this->context->link->getCategoryLink($category['id_category'], null, $idLang),
             ];
             $categoryUrls[] = $categoryInfo;
         }
@@ -174,17 +175,18 @@ class AdminDuplicateUrlsControllerCore extends AdminController
         if (empty($idLang)) {
             return [];
         }
-        $cmsUrls = [];
-        $context = Context::getContext();
+
         $sql = 'SELECT `id_cms` FROM `'._DB_PREFIX_.'cms`';
         $cmss = Db::getInstance()->executeS($sql);
         if (empty($cmss)) {
             return [];
         }
+
+        $cmsUrls = [];
         foreach ($cmss as $cms) {
             $cmsInfo = [
                 'id_cms' => $cms['id_cms'],
-                'url'    => $context->link->getCMSLink($cms['id_cms'], null, $idLang),
+                'url'    => $this->context->link->getCMSLink($cms['id_cms'], null, $idLang),
             ];
             $cmsUrls[] = $cmsInfo;
         }
@@ -205,17 +207,18 @@ class AdminDuplicateUrlsControllerCore extends AdminController
         if (empty($idLang)) {
             return [];
         }
-        $categoryUrls = [];
-        $context = Context::getContext();
+
         $sql = 'SELECT `id_cms_category` FROM `'._DB_PREFIX_.'cms_category`';
         $categories = Db::getInstance()->executeS($sql);
         if (empty($categories)) {
             return [];
         }
+
+        $categoryUrls = [];
         foreach ($categories as $category) {
             $categoryInfo = [
                 'id_cms_category' => $category['id_cms_category'],
-                'url'             => $context->link->getCMSCategoryLink($category['id_cms_category'], null, $idLang),
+                'url'             => $this->context->link->getCMSCategoryLink($category['id_cms_category'], null, $idLang),
             ];
             $categoryUrls[] = $categoryInfo;
         }
@@ -236,17 +239,18 @@ class AdminDuplicateUrlsControllerCore extends AdminController
         if (empty($idLang)) {
             return [];
         }
-        $supplierUrls = [];
-        $context = Context::getContext();
+
         $sql = 'SELECT `id_supplier` FROM `'._DB_PREFIX_.'supplier`';
         $suppliers = Db::getInstance()->executeS($sql);
         if (empty($suppliers)) {
             return [];
         }
+
+        $supplierUrls = [];
         foreach ($suppliers as $supplier) {
             $supplierInfo = [
                 'id_supplier' => $supplier['id_supplier'],
-                'url'         => $context->link->getSupplierLink($supplier['id_supplier'], null, $idLang),
+                'url'         => $this->context->link->getSupplierLink($supplier['id_supplier'], null, $idLang),
             ];
             $supplierUrls[] = $supplierInfo;
         }
@@ -267,17 +271,18 @@ class AdminDuplicateUrlsControllerCore extends AdminController
         if (empty($idLang)) {
             return [];
         }
-        $manufacturerUrls = [];
-        $context = Context::getContext();
+
         $sql = 'SELECT `id_manufacturer` FROM `'._DB_PREFIX_.'manufacturer`';
         $manufacturers = Db::getInstance()->executeS($sql);
         if (empty($manufacturers)) {
             return [];
         }
+
+        $manufacturerUrls = [];
         foreach ($manufacturers as $manufacturer) {
             $manufacturerInfo = [
                 'id_manufacturer' => $manufacturer['id_manufacturer'],
-                'url'             => $context->link->getManufacturerLink($manufacturer['id_manufacturer'], null, $idLang),
+                'url'             => $this->context->link->getManufacturerLink($manufacturer['id_manufacturer'], null, $idLang),
             ];
             $manufacturerUrls[] = $manufacturerInfo;
         }
@@ -287,7 +292,7 @@ class AdminDuplicateUrlsControllerCore extends AdminController
 
     protected function processItem($item, $prefix = 'a')
     {
-        $link = Context::getContext()->link;
+        $link = $this->context->link;
         reset($item);
         switch (key($item)) {
             case 'id_product':

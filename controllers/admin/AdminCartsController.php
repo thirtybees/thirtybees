@@ -143,7 +143,7 @@ class AdminCartsControllerCore extends AdminController
      */
     public static function getOrderTotalUsingTaxCalculationMethod($idCart)
     {
-        $context = Context::getContext();
+        $context = $this->context;
         $context->cart = new Cart($idCart);
         $context->currency = new Currency((int) $context->cart->id_currency);
         $context->customer = new Customer((int) $context->cart->id_customer);
@@ -213,8 +213,8 @@ class AdminCartsControllerCore extends AdminController
         $helper->icon = 'icon-shopping-cart';
         $helper->color = 'color2';
         $helper->title = $this->l('Abandoned Carts', null, null, false);
-        $dateFrom = date(Context::getContext()->language->date_format_lite, strtotime('-2 day'));
-        $dateTo = date(Context::getContext()->language->date_format_lite, strtotime('-1 day'));
+        $dateFrom = date($this->context->language->date_format_lite, strtotime('-2 day'));
+        $dateTo = date($this->context->language->date_format_lite, strtotime('-1 day'));
         $helper->subtitle = sprintf($this->l('From %s to %s', null, null, false), $dateFrom, $dateTo);
         $helper->href = $this->context->link->getAdminLink('AdminCarts').'&action=filterOnlyAbandonedCarts';
         if (ConfigurationKPI::get('ABANDONED_CARTS') !== false) {
@@ -505,7 +505,7 @@ class AdminCartsControllerCore extends AdminController
     protected function getCartSummary()
     {
         $summary = $this->context->cart->getSummaryDetails(null, true);
-        $currency = Context::getContext()->currency;
+        $currency = $this->context->currency;
         if (count($summary['products'])) {
             foreach ($summary['products'] as &$product) {
                 $product['numeric_price'] = $product['price'];
