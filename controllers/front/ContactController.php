@@ -207,8 +207,8 @@ class ContactControllerCore extends FrontController
 
                     if ($idProduct) {
                         $product = new Product((int) $idProduct);
-                        if (Validate::isLoadedObject($product) && isset($product->name[Context::getContext()->language->id])) {
-                            $varList['{product_name}'] = $product->name[Context::getContext()->language->id];
+                        if (Validate::isLoadedObject($product) && isset($product->name[$this->context->language->id])) {
+                            $varList['{product_name}'] = $product->name[$this->context->language->id];
                         }
                     }
 

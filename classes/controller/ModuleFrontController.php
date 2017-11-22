@@ -58,13 +58,13 @@ class ModuleFrontControllerCore extends FrontController
 
         $this->controller_type = 'modulefront';
 
-        $inBase = isset($this->page_name) && is_object(Context::getContext()->theme) && Context::getContext()->theme->hasColumnsSettings($this->page_name);
+        $inBase = isset($this->page_name) && is_object($this->context->theme) && $this->context->theme->hasColumnsSettings($this->page_name);
 
         $tmp = isset($this->display_column_left) ? (bool) $this->display_column_left : true;
-        $this->display_column_left = $inBase ? Context::getContext()->theme->hasLeftColumn($this->page_name) : $tmp;
+        $this->display_column_left = $inBase ? $this->context->theme->hasLeftColumn($this->page_name) : $tmp;
 
         $tmp = isset($this->display_column_right) ? (bool) $this->display_column_right : true;
-        $this->display_column_right = $inBase ? Context::getContext()->theme->hasRightColumn($this->page_name) : $tmp;
+        $this->display_column_right = $inBase ? $this->context->theme->hasRightColumn($this->page_name) : $tmp;
     }
 
     /**
