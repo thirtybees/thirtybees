@@ -1988,7 +1988,7 @@ class AdminControllerCore extends Controller
             }
         }
 
-        $cookie = Context::getContext()->cookie;
+        $cookie = $this->context->cookie;
         $whitelist = ['date_add', 'id_lang', 'id_employee', 'email', 'profile', 'passwd', 'remote_addr', 'shopContext', 'collapse_menu', 'checksum'];
         foreach ($cookie->getAll() as $key => $value) {
             if (!in_array($key, $whitelist)) {
@@ -2300,7 +2300,7 @@ class AdminControllerCore extends Controller
                     'shop_group'                => new ShopGroup((int) Shop::getContextShopGroupID()),
                     'is_multishop'              => $isMultishop,
                     'multishop_context'         => $this->multishop_context,
-                    'default_tab_link'          => $this->context->link->getAdminLink(Tab::getClassNameById((int) Context::getContext()->employee->default_tab)),
+                    'default_tab_link'          => $this->context->link->getAdminLink(Tab::getClassNameById((int) $this->context->employee->default_tab)),
                     'login_link'                => $this->context->link->getAdminLink('AdminLogin'),
                     'collapse_menu'             => isset($this->context->cookie->collapse_menu) ? (int) $this->context->cookie->collapse_menu : 0,
                 ]
@@ -3838,7 +3838,7 @@ class AdminControllerCore extends Controller
             $this->context->employee->logout();
         }
 
-        if (isset(Context::getContext()->cookie->last_activity)) {
+        if (isset($this->context->cookie->last_activity)) {
             if ($this->context->cookie->last_activity + 900 < time()) {
                 $this->context->employee->logout();
             } else {
@@ -4200,10 +4200,10 @@ class AdminControllerCore extends Controller
         );
 
         //Force override translation key
-        Context::getContext()->override_controller_name_for_translations = 'AdminModules';
+        $this->context->override_controller_name_for_translations = 'AdminModules';
 
         //After override translation, remove it
-        Context::getContext()->override_controller_name_for_translations = null;
+        $this->context->override_controller_name_for_translations = null;
     }
 
     /**
@@ -4287,7 +4287,7 @@ class AdminControllerCore extends Controller
             ]
         );
         // Fetch the translations in the right place - they are not defined by our current controller!
-        Context::getContext()->override_controller_name_for_translations = 'AdminModules';
+        $this->context->override_controller_name_for_translations = 'AdminModules';
         $this->smartyOutputContent('controllers/modules/quickview.tpl');
         die(1);
     }
