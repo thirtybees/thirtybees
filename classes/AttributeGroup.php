@@ -98,7 +98,7 @@ class AttributeGroupCore extends ObjectModel
                 ->select('*')
                 ->from('attribute', 'a')
                 ->join(Shop::addSqlAssociation('attribute', 'a'))
-                ->leftJoin('attribute_lang', 'al', 'a.`id_attribute` = al.`id_attribute` al.`id_lang` = '.(int) $idLang)
+                ->leftJoin('attribute_lang', 'al', 'a.`id_attribute` = al.`id_attribute` AND al.`id_lang` = '.(int) $idLang)
                 ->where('a.`id_attribute_group` = '.(int) $idAttributeGroup)
                 ->orderBy('`position` ASC')
         );
