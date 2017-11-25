@@ -2983,7 +2983,7 @@ class AdminThemesControllerCore extends AdminController
         if (isset($_FILES[$name]['tmp_name']) && !empty($_FILES[$name]['tmp_name'])) {
             // Check ico validity
             if ($error = ImageManager::validateIconUpload($_FILES[$name])) {
-                $this->errors[] = $error;
+                $this->errors[] = $name . ': ' . $error;
             } elseif (!copy($_FILES[$name]['tmp_name'], $dest)) {
                 // Copy new ico
                 $this->errors[] = sprintf(Tools::displayError('An error occurred while uploading the favicon: cannot copy file "%s" to folder "%s".'), $_FILES[$name]['tmp_name'], $dest);
@@ -3015,7 +3015,7 @@ class AdminThemesControllerCore extends AdminController
 
         if (!$this->errors) {
             $this->redirect_after = static::$currentIndex.'&token='.$this->token;
-        }
+        } else $this->redirect_after = false;
     }
 
     /**
@@ -3038,7 +3038,7 @@ class AdminThemesControllerCore extends AdminController
 
         if (!$this->errors) {
             $this->redirect_after = static::$currentIndex.'&token='.$this->token;
-        }
+        } else $this->redirect_after = false;
     }
 
     /**
@@ -3061,7 +3061,7 @@ class AdminThemesControllerCore extends AdminController
 
         if (!$this->errors) {
             $this->redirect_after = static::$currentIndex.'&token='.$this->token;
-        }
+        } else $this->redirect_after = false;
     }
 
     /**
@@ -3084,7 +3084,7 @@ class AdminThemesControllerCore extends AdminController
 
         if (!$this->errors) {
             $this->redirect_after = static::$currentIndex.'&token='.$this->token;
-        }
+        } else $this->redirect_after = false;
     }
 
     /**
@@ -3107,7 +3107,7 @@ class AdminThemesControllerCore extends AdminController
 
         if (!$this->errors) {
             $this->redirect_after = static::$currentIndex.'&token='.$this->token;
-        }
+        } else $this->redirect_after = false;
     }
 
     /**
