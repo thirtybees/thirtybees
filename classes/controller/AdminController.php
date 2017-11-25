@@ -3839,13 +3839,11 @@ class AdminControllerCore extends Controller
         }
 
         if (isset(Context::getContext()->cookie->last_activity)) {
-            $autologout_timer = Configuration::get('PS_BO_AUTOLOGOUT_TIMER');
-            if($autologout_timer)
-                if ($this->context->cookie->last_activity + $autologout_timer < time()) {
-                    $this->context->employee->logout();
-                } else {
-                    $this->context->cookie->last_activity = time();
-                }
+            if ($this->context->cookie->last_activity + 900 < time()) {
+                $this->context->employee->logout();
+            } else {
+                $this->context->cookie->last_activity = time();
+            }
         }
 
         if ($this->controller_name != 'AdminLogin' && (!isset($this->context->employee) || !$this->context->employee->isLoggedBack())) {

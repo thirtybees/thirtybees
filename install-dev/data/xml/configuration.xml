@@ -424,9 +424,6 @@
     <configuration id="PS_COOKIE_LIFETIME_BO" name="PS_COOKIE_LIFETIME_BO">
       <value>480</value>
     </configuration>
-    <configuration id="PS_BO_AUTOLOGOUT_TIMER" name="PS_BO_AUTOLOGOUT_TIMER">
-      <value>900</value>
-    </configuration>    
     <configuration id="PS_RESTRICT_DELIVERED_COUNTRIES" name="PS_RESTRICT_DELIVERED_COUNTRIES">
       <value>0</value>
     </configuration>
