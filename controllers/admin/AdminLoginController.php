@@ -264,6 +264,9 @@ class AdminLoginControllerCore extends AdminController
 
                 if (!Tools::getValue('stay_logged_in')) {
                     $cookie->last_activity = time();
+                } else {
+                    // Needed in some edge cases, see Github issue #399.
+                    unset($cookie->last_activity);
                 }
 
                 $cookie->write();
