@@ -380,7 +380,7 @@ class EmployeeCore extends ObjectModel
     public function getByEmail($email, $plainTextPassword = null, $activeOnly = true)
     {
         if (!Validate::isEmail($email) || empty($plainTextPassword)) {
-            die(Tools::displayError());
+            return false;
         }
 
         $sql = new DbQuery();
