@@ -80,11 +80,11 @@ class ContactControllerCore extends FrontController
                         ($idCustomerThread = (int) Tools::getValue('id_customer_thread'))
                         && (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                             (new DbQuery())
-                                ->select('cm.`id_customer_thread`')
-                                ->from('customer_thread', 'cm')
-                                ->where('cm.`id_customer_thread` = '.(int) $idCustomerThread)
-                                ->where('cm.`id_shop` = '.(int) $this->context->shop->id)
-                                ->where('cm.`token` = \''.pSQL(Tools::getValue('token')).'\'')
+                                ->select('ct.`id_customer_thread`')
+                                ->from('customer_thread', 'ct')
+                                ->where('ct.`id_customer_thread` = '.(int) $idCustomerThread)
+                                ->where('ct.`id_shop` = '.(int) $this->context->shop->id)
+                                ->where('ct.`token` = \''.pSQL(Tools::getValue('token')).'\'')
                         )
                     ) || (
                     $idCustomerThread = CustomerThread::getIdCustomerThreadByEmailAndIdOrder($from, $idOrder)
@@ -95,7 +95,7 @@ class ContactControllerCore extends FrontController
                             ->select('ct.`id_customer_thread`, ct.`id_contact`, ct.`id_customer`, ct.`id_order`, ct.`id_product`, ct.`email`')
                             ->from('customer_thread', 'ct')
                             ->where('ct.`email` = \''.pSQL($from).'\'')
-                            ->where('cm.`id_shop` = '.(int) $this->context->shop->id)
+                            ->where('ct.`id_shop` = '.(int) $this->context->shop->id)
                             ->where('('.($customer->id ? 'id_customer = '.(int) $customer->id.' OR ' : '').' id_order = '.(int) $idOrder.')')
                     );
                     $score = 0;
