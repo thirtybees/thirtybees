@@ -354,9 +354,12 @@ class AdminCustomerThreadsControllerCore extends AdminController
 
         $conf = Configuration::getMultiple(
             [
-                'PS_SAV_IMAP_OPT_NORSH', 'PS_SAV_IMAP_OPT_SSL',
-                'PS_SAV_IMAP_OPT_VALIDATE-CERT', 'PS_SAV_IMAP_OPT_NOVALIDATE-CERT',
-                'PS_SAV_IMAP_OPT_TLS', 'PS_SAV_IMAP_OPT_NOTLS',
+                'PS_SAV_IMAP_OPT_NORSH',
+                'PS_SAV_IMAP_OPT_SSL',
+                'PS_SAV_IMAP_OPT_VALIDATE-CERT',
+                'PS_SAV_IMAP_OPT_NOVALIDATE-CERT',
+                'PS_SAV_IMAP_OPT_TLS',
+                'PS_SAV_IMAP_OPT_NOTLS',
             ]
         );
 
