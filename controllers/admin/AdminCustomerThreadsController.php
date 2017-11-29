@@ -325,12 +325,12 @@ class AdminCustomerThreadsControllerCore extends AdminController
         }
 
         // Executes the IMAP synchronization.
-        $sync_errors = $this->syncImap();
+        $syncErrors = $this->syncImap();
 
         // Show the errors.
-        if (isset($sync_errors['hasError']) && $sync_errors['hasError']) {
-            if (isset($sync_errors['errors'])) {
-                foreach ($sync_errors['errors'] as &$error) {
+        if (isset($syncErrors['hasError']) && $syncErrors['hasError']) {
+            if (isset($syncErrors['errors'])) {
+                foreach ($syncErrors['errors'] as &$error) {
                     $this->displayWarning($error);
                 }
             }
@@ -360,50 +360,50 @@ class AdminCustomerThreadsControllerCore extends AdminController
             ]
         );
 
-        $conf_str = '';
+        $confStr = '';
         if ($conf['PS_SAV_IMAP_OPT_NORSH']) {
-            $conf_str .= '/norsh';
+            $confStr .= '/norsh';
         }
         if ($conf['PS_SAV_IMAP_OPT_SSL']) {
-            $conf_str .= '/ssl';
+            $confStr .= '/ssl';
         }
         if ($conf['PS_SAV_IMAP_OPT_VALIDATE-CERT']) {
-            $conf_str .= '/validate-cert';
+            $confStr .= '/validate-cert';
         }
         if ($conf['PS_SAV_IMAP_OPT_NOVALIDATE-CERT']) {
-            $conf_str .= '/novalidate-cert';
+            $confStr .= '/novalidate-cert';
         }
         if ($conf['PS_SAV_IMAP_OPT_TLS']) {
-            $conf_str .= '/tls';
+            $confStr .= '/tls';
         }
         if ($conf['PS_SAV_IMAP_OPT_NOTLS']) {
-            $conf_str .= '/notls';
+            $confStr .= '/notls';
         }
 
         if (!function_exists('imap_open')) {
             return ['hasError' => true, 'errors' => ['imap is not installed on this server']];
         }
 
-        $mbox = @imap_open('{'.$url.':'.$port.$conf_str.'}', $user, $password);
+        $mbox = @imap_open('{'.$url.':'.$port.$confStr.'}', $user, $password);
 
         //checks if there is no error when connecting imap server
         $errors = imap_errors();
         if (is_array($errors)) {
             $errors = array_unique($errors);
         }
-        $str_errors = '';
-        $str_error_delete = '';
+        $strErrors = '';
+        $strErrorDelete = '';
 
         if (count($errors) && is_array($errors)) {
-            $str_errors = '';
+            $strErrors = '';
             foreach ($errors as $error) {
-                $str_errors .= $error.', ';
+                $strErrors .= $error.', ';
             }
-            $str_errors = rtrim(trim($str_errors), ',');
+            $strErrors = rtrim(trim($strErrors), ',');
         }
         //checks if imap connexion is active
         if (!$mbox) {
-            return ['hasError' => true, 'errors' => ['Cannot connect to the mailbox :<br />'.($str_errors)]];
+            return ['hasError' => true, 'errors' => ['Cannot connect to the mailbox :<br />'.($strErrors)]];
         }
 
         //Returns information about the current mailbox. Returns FALSE on failure.
@@ -427,29 +427,30 @@ class AdminCustomerThreadsControllerCore extends AdminController
             //Creating an md5 to check if message has been allready processed
             $md5 = md5($overview->date.$overview->from.$subject.$overview->msgno);
             $exist = Db::getInstance()->getValue(
-                'SELECT `md5_header`
-						 FROM `'._DB_PREFIX_.'customer_message_sync_imap`
-						 WHERE `md5_header` = \''.pSQL($md5).'\''
+                (new DbQuery())
+                    ->select('`md5_header`')
+                    ->from('customer_message_sync_imap')
+                    ->where('`md5_header` = \''.pSQL($md5).'\'')
             );
             if ($exist) {
                 if (Configuration::get('PS_SAV_IMAP_DELETE_MSG')) {
                     if (!imap_delete($mbox, $overview->msgno)) {
-                        $str_error_delete = ', Fail to delete message';
+                        $strErrorDelete = ', Fail to delete message';
                     }
                 }
             } else {
                 //check if subject has id_order
                 preg_match('/\#ct([0-9]*)/', $subject, $matches1);
                 preg_match('/\#tc([0-9-a-z-A-Z]*)/', $subject, $matches2);
-                $match_found = false;
+                $matchFound = false;
                 if (isset($matches1[1]) && isset($matches2[1])) {
-                    $match_found = true;
+                    $matchFound = true;
                 }
 
-                $new_ct = (Configuration::get('PS_SAV_IMAP_CREATE_THREADS') && !$match_found && (strpos($subject, '[no_sync]') == false));
+                $newCt = (Configuration::get('PS_SAV_IMAP_CREATE_THREADS') && !$matchFound && (strpos($subject, '[no_sync]') == false));
 
-                if ($match_found || $new_ct) {
-                    if ($new_ct) {
+                if ($matchFound || $newCt) {
+                    if ($newCt) {
                         if (!preg_match('/<('.Tools::cleanNonUnicodeSupport('[a-z\p{L}0-9!#$%&\'*+\/=?^`{}|~_-]+[.a-z\p{L}0-9!#$%&\'*+\/=?^`{}|~_-]*@[a-z\p{L}0-9]+[._a-z\p{L}0-9-]*\.[a-z0-9]+').')>/', $overview->from, $result)
                             || !Validate::isEmail($from = $result[1])
                         ) {
@@ -464,22 +465,22 @@ class AdminCustomerThreadsControllerCore extends AdminController
 
                         foreach ($contacts as $contact) {
                             if (strpos($overview->to, $contact['email']) !== false) {
-                                $id_contact = $contact['id_contact'];
+                                $idContact = $contact['id_contact'];
                             }
                         }
 
-                        if (!isset($id_contact)) { // if not use the default contact category
-                            $id_contact = $contacts[0]['id_contact'];
+                        if (!isset($idContact)) { // if not use the default contact category
+                            $idContact = $contacts[0]['id_contact'];
                         }
 
-                        $customer = new Customer;
+                        $customer = new Customer();
                         $client = $customer->getByEmail($from); //check if we already have a customer with this email
                         $ct = new CustomerThread();
                         if (isset($client->id)) { //if mail is owned by a customer assign to him
                             $ct->id_customer = $client->id;
                         }
                         $ct->email = $from;
-                        $ct->id_contact = $id_contact;
+                        $ct->id_contact = $idContact;
                         $ct->id_lang = (int) Configuration::get('PS_LANG_DEFAULT');
                         $ct->id_shop = $this->context->shop->id; //new customer threads for unrecognized mails are not shown without shop id
                         $ct->status = 'open';
@@ -489,7 +490,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
                         $ct = new CustomerThread((int) $matches1[1]);
                     } //check if order exist in database
 
-                    if (Validate::isLoadedObject($ct) && ((isset($matches2[1]) && $ct->token == $matches2[1]) || $new_ct)) {
+                    if (Validate::isLoadedObject($ct) && ((isset($matches2[1]) && $ct->token == $matches2[1]) || $newCt)) {
                         $message = imap_fetchbody($mbox, $overview->msgno, 1);
                         $message = quoted_printable_decode($message);
                         $message = utf8_encode($message);
@@ -500,20 +501,25 @@ class AdminCustomerThreadsControllerCore extends AdminController
                         $cm = new CustomerMessage();
                         $cm->id_customer_thread = $ct->id;
                         if (empty($message) || !Validate::isCleanHtml($message)) {
-                            $str_errors .= Tools::displayError(sprintf('Invalid Message Content for subject: %1s', $subject));
+                            $strErrors .= Tools::displayError(sprintf('Invalid Message Content for subject: %1s', $subject));
                         } else {
                             $cm->message = $message;
                             $cm->add();
                         }
                     }
                 }
-                Db::getInstance()->execute('INSERT INTO `'._DB_PREFIX_.'customer_message_sync_imap` (`md5_header`) VALUES (\''.pSQL($md5).'\')');
+                Db::getInstance()->insert(
+                    'customer_message_sync_imap',
+                    [
+                        'md5_header' => pSQL($md5),
+                    ]
+                );
             }
         }
         imap_expunge($mbox);
         imap_close($mbox);
-        if ($str_errors.$str_error_delete) {
-            return ['hasError' => true, 'errors' => [$str_errors.$str_error_delete]];
+        if ($strErrors.$strErrorDelete) {
+            return ['hasError' => true, 'errors' => [$strErrors.$strErrorDelete]];
         } else {
             return ['hasError' => false, 'errors' => ''];
         }
@@ -531,8 +537,8 @@ class AdminCustomerThreadsControllerCore extends AdminController
     }
 
     /**
-     * @param $value
-     * @param $customer
+     * @param mixed    $value
+     * @param Customer $customer
      *
      * @return string
      *
