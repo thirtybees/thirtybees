@@ -495,6 +495,9 @@ class AdminCustomerThreadsControllerCore extends AdminController
 
                     if (Validate::isLoadedObject($ct) && ((isset($matches2[1]) && $ct->token == $matches2[1]) || $newCt)) {
                         $message = imap_fetchbody($mbox, $overview->msgno, 1);
+                        if (base64_encode(base64_decode($message)) === $message) {
+                            $message = base64_decode($message);
+                        }
                         $message = quoted_printable_decode($message);
                         $message = utf8_encode($message);
                         $message = quoted_printable_decode($message);
