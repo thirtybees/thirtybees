@@ -328,7 +328,7 @@ class AdminPaymentControllerCore extends AdminController
                 $nameId = $list['name_id'];
 
                 if ($nameId === 'currency'
-                    && Tools::strpos($list['items'][$keyItem]['name'], '('.$list['items'][$keyItem]['iso_code'].')') === false) {
+                    && mb_strpos($list['items'][$keyItem]['name'], '('.$list['items'][$keyItem]['iso_code'].')') === false) {
                     $list['items'][$keyItem]['name'] = sprintf($this->l('%1$s (%2$s)'), $list['items'][$keyItem]['name'], $list['items'][$keyItem]['iso_code']);
                 }
 

@@ -144,7 +144,7 @@ class MailCore extends ObjectModel
             }
         }
 
-        if (!isset($configuration['PS_MAIL_SMTP_ENCRYPTION']) || Tools::strtolower($configuration['PS_MAIL_SMTP_ENCRYPTION']) === 'off') {
+        if (!isset($configuration['PS_MAIL_SMTP_ENCRYPTION']) || mb_strtolower($configuration['PS_MAIL_SMTP_ENCRYPTION']) === 'off') {
             $configuration['PS_MAIL_SMTP_ENCRYPTION'] = false;
         }
         if (!isset($configuration['PS_MAIL_SMTP_PORT'])) {
@@ -415,8 +415,8 @@ class MailCore extends ObjectModel
 
             if ($send && Configuration::get('PS_LOG_EMAILS')) {
                 $mail = new Mail();
-                $mail->template = Tools::substr($template, 0, 62);
-                $mail->subject = Tools::substr($subject, 0, 254);
+                $mail->template = mb_substr($template, 0, 62);
+                $mail->subject = mb_substr($subject, 0, 254);
                 $mail->id_lang = (int) $idLang;
                 $recipientsTo = $message->getTo();
                 $recipientsCc = $message->getCc();
@@ -433,7 +433,7 @@ class MailCore extends ObjectModel
                 foreach (array_merge($recipientsTo, $recipientsCc, $recipientsBcc) as $email => $recipientName) {
                     /** @var Swift_Address $recipient */
                     $mail->id = null;
-                    $mail->recipient = Tools::substr($email, 0, 126);
+                    $mail->recipient = mb_substr($email, 0, 126);
                     $mail->add();
                 }
             }
@@ -469,7 +469,7 @@ class MailCore extends ObjectModel
             return $string;
         }
 
-        $charset = Tools::strtoupper($charset);
+        $charset = mb_strtoupper($charset);
         $start = '=?'.$charset.'?B?';
         $end = '?=';
         $sep = $end.$newline.' '.$start;
@@ -489,8 +489,8 @@ class MailCore extends ObjectModel
                     $result = ord($string[--$i]);
                 }
 
-                $parts[] = base64_encode(Tools::substr($string, 0, $i));
-                $string = Tools::substr($string, $i);
+                $parts[] = base64_encode(mb_substr($string, 0, $i));
+                $string = mb_substr($string, $i);
                 $stringLength = mb_strlen($string);
             }
 
@@ -595,7 +595,7 @@ class MailCore extends ObjectModel
         $result = false;
         try {
             if ($smtpChecked) {
-                if (Tools::strtolower($smtpEncryption) === 'off') {
+                if (mb_strtolower($smtpEncryption) === 'off') {
                     $smtpEncryption = false;
                 }
                 $smtp = Swift_SmtpTransport::newInstance($smtpServer, $smtpPort, $smtpEncryption)

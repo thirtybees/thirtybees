@@ -902,7 +902,7 @@ abstract class ModuleCore
                     $moduleList[] = $item;
 
                     $moduleNameList[] = '\''.pSQL($item->name).'\'';
-                    $modulesNameToCursor[Tools::strtolower(strval($item->name))] = $item;
+                    $modulesNameToCursor[mb_strtolower(strval($item->name))] = $item;
                 }
             }
 
@@ -978,7 +978,7 @@ abstract class ModuleCore
 
                     $item = (object) $item;
                     $moduleList[] = $item;
-                    $modulesNameToCursor[Tools::strtolower($item->name)] = $item;
+                    $modulesNameToCursor[mb_strtolower($item->name)] = $item;
 
                     if (!$xmlExist || $needNewConfigFile) {
                         // @codingStandardsIgnoreStart
@@ -1003,12 +1003,12 @@ abstract class ModuleCore
                 (new DbQuery())
                     ->select('m.`id_module`, m.`name`, (SELECT COUNT(*) FROM `'._DB_PREFIX_.'module_shop` ms WHERE m.`id_module` = ms.`id_module` AND ms.`id_shop` IN ('.implode(',', $list).')) AS `total`')
                     ->from('module', 'm')
-                    ->where('LOWER(m.`name`) IN ('.Tools::strtolower(implode(',', $moduleNameList)).')')
+                    ->where('LOWER(m.`name`) IN ('.mb_strtolower(implode(',', $moduleNameList)).')')
             );
 
             foreach ($results as $result) {
-                if (isset($modulesNameToCursor[Tools::strtolower($result['name'])])) {
-                    $moduleCursor = $modulesNameToCursor[Tools::strtolower($result['name'])];
+                if (isset($modulesNameToCursor[mb_strtolower($result['name'])])) {
+                    $moduleCursor = $modulesNameToCursor[mb_strtolower($result['name'])];
                     $moduleCursor->id = (int) $result['id_module'];
                     $moduleCursor->active = ($result['total'] == count($list)) ? 1 : 0;
                 }
@@ -1018,18 +1018,18 @@ abstract class ModuleCore
         // Get native and partner modules
         /** @var TbUpdater $updater */
         $updater = Module::getInstanceByName('tbupdater');
-        $languageCode = str_replace('_', '-', Tools::strtolower(Context::getContext()->language->language_code));
+        $languageCode = str_replace('_', '-', mb_strtolower(Context::getContext()->language->language_code));
 
         // This array gets filled with requested module images to download (key = module code, value = guzzle promise)
         $imagePromises = [];
         $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
         if (Validate::isLoadedObject($updater) && $modules = $updater->getCachedModulesInfo()) {
             foreach ($modules as $name => $module) {
-                if (isset($modulesNameToCursor[Tools::strtolower(strval($name))])) {
-                    $moduleFromList = $modulesNameToCursor[Tools::strtolower(strval($name))];
+                if (isset($modulesNameToCursor[mb_strtolower(strval($name))])) {
+                    $moduleFromList = $modulesNameToCursor[mb_strtolower(strval($name))];
                     if ($moduleFromList->version && Version::gt($module['version'], $moduleFromList->version)) {
                         $moduleFromList->version_addons = $module['version'];
-                        $modulesNameToCursor[Tools::strtolower(strval($name))] = $moduleFromList;
+                        $modulesNameToCursor[mb_strtolower(strval($name))] = $moduleFromList;
                     }
 
                     continue;
@@ -1460,7 +1460,7 @@ abstract class ModuleCore
                         (new DbQuery())
                             ->select('`id_module`')
                             ->from('module')
-                            ->where('LOWER(`name`) = \''.pSQL(Tools::strtolower($dependency)).'\'')
+                            ->where('LOWER(`name`) = \''.pSQL(mb_strtolower($dependency)).'\'')
                     )) {
                         $error = Tools::displayError('Before installing this module, you have to install this/these module(s) first:').'<br />';
                         foreach ($this->dependencies as $d) {

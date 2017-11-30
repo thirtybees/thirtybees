@@ -897,7 +897,7 @@ class ShopCore extends ObjectModel
         Shop::cacheShops();
         foreach (static::$shops as $groupData) {
             foreach ($groupData['shops'] as $idShop => $shopData) {
-                if (Tools::strtolower($shopData['name']) == Tools::strtolower($name)) {
+                if (mb_strtolower($shopData['name']) == mb_strtolower($name)) {
                     return $idShop;
                 }
             }

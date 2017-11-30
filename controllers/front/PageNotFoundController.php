@@ -69,7 +69,7 @@ class PageNotFoundControllerCore extends FrontController
             }
             if (preg_match('#/p[0-9/]*/([0-9]+)\-([_a-zA-Z]*)\.(png|jpe?g|gif)$#', $_SERVER['REDIRECT_URL'], $matches)) {
                 // Backward compatibility since we suffixed the template image with _default
-                if (Tools::strtolower(substr($matches[2], -8)) != '_default') {
+                if (mb_strtolower(substr($matches[2], -8)) != '_default') {
                     header('Location: '.$this->context->link->getImageLink('', $matches[1], $matches[2]), true, 302);
                     exit;
                 } else {
@@ -113,7 +113,7 @@ class PageNotFoundControllerCore extends FrontController
             header('Content-Type: image/gif');
             readfile(_PS_IMG_DIR_.'404.gif');
             exit;
-        } elseif (in_array(Tools::strtolower(substr($_SERVER['REQUEST_URI'], -3)), ['.js', 'css'])) {
+        } elseif (in_array(mb_strtolower(substr($_SERVER['REQUEST_URI'], -3)), ['.js', 'css'])) {
             $this->context->cookie->disallowWriting();
             exit;
         }

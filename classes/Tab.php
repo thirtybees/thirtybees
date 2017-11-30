@@ -142,13 +142,13 @@ class TabCore extends ObjectModel
      */
     public static function getCurrentParentId()
     {
-        $cacheId = 'getCurrentParentId_'.Tools::strtolower(Tools::getValue('controller'));
+        $cacheId = 'getCurrentParentId_'.mb_strtolower(Tools::getValue('controller'));
         if (!Cache::isStored($cacheId)) {
             $value = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 (new DbQuery())
                     ->select('`id_parent`')
                     ->from('tab')
-                    ->where('LOWER(`class_name`) = \''.pSQL(Tools::strtolower(Tools::getValue('controller'))).'\'')
+                    ->where('LOWER(`class_name`) = \''.pSQL(mb_strtolower(Tools::getValue('controller'))).'\'')
             );
             if (!$value) {
                 $value = -1;
@@ -523,7 +523,7 @@ class TabCore extends ObjectModel
 
         // Set good position for new tab
         $this->position = Tab::getNewLastPosition($this->id_parent);
-        $this->module = Tools::strtolower($this->module);
+        $this->module = mb_strtolower($this->module);
 
         // Add tab
         if (parent::add($autoDate, $nullValues)) {

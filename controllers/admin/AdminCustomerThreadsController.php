@@ -502,7 +502,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
                         $message = utf8_encode($message);
                         $message = quoted_printable_decode($message);
                         $message = nl2br($message);
-                        $message = Tools::substr($message, 0, (int) CustomerMessage::$definition['fields']['message']['size']);
+                        $message = mb_substr($message, 0, (int) CustomerMessage::$definition['fields']['message']['size']);
 
                         $cm = new CustomerMessage();
                         $cm->id_customer_thread = $ct->id;
@@ -1230,7 +1230,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
 
         $extension = false;
         foreach ($extensions as $key => $val) {
-            if (substr(Tools::strtolower($filename), -4) == $key || substr(Tools::strtolower($filename), -5) == $key) {
+            if (substr(mb_strtolower($filename), -4) == $key || substr(mb_strtolower($filename), -5) == $key) {
                 $extension = $val;
                 break;
             }

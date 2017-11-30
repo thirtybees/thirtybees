@@ -1578,7 +1578,7 @@ class AdminModulesControllerCore extends AdminController
                     // If Addons module, download and unzip it before installing it
                     if (Validate::isLoadedObject($tbupdater) && !file_exists(_PS_MODULE_DIR_.$name.'/'.$name.'.php') || $key == 'update' || $key == 'updateAll') {
                         foreach ($tbupdater->getCachedModulesInfo($this->context->language->language_code) as $moduleInfoName => $moduleInfo) {
-                            if (Tools::strtolower($name) == Tools::strtolower($moduleInfoName)) {
+                            if (mb_strtolower($name) == mb_strtolower($moduleInfoName)) {
                                 $moduleToUpdate[$name]['id'] = 0;
                                 $moduleToUpdate[$name]['displayName'] = $moduleInfo['displayName'];
                             }

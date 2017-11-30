@@ -117,12 +117,12 @@ class MetaCore extends ObjectModel
 
         // Add modules controllers to list (this function is cool !)
         foreach (glob(_PS_MODULE_DIR_.'*/controllers/front/*.php') as $file) {
-            $filename = Tools::strtolower(basename($file, '.php'));
+            $filename = mb_strtolower(basename($file, '.php'));
             if ($filename == 'index') {
                 continue;
             }
 
-            $module = Tools::strtolower(basename(dirname(dirname(dirname($file)))));
+            $module = mb_strtolower(basename(dirname(dirname(dirname($file)))));
             $selectedPages[$module.' - '.$filename] = 'module-'.$module.'-'.$filename;
         }
 

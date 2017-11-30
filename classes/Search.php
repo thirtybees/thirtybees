@@ -165,12 +165,12 @@ class SearchCore
 						AND sw.id_shop = '.$context->shop->id.'
 						AND sw.word LIKE
 					'.($word[0] == '-'
-                        ? ' \''.$startSearch.pSQL(Tools::substr($word, 1, PS_SEARCH_MAX_WORD_LENGTH)).$endSearch.'\''
-                        : ' \''.$startSearch.pSQL(Tools::substr($word, 0, PS_SEARCH_MAX_WORD_LENGTH)).$endSearch.'\''
+                        ? ' \''.$startSearch.pSQL(mb_substr($word, 1, PS_SEARCH_MAX_WORD_LENGTH)).$endSearch.'\''
+                        : ' \''.$startSearch.pSQL(mb_substr($word, 0, PS_SEARCH_MAX_WORD_LENGTH)).$endSearch.'\''
                     );
 
                 if ($word[0] != '-') {
-                    $scoreArray[] = 'sw.word LIKE \''.$startSearch.pSQL(Tools::substr($word, 0, PS_SEARCH_MAX_WORD_LENGTH)).$endSearch.'\'';
+                    $scoreArray[] = 'sw.word LIKE \''.$startSearch.pSQL(mb_substr($word, 0, PS_SEARCH_MAX_WORD_LENGTH)).$endSearch.'\'';
                 }
             } else {
                 unset($words[$key]);
@@ -338,7 +338,7 @@ class SearchCore
             return '';
         }
 
-        $string = Tools::strtolower(strip_tags($string));
+        $string = mb_strtolower(strip_tags($string));
         $string = html_entity_decode($string, ENT_NOQUOTES, 'utf-8');
 
         $string = preg_replace('/(['.PREG_CLASS_NUMBERS.']+)['.PREG_CLASS_PUNCTUATION.']+(?=['.PREG_CLASS_NUMBERS.'])/u', '\1', $string);
@@ -365,7 +365,7 @@ class SearchCore
             $string = preg_replace('/[^\s]-+/', '', $string);
         }
 
-        $blacklist = Tools::strtolower(Configuration::get('PS_SEARCH_BLACKLIST', $idLang));
+        $blacklist = mb_strtolower(Configuration::get('PS_SEARCH_BLACKLIST', $idLang));
         if (!empty($blacklist)) {
             $string = preg_replace('/(?<=\s)('.$blacklist.')(?=\s)/Su', '', $string);
             $string = preg_replace('/^('.$blacklist.')(?=\s)/Su', '', $string);
@@ -841,7 +841,7 @@ class SearchCore
             $words = explode(' ', Search::sanitize($value, (int) $idLang, true, $isoCode));
             foreach ($words as $word) {
                 if (!empty($word)) {
-                    $word = Tools::substr($word, 0, PS_SEARCH_MAX_WORD_LENGTH);
+                    $word = mb_substr($word, 0, PS_SEARCH_MAX_WORD_LENGTH);
 
                     if (!isset($productArray[$word])) {
                         $productArray[$word] = 0;

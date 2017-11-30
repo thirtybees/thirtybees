@@ -460,7 +460,7 @@ class AdminDashboardControllerCore extends AdminController
                             $utmContent = 'download';
                         }
                         $shopDefaultCountryId = (int) Configuration::get('PS_COUNTRY_DEFAULT');
-                        $shopDefaultIsoCountry = (string) Tools::strtoupper(Country::getIsoById($shopDefaultCountryId));
+                        $shopDefaultIsoCountry = (string) mb_strtoupper(Country::getIsoById($shopDefaultCountryId));
                         $analyticsParams = array(
                             'utm_source'   => 'back-office',
                             'utm_medium'   => 'rss',

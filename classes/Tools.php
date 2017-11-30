@@ -326,7 +326,7 @@ class ToolsCore
     public static function getShopProtocol()
     {
         $protocol = (Configuration::get('PS_SSL_ENABLED') || (!empty($_SERVER['HTTPS'])
-                && Tools::strtolower($_SERVER['HTTPS']) != 'off')) ? 'https://' : 'http://';
+                && mb_strtolower($_SERVER['HTTPS']) != 'off')) ? 'https://' : 'http://';
 
         return $protocol;
     }
@@ -338,17 +338,16 @@ class ToolsCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @deprecated 1.0.4 Use mb_strlen for UTF-8 or strlen if guaranteed ASCII
      */
     public static function strtolower($str)
     {
         if (is_array($str)) {
             return false;
         }
-        if (function_exists('mb_strtolower')) {
-            return mb_strtolower($str, 'utf-8');
-        }
 
-        return strtolower($str);
+        return mb_strtolower($str, 'utf-8');
     }
 
     /**
@@ -430,21 +429,21 @@ class ToolsCore
     public static function usingSecureMode()
     {
         if (isset($_SERVER['HTTPS'])) {
-            return in_array(Tools::strtolower($_SERVER['HTTPS']), [1, 'on']);
+            return in_array(mb_strtolower($_SERVER['HTTPS']), [1, 'on']);
         }
         // $_SERVER['SSL'] exists only in some specific configuration
         if (isset($_SERVER['SSL'])) {
-            return in_array(Tools::strtolower($_SERVER['SSL']), [1, 'on']);
+            return in_array(mb_strtolower($_SERVER['SSL']), [1, 'on']);
         }
         // $_SERVER['REDIRECT_HTTPS'] exists only in some specific configuration
         if (isset($_SERVER['REDIRECT_HTTPS'])) {
-            return in_array(Tools::strtolower($_SERVER['REDIRECT_HTTPS']), [1, 'on']);
+            return in_array(mb_strtolower($_SERVER['REDIRECT_HTTPS']), [1, 'on']);
         }
         if (isset($_SERVER['HTTP_SSL'])) {
-            return in_array(Tools::strtolower($_SERVER['HTTP_SSL']), [1, 'on']);
+            return in_array(mb_strtolower($_SERVER['HTTP_SSL']), [1, 'on']);
         }
         if (isset($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
-            return Tools::strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) == 'https';
+            return mb_strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) == 'https';
         }
 
         return false;
@@ -547,7 +546,7 @@ class ToolsCore
         if (!Tools::getValue('isolang') && !Tools::getValue('id_lang') && (!$cookie->id_lang || isset($cookie->detect_language))
             && isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])
         ) {
-            $array = explode(',', Tools::strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE']));
+            $array = explode(',', mb_strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE']));
             $string = $array[0];
 
             if (Validate::isLanguageCode($string)) {
@@ -880,7 +879,7 @@ class ToolsCore
         $currencyRepository = new CurrencyRepository();
         $numberFormatRepository = new NumberFormatRepository();
 
-        $currency = $currencyRepository->get(Tools::strtoupper($currencyIso));
+        $currency = $currencyRepository->get(mb_strtoupper($currencyIso));
         if ($tbCurrency->sign) {
             $currency->setSymbol($tbCurrency->sign);
         }
@@ -1992,7 +1991,7 @@ class ToolsCore
         // If it was not possible to lowercase the string with mb_strtolower, we do it after the transformations.
         // This way we lose fewer special chars.
         if (!$hasMbStrtolower) {
-            $returnStr = Tools::strtolower($returnStr);
+            $returnStr = mb_strtolower($returnStr);
         }
 
         $arrayStr[$str] = $returnStr;
@@ -2218,12 +2217,8 @@ class ToolsCore
         if (is_array($str)) {
             return false;
         }
-        $str = html_entity_decode($str, ENT_COMPAT, 'UTF-8');
-        if (function_exists('mb_strlen')) {
-            return mb_strlen($str, $encoding);
-        }
 
-        return strlen($str);
+        return mb_strlen($str, $encoding);
     }
 
     /**
@@ -2289,7 +2284,7 @@ class ToolsCore
                         }
                     }
 
-                    $truncate .= Tools::substr($tag[3], 0, $left + $entitiesLength);
+                    $truncate .= mb_substr($tag[3], 0, $left + $entitiesLength);
                     break;
                 } else {
                     $truncate .= $tag[3];
@@ -2305,23 +2300,23 @@ class ToolsCore
                 return $text;
             }
 
-            $truncate = Tools::substr($text, 0, $length - mb_strlen($ellipsis));
+            $truncate = mb_substr($text, 0, $length - mb_strlen($ellipsis));
         }
 
         if (!$exact) {
-            $spacepos = Tools::strrpos($truncate, ' ');
+            $spacepos = mb_strrpos($truncate, ' ');
             if ($html) {
-                $truncateCheck = Tools::substr($truncate, 0, $spacepos);
-                $lastOpenTag = Tools::strrpos($truncateCheck, '<');
-                $lastCloseTag = Tools::strrpos($truncateCheck, '>');
+                $truncateCheck = mb_substr($truncate, 0, $spacepos);
+                $lastOpenTag = mb_strrpos($truncateCheck, '<');
+                $lastCloseTag = mb_strrpos($truncateCheck, '>');
 
                 if ($lastOpenTag > $lastCloseTag) {
                     preg_match_all('/<[\w]+[^>]*>/s', $truncate, $lastTagMatches);
                     $lastTag = array_pop($lastTagMatches[0]);
-                    $spacepos = Tools::strrpos($truncate, $lastTag) + mb_strlen($lastTag);
+                    $spacepos = mb_strrpos($truncate, $lastTag) + mb_strlen($lastTag);
                 }
 
-                $bits = Tools::substr($truncate, $spacepos);
+                $bits = mb_substr($truncate, $spacepos);
                 preg_match_all('/<\/([a-z]+)>/', $bits, $droppedTags, PREG_SET_ORDER);
 
                 if (!empty($droppedTags)) {
@@ -2339,7 +2334,7 @@ class ToolsCore
                 }
             }
 
-            $truncate = Tools::substr($truncate, 0, $spacepos);
+            $truncate = mb_substr($truncate, 0, $spacepos);
         }
 
         $truncate .= $ellipsis;
@@ -2371,11 +2366,8 @@ class ToolsCore
         if (is_array($str)) {
             return false;
         }
-        if (function_exists('mb_substr')) {
-            return mb_substr($str, (int) $start, ($length === false ? mb_strlen($str) : (int) $length), $encoding);
-        }
 
-        return substr($str, $start, ($length === false ? mb_strlen($str) : (int) $length));
+        return mb_substr($str, (int) $start, ($length === false ? mb_strlen($str) : (int) $length), $encoding);
     }
 
     /**
@@ -2393,11 +2385,7 @@ class ToolsCore
      */
     public static function strrpos($str, $find, $offset = 0, $encoding = 'utf-8')
     {
-        if (function_exists('mb_strrpos')) {
-            return mb_strrpos($str, $find, $offset, $encoding);
-        }
-
-        return strrpos($str, $find, $offset);
+        return mb_strrpos($str, $find, $offset, $encoding);
     }
 
     /**
@@ -2551,11 +2539,7 @@ class ToolsCore
      */
     public static function strpos($str, $find, $offset = 0, $encoding = 'UTF-8')
     {
-        if (function_exists('mb_strpos')) {
-            return mb_strpos($str, $find, $offset, $encoding);
-        }
-
-        return strpos($str, $find, $offset);
+        return mb_strpos($str, $find, $offset, $encoding);
     }
 
     /**
@@ -2574,7 +2558,7 @@ class ToolsCore
             return mb_convert_case($str, MB_CASE_TITLE);
         }
 
-        return ucwords(Tools::strtolower($str));
+        return ucwords(mb_strtolower($str));
     }
 
     /**
@@ -2592,7 +2576,7 @@ class ToolsCore
 
         unset($row);
 
-        if (Tools::strtolower($order_way) == 'desc') {
+        if (mb_strtolower($order_way) == 'desc') {
             uasort($array, 'cmpPriceDesc');
         } else {
             uasort($array, 'cmpPriceAsc');
@@ -2677,7 +2661,7 @@ class ToolsCore
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
             if ($stream_context != null) {
                 $opts = stream_context_get_options($stream_context);
-                if (isset($opts['http']['method']) && Tools::strtolower($opts['http']['method']) == 'post') {
+                if (isset($opts['http']['method']) && mb_strtolower($opts['http']['method']) == 'post') {
                     curl_setopt($curl, CURLOPT_POST, true);
                     if (isset($opts['http']['content'])) {
                         parse_str($opts['http']['content'], $post_data);
@@ -2764,7 +2748,7 @@ class ToolsCore
      */
     public static function toCamelCase($str, $catapitaliseFirstChar = false)
     {
-        $str = Tools::strtolower($str);
+        $str = mb_strtolower($str);
         if ($catapitaliseFirstChar) {
             $str = Tools::ucfirst($str);
         }
@@ -2799,11 +2783,8 @@ class ToolsCore
         if (is_array($str)) {
             return false;
         }
-        if (function_exists('mb_strtoupper')) {
-            return mb_strtoupper($str, 'utf-8');
-        }
 
-        return strtoupper($str);
+        return mb_strtoupper($str, 'utf-8');
     }
 
     /**
@@ -2820,7 +2801,7 @@ class ToolsCore
     {
         // 'CMSCategories' => 'cms_categories'
         // 'RangePrice' => 'range_price'
-        return Tools::strtolower(trim(preg_replace('/([A-Z][a-z])/', '_$1', $string), '_'));
+        return mb_strtolower(trim(preg_replace('/([A-Z][a-z])/', '_$1', $string), '_'));
     }
 
     /**
@@ -2833,7 +2814,7 @@ class ToolsCore
      */
     public static function getBrightness($hex)
     {
-        if (Tools::strtolower($hex) == 'transparent') {
+        if (mb_strtolower($hex) == 'transparent') {
             return '129';
         }
 
@@ -3661,7 +3642,7 @@ exit;
             $safe_mode = '';
         }
 
-        return in_array(Tools::strtolower($safe_mode), [1, 'on']);
+        return in_array(mb_strtolower($safe_mode), [1, 'on']);
     }
 
     /**
@@ -3960,7 +3941,7 @@ exit;
      */
     public static function isPHPCLI()
     {
-        return (defined('STDIN') || (Tools::strtolower(php_sapi_name()) == 'cli' && (!isset($_SERVER['REMOTE_ADDR']) || empty($_SERVER['REMOTE_ADDR']))));
+        return (defined('STDIN') || (mb_strtolower(php_sapi_name()) == 'cli' && (!isset($_SERVER['REMOTE_ADDR']) || empty($_SERVER['REMOTE_ADDR']))));
     }
 
     /**
@@ -4025,7 +4006,7 @@ exit;
         } else {
             $value_length = strlen($value);
             $qty = (int) substr($value, 0, $value_length - 1);
-            $unit = Tools::strtolower(substr($value, $value_length - 1));
+            $unit = mb_strtolower(substr($value, $value_length - 1));
             switch ($unit) {
                 case 'k':
                     $qty *= 1024;
@@ -4319,7 +4300,7 @@ exit;
     {
         $file_attachment = null;
         if (isset($_FILES[$input]['name']) && !empty($_FILES[$input]['name']) && !empty($_FILES[$input]['tmp_name'])) {
-            $file_attachment['rename'] = uniqid().Tools::strtolower(substr($_FILES[$input]['name'], -5));
+            $file_attachment['rename'] = uniqid().mb_strtolower(substr($_FILES[$input]['name'], -5));
             if ($return_content) {
                 $file_attachment['content'] = file_get_contents($_FILES[$input]['tmp_name']);
             }

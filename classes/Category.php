@@ -1843,8 +1843,8 @@ class CategoryCore extends ObjectModel
         }
 
         /** Tools::strtolower is a fix for all modules which are now using lowercase values for 'orderBy' parameter */
-        $orderBy = Validate::isOrderBy($orderBy) ? Tools::strtolower($orderBy) : 'position';
-        $orderWay = Validate::isOrderWay($orderWay) ? Tools::strtoupper($orderWay) : 'ASC';
+        $orderBy = Validate::isOrderBy($orderBy) ? mb_strtolower($orderBy) : 'position';
+        $orderWay = Validate::isOrderWay($orderWay) ? mb_strtoupper($orderWay) : 'ASC';
 
         $orderByPrefix = false;
         if ($orderBy == 'id_product' || $orderBy == 'date_add' || $orderBy == 'date_upd') {

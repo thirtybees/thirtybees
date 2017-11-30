@@ -652,7 +652,7 @@ class EmployeeCore extends ObjectModel
      */
     public function getImage()
     {
-        return 'https://www.gravatar.com/avatar/'.md5(Tools::strtolower(trim($this->email))).'?s=200&d=mm';
+        return 'https://www.gravatar.com/avatar/'.md5(mb_strtolower(trim($this->email))).'?s=200&d=mm';
     }
 
     /**

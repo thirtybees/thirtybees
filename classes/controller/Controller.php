@@ -247,7 +247,7 @@ abstract class ControllerCore
         if (Configuration::get('TB_PAGE_CACHE_ENABLED')) {
             $pageName = Dispatcher::getInstance()->getController();
             $cacheableControllers = json_decode(Configuration::get('TB_PAGE_CACHE_CONTROLLERS'));
-            $ajaxCalling = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && Tools::strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+            $ajaxCalling = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && mb_strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
 
             if (in_array($pageName, $cacheableControllers) && !Tools::isSubmit('live_edit') && !Tools::isSubmit('live_configurator_token') && !$ajaxCalling) {
                 $protocol = Configuration::get('PS_SSL_ENABLED') ? 'https://' : 'http://';

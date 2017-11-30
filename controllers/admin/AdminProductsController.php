@@ -1654,7 +1654,7 @@ class AdminProductsControllerCore extends AdminController
         /* Additional fields */
         foreach (Language::getIDs(false) as $idLang) {
             if (isset($_POST['meta_keywords_'.$idLang])) {
-                $_POST['meta_keywords_'.$idLang] = $this->_cleanMetaKeywords(Tools::strtolower($_POST['meta_keywords_'.$idLang]));
+                $_POST['meta_keywords_'.$idLang] = $this->_cleanMetaKeywords(mb_strtolower($_POST['meta_keywords_'.$idLang]));
                 // preg_replace('/ *,? +,* /', ',', strtolower($_POST['meta_keywords_'.$id_lang]));
                 $object->meta_keywords[$idLang] = $_POST['meta_keywords_'.$idLang];
             }
@@ -1972,7 +1972,7 @@ class AdminProductsControllerCore extends AdminController
         foreach ($rules['validate'] as $field => $function) {
             if ($this->isProductFieldUpdated($field) && ($value = Tools::getValue($field))) {
                 $res = true;
-                if (Tools::strtolower($function) == 'iscleanhtml') {
+                if (mb_strtolower($function) == 'iscleanhtml') {
                     if (!Validate::$function($value, (int) Configuration::get('PS_ALLOW_HTML_IFRAME'))) {
                         $res = false;
                     }
@@ -3150,7 +3150,7 @@ class AdminProductsControllerCore extends AdminController
 
                     $productTabs[$productTab] = [
                         'id'       => $productTab,
-                        'selected' => (strtolower($productTab) == strtolower($this->tab_display) || (isset($this->tab_display_module) && 'module'.$this->tab_display_module == Tools::strtolower($productTab))),
+                        'selected' => (strtolower($productTab) == strtolower($this->tab_display) || (isset($this->tab_display_module) && 'module'.$this->tab_display_module == mb_strtolower($productTab))),
                         'name'     => $this->available_tabs_lang[$productTab],
                         'href'     => $this->context->link->getAdminLink('AdminProducts').'&id_product='.(int) Tools::getValue('id_product').'&action='.$productTab,
                     ];

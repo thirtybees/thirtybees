@@ -448,7 +448,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                 }
             }
 
-            $purify = (isset($data['validate']) && Tools::strtolower($data['validate']) == 'iscleanhtml') ? true : false;
+            $purify = (isset($data['validate']) && mb_strtolower($data['validate']) == 'iscleanhtml') ? true : false;
             // Format field value
             $fields[$field] = ObjectModel::formatValue($value, $data['type'], false, $purify, !empty($data['allow_null']));
         }
@@ -1169,7 +1169,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
             if (!empty($value)) {
                 $res = true;
-                if (Tools::strtolower($data['validate']) == 'iscleanhtml') {
+                if (mb_strtolower($data['validate']) == 'iscleanhtml') {
                     if (!call_user_func(['Validate', $data['validate']], $value, $psAllowHtmlIframe)) {
                         $res = false;
                     }

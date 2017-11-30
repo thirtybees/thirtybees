@@ -264,18 +264,18 @@ class CurrencyCore extends ObjectModel
         $currencyRates = array_filter($currencyRates);
         $moduleRates = [];
         foreach ($currencyRates as $currency => $module) {
-            if (Tools::strtoupper($currency) === Tools::strtoupper($defaultCurrency->iso_code)) {
+            if (mb_strtoupper($currency) === mb_strtoupper($defaultCurrency->iso_code)) {
                 continue;
             }
             if (!isset($moduleRates[$module->id])) {
-                $moduleRates[$module->id] = [Tools::strtoupper($currency)];
+                $moduleRates[$module->id] = [mb_strtoupper($currency)];
             } else {
-                $moduleRates[$module->id][] = Tools::strtoupper($currency);
+                $moduleRates[$module->id][] = mb_strtoupper($currency);
             }
         }
 
         foreach ($moduleRates as $idModule => $currencies) {
-            $response = Hook::exec('actionRetrieveCurrencyRates', ['currencies' => $currencies, 'baseCurrency' => Tools::strtoupper($defaultCurrency->iso_code)], $idModule, true);
+            $response = Hook::exec('actionRetrieveCurrencyRates', ['currencies' => $currencies, 'baseCurrency' => mb_strtoupper($defaultCurrency->iso_code)], $idModule, true);
             if (!is_array($response)) {
                 continue;
             }

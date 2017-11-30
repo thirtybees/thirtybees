@@ -1080,7 +1080,7 @@ class CustomerCore extends ObjectModel
             die(Tools::displayError());
         }
 
-        if (Validate::isMd5($plaintextOrHashedPassword) || Tools::substr($plaintextOrHashedPassword, 0, 4) === '$2y$') {
+        if (Validate::isMd5($plaintextOrHashedPassword) || mb_substr($plaintextOrHashedPassword, 0, 4) === '$2y$') {
             $hashedPassword = $plaintextOrHashedPassword;
 
             return static::checkPasswordInDatabase($idCustomer, $hashedPassword);

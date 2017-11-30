@@ -86,7 +86,7 @@ class CookieCore
         $this->_path = str_replace('%7E', '~', $this->_path);
         // Take Windows case insensitivity of file paths into account
         if (DIRECTORY_SEPARATOR === '\\') {
-            $this->_path = Tools::strtolower($this->_path);
+            $this->_path = mb_strtolower($this->_path);
         }
 
         $this->_domain = $this->getDomain($sharedUrls);

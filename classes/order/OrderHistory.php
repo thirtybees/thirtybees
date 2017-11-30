@@ -322,7 +322,7 @@ class OrderHistoryCore extends ObjectModel
                 $restPaid = $invoice->getRestPaid();
                 if ($restPaid > 0) {
                     $payment = new OrderPayment();
-                    $payment->order_reference = Tools::substr($order->reference, 0, 9);
+                    $payment->order_reference = mb_substr($order->reference, 0, 9);
                     $payment->id_currency = $order->id_currency;
                     $payment->amount = $restPaid;
 

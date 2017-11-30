@@ -204,7 +204,7 @@ class AdminQuickAccessesControllerCore extends AdminController
      */
     public function ajaxProcessGetUrl()
     {
-        if (Tools::strtolower(Tools::getValue('method')) === 'add') {
+        if (mb_strtolower(Tools::getValue('method')) === 'add') {
             $params['new_window'] = 0;
             $params['name_'.(int) Configuration::get('PS_LANG_DEFAULT')] = Tools::getValue('name');
             $params['link'] = 'index.php?'.Tools::getValue('url');
@@ -212,7 +212,7 @@ class AdminQuickAccessesControllerCore extends AdminController
             unset($_POST['name']);
             $_POST = array_merge($_POST, $params);
             die($this->addQuickLink());
-        } elseif (Tools::strtolower(Tools::getValue('method')) === 'remove') {
+        } elseif (mb_strtolower(Tools::getValue('method')) === 'remove') {
             $params['deletequick_access'] = 1;
             $_POST = array_merge($_POST, $params);
             die($this->processDelete());

@@ -511,7 +511,7 @@ abstract class AdminTabCore
         /* Cache */
         $this->_lang = (int) ($idLang);
         $this->_orderBy = $orderBy;
-        $this->_orderWay = Tools::strtoupper($orderWay);
+        $this->_orderWay = mb_strtoupper($orderWay);
 
         /* SQL table : orders, but class name is Order */
         $sqlTable = $this->table == 'order' ? 'orders' : $this->table;
@@ -745,7 +745,7 @@ abstract class AdminTabCore
 			<script type="text/javascript" src="../js/admin/dnd.js"></script>
 			';
         }
-        echo '<table'.(array_key_exists($this->identifier, $this->identifiersDnd) ? ' id="'.(((int) (Tools::getValue($this->identifiersDnd[$this->identifier], 1))) ? Tools::substr($this->identifier, 3, mb_strlen($this->identifier)) : '').'"' : '').' class="table'.((array_key_exists($this->identifier, $this->identifiersDnd) && ($this->_orderBy != 'position' && $this->_orderWay != 'DESC')) ? ' tableDnD' : '').'" cellpadding="0" cellspacing="0">
+        echo '<table'.(array_key_exists($this->identifier, $this->identifiersDnd) ? ' id="'.(((int) (Tools::getValue($this->identifiersDnd[$this->identifier], 1))) ? mb_substr($this->identifier, 3, mb_strlen($this->identifier)) : '').'"' : '').' class="table'.((array_key_exists($this->identifier, $this->identifiersDnd) && ($this->_orderBy != 'position' && $this->_orderWay != 'DESC')) ? ' tableDnD' : '').'" cellpadding="0" cellspacing="0">
 			<thead>
 				<tr class="nodrag nodrop">
 					<th>';
@@ -954,7 +954,7 @@ abstract class AdminTabCore
                         if ($key == 'price') {
                             $echo = round($tr[$key], 2);
                         } elseif (isset($params['maxlength']) && mb_strlen($tr[$key]) > $params['maxlength']) {
-                            $echo = '<span title="'.$tr[$key].'">'.Tools::substr($tr[$key], 0, $params['maxlength']).'...</span>';
+                            $echo = '<span title="'.$tr[$key].'">'.mb_substr($tr[$key], 0, $params['maxlength']).'...</span>';
                         } else {
                             $echo = $tr[$key];
                         }
@@ -969,7 +969,7 @@ abstract class AdminTabCore
                 }
 
                 if ($this->shopLinkType) {
-                    $name = (mb_strlen($tr['shop_name']) > 15) ? Tools::substr($tr['shop_name'], 0, 15).'...' : $tr['shop_name'];
+                    $name = (mb_strlen($tr['shop_name']) > 15) ? mb_substr($tr['shop_name'], 0, 15).'...' : $tr['shop_name'];
                     echo '<td class="center" '.(($name != $tr['shop_name']) ? 'title="'.$tr['shop_name'].'"' : '').'>'.$name.'</td>';
                 }
 
@@ -1611,7 +1611,7 @@ abstract class AdminTabCore
             $filters = $this->context->cookie->getFamily($this->table.'Filter_');
             foreach ($filters as $cookieKey => $filter) {
                 if (strncmp($cookieKey, $this->table.'Filter_', 7 + mb_strlen($this->table)) == 0) {
-                    $key = Tools::substr($cookieKey, 7 + mb_strlen($this->table));
+                    $key = mb_substr($cookieKey, 7 + mb_strlen($this->table));
                     /* Table alias could be specified using a ! eg. alias!field */
                     $tmpTab = explode('!', $key);
                     $key = (count($tmpTab) > 1 ? $tmpTab[1] : $tmpTab[0]);
@@ -1639,7 +1639,7 @@ abstract class AdminTabCore
             foreach ($_POST as $key => $value) {
                 /* Extracting filters from $_POST on key filter_ */
                 if ($value != null && !strncmp($key, $this->table.'Filter_', 7 + mb_strlen($this->table))) {
-                    $key = Tools::substr($key, 7 + mb_strlen($this->table));
+                    $key = mb_substr($key, 7 + mb_strlen($this->table));
                     /* Table alias could be specified using a ! eg. alias!field */
                     $tmpTab = explode('!', $key);
                     $filter = count($tmpTab) > 1 ? $tmpTab[1] : $tmpTab[0];
@@ -2387,10 +2387,10 @@ abstract class AdminTabCore
         foreach ($field['list'] as $theme) {
             echo '<td class="center" style="width: 180px; padding:0px 20px 20px 0px;">';
             echo '<input type="radio" name="'.$key.'" id="'.$key.'_'.$theme['name'].'_on" style="vertical-align: text-bottom;" value="'.$theme['name'].'"'.(_THEME_NAME_ == $theme['name'] ? 'checked="checked"' : '').' />';
-            echo '<label class="t" for="'.$key.'_'.$theme['name'].'_on"> '.Tools::strtolower($theme['name']).'</label>';
+            echo '<label class="t" for="'.$key.'_'.$theme['name'].'_on"> '.mb_strtolower($theme['name']).'</label>';
             echo '<br />';
             echo '<label class="t" for="'.$key.'_'.$theme['name'].'_on">';
-            echo '<img src="../themes/'.$theme['name'].'/preview.jpg" alt="'.Tools::strtolower($theme['name']).'">';
+            echo '<img src="../themes/'.$theme['name'].'/preview.jpg" alt="'.mb_strtolower($theme['name']).'">';
             echo '</label>';
             echo '</td>';
             if (isset($field['max']) && ($i + 1) % $field['max'] == 0) {
@@ -2493,9 +2493,9 @@ abstract class AdminTabCore
         $languages = Language::getLanguages(false);
         foreach ($languages as $language) {
             echo '<div id="'.$key.'_'.$language['id_lang'].'" style="margin-bottom:8px; display: '.($language['id_lang'] == $this->context->language->id ? 'block' : 'none').'; float: left; vertical-align: top;">';
-            echo '<select name="'.$key.'_'.Tools::strtoupper($language['iso_code']).'">';
+            echo '<select name="'.$key.'_'.mb_strtoupper($language['iso_code']).'">';
             foreach ($field['list'] as $k => $v) {
-                echo '<option value="'.(isset($v['cast']) ? $v['cast']($v[$field['identifier']]) : $v[$field['identifier']]).'"'.((htmlentities(Tools::getValue($key.'_'.Tools::strtoupper($language['iso_code']), (Configuration::get($key.'_'.Tools::strtoupper($language['iso_code'])) ? Configuration::get($key.'_'.Tools::strtoupper($language['iso_code'])) : '')), ENT_COMPAT, 'UTF-8') == $v[$field['identifier']]) ? ' selected="selected"' : '').'>'.$v['name'].'</option>';
+                echo '<option value="'.(isset($v['cast']) ? $v['cast']($v[$field['identifier']]) : $v[$field['identifier']]).'"'.((htmlentities(Tools::getValue($key.'_'.mb_strtoupper($language['iso_code']), (Configuration::get($key.'_'.mb_strtoupper($language['iso_code'])) ? Configuration::get($key.'_'.mb_strtoupper($language['iso_code'])) : '')), ENT_COMPAT, 'UTF-8') == $v[$field['identifier']]) ? ' selected="selected"' : '').'>'.$v['name'].'</option>';
             }
             echo '</select>';
             echo '</div>';
@@ -2741,7 +2741,7 @@ EOF;
         $url = preg_replace('#(?<=&|\?)('.implode('|', $remove).')=.*?(&|$)#i', '', $url);
         $len = mb_strlen($url);
         if ($url[$len - 1] == '&') {
-            $url = Tools::substr($url, 0, $len - 1);
+            $url = mb_substr($url, 0, $len - 1);
         }
 
         return $url;

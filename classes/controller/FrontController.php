@@ -806,7 +806,7 @@ class FrontControllerCore extends Controller
             $newUrl = $protocol.$_SERVER['HTTP_HOST'].$uri.'?'.$newQueryString;
         }
 
-        $ajaxCalling = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && Tools::strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+        $ajaxCalling = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && mb_strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
 
         if (!Tools::getValue('no_cache') && !$ajaxCalling) {
             $entityType = Dispatcher::getInstance()->getController();
@@ -1319,8 +1319,8 @@ class FrontControllerCore extends Controller
         $orderByValues = [0 => 'name', 1 => 'price', 2 => 'date_add', 3 => 'date_upd', 4 => 'position', 5 => 'manufacturer_name', 6 => 'quantity', 7 => 'reference'];
         $orderWayValues = [0 => 'asc', 1 => 'desc'];
 
-        $this->orderBy = Tools::strtolower(Tools::getValue('orderby', $orderByValues[(int) Configuration::get('PS_PRODUCTS_ORDER_BY')]));
-        $this->orderWay = Tools::strtolower(Tools::getValue('orderway', $orderWayValues[(int) Configuration::get('PS_PRODUCTS_ORDER_WAY')]));
+        $this->orderBy = mb_strtolower(Tools::getValue('orderby', $orderByValues[(int) Configuration::get('PS_PRODUCTS_ORDER_BY')]));
+        $this->orderWay = mb_strtolower(Tools::getValue('orderway', $orderWayValues[(int) Configuration::get('PS_PRODUCTS_ORDER_WAY')]));
 
         if (!in_array($this->orderBy, $orderByValues)) {
             $this->orderBy = $orderByValues[0];

@@ -651,7 +651,7 @@ class AdminControllerCore extends Controller
         foreach ($filters as $key => $value) {
             /* Extracting filters from $_POST on key filter_ */
             if ($value != null && !strncmp($key, $prefix.$this->list_id.'Filter_', 7 + mb_strlen($prefix.$this->list_id))) {
-                $key = Tools::substr($key, 7 + mb_strlen($prefix.$this->list_id));
+                $key = mb_substr($key, 7 + mb_strlen($prefix.$this->list_id));
                 /* Table alias could be specified using a ! eg. alias!field */
                 $tmpTab = explode('!', $key);
                 $filter = count($tmpTab) > 1 ? $tmpTab[1] : $tmpTab[0];
@@ -751,7 +751,7 @@ class AdminControllerCore extends Controller
      */
     protected function getCookieFilterPrefix()
     {
-        return str_replace(['admin', 'controller'], '', Tools::strtolower(get_class($this)));
+        return str_replace(['admin', 'controller'], '', mb_strtolower(get_class($this)));
     }
 
     /**
@@ -967,7 +967,7 @@ class AdminControllerCore extends Controller
         if (!Validate::isTableOrIdentifier($this->table)) {
             throw new PrestaShopException(sprintf('Table name %s is invalid:', $this->table));
         }
-        $prefix = str_replace(['admin', 'controller'], '', Tools::strtolower(get_class($this)));
+        $prefix = str_replace(['admin', 'controller'], '', mb_strtolower(get_class($this)));
         if (empty($orderBy)) {
             if ($this->context->cookie->{$prefix.$this->list_id.'Orderby'}) {
                 $orderBy = $this->context->cookie->{$prefix.$this->list_id.'Orderby'};
@@ -1037,7 +1037,7 @@ class AdminControllerCore extends Controller
             $orderBy = '`'.bqSQL($orderBy).'`';
         }
 
-        $this->_orderWay = Tools::strtoupper($orderWay);
+        $this->_orderWay = mb_strtoupper($orderWay);
 
         /* SQL table : orders, but class name is Order */
         $sqlTable = $this->table == 'order' ? 'orders' : $this->table;
@@ -1416,7 +1416,7 @@ class AdminControllerCore extends Controller
             foreach ($rules['validateLang'] as $fieldLang => $function) {
                 foreach ($languages as $language) {
                     if (($value = Tools::getValue($fieldLang.'_'.$language['id_lang'])) !== false && !empty($value)) {
-                        if (Tools::strtolower($function) == 'iscleanhtml' && Configuration::get('PS_ALLOW_HTML_IFRAME')) {
+                        if (mb_strtolower($function) == 'iscleanhtml' && Configuration::get('PS_ALLOW_HTML_IFRAME')) {
                             $res = Validate::$function($value, true);
                         } else {
                             $res = Validate::$function($value);
@@ -1905,7 +1905,7 @@ class AdminControllerCore extends Controller
             $listId = isset($this->list_id) ? $this->list_id : $this->table;
         }
 
-        $prefix = str_replace(['admin', 'controller'], '', Tools::strtolower(get_class($this)));
+        $prefix = str_replace(['admin', 'controller'], '', mb_strtolower(get_class($this)));
         $filters = $this->context->cookie->getFamily($prefix.$listId.'Filter_');
         foreach ($filters as $cookieKey => $filter) {
             if (strncmp($cookieKey, $prefix.$listId.'Filter_', 7 + mb_strlen($prefix.$listId)) == 0) {

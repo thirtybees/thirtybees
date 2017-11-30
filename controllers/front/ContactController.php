@@ -66,7 +66,7 @@ class ContactControllerCore extends FrontController
                 $this->errors[] = Tools::displayError('Please select a subject from the list provided. ');
             } elseif (!empty($fileAttachment['name']) && $fileAttachment['error'] != 0) {
                 $this->errors[] = Tools::displayError('An error occurred during the file-upload process.');
-            } elseif (!empty($fileAttachment['name']) && !in_array(Tools::strtolower(substr($fileAttachment['name'], -4)), $extension) && !in_array(Tools::strtolower(substr($fileAttachment['name'], -5)), $extension)) {
+            } elseif (!empty($fileAttachment['name']) && !in_array(mb_strtolower(substr($fileAttachment['name'], -4)), $extension) && !in_array(mb_strtolower(substr($fileAttachment['name'], -5)), $extension)) {
                 $this->errors[] = Tools::displayError('Bad file extension');
             } else {
                 $customer = $this->context->customer;

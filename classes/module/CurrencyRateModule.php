@@ -174,13 +174,13 @@ abstract class CurrencyRateModuleCore extends Module
             $module = Module::getInstanceById($result['id_module']);
             if (Validate::isLoadedObject($currency) && Validate::isLoadedObject($module)) {
                 if ($codesOnly) {
-                    $return[Tools::strtoupper($currency->iso_code)] = null;
+                    $return[mb_strtoupper($currency->iso_code)] = null;
 
                 } else {
-                    $return[Tools::strtoupper($currency->iso_code)] = $module;
+                    $return[mb_strtoupper($currency->iso_code)] = $module;
                 }
             } elseif (!$registeredOnly && Validate::isLoadedObject($currency)) {
-                $return[Tools::strtoupper($currency->iso_code)] = null;
+                $return[mb_strtoupper($currency->iso_code)] = null;
             }
         }
 
@@ -297,7 +297,7 @@ abstract class CurrencyRateModuleCore extends Module
     {
         if (!$from) {
             $fromCurrency = Currency::getDefaultCurrency();
-            $from = Tools::strtoupper($fromCurrency->iso_code);
+            $from = mb_strtoupper($fromCurrency->iso_code);
         }
 
         $modules = static::getCurrencyRateModules();
@@ -307,7 +307,7 @@ abstract class CurrencyRateModuleCore extends Module
             $providingModules = [];
         }
         foreach ($modules as $moduleName => $supportedCurrencies) {
-            if (in_array(Tools::strtoupper($to), $supportedCurrencies) && in_array($from, $supportedCurrencies)) {
+            if (in_array(mb_strtoupper($to), $supportedCurrencies) && in_array($from, $supportedCurrencies)) {
                 if ($justOne) {
                     return $moduleName;
                 }

@@ -224,7 +224,7 @@ class HelperListCore extends Helper
             $tableDnd = true;
         }
 
-        $prefix = isset($this->controller_name) ? str_replace(['admin', 'controller'], '', Tools::strtolower($this->controller_name)) : '';
+        $prefix = isset($this->controller_name) ? str_replace(['admin', 'controller'], '', mb_strtolower($this->controller_name)) : '';
         $ajax = false;
         foreach ($this->fields_list as $key => $params) {
             if (!isset($params['type'])) {
@@ -428,7 +428,7 @@ class HelperListCore extends Helper
             $name = isset($tr['name']) ? $tr['name'] : null;
 
             if ($this->shopLinkType) {
-                $this->_list[$index]['short_shop_name'] = mb_strlen($tr['shop_name']) > 15 ? Tools::substr($tr['shop_name'], 0, 15).'...' : $tr['shop_name'];
+                $this->_list[$index]['short_shop_name'] = mb_strlen($tr['shop_name']) > 15 ? mb_substr($tr['shop_name'], 0, 15).'...' : $tr['shop_name'];
             }
 
             $isFirst = true;

@@ -311,7 +311,7 @@ class AdminCustomersControllerCore extends AdminController
                 /** @var Customer $customer */
                 if (($customer = $this->loadObject(true)) && Validate::isLoadedObject($customer)) {
                     array_pop($this->toolbar_title);
-                    $this->toolbar_title[] = sprintf($this->l('Information about Customer: %s'), Tools::substr($customer->firstname, 0, 1).'. '.$customer->lastname);
+                    $this->toolbar_title[] = sprintf($this->l('Information about Customer: %s'), mb_substr($customer->firstname, 0, 1).'. '.$customer->lastname);
                 }
                 break;
             case 'add':
@@ -319,7 +319,7 @@ class AdminCustomersControllerCore extends AdminController
                 array_pop($this->toolbar_title);
                 /** @var Customer $customer */
                 if (($customer = $this->loadObject(true)) && Validate::isLoadedObject($customer)) {
-                    $this->toolbar_title[] = sprintf($this->l('Editing Customer: %s'), Tools::substr($customer->firstname, 0, 1).'. '.$customer->lastname);
+                    $this->toolbar_title[] = sprintf($this->l('Editing Customer: %s'), mb_substr($customer->firstname, 0, 1).'. '.$customer->lastname);
                 } else {
                     $this->toolbar_title[] = $this->l('Creating a new Customer');
                 }

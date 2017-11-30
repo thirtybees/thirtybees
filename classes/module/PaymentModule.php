@@ -1012,7 +1012,7 @@ abstract class PaymentModuleCore extends Module
                             '{order_name}'           => $order->getUniqReference(),
                             '{date}'                 => Tools::displayDate(date('Y-m-d H:i:s'), null, 1),
                             '{carrier}'              => ($virtualProduct || !isset($carrier->name)) ? Tools::displayError('No carrier') : $carrier->name,
-                            '{payment}'              => Tools::substr($order->payment, 0, 32),
+                            '{payment}'              => mb_substr($order->payment, 0, 32),
                             '{products}'             => $productListHtml,
                             '{products_txt}'         => $productListTxt,
                             '{discounts}'            => $cartRulesListHtml,

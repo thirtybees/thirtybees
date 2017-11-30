@@ -2700,7 +2700,7 @@ class AdminTranslationsControllerCore extends AdminController
             $modulePath = rtrim($modulePath, '/');
             $moduleMails[$moduleName] = $this->getMailFiles($modulePath.'/mails/'.$this->lang_selected->iso_code.'/', 'module_mail');
             $moduleMails[$moduleName]['subject'] = $coreMails['subject'];
-            $moduleMails[$moduleName]['display'] = $this->displayMailContent($moduleMails[$moduleName], $subjectMail, $this->lang_selected, Tools::strtolower($moduleName), $moduleName, $moduleName);
+            $moduleMails[$moduleName]['display'] = $this->displayMailContent($moduleMails[$moduleName], $subjectMail, $this->lang_selected, mb_strtolower($moduleName), $moduleName, $moduleName);
         }
 
         if ($noDisplay) {
@@ -3307,9 +3307,9 @@ class AdminTranslationsControllerCore extends AdminController
 
                 foreach ($matches as $key) {
                     $md5Key = md5($key);
-                    $moduleKey = '<{'.Tools::strtolower($moduleName).'}'.strtolower($themeName).'>'.Tools::strtolower($templateName).'_'.$md5Key;
-                    $defaultKey = '<{'.Tools::strtolower($moduleName).'}thirtybees>'.Tools::strtolower($templateName).'_'.$md5Key;
-                    $prestaShopKey = '<{'.Tools::strtolower($moduleName).'}prestashop>'.Tools::strtolower($templateName).'_'.$md5Key;
+                    $moduleKey = '<{'.mb_strtolower($moduleName).'}'.strtolower($themeName).'>'.mb_strtolower($templateName).'_'.$md5Key;
+                    $defaultKey = '<{'.mb_strtolower($moduleName).'}thirtybees>'.mb_strtolower($templateName).'_'.$md5Key;
+                    $prestaShopKey = '<{'.mb_strtolower($moduleName).'}prestashop>'.mb_strtolower($templateName).'_'.$md5Key;
                     // to avoid duplicate entry
                     if (!in_array($moduleKey, $arrayCheckDuplicate)) {
                         $arrayCheckDuplicate[] = $moduleKey;

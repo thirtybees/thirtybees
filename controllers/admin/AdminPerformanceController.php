@@ -1408,7 +1408,7 @@ class AdminPerformanceControllerCore extends AdminController
             }
         }
 
-        if (Tools::strtolower($m[1]) === 'true') {
+        if (mb_strtolower($m[1]) === 'true') {
             return true;
         }
 
@@ -1436,7 +1436,7 @@ class AdminPerformanceControllerCore extends AdminController
             }
         }
 
-        if (Tools::strtolower($m[1]) === 'true') {
+        if (mb_strtolower($m[1]) === 'true') {
             return true;
         }
 
@@ -1711,7 +1711,7 @@ class AdminPerformanceControllerCore extends AdminController
                             }
                             $redis->select($db);
 
-                            $res = (Tools::strtolower($redis->ping() === '+PONG') ? 1 : 0);
+                            $res = (mb_strtolower($redis->ping() === '+PONG') ? 1 : 0);
                         }
                     } catch (Exception $e) {
                         die(json_encode([0]));

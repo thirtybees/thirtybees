@@ -799,7 +799,7 @@ class DispatcherCore
         }
         if ($this->use_routes && !$controller && !defined('_PS_ADMIN_DIR_')) {
             if (!$this->request_uri) {
-                return Tools::strtolower($this->controller_not_found);
+                return mb_strtolower($this->controller_not_found);
             }
 
             // Check basic controllers & params

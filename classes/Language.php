@@ -562,7 +562,7 @@ class LanguageCore extends ObjectModel
 
         // Initialize the language
         $lang = new Language();
-        $lang->iso_code = Tools::strtolower($isoCode);
+        $lang->iso_code = mb_strtolower($isoCode);
         $lang->language_code = $isoCode; // Rewritten afterwards if the language code is available
         $lang->active = true;
 
@@ -576,7 +576,7 @@ class LanguageCore extends ObjectModel
             ]);
 
             try {
-                $lowerIso = Tools::strtolower($isoCode);
+                $lowerIso = mb_strtolower($isoCode);
                 $langPack = json_decode((string) $guzzle->get("{$lowerIso}.json")->getBody());
             } catch (Exception $e) {
                 $langPack = false;
