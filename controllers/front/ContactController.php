@@ -369,7 +369,7 @@ class ContactControllerCore extends FrontController
                     $products[$row['id_order']][$val['product_id']] = ['value' => $val['product_id'], 'label' => $val['product_name']];
                 }
 
-                $orders[] = ['value' => $order->id, 'label' => $order->getUniqReference().' - '.Tools::displayDate($date[0], null), 'selected' => (int) $this->getOrder() == $order->id];
+                $orders[] = ['value' => $order->getUniqReference(), 'label' => $order->getUniqReference().' - '.Tools::displayDate($date[0], null), 'selected' => (int) $this->getOrder() == $order->id];
             }
 
             $this->context->smarty->assign('orderList', $orders);
