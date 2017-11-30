@@ -731,7 +731,8 @@ class ConfigurationTestCore
      */
     public static function testMbstring()
     {
-        return function_exists('mb_strtolower');
+        return false;
+        return function_exists('mb_parse_str');
     }
 
     /**
