@@ -163,6 +163,7 @@ class AdminInformationControllerCore extends AdminController
             'Gz'                      => $this->l('Enable GZIP compression on your server.'),
             'Files'                   => $this->l('Some thirty bees files are missing from your server.'),
             'NewPhpVersion'           => sprintf($this->l('You are using PHP %s version. Soon, the oldest PHP version supported by thirty bees will be PHP 5.6. To make sure you’re ready for the future, we recommend you to upgrade to PHP 5.6 now!'), phpversion()),
+            'Mbstring'                => $this->l('The `mbstring` extension has not been installed/enabled. This has a severe impact on the store\'s performance.'),
         ];
 
         // Functions list to test with 'test_system'
@@ -174,7 +175,7 @@ class AdminInformationControllerCore extends AdminController
         foreach ($paramsRequiredResults as $key => $result) {
             if ($result !== 'ok') {
                 $failRequired = true;
-                $testsErrors[$key] = $result;
+                $testsErrors[$key] .= '<br/>'.sprintf($this->l('Test result: %s'), $result);
                 // Establish retrocompatibility with templates.
                 $paramsRequiredResults[$key] = 'fail';
             }
@@ -183,7 +184,7 @@ class AdminInformationControllerCore extends AdminController
         foreach ($paramsOptionalResults as $key => $result) {
             if ($result !== 'ok') {
                 $failOptional = true;
-                $testsErrors[$key] = $result;
+                $testsErrors[$key] .= '<br/>'.sprintf($this->l('Test result: %s'), $result);
                 // Establish retrocompatibility with templates.
                 $paramsOptionalResults[$key] = 'fail';
             }
@@ -214,19 +215,21 @@ class AdminInformationControllerCore extends AdminController
      */
     public function displayAjaxCheckFiles()
     {
-        $this->fileList = ['listMissing'   => false,
-                           'isDevelopment' => false,
-                           'missing'       => [],
-                           'updated'       => []];
+        $this->fileList = [
+            'listMissing'   => false,
+            'isDevelopment' => false,
+            'missing'       => [],
+            'updated'       => [],
+        ];
         $filesFile = _PS_CONFIG_DIR_.'json/files.json';
         if (file_exists($filesFile)) {
             $files = json_decode(file_get_contents($filesFile), true);
             $this->getListOfUpdatedFiles($files);
         } else {
-          $this->fileList['listMissing'] = $filesFile;
-          if (file_exists(_PS_ROOT_DIR_.'/admin-dev/')) {
-            $this->fileList['isDevelopment'] = true;
-          }
+            $this->fileList['listMissing'] = $filesFile;
+            if (file_exists(_PS_ROOT_DIR_.'/admin-dev/')) {
+                $this->fileList['isDevelopment'] = true;
+            }
         }
 
         die(json_encode($this->fileList));
@@ -264,8 +267,10 @@ class AdminInformationControllerCore extends AdminController
             $md5List[$filePath] = md5_file($file->getPathname());
         }
 
-        file_put_contents(_PS_CONFIG_DIR_.'json/files.json',
-                          json_encode($md5List, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
+        file_put_contents(
+            _PS_CONFIG_DIR_.'json/files.json',
+            json_encode($md5List, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)
+        );
 
         return $md5List;
     }
