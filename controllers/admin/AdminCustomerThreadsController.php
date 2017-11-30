@@ -455,7 +455,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
                 if ($matchFound || $newCt) {
                     if ($newCt) {
                         if (!preg_match('/<('.Tools::cleanNonUnicodeSupport('[a-z\p{L}0-9!#$%&\'*+\/=?^`{}|~_-]+[.a-z\p{L}0-9!#$%&\'*+\/=?^`{}|~_-]*@[a-z\p{L}0-9]+[._a-z\p{L}0-9-]*\.[a-z0-9]+').')>/', $overview->from, $result)
-                            || !Validate::isEmail($from = $result[1])
+                            || !Validate::isEmail($from = Tools::convertEmailToIdn($result[1]))
                         ) {
                             continue;
                         }
@@ -607,7 +607,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
                 $currentEmployee = $this->context->employee;
                 $idEmployee = (int) Tools::getValue('id_employee_forward');
                 $employee = new Employee($idEmployee);
-                $email = Tools::getValue('email');
+                $email = Tools::convertEmailToIdn(Tools::getValue('email'));
                 $message = Tools::getValue('message_forward');
                 if (($error = $cm->validateField('message', $message, null, [], true)) !== true) {
                     $this->errors[] = $error;
@@ -661,7 +661,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
                         _PS_MAIL_DIR_,
                         true
                     )) {
-                        $cm->message = $this->l('Message forwarded to').' '.$email."\n".$this->l('Comment:').' '.$message;
+                        $cm->message = $this->l('Message forwarded to').' '.Tools::convertEmailFromIdn($email)."\n".$this->l('Comment:').' '.$message;
                         $cm->add();
                     }
                 } else {
@@ -717,7 +717,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
                         $params,
                         Tools::getValue('msg_email'),
                         null,
-                        $fromEmail,
+                        Tools::convertEmailToIdn($fromEmail),
                         $fromName,
                         $fileAttachment,
                         null,
@@ -792,7 +792,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
                 'token'             => $this->token,
                 'message'           => $message,
                 'id_order_product'  => isset($idOrderProduct) ? $idOrderProduct : null,
-                'email'             => $email,
+                'email'             => Tools::convertEmailFromIdn($email),
                 'id_employee'       => $idEmployee,
                 'PS_SHOP_NAME'      => Configuration::get('PS_SHOP_NAME'),
                 'file_name'         => file_exists(_PS_UPLOAD_DIR_.$message['file_name']),
@@ -1153,6 +1153,9 @@ class AdminCustomerThreadsControllerCore extends AdminController
         for ($i = 0; $i < $nbItems; ++$i) {
             if (isset($this->_list[$i]['messages'])) {
                 $this->_list[$i]['messages'] = Tools::htmlentitiesDecodeUTF8($this->_list[$i]['messages']);
+            }
+            if (isset($this->_list[$i]['email'])) {
+                $this->_list[$i]['email'] = Tools::convertEmailFromIdn($this->_list[$i]['email']);
             }
         }
     }

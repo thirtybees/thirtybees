@@ -1481,6 +1481,14 @@ class AdminControllerCore extends Controller
                 if ($key == 'passwd' && !empty($value)) {
                     $value = Tools::hash($value);
                 }
+                if ($key === 'email') {
+                    if (mb_detect_encoding($value, 'UTF-8', true) && mb_strpos($value, '@') > -1) {
+                        // Convert to IDN
+                        list ($local, $domain) = explode('@', $value, 2);
+                        $domain = Tools::utf8ToIdn($domain);
+                        $value = "$local@$domain";
+                    }
+                }
                 $object->{$key} = $value;
             }
         }

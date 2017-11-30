@@ -160,6 +160,7 @@ class MailCore extends ObjectModel
         if (!Validate::isEmail($from)) {
             $from = null;
         }
+        $from = Tools::convertEmailToIdn($from);
 
         // $from_name is not that important, no need to die if it is not valid
         if (!isset($fromName) || !Validate::isMailName($fromName)) {
@@ -175,11 +176,25 @@ class MailCore extends ObjectModel
 
             return false;
         }
+        if (is_array($to)) {
+            foreach ($to as &$address) {
+                $address = Tools::convertEmailToIdn($address);
+            }
+        } elseif (is_string($to)) {
+            $to = Tools::convertEmailToIdn($to);
+        }
 
         // if bcc is not null, make sure it's a vaild e-mail
         if (!is_null($bcc) && !is_array($bcc) && !Validate::isEmail($bcc)) {
             Tools::dieOrLog(Tools::displayError('Error: parameter "bcc" is corrupted'), $die);
             $bcc = null;
+        }
+        if (is_array($bcc)) {
+            foreach ($bcc as &$address) {
+                $address = Tools::convertEmailToIdn($address);
+            }
+        } elseif (is_string($bcc)) {
+            $bcc = Tools::convertEmailToIdn($bcc);
         }
 
         if (!is_array($templateVars)) {
@@ -346,7 +361,7 @@ class MailCore extends ObjectModel
             }
 
             if (isset($replyTo) && $replyTo) {
-                $message->setReplyTo($replyTo);
+                $message->setReplyTo(Tools::convertEmailToIdn($replyTo));
             }
 
             $templateVars = array_map(['Tools', 'htmlentitiesDecodeUTF8'], $templateVars);
@@ -609,8 +624,8 @@ class MailCore extends ObjectModel
             $message = Swift_Message::newInstance();
 
             $message
-                ->setFrom($from)
-                ->setTo($to)
+                ->setFrom(Tools::convertEmailToIdn($from))
+                ->setTo(Tools::convertEmailToIdn($to))
                 ->setSubject($subject)
                 ->setBody($content);
 

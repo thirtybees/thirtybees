@@ -4761,6 +4761,44 @@ exit;
     ];
 
     /**
+     * Convert a UTF-8 email addres to IDN format (domain part only)
+     *
+     * @param string $email
+     *
+     * @return string
+     */
+    public static function convertEmailToIdn($email)
+    {
+        if (mb_detect_encoding($email, 'UTF-8', true) && mb_strpos($email, '@') > -1) {
+            // Convert to IDN
+            list ($local, $domain) = explode('@', $email, 2);
+            $domain = Tools::utf8ToIdn($domain);
+            $email = "$local@$domain";
+        }
+
+        return $email;
+    }
+
+    /**
+     * Convert an IDN email to UTF-8 (domain part only)
+     *
+     * @param string $email
+     *
+     * @return string
+     */
+    public static function convertEmailFromIdn($email)
+    {
+        if (mb_strpos($email, '@') > -1) {
+            // Convert from IDN if necessary
+            list ($local, $domain) = explode('@', $email, 2);
+            $domain = Tools::idnToUtf8($domain);
+            $email = "$local@$domain";
+        }
+
+        return $email;
+    }
+
+    /**
      * Encode a domain to its Punycode version
      *
      * @param string $input Domain name in Unicode to be encoded

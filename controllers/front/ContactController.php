@@ -56,7 +56,7 @@ class ContactControllerCore extends FrontController
             $extension = ['.txt', '.rtf', '.doc', '.docx', '.pdf', '.zip', '.png', '.jpeg', '.gif', '.jpg'];
             $fileAttachment = Tools::fileAttachment('fileUpload');
             $message = Tools::getValue('message'); // Html entities is not usefull, iscleanHtml check there is no bad html tags.
-            if (!($from = trim(Tools::getValue('from'))) || !Validate::isEmail($from)) {
+            if (!($from = Tools::convertEmailToIdn(trim(Tools::getValue('from')))) || !Validate::isEmail($from)) {
                 $this->errors[] = Tools::displayError('Invalid email address.');
             } elseif (!$message) {
                 $this->errors[] = Tools::displayError('The message cannot be blank.');
@@ -296,12 +296,12 @@ class ContactControllerCore extends FrontController
 
         $this->assignOrderList();
 
-        $email = Tools::safeOutput(
+        $email = Tools::convertEmailToIdn(Tools::safeOutput(
             Tools::getValue(
                 'from',
                 ((isset($this->context->cookie) && isset($this->context->cookie->email) && Validate::isEmail($this->context->cookie->email)) ? $this->context->cookie->email : '')
             )
-        );
+        ));
         $this->context->smarty->assign(
             [
                 'errors'          => $this->errors,

@@ -286,6 +286,7 @@ class AdminCustomersControllerCore extends AdminController
         if ($this->_list) {
             foreach ($this->_list as &$row) {
                 $row['badge_success'] = $row['total_spent'] > 0;
+                $row['email'] = Tools::convertEmailFromIdn($row['email']);
             }
         }
     }
@@ -1043,7 +1044,13 @@ class AdminCustomersControllerCore extends AdminController
             $this->redirect_after = false;
         }
         // Check that the new email is not already in use
-        $customerEmail = strval(Tools::getValue('email'));
+        $customerEmail = (string) Tools::getValue('email');
+        if (mb_detect_encoding($customerEmail, 'UTF-8', true) && mb_strpos($customerEmail, '@') > -1) {
+            // Convert to IDN
+            list ($local, $domain) = explode('@', $customerEmail, 2);
+            $domain = Tools::utf8ToIdn($domain);
+            $customerEmail = "$local@$domain";
+        }
         $customer = new Customer();
         if (Validate::isEmail($customerEmail)) {
             $customer->getByEmail($customerEmail);
@@ -1077,6 +1084,12 @@ class AdminCustomersControllerCore extends AdminController
     {
         if (Validate::isLoadedObject($this->object)) {
             $customerEmail = strval(Tools::getValue('email'));
+            if (mb_detect_encoding($customerEmail, 'UTF-8', true) && mb_strpos($customerEmail, '@') > -1) {
+                // Convert to IDN
+                list ($local, $domain) = explode('@', $customerEmail, 2);
+                $domain = Tools::utf8ToIdn($domain);
+                $customerEmail = "$local@$domain";
+            }
 
             // check if e-mail already used
             if ($customerEmail != $this->object->email) {
