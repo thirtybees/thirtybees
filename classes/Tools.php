@@ -41,6 +41,20 @@ use PHPSQLParser\PHPSQLParser;
  */
 class ToolsCore
 {
+    /**
+     * Bootstring parameter values
+     *
+     */
+    const PUNYCODE_BASE         = 36;
+    const PUNYCODE_TMIN         = 1;
+    const PUNYCODE_TMAX         = 26;
+    const PUNYCODE_SKEW         = 38;
+    const PUNYCODE_DAMP         = 700;
+    const PUNYCODE_INITIAL_BIAS = 72;
+    const PUNYCODE_INITIAL_N    = 128;
+    const PUNYCODE_PREFIX       = 'xn--';
+    const PUNYCODE_DELIMITER    = '-';
+
     // @codingStandardsIgnoreStart
     public static $round_mode = null;
     protected static $file_exists_cache = [];
@@ -4699,6 +4713,344 @@ exit;
             $params['separator'] = ',';
 
         return implode($params['value'], $params['separator']);
+    }
+
+    /**
+     * Encode table
+     *
+     * @param array
+     *
+     * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
+     *
+     * Copyright (c) 2014 TrueServer B.V.
+     *
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is furnished
+     * to do so, subject to the following conditions:
+     *
+     * The above copyright notice and this permission notice shall be included in all
+     * copies or substantial portions of the Software.
+     *
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     * THE SOFTWARE.
+     */
+    protected static $encodeTable = [
+        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
+        'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x',
+        'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    ];
+    /**
+     * Decode table
+     *
+     * @param array
+     *
+     * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
+     */
+    protected static $decodeTable = [
+        'a' =>  0, 'b' =>  1, 'c' =>  2, 'd' =>  3, 'e' =>  4, 'f' =>  5,
+        'g' =>  6, 'h' =>  7, 'i' =>  8, 'j' =>  9, 'k' => 10, 'l' => 11,
+        'm' => 12, 'n' => 13, 'o' => 14, 'p' => 15, 'q' => 16, 'r' => 17,
+        's' => 18, 't' => 19, 'u' => 20, 'v' => 21, 'w' => 22, 'x' => 23,
+        'y' => 24, 'z' => 25, '0' => 26, '1' => 27, '2' => 28, '3' => 29,
+        '4' => 30, '5' => 31, '6' => 32, '7' => 33, '8' => 34, '9' => 35
+    ];
+
+    /**
+     * Encode a domain to its Punycode version
+     *
+     * @param string $input Domain name in Unicode to be encoded
+     *
+     * @return string Punycode representation in ASCII
+     *
+     * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
+     */
+    public function encode($input)
+    {
+        $input = static::strtolower($input);
+        $parts = explode('.', $input);
+        foreach ($parts as &$part) {
+            $length = strlen($part);
+            if ($length < 1) {
+                return false;
+            }
+            $part = $this->encodePart($part);
+        }
+        $output = implode('.', $parts);
+        $length = strlen($output);
+        if ($length > 255) {
+            return false;
+        }
+        return $output;
+    }
+
+    /**
+     * Encode a part of a domain name, such as tld, to its Punycode version
+     *
+     * @param string $input Part of a domain name
+     *
+     * @return string Punycode representation of a domain part
+     *
+     * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
+     */
+    protected function encodePart($input)
+    {
+        $codePoints = $this->listCodePoints($input);
+        $n = static::PUNYCODE_INITIAL_N;
+        $bias = static::PUNYCODE_INITIAL_BIAS;
+        $delta = 0;
+        $h = $b = count($codePoints['basic']);
+        $output = '';
+        foreach ($codePoints['basic'] as $code) {
+            $output .= $this->codePointToChar($code);
+        }
+        if ($input === $output) {
+            return $output;
+        }
+        if ($b > 0) {
+            $output .= static::PUNYCODE_DELIMITER;
+        }
+        $codePoints['nonBasic'] = array_unique($codePoints['nonBasic']);
+        sort($codePoints['nonBasic']);
+        $i = 0;
+        $length = static::strlen($input);
+        while ($h < $length) {
+            $m = $codePoints['nonBasic'][$i++];
+            $delta = $delta + ($m - $n) * ($h + 1);
+            $n = $m;
+            foreach ($codePoints['all'] as $c) {
+                if ($c < $n || $c < static::PUNYCODE_INITIAL_N) {
+                    $delta++;
+                }
+                if ($c === $n) {
+                    $q = $delta;
+                    for ($k = static::PUNYCODE_BASE;; $k += static::PUNYCODE_BASE) {
+                        $t = $this->calculateThreshold($k, $bias);
+                        if ($q < $t) {
+                            break;
+                        }
+                        $code = $t + (($q - $t) % (static::PUNYCODE_BASE - $t));
+                        $output .= static::$encodeTable[$code];
+                        $q = ($q - $t) / (static::PUNYCODE_BASE - $t);
+                    }
+                    $output .= static::$encodeTable[$q];
+                    $bias = $this->adapt($delta, $h + 1, ($h === $b));
+                    $delta = 0;
+                    $h++;
+                }
+            }
+            $delta++;
+            $n++;
+        }
+        $out = static::PUNYCODE_PREFIX . $output;
+        $length = strlen($out);
+        if ($length > 63 || $length < 1) {
+            return false;
+        }
+        return $out;
+    }
+    /**
+     * Decode a Punycode domain name to its Unicode counterpart
+     *
+     * @param string $input Domain name in Punycode
+     *
+     * @return string Unicode domain name
+     *
+     * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
+     */
+    public function decode($input)
+    {
+        $input = strtolower($input);
+        $parts = explode('.', $input);
+        foreach ($parts as &$part) {
+            $length = strlen($part);
+            if ($length > 63 || $length < 1) {
+                return false;
+            }
+            if (strpos($part, static::PUNYCODE_PREFIX) !== 0) {
+                continue;
+            }
+            $part = substr($part, strlen(static::PUNYCODE_PREFIX));
+            $part = $this->decodePart($part);
+        }
+        $output = implode('.', $parts);
+        $length = strlen($output);
+        if ($length > 255) {
+            return false;
+        }
+
+        return $output;
+    }
+    /**
+     * Decode a part of domain name, such as tld
+     *
+     * @param string $input Part of a domain name
+     *
+     * @return string Unicode domain part
+     *
+     * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
+     */
+    protected function decodePart($input)
+    {
+        $n = static::PUNYCODE_INITIAL_N;
+        $i = 0;
+        $bias = static::PUNYCODE_INITIAL_BIAS;
+        $output = '';
+        $pos = strrpos($input, static::PUNYCODE_DELIMITER);
+        if ($pos !== false) {
+            $output = substr($input, 0, $pos++);
+        } else {
+            $pos = 0;
+        }
+        $outputLength = strlen($output);
+        $inputLength = strlen($input);
+        while ($pos < $inputLength) {
+            $oldi = $i;
+            $w = 1;
+            for ($k = static::PUNYCODE_BASE;; $k += static::PUNYCODE_BASE) {
+                $digit = static::$decodeTable[$input[$pos++]];
+                $i = $i + ($digit * $w);
+                $t = $this->calculateThreshold($k, $bias);
+                if ($digit < $t) {
+                    break;
+                }
+                $w = $w * (static::PUNYCODE_BASE - $t);
+            }
+            $bias = $this->adapt($i - $oldi, ++$outputLength, ($oldi === 0));
+            $n = $n + (int) ($i / $outputLength);
+            $i = $i % ($outputLength);
+            $output = static::substr($output, 0, $i).$this->codePointToChar($n).static::substr($output, $i, $outputLength - 1);
+            $i++;
+        }
+
+        return $output;
+    }
+    /**
+     * Calculate the bias threshold to fall between TMIN and TMAX
+     *
+     * @param integer $k
+     * @param integer $bias
+     *
+     * @return integer
+     *
+     * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
+     */
+    protected function calculateThreshold($k, $bias)
+    {
+        if ($k <= $bias + static::PUNYCODE_TMIN) {
+            return static::PUNYCODE_TMIN;
+        } elseif ($k >= $bias + static::PUNYCODE_TMAX) {
+            return static::PUNYCODE_TMAX;
+        }
+
+        return $k - $bias;
+    }
+    /**
+     * Bias adaptation
+     *
+     * @param integer $delta
+     * @param integer $numPoints
+     * @param boolean $firstTime
+     *
+     * @return integer
+     *
+     * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
+     */
+    protected function adapt($delta, $numPoints, $firstTime)
+    {
+        $delta = (int) (
+        ($firstTime)
+            ? $delta / static::PUNYCODE_DAMP
+            : $delta / 2
+        );
+        $delta += (int) ($delta / $numPoints);
+        $k = 0;
+        while ($delta > ((static::PUNYCODE_BASE - static::PUNYCODE_TMIN) * static::PUNYCODE_TMAX) / 2) {
+            $delta = (int) ($delta / (static::PUNYCODE_BASE - static::PUNYCODE_TMIN));
+            $k = $k + static::PUNYCODE_BASE;
+        }
+        $k = $k + (int) (((static::PUNYCODE_BASE - static::PUNYCODE_TMIN + 1) * $delta) / ($delta + static::PUNYCODE_SKEW));
+
+        return $k;
+    }
+    /**
+     * List code points for a given input
+     *
+     * @param string $input
+     *
+     * @return array Multi-dimension array with basic, non-basic and aggregated code points
+     *
+     * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
+     */
+    protected function listCodePoints($input)
+    {
+        $codePoints = [
+            'all'      => [],
+            'basic'    => [],
+            'nonBasic' => [],
+        ];
+        $length = static::strlen($input);
+        for ($i = 0; $i < $length; $i++) {
+            $char = static::substr($input, $i, 1);
+            $code = $this->charToCodePoint($char);
+            if ($code < 128) {
+                $codePoints['all'][] = $codePoints['basic'][] = $code;
+            } else {
+                $codePoints['all'][] = $codePoints['nonBasic'][] = $code;
+            }
+        }
+
+        return $codePoints;
+    }
+    /**
+     * Convert a single or multi-byte character to its code point
+     *
+     * @param string $char
+     * @return integer
+     *
+     * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
+     */
+    protected function charToCodePoint($char)
+    {
+        $code = ord($char[0]);
+        if ($code < 128) {
+            return $code;
+        } elseif ($code < 224) {
+            return (($code - 192) * 64) + (ord($char[1]) - 128);
+        } elseif ($code < 240) {
+            return (($code - 224) * 4096) + ((ord($char[1]) - 128) * 64) + (ord($char[2]) - 128);
+        } else {
+            return (($code - 240) * 262144) + ((ord($char[1]) - 128) * 4096) + ((ord($char[2]) - 128) * 64) + (ord($char[3]) - 128);
+        }
+    }
+
+    /**
+     * Convert a code point to its single or multi-byte character
+     *
+     * @param integer $code
+     * @return string
+     *
+     * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
+     *
+     */
+    protected function codePointToChar($code)
+    {
+        if ($code <= 0x7F) {
+            return chr($code);
+        } elseif ($code <= 0x7FF) {
+            return chr(($code >> 6) + 192) . chr(($code & 63) + 128);
+        } elseif ($code <= 0xFFFF) {
+            return chr(($code >> 12) + 224) . chr((($code >> 6) & 63) + 128) . chr(($code & 63) + 128);
+        } else {
+            return chr(($code >> 18) + 240) . chr((($code >> 12) & 63) + 128) . chr((($code >> 6) & 63) + 128) . chr(($code & 63) + 128);
+        }
     }
 }
 
