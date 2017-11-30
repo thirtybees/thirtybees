@@ -4720,6 +4720,8 @@ exit;
      *
      * @param array
      *
+     * @since 1.0.4
+     *
      * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
      *
      * Copyright (c) 2014 TrueServer B.V.
@@ -4752,6 +4754,8 @@ exit;
      *
      * @param array
      *
+     * @since 1.0.4
+     *
      * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
      */
     protected static $decodeTable = [
@@ -4770,9 +4774,11 @@ exit;
      *
      * @return string Punycode representation in ASCII
      *
+     * @since 1.0.4
+     *
      * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
      */
-    public function encode($input)
+    public function utf8ToIdn($input)
     {
         $input = static::strtolower($input);
         $parts = explode('.', $input);
@@ -4792,11 +4798,48 @@ exit;
     }
 
     /**
+     * Decode a Punycode domain name to its Unicode counterpart
+     *
+     * @param string $input Domain name in Punycode
+     *
+     * @return string Unicode domain name
+     *
+     * @since 1.0.4
+     *
+     * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
+     */
+    public function idnToUtf8($input)
+    {
+        $input = strtolower($input);
+        $parts = explode('.', $input);
+        foreach ($parts as &$part) {
+            $length = strlen($part);
+            if ($length > 63 || $length < 1) {
+                return false;
+            }
+            if (strpos($part, static::PUNYCODE_PREFIX) !== 0) {
+                continue;
+            }
+            $part = substr($part, strlen(static::PUNYCODE_PREFIX));
+            $part = $this->decodePart($part);
+        }
+        $output = implode('.', $parts);
+        $length = strlen($output);
+        if ($length > 255) {
+            return false;
+        }
+
+        return $output;
+    }
+
+    /**
      * Encode a part of a domain name, such as tld, to its Punycode version
      *
      * @param string $input Part of a domain name
      *
      * @return string Punycode representation of a domain part
+     *
+     * @since 1.0.4
      *
      * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
      */
@@ -4856,44 +4899,15 @@ exit;
         }
         return $out;
     }
-    /**
-     * Decode a Punycode domain name to its Unicode counterpart
-     *
-     * @param string $input Domain name in Punycode
-     *
-     * @return string Unicode domain name
-     *
-     * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
-     */
-    public function decode($input)
-    {
-        $input = strtolower($input);
-        $parts = explode('.', $input);
-        foreach ($parts as &$part) {
-            $length = strlen($part);
-            if ($length > 63 || $length < 1) {
-                return false;
-            }
-            if (strpos($part, static::PUNYCODE_PREFIX) !== 0) {
-                continue;
-            }
-            $part = substr($part, strlen(static::PUNYCODE_PREFIX));
-            $part = $this->decodePart($part);
-        }
-        $output = implode('.', $parts);
-        $length = strlen($output);
-        if ($length > 255) {
-            return false;
-        }
 
-        return $output;
-    }
     /**
      * Decode a part of domain name, such as tld
      *
      * @param string $input Part of a domain name
      *
      * @return string Unicode domain part
+     *
+     * @since 1.0.4
      *
      * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
      */
@@ -4932,6 +4946,7 @@ exit;
 
         return $output;
     }
+
     /**
      * Calculate the bias threshold to fall between TMIN and TMAX
      *
@@ -4939,6 +4954,8 @@ exit;
      * @param integer $bias
      *
      * @return integer
+     *
+     * @since 1.0.4
      *
      * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
      */
@@ -4952,6 +4969,7 @@ exit;
 
         return $k - $bias;
     }
+
     /**
      * Bias adaptation
      *
@@ -4960,6 +4978,8 @@ exit;
      * @param boolean $firstTime
      *
      * @return integer
+     *
+     * @since 1.0.4
      *
      * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
      */
@@ -4980,12 +5000,15 @@ exit;
 
         return $k;
     }
+
     /**
      * List code points for a given input
      *
      * @param string $input
      *
      * @return array Multi-dimension array with basic, non-basic and aggregated code points
+     *
+     * @since 1.0.4
      *
      * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
      */
@@ -5009,11 +5032,14 @@ exit;
 
         return $codePoints;
     }
+
     /**
      * Convert a single or multi-byte character to its code point
      *
      * @param string $char
      * @return integer
+     *
+     * @since 1.0.4
      *
      * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
      */
@@ -5036,6 +5062,8 @@ exit;
      *
      * @param integer $code
      * @return string
+     *
+     * @since 1.0.4
      *
      * @copyright 2014 TrueServer B.V. (https://github.com/true/php-punycode)
      *
