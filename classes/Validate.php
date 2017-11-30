@@ -627,7 +627,7 @@ class ValidateCore
      */
     public static function isPasswd($plainTextPassword, $size = self::PASSWORD_LENGTH)
     {
-        return (Tools::strlen($plainTextPassword) >= $size && Tools::strlen($plainTextPassword) < 255);
+        return (mb_strlen($plainTextPassword) >= $size && mb_strlen($plainTextPassword) < 255);
     }
 
     /**
@@ -1166,7 +1166,7 @@ class ValidateCore
      */
     public static function isWeightUnit($unit)
     {
-        return (static::isGenericName($unit) & (Tools::strlen($unit) < 5));
+        return (static::isGenericName($unit) & (mb_strlen($unit) < 5));
     }
 
     /**
@@ -1194,7 +1194,7 @@ class ValidateCore
      */
     public static function isDistanceUnit($unit)
     {
-        return (static::isGenericName($unit) & (Tools::strlen($unit) < 5));
+        return (static::isGenericName($unit) & (mb_strlen($unit) < 5));
     }
 
     /**
@@ -1510,7 +1510,7 @@ class ValidateCore
      */
     public static function isSiret($siret)
     {
-        if (Tools::strlen($siret) != 14) {
+        if (mb_strlen($siret) != 14) {
             return false;
         }
         $sum = 0;

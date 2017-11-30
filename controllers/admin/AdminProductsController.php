@@ -643,13 +643,13 @@ class AdminProductsControllerCore extends AdminController
             foreach ($attachmentNames as $lang => $name) {
                 $language = Language::getLanguage((int) $lang);
 
-                if (Tools::strlen($name) > 0) {
+                if (mb_strlen($name) > 0) {
                     $isAttachmentNameValid = true;
                 }
 
                 if (!Validate::isGenericName($name)) {
                     $_FILES['attachment_file']['error'][] = sprintf(Tools::displayError('Invalid name for %s language'), $language['name']);
-                } elseif (Tools::strlen($name) > 32) {
+                } elseif (mb_strlen($name) > 32) {
                     $_FILES['attachment_file']['error'][] = sprintf(Tools::displayError('The name for %1s language is too long (%2d chars max).'), $language['name'], 32);
                 }
             }
@@ -702,13 +702,13 @@ class AdminProductsControllerCore extends AdminController
                     $attachment->mime = $_FILES['attachment_file']['type'];
                     $attachment->file_name = $_FILES['attachment_file']['name'];
 
-                    if (empty($attachment->mime) || Tools::strlen($attachment->mime) > 128) {
+                    if (empty($attachment->mime) || mb_strlen($attachment->mime) > 128) {
                         $_FILES['attachment_file']['error'][] = Tools::displayError('Invalid file extension');
                     }
                     if (!Validate::isGenericName($attachment->file_name)) {
                         $_FILES['attachment_file']['error'][] = Tools::displayError('Invalid file name');
                     }
-                    if (Tools::strlen($attachment->file_name) > 128) {
+                    if (mb_strlen($attachment->file_name) > 128) {
                         $_FILES['attachment_file']['error'][] = Tools::displayError('The file name is too long.');
                     }
                     if (empty($this->errors)) {
@@ -1917,7 +1917,7 @@ class AdminProductsControllerCore extends AdminController
 
         // Check fields sizes
         foreach ($rules['size'] as $field => $maxLength) {
-            if ($this->isProductFieldUpdated($field) && ($value = Tools::getValue($field)) && Tools::strlen($value) > $maxLength) {
+            if ($this->isProductFieldUpdated($field) && ($value = Tools::getValue($field)) && mb_strlen($value) > $maxLength) {
                 $this->errors[] = sprintf(
                     Tools::displayError('The %1$s field is too long (%2$d chars max).'),
                     call_user_func([$className, 'displayFieldName'], $field, $className),
@@ -1938,13 +1938,13 @@ class AdminProductsControllerCore extends AdminController
         }
         foreach ($languages as $language) {
             if ($this->isProductFieldUpdated('description_short', $language['id_lang']) && ($value = Tools::getValue('description_short_'.$language['id_lang']))) {
-                if (Tools::strlen(strip_tags($value)) > $limit) {
+                if (mb_strlen(strip_tags($value)) > $limit) {
                     $this->errors[] = sprintf(
                         Tools::displayError('This %1$s field (%2$s) is too long: %3$d chars max (current count %4$d).'),
                         call_user_func([$className, 'displayFieldName'], 'description_short'),
                         $language['name'],
                         $limit,
-                        Tools::strlen(strip_tags($value))
+                        mb_strlen(strip_tags($value))
                     );
                 }
             }
@@ -1954,7 +1954,7 @@ class AdminProductsControllerCore extends AdminController
         foreach ($rules['sizeLang'] as $fieldLang => $maxLength) {
             foreach ($languages as $language) {
                 $value = Tools::getValue($fieldLang.'_'.$language['id_lang']);
-                if ($value && Tools::strlen($value) > $maxLength) {
+                if ($value && mb_strlen($value) > $maxLength) {
                     $this->errors[] = sprintf(
                         Tools::displayError('The %1$s field is too long (%2$d chars max).'),
                         call_user_func([$className, 'displayFieldName'], $fieldLang, $className),
@@ -2702,7 +2702,7 @@ class AdminProductsControllerCore extends AdminController
         foreach ($languages as $language) {
             if ($val = Tools::getValue('custom_'.$featureId.'_'.$language['id_lang'])) {
                 $currentLanguage = new Language($language['id_lang']);
-                if (Tools::strlen($val) > $rules['sizeLang']['value']) {
+                if (mb_strlen($val) > $rules['sizeLang']['value']) {
                     $this->errors[] = sprintf(
                         Tools::displayError('The name for feature %1$s is too long in %2$s.'),
                         ' <b>'.$feature['name'].'</b>',
@@ -3124,7 +3124,7 @@ class AdminProductsControllerCore extends AdminController
 
             // Check if Module
             if (substr($this->tab_display, 0, 6) == 'Module') {
-                $this->tab_display_module = strtolower(substr($this->tab_display, 6, Tools::strlen($this->tab_display) - 6));
+                $this->tab_display_module = strtolower(substr($this->tab_display, 6, mb_strlen($this->tab_display) - 6));
                 $this->tab_display = 'Modules';
             }
             if (method_exists($this, 'initForm'.$this->tab_display)) {

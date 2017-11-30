@@ -745,7 +745,7 @@ abstract class AdminTabCore
 			<script type="text/javascript" src="../js/admin/dnd.js"></script>
 			';
         }
-        echo '<table'.(array_key_exists($this->identifier, $this->identifiersDnd) ? ' id="'.(((int) (Tools::getValue($this->identifiersDnd[$this->identifier], 1))) ? Tools::substr($this->identifier, 3, Tools::strlen($this->identifier)) : '').'"' : '').' class="table'.((array_key_exists($this->identifier, $this->identifiersDnd) && ($this->_orderBy != 'position' && $this->_orderWay != 'DESC')) ? ' tableDnD' : '').'" cellpadding="0" cellspacing="0">
+        echo '<table'.(array_key_exists($this->identifier, $this->identifiersDnd) ? ' id="'.(((int) (Tools::getValue($this->identifiersDnd[$this->identifier], 1))) ? Tools::substr($this->identifier, 3, mb_strlen($this->identifier)) : '').'"' : '').' class="table'.((array_key_exists($this->identifier, $this->identifiersDnd) && ($this->_orderBy != 'position' && $this->_orderWay != 'DESC')) ? ' tableDnD' : '').'" cellpadding="0" cellspacing="0">
 			<thead>
 				<tr class="nodrag nodrop">
 					<th>';
@@ -953,7 +953,7 @@ abstract class AdminTabCore
                     } elseif (isset($tr[$key])) {
                         if ($key == 'price') {
                             $echo = round($tr[$key], 2);
-                        } elseif (isset($params['maxlength']) && Tools::strlen($tr[$key]) > $params['maxlength']) {
+                        } elseif (isset($params['maxlength']) && mb_strlen($tr[$key]) > $params['maxlength']) {
                             $echo = '<span title="'.$tr[$key].'">'.Tools::substr($tr[$key], 0, $params['maxlength']).'...</span>';
                         } else {
                             $echo = $tr[$key];
@@ -969,7 +969,7 @@ abstract class AdminTabCore
                 }
 
                 if ($this->shopLinkType) {
-                    $name = (Tools::strlen($tr['shop_name']) > 15) ? Tools::substr($tr['shop_name'], 0, 15).'...' : $tr['shop_name'];
+                    $name = (mb_strlen($tr['shop_name']) > 15) ? Tools::substr($tr['shop_name'], 0, 15).'...' : $tr['shop_name'];
                     echo '<td class="center" '.(($name != $tr['shop_name']) ? 'title="'.$tr['shop_name'].'"' : '').'>'.$name.'</td>';
                 }
 
@@ -1610,8 +1610,8 @@ abstract class AdminTabCore
         elseif (isset($_POST['submitReset'.$this->table])) {
             $filters = $this->context->cookie->getFamily($this->table.'Filter_');
             foreach ($filters as $cookieKey => $filter) {
-                if (strncmp($cookieKey, $this->table.'Filter_', 7 + Tools::strlen($this->table)) == 0) {
-                    $key = Tools::substr($cookieKey, 7 + Tools::strlen($this->table));
+                if (strncmp($cookieKey, $this->table.'Filter_', 7 + mb_strlen($this->table)) == 0) {
+                    $key = Tools::substr($cookieKey, 7 + mb_strlen($this->table));
                     /* Table alias could be specified using a ! eg. alias!field */
                     $tmpTab = explode('!', $key);
                     $key = (count($tmpTab) > 1 ? $tmpTab[1] : $tmpTab[0]);
@@ -1638,8 +1638,8 @@ abstract class AdminTabCore
             $_POST = array_merge($this->context->cookie->getFamily($this->table.'Filter_'), (isset($_POST) ? $_POST : []));
             foreach ($_POST as $key => $value) {
                 /* Extracting filters from $_POST on key filter_ */
-                if ($value != null && !strncmp($key, $this->table.'Filter_', 7 + Tools::strlen($this->table))) {
-                    $key = Tools::substr($key, 7 + Tools::strlen($this->table));
+                if ($value != null && !strncmp($key, $this->table.'Filter_', 7 + mb_strlen($this->table))) {
+                    $key = Tools::substr($key, 7 + mb_strlen($this->table));
                     /* Table alias could be specified using a ! eg. alias!field */
                     $tmpTab = explode('!', $key);
                     $filter = count($tmpTab) > 1 ? $tmpTab[1] : $tmpTab[0];
@@ -1805,7 +1805,7 @@ abstract class AdminTabCore
 
         /* Checking for maximum fields sizes */
         foreach ($rules['size'] as $field => $maxLength) {
-            if (Tools::getValue($field) !== false && Tools::strlen(Tools::getValue($field)) > $maxLength) {
+            if (Tools::getValue($field) !== false && mb_strlen(Tools::getValue($field)) > $maxLength) {
                 $this->_errors[] = sprintf(Tools::displayError('field %1$s is too long. (%2$d chars max)'), call_user_func([$className, 'displayFieldName'], $field, $className), $maxLength);
             }
         }
@@ -1813,7 +1813,7 @@ abstract class AdminTabCore
         /* Checking for maximum multilingual fields size */
         foreach ($rules['sizeLang'] as $fieldLang => $maxLength) {
             foreach ($languages as $language) {
-                if (Tools::getValue($fieldLang.'_'.$language['id_lang']) !== false && Tools::strlen(Tools::getValue($fieldLang.'_'.$language['id_lang'])) > $maxLength) {
+                if (Tools::getValue($fieldLang.'_'.$language['id_lang']) !== false && mb_strlen(Tools::getValue($fieldLang.'_'.$language['id_lang'])) > $maxLength) {
                     $this->_errors[] = sprintf(Tools::displayError('field %1$s is too long. (%2$d chars max, html chars including)'), call_user_func([$className, 'displayFieldName'], $fieldLang, $className), $maxLength);
                 }
             }
@@ -2739,7 +2739,7 @@ EOF;
         }
 
         $url = preg_replace('#(?<=&|\?)('.implode('|', $remove).')=.*?(&|$)#i', '', $url);
-        $len = Tools::strlen($url);
+        $len = mb_strlen($url);
         if ($url[$len - 1] == '&') {
             $url = Tools::substr($url, 0, $len - 1);
         }

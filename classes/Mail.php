@@ -465,7 +465,7 @@ class MailCore extends ObjectModel
      */
     public static function mimeEncode($string, $charset = 'UTF-8', $newline = "\r\n")
     {
-        if (!static::isMultibyte($string) && Tools::strlen($string) < 75) {
+        if (!static::isMultibyte($string) && mb_strlen($string) < 75) {
             return $string;
         }
 
@@ -473,13 +473,13 @@ class MailCore extends ObjectModel
         $start = '=?'.$charset.'?B?';
         $end = '?=';
         $sep = $end.$newline.' '.$start;
-        $length = 75 - Tools::strlen($start) - Tools::strlen($end);
+        $length = 75 - mb_strlen($start) - mb_strlen($end);
         $length = $length - ($length % 4);
 
         if ($charset === 'UTF-8') {
             $parts = [];
             $maxchars = floor(($length * 3) / 4);
-            $stringLength = Tools::strlen($string);
+            $stringLength = mb_strlen($string);
 
             while ($stringLength > $maxchars) {
                 $i = (int) $maxchars;
@@ -491,7 +491,7 @@ class MailCore extends ObjectModel
 
                 $parts[] = base64_encode(Tools::substr($string, 0, $i));
                 $string = Tools::substr($string, $i);
-                $stringLength = Tools::strlen($string);
+                $stringLength = mb_strlen($string);
             }
 
             $parts[] = base64_encode($string);
@@ -516,7 +516,7 @@ class MailCore extends ObjectModel
      */
     public static function isMultibyte($data)
     {
-        $length = Tools::strlen($data);
+        $length = mb_strlen($data);
         for ($i = 0; $i < $length; $i++) {
             if (ord(($data[$i])) > 128) {
                 return true;

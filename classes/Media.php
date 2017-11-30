@@ -1042,7 +1042,7 @@ class MediaCore
      */
     public static function addJsDefL($params, $content, $smarty = null, &$repeat = false)
     {
-        if (!$repeat && isset($params) && Tools::strlen($content)) {
+        if (!$repeat && isset($params) && mb_strlen($content)) {
             if (!is_array($params)) {
                 $params = (array) $params;
             }

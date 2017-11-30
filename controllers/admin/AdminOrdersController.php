@@ -689,7 +689,7 @@ class AdminOrdersControllerCore extends AdminController
                         }
                     }
                     foreach ($rules['size'] as $field => $maxLength) {
-                        if (Tools::getValue($field) && Tools::strlen(Tools::getValue($field)) > $maxLength) {
+                        if (Tools::getValue($field) && mb_strlen(Tools::getValue($field)) > $maxLength) {
                             $this->errors[] = sprintf(Tools::displayError('field %1$s is too long (%2$d chars max).'), $field, $maxLength);
                         }
                     }

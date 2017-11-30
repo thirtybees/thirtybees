@@ -650,8 +650,8 @@ class AdminControllerCore extends Controller
 
         foreach ($filters as $key => $value) {
             /* Extracting filters from $_POST on key filter_ */
-            if ($value != null && !strncmp($key, $prefix.$this->list_id.'Filter_', 7 + Tools::strlen($prefix.$this->list_id))) {
-                $key = Tools::substr($key, 7 + Tools::strlen($prefix.$this->list_id));
+            if ($value != null && !strncmp($key, $prefix.$this->list_id.'Filter_', 7 + mb_strlen($prefix.$this->list_id))) {
+                $key = Tools::substr($key, 7 + mb_strlen($prefix.$this->list_id));
                 /* Table alias could be specified using a ! eg. alias!field */
                 $tmpTab = explode('!', $key);
                 $filter = count($tmpTab) > 1 ? $tmpTab[1] : $tmpTab[0];
@@ -1908,8 +1908,8 @@ class AdminControllerCore extends Controller
         $prefix = str_replace(['admin', 'controller'], '', Tools::strtolower(get_class($this)));
         $filters = $this->context->cookie->getFamily($prefix.$listId.'Filter_');
         foreach ($filters as $cookieKey => $filter) {
-            if (strncmp($cookieKey, $prefix.$listId.'Filter_', 7 + Tools::strlen($prefix.$listId)) == 0) {
-                $key = substr($cookieKey, 7 + Tools::strlen($prefix.$listId));
+            if (strncmp($cookieKey, $prefix.$listId.'Filter_', 7 + mb_strlen($prefix.$listId)) == 0) {
+                $key = substr($cookieKey, 7 + mb_strlen($prefix.$listId));
                 if (is_array($this->fields_list) && array_key_exists($key, $this->fields_list)) {
                     $this->context->cookie->$cookieKey = null;
                 }

@@ -2933,7 +2933,7 @@ class AdminTranslationsControllerCore extends AdminController
     {
         $content = file_get_contents($dir.'/'.$file);
 
-        if (Tools::strlen($content) === 0) {
+        if (mb_strlen($content) === 0) {
             $content = '';
         }
 

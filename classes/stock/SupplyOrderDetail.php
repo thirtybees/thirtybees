@@ -313,7 +313,7 @@ class SupplyOrderDetailCore extends ObjectModel
 
         /* Checks maximum fields sizes */
         foreach ($this->fieldsSize as $field => $maxLength) {
-            if ($value = $this->{$field} && Tools::strlen($value) > $maxLength) {
+            if ($value = $this->{$field} && mb_strlen($value) > $maxLength) {
                 $errors[] = sprintf(
                     Tools::displayError('%1$s is too long. Maximum length: %2$d'),
                     SupplyOrderDetail::displayFieldName($field, get_class($this), $htmlentities),

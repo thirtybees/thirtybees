@@ -1145,7 +1145,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                 $size = ['min' => 0, 'max' => $data['size']];
             }
 
-            $length = Tools::strlen($value);
+            $length = mb_strlen($value);
             if ($length < $size['min'] || $length > $size['max']) {
                 if ($humanErrors) {
                     if (isset($data['lang']) && $data['lang']) {
@@ -1264,7 +1264,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             }
 
             // Checking for maximum fields sizes
-            if (isset($data['size']) && !empty($value) && Tools::strlen($value) > $data['size']) {
+            if (isset($data['size']) && !empty($value) && mb_strlen($value) > $data['size']) {
                 $errors[$field] = sprintf(
                     Tools::displayError('%1$s is too long. Maximum length: %2$d'),
                     static::displayFieldName($field, get_class($this), $htmlentities),

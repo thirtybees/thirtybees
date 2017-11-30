@@ -428,7 +428,7 @@ class HelperListCore extends Helper
             $name = isset($tr['name']) ? $tr['name'] : null;
 
             if ($this->shopLinkType) {
-                $this->_list[$index]['short_shop_name'] = Tools::strlen($tr['shop_name']) > 15 ? Tools::substr($tr['shop_name'], 0, 15).'...' : $tr['shop_name'];
+                $this->_list[$index]['short_shop_name'] = mb_strlen($tr['shop_name']) > 15 ? Tools::substr($tr['shop_name'], 0, 15).'...' : $tr['shop_name'];
             }
 
             $isFirst = true;

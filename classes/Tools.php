@@ -2194,12 +2194,12 @@ class ToolsCore
      */
     public static function truncate($str, $maxLength, $suffix = '...')
     {
-        if (Tools::strlen($str) <= $maxLength) {
+        if (mb_strlen($str) <= $maxLength) {
             return $str;
         }
         $str = utf8_decode($str);
 
-        return (utf8_encode(substr($str, 0, $maxLength - Tools::strlen($suffix)).$suffix));
+        return (utf8_encode(substr($str, 0, $maxLength - mb_strlen($suffix)).$suffix));
     }
 
     /**
@@ -2249,11 +2249,11 @@ class ToolsCore
          */
 
         if ($html) {
-            if (Tools::strlen(preg_replace('/<.*?>/', '', $text)) <= $length) {
+            if (mb_strlen(preg_replace('/<.*?>/', '', $text)) <= $length) {
                 return $text;
             }
 
-            $totalLength = Tools::strlen(strip_tags($ellipsis));
+            $totalLength = mb_strlen(strip_tags($ellipsis));
             $openTags = [];
             $truncate = '';
             preg_match_all('/(<\/?([\w+]+)[^>]*>)?([^<>]*)/', $text, $tags, PREG_SET_ORDER);
@@ -2270,7 +2270,7 @@ class ToolsCore
                     }
                 }
                 $truncate .= $tag[1];
-                $contentLength = Tools::strlen(preg_replace('/&[0-9a-z]{2,8};|&#[0-9]{1,7};|&#x[0-9a-f]{1,6};/i', ' ', $tag[3]));
+                $contentLength = mb_strlen(preg_replace('/&[0-9a-z]{2,8};|&#[0-9]{1,7};|&#x[0-9a-f]{1,6};/i', ' ', $tag[3]));
 
                 if ($contentLength + $totalLength > $length) {
                     $left = $length - $totalLength;
@@ -2280,7 +2280,7 @@ class ToolsCore
                         foreach ($entities[0] as $entity) {
                             if ($entity[1] + 1 - $entitiesLength <= $left) {
                                 $left--;
-                                $entitiesLength += Tools::strlen($entity[0]);
+                                $entitiesLength += mb_strlen($entity[0]);
                             } else {
                                 break;
                             }
@@ -2299,11 +2299,11 @@ class ToolsCore
                 }
             }
         } else {
-            if (Tools::strlen($text) <= $length) {
+            if (mb_strlen($text) <= $length) {
                 return $text;
             }
 
-            $truncate = Tools::substr($text, 0, $length - Tools::strlen($ellipsis));
+            $truncate = Tools::substr($text, 0, $length - mb_strlen($ellipsis));
         }
 
         if (!$exact) {
@@ -2316,7 +2316,7 @@ class ToolsCore
                 if ($lastOpenTag > $lastCloseTag) {
                     preg_match_all('/<[\w]+[^>]*>/s', $truncate, $lastTagMatches);
                     $lastTag = array_pop($lastTagMatches[0]);
-                    $spacepos = Tools::strrpos($truncate, $lastTag) + Tools::strlen($lastTag);
+                    $spacepos = Tools::strrpos($truncate, $lastTag) + mb_strlen($lastTag);
                 }
 
                 $bits = Tools::substr($truncate, $spacepos);
@@ -2368,10 +2368,10 @@ class ToolsCore
             return false;
         }
         if (function_exists('mb_substr')) {
-            return mb_substr($str, (int) $start, ($length === false ? Tools::strlen($str) : (int) $length), $encoding);
+            return mb_substr($str, (int) $start, ($length === false ? mb_strlen($str) : (int) $length), $encoding);
         }
 
-        return substr($str, $start, ($length === false ? Tools::strlen($str) : (int) $length));
+        return substr($str, $start, ($length === false ? mb_strlen($str) : (int) $length));
     }
 
     /**
@@ -2827,7 +2827,7 @@ class ToolsCore
 
         $hex = str_replace('#', '', $hex);
 
-        if (Tools::strlen($hex) == 3) {
+        if (mb_strlen($hex) == 3) {
             $hex .= $hex;
         }
 
