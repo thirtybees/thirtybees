@@ -2210,6 +2210,8 @@ class ToolsCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @deprecated 1.0.4 Use mb_strlen for UTF-8 or strlen if guaranteed ASCII
      */
     public static function strlen($str, $encoding = 'UTF-8')
     {
@@ -2361,6 +2363,8 @@ class ToolsCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @deprecated 1.0.4 Use mb_strlen for UTF-8 or strlen if guaranteed ASCII
      */
     public static function substr($str, $start, $length = false, $encoding = 'utf-8')
     {
@@ -2384,6 +2388,8 @@ class ToolsCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @deprecated 1.0.4 Use mb_strlen for UTF-8 or strlen if guaranteed ASCII
      */
     public static function strrpos($str, $find, $offset = 0, $encoding = 'utf-8')
     {
@@ -2540,6 +2546,8 @@ class ToolsCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @deprecated 1.0.4 Use mb_strlen for UTF-8 or strlen if guaranteed ASCII
      */
     public static function strpos($str, $find, $offset = 0, $encoding = 'UTF-8')
     {
@@ -2557,6 +2565,8 @@ class ToolsCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @deprecated 1.0.4 Use mb_strlen for UTF-8 or strlen if guaranteed ASCII
      */
     public static function ucwords($str)
     {
@@ -2781,6 +2791,8 @@ class ToolsCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @deprecated 1.0.4 Use mb_strlen for UTF-8 or strlen if guaranteed ASCII
      */
     public static function strtoupper($str)
     {
