@@ -653,7 +653,7 @@ class AdminPerformanceControllerCore extends AdminController
                     'type'   => 'radio',
                     'label'  => $this->l('Algorithm'),
                     'name'   => 'PS_CIPHER_ALGORITHM',
-                    'hint'   => $this->l('Mcrypt is faster than our custom BlowFish class, but requires the "mcrypt" PHP extension. If you change this configuration, all cookies will be reset.'),
+                    'hint'   => $this->l('The Rijndael is faster than our custom BlowFish class, but requires the "mcrypt" or "openssl" PHP extension. If you change this configuration option, all cookies will be reset.'),
                     'values' => [
                         [
                             'id'    => 'PS_CIPHER_ALGORITHM_2',
