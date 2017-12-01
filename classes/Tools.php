@@ -4615,10 +4615,9 @@ exit;
             return;
         }
 
-        $sort_function = function ($a, $b) {
-            return $b['$column'] > $a['$column'] ? 1 : -1;
-        };
-        uasort($rows, $sort_function);
+        uasort($rows, function ($a, $b) use($column) {
+            return $b[$column] > $a[$column] ? 1 : -1;
+        });
 
         $unit = pow(10, $precision);
 
