@@ -355,13 +355,13 @@ class AdminEmailsControllerCore extends AdminController
      */
     public function beforeUpdateOptions()
     {
-        /* PrestaShop demo mode */
+        /* thirty bees demo mode */
         if (_PS_MODE_DEMO_) {
             $this->errors[] = Tools::displayError('This functionality has been disabled.');
 
             return;
         }
-        /* PrestaShop demo mode*/
+        /* thirty bees demo mode*/
 
         // We don't want to update the shop e-mail when sending test e-mails
         if (isset($_POST['PS_SHOP_EMAIL'])) {
@@ -409,6 +409,31 @@ class AdminEmailsControllerCore extends AdminController
 
             $result = Mail::sendMailTest(Tools::htmlentitiesUTF8($smtpChecked), Tools::htmlentitiesUTF8($smtpServer), $content, $subject, Tools::htmlentitiesUTF8($type), Tools::htmlentitiesUTF8($to), Tools::htmlentitiesUTF8($from), Tools::htmlentitiesUTF8($smtpLogin), $smtpPassword, Tools::htmlentitiesUTF8($smtpPort), Tools::htmlentitiesUTF8($smtpEncryption));
             die($result === true ? 'ok' : $result);
+        }
+    }
+
+    /**
+     * @param int  $idLang
+     * @param null $orderBy
+     * @param null $orderWay
+     * @param int  $start
+     * @param null $limit
+     * @param bool $idLangShop
+     *
+     * @since 1.0.4
+     */
+    public function getList(
+        $idLang,
+        $orderBy = null,
+        $orderWay = null,
+        $start = 0,
+        $limit = null,
+        $idLangShop = false
+    ) {
+        parent::getList($idLang, $orderBy, $orderWay, $start, $limit, $idLangShop);
+
+        foreach ($this->_list as &$row) {
+            $row['recipient'] = Tools::convertEmailFromIdn($row['recipient']);
         }
     }
 }
