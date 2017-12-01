@@ -2898,7 +2898,7 @@ class AdminImportControllerCore extends AdminController
             // clean feature positions to avoid conflict
             Feature::cleanPositions();
 
-            // set advanced stock managment
+            // set advanced stock managament
             if (!$validateOnly && isset($product->advanced_stock_management)) {
                 if ($product->advanced_stock_management != 1 && $product->advanced_stock_management != 0) {
                     $this->warnings[] = sprintf($this->l('Advanced stock management has incorrect value. Not set for product %1$s '), $product->name[$idDefaultLanguage]);
@@ -2907,7 +2907,7 @@ class AdminImportControllerCore extends AdminController
                 } elseif ($updateAdvancedStockManagementValue) {
                     $product->setAdvancedStockManagement($product->advanced_stock_management);
                 }
-                // automaticly disable depends on stock, if a_s_m set to disabled
+                // automatically disable depends on stock, if a_s_m set to disabled
                 if (StockAvailable::dependsOnStock($product->id) == 1 && $product->advanced_stock_management == 0) {
                     StockAvailable::setProductDependsOnStock($product->id, 0);
                 }
