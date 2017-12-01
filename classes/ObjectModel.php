@@ -573,7 +573,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
         if (Shop::isTableAssociated($this->def['table'])) {
             $idShopList = Shop::getContextListShopID();
-            if (count($this->id_shop_list) > 0) {
+            if (is_array($this->id_shop_list) && count($this->id_shop_list) > 0) {
                 $idShopList = $this->id_shop_list;
             }
         }
@@ -741,7 +741,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         }
 
         $idShopList = Shop::getContextListShopID();
-        if (count($this->id_shop_list) > 0) {
+        if (is_array($this->id_shop_list) && count($this->id_shop_list) > 0) {
             $idShopList = $this->id_shop_list;
         }
 
@@ -1422,8 +1422,10 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     public function getWebserviceObjectList($sqlJoin, $sqlFilter, $sqlSort, $sqlLimit)
     {
         $assoc = Shop::getAssoTable($this->def['table']);
-        $class_name = WebserviceRequest::$ws_current_classname;
-        $vars = get_class_vars($class_name);
+        // @codingStandardsIgnoreStart
+        $className = WebserviceRequest::$ws_current_classname;
+        // @codingStandardsIgnoreEnd
+        $vars = get_class_vars($className);
         if ($assoc !== false) {
             if ($assoc['type'] !== 'fk_shop') {
                 $multiShopJoin = ' LEFT JOIN `'._DB_PREFIX_.bqSQL($this->def['table']).'_'.bqSQL($assoc['type']).'`
@@ -1432,9 +1434,9 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                 $sqlFilter = 'AND `multi_shop_'.bqSQL($this->def['table']).'`.id_shop = '.Context::getContext()->shop->id.' '.$sqlFilter;
                 $sqlJoin = $multiShopJoin.' '.$sqlJoin;
             } else {
-                $vars = get_class_vars($class_name);
-                foreach ($vars['shopIDs'] as $id_shop) {
-                    $or[] = '(main.id_shop = '.(int)$id_shop.(isset($this->def['fields']['id_shop_group']) ? ' OR (id_shop = 0 AND id_shop_group='.(int)Shop::getGroupFromShop((int)$id_shop).')' : '').')';
+                $vars = get_class_vars($className);
+                foreach ($vars['shopIDs'] as $idShop) {
+                    $or[] = '(main.id_shop = '.(int) $idShop.(isset($this->def['fields']['id_shop_group']) ? ' OR (id_shop = 0 AND id_shop_group='.(int) Shop::getGroupFromShop((int) $idShop).')' : '').')';
                 }
 
                 $prepend = '';
