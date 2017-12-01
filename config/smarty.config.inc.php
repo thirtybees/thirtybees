@@ -88,7 +88,7 @@ smartyRegisterFunction($smarty, 'modifier', 'boolval', ['Tools', 'boolval']);
 smartyRegisterFunction($smarty, 'modifier', 'cleanHtml', 'smartyCleanHtml');
 smartyRegisterFunction($smarty, 'function', 'implode', array('Tools', 'smartyImplode'));
 smartyRegisterFunction($smarty, 'modifier', 'utf8ToIdn', array('Tools', 'convertEmailToIdn'));
-smartyRegisterFunction($smarty, 'modifier', 'idnToUtf8', array('Tools', 'convertEmailToUtf8'));
+smartyRegisterFunction($smarty, 'modifier', 'idnToUtf8', array('Tools', 'convertEmailFromIdn'));
 
 function smartyDieObject($params, &$smarty)
 {
