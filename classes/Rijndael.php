@@ -66,40 +66,78 @@ class RijndaelCore
      */
     public function encrypt($plaintext)
     {
-        $length = (ini_get('mbstring.func_overload') & 2) ? mb_strlen($plaintext, ini_get('default_charset')) : strlen($plaintext);
-
-        if ($length >= 1048576) {
+        if (mb_strlen($this->_key, '8bit') !== 32) {
             return false;
         }
 
-        return base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_128, $this->_key, $plaintext, MCRYPT_MODE_CBC, $this->_iv)).sprintf('%06d', $length);
+        if (function_exists('openssl_encrypt')) {
+            $ciphertext = openssl_encrypt(
+                $plaintext,
+                'aes-256-cbc',
+                $this->_key,
+                OPENSSL_RAW_DATA,
+                $this->_iv
+            );
+        } else {
+            // Add PKCS7 Padding
+            $block = mcrypt_get_block_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
+            $pad = $block - (mb_strlen($plaintext, '8bit') % $block);
+            $plaintext .= str_repeat(chr($pad), $pad);
+
+            $ciphertext = mcrypt_encrypt(
+                MCRYPT_RIJNDAEL_128,
+                $this->_key,
+                $plaintext,
+                MCRYPT_MODE_CBC,
+                $this->_iv
+            );
+        }
+
+        return $this->_iv.$ciphertext;
     }
 
     /**
      * @param string $ciphertext
      *
-     * @return string
+     * @return string|false
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function decrypt($ciphertext)
     {
-        if (ini_get('mbstring.func_overload') & 2) {
-            $length = intval(mb_substr($ciphertext, -6, 6, ini_get('default_charset')));
-            $ciphertext = mb_substr($ciphertext, 0, -6, ini_get('default_charset'));
+        if (mb_strlen($this->_key, '8bit') !== 32) {
+            return false;
+        }
 
-            return mb_substr(
-                mcrypt_decrypt(MCRYPT_RIJNDAEL_128, $this->_key, base64_decode($ciphertext), MCRYPT_MODE_CBC, $this->_iv),
-                0,
-                $length,
-                ini_get('default_charset')
+        $ciphertext = mb_substr($ciphertext, mb_strlen($this->_iv, '8bit'), null, '8bit');
+
+        if (function_exists('openssl_decrypt')) {
+            return openssl_decrypt(
+                $ciphertext,
+                'aes-256-cbc',
+                $this->_key,
+                OPENSSL_RAW_DATA,
+                $this->_iv
             );
         } else {
-            $length = intval(substr($ciphertext, -6));
-            $ciphertext = substr($ciphertext, 0, -6);
-
-            return substr(mcrypt_decrypt(MCRYPT_RIJNDAEL_128, $this->_key, base64_decode($ciphertext), MCRYPT_MODE_CBC, $this->_iv), 0, $length);
+            $plaintext = mcrypt_decrypt(
+                MCRYPT_RIJNDAEL_128,
+                $this->_key,
+                $ciphertext,
+                MCRYPT_MODE_CBC,
+                $this->_iv
+            );
         }
+
+        $len = mb_strlen($plaintext, '8bit');
+        $pad = ord($plaintext[$len - 1]);
+        $block = mcrypt_get_block_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
+        if ($pad <= 0 || $pad > $block) {
+            // Padding error!
+            return false;
+        }
+
+        return mb_substr($plaintext, 0, $len - $pad, '8bit');
     }
 }
