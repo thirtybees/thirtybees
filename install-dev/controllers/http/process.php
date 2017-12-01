@@ -328,7 +328,7 @@ class InstallControllerHttpProcess extends InstallControllerHttp
 
         $installModules = ['key' => 'installModules', 'lang' => $this->l('Install modules')];
         if ($lowMemory) {
-            foreach (array_chunk($this->modelInstall->getModulesList(), 10) as $module) {
+            foreach (array_chunk($this->modelInstall->getModulesList(), 5) as $module) {
                 $installModules['subtasks'][] = ['module' => $module];
             }
         }
