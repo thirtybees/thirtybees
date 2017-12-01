@@ -41,8 +41,11 @@ class AdminImportControllerCore extends AdminController
     const MAX_LINE_SIZE = 0;
 
     // @codingStandardsIgnoreStart
+    /** @var mixed $columnMask */
     public static $columnMask;
+    /** @var array $defaultValues */
     public static $defaultValues = [];
+    /** @var array $validators */
     public static $validators = [
         'active'            => ['self', 'getBoolean'],
         'tax_rate'          => ['self', 'getPrice'],
@@ -68,11 +71,17 @@ class AdminImportControllerCore extends AdminController
         'accessories'       => ['self', 'split'],
         'image_alt'         => ['self', 'split'],
     ];
+    /** @var array $entitities */
     public $entities = [];
+    /** @var array $available_fields */
     public $available_fields = [];
+    /** @var array $required_fields */
     public $required_fields = [];
+    /** @var string $separator */
     public $separator;
+    /** @var bool $convert */
     public $convert;
+    /** @var string $multiple_value_separator */
     public $multiple_value_separator;
     // @codingStandardsIgnoreEnd
 
@@ -505,7 +514,6 @@ class AdminImportControllerCore extends AdminController
                 break;
         }
 
-        // @since 1.5.0
         if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
             switch ((int) Tools::getValue('entity')) {
                 case $this->entities[$this->l('Supply Orders')]:
