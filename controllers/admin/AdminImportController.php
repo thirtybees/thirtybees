@@ -1482,20 +1482,17 @@ class AdminImportControllerCore extends AdminController
     {
         switch ((int) $case) {
             case $this->entities[$this->l('Categories')]:
-                Db::getInstance()->execute(
-                    '
-					DELETE FROM `'._DB_PREFIX_.'category`
-					WHERE id_category NOT IN ('.(int) Configuration::get('PS_HOME_CATEGORY').', '.(int) Configuration::get('PS_ROOT_CATEGORY').')'
+                Db::getInstance()->delete(
+                    'category',
+                    '`id_category` NOT IN ('.(int) Configuration::get('PS_HOME_CATEGORY').', '.(int) Configuration::get('PS_ROOT_CATEGORY').')'
                 );
                 Db::getInstance()->execute(
-                    '
-					DELETE FROM `'._DB_PREFIX_.'category_lang`
-					WHERE id_category NOT IN ('.(int) Configuration::get('PS_HOME_CATEGORY').', '.(int) Configuration::get('PS_ROOT_CATEGORY').')'
+                    'category_lang',
+                    '`id_category` NOT IN ('.(int) Configuration::get('PS_HOME_CATEGORY').', '.(int) Configuration::get('PS_ROOT_CATEGORY').')'
                 );
                 Db::getInstance()->execute(
-                    '
-					DELETE FROM `'._DB_PREFIX_.'category_shop`
-					WHERE `id_category` NOT IN ('.(int) Configuration::get('PS_HOME_CATEGORY').', '.(int) Configuration::get('PS_ROOT_CATEGORY').')'
+                    'category_shop',
+                    '`id_category` NOT IN ('.(int) Configuration::get('PS_HOME_CATEGORY').', '.(int) Configuration::get('PS_ROOT_CATEGORY').')'
                 );
                 Db::getInstance()->execute('ALTER TABLE `'._DB_PREFIX_.'category` AUTO_INCREMENT = 3');
                 foreach (scandir(_PS_CAT_IMG_DIR_) as $d) {
