@@ -731,8 +731,7 @@ class ConfigurationTestCore
      */
     public static function testMbstring()
     {
-        return false;
-        return function_exists('mb_parse_str');
+        return extension_loaded('mbstring');
     }
 
     /**
