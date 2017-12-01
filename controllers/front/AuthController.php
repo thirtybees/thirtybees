@@ -314,7 +314,7 @@ class AuthControllerCore extends FrontController
         Hook::exec('actionBeforeAuthentication');
         $passwd = trim(Tools::getValue('passwd'));
         $_POST['passwd'] = null;
-        $email = trim(Tools::getValue('email'));
+        $email = Tools::convertEmailToIdn(trim(Tools::getValue('email')));
         if (empty($email)) {
             $this->errors[] = Tools::displayError('An email address required.');
         } elseif (!Validate::isEmail($email)) {
@@ -410,7 +410,7 @@ class AuthControllerCore extends FrontController
         $moduleNewsletter = Module::getInstanceByName('blocknewsletter');
         if ($blocknewsletter && $moduleNewsletter->active && !Tools::getValue('newsletter')) {
             require_once _PS_MODULE_DIR_.'blocknewsletter/blocknewsletter.php';
-            if (method_exists($moduleNewsletter, 'isNewsletterRegistered') && $moduleNewsletter->isNewsletterRegistered(Tools::getValue('email')) == Blocknewsletter::GUEST_REGISTERED) {
+            if (method_exists($moduleNewsletter, 'isNewsletterRegistered') && $moduleNewsletter->isNewsletterRegistered(Tools::convertEmailToIdn(Tools::getValue('email'))) == Blocknewsletter::GUEST_REGISTERED) {
                 /* Force newsletter registration as customer as already registred as guest */
                 $_POST['newsletter'] = true;
             }
@@ -422,7 +422,7 @@ class AuthControllerCore extends FrontController
             $customer->newsletter_date_add = pSQL(date('Y-m-d H:i:s'));
             /** @var Blocknewsletter $moduleNewsletter */
             if ($blocknewsletter && $moduleNewsletter->active) {
-                $moduleNewsletter->confirmSubscription(Tools::getValue('email'));
+                $moduleNewsletter->confirmSubscription(Tools::convertEmailToIdn(Tools::getValue('email')));
             }
         }
     }
@@ -446,11 +446,11 @@ class AuthControllerCore extends FrontController
         if (!Tools::getValue('is_new_customer', 1)) {
             $_POST['passwd'] = md5(time()._COOKIE_KEY_);
         }
-        if ($guestEmail = Tools::getValue('guest_email')) {
+        if ($guestEmail = Tools::convertEmailToIdn(Tools::getValue('guest_email'))) {
             $_POST['email'] = $guestEmail;
         }
         // Checked the user address in case he changed his email address
-        if (Validate::isEmail($email = Tools::getValue('email')) && !empty($email)) {
+        if (Validate::isEmail($email = Tools::convertEmailToIdn(Tools::getValue('email'))) && !empty($email)) {
             if (Customer::customerExists($email)) {
                 $this->errors[] = Tools::displayError('An account using this email address has already been registered.', false);
             }
@@ -625,7 +625,7 @@ class AuthControllerCore extends FrontController
         }
 
         if (!count($this->errors)) {
-            if (Customer::customerExists(Tools::getValue('email'))) {
+            if (Customer::customerExists(Tools::convertEmailToIdn(Tools::getValue('email')))) {
                 $this->errors[] = Tools::displayError('An account using this email address has already been registered. Please enter a valid password or request a new one. ', false);
             }
 
@@ -786,11 +786,11 @@ class AuthControllerCore extends FrontController
      */
     protected function processSubmitCreate()
     {
-        if (!Validate::isEmail($email = trim(Tools::getValue('email_create'))) || empty($email)) {
+        if (!Validate::isEmail($email = Tools::convertEmailToIdn(trim(Tools::getValue('email_create')))) || empty($email)) {
             $this->errors[] = Tools::displayError('Invalid email address.');
         } elseif (Customer::customerExists($email)) {
             $this->errors[] = Tools::displayError('An account using this email address has already been registered. Please enter a valid password or request a new one. ', false);
-            $_POST['email'] = trim(Tools::getValue('email_create'));
+            $_POST['email'] = Tools::convertEmailToIdn(trim(Tools::getValue('email_create')));
             unset($_POST['email_create']);
         } else {
             $this->create_account = true;
