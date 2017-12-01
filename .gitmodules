@@ -384,6 +384,6 @@
 	branch = master
 	ignore = dirty
 [submodule "statsmodule"]
-	path = statsmodule
+	path = modules/statsmodule
 	url = https://github.com/thirtybees/statsmodule
 	branch = master
