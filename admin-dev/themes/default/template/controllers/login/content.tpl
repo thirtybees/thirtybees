@@ -58,7 +58,7 @@
 					<input type="hidden" name="redirect" id="redirect" value="{$redirect}"/>
 					<div class="form-group">
 						<label class="control-label" for="email">{l s='Email address'}</label>
-						<input name="email" type="email" id="email" class="form-control" value="{if isset($email)}{$email|escape:'html':'UTF-8'}{/if}" autofocus="autofocus" tabindex="1" placeholder="&#xf0e0 test@example.com" />
+						<input name="email" type="email" id="email" class="form-control" value="{if isset($email)}{$email|idnToUtf8|escape:'html':'UTF-8'}{/if}" autofocus="autofocus" tabindex="1" placeholder="&#xf0e0 test@example.com" />
 					</div>
 					<div class="form-group">
 						<label class="control-label" for="passwd">

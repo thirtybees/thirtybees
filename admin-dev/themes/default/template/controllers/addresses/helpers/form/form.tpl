@@ -41,8 +41,8 @@
 	{if $input.type == 'text_customer'}
 		{if isset($customer)}
 			<div class="col-lg-9">
-				<a class="btn btn-default" href="?tab=AdminCustomers&amp;id_customer={$customer->id|intval}&amp;viewcustomer&amp;token={$tokenCustomer}">
-					<i class="icon-eye-open"></i> {$customer->lastname} {$customer->firstname} ({$customer->email})
+				<a class="btn btn-default" href="?tab=AdminCustomers&amp;id_customer={$customer->id|intval}&amp;viewcustomer&amp;token={$tokenCustomer|escape:'htmlall':'UTF-8'}">
+					<i class="icon-eye-open"></i> {$customer->lastname|escape:'htmlall':'UTF-8'} {$customer->firstname|escape:'htmlall':'UTF-8'} ({$customer->email|indToUtf8|escape:'htmlall':'UTF-8'})
 				</a>
 			</div>
 			<input type="hidden" name="id_customer" value="{$customer->id}" />
@@ -86,7 +86,7 @@
 			</script>
 
 			<div class="col-lg-4">
-				<input type="email" id="email" name="email" value="{$fields_value[$input.name]|escape:'html':'UTF-8'}"/>
+				<input type="email" id="email" name="email" value="{$fields_value[$input.name]|idnToUtf8|escape:'html':'UTF-8'}"/>
 			</div>
 		{/if}
 	{else}
