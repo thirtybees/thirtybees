@@ -32,7 +32,7 @@
 		{l s="Thread"}: <span class="badge">#{$id_customer_thread|intval}</span>
 		{if isset($next_thread) && $next_thread}
 			<a class="btn btn-default pull-right" href="{$next_thread.href|escape:'html':'UTF-8'}">
-				{$next_thread.name} <i class="icon-forward"></i>
+				{$next_thread.name|escape:'htmlall':'UTF-8'} <i class="icon-forward"></i>
 			</a> 
 		{/if}
 	</div>
@@ -40,7 +40,7 @@
 		<form action="{$link->getAdminLink('AdminCustomerThreads')|escape:'html':'UTF-8'}&amp;viewcustomer_thread&amp;id_customer_thread={$id_customer_thread|intval}" method="post" enctype="multipart/form-data" class="form-horizontal">
 			{foreach $actions as $action}
 				<button class="btn btn-default" name="{$action.name|escape:'html':'UTF-8'}" value="{$action.value|intval}">
-					{if isset($action.icon)}<i class="{$action.icon|escape:'html':'UTF-8'}"></i>{/if}{$action.label}
+					{if isset($action.icon)}<i class="{$action.icon|escape:'html':'UTF-8'}"></i>{/if}{$action.label|escape:'htmlall':'UTF-8'}
 				</button>
 			{/foreach}
 			<button class="btn btn-default" type="button" data-toggle="modal" data-target="#myModal">
@@ -61,7 +61,7 @@
 							</a>
 						</h2>
 					{else}
-						<h2>{$thread->email|escape:'html':'UTF-8'}</h2>
+						<h2>{$thread->email|idnToUtf8|escape:'html':'UTF-8'}</h2>
 					{/if}
 					{if isset($contact) && trim($contact) != ''}
 						<span>{l s="To:"} </span><span class="badge">{$contact|escape:'html':'UTF-8'}</span>
@@ -98,11 +98,11 @@
 </div>
 <div class="panel">
 	<form action="{$link->getAdminLink('AdminCustomerThreads')|escape:'html':'UTF-8'}&amp;id_customer_thread={$thread->id|intval}&amp;viewcustomer_thread" method="post" enctype="multipart/form-data" class="form-horizontal">
-	<h3>{l s="Your answer to"} {if isset($customer->firstname)}{$customer->firstname|escape:'html':'UTF-8'} {$customer->lastname|escape:'html':'UTF-8'} {else} {$thread->email}{/if}</h3>
+	<h3>{l s="Your answer to"} {if isset($customer->firstname)}{$customer->firstname|escape:'html':'UTF-8'} {$customer->lastname|escape:'html':'UTF-8'} {else} {$thread->email|idnToUtf8|escape:'htmlall':'UTF-8'}{/if}</h3>
 	<div class="row">
 		<div class="media">
 			<div class="pull-left">
-				<span class="avatar-md">{if isset($current_employee->firstname)}<img src="{$current_employee->getImage()}" alt="">{/if}</span>
+				<span class="avatar-md">{if isset($current_employee->firstname)}<img src="{$current_employee->getImage()|escape:'htmlall':'UTF-8'}" alt="">{/if}</span>
 			</div>
 			<div class="media-body">
 				<textarea cols="30" rows="7" name="reply_message">{$PS_CUSTOMER_SERVICE_SIGNATURE|escape:'html':'UTF-8'}</textarea>
@@ -116,9 +116,9 @@
 			{l s="Choose a template"}
 		</button>
 		-->		
-		<button class="btn btn-default pull-right" name="submitReply"><i class="process-icon-mail-reply"></i> {l s="Send"}</button>
+		<button class="btn btn-default pull-right" name="submitReply"><i class="process-icon-mail-reply"></i> {l s='Send'}</button>
 		<input type="hidden" name="id_customer_thread" value="{$thread->id|intval}" />
-		<input type="hidden" name="msg_email" value="{$thread->email}" />
+		<input type="hidden" name="msg_email" value="{$thread->email|escape:'htmlall':'UTF-8'}" />
 	</div>
 	</form>
 </div>
@@ -152,7 +152,7 @@
 					$('#message_forward_email').hide(200);
 			});
 			$('textarea[name=message_forward]').click(function(){
-				if($(this).val() == '{l s='You can add a comment here.'}')
+				if($(this).val() == '{l s='You can add a comment here.' js=1}')
 				{
 					$(this).val('');
 				}
@@ -171,7 +171,7 @@
 				controller: 'AdminCustomerThreads',
 				action: 'markAsRead',
 				token : '{$token|escape:'html':'UTF-8'}',
-				id_thread: {$id_customer_thread}
+				id_thread: {$id_customer_thread|intval}
 			}
 		});
 		clearInterval(timer);
