@@ -31,7 +31,7 @@ With version 1.0.x we are striving to fix as many bugs as possible, while mainta
 
 **Native Modules:**
 
-Native modules will be refactored to remove legacy code. Code that supports previous PrestaShop versions will be removed and refactored to support PHP 5.5 - PHP 7.1.
+Native modules will be refactored to remove legacy code. Code that supports previous PrestaShop versions is currently being removed and refactored to support PHP 5.5 - PHP 7.2.
 
 **Rewritten modules:**
 
@@ -51,7 +51,7 @@ You can find the latest version of the roadmap here: https://thirtybees.com/road
 ## Requirements
 **General server requirements:**
 
-- PHP 5.5 - PHP 7.1
+- PHP 5.5 - PHP 7.2
 - Apache, nginx or IIS
 - Windows, Linux or OS X
 - MySQL 5.5.3+ or MariaDB 5.5+
