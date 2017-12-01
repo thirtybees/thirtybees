@@ -634,6 +634,9 @@ class AdminPerformanceControllerCore extends AdminController
         $warningOpenssl = str_replace('[a]', '<a href="http://www.php.net/manual/'.substr($phpLang, 0, 2).'/book.openssl.php" target="_blank">', $warningOpenssl);
         $warningOpenssl = str_replace('[/a]', '</a>', $warningOpenssl);
 
+        $usePhpEncryptionWith = (extension_loaded('libsodium') || version_compare(phpversion(), '7.2.0', '>=')) ? 'libsodium' : (function_exists('openssl_encrypt') ? 'openssl' : 'libsodium/openssl');
+        $useRijndaelWith = extension_loaded('openssl') ? 'openssl' : (function_exists('mcrypt_encrypt') ? 'mcrypt' : 'mcrypt/openssl');
+
         $this->fields_form[5]['form'] = [
 
             'legend'      => [
@@ -655,12 +658,12 @@ class AdminPerformanceControllerCore extends AdminController
                         [
                             'id'    => 'PS_CIPHER_ALGORITHM_2',
                             'value' => 2,
-                            'label' => $this->l('Use the PHP Encryption library with openssl extension (highest security).').(extension_loaded('openssl') ? '' : $warningOpenssl),
+                            'label' => sprintf($this->l('Use the PHP Encryption library with the %s extension (highest security).'), $usePhpEncryptionWith).(extension_loaded('openssl') ? '' : $warningOpenssl),
                         ],
                         [
                             'id'    => 'PS_CIPHER_ALGORITHM_1',
                             'value' => 1,
-                            'label' => $this->l('Use Rijndael with mcrypt lib.').(function_exists('mcrypt_encrypt') ? '' : $warningMcrypt),
+                            'label' => sprintf($this->l('Use Rijndael with the %s extension.'), $useRijndaelWith).(!extension_loaded('openssl') && !function_exists('mcrypt_encrypt') ? $warningOpenssl : (!extension_loaded('openssl') ? (!function_exists('mcrypt_encrypt') ? $warningMcrypt : '') : '')),
                         ],
                         [
                             'id'    => 'PS_CIPHER_ALGORITHM_0',
@@ -1136,11 +1139,12 @@ class AdminPerformanceControllerCore extends AdminController
                 $prevSettings = file_get_contents(_PS_ROOT_DIR_.'/config/settings.inc.php');
                 $newSettings = $prevSettings;
                 if ($algo === 1) {
-                    if (!function_exists('mcrypt_encrypt')) {
-                        $this->errors[] = Tools::displayError('The "Mcrypt" PHP extension is not activated on this server.');
+                    if (!function_exists('mcrypt_encrypt') && !function_exists('openssl_encrypt')) {
+                        $this->errors[] = Tools::displayError('The "Mcrypt" and/or "openssl" PHP extension are not activated on this server. One of them is needed to make this encryption type work.');
                     } else {
                         if (!strstr($newSettings, '_RIJNDAEL_KEY_')) {
-                            $keySize = mcrypt_get_key_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
+                            // 256 bits
+                            $keySize = 32;
                             $key = Tools::passwdGen($keySize);
                             $newSettings = preg_replace(
                                 '/define\(\'_COOKIE_KEY_\', \'([a-z0-9=\/+-_]+)\'\);/i',
@@ -1149,8 +1153,13 @@ class AdminPerformanceControllerCore extends AdminController
                             );
                         }
                         if (!strstr($newSettings, '_RIJNDAEL_IV_')) {
-                            $ivSize = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
-                            $iv = base64_encode(mcrypt_create_iv($ivSize, MCRYPT_RAND));
+                            // IV size 128 bits
+                            $ivSize = 16;
+                            if (function_exists('openssl_encrypt')) {
+                                $iv = base64_encode(openssl_random_pseudo_bytes($ivSize));
+                            } else {
+                                $iv = base64_encode(mcrypt_create_iv($ivSize, MCRYPT_RAND));
+                            }
                             $newSettings = preg_replace(
                                 '/define\(\'_COOKIE_IV_\', \'([a-z0-9=\/+-_]+)\'\);/i',
                                 'define(\'_COOKIE_IV_\', \'\1\');'."\n".'define(\'_RIJNDAEL_IV_\', \''.$iv.'\');',
