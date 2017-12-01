@@ -121,7 +121,7 @@ class ValidateCore
                 $errors[] = Tools::displayError('Invalid URL');
             }
         }
-        if (!count($errors)) {
+        if (!is_array($errors) || !count($errors)) {
             return true;
         }
 
