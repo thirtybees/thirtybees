@@ -695,6 +695,31 @@ class AdminEmployeesControllerCore extends AdminController
     }
 
     /**
+     * @param int  $idLang
+     * @param null $orderBy
+     * @param null $orderWay
+     * @param int  $start
+     * @param null $limit
+     * @param bool $idLangShop
+     *
+     * @since 1.0.4
+     */
+    public function getList(
+        $idLang,
+        $orderBy = null,
+        $orderWay = null,
+        $start = 0,
+        $limit = null,
+        $idLangShop = false
+    ) {
+        parent::getList($idLang, $orderBy, $orderWay, $start, $limit, $idLangShop);
+
+        foreach ($this->_list as &$row) {
+            $row['email'] = Tools::convertEmailFromIdn($row['email']);
+        }
+    }
+
+    /**
      * Ajax process get tab by id profile
      *
      * @since 1.0.0
