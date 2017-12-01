@@ -160,7 +160,6 @@ class InstallControllerHttpProcess extends InstallControllerHttp
      */
     public function processInstallDefaultData()
     {
-        // @todo remove true in populateDatabase for 1.5.0 RC version
         $result = $this->modelInstall->installDefaultData($this->session->shopName, $this->session->shopCountry, false, true);
 
         if (!$result) {
@@ -293,7 +292,7 @@ class InstallControllerHttpProcess extends InstallControllerHttp
     public function display()
     {
         // The installer SHOULD take less than 32M, but may take up to 35/36M sometimes. So 42M is a good value :)
-        $lowMemory = Tools::getMemoryLimit() < Tools::getOctets('42M');
+        $lowMemory = true;
 
         // We fill the process step used for Ajax queries
         $this->processSteps[] = ['key' => 'generateSettingsFile', 'lang' => $this->l('Create settings.inc file')];
@@ -305,7 +304,7 @@ class InstallControllerHttpProcess extends InstallControllerHttp
         if ($lowMemory) {
             $populateStep['subtasks'] = [];
             $xmlLoader = new InstallXmlLoader();
-            foreach ($xmlLoader->getSortedEntities() as $entity) {
+            foreach (array_chunk($xmlLoader->getSortedEntities(), 10) as $entity) {
                 $populateStep['subtasks'][] = ['entity' => $entity];
             }
         }
@@ -320,7 +319,7 @@ class InstallControllerHttpProcess extends InstallControllerHttp
                 $fixturesStep['subtasks'] = [];
                 $xmlLoader = new InstallXmlLoader();
                 $xmlLoader->setFixturesPath();
-                foreach ($xmlLoader->getSortedEntities() as $entity) {
+                foreach (array_chunk($xmlLoader->getSortedEntities(), 10) as $entity) {
                     $fixturesStep['subtasks'][] = ['entity' => $entity];
                 }
             }
@@ -329,7 +328,7 @@ class InstallControllerHttpProcess extends InstallControllerHttp
 
         $installModules = ['key' => 'installModules', 'lang' => $this->l('Install modules')];
         if ($lowMemory) {
-            foreach ($this->modelInstall->getModulesList() as $module) {
+            foreach (array_chunk($this->modelInstall->getModulesList(), 10) as $module) {
                 $installModules['subtasks'][] = ['module' => $module];
             }
         }

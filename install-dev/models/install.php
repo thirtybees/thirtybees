@@ -493,7 +493,13 @@ class InstallModelInstall extends InstallAbstractModel
         }
 
         if ($entity) {
-            $xmlLoader->populateEntity($entity);
+            if (is_array($entity)) {
+                foreach ($entity as $item) {
+                    $xmlLoader->populateEntity($item);
+                }
+            } else {
+                $xmlLoader->populateEntity($entity);
+            }
         } else {
             $xmlLoader->populateFromXmlFiles();
         }
@@ -748,7 +754,6 @@ class InstallModelInstall extends InstallAbstractModel
 
     /**
      * PROCESS : installModules
-     * Download module from addons and Install all modules in ~/modules/ directory
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -934,7 +939,13 @@ class InstallModelInstall extends InstallAbstractModel
         $xmlLoader->setLanguages($languages);
 
         if ($entity) {
-            $xmlLoader->populateEntity($entity);
+            if (is_array($entity)) {
+                foreach ($entity as $item) {
+                    $xmlLoader->populateEntity($item);
+                }
+            } else {
+                $xmlLoader->populateEntity($entity);
+            }
         } else {
             $xmlLoader->populateFromXmlFiles();
             Tools::deleteDirectory($tempDir, true);

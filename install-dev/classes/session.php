@@ -82,6 +82,7 @@ class InstallSession
 //    public $processValidated;
 //
 //    public $xmlLoaderIds;
+//    public $modules;
 
     /**
      * @return InstallSession
