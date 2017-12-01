@@ -1998,6 +1998,12 @@ class FrontControllerCore extends Controller
         }
 
         $matchUrl = rawurldecode(Tools::getCurrentUrlProtocolPrefix().$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
+        if (Tools::usingSecureMode()) {
+            // Do not redirect to the same page on HTTP
+            if (substr_replace($canonicalUrl, 'https', 0, 4) === $matchUrl) {
+                return;
+            }
+        }
         if (!preg_match('/^'.Tools::pRegexp(rawurldecode($canonicalUrl), '/').'([&?].*)?$/', $matchUrl)) {
             $params = [];
             $urlDetails = parse_url($canonicalUrl);
