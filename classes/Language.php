@@ -180,7 +180,7 @@ class LanguageCore extends ObjectModel
      */
     public static function getLanguage($idLang)
     {
-        if (!array_key_exists((int) $idLang, static::$_LANGUAGES)) {
+        if (!isset(static::$_LANGUAGES[$idLang])) {
             return false;
         }
 
