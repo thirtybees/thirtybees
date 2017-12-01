@@ -166,4 +166,46 @@ class AdminContactsControllerCore extends AdminController
 
         parent::initPageHeaderToolbar();
     }
+
+    /**
+     * @param int  $idLang
+     * @param null $orderBy
+     * @param null $orderWay
+     * @param int  $start
+     * @param null $limit
+     * @param bool $idLangShop
+     *
+     * @since 1.0.4
+     */
+    public function getList(
+        $idLang,
+        $orderBy = null,
+        $orderWay = null,
+        $start = 0,
+        $limit = null,
+        $idLangShop = false
+    ) {
+        parent::getList($idLang, $orderBy, $orderWay, $start, $limit, $idLangShop);
+
+        foreach ($this->_list as &$row) {
+            $row['email'] = Tools::convertEmailFromIdn($row['email']);
+        }
+    }
+
+    /**
+     * Return the list of fields value
+     *
+     * @param ObjectModel $obj Object
+     *
+     * @return array
+     *
+     * @since 1.0.4
+     */
+    public function getFieldsValue($obj)
+    {
+        $fieldsValue = parent::getFieldsValue($obj);
+        $fieldsValue['email'] = Tools::convertEmailFromIdn($fieldsValue['email']);
+
+        return $fieldsValue;
+    }
 }
