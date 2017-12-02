@@ -501,18 +501,19 @@ class AdminOrdersControllerCore extends AdminController
                                     $firstname = '';
                                     $lastname = '';
                                 }
-                                $templateVars = [];
+                                $templateVars = [
+                                    '{firstname}'        => $firstname,
+                                    '{lastname}'         => $lastname,
+                                    '{id_order}'         => $order->id,
+                                    '{order_name}'       => $order->getUniqReference(),
+                                    '{bankwire_owner}'   => (string) Configuration::get('BANK_WIRE_OWNER'),
+                                    '{bankwire_details}' => (string) nl2br(Configuration::get('BANK_WIRE_DETAILS')),
+                                    '{bankwire_address}' => (string) nl2br(Configuration::get('BANK_WIRE_ADDRESS')),
+                                ];
                                 if ($history->id_order_state == Configuration::get('PS_OS_SHIPPING') && $order->shipping_number) {
                                     $templateVars = [
                                         '{followup}'         => str_replace('@', $order->shipping_number, $carrier->url),
-                                        '{firstname}'        => $firstname,
-                                        '{lastname}'         => $lastname,
-                                        '{id_order}'         => $order->id,
                                         '{shipping_number}'  => $order->shipping_number,
-                                        '{order_name}'       => $order->getUniqReference(),
-                                        '{bankwire_owner}'   => Configuration::get('BANK_WIRE_OWNER'),
-                                        '{bankwire_details}' => nl2br(Configuration::get('BANK_WIRE_DETAILS')),
-                                        '{bankwire_address}' => nl2br(Configuration::get('BANK_WIRE_ADDRESS')),
                                     ];
                                 }
 
@@ -612,9 +613,9 @@ class AdminOrdersControllerCore extends AdminController
                             '{id_order}'         => $order->id,
                             '{shipping_number}'  => $order->shipping_number,
                             '{order_name}'       => $order->getUniqReference(),
-                            '{bankwire_owner}'   => Configuration::get('BANK_WIRE_OWNER'),
-                            '{bankwire_details}' => nl2br(Configuration::get('BANK_WIRE_DETAILS')),
-                            '{bankwire_address}' => nl2br(Configuration::get('BANK_WIRE_ADDRESS')),
+                            '{bankwire_owner}'   => (string) Configuration::get('BANK_WIRE_OWNER'),
+                            '{bankwire_details}' => (string) nl2br(Configuration::get('BANK_WIRE_DETAILS')),
+                            '{bankwire_address}' => (string) nl2br(Configuration::get('BANK_WIRE_ADDRESS')),
                         ];
                         if (@Mail::Send(
                             (int) $order->id_lang,
@@ -673,18 +674,19 @@ class AdminOrdersControllerCore extends AdminController
                             $firstname = '';
                             $lastname = '';
                         }
-                        $templateVars = [];
+                        $templateVars = [
+                            '{firstname}'        => $firstname,
+                            '{lastname}'         => $lastname,
+                            '{id_order}'         => $order->id,
+                            '{order_name}'       => $order->getUniqReference(),
+                            '{bankwire_owner}'   => (string) Configuration::get('BANK_WIRE_OWNER'),
+                            '{bankwire_details}' => (string) nl2br(Configuration::get('BANK_WIRE_DETAILS')),
+                            '{bankwire_address}' => (string) nl2br(Configuration::get('BANK_WIRE_ADDRESS')),
+                        ];
                         if ($history->id_order_state == Configuration::get('PS_OS_SHIPPING') && $order->shipping_number) {
                             $templateVars = [
                                 '{followup}'         => str_replace('@', $order->shipping_number, $carrier->url),
-                                '{firstname}'        => $firstname,
-                                '{lastname}'         => $lastname,
-                                '{id_order}'         => $order->id,
                                 '{shipping_number}'  => $order->shipping_number,
-                                '{order_name}'       => $order->getUniqReference(),
-                                '{bankwire_owner}'   => Configuration::get('BANK_WIRE_OWNER'),
-                                '{bankwire_details}' => nl2br(Configuration::get('BANK_WIRE_DETAILS')),
-                                '{bankwire_address}' => nl2br(Configuration::get('BANK_WIRE_ADDRESS')),
                             ];
                         }
 
@@ -1710,19 +1712,20 @@ class AdminOrdersControllerCore extends AdminController
                         $firstname = '';
                         $lastname = '';
                     }
-                    $templateVars = [];
+                    $templateVars = [
+                        '{firstname}'        => $firstname,
+                        '{lastname}'         => $lastname,
+                        '{id_order}'         => $order->id,
+                        '{order_name}'       => $order->getUniqReference(),
+                        '{bankwire_owner}'   => (string) Configuration::get('BANK_WIRE_OWNER'),
+                        '{bankwire_details}' => (string) nl2br(Configuration::get('BANK_WIRE_DETAILS')),
+                        '{bankwire_address}' => (string) nl2br(Configuration::get('BANK_WIRE_ADDRESS')),
+                    ];
                     if ($orderState->id == Configuration::get('PS_OS_SHIPPING') && $order->shipping_number) {
-                        $templateVars = [
+                        $templateVars = array_merge($templateVars, [
                             '{followup}'         => str_replace('@', $order->shipping_number, $carrier->url),
-                            '{firstname}'        => $firstname,
-                            '{lastname}'         => $lastname,
-                            '{id_order}'         => $order->id,
                             '{shipping_number}'  => $order->shipping_number,
-                            '{order_name}'       => $order->getUniqReference(),
-                            '{bankwire_owner}'   => Configuration::get('BANK_WIRE_OWNER'),
-                            '{bankwire_details}' => nl2br(Configuration::get('BANK_WIRE_DETAILS')),
-                            '{bankwire_address}' => nl2br(Configuration::get('BANK_WIRE_ADDRESS')),
-                        ];
+                        ]);
                     }
 
                     if ($history->sendEmail($order, $templateVars)) {
