@@ -1084,6 +1084,8 @@ class AdminImportControllerCore extends AdminController
     /**
      * @return string
      *
+     * @throws Exception
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function renderForm()
@@ -1233,6 +1235,7 @@ class AdminImportControllerCore extends AdminController
      * @return void
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function productImportCreateCat($defaultLanguageId, $categoryName, $idParentCategory = null)
     {
@@ -1286,7 +1289,7 @@ class AdminImportControllerCore extends AdminController
      */
     public function postProcess()
     {
-        /* PrestaShop demo mode */
+        /* thirty bees demo mode */
         if (_PS_MODE_DEMO_) {
             $this->errors[] = $this->l('This functionality has been disabled.');
 
@@ -1482,19 +1485,37 @@ class AdminImportControllerCore extends AdminController
     {
         switch ((int) $case) {
             case $this->entities[$this->l('Categories')]:
-                Db::getInstance()->delete(
-                    'category',
-                    '`id_category` NOT IN ('.(int) Configuration::get('PS_HOME_CATEGORY').', '.(int) Configuration::get('PS_ROOT_CATEGORY').')'
-                );
-                Db::getInstance()->execute(
-                    'category_lang',
-                    '`id_category` NOT IN ('.(int) Configuration::get('PS_HOME_CATEGORY').', '.(int) Configuration::get('PS_ROOT_CATEGORY').')'
-                );
-                Db::getInstance()->execute(
-                    'category_shop',
-                    '`id_category` NOT IN ('.(int) Configuration::get('PS_HOME_CATEGORY').', '.(int) Configuration::get('PS_ROOT_CATEGORY').')'
-                );
-                Db::getInstance()->execute('ALTER TABLE `'._DB_PREFIX_.'category` AUTO_INCREMENT = 3');
+                try {
+                    Db::getInstance()->delete(
+                        'category',
+                        '`id_category` NOT IN ('.(int) Configuration::get('PS_HOME_CATEGORY').', '.(int) Configuration::get('PS_ROOT_CATEGORY').')'
+                    );
+                } catch (PrestaShopDatabaseException $e) {
+                    $this->warnings[] = sprintf($this->l('Unable to delete category from table `%s`'), 'category');
+                }
+                try {
+                    Db::getInstance()->execute(
+                        'category_lang',
+                        '`id_category` NOT IN ('.(int) Configuration::get('PS_HOME_CATEGORY').', '.(int) Configuration::get('PS_ROOT_CATEGORY').')'
+                    );
+                } catch (PrestaShopException $e) {
+                    $this->warnings[] = sprintf($this->l('Unable to delete category from table `%s`'), 'categor_lang');
+                }
+                try {
+                    Db::getInstance()->execute(
+                        'category_shop',
+                        '`id_category` NOT IN ('.(int) Configuration::get('PS_HOME_CATEGORY').', '.(int) Configuration::get('PS_ROOT_CATEGORY').')'
+                    );
+                } catch (PrestaShopException $e) {
+                    $this->warnings[] = sprintf($this->l('Unable to delete category from table `%s`'), 'category_shop');
+                }
+                try {
+                    Db::getInstance()->execute('ALTER TABLE `'._DB_PREFIX_.'category` AUTO_INCREMENT = 3');
+                } catch (PrestaShopException $e) {
+                    $this->errors[] = $this->l('Failed to reset auto increment');
+
+                    return false;
+                }
                 foreach (scandir(_PS_CAT_IMG_DIR_) as $d) {
                     if (preg_match('/^[0-9]+(\-(.*))?\.jpg$/', $d)) {
                         unlink(_PS_CAT_IMG_DIR_.$d);
@@ -1502,70 +1523,123 @@ class AdminImportControllerCore extends AdminController
                 }
                 break;
             case $this->entities[$this->l('Products')]:
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'product`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'product_shop`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'feature_product`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'product_lang`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'category_product`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'product_tag`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'image`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'image_lang`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'image_shop`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'specific_price`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'specific_price_priority`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'product_carrier`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'cart_product`');
-                if (count(Db::getInstance()->executeS('SHOW TABLES LIKE \''._DB_PREFIX_.'favorite_product\' '))) { //check if table exist
-                    Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'favorite_product`');
+                foreach ([
+                             'product',
+                             'product_shop',
+                             'feature_product',
+                             'product_lang',
+                             'category_product',
+                             'product_tag',
+                             'image',
+                             'image_lang',
+                             'image_shop',
+                             'specific_price',
+                             'specific_price_priority',
+                             'product_carrier',
+                             'cart_product',
+                         ] as $table) {
+                    try {
+                        Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.$table.'`');
+                    } catch (PrestaShopException $e) {
+                        $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), $table, $e->getMessage());
+                    }
                 }
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'product_attachment`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'product_country_tax`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'product_download`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'product_group_reduction_cache`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'product_sale`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'product_supplier`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'warehouse_product_location`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'stock`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'stock_available`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'stock_mvt`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'customization`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'customization_field`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'supply_order_detail`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'attribute_impact`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'product_attribute`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'product_attribute_shop`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'product_attribute_combination`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'product_attribute_image`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'pack`');
+                try {
+                    if (count(Db::getInstance()->executeS('SHOW TABLES LIKE \''._DB_PREFIX_.'favorite_product\' '))) { //check if table exist
+                        Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'favorite_product`');
+                    }
+                } catch (PrestaShopException $e) {
+                    $this->errors[] = sprintf($this->l('Unable to truncate table `%s`'), 'favorite_product');
+                }
+                foreach ([
+                             'product_attachment',
+                             'product_country_tax',
+                             'product_download',
+                             'product_group_reduction_cache',
+                             'product_sale',
+                             'product_supplier',
+                             'warehouse_product_location',
+                             'stock',
+                             'stock_available',
+                             'stock_mvt',
+                             'customization',
+                             'customization_field',
+                             'supply_order_detail',
+                             'attribute_impact',
+                             'product_attribute',
+                             'product_attribute_shop',
+                             'product_attribute_combination',
+                             'product_attribute_image',
+                             'pack',
+                         ] as $table) {
+                    try {
+                        Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.$table.'`');
+                    } catch (PrestaShopException $e) {
+                        $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), $table, $e->getMessage());
+                    }
+                }
                 Image::deleteAllImages(_PS_PROD_IMG_DIR_);
                 if (!file_exists(_PS_PROD_IMG_DIR_)) {
                     mkdir(_PS_PROD_IMG_DIR_);
                 }
                 break;
             case $this->entities[$this->l('Combinations')]:
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'attribute`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'attribute_impact`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'attribute_lang`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'attribute_group`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'attribute_group_lang`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'attribute_group_shop`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'attribute_shop`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'product_attribute`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'product_attribute_shop`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'product_attribute_combination`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'product_attribute_image`');
-                Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'stock_available` WHERE id_product_attribute != 0');
+                foreach ([
+                             'attribute',
+                             'attribute_impact',
+                             'attribute_lang',
+                             'attribute_group',
+                             'attribute_group_lang',
+                             'attribute_group_shop',
+                             'attribute_shop',
+                             'product_attribute',
+                             'product_attribute_shop',
+                             'product_attribute_combination',
+                             'product_attribute_image',
+                         ] as $table) {
+                    try {
+                        Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.$table.'`');
+                    } catch (PrestaShopException $e) {
+                        $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), $table, $e->getMessage());
+                    }
+                }
+
+                try {
+                    Db::getInstance()->execute('DELETE FROM `'._DB_PREFIX_.'stock_available` WHERE id_product_attribute != 0');
+                } catch (PrestaShopException $e) {
+                    $this->warnings[] = sprintf($this->l('Unable to delete from table `%s`'), 'stock_available');
+                }
                 break;
             case $this->entities[$this->l('Customers')]:
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'customer`');
+                try {
+                    Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'customer`');
+                } catch (PrestaShopException $e) {
+                    $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), 'customer', $e->getMessage());
+                }
                 break;
             case $this->entities[$this->l('Addresses')]:
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'address`');
+                try {
+                    Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'address`');
+                } catch (PrestaShopException $e) {
+                    $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), 'address', $e->getMessage());
+                }
                 break;
             case $this->entities[$this->l('Brands')]:
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'manufacturer`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'manufacturer_lang`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'manufacturer_shop`');
+                try {
+                    Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'manufacturer`');
+                } catch (PrestaShopException $e) {
+                    $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), 'manufacturer', $e->getMessage());
+                }
+                try {
+                    Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'manufacturer_lang`');
+                } catch (PrestaShopException $e) {
+                    $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), 'manufacturer_lang', $e->getMessage());
+                }
+                try {
+                    Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'manufacturer_shop`');
+                } catch (PrestaShopException $e) {
+                    $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), 'manufacturer_shop', $e->getMessage());
+                }
                 foreach (scandir(_PS_MANU_IMG_DIR_) as $d) {
                     if (preg_match('/^[0-9]+(\-(.*))?\.jpg$/', $d)) {
                         unlink(_PS_MANU_IMG_DIR_.$d);
@@ -1573,9 +1647,21 @@ class AdminImportControllerCore extends AdminController
                 }
                 break;
             case $this->entities[$this->l('Suppliers')]:
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'supplier`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'supplier_lang`');
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'supplier_shop`');
+                try {
+                    Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'supplier`');
+                } catch (PrestaShopException $e) {
+                    $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), 'supplier', $e->getMessage());
+                }
+                try {
+                    Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'supplier_lang`');
+                } catch (PrestaShopException $e) {
+                    $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), 'supplier_lang', $e->getMessage());
+                }
+                try {
+                    Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'supplier_shop`');
+                } catch (PrestaShopException $e) {
+                    $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), 'supplier_shop', $e->getMessage());
+                }
                 foreach (scandir(_PS_SUPP_IMG_DIR_) as $d) {
                     if (preg_match('/^[0-9]+(\-(.*))?\.jpg$/', $d)) {
                         unlink(_PS_SUPP_IMG_DIR_.$d);
@@ -1583,7 +1669,11 @@ class AdminImportControllerCore extends AdminController
                 }
                 break;
             case $this->entities[$this->l('Alias')]:
-                Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'alias`');
+                try {
+                    Db::getInstance()->execute('TRUNCATE TABLE `'._DB_PREFIX_.'alias`');
+                } catch (PrestaShopException $e) {
+                    $this->warnings[] = sprintf($this->l('Unable to truncate table `%s`: %s'), 'alias', $e->getMessage());
+                }
                 break;
         }
         Image::clearTmpDir();
@@ -1639,21 +1729,29 @@ class AdminImportControllerCore extends AdminController
 
             $info = static::getMaskedRow($line);
 
-            $this->categoryImportOne(
-                $info,
-                $idDefaultLanguage,
-                $idLang,
-                $forceIds,
-                $regenerate,
-                $shopIsFeatureActive,
-                $catMoved, // by ref
-                $validateOnly
-            );
+            try {
+                $this->categoryImportOne(
+                    $info,
+                    $idDefaultLanguage,
+                    $idLang,
+                    $forceIds,
+                    $regenerate,
+                    $shopIsFeatureActive,
+                    $catMoved, // by ref
+                    $validateOnly
+                );
+            } catch (PrestaShopException $e) {
+                $this->errors[] = $e->getMessage();
+            }
         }
 
         if (!$validateOnly) {
             /* Import has finished, we can regenerate the categories nested tree */
-            Category::regenerateEntireNtree();
+            try {
+                Category::regenerateEntireNtree();
+            } catch (PrestaShopException $e) {
+                $this->warnings[] = sprintf($this->l('Unable to regenerate category tree: %s'), $e->getMessage());
+            }
         }
         $this->closeCsvFile($handle);
 
@@ -1700,14 +1798,16 @@ class AdminImportControllerCore extends AdminController
 
     /**
      * @param      $info
-     * @param      $idDefaultLanguage
-     * @param      $idLang
-     * @param      $forceIds
-     * @param      $regenerate
+     * @param int  $idDefaultLanguage
+     * @param int  $idLang
+     * @param bool $forceIds
+     * @param bool $regenerate
      * @param      $shopIsFeatureActive
      * @param      $catMoved
      * @param bool $validateOnly
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function categoryImportOne($info, $idDefaultLanguage, $idLang, $forceIds, $regenerate, $shopIsFeatureActive, &$catMoved, $validateOnly = false)
@@ -2166,18 +2266,22 @@ class AdminImportControllerCore extends AdminController
 
             $info = static::getMaskedRow($line);
 
-            $this->productImportOne(
-                $info,
-                $idDefaultLanguage,
-                $idLang,
-                $forceIds,
-                $regenerate,
-                $shopIsFeatureActive,
-                $shopIds,
-                $matchRef,
-                $accessories, // by ref
-                $validateOnly
-            );
+            try {
+                $this->productImportOne(
+                    $info,
+                    $idDefaultLanguage,
+                    $idLang,
+                    $forceIds,
+                    $regenerate,
+                    $shopIsFeatureActive,
+                    $shopIds,
+                    $matchRef,
+                    $accessories, // by ref
+                    $validateOnly
+                );
+            } catch (PrestaShopException $e) {
+                $this->errors[] = $e->getMessage();
+            }
         }
         $this->closeCsvFile($handle);
         if (!$validateOnly) {
@@ -2227,7 +2331,11 @@ class AdminImportControllerCore extends AdminController
             if (count($links) > 0) { // We delete and relink only if there is accessories to link...
                 // Bulk jobs: for performances, we need to do a minimum amount of SQL queries. No product inflation.
                 $uniqueIds = static::getExistingIdsFromIdsOrRefs($links);
-                Db::getInstance()->delete('accessory', '`id_product_1` = '.(int) $productId);
+                try {
+                    Db::getInstance()->delete('accessory', '`id_product_1` = '.(int) $productId);
+                } catch (PrestaShopDatabaseException $e) {
+                    $this->warnings[] = sprintf($this->l('Unable to delete from table `%s`: %s'), 'accessory', $e->getMessage());
+                }
                 static::changeAccessoriesForProduct($uniqueIds, $productId);
             }
             $lineCount++;
@@ -2284,12 +2392,16 @@ class AdminImportControllerCore extends AdminController
         if (!count($whereStatements)) {
             return false;
         }
-        $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            (new DbQuery())
-                ->select('DISTINCT `id_product`')
-                ->from('product', 'p')
-                ->where(implode(' OR ', $whereStatements))
-        );
+        try {
+            $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                    ->select('DISTINCT `id_product`')
+                    ->from('product', 'p')
+                    ->where(implode(' OR ', $whereStatements))
+            );
+        } catch (PrestaShopException $e) {
+            return false;
+        }
         // simplify array since there is 1 useless dimension.
         $results = array_column($results, 'id_product');
 
@@ -2309,13 +2421,17 @@ class AdminImportControllerCore extends AdminController
     protected static function changeAccessoriesForProduct($accessoriesId, $productId)
     {
         foreach ($accessoriesId as $idProduct2) {
-            Db::getInstance()->insert(
-                'accessory',
-                [
-                    'id_product_1' => (int) $productId,
-                    'id_product_2' => (int) $idProduct2,
-                ]
-            );
+            try {
+                Db::getInstance()->insert(
+                    'accessory',
+                    [
+                        'id_product_1' => (int) $productId,
+                        'id_product_2' => (int) $idProduct2,
+                    ]
+                );
+            } catch (PrestaShopException $e) {
+                Context::getContext()->controller->warnings[] = sprintf(('Unable to insert products into accessory table: %s'), $e->getMessage());
+            }
         }
     }
 
@@ -2333,6 +2449,8 @@ class AdminImportControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function productImportOne($info, $idDefaultLanguage, $idLang, $forceIds, $regenerate, $shopIsFeatureActive, $shopIds, $matchRef, &$accessories, $validateOnly = false)
@@ -2857,7 +2975,7 @@ class AdminImportControllerCore extends AdminController
                     }
 
                     if ($error) {
-                        $this->warnings[] = sprintf($this->l('Product #%1$d: the picture (%2$s) cannot be saved.'), $image->id_product, $url);
+                        $this->warnings[] = sprintf($this->l('Product #%1$d: the picture (%2$s) cannot be saved.'), isset($image) ? $image->id_product : $product->id, $url);
                     }
                 }
             }
@@ -3093,14 +3211,18 @@ class AdminImportControllerCore extends AdminController
 
             $info = static::getMaskedRow($line);
 
-            $this->customerImportOne(
-                $info,
-                $defaultLanguageId,
-                $idLang,
-                $shopIsFeatureActive,
-                $forceIds,
-                $validateOnly
-            );
+            try {
+                $this->customerImportOne(
+                    $info,
+                    $defaultLanguageId,
+                    $idLang,
+                    $shopIsFeatureActive,
+                    $forceIds,
+                    $validateOnly
+                );
+            } catch (PrestaShopException $e) {
+                $this->errors[] = $e->getMessage();
+            }
         }
         $this->closeCsvFile($handle);
 
@@ -3117,6 +3239,8 @@ class AdminImportControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function customerImportOne($info, $defaultLanguageId, $idLang, $shopIsFeatureActive, $forceIds, $validateOnly = false)
@@ -3356,11 +3480,15 @@ class AdminImportControllerCore extends AdminController
 
             $info = static::getMaskedRow($line);
 
-            $this->addressImportOne(
-                $info,
-                $forceIds,
-                $validateOnly
-            );
+            try {
+                $this->addressImportOne(
+                    $info,
+                    $forceIds,
+                    $validateOnly
+                );
+            } catch (PrestaShopException $e) {
+                $this->errors[] = $e->getMessage();
+            }
         }
         $this->closeCsvFile($handle);
 
@@ -3374,6 +3502,8 @@ class AdminImportControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function addressImportOne($info, $forceIds, $validateOnly = false)
@@ -3658,15 +3788,19 @@ class AdminImportControllerCore extends AdminController
             $info = static::getMaskedRow($line);
             $info = array_map('trim', $info);
 
-            $this->attributeImportOne(
-                $info,
-                $defaultLanguage,
-                $groups, // by ref
-                $attributes, // by ref
-                $regenerate,
-                $shopIsFeatureActive,
-                $validateOnly
-            );
+            try {
+                $this->attributeImportOne(
+                    $info,
+                    $defaultLanguage,
+                    $groups, // by ref
+                    $attributes, // by ref
+                    $regenerate,
+                    $shopIsFeatureActive,
+                    $validateOnly
+                );
+            } catch (PrestaShopException $e) {
+                $this->errors[] = $e->getMessage();
+            }
         }
         $this->closeCsvFile($handle);
 
@@ -3689,6 +3823,8 @@ class AdminImportControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function attributeImportOne($info, $defaultLanguage, &$groups, &$attributes, $regenerate, $shopIsFeatureActive, $validateOnly = false)
@@ -4210,13 +4346,17 @@ class AdminImportControllerCore extends AdminController
 
             $info = static::getMaskedRow($line);
 
-            $this->manufacturerImportOne(
-                $info,
-                $shopIsFeatureActive,
-                $regenerate,
-                $forceIds,
-                $validateOnly
-            );
+            try {
+                $this->manufacturerImportOne(
+                    $info,
+                    $shopIsFeatureActive,
+                    $regenerate,
+                    $forceIds,
+                    $validateOnly
+                );
+            } catch (PrestaShopException $e) {
+                $this->errors[] = $e->getMessage();
+            }
         }
         $this->closeCsvFile($handle);
 
@@ -4232,6 +4372,8 @@ class AdminImportControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function manufacturerImportOne($info, $shopIsFeatureActive, $regenerate, $forceIds, $validateOnly = false)
@@ -4348,13 +4490,17 @@ class AdminImportControllerCore extends AdminController
                 $this->toto = true;
             }
 
-            $this->supplierImportOne(
-                $info,
-                $shopIsFeatureActive,
-                $regenerate,
-                $forceIds,
-                $validateOnly
-            );
+            try {
+                $this->supplierImportOne(
+                    $info,
+                    $shopIsFeatureActive,
+                    $regenerate,
+                    $forceIds,
+                    $validateOnly
+                );
+            } catch (PrestaShopException $e) {
+                $this->errors[] = $e->getMessage();
+            }
         }
         $this->closeCsvFile($handle);
 
@@ -4368,6 +4514,8 @@ class AdminImportControllerCore extends AdminController
      * @param      $forceIds
      * @param bool $validateOnly
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function supplierImportOne($info, $shopIsFeatureActive, $regenerate, $forceIds, $validateOnly = false)
@@ -4413,10 +4561,9 @@ class AdminImportControllerCore extends AdminController
             } elseif (!$validateOnly) {
                 // Associate supplier to group shop
                 if ($shopIsFeatureActive && $supplier->shop) {
-                    Db::getInstance()->execute(
-                        '
-						DELETE FROM '._DB_PREFIX_.'supplier_shop
-						WHERE id_supplier = '.(int) $supplier->id
+                    Db::getInstance()->delete(
+                        'supplier_shop',
+                        '`id_supplier` = '.(int) $supplier->id
                     );
                     $supplier->shop = explode($this->multiple_value_separator, $supplier->shop);
                     $shops = [];
@@ -4474,11 +4621,15 @@ class AdminImportControllerCore extends AdminController
 
             $info = static::getMaskedRow($line);
 
-            $this->aliasImportOne(
-                $info,
-                $forceIds,
-                $validateOnly
-            );
+            try {
+                $this->aliasImportOne(
+                    $info,
+                    $forceIds,
+                    $validateOnly
+                );
+            } catch (PrestaShopException $e) {
+                $this->errors[] = $e->getMessage();
+            }
         }
         $this->closeCsvFile($handle);
 
@@ -4486,10 +4637,12 @@ class AdminImportControllerCore extends AdminController
     }
 
     /**
-     * @param      $info
-     * @param      $forceIds
-     * @param bool $validateOnly
+     * @param mixed $info
+     * @param bool  $forceIds
+     * @param bool  $validateOnly
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function aliasImportOne($info, $forceIds, $validateOnly = false)
@@ -4567,13 +4720,17 @@ class AdminImportControllerCore extends AdminController
 
             $info = static::getMaskedRow($line);
 
-            $this->storeContactImportOne(
-                $info,
-                Shop::isFeatureActive(),
-                $regenerate,
-                $forceIds,
-                $validateOnly
-            );
+            try {
+                $this->storeContactImportOne(
+                    $info,
+                    Shop::isFeatureActive(),
+                    $regenerate,
+                    $forceIds,
+                    $validateOnly
+                );
+            } catch (PrestaShopException $e) {
+                $this->errors[] = $e->getMessage();
+            }
         }
         $this->closeCsvFile($handle);
 
@@ -4589,6 +4746,8 @@ class AdminImportControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function storeContactImportOne($info, $shopIsFeatureActive, $regenerate, $forceIds, $validateOnly = false)
@@ -4715,6 +4874,7 @@ class AdminImportControllerCore extends AdminController
      * @return bool
      *
      * @since 1.0.1
+     * @throws PrestaShopException
      */
     protected static function storeExists($idStore)
     {
@@ -4905,14 +5065,18 @@ class AdminImportControllerCore extends AdminController
             }
             $info = static::getMaskedRow($line);
 
-            $this->supplyOrdersDetailsImportOne(
-                $info,
-                $products, // by ref
-                $reset, // by ref
-                $forceIds,
-                $currentLine,
-                $validateOnly
-            );
+            try {
+                $this->supplyOrdersDetailsImportOne(
+                    $info,
+                    $products, // by ref
+                    $reset, // by ref
+                    $forceIds,
+                    $currentLine,
+                    $validateOnly
+                );
+            } catch (PrestaShopException $e) {
+                $this->errors[] = $e->getMessage();
+            }
         }
         // closes
         $this->closeCsvFile($handle);
@@ -4933,6 +5097,8 @@ class AdminImportControllerCore extends AdminController
      * @param      $currentLine
      * @param bool $validateOnly
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function supplyOrdersDetailsImportOne($info, &$products, &$reset, $forceIds, $currentLine, $validateOnly = false)
@@ -5057,18 +5223,22 @@ class AdminImportControllerCore extends AdminController
     {
         if ($this->tabAccess['edit'] === '1') {
             $match = implode('|', Tools::getValue('type_value'));
-            Db::getInstance()->insert(
-                'import_match',
-                [
-                    'name'  => pSQL(Tools::getValue('newImportMatchs')),
-                    'match' => pSQL($match),
-                    'skip'  => pSQL(Tools::getValue('skip')),
-                ],
-                false,
-                Db::INSERT_IGNORE
-            );
+            try {
+                Db::getInstance()->insert(
+                    'import_match',
+                    [
+                        'name'  => pSQL(Tools::getValue('newImportMatchs')),
+                        'match' => pSQL($match),
+                        'skip'  => pSQL(Tools::getValue('skip')),
+                    ],
+                    false,
+                    Db::INSERT_IGNORE
+                );
+            } catch (PrestaShopException $e) {
+                die(json_encode(['hasError' => true, 'error' => $e->getMessage()]));
+            }
 
-            die('{"id" : "'.Db::getInstance()->Insert_ID().'"}');
+            die(json_encode(['id' => (int) Db::getInstance()->Insert_ID()]));
         }
     }
 
@@ -5080,17 +5250,19 @@ class AdminImportControllerCore extends AdminController
     public function ajaxProcessLoadImportMatchs()
     {
         if ($this->tabAccess['edit'] === '1') {
-            $return = Db::getInstance()->executeS(
-                (new DbQuery())
-                    ->select('*')
-                    ->from('import_match')
-                    ->where('`id_import_match` = '.(int) Tools::getValue('idImportMatchs')),
-                true,
-                false
-            );
-            die(
-                '{"id" : "'.$return[0]['id_import_match'].'", "matchs" : "'.$return[0]['match'].'", "skip" : "'.$return[0]['skip'].'"}'
-            );
+            try {
+                $return = Db::getInstance()->executeS(
+                    (new DbQuery())
+                        ->select('*')
+                        ->from('import_match')
+                        ->where('`id_import_match` = '.(int) Tools::getValue('idImportMatchs')),
+                    true,
+                    false
+                );
+            } catch (PrestaShopException $e) {
+                die(json_encode(['hasError' => true, 'error' => $e->getMessage()]));
+            }
+            die(json_encode(['id' => $return[0]['id_import_match'], 'matchs' => $return[0]['match'], 'skip' => $return[0]['skip']]));
         }
     }
 
@@ -5102,11 +5274,15 @@ class AdminImportControllerCore extends AdminController
     public function ajaxProcessDeleteImportMatchs()
     {
         if ($this->tabAccess['edit'] === '1') {
-            Db::getInstance()->delete(
-                'import_match',
-                '`id_import_match` = '.(int) Tools::getValue('idImportMatchs'),
-                false
-            );
+            try {
+                Db::getInstance()->delete(
+                    'import_match',
+                    '`id_import_match` = '.(int) Tools::getValue('idImportMatchs'),
+                    false
+                );
+            } catch (PrestaShopException $e) {
+                die(json_encode(['hasError' => true, 'error' => $e->getMessage()]));
+            }
             die;
         }
     }
@@ -5184,6 +5360,8 @@ class AdminImportControllerCore extends AdminController
     /**
      * @return void
      *
+     * @throws Exception
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function initModal()
