@@ -106,7 +106,6 @@ class CategoryCore extends ObjectModel
     /** @var int */
     public $id_shop_default;
     public $groupBox;
-    // @codingStandardsIgnoreEnd
     /** @var string id_image is the category ID when an image exists and 'default' otherwise */
     public $id_image = 'default';
     protected $webserviceParameters = [
@@ -122,6 +121,7 @@ class CategoryCore extends ObjectModel
             'products'   => ['getter' => 'getProductsWs', 'resource' => 'product',],
         ],
     ];
+    // @codingStandardsIgnoreEnd
 
     /**
      * CategoryCore constructor.
@@ -132,6 +132,8 @@ class CategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @throws PrestaShopException
      */
     public function __construct($idCategory = null, $idLang = null, $idShop = null)
     {
@@ -167,11 +169,18 @@ class CategoryCore extends ObjectModel
     /**
      * Return available categories
      *
-     * @param int  $idLang Language ID
-     * @param bool $active return only active categories
+     * @param bool   $idLang Language ID
+     * @param bool   $active return only active categories
+     *
+     * @param bool   $order
+     * @param string $sqlFilter
+     * @param string $sqlSort
+     * @param string $sqlLimit
      *
      * @return array Categories
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -217,6 +226,8 @@ class CategoryCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -243,12 +254,12 @@ class CategoryCore extends ObjectModel
         }
 
         $cacheId = 'Category::getAllCategoriesName_'.md5(
-                (int) $rootCategory.(int) $idLang.(int) $active.(int) $useShopRestriction
-                .(isset($groups) && Group::isFeatureActive() ? implode('', $groups) : '')
-            );
+            (int) $rootCategory.(int) $idLang.(int) $active.(int) $useShopRestriction
+            .(isset($groups) && Group::isFeatureActive() ? implode('', $groups) : '')
+        );
 
         if (!Cache::isStored($cacheId)) {
-            $result = Db::getInstance()->executeS(
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                 '
 				SELECT c.id_category, cl.name
 				FROM `'._DB_PREFIX_.'category` c
@@ -285,6 +296,8 @@ class CategoryCore extends ObjectModel
      *
      * @return array|null
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -316,7 +329,7 @@ class CategoryCore extends ObjectModel
             );
 
         if (!Cache::isStored($cacheId)) {
-            $result = Db::getInstance()->executeS(
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                 '
 				SELECT c.*, cl.*
 				FROM `'._DB_PREFIX_.'category` c
@@ -365,6 +378,8 @@ class CategoryCore extends ObjectModel
      *
      * @return Category
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -396,6 +411,8 @@ class CategoryCore extends ObjectModel
     /**
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -419,12 +436,13 @@ class CategoryCore extends ObjectModel
     }
 
     /**
-     * @param null $idLang
+     * @param int|null $idLang
      *
      * @return Category
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getTopCategory($idLang = null)
     {
@@ -433,11 +451,11 @@ class CategoryCore extends ObjectModel
         }
         $cacheId = 'Category::getTopCategory_'.(int) $idLang;
         if (!Cache::isStored($cacheId)) {
-            $idCategory = (int) Db::getInstance()->getValue(
-                '
-			SELECT `id_category`
-			FROM `'._DB_PREFIX_.'category`
-			WHERE `id_parent` = 0'
+            $idCategory = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                    ->select('`id_category`')
+                    ->from('category')
+                    ->where('`id_parent` = 0')
             );
             $category = new Category($idCategory, $idLang);
             Cache::store($cacheId, $category);
@@ -449,25 +467,27 @@ class CategoryCore extends ObjectModel
     }
 
     /**
-     * @param $idLang
+     * @param int $idLang
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function getSimpleCategories($idLang)
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            '
-		SELECT c.`id_category`, cl.`name`
-		FROM `'._DB_PREFIX_.'category` c
-		LEFT JOIN `'._DB_PREFIX_.'category_lang` cl ON (c.`id_category` = cl.`id_category`'.Shop::addSqlRestrictionOnLang('cl').')
-		'.Shop::addSqlAssociation('category', 'c').'
-		WHERE cl.`id_lang` = '.(int) $idLang.'
-		AND c.`id_category` != '.Configuration::get('PS_ROOT_CATEGORY').'
-		GROUP BY c.id_category
-		ORDER BY c.`id_category`, category_shop.`position`'
+            (new DbQuery())
+                ->select('c.`id_category`, cl.`name`')
+                ->from('category', 'c')
+                ->leftJoin('category_lang', 'cl', 'c.`id_category` = cl.`id_category` '.Shop::addSqlRestrictionOnLang('cl'))
+                ->join(Shop::addSqlAssociation('category', 'c'))
+                ->where('cl.`id_lang` = '.(int) $idLang)
+                ->where('c.`id_category` != '.Configuration::get('PS_ROOT_CATEGORY'))
+                ->groupBy('c.`id_category`')
+                ->orderBy('c.`id_category`, category_shop.`position`')
         );
     }
 
@@ -477,8 +497,12 @@ class CategoryCore extends ObjectModel
      * @param int  $idLang Language ID
      * @param bool $active return only active categories
      *
+     * @param bool $idShop
+     *
      * @return array categories
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -496,6 +520,8 @@ class CategoryCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -534,6 +560,8 @@ class CategoryCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -571,6 +599,8 @@ class CategoryCore extends ObjectModel
      * @param bool  $useShopContext
      *
      * @return array
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @internal param int $id_product
      * @since    1.0.0
      * @version  1.0.0 Initial version
@@ -620,6 +650,8 @@ class CategoryCore extends ObjectModel
      *
      * @return bool Duplication result
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -628,7 +660,7 @@ class CategoryCore extends ObjectModel
         $sql = 'SELECT `id_category`
 				FROM `'._DB_PREFIX_.'category_product`
 				WHERE `id_product` = '.(int) $idOld;
-        $result = Db::getInstance()->executeS($sql);
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
 
         $row = [];
         if ($result) {
@@ -662,6 +694,8 @@ class CategoryCore extends ObjectModel
      *
      * @return bool Parent validity
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -676,7 +710,7 @@ class CategoryCore extends ObjectModel
         $i = (int) $idParent;
 
         while (42) {
-            $result = Db::getInstance()->getRow('SELECT `id_parent` FROM `'._DB_PREFIX_.'category` WHERE `id_category` = '.(int) $i);
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow('SELECT `id_parent` FROM `'._DB_PREFIX_.'category` WHERE `id_category` = '.(int) $i);
             if (!isset($result['id_parent'])) {
                 return false;
             }
@@ -698,6 +732,7 @@ class CategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getLinkRewrite($idCategory, $idLang)
     {
@@ -706,7 +741,7 @@ class CategoryCore extends ObjectModel
         }
 
         if (!isset(static::$_links[$idCategory.'-'.$idLang])) {
-            static::$_links[$idCategory.'-'.$idLang] = Db::getInstance()->getValue(
+            static::$_links[$idCategory.'-'.$idLang] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 '
 			SELECT cl.`link_rewrite`
 			FROM `'._DB_PREFIX_.'category_lang` cl
@@ -731,6 +766,8 @@ class CategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function searchByPath($idLang, $path, $objectToCreate = false, $methodToCreate = false)
     {
@@ -767,12 +804,14 @@ class CategoryCore extends ObjectModel
      *
      * @return array Corresponding category
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function searchByNameAndParentCategoryId($idLang, $categoryName, $idParentCategory)
     {
-        return Db::getInstance()->getRow(
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
             '
 		SELECT c.*, cl.*
 		FROM `'._DB_PREFIX_.'category` c
@@ -798,18 +837,19 @@ class CategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function searchByName($idLang, $query, $unrestricted = false, $skipCache = false)
     {
         if ($unrestricted === true) {
             $key = 'Category::searchByName_'.$query;
             if ($skipCache || !Cache::isStored($key)) {
-                $categories = Db::getInstance()->getRow(
-                    '
-				SELECT c.*, cl.*
-				FROM `'._DB_PREFIX_.'category` c
-				LEFT JOIN `'._DB_PREFIX_.'category_lang` cl ON (c.`id_category` = cl.`id_category` '.Shop::addSqlRestrictionOnLang('cl').')
-				WHERE `name` = \''.pSQL($query).'\''
+                $categories = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                    (new DbQuery())
+                        ->select('c.*, cl.*')
+                        ->from('category', 'c')
+                        ->leftJoin('category_lang', 'cl', 'c.`id_category` = cl.`id_category` '.Shop::addSqlRestrictionOnLang('cl'))
+                        ->where('`name` = \''.pSQL($query).'\'')
                 );
                 if (!$skipCache) {
                     Cache::store($key, $categories);
@@ -820,13 +860,13 @@ class CategoryCore extends ObjectModel
 
             return Cache::retrieve($key);
         } else {
-            return Db::getInstance()->executeS(
-                '
-			SELECT c.*, cl.*
-			FROM `'._DB_PREFIX_.'category` c
-			LEFT JOIN `'._DB_PREFIX_.'category_lang` cl ON (c.`id_category` = cl.`id_category` AND `id_lang` = '.(int) $idLang.' '.Shop::addSqlRestrictionOnLang('cl').')
-			WHERE `name` LIKE \'%'.pSQL($query).'%\'
-			AND c.`id_category` != '.(int) Configuration::get('PS_HOME_CATEGORY')
+            return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                    ->select('c.*, cl.*')
+                    ->from('category', 'c')
+                    ->leftJoin('category_lang', 'cl', 'c.`id_category` = cl.`id_category` AND `id_lang` = '.(int) $idLang.' '.Shop::addSqlRestrictionOnLang('cl'))
+                    ->where('WHERE `name` LIKE \'%'.pSQL($query).'%\'')
+                    ->where('c.`id_category` != '.(int) Configuration::get('PS_HOME_CATEGORY'))
             );
         }
     }
@@ -838,28 +878,31 @@ class CategoryCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function categoryExists($idCategory)
     {
-        $row = Db::getInstance()->getRow(
-            '
-		SELECT `id_category`
-		FROM '._DB_PREFIX_.'category c
-		WHERE c.`id_category` = '.(int) $idCategory
+        $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('`id_category`')
+                ->from('category', 'c')
+                ->where('c.`id_category` = '.(int) $idCategory)
         );
 
         return isset($row['id_category']);
     }
 
     /**
-     * @param $idGroup
+     * @param int $idGroup
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function setNewGroupForHome($idGroup)
     {
@@ -867,40 +910,50 @@ class CategoryCore extends ObjectModel
             return false;
         }
 
-        return Db::getInstance()->execute(
-            '
-		INSERT INTO `'._DB_PREFIX_.'category_group` (`id_category`, `id_group`)
-		VALUES ('.(int) Context::getContext()->shop->getCategory().', '.(int) $idGroup.')'
-        );
+        try {
+            return Db::getInstance()->insert(
+                'category_group',
+                [
+                    'id_category' => (int) Context::getContext()->shop->getCategory(),
+                    'id_group'    => (int) $idGroup,
+                ]
+            );
+        } catch (PrestaShopDatabaseException $e) {
+            return false;
+        }
     }
 
     /**
-     * @param $idCategory
+     * @param int $idCategory
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getUrlRewriteInformations($idCategory)
     {
-        return Db::getInstance()->executeS(
-            'SELECT l.`id_lang`, c.`link_rewrite`
-            FROM `'._DB_PREFIX_.'category_lang` AS c
-            LEFT JOIN  `'._DB_PREFIX_.'lang` AS l ON c.`id_lang` = l.`id_lang`
-            WHERE c.`id_category` = '.(int) $idCategory.'
-            AND l.`active` = 1'
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('l.`id_lang`, c.`link_rewrite`')
+                ->from('category_lang', 'c')
+                ->leftJoin('lang', 'l', 'c.`id_lang` = l.`id_lang`')
+                ->where('c.`id_category` = '.(int) $idCategory)
+                ->where('l.`active` = 1')
         );
     }
 
     /**
-     * @param           $idCategory
+     * @param int       $idCategory
      * @param Shop|null $shop
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function inShopStatic($idCategory, Shop $shop = null)
     {
@@ -911,7 +964,16 @@ class CategoryCore extends ObjectModel
         if (!$interval = Category::getInterval($shop->getCategory())) {
             return false;
         }
-        $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow('SELECT nleft, nright FROM `'._DB_PREFIX_.'category` WHERE id_category = '.(int) $idCategory);
+        try {
+            $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                (new DbQuery())
+                    ->select('`nleft`, `nright`')
+                    ->from('category')
+                    ->where('`id_category` = '.(int) $idCategory)
+            );
+        } catch (PrestaShopException $e) {
+            return false;
+        }
 
         return ($row['nleft'] >= $interval['nleft'] && $row['nright'] <= $interval['nright']);
     }
@@ -919,31 +981,31 @@ class CategoryCore extends ObjectModel
     /**
      * Return nleft and nright fields for a given category
      *
-     * @since   1.5.0
-     *
      * @param int $id
      *
      * @return array
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @throws PrestaShopException
      */
     public static function getInterval($id)
     {
-        $cache_id = 'Category::getInterval_'.(int) $id;
-        if (!Cache::isStored($cache_id)) {
-            $result = Db::getInstance()->getRow(
-                '
-			SELECT nleft, nright, level_depth
-			FROM '._DB_PREFIX_.'category
-			WHERE id_category = '.(int) $id
+        $cacheId = 'Category::getInterval_'.(int) $id;
+        if (!Cache::isStored($cacheId)) {
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+                (new DbQuery())
+                    ->select('`nleft`, `nright`, `level_depth`')
+                    ->from('category')
+                    ->where('`id_category` = '.(int) $id)
             );
-            Cache::store($cache_id, $result);
+            Cache::store($cacheId, $result);
 
             return $result;
         }
 
-        return Cache::retrieve($cache_id);
+        return Cache::retrieve($cacheId);
     }
 
     /**
@@ -951,10 +1013,12 @@ class CategoryCore extends ObjectModel
      * @param array $idsCategory
      * @param int   $idLang
      *
-     * @return array
+     * @return array|false
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @throws PrestaShopException
      */
     public static function getCategoryInformations($idsCategory, $idLang = null)
     {
@@ -963,18 +1027,17 @@ class CategoryCore extends ObjectModel
         }
 
         if (!is_array($idsCategory) || !count($idsCategory)) {
-            return;
+            return false;
         }
 
         $categories = [];
         $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            '
-		SELECT c.`id_category`, cl.`name`, cl.`link_rewrite`, cl.`id_lang`
-		FROM `'._DB_PREFIX_.'category` c
-		LEFT JOIN `'._DB_PREFIX_.'category_lang` cl ON (c.`id_category` = cl.`id_category`'.Shop::addSqlRestrictionOnLang('cl').')
-		'.Shop::addSqlAssociation('category', 'c').'
-		WHERE cl.`id_lang` = '.(int) $idLang.'
-		AND c.`id_category` IN ('.implode(',', array_map('intval', $idsCategory)).')'
+            (new DbQuery())
+                ->select('c.`id_category`, cl.`name`, cl.`link_rewrite`, cl.`id_lang`')
+                ->from('category', 'c')
+                ->leftJoin('category_lang', 'cl', 'c.`id_category` = cl.`id_category` '.Shop::addSqlRestrictionOnLang('cl'))
+                ->where('cl.`id_lang` = '.(int) $idLang)
+                ->where('c.`id_category` IN ('.implode(',', array_map('intval', $idsCategory)).')')
         );
 
         foreach ($results as $category) {
@@ -985,13 +1048,15 @@ class CategoryCore extends ObjectModel
     }
 
     /**
-     * @param null $idLang
-     * @param bool $active
+     * @param int|null $idLang
+     * @param bool     $active
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @throws PrestaShopException
      */
     public static function getRootCategories($idLang = null, $active = true)
     {
@@ -1000,30 +1065,32 @@ class CategoryCore extends ObjectModel
         }
 
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            '
-		SELECT DISTINCT(c.`id_category`), cl.`name`
-		FROM `'._DB_PREFIX_.'category` c
-		LEFT JOIN `'._DB_PREFIX_.'category_lang` cl ON (cl.`id_category` = c.`id_category` AND cl.`id_lang`='.(int) $idLang.')
-		WHERE `is_root_category` = 1
-		'.($active ? 'AND `active` = 1' : '')
+            (new DbQuery())
+                ->select('DISTINCT(c.`id_category`), cl.`name`')
+                ->from('category', 'c')
+                ->leftJoin('category_lang', 'cl', 'cl.`id_category` = c.`id_category` AND cl.`id_lang`='.(int) $idLang)
+                ->where('`is_root_category` = 1')
+                ->where($active ? '`active` = 1' : '')
         );
     }
 
     /**
-     * @param $idCategory
+     * @param int $idCategory
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @throws PrestaShopException
      */
     public static function getShopsByCategory($idCategory)
     {
-        return Db::getInstance()->executeS(
-            '
-		SELECT `id_shop`
-		FROM `'._DB_PREFIX_.'category_shop`
-		WHERE `id_category` = '.(int) $idCategory
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('`id_shop`')
+                ->from('category_shop')
+                ->where('`id_category` = '.(int) $idCategory)
         );
     }
 
@@ -1033,10 +1100,11 @@ class CategoryCore extends ObjectModel
      * @param array $categories Categories list to associate a shop
      * @param int   $idShop     Categories list to associate a shop
      *
-     * @return array Update/insertion result
+     * @return array|false Update/insertion result
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function updateFromShop($categories, $idShop)
     {
@@ -1060,6 +1128,8 @@ class CategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @throws PrestaShopException
      */
     public static function deleteCategoriesFromShop($idShop)
     {
@@ -1075,6 +1145,8 @@ class CategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @throws PrestaShopException
      */
     public static function addToShop(array $categories, $idShop)
     {
@@ -1101,13 +1173,14 @@ class CategoryCore extends ObjectModel
     }
 
     /**
-     * @param      $position
-     * @param null $idShop
+     * @param int      $position
+     * @param int|null $idShop
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function addPosition($position, $idShop = null)
     {
@@ -1155,10 +1228,11 @@ class CategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getLastPosition($idCategoryParent, $idShop)
     {
-        if ((int) Db::getInstance()->getValue(
+        if ((int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 '
 				SELECT COUNT(c.`id_category`)
 				FROM `'._DB_PREFIX_.'category` c
@@ -1169,7 +1243,7 @@ class CategoryCore extends ObjectModel
         ) {
             return 0;
         } else {
-            return (1 + (int) Db::getInstance()->getValue(
+            return (1 + (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                     '
 				SELECT MAX(cs.`position`)
 				FROM `'._DB_PREFIX_.'category` c
@@ -1188,6 +1262,8 @@ class CategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -1228,6 +1304,8 @@ class CategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @throws PrestaShopException
      */
     public function calcLevelDepth()
     {
@@ -1249,18 +1327,19 @@ class CategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @throws PrestaShopException
      */
     public static function regenerateEntireNtree()
     {
         $id = Context::getContext()->shop->id;
         $idShop = $id ? $id : Configuration::get('PS_SHOP_DEFAULT');
-        $categories = Db::getInstance()->executeS(
-            '
-		SELECT c.`id_category`, c.`id_parent`
-		FROM `'._DB_PREFIX_.'category` c
-		LEFT JOIN `'._DB_PREFIX_.'category_shop` cs
-		ON (c.`id_category` = cs.`id_category` AND cs.`id_shop` = '.(int) $idShop.')
-		ORDER BY c.`id_parent`, cs.`position` ASC'
+        $categories = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('c.`id_category`, c.`id_parent`')
+                ->from('category', 'c')
+                ->leftJoin('category_shop', 'cs', 'c.`id_category` = cs.`id_category` AND cs.`id_shop` = '.(int) $idShop)
+                ->orderBy('c.`id_parent`, cs.`position` ASC')
         );
         $categoriesArray = [];
         foreach ($categories as $category) {
@@ -1279,6 +1358,7 @@ class CategoryCore extends ObjectModel
      * @param $n
      *
      * @deprecated 1.0.0
+     * @throws PrestaShopException
      */
     protected static function _subTree(&$categories, $idCategory, &$n)
     {
@@ -1292,6 +1372,7 @@ class CategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected static function subTree(&$categories, $idCategory, &$n)
     {
@@ -1333,6 +1414,7 @@ class CategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      */
     public function cleanGroups()
     {
@@ -1340,8 +1422,10 @@ class CategoryCore extends ObjectModel
     }
 
     /**
-     * @param $groups
+     * @param array $groups
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1361,6 +1445,8 @@ class CategoryCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1419,14 +1505,15 @@ class CategoryCore extends ObjectModel
     /**
      * Search for another category with the same parent and the same position
      *
-     * @return array first category found
+     * @return false|null|string first category found
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function getDuplicatePosition()
     {
-        return Db::getInstance()->getValue(
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             '
 		SELECT c.`id_category`
 		FROM `'._DB_PREFIX_.'category` c
@@ -1446,6 +1533,8 @@ class CategoryCore extends ObjectModel
      *
      * @return bool true if succeed
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1456,13 +1545,13 @@ class CategoryCore extends ObjectModel
         }
 
         $return = true;
-        $result = Db::getInstance()->executeS(
-            '
-        SELECT c.`id_category`
-        FROM `'._DB_PREFIX_.'category` c
-        '.Shop::addSqlAssociation('category', 'c').'
-        WHERE c.`id_parent` = '.(int) $idCategoryParent.'
-        ORDER BY category_shop.`position`'
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('c.`id_category`')
+                ->from('category', 'c')
+                ->join(Shop::addSqlAssociation('category', 'c'))
+                ->where('c.`id_parent` = '.(int) $idCategoryParent)
+                ->orderBy('category_shop.`position`')
         );
         $count = count($result);
         for ($i = 0; $i < $count; $i++) {
@@ -1484,6 +1573,8 @@ class CategoryCore extends ObjectModel
      *
      * @param int $idCategory parent category
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1494,17 +1585,17 @@ class CategoryCore extends ObjectModel
         }
         /* Gets all children */
         $categories = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            '
-			SELECT id_category, id_parent, level_depth
-			FROM '._DB_PREFIX_.'category
-			WHERE id_parent = '.(int) $idCategory
+            (new DbQuery())
+                ->select('`id_category`, `id_parent`, `level_depth`')
+                ->from('category')
+                ->where('`id_parent` = '.(int) $idCategory)
         );
         /* Gets level_depth */
         $level = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
-            '
-			SELECT level_depth
-			FROM '._DB_PREFIX_.'category
-			WHERE id_category = '.(int) $idCategory
+            (new DbQuery())
+                ->select('level_depth')
+                ->from('category')
+                ->where('`id_category` = '.(int) $idCategory)
         );
         /* Updates level_depth for all children */
         foreach ($categories as $subCategory) {
@@ -1524,6 +1615,8 @@ class CategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @throws PrestaShopException
      */
     public function toggleStatus()
     {
@@ -1543,6 +1636,8 @@ class CategoryCore extends ObjectModel
      *
      * @return array Subcategories lite tree
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1588,6 +1683,8 @@ class CategoryCore extends ObjectModel
      *
      * @return array Categories
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1624,7 +1721,7 @@ class CategoryCore extends ObjectModel
     }
 
     /**
-     * @param $description
+     * @param string $description
      *
      * @return string
      *
@@ -1643,6 +1740,8 @@ class CategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @throws PrestaShopException
      */
     public function deleteSelection($categories)
     {
@@ -1664,20 +1763,23 @@ class CategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function isRootCategoryForAShop()
     {
         return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-            '
-		SELECT `id_shop`
-		FROM `'._DB_PREFIX_.'shop`
-		WHERE `id_category` = '.(int) $this->id
+            (new DbQuery())
+                ->select('`id_shop`')
+                ->from('shop')
+                ->where('`id_category` = '.(int) $this->id)
         );
     }
 
     /**
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1731,6 +1833,7 @@ class CategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getAllChildren($idLang = null)
     {
@@ -1750,6 +1853,7 @@ class CategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function deleteLite()
     {
@@ -1762,6 +1866,7 @@ class CategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      */
     public function cleanAssoProducts()
     {
@@ -1800,6 +1905,7 @@ class CategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getProducts($idLang, $p, $n, $orderBy = null, $orderWay = null, $getTotal = false, $active = true, $random = false, $randomNumberProducts = 1, $checkAccess = true, Context $context = null)
     {
@@ -1815,11 +1921,11 @@ class CategoryCore extends ObjectModel
         $idSupplier = (int) Tools::getValue('id_supplier');
 
         $subcats = $this->getAllSubcategories();
-        $cats_to_search_in = [$this->id];
+        $catsToSearchIn = [$this->id];
         if($subcats && $this->display_from_sub)
         {
             foreach ($subcats as $scat) {
-                $cats_to_search_in[] = $scat['id_category'];
+                $catsToSearchIn[] = $scat['id_category'];
             }
         }
 
@@ -1830,7 +1936,7 @@ class CategoryCore extends ObjectModel
 					FROM `'._DB_PREFIX_.'product` p
 					'.Shop::addSqlAssociation('product', 'p').'
 					LEFT JOIN `'._DB_PREFIX_.'category_product` cp ON p.`id_product` = cp.`id_product`
-					WHERE cp.`id_category` IN ('.implode(',', $cats_to_search_in).')'.
+					WHERE cp.`id_category` IN ('.implode(',', $catsToSearchIn).')'.
                 ($front ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '').
                 ($active ? ' AND product_shop.`active` = 1' : '').
                 ($idSupplier ? 'AND p.id_supplier = '.(int) $idSupplier : '');
@@ -1894,7 +2000,7 @@ class CategoryCore extends ObjectModel
 				LEFT JOIN `'._DB_PREFIX_.'manufacturer` m
 					ON m.`id_manufacturer` = p.`id_manufacturer`
 				WHERE product_shop.`id_shop` = '.(int) $context->shop->id.'
-					AND cp.`id_category` IN ('.implode(',', $cats_to_search_in).')'
+					AND cp.`id_category` IN ('.implode(',', $catsToSearchIn).')'
             .($active ? ' AND product_shop.`active` = 1' : '')
             .($front ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '')
             .($idSupplier ? ' AND p.id_supplier = '.(int) $idSupplier : ''
@@ -1931,6 +2037,7 @@ class CategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function checkAccess($idCustomer)
     {
@@ -1969,6 +2076,7 @@ class CategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getAllParents($idLang = null)
     {
@@ -2037,6 +2145,8 @@ class CategoryCore extends ObjectModel
      *
      * @return array Corresponding categories
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2097,6 +2207,8 @@ class CategoryCore extends ObjectModel
      *
      * @return bool|void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2113,6 +2225,8 @@ class CategoryCore extends ObjectModel
     /**
      * @return array|null
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2120,11 +2234,11 @@ class CategoryCore extends ObjectModel
     {
         $cache_id = 'Category::getGroups_'.(int) $this->id;
         if (!Cache::isStored($cache_id)) {
-            $result = Db::getInstance()->executeS(
-                '
-			SELECT cg.`id_group`
-			FROM '._DB_PREFIX_.'category_group cg
-			WHERE cg.`id_category` = '.(int) $this->id
+            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                    ->select('cg.`id_group`')
+                    ->from('category_group', 'cg')
+                    ->where('cg.`id_category` = '.(int) $this->id)
             );
             $groups = [];
             foreach ($result as $group) {
@@ -2144,20 +2258,21 @@ class CategoryCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function updatePosition($way, $position)
     {
-        if (!$res = Db::getInstance()->executeS(
-            '
-            SELECT cp.`id_category`, category_shop.`position`, cp.`id_parent`
-            FROM `'._DB_PREFIX_.'category` cp
-            '.Shop::addSqlAssociation('category', 'cp').'
-            WHERE cp.`id_parent` = '.(int) $this->id_parent.'
-            ORDER BY category_shop.`position` ASC'
-        )
-        ) {
+        if (!$res = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('cp.`id_category`, category_shop.`position`, cp.`id_parent`')
+                ->from('category', 'cp')
+                ->join(Shop::addSqlAssociation('category', 'cp'))
+                ->where('cp.`id_parent` = '.(int) $this->id_parent)
+                ->orderBy('category_shop.`position` ASC')
+        )) {
             return false;
         }
 
@@ -2210,6 +2325,7 @@ class CategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function inShop(Shop $shop = null)
     {
@@ -2227,6 +2343,8 @@ class CategoryCore extends ObjectModel
     /**
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2248,6 +2366,8 @@ class CategoryCore extends ObjectModel
     /**
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2269,6 +2389,7 @@ class CategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getWsNbProductsRecursive()
     {
@@ -2302,19 +2423,20 @@ class CategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function isParentCategoryAvailable($idShop)
     {
         $id = Context::getContext()->shop->id;
-        $id_shop = $id ? $id : Configuration::get('PS_SHOP_DEFAULT');
+        $idShop = $id ? $id : Configuration::get('PS_SHOP_DEFAULT');
 
-        return (bool) Db::getInstance()->getValue(
-            '
-		SELECT c.`id_category`
-		FROM `'._DB_PREFIX_.'category` c
-		'.Shop::addSqlAssociation('category', 'c').'
-		WHERE category_shop.`id_shop` = '.(int) $id_shop.'
-		AND c.`id_parent` = '.(int) $this->id_parent
+        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('c.`id_category`')
+                ->from('category', 'c')
+                ->join(Shop::addSqlAssociation('category', 'c'))
+                ->where('category_shop.`id_shop` = '.(int) $idShop)
+                ->where('c.`id_parent` = '.(int) $this->id_parent)
         );
     }
 
@@ -2325,6 +2447,8 @@ class CategoryCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2357,15 +2481,16 @@ class CategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function existsInShop($id_shop)
     {
-        return (bool) Db::getInstance()->getValue(
-            '
-		SELECT `id_category`
-		FROM `'._DB_PREFIX_.'category_shop`
-		WHERE `id_category` = '.(int) $this->id.'
-		AND `id_shop` = '.(int) $id_shop
+        return (bool) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('`id_category`')
+                ->from('category_shop')
+                ->where('`id_category` = '.(int) $this->id)
+                ->where('`id_shop` = '.(int) $id_shop)
         );
     }
 
@@ -2378,14 +2503,13 @@ class CategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function deleteFromShop($idShop)
     {
-        return Db::getInstance()->execute(
-            '
-		DELETE FROM `'._DB_PREFIX_.'category_shop`
-		WHERE `id_shop` = '.(int) $idShop.'
-		AND id_category = '.(int) $this->id
+        return Db::getInstance()->delete(
+            'category_shop',
+            '`id_shop` = '.(int) $idShop.' AND id_category = '.(int) $this->id
         );
     }
 
@@ -2395,6 +2519,8 @@ class CategoryCore extends ObjectModel
      * @param array &$toDelete  Array reference where categories ID will be saved
      * @param int   $idCategory Parent category ID
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2408,11 +2534,11 @@ class CategoryCore extends ObjectModel
             PageCache::invalidateEntity('category', $this->id);
         }
 
-        $result = Db::getInstance()->executeS(
-            '
-		SELECT `id_category`
-		FROM `'._DB_PREFIX_.'category`
-		WHERE `id_parent` = '.(int) $idCategory
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('`id_category`')
+                ->from('category')
+                ->where('`id_parent` = '.(int) $idCategory)
         );
         foreach ($result as $row) {
             $toDelete[] = (int) $row['id_category'];
@@ -2426,15 +2552,16 @@ class CategoryCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @return array list of ids of the subcategories
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getAllSubcategories()
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->ExecuteS('
-            SELECT id_category
-            FROM '._DB_PREFIX_.'category
-            WHERE nleft > '.$this->nleft.'
-            AND nright < '.$this->nright.'
-            ');
-    }  
-
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('`id_category`')
+                ->from('category')
+                ->where('`nleft` > '.$this->nleft.' AND `nright` < '.$this->nright)
+        );
+    }
 }
