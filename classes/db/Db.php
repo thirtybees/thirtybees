@@ -381,7 +381,7 @@ abstract class DbCore
      *
      * @param string $table
      * @param array  $data
-     * @param string $type (INSERT, INSERT IGNORE, REPLACE, UPDATE).
+     * @param string $type     (INSERT, INSERT IGNORE, REPLACE, UPDATE).
      * @param string $where
      * @param int    $limit
      * @param bool   $useCache
@@ -389,6 +389,7 @@ abstract class DbCore
      *
      * @return bool
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
@@ -426,8 +427,9 @@ abstract class DbCore
      * @return bool
      * @throws PrestaShopDatabaseException
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function autoExecuteWithNullValues($table, $values, $type, $where = '', $limit = 0)
     {
@@ -441,6 +443,7 @@ abstract class DbCore
      *
      * @return bool|PDOStatement
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function query($sql)
     {
@@ -476,8 +479,9 @@ abstract class DbCore
      * @return bool
      * @throws PrestaShopDatabaseException
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function insert($table, $data, $nullValues = false, $useCache = true, $type = self::INSERT, $addPrefix = true)
     {
@@ -565,6 +569,9 @@ abstract class DbCore
      * @param bool   $addPrefix  Add or not _DB_PREFIX_ before table name
      *
      * @return bool
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function update($table, $data, $where = '', $limit = 0, $nullValues = false, $useCache = true, $addPrefix = true)
     {
@@ -609,6 +616,7 @@ abstract class DbCore
      * @param bool   $addPrefix Add or not _DB_PREFIX_ before table name
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
      */
     public function delete($table, $where = '', $limit = 0, $useCache = true, $addPrefix = true)
     {
@@ -630,6 +638,7 @@ abstract class DbCore
      * @param bool           $useCache
      *
      * @return bool
+     * @throws PrestaShopException
      */
     public function execute($sql, $useCache = true)
     {
@@ -651,6 +660,7 @@ abstract class DbCore
      *
      * @return array|false|null|PDOStatement
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function executeS($sql, $array = true, $useCache = true)
     {
@@ -695,6 +705,8 @@ abstract class DbCore
      * @param bool           $useCache Deprecated, the internal query cache is no longer used
      *
      * @return array|bool|object|null
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getRow($sql, $useCache = true)
     {
@@ -729,6 +741,7 @@ abstract class DbCore
      * @param bool           $useCache Deprecated, the internal query cache is no longer used
      *
      * @return string|false|null
+     * @throws PrestaShopException
      */
     public function getValue($sql, $useCache = true)
     {
@@ -772,6 +785,7 @@ abstract class DbCore
      *
      * @return bool|PDOStatement
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function q($sql, $useCache = true)
     {
@@ -931,6 +945,7 @@ abstract class DbCore
      * @throws PrestaShopDatabaseException
      *
      * @deprecated 2.0.0
+     * @throws PrestaShopException
      */
     public static function s($sql, $useCache = true)
     {
@@ -947,6 +962,8 @@ abstract class DbCore
      * @return array|bool|PDOStatement
      *
      * @deprecated 2.0.0
+     *
+     * @throws PrestaShopException
      */
     public static function ps($sql, $useCache = 1)
     {
@@ -963,6 +980,8 @@ abstract class DbCore
      * @param int $useCache
      *
      * @deprecated 2.0.0
+     *
+     * @throws PrestaShopException
      */
     public static function ds($sql, $useCache = 1)
     {
