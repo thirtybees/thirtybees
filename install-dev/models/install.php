@@ -855,8 +855,6 @@ class InstallModelInstall extends InstallAbstractModel
                 'homeslider',
                 'homefeatured',
                 'productpaymentlogos',
-                'pagesnotfound',
-                'sekeywords',
                 'statsmodule',
                 'tbupdater',
                 'themeconfigurator',
