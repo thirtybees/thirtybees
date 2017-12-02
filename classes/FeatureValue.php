@@ -164,6 +164,8 @@ class FeatureValueCore extends ObjectModel
      *
      * @return int
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -198,6 +200,7 @@ class FeatureValueCore extends ObjectModel
                     ->select('fv.`id_feature_value`')
                     ->from('feature_value', 'fv')
                     ->leftJoin('feature_value_lang', 'fvl', 'fvl.`id_feature_value` = fv.`id_feature_value` AND fvl.`id_lang` = '.(int) $idLang)
+                    ->where('fvl.`value` = \''.pSQL($value).'\'')
                     ->where('fv.`id_feature` = '.(int) $idFeature)
                     ->where('fv.`custom` = 0')
                     ->groupBy('fv.`id_feature_value`')
