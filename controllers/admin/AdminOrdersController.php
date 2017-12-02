@@ -493,9 +493,27 @@ class AdminOrdersControllerCore extends AdminController
                                 $history->changeIdOrderState((int) $orderState->id, $order, !$order->hasInvoice());
 
                                 $carrier = new Carrier($order->id_carrier, $order->id_lang);
+                                $customer = new Customer($order->id_customer);
+                                if (Validate::isLoadedObject($customer)) {
+                                    $firstname = $customer->firstname;
+                                    $lastname = $customer->lastname;
+                                } else {
+                                    $firstname = '';
+                                    $lastname = '';
+                                }
                                 $templateVars = [];
                                 if ($history->id_order_state == Configuration::get('PS_OS_SHIPPING') && $order->shipping_number) {
-                                    $templateVars = ['{followup}' => str_replace('@', $order->shipping_number, $carrier->url)];
+                                    $templateVars = [
+                                        '{followup}'         => str_replace('@', $order->shipping_number, $carrier->url),
+                                        '{firstname}'        => $firstname,
+                                        '{lastname}'         => $lastname,
+                                        '{id_order}'         => $order->id,
+                                        '{shipping_number}'  => $order->shipping_number,
+                                        '{order_name}'       => $order->getUniqReference(),
+                                        '{bankwire_owner}'   => Configuration::get('BANK_WIRE_OWNER'),
+                                        '{bankwire_details}' => nl2br(Configuration::get('BANK_WIRE_DETAILS')),
+                                        '{bankwire_address}' => nl2br(Configuration::get('BANK_WIRE_ADDRESS')),
+                                    ];
                                 }
 
                                 if ($history->addWithemail(true, $templateVars)) {
@@ -588,12 +606,15 @@ class AdminOrdersControllerCore extends AdminController
                             throw new PrestaShopException('Can\'t load Carrier object');
                         }
                         $templateVars = [
-                            '{followup}'        => str_replace('@', $order->shipping_number, $carrier->url),
-                            '{firstname}'       => $customer->firstname,
-                            '{lastname}'        => $customer->lastname,
-                            '{id_order}'        => $order->id,
-                            '{shipping_number}' => $order->shipping_number,
-                            '{order_name}'      => $order->getUniqReference(),
+                            '{followup}'         => str_replace('@', $order->shipping_number, $carrier->url),
+                            '{firstname}'        => $customer->firstname,
+                            '{lastname}'         => $customer->lastname,
+                            '{id_order}'         => $order->id,
+                            '{shipping_number}'  => $order->shipping_number,
+                            '{order_name}'       => $order->getUniqReference(),
+                            '{bankwire_owner}'   => Configuration::get('BANK_WIRE_OWNER'),
+                            '{bankwire_details}' => nl2br(Configuration::get('BANK_WIRE_DETAILS')),
+                            '{bankwire_address}' => nl2br(Configuration::get('BANK_WIRE_ADDRESS')),
                         ];
                         if (@Mail::Send(
                             (int) $order->id_lang,
@@ -644,9 +665,27 @@ class AdminOrdersControllerCore extends AdminController
                         $history->changeIdOrderState((int) $orderState->id, $order, $useExistingPayment);
 
                         $carrier = new Carrier($order->id_carrier, $order->id_lang);
+                        $customer = new Customer($order->id_customer);
+                        if (Validate::isLoadedObject($customer)) {
+                            $firstname = $customer->firstname;
+                            $lastname = $customer->lastname;
+                        } else {
+                            $firstname = '';
+                            $lastname = '';
+                        }
                         $templateVars = [];
                         if ($history->id_order_state == Configuration::get('PS_OS_SHIPPING') && $order->shipping_number) {
-                            $templateVars = ['{followup}' => str_replace('@', $order->shipping_number, $carrier->url)];
+                            $templateVars = [
+                                '{followup}'         => str_replace('@', $order->shipping_number, $carrier->url),
+                                '{firstname}'        => $firstname,
+                                '{lastname}'         => $lastname,
+                                '{id_order}'         => $order->id,
+                                '{shipping_number}'  => $order->shipping_number,
+                                '{order_name}'       => $order->getUniqReference(),
+                                '{bankwire_owner}'   => Configuration::get('BANK_WIRE_OWNER'),
+                                '{bankwire_details}' => nl2br(Configuration::get('BANK_WIRE_DETAILS')),
+                                '{bankwire_address}' => nl2br(Configuration::get('BANK_WIRE_ADDRESS')),
+                            ];
                         }
 
                         // Save all changes
@@ -1663,9 +1702,27 @@ class AdminOrdersControllerCore extends AdminController
                     $history = new OrderHistory((int) Tools::getValue('id_order_history'));
 
                     $carrier = new Carrier($order->id_carrier, $order->id_lang);
+                    $customer = new Customer($order->id_customer);
+                    if (Validate::isLoadedObject($customer)) {
+                        $firstname = $customer->firstname;
+                        $lastname = $customer->lastname;
+                    } else {
+                        $firstname = '';
+                        $lastname = '';
+                    }
                     $templateVars = [];
                     if ($orderState->id == Configuration::get('PS_OS_SHIPPING') && $order->shipping_number) {
-                        $templateVars = ['{followup}' => str_replace('@', $order->shipping_number, $carrier->url)];
+                        $templateVars = [
+                            '{followup}'         => str_replace('@', $order->shipping_number, $carrier->url),
+                            '{firstname}'        => $firstname,
+                            '{lastname}'         => $lastname,
+                            '{id_order}'         => $order->id,
+                            '{shipping_number}'  => $order->shipping_number,
+                            '{order_name}'       => $order->getUniqReference(),
+                            '{bankwire_owner}'   => Configuration::get('BANK_WIRE_OWNER'),
+                            '{bankwire_details}' => nl2br(Configuration::get('BANK_WIRE_DETAILS')),
+                            '{bankwire_address}' => nl2br(Configuration::get('BANK_WIRE_ADDRESS')),
+                        ];
                     }
 
                     if ($history->sendEmail($order, $templateVars)) {
