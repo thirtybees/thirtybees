@@ -114,5 +114,18 @@ $  php install-dev/index_cli.php --newsletter=1 --language=en --country=us --dom
 --send_email    Send an email to the administrator after installation   (Default: 1)
 ```
 
+## Building a release package
+
+- Clone recursively:
+```shell
+$ git clone --recursive --depth 1 https://github.com/thirtybees/thirtybees
+```
+- Build `HEAD` as follows:
+```shell
+$ cd build
+$ ./build.sh HEAD
+```
+- This should result in a package called `thirtybees-v<version>.zip`
+
 ## Contributing
 See [CONTRIBUTING.md](CONTRIBUTING.md)
