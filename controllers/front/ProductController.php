@@ -54,7 +54,7 @@ class ProductControllerCore extends FrontController
     public function setMedia()
     {
         parent::setMedia();
-        if (count($this->errors)) {
+        if (is_array($this->errors) && count($this->errors)) {
             return;
         }
 
@@ -295,7 +295,7 @@ class ProductControllerCore extends FrontController
             }
 
             $accessories = $this->product->getAccessories($this->context->language->id);
-            if ($this->product->cache_is_pack || count($accessories)) {
+            if ($this->product->cache_is_pack || is_array($accessories) && ($accessories)) {
                 $this->context->controller->addCSS(_THEME_CSS_DIR_.'product_list.css');
             }
             if ($this->product->customizable) {
