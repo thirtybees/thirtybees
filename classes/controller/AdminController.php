@@ -3250,7 +3250,7 @@ class AdminControllerCore extends Controller
             $filterModulesList = [$filterModulesList];
         }
 
-        if (!count($filterModulesList)) {
+        if (is_null($filterModulesList) || !count($filterModulesList)) {
             return false;
         } //if there is no modules to display just return false;
 
