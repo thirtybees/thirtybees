@@ -4103,7 +4103,7 @@ class AdminControllerCore extends Controller
      */
     public function initBreadcrumbs($tabId = null, $tabs = null)
     {
-        if (is_array($tabs) || count($tabs)) {
+        if (is_array($tabs)) {
             $tabs = [];
         }
 
