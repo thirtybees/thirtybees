@@ -202,7 +202,7 @@ class AdminModulesControllerCore extends AdminController
      */
     public function displayAjaxRefreshModuleList()
     {
-        echo json_encode(['status' => $this->status]);
+        $this->ajaxDie(json_encode(['status' => $this->status]));
     }
 
     /**

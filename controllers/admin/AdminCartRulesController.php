@@ -133,7 +133,8 @@ class AdminCartRulesControllerCore extends AdminController
                 }
             }
         }
-        echo json_encode(['html' => $html, 'next_link' => $nextLink]);
+
+        $this->ajaxDie(json_encode(['html' => $html, 'next_link' => $nextLink]));
     }
 
     /**
@@ -718,7 +719,8 @@ class AdminCartRulesControllerCore extends AdminController
         if ($vouchers = CartRule::getCartsRuleByCode(Tools::getValue('q'), (int) $this->context->language->id, true)) {
             $found = true;
         }
-        echo json_encode(['found' => $found, 'vouchers' => $vouchers]);
+
+        $this->ajaxDie(json_encode(['found' => $found, 'vouchers' => $vouchers]));
     }
 
     /**

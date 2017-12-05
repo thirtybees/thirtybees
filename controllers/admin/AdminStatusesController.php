@@ -726,9 +726,9 @@ class AdminStatusesControllerCore extends AdminController
         $result = Db::getInstance()->execute($sql);
 
         if ($result) {
-            echo json_encode(['success' => 1, 'text' => $this->l('The status has been updated successfully.')]);
+            $this->ajaxDie(json_encode(['success' => 1, 'text' => $this->l('The status has been updated successfully.')]));
         } else {
-            echo json_encode(['success' => 0, 'text' => $this->l('An error occurred while updating this meta.')]);
+            $this->ajaxDie(json_encode(['success' => 0, 'text' => $this->l('An error occurred while updating this meta.')]));
         }
     }
 
@@ -747,9 +747,9 @@ class AdminStatusesControllerCore extends AdminController
         $result = Db::getInstance()->execute($sql);
 
         if ($result) {
-            echo json_encode(['success' => 1, 'text' => $this->l('The status has been updated successfully.')]);
+            $this->ajaxDie(json_encode(['success' => 1, 'text' => $this->l('The status has been updated successfully.')]));
         } else {
-            echo json_encode(['success' => 0, 'text' => $this->l('An error occurred while updating this meta.')]);
+            $this->ajaxDie(json_encode(['success' => 0, 'text' => $this->l('An error occurred while updating this meta.')]));
         }
     }
 
@@ -768,9 +768,9 @@ class AdminStatusesControllerCore extends AdminController
         $result = Db::getInstance()->execute($sql);
 
         if ($result) {
-            echo json_encode(['success' => 1, 'text' => $this->l('The status has been updated successfully.')]);
+            $this->ajaxDie(json_encode(['success' => 1, 'text' => $this->l('The status has been updated successfully.')]));
         } else {
-            echo json_encode(['success' => 0, 'text' => $this->l('An error occurred while updating this meta.')]);
+            $this->ajaxDie(json_encode(['success' => 0, 'text' => $this->l('An error occurred while updating this meta.')]));
         }
     }
 
