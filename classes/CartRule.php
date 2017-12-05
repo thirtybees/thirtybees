@@ -993,7 +993,7 @@ class CartRuleCore extends ObjectModel
                     ->select('crg.`id_cart_rule`')
                     ->from('cart_rule_group', 'crg')
                     ->where('crg.`id_cart_rule` = '.(int) $this->id)
-                    ->where('crg.`id_group` = '.($context->cart->id_customer ? 'IN (SELECT cg.id_group FROM '._DB_PREFIX_.'customer_group cg WHERE cg.id_customer = '.(int) $context->cart->id_customer.')' : '= '.(int) Configuration::get('PS_UNIDENTIFIED_GROUP')))
+                    ->where('crg.`id_group` '.($context->cart->id_customer ? 'IN (SELECT cg.id_group FROM '._DB_PREFIX_.'customer_group cg WHERE cg.id_customer = '.(int) $context->cart->id_customer.')' : '= '.(int) Configuration::get('PS_UNIDENTIFIED_GROUP')))
             );
             if (!$idCartRule) {
                 return (!$displayError) ? false : Tools::displayError('You cannot use this voucher');
