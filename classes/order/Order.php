@@ -427,7 +427,7 @@ class OrderCore extends ObjectModel
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
-    protected function _deleteProduct(OrderDetail $orderDetail, $quantity)
+    protected function _deleteProduct($orderDetail, $quantity)
     {
         $productPriceTaxExcl = $orderDetail->unit_price_tax_excl * $quantity;
         $productPriceTaxIncl = $orderDetail->unit_price_tax_incl * $quantity;
