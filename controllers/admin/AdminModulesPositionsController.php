@@ -83,7 +83,7 @@ class AdminModulesPositionsControllerCore extends AdminController
         if (array_key_exists('changePosition', $_GET)) {
             if ($this->tabAccess['edit'] === '1') {
                 $idModule = (int) Tools::getValue('id_module');
-                $idHsook = (int) Tools::getValue('id_hook');
+                $idHook = (int) Tools::getValue('id_hook');
                 $module = Module::getInstanceById($idModule);
                 if (Validate::isLoadedObject($module)) {
                     $module->updatePosition($idHook, (int) Tools::getValue('direction'));
