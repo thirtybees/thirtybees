@@ -181,7 +181,7 @@ class InstallModelInstall extends InstallAbstractModel
              FROM `INFORMATION_SCHEMA`.`ENGINES`
              WHERE `ENGINE` = \'InnoDB\';'
         );
-        if (!in_array(Tools::strtolower($engine), ['default', 'yes'])) {
+        if (!in_array(mb_strtolower($engine), ['default', 'yes'])) {
             $this->setError(
                 sprintf(
                     $this->language->l(

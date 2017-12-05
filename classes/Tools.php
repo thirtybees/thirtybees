@@ -339,7 +339,7 @@ class ToolsCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      *
-     * @deprecated 1.0.4 Use mb_strlen for UTF-8 or strlen if guaranteed ASCII
+     * @deprecated 1.0.4 Use mb_strtolower for UTF-8 or strtolower if guaranteed ASCII
      */
     public static function strtolower($str)
     {
@@ -4813,7 +4813,7 @@ exit;
      */
     public static function utf8ToIdn($input)
     {
-        $input = static::strtolower($input);
+        $input = mb_strtolower($input);
         $parts = explode('.', $input);
         foreach ($parts as &$part) {
             $length = strlen($part);

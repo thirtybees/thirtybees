@@ -263,7 +263,6 @@ function translate($string)
  */
 function checkingTab($tab)
 {
-    $tab_lowercase = Tools::strtolower(trim($tab));
     if (!Validate::isTabName($tab)) {
         return false;
     }

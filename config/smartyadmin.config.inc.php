@@ -70,19 +70,19 @@ function smartyTranslate($params, &$smarty)
         if (!empty(Context::getContext()->override_controller_name_for_translations)) {
             $class = Context::getContext()->override_controller_name_for_translations;
         } elseif (isset(Context::getContext()->controller)) {
-            $class_name = get_class(Context::getContext()->controller);
-            $class = substr($class_name, 0, strpos(Tools::strtolower($class_name), 'controller'));
+            $className = get_class(Context::getContext()->controller);
+            $class = substr($className, 0, strpos(strtolower($className), 'controller'));
         } else {
             // Split by \ and / to get the folder tree for the file
-        $folder_tree = preg_split('#[/\\\]#', $filename);
-            $key = array_search('controllers', $folder_tree);
+        $folderTree = preg_split('#[/\\\]#', $filename);
+            $key = array_search('controllers', $folderTree);
 
         // If there was a match, construct the class name using the child folder name
         // Eg. xxx/controllers/customers/xxx => AdminCustomers
         if ($key !== false) {
-            $class = 'Admin'.Tools::toCamelCase($folder_tree[$key + 1], true);
-        } elseif (isset($folder_tree[0])) {
-            $class = 'Admin'.Tools::toCamelCase($folder_tree[0], true);
+            $class = 'Admin'.Tools::toCamelCase($folderTree[$key + 1], true);
+        } elseif (isset($folderTree[0])) {
+            $class = 'Admin'.Tools::toCamelCase($folderTree[0], true);
         }
         }
     }

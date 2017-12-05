@@ -64,15 +64,15 @@ function smartyTranslate($params, &$smarty)
     }
 
     if ($params['mod']) {
-        return Translate::smartyPostProcessTranslation(Translate::getModuleTranslation($params['mod'], $params['s'], $basename, $params['sprintf'], $params['js']), $params);
+        return Translate::postProcessTranslation(Translate::getModuleTranslation($params['mod'], $params['s'], $basename, $params['sprintf'], $params['js']), $params);
     } elseif ($params['pdf']) {
-        return Translate::smartyPostProcessTranslation(Translate::getPdfTranslation($params['s'], $params['sprintf']), $params);
+        return Translate::postProcessTranslation(Translate::getPdfTranslation($params['s'], $params['sprintf']), $params);
     }
 
     if ($_LANG != null && isset($_LANG[$key])) {
         $msg = $_LANG[$key];
-    } elseif ($_LANG != null && isset($_LANG[Tools::strtolower($key)])) {
-        $msg = $_LANG[Tools::strtolower($key)];
+    } elseif ($_LANG != null && isset($_LANG[mb_strtolower($key)])) {
+        $msg = $_LANG[mb_strtolower($key)];
     } else {
         $msg = $params['s'];
     }

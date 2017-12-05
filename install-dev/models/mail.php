@@ -86,7 +86,7 @@ class InstallModelMail extends InstallAbstractModel
             // Test with custom SMTP connection
             if ($this->smtp_checked) {
                 // Retrocompatibility
-                if (Tools::strtolower($this->encryption) === 'off') {
+                if (mb_strtolower($this->encryption) === 'off') {
                     $this->encryption = false;
                 }
                 $smtp = Swift_SmtpTransport::newInstance($this->server, $this->port, $this->encryption);
