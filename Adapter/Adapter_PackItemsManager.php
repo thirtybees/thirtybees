@@ -51,7 +51,7 @@ class Adapter_PackItemsManager
      * @version 1.0.0 Initial version
      * @throws Adapter_Exception
      */
-    public function getPackItems(Product $product, $idLang = false)
+    public function getPackItems($product, $idLang = false)
     {
         if (!static::isPack($product)) {
             return [];
