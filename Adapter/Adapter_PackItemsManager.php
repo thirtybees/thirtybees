@@ -42,24 +42,25 @@ class Adapter_PackItemsManager
     /**
      * Get the Products contained in the given Pack.
      *
-     * @param Pack     $pack
+     * @param Product  $product
      * @param bool|int $idLang
      *
      * @return array The products contained in this Pack, with special dynamic attributes [pack_quantity, id_pack_product_attribute]
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws Adapter_Exception
      */
-    public function getPackItems(Pack $pack, $idLang = false)
+    public function getPackItems(Product $product, $idLang = false)
     {
         if ($idLang === false) {
             $configuration = Adapter_ServiceLocator::get('Core_Business_ConfigurationInterface');
             $idLang = (int) $configuration->get('PS_LANG_DEFAULT');
         }
 
-        return Pack::getItems($pack->id, $idLang);
+        return Pack::getItems($product->id, $idLang);
     }
-    
+
     /**
      * Get all Packs that contains the given item in the corresponding declination.
      *
@@ -69,8 +70,9 @@ class Adapter_PackItemsManager
      *
      * @return array The packs that contains the given item, with special dynamic attribute [pack_item_quantity]
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws Adapter_Exception
      */
     public function getPacksContainingItem($item, $itemAttributeId, $idLang = false)
     {
