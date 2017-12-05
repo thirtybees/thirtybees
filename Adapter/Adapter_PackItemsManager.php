@@ -53,6 +53,10 @@ class Adapter_PackItemsManager
      */
     public function getPackItems(Product $product, $idLang = false)
     {
+        if (!static::isPack($product)) {
+            return [];
+        }
+
         if ($idLang === false) {
             $configuration = Adapter_ServiceLocator::get('Core_Business_ConfigurationInterface');
             $idLang = (int) $configuration->get('PS_LANG_DEFAULT');
