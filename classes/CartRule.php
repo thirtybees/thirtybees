@@ -530,7 +530,7 @@ class CartRuleCore extends ObjectModel
                                 (new DbQuery())
                                     ->select('cp.`quantity`, cp.`id_product`, pac.`id_attribute`, cp.`id_product_attribute`')
                                     ->from('cart_product', 'cp')
-                                    ->leftJoin('product_attribute_combination', 'pac', 'cp.`id_product_attrbute` = pac.`id_product_attribute`')
+                                    ->leftJoin('product_attribute_combination', 'pac', 'cp.`id_product_attribute` = pac.`id_product_attribute`')
                                     ->where('cp.`id_cart` = '.(int) $context->cart->id)
                                     ->where('cp.`id_product` IN ('.implode(',', array_map('intval', $eligibleProductsList)).')')
                                     ->where('cp.`id_product_attribute` > 0')
