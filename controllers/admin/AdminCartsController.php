@@ -701,12 +701,12 @@ class AdminCartsControllerCore extends AdminController
                 if (!($qtyUpd = $this->context->cart->updateQty($qty, $idProduct, (int) $idProductAttribute, (int) $idCustomization, $operator))) {
                     $errors[] = Tools::displayError('You already have the maximum quantity available for this product.');
                 } elseif ($qtyUpd < 0) {
-                    $minimal_qty = $idProductAttribute ? Attribute::getAttributeMinimalQty((int) $idProductAttribute) : $product->minimal_quantity;
-                    $errors[] = sprintf(Tools::displayError('You must add a minimum quantity of %d', false), $minimal_qty);
+                    $minimalQty = $idProductAttribute ? Attribute::getAttributeMinimalQty((int) $idProductAttribute) : $product->minimal_quantity;
+                    $errors[] = sprintf(Tools::displayError('You must add a minimum quantity of %d', false), $minimalQty);
                 }
             }
 
-            echo json_encode(array_merge($this->ajaxReturnVars(), ['errors' => $errors]));
+            die(json_encode(array_merge($this->ajaxReturnVars(), ['errors' => $errors])));
         }
     }
 
@@ -730,7 +730,7 @@ class AdminCartsControllerCore extends AdminController
                 $this->context->cart->gift_message = $giftMessage;
             }
             $this->context->cart->save();
-            echo json_encode($this->ajaxReturnVars());
+            die(json_encode($this->ajaxReturnVars()));
         }
     }
 
@@ -755,7 +755,7 @@ class AdminCartsControllerCore extends AdminController
             } elseif (Validate::isLoadedObject($message)) {
                 $message->delete();
             }
-            echo json_encode($this->ajaxReturnVars());
+            die(json_encode($this->ajaxReturnVars()));
         }
     }
 
@@ -771,7 +771,7 @@ class AdminCartsControllerCore extends AdminController
                 $this->context->currency = $currency;
                 $this->context->cart->save();
             }
-            echo json_encode($this->ajaxReturnVars());
+            die(json_encode($this->ajaxReturnVars()));
         }
     }
 
@@ -786,7 +786,7 @@ class AdminCartsControllerCore extends AdminController
                 $this->context->cart->id_lang = (int) $lang->id;
                 $this->context->cart->save();
             }
-            echo json_encode($this->ajaxReturnVars());
+            die(json_encode($this->ajaxReturnVars()));
         }
     }
 
@@ -808,7 +808,7 @@ class AdminCartsControllerCore extends AdminController
                 $errors[] = Tools::displayError('The order cannot be renewed.');
             } else {
                 $this->context->cart = $newCart['cart'];
-                echo json_encode($this->ajaxReturnVars());
+                die(json_encode($this->ajaxReturnVars()));
             }
         }
     }
@@ -820,7 +820,7 @@ class AdminCartsControllerCore extends AdminController
     {
         if ($this->tabAccess['edit'] === '1') {
             if ($this->context->cart->removeCartRule((int) Tools::getValue('id_cart_rule'))) {
-                echo json_encode($this->ajaxReturnVars());
+                die(json_encode($this->ajaxReturnVars()));
             }
         }
     }
@@ -854,7 +854,7 @@ class AdminCartsControllerCore extends AdminController
                 $this->context->cart->addCartRule((int) $cartRule->id);
             }
 
-            echo json_encode($this->ajaxReturnVars());
+            die(json_encode($this->ajaxReturnVars()));
         }
     }
 
@@ -875,7 +875,7 @@ class AdminCartsControllerCore extends AdminController
                     $errors[] = Tools::displayError('Can\'t add the voucher.');
                 }
             }
-            echo json_encode(array_merge($this->ajaxReturnVars(), ['errors' => $errors]));
+            die(json_encode(array_merge($this->ajaxReturnVars(), ['errors' => $errors])));
         }
     }
 
@@ -885,7 +885,7 @@ class AdminCartsControllerCore extends AdminController
     public function ajaxProcessUpdateAddress()
     {
         if ($this->tabAccess['edit'] === '1') {
-            echo json_encode(['addresses' => $this->context->customer->getAddresses((int) $this->context->cart->id_lang)]);
+            die(json_encode(['addresses' => $this->context->customer->getAddresses((int) $this->context->cart->id_lang)]));
         }
     }
 
@@ -910,7 +910,7 @@ class AdminCartsControllerCore extends AdminController
             }
             $this->context->cart->save();
 
-            echo json_encode($this->ajaxReturnVars());
+            die(json_encode($this->ajaxReturnVars()));
         }
     }
 
