@@ -440,10 +440,10 @@ class AdminCartsControllerCore extends AdminController
                 $errors[] = Tools::displayError('Invalid combination');
             }
             if (count($errors)) {
-                die(json_encode($errors));
+                $this->ajaxDie(json_encode($errors));
             }
             if ($this->context->cart->deleteProduct($idProduct, $idProductAttribute, (int) Tools::getValue('id_customization'))) {
-                echo json_encode($this->ajaxReturnVars());
+                $this->ajaxDie(json_encode($this->ajaxReturnVars()));
             }
         }
     }
@@ -706,7 +706,7 @@ class AdminCartsControllerCore extends AdminController
                 }
             }
 
-            die(json_encode(array_merge($this->ajaxReturnVars(), ['errors' => $errors])));
+            $this->ajaxDie(json_encode(array_merge($this->ajaxReturnVars(), ['errors' => $errors])));
         }
     }
 
@@ -730,7 +730,7 @@ class AdminCartsControllerCore extends AdminController
                 $this->context->cart->gift_message = $giftMessage;
             }
             $this->context->cart->save();
-            die(json_encode($this->ajaxReturnVars()));
+            $this->ajaxDie(json_encode($this->ajaxReturnVars()));
         }
     }
 
@@ -755,7 +755,7 @@ class AdminCartsControllerCore extends AdminController
             } elseif (Validate::isLoadedObject($message)) {
                 $message->delete();
             }
-            die(json_encode($this->ajaxReturnVars()));
+            $this->ajaxDie(json_encode($this->ajaxReturnVars()));
         }
     }
 
@@ -771,7 +771,7 @@ class AdminCartsControllerCore extends AdminController
                 $this->context->currency = $currency;
                 $this->context->cart->save();
             }
-            die(json_encode($this->ajaxReturnVars()));
+            $this->ajaxDie(json_encode($this->ajaxReturnVars()));
         }
     }
 
@@ -786,7 +786,7 @@ class AdminCartsControllerCore extends AdminController
                 $this->context->cart->id_lang = (int) $lang->id;
                 $this->context->cart->save();
             }
-            die(json_encode($this->ajaxReturnVars()));
+            $this->ajaxDie(json_encode($this->ajaxReturnVars()));
         }
     }
 
@@ -808,7 +808,7 @@ class AdminCartsControllerCore extends AdminController
                 $errors[] = Tools::displayError('The order cannot be renewed.');
             } else {
                 $this->context->cart = $newCart['cart'];
-                die(json_encode($this->ajaxReturnVars()));
+                $this->ajaxDie(json_encode($this->ajaxReturnVars()));
             }
         }
     }
@@ -820,7 +820,7 @@ class AdminCartsControllerCore extends AdminController
     {
         if ($this->tabAccess['edit'] === '1') {
             if ($this->context->cart->removeCartRule((int) Tools::getValue('id_cart_rule'))) {
-                die(json_encode($this->ajaxReturnVars()));
+                $this->ajaxDie(json_encode($this->ajaxReturnVars()));
             }
         }
     }
@@ -854,7 +854,7 @@ class AdminCartsControllerCore extends AdminController
                 $this->context->cart->addCartRule((int) $cartRule->id);
             }
 
-            die(json_encode($this->ajaxReturnVars()));
+            $this->ajaxDie(json_encode($this->ajaxReturnVars()));
         }
     }
 
@@ -875,7 +875,7 @@ class AdminCartsControllerCore extends AdminController
                     $errors[] = Tools::displayError('Can\'t add the voucher.');
                 }
             }
-            die(json_encode(array_merge($this->ajaxReturnVars(), ['errors' => $errors])));
+            $this->ajaxDie(json_encode(array_merge($this->ajaxReturnVars(), ['errors' => $errors])));
         }
     }
 
@@ -885,7 +885,7 @@ class AdminCartsControllerCore extends AdminController
     public function ajaxProcessUpdateAddress()
     {
         if ($this->tabAccess['edit'] === '1') {
-            die(json_encode(['addresses' => $this->context->customer->getAddresses((int) $this->context->cart->id_lang)]));
+            $this->ajaxDie(json_encode(['addresses' => $this->context->customer->getAddresses((int) $this->context->cart->id_lang)]));
         }
     }
 
@@ -910,7 +910,7 @@ class AdminCartsControllerCore extends AdminController
             }
             $this->context->cart->save();
 
-            die(json_encode($this->ajaxReturnVars()));
+            $this->ajaxDie(json_encode($this->ajaxReturnVars()));
         }
     }
 
@@ -952,7 +952,7 @@ class AdminCartsControllerCore extends AdminController
             $toReturn = array_merge($this->ajaxReturnVars(), ['found' => false]);
         }
 
-        echo json_encode($toReturn);
+        $this->ajaxDie(json_encode($toReturn));
     }
 
     /**
@@ -969,7 +969,7 @@ class AdminCartsControllerCore extends AdminController
      */
     public function displayAjaxGetSummary()
     {
-        echo json_encode($this->ajaxReturnVars());
+        $this->ajaxDie(json_encode($this->ajaxReturnVars()));
     }
 
     /**
@@ -996,7 +996,7 @@ class AdminCartsControllerCore extends AdminController
             $specificPrice->from = '0000-00-00 00:00:00';
             $specificPrice->to = '0000-00-00 00:00:00';
             $specificPrice->add();
-            echo json_encode($this->ajaxReturnVars());
+            $this->ajaxDie(json_encode($this->ajaxReturnVars()));
         }
     }
 
