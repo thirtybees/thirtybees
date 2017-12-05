@@ -163,7 +163,7 @@ class CookieCore
     {
         if (isset($_COOKIE[$this->_name])) {
             /* Decrypt cookie content */
-            $content = $this->_cipherTool->decrypt($_COOKIE[$this->_name]);
+            $content = $this->_cipherTool->decrypt(Tools::base64UrlDecode($_COOKIE[$this->_name]));
 
             /* Get cookie checksum */
             $tmpTab = explode('¤', $content);
@@ -232,7 +232,7 @@ class CookieCore
             $time = 1;
         }
 
-        return setcookie($this->_name, $content, $time, $this->_path, $this->_domain, $this->_secure, true);
+        return setrawcookie($this->_name, Tools::base64UrlEncode($content), $time, $this->_path, $this->_domain, $this->_secure, true);
     }
 
     /**

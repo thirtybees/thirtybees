@@ -5113,6 +5113,36 @@ exit;
             return chr(($code >> 18) + 240) . chr((($code >> 12) & 63) + 128) . chr((($code >> 6) & 63) + 128) . chr(($code & 63) + 128);
         }
     }
+
+    /**
+     * Base 64 encode that does not require additional URL Encoding for i.e. cookies
+     *
+     * This greatly reduces the size of a cookie
+     *
+     * @param mixed $data
+     *
+     * @return string
+     *
+     * @since 1.0.4
+     */
+    public static function base64UrlEncode($data)
+    {
+        return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+    }
+
+    /**
+     * Base 64 decode for base64UrlEncoded data
+     *
+     * @param mixed $data
+     *
+     * @return string
+     *
+     * @since 1.0.4
+     */
+    public static function base64UrlDecode($data)
+    {
+        return base64_decode(str_pad(strtr($data, '-_', '+/'), strlen($data) % 4, '=', STR_PAD_RIGHT));
+    }
 }
 
 /**
