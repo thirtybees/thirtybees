@@ -143,7 +143,7 @@ class AdminCartsControllerCore extends AdminController
      */
     public static function getOrderTotalUsingTaxCalculationMethod($idCart)
     {
-        $context = $this->context;
+        $context = Context::getContext();
         $context->cart = new Cart($idCart);
         $context->currency = new Currency((int) $context->cart->id_currency);
         $context->customer = new Customer((int) $context->cart->id_customer);
