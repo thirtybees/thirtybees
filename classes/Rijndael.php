@@ -63,6 +63,7 @@ class RijndaelCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws Exception
      */
     public function encrypt($plaintext)
     {
@@ -71,14 +72,40 @@ class RijndaelCore
         }
 
         if (function_exists('openssl_encrypt')) {
+            $ivsize = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
+            try {
+                $iv = random_bytes($ivsize);
+            } catch (Exception $e) {
+                if (function_exists('mcrypt_create_iv')) {
+                    $iv = mcrypt_create_iv($ivsize, MCRYPT_RAND);
+                } elseif (extension_loaded('openssl_random_pseudo_bytes')) {
+                    $iv = openssl_random_pseudo_bytes($ivsize);
+                } else {
+                    throw new Exception('No secure random number generator found on your system.');
+                }
+            }
+
             $ciphertext = openssl_encrypt(
                 $plaintext,
                 'aes-256-cbc',
                 $this->_key,
                 OPENSSL_RAW_DATA,
-                $this->_iv
+                $iv
             );
         } else {
+            $ivsize = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
+            try {
+                $iv = random_bytes($ivsize);
+            } catch (Exception $e) {
+                if (function_exists('mcrypt_create_iv')) {
+                    $iv = mcrypt_create_iv($ivsize, MCRYPT_RAND);
+                } elseif (extension_loaded('openssl_random_pseudo_bytes')) {
+                    $iv = openssl_random_pseudo_bytes($ivsize);
+                } else {
+                    throw new Exception('No secure random number generator found on your system.');
+                }
+            }
+
             // Add PKCS7 Padding
             $block = mcrypt_get_block_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
             $pad = $block - (mb_strlen($plaintext, '8bit') % $block);
@@ -89,11 +116,11 @@ class RijndaelCore
                 $this->_key,
                 $plaintext,
                 MCRYPT_MODE_CBC,
-                $this->_iv
+                $iv
             );
         }
 
-        return $this->_iv.$ciphertext;
+        return $iv.$ciphertext;
     }
 
     /**
@@ -110,23 +137,29 @@ class RijndaelCore
             return false;
         }
 
-        $ciphertext = mb_substr($ciphertext, mb_strlen($this->_iv, '8bit'), null, '8bit');
-
         if (function_exists('openssl_decrypt')) {
+            $ivsize = openssl_cipher_iv_length('aes-256-cbc');
+            $iv = mb_substr($ciphertext, 0, $ivsize, '8bit');
+            $ciphertext = mb_substr($ciphertext, $ivsize, null, '8bit');
+
             return openssl_decrypt(
                 $ciphertext,
                 'aes-256-cbc',
                 $this->_key,
                 OPENSSL_RAW_DATA,
-                $this->_iv
+                $iv
             );
         } else {
+            $ivsize = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
+            $iv = mb_substr($ciphertext, 0, $ivsize, '8bit');
+            $ciphertext = mb_substr($ciphertext, $ivsize, null, '8bit');
+
             $plaintext = mcrypt_decrypt(
                 MCRYPT_RIJNDAEL_128,
                 $this->_key,
                 $ciphertext,
                 MCRYPT_MODE_CBC,
-                $this->_iv
+                $iv
             );
         }
 
