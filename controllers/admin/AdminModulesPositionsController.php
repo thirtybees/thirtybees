@@ -634,7 +634,7 @@ class AdminModulesPositionsControllerCore extends AdminController
                 }
             }
             $hookableList['hasError'] = false;
-            die(json_encode($hookableList));
+            $this->ajaxDie(json_encode($hookableList));
         }
     }
 
@@ -650,7 +650,7 @@ class AdminModulesPositionsControllerCore extends AdminController
         if ($this->tabAccess['view'] === '1') {
             /* PrestaShop demo mode */
             if (_PS_MODE_DEMO_) {
-                die('{"hasError" : true, "errors" : ["Live Edit: This functionality has been disabled."]}');
+                $this->ajaxDie('{"hasError" : true, "errors" : ["Live Edit: This functionality has been disabled."]}');
             }
             /* PrestaShop demo mode*/
 
@@ -675,7 +675,7 @@ class AdminModulesPositionsControllerCore extends AdminController
                     }
                 }
             }
-            die(json_encode($hookableModulesList));
+            $this->ajaxDie(json_encode($hookableModulesList));
         }
     }
 
@@ -691,7 +691,7 @@ class AdminModulesPositionsControllerCore extends AdminController
         if ($this->tabAccess['edit'] === '1') {
             /* PrestaShop demo mode */
             if (_PS_MODE_DEMO_) {
-                die('{"hasError" : true, "errors" : ["Live Edit: This functionality has been disabled."]}');
+                $this->ajaxDie('{"hasError" : true, "errors" : ["Live Edit: This functionality has been disabled."]}');
             }
 
             $hooksList = explode(',', Tools::getValue('hooks_list'));
@@ -734,7 +734,7 @@ class AdminModulesPositionsControllerCore extends AdminController
                 $hasError = false;
             }
 
-            die(json_encode([
+            $this->ajaxDie(json_encode([
                 'hasError' => $hasError,
                 'errors'   => '',
             ]));
@@ -752,10 +752,10 @@ class AdminModulesPositionsControllerCore extends AdminController
     {
         $moduleId = (int) Tools::getValue('module_id');
         if ($moduleId == 0) {
-            die(json_encode(['hasError' => true, 'errors' => ['Wrong Module ID.']]));
+            $this->ajaxDie(json_encode(['hasError' => true, 'errors' => ['Wrong Module ID.']]));
         }
 
         $moduleInstance = Module::getInstanceById($moduleId);
-        die(json_encode($moduleInstance->getPossibleHooksList()));
+        $this->ajaxDie(json_encode($moduleInstance->getPossibleHooksList()));
     }
 }

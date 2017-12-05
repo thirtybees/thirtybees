@@ -1209,7 +1209,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
         }
 
         if (Tools::isSubmit('syncImapMail')) {
-            die(json_encode($this->syncImap()));
+            $this->ajaxDie(json_encode($this->syncImap()));
         }
     }
 

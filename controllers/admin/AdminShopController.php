@@ -924,7 +924,7 @@ class AdminShopControllerCore extends AdminController
             ],
         ];
 
-        die(json_encode($tree));
+        $this->ajaxDie(json_encode($tree));
     }
 
     /**

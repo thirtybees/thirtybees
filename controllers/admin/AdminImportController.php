@@ -709,7 +709,7 @@ class AdminImportControllerCore extends AdminController
             $_FILES['file']['filename'] = $filenamePrefix.str_replace('\0', '', $_FILES['file']['name']);
         }
 
-        die(json_encode($_FILES));
+        $this->ajaxDie(json_encode($_FILES));
     }
 
     /**
@@ -5235,10 +5235,10 @@ class AdminImportControllerCore extends AdminController
                     Db::INSERT_IGNORE
                 );
             } catch (PrestaShopException $e) {
-                die(json_encode(['hasError' => true, 'error' => $e->getMessage()]));
+                $this->ajaxDie(json_encode(['hasError' => true, 'error' => $e->getMessage()]));
             }
 
-            die(json_encode(['id' => (int) Db::getInstance()->Insert_ID()]));
+            $this->ajaxDie(json_encode(['id' => (int) Db::getInstance()->Insert_ID()]));
         }
     }
 
@@ -5260,9 +5260,9 @@ class AdminImportControllerCore extends AdminController
                     false
                 );
             } catch (PrestaShopException $e) {
-                die(json_encode(['hasError' => true, 'error' => $e->getMessage()]));
+                $this->ajaxDie(json_encode(['hasError' => true, 'error' => $e->getMessage()]));
             }
-            die(json_encode(['id' => $return[0]['id_import_match'], 'matchs' => $return[0]['match'], 'skip' => $return[0]['skip']]));
+            $this->ajaxDie(json_encode(['id' => $return[0]['id_import_match'], 'matchs' => $return[0]['match'], 'skip' => $return[0]['skip']]));
         }
     }
 
@@ -5281,7 +5281,7 @@ class AdminImportControllerCore extends AdminController
                     false
                 );
             } catch (PrestaShopException $e) {
-                die(json_encode(['hasError' => true, 'error' => $e->getMessage()]));
+                $this->ajaxDie(json_encode(['hasError' => true, 'error' => $e->getMessage()]));
             }
             die;
         }
@@ -5354,7 +5354,7 @@ class AdminImportControllerCore extends AdminController
             }
         }
 
-        die(json_encode($results));
+        $this->ajaxDie(json_encode($results));
     }
 
     /**

@@ -479,11 +479,11 @@ class AdminCurrenciesControllerCore extends AdminController
         if ($idModule && $idCurrency) {
             CurrencyRateModule::setModule($idCurrency, $idModule);
 
-            die(json_encode([
+            $this->ajaxDie(json_encode([
                     'success' => true,
             ]));
         } else {
-            die(json_encode([
+            $this->ajaxDie(json_encode([
                     'success' => false,
             ]));
         }

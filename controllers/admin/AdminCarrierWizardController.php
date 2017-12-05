@@ -819,7 +819,7 @@ class AdminCarrierWizardControllerCore extends AdminController
             $return['errors'] = $this->errors;
         }
         if (count($this->errors) || $die) {
-            die(json_encode($return));
+            $this->ajaxDie(json_encode($return));
         }
     }
 
@@ -961,7 +961,7 @@ class AdminCarrierWizardControllerCore extends AdminController
                 $return['id_carrier'] = $carrier->id;
             }
         }
-        die(json_encode($return));
+        $this->ajaxDie(json_encode($return));
     }
 
     /**

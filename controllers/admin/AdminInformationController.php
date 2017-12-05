@@ -232,7 +232,7 @@ class AdminInformationControllerCore extends AdminController
             }
         }
 
-        die(json_encode($this->fileList));
+        $this->ajaxDie(json_encode($this->fileList));
     }
 
     /**

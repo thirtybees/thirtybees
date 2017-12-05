@@ -2104,10 +2104,10 @@ class AdminSupplyOrdersControllerCore extends AdminController
             }
         }
         if ($items) {
-            die(json_encode($items));
+            $this->ajaxDie(json_encode($items));
         }
 
-        die('1');
+        $this->ajaxDie('1');
     }
 
     /**

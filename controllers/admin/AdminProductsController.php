@@ -610,7 +610,7 @@ class AdminProductsControllerCore extends AdminController
     public function ajaxProcessAddAttachment()
     {
         if ($this->tabAccess['edit'] === '0') {
-            return die(json_encode(['error' => $this->l('You do not have the right permission')]));
+            $this->ajaxDie(json_encode(['error' => $this->l('You do not have the right permission')]));
         }
         if (isset($_FILES['attachment_file'])) {
             if ((int) $_FILES['attachment_file']['error'] === 1) {
@@ -730,7 +730,7 @@ class AdminProductsControllerCore extends AdminController
                 }
             }
 
-            die(json_encode($_FILES));
+            $this->ajaxDie(json_encode($_FILES));
         }
     }
 
@@ -1037,7 +1037,7 @@ class AdminProductsControllerCore extends AdminController
             ];
         }
 
-        die(json_encode($json));
+        $this->ajaxDie(json_encode($json));
     }
 
     /**
@@ -1374,7 +1374,7 @@ class AdminProductsControllerCore extends AdminController
             ];
         }
 
-        die(json_encode($json));
+        $this->ajaxDie(json_encode($json));
     }
 
     /**
@@ -1403,7 +1403,7 @@ class AdminProductsControllerCore extends AdminController
                 ];
             }
 
-            die(json_encode($json));
+            $this->ajaxDie(json_encode($json));
         }
     }
 
@@ -1423,7 +1423,7 @@ class AdminProductsControllerCore extends AdminController
                     $combinations[$key]['attributes'][] = [$combination['group_name'], $combination['attribute_name'], $combination['id_attribute']];
                 }
 
-                die(json_encode($combinations));
+                $this->ajaxDie(json_encode($combinations));
             }
         }
     }
@@ -1504,7 +1504,7 @@ class AdminProductsControllerCore extends AdminController
     public function ajaxProcessUpdateImagePosition()
     {
         if ($this->tabAccess['edit'] === '0') {
-            return die(json_encode(['error' => $this->l('You do not have the right permission')]));
+            $this->ajaxDie(json_encode(['error' => $this->l('You do not have the right permission')]));
         }
         $res = false;
         if ($json = Tools::getValue('json')) {
@@ -1532,7 +1532,7 @@ class AdminProductsControllerCore extends AdminController
     public function ajaxProcessUpdateCover()
     {
         if ($this->tabAccess['edit'] === '0') {
-            return die(json_encode(['error' => $this->l('You do not have the right permission')]));
+            $this->ajaxDie(json_encode(['error' => $this->l('You do not have the right permission')]));
         }
         Image::deleteCover((int) Tools::getValue('id_product'));
         $img = new Image((int) Tools::getValue('id_image'));
@@ -4792,7 +4792,7 @@ class AdminProductsControllerCore extends AdminController
             }
         }
 
-        die(json_encode([$imageUploader->getName() => $files]));
+        $this->ajaxDie(json_encode([$imageUploader->getName() => $files]));
     }
 
     /**
@@ -5468,36 +5468,36 @@ class AdminProductsControllerCore extends AdminController
     public function ajaxProcessProductQuantity()
     {
         if ($this->tabAccess['edit'] === '0') {
-            return die(json_encode(['error' => $this->l('You do not have the right permission')]));
+            $this->ajaxDie(json_encode(['error' => $this->l('You do not have the right permission')]));
         }
         if (!Tools::getValue('actionQty')) {
-            return json_encode(['error' => $this->l('Undefined action')]);
+            $this->ajaxDie(json_encode(['error' => $this->l('Undefined action')]));
         }
 
         $product = new Product((int) Tools::getValue('id_product'), true);
         switch (Tools::getValue('actionQty')) {
             case 'depends_on_stock':
                 if (Tools::getValue('value') === false) {
-                    die(json_encode(['error' => $this->l('Undefined value')]));
+                    $this->ajaxDie(json_encode(['error' => $this->l('Undefined value')]));
                 }
                 if ((int) Tools::getValue('value') != 0 && (int) Tools::getValue('value') != 1) {
-                    die(json_encode(['error' => $this->l('Incorrect value')]));
+                    $this->ajaxDie(json_encode(['error' => $this->l('Incorrect value')]));
                 }
                 if (!$product->advanced_stock_management && (int) Tools::getValue('value') == 1) {
-                    die(json_encode(['error' => $this->l('Not possible if advanced stock management is disabled. ')]));
+                    $this->ajaxDie(json_encode(['error' => $this->l('Not possible if advanced stock management is disabled. ')]));
                 }
                 if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') && (int) Tools::getValue('value') == 1 && (Pack::isPack($product->id) && !Pack::allUsesAdvancedStockManagement($product->id)
                         && ($product->pack_stock_type == 2 || $product->pack_stock_type == 1 ||
                             ($product->pack_stock_type == 3 && (Configuration::get('PS_PACK_STOCK_TYPE') == 1 || Configuration::get('PS_PACK_STOCK_TYPE') == 2))))
                 ) {
-                    die(
-                    json_encode(
-                        [
-                            'error' => $this->l('You cannot use advanced stock management for this pack because').'<br />'.
-                                $this->l('- advanced stock management is not enabled for these products').'<br />'.
-                                $this->l('- you have chosen to decrement products quantities.'),
-                        ]
-                    )
+                    $this->ajaxDie(
+                        json_encode(
+                            [
+                                'error' => $this->l('You cannot use advanced stock management for this pack because').'<br />'.
+                                    $this->l('- advanced stock management is not enabled for these products').'<br />'.
+                                    $this->l('- you have chosen to decrement products quantities.'),
+                            ]
+                        )
                     );
                 }
 
@@ -5507,24 +5507,24 @@ class AdminProductsControllerCore extends AdminController
             case 'pack_stock_type':
                 $value = Tools::getValue('value');
                 if ($value === false) {
-                    die(json_encode(['error' => $this->l('Undefined value')]));
+                    $this->ajaxDie(json_encode(['error' => $this->l('Undefined value')]));
                 }
                 if ((int) $value != 0 && (int) $value != 1
                     && (int) $value != 2 && (int) $value != 3
                 ) {
-                    die(json_encode(['error' => $this->l('Incorrect value')]));
+                    $this->ajaxDie(json_encode(['error' => $this->l('Incorrect value')]));
                 }
                 if ($product->depends_on_stock && !Pack::allUsesAdvancedStockManagement($product->id) && ((int) $value == 1
                         || (int) $value == 2 || ((int) $value == 3 && (Configuration::get('PS_PACK_STOCK_TYPE') == 1 || Configuration::get('PS_PACK_STOCK_TYPE') == 2)))
                 ) {
-                    die(
-                    json_encode(
-                        [
-                            'error' => $this->l('You cannot use this stock management option because:').'<br />'.
-                                $this->l('- advanced stock management is not enabled for these products').'<br />'.
-                                $this->l('- advanced stock management is enabled for the pack'),
-                        ]
-                    )
+                    $this->ajaxDie(
+                        json_encode(
+                            [
+                                'error' => $this->l('You cannot use this stock management option because:').'<br />'.
+                                    $this->l('- advanced stock management is not enabled for these products').'<br />'.
+                                    $this->l('- advanced stock management is enabled for the pack'),
+                            ]
+                        )
                     );
                 }
 
@@ -5533,10 +5533,10 @@ class AdminProductsControllerCore extends AdminController
 
             case 'out_of_stock':
                 if (Tools::getValue('value') === false) {
-                    die(json_encode(['error' => $this->l('Undefined value')]));
+                    $this->ajaxDie(json_encode(['error' => $this->l('Undefined value')]));
                 }
                 if (!in_array((int) Tools::getValue('value'), [0, 1, 2])) {
-                    die(json_encode(['error' => $this->l('Incorrect value')]));
+                    $this->ajaxDie(json_encode(['error' => $this->l('Incorrect value')]));
                 }
 
                 StockAvailable::setProductOutOfStock($product->id, (int) Tools::getValue('value'));
@@ -5544,10 +5544,10 @@ class AdminProductsControllerCore extends AdminController
 
             case 'set_qty':
                 if (Tools::getValue('value') === false || (!is_numeric(trim(Tools::getValue('value'))))) {
-                    die(json_encode(['error' => $this->l('Undefined value')]));
+                    $this->ajaxDie(json_encode(['error' => $this->l('Undefined value')]));
                 }
                 if (Tools::getValue('id_product_attribute') === false) {
-                    die(json_encode(['error' => $this->l('Undefined id product attribute')]));
+                    $this->ajaxDie(json_encode(['error' => $this->l('Undefined id product attribute')]));
                 }
 
                 StockAvailable::setQuantity($product->id, (int) Tools::getValue('id_product_attribute'), (int) Tools::getValue('value'));
@@ -5557,18 +5557,18 @@ class AdminProductsControllerCore extends AdminController
                 $error = ob_get_contents();
                 if (!empty($error)) {
                     ob_end_clean();
-                    die(json_encode(['error' => $error]));
+                    $this->ajaxDie(json_encode(['error' => $error]));
                 }
                 break;
             case 'advanced_stock_management' :
                 if (Tools::getValue('value') === false) {
-                    die(json_encode(['error' => $this->l('Undefined value')]));
+                    $this->ajaxDie(json_encode(['error' => $this->l('Undefined value')]));
                 }
                 if ((int) Tools::getValue('value') != 1 && (int) Tools::getValue('value') != 0) {
-                    die(json_encode(['error' => $this->l('Incorrect value')]));
+                    $this->ajaxDie(json_encode(['error' => $this->l('Incorrect value')]));
                 }
                 if (!Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') && (int) Tools::getValue('value') == 1) {
-                    die(json_encode(['error' => $this->l('Not possible if advanced stock management is disabled. ')]));
+                    $this->ajaxDie(json_encode(['error' => $this->l('Not possible if advanced stock management is disabled. ')]));
                 }
 
                 $product->setAdvancedStockManagement((int) Tools::getValue('value'));
@@ -5578,7 +5578,7 @@ class AdminProductsControllerCore extends AdminController
                 break;
 
         }
-        die(json_encode(['error' => false]));
+        $this->ajaxDie(json_encode(['error' => false]));
     }
 
     /**
@@ -5641,7 +5641,7 @@ class AdminProductsControllerCore extends AdminController
 					LIMIT '.(int) $limit
                 );
             }
-            die(json_encode($result));
+            $this->ajaxDie(json_encode($result));
         }
     }
 

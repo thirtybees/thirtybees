@@ -136,7 +136,7 @@ class AdminRequestSqlControllerCore extends AdminController
                 unset($attributes[$key]['Default']);
                 unset($attributes[$key]['Extra']);
             }
-            die(json_encode($attributes));
+            $this->ajaxDie(json_encode($attributes));
         }
     }
 

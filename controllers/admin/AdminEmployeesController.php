@@ -739,7 +739,7 @@ class AdminEmployeesControllerCore extends AdminController
                 }
             }
         }
-        die(json_encode($this->tabs_list));
+        $this->ajaxDie(json_encode($this->tabs_list));
     }
 
     /**

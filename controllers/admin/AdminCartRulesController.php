@@ -322,12 +322,12 @@ class AdminCartRulesControllerCore extends AdminController
                 ORDER BY c.`firstname`, c.`lastname` ASC
                 LIMIT 50'
             );
-            die(json_encode($customers));
+            $this->ajaxDie(json_encode($customers));
         }
         // Both product filter (free product and product discount) search for products
         if (Tools::isSubmit('giftProductFilter') || Tools::isSubmit('reductionProductFilter')) {
             $products = Product::searchByName($this->context->language->id, trim(Tools::getValue('q')));
-            die(json_encode($products));
+            $this->ajaxDie(json_encode($products));
         }
     }
 

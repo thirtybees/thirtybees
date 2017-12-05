@@ -1682,7 +1682,7 @@ class AdminPerformanceControllerCore extends AdminController
                         $res      = @memcache_get_server_status($memcache, $host, $port);
                     }
                 }
-                die(json_encode([$res]));
+                $this->ajaxDie(json_encode([$res]));
             }
         }
         die;
@@ -1715,7 +1715,7 @@ class AdminPerformanceControllerCore extends AdminController
                             $redis->setOption(Redis::OPT_SERIALIZER, Redis::SERIALIZER_PHP);
                             if (!empty($auth)) {
                                 if (!($redis->auth($auth))) {
-                                    die(json_encode([0]));
+                                    $this->ajaxDie(json_encode([0]));
                                 }
                             }
                             $redis->select($db);
@@ -1723,10 +1723,10 @@ class AdminPerformanceControllerCore extends AdminController
                             $res = (mb_strtolower($redis->ping() === '+PONG') ? 1 : 0);
                         }
                     } catch (Exception $e) {
-                        die(json_encode([0]));
+                        $this->ajaxDie(json_encode([0]));
                     }
                 }
-                die(json_encode([$res]));
+                $this->ajaxDie(json_encode([$res]));
             }
         }
         die;
@@ -1751,11 +1751,11 @@ class AdminPerformanceControllerCore extends AdminController
         }
 
         if (Configuration::updateGlobalValue('TB_PAGE_CACHE_HOOKS', json_encode($hookSettings))) {
-            die(json_encode([
+            $this->ajaxDie(json_encode([
                 'success' => true,
             ]));
         }
-        die(json_encode([
+        $this->ajaxDie(json_encode([
             'success' => false,
         ]));
     }

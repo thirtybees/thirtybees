@@ -420,7 +420,7 @@ class AdminDashboardControllerCore extends AdminController
             'extra'              => (int) Tools::getValue('extra'),
         ];
 
-        die(json_encode(Hook::exec('dashboardData', $params, $idModule, true, true, (int) Tools::getValue('dashboard_use_push'))));
+        $this->ajaxDie(json_encode(Hook::exec('dashboardData', $params, $idModule, true, true, (int) Tools::getValue('dashboard_use_push'))));
     }
 
     /**
@@ -429,7 +429,7 @@ class AdminDashboardControllerCore extends AdminController
     public function ajaxProcessSetSimulationMode()
     {
         Configuration::updateValue('PS_DASHBOARD_SIMULATION', (int) Tools::getValue('PS_DASHBOARD_SIMULATION'));
-        die('k'.Configuration::get('PS_DASHBOARD_SIMULATION').'k');
+        $this->ajaxDie('k'.Configuration::get('PS_DASHBOARD_SIMULATION').'k');
     }
 
     /**
@@ -490,7 +490,7 @@ class AdminDashboardControllerCore extends AdminController
                 }
             }
         }
-        die(json_encode($return));
+        $this->ajaxDie(json_encode($return));
     }
 
     /**
@@ -531,6 +531,6 @@ class AdminDashboardControllerCore extends AdminController
             $return['widget_html'] = $moduleObj->$hook($params);
         }
 
-        die(json_encode($return));
+        $this->ajaxDie(json_encode($return));
     }
 }

@@ -653,7 +653,7 @@ class AdminTaxRulesGroupControllerCore extends AdminController
             foreach ($taxRules as $key => $result) {
                 $output[$key] = $result;
             }
-            die(json_encode($output));
+            $this->ajaxDie(json_encode($output));
         }
     }
 }

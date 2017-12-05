@@ -2153,7 +2153,7 @@ class AdminOrdersControllerCore extends AdminController
                         true,
                         $cart->id_shop
                     )) {
-                        die(json_encode(['errors' => false, 'result' => $this->l('The email was sent to your customer.')]));
+                        $this->ajaxDie(json_encode(['errors' => false, 'result' => $this->l('The email was sent to your customer.')]));
                     }
                 }
             }
@@ -2173,26 +2173,26 @@ class AdminOrdersControllerCore extends AdminController
         // Load object
         $order = new Order((int) Tools::getValue('id_order'));
         if (!Validate::isLoadedObject($order)) {
-            die(
-            json_encode(
-                [
-                    'result' => false,
-                    'error'  => Tools::displayError('The order object cannot be loaded.'),
-                ]
-            )
+            $this->ajaxDie(
+                json_encode(
+                    [
+                        'result' => false,
+                        'error'  => Tools::displayError('The order object cannot be loaded.'),
+                    ]
+                )
             );
         }
 
         $oldCartRules = $this->context->cart->getCartRules();
 
         if ($order->hasBeenShipped()) {
-            die(
-            json_encode(
-                [
-                    'result' => false,
-                    'error'  => Tools::displayError('You cannot add products to delivered orders. '),
-                ]
-            )
+            $this->ajaxDie(
+                json_encode(
+                    [
+                        'result' => false,
+                        'error'  => Tools::displayError('You cannot add products to delivered orders. '),
+                    ]
+                )
             );
         }
 
@@ -2204,26 +2204,26 @@ class AdminOrdersControllerCore extends AdminController
         }
         $product = new Product($productInformations['product_id'], false, $order->id_lang);
         if (!Validate::isLoadedObject($product)) {
-            die(
-            json_encode(
-                [
-                    'result' => false,
-                    'error'  => Tools::displayError('The product object cannot be loaded.'),
-                ]
-            )
+            $this->ajaxDie(
+                json_encode(
+                    [
+                        'result' => false,
+                        'error'  => Tools::displayError('The product object cannot be loaded.'),
+                    ]
+                )
             );
         }
 
         if (isset($productInformations['product_attribute_id']) && $productInformations['product_attribute_id']) {
             $combination = new Combination($productInformations['product_attribute_id']);
             if (!Validate::isLoadedObject($combination)) {
-                die(
-                json_encode(
-                    [
-                        'result' => false,
-                        'error'  => Tools::displayError('The combination object cannot be loaded.'),
-                    ]
-                )
+                $this->ajaxDie(
+                    json_encode(
+                        [
+                            'result' => false,
+                            'error'  => Tools::displayError('The combination object cannot be loaded.'),
+                        ]
+                    )
                 );
             }
         }
@@ -2307,9 +2307,9 @@ class AdminOrdersControllerCore extends AdminController
         if ($updateQuantity < 0) {
             // If product has attribute, minimal quantity is set with minimal quantity of attribute
             $minimalQuantity = ($productInformations['product_attribute_id']) ? Attribute::getAttributeMinimalQty($productInformations['product_attribute_id']) : $product->minimal_quantity;
-            die(json_encode(['error' => sprintf(Tools::displayError('You must add %d minimum quantity', false), $minimalQuantity)]));
+            $this->ajaxDie(json_encode(['error' => sprintf(Tools::displayError('You must add %d minimum quantity', false), $minimalQuantity)]));
         } elseif (!$updateQuantity) {
-            die(json_encode(['error' => Tools::displayError('You already have the maximum quantity available for this product.', false)]));
+            $this->ajaxDie(json_encode(['error' => Tools::displayError('You already have the maximum quantity available for this product.', false)]));
         }
 
         // If order is valid, we can create a new invoice or edit an existing invoice
@@ -2528,20 +2528,20 @@ class AdminOrdersControllerCore extends AdminController
         // Update Order
         $order->update();
 
-        die(
-        json_encode(
-            [
-                'result'             => true,
-                'view'               => $this->createTemplate('_product_line.tpl')->fetch(),
-                'can_edit'           => $this->tabAccess['add'],
-                'order'              => $order,
-                'invoices'           => $invoiceArray,
-                'documents_html'     => $this->createTemplate('_documents.tpl')->fetch(),
-                'shipping_html'      => $this->createTemplate('_shipping.tpl')->fetch(),
-                'discount_form_html' => $this->createTemplate('_discount_form.tpl')->fetch(),
-                'refresh'            => $refresh,
-            ]
-        )
+        $this->ajaxDie(
+            json_encode(
+                [
+                    'result'             => true,
+                    'view'               => $this->createTemplate('_product_line.tpl')->fetch(),
+                    'can_edit'           => $this->tabAccess['add'],
+                    'order'              => $order,
+                    'invoices'           => $invoiceArray,
+                    'documents_html'     => $this->createTemplate('_documents.tpl')->fetch(),
+                    'shipping_html'      => $this->createTemplate('_shipping.tpl')->fetch(),
+                    'discount_form_html' => $this->createTemplate('_discount_form.tpl')->fetch(),
+                    'refresh'            => $refresh,
+                ]
+            )
         );
     }
 
@@ -2572,41 +2572,41 @@ class AdminOrdersControllerCore extends AdminController
     {
         $orderDetail = new OrderDetail(Tools::getValue('id_order_detail'));
         if (!Validate::isLoadedObject($orderDetail)) {
-            die(
-            json_encode(
-                [
-                    'result' => false,
-                    'error'  => Tools::displayError('The OrderDetail object cannot be loaded.'),
-                ]
-            )
+            $this->ajaxDie(
+                json_encode(
+                    [
+                        'result' => false,
+                        'error'  => Tools::displayError('The OrderDetail object cannot be loaded.'),
+                    ]
+                )
             );
         }
 
         $product = new Product($orderDetail->product_id);
         if (!Validate::isLoadedObject($product)) {
-            die(
-            json_encode(
-                [
-                    'result' => false,
-                    'error'  => Tools::displayError('The product object cannot be loaded.'),
-                ]
-            )
+            $this->ajaxDie(
+                json_encode(
+                    [
+                        'result' => false,
+                        'error'  => Tools::displayError('The product object cannot be loaded.'),
+                    ]
+                )
             );
         }
 
         $address = new Address(Tools::getValue('id_address'));
         if (!Validate::isLoadedObject($address)) {
-            die(
-            json_encode(
-                [
-                    'result' => false,
-                    'error'  => Tools::displayError('The address object cannot be loaded.'),
-                ]
-            )
+            $this->ajaxDie(
+                json_encode(
+                    [
+                        'result' => false,
+                        'error'  => Tools::displayError('The address object cannot be loaded.'),
+                    ]
+                )
             );
         }
 
-        die(json_encode([
+        $this->ajaxDie(json_encode([
             'result'            => true,
             'product'           => $product,
             'tax_rate'          => $product->getTaxesRate($address),
@@ -2812,13 +2812,13 @@ class AdminOrdersControllerCore extends AdminController
         );
 
         if (!$res) {
-            die(
-            json_encode(
-                [
-                    'result' => $res,
-                    'error'  => Tools::displayError('An error occurred while editing the product line.'),
-                ]
-            )
+            $this->ajaxDie(
+                json_encode(
+                    [
+                        'result' => $res,
+                        'error'  => Tools::displayError('An error occurred while editing the product line.'),
+                    ]
+                )
             );
         }
 
@@ -2830,7 +2830,7 @@ class AdminOrdersControllerCore extends AdminController
 
         $this->sendChangedNotification($order);
 
-        die(json_encode([
+        $this->ajaxDie(json_encode([
             'result'              => $res,
             'view'                => $view,
             'can_edit'            => $this->tabAccess['add'],
@@ -2853,13 +2853,13 @@ class AdminOrdersControllerCore extends AdminController
             $stockAvailable = StockAvailable::getQuantityAvailableByProduct($orderDetail->product_id, $orderDetail->product_attribute_id, $orderDetail->id_shop);
             $product = new Product($orderDetail->product_id, true, null, $orderDetail->id_shop);
             if (!Validate::isLoadedObject($product)) {
-                die(json_encode([
+                $this->ajaxDie(json_encode([
                     'result' => false,
                     'error'  => Tools::displayError('The Product object could not be loaded.'),
                 ]));
             } else {
                 if (($stockAvailable < $addQuantity) && (!$product->isAvailableWhenOutOfStock((int) $product->out_of_stock))) {
-                    die(json_encode([
+                    $this->ajaxDie(json_encode([
                         'result' => false,
                         'error'  => Tools::displayError('This product is no longer in stock with those attributes '),
                     ]));
@@ -2918,7 +2918,7 @@ class AdminOrdersControllerCore extends AdminController
         }
 
         if (!$res) {
-            die(json_encode([
+            $this->ajaxDie(json_encode([
                 'result' => $res,
                 'error'  => Tools::displayError('An error occurred while attempting to delete the product line.'),
             ]));
@@ -2946,7 +2946,7 @@ class AdminOrdersControllerCore extends AdminController
 
         $this->sendChangedNotification($order);
 
-        die(json_encode([
+        $this->ajaxDie(json_encode([
             'result'         => $res,
             'order'          => $order,
             'invoices'       => $invoiceArray,
@@ -2969,7 +2969,7 @@ class AdminOrdersControllerCore extends AdminController
         $authorizedModules = [];
 
         if (!Validate::isLoadedObject($customer) || !is_array($modules)) {
-            die(json_encode(['result' => false]));
+            $this->ajaxDie(json_encode(['result' => false]));
         }
 
         foreach ($modules as $module) {
@@ -2988,7 +2988,7 @@ class AdminOrdersControllerCore extends AdminController
             'payment_modules' => $paymentModules,
         ]);
 
-        die(json_encode([
+        $this->ajaxDie(json_encode([
             'result' => true,
             'view'   => $this->createTemplate('_select_payment.tpl')->fetch(),
         ]));
@@ -3030,28 +3030,28 @@ class AdminOrdersControllerCore extends AdminController
     protected function doEditProductValidation(OrderDetail $orderDetail, Order $order, OrderInvoice $orderInvoice = null)
     {
         if (!Validate::isLoadedObject($orderDetail)) {
-            die(json_encode([
+            $this->ajaxDie(json_encode([
                 'result' => false,
                 'error'  => Tools::displayError('The Order Detail object could not be loaded.'),
             ]));
         }
 
         if (!empty($orderInvoice) && !Validate::isLoadedObject($orderInvoice)) {
-            die(json_encode([
+            $this->ajaxDie(json_encode([
                 'result' => false,
                 'error'  => Tools::displayError('The invoice object cannot be loaded.'),
             ]));
         }
 
         if (!Validate::isLoadedObject($order)) {
-            die(json_encode([
+            $this->ajaxDie(json_encode([
                 'result' => false,
                 'error'  => Tools::displayError('The order object cannot be loaded.'),
             ]));
         }
 
         if ($orderDetail->id_order != $order->id) {
-            die(json_encode([
+            $this->ajaxDie(json_encode([
                 'result' => false,
                 'error'  => Tools::displayError('You cannot edit the order detail for this order.'),
             ]));
@@ -3059,14 +3059,14 @@ class AdminOrdersControllerCore extends AdminController
 
         // We can't edit a delivered order
         if ($order->hasBeenDelivered()) {
-            die(json_encode([
+            $this->ajaxDie(json_encode([
                 'result' => false,
                 'error'  => Tools::displayError('You cannot edit a delivered order.'),
             ]));
         }
 
         if (!empty($orderInvoice) && $orderInvoice->id_order != Tools::getValue('id_order')) {
-            die(json_encode([
+            $this->ajaxDie(json_encode([
                 'result' => false,
                 'error'  => Tools::displayError('You cannot use this invoice for the order'),
             ]));
@@ -3077,21 +3077,21 @@ class AdminOrdersControllerCore extends AdminController
         $productPriceTaxExcl = str_replace(',', '.', Tools::getValue('product_price_tax_excl'));
 
         if (!Validate::isPrice($productPriceTaxIncl) || !Validate::isPrice($productPriceTaxExcl)) {
-            die(json_encode([
+            $this->ajaxDie(json_encode([
                 'result' => false,
                 'error'  => Tools::displayError('Invalid price'),
             ]));
         }
 
         if (!is_array(Tools::getValue('product_quantity')) && !Validate::isUnsignedInt(Tools::getValue('product_quantity'))) {
-            die(json_encode([
+            $this->ajaxDie(json_encode([
                 'result' => false,
                 'error'  => Tools::displayError('Invalid quantity'),
             ]));
         } elseif (is_array(Tools::getValue('product_quantity'))) {
             foreach (Tools::getValue('product_quantity') as $qty) {
                 if (!Validate::isUnsignedInt($qty)) {
-                    die(json_encode([
+                    $this->ajaxDie(json_encode([
                         'result' => false,
                         'error'  => Tools::displayError('Invalid quantity'),
                     ]));
@@ -3113,21 +3113,21 @@ class AdminOrdersControllerCore extends AdminController
     protected function doDeleteProductLineValidation(OrderDetail $orderDetail, Order $order)
     {
         if (!Validate::isLoadedObject($orderDetail)) {
-            die(json_encode([
+            $this->ajaxDie(json_encode([
                 'result' => false,
                 'error'  => Tools::displayError('The Order Detail object could not be loaded.'),
             ]));
         }
 
         if (!Validate::isLoadedObject($order)) {
-            die(json_encode([
+            $this->ajaxDie(json_encode([
                 'result' => false,
                 'error'  => Tools::displayError('The order object cannot be loaded.'),
             ]));
         }
 
         if ($orderDetail->id_order != $order->id) {
-            die(json_encode([
+            $this->ajaxDie(json_encode([
                 'result' => false,
                 'error'  => Tools::displayError('You cannot delete the order detail.'),
             ]));
@@ -3135,7 +3135,7 @@ class AdminOrdersControllerCore extends AdminController
 
         // We can't edit a delivered order
         if ($order->hasBeenDelivered()) {
-            die(json_encode([
+            $this->ajaxDie(json_encode([
                 'result' => false,
                 'error'  => Tools::displayError('You cannot edit a delivered order.'),
             ]));

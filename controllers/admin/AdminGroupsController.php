@@ -490,7 +490,7 @@ class AdminGroupsControllerCore extends AdminController
             $result['discount'] = $category_reduction;
             $result['hasError'] = false;
         }
-        die(json_encode($result));
+        $this->ajaxDie(json_encode($result));
     }
 
     /**

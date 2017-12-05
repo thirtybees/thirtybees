@@ -323,9 +323,9 @@ class AdminStatsControllerCore extends AdminStatsTabController
             if (isset($data)) {
                 $array['data'] = $data;
             }
-            die(json_encode($array));
+            $this->ajaxDie(json_encode($array));
         }
-        die(json_encode(['has_errors' => true]));
+        $this->ajaxDie(json_encode(['has_errors' => true]));
     }
 
     /**
