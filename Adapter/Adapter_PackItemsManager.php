@@ -117,7 +117,7 @@ class Adapter_PackItemsManager
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
-    public function isPacked(Product $product, $idProductAttribute = false)
+    public function isPacked($product, $idProductAttribute = false)
     {
         return Pack::isPacked($product->id, $idProductAttribute);
     }
