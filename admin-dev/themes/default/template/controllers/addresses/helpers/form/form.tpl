@@ -42,7 +42,7 @@
 		{if isset($customer)}
 			<div class="col-lg-9">
 				<a class="btn btn-default" href="?tab=AdminCustomers&amp;id_customer={$customer->id|intval}&amp;viewcustomer&amp;token={$tokenCustomer|escape:'htmlall':'UTF-8'}">
-					<i class="icon-eye-open"></i> {$customer->lastname|escape:'htmlall':'UTF-8'} {$customer->firstname|escape:'htmlall':'UTF-8'} ({$customer->email|indToUtf8|escape:'htmlall':'UTF-8'})
+					<i class="icon-eye-open"></i> {$customer->lastname|escape:'htmlall':'UTF-8'} {$customer->firstname|escape:'htmlall':'UTF-8'} ({$customer->email|idnToUtf8|escape:'htmlall':'UTF-8'})
 				</a>
 			</div>
 			<input type="hidden" name="id_customer" value="{$customer->id}" />
