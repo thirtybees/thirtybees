@@ -1781,7 +1781,8 @@ abstract class ModuleCore
             $dirName = dirname($overrideDest);
 
             if (!$origPath && !is_dir($dirName)) {
-                $oldumask = umask(0000);
+                $definedUmask = defined('_TB_UMASK_') ? _TB_UMASK_ : 0000;
+                $oldumask = umask($definedUmask);
                 @mkdir($dirName, 0777);
                 umask($oldumask);
             }

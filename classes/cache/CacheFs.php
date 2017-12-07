@@ -58,7 +58,9 @@ class CacheFsCore extends Cache
      */
     protected function _set($key, $value, $ttl = 0)
     {
-        $previousUmask = @umask(0000);
+        $definedUmask = defined('_TB_UMASK_') ? _TB_UMASK_ : 0000;
+
+        $previousUmask = @umask($definedUmask);
 
         $result = @file_put_contents($this->getFilename($key), serialize($value));
 
@@ -122,7 +124,9 @@ class CacheFsCore extends Cache
      */
     protected function _writeKeys()
     {
-        $previousUmask = @umask(0000);
+        $definedUmask = defined('_TB_UMASK_') ? _TB_UMASK_ : 0000;
+
+        $previousUmask = @umask($definedUmask);
 
         @file_put_contents($this->getFilename(static::KEYS_NAME), serialize($this->keys));
 
@@ -187,7 +191,8 @@ class CacheFsCore extends Cache
         }
 
         if (!is_dir($path)) {
-            $previousUmask = @umask(0000);
+            $definedUmask = defined('_TB_UMASK_') ? _TB_UMASK_ : 0000;
+            $previousUmask = @umask($definedUmask);
             @mkdir($path, 0777, true);
             @umask($previousUmask);
         }
