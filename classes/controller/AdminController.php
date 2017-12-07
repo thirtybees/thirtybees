@@ -3847,7 +3847,8 @@ class AdminControllerCore extends Controller
         }
 
         if (isset($this->context->cookie->last_activity)) {
-            if ($this->context->cookie->last_activity + 900 < time()) {
+            $shortExpire = defined('_TB_COOKIE_SHORT_EXPIRE_') ? _TB_COOKIE_SHORT_EXPIRE_ : 900;
+            if ((int) $this->context->cookie->last_activity + (int) $shortExpire < time()) {
                 $this->context->employee->logout();
             } else {
                 $this->context->cookie->last_activity = time();
