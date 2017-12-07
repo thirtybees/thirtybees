@@ -56,7 +56,7 @@ if (!Validate::isModuleName($module)) {
     die(Tools::displayError());
 }
 
-$statsModuleInstance = Module::getInstanceByName('statsModule');
+$statsModuleInstance = Module::getInstanceByName('statsmodule');
 
 if ($statsModuleInstance->active && in_array($module, $statsModuleInstance->modules)) {
     $module_path = _PS_ROOT_DIR_.'/modules/statsmodule/stats/'.$module.'.php';
