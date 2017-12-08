@@ -119,30 +119,23 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
         $moduleInstance = [];
         /** @var StatsModule $statsModuleInstance */
         $statsModuleInstance = Module::getInstanceByName('statsmodule');
-        foreach ($modules as $m => $module) {
-            if ($module['name'] == 'statsmodule') {
-                unset($modules[$m]);
+        foreach ($modules as $index => $module) {
+            if ($module['name'] === 'statsmodule'  ||  Validate::isLoadedObject($statsModuleInstance) && isset($module['hook']) && in_array($module['name'], $statsModuleInstance->modules)) {
+                unset($modules[$index]);
                 continue;
             }
 
             if (Validate::isLoadedObject($statsModuleInstance) && $statsModuleInstance->active && in_array($module['name'], $statsModuleInstance->modules)) {
                 $moduleInstance[$module['name']] = $statsModuleInstance->executeStatsInstance($module['name']);
-                $modules[$m]['displayName'] = $moduleInstance[$module['name']]->displayName;
+                $modules[$index]['displayName'] = $moduleInstance[$module['name']]->displayName;
             } elseif ($moduleInstance[$module['name']] = Module::getInstanceByName($module['name'])) {
-                $modules[$m]['displayName'] = $moduleInstance[$module['name']]->displayName;
+                $modules[$index]['displayName'] = $moduleInstance[$module['name']]->displayName;
             } else {
                 unset($moduleInstance[$module['name']]);
-                unset($modules[$m]);
+                unset($modules[$index]);
             }
         }
         uasort($modules, [$this, 'checkModulesNames']);
-        if (Validate::isLoadedObject($statsModuleInstance)) {
-            foreach ($modules as $index => $module) {
-                if (isset($module['hook']) && in_array($module['name'], $statsModuleInstance->modules)) {
-                    unset($modules[$index]);
-                }
-            }
-        }
 
         $tpl->assign(
             [
