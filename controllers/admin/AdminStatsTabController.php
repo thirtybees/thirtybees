@@ -147,14 +147,18 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
         $tpl->assign(
             [
                 'current'             => static::$currentIndex,
-                'current_module_name' => Tools::getValue('module', 'statsforecast'),
+                'current_module_name' => Tools::getValue('module'),
                 'token'               => $this->token,
                 'modules'             => $modules,
                 'module_instance'     => $moduleInstance,
             ]
         );
 
-        return $tpl->fetch();
+        try {
+            return $tpl->fetch();
+        } catch (Exception $e) {
+            return '';
+        }
     }
 
     /**
