@@ -117,28 +117,32 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
 
         $modules = $this->getModules();
         $moduleInstance = [];
+        /** @var StatsModule $statsModuleInstance */
+        $statsModuleInstance = Module::getInstanceByName('statsmodule');
         foreach ($modules as $m => $module) {
             if ($module['name'] == 'statsmodule') {
                 unset($modules[$m]);
                 continue;
             }
 
-            if ($moduleInstance[$module['name']] = Module::getInstanceByName($module['name'])) {
+            if (Validate::isLoadedObject($statsModuleInstance) && $statsModuleInstance->active && in_array($module['name'], $statsModuleInstance->modules)) {
+                $moduleInstance[$module['name']] = $statsModuleInstance->executeStatsInstance($module['name']);
+                $modules[$m]['displayName'] = $moduleInstance[$module['name']]->displayName;
+            } elseif ($moduleInstance[$module['name']] = Module::getInstanceByName($module['name'])) {
                 $modules[$m]['displayName'] = $moduleInstance[$module['name']]->displayName;
             } else {
-                /** @var StatsModule $statsModuleInstance */
-                $statsModuleInstance = Module::getInstanceByName('statsmodule');
-                if (Validate::isLoadedObject($statsModuleInstance) && $statsModuleInstance->active && in_array($module['name'], $statsModuleInstance->modules)) {
-                    $moduleInstance[$module['name']] = $statsModuleInstance->executeStatsInstance($module['name']);
-                    $modules[$m]['displayName'] = $moduleInstance[$module['name']]->displayName;
-                } else {
-                    unset($moduleInstance[$module['name']]);
-                    unset($modules[$m]);
-                }
-
+                unset($moduleInstance[$module['name']]);
+                unset($modules[$m]);
             }
         }
         uasort($modules, [$this, 'checkModulesNames']);
+        if (Validate::isLoadedObject($statsModuleInstance)) {
+            foreach ($modules as $index => $module) {
+                if (isset($module['hook']) && in_array($module['name'], $statsModuleInstance->modules)) {
+                    unset($modules[$index]);
+                }
+            }
+        }
 
         $tpl->assign(
             [
