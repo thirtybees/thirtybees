@@ -433,7 +433,7 @@ class RequestSqlCore extends ObjectModel
     {
         if ($alias) {
             foreach ($tables as $table) {
-                if (isset($table['alias']) && isset($table['table']) && $table['alias']['no_quotes'] == $alias) {
+                if (isset($table['alias']) && isset($table['table']) && $table['alias']['no_quotes']['parts'][0] == $alias) {
                     return [$table['table']];
                 }
             }
@@ -527,6 +527,10 @@ class RequestSqlCore extends ObjectModel
      */
     public function checkedSelect($select, $from, $in = false)
     {
+        if (!is_array($select)) {
+            return false;
+        }
+
         $nb = count($select);
         for ($i = 0; $i < $nb; $i++) {
             /** @var string[] $attribut */
@@ -575,6 +579,10 @@ class RequestSqlCore extends ObjectModel
      */
     public function checkedWhere($where, $from, $sql)
     {
+        if (!is_array($where)) {
+            return false;
+        }
+
         $nb = count($where);
         for ($i = 0; $i < $nb; $i++) {
             $attribut = $where[$i];
