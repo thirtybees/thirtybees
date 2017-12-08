@@ -63,5 +63,10 @@
 			});
 		</script>
 	{/if}
+	<div class="panel-footer">
+		<button class="btn btn-default" type="submit" onclick="window.history.back();return false;">
+			<i class="process-icon-back"></i> {l s='Go back'}
+		</button>
+	</div>
 </div>
 {/block}
