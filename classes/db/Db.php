@@ -64,8 +64,12 @@ abstract class DbCore
     /** @var string Database name */
     protected $database;
 
-    /** @var bool */
-    protected $is_cache_enabled;
+    /**
+     * @var bool
+     *
+     * @deprecated 1.0.4 For backwards compatibility only
+     */
+    protected $is_cache_enabled = false;
 
     /** @var PDO Resource link */
     protected $link;
@@ -88,6 +92,8 @@ abstract class DbCore
      * Store last executed query
      *
      * @var string
+     *
+     * @deprecated 1.0.4 For backwards compatibility only
      */
     protected $last_query;
 
@@ -95,6 +101,8 @@ abstract class DbCore
      * Store hash of the last executed query
      *
      * @var string
+     *
+     * @deprecated 1.0.4 For backwards compatibility only
      */
     protected $last_query_hash;
 
@@ -102,6 +110,8 @@ abstract class DbCore
      * Last cached query
      *
      * @var string
+     *
+     * @deprecated 1.0.4 For backwards compatibility only
      */
     protected $last_cached;
 
@@ -328,7 +338,6 @@ abstract class DbCore
         $this->user = $user;
         $this->password = $password;
         $this->database = $database;
-        $this->is_cache_enabled = (defined('_PS_CACHE_ENABLED_')) ? _PS_CACHE_ENABLED_ : false;
 
         if (!defined('_PS_DEBUG_SQL_')) {
             define('_PS_DEBUG_SQL_', false);
@@ -344,6 +353,8 @@ abstract class DbCore
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @deprecated 1.0.4 For backwards compatibility only
      */
     public function disableCache()
     {
@@ -355,6 +366,8 @@ abstract class DbCore
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
+     *
+     * @deprecated 1.0.4 For backwards compatibility only
      */
     public function enableCache()
     {

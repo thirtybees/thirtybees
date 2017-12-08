@@ -725,7 +725,7 @@ class FrontControllerCore extends Controller
      */
     protected function smartyOutputContent($content)
     {
-        if (!Configuration::get('TB_PAGE_CACHE_ENABLED')) {
+        if (!Configuration::get('TB_CACHE_ENABLED') || !Configuration::get('TB_PAGE_CACHE_ENABLED')) {
             parent::smartyOutputContent($content);
 
             return;

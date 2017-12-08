@@ -538,7 +538,7 @@ class CMSCategoryCore extends ObjectModel
      */
     public function update($nullValues = false)
     {
-        if ('TB_PAGE_CACHE_ENABLED') {
+        if (Configuration::get('TB_CACHE_ENABLED') && Configuration::get('TB_PAGE_CACHE_ENABLED')) {
             PageCache::invalidateEntity('cms_category', $this->id);
         }
 
@@ -685,7 +685,7 @@ class CMSCategoryCore extends ObjectModel
             return false;
         }
 
-        if ('TB_PAGE_CACHE_ENABLED') {
+        if (Configuration::get('TB_CACHE_ENABLED') && Configuration::get('TB_PAGE_CACHE_ENABLED')) {
             PageCache::invalidateEntity('cms', $this->id);
         }
 
