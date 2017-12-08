@@ -151,9 +151,12 @@
 						{/foreach}
 					</div>
 				</td>
+				{if ($order->getTaxCalculationMethod() != $smarty.const.PS_TAX_EXC)}
+					<td>-</td>
+				{/if}
 				<td>-</td>
 				<td class="productQuantity text-center">
-					<span class="product_quantity_show{if (int)$customization['quantity'] > 1} red bold{/if}">{$customization['quantity']}</span>
+					<span class="product_quantity_show{if $customization['quantity'] > 1} red bold{/if}">{$customization['quantity']}</span>
 					{if $can_edit}
 					<span class="product_quantity_edit" style="display:none;">
 						<input type="text" name="product_quantity[{$customizationId|intval}]" class="edit_product_quantity" value="{$customization['quantity']|htmlentities}" size="2" />
