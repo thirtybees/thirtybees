@@ -813,9 +813,8 @@ class InstallModelInstall extends InstallAbstractModel
             }
         } else {
             $modules = [
-                'socialsharing',
-                'blockbanner',
                 'bankwire',
+                'blockbanner',
                 'blockbestsellers',
                 'blockcart',
                 'blocksocial',
@@ -855,6 +854,8 @@ class InstallModelInstall extends InstallAbstractModel
                 'homeslider',
                 'homefeatured',
                 'productpaymentlogos',
+                'socialsharing',
+                'statsdata',
                 'statsmodule',
                 'tbupdater',
                 'themeconfigurator',
