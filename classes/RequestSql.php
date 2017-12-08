@@ -94,12 +94,16 @@ class RequestSqlCore extends ObjectModel
      */
     public static function getRequestSql()
     {
-        if (!$result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            (new Dbquery())
-                ->select('*')
-                ->from(bqSQL(static::$definition['table']))
-                ->orderBy('`'.bqSQL(static::$definition['primary']).'`')
-        )) {
+        try {
+            if (!$result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new Dbquery())
+                    ->select('*')
+                    ->from(bqSQL(static::$definition['table']))
+                    ->orderBy('`'.bqSQL(static::$definition['primary']).'`')
+            )) {
+                return false;
+            }
+        } catch (PrestaShopException $e) {
             return false;
         }
 
@@ -123,12 +127,16 @@ class RequestSqlCore extends ObjectModel
      */
     public static function getRequestSqlById($id)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            (new DbQuery())
-                ->select('`sql`')
-                ->from(bqSQL(static::$definition['table']))
-                ->where('`'.bqSQL(static::$definition['primary']).'` = '.(int) $id)
-        );
+        try {
+            return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                    ->select('`sql`')
+                    ->from(bqSQL(static::$definition['table']))
+                    ->where('`'.bqSQL(static::$definition['primary']).'` = '.(int) $id)
+            );
+        } catch (PrestaShopException $e) {
+            return [];
+        }
     }
 
     /**
@@ -221,7 +229,11 @@ class RequestSqlCore extends ObjectModel
             }
         }
 
-        if (empty($this->_errors) && !Db::getInstance()->executeS($sql)) {
+        try {
+            if (empty($this->_errors) && !Db::getInstance()->executeS($sql)) {
+                return false;
+            }
+        } catch (PrestaShopException $e) {
             return false;
         }
 
@@ -277,7 +289,7 @@ class RequestSqlCore extends ObjectModel
     /**
      * Check a "FROM" sentence
      *
-     * @param string $from
+     * @param array $from
      *
      * @return bool
      *
@@ -286,6 +298,10 @@ class RequestSqlCore extends ObjectModel
      */
     public function checkedFrom($from)
     {
+        if (!is_array($from)) {
+            return false;
+        }
+
         $nb = count($from);
         for ($i = 0; $i < $nb; $i++) {
             $table = $from[$i];
@@ -332,7 +348,11 @@ class RequestSqlCore extends ObjectModel
     public function getTables()
     {
         $tables = [];
-        $results = Db::getInstance()->executeS('SHOW TABLES');
+        try {
+            $results = Db::getInstance()->executeS('SHOW TABLES');
+        } catch (PrestaShopException $e) {
+            return $tables;
+        }
         foreach ($results as $result) {
             $key = array_keys($result);
             $tables[] = $result[$key[0]];
@@ -344,8 +364,8 @@ class RequestSqlCore extends ObjectModel
     /**
      * Cut an join sentence
      *
-     * @param array  $attrs
-     * @param string $from
+     * @param array $attrs
+     * @param array $from
      *
      * @return array|bool
      */
@@ -368,8 +388,8 @@ class RequestSqlCore extends ObjectModel
     /**
      * Cut an attribute with or without the alias
      *
-     * @param array  $attr
-     * @param string $from
+     * @param string $attr
+     * @param array  $from
      *
      * @return array|bool
      */
@@ -486,7 +506,11 @@ class RequestSqlCore extends ObjectModel
      */
     public function getAttributesByTable($table)
     {
-        return Db::getInstance()->executeS('DESCRIBE '.pSQL($table));
+        try {
+            return Db::getInstance()->executeS('DESCRIBE '.pSQL($table));
+        } catch (PrestaShopException $e) {
+            return [];
+        }
     }
 
     /**
@@ -591,8 +615,8 @@ class RequestSqlCore extends ObjectModel
     /**
      * Check a "HAVING" sentence
      *
-     * @param string[] $having
-     * @param string   $from
+     * @param array $having
+     * @param array $from
      *
      * @return bool
      *
@@ -639,8 +663,8 @@ class RequestSqlCore extends ObjectModel
     /**
      * Check a "ORDER" sentence
      *
-     * @param string[] $order
-     * @param string   $from
+     * @param array $order
+     * @param array $from
      *
      * @return bool
      *
@@ -676,8 +700,8 @@ class RequestSqlCore extends ObjectModel
     /**
      * Check a "GROUP BY" sentence
      *
-     * @param array  $group
-     * @param string $from
+     * @param array $group
+     * @param array $from
      *
      * @return bool
      *
