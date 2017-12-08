@@ -166,18 +166,25 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
      */
     protected function getModules()
     {
-        $sql = 'SELECT h.`name` AS hook, m.`name`
-				FROM `'._DB_PREFIX_.'module` m
-				LEFT JOIN `'._DB_PREFIX_.'hook_module` hm ON hm.`id_module` = m.`id_module`
-				LEFT JOIN `'._DB_PREFIX_.'hook` h ON hm.`id_hook` = h.`id_hook`
-				WHERE h.`name` = \'displayAdminStatsModules\'
-					AND m.`active` = 1
-				GROUP BY hm.id_module
-				ORDER BY hm.`position`';
-        $modules = Db::getInstance()->executeS($sql);
+        try {
+            $modules = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                    ->select('h.`name` AS hook, m.`name`')
+                    ->from('module', 'm')
+                    ->leftJoin('hook_module', 'hm', 'hm.`id_module` = m.`id_module`')
+                    ->leftJoin('hook', 'h', 'hm.`id_hook` = h.`id_hook`')
+                    ->where('h.`name` = \'displayAdminStatsModules\'')
+                    ->where('m.`active` = 1')
+                    ->groupBy('hm.`id_module`')
+                    ->orderBy('hm.`position`')
+            );
+        } catch (PrestaShopException $e) {
+            $modules = [];
+        }
         if ($modules) {
             foreach ($modules as $module) {
                 if ($module['name'] == 'statsmodule') {
+                    /** @var StatsModule $statsModule */
                     $statsModule = Module::getInstanceByName('statsmodule');
                     $statsModulesList = $statsModule->getStatsModulesList();
                     if ($statsModulesList) {
@@ -214,12 +221,12 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
     /**
      * Display calendar form
      *
-     * @param      $translations
-     * @param      $token
-     * @param null $action
-     * @param null $table
-     * @param null $identifier
-     * @param null $id
+     * @param array       $translations
+     * @param string      $token
+     * @param string|null $action
+     * @param null        $table
+     * @param null        $identifier
+     * @param null        $id
      *
      * @return string
      *
@@ -258,7 +265,11 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
             ]
         );
 
-        return $tpl->fetch();
+        try {
+            return $tpl->fetch();
+        } catch (Exception $e) {
+            return '';
+        }
     }
 
     /**
@@ -304,7 +315,11 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
             ]
         );
 
-        return $tpl->fetch();
+        try {
+            return $tpl->fetch();
+        } catch (Exception $e) {
+            return '';
+        }
     }
 
     /**
@@ -466,7 +481,11 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
             ]
         );
 
-        return $tpl->fetch();
+        try {
+            return $tpl->fetch();
+        } catch (Exception $e) {
+            return '';
+        }
     }
 
     /**
