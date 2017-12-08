@@ -147,7 +147,7 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
         $tpl->assign(
             [
                 'current'             => static::$currentIndex,
-                'current_module_name' => Tools::getValue('module'),
+                'current_module_name' => Tools::getValue('module', 'statsforecast'),
                 'token'               => $this->token,
                 'modules'             => $modules,
                 'module_instance'     => $moduleInstance,
@@ -287,10 +287,9 @@ abstract class AdminStatsTabControllerCore extends AdminPreferencesControllerCor
     {
         $tpl = $this->createTemplate('stats.tpl');
 
-        if ((!($moduleName = Tools::getValue('module')) || !Validate::isModuleName($moduleName)) && ($moduleInstance = Module::getInstanceByName('statsforecast')) && $moduleInstance->active) {
-            $moduleName = 'statsforecast';
+        if ((!($moduleName = Tools::getValue('module', 'statsforecast')) || !Validate::isModuleName($moduleName)) && ($moduleInstance = Module::getInstanceByName('statsforecast')) && $moduleInstance->active) {
+            return '';
         }
-
 
         if ($moduleName) {
             $_GET['module'] = $moduleName;
