@@ -849,8 +849,6 @@ class InstallModelInstall extends InstallAbstractModel
                 'dashtrends',
                 'dashgoals',
                 'dashproducts',
-                'graphnvd3',
-                'gridhtml',
                 'homeslider',
                 'homefeatured',
                 'productpaymentlogos',
