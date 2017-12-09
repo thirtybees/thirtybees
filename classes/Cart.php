@@ -1715,7 +1715,7 @@ class CartCore extends ObjectModel
 
         if (Configuration::get('PS_TAX_ADDRESS_TYPE') == 'id_address_invoice') {
             $addressId = (int) $this->id_address_invoice;
-        } elseif (count($productList)) {
+        } elseif (is_array($productList) && count($productList)) {
             $prod = current($productList);
             $addressId = (int) $prod['id_address_delivery'];
         } else {
