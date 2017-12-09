@@ -41,6 +41,8 @@ class AdminStatsControllerCore extends AdminStatsTabController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function displayAjaxGetKpi()
@@ -1094,5 +1096,18 @@ class AdminStatsControllerCore extends AdminStatsTabController
 		GROUP BY ca.`id_category`
 		ORDER BY SUM(t.`totalPriceSold`) DESC'
         );
+    }
+
+    public function setMedia()
+    {
+        parent::setMedia();
+        $adminWebpath = str_ireplace(_PS_ROOT_DIR_, '', _PS_ADMIN_DIR_);
+        $adminWebpath = preg_replace('/^'.preg_quote(DIRECTORY_SEPARATOR, '/').'/', '', $adminWebpath);
+
+        $this->addJS([
+            _PS_JS_DIR_.'vendor/d3.v3.min.js',
+            __PS_BASE_URI__.$adminWebpath.'/themes/'.$this->context->employee->bo_theme.'/js/vendor/nv.d3.min.js',
+        ]);
+        $this->addCSS(__PS_BASE_URI__.$adminWebpath.'/themes/'.$this->context->employee->bo_theme.'/css/vendor/nv.d3.css');
     }
 }
