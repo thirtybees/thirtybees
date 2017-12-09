@@ -61,14 +61,14 @@ abstract class ModuleGraphCore extends Module
     }
 
     /**
-     * @param $id_lang
+     * @param int $idLang
      *
      * @since 1.0.0
      * @version 1.0.0 Initial version
      */
-    public function setLang($id_lang)
+    public function setLang($idLang)
     {
-        $this->_id_lang = $id_lang;
+        $this->_id_lang = $idLang;
     }
 
     /**
@@ -334,16 +334,7 @@ abstract class ModuleGraphCore extends Module
     public function engine($params)
     {
         $context = Context::getContext();
-        if (!($render = Configuration::get('PS_STATS_RENDER'))) {
-            return Tools::displayError('No graph engine selected');
-        }
-        if (!Validate::isModuleName($render)) {
-            die(Tools::displayError());
-        }
-        if (!file_exists(_PS_ROOT_DIR_.'/modules/'.$render.'/'.$render.'.php')) {
-            return Tools::displayError('Graph engine selected is unavailable.');
-        }
-
+        $render = Configuration::get('PS_STATS_RENDER');
         $idEmployee = (int) $context->employee->id;
         $idLang = (int) $context->language->id;
 
@@ -367,9 +358,13 @@ abstract class ModuleGraphCore extends Module
         $urlParams['id_lang'] = $idLang;
         $drawer = 'drawer.php?'.http_build_query(array_map('Tools::safeOutput', $urlParams), '', '&');
 
-        require_once(_PS_ROOT_DIR_.'/modules/'.$render.'/'.$render.'.php');
+        if (file_exists(_PS_ROOT_DIR_.'/modules/'.$render.'/'.$render.'.php')) {
+            require_once(_PS_ROOT_DIR_.'/modules/'.$render.'/'.$render.'.php');
 
-        return call_user_func([$render, 'hookGraphEngine'], $params, $drawer);
+            return call_user_func([$render, 'hookGraphEngine'], $params, $drawer);
+        } else {
+            return call_user_func(['ModuleGraphEngine', 'hookGraphEngine'], $params, $drawer);
+        }
     }
 
     /**

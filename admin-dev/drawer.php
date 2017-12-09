@@ -111,5 +111,5 @@ if ($option) {
     $graph->setOption($option, $layers);
 }
 call_user_func_array([$graph, 'create'.Tools::getValue('engine')], [$render, $type, $width, $height, $layers]);
-// $graph->create($render, $type, $width, $height, $layers);
+//$graph->create($render, $type, $width, $height, $layers);
 $graph->draw();
