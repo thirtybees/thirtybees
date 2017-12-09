@@ -41,6 +41,7 @@ if (_PS_MODE_DEV_ === true) {
     define('_PS_DEBUG_SQL_', true);
 } else {
     @ini_set('display_errors', 'off');
+    @error_reporting('E_ALL ^ E_DEPRECATED');
     define('_PS_DEBUG_SQL_', false);
 }
 
