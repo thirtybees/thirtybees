@@ -302,7 +302,7 @@ abstract class PaymentModuleCore extends Module
             $shops = Shop::getShops(true, null, true);
         }
 
-        $carriers = Carrier::getCarriers((int) Context::getContext()->language->id);
+        $carriers = Carrier::getCarriers((int) Context::getContext()->language->id, false, false, false, null, Carrier::ALL_CARRIERS);
         $carrierIds = [];
         foreach ($carriers as $carrier) {
             $carrierIds[] = $carrier['id_reference'];
