@@ -110,6 +110,8 @@ class CustomerThreadCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -137,6 +139,7 @@ class CustomerThreadCore extends ObjectModel
      *
      * @return false|null|string
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -155,6 +158,8 @@ class CustomerThreadCore extends ObjectModel
     /**
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -181,24 +186,16 @@ class CustomerThreadCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getTotalCustomerThreads($where = null)
     {
-        if (is_null($where)) {
-            return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-                (new DbQuery())
-                    ->select('COUNT(*)')
-                    ->from('customer_thread')
-                    ->where('1 '.Shop::addSqlRestriction())
-            );
-        } else {
-            return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-                (new DbQuery())
-                    ->select('COUNT(*)')
-                    ->from('customer_thread')
-                    ->where('1 '.Shop::addSqlRestriction())
-            );
-        }
+        return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('COUNT(*)')
+                ->from('customer_thread')
+                ->where(($where ?: '1').' '.Shop::addSqlRestriction())
+        );
     }
 
     /**
@@ -208,6 +205,7 @@ class CustomerThreadCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getMessageCustomerThreads($idCustomerThread)
     {
@@ -232,6 +230,7 @@ class CustomerThreadCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getNextThread($idCustomerThread)
     {
@@ -252,6 +251,8 @@ class CustomerThreadCore extends ObjectModel
     /**
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -268,6 +269,8 @@ class CustomerThreadCore extends ObjectModel
     /**
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
