@@ -868,7 +868,6 @@ abstract class AdminTabCore
      *
      * @deprecated 1.0.0
      * @throws PrestaShopException
-     * @throws PrestaShopException
      */
     public function displayListContent($token = null)
     {
@@ -1958,7 +1957,6 @@ abstract class AdminTabCore
      * @param bool $idObject
      *
      * @deprecated 1.0.0
-     * @throws PrestaShopException
      * @throws PrestaShopException
      */
     protected function updateAssoShop($idObject = false)
