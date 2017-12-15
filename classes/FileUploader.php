@@ -139,6 +139,7 @@ class QqUploadedFileForm
      * Save the file to the specified path
      *
      * @return bool|array TRUE on success
+     * @throws PrestaShopException
      */
     public function save()
     {
@@ -185,6 +186,8 @@ class QqUploadedFileForm
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function copyImage($idProduct, $idImage, $method = 'auto')
     {
@@ -272,6 +275,7 @@ class QqUploadedFileXhr
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function save()
     {
@@ -318,6 +322,8 @@ class QqUploadedFileXhr
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function copyImage($idProduct, $idImage, $method = 'auto')
     {

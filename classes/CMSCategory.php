@@ -101,6 +101,8 @@ class CMSCategoryCore extends ObjectModel
      *
      * @return array|bool|null|object
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -188,6 +190,8 @@ class CMSCategoryCore extends ObjectModel
      *
      * @return array Categories
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -224,6 +228,8 @@ class CMSCategoryCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -247,6 +253,8 @@ class CMSCategoryCore extends ObjectModel
      *
      * @return array categories
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -262,6 +270,8 @@ class CMSCategoryCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -296,10 +306,12 @@ class CMSCategoryCore extends ObjectModel
      * Check if CMSCategory can be moved in another one
      *
      * @param int $idCmsCategory
-     * @param int $idParent      Parent candidate
+     * @param int $idParent Parent candidate
      *
      * @return bool Parent validity
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -334,6 +346,8 @@ class CMSCategoryCore extends ObjectModel
      *
      * @return bool|mixed
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -369,6 +383,8 @@ class CMSCategoryCore extends ObjectModel
      *
      * @return array Corresponding categories
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -401,6 +417,8 @@ class CMSCategoryCore extends ObjectModel
      * @param int    $idParentCmsCategory parent CMSCategory ID
      *
      * @return array Corresponding CMSCategory
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @deprecated 1.0.0
      */
     public static function searchByNameAndParentCMSCategoryId($idLang, $cmsCategoryName, $idParentCmsCategory)
@@ -423,6 +441,8 @@ class CMSCategoryCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -444,6 +464,8 @@ class CMSCategoryCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -469,6 +491,7 @@ class CMSCategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getLastPosition($idCategoryParent)
     {
@@ -503,6 +526,8 @@ class CMSCategoryCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -533,6 +558,8 @@ class CMSCategoryCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -564,6 +591,8 @@ class CMSCategoryCore extends ObjectModel
      *
      * @return array Subcategories lite tree
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -609,6 +638,8 @@ class CMSCategoryCore extends ObjectModel
      *
      * @return array Categories
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -661,6 +692,8 @@ class CMSCategoryCore extends ObjectModel
      * @param array $categories
      *
      * @return bool|int
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function deleteSelection($categories)
     {
@@ -676,6 +709,8 @@ class CMSCategoryCore extends ObjectModel
     /**
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -736,6 +771,8 @@ class CMSCategoryCore extends ObjectModel
      * @param array     &$toDelete     Array reference where categories ID will be saved
      * @param array|int $idCmsCategory Parent CMSCategory ID
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -775,12 +812,13 @@ class CMSCategoryCore extends ObjectModel
     }
 
     /**
-     * @param null $idLang
+     * @param int|null $idLang
      *
      * @return string
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getName($idLang = null)
     {
@@ -803,6 +841,8 @@ class CMSCategoryCore extends ObjectModel
      *
      * @return false|array Corresponding categories
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -839,6 +879,8 @@ class CMSCategoryCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

@@ -99,6 +99,8 @@ class DiscountCore extends CartRule
     /**
      * @param string $key
      * @param mixed  $value
+     *
+     * @throws PrestaShopException
      */
     public function __set($key, $value)
     {
@@ -173,6 +175,7 @@ class DiscountCore extends CartRule
      * @param null $categories
      *
      * @return bool
+     * @throws PrestaShopException
      */
     public function add($autodate = true, $nullValues = false, $categories = null)
     {
@@ -187,6 +190,7 @@ class DiscountCore extends CartRule
      * @param array|null $categories
      *
      * @return bool
+     * @throws PrestaShopException
      */
     public function update($autodate = true, $nullValues = false, $categories = null)
     {
@@ -199,6 +203,7 @@ class DiscountCore extends CartRule
      * @param string $code
      *
      * @return bool|int[]
+     * @throws PrestaShopException
      */
     public static function getIdByName($code)
     {
@@ -214,6 +219,8 @@ class DiscountCore extends CartRule
      * @param Cart|null $cart
      *
      * @return array
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getCustomerDiscounts($idLang, $idCustomer, $active = false, $includeGenericOnes = true, $hasStock = false, Cart $cart = null)
     {
@@ -225,6 +232,8 @@ class DiscountCore extends CartRule
      * @param int $idCustomer
      *
      * @return array
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getVouchersToCartDisplay($idLang, $idCustomer)
     {
@@ -241,6 +250,9 @@ class DiscountCore extends CartRule
      * @param Shop|null     $shop
      *
      * @return float|int|string
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getValue($nb_discounts = 0, $order_total_products = 0, $shipping_fees = 0, $idCart = false, $useTax = true, Currency $currency = null, Shop $shop = null)
     {
@@ -263,6 +275,7 @@ class DiscountCore extends CartRule
      * @param int    $idDiscount
      *
      * @return bool
+     * @throws PrestaShopException
      */
     public static function discountExists($discountName, $idDiscount = 0)
     {
@@ -279,6 +292,7 @@ class DiscountCore extends CartRule
      * @param int        $subcategory
      *
      * @return bool|Discount
+     * @throws PrestaShopException
      */
     public static function createOrderDiscount($order, $productList, $qtyList, $name, $shippingCost = false, $idCategory = 0, $subcategory = 0)
     {
@@ -338,6 +352,7 @@ class DiscountCore extends CartRule
      * @param Currency|null $currency
      *
      * @return string
+     * @throws PrestaShopException
      */
     public static function display($value, $type, $currency = null)
     {

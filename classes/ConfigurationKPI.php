@@ -65,14 +65,15 @@ class ConfigurationKPICore extends Configuration
     }
 
     /**
-     * @param string $key
-     * @param null   $idShopGroup
-     * @param null   $idShop
+     * @param string   $key
+     * @param int|null $idShopGroup
+     * @param int|null $idShop
      *
      * @return int
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getIdByName($key, $idShopGroup = null, $idShop = null)
     {
@@ -95,15 +96,16 @@ class ConfigurationKPICore extends Configuration
     }
 
     /**
-     * @param string $key
-     * @param null   $idLang
-     * @param null   $idShopGroup
-     * @param null   $idShop
+     * @param string   $key
+     * @param int|null $idLang
+     * @param int|null $idShopGroup
+     * @param int|null $idShop
      *
      * @return string
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function get($key, $idLang = null, $idShopGroup = null, $idShop = null)
     {
@@ -122,6 +124,7 @@ class ConfigurationKPICore extends Configuration
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getGlobalValue($key, $idLang = null)
     {
@@ -133,14 +136,15 @@ class ConfigurationKPICore extends Configuration
     }
 
     /**
-     * @param string $key
-     * @param null   $idShopGroup
-     * @param null   $idShop
+     * @param string   $key
+     * @param int|null $idShopGroup
+     * @param int|null $idShop
      *
      * @return array
      * @since   1.0.0
      *
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getInt($key, $idShopGroup = null, $idShop = null)
     {
@@ -161,6 +165,7 @@ class ConfigurationKPICore extends Configuration
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getMultiple($keys, $idLang = null, $idShopGroup = null, $idShop = null)
     {
@@ -216,6 +221,7 @@ class ConfigurationKPICore extends Configuration
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function updateGlobalValue($key, $values, $html = false)
     {
@@ -227,16 +233,17 @@ class ConfigurationKPICore extends Configuration
     }
 
     /**
-     * @param string $key
-     * @param mixed  $values
-     * @param bool   $html
-     * @param null   $idShopGroup
-     * @param null   $idShop
+     * @param string   $key
+     * @param mixed    $values
+     * @param bool     $html
+     * @param int|null $idShopGroup
+     * @param int|null $idShop
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function updateValue($key, $values, $html = false, $idShopGroup = null, $idShop = null)
     {
@@ -252,6 +259,8 @@ class ConfigurationKPICore extends Configuration
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -267,6 +276,8 @@ class ConfigurationKPICore extends Configuration
     /**
      * @param string $key
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -303,6 +314,7 @@ class ConfigurationKPICore extends Configuration
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function isOverridenByCurrentContext($key)
     {

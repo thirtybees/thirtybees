@@ -124,12 +124,14 @@ class SpecificPriceCore extends ObjectModel
     ];
 
     /**
-     * @param int|     $idProduct
+     * @param int      $idProduct
      * @param int|bool $idProductAttribute
      * @param int|bool $idCart
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -154,6 +156,7 @@ class SpecificPriceCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      */
     public static function deleteByIdCart($idCart, $idProduct = false, $idProductAttribute = false)
     {
@@ -164,12 +167,14 @@ class SpecificPriceCore extends ObjectModel
     }
 
     /**
-     * @param int|     $idProduct
+     * @param int      $idProduct
      * @param int|bool $idProductAttribute
      * @param int|int  $idCart
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -199,6 +204,8 @@ class SpecificPriceCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -240,6 +247,7 @@ class SpecificPriceCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function isFeatureActive()
     {
@@ -265,6 +273,8 @@ class SpecificPriceCore extends ObjectModel
      * @return string
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected static function computeExtraConditions($idProduct, $idProductAttribute, $idCustomer, $idCart, $beginning = null, $ending = null)
     {
@@ -343,6 +353,7 @@ class SpecificPriceCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected static function filterOutField($fieldName, $fieldValue, $threshold = 1000)
     {
@@ -433,6 +444,7 @@ class SpecificPriceCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getPriority($idProduct)
     {
@@ -470,6 +482,7 @@ class SpecificPriceCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function setPriorities($priorities)
     {
@@ -490,6 +503,7 @@ class SpecificPriceCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function deletePriorities()
     {
@@ -504,6 +518,7 @@ class SpecificPriceCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function setSpecificPriority($idProduct, $priorities)
     {
@@ -533,6 +548,8 @@ class SpecificPriceCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -587,6 +604,8 @@ class SpecificPriceCore extends ObjectModel
      *
      * @return array|bool|null|object
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -623,6 +642,8 @@ class SpecificPriceCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -659,6 +680,8 @@ class SpecificPriceCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function deleteByProductId($idProduct)
     {
@@ -689,6 +712,7 @@ class SpecificPriceCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function exists($idProduct, $idProductAttribute, $idShop, $idGroup, $idCountry, $idCurrency, $idCustomer, $fromQuantity, $from, $to, $rule = false)
     {
@@ -753,6 +777,7 @@ class SpecificPriceCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function delete()
     {
@@ -775,6 +800,7 @@ class SpecificPriceCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function duplicate($idProduct = false)
     {
@@ -794,6 +820,7 @@ class SpecificPriceCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
     {

@@ -64,6 +64,8 @@ class AliasCore extends ObjectModel
      * @param null $search
      * @param null $idLang
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -128,6 +130,7 @@ class AliasCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function delete()
     {
@@ -144,6 +147,8 @@ class AliasCore extends ObjectModel
     /**
      * @return string
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -172,6 +177,7 @@ class AliasCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function isFeatureActive()
     {
@@ -184,6 +190,8 @@ class AliasCore extends ObjectModel
      * @param int $idAlias
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

@@ -640,6 +640,7 @@ class AddressFormatCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function _getFormatDB($idCountry)
     {

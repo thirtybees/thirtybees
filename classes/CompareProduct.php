@@ -65,6 +65,8 @@ class CompareProductCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -99,6 +101,8 @@ class CompareProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     public static function addCompareProduct($idCompare, $idProduct)
     {
@@ -154,6 +158,7 @@ class CompareProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function removeCompareProduct($idCompare, $idProduct)
     {
@@ -173,6 +178,7 @@ class CompareProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getNumberProducts($idCompare)
     {
@@ -193,6 +199,7 @@ class CompareProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function cleanCompareProducts($period = null)
     {
@@ -216,6 +223,7 @@ class CompareProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getIdCompareByIdCustomer($idCustomer)
     {

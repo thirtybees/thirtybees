@@ -62,6 +62,8 @@ class GroupReductionCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -85,6 +87,7 @@ class GroupReductionCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getValueForProduct($idProduct, $idGroup)
     {
@@ -116,6 +119,7 @@ class GroupReductionCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function doesExist($idGroup, $idCategory)
     {
@@ -134,6 +138,8 @@ class GroupReductionCore extends ObjectModel
      * @param int $idCategory
      *
      * @return array|null
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getGroupByCategoryId($idCategory)
     {
@@ -152,6 +158,8 @@ class GroupReductionCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -171,6 +179,8 @@ class GroupReductionCore extends ObjectModel
      * @param int $idCategory
      *
      * @return array|null
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getGroupReductionByCategoryId($idCategory)
     {
@@ -192,6 +202,8 @@ class GroupReductionCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -224,6 +236,7 @@ class GroupReductionCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      */
     public static function deleteProductReduction($idProduct)
     {
@@ -235,6 +248,8 @@ class GroupReductionCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -254,6 +269,8 @@ class GroupReductionCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -294,6 +311,7 @@ class GroupReductionCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      */
     public static function deleteCategory($idCategory)
     {
@@ -308,6 +326,7 @@ class GroupReductionCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -319,6 +338,7 @@ class GroupReductionCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     // @codingStandardsIgnoreStart
     protected function _setCache()
@@ -352,6 +372,8 @@ class GroupReductionCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -363,6 +385,8 @@ class GroupReductionCore extends ObjectModel
     /**
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -401,6 +425,8 @@ class GroupReductionCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function delete()
     {
@@ -428,6 +454,7 @@ class GroupReductionCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      */
     // @codingStandardsIgnoreStart
     protected function _clearCache()

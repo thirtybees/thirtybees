@@ -86,6 +86,8 @@ class AttributeGroupCore extends ObjectModel
      * @param bool $idAttributeGroup Attribute group id
      *
      * @return array Attributes
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getAttributes($idLang, $idAttributeGroup)
     {
@@ -110,6 +112,8 @@ class AttributeGroupCore extends ObjectModel
      * @param int $idLang Language id
      *
      * @return array Attributes groups
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getAttributesGroups($idLang)
     {
@@ -135,6 +139,7 @@ class AttributeGroupCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -160,6 +165,7 @@ class AttributeGroupCore extends ObjectModel
      * Get the higher group attribute position
      *
      * @return int $position
+     * @throws PrestaShopException
      */
     public static function getHigherPosition()
     {
@@ -209,6 +215,7 @@ class AttributeGroupCore extends ObjectModel
      * @param array $selection
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
      */
     public function deleteSelection($selection)
     {
@@ -228,6 +235,8 @@ class AttributeGroupCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function delete()
     {
@@ -278,6 +287,8 @@ class AttributeGroupCore extends ObjectModel
     /**
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -312,6 +323,8 @@ class AttributeGroupCore extends ObjectModel
      *
      * @return bool $return
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -346,6 +359,8 @@ class AttributeGroupCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function setWsProductOptionValues($values)
     {
@@ -377,6 +392,8 @@ class AttributeGroupCore extends ObjectModel
     /**
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -401,6 +418,8 @@ class AttributeGroupCore extends ObjectModel
      *
      * @return bool Update result
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

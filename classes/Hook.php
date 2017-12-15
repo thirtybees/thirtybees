@@ -94,6 +94,8 @@ class HookCore extends ObjectModel
      *
      * @return array Hooks List
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -112,6 +114,7 @@ class HookCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getNameById($hookId)
     {
@@ -136,6 +139,7 @@ class HookCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getLiveEditById($hookId)
     {
@@ -165,6 +169,8 @@ class HookCore extends ObjectModel
      *
      * @return array Modules List
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -185,6 +191,8 @@ class HookCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -236,6 +244,7 @@ class HookCore extends ObjectModel
      * @param $idOrder
      *
      * @return bool|string
+     * @throws PrestaShopException
      */
     public static function updateOrderStatus($newOrderStatusId, $idOrder)
     {
@@ -526,6 +535,8 @@ class HookCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -657,6 +668,8 @@ class HookCore extends ObjectModel
      *
      * @return int Hook ID
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -681,6 +694,8 @@ class HookCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -710,6 +725,8 @@ class HookCore extends ObjectModel
      *
      * @return int Hook ID
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -752,6 +769,8 @@ class HookCore extends ObjectModel
      *
      * @return mixed
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -956,6 +975,8 @@ class HookCore extends ObjectModel
      * @deprecated 1.0.0 use Hook::getHookModuleList() instead
      *
      * @return bool preload_needed
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function preloadHookModulesCache()
     {
@@ -977,6 +998,8 @@ class HookCore extends ObjectModel
      *
      * @return int Hook ID
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @deprecated 1.0.0 use Hook::getIdByName() instead
      */
     public static function get($hookName)

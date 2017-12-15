@@ -108,6 +108,8 @@ class AttachmentCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function delete()
     {
@@ -134,6 +136,8 @@ class AttachmentCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -174,6 +178,8 @@ class AttachmentCore extends ObjectModel
      * @param bool $include
      *
      * @return array|false|null|PDOStatement
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getAttachments($idLang, $idProduct, $include = true)
     {
@@ -198,6 +204,8 @@ class AttachmentCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function deleteProductAttachments($idProduct)
     {
@@ -218,6 +226,8 @@ class AttachmentCore extends ObjectModel
      *
      * @return bool true if succed
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -245,6 +255,8 @@ class AttachmentCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -279,6 +291,8 @@ class AttachmentCore extends ObjectModel
      *
      * @return array|bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

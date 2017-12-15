@@ -90,6 +90,7 @@ class GuestCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function setNewGuest($cookie)
     {
@@ -104,6 +105,8 @@ class GuestCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -164,10 +167,12 @@ class GuestCore extends ObjectModel
     }
 
     /**
-     * @param $userAgent
+     * @param string $userAgent
      *
      * @return null
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -200,10 +205,12 @@ class GuestCore extends ObjectModel
     }
 
     /**
-     * @param $userAgent
+     * @param string $userAgent
      *
      * @return null
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -242,6 +249,8 @@ class GuestCore extends ObjectModel
      * @param int $idGuest
      * @param int $idCustomer
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

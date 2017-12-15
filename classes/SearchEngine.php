@@ -56,6 +56,8 @@ class SearchEngineCore extends ObjectModel
      *
      * @return bool|string
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

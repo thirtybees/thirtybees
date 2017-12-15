@@ -628,6 +628,7 @@ class MediaCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function cccCss($cssFiles, $cachePath = null)
     {
@@ -860,6 +861,7 @@ class MediaCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function cccJS($jsFiles)
     {
@@ -951,6 +953,7 @@ class MediaCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function clearCache()
     {

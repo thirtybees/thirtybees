@@ -64,6 +64,7 @@ class EncryptorCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function __construct()
     {

@@ -1321,6 +1321,7 @@ class LanguageCore extends ObjectModel
      *
      * @return array([theme dir] => array('name' => [theme name]))
      * @deprecated 1.0.0
+     * @throws PrestaShopException
      */
     protected function _getThemesList()
     {

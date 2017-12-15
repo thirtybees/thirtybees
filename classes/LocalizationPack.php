@@ -55,6 +55,7 @@ class LocalizationPackCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function loadLocalisationPack($file, $selection, $installMode = false, $isoLocalizationPack = null)
     {
@@ -379,6 +380,7 @@ class LocalizationPackCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function installConfiguration($xml)
     {
@@ -408,6 +410,8 @@ class LocalizationPackCore
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -450,6 +454,7 @@ class LocalizationPackCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function updateDefaultGroupDisplayMethod($xml)
     {
@@ -481,6 +486,8 @@ class LocalizationPackCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     protected function _installLanguages($xml, $installMode = false)
     {
@@ -516,6 +523,7 @@ class LocalizationPackCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function _installUnits($xml)
     {
@@ -558,6 +566,7 @@ class LocalizationPackCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function _installGroups($xml)
     {

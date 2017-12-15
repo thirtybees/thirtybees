@@ -72,6 +72,8 @@ class FeatureCore extends ObjectModel
      *
      * @return array Array with feature's data
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -89,11 +91,13 @@ class FeatureCore extends ObjectModel
     /**
      * Get all features for a given language
      *
-     * @param int  $idLang   Language id
+     * @param int  $idLang Language id
      * @param bool $withShop
      *
      * @return array Multiple arrays with feature's data
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -118,6 +122,7 @@ class FeatureCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function nbFeatures($idLang)
     {
@@ -139,6 +144,7 @@ class FeatureCore extends ObjectModel
      *
      * @since    1.0.0
      * @version  1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function addFeatureImport($name, $position = false)
     {
@@ -182,6 +188,7 @@ class FeatureCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getHigherPosition()
     {
@@ -202,6 +209,7 @@ class FeatureCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -222,6 +230,7 @@ class FeatureCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function update($nullValues = false)
     {
@@ -267,6 +276,8 @@ class FeatureCore extends ObjectModel
      *
      * @return array|bool|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -306,6 +317,7 @@ class FeatureCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function isFeatureActive()
     {
@@ -319,6 +331,8 @@ class FeatureCore extends ObjectModel
      *
      * @return bool Deletion result
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -340,6 +354,8 @@ class FeatureCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws PrestaShopDatabaseException
      */
     public function delete()
     {
@@ -379,6 +395,8 @@ class FeatureCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     public static function cleanPositions()
     {
@@ -397,6 +415,8 @@ class FeatureCore extends ObjectModel
      *
      * @return bool Update result
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

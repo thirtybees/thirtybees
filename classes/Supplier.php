@@ -136,6 +136,8 @@ class SupplierCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getSuppliers($getNbProducts = false, $idLang = 0, $active = true, $p = false, $n = false, $allGroups = false)
     {
@@ -227,6 +229,8 @@ class SupplierCore extends ObjectModel
      * @param null $nullValues
      *
      * @return bool Indicates whether updating succeeded
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function update($nullValues = null)
     {
@@ -239,6 +243,8 @@ class SupplierCore extends ObjectModel
 
     /**
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function delete()
     {
@@ -256,6 +262,7 @@ class SupplierCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getNameById($idSupplier)
     {
@@ -278,6 +285,8 @@ class SupplierCore extends ObjectModel
      *
      * @return bool|int
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -312,6 +321,9 @@ class SupplierCore extends ObjectModel
      *
      * @since    1.0.0
      * @version  1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     public static function getProducts(
         $idSupplier,
@@ -457,6 +469,7 @@ class SupplierCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function supplierExists($idSupplier)
     {
@@ -473,7 +486,7 @@ class SupplierCore extends ObjectModel
     /**
      * Gets product informations
      *
-     * @since 1.5.0
+     * @since   1.5.0
      *
      * @param int $idSupplier
      * @param int $idProduct
@@ -481,6 +494,8 @@ class SupplierCore extends ObjectModel
      *
      * @return false|array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -507,6 +522,8 @@ class SupplierCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

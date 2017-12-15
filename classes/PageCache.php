@@ -80,6 +80,8 @@ class PageCacheCore
      * @param int|null $idEntity
      *
      * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function invalidateEntity($entityType, $idEntity = null)
     {
@@ -144,6 +146,8 @@ class PageCacheCore
      * Flush all data
      *
      * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function flush()
     {
@@ -162,6 +166,8 @@ class PageCacheCore
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected static function getKeysToInvalidate($entityType, $idEntity = null)

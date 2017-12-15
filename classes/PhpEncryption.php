@@ -45,6 +45,8 @@ class PhpEncryptionCore
      *
      * @param string $asciiKey
      *
+     * @throws \Defuse\Crypto\Exception\BadFormatException
+     * @throws \Defuse\Crypto\Exception\EnvironmentIsBrokenException
      * @since 1.0.0
      */
     public function __construct($asciiKey)
@@ -56,6 +58,7 @@ class PhpEncryptionCore
      * @param string $plaintext
      *
      * @return string Ciphertext
+     * @throws \Defuse\Crypto\Exception\EnvironmentIsBrokenException
      */
     public function encrypt($plaintext)
     {

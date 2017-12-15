@@ -150,6 +150,7 @@ class CategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function recurseCategory($categories, $current, $idCategory = null, $idSelected = 1)
     {
@@ -1399,6 +1400,8 @@ class CategoryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function updateGroup($list)
     {
@@ -2118,12 +2121,13 @@ class CategoryCore extends ObjectModel
     }
 
     /**
-     * @param null $idLang
+     * @param int|null $idLang
      *
      * @return string
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getName($idLang = null)
     {

@@ -104,6 +104,7 @@ class ProductSupplierCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getProductSupplierReference($idProduct, $idProductAttribute, $idSupplier)
     {
@@ -123,12 +124,13 @@ class ProductSupplierCore extends ObjectModel
      * @param int  $idProduct
      * @param int  $idProductAttribute
      * @param int  $idSupplier
-     * @param bool $withCurrency       Optional
+     * @param bool $withCurrency Optional
      *
      * @return int|array
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getProductSupplierPrice($idProduct, $idProductAttribute, $idSupplier, $withCurrency = false)
     {
@@ -168,6 +170,7 @@ class ProductSupplierCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getIdByProductAndSupplier($idProduct, $idProductAttribute, $idSupplier)
     {
@@ -191,6 +194,8 @@ class ProductSupplierCore extends ObjectModel
      *
      * @return false|float|array keys: price_te, id_currency
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -219,6 +224,7 @@ class ProductSupplierCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function delete()
     {
@@ -247,6 +253,7 @@ class ProductSupplierCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getSupplierCollection($idProduct, $groupBySupplier = true)
     {

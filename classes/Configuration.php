@@ -366,6 +366,7 @@ class ConfigurationCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function get($key, $idLang = null, $idShopGroup = null, $idShop = null)
     {
@@ -492,7 +493,7 @@ class ConfigurationCore extends ObjectModel
     /**
      * Get a single configuration value (in multiple languages)
      *
-     * @param string $key         Key wanted
+     * @param string $key Key wanted
      * @param int    $idShopGroup
      * @param int    $idShop
      *
@@ -500,6 +501,7 @@ class ConfigurationCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getInt($key, $idShopGroup = null, $idShop = null)
     {
@@ -521,6 +523,7 @@ class ConfigurationCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getMultiShopValues($key, $idLang = null)
     {
@@ -581,6 +584,7 @@ class ConfigurationCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function updateGlobalValue($key, $values, $html = false)
     {
@@ -595,9 +599,9 @@ class ConfigurationCore extends ObjectModel
      *
      * @TODO    Fix saving HTML values in Configuration model
      *
-     * @param string $key         Key
-     * @param mixed  $values      $values is an array if the configuration is multilingual, a single string else.
-     * @param bool   $html        Specify if html is authorized in value
+     * @param string $key    Key
+     * @param mixed  $values $values is an array if the configuration is multilingual, a single string else.
+     * @param bool   $html   Specify if html is authorized in value
      * @param int    $idShopGroup
      * @param int    $idShop
      *
@@ -605,6 +609,7 @@ class ConfigurationCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function updateValue($key, $values, $html = false, $idShopGroup = null, $idShop = null)
     {
@@ -733,6 +738,7 @@ class ConfigurationCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getIdByName($key, $idShopGroup = null, $idShop = null)
     {
@@ -799,6 +805,8 @@ class ConfigurationCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws PrestaShopDatabaseException
      */
     public static function deleteByName($key)
     {
@@ -830,6 +838,8 @@ class ConfigurationCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function deleteFromContext($key)
     {
@@ -863,6 +873,7 @@ class ConfigurationCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function isOverridenByCurrentContext($key)
     {
@@ -938,6 +949,7 @@ class ConfigurationCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getFieldsLang()
     {
@@ -958,6 +970,8 @@ class ConfigurationCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

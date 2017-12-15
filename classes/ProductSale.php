@@ -43,6 +43,7 @@ class ProductSaleCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function fillProductSales()
     {
@@ -61,6 +62,7 @@ class ProductSaleCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getNbSales()
     {
@@ -85,6 +87,8 @@ class ProductSaleCore
      *
      * @return false| array from Product::getProductProperties
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -237,6 +241,7 @@ class ProductSaleCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function addProductSale($idProduct, $qty = 1)
     {
@@ -255,6 +260,8 @@ class ProductSaleCore
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -280,6 +287,8 @@ class ProductSaleCore
      *
      * @return int
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

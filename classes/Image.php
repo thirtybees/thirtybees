@@ -102,6 +102,8 @@ class ImageCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -138,6 +140,8 @@ class ImageCore extends ObjectModel
      *
      * @return array Images
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -169,6 +173,7 @@ class ImageCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function hasImages($idLang, $idProduct, $idProductAttribute = null)
     {
@@ -191,6 +196,8 @@ class ImageCore extends ObjectModel
      *
      * @return array Images
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -211,6 +218,8 @@ class ImageCore extends ObjectModel
      *
      * @return int number of images
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -233,6 +242,8 @@ class ImageCore extends ObjectModel
      *
      * @return bool result
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -271,6 +282,8 @@ class ImageCore extends ObjectModel
      *
      * @return bool result
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -292,6 +305,8 @@ class ImageCore extends ObjectModel
      *
      * @return bool result
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -309,13 +324,16 @@ class ImageCore extends ObjectModel
     /**
      * Copy images from a product to another
      *
-     * @param int   $idProductOld      Source product ID
-     * @param bool  $idProductNew      Destination product ID
+     * @param int   $idProductOld Source product ID
+     * @param bool  $idProductNew Destination product ID
      * @param array $combinationImages
      *
      * @return bool
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function duplicateProductImages($idProductOld, $idProductNew, $combinationImages)
     {
@@ -375,6 +393,8 @@ class ImageCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -400,6 +420,8 @@ class ImageCore extends ObjectModel
      *
      * @return int highest position of images
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -422,6 +444,7 @@ class ImageCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getPathForCreation()
     {
@@ -503,6 +526,8 @@ class ImageCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -530,6 +555,8 @@ class ImageCore extends ObjectModel
      *
      * @return mixed
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -545,6 +572,8 @@ class ImageCore extends ObjectModel
      *
      * @return mixed
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -568,6 +597,8 @@ class ImageCore extends ObjectModel
      *
      * @return mixed
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -764,6 +795,8 @@ class ImageCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     public function delete()
     {
@@ -796,6 +829,7 @@ class ImageCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      */
     public function deleteProductAttributeImage()
     {
@@ -812,6 +846,8 @@ class ImageCore extends ObjectModel
      * @param bool $forceDelete
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function deleteImage($forceDelete = false)
     {
@@ -875,6 +911,7 @@ class ImageCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getExistingImgPath()
     {
@@ -959,6 +996,8 @@ class ImageCore extends ObjectModel
      * @param int  $position  Position
      * @param bool $direction Direction
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @deprecated since version 1.0.0 use Image::updatePosition() instead
      */
     public function positionImage($position, $direction)
@@ -1004,6 +1043,8 @@ class ImageCore extends ObjectModel
      *
      * @return int success
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

@@ -37,18 +37,21 @@
 class ChartCore
 {
     // @codingStandardsIgnoreStart
+    /** @var int $poolId */
     protected static $poolId = 0;
-
+    /** @var int $width */
     protected $width = 600;
+    /** @var int $height */
     protected $height = 300;
 
     /* Time mode */
+    /** @var bool $timeMode */
     protected $timeMode = false;
     protected $from;
     protected $to;
     protected $format;
     protected $granularity;
-
+    /** @var array $curves */
     protected $curves = [];
     // @codingStandardsIgnoreEnd
 

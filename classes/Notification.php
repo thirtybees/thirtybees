@@ -55,6 +55,8 @@ class NotificationCore
      *
      * @return array containing the notifications
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -86,6 +88,7 @@ class NotificationCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getLastElementsIdsByType($type, $idLastElement)
     {
@@ -158,6 +161,8 @@ class NotificationCore
      *
      * @return bool if type exists or not
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

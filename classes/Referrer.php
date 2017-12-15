@@ -94,6 +94,7 @@ class ReferrerCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function cacheNewSource($idConnectionsSource)
     {
@@ -115,9 +116,11 @@ class ReferrerCore extends ObjectModel
      *
      * @param int $idCustomer
      *
+     * @return array|false|null|PDOStatement
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @return array|false|null|PDOStatement
      */
     public static function getReferrers($idCustomer)
     {
@@ -140,6 +143,8 @@ class ReferrerCore extends ObjectModel
      * @param int  $idProduct
      * @param null $employee
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -186,9 +191,10 @@ class ReferrerCore extends ObjectModel
      *
      * @return array|bool|null|object
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     *
      */
     public function getStatsVisits($idProduct, $employee)
     {
@@ -221,9 +227,11 @@ class ReferrerCore extends ObjectModel
      * @param int $idProduct
      * @param int $employee
      *
+     * @return int
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @return int
      */
     public function getRegistrations($idProduct, $employee)
     {
@@ -257,9 +265,11 @@ class ReferrerCore extends ObjectModel
      * @param int $idProduct
      * @param int $employee
      *
+     * @return array|bool|null|object
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @return array|bool|null|object
      */
     public function getStatsSales($idProduct, $employee)
     {
@@ -310,6 +320,8 @@ class ReferrerCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -332,6 +344,8 @@ class ReferrerCore extends ObjectModel
      *
      * @return true
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -381,6 +395,8 @@ class ReferrerCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws PrestaShopDatabaseException
      */
     public static function refreshIndex($referrers = null)
     {

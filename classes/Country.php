@@ -106,6 +106,8 @@ class CountryCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -128,6 +130,8 @@ class CountryCore extends ObjectModel
      *
      * @return int Country ID
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -156,6 +160,8 @@ class CountryCore extends ObjectModel
      *
      * @return bool|int
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -195,6 +201,7 @@ class CountryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getNameById($idLang, $idCountry)
     {
@@ -224,6 +231,7 @@ class CountryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getIsoById($idCountry)
     {
@@ -252,6 +260,8 @@ class CountryCore extends ObjectModel
      *
      * @return int Country ID
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -279,6 +289,7 @@ class CountryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getNeedZipCode($idCountry)
     {
@@ -301,6 +312,7 @@ class CountryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getZipCodeFormat($idCountry)
     {
@@ -341,6 +353,8 @@ class CountryCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -368,6 +382,7 @@ class CountryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function containsStates($idCountry)
     {
@@ -384,6 +399,7 @@ class CountryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      */
     public function delete()
     {
@@ -399,6 +415,7 @@ class CountryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function isNeedDni()
     {
@@ -412,6 +429,7 @@ class CountryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function isNeedDniByCountryId($idCountry)
     {
@@ -429,6 +447,8 @@ class CountryCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -474,6 +494,8 @@ class CountryCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -491,6 +513,8 @@ class CountryCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -529,7 +553,7 @@ class CountryCore extends ObjectModel
     }
 
     /**
-     * @brief Return available countries
+     * @brief   Return available countries
      *
      * @param int  $idLang        Language ID
      * @param bool $active        return only active countries
@@ -538,6 +562,8 @@ class CountryCore extends ObjectModel
      *
      * @return array Countries and corresponding zones
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

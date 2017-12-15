@@ -60,7 +60,7 @@ class CookieCore
     /**
      * Get data if the cookie exists and else initialize an new one
      *
-     * @param string      $name       Cookie name before encrypting
+     * @param string      $name Cookie name before encrypting
      * @param string      $path
      *
      * @param string|null $expire
@@ -70,6 +70,7 @@ class CookieCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function __construct($name, $path = '', $expire = null, $sharedUrls = null, $standalone = false, $secure = false)
     {
@@ -114,6 +115,7 @@ class CookieCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function getDomain($sharedUrls = null)
     {

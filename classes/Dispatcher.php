@@ -395,6 +395,9 @@ class DispatcherCore
      *
      * @return array
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -436,6 +439,7 @@ class DispatcherCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function __construct()
     {
@@ -472,6 +476,7 @@ class DispatcherCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function setRequestUri()
     {
@@ -503,6 +508,7 @@ class DispatcherCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function loadRoutes($idShop = null)
     {
@@ -619,6 +625,7 @@ class DispatcherCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function dispatch()
     {
@@ -749,10 +756,12 @@ class DispatcherCore
     /**
      * Retrieve the controller from url or request uri if routes are activated
      *
-     * @param null $idShop
+     * @param int|null $idShop
      *
      * @return string
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -971,6 +980,7 @@ class DispatcherCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function useDefaultController()
     {
@@ -1085,6 +1095,7 @@ class DispatcherCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function hasKeyword($routeId, $idLang, $keyword, $idShop = null)
     {
@@ -1252,6 +1263,14 @@ class DispatcherCore
         return $url.$anchor;
     }
 
+    /**
+     * @param string $rewrite
+     * @param string $url
+     *
+     * @return int
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     protected function productID($rewrite, $url = '')
     {
         // Rewrite and url cannot both be empty
@@ -1300,6 +1319,14 @@ class DispatcherCore
         return 0;
     }
 
+    /**
+     * @param string $rewrite
+     * @param string $url
+     *
+     * @return int
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     protected function categoryID($rewrite, $url = '')
     {
         // Rewrite cannot be empty
@@ -1348,6 +1375,11 @@ class DispatcherCore
         return 0;
     }
 
+    /**
+     * @param string $rewrite
+     *
+     * @return int
+     */
     protected function supplierID($rewrite)
     {
         // Rewrite cannot be empty
@@ -1367,6 +1399,11 @@ class DispatcherCore
         return 0;
     }
 
+    /**
+     * @param string $rewrite
+     *
+     * @return int
+     */
     protected function manufacturerID($rewrite)
     {
         // Rewrite cannot be empty
@@ -1386,6 +1423,14 @@ class DispatcherCore
         return 0;
     }
 
+    /**
+     * @param string $rewrite
+     * @param string $url
+     *
+     * @return int
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     protected function cmsID($rewrite, $url = '')
     {
         // Rewrite cannot be empty
@@ -1435,6 +1480,14 @@ class DispatcherCore
         return 0;
     }
 
+    /**
+     * @param string $rewrite
+     * @param string $url
+     *
+     * @return int
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     protected function cmsCategoryID($rewrite, $url = '')
     {
         // Rewrite cannot be empty
@@ -1485,6 +1538,12 @@ class DispatcherCore
         return 0;
     }
 
+    /**
+     * @param string $rule
+     * @param array  $keywords
+     *
+     * @return string
+     */
     protected function createRegExp($rule, $keywords)
     {
         $regexp = preg_quote($rule, '#');

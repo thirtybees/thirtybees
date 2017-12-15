@@ -222,6 +222,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws Adapter_Exception
      */
     public function __construct($id = null, $idLang = null, $idShop = null)
     {
@@ -343,6 +344,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getFieldsShop()
     {
@@ -469,6 +471,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function formatValue($value, $type, $withQuotes = false, $purify = true, $allowNull = false)
     {
@@ -647,6 +650,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function duplicateObject()
     {
@@ -888,6 +892,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function deleteSelection($ids)
     {
@@ -1223,9 +1228,11 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
     /**
      * @deprecated 1.0.0 Use validateController() instead
+     *
      * @param bool $htmlentities
      *
      * @return array
+     * @throws PrestaShopDatabaseException
      */
     public function validateControler($htmlentities = true)
     {
@@ -1243,6 +1250,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      */
     public function validateController($htmlentities = true)
     {
@@ -1312,6 +1320,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      */
     public function getWebserviceParameters($wsParamsAttributeName = null)
     {
@@ -1418,6 +1427,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getWebserviceObjectList($sqlJoin, $sqlFilter, $sqlSort, $sqlLimit)
     {
@@ -1502,6 +1512,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getFieldsRequiredDatabase($all = false)
     {
@@ -1518,6 +1529,8 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function cacheFieldsRequiredDatabase($all = true)
     {
@@ -1543,6 +1556,8 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     public function addFieldsRequiredDatabase($fields)
     {
@@ -1589,6 +1604,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function isAssociatedToShop($idShop = null)
     {
@@ -1627,6 +1643,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function associateTo($idShops)
     {
@@ -1663,6 +1680,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getAssociatedShops()
     {
@@ -1689,6 +1707,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function duplicateShops($id)
     {
@@ -1718,6 +1737,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function hasMultishopEntries()
     {
@@ -1781,6 +1801,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function updateMultishopTable($className, $data, $where = '', $specificWhere = '')
     {
@@ -1825,6 +1846,8 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function deleteImage($forceDelete = false)
     {
@@ -1869,6 +1892,8 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1887,12 +1912,13 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * Checks if an object type exists in the database.
      *
      * @param string|null $table           Name of table linked to entity
-     * @param bool  $hasActiveColumn True if the table has an active column
+     * @param bool        $hasActiveColumn True if the table has an active column
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function isCurrentlyUsed($table = null, $hasActiveColumn = false)
     {
@@ -2189,6 +2215,9 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     public static function createDatabase($className = null)
     {
@@ -2314,6 +2343,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function dropDatabase($className = null)
     {
@@ -2346,6 +2376,8 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @return array|false|\mysqli_result|null|\PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2391,6 +2423,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function createColumn($name, $columnDefinition, $className = null)
     {
@@ -2423,10 +2456,12 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      *
      * @return bool Indicates whether the missing columns were successfully created
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      *
-     * @todo: Support multishop and multilang
+     * @todo    : Support multishop and multilang
      */
     public static function createMissingColumns($className = null)
     {

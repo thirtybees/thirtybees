@@ -79,6 +79,7 @@ class ThemeCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getAllThemes($excludedIds = false)
     {
@@ -99,6 +100,7 @@ class ThemeCore extends ObjectModel
      * @param bool $installedOnly
      *
      * @return array string (directory)
+     * @throws PrestaShopException
      */
     public static function getAvailable($installedOnly = true)
     {
@@ -139,6 +141,7 @@ class ThemeCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getThemes()
     {
@@ -157,6 +160,7 @@ class ThemeCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getByDirectory($directory)
     {
@@ -181,6 +185,7 @@ class ThemeCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getThemeInfo($idTheme)
     {
@@ -225,6 +230,8 @@ class ThemeCore extends ObjectModel
     /**
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -255,6 +262,8 @@ class ThemeCore extends ObjectModel
     /**
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -280,6 +289,7 @@ class ThemeCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function isUsed()
     {
@@ -319,6 +329,9 @@ class ThemeCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function updateMetas($metas, $fullUpdate = false)
     {
@@ -349,6 +362,8 @@ class ThemeCore extends ObjectModel
      *
      * @return array|bool|null|object
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -372,6 +387,7 @@ class ThemeCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function hasColumnsSettings($page)
     {
@@ -393,6 +409,7 @@ class ThemeCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function hasLeftColumn($page = null)
     {
@@ -414,6 +431,7 @@ class ThemeCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function hasRightColumn($page = null)
     {
@@ -431,6 +449,8 @@ class ThemeCore extends ObjectModel
     /**
      * @return array|bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -453,6 +473,7 @@ class ThemeCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      */
     public function removeMetas()
     {

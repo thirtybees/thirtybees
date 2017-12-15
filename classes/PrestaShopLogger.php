@@ -86,8 +86,12 @@ class PrestaShopLoggerCore extends ObjectModel
      * @param int    $objectId
      * @param bool   $allowDuplicate if set to true, can log several time the same information (not recommended)
      *
+     * @param null   $idEmployee
+     *
      * @return bool true if succeed
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -137,6 +141,7 @@ class PrestaShopLoggerCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function sendByMail($log)
     {
@@ -158,6 +163,7 @@ class PrestaShopLoggerCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function _isPresent()
     {
@@ -200,6 +206,7 @@ class PrestaShopLoggerCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function eraseAllLogs()
     {

@@ -56,6 +56,8 @@ class PageCore extends ObjectModel
     /**
      * @return int Current page ID
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -107,6 +109,7 @@ class PageCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @return false|int|null|string
+     * @throws PrestaShopException
      */
     public static function getPageTypeByName($name)
     {
@@ -129,6 +132,7 @@ class PageCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function setPageViewed($idPage)
     {

@@ -48,6 +48,8 @@ class Smarty_CacheResource_Mysql extends Smarty_CacheResource_Custom
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -77,6 +79,7 @@ class Smarty_CacheResource_Mysql extends Smarty_CacheResource_Custom
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function fetchTimestamp($id, $name, $cacheId, $compileId)
     {
@@ -100,6 +103,7 @@ class Smarty_CacheResource_Mysql extends Smarty_CacheResource_Custom
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function save($id, $name, $cacheId, $compileId, $expTime, $content)
     {
@@ -129,6 +133,8 @@ class Smarty_CacheResource_Mysql extends Smarty_CacheResource_Custom
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     protected function delete($name, $cacheId, $compileId, $expTime)
     {
