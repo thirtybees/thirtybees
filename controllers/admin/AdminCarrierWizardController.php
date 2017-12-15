@@ -64,7 +64,12 @@ class AdminCarrierWizardControllerCore extends AdminController
 
         parent::__construct();
 
-        $this->tabAccess = Profile::getProfileAccess($this->context->employee->id_profile, Tab::getIdFromClassName('AdminCarriers'));
+        try {
+            $this->tabAccess = Profile::getProfileAccess($this->context->employee->id_profile, Tab::getIdFromClassName('AdminCarriers'));
+        } catch (PrestaShopException $e) {
+            $this->errors[] = $e->getMessage();
+            $this->tabAccess = false;
+        }
     }
 
     /**
@@ -91,7 +96,7 @@ class AdminCarrierWizardControllerCore extends AdminController
     }
 
     /**
-     * @return string|void
+     * @return string
      *
      * @since 1.0.0
      */
@@ -108,10 +113,15 @@ class AdminCarrierWizardControllerCore extends AdminController
         if ((!$this->tabAccess['edit'] && Tools::getValue('id_carrier')) || (!$this->tabAccess['add'] && !Tools::getValue('id_carrier'))) {
             $this->errors[] = Tools::displayError('You do not have permission to use this wizard.');
 
-            return;
+            return '';
         }
 
-        $currency = $this->getActualCurrency();
+        try {
+            $currency = $this->getActualCurrency();
+        } catch (PrestaShopException $e) {
+            $this->errors[] = $e->getMessage();
+            return '';
+        }
 
         $this->tpl_view_vars = [
             'currency_sign'     => $currency->sign,
@@ -143,11 +153,16 @@ class AdminCarrierWizardControllerCore extends AdminController
             ]
         );
 
-        $this->context->smarty->assign(
-            [
-                'logo_content' => $this->createTemplate('logo.tpl')->fetch(),
-            ]
-        );
+        try {
+            $this->context->smarty->assign(
+                [
+                    'logo_content' => $this->createTemplate('logo.tpl')->fetch(),
+                ]
+            );
+        } catch (Exception $e) {
+            $this->errors[] = $e->getMessage();
+            return '';
+        }
 
         $this->addjQueryPlugin(['ajaxfileupload']);
 
@@ -194,21 +209,27 @@ class AdminCarrierWizardControllerCore extends AdminController
      */
     public function getActualCurrency()
     {
-        if ($this->type_context == Shop::CONTEXT_SHOP) {
-            Shop::setContext($this->type_context, $this->old_context->shop->id);
-        } elseif ($this->type_context == Shop::CONTEXT_GROUP) {
-            Shop::setContext($this->type_context, $this->old_context->shop->id_shop_group);
+        try {
+            if ($this->type_context == Shop::CONTEXT_SHOP) {
+                Shop::setContext($this->type_context, $this->old_context->shop->id);
+            } elseif ($this->type_context == Shop::CONTEXT_GROUP) {
+                Shop::setContext($this->type_context, $this->old_context->shop->id_shop_group);
+            }
+
+            $currency = new Currency(Configuration::get('PS_CURRENCY_DEFAULT'));
+
+            Shop::setContext(Shop::CONTEXT_ALL);
+        } catch (Exception $e) {
+            $this->errors[] = $e->getMessage();
+
+            return new Currency();
         }
-
-        $currency = new Currency(Configuration::get('PS_CURRENCY_DEFAULT'));
-
-        Shop::setContext(Shop::CONTEXT_ALL);
 
         return $currency;
     }
 
     /**
-     * @param $carrier
+     * @param Carrier $carrier
      *
      * @return string
      *
@@ -974,13 +995,13 @@ class AdminCarrierWizardControllerCore extends AdminController
     {
         $oldLogo = _PS_SHIP_IMG_DIR_.'/'.(int) $oldId.'.jpg';
         if (file_exists($oldLogo)) {
-            copy($oldLogo, _PS_SHIP_IMG_DIR_.'/'.(int) $newId.'.jpg');
+            @copy($oldLogo, _PS_SHIP_IMG_DIR_.'/'.(int) $newId.'.jpg');
         }
 
         $oldTmpLogo = _PS_TMP_IMG_DIR_.'/carrier_mini_'.(int) $oldId.'.jpg';
         if (file_exists($oldTmpLogo)) {
             if (!isset($_FILES['logo'])) {
-                copy($oldTmpLogo, _PS_TMP_IMG_DIR_.'/carrier_mini_'.$newId.'.jpg');
+                @copy($oldTmpLogo, _PS_TMP_IMG_DIR_.'/carrier_mini_'.$newId.'.jpg');
             }
             unlink($oldTmpLogo);
         }
