@@ -110,6 +110,7 @@ class LanguageCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getIDs($active = true, $idShop = false)
     {
@@ -127,6 +128,7 @@ class LanguageCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getLanguages($active = true, $idShop = false, $idsOnly = false)
     {
@@ -151,6 +153,7 @@ class LanguageCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function loadLanguages()
     {
@@ -194,6 +197,7 @@ class LanguageCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getLanguageCodeByIso($isoCode)
     {
@@ -216,6 +220,7 @@ class LanguageCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getLanguageByIETFCode($code)
     {
@@ -256,7 +261,7 @@ class LanguageCore extends ObjectModel
      * @param bool $active
      *
      * @return array Language (id_lang, iso_code)
-     *
+     * @throws PrestaShopException
      * @since    1.0.0
      * @version  1.0.0 Initial version
      */
@@ -276,6 +281,7 @@ class LanguageCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -316,6 +322,7 @@ class LanguageCore extends ObjectModel
      *
      * @return bool|mixed
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -343,6 +350,7 @@ class LanguageCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function isMultiLanguageActivated($idShop = null)
     {
@@ -354,6 +362,7 @@ class LanguageCore extends ObjectModel
      *
      * @return mixed
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -382,6 +391,7 @@ class LanguageCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function updateModulesTranslations(Array $modulesList)
     {
@@ -427,6 +437,7 @@ class LanguageCore extends ObjectModel
      *
      * @return array|bool
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -544,8 +555,8 @@ class LanguageCore extends ObjectModel
      * @param bool          $onlyAdd
      * @param array|null    $paramsLang
      *
+     * @throws PrestaShopException
      * @return bool
-     *
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -678,6 +689,7 @@ class LanguageCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false, $onlyAdd = false)
     {
@@ -752,6 +764,7 @@ class LanguageCore extends ObjectModel
      *
      * @return bool true if succeed
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -831,6 +844,7 @@ class LanguageCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      *
@@ -866,6 +880,7 @@ class LanguageCore extends ObjectModel
      * @see     ObjectModel::getFields()
      * @return array
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -882,6 +897,7 @@ class LanguageCore extends ObjectModel
     /**
      * Move translations files after editing language iso code
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -934,6 +950,7 @@ class LanguageCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function checkFiles()
     {
@@ -951,6 +968,7 @@ class LanguageCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function checkFilesWithIsoCode($isoCode)
     {
@@ -981,6 +999,7 @@ class LanguageCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getFilesList($isoFrom, $themeFrom, $isoTo = false, $themeTo = false, $select = false, $check = false, $modules = false)
     {
@@ -1138,6 +1157,8 @@ class LanguageCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1159,6 +1180,8 @@ class LanguageCore extends ObjectModel
     /**
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
