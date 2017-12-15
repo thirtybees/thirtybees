@@ -973,7 +973,7 @@ class AdminCarrierWizardControllerCore extends AdminController
                         unlink(_PS_SHIP_IMG_DIR_.$carrier->id.'.jpg');
                     } else {
                         $logo = basename(Tools::getValue('logo'));
-                        if (!file_exists(_PS_TMP_IMG_DIR_.$logo) || !copy(_PS_TMP_IMG_DIR_.$logo, _PS_SHIP_IMG_DIR_.$carrier->id.'.jpg')) {
+                        if (!file_exists(_PS_TMP_IMG_DIR_.$logo) || !@copy(_PS_TMP_IMG_DIR_.$logo, _PS_SHIP_IMG_DIR_.$carrier->id.'.jpg')) {
                             $return['has_error'] = true;
                             $return['errors'][] = $this->l('An error occurred while saving carrier logo.');
                         }
