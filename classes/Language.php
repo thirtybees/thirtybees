@@ -644,6 +644,7 @@ class LanguageCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getIdByIso($isoCode, $noCache = false)
     {
@@ -694,12 +695,12 @@ class LanguageCore extends ObjectModel
         // Set default language routes
         Configuration::updateValue('PS_ROUTE_product_rule', [$this->id => '{categories:/}{rewrite}']);
         Configuration::updateValue('PS_ROUTE_category_rule', [$this->id => '{rewrite}']);
+        Configuration::updateValue('PS_ROUTE_layered_rule', [$this->id => '{categories:/}{rewrite}{/:selected_filters}']);
         Configuration::updateValue('PS_ROUTE_supplier_rule', [$this->id => '{rewrite}']);
         Configuration::updateValue('PS_ROUTE_manufacturer_rule', [$this->id => '{rewrite}']);
         Configuration::updateValue('PS_ROUTE_cms_rule', [$this->id => 'info/{categories:/}{rewrite}']);
         Configuration::updateValue('PS_ROUTE_cms_category_rule', [$this->id => 'info/{categories:/}{rewrite}']);
 
-        // @todo Since a lot of modules are not in right format with their primary keys name, just get true ...
         $this->loadUpdateSQL();
 
         return true;
