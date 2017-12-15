@@ -112,6 +112,7 @@ class StockAvailableCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getStockAvailableIdByProductId($idProduct, $idProductAttribute = null, $idShop = null)
     {
@@ -140,6 +141,8 @@ class StockAvailableCore extends ObjectModel
      * @param int|null $orderIdShop
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -292,11 +295,13 @@ class StockAvailableCore extends ObjectModel
      * For a given id_product, sets if stock available depends on stock
      *
      * @param int      $idProduct
-     * @param int|bool $dependsOnStock     true by default
-     * @param int|null $idShop             gets context by default
+     * @param int|bool $dependsOnStock true by default
+     * @param int|null $idShop         gets context by default
      * @param int      $idProductAttribute
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -337,11 +342,13 @@ class StockAvailableCore extends ObjectModel
      * For a given id_product, sets if product is available out of stocks
      *
      * @param int      $idProduct
-     * @param bool|int $outOfStock         Optional false by default
-     * @param int      $idShop             Optional gets context by default
+     * @param bool|int $outOfStock Optional false by default
+     * @param int      $idShop     Optional gets context by default
      * @param int      $idProductAttribute
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -382,6 +389,7 @@ class StockAvailableCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getQuantityAvailableByProduct($idProduct = null, $idProductAttribute = null, $idShop = null)
     {
@@ -424,6 +432,8 @@ class StockAvailableCore extends ObjectModel
      * @param bool $nullValues
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -447,6 +457,8 @@ class StockAvailableCore extends ObjectModel
      * @param bool $nullValues
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function update($nullValues = false)
     {
@@ -467,6 +479,7 @@ class StockAvailableCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function postSave()
     {
@@ -510,9 +523,10 @@ class StockAvailableCore extends ObjectModel
      * @param int $deltaQuantity      The delta quantity to update
      * @param int $idShop             Optional
      *
+     * @return bool
+     * @throws Adapter_Exception
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @return bool
      */
     public static function updateQuantity($idProduct, $idProductAttribute, $deltaQuantity, $idShop = null)
     {
@@ -535,12 +549,14 @@ class StockAvailableCore extends ObjectModel
      *
      * @param int $idProduct
      * @param int $idProductAttribute Optional
-     * @param int $delta_quantity     The delta quantity to update
+     * @param     $quantity
      * @param int $idShop             Optional
      *
+     * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @return bool
      */
     public static function setQuantity($idProduct, $idProductAttribute, $quantity, $idShop = null)
     {
@@ -611,6 +627,8 @@ class StockAvailableCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -675,9 +693,11 @@ class StockAvailableCore extends ObjectModel
      *
      * @param ShopGroup $shopGroup the ShopGroup object
      *
+     * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @return bool
      */
     public static function resetProductFromStockAvailableByShopGroup(ShopGroup $shopGroup)
     {
@@ -704,6 +724,7 @@ class StockAvailableCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function dependsOnStock($idProduct, $idShop = null)
     {
@@ -732,6 +753,7 @@ class StockAvailableCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function outOfStock($idProduct, $idShop = null)
     {
@@ -863,6 +885,7 @@ class StockAvailableCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function copyStockAvailableFromShopToShop($srcShopId, $dstShopId)
     {

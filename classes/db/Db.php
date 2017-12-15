@@ -630,6 +630,7 @@ abstract class DbCore
      *
      * @return bool
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function delete($table, $where = '', $limit = 0, $useCache = true, $addPrefix = true)
     {
@@ -773,6 +774,7 @@ abstract class DbCore
      * Get number of rows for last result
      *
      * @return int
+     * @throws PrestaShopException
      */
     public function numRows()
     {

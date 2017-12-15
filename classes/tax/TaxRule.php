@@ -75,6 +75,7 @@ class TaxRuleCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function deleteByGroupId($idGroup)
     {
@@ -94,6 +95,8 @@ class TaxRuleCore extends ObjectModel
      *
      * @return array|bool|null|object
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -107,11 +110,13 @@ class TaxRuleCore extends ObjectModel
     }
 
     /**
-     * @param $idLang
-     * @param $idGroup
+     * @param int $idLang
+     * @param int $idGroup
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -138,12 +143,13 @@ class TaxRuleCore extends ObjectModel
     }
 
     /**
-     * @param $idTax
+     * @param int $idTax
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function deleteTaxRuleByIdTax($idTax)
     {
@@ -171,6 +177,7 @@ class TaxRuleCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function isTaxInUse($idTax)
     {
@@ -225,6 +232,7 @@ class TaxRuleCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @return bool
      */
     public static function swapTaxId($oldId, $newId)
     {

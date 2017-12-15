@@ -185,10 +185,11 @@ class SupplyOrderCore extends ObjectModel
     ];
 
     /**
-     * @see ObjectModel::update()
+     * @see     ObjectModel::update()
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function update($nullValues = false)
     {
@@ -204,10 +205,11 @@ class SupplyOrderCore extends ObjectModel
     }
 
     /**
-     * @see ObjectModel::add()
+     * @see     ObjectModel::add()
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -228,6 +230,7 @@ class SupplyOrderCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function calculatePrices()
     {
@@ -271,6 +274,8 @@ class SupplyOrderCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -313,6 +318,7 @@ class SupplyOrderCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getEntriesCollection()
     {
@@ -329,6 +335,7 @@ class SupplyOrderCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function hasEntries()
     {
@@ -347,6 +354,7 @@ class SupplyOrderCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function isEditable()
     {
@@ -365,6 +373,7 @@ class SupplyOrderCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function isDeliveryNoteAvailable()
     {
@@ -383,6 +392,7 @@ class SupplyOrderCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function isInReceiptState()
     {
@@ -399,6 +409,7 @@ class SupplyOrderCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function addHistory()
     {
@@ -418,6 +429,7 @@ class SupplyOrderCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function resetProducts()
     {
@@ -437,6 +449,7 @@ class SupplyOrderCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function warehouseHasPendingOrders($idWarehouse)
     {
@@ -465,6 +478,7 @@ class SupplyOrderCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function supplierHasPendingOrders($idSupplier)
     {
@@ -493,6 +507,7 @@ class SupplyOrderCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function exists($match)
     {
@@ -519,6 +534,7 @@ class SupplyOrderCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getSupplyOrderByReference($reference)
     {
@@ -573,6 +589,7 @@ class SupplyOrderCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getReferenceById($idSupplyOrder)
     {
@@ -594,6 +611,7 @@ class SupplyOrderCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getAllExpectedQuantity()
     {
@@ -610,6 +628,7 @@ class SupplyOrderCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getAllReceivedQuantity()
     {
@@ -626,6 +645,7 @@ class SupplyOrderCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getAllPendingQuantity()
     {
@@ -648,6 +668,8 @@ class SupplyOrderCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

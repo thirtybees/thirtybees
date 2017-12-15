@@ -180,6 +180,8 @@ class WarehouseCore extends ObjectModel
      *
      * @param array $idsCarriers
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -214,6 +216,7 @@ class WarehouseCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function removeCarrier($idCarrier, $idWarehouse = null)
     {
@@ -232,6 +235,7 @@ class WarehouseCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function isEmpty()
     {
@@ -252,6 +256,7 @@ class WarehouseCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function exists($idWarehouse)
     {
@@ -275,6 +280,8 @@ class WarehouseCore extends ObjectModel
      *
      * @return bool Success/Failure
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -322,8 +329,9 @@ class WarehouseCore extends ObjectModel
      *
      * @return string Location of the product
      *
-     *                @since   1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getProductLocation($idProduct, $idProductAttribute, $idWarehouse)
     {
@@ -346,6 +354,8 @@ class WarehouseCore extends ObjectModel
      *
      * @return array Warehouses (ID, reference/name concatenated)
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -394,6 +404,8 @@ class WarehouseCore extends ObjectModel
      *
      * @return array Warehouses (ID, reference/name concatenated)
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -422,6 +434,8 @@ class WarehouseCore extends ObjectModel
      *
      * @return array (of array) Warehouses ID are grouped by shops ID
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -448,6 +462,7 @@ class WarehouseCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getNumberOfProducts()
     {
@@ -471,6 +486,7 @@ class WarehouseCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getQuantitiesOfProducts()
     {
@@ -491,6 +507,7 @@ class WarehouseCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getStockValue()
     {
@@ -509,6 +526,8 @@ class WarehouseCore extends ObjectModel
      *
      * @return array ids_warehouse Ids of the warehouses
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -530,6 +549,8 @@ class WarehouseCore extends ObjectModel
      *
      * @return array Warehouses Ids and names
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -563,6 +584,7 @@ class WarehouseCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getWarehouseNameById($idWarehouse)
     {
@@ -577,10 +599,14 @@ class WarehouseCore extends ObjectModel
     /**
      * For a given pack, returns the warehouse it can be shipped from
      *
-     * @param int $idProduct
+     * @param int  $idProduct
+     *
+     * @param null $idShop
      *
      * @return array|bool id_warehouse or false
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -633,6 +659,7 @@ class WarehouseCore extends ObjectModel
     /**
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function resetStockAvailable()
     {
@@ -655,6 +682,7 @@ class WarehouseCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getWsStockValue()
     {
@@ -666,6 +694,8 @@ class WarehouseCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -684,6 +714,8 @@ class WarehouseCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -705,6 +737,8 @@ class WarehouseCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

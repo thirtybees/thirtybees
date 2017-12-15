@@ -71,6 +71,10 @@ class HTMLTemplateOrderReturnCore extends HTMLTemplate
      *
      * @return string HTML content
      *
+     * @throws Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -139,6 +143,9 @@ class HTMLTemplateOrderReturnCore extends HTMLTemplate
      *
      * @return string HTML header
      *
+     * @throws Exception
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

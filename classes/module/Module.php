@@ -162,11 +162,12 @@ abstract class ModuleCore
     /**
      * Constructor
      *
-     * @param string  $name    Module unique name
+     * @param string  $name Module unique name
      * @param Context $context
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function __construct($name = null, Context $context = null)
     {
@@ -286,6 +287,7 @@ abstract class ModuleCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function processDeferedClearCache()
     {
@@ -311,6 +313,7 @@ abstract class ModuleCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function _deferedClearCache($templatePath, $cacheId, $compileId)
     {
@@ -341,6 +344,8 @@ abstract class ModuleCore
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -379,6 +384,8 @@ abstract class ModuleCore
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -401,6 +408,8 @@ abstract class ModuleCore
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -428,6 +437,9 @@ abstract class ModuleCore
      *
      * @return Module|bool
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -457,6 +469,9 @@ abstract class ModuleCore
      *
      * @return bool|mixed|object
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -528,6 +543,8 @@ abstract class ModuleCore
      *
      * @return bool to know directly if any files have been found
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -611,6 +628,8 @@ abstract class ModuleCore
      * @param array|string $name
      *
      * @return true if succeed
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -639,6 +658,8 @@ abstract class ModuleCore
      *
      * @return true if succeed
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -710,6 +731,8 @@ abstract class ModuleCore
      *
      * @return false|Module instance
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -807,6 +830,9 @@ abstract class ModuleCore
      *
      * @return array Modules
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1177,6 +1203,8 @@ abstract class ModuleCore
     /**
      * @return array|bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1190,6 +1218,8 @@ abstract class ModuleCore
      *
      * @return array Modules
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1205,6 +1235,8 @@ abstract class ModuleCore
      *
      * @return array Modules
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1308,6 +1340,8 @@ abstract class ModuleCore
      *
      * @return array module informations
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1383,6 +1417,7 @@ abstract class ModuleCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function isEnabled($moduleName)
     {
@@ -1413,6 +1448,8 @@ abstract class ModuleCore
      *
      * @return array|null
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1432,6 +1469,8 @@ abstract class ModuleCore
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1566,6 +1605,7 @@ abstract class ModuleCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws \vierbergenlars\SemVer\UnexpectedValueException
      */
     public function checkCompliancy()
     {
@@ -1589,6 +1629,7 @@ abstract class ModuleCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function isInstalled($moduleName)
     {
@@ -1611,6 +1652,7 @@ abstract class ModuleCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getModuleIdByName($name)
     {
@@ -1635,6 +1677,8 @@ abstract class ModuleCore
      *
      * @return bool
      *
+     * @throws Exception
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1846,6 +1890,7 @@ abstract class ModuleCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function uninstallOverrides()
     {
@@ -1873,6 +1918,7 @@ abstract class ModuleCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function removeOverride($classname)
     {
@@ -2193,6 +2239,8 @@ abstract class ModuleCore
      *
      * @param bool $forceAll If true, disable module for all shop
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2353,9 +2401,11 @@ abstract class ModuleCore
      * @param bool  $idHook   Hook ID
      * @param array $shopList List of shop
      *
+     * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @return bool
      */
     public function cleanPositions($idHook, $shopList = null)
     {
@@ -2392,6 +2442,8 @@ abstract class ModuleCore
      * @param array $shopList List of shop
      *
      * @return bool result
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function unregisterExceptions($hookId, $shopList = null)
     {
@@ -2406,6 +2458,8 @@ abstract class ModuleCore
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2427,6 +2481,8 @@ abstract class ModuleCore
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2639,6 +2695,8 @@ abstract class ModuleCore
      * @param array $shopList List of shop
      *
      * @return bool result
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function registerExceptions($idHook, $excepts, $shopList = null)
     {
@@ -2678,6 +2736,8 @@ abstract class ModuleCore
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2821,10 +2881,14 @@ abstract class ModuleCore
     /**
      * Return exceptions for module in hook
      *
-     * @param int $idHook Hook ID
+     * @param int  $idHook Hook ID
+     *
+     * @param bool $dispatch
      *
      * @return array Exceptions
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2836,11 +2900,15 @@ abstract class ModuleCore
     /**
      * Return exceptions for module in hook
      *
-     * @param int $id_module Module ID
-     * @param int $id_hook   Hook ID
+     * @param int  $id_module Module ID
+     * @param int  $id_hook   Hook ID
+     *
+     * @param bool $dispatch
      *
      * @return array Exceptions
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2902,6 +2970,7 @@ abstract class ModuleCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function isEnabledForShopContext()
     {
@@ -2923,6 +2992,7 @@ abstract class ModuleCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function isRegisteredInHook($hook)
     {
@@ -2948,6 +3018,9 @@ abstract class ModuleCore
      *
      * @return string
      *
+     * @throws Exception
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -3093,6 +3166,7 @@ abstract class ModuleCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function isCached($template, $cacheId = null, $compileId = null)
     {
@@ -3114,6 +3188,8 @@ abstract class ModuleCore
      *
      * @return bool if module can be transplanted on hook
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -3134,6 +3210,7 @@ abstract class ModuleCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getPermission($variable, $employee = null)
     {
@@ -3225,6 +3302,8 @@ abstract class ModuleCore
      *
      * @return int position
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -3273,6 +3352,8 @@ abstract class ModuleCore
      *
      * @return array Hooks list.
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -3301,6 +3382,8 @@ abstract class ModuleCore
      *
      * @return string
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -3353,6 +3436,7 @@ abstract class ModuleCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function _clearCache($template, $cacheId = null, $compileId = null)
     {

@@ -91,6 +91,8 @@ class StockMvtReasonCore extends ObjectModel
      * @param int $sign Optional
      *
      * @return array
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getStockMvtReasons($idLang, $sign = null)
     {
@@ -116,6 +118,7 @@ class StockMvtReasonCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @return array|false|null|PDOStatement
      */
     public static function getStockMvtReasonsWithFilter($idLang, $idsIgnore, $sign = null)
     {
@@ -146,6 +149,7 @@ class StockMvtReasonCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function exists($idStockMvtReason)
     {

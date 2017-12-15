@@ -50,6 +50,7 @@ class HTMLTemplateDeliverySlipCore extends HTMLTemplate
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function __construct(OrderInvoiceCore $orderInvoice, Smarty $smarty, $bulkMode = false)
     {
@@ -83,6 +84,7 @@ class HTMLTemplateDeliverySlipCore extends HTMLTemplate
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getHeader()
     {
@@ -97,6 +99,10 @@ class HTMLTemplateDeliverySlipCore extends HTMLTemplate
      *
      * @return string HTML content
      *
+     * @throws Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -181,6 +187,7 @@ class HTMLTemplateDeliverySlipCore extends HTMLTemplate
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getFilename()
     {

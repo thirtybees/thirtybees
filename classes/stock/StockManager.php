@@ -558,6 +558,7 @@ class StockManagerCore implements StockManagerInterface
      * @param bool $usable
      *
      * @return int
+     * @throws PrestaShopException
      */
     public function getProductPhysicalQuantities(
         $idProduct,
@@ -588,6 +589,8 @@ class StockManagerCore implements StockManagerInterface
      *
      * @return int
      *
+     * @throws Exception
+     * @throws PrestaShopException
      * @since 1.0.0
      * @since 1.0.1 Add `usable` to `$productStockCriteria`
      */
@@ -608,6 +611,8 @@ class StockManagerCore implements StockManagerInterface
      *
      * @return int
      *
+     * @throws Exception
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -868,13 +873,14 @@ class StockManagerCore implements StockManagerInterface
     }
 
     /**
-     * @see StockManagerInterface::getProductCoverage()
+     * @see     StockManagerInterface::getProductCoverage()
      * Here, $coverage is a number of days
      *
      * @return int number of days left (-1 if infinite)
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getProductCoverage($idProduct, $idProductAttribute, $coverage, $idWarehouse = null)
     {
@@ -936,6 +942,7 @@ class StockManagerCore implements StockManagerInterface
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function calculateWA(Stock $stock, $quantity, $priceTe)
     {
@@ -955,6 +962,7 @@ class StockManagerCore implements StockManagerInterface
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function getStockCollection(
         $idProduct,
@@ -988,6 +996,8 @@ class StockManagerCore implements StockManagerInterface
      *
      * @return int quantity
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1050,6 +1060,7 @@ class StockManagerCore implements StockManagerInterface
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function ensureStockMovementReasonIsValid($stockMovementReasonId)
     {
@@ -1068,6 +1079,7 @@ class StockManagerCore implements StockManagerInterface
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function shouldHandleStockOperationForProductsPack($productId, $shouldIgnorePack)
     {
@@ -1103,13 +1115,15 @@ class StockManagerCore implements StockManagerInterface
 
     /**
      * @param Warehouse $warehouse
-     * @param           $productId
-     * @param           $productAttributeId
-     * @param           $shouldHandleUsableQuantity
-     * @param           $stock
+     * @param int       $productId
+     * @param int       $productAttributeId
+     * @param bool      $shouldHandleUsableQuantity
+     * @param Stock     $stock
      *
      * @return int
      *
+     * @throws Exception
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1157,8 +1171,8 @@ class StockManagerCore implements StockManagerInterface
     }
 
     /**
-     * @param           $idProduct
-     * @param           $idProductAttribute
+     * @param int       $idProduct
+     * @param int       $idProductAttribute
      * @param Warehouse $warehouse
      * @param Stock     $stock
      *
@@ -1166,6 +1180,7 @@ class StockManagerCore implements StockManagerInterface
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function getProductStockLinesInWarehouse(
         $idProduct,
@@ -1224,6 +1239,8 @@ class StockManagerCore implements StockManagerInterface
      * @param $employee
      * @param $stock
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

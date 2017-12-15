@@ -86,6 +86,7 @@ class ShopUrlCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getFields()
     {
@@ -146,6 +147,7 @@ class ShopUrlCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getShopUrls($idShop = false)
     {
@@ -160,6 +162,8 @@ class ShopUrlCore extends ObjectModel
     /**
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -194,6 +198,7 @@ class ShopUrlCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function canAddThisUrl($domain, $domainSsl, $physicalUri, $virtualUri)
     {
@@ -224,6 +229,8 @@ class ShopUrlCore extends ObjectModel
     /**
      * @param int $idShop
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -261,6 +268,8 @@ class ShopUrlCore extends ObjectModel
      *
      * @return mixed
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -274,10 +283,12 @@ class ShopUrlCore extends ObjectModel
     }
 
     /**
-     * @param null $idShop
+     * @param int|null $idShop
      *
      * @return mixed
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

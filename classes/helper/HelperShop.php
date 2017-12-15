@@ -41,7 +41,10 @@ class HelperShopCore extends Helper
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws Exception
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function getRenderedShopList()

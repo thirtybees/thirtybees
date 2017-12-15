@@ -77,6 +77,9 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
      *
      * @return string HTML header
      *
+     * @throws Exception
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -97,6 +100,10 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
      *
      * @return string HTML content
      *
+     * @throws Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -230,6 +237,10 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
      *
      * @return String Tax tab html content
      *
+     * @throws Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -259,6 +270,8 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
     /**
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -303,6 +316,7 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getShippingTaxesBreakdown()
     {
@@ -337,6 +351,8 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
      *
      * @return array Different tax breakdown elements
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

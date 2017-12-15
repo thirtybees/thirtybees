@@ -58,14 +58,17 @@ class OrderReturnStateCore extends ObjectModel
     ];
 
     /**
-    * Get all available order statuses
-    *
-    * @param int $idLang Language id for status name
-    * @return array Order statuses
+     * Get all available order statuses
      *
-     * @since 1.0.0
+     * @param int $idLang Language id for status name
+     *
+     * @return array Order statuses
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
-    */
+     */
     public static function getOrderReturnStates($idLang)
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(

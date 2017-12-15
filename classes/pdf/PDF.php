@@ -59,6 +59,7 @@ class PDFCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function __construct($objects, $template, $smarty, $orientation = 'P')
     {

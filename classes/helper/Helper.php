@@ -123,17 +123,18 @@ class HelperCore
 
     /**
      *
-     * @param array  $root               array with the name and ID of the tree root category, if null the Shop's root category will be used
-     * @param array  $selectedCat        array of selected categories
-     * @param string $inputName          name of input
-     * @param bool   $useRadio           use radio tree or checkbox tree
-     * @param bool   $useSearch          display a find category search box
+     * @param array  $root        array with the name and ID of the tree root category, if null the Shop's root category will be used
+     * @param array  $selectedCat array of selected categories
+     * @param string $inputName   name of input
+     * @param bool   $useRadio    use radio tree or checkbox tree
+     * @param bool   $useSearch   display a find category search box
      * @param array  $disabledCategories
      *
      * @return string
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function renderCategoryTree(
         $root = null,
@@ -267,6 +268,7 @@ class HelperCore
      * @return string
      *
      * @deprecated deprecated since 1.0.0 use HelperShop->getRenderedShopList
+     * @throws PrestaShopException
      */
     public static function renderShopList()
     {
@@ -368,6 +370,8 @@ class HelperCore
      *
      * @return string
      *
+     * @throws Exception
+     * @throws SmartyException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -387,6 +391,10 @@ class HelperCore
      *
      * @return string
      *
+     * @throws Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -460,6 +468,7 @@ class HelperCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function l($string, $class = 'AdminTab', $addslashes = false, $htmlentities = true)
     {

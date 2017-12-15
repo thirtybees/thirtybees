@@ -108,6 +108,8 @@ class SupplyOrderStateCore extends ObjectModel
      *
      * @return array States
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -164,6 +166,8 @@ class SupplyOrderStateCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

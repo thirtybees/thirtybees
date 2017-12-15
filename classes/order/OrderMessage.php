@@ -73,7 +73,9 @@ class OrderMessageCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function getOrderMessages($idLang)

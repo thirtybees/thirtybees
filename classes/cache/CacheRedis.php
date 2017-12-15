@@ -79,6 +79,8 @@ class CacheRedisCore extends CacheCore
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function connect()
@@ -152,6 +154,8 @@ class CacheRedisCore extends CacheCore
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public static function getRedisServer()
@@ -180,6 +184,7 @@ class CacheRedisCore extends CacheCore
      *
      * @return bool Whether the server was successfully added
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function addServer($ip, $port, $auth, $db)
     {
@@ -215,6 +220,8 @@ class CacheRedisCore extends CacheCore
      * Get list of redis server information
      *
      * @return array
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getRedisServers()
     {
@@ -231,6 +238,7 @@ class CacheRedisCore extends CacheCore
      * @param int $idServer Server ID
      *
      * @return bool Whether the server was successfully deleted
+     * @throws PrestaShopDatabaseException
      */
     public static function deleteServer($idServer)
     {

@@ -79,6 +79,7 @@ class TaxCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function delete()
     {
@@ -112,6 +113,7 @@ class TaxCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function toggleStatus()
     {
@@ -129,6 +131,7 @@ class TaxCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function update($nullValues = false)
     {
@@ -155,6 +158,7 @@ class TaxCore extends ObjectModel
      * @return bool
      *
      * @deprecated 2.0.0
+     * @throws PrestaShopException
      */
     protected function _onStatusChange()
     {
@@ -172,6 +176,7 @@ class TaxCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function isUsed()
     {
@@ -186,8 +191,13 @@ class TaxCore extends ObjectModel
     /**
      * Get all available taxes
      *
+     * @param bool $idLang
+     * @param bool $activeOnly
+     *
      * @return array Taxes
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -216,6 +226,7 @@ class TaxCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function excludeTaxeOption()
     {
@@ -226,13 +237,14 @@ class TaxCore extends ObjectModel
      * Return the tax id associated to the specified name
      *
      * @param string $taxName
-     * @param bool   $active (true by default)
+     * @param int    $active (true by default)
      *
      * @return bool|int
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     *
      */
     public static function getTaxIdByName($taxName, $active = 1)
     {
@@ -257,6 +269,7 @@ class TaxCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getProductEcotaxRate($idAddress = null)
     {
@@ -277,6 +290,7 @@ class TaxCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getCarrierTaxRate($idCarrier, $idAddress = null)
     {
@@ -298,6 +312,7 @@ class TaxCore extends ObjectModel
      * @return Tax
      *
      * @deprecated 1.0.0
+     * @throws PrestaShopException
      */
     public static function getProductTaxRateViaRules($idProduct, $idCountry, $idState, $zipcode)
     {
@@ -314,11 +329,13 @@ class TaxCore extends ObjectModel
     /**
      * Returns the product tax
      *
-     * @param int $idProduct
-     * @param int $id_country
+     * @param int          $idProduct
+     * @param null         $idAddress
+     * @param Context|null $context
      *
-     * @return Tax
+     * @return float
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

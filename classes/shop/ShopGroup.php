@@ -68,6 +68,7 @@ class ShopGroupCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getFields()
     {
@@ -85,6 +86,7 @@ class ShopGroupCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getShopGroups($active = true)
     {
@@ -104,6 +106,7 @@ class ShopGroupCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getTotalShopGroup($active = true)
     {
@@ -115,6 +118,7 @@ class ShopGroupCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function haveShops()
     {
@@ -126,6 +130,7 @@ class ShopGroupCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getTotalShops()
     {
@@ -142,6 +147,8 @@ class ShopGroupCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -164,6 +171,7 @@ class ShopGroupCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getIdByName($name)
     {
@@ -179,12 +187,13 @@ class ShopGroupCore extends ObjectModel
      * Detect dependency with customer or orders
      *
      * @param int    $idShopGroup
-     * @param string $check       all|customer|order
+     * @param string $check all|customer|order
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function hasDependency($idShopGroup, $check = 'all')
     {
@@ -228,6 +237,7 @@ class ShopGroupCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function shopNameExists($name, $idShop = false)
     {

@@ -125,6 +125,9 @@ class HelperListCore extends Helper
      *
      * @return string html
      *
+     * @throws Exception
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -164,6 +167,8 @@ class HelperListCore extends Helper
      *
      * @return string
      *
+     * @throws Exception
+     * @throws SmartyException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -394,6 +399,9 @@ class HelperListCore extends Helper
     /**
      * @return mixed
      *
+     * @throws Exception
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -595,8 +603,12 @@ class HelperListCore extends Helper
      * @param int    $idCategory
      * @param int    $idProduct
      *
+     * @param bool   $ajax
+     *
      * @return string
      *
+     * @throws Exception
+     * @throws SmartyException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -647,6 +659,9 @@ class HelperListCore extends Helper
      * @param string|null $name
      *
      * @return string
+     * @throws Exception
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function displayDuplicateLink($token = null, $id, $name = null)
     {
@@ -716,6 +731,9 @@ class HelperListCore extends Helper
      * @param string|null $name
      *
      * @return string
+     * @throws Exception
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function displayDetailsLink($token = null, $id, $name = null)
     {
@@ -757,6 +775,9 @@ class HelperListCore extends Helper
      * @param string|null $name
      *
      * @return string
+     * @throws Exception
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function displayViewLink($token = null, $id, $name = null)
     {
@@ -785,6 +806,9 @@ class HelperListCore extends Helper
      * @param string|null $name
      *
      * @return string
+     * @throws Exception
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function displayEditLink($token = null, $id, $name = null)
     {
@@ -812,9 +836,12 @@ class HelperListCore extends Helper
      * @param int         $id
      * @param string|null $name
      *
+     * @return string
+     * @throws Exception
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @return string
      */
     public function displayDeleteLink($token = null, $id, $name = null)
     {
@@ -855,9 +882,12 @@ class HelperListCore extends Helper
      * @param int         $id
      * @param string|null $name
      *
+     * @return string
+     * @throws Exception
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @return string
      */
     public function displayDefaultLink($token = null, $id, $name = null)
     {

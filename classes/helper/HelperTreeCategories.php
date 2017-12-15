@@ -64,8 +64,9 @@ class HelperTreeCategoriesCore extends TreeCore
      * @param int|null    $lang
      * @param bool        $useShopRestriction
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function __construct(
         $id,
@@ -89,12 +90,14 @@ class HelperTreeCategoriesCore extends TreeCore
     }
 
     /**
-     * @param $categories
-     * @param $idCategory
+     * @param array $categories
+     * @param int   $idCategory
      *
      * @return array
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     protected function fillTree(&$categories, $idCategory)
@@ -115,7 +118,9 @@ class HelperTreeCategoriesCore extends TreeCore
     /**
      * @return mixed
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function getData()
@@ -414,8 +419,9 @@ class HelperTreeCategoriesCore extends TreeCore
     /**
      * @return Shop
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getShop()
     {
@@ -532,7 +538,9 @@ class HelperTreeCategoriesCore extends TreeCore
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function render($data = null)

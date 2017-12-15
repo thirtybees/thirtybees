@@ -242,7 +242,9 @@ class OrderDetailCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function delete()
@@ -261,7 +263,9 @@ class OrderDetailCore extends ObjectModel
      *
      * @return array|bool|null|object
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function getDownloadFromHash($hash)
@@ -286,7 +290,9 @@ class OrderDetailCore extends ObjectModel
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function incrementDownload($idOrderDetail, $increment = 1)
@@ -305,7 +311,9 @@ class OrderDetailCore extends ObjectModel
      *
      * @return TaxCalculator
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function getTaxCalculator()
@@ -320,7 +328,9 @@ class OrderDetailCore extends ObjectModel
      *
      * @return TaxCalculator
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function getTaxCalculatorStatic($idOrderDetail)
@@ -351,6 +361,8 @@ class OrderDetailCore extends ObjectModel
      * @param bool  $replace
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function saveTaxCalculator(Order $order, $replace = false)
     {
@@ -424,7 +436,9 @@ class OrderDetailCore extends ObjectModel
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function updateTaxAmount(Order $order)
@@ -444,7 +458,9 @@ class OrderDetailCore extends ObjectModel
      *
      * @return array
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function getList($idOrder)
@@ -460,7 +476,9 @@ class OrderDetailCore extends ObjectModel
     /**
      * @return mixed
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function getTaxList()
@@ -473,7 +491,9 @@ class OrderDetailCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function getTaxListStatic($idOrderDetail)
@@ -494,9 +514,11 @@ class OrderDetailCore extends ObjectModel
      * @param int          $idOrderState
      * @param array[]      $productList
      * @param int          $idOrderInvoice
-     * @param bool         $useTaxes       set to false if you don't want to use taxes
+     * @param bool         $useTaxes set to false if you don't want to use taxes
      * @param int          $idWarehouse
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since    1.0.0
      * @version  1.0.0 Initial version
      */
@@ -538,7 +560,9 @@ class OrderDetailCore extends ObjectModel
      *
      * @return void
      *
-     * @since 1.0.0
+     * @throws Adapter_Exception
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function setShippingCost(Order $order, $product)
@@ -558,7 +582,9 @@ class OrderDetailCore extends ObjectModel
     /**
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function getWsTaxes()
@@ -579,7 +605,9 @@ class OrderDetailCore extends ObjectModel
      *
      * @return array
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function getCrossSells($idProduct, $idLang, $limit = 12)
@@ -664,8 +692,9 @@ class OrderDetailCore extends ObjectModel
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -720,8 +749,9 @@ class OrderDetailCore extends ObjectModel
     /**
      * @param $product
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function setVirtualProductInformation($product)
     {
@@ -744,7 +774,10 @@ class OrderDetailCore extends ObjectModel
      * @param array $product
      * @param int   $idOrderState
      *
-     * @since 1.0.0
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     protected function checkProductStock($product, $idOrderState)
@@ -772,8 +805,9 @@ class OrderDetailCore extends ObjectModel
      * @param Order $order
      * @param array $product
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function setProductTax(Order $order, $product)
     {
@@ -803,6 +837,7 @@ class OrderDetailCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function setSpecificPrice(Order $order, $product = null)
     {
@@ -846,7 +881,9 @@ class OrderDetailCore extends ObjectModel
      * @param Cart  $cart
      * @param array $product
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     protected function setDetailProductPrice(Order $order, Cart $cart, $product)
@@ -927,6 +964,9 @@ class OrderDetailCore extends ObjectModel
      * @param bool  $useTaxes set to false if you don't want to use taxes
      * @param int   $idWarehouse
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

@@ -43,6 +43,8 @@ abstract class TaxManagerModuleCore extends Module
     /**
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

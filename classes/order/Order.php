@@ -248,11 +248,12 @@ class OrderCore extends ObjectModel
     /**
      * OrderCore constructor.
      *
-     * @param null $id
-     * @param null $idLang
+     * @param int|null $id
+     * @param int|null $idLang
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function __construct($id = null, $idLang = null)
     {
@@ -268,11 +269,12 @@ class OrderCore extends ObjectModel
     }
 
     /**
-     * @see ObjectModel::getFields()
+     * @see     ObjectModel::getFields()
      * @return array
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getFields()
     {
@@ -291,10 +293,11 @@ class OrderCore extends ObjectModel
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      *
-     * @since 1.0.2 Amounts are rounded before being saved to db
+     * @since   1.0.2 Amounts are rounded before being saved to db
+     * @throws PrestaShopDatabaseException
      */
     public function add($autoDate = true, $nullValues = true)
     {
@@ -389,7 +392,9 @@ class OrderCore extends ObjectModel
      *
      * @return array
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function getCartProducts()
@@ -505,7 +510,9 @@ class OrderCore extends ObjectModel
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function deleteCustomization($idCustomization, $quantity, $orderDetail)
@@ -539,7 +546,9 @@ class OrderCore extends ObjectModel
      *
      * @return array History entries ordered by date DESC
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function getHistory($idLang, $idOrderState = false, $noHidden = false, $filters = 0)
@@ -601,7 +610,9 @@ class OrderCore extends ObjectModel
     /**
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function getProductsDetail()
@@ -619,8 +630,9 @@ class OrderCore extends ObjectModel
     /**
      * @return false|null|string
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getFirstMessage()
     {
@@ -641,6 +653,9 @@ class OrderCore extends ObjectModel
      * @deprecated 2.0.0
      *
      * @param mixed $row
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function setProductPrices(&$row)
     {
@@ -665,6 +680,8 @@ class OrderCore extends ObjectModel
      * @param array|bool $selectedQty
      *
      * @return array Products with price, quantity (with taxe and without)
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getProducts($products = false, $selectedProducts = false, $selectedQty = false)
     {
@@ -725,8 +742,9 @@ class OrderCore extends ObjectModel
      *
      * @return int
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getIdOrderProduct($idCustomer, $idProduct)
     {
@@ -767,8 +785,9 @@ class OrderCore extends ObjectModel
      *
      * @param array &$product
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function setProductCurrentStock(&$product)
     {
@@ -784,10 +803,12 @@ class OrderCore extends ObjectModel
     /**
      *
      * This method allow to add image information on a product detail
+     *
      * @param array &$product
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function setProductImageInformations(&$product)
     {
@@ -824,8 +845,9 @@ class OrderCore extends ObjectModel
     /**
      * @return float|int
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getTaxesAverageUsed()
     {
@@ -837,7 +859,9 @@ class OrderCore extends ObjectModel
      *
      * @return mixed
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function getVirtualProducts()
@@ -852,14 +876,17 @@ class OrderCore extends ObjectModel
     }
 
     /**
-    * Check if order contains (only) virtual products
-    *
-    * @param bool $strict If false return true if there are at least one product virtual
-    * @return bool true if is a virtual order or false
-    *
-    * @since 1.0.0
-    * @version 1.0.0 Initial version
-    */
+     * Check if order contains (only) virtual products
+     *
+     * @param bool $strict If false return true if there are at least one product virtual
+     *
+     * @return bool true if is a virtual order or false
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
     public function isVirtual($strict = true)
     {
         $products = $this->getProducts();
@@ -886,6 +913,8 @@ class OrderCore extends ObjectModel
      * @param bool $details
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getDiscounts($details = false)
     {
@@ -897,7 +926,9 @@ class OrderCore extends ObjectModel
     /**
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function getCartRules()
@@ -916,8 +947,9 @@ class OrderCore extends ObjectModel
      *
      * @return int|null
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getDiscountsCustomer($idCustomer, $idCartRule)
     {
@@ -955,9 +987,13 @@ class OrderCore extends ObjectModel
     /**
      * Get current order status name (eg. Awaiting payment, Delivered...)
      *
+     * @param $idLang
+     *
      * @return array Order status details
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function getCurrentStateFull($idLang)
@@ -974,7 +1010,9 @@ class OrderCore extends ObjectModel
     /**
      * @return int
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function hasBeenDelivered()
@@ -1003,7 +1041,9 @@ class OrderCore extends ObjectModel
     /**
      * @return int
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function hasBeenPaid()
@@ -1014,7 +1054,9 @@ class OrderCore extends ObjectModel
     /**
      * @return int
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function hasBeenShipped()
@@ -1025,7 +1067,9 @@ class OrderCore extends ObjectModel
     /**
      * @return int
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function isInPreparation()
@@ -1060,6 +1104,8 @@ class OrderCore extends ObjectModel
      *
      * @return array Customer orders
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1110,7 +1156,9 @@ class OrderCore extends ObjectModel
      *
      * @return array
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function getOrdersIdByDate($dateFrom, $dateTo, $idCustomer = null, $type = null)
@@ -1139,7 +1187,9 @@ class OrderCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function getOrdersWithInformations($limit = null, Context $context = null)
@@ -1175,7 +1225,9 @@ class OrderCore extends ObjectModel
      *
      * @return array
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function getOrdersIdInvoiceByDate($dateFrom, $dateTo, $idCustomer = null, $type = null)
@@ -1203,7 +1255,9 @@ class OrderCore extends ObjectModel
      *
      * @return array
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function getOrderIdsByStatus($idOrderState)
@@ -1246,7 +1300,9 @@ class OrderCore extends ObjectModel
      *
      * @return float Product total with taxes
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function getTotalProductsWithTaxes($products = false)
@@ -1297,6 +1353,8 @@ class OrderCore extends ObjectModel
      *
      * @return int Customer orders number
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1318,6 +1376,8 @@ class OrderCore extends ObjectModel
      * @param int $idCart Cart id
      *
      * @return false|array Order details
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getOrderByCartId($idCart)
     {
@@ -1333,13 +1393,15 @@ class OrderCore extends ObjectModel
 
     /**
      * @deprecated 2.0.0
-     * @see Order::addCartRule()
+     * @see        Order::addCartRule()
      *
      * @param int    $idCartRule
      * @param string $name
      * @param float  $value
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function addDiscount($idCartRule, $name, $value)
     {
@@ -1354,9 +1416,13 @@ class OrderCore extends ObjectModel
      * @param array  $values
      * @param int    $idOrderInvoice
      *
+     * @param null   $freeShipping
+     *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function addCartRule($idCartRule, $name, $values, $idOrderInvoice = 0, $freeShipping = null)
@@ -1380,7 +1446,9 @@ class OrderCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function getNumberOfDays()
@@ -1407,7 +1475,9 @@ class OrderCore extends ObjectModel
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function isReturnable()
@@ -1422,8 +1492,9 @@ class OrderCore extends ObjectModel
     /**
      * @return false|null|string
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getLastInvoiceNumber()
     {
@@ -1442,6 +1513,7 @@ class OrderCore extends ObjectModel
      * @param int $idShop
      *
      * @return bool
+     * @throws PrestaShopException
      */
     public static function setLastInvoiceNumber($orderInvoiceId, $idShop)
     {
@@ -1478,6 +1550,7 @@ class OrderCore extends ObjectModel
      * @param int $orderInvoiceId
      *
      * @return bool|false|null|string
+     * @throws PrestaShopException
      */
     public function getInvoiceNumber($orderInvoiceId)
     {
@@ -1500,6 +1573,10 @@ class OrderCore extends ObjectModel
      * @version 1.0.0 Initial version
      *
      * @param bool $useExistingPayment
+     *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function setInvoice($useExistingPayment = false)
     {
@@ -1628,6 +1705,9 @@ class OrderCore extends ObjectModel
      *
      * @param OrderInvoice $orderInvoice
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1709,8 +1789,9 @@ class OrderCore extends ObjectModel
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function setDeliveryNumber($orderInvoiceId, $idShop)
     {
@@ -1744,8 +1825,9 @@ class OrderCore extends ObjectModel
      *
      * @return bool|false|null|string
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getDeliveryNumber($orderInvoiceId)
     {
@@ -1796,7 +1878,9 @@ class OrderCore extends ObjectModel
      *
      * @return Order
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function getByDelivery($idDelivery)
@@ -1815,10 +1899,12 @@ class OrderCore extends ObjectModel
      * Get a collection of orders using reference
      *
      * @param string $reference
+     *
      * @return PrestaShopCollection Collection of Order
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getByReference($reference)
     {
@@ -1848,7 +1934,9 @@ class OrderCore extends ObjectModel
      *
      * @return array|bool|null|object
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function getInvoice($idInvoice)
@@ -1868,8 +1956,9 @@ class OrderCore extends ObjectModel
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function isAssociatedAtGuest($email)
     {
@@ -1894,8 +1983,9 @@ class OrderCore extends ObjectModel
      *
      * @return int
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getCartIdStatic($idOrder, $idCustomer = 0)
     {
@@ -1911,7 +2001,9 @@ class OrderCore extends ObjectModel
     /**
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function getWsOrderRows()
@@ -1942,9 +2034,12 @@ class OrderCore extends ObjectModel
      * @param int $idOrderState
      * @param int $idEmployee (/!\ not optional except for Webservice.
      *
+     * @return bool
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @return bool
      */
     public function setCurrentState($idOrderState, $idEmployee = 0)
     {
@@ -1976,8 +2071,9 @@ class OrderCore extends ObjectModel
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function addWs($autodate = true, $nullValues = false)
     {
@@ -1993,7 +2089,9 @@ class OrderCore extends ObjectModel
     /**
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function deleteAssociations()
@@ -2003,10 +2101,12 @@ class OrderCore extends ObjectModel
 
     /**
      * This method return the ID of the previous order
+     *
      * @return int
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getPreviousOrderId()
     {
@@ -2024,8 +2124,9 @@ class OrderCore extends ObjectModel
      *
      * @return int
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getNextOrderId()
     {
@@ -2043,7 +2144,9 @@ class OrderCore extends ObjectModel
      *
      * @return array
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function getOrderDetailList()
@@ -2088,8 +2191,9 @@ class OrderCore extends ObjectModel
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function useOneAfterAnotherTaxComputationMethod()
     {
@@ -2109,8 +2213,9 @@ class OrderCore extends ObjectModel
      *
      * @return PrestaShopCollection Collection of OrderPayment
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getOrderPaymentCollection()
     {
@@ -2133,7 +2238,9 @@ class OrderCore extends ObjectModel
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function addOrderPayment($amountPaid, $paymentMethod = null, $paymentTransactionId = null, $currency = null, $date = null, $orderInvoice = null)
@@ -2192,8 +2299,9 @@ class OrderCore extends ObjectModel
      *
      * @return array
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getDocuments()
     {
@@ -2223,7 +2331,9 @@ class OrderCore extends ObjectModel
     /**
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function getReturn()
@@ -2235,7 +2345,9 @@ class OrderCore extends ObjectModel
      * @return array return all shipping method for the current order
      * state_name sql var is now deprecated - use order_state_name for the state name and carrier_name for the carrier_name
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function getShipping()
@@ -2263,8 +2375,9 @@ class OrderCore extends ObjectModel
      *
      * @return PrestaShopCollection Collection of OrderSlip
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getOrderSlipsCollection()
     {
@@ -2280,8 +2393,9 @@ class OrderCore extends ObjectModel
      *
      * @return PrestaShopCollection Collection of OrderInvoice
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getInvoicesCollection()
     {
@@ -2297,8 +2411,9 @@ class OrderCore extends ObjectModel
      *
      * @return PrestaShopCollection Collection of OrderInvoice
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getDeliverySlipsCollection()
     {
@@ -2314,8 +2429,9 @@ class OrderCore extends ObjectModel
      *
      * @return PrestaShopCollection Collection of Order invoice not paid
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getNotPaidInvoicesCollection()
     {
@@ -2337,8 +2453,9 @@ class OrderCore extends ObjectModel
      *
      * @return float amount in the $currency
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getTotalPaid($currency = null)
     {
@@ -2371,8 +2488,9 @@ class OrderCore extends ObjectModel
      *
      * @return float
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getOrdersTotalPaid()
     {
@@ -2415,10 +2533,12 @@ class OrderCore extends ObjectModel
     /**
      * Returns the correct product taxes breakdown.
      *
-     * @since 1.5.0.1
+     * @since   1.5.0.1
      * @return array
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function getProductTaxesBreakdown()
@@ -2513,7 +2633,9 @@ class OrderCore extends ObjectModel
      *
      * @return array
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function getEcoTaxTaxesBreakdown()
@@ -2531,8 +2653,9 @@ class OrderCore extends ObjectModel
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function hasInvoice()
     {
@@ -2550,8 +2673,9 @@ class OrderCore extends ObjectModel
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function hasDelivery()
     {
@@ -2563,8 +2687,9 @@ class OrderCore extends ObjectModel
      *
      * @return int
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getOrderInvoiceIdIfHasDelivery()
     {
@@ -2582,7 +2707,9 @@ class OrderCore extends ObjectModel
      *
      * @return array List of warehouse
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function getWarehouseList()
@@ -2634,6 +2761,8 @@ class OrderCore extends ObjectModel
      * @param string $sqlLimit
      *
      * @return array|null
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getWebserviceObjectList($sqlJoin, $sqlFilter, $sqlSort, $sqlLimit)
     {
@@ -2647,8 +2776,9 @@ class OrderCore extends ObjectModel
      *
      * @return PrestaShopCollection
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getBrother()
     {
@@ -2747,8 +2877,9 @@ class OrderCore extends ObjectModel
     /**
      * @return int|string
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getWsShippingNumber()
     {
@@ -2772,7 +2903,9 @@ class OrderCore extends ObjectModel
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function setWsShippingNumber($shippingNumber)
@@ -2807,7 +2940,10 @@ class OrderCore extends ObjectModel
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function setWsCurrentState($state)
@@ -2829,7 +2965,9 @@ class OrderCore extends ObjectModel
      *
      * @return array A list of tax rows applied to the given OrderDetails (or all OrderDetails linked to the current Order).
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function getProductTaxesDetails($limitToOrderDetails = false)
@@ -3042,6 +3180,8 @@ class OrderCore extends ObjectModel
      * Get order detail taxes breakdown
      *
      * @return array|false|null|PDOStatement
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getOrderDetailTaxes()
     {
