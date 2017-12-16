@@ -1,5 +1,5 @@
 2007-2016 PrestaShop
-2017 thirty bees
+2017-2018 thirty bees
 
 NOTICE OF LICENSE
 
@@ -24,8 +24,8 @@ needs please refer to http://www.thirtybees.com for more information.
 @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
 International Registered Trademark & Property of PrestaShop SA
 
-NAME: thirtybees 1.0.2-beta.1
-VERSION: 1.0.2-beta.1
+NAME: thirtybees 1.0.4
+VERSION: 1.0.4
 
 PREPARACIÓN
 ===========
