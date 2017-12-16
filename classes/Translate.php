@@ -48,23 +48,29 @@ class TranslateCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      */
     public static function getAdminTranslation($string, $class = 'AdminTab', $addslashes = false, $htmlentities = true, $sprintf = null)
     {
         static $modulesTabs = null;
 
-        // @todo remove global keyword in translations files and use static
         global $_LANGADM;
 
         if ($modulesTabs === null) {
-            $modulesTabs = Tab::getModuleTabList();
+            try {
+                $modulesTabs = Tab::getModuleTabList();
+            } catch (PrestaShopException $e) {
+                $modulesTabs = [];
+            }
         }
 
         if ($_LANGADM == null) {
             $iso = Context::getContext()->language->iso_code;
             if (empty($iso)) {
-                $iso = Language::getIsoById((int) Configuration::get('PS_LANG_DEFAULT'));
+                try {
+                    $iso = Language::getIsoById((int) Configuration::get('PS_LANG_DEFAULT'));
+                } catch (PrestaShopException $e) {
+                    $iso = 'en';
+                }
             }
             if (file_exists(_PS_TRANSLATIONS_DIR_.$iso.'/admin.php')) {
                 include_once(_PS_TRANSLATIONS_DIR_.$iso.'/admin.php');
