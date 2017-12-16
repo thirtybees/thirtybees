@@ -174,6 +174,7 @@ class CustomerCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function __construct($id = null)
     {
@@ -188,6 +189,8 @@ class CustomerCore extends ObjectModel
      *
      * @return array Customers
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -212,6 +215,8 @@ class CustomerCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -228,8 +233,12 @@ class CustomerCore extends ObjectModel
     /**
      * Check id the customer is active or not
      *
+     * @param $idCustomer
+     *
      * @return bool customer validity
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -266,6 +275,7 @@ class CustomerCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function customerExists($email, $returnId = false, $ignoreGuest = true)
     {
@@ -296,6 +306,7 @@ class CustomerCore extends ObjectModel
      * @param int $idAddress  Address ID
      *
      * @return bool result
+     * @throws PrestaShopException
      */
     public static function customerHasAddress($idCustomer, $idAddress)
     {
@@ -338,6 +349,7 @@ class CustomerCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getAddressesTotalById($idCustomer)
     {
@@ -361,6 +373,7 @@ class CustomerCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function searchByName($query, $limit = null)
     {
@@ -385,6 +398,7 @@ class CustomerCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @return array|false|null|PDOStatement
      */
     public static function searchByIp($ip)
     {
@@ -399,12 +413,13 @@ class CustomerCore extends ObjectModel
     }
 
     /**
-     * @param $idCustomer
+     * @param int $idCustomer
      *
      * @return mixed|null|string
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getDefaultGroupId($idCustomer)
     {
@@ -435,6 +450,8 @@ class CustomerCore extends ObjectModel
      *
      * @return string
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -467,6 +484,7 @@ class CustomerCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = true)
     {
@@ -504,6 +522,8 @@ class CustomerCore extends ObjectModel
      *
      * @param array $list groups
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -522,6 +542,7 @@ class CustomerCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      */
     public function cleanGroups()
     {
@@ -531,6 +552,8 @@ class CustomerCore extends ObjectModel
     /**
      * @param $groups
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -545,6 +568,8 @@ class CustomerCore extends ObjectModel
     /**
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -598,6 +623,8 @@ class CustomerCore extends ObjectModel
      *
      * @return array Addresses
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -634,6 +661,8 @@ class CustomerCore extends ObjectModel
      *
      * @return Customer|bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -704,6 +733,8 @@ class CustomerCore extends ObjectModel
      *
      * @return array Stats
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -741,6 +772,8 @@ class CustomerCore extends ObjectModel
     /**
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -764,6 +797,8 @@ class CustomerCore extends ObjectModel
     /**
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -794,6 +829,7 @@ class CustomerCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function customerIdExists($idCustomer)
     {
@@ -807,6 +843,7 @@ class CustomerCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function customerIdExistsStatic($idCustomer)
     {
@@ -829,6 +866,8 @@ class CustomerCore extends ObjectModel
     /**
      * @return array|mixed
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -842,6 +881,8 @@ class CustomerCore extends ObjectModel
      *
      * @return array|mixed
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -888,6 +929,8 @@ class CustomerCore extends ObjectModel
     /**
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -906,6 +949,8 @@ class CustomerCore extends ObjectModel
     /**
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -925,11 +970,13 @@ class CustomerCore extends ObjectModel
     }
 
     /**
-     * @param int  $idLang
-     * @param null $password
+     * @param int         $idLang
+     * @param string|null $password
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -995,6 +1042,8 @@ class CustomerCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1040,7 +1089,7 @@ class CustomerCore extends ObjectModel
     /**
      * Check customer informations and return customer validity
      *
-     * @since   1.5.0
+     * @since   1.0.0
      *
      * @param bool $withGuest
      *
@@ -1048,6 +1097,7 @@ class CustomerCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function isLogged($withGuest = false)
     {
@@ -1073,6 +1123,7 @@ class CustomerCore extends ObjectModel
      *
      * @todo    : adapt validation for hashed password
      * @todo    : find out why both hashed and plaintext password are passed
+     * @throws PrestaShopException
      */
     public static function checkPassword($idCustomer, $plaintextOrHashedPassword)
     {
@@ -1111,6 +1162,7 @@ class CustomerCore extends ObjectModel
      * @return bool
      *
      * @since 1.0.1
+     * @throws PrestaShopException
      */
     protected static function checkPasswordInDatabase($idCustomer, $hashedPassword)
     {
@@ -1174,6 +1226,8 @@ class CustomerCore extends ObjectModel
      *
      * @return bool|int
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1194,6 +1248,7 @@ class CustomerCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getOutstanding()
     {
@@ -1222,10 +1277,12 @@ class CustomerCore extends ObjectModel
     /**
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      *
-     * @todo Double-check the query, doesn't look right ^MD
+     * @todo    Double-check the query, doesn't look right ^MD
      */
     public function getWsGroups()
     {
@@ -1243,6 +1300,8 @@ class CustomerCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1266,6 +1325,8 @@ class CustomerCore extends ObjectModel
      *
      * @return array|null
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

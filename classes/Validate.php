@@ -489,6 +489,7 @@ class ValidateCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function isLinkRewrite($link)
     {
@@ -508,6 +509,7 @@ class ValidateCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function isRoutePattern($pattern)
     {
@@ -1581,6 +1583,7 @@ class ValidateCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function isOrderInvoiceNumber($id)
     {

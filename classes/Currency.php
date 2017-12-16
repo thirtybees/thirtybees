@@ -105,12 +105,13 @@ class CurrencyCore extends ObjectModel
     /**
      * CurrencyCore constructor.
      *
-     * @param null $id
-     * @param null $idLang
-     * @param null $idShop
+     * @param int|null $id
+     * @param int|null $idLang
+     * @param int|null $idShop
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function __construct($id = null, $idLang = null, $idShop = null)
     {
@@ -131,6 +132,8 @@ class CurrencyCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -152,6 +155,8 @@ class CurrencyCore extends ObjectModel
      *
      * @return array|bool|null|object
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -176,6 +181,8 @@ class CurrencyCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -204,6 +211,8 @@ class CurrencyCore extends ObjectModel
      *
      * @return array|bool|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -231,6 +240,8 @@ class CurrencyCore extends ObjectModel
      *
      * @return array|bool|null|object
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -248,6 +259,8 @@ class CurrencyCore extends ObjectModel
     /**
      * @return string|null
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -297,6 +310,7 @@ class CurrencyCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getDefaultCurrency()
     {
@@ -311,8 +325,14 @@ class CurrencyCore extends ObjectModel
     /**
      * Return available currencies
      *
+     * @param bool $object
+     * @param bool $active
+     * @param bool $groupBy
+     *
      * @return array Currencies
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -419,12 +439,13 @@ class CurrencyCore extends ObjectModel
     }
 
     /**
-     * @param null $idShop
+     * @param int|null $idShop
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function isMultiCurrencyActivated($idShop = null)
     {
@@ -438,6 +459,7 @@ class CurrencyCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function countActiveCurrencies($idShop = null)
     {
@@ -494,6 +516,7 @@ class CurrencyCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function exists($isoCode, $isoCodeNum, $idShop = 0)
     {
@@ -518,6 +541,7 @@ class CurrencyCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getIdByIsoCodeNum($isoCodeNum, $idShop = 0)
     {
@@ -558,6 +582,7 @@ class CurrencyCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getIdByIsoCode($isoCode, $idShop = 0)
     {
@@ -582,6 +607,7 @@ class CurrencyCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      */
     public function deleteSelection($selection)
     {
@@ -609,6 +635,8 @@ class CurrencyCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function delete()
     {
@@ -691,6 +719,7 @@ class CurrencyCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getConversationRate()
     {
@@ -703,6 +732,7 @@ class CurrencyCore extends ObjectModel
      * @return bool
      *
      * @since 1.0.2
+     * @throws PrestaShopException
      */
     public function getMode()
     {
@@ -715,6 +745,8 @@ class CurrencyCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.2
      */
     public static function getModes()

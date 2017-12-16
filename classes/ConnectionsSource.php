@@ -65,6 +65,8 @@ class ConnectionsSourceCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -131,6 +133,7 @@ class ConnectionsSourceCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -142,10 +145,12 @@ class ConnectionsSourceCore extends ObjectModel
     }
 
     /**
-     * @param $idOrder
+     * @param int $idOrder
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

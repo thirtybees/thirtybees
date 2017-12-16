@@ -58,6 +58,7 @@ class PrestaShopBackupCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function __construct($filename = null)
     {
@@ -216,6 +217,8 @@ class PrestaShopBackupCore
      *
      * @return bool true on successful backup
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

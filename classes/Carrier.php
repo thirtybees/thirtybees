@@ -167,11 +167,12 @@ class CarrierCore extends ObjectModel
     /**
      * CarrierCore constructor.
      *
-     * @param null $id
-     * @param null $idLang
+     * @param int|null $id
+     * @param int|null $idLang
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function __construct($id = null, $idLang = null)
     {
@@ -211,6 +212,7 @@ class CarrierCore extends ObjectModel
      * @return void
      *
      * @since 1.0.2 Fix the hydrate function of the carrier
+     * @throws PrestaShopException
      */
     public function hydrate(array $data, $idLang = null)
     {
@@ -237,6 +239,7 @@ class CarrierCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getIdTaxRulesGroup(Context $context = null)
     {
@@ -249,6 +252,7 @@ class CarrierCore extends ObjectModel
      *
      * @return false|null|string
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -281,6 +285,7 @@ class CarrierCore extends ObjectModel
      * The returned carrier name is the shop name without '#' and ';' because this is not the same validation.
      *
      * @return string Carrier name
+     * @throws PrestaShopException
      */
     public static function getCarrierNameFromShopName()
     {
@@ -299,6 +304,8 @@ class CarrierCore extends ObjectModel
      *
      * @return array Delivery prices
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -356,6 +363,8 @@ class CarrierCore extends ObjectModel
     /**
      * @return int
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -374,17 +383,17 @@ class CarrierCore extends ObjectModel
     }
 
     /**
-     * @param int  $idLang
-     * @param bool $activeCountries
-     * @param bool $activeCarriers
-     * @param null $containStates
+     * @param int       $idLang
+     * @param bool      $activeCountries
+     * @param bool      $activeCarriers
+     * @param bool|null $containStates
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     *
-     * @todo Check if the db queries have been fixed correctly ^MD
      */
     public static function getDeliveredCountries($idLang, $activeCountries = false, $activeCarriers = false, $containStates = null)
     {
@@ -440,6 +449,7 @@ class CarrierCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getDefaultCarrierSelection($carriers, $defaultCarrier = 0)
     {
@@ -469,6 +479,8 @@ class CarrierCore extends ObjectModel
      * @param int $idReference
      *
      * @return bool|Carrier
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getCarrierByReference($idReference)
     {
@@ -495,18 +507,19 @@ class CarrierCore extends ObjectModel
      *
      * @since   1.5.0
      *
-     * @param Product $product           The id of the product, or an array with at least the package size and weight
+     * @param Product $product The id of the product, or an array with at least the package size and weight
      * @param int     $idWarehouse
      * @param int     $idAddressDelivery
      * @param int     $idShop
      * @param Cart    $cart
-     * @param array   $error             contains an error message if an error occurs
+     * @param array   $error   contains an error message if an error occurs
      *
      * @return array
      * @throws PrestaShopDatabaseException
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getAvailableCarrierList(Product $product, $idWarehouse, $idAddressDelivery = null, $idShop = null, $cart = null, &$error = [])
     {
@@ -653,10 +666,11 @@ class CarrierCore extends ObjectModel
      * @param int $idCarrier
      * @param int $idZone
      *
-     * @return null
+     * @return null|int
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function checkCarrierZone($idCarrier, $idZone)
     {
@@ -688,6 +702,8 @@ class CarrierCore extends ObjectModel
      * @param array     $error  contains an error message if an error occurs
      *
      * @return array
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -800,10 +816,12 @@ class CarrierCore extends ObjectModel
      *
      * @return array Carriers
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      *
-     * @todo Check if the query has been fixed and remove the EXISTS subquery ^MD
+     * @todo    Check if the query has been fixed and remove the EXISTS subquery ^MD
      */
     public static function getCarriers($idLang, $active = false, $delete = false, $idZone = false, $idsGroup = null, $modulesFilters = self::PS_CARRIERS_ONLY)
     {
@@ -872,6 +890,7 @@ class CarrierCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getShippingMethod()
     {
@@ -898,6 +917,7 @@ class CarrierCore extends ObjectModel
      *
      * @return false|null|string
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -927,6 +947,7 @@ class CarrierCore extends ObjectModel
      *
      * @return null
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -956,6 +977,8 @@ class CarrierCore extends ObjectModel
      *
      * @return mixed
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1003,6 +1026,8 @@ class CarrierCore extends ObjectModel
      * @param int|null $idCurrency
      *
      * @return float Delivery price
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function checkDeliveryPriceByPrice($idCarrier, $orderTotal, $idZone, $idCurrency = null)
     {
@@ -1049,9 +1074,11 @@ class CarrierCore extends ObjectModel
      * @param int|array $idGroupList group id or list of group ids
      * @param array     $exception   list of id carriers to ignore
      *
+     * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @return bool
      */
     public static function assignGroupToAllCarriers($idGroupList, $exception = null)
     {
@@ -1097,6 +1124,7 @@ class CarrierCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -1127,6 +1155,7 @@ class CarrierCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getHigherPosition()
     {
@@ -1143,6 +1172,8 @@ class CarrierCore extends ObjectModel
     /**
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1164,6 +1195,8 @@ class CarrierCore extends ObjectModel
      *
      * @return bool $return
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1198,6 +1231,8 @@ class CarrierCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1220,6 +1255,8 @@ class CarrierCore extends ObjectModel
      *
      * @param int $idOld Old id carrier
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1242,6 +1279,8 @@ class CarrierCore extends ObjectModel
      *
      * @return float Delivery price
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1295,6 +1334,8 @@ class CarrierCore extends ObjectModel
      *
      * @return float Delivery price
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1347,6 +1388,8 @@ class CarrierCore extends ObjectModel
      *
      * @return array Zones
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1368,6 +1411,8 @@ class CarrierCore extends ObjectModel
      *
      * @return array Zone
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1391,6 +1436,8 @@ class CarrierCore extends ObjectModel
      * @param int $idZone
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function addZone($idZone)
     {
@@ -1449,6 +1496,7 @@ class CarrierCore extends ObjectModel
      * @param int $idZone
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
      */
     public function deleteZone($idZone)
     {
@@ -1471,6 +1519,8 @@ class CarrierCore extends ObjectModel
      *
      * @return array Group
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1493,6 +1543,7 @@ class CarrierCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      */
     public function deleteDeliveryPrice($rangeTable)
     {
@@ -1519,6 +1570,7 @@ class CarrierCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function addDeliveryPrice($priceList, $delete = false)
     {
@@ -1698,6 +1750,7 @@ class CarrierCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function isUsed()
     {
@@ -1716,6 +1769,7 @@ class CarrierCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getRangeTable()
     {
@@ -1729,7 +1783,8 @@ class CarrierCore extends ObjectModel
         return false;
     }
 
-    /**
+    /*
+    *
      * @param bool $shippingMethod
      *
      * @return bool|RangePrice|RangeWeight
@@ -1759,6 +1814,7 @@ class CarrierCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getRangeSuffix($currency = null)
     {
@@ -1779,6 +1835,8 @@ class CarrierCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1816,6 +1874,8 @@ class CarrierCore extends ObjectModel
      *
      * @return float
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1834,6 +1894,8 @@ class CarrierCore extends ObjectModel
      * @param bool     $useAverageTaxOfProducts
      *
      * @return AverageTaxOfProductsTaxCalculator|TaxCalculator
+     * @throws Adapter_Exception
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1851,11 +1913,13 @@ class CarrierCore extends ObjectModel
     /**
      * Moves a carrier
      *
-     * @param bool $way      Up (1) or Down (0)
+     * @param bool $way Up (1) or Down (0)
      * @param int  $position
      *
      * @return bool Update result
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1904,6 +1968,8 @@ class CarrierCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

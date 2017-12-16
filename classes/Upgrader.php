@@ -61,6 +61,7 @@ class UpgraderCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function __construct($autoload = false)
     {
@@ -81,6 +82,7 @@ class UpgraderCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function loadFromConfig()
     {
@@ -130,6 +132,7 @@ class UpgraderCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function checkPSVersion($force = false)
     {

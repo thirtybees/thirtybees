@@ -152,6 +152,7 @@ class CartCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function __construct($id = null, $idLang = null)
     {
@@ -182,6 +183,7 @@ class CartCore extends ObjectModel
     /**
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function setTaxCalculationMethod()
     {
@@ -194,6 +196,7 @@ class CartCore extends ObjectModel
      * @param int $idCart
      *
      * @return float|int
+     * @throws PrestaShopException
      */
     public static function getTaxesAverageUsed($idCart)
     {
@@ -245,6 +248,8 @@ class CartCore extends ObjectModel
      * @param null $idCountry
      *
      * @return array|null
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     public function getProducts($refresh = false, $idProduct = false, $idCountry = null)
     {
@@ -543,6 +548,8 @@ class CartCore extends ObjectModel
      * @param array $ipaList
      * @param int   $idLang
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -651,6 +658,9 @@ class CartCore extends ObjectModel
      *
      * @return float Order total
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -930,6 +940,7 @@ class CartCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function isVirtualCart()
     {
@@ -964,6 +975,9 @@ class CartCore extends ObjectModel
      *
      * @return float Shipping total
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1002,8 +1016,11 @@ class CartCore extends ObjectModel
      *
      * @return array|bool|mixed Delivery option
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws Adapter_Exception
      */
     public function getDeliveryOption($defaultCountry = null, $dontAutoSelectOptions = false, $useCache = true)
     {
@@ -1069,6 +1086,9 @@ class CartCore extends ObjectModel
      *
      * @param array ?null $deliveryOption
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1105,7 +1125,7 @@ class CartCore extends ObjectModel
      * Get all deliveries options available for the current cart
      *
      * @param Country $defaultCountry
-     * @param bool    $flush          Force flushing cache
+     * @param bool    $flush Force flushing cache
      *
      * @return array array(
      *                   0 => array( // First address
@@ -1132,6 +1152,9 @@ class CartCore extends ObjectModel
      *                   ),
      *               );
      *               If there are no carriers available for an address, return an empty  array
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getDeliveryOptionList(Country $defaultCountry = null, $flush = false)
     {
@@ -1430,6 +1453,8 @@ class CartCore extends ObjectModel
      *                       ),
      *                   ),
      *               );
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @todo Add availability check
      */
     public function getPackageList($flush = false)
@@ -1688,6 +1713,10 @@ class CartCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws PrestaShopException
+     * @throws PrestaShopException
+     * @throws Adapter_Exception
      */
     public function getPackageShippingCost($idCarrier = null, $useTax = true, Country $defaultCountry = null, $productList = null, $idZone = null)
     {
@@ -2026,6 +2055,7 @@ class CartCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function isMultiAddressDelivery()
     {
@@ -2053,6 +2083,9 @@ class CartCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since      1.0.0
      * @version    1.0.0 Initial version
      */
@@ -2102,6 +2135,8 @@ class CartCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     public function getTotalWeight($products = null)
     {
@@ -2157,6 +2192,9 @@ class CartCore extends ObjectModel
      *
      * @return float|int
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2229,6 +2267,9 @@ class CartCore extends ObjectModel
      *
      * @return float wrapping price
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2282,6 +2323,8 @@ class CartCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2339,6 +2382,9 @@ class CartCore extends ObjectModel
      *
      * @return int|mixed
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2367,6 +2413,7 @@ class CartCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function sortDeliveryOptionList($option1, $option2)
     {
@@ -2422,6 +2469,7 @@ class CartCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function lastNoneOrderedCart($idCustomer)
     {
@@ -2446,6 +2494,8 @@ class CartCore extends ObjectModel
      *
      * @return Cart|bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2463,6 +2513,8 @@ class CartCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2487,6 +2539,8 @@ class CartCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2510,6 +2564,7 @@ class CartCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function replaceZeroByShopName($echo, $tr)
     {
@@ -2525,6 +2580,7 @@ class CartCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function isGuestCartByCartId($idCart)
     {
@@ -2546,6 +2602,9 @@ class CartCore extends ObjectModel
      * Execute hook displayCarrierList (extraCarrier) and merge theme to the $array
      *
      * @param array $array
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function addExtraCarriers(&$array)
     {
@@ -2573,6 +2632,8 @@ class CartCore extends ObjectModel
      * Get all delivery addresses object for the current cart
      *
      * @return array
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getAddressCollection()
     {
@@ -2607,6 +2668,8 @@ class CartCore extends ObjectModel
      * @param int $idAddress    Current address id to change
      * @param int $idAddressNew New address id
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2672,6 +2735,11 @@ class CartCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function delete()
     {
@@ -2719,6 +2787,7 @@ class CartCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0
+     * @throws PrestaShopException
      */
     public function orderExists()
     {
@@ -2745,6 +2814,8 @@ class CartCore extends ObjectModel
      * @param bool $refresh
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getDiscounts($lite = false, $refresh = false)
     {
@@ -2763,6 +2834,7 @@ class CartCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getOrderedCartRulesIds($filter = CartRule::FILTER_ACTION_ALL)
     {
@@ -2795,6 +2867,7 @@ class CartCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getDiscountsCustomer($idCartRule)
     {
@@ -2821,6 +2894,8 @@ class CartCore extends ObjectModel
     /**
      * @return bool|mixed
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2858,6 +2933,7 @@ class CartCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function nbProducts()
     {
@@ -2875,6 +2951,7 @@ class CartCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getNbProducts($id)
     {
@@ -2899,6 +2976,7 @@ class CartCore extends ObjectModel
      * @param int $idCartRule
      *
      * @return bool
+     * @throws PrestaShopException
      */
     public function addDiscount($idCartRule)
     {
@@ -2914,6 +2992,7 @@ class CartCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function addCartRule($idCartRule)
     {
@@ -2976,6 +3055,8 @@ class CartCore extends ObjectModel
      * @param bool     $autoAddCartRule
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function updateQty(
         $quantity,
@@ -3175,6 +3256,9 @@ class CartCore extends ObjectModel
      * @param bool $autoAddCartRule
      *
      * @return bool result
+     * @throws PrestaShopException
+     * @throws PrestaShopException
+     * @throws PrestaShopDatabaseException
      */
     public function deleteProduct($idProduct, $idProductAttribute = null, $idCustomization = null, $idAddressDelivery = 0, $autoAddCartRule = true)
     {
@@ -3271,6 +3355,9 @@ class CartCore extends ObjectModel
      * @return bool result
      *
      * @deprecated 2.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     // @codingStandardsIgnoreStart
     protected function _deleteCustomization($idCustomization, $idProduct, $idProductAttribute, $idAddressDelivery = 0)
@@ -3327,6 +3414,8 @@ class CartCore extends ObjectModel
      *
      * @return array|bool|null|object
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -3366,6 +3455,8 @@ class CartCore extends ObjectModel
      * @return bool
      *
      * @deprecated 2.0.0
+     * @throws PrestaShopException
+     * @throws PrestaShopDatabaseException
      */
     protected function _updateCustomizationQuantity($quantityChange, $idCustomization, $idProduct, $idProductAttribute, $idAddressDelivery, $operator = 'up')
     {
@@ -3428,6 +3519,8 @@ class CartCore extends ObjectModel
      *
      * @return array result rows
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -3458,6 +3551,8 @@ class CartCore extends ObjectModel
      * @param int $idCartRule
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function deleteDiscount($idCartRule)
     {
@@ -3473,6 +3568,8 @@ class CartCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function removeCartRule($idCartRule)
     {
@@ -3500,6 +3597,8 @@ class CartCore extends ObjectModel
      * Get the number of packages
      *
      * @return int number of packages
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getNbOfPackages()
     {
@@ -3521,6 +3620,8 @@ class CartCore extends ObjectModel
      *
      * @return int
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -3552,6 +3653,9 @@ class CartCore extends ObjectModel
      * @param int $idAddress
      *
      * @return bool
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function carrierIsSelected($idCarrier, $idAddress)
     {
@@ -3579,10 +3683,13 @@ class CartCore extends ObjectModel
      * New theme need to use static::getDeliveryOptionList() to generate carriers option in the checkout process
      *
      * @param Country $defaultCountry
-     * @param bool    $flush          Force flushing cache
+     * @param bool    $flush Force flushing cache
      *
      * @return array
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -3663,6 +3770,8 @@ class CartCore extends ObjectModel
      *
      * @return int
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -3687,6 +3796,9 @@ class CartCore extends ObjectModel
      *
      * @return float Shipping total
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -3724,6 +3836,8 @@ class CartCore extends ObjectModel
      * @param array|null   $productList
      *
      * @return bool|float
+     * @throws Adapter_Exception
+     * @throws PrestaShopException
      */
     public function getOrderShippingCost($idCarrier = null, $useTax = true, Country $defaultCountry = null, $productList = null)
     {
@@ -3742,6 +3856,7 @@ class CartCore extends ObjectModel
      * @param bool     $checkCartDiscount
      *
      * @return bool|string
+     * @throws PrestaShopException
      */
     public function checkDiscountValidity($obj, $discounts, $orderTotal, $products, $checkCartDiscount = false)
     {
@@ -3760,6 +3875,9 @@ class CartCore extends ObjectModel
      *
      * @return array Cart details
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -3925,6 +4043,7 @@ class CartCore extends ObjectModel
      * @param array $error            contains an error message if an error occurs
      *
      * @return array Array of address id or of address object
+     * @throws PrestaShopException
      */
     public function getDeliveryAddressesWithoutCarriers($returnCollection = false, &$error = [])
     {
@@ -3953,6 +4072,8 @@ class CartCore extends ObjectModel
      *
      * @return bool|mixed
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -3983,6 +4104,7 @@ class CartCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function checkProductsAccess()
     {
@@ -4011,6 +4133,7 @@ class CartCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      */
     public function addTextFieldToProduct($idProduct, $index, $type, $textValue)
     {
@@ -4031,6 +4154,8 @@ class CartCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     // @codingStandardsIgnoreStart
     public function _addCustomization($idProduct, $idProductAttribute, $index, $type, $field, $quantity)
@@ -4101,6 +4226,8 @@ class CartCore extends ObjectModel
      *
      * @return bool Always true
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0
      */
@@ -4116,6 +4243,7 @@ class CartCore extends ObjectModel
      * @param int $index
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
      */
     public function deletePictureToProduct($idProduct, $index)
     {
@@ -4131,6 +4259,8 @@ class CartCore extends ObjectModel
      * @param int $index
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function deleteCustomizationToProduct($idProduct, $index)
     {
@@ -4160,6 +4290,8 @@ class CartCore extends ObjectModel
     /**
      * @return false|array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0
      */
@@ -4308,6 +4440,7 @@ class CartCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -4327,6 +4460,8 @@ class CartCore extends ObjectModel
     /**
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0
      */
@@ -4346,6 +4481,8 @@ class CartCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0
      */
@@ -4376,6 +4513,7 @@ class CartCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0
+     * @throws PrestaShopDatabaseException
      */
     public function deleteAssociations()
     {
@@ -4390,6 +4528,8 @@ class CartCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0
      */
@@ -4459,6 +4599,8 @@ class CartCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0
      */
@@ -4708,6 +4850,7 @@ class CartCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0
+     * @throws PrestaShopException
      */
     public function isAllProductsInStock($ignoreVirtual = false, $exclusive = false)
     {

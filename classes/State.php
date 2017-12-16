@@ -77,6 +77,8 @@ class StateCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -100,6 +102,7 @@ class StateCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getNameById($idState)
     {
@@ -131,6 +134,7 @@ class StateCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getIdByName($state)
     {
@@ -156,13 +160,14 @@ class StateCore extends ObjectModel
     /**
      * Get a state id with its iso code
      *
-     * @param string   $isoCode   Iso code
+     * @param string   $isoCode Iso code
      * @param int|null $idCountry
      *
      * @return int state id
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getIdByIso($isoCode, $idCountry = null)
     {
@@ -180,6 +185,8 @@ class StateCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -217,6 +224,7 @@ class StateCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getIdZone($idState)
     {
@@ -239,6 +247,8 @@ class StateCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function delete()
     {
@@ -267,6 +277,7 @@ class StateCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function isUsed()
     {
@@ -280,6 +291,7 @@ class StateCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function countUsed()
     {
@@ -299,6 +311,8 @@ class StateCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

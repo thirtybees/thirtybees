@@ -100,6 +100,8 @@ class GroupCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -126,6 +128,7 @@ class GroupCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getReduction($idCustomer = null)
     {
@@ -147,6 +150,7 @@ class GroupCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getCurrent()
     {
@@ -190,6 +194,7 @@ class GroupCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getReductionByIdGroup($idGroup)
     {
@@ -212,6 +217,7 @@ class GroupCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getDefaultPriceDisplayMethod()
     {
@@ -225,6 +231,7 @@ class GroupCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getPriceDisplayMethod($idGroup)
     {
@@ -250,6 +257,7 @@ class GroupCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function isFeatureActive()
     {
@@ -271,6 +279,7 @@ class GroupCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function isCurrentlyUsed($table = null, $hasActiveColumn = false)
     {
@@ -287,6 +296,7 @@ class GroupCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      */
     public static function truncateRestrictionsByModule($idModule)
     {
@@ -304,6 +314,8 @@ class GroupCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function addModulesRestrictions($idGroup, $modules, $shops = [1])
     {
@@ -339,6 +351,7 @@ class GroupCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function addRestrictionsForModule($idModule, $shops = [1])
     {
@@ -365,6 +378,8 @@ class GroupCore extends ObjectModel
      *
      * @return array Corresponding groups
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -389,6 +404,7 @@ class GroupCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getCustomers($count = false, $start = 0, $limit = 0, $shopFiltering = false)
     {
@@ -421,6 +437,8 @@ class GroupCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -445,6 +463,7 @@ class GroupCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function update($autodate = true, $nullValues = false)
     {
@@ -460,6 +479,8 @@ class GroupCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws PrestaShopDatabaseException
      */
     public function delete()
     {
@@ -510,6 +531,7 @@ class GroupCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      */
     public static function truncateModulesRestrictions($idGroup)
     {

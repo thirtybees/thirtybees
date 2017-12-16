@@ -120,6 +120,7 @@ class ProductDownloadCore extends ObjectModel
      * @since   1.0.2 Removed caching, which ignored $active.
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getIdFromIdProduct($idProduct, $active = true)
     {
@@ -145,6 +146,7 @@ class ProductDownloadCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function isFeatureActive()
     {
@@ -161,6 +163,7 @@ class ProductDownloadCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      *
+     * @throws PrestaShopException
      */
     public static function getIdFromFilename($filename)
     {
@@ -181,6 +184,7 @@ class ProductDownloadCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getFilenameFromIdProduct($idProduct)
     {
@@ -202,6 +206,7 @@ class ProductDownloadCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getFilenameFromFilename($filename)
     {
@@ -237,6 +242,7 @@ class ProductDownloadCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function update($nullValues = false)
     {
@@ -259,6 +265,7 @@ class ProductDownloadCore extends ObjectModel
      *                file without matching DB entry means just a leaked file.
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function delete($deleteFile = 999)
     {
@@ -281,6 +288,7 @@ class ProductDownloadCore extends ObjectModel
      *                wanting to also delete the DB entry should use delete().
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function deleteFile($idProductDownload = 999)
     {

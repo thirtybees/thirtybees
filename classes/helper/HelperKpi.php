@@ -59,7 +59,9 @@ class HelperKpiCore extends Helper
     /**
      * @return mixed
      *
-     * @since 1.0.0
+     * @throws Exception
+     * @throws SmartyException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function generate()

@@ -88,6 +88,7 @@ class MailCore extends ObjectModel
      * @param string $replyTo        Email address for setting the Reply-To header
      *
      * @return bool|int Whether sending was successful. If not at all, false, otherwise amount of recipients succeeded.
+     * @throws PrestaShopException
      */
     public static function Send(
         $idLang,
@@ -568,6 +569,7 @@ class MailCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      */
     public static function eraseLog($idMail)
     {
@@ -579,6 +581,7 @@ class MailCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function eraseAllLogs()
     {
@@ -650,6 +653,7 @@ class MailCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function l($string, $idLang = null, Context $context = null)
     {

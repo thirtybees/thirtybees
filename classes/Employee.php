@@ -51,11 +51,17 @@ class EmployeeCore extends ObjectModel
     public $passwd;
     /** @var datetime Password */
     public $last_passwd_gen;
+    /** @var string $stats_date_from */
     public $stats_date_from;
+    /** @var string $stats_date_to */
     public $stats_date_to;
+    /** @var string $stats_compare_from */
     public $stats_compare_from;
+    /** @var string $stats_compare_to */
     public $stats_compare_to;
+    /** @var int $stats_compare_option */
     public $stats_compare_option = 1;
+    /** @var string $preselect_date_range */
     public $preselect_date_range;
     /** @var string Display back office background in the specified color */
     public $bo_color;
@@ -137,6 +143,8 @@ class EmployeeCore extends ObjectModel
      * @param int|null $idLang
      * @param int|null $idShop
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -162,6 +170,8 @@ class EmployeeCore extends ObjectModel
      *
      * @return array|false Employees or false
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -179,12 +189,13 @@ class EmployeeCore extends ObjectModel
     }
 
     /**
-     * @param $email
+     * @param string $email
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function employeeExists($email)
     {
@@ -201,11 +212,13 @@ class EmployeeCore extends ObjectModel
     }
 
     /**
-     * @param      $idProfile
+     * @param int  $idProfile
      * @param bool $activeOnly
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -227,6 +240,8 @@ class EmployeeCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -242,11 +257,12 @@ class EmployeeCore extends ObjectModel
     }
 
     /**
-     * @see ObjectModel::getFields()
+     * @see     ObjectModel::getFields()
      * @return array
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getFields()
     {
@@ -277,6 +293,7 @@ class EmployeeCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = true)
     {
@@ -374,6 +391,8 @@ class EmployeeCore extends ObjectModel
      *
      * @return Employee|bool Employee instance
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -438,6 +457,7 @@ class EmployeeCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function isLastAdmin()
     {
@@ -461,13 +481,14 @@ class EmployeeCore extends ObjectModel
     }
 
     /**
-     * @param      $idProfile
+     * @param int  $idProfile
      * @param bool $activeOnly
      *
      * @return false|null|string
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function countProfile($idProfile, $activeOnly = false)
     {
@@ -510,6 +531,7 @@ class EmployeeCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function isLoggedBack()
     {
@@ -537,6 +559,7 @@ class EmployeeCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function checkPassword($idEmployee, $hashedPassword)
     {
@@ -572,6 +595,8 @@ class EmployeeCore extends ObjectModel
     /**
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -634,6 +659,7 @@ class EmployeeCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getDefaultShopID()
     {
@@ -662,6 +688,7 @@ class EmployeeCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getLastElementsForNotify($element)
     {

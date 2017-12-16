@@ -151,6 +151,8 @@ class ManufacturerCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getManufacturers($getNbProducts = false, $idLang = 0, $active = true, $p = false, $n = false, $allGroup = false, $groupBy = false)
     {
@@ -237,6 +239,7 @@ class ManufacturerCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getNameById($idManufacturer)
     {
@@ -258,6 +261,8 @@ class ManufacturerCore extends ObjectModel
      *
      * @return bool|int
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -293,6 +298,8 @@ class ManufacturerCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getProducts(
         $idManufacturer,
@@ -431,6 +438,8 @@ class ManufacturerCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -457,6 +466,8 @@ class ManufacturerCore extends ObjectModel
      * @param array $selection
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function deleteSelection($selection)
     {
@@ -477,6 +488,8 @@ class ManufacturerCore extends ObjectModel
     /**
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -506,6 +519,8 @@ class ManufacturerCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -534,6 +549,8 @@ class ManufacturerCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -554,6 +571,8 @@ class ManufacturerCore extends ObjectModel
     /**
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -574,6 +593,8 @@ class ManufacturerCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -610,9 +631,10 @@ class ManufacturerCore extends ObjectModel
     }
 
     /**
-     * @param null $nullValues
+     * @param bool $nullValues
      *
      * @return bool Indicates whether updating succeeded
+     * @throws PrestaShopDatabaseException
      */
     public function update($nullValues = null)
     {
@@ -628,6 +650,7 @@ class ManufacturerCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function getManufacturerAddress()
     {

@@ -524,6 +524,7 @@ class ToolsCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function setCookieLanguage(Cookie $cookie = null)
     {
@@ -607,6 +608,8 @@ class ToolsCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     public static function switchLanguage(Context $context = null)
     {
@@ -1210,6 +1213,7 @@ class ToolsCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function dateFormat($params, &$smarty)
     {
@@ -1228,6 +1232,7 @@ class ToolsCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function displayDate($date, $idLang = null, $full = false, $separator = null)
     {
@@ -1428,6 +1433,7 @@ class ToolsCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @return mixed
      */
     public static function d($object, $kill = true)
     {
@@ -1530,7 +1536,12 @@ class ToolsCore
     {
         Tools::displayAsDeprecated();
 
-        return Meta::getMetaTags($idLang, $pageName, $title);
+        try {
+            return Meta::getMetaTags($idLang, $pageName, $title);
+        } catch (PrestaShopDatabaseException $e) {
+            return [];
+        } catch (PrestaShopException $e) {
+        }
     }
 
     /**
@@ -1564,6 +1575,7 @@ class ToolsCore
 
     /**
      * @deprecated 1.0.0
+     * @throws PrestaShopException
      */
     public static function completeMetaTags($metaTags, $defaultValue, Context $context = null)
     {
@@ -1594,6 +1606,7 @@ class ToolsCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @return string
      */
     public static function encryptIV($data)
     {
@@ -1604,6 +1617,8 @@ class ToolsCore
      * Get token to prevent CSRF
      *
      * @param string $token token to encrypt
+     *
+     * @return string
      */
     public static function getToken($page = true, Context $context = null)
     {
@@ -1621,6 +1636,8 @@ class ToolsCore
      * Encrypt password
      *
      * @param string $passwd String to encrypt
+     *
+     * @return string
      */
     public static function encrypt($passwd)
     {
@@ -1643,6 +1660,7 @@ class ToolsCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @return bool|string
      */
     public static function getAdminToken($string)
     {
@@ -1655,6 +1673,8 @@ class ToolsCore
      *
      * @return bool|string
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1673,6 +1693,7 @@ class ToolsCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @return string
      */
     public static function getAdminImageUrl($image = null, $entities = false)
     {
@@ -1687,6 +1708,8 @@ class ToolsCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @return string
+     * @throws PrestaShopException
      */
     public static function getAdminUrl($url = null, $entities = false)
     {
@@ -1707,8 +1730,11 @@ class ToolsCore
      * @param bool $http
      * @param bool $entities
      *
+     * @param bool $ignore_port
+     *
      * @return string host
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1747,8 +1773,13 @@ class ToolsCore
     }
 
     /**
-     * @param string [optionnal] $type_cat defined what type of categories is used (products or cms)
+     * @param              $idCategory
+     * @param              $end
+     * @param string       $typeCat
+     * @param Context|null $context
      *
+     * @return string
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1793,6 +1824,7 @@ class ToolsCore
      * @param Context $context
      *
      * @return
+     * @throws PrestaShopException
      */
     public static function getPath($idCategory, $path = '', $linkOnTheItem = false, $categoryType = 'products', Context $context = null)
     {
@@ -1920,6 +1952,7 @@ class ToolsCore
      *
      * @return string
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1940,6 +1973,7 @@ class ToolsCore
      *
      * @return string
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2567,6 +2601,7 @@ class ToolsCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function orderbyPrice(&$array, $order_way)
     {
@@ -2937,6 +2972,7 @@ class ToolsCore
 
     /**
      * @deprecated 1.0.0 use Media::cccCss()
+     * @throws PrestaShopException
      */
     public static function cccCss($css_files)
     {
@@ -2947,6 +2983,7 @@ class ToolsCore
 
     /**
      * @deprecated 1.0.0 use Media::cccJS()
+     * @throws PrestaShopException
      */
     public static function cccJS($js_files)
     {
@@ -2962,6 +2999,7 @@ class ToolsCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getMediaServer($filename)
     {
@@ -2994,6 +3032,7 @@ class ToolsCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getShopDomainSsl($http = false, $entities = false)
     {
@@ -3020,6 +3059,7 @@ class ToolsCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getShopDomain($http = false, $entities = false)
     {
@@ -3049,6 +3089,7 @@ class ToolsCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function generateHtaccess($path = null, $rewrite_settings = null, $cache_control = null, $specific = '', $disable_multiviews = null, $medias = false, $disable_modsec = null)
     {
@@ -3358,6 +3399,7 @@ FileETag none
     /**
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function generateIndex()
     {
@@ -3466,6 +3508,7 @@ exit;
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function enableCache($level = 1, Context $context = null)
     {
@@ -3706,14 +3749,15 @@ exit;
     /**
      * Get products order field name for queries.
      *
-     * @param string                   $type  by|way
-     * @param string                   $value If no index given, use default order from admin -> pref -> products
+     * @param string $type  by|way
+     * @param string $value If no index given, use default order from admin -> pref -> products
      * @param bool|\bool(false)|string $prefix
      *
      * @return string Order by sql clause
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getProductsOrder($type, $value = null, $prefix = false)
     {
@@ -3830,6 +3874,7 @@ exit;
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @return int|void
      */
     public static function clearCache($smarty = null, $tpl = false, $cacheId = null, $compileId = null)
     {
@@ -4034,6 +4079,7 @@ exit;
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @return bool
      */
     public static function recurseCopy($src, $dst, $del = false)
     {
@@ -4496,6 +4542,8 @@ exit;
      * @version 1.0.0 Initial version
      *
      * @todo    : update htmlpurifier
+     * @throws PrestaShopException
+     * @throws HTMLPurifier_Exception
      */
     public static function purifyHTML($html, $uri_unescape = null, $allow_style = false)
     {

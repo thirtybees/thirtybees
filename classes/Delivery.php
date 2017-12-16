@@ -86,6 +86,7 @@ class DeliveryCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getFields()
     {

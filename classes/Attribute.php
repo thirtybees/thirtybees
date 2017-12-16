@@ -97,6 +97,7 @@ class AttributeCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function delete()
     {
@@ -181,6 +182,7 @@ class AttributeCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -205,6 +207,8 @@ class AttributeCore extends ObjectModel
      *
      * @return array Attributes
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -237,6 +241,7 @@ class AttributeCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function isAttribute($idAttributeGroup, $name, $idLang)
     {
@@ -329,6 +334,7 @@ class AttributeCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function isColorAttribute()
     {
@@ -352,6 +358,7 @@ class AttributeCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getAttributeMinimalQty($idProductAttribute)
     {
@@ -373,11 +380,13 @@ class AttributeCore extends ObjectModel
     /**
      * Move an attribute inside its group
      *
-     * @param bool $way      Up (1)  or Down (0)
+     * @param bool $way Up (1)  or Down (0)
      * @param int  $position
      *
      * @return bool Update result
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -440,6 +449,8 @@ class AttributeCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     public function cleanPositions($idAttributeGroup, $useLastAttribute = true)
     {
@@ -466,6 +477,7 @@ class AttributeCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getHigherPosition($idAttributeGroup)
     {

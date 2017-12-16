@@ -53,6 +53,9 @@ abstract class HTMLTemplateCore
      * Returns the template's HTML header
      *
      * @return string HTML header
+     * @throws Exception
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function getHeader()
     {
@@ -66,6 +69,9 @@ abstract class HTMLTemplateCore
      *
      * @return string HTML footer
      *
+     * @throws Exception
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -96,6 +102,7 @@ abstract class HTMLTemplateCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function getShopAddress()
     {
@@ -114,6 +121,7 @@ abstract class HTMLTemplateCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function getLogo()
     {
@@ -135,6 +143,7 @@ abstract class HTMLTemplateCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function assignCommonHeaderData()
     {

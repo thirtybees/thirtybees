@@ -118,6 +118,8 @@ class OrderSlipCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -139,6 +141,8 @@ class OrderSlipCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -169,6 +173,8 @@ class OrderSlipCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -188,9 +194,11 @@ class OrderSlipCore extends ObjectModel
      *
      * @param int $idOrderDetail
      *
+     * @return array|false|null|PDOStatement
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @return array|false|null|PDOStatement
      */
     public static function getProductSlipDetail($idOrderDetail)
     {
@@ -209,6 +217,8 @@ class OrderSlipCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -240,6 +250,9 @@ class OrderSlipCore extends ObjectModel
      * @param bool  $shippingCost
      *
      * @return bool
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function createOrderSlip($order, $productList, $qtyList, $shippingCost = false)
     {
@@ -272,6 +285,9 @@ class OrderSlipCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -419,9 +435,11 @@ class OrderSlipCore extends ObjectModel
      *
      * @param int $idOrderDetail
      *
+     * @return array|bool|null|object
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @return array|bool|null|object
      */
     public static function getProductSlipResume($idOrderDetail)
     {
@@ -441,6 +459,8 @@ class OrderSlipCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -468,6 +488,8 @@ class OrderSlipCore extends ObjectModel
      * @param array $orderDetailList
      *
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -533,6 +555,8 @@ class OrderSlipCore extends ObjectModel
      * @param array $orderDetailList
      * @param array $productQtyList
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -561,6 +585,8 @@ class OrderSlipCore extends ObjectModel
     /**
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -587,6 +613,8 @@ class OrderSlipCore extends ObjectModel
     /**
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -615,6 +643,8 @@ class OrderSlipCore extends ObjectModel
     /**
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -635,6 +665,8 @@ class OrderSlipCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -662,6 +694,8 @@ class OrderSlipCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

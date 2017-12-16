@@ -66,6 +66,8 @@ class TagCore extends ObjectModel
      * @param string|null $name
      * @param int|null    $idLang
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0
      */
@@ -104,6 +106,8 @@ class TagCore extends ObjectModel
      *
      * @return bool Operation success
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0
      */
@@ -163,6 +167,8 @@ class TagCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -182,6 +188,8 @@ class TagCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function setProducts($array)
     {
@@ -215,6 +223,7 @@ class TagCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0
+     * @throws PrestaShopException
      */
     public static function updateTagCount($tagList = null)
     {
@@ -261,6 +270,8 @@ class TagCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getMainTags($idLang, $nb = 10)
     {
@@ -299,6 +310,8 @@ class TagCore extends ObjectModel
      *
      * @return array|bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0
      */
@@ -329,6 +342,8 @@ class TagCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function deleteTagsForProduct($idProduct)
     {
@@ -357,6 +372,8 @@ class TagCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0
      */

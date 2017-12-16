@@ -59,6 +59,7 @@ class SmartyCustomCore extends Smarty
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function clearCompiledTemplate($resourceName = null, $compileId = null, $expTime = null)
     {
@@ -81,6 +82,7 @@ class SmartyCustomCore extends Smarty
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function clearAllCache($expTime = null, $type = null)
     {
@@ -100,6 +102,8 @@ class SmartyCustomCore extends Smarty
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     public function delete_from_lazy_cache($template, $cacheId, $compileId)
     {
@@ -139,6 +143,7 @@ class SmartyCustomCore extends Smarty
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function clearCache($templateName, $cacheId = null, $compileId = null, $expTime = null, $type = null)
     {
@@ -156,6 +161,9 @@ class SmartyCustomCore extends Smarty
      *
      * @return string
      *
+     * @throws Exception
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -171,6 +179,7 @@ class SmartyCustomCore extends Smarty
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function check_compile_cache_invalidation()
     {
@@ -200,6 +209,7 @@ class SmartyCustomCore extends Smarty
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function createTemplate($template, $cacheId = null, $compileId = null, $parent = null, $doClone = true)
     {
@@ -222,6 +232,8 @@ class SmartyCustomCore extends Smarty
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function check_template_invalidation($template, $cacheId, $compileId)
     {
@@ -261,6 +273,8 @@ class SmartyCustomCore extends Smarty
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -320,6 +334,7 @@ class SmartyCustomCore extends Smarty
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function insert_in_lazy_cache($template, $cacheId, $compileId)
     {
@@ -349,6 +364,7 @@ class SmartyCustomCore extends Smarty
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function update_filepath($filepath, $template, $cacheId, $compileId)
     {
@@ -390,6 +406,8 @@ class Smarty_Custom_Template extends Smarty_Internal_Template
      * @throws SmartyException
      *
      * @since 1.0.0
+     * @throws Exception
+     * @throws Exception
      */
     public function fetch($template = null, $cacheId = null, $compileId = null, $parent = null, $display = false, $mergeTplVars = true, $noOutputFilter = false)
     {

@@ -69,13 +69,15 @@ class RangeWeightCore extends ObjectModel
     /**
      * Override add to create delivery value for all zones
      *
-     * @see classes/ObjectModelCore::add()
+     * @see     classes/ObjectModelCore::add()
      *
      * @param bool $autoDate
      * @param bool $nullValues
      *
      * @return bool Insertion result
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -110,6 +112,8 @@ class RangeWeightCore extends ObjectModel
      *
      * @return array Ranges
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -134,6 +138,7 @@ class RangeWeightCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function rangeExist($idCarrier, $delimiter1, $delimiter2, $idReference = null)
     {
@@ -160,6 +165,7 @@ class RangeWeightCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function isOverlapping($idCarrier, $delimiter1, $delimiter2, $idRang = null)
     {

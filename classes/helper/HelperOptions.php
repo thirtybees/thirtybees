@@ -61,7 +61,12 @@ class HelperOptionsCore extends Helper
      *
      * @return string html
      *
-     * @since 1.0.0
+     * @throws Exception
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function generateOptions($optionList)
@@ -333,7 +338,9 @@ class HelperOptionsCore extends Helper
      *
      * @return string
      *
-     * @since 1.0.0
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function getOptionValue($key, $field)

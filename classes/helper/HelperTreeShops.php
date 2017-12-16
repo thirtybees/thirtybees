@@ -52,8 +52,9 @@ class HelperTreeShopsCore extends TreeCore
      * @param null $title
      * @param null $lang
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function __construct($id, $title = null, $lang = null)
     {
@@ -69,8 +70,9 @@ class HelperTreeShopsCore extends TreeCore
     /**
      * @return mixed
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getData()
     {
@@ -198,8 +200,9 @@ class HelperTreeShopsCore extends TreeCore
      *
      * @return string
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function render($data = null, $useDefaultActions = true, $useSelectedShop = true)
     {

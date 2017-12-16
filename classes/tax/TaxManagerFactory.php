@@ -46,6 +46,8 @@ class TaxManagerFactoryCore
      *
      * @return TaxManagerInterface
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -72,6 +74,8 @@ class TaxManagerFactoryCore
      *
      * @return TaxManagerInterface|false
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -106,6 +110,7 @@ class TaxManagerFactoryCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @return string
      */
     protected static function getCacheKey(Address $address)
     {

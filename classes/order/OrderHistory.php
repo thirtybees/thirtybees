@@ -79,6 +79,10 @@ class OrderHistoryCore extends ObjectModel
      * @param int       $newOrderState
      * @param int|Order $idOrder
      * @param bool      $useExistingPayment
+     *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function changeIdOrderState($newOrderState, $idOrder, $useExistingPayment = false)
     {
@@ -373,7 +377,8 @@ class OrderHistoryCore extends ObjectModel
      * @return OrderState|false
      *
      * @deprecated 2.0.0
-     * @see Order->current_state
+     * @see        Order->current_state
+     * @throws PrestaShopException
      */
     public static function getLastOrderState($idOrder)
     {
@@ -408,7 +413,9 @@ class OrderHistoryCore extends ObjectModel
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial versions
      */
     public function addWithemail($autodate = true, $templateVars = false, Context $context = null)
@@ -432,7 +439,9 @@ class OrderHistoryCore extends ObjectModel
      *
      * @return bool
      *
-     * @since 1.0.0
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function sendEmail($order, $templateVars = false)
@@ -546,8 +555,9 @@ class OrderHistoryCore extends ObjectModel
     /**
      * @return false|null|string
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function isValidated()
     {
@@ -564,7 +574,11 @@ class OrderHistoryCore extends ObjectModel
     /**
      * Add method for webservice create resource Order History
      * If sendemail=1 GET parameter is present sends email to customer otherwise does not
+     *
      * @return bool
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function addWs()
     {

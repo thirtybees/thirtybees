@@ -43,6 +43,8 @@ class PackCore extends Product
      *
      * @return float|int
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public static function noPackPrice($idProduct)
@@ -63,6 +65,8 @@ class PackCore extends Product
      * @param int $idLang
      *
      * @return array|mixed
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getItems($idProduct, $idLang)
     {
@@ -110,6 +114,7 @@ class PackCore extends Product
      *
      * @since 1.5.0.1
      * @return bool
+     * @throws PrestaShopException
      */
     public static function isFeatureActive()
     {
@@ -120,6 +125,8 @@ class PackCore extends Product
      * @param int $idProduct
      *
      * @return int
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function noPackWholesalePrice($idProduct)
     {
@@ -136,6 +143,8 @@ class PackCore extends Product
      * @param int $idProduct
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function isInStock($idProduct)
     {
@@ -162,6 +171,8 @@ class PackCore extends Product
      * @param bool $full
      *
      * @return array|false|null|PDOStatement
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getItemTable($idProduct, $idLang, $full = false)
     {
@@ -241,6 +252,7 @@ class PackCore extends Product
      * @param int $idProduct
      *
      * @return bool
+     * @throws PrestaShopException
      */
     public static function isPack($idProduct)
     {
@@ -267,6 +279,7 @@ class PackCore extends Product
      * @param null $limit
      *
      * @return array|false|null|PDOStatement
+     * @throws PrestaShopException
      */
     public static function getPacksTable($idProduct, $idLang, $full = false, $limit = null)
     {
@@ -328,6 +341,8 @@ class PackCore extends Product
      * @param bool|int $idProductAttribute Optional combination of the product
      *
      * @return bool
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     public static function isPacked($idProduct, $idProductAttribute = false)
     {
@@ -363,6 +378,7 @@ class PackCore extends Product
      * @return bool
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public static function deleteItems($idProduct)
     {
@@ -380,6 +396,7 @@ class PackCore extends Product
      * @param bool   $hasActiveColumn
      *
      * @return bool
+     * @throws PrestaShopException
      */
     public static function isCurrentlyUsed($table = null, $hasActiveColumn = false)
     {
@@ -402,6 +419,8 @@ class PackCore extends Product
      *
      * @return bool true if everything was fine
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     public static function addItem($idProduct, $idItem, $qty, $idAttributeItem = 0)
     {
@@ -427,6 +446,7 @@ class PackCore extends Product
      * @return bool
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public static function duplicate($idProductOld, $idProductNew)
     {

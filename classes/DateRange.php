@@ -57,6 +57,8 @@ class DateRangeCore extends ObjectModel
     /**
      * @return mixed
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

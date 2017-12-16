@@ -203,6 +203,9 @@ class StockMvtWSCore extends ObjectModelCore
      * @param int|null $idLang
      * @param int|null $idShop
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -230,6 +233,8 @@ class StockMvtWSCore extends ObjectModelCore
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -284,6 +289,7 @@ class StockMvtWSCore extends ObjectModelCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getWSProductName()
     {

@@ -77,6 +77,8 @@ class MessageCore extends ObjectModel
      *
      * @return array Message
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -99,6 +101,8 @@ class MessageCore extends ObjectModel
      *
      * @return array Messages
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -138,6 +142,8 @@ class MessageCore extends ObjectModel
      * @param Context|null $context
      *
      * @return array Messages
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since    1.0.0
      * @version  1.0.0 Initial version
      */
@@ -174,9 +180,11 @@ class MessageCore extends ObjectModel
      * @param int $idMessage  Message ID
      * @param int $idEmployee Employee ID
      *
+     * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @return bool
      */
     public static function markAsReaded($idMessage, $idEmployee)
     {

@@ -76,6 +76,8 @@ class ConnectionCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -127,6 +129,7 @@ class ConnectionCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function setNewConnection($cookie)
     {
@@ -183,6 +186,7 @@ class ConnectionCore extends ObjectModel
     /**
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function cleanConnectionsPages()
     {
@@ -216,6 +220,7 @@ class ConnectionCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function setPageTime($idConnections, $idPage, $timeStart, $time)
     {
@@ -241,11 +246,12 @@ class ConnectionCore extends ObjectModel
     }
 
     /**
-     * @see ObjectModel::getFields()
+     * @see     ObjectModel::getFields()
      * @return array
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getFields()
     {

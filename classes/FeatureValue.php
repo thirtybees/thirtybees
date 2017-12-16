@@ -76,6 +76,8 @@ class FeatureValueCore extends ObjectModel
      *
      * @return array Array with feature's values
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -98,6 +100,8 @@ class FeatureValueCore extends ObjectModel
      *
      * @return array Array with feature's values
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -121,6 +125,8 @@ class FeatureValueCore extends ObjectModel
      *
      * @return array Array with value's languages
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -245,6 +251,7 @@ class FeatureValueCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      */
     public function delete()
     {

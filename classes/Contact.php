@@ -70,6 +70,8 @@ class ContactCore extends ObjectModel
      * @param int $idLang Language ID
      *
      * @return array Contacts
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getContacts($idLang)
     {
@@ -90,6 +92,8 @@ class ContactCore extends ObjectModel
      *
      * @return array Contacts
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

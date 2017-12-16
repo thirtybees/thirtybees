@@ -95,6 +95,7 @@ class WarehouseProductLocationCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getProductLocation($idProduct, $idProductAttribute, $idWarehouse)
     {
@@ -122,6 +123,7 @@ class WarehouseProductLocationCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getIdByProductAndWarehouse($idProduct, $idProductAttribute, $idWarehouse)
     {
@@ -147,6 +149,7 @@ class WarehouseProductLocationCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getCollection($idProduct)
     {
@@ -161,6 +164,8 @@ class WarehouseProductLocationCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

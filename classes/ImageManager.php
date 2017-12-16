@@ -154,6 +154,7 @@ class ImageManagerCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function resize(
         $srcFile,
@@ -379,6 +380,7 @@ class ImageManagerCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function write($type, $resource, $filename)
     {
@@ -578,6 +580,7 @@ class ImageManagerCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function cut($srcFile, $dstFile, $dstWidth = null, $dstHeight = null, $fileType = 'jpg', $dstX = 0, $dstY = 0)
     {

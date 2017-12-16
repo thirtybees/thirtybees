@@ -50,6 +50,7 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function __construct(OrderInvoiceCore $orderInvoice, Smarty $smarty, $bulkMode = false)
     {
@@ -81,6 +82,9 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
      *
      * @return string HTML header
      *
+     * @throws Exception
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -97,6 +101,10 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
      *
      * @return string HTML content
      *
+     * @throws Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -331,6 +339,10 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
      *
      * @return string|string[] Tax tab html content
      *
+     * @throws Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -395,6 +407,7 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getFilename()
     {
@@ -470,6 +483,7 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
      * @param string $isoCountry
      *
      * @return string
+     * @throws PrestaShopException
      */
     protected function getTemplateByCountry($isoCountry)
     {
@@ -491,6 +505,8 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
      *
      * @return array Different tax breakdown elements
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

@@ -80,6 +80,10 @@ class HelperFormCore extends Helper
      *
      * @return string
      *
+     * @throws Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -92,8 +96,10 @@ class HelperFormCore extends Helper
 
     /**
      * @return string
+     * @throws Exception
+     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     *
+     * @throws SmartyException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -343,6 +349,8 @@ class HelperFormCore extends Helper
      * @param null $templateDirectory
      *
      * @return string
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

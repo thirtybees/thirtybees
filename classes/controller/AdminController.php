@@ -290,11 +290,13 @@ class AdminControllerCore extends Controller
     /** @var bool $isThirtybeesUp */
     public static $isThirtybeesUp = true;
     // @codingStandardsIgnoreEnd
+
     /**
      * AdminControllerCore constructor.
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -857,6 +859,7 @@ class AdminControllerCore extends Controller
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopExceptionCore
      */
     public function processExport($textDelimiter = '"')
     {
@@ -1240,6 +1243,8 @@ class AdminControllerCore extends Controller
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     public function processSave()
     {
@@ -1467,6 +1472,7 @@ class AdminControllerCore extends Controller
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function copyFromPost(&$object, $table)
     {
@@ -1553,6 +1559,8 @@ class AdminControllerCore extends Controller
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     protected function updateAssoShop($idObject)
     {
@@ -1810,6 +1818,7 @@ class AdminControllerCore extends Controller
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      */
     public function processUpdateFields()
     {
@@ -2012,6 +2021,8 @@ class AdminControllerCore extends Controller
     /**
      * @return void
      *
+     * @throws Exception
+     * @throws SmartyException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2398,8 +2409,12 @@ class AdminControllerCore extends Controller
      *
      * @return void
      *
+     * @throws Exception
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function initContent()
     {
@@ -2460,6 +2475,7 @@ class AdminControllerCore extends Controller
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getLanguages()
     {
@@ -3082,6 +3098,7 @@ class AdminControllerCore extends Controller
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function renderDetails()
     {
@@ -3096,6 +3113,7 @@ class AdminControllerCore extends Controller
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopExceptionCore
      */
     public function renderList()
     {
@@ -3188,6 +3206,7 @@ class AdminControllerCore extends Controller
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function renderModulesList()
     {
@@ -4306,6 +4325,7 @@ class AdminControllerCore extends Controller
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function processUpdateOptions()
     {
@@ -4591,6 +4611,7 @@ class AdminControllerCore extends Controller
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function processBulkEnableSelection()
     {
@@ -4631,6 +4652,7 @@ class AdminControllerCore extends Controller
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function processBulkDisableSelection()
     {

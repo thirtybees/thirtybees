@@ -107,12 +107,13 @@ class CombinationCore extends ObjectModel
     // @codingStandardsIgnoreEnd
 
     /**
-     * This method is allow to know if a feature is active
+     * This method is allowed to know if a feature is active
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function isFeatureActive()
     {
@@ -126,7 +127,7 @@ class CombinationCore extends ObjectModel
     }
 
     /**
-     * This method is allow to know if a Combination entity is currently used
+     * This method is allowed to know if a Combination entity is currently used
      *
      * @param string|null $table
      * @param bool        $hasActiveColumn
@@ -135,6 +136,7 @@ class CombinationCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function isCurrentlyUsed($table = null, $hasActiveColumn = false)
     {
@@ -151,6 +153,7 @@ class CombinationCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getIdByReference($idProduct, $reference)
     {
@@ -176,6 +179,7 @@ class CombinationCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getPrice($idProductAttribute)
     {
@@ -191,6 +195,8 @@ class CombinationCore extends ObjectModel
     /**
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -226,6 +232,7 @@ class CombinationCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      */
     public function deleteAssociations()
     {
@@ -243,6 +250,7 @@ class CombinationCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      */
     public function deleteFromSupplier($idProduct)
     {
@@ -255,6 +263,8 @@ class CombinationCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -289,6 +299,8 @@ class CombinationCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -311,6 +323,8 @@ class CombinationCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -325,10 +339,12 @@ class CombinationCore extends ObjectModel
     }
 
     /**
-     * @param array $idsAttribute
+     * @param int[] $idsAttribute
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -353,6 +369,8 @@ class CombinationCore extends ObjectModel
     /**
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -372,6 +390,8 @@ class CombinationCore extends ObjectModel
     /**
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -393,6 +413,7 @@ class CombinationCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      */
     public function setWsImages($values)
     {
@@ -411,6 +432,8 @@ class CombinationCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function setImages($idsImage)
     {
@@ -440,6 +463,8 @@ class CombinationCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -458,6 +483,8 @@ class CombinationCore extends ObjectModel
     /**
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

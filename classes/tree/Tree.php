@@ -66,11 +66,12 @@ class TreeCore
     /**
      * TreeCore constructor.
      *
-     * @param      $id
-     * @param null $data
+     * @param int   $id
+     * @param mixed $data
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function __construct($id, $data = null)
     {
@@ -86,6 +87,7 @@ class TreeCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function __toString()
     {
@@ -99,6 +101,7 @@ class TreeCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function setActions($value)
     {
@@ -116,6 +119,7 @@ class TreeCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getActions()
     {
@@ -640,6 +644,7 @@ class TreeCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function addAction($action)
     {
@@ -657,6 +662,7 @@ class TreeCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function removeActions()
     {
@@ -676,6 +682,7 @@ class TreeCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function render($data = null)
     {

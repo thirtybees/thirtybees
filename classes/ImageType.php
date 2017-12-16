@@ -87,7 +87,7 @@ class ImageTypeCore extends ObjectModel
     /**
      * Returns image type definitions
      *
-     * @param string|null $type        Image type
+     * @param string|null $type Image type
      * @param bool        $orderBySize
      *
      * @return array Image type definitions
@@ -95,6 +95,7 @@ class ImageTypeCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getImagesTypes($type = null, $orderBySize = false)
     {
@@ -127,6 +128,8 @@ class ImageTypeCore extends ObjectModel
      *
      * @return int Number of results found
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -151,6 +154,8 @@ class ImageTypeCore extends ObjectModel
      *
      * @return string
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -177,9 +182,13 @@ class ImageTypeCore extends ObjectModel
      * @param string $name
      * @param string $type
      *
+     * @param int    $order
+     *
+     * @return bool|mixed
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @return bool|mixed
      */
     public static function getByNameNType($name, $type = null, $order = 0)
     {

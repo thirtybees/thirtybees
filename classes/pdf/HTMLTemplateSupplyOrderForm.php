@@ -76,6 +76,9 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws SmartyException
+     * @throws Exception
      */
     public function getContent()
     {
@@ -118,6 +121,7 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function getLogo()
     {
@@ -162,6 +166,7 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function getTaxOrderSummary()
     {
@@ -187,10 +192,14 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
     }
 
     /**
-     * @see HTMLTemplate::getHeader()
+     * @see     HTMLTemplate::getHeader()
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @return string
+     * @throws Exception
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function getHeader()
     {
@@ -220,10 +229,12 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
     }
 
     /**
-     * @see HTMLTemplate::getFooter()
+     * @see     HTMLTemplate::getFooter()
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws Exception
      */
     public function getFooter()
     {
@@ -252,6 +263,7 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function roundSupplyOrderDetails(&$collection)
     {
@@ -273,6 +285,7 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function roundSupplyOrder(SupplyOrder &$supplyOrder)
     {

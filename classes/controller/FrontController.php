@@ -166,6 +166,7 @@ class FrontControllerCore extends Controller
      * @since   1.0.0
      *
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getCurrentCustomerGroups()
     {
@@ -245,6 +246,7 @@ class FrontControllerCore extends Controller
      * @since   1.0.0
      *
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function initContent()
     {
@@ -339,6 +341,7 @@ class FrontControllerCore extends Controller
      * @since   1.0.0
      *
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getSeoFields()
     {

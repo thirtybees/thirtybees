@@ -67,6 +67,9 @@ class TranslatedConfigurationCore extends Configuration
      * @param int|null $id
      * @param int|null $idLang
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -97,6 +100,8 @@ class TranslatedConfigurationCore extends Configuration
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -109,6 +114,8 @@ class TranslatedConfigurationCore extends Configuration
      * @param bool $nullValues
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function update($nullValues = false)
     {
@@ -142,6 +149,8 @@ class TranslatedConfigurationCore extends Configuration
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

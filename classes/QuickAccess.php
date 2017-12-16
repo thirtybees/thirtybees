@@ -67,6 +67,8 @@ class QuickAccessCore extends ObjectModel
      *
      * @return array QuickAccesses
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

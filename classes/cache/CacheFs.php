@@ -43,9 +43,14 @@ class CacheFsCore extends Cache
      */
     protected $depth;
 
+    /**
+     * CacheFsCore constructor.
+     *
+     * @throws PrestaShopException
+     */
     protected function __construct()
     {
-        $this->depth = (int) Db::getInstance()->getValue('SELECT value FROM '._DB_PREFIX_.'configuration WHERE name= \'PS_CACHEFS_DIRECTORY_DEPTH\'', false);
+        $this->depth = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue('SELECT value FROM '._DB_PREFIX_.'configuration WHERE name= \'PS_CACHEFS_DIRECTORY_DEPTH\'', false);
 
         $keysFilename = $this->getFilename(static::KEYS_NAME);
         if (@filemtime($keysFilename)) {

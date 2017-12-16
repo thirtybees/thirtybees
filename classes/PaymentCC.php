@@ -85,14 +85,16 @@ class PaymentCCCore extends OrderPayment
     }
 
     /**
-    * Get the detailed payment of an order
-    *
-    * @param int $idOrder
-    *
-    * @return array
-    * @deprecated 1.5.0.1
-    * @see OrderPaymentCore
-    */
+     * Get the detailed payment of an order
+     *
+     * @param int $idOrder
+     *
+     * @return array
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @deprecated 1.5.0.1
+     * @see        OrderPaymentCore
+     */
     public static function getByOrderId($idOrder)
     {
         Tools::displayAsDeprecated();

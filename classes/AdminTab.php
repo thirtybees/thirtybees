@@ -318,6 +318,7 @@ abstract class AdminTabCore
      * @deprecated 1.0.0
      *
      * @return bool
+     * @throws PrestaShopException
      */
     public function includeSubTab($methodname, $actions = [])
     {
@@ -414,6 +415,7 @@ abstract class AdminTabCore
      * @param bool $firstCall
      *
      * @deprecated 1.0.0
+     * @throws PrestaShopException
      */
     public function displayForm($firstCall = true)
     {
@@ -468,6 +470,7 @@ abstract class AdminTabCore
      * @param int    $limit     Row count in LIMIT clause
      *
      * @deprecated 1.0.0
+     * @throws PrestaShopException
      */
     public function getList($idLang, $orderBy = null, $orderWay = null, $start = 0, $limit = null, $idLangShop = false)
     {
@@ -864,6 +867,7 @@ abstract class AdminTabCore
      * @param string|null $token
      *
      * @deprecated 1.0.0
+     * @throws PrestaShopException
      */
     public function displayListContent($token = null)
     {
@@ -1262,6 +1266,7 @@ abstract class AdminTabCore
 
     /**
      * @deprecated 1.0.0
+     * @throws PrestaShopDatabaseException
      */
     public function displayRequiredFields()
     {
@@ -1317,6 +1322,7 @@ abstract class AdminTabCore
      * @param int $id Object id used for deleting images
      *
      * @deprecated 1.0.0
+     * @throws PrestaShopDatabaseException
      */
     public function deleteImage($id)
     {
@@ -1371,6 +1377,8 @@ abstract class AdminTabCore
      * Manage page processing
      *
      * @deprecated 1.0.0
+     * @throws PrestaShopException
+     * @throws PrestaShopDatabaseException
      */
     public function postProcess()
     {
@@ -1771,6 +1779,8 @@ abstract class AdminTabCore
      * Manage page display (form, list...)
      *
      * @param string $className Allow to validate a different class than the current one
+     *
+     * @throws PrestaShopException
      */
     public function validateRules($className = false)
     {
@@ -1883,7 +1893,8 @@ abstract class AdminTabCore
      * @param object &$object Object
      * @param string $table   Object table
      *
-     *                        @deprecated 1.0.0
+     * @deprecated 1.0.0
+     * @throws PrestaShopException
      */
     protected function copyFromPost(&$object, $table)
     {
@@ -1946,6 +1957,7 @@ abstract class AdminTabCore
      * @param bool $idObject
      *
      * @deprecated 1.0.0
+     * @throws PrestaShopException
      */
     protected function updateAssoShop($idObject = false)
     {
@@ -2059,6 +2071,7 @@ abstract class AdminTabCore
      * @param string $token
      *
      * @deprecated 1.0.0
+     * @throws PrestaShopException
      */
     protected function updateOptions($token)
     {
@@ -2412,6 +2425,7 @@ abstract class AdminTabCore
      * @param $value
      *
      * @deprecated 1.0.0
+     * @throws PrestaShopException
      */
     public function displayOptionTypeTextLang($key, $field, $value)
     {
@@ -2469,6 +2483,8 @@ abstract class AdminTabCore
      * @param $key
      * @param $field
      * @param $value
+     *
+     * @throws PrestaShopException
      */
     public function displayOptionTypeTextareaLang($key, $field, $value)
     {
@@ -2489,6 +2505,8 @@ abstract class AdminTabCore
      * @param $key
      * @param $field
      * @param $value
+     *
+     * @throws PrestaShopException
      */
     public function displayOptionTypeSelectLang($key, $field, $value)
     {

@@ -437,6 +437,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function __construct($idProduct = null, $full = false, $idLang = null, $idShop = null, Context $context = null)
     {
@@ -483,6 +484,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getTaxesRate(Address $address = null)
     {
@@ -499,6 +501,8 @@ class ProductCore extends ObjectModel
     /**
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -554,6 +558,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getPriceStatic(
         $idProduct,
@@ -722,9 +727,11 @@ class ProductCore extends ObjectModel
      *
      * @return float Product price
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     **/
+     */
     public static function priceCalculation(
         $idShop,
         $idProduct,
@@ -968,6 +975,10 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws PrestaShopException
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     public static function getDefaultAttribute($idProduct, $minimumQuantity = 0, $reset = false)
     {
@@ -1051,6 +1062,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function sqlStock($productAlias, $productAttribute = null, $innerJoin = false, Shop $shop = null)
     {
@@ -1082,6 +1094,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getIdTaxRulesGroupByIdProduct($idProduct, Context $context = null)
     {
@@ -1128,6 +1141,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function useAdvancedStockManagement()
     {
@@ -1144,6 +1158,8 @@ class ProductCore extends ObjectModel
      *
      * @return int
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1157,10 +1173,11 @@ class ProductCore extends ObjectModel
     }
 
     /**
-     * @param null $idCustomer
+     * @param int|null $idCustomer
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function initPricesComputation($idCustomer = null)
     {
@@ -1199,6 +1216,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getAvailableDate($idProduct, $idProductAttribute = null)
     {
@@ -1238,9 +1256,11 @@ class ProductCore extends ObjectModel
     }
 
     /**
-     * @param      $idProduct
+     * @param int  $idProduct
      * @param bool $isVirtual
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1256,14 +1276,20 @@ class ProductCore extends ObjectModel
     /**
      * Get all available products
      *
-     * @param int    $idLang   Language id
-     * @param int    $start    Start number
-     * @param int    $limit    Number of products to return
-     * @param string $orderBy  Field for ordering
-     * @param string $orderWay Way for ordering (ASC or DESC)
+     * @param int          $idLang   Language id
+     * @param int          $start    Start number
+     * @param int          $limit    Number of products to return
+     * @param string       $orderBy  Field for ordering
+     * @param string       $orderWay Way for ordering (ASC or DESC)
+     *
+     * @param bool         $idCategory
+     * @param bool         $onlyActive
+     * @param Context|null $context
      *
      * @return array Products details
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1335,6 +1361,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getTaxesInformations($row, Context $context = null)
     {
@@ -1364,6 +1391,8 @@ class ProductCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1390,11 +1419,13 @@ class ProductCore extends ObjectModel
     }
 
     /**
-     * @param $idProductAttribute
-     * @param $idLang
+     * @param int $idProductAttribute
+     * @param int $idLang
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1435,6 +1466,9 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws PrestaShopDatabaseException
      */
     public static function getNewProducts($idLang, $pageNumber = 0, $nbProducts = 10, $count = false, $orderBy = null, $orderWay = null, Context $context = null)
     {
@@ -1560,6 +1594,8 @@ class ProductCore extends ObjectModel
      * @param array $productIds
      * @param int   $idLang
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1609,6 +1645,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getProductsProperties($idLang, $queryResult)
     {
@@ -1634,6 +1671,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getProductProperties($idLang, $row, Context $context = null)
     {
@@ -1810,6 +1848,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function isAvailableWhenOutOfStock($outOfStock)
     {
@@ -1837,6 +1876,7 @@ class ProductCore extends ObjectModel
      * @param int $idProductAttribute
      *
      * @return float
+     * @throws PrestaShopException
      */
     public static function getProductAttributePrice($idProductAttribute)
     {
@@ -1853,6 +1893,8 @@ class ProductCore extends ObjectModel
      *
      * @return int Available quantities
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1891,6 +1933,8 @@ class ProductCore extends ObjectModel
      *
      * @return array|mixed
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1922,6 +1966,8 @@ class ProductCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1942,6 +1988,8 @@ class ProductCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1963,7 +2011,7 @@ class ProductCore extends ObjectModel
     /**
      * Get a random special
      *
-     * @param int     $idLang    Language id
+     * @param int     $idLang Language id
      * @param bool    $beginning
      * @param bool    $ending
      * @param Context $context
@@ -1972,6 +2020,8 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getRandomSpecial($idLang, $beginning = false, $ending = false, Context $context = null)
     {
@@ -2065,6 +2115,8 @@ class ProductCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2108,6 +2160,8 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getPricesDrop(
         $idLang,
@@ -2244,6 +2298,8 @@ class ProductCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2280,6 +2336,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function convertAndFormatPrice($price, $currency = false, Context $context = null)
     {
@@ -2302,6 +2359,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function isDiscounted($idProduct, $quantity = 1, Context $context = null)
     {
@@ -2335,6 +2393,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function convertPrice($params, &$smarty)
     {
@@ -2351,6 +2410,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function convertPriceWithCurrency($params, &$smarty)
     {
@@ -2365,6 +2425,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function displayWtPrice($params, &$smarty)
     {
@@ -2381,6 +2442,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function displayWtPriceWithCurrency($params, &$smarty)
     {
@@ -2426,6 +2488,8 @@ class ProductCore extends ObjectModel
      *
      * @return array|bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2476,6 +2540,8 @@ class ProductCore extends ObjectModel
      *
      * @return array Product accessories
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2500,6 +2566,8 @@ class ProductCore extends ObjectModel
      *
      * @return array|bool|null|object
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2517,6 +2585,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function addFeatureProductImport($idProduct, $idFeature, $idFeatureValue)
     {
@@ -2531,6 +2600,8 @@ class ProductCore extends ObjectModel
     /**
      * @param array $productIds
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2573,6 +2644,8 @@ class ProductCore extends ObjectModel
      *
      * @return array Matching products
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2639,6 +2712,7 @@ class ProductCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      *
+     * @throws PrestaShopException
      */
     public static function duplicateAttributes($idProductOld, $idProductNew)
     {
@@ -2751,6 +2825,8 @@ class ProductCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2775,6 +2851,8 @@ class ProductCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2804,6 +2882,8 @@ class ProductCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2834,6 +2914,8 @@ class ProductCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2862,6 +2944,8 @@ class ProductCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2902,6 +2986,8 @@ class ProductCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -2942,6 +3028,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function duplicateFeatures($idProductOld, $idProductNew)
     {
@@ -3003,6 +3090,8 @@ class ProductCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -3024,6 +3113,8 @@ class ProductCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -3077,6 +3168,8 @@ class ProductCore extends ObjectModel
      *
      * @return array|bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -3137,6 +3230,8 @@ class ProductCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -3161,13 +3256,15 @@ class ProductCore extends ObjectModel
     }
 
     /**
-     * @param int|     $idCart
+     * @param int      $idCart
      * @param int|null $idLang
      * @param int|bool $onlyInCart
      * @param int|null $idShop
      *
      * @return array|bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -3235,6 +3332,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function addCustomizationPrice(&$products, &$customizedDatas)
     {
@@ -3299,6 +3397,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function idIsOnCategoryId($idProduct, $categories)
     {
@@ -3323,10 +3422,12 @@ class ProductCore extends ObjectModel
     }
 
     /**
-     * @param $idProduct
+     * @param int $idProduct
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -3351,6 +3452,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function resetEcoTax()
     {
@@ -3365,10 +3467,14 @@ class ProductCore extends ObjectModel
     /**
      * Get all product attributes ids
      *
-     * @param int $idProduct the id of the product
+     * @param int  $idProduct the id of the product
+     *
+     * @param bool $shopOnly
      *
      * @return array product attribute id list
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -3388,9 +3494,11 @@ class ProductCore extends ObjectModel
      *
      * @param int $idProduct
      *
+     * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @return array|false|mysqli_result|null|PDOStatement|resource
      */
     public static function getAttributesInformationsByProduct($idProduct)
     {
@@ -3509,6 +3617,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getProductName($idProduct, $idProductAttribute = null, $idLang = null)
     {
@@ -3560,6 +3669,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getRealQuantity($idProduct, $idProductAttribute = 0, $idWarehouse = 0, $idShop = null)
     {
@@ -3587,6 +3697,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function usesAdvancedStockManagement($idProduct)
     {
@@ -3616,6 +3727,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getIdTaxRulesGroupMostUsed()
     {
@@ -3644,6 +3756,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getIdByEan13($ean13)
     {
@@ -3694,6 +3807,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function setPackStockType($idProduct, $packStockType)
     {
@@ -3704,11 +3818,12 @@ class ProductCore extends ObjectModel
     }
 
     /**
-     * @see ObjectModel::getFieldsShop()
+     * @see     ObjectModel::getFieldsShop()
      * @return array
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getFieldsShop()
     {
@@ -3724,13 +3839,15 @@ class ProductCore extends ObjectModel
     /**
      * Move a product inside its category
      *
-     * @param bool $way      Up (1)  or Down (0)
+     * @param bool $way Up (1)  or Down (0)
      * @param int  $position
      *
      * @return bool Update result
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     public function updatePosition($way, $position)
     {
@@ -3797,6 +3914,7 @@ class ProductCore extends ObjectModel
      * @param bool   $humanErrors
      *
      * @return string|true
+     * @throws PrestaShopException
      */
     public function validateField($field, $value, $idLang = null, $skip = [], $humanErrors = false)
     {
@@ -3819,6 +3937,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function toggleStatus()
     {
@@ -3844,6 +3963,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws Adapter_Exception
      */
     public function deleteSelection($products)
     {
@@ -3866,6 +3986,9 @@ class ProductCore extends ObjectModel
     /**
      * @return bool
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -3945,6 +4068,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function deleteProductAttributes()
     {
@@ -3967,6 +4091,8 @@ class ProductCore extends ObjectModel
      *
      * @return bool success
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -3993,8 +4119,9 @@ class ProductCore extends ObjectModel
     /**
      * Delete product in its scenes
      *
-     * @return array Deletion result
+     * @return bool Deletion result
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -4015,6 +4142,8 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function deleteCategories($cleanPositions = false)
     {
@@ -4046,6 +4175,8 @@ class ProductCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @return bool
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     public static function cleanPositions($idCategory, $position = 0)
     {
@@ -4109,6 +4240,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function deleteProductFeatures()
     {
@@ -4122,6 +4254,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function deleteFeatures()
     {
@@ -4167,6 +4300,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function deleteTags()
     {
@@ -4176,10 +4310,11 @@ class ProductCore extends ObjectModel
     /**
      * Delete product from cart
      *
-     * @return array Deletion result
+     * @return array|bool Deletion result
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function deleteCartProducts()
     {
@@ -4193,6 +4328,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function deleteAttributesImpacts()
     {
@@ -4213,6 +4349,7 @@ class ProductCore extends ObjectModel
      *
      * @since    1.0.0
      * @version  1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function deleteAttachments($updateAttachmentCache = true)
     {
@@ -4236,6 +4373,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function updateCacheAttachment($idProduct)
     {
@@ -4260,6 +4398,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function deleteCustomization()
     {
@@ -4284,6 +4423,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function deletePack()
     {
@@ -4301,6 +4441,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function deleteProductSale()
     {
@@ -4317,6 +4458,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function deleteSearchIndexes()
     {
@@ -4337,6 +4479,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      */
     public function deleteAccessories()
     {
@@ -4350,6 +4493,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      */
     public function deleteFromAccessories()
     {
@@ -4361,6 +4505,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      */
     public function deleteFromSupplier()
     {
@@ -4374,6 +4519,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function deleteDownload()
     {
@@ -4391,6 +4537,8 @@ class ProductCore extends ObjectModel
     /**
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -4414,6 +4562,8 @@ class ProductCore extends ObjectModel
      *
      * @return bool Update/insertion result
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since    1.0.0
      * @version  1.0.0 Initial version
      */
@@ -4456,6 +4606,8 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function deleteCategory($idCategory, $cleanPositions = true)
     {
@@ -4483,6 +4635,8 @@ class ProductCore extends ObjectModel
      * @param mixed $categories id_category or array of id_category
      *
      * @return bool true if succeed
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function addToCategories($categories = [])
     {
@@ -4544,6 +4698,8 @@ class ProductCore extends ObjectModel
      *
      * @return array of categories
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -4555,8 +4711,12 @@ class ProductCore extends ObjectModel
     /**
      * getProductCategories return an array of categories which this product belongs to
      *
+     * @param string $idProduct
+     *
      * @return array of categories
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -4612,6 +4772,7 @@ class ProductCore extends ObjectModel
      * @param int  $minimalQuantity
      *
      * @return bool|mixed
+     * @throws PrestaShopException
      */
     public function addProductAttribute(
         $price,
@@ -4663,6 +4824,8 @@ class ProductCore extends ObjectModel
      * @param null   $availableDate
      *
      * @return mixed $id_product_attribute or false
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     public function addAttribute(
         $price,
@@ -4751,10 +4914,12 @@ class ProductCore extends ObjectModel
     }
 
     /**
-     * @param $idProduct
+     * @param int $idProduct
      *
      * @return bool|int
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -4786,10 +4951,12 @@ class ProductCore extends ObjectModel
     }
 
     /**
-     * @param $idProduct
+     * @param int $idProduct
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -4811,6 +4978,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function generateMultipleCombinations($combinations, $attributes)
     {
@@ -4859,6 +5027,8 @@ class ProductCore extends ObjectModel
      *
      * @return bool|int|string
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -4915,6 +5085,8 @@ class ProductCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -4934,6 +5106,8 @@ class ProductCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -4987,6 +5161,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getType()
     {
@@ -5026,6 +5201,7 @@ class ProductCore extends ObjectModel
      *
      * @since    1.0.0
      * @version  1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function addCombinationEntity(
         $wholesalePrice,
@@ -5073,6 +5249,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function addSupplierReference($idSupplier, $idProductAttribute, $supplierReference = null, $price = null, $idCurrency = null)
     {
@@ -5106,6 +5283,8 @@ class ProductCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -5146,6 +5325,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function hasAttributesInOtherShops()
     {
@@ -5182,6 +5362,7 @@ class ProductCore extends ObjectModel
      * @param string $availableDate
      *
      * @return array
+     * @throws PrestaShopException
      */
     public function updateProductAttribute(
         $idProductAttribute,
@@ -5229,6 +5410,7 @@ class ProductCore extends ObjectModel
      * @param array  $idShopList
      *
      * @return array Update result
+     * @throws PrestaShopException
      */
     public function updateAttribute(
         $idProductAttribute,
@@ -5319,6 +5501,7 @@ class ProductCore extends ObjectModel
      * @return bool
      *
      * @deprecated 1.0.0
+     * @throws PrestaShopException
      */
     public function updateQuantityProductWithAttributeQuantity()
     {
@@ -5343,8 +5526,10 @@ class ProductCore extends ObjectModel
      * @param int   $idProductAttribute Product attribute id
      * @param array $attributes         Attributes to forge combinaison
      *
-     * @return array Insertion result
+     * @return bool Insertion result
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @deprecated 1.0.0
      */
     public function addAttributeCombinaison($idProductAttribute, $attributes)
@@ -5370,6 +5555,7 @@ class ProductCore extends ObjectModel
      *
      * @return bool
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function addAttributeCombinationMultiple($idAttributes, $combinations)
     {
@@ -5397,6 +5583,8 @@ class ProductCore extends ObjectModel
      * @param string $attributeSeparator
      *
      * @return array Product attributes combinations
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getAttributesResume($idLang, $attributeValueSeparator = ' - ', $attributeSeparator = ', ')
     {
@@ -5459,9 +5647,11 @@ class ProductCore extends ObjectModel
      * Get product attribute combination by id_product_attribute
      *
      * @param int $idProductAttribute
-     * @param int $idLang             Language id
+     * @param int $idLang Language id
      *
      * @return array Product attribute combination by id_product_attribute
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getAttributeCombinationsById($idProductAttribute, $idLang)
     {
@@ -5508,6 +5698,8 @@ class ProductCore extends ObjectModel
      *
      * @return array|bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -5562,6 +5754,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function hasAttributes()
     {
@@ -5587,6 +5780,8 @@ class ProductCore extends ObjectModel
      * @version 1.0.0 Initial version
      *
      * @return mixed
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getCarriers()
     {
@@ -5608,6 +5803,8 @@ class ProductCore extends ObjectModel
      * @version 1.0.0 Initial version
      *
      * @param array $carrierList
+     *
+     * @throws PrestaShopException
      */
     public function setCarriers($carrierList)
     {
@@ -5646,6 +5843,8 @@ class ProductCore extends ObjectModel
      *
      * @return array Product images and legends
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -5675,6 +5874,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getPrice(
         $tax = true,
@@ -5705,6 +5905,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getPublicPrice(
         $tax = true,
@@ -5725,6 +5926,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getIdProductAttributeMostExpensive()
     {
@@ -5747,6 +5949,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getDefaultIdProductAttribute()
     {
@@ -5773,6 +5976,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getPriceWithoutReduct($notax = false, $idProductAttribute = false, $decimals = 6)
     {
@@ -5786,6 +5990,8 @@ class ProductCore extends ObjectModel
      *
      * @return bool True if product is available with this quantity
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -5815,6 +6021,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function checkDefaultAttributes()
     {
@@ -5874,6 +6081,8 @@ class ProductCore extends ObjectModel
      *
      * @return array Attribute groups
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -5913,6 +6122,8 @@ class ProductCore extends ObjectModel
      *
      * @return array Product accessories
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -5966,6 +6177,8 @@ class ProductCore extends ObjectModel
      *
      * @param array $accessoriesId Accessories ids
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -5993,6 +6206,8 @@ class ProductCore extends ObjectModel
      * @param string $cust
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function addFeaturesCustomToDB($idValue, $idLang, $cust)
     {
@@ -6025,6 +6240,8 @@ class ProductCore extends ObjectModel
      *
      * @return string
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -6051,6 +6268,8 @@ class ProductCore extends ObjectModel
      *
      * @return array|mixed
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -6064,6 +6283,8 @@ class ProductCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -6080,6 +6301,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function createLabels($uploadableFiles, $textFields)
     {
@@ -6111,6 +6333,8 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     protected function _createLabel($languages, $type)
     {
@@ -6155,6 +6379,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function updateLabels()
     {
@@ -6239,6 +6464,8 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     protected function _deleteOldLabels()
     {
@@ -6308,11 +6535,13 @@ class ProductCore extends ObjectModel
     }
 
     /**
-     * @param bool $idLang
-     * @param null $idShop
+     * @param int|bool $idLang
+     * @param null     $idShop
      *
      * @return array|bool|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -6354,6 +6583,8 @@ class ProductCore extends ObjectModel
     /**
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -6376,6 +6607,8 @@ class ProductCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -6412,6 +6645,8 @@ class ProductCore extends ObjectModel
     /**
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -6427,6 +6662,8 @@ class ProductCore extends ObjectModel
     /**
      * @return int
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -6442,6 +6679,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function checkAccess($idCustomer)
     {
@@ -6456,6 +6694,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function checkAccessStatic($idProduct, $idCustomer)
     {
@@ -6503,12 +6742,13 @@ class ProductCore extends ObjectModel
      * @deprecated since 1.5.0
      *
      * @param int $quantity
-     * @param int $idReason           - useless
+     * @param int $idReason   - useless
      * @param int $idProductAttribute
-     * @param int $idOrder            - DEPRECATED
-     * @param int $idEmployee         - DEPRECATED
+     * @param int $idOrder    - DEPRECATED
+     * @param int $idEmployee - DEPRECATED
      *
      * @return bool
+     * @throws Adapter_Exception
      */
     public function addStockMvt($quantity, $idReason, $idProductAttribute = null, $idOrder = null, $idEmployee = null)
     {
@@ -6536,6 +6776,8 @@ class ProductCore extends ObjectModel
      * @param int $idLang
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getStockMvts($idLang)
     {
@@ -6612,6 +6854,8 @@ class ProductCore extends ObjectModel
      *
      * @return array Array with feature product's data
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -6625,6 +6869,8 @@ class ProductCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -6655,6 +6901,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function setWsProductFeatures($productFeatures)
     {
@@ -6702,6 +6949,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getWsDefaultCombination()
     {
@@ -6717,6 +6965,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function setWsDefaultCombination($idCombination)
     {
@@ -6732,6 +6981,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function deleteDefaultAttributes()
     {
@@ -6751,6 +7001,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function setDefaultAttribute($idProductAttribute)
     {
@@ -6779,6 +7030,8 @@ class ProductCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -6804,6 +7057,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function setWsCategories($categoryIds)
     {
@@ -6838,6 +7092,8 @@ class ProductCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -6862,6 +7118,7 @@ class ProductCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @return bool
+     * @throws PrestaShopException
      */
     public function setWsAccessories($accessories)
     {
@@ -6878,6 +7135,8 @@ class ProductCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -6901,6 +7160,8 @@ class ProductCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @return bool
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     public function setWsCombinations($combinations)
     {
@@ -6971,6 +7232,8 @@ class ProductCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -6994,6 +7257,8 @@ class ProductCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -7043,6 +7308,8 @@ class ProductCore extends ObjectModel
      *
      * @return int
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -7066,6 +7333,8 @@ class ProductCore extends ObjectModel
      *
      * @return int
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -7084,6 +7353,8 @@ class ProductCore extends ObjectModel
      *
      * @return array Product cover image
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -7115,6 +7386,8 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     public function setCoverWs($idImage)
     {
@@ -7137,6 +7410,8 @@ class ProductCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -7155,6 +7430,8 @@ class ProductCore extends ObjectModel
     /**
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -7170,6 +7447,8 @@ class ProductCore extends ObjectModel
     /**
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -7191,6 +7470,8 @@ class ProductCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @return bool
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     public function setWsTags($tagIds)
     {
@@ -7226,6 +7507,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      */
     public function deleteWsTags()
     {
@@ -7237,6 +7519,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getWsManufacturerName()
     {
@@ -7249,6 +7532,8 @@ class ProductCore extends ObjectModel
      * @param string $reference
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -7272,6 +7557,8 @@ class ProductCore extends ObjectModel
      * @param bool $withId
      *
      * @return string
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getAnchor($idProductAttribute, $withId = false)
     {
@@ -7298,6 +7585,8 @@ class ProductCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -7410,6 +7699,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function addWs($autodate = true, $nullValues = false)
     {
@@ -7427,6 +7717,8 @@ class ProductCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -7464,6 +7756,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function updateWs($nullValues = false)
     {
@@ -7485,6 +7778,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getParentCategories($idLang = null)
     {
@@ -7507,6 +7801,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function setAdvancedStockManagement($value)
     {
@@ -7529,6 +7824,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getDefaultCategory()
     {
@@ -7552,6 +7848,10 @@ class ProductCore extends ObjectModel
      * @see        Product::getAttributeCombinations()
      *
      * @param int $idLang
+     *
+     * @return array
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getAttributeCombinaisons($idLang)
     {
@@ -7567,6 +7867,8 @@ class ProductCore extends ObjectModel
      *
      * @return array Product attributes combinations
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -7613,6 +7915,8 @@ class ProductCore extends ObjectModel
      * @see        Product::deleteAttributeCombination()
      *
      * @param int $idProductAttribute
+     *
+     * @return array
      */
     public function deleteAttributeCombinaison($idProductAttribute)
     {
@@ -7630,8 +7934,10 @@ class ProductCore extends ObjectModel
      *
      * @param int $idProductAttribute Product attribute id
      *
-     * @return array Deletion result
+     * @return bool Deletion result
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -7662,6 +7968,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getWsType()
     {
@@ -7696,6 +8003,8 @@ class ProductCore extends ObjectModel
     /**
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -7711,6 +8020,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function setWsType($typeStr)
     {
@@ -7743,6 +8053,8 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function setWsProductBundle($items)
     {
@@ -7769,6 +8081,7 @@ class ProductCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function isColorUnavailable($idAttribute, $idShop)
     {

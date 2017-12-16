@@ -71,6 +71,8 @@ class RangePriceCore extends ObjectModel
      *
      * @return array Ranges
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -95,6 +97,7 @@ class RangePriceCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function rangeExist($idCarrier, $delimiter1, $delimiter2, $idReference = null)
     {
@@ -120,6 +123,7 @@ class RangePriceCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function isOverlapping($idCarrier, $delimiter1, $delimiter2, $idRang = null)
     {
@@ -143,6 +147,8 @@ class RangePriceCore extends ObjectModel
      *
      * @return bool Insertion result
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

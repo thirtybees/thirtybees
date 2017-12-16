@@ -112,15 +112,17 @@ class OrderStateCore extends ObjectModel
     const FLAG_PAID        = 16; /* 10000 */
 
     /**
-    * Get all available order statuses
-    *
-    * @param int $idLang Language id for status name
-    *
-    * @return array Order statuses
+     * Get all available order statuses
      *
-     * @since 1.0.0
+     * @param int $idLang Language id for status name
+     *
+     * @return array Order statuses
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @since   1.0.0
      * @version 1.0.0 Initial version
-    */
+     */
     public static function getOrderStates($idLang)
     {
         $cacheId = 'OrderState::getOrderStates_'.(int) $idLang;
@@ -149,8 +151,9 @@ class OrderStateCore extends ObjectModel
      *
      * @return bool availability
      *
-     * @since 1.0.0
+     * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function invoiceAvailable($idOrderState)
     {

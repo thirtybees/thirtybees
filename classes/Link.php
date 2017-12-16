@@ -59,6 +59,7 @@ class LinkCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function __construct($protocolLink = null, $protocolContent = null)
     {
@@ -114,6 +115,7 @@ class LinkCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getProductDeletePictureLink($product, $idPicture)
     {
@@ -218,6 +220,7 @@ class LinkCore
      * @return string
      *
      * @since 1.0.0 Function has become public
+     * @throws PrestaShopException
      */
     public function getBaseLink($idShop = null, $ssl = null, $relativeProtocol = false)
     {
@@ -253,6 +256,7 @@ class LinkCore
      * @return string
      *
      * @since 1.0.0 Function has become public
+     * @throws PrestaShopException
      */
     public function getLangLink($idLang = null, Context $context = null, $idShop = null)
     {
@@ -281,6 +285,7 @@ class LinkCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getAdminLink($controller, $withToken = true)
     {
@@ -303,6 +308,7 @@ class LinkCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getImageLink($name, $ids, $type = null)
     {
@@ -383,6 +389,7 @@ class LinkCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getLanguageLink($idLang, Context $context = null)
     {
@@ -438,6 +445,9 @@ class LinkCore
      * @param bool         $relativeProtocol
      *
      * @return string
+     * @throws PrestaShopException
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     public function getCategoryLink($category, $alias = null, $idLang = null, $selectedFilters = null, $idShop = null, $relativeProtocol = false)
     {
@@ -482,7 +492,7 @@ class LinkCore
     /**
      * Create a link to a supplier
      *
-     * @param mixed    $supplier         Supplier object (can be an ID supplier, but deprecated)
+     * @param mixed    $supplier Supplier object (can be an ID supplier, but deprecated)
      * @param string   $alias
      * @param int      $idLang
      * @param int|null $idShop
@@ -491,6 +501,8 @@ class LinkCore
      * @return string
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     public function getSupplierLink($supplier, $alias = null, $idLang = null, $idShop = null, $relativeProtocol = false)
     {
@@ -521,7 +533,7 @@ class LinkCore
     /**
      * Create a link to a manufacturer
      *
-     * @param mixed    $manufacturer     Manufacturer object (can be an ID supplier, but deprecated)
+     * @param mixed    $manufacturer Manufacturer object (can be an ID supplier, but deprecated)
      * @param string   $alias
      * @param int      $idLang
      * @param int|null $idShop
@@ -530,6 +542,8 @@ class LinkCore
      * @return string
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws PrestaShopException
      */
     public function getManufacturerLink($manufacturer, $alias = null, $idLang = null, $idShop = null, $relativeProtocol = false)
     {
@@ -566,6 +580,7 @@ class LinkCore
      * @param bool        $relativeProtocol
      *
      * @return string
+     * @throws PrestaShopException
      */
     public function getCMSLink($cms, $alias = null, $ssl = null, $idLang = null, $idShop = null, $relativeProtocol = false)
     {
@@ -603,6 +618,7 @@ class LinkCore
      * @param int $idLang
      *
      * @return string
+     * @throws PrestaShopException
      */
     protected function findCMSSubcategories($idCms, $idLang)
     {
@@ -648,6 +664,7 @@ class LinkCore
      * @param bool            $relativeProtocol
      *
      * @return string
+     * @throws PrestaShopException
      */
     public function getCMSCategoryLink($cmsCategory, $alias = null, $idLang = null, $idShop = null, $relativeProtocol = false)
     {
@@ -691,6 +708,7 @@ class LinkCore
      * @param int $idCmsCategory
      *
      * @return int
+     * @throws PrestaShopException
      */
     protected function findCMSCategoryParent($idCmsCategory)
     {
@@ -709,7 +727,7 @@ class LinkCore
     /**
      * Create a link to a module
      *
-     * @param string   $module           Module name
+     * @param string   $module Module name
      * @param string   $controller
      * @param array    $params
      * @param null     $ssl
@@ -721,6 +739,7 @@ class LinkCore
      * @internal param string $process Action name
      * @since    1.0.0
      * @version  1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getModuleLink($module, $controller = 'default', array $params = [], $ssl = null, $idLang = null, $idShop = null, $relativeProtocol = false)
     {
@@ -757,6 +776,7 @@ class LinkCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getPageLink($controller, $ssl = null, $idLang = null, $request = null, $requestUrlEncode = false, $idShop = null, $relativeProtocol = false)
     {
@@ -824,6 +844,7 @@ class LinkCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getPaginationLink($type, $idObject, $nb = false, $sort = false, $pagination = false, $array = false)
     {

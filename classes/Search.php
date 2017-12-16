@@ -119,6 +119,8 @@ class SearchCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function find(
         $idLang,
@@ -330,6 +332,7 @@ class SearchCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function sanitize($string, $idLang, $indexation = false, $isoCode = false)
     {
@@ -415,6 +418,7 @@ class SearchCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function indexation($full = false, $idProduct = false)
     {
@@ -637,6 +641,8 @@ class SearchCore
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -725,6 +731,8 @@ class SearchCore
      *
      * @return string
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -751,6 +759,8 @@ class SearchCore
      *
      * @return string
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -783,6 +793,8 @@ class SearchCore
      *
      * @return string
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -813,6 +825,8 @@ class SearchCore
      *
      * @return array|null
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -834,6 +848,7 @@ class SearchCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected static function fillProductArray(&$productArray, $weightArray, $key, $value, $idLang, $isoCode)
     {
@@ -857,6 +872,7 @@ class SearchCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected static function saveIndex(&$queryArray3)
     {
@@ -875,6 +891,7 @@ class SearchCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected static function setProductsAsIndexed(&$products)
     {
@@ -888,6 +905,7 @@ class SearchCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function removeProductsSearchIndex($products)
     {
@@ -912,6 +930,8 @@ class SearchCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function searchTag(
         $idLang,

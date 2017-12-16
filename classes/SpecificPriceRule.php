@@ -124,6 +124,7 @@ class SpecificPriceRuleCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      */
     public static function applyAllRules($products = false)
     {
@@ -145,6 +146,8 @@ class SpecificPriceRuleCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function apply($products = false)
     {
@@ -168,6 +171,7 @@ class SpecificPriceRuleCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
      */
     public function resetApplication($products = false)
     {
@@ -186,6 +190,7 @@ class SpecificPriceRuleCore extends ObjectModel
      *
      * @return array Affected products list IDs.
      * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function getAffectedProducts($products = false)
     {
@@ -279,6 +284,7 @@ class SpecificPriceRuleCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getConditions()
     {
@@ -314,14 +320,15 @@ class SpecificPriceRuleCore extends ObjectModel
     }
 
     /**
-     * @param      $idRule
-     * @param      $idProduct
+     * @param int  $idRule
+     * @param int  $idProduct
      * @param null $idProductAttribute
      *
      * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function applyRuleToProduct($idRule, $idProduct, $idProductAttribute = null)
     {
@@ -355,6 +362,8 @@ class SpecificPriceRuleCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function delete()
     {
@@ -367,6 +376,8 @@ class SpecificPriceRuleCore extends ObjectModel
     /**
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function deleteConditions()
     {
@@ -389,6 +400,8 @@ class SpecificPriceRuleCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

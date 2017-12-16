@@ -135,6 +135,8 @@ class ShopCore extends ObjectModel
      * @param int $idShop
      *
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -149,6 +151,8 @@ class ShopCore extends ObjectModel
     /**
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -193,6 +197,8 @@ class ShopCore extends ObjectModel
      * @param bool $nullValues
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function add($autoDate = true, $nullValues = false)
     {
@@ -231,6 +237,8 @@ class ShopCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -282,6 +290,7 @@ class ShopCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function hasDependency($idShop)
     {
@@ -452,6 +461,7 @@ class ShopCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getAddress()
     {
@@ -549,6 +559,7 @@ class ShopCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getCategory()
     {
@@ -560,6 +571,8 @@ class ShopCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -581,6 +594,7 @@ class ShopCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function isDefaultShop()
     {
@@ -696,6 +710,8 @@ class ShopCore extends ObjectModel
      *
      * @param bool $refresh
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -757,6 +773,8 @@ class ShopCore extends ObjectModel
     /**
      * @return array|null
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -786,6 +804,8 @@ class ShopCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -812,6 +832,8 @@ class ShopCore extends ObjectModel
     /**
      * @return array|bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -845,6 +867,7 @@ class ShopCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getShopsCollection($active = true, $idShopGroup = null)
     {
@@ -867,6 +890,8 @@ class ShopCore extends ObjectModel
      *
      * @return false|array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -889,6 +914,8 @@ class ShopCore extends ObjectModel
      *
      * @return int
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -928,6 +955,8 @@ class ShopCore extends ObjectModel
      *
      * @return int Group ID
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -979,6 +1008,7 @@ class ShopCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function getContextListShopID($share = false)
     {
@@ -1002,6 +1032,8 @@ class ShopCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1120,12 +1152,14 @@ class ShopCore extends ObjectModel
     /**
      * Add an sql restriction for shops fields
      *
-     * @param int    $share If false, dont check share datas from group. Else can take a Shop::SHARE_* constant value
+     * @param bool   $share If false, dont check share datas from group. Else can take a Shop::SHARE_* constant value
      * @param string $alias
      *
+     * @return string
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @return string
      */
     public static function addSqlRestriction($share = false, $alias = null)
     {
@@ -1155,6 +1189,7 @@ class ShopCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function addSqlAssociation($table, $alias, $innerJoin = true, $on = null, $forceNotDefault = false)
     {
@@ -1192,6 +1227,7 @@ class ShopCore extends ObjectModel
      *
      * @since    1.0.0
      * @version  1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function addSqlRestrictionOnLang($alias = null, $idShop = null)
     {
@@ -1210,6 +1246,8 @@ class ShopCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1225,6 +1263,7 @@ class ShopCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public static function isFeatureActive()
     {
@@ -1243,6 +1282,8 @@ class ShopCore extends ObjectModel
      * @param bool $tablesImport
      * @param bool $deleted
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1355,6 +1396,8 @@ class ShopCore extends ObjectModel
      * @param bool $onlyId
      *
      * @return array
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -1402,6 +1445,8 @@ class ShopCore extends ObjectModel
      * @param bool   $delete
      *
      * @return array|bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */

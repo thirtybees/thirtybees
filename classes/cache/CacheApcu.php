@@ -40,6 +40,8 @@ class CacheApcuCore extends CacheCore
 {
     /**
      * CacheApcCore constructor.
+     *
+     * @throws PrestaShopException
      */
     public function __construct()
     {
