@@ -20,7 +20,7 @@ needs please refer to http://www.thirtybees.com for more information.
 @author PrestaShop SA <contact@prestashop.com>
 @author thirt bees <info@thirtybees.com>
 @copyright 2007-2016 PrestaShop SA
-@copyright 2017 thirty bees
+@copyright 2017-2018 thirty bees
 @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
 International Registered Trademark & Property of PrestaShop SA
 
