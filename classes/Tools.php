@@ -910,7 +910,11 @@ class ToolsCore
     {
         if ($roundMode === null) {
             if (Tools::$round_mode == null) {
-                Tools::$round_mode = (int) Configuration::get('PS_PRICE_ROUND_MODE');
+                try {
+                    Tools::$round_mode = (int) Configuration::get('PS_PRICE_ROUND_MODE');
+                } catch (PrestaShopException $e) {
+                    Tools::$round_mode = PS_ROUND_HALF_UP;
+                }
             }
 
             $roundMode = Tools::$round_mode;
