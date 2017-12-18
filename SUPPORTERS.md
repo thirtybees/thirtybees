@@ -11,6 +11,8 @@ Ian Osaka
 
 ## Generous Backers
 
+Emanuel Schiendorfer
+
 Kubilay Erdogan
 
 MpA1 Aps
@@ -30,8 +32,6 @@ Vincent Schillevoort
 Yaniv Mirel
 
 ## Backers
-
-Emanuel Schiendorfer
 
 Gerdus van Zyl
 
