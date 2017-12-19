@@ -2156,6 +2156,8 @@ class CategoryCore extends ObjectModel
      */
     public function getParentsCategories($idLang = null)
     {
+        static $parentCategoryCache = [];
+
         $context = Context::getContext()->cloneContext();
         $context->shop = clone($context->shop);
 
@@ -2171,28 +2173,40 @@ class CategoryCore extends ObjectModel
             $context->shop = new Shop(Configuration::get('PS_SHOP_DEFAULT'));
         }
         $idShop = $context->shop->id;
-        while (true) {
-            $sql = '
-			SELECT c.*, cl.*
-			FROM `'._DB_PREFIX_.'category` c
-			LEFT JOIN `'._DB_PREFIX_.'category_lang` cl
-				ON (c.`id_category` = cl.`id_category`
-				AND `id_lang` = '.(int) $idLang.Shop::addSqlRestrictionOnLang('cl').')';
-            if (Shop::isFeatureActive() && Shop::getContext() == Shop::CONTEXT_SHOP) {
-                $sql .= ' LEFT JOIN `'._DB_PREFIX_.'category_shop` cs ON (c.`id_category` = cs.`id_category` AND cs.`id_shop` = '.(int) $idShop.')';
-            }
-            $sql .= ' WHERE c.`id_category` = '.(int) $idCurrent;
-            if (Shop::isFeatureActive() && Shop::getContext() == Shop::CONTEXT_SHOP) {
-                $sql .= ' AND cs.`id_shop` = '.(int) $context->shop->id;
-            }
-            $rootCategory = Category::getRootCategory();
-            if (Shop::isFeatureActive() && Shop::getContext() == Shop::CONTEXT_SHOP
-                && (!Tools::isSubmit('id_category') || (int) Tools::getValue('id_category') == (int) $rootCategory->id || (int) $rootCategory->id == (int) $context->shop->id_category)
-            ) {
-                $sql .= ' AND c.`id_parent` != 0';
-            }
 
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
+        if (!isset($parentCategoryCache[$idShop][$idLang])) {
+            if (!isset($parentCategoryCache[$idShop][$idLang])) {
+                $parentCategoryCache[$idShop] = [];
+            }
+            $parentCategoryCache[$idShop][$idLang] = [];
+        }
+
+        while (true) {
+            if (!empty($parentCategoryCache[$idShop][$idLang][$idCurrent])) {
+                $result = $parentCategoryCache[$idShop][$idLang][$idCurrent];
+            } else {
+                $sql = (new DbQuery())
+                    ->select('c.*, cl.*')
+                    ->from('category', 'c')
+                    ->leftJoin('category_lang', 'cl', 'c.`id_category` = cl.`id_category`')
+                    ->where('`id_lang` = '.(int) $idLang.Shop::addSqlRestrictionOnLang('cl'));
+                if (Shop::isFeatureActive() && Shop::getContext() == Shop::CONTEXT_SHOP) {
+                    $sql->leftJoin('category_shop', 'cs', 'c.`id_category` = cs.`id_category` AND cs.`id_shop` = '.(int) $idShop);
+                }
+                $sql->where('c.`id_category` = '.(int) $idCurrent);
+                if (Shop::isFeatureActive() && Shop::getContext() == Shop::CONTEXT_SHOP) {
+                    $sql->where('cs.`id_shop` = '.(int) $context->shop->id);
+                }
+                $rootCategory = Category::getRootCategory();
+                if (Shop::isFeatureActive() && Shop::getContext() == Shop::CONTEXT_SHOP
+                    && (!Tools::isSubmit('id_category') || (int) Tools::getValue('id_category') == (int) $rootCategory->id || (int) $rootCategory->id == (int) $context->shop->id_category)
+                ) {
+                    $sql->where('c.`id_parent` != 0');
+                }
+
+                $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
+                $parentCategoryCache[$idShop][$idLang][$idCurrent] = $result;
+            }
 
             if ($result) {
                 $categories[] = $result;
