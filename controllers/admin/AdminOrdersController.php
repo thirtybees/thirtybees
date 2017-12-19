@@ -1841,6 +1841,17 @@ class AdminOrdersControllerCore extends AdminController
         $carrierModuleCall = null;
         if ($carrier->is_module) {
             $module = Module::getInstanceByName($carrier->external_module_name);
+            if (!Validate::isLoadedObject($module)) {
+                $carrier->shipping_external = false;
+                $carrier->external_module_name = '';
+                $carrier->is_module = false;
+                try {
+                    $carrier->save();
+                } catch (PrestaShopException $e) {
+                    $this->context->controller->errors[] = $e->getMessage();
+                }
+            }
+
             if (method_exists($module, 'displayInfoByCart')) {
                 $carrierModuleCall = call_user_func([$module, 'displayInfoByCart'], $order->id_cart);
             }
