@@ -1048,6 +1048,8 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      */
     public function validateFieldsLang($die = true, $errorReturn = false)
     {
+        $idLangDefault = Configuration::get('PS_LANG_DEFAULT');
+
         foreach ($this->def['fields'] as $field => $data) {
             if (empty($data['lang'])) {
                 continue;
@@ -1061,8 +1063,8 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             }
 
             // The value for the default must always be set, so we put an empty string if it does not exists
-            if (!isset($values[Configuration::get('PS_LANG_DEFAULT')])) {
-                $values[Configuration::get('PS_LANG_DEFAULT')] = '';
+            if (!isset($values[$idLangDefault])) {
+                $values[$idLangDefault] = '';
             }
 
             foreach ($values as $idLang => $value) {
