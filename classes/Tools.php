@@ -2675,32 +2675,43 @@ class ToolsCore
     }
 
     /**
-     * @param      $url
-     * @param bool $use_include_path
-     * @param null $stream_context
-     * @param int  $curl_timeout
+     * @param string        $url
+     * @param bool          $useIncludePath
+     * @param resource|null $streamContext
+     * @param int           $curlTimeout
      *
      * @return bool|mixed|string
      *
      * @deprecated 1.0.0 Use Guzzle for remote URLs and file_get_contents for local files instead
      */
-    public static function file_get_contents($url, $use_include_path = false, $stream_context = null, $curl_timeout = 5)
+    public static function file_get_contents($url, $useIncludePath = false, $streamContext = null, $curlTimeout = 5)
     {
-        if ($stream_context == null && preg_match('/^https?:\/\//', $url)) {
-            $stream_context = @stream_context_create(['http' => ['timeout' => $curl_timeout]]);
+        if ($streamContext == null && preg_match('/^https?:\/\//', $url)) {
+            $streamContext = @stream_context_create(['http' => ['timeout' => $curlTimeout]]);
+        }
+
+        // Remove the Content-Length header -- let cURL/fopen handle it
+        if (!empty($streamContext['http']['header'])) {
+            $headers = explode("\r\n", $streamContext['http']['header']);
+            foreach ($headers as $index => $header) {
+                if (substr(strtolower($header), 0, 14) === 'content-length') {
+                    unset($headers[$index]);
+                }
+            }
+            $streamContext['http']['header'] = implode("\r\n", $headers);
         }
 
         if (!preg_match('/^https?:\/\//', $url)) {
-            return @file_get_contents($url, $use_include_path, $stream_context);
+            return @file_get_contents($url, $useIncludePath, $streamContext);
         } elseif (function_exists('curl_init')) {
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($curl, CURLOPT_URL, $url);
             curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
-            curl_setopt($curl, CURLOPT_TIMEOUT, $curl_timeout);
+            curl_setopt($curl, CURLOPT_TIMEOUT, $curlTimeout);
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
-            if ($stream_context != null) {
-                $opts = stream_context_get_options($stream_context);
+            if ($streamContext != null) {
+                $opts = stream_context_get_options($streamContext);
                 if (isset($opts['http']['method']) && mb_strtolower($opts['http']['method']) == 'post') {
                     curl_setopt($curl, CURLOPT_POST, true);
                     if (isset($opts['http']['content'])) {
@@ -2714,7 +2725,7 @@ class ToolsCore
 
             return $content;
         } elseif (ini_get('allow_url_fopen')) {
-            return @file_get_contents($url, $use_include_path, $stream_context);
+            return @file_get_contents($url, $useIncludePath, $streamContext);
         } else {
             return false;
         }
