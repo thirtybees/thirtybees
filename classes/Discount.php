@@ -45,7 +45,7 @@ class DiscountCore extends CartRule
      *
      * @return bool|float|int|mixed|string
      */
-    public function __get($key)
+    public function &__get($key)
     {
         Tools::displayAsDeprecated();
 
