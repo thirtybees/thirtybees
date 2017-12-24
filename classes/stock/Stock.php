@@ -188,7 +188,7 @@ class StockCore extends ObjectModel
                 ->from('stock')
                 ->where('`id_warehouse` = '.(int) $idWarehouse)
                 ->where('`id_product` = '.(int) $idProduct)
-                ->where((int) $idProductAttribute ? ' AND `id_product_attribute` = '.$idProductAttribute : '')
+                ->where((int) $idProductAttribute ? '`id_product_attribute` = '.$idProductAttribute : '')
         );
 
         return (is_array($result) && !empty($result) ? true : false);
