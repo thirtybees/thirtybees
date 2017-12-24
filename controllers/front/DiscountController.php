@@ -87,8 +87,6 @@ class DiscountControllerCore extends FrontController
                 $product = new Product((int) $discount['gift_product'], false, (int) $this->context->language->id);
                 if (!Validate::isLoadedObject($product) || !$product->isAssociatedToShop() || !$product->active) {
                     unset($cartRules[$key]);
-
-                    continue;
                 }
                 if (Combination::isFeatureActive() && (int) $discount['gift_product_attribute'] !== 0) {
                     $attributes = $product->getAttributeCombinationsById(
@@ -118,7 +116,6 @@ class DiscountControllerCore extends FrontController
         }
 
         $nbCartRules = count($cartRules);
-
 
         $this->context->smarty->assign(
             [
