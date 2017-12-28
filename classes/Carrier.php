@@ -144,6 +144,7 @@ class CarrierCore extends ObjectModel
             'need_range'           => ['type' => self::TYPE_BOOL                                                                   ],
             'position'             => ['type' => self::TYPE_INT                                                                    ],
             'deleted'              => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                         ],
+            'id_tax_rules_group'   => ['type' => self::TYPE_INT,    'validate' => 'isInt'                                          ],
 
             /* Lang fields */
             'delay'                => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128],

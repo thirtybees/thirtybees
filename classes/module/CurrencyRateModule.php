@@ -276,7 +276,9 @@ abstract class CurrencyRateModuleCore extends Module
         foreach ($installedModules as $moduleInfo) {
             /** @var CurrencyRateModule $module */
             $module = Module::getInstanceById($moduleInfo['id_module']);
-            $modules[$module->name] = $module->getSupportedCurrencies();
+            if (Validate::isLoadedObject($module)) {
+                $modules[$module->name] = $module->getSupportedCurrencies();
+            }
         }
 
         return $modules;
