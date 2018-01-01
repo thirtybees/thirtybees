@@ -183,15 +183,16 @@ class AttachmentCore extends ObjectModel
      */
     public static function getAttachments($idLang, $idProduct, $include = true)
     {
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            (new DbQuery())
-                ->select('a.*, al.*')
-                ->from('attachment', 'a')
-                ->leftJoin('attachment_lang', 'al', 'a.`id_attachment` = al.`id_attachment`')
-                ->leftJoin('product_attachment', 'pa', 'pa.`id_attachment` = a.`id_attachment`')
-                ->where('al.`id_lang` = '.(int) $idLang)
-                ->where($include ? 'pa.`id_product` = '.(int) $idProduct : '')
-                ->where('pa.`id_product` IS '.($include ? 'NOT ' : '').'NULL')
+        return Db::getInstance()->executeS('
+            SELECT *
+            FROM '._DB_PREFIX_.'attachment a
+            LEFT JOIN '._DB_PREFIX_.'attachment_lang al
+                ON (a.id_attachment = al.id_attachment AND al.id_lang = '.(int) $idLang.')
+            WHERE a.id_attachment '.($include ? 'IN' : 'NOT IN').' (
+                SELECT pa.id_attachment
+                FROM '._DB_PREFIX_.'product_attachment pa
+                WHERE id_product = '.(int) $idProduct.'
+            )'
         );
     }
 
