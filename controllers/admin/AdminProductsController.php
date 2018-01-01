@@ -768,6 +768,7 @@ class AdminProductsControllerCore extends AdminController
                 && Product::duplicateCustomizationFields($idProductOld, $product->id)
                 && Product::duplicateTags($idProductOld, $product->id)
                 && Product::duplicateDownload($idProductOld, $product->id)
+                && Product::duplicateAttachments($idProductOld, $product->id)
             ) {
                 if ($product->hasAttributes()) {
                     Product::updateDefaultAttribute($product->id);
