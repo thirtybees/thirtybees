@@ -3097,7 +3097,7 @@ class ProductCore extends ObjectModel
      */
     public static function duplicateSpecificPrices($oldProductId, $productId)
     {
-        foreach (SpecificPrice::getIdsByProductId((int) $oldProductId) as $data) {
+        foreach (SpecificPrice::getByProductId((int) $oldProductId) as $data) {
             $specificPrice = new SpecificPrice((int) $data['id_specific_price']);
             if (!$specificPrice->duplicate((int) $productId)) {
                 return false;
