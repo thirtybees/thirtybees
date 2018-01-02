@@ -211,7 +211,7 @@ class AdminPerformanceControllerCore extends AdminController
                         ],
                         [
                             'id'    => 'smarty_caching_type_apcu',
-                            'value' => 'mysql',
+                            'value' => 'apcu',
                             'label' => $this->l('APCu'),
                         ],
                     ],
