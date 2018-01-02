@@ -41,8 +41,15 @@ if (!Tools::getSafeModeStatus()) {
 $smarty->setConfigDir(_PS_SMARTY_DIR_.'configs');
 $smarty->caching = false;
 if (Configuration::get('PS_SMARTY_CACHING_TYPE') == 'mysql') {
-    include(_PS_CLASS_DIR_.'/SmartyCacheResourceMysql.php');
+    if (!class_exists('Smarty_CacheResource_Mysql')) {
+        include(_PS_CLASS_DIR_.'/SmartyCacheResourceMysql.php');
+    }
     $smarty->caching_type = 'mysql';
+} elseif (Configuration::get('PS_SMARTY_CACHING_TYPE') == 'apcu') {
+    if (!class_exists('Smarty_CacheResource_Apcu')) {
+        include(_PS_CLASS_DIR_.'/SmartyCacheResourceApcu.php');
+    }
+    $smarty->caching_type = 'apcu';
 }
 $smarty->force_compile = (Configuration::get('PS_SMARTY_FORCE_COMPILE') == _PS_SMARTY_FORCE_COMPILE_) ? true : false;
 $smarty->compile_check = (Configuration::get('PS_SMARTY_FORCE_COMPILE') >= _PS_SMARTY_CHECK_COMPILE_) ? true : false;
