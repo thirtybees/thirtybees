@@ -49,7 +49,6 @@ EXCLUDE_FILE+=("composer.lock")
 EXCLUDE_FILE+=("Vagrantfile")
 
 # Directories not needed in the release package.
-EXCLUDE_DIR=("docs")
 EXCLUDE_DIR+=("examples")
 EXCLUDE_DIR+=("Examples")
 EXCLUDE_DIR+=("tests")
