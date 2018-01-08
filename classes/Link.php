@@ -310,7 +310,7 @@ class LinkCore
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
-    public function getImageLink($name, $ids, $type = null)
+    public function getImageLink($name, $ids, $type = null, $format = 'jpg')
     {
         $notDefault = false;
 
@@ -320,25 +320,25 @@ class LinkCore
         }
 
         // legacy mode or default image
-        $theme = ((Shop::isFeatureActive() && file_exists(_PS_PROD_IMG_DIR_.$ids.($type ? '-'.$type : '').'-'.(int) Context::getContext()->shop->id_theme.'.jpg')) ? '-'.Context::getContext()->shop->id_theme : '');
+        $theme = ((Shop::isFeatureActive() && file_exists(_PS_PROD_IMG_DIR_.$ids.($type ? '-'.$type : '').'-'.(int) Context::getContext()->shop->id_theme.'.'.$format)) ? '-'.Context::getContext()->shop->id_theme : '');
         if ((Configuration::get('PS_LEGACY_IMAGES')
-                && (file_exists(_PS_PROD_IMG_DIR_.$ids.($type ? '-'.$type : '').$theme.'.jpg')))
+                && (file_exists(_PS_PROD_IMG_DIR_.$ids.($type ? '-'.$type : '').$theme.'.'.$format)))
             || ($notDefault = strpos($ids, 'default') !== false)
         ) {
             if ($this->allow == 1 && !$notDefault) {
-                $uriPath = __PS_BASE_URI__.$ids.($type ? '-'.$type : '').$theme.'/'.$name.'.jpg';
+                $uriPath = __PS_BASE_URI__.$ids.($type ? '-'.$type : '').$theme.'/'.$name.'.'.$format;
             } else {
-                $uriPath = _THEME_PROD_DIR_.$ids.($type ? '-'.$type : '').$theme.'.jpg';
+                $uriPath = _THEME_PROD_DIR_.$ids.($type ? '-'.$type : '').$theme.'.'.$format;
             }
         } else {
             // if ids if of the form id_product-id_image, we want to extract the id_image part
             $splitIds = explode('-', $ids);
             $idImage = (isset($splitIds[1]) ? $splitIds[1] : $splitIds[0]);
-            $theme = ((Shop::isFeatureActive() && file_exists(_PS_PROD_IMG_DIR_.Image::getImgFolderStatic($idImage).$idImage.($type ? '-'.$type : '').'-'.(int) Context::getContext()->shop->id_theme.'.jpg')) ? '-'.Context::getContext()->shop->id_theme : '');
+            $theme = ((Shop::isFeatureActive() && file_exists(_PS_PROD_IMG_DIR_.Image::getImgFolderStatic($idImage).$idImage.($type ? '-'.$type : '').'-'.(int) Context::getContext()->shop->id_theme.'.'.$format)) ? '-'.Context::getContext()->shop->id_theme : '');
             if ($this->allow == 1) {
-                $uriPath = __PS_BASE_URI__.$idImage.($type ? '-'.$type : '').$theme.'/'.$name.'.jpg';
+                $uriPath = __PS_BASE_URI__.$idImage.($type ? '-'.$type : '').$theme.'/'.$name.'.'.$format;
             } else {
-                $uriPath = _THEME_PROD_DIR_.Image::getImgFolderStatic($idImage).$idImage.($type ? '-'.$type : '').$theme.'.jpg';
+                $uriPath = _THEME_PROD_DIR_.Image::getImgFolderStatic($idImage).$idImage.($type ? '-'.$type : '').$theme.'.'.$format;
             }
         }
 
