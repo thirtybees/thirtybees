@@ -125,7 +125,7 @@ class CustomizationCore extends ObjectModel
             ->from('order_return', 'ore')
             ->innerJoin('order_return_detail', 'ord', 'ord.`id_order_return` = ore.`id_order_return`')
             ->where('ore.`id_order` = '.(int) $idOrder)
-            ->where('ord.`id_customzation` != 0')
+            ->where('ord.`id_customization` != 0')
         )) === false) {
             return false;
         }
