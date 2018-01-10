@@ -327,6 +327,8 @@ class OrderReturnCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -336,7 +338,7 @@ class OrderReturnCore extends ObjectModel
             (new DbQuery())
                 ->select('*')
                 ->from('order_return_detail')
-                ->where('`id_order_detail` = '.(int) $idOrderReturn)
+                ->where('`id_order_return` = '.(int) $idOrderReturn)
         );
     }
 
