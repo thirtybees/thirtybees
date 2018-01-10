@@ -73,6 +73,8 @@ class OrderReturnCore extends ObjectModel
      *
      * @return array|bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -120,6 +122,8 @@ class OrderReturnCore extends ObjectModel
      *
      * @return array|false|null|PDOStatement
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -141,6 +145,9 @@ class OrderReturnCore extends ObjectModel
      *
      * @param array $products
      * @param int   $idOrder
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function addReturnedQuantity(&$products, $idOrder)
     {
@@ -174,6 +181,8 @@ class OrderReturnCore extends ObjectModel
      * @param array $customizationIds
      * @param array $customizationQtyInput
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -207,6 +216,8 @@ class OrderReturnCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -263,6 +274,8 @@ class OrderReturnCore extends ObjectModel
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -298,6 +311,8 @@ class OrderReturnCore extends ObjectModel
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
@@ -345,6 +360,8 @@ class OrderReturnCore extends ObjectModel
     /**
      * @return bool|int
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
