@@ -317,9 +317,9 @@ class WebserviceOutputXMLCore implements WebserviceOutputInterface
     public function overrideContent($content)
     {
         $xml = '<?xml version="1.0" encoding="UTF-8"?>'."\n";
-        $xml .= '<thirtybees xmlns:xlink="http://www.w3.org/1999/xlink">'."\n";
+        $xml .= '<prestashop xmlns:xlink="http://www.w3.org/1999/xlink">'."\n";
         $xml .= $content;
-        $xml .= '</thirtybees>'."\n";
+        $xml .= '</prestashop>'."\n";
 
         return $xml;
     }
