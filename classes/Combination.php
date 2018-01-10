@@ -380,7 +380,7 @@ class CombinationCore extends ObjectModel
             (new DbQuery())
                 ->select('a.`id_attribute` AS `id`')
                 ->from('product_attribute_combination', 'a')
-                ->join(Shop::addSqlRestriction('attribute', 'a'))
+                ->join(Shop::addSqlAssociation('attribute', 'a'))
                 ->where('a.`id_product_attribute` = '.(int) $this->id)
         );
 
@@ -401,7 +401,7 @@ class CombinationCore extends ObjectModel
             (new DbQuery())
                 ->select('a.`id_image` AS `id`')
                 ->from('product_attribute_image', 'a')
-                ->join(Shop::addSqlRestriction('product_attribute', 'a'))
+                ->join(Shop::addSqlAssociation('product_attribute', 'a'))
                 ->where('a.`id_product_attribute` = '.(int) $this->id)
         );
     }
