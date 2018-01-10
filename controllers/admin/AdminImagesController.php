@@ -538,9 +538,9 @@ class AdminImagesControllerCore extends AdminController
 
         foreach ($toDel as $d) {
             foreach ($type as $imageType) {
-                if (preg_match('/^[0-9]+\-'.($product ? '[0-9]+\-' : '').$imageType['name'].'\.jpg$/', $d)
-                    || (count($type) > 1 && preg_match('/^[0-9]+\-[_a-zA-Z0-9-]*\.jpg$/', $d))
-                    || preg_match('/^([[:lower:]]{2})\-default\-'.$imageType['name'].'\.jpg$/', $d)
+                if (preg_match('/^[0-9]+\-'.($product ? '[0-9]+\-' : '').$imageType['name'].'\.(jpg|webp)$/', $d)
+                    || (count($type) > 1 && preg_match('/^[0-9]+\-[_a-zA-Z0-9-]*\.(jpg|webp)$/', $d))
+                    || preg_match('/^([[:lower:]]{2})\-default\-'.$imageType['name'].'\.(jpg|webp)$/', $d)
                 ) {
                     if (file_exists($dir.$d)) {
                         unlink($dir.$d);
@@ -559,7 +559,7 @@ class AdminImagesControllerCore extends AdminController
                     $toDel = scandir($dir.$imageObj->getImgFolder());
                     foreach ($toDel as $d) {
                         foreach ($type as $imageType) {
-                            if (preg_match('/^[0-9]+\-'.$imageType['name'].'\.jpg$/', $d) || (count($type) > 1 && preg_match('/^[0-9]+\-[_a-zA-Z0-9-]*\.jpg$/', $d))) {
+                            if (preg_match('/^[0-9]+\-'.$imageType['name'].'\.(jpg|webp)$/', $d) || (count($type) > 1 && preg_match('/^[0-9]+\-[_a-zA-Z0-9-]*\.(jpg|webp)$/', $d))) {
                                 if (file_exists($dir.$imageObj->getImgFolder().$d)) {
                                     unlink($dir.$imageObj->getImgFolder().$d);
                                 }
@@ -644,6 +644,11 @@ class AdminImagesControllerCore extends AdminController
                                 if (!ImageManager::resize($existingImg, $dir.$imageObj->getExistingImgPath().'-'.stripslashes($imageType['name']).'2x.jpg', (int) $imageType['width'] * 2, (int) $imageType['height'] * 2)) {
                                     $this->errors[] = sprintf(Tools::displayError('Original image is corrupt (%s) for product ID %2$d or bad permission on folder'), $existingImg, (int) $imageObj->id_product);
                                 }
+                            }
+                            if(!$this->errors && Configuration::get('PS_USE_WEBP') && function_exists('imagewebp'))
+                            {   
+                                $imgRes = imagecreatefromjpeg($dir.$imageObj->getExistingImgPath().'-'.stripslashes($imageType['name']).'.jpg');
+                                imagewebp($imgRes, $dir.$imageObj->getExistingImgPath().'-'.stripslashes($imageType['name']).'.webp');
                             }
                         }
                     }

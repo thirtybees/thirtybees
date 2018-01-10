@@ -959,6 +959,7 @@ class FrontControllerCore extends Controller
                 'errors'         => $this->errors,
                 'display_header' => $this->display_header,
                 'display_footer' => $this->display_footer,
+                'img_formats'    => ['webp' => 'image/webp', 'jpg' => 'image/jpeg']
             ]
         );
 
