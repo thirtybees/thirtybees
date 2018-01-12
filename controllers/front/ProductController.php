@@ -552,6 +552,9 @@ class ProductControllerCore extends FrontController
 
         $quantityDiscounts = SpecificPrice::getQuantityDiscounts($idProduct, $idShop, $idCurrency, $idCountry, $idGroup, null, true, (int) $this->context->customer->id);
         foreach ($quantityDiscounts as &$quantityDiscount) {
+            if (!isset($quantityDiscount['base_price'])) {
+                $quantityDiscount['base_price'] = 0;
+            }
             if ($quantityDiscount['id_product_attribute']) {
                 $quantityDiscount['base_price'] = $this->product->getPrice(Product::$_taxCalculationMethod === PS_TAX_INC, $quantityDiscount['id_product_attribute']);
                 $combination = new Combination((int) $quantityDiscount['id_product_attribute']);
@@ -560,6 +563,8 @@ class ProductControllerCore extends FrontController
                     $quantityDiscount['attributes'] = $attribute['name'].' - ';
                 }
                 $quantityDiscount['attributes'] = rtrim($quantityDiscount['attributes'], ' - ');
+            } else {
+                $quantityDiscount['base_price'] = $this->product->getPrice(Product::$_taxCalculationMethod == PS_TAX_INC);
             }
             if ((int) $quantityDiscount['id_currency'] == 0 && $quantityDiscount['reduction_type'] == 'amount') {
                 $quantityDiscount['reduction'] = Tools::convertPriceFull($quantityDiscount['reduction'], null, $this->context->currency);
