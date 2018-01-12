@@ -243,11 +243,6 @@
 	url = https://github.com/thirtybees/statsbestcustomers.git
 	branch = master
 	ignore = dirty
-[submodule "modules/statsbestmanufacturers"]
-	path = modules/statsbestmanufacturers
-	url = https://github.com/thirtybees/statsbestmanufacturers.git
-	branch = master
-	ignore = dirty
 [submodule "modules/statsbestproducts"]
 	path = modules/statsbestproducts
 	url = https://github.com/thirtybees/statsbestproducts.git
