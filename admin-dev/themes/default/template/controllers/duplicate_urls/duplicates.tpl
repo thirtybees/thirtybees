@@ -29,7 +29,7 @@
 {foreach $languages as $language}
     <div class="panel">
         <div class="panel-heading">
-            <i class="icon-link"></i> {l s='Duplicate URLs' mod='mpcleanurls'} - {$language['name']|escape:'htmlall':'UTF-8'}
+            <i class="icon-link"></i> {l s='Duplicate URLs'} - {$language['name']|escape:'htmlall':'UTF-8'}
         </div>
         {assign var=duplicates value=$duplicates_languages[$language['id_lang']]}
         {if count($duplicates)}
@@ -39,25 +39,25 @@
                         <thead>
                         <tr>
                             <th style="width:10%">
-                                <span class="title_box">{l s='Type' mod='mpcleanurls'}</span>
+                                <span class="title_box">{l s='Type'}</span>
                             </th>
                             <th style="width:10%">
-                                <span class="title_box">{l s='ID' mod='mpcleanurls'}</span>
+                                <span class="title_box">{l s='ID'}</span>
                             </th>
                             <th style="width:10%">
-                                <span class="title_box">{l s='Edit' mod='mpcleanurls'}</span>
+                                <span class="title_box">{l s='Edit'}</span>
                             </th>
                             <th style="width:10%">
-                                <span class="title_box">{l s='Type' mod='mpcleanurls'}</span>
+                                <span class="title_box">{l s='Type'}</span>
                             </th>
                             <th style="width:10%">
-                                <span class="title_box">{l s='ID' mod='mpcleanurls'}</span>
+                                <span class="title_box">{l s='ID'}</span>
                             </th>
                             <th style="width:10%">
-                                <span class="title_box">{l s='Edit' mod='mpcleanurls'}</span>
+                                <span class="title_box">{l s='Edit'}</span>
                             </th>
                             <th style="width:40%">
-                                <span class="title_box">{l s='URL' mod='mpcleanurls'}</span>
+                                <span class="title_box">{l s='URL'}</span>
                             </th>
                         </tr>
                         </thead>
@@ -74,8 +74,8 @@
                                     <div class="btn-group">
                                         <a href="{$duplicate['a_view']|escape:'htmlall':'UTF-8'}"
                                            class="btn btn-default"
-                                           title="{l s='Edit' mod='mpcleanurls'}">
-                                            <i class="icon-pencil"></i> {l s='Edit' mod='mpcleanurls'}
+                                           title="{l s='Edit'}">
+                                            <i class="icon-pencil"></i> {l s='Edit'}
                                         </a>
                                     </div>
                                 </td>
@@ -89,8 +89,8 @@
                                     <div class="btn-group">
                                         <a href="{$duplicate['b_view']|escape:'htmlall':'UTF-8'}"
                                            class="btn btn-default"
-                                           title="{l s='Edit' mod='mpcleanurls'}">
-                                            <i class="icon-pencil"></i> {l s='Edit' mod='mpcleanurls'}
+                                           title="{l s='Edit'}">
+                                            <i class="icon-pencil"></i> {l s='Edit'}
                                         </a>
                                     </div>
                                 </td>
@@ -104,7 +104,7 @@
                 </div>
             </div>
         {else}
-            <h2>{l s='No duplicates found. Good job!' mod='mpcleanurls'}</h2>
+            <h2>{l s='No duplicates found. Good job!'}</h2>
         {/if}
     </div>
 {/foreach}
