@@ -107,10 +107,15 @@ class CacheRedisCore extends CacheCore
                             }
                         }
                     } else {
-                        $ping = array_values($this->redis->ping());
-                        if (!empty($ping) && $ping[0] === '+PONG') {
-                            // We're connected if a connection without +AUTH receives a +PONG
+                        $ping = $this->redis->ping();
+                        // We're connected if a connection without +AUTH receives a +PONG
+                        if ($ping === '+PONG') {
                             $this->is_connected = true;
+                        } elseif (is_array($ping)) {
+                            $ping = array_values($ping);
+                            if (!empty($ping) && $ping[0] === '+PONG') {
+                                $this->is_connected = true;
+                            }
                         }
                     }
                 }
