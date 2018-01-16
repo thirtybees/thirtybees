@@ -259,7 +259,7 @@
 				</div>
 				<div class="form-group">
 					<label for="forceIDs" class="control-label col-lg-4">
-						<span data-toggle="tooltip" class="label-tooltip" data-original-title="{l s='If you enable this option, your imported items\' ID number will be used as-is. If you do not enable this option, the imported ID numbers will be ignored, and PrestaShop will instead create auto-incremented ID numbers for all the imported items.'}">
+						<span data-toggle="tooltip" class="label-tooltip" data-original-title="{l s='If you enable this option, your imported items\' ID number will be used as-is. If you do not enable this option, the imported ID numbers will be ignored, and thirty bees will instead create auto-incremented ID numbers for all the imported items.'}">
 							{l s='Force all ID numbers'}
 						</span>
 					</label>
