@@ -7067,15 +7067,18 @@ class ProductCore extends ObjectModel
         }
         if ($this->deleteCategories()) {
             if ($ids) {
-                $sqlValues = '';
                 $ids = array_map('intval', $ids);
+                $inserts = [];
                 foreach ($ids as $position => $id) {
-                    $sqlValues[] = '('.(int) $id.', '.(int) $this->id.', '.(int) $position.')';
+                    $inserts[] = [
+                        'id_category' => (int) $id,
+                        'id_product'  => (int) $this->id,
+                        'position'    => (int) $position,
+                    ];
                 }
-                $result = Db::getInstance()->execute(
-                    '
-					INSERT INTO `'._DB_PREFIX_.'category_product` (`id_category`, `id_product`, `position`)
-					VALUES '.implode(',', $sqlValues)
+                $result = Db::getInstance()->insert(
+                    'category_product',
+                    $inserts
                 );
                 Hook::exec('updateProduct', ['id_product' => (int) $this->id]);
 
