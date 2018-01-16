@@ -2247,7 +2247,28 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             if (isset($field['lang']) && $field['lang'] || isset($field['shop']) && $field['shop']) {
                 continue;
             }
-            $sql .= '`'.$fieldName.'` '.$field['db_type'];
+
+            switch ($field['type']) {
+                case '1':
+                    $sql .= '`'.$fieldName.'` INT(11) UNSIGNED';
+                    break;
+                case '2':
+                    $sql .= '`'.$fieldName.'` TINYINT(1)';
+                    break;
+                case '3':
+                    (isset($field['size']) && $field['size'] > 256) ? $sql .= '`'.$fieldName.'` VARCHAR(256)' : $sql .= '`'.$fieldName.'` VARCHAR(512)';
+                    break;
+                case '4':
+                    $sql .= '`'.$fieldName.'` DECIMAL(20,6)';
+                    break;
+                case '5':
+                    $sql .= '`'.$fieldName.'` DATETIME';
+                    break;
+                case '6':
+                    $sql .= '`'.$fieldName.'` TEXT';
+                    break;
+            }
+
             if (isset($field['required'])) {
                 $sql .= ' NOT NULL';
             }
@@ -2286,10 +2307,10 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             }
 
             // Lang field
-            $sql .= '`id_lang` INT(11) DEFAULT NULL,';
+            $sql .= '`id_lang` INT(11) NOT NULL,';
 
             if (isset($definition['multilang_shop']) && $definition['multilang_shop']) {
-                $sql .= '`id_shop` INT(11) DEFAULT NULL,';
+                $sql .= '`id_shop` INT(11) NOT NULL,';
             }
 
             // Primary key
@@ -2325,7 +2346,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             }
 
             // Shop field
-            $sql .= '`id_shop` INT(11) DEFAULT NULL,';
+            $sql .= '`id_shop` INT(11) NOT NULL,';
 
             // Primary key
             $sql .= 'PRIMARY KEY (`'.bqSQL($definition['primary']).'`, `id_shop`)';
