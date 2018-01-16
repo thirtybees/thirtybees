@@ -39,6 +39,8 @@ class AdminCurrenciesControllerCore extends AdminController
     /**
      * AdminCurrenciesControllerCore constructor.
      *
+     * @throws PrestaShopException
+     *
      * @since 1.0.0
      */
     public function __construct()
@@ -88,7 +90,12 @@ class AdminCurrenciesControllerCore extends AdminController
 
         parent::__construct();
 
-        CurrencyRateModule::scanMissingCurrencyRateModules();
+        try {
+            CurrencyRateModule::scanMissingCurrencyRateModules();
+        } catch (Adapter_Exception $e) {
+        } catch (PrestaShopDatabaseException $e) {
+        } catch (PrestaShopException $e) {
+        }
 
         $this->_select .= 'currency_shop.conversion_rate conversion_rate, m.`name` AS `module_name`';
         $this->_join .= Shop::addSqlAssociation('currency', 'a');
@@ -101,6 +108,9 @@ class AdminCurrenciesControllerCore extends AdminController
      * @return false|string
      *
      * @since 1.0.0
+     *
+     * @throws PrestaShopException
+     * @throws PrestaShopExceptionCore
      */
     public function renderList()
     {
@@ -116,6 +126,10 @@ class AdminCurrenciesControllerCore extends AdminController
      * @return string
      *
      * @since 1.0.0
+     *
+     * @throws Exception
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function renderForm()
     {
@@ -284,7 +298,10 @@ class AdminCurrenciesControllerCore extends AdminController
     }
 
     /**
-     * Process Add
+     * Process add
+     *
+     * @return false|ObjectModel|void
+     * @throws PrestaShopException
      */
     public function processAdd()
     {
@@ -295,6 +312,10 @@ class AdminCurrenciesControllerCore extends AdminController
 
     /**
      * Process update
+     *
+     * @return false|ObjectModel|void
+     *
+     * @throws PrestaShopException
      */
     public function processUpdate()
     {
@@ -307,6 +328,7 @@ class AdminCurrenciesControllerCore extends AdminController
      * @return bool|false|ObjectModel
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processDelete()
     {
@@ -319,11 +341,12 @@ class AdminCurrenciesControllerCore extends AdminController
     }
 
     /**
-     * @param $object
+     * @param mixed $object
      *
      * @return bool
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function checkDeletion($object)
     {
@@ -345,6 +368,7 @@ class AdminCurrenciesControllerCore extends AdminController
      * @return bool|false|ObjectModel
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processStatus()
     {
@@ -357,11 +381,12 @@ class AdminCurrenciesControllerCore extends AdminController
     }
 
     /**
-     * @param $object
+     * @param mixed $object
      *
      * @return bool
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function checkDisableStatus($object)
     {
@@ -383,6 +408,8 @@ class AdminCurrenciesControllerCore extends AdminController
      * Update currency exchange rates
      *
      * @since 1.0.0
+     *
+     * @throws PrestaShopException
      */
     public function processExchangeRates()
     {
@@ -395,6 +422,7 @@ class AdminCurrenciesControllerCore extends AdminController
      * @see   AdminController::initProcess()
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initProcess()
     {
@@ -405,7 +433,9 @@ class AdminCurrenciesControllerCore extends AdminController
                 $this->errors[] = Tools::displayError('You do not have permission to edit this.');
             }
         }
-        if (Tools::isSubmit('submitAddcurrency') && !Tools::getValue('id_currency') && Currency::exists(Tools::getValue('iso_code'), Tools::getValue('iso_code_num'))) {
+        if (Tools::isSubmit('submitAddcurrency') && !Tools::getValue('id_currency')
+            && Currency::exists(Tools::getValue('iso_code'), Tools::getValue('iso_code_num'))
+        ) {
             $this->errors[] = Tools::displayError('This currency already exists.');
         }
         if (Tools::isSubmit('submitAddcurrency') && (float) Tools::getValue('conversion_rate') <= 0) {
@@ -434,6 +464,7 @@ class AdminCurrenciesControllerCore extends AdminController
      * @return bool
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function processBulkDelete()
     {
@@ -453,6 +484,7 @@ class AdminCurrenciesControllerCore extends AdminController
      * @return bool
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function processBulkDisableSelection()
     {
@@ -470,6 +502,8 @@ class AdminCurrenciesControllerCore extends AdminController
 
     /**
      * Process update fx service ajax call
+     *
+     * @throws PrestaShopException
      */
     public function ajaxProcessUpdateFxService()
     {
