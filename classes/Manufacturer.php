@@ -391,14 +391,11 @@ class ManufacturerCore extends ObjectModel
             ->join(Shop::addSqlAssociation('product', 'p'))
             ->join(Combination::isFeatureActive() ? 'LEFT JOIN `'._DB_PREFIX_.'product_attribute_shop` product_attribute_shop ON (p.`id_product` = product_attribute_shop.`id_product` AND product_attribute_shop.`default_on` = 1 AND product_attribute_shop.`id_shop` = '.(int) $context->shop->id.')' : '')
             ->leftJoin('product_lang', 'pl', 'p.`id_product` = pl.`id_product`')
-            ->leftJoin('image_shop', 'image_shop', 'image_shop.`id_product` = p.`id_product`')
-            ->leftJoin('image_lang', 'il', 'image_shop.`id_image` = il.`id_image`')
+            ->leftJoin('image_shop', 'image_shop', 'image_shop.`id_product` = p.`id_product` AND image_shop.cover=1 AND image_shop.id_shop='.(int) $context->shop->id)
+            ->leftJoin('image_lang', 'il', 'image_shop.`id_image` = il.`id_image` AND il.`id_lang` = '.(int) $idLang)
             ->leftJoin('manufacturer', 'm', 'm.`id_manufacturer` = p.`id_manufacturer`')
             ->join(Product::sqlStock('p', 0))
-            ->where('pl.`id_lang` = '.(int) $idLang.Shop::addSqlRestrictionOnLang('pl'))
-            ->where('image_shop.`cover` = 1')
-            ->where('image_shop.`id_shop` = '.(int) $context->shop->id)
-            ->where('il.`id_lang` = '.(int) $idLang);
+            ->where('pl.`id_lang` = '.(int) $idLang.Shop::addSqlRestrictionOnLang('pl'));
 
         if (Group::isFeatureActive() || $activeCategory) {
             $sql->innerJoin('category_product', 'cp', 'p.`id_product` = cp.`id_product`');
