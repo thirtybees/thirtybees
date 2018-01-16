@@ -3468,7 +3468,7 @@ class CartCore extends ObjectModel
                     Db::getInstance()->update(
                         'customization',
                         [
-                            'quantity'             => ['type' => 'sql', 'value' => '`quantity` '.($operator === 'up' ? '+' : '-').(int) $quantityChange],
+                            'quantity'             => (int) $quantityChange,
                             'id_product'           => (int) $idProduct,
                             'id_product_attribute' => (int) $idProductAttribute,
                             'id_address_delivery'  => (int) $idAddressDelivery,
@@ -3496,7 +3496,7 @@ class CartCore extends ObjectModel
             return Db::getInstance()->update(
                 'customization',
                 [
-                    'quantity'            => ($operator === 'up') ? $result + $quantityChange : $result - $quantityChange,
+                    'quantity'            => ['type' => 'sql', 'value' => '`quantity` '.($operator === 'up' ? '+' : '-').(int) $quantityChange],
                     'id_address_delivery' => (int) $idAddressDelivery,
                     'in_cart'             => true,
                 ],
