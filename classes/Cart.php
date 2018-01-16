@@ -4661,12 +4661,12 @@ class CartCore extends ObjectModel
                     'cart_product',
                     [
                         'quantity'             => ['type' => 'sql', 'value' => '`quantity - `'.(int) $quantity],
-                        'id_cart'              => (int) $this->id,
                         'id_product'           => (int) $idProduct,
                         'id_shop'              => (int) $this->id_shop,
                         'id_product_attribute' => (int) $idProductAttribute,
                         'id_address_delivery'  => (int) $idAddressDelivery,
-                    ]
+                    ],
+                    '`id_cart` ='.(int) $this->id
                 );
             }
         }
