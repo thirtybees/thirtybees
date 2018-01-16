@@ -171,6 +171,13 @@ class AdminFeaturesControllerCore extends AdminController
             $this->displayWarning(sprintf($this->l('This feature has been disabled. You can activate it here: %s.'), $url));
         }
 
+        /** Reset the old search */
+        if (Tools::getIsset('viewfeature')
+            && !Tools::getIsset('submitReset' . $this->list_id)
+            && !Tools::getIsset('submitFilter')) {
+            $this->processResetFilters();
+        }
+
         $this->context->smarty->assign(
             [
                 'content'                   => $this->content,
@@ -478,8 +485,12 @@ class AdminFeaturesControllerCore extends AdminController
         if (Tools::getIsset('viewfeature')) {
             $this->list_id = 'feature_value';
 
-            if (isset($_POST['submitReset'.$this->list_id])) {
+            if (Tools::getIsset('submitReset' . $this->list_id)) {
                 $this->processResetFilters();
+            }
+
+            if (Tools::getIsset('submitFilter')) {
+                static::$currentIndex = static::$currentIndex . '&id_feature=' . (int)Tools::getValue('id_feature') . '&viewfeature';
             }
         } else {
             $this->list_id = 'feature';
