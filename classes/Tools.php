@@ -900,7 +900,12 @@ class ToolsCore
             $numberFormat = $numberFormatRepository->get($languageIso);
             $decimalFormatter = new NumberFormatter($numberFormat, NumberFormatter::DECIMAL);
 
-            return $decimalFormatter->format($price);
+            $formattedPrice = '';
+            if ($tbCurrency->iso_code) {
+                $formattedPrice .= mb_strtoupper($tbCurrency->iso_code).' ';
+            }
+
+            return $formattedPrice.$decimalFormatter->format($price);
         }
 
         if ($tbCurrency->sign) {
