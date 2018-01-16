@@ -754,8 +754,8 @@ class ToolsCore
     }
 
     /**
-     * @param $params
-     * @param $smarty
+     * @param array  $params
+     * @param Smarty $smarty
      *
      * @return string
      *
@@ -767,11 +767,19 @@ class ToolsCore
         if (array_key_exists('currency', $params)) {
             $currency = Currency::getCurrencyInstance((int) $params['currency']);
             if (Validate::isLoadedObject($currency)) {
-                return Tools::displayPrice($params['price'], $currency, false);
+                try {
+                    return Tools::displayPrice($params['price'], $currency, false);
+                } catch (PrestaShopException $e) {
+                    return '';
+                }
             }
         }
 
-        return Tools::displayPrice($params['price']);
+        try {
+            return Tools::displayPrice($params['price']);
+        } catch (PrestaShopException $e) {
+            return '';
+        }
     }
 
     /**
@@ -820,7 +828,11 @@ class ToolsCore
         }
 
         if ($auto === null) {
-            $auto = $tbCurrency->getMode();
+            try {
+                $auto = $tbCurrency->getMode();
+            } catch (PrestaShopException $e) {
+                $auto = false;
+            }
         }
 
         if (!$auto) {
@@ -882,7 +894,15 @@ class ToolsCore
         $currencyRepository = new CurrencyRepository();
         $numberFormatRepository = new NumberFormatRepository();
 
-        $currency = $currencyRepository->get(mb_strtoupper($currencyIso));
+        try {
+            $currency = $currencyRepository->get(mb_strtoupper($currencyIso));
+        } catch (\CommerceGuys\Intl\Exception\UnknownCurrencyException $e) {
+            $numberFormat = $numberFormatRepository->get($languageIso);
+            $decimalFormatter = new NumberFormatter($numberFormat, NumberFormatter::DECIMAL);
+
+            return $decimalFormatter->format($price);
+        }
+
         if ($tbCurrency->sign) {
             $currency->setSymbol($tbCurrency->sign);
         }
