@@ -423,7 +423,7 @@ class AdminSuppliersControllerCore extends AdminController
                 $newProduct->combination = isset($combArray) ? $combArray : '';
                 unset($combArray);
             } else {
-                $productInfos = Supplier::getProductInformationsBySupplier($this->object->id, $products[$i]->id, 0);
+                $productInfos = Supplier::getProductInformationsBySupplier($this->object->id, $products[$i]['id_product'], 0);
                 $newProduct->product_supplier_reference = $productInfos['product_supplier_reference'];
                 $newProduct->product_supplier_price_te = Tools::displayPrice($productInfos['product_supplier_price_te'], new Currency($productInfos['id_currency']));
             }
