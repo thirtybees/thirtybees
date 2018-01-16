@@ -298,6 +298,42 @@ class AdminCurrenciesControllerCore extends AdminController
     }
 
     /**
+     * Copy data values from $_POST to object
+     *
+     * @param Currency &$object Object
+     * @param string   $table   Object table
+     *
+     * @since   1.0.4 Auto set currency code or number
+     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     */
+    protected function copyFromPost(&$object, $table)
+    {
+        parent::copyFromPost($object, $table);
+
+        if ($object->iso_code xor $object->iso_code_num) {
+            try {
+                $currencyList = (new \CommerceGuys\Intl\Currency\CurrencyRepository())->getAll();
+                if ($object->iso_code) {
+                    if (isset($currencyList[$object->iso_code])) {
+                        $object->iso_code_num = $currencyList[$object->iso_code]->getNumericCode();
+                    } else {
+                        foreach ($currencyList as $item) {
+                            /** @var \CommerceGuys\Intl\Currency\Currency $item */
+                            if ((int) $item->getNumericCode() === (int) $object->iso_code_num) {
+                                $object->iso_code = $item->getCurrencyCode();
+
+                                break;
+                            }
+                        }
+                    }
+                }
+            } catch (\CommerceGuys\Intl\Exception\UnknownCurrencyException $e) {
+            }
+        }
+    }
+
+    /**
      * Process add
      *
      * @return false|ObjectModel|void
@@ -320,8 +356,6 @@ class AdminCurrenciesControllerCore extends AdminController
     public function processUpdate()
     {
         parent::processUpdate();
-
-        Configuration::updateValue('TB_NO_AUTO_FORMAT_'.(int) $this->object->id, !Tools::getValue('auto_format'));
     }
 
     /**
