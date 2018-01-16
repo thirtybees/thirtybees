@@ -366,6 +366,7 @@ class SearchCore
             $string = ltrim(preg_replace('/([^ ])-/', '$1 ', ' '.$string));
             $string = preg_replace('/[._]+/', '', $string);
             $string = preg_replace('/[^\s]-+/', '', $string);
+            $string = preg_replace('/[._-]+/', ' ', $string);
         }
 
         $blacklist = mb_strtolower(Configuration::get('PS_SEARCH_BLACKLIST', $idLang));
