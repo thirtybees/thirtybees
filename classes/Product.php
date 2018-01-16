@@ -7037,15 +7037,14 @@ class ProductCore extends ObjectModel
      */
     public function getWsCategories()
     {
-        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            'SELECT cp.`id_category` AS id
-			FROM `'._DB_PREFIX_.'category_product` cp
-			LEFT JOIN `'._DB_PREFIX_.'category` c ON (c.id_category = cp.id_category)
-			'.Shop::addSqlAssociation('category', 'c').'
-			WHERE cp.`id_product` = '.(int) $this->id
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('cp.`id_category` AS `id`')
+                ->from('category_product', 'cp')
+                ->leftJoin('category', 'c', 'c.`id_category` = cp.`id_category`')
+                ->join(Shop::addSqlAssociation('category', 'c'))
+                ->where('cp.`id_product` = '.(int) $this->id)
         );
-
-        return $result;
     }
 
     /**
@@ -7102,15 +7101,14 @@ class ProductCore extends ObjectModel
      */
     public function getWsAccessories()
     {
-        $result = Db::getInstance()->executeS(
-            'SELECT p.`id_product` AS id
-			FROM `'._DB_PREFIX_.'accessory` a
-			LEFT JOIN `'._DB_PREFIX_.'product` p ON (p.id_product = a.id_product_2)
-			'.Shop::addSqlAssociation('product', 'p').'
-			WHERE a.`id_product_1` = '.(int) $this->id
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('p.`id_product` AS `id`')
+                ->from('accessory', 'a')
+                ->leftJoin('product', 'p', 'p.`id_product` = a.`id_product_2`')
+                ->join(Shop::addSqlAssociation('product', 'p'))
+                ->where('a.`id_product_1` = '.(int) $this->id)
         );
-
-        return $result;
     }
 
     /**
