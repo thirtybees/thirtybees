@@ -2248,26 +2248,31 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                 continue;
             }
 
-            switch ($field['type']) {
-                case '1':
-                    $sql .= '`'.$fieldName.'` INT(11) UNSIGNED';
-                    break;
-                case '2':
-                    $sql .= '`'.$fieldName.'` TINYINT(1)';
-                    break;
-                case '3':
-                    (isset($field['size']) && $field['size'] > 256) ? $sql .= '`'.$fieldName.'` VARCHAR(256)' : $sql .= '`'.$fieldName.'` VARCHAR(512)';
-                    break;
-                case '4':
-                    $sql .= '`'.$fieldName.'` DECIMAL(20,6)';
-                    break;
-                case '5':
-                    $sql .= '`'.$fieldName.'` DATETIME';
-                    break;
-                case '6':
-                    $sql .= '`'.$fieldName.'` TEXT';
-                    break;
+            if (empty($field['db_type'])) {
+                switch ($field['type']) {
+                    case '1':
+                        $field['db_type'] = 'INT(11) UNSIGNED';
+                        break;
+                    case '2':
+                        $field['db_type'] .= 'TINYINT(1)';
+                        break;
+                    case '3':
+                        (isset($field['size']) && $field['size'] > 256)
+                            ? $field['db_type'] = 'VARCHAR(256)'
+                            : $field['db_type'] = 'VARCHAR(512)';
+                        break;
+                    case '4':
+                        $field['db_type'] = 'DECIMAL(20,6)';
+                        break;
+                    case '5':
+                        $field['db_type'] = 'DATETIME';
+                        break;
+                    case '6':
+                        $field['db_type'] = 'TEXT';
+                        break;
+                }
             }
+            $sql .= '`'.$fieldName.'` '.$field['db_type'];
 
             if (isset($field['required'])) {
                 $sql .= ' NOT NULL';
