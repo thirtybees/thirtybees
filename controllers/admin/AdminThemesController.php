@@ -48,7 +48,7 @@ class AdminThemesControllerCore extends AdminController
     public static $check_features_version = '1.4';
     /**
      * Multidimensional array used to check [theme]/config.xml values,
-     * and also checks prestashop current configuration if not match.
+     * and also checks thirty bees current configuration if not match.
      *
      * @var array
      */
@@ -58,7 +58,7 @@ class AdminThemesControllerCore extends AdminController
                 'available' => [
                     'value'              => 'true',
                     /*
-                     * accepted attribute value if value doesn't match, prestashop configuration value must have those values
+                     * accepted attribute value if value doesn't match, thirty bees configuration value must have those values
                     */
                     'check_if_not_valid' => [
                         'PS_CSS_THEME_CACHE'           => 0,
@@ -125,6 +125,7 @@ class AdminThemesControllerCore extends AdminController
      * AdminThemesControllerCore constructor.
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -137,6 +138,10 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function init()
@@ -198,45 +203,28 @@ class AdminThemesControllerCore extends AdminController
                         'tab'   => 'icons',
                         'thumb' => Media::getMediaPath(_PS_IMG_DIR_.'favicon.ico'),
                     ],
-                    'PS_FAVICON_57'   => [
-                        'title' => $this->l('iPhone/iPad Favicon 57px (PNG)'),
+                    'TB_SOURCE_FAVICON'  => [
+                        'title' => $this->l('Source favicon (PNG)'),
                         'hint'  => $this->l('Will appear in the address bar of your web browser.'),
+                        'desc'  => $this->l('Make sure you upload a big enough favicon. Preferrably one that covers all sizes.'),
                         'type'  => 'file',
-                        'name'  => 'PS_FAVICON_57',
+                        'name'  => 'TB_SOURCE_FAVICON',
                         'tab'   => 'icons',
-                        'thumb' => Media::getMediaPath(_PS_IMG_DIR_.'favicon_57.png'),
+                        'thumb' => $this->thumbnail(_PS_IMG_DIR_."favicon/favicon_{$this->context->shop->id}_source.png", 'favicon_source', 256),
                     ],
-                    'PS_FAVICON_72'   => [
-                        'title' => $this->l('iPhone/iPad Favicon 72px (PNG)'),
-                        'hint'  => $this->l('Will appear in the address bar of your web browser.'),
-                        'type'  => 'file',
-                        'name'  => 'PS_FAVICON_72',
-                        'tab'   => 'icons',
-                        'thumb' => Media::getMediaPath(_PS_IMG_DIR_.'favicon_72.png'),
-                    ],
-                    'PS_FAVICON_114'  => [
-                        'title' => $this->l('iPhone/iPad Favicon 114px (PNG)'),
-                        'hint'  => $this->l('Will appear in the address bar of your web browser.'),
-                        'type'  => 'file',
-                        'name'  => 'PS_FAVICON_114',
-                        'tab'   => 'icons',
-                        'thumb' => Media::getMediaPath(_PS_IMG_DIR_.'favicon_114.png'),
-                    ],
-                    'PS_FAVICON_144'  => [
-                        'title' => $this->l('iPhone/iPad Favicon 144px (PNG)'),
-                        'hint'  => $this->l('Will appear in the address bar of your web browser.'),
-                        'type'  => 'file',
-                        'name'  => 'PS_FAVICON_144',
-                        'tab'   => 'icons',
-                        'thumb' => Media::getMediaPath(_PS_IMG_DIR_.'favicon_144.png'),
-                    ],
-                    'PS_FAVICON_192'  => [
-                        'title' => $this->l('Android Chrome Favicon 192 (PNG)'),
-                        'hint'  => $this->l('Will appear in the address bar of your web browser.'),
-                        'type'  => 'file',
-                        'name'  => 'PS_FAVICON_192',
-                        'tab'   => 'icons',
-                        'thumb' => Media::getMediaPath(_PS_IMG_DIR_.'favicon_192.png'),
+                    'TB_SOURCE_FAVICON_CODE'   => [
+                        'title'                     => $this->l('Favicon metas'),
+                        'hint'                      => $this->l('The literal favicon meta code that gets included on every page.'),
+                        'type'                      => 'code',
+                        'mode'                      => 'html',
+                        'enableBasicAutocompletion' => true,
+                        'enableSnippets'            => true,
+                        'enableLiveAutocompletion'  => true,
+                        'visibility'                => Shop::CONTEXT_ALL,
+                        'minLines'                  => 20,
+                        'maxLines'                  => 30,
+                        'tab'                       => 'icons',
+                        'grab_favicon_template'     => true,
                     ],
                     'PS_STORES_ICON'  => [
                         'title' => $this->l('Store icon'),
@@ -280,6 +268,10 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return string
      *
+     * @throws Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function renderForm()
@@ -426,7 +418,7 @@ class AdminThemesControllerCore extends AdminController
                 'label'    => $this->l('Name of the theme\'s directory'),
                 'name'     => 'directory',
                 'required' => true,
-                'hint'     => $this->l('If the directory does not exist, PrestaShop will create it automatically.'),
+                'hint'     => $this->l('If the directory does not exist, thirty bees will create it automatically.'),
             ];
 
             $themeQuery = Theme::getThemes();
@@ -520,6 +512,8 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return false|string
      *
+     * @throws PrestaShopException
+     * @throws PrestaShopExceptionCore
      * @since 1.0.0
      */
     public function renderList()
@@ -543,6 +537,7 @@ class AdminThemesControllerCore extends AdminController
      * @return bool|Theme
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processAdd()
     {
@@ -645,6 +640,8 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function processUpdate()
@@ -687,6 +684,8 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return bool|false|ObjectModel
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function processDelete()
@@ -731,6 +730,9 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function processExportTheme()
@@ -1093,6 +1095,9 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return bool
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function checkParentClass($name)
@@ -1122,10 +1127,11 @@ class AdminThemesControllerCore extends AdminController
     /**
      * Generate XML
      *
-     * @param $themeToExport
-     * @param $metas
+     * @param Theme $themeToExport
+     * @param array $metas
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function generateXML($themeToExport, $metas)
     {
@@ -1328,6 +1334,11 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return string
      *
+     * @throws Adapter_Exception
+     * @throws Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function renderExportTheme()
@@ -1386,6 +1397,11 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return string
      *
+     * @throws Adapter_Exception
+     * @throws Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     protected function renderExportTheme1()
@@ -1595,6 +1611,9 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return array
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function formatHelperArray($originArr)
@@ -1624,6 +1643,7 @@ class AdminThemesControllerCore extends AdminController
      * @return bool
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processImportTheme()
     {
@@ -1734,6 +1754,8 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function installTheme($themeDir, $sandbox = false, $redirect = true)
@@ -1828,6 +1850,8 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return array|string return array of themes on success, otherwise the error as a string is returned
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function importThemeXmlConfig(SimpleXMLElement $xml, $themeDir = false)
@@ -1949,6 +1973,7 @@ class AdminThemesControllerCore extends AdminController
      * @return bool
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function isThemeInstalled($themeName)
     {
@@ -1969,6 +1994,10 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return string
      *
+     * @throws Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function renderImportTheme()
@@ -2097,6 +2126,9 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws Exception
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function initContent()
@@ -2138,6 +2170,7 @@ class AdminThemesControllerCore extends AdminController
      * @return void
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -2186,6 +2219,11 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return string
      *
+     * @throws Adapter_Exception
+     * @throws Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function renderChooseThemeModule()
@@ -2451,6 +2489,9 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function processThemeInstall()
@@ -2592,6 +2633,8 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return array
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function updateImages($xml)
@@ -2634,6 +2677,8 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function hookModule($idModule, $moduleHooks, $shop)
@@ -2674,6 +2719,9 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return string
      *
+     * @throws Exception
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function renderView()
@@ -2687,7 +2735,7 @@ class AdminThemesControllerCore extends AdminController
             'image_link'     => $this->context->link->getAdminLink('AdminImages'),
         ];
 
-        return parent::renderView();
+        parent::renderView();
     }
 
     /**
@@ -2727,6 +2775,7 @@ class AdminThemesControllerCore extends AdminController
      * @return bool Validity is ok or not
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function _isThemeCompatible($themeDir)
     {
@@ -2778,6 +2827,8 @@ class AdminThemesControllerCore extends AdminController
      * @param mixed $configItem  will precise the attribute which not matches. If empty, will check every attributes
      *
      * @return bool Error message, or null if disabled
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     protected function _checkConfigForFeatures($arrFeatures, $configItem = [])
     {
@@ -2837,6 +2888,7 @@ class AdminThemesControllerCore extends AdminController
      * @return bool
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function updateLogo($fieldName, $logoPrefix)
     {
@@ -2913,6 +2965,7 @@ class AdminThemesControllerCore extends AdminController
      * @return void
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function updateOptionPsLogoMail()
     {
@@ -2925,6 +2978,7 @@ class AdminThemesControllerCore extends AdminController
      * @return void
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function updateOptionPsLogoInvoice()
     {
@@ -2937,6 +2991,7 @@ class AdminThemesControllerCore extends AdminController
      * @return void
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function updateOptionPsStoresIcon()
     {
@@ -2949,6 +3004,7 @@ class AdminThemesControllerCore extends AdminController
      * @return void
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function updateOptionPsFavicon()
     {
@@ -2962,6 +3018,59 @@ class AdminThemesControllerCore extends AdminController
         }
 
         Configuration::updateGlobalValue('PS_FAVICON', 'favicon.ico');
+
+        if (!$this->errors) {
+            $this->redirect_after = static::$currentIndex.'&token='.$this->token;
+        }
+    }
+
+    /**
+     * Process the favicon sizes
+     *
+     * @since 1.0.4
+     */
+    public function updateOptionTbSourceFaviconCode()
+    {
+        if (!file_exists(_PS_IMG_DIR_.'favicon')) {
+            $definedUmask = defined('_TB_UMASK_') ? _TB_UMASK_ : 0000;
+            $previousUmask = @umask($definedUmask);
+            mkdir(_PS_IMG_DIR_.'favicon', 0777);
+            @umask($previousUmask);
+        }
+
+        $idShop = (int) $this->context->shop->id;
+        $this->uploadIco('TB_SOURCE_FAVICON', _PS_IMG_DIR_."favicon/favicon_{$idShop}_source.png");
+
+        $newTemplate = Tools::getValue('TB_SOURCE_FAVICON_CODE');
+        $filteredHtml = '';
+
+        // Filter and detect sizes
+        $dom = new DOMDocument();
+        $dom->loadHTML($newTemplate);
+        $links = [];
+        foreach ($dom->getElementsByTagName('link') as $elem) {
+            $links[] = $elem;
+        }
+        foreach ($dom->getElementsByTagName('meta') as $elem) {
+            $links[] = $elem;
+        }
+        foreach ($links as $link) {
+            foreach ($link->attributes as $attribute) {
+                /** @var DOMElement $link */
+                if ($favicon = Tools::parseFaviconSizeTag(urldecode($attribute->value))) {
+                    ImageManager::resize(
+                        _PS_IMG_DIR_."favicon/favicon_{$idShop}_source.png",
+                        _PS_IMG_DIR_."favicon/favicon_{$idShop}_{$favicon['width']}_{$favicon['height']}.png",
+                        (int) $favicon['width'],
+                        (int) $favicon['height'],
+                        $favicon['type']
+                    );
+                }
+            }
+            $filteredHtml .= $dom->saveHTML($link);
+        }
+
+        Configuration::updateValue('TB_SOURCE_FAVICON_CODE', urldecode($filteredHtml), true);
 
         if (!$this->errors) {
             $this->redirect_after = static::$currentIndex.'&token='.$this->token;
@@ -2999,6 +3108,8 @@ class AdminThemesControllerCore extends AdminController
      * @return void
      *
      * @since 1.0.0
+     * @deprecated 1.0.4
+     * @throws PrestaShopException
      */
     public function updateOptionPsFavicon_57()
     {
@@ -3022,6 +3133,8 @@ class AdminThemesControllerCore extends AdminController
      * Update PS_FAVICON_72
      *
      * @since 1.0.0
+     * @deprecated 1.0.4
+     * @throws PrestaShopException
      */
     public function updateOptionPsFavicon_72()
     {
@@ -3045,6 +3158,8 @@ class AdminThemesControllerCore extends AdminController
      * Update PS_FAVICON_114
      *
      * @since 1.0.0
+     * @deprecated 1.0.4
+     * @throws PrestaShopException
      */
     public function updateOptionPsFavicon_114()
     {
@@ -3068,6 +3183,8 @@ class AdminThemesControllerCore extends AdminController
      * Update PS_FAVICON_144
      *
      * @since 1.0.0
+     * @deprecated 1.0.4
+     * @throws PrestaShopException
      */
     public function updateOptionPsFavicon_144()
     {
@@ -3091,6 +3208,8 @@ class AdminThemesControllerCore extends AdminController
      * Update PS_FAVICON_192
      *
      * @since 1.0.0
+     * @deprecated 1.0.4
+     * @throws PrestaShopException
      */
     public function updateOptionPsFavicon_192()
     {
@@ -3111,10 +3230,46 @@ class AdminThemesControllerCore extends AdminController
     }
 
     /**
+     * Refresh the favicon template
+     *
+     * @since 1.0.4 to enable the favicon template
+     */
+    function ajaxProcessRefreshFaviconTemplate()
+    {
+        try {
+            $template = (string) (new \GuzzleHttp\Client([
+                'http_errors' => false,
+                'verify'      => _PS_TOOL_DIR_.'cacert.pem',
+                'timeout'     => 60,
+            ]))->get('https://raw.githubusercontent.com/thirtybees/favicons/master/template.html')->getBody();
+        } catch (Exception $e) {
+            $this->ajaxDie(json_encode([
+                'hasError' => true,
+                'error'    => $e->getMessage(),
+            ]));
+        }
+
+        if (!$template) {
+            $this->ajaxDie(json_encode([
+                'hasError' => true,
+                'error' => '',
+            ]));
+        }
+
+        $this->ajaxDie(json_encode([
+            'hasError' => false,
+            'template' => base64_encode($template),
+            'error'    => '',
+        ]));
+    }
+
+    /**
      * Update theme for current shop
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function updateOptionThemeForShop()
@@ -3203,6 +3358,7 @@ class AdminThemesControllerCore extends AdminController
      * @return false|ObjectModel|Theme
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processResponsive()
     {
@@ -3226,6 +3382,7 @@ class AdminThemesControllerCore extends AdminController
      * @return false|ObjectModel|Theme
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processDefaultLeftColumn()
     {
@@ -3249,6 +3406,7 @@ class AdminThemesControllerCore extends AdminController
      * @return false|ObjectModel|Theme
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function processDefaultRightColumn()
     {
@@ -3271,6 +3429,8 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function ajaxProcessLeftMeta()
@@ -3297,6 +3457,8 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function processLeftMeta()
@@ -3329,6 +3491,8 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @sicne 1.0.0
      */
     public function ajaxProcessRightMeta()
@@ -3354,6 +3518,8 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function processRightMeta()
@@ -3386,6 +3552,11 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return string
      *
+     * @throws Exception
+     * @throws HTMLPurifier_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function renderOptions()
@@ -3420,6 +3591,8 @@ class AdminThemesControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function setMedia()
@@ -3434,6 +3607,7 @@ class AdminThemesControllerCore extends AdminController
      * @return void
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function processUpdateOptions()
     {
@@ -3476,5 +3650,63 @@ class AdminThemesControllerCore extends AdminController
             }
         }
         closedir($dir);
+    }
+
+    /**
+     * Generate a cached thumbnail for object lists (eg. carrier, order statuses...etc)
+     *
+     * @param string $image        Real image filename
+     * @param string $cacheImage   Cached filename
+     * @param int    $size         Desired size
+     * @param string $imageType    Image type
+     * @param bool   $disableCache When turned on a timestamp will be added to the image URI to disable the HTTP cache
+     * @param bool   $regenerate   When turned on and the file already exist, the file will be regenerated
+     *
+     * @return string
+     *
+     * @since   1.0.4
+     */
+    protected function thumbnail($image, $cacheImage, $size, $imageType = 'jpg', $disableCache = true, $regenerate = false)
+    {
+        if (!file_exists($image)) {
+            return '';
+        }
+
+        if (file_exists(_PS_TMP_IMG_DIR_.$cacheImage) && $regenerate) {
+            @unlink(_PS_TMP_IMG_DIR_.$cacheImage);
+        }
+
+        if ($regenerate || !file_exists(_PS_TMP_IMG_DIR_.$cacheImage)) {
+            $infos = getimagesize($image);
+
+            // Evaluate the memory required to resize the image: if it's too much, you can't resize it.
+            if (!ImageManager::checkImageMemoryLimit($image)) {
+                return false;
+            }
+
+            $x = $infos[0];
+            $y = $infos[1];
+            $maxX = $size * 3;
+
+            // Size is already ok
+            if ($y < $size && $x <= $maxX) {
+                copy($image, _PS_TMP_IMG_DIR_.$cacheImage);
+            } // We need to resize */
+            else {
+                $ratio_x = $x / ($y / $size);
+                if ($ratio_x > $maxX) {
+                    $ratio_x = $maxX;
+                    $size = $y / ($x / $maxX);
+                }
+
+                ImageManager::resize($image, _PS_TMP_IMG_DIR_.$cacheImage, $ratio_x, $size, $imageType);
+            }
+        }
+        // Relative link will always work, whatever the base uri set in the admin
+        if (Context::getContext()->controller->controller_type == 'admin') {
+            return '../img/tmp/'.$cacheImage.($disableCache ? '?time='.time() : '');
+        } else {
+            return _PS_TMP_IMG_.$cacheImage.($disableCache ? '?time='.time() : '');
+        }
     }
 }

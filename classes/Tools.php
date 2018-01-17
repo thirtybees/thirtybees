@@ -5234,6 +5234,60 @@ exit;
     {
         return base64_decode(str_pad(strtr($data, '-_', '+/'), strlen($data) % 4, '=', STR_PAD_RIGHT));
     }
+
+    /**
+     * Grabs a size tag from a DOMElement (as HTML)
+     *
+     * @param string $html
+     *
+     * @return array|false
+     *
+     * @since 1.0.4
+     */
+    public static function parseFaviconSizeTag($html)
+    {
+        $srcFound = false;
+        $favicon = [];
+        preg_match('/\{(.*)\}/U', $html, $m);
+        if (!$m || count($m) < 2) {
+            return false;
+        }
+        $tags = explode(' ', $m[1]);
+        foreach ($tags as $tag) {
+            $components = explode('=', $tag);
+            if (count($components) === 1) {
+                if ($components[0] === 'src') {
+                    $srcFound = true;
+                }
+
+                continue;
+            }
+
+            switch ($components[0]) {
+                case 'type':
+                    $favicon['type'] = $components[1];
+                    break;
+                case 'size':
+                    $dimension = explode('x', $components[1]);
+                    if (count($dimension) !== 2) {
+                        continue;
+                    }
+                    $favicon['width'] = $dimension[0];
+                    $favicon['height'] = $dimension[1];
+                    break;
+            }
+        }
+
+        if ($srcFound && array_key_exists('width', $favicon) && array_key_exists('height', $favicon)) {
+            if (!isset($favicon['type'])) {
+                $favicon['type'] = 'png';
+            }
+
+            return $favicon;
+        }
+
+        return false;
+    }
 }
 
 /**
