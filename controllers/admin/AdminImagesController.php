@@ -56,6 +56,7 @@ class AdminImagesControllerCore extends AdminController
         $this->table = 'image_type';
         $this->className = 'ImageType';
         $this->lang = false;
+        $this->context = Context::getContext();
 
         $this->addRowAction('edit');
         $this->addRowAction('delete');
@@ -208,6 +209,19 @@ class AdminImagesControllerCore extends AdminController
                 'cast'       => 'intval',
                 'required'   => false,
                 'type'       => 'bool',
+                'visibility' => Shop::CONTEXT_ALL,
+            ];
+        }
+
+        $themeConfiguration = $this->context->theme->getConfiguration();
+        if (!empty($themeConfiguration['lazy_load'])) {
+            $this->fields_options['images']['fields']['TB_LAZY_LOAD'] = [
+                'type'       => 'bool',
+                'validation' => 'isBool',
+                'cast'       => 'intval',
+                'required'   => false,
+                'title'      => $this->l('Lazy load images'),
+                'desc'       => $this->l('Defer the loading of images until they scroll into view'),
                 'visibility' => Shop::CONTEXT_ALL,
             ];
         }
