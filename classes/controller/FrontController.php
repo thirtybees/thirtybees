@@ -286,6 +286,8 @@ class FrontControllerCore extends Controller
                 if ($faviconHtml) {
                     $hookHeader .= $faviconHtml;
                 }
+                $hookHeader .= '<meta name="msapplication-config" content="'.Media::getMediaPath(_PS_IMG_DIR_."favicon/browserconfig_{$this->context->shop->id}.xml").'">';
+                $hookHeader .= '<link rel="manifest" href="'.Media::getMediaPath(_PS_IMG_DIR_."favicon/manifest_{$this->context->shop->id}.json").'">';
             }
 
             if (isset($this->php_self)) { // append some seo fields, canonical, hrefLang, rel prev/next

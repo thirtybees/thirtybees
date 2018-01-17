@@ -198,19 +198,20 @@ class AdminThemesControllerCore extends AdminController
                     'PS_FAVICON'      => [
                         'title' => $this->l('Favicon'),
                         'hint'  => $this->l('Will appear in the address bar of your web browser.'),
+                        'desc'  => $this->l('Make sure you upload a square image.'),
                         'type'  => 'file',
                         'name'  => 'PS_FAVICON',
                         'tab'   => 'icons',
-                        'thumb' => Media::getMediaPath(_PS_IMG_DIR_.'favicon.ico'),
+                        'thumb' => Media::getMediaPath(_PS_IMG_DIR_."favicon_{$this->context->shop->id}.ico").'?'.time(),
                     ],
                     'TB_SOURCE_FAVICON'  => [
                         'title' => $this->l('Source favicon (PNG)'),
                         'hint'  => $this->l('Will appear in the address bar of your web browser.'),
-                        'desc'  => $this->l('Make sure you upload a big enough favicon. Preferrably one that covers all sizes.'),
+                        'desc'  => $this->l('Make sure you upload a big enough favicon. Preferrably one that covers all sizes and a square size.'),
                         'type'  => 'file',
                         'name'  => 'TB_SOURCE_FAVICON',
                         'tab'   => 'icons',
-                        'thumb' => $this->thumbnail(_PS_IMG_DIR_."favicon/favicon_{$this->context->shop->id}_source.png", 'favicon_source', 256),
+                        'thumb' => $this->thumbnail(_PS_IMG_DIR_."favicon/favicon_{$this->context->shop->id}_source.png", 'favicon_source.png', 512, true, true),
                     ],
                     'TB_SOURCE_FAVICON_CODE'   => [
                         'title'                     => $this->l('Favicon metas'),
@@ -3013,8 +3014,8 @@ class AdminThemesControllerCore extends AdminController
         if ($idShop == Configuration::get('PS_SHOP_DEFAULT')) {
             $this->uploadIco('PS_FAVICON', _PS_IMG_DIR_.'favicon.ico');
         }
-        if ($this->uploadIco('PS_FAVICON', _PS_IMG_DIR_.'favicon-'.(int) $idShop.'.ico')) {
-            Configuration::updateValue('PS_FAVICON', 'favicon-'.(int) $idShop.'.ico');
+        if ($this->uploadIco('PS_FAVICON', _PS_IMG_DIR_.'favicon_'.(int) $idShop.'.ico')) {
+            Configuration::updateValue('PS_FAVICON', 'favicon_'.(int) $idShop.'.ico');
         }
 
         Configuration::updateGlobalValue('PS_FAVICON', 'favicon.ico');
@@ -3028,6 +3029,7 @@ class AdminThemesControllerCore extends AdminController
      * Process the favicon sizes
      *
      * @since 1.0.4
+     * @throws PrestaShopException
      */
     public function updateOptionTbSourceFaviconCode()
     {
@@ -3042,7 +3044,28 @@ class AdminThemesControllerCore extends AdminController
         $this->uploadIco('TB_SOURCE_FAVICON', _PS_IMG_DIR_."favicon/favicon_{$idShop}_source.png");
 
         $newTemplate = Tools::getValue('TB_SOURCE_FAVICON_CODE');
+
+        // Generate the new header HTML
         $filteredHtml = '';
+
+        // Generate a browserconfig.xml
+        $browserConfig = new DOMDocument('1.0', 'UTF-8');
+        $main = $browserConfig->createElement('browserconfig');
+        $ms = $browserConfig->createElement('msapplication');
+        $tile = $browserConfig->createElement('tile');
+        $ms->appendChild($tile);
+        $main->appendChild($ms);
+        $browserConfig->appendChild($main);
+        $browserConfig->formatOutput = true;
+
+        // Generate a new manifest.json
+        $manifest = [
+            'name'             => Configuration::get('PS_SHOP_NAME'),
+            'icons'            => [],
+            'theme_color'      => '#ffffff',
+            'background_color' => '#000000',
+            'display'          => 'standalone',
+        ];
 
         // Filter and detect sizes
         $dom = new DOMDocument();
@@ -3065,11 +3088,32 @@ class AdminThemesControllerCore extends AdminController
                         (int) $favicon['height'],
                         $favicon['type']
                     );
+
+                    if (in_array("{$favicon['width']}x{$favicon['height']}", [
+                        '70x70',
+                        '150x150',
+                        '310x310',
+                        '310x150'
+                    ])) {
+                        $path = Media::getMediaPath(_PS_IMG_DIR_."favicon/favicon_{$idShop}_{$favicon['width']}_{$favicon['height']}.png");
+                        $logo = $favicon['width'] == $favicon['height']
+                            ? $browserConfig->createElement("square{$favicon['width']}x{$favicon['height']}logo", $path)
+                            : $browserConfig->createElement("wide{$favicon['width']}x{$favicon['height']}logo", $path);
+                        $tile->appendChild($logo);
+                    }
+
+                    $manifest['icons'][] = [
+                        'src'   => Media::getMediaPath(_PS_IMG_DIR_."favicon/favicon_{$idShop}_{$favicon['width']}_{$favicon['height']}.png"),
+                        'sizes' => "{$favicon['width']}x{$favicon['height']}",
+                        'type'  => "image/{$favicon['type']}",
+                    ];
                 }
             }
             $filteredHtml .= $dom->saveHTML($link);
         }
 
+        file_put_contents(_PS_IMG_DIR_."favicon/browserconfig_{$idShop}.xml", $browserConfig->saveXML());
+        file_put_contents(_PS_IMG_DIR_."favicon/manifest_{$idShop}.json", json_encode($manifest, JSON_UNESCAPED_SLASHES + JSON_PRETTY_PRINT));
         Configuration::updateValue('TB_SOURCE_FAVICON_CODE', urldecode($filteredHtml), true);
 
         if (!$this->errors) {
@@ -3093,7 +3137,7 @@ class AdminThemesControllerCore extends AdminController
             // Check ico validity
             if ($error = ImageManager::validateIconUpload($_FILES[$name])) {
                 $this->errors[] = $name . ': ' . $error;
-            } elseif (!copy($_FILES[$name]['tmp_name'], $dest)) {
+            } elseif (!@file_put_contents($dest, ImageManager::generateFavicon($_FILES[$name]['tmp_name']))) {
                 // Copy new ico
                 $this->errors[] = sprintf(Tools::displayError('An error occurred while uploading the favicon: cannot copy file "%s" to folder "%s".'), $_FILES[$name]['tmp_name'], $dest);
             }
