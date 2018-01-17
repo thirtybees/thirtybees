@@ -680,6 +680,11 @@ class ImageManagerCore
      * @param array  $sizes  Optional. An array of sizes (each size is an array with a width and height) that the source image should be rendered at in the generated ICO file. If sizes are not supplied, the size of the source image will be used.
      *
      * @return boolean true on success and false on failure.
+     *
+     * @copyright 2011-2016  Chris Jean
+     * @author Chris Jean
+     * @license GNU General Public License v2.0
+     * @source https://github.com/chrisbliss18/php-ico
      */
     public static function generateFavicon($source, $sizes = [['16', '16'], ['32', '32'], ['48', '48']])
     {
@@ -696,12 +701,12 @@ class ImageManagerCore
         }
         unset($file_data);
         if (empty($sizes)) {
-            $sizes = array(imagesx($im), imagesy($im));
+            $sizes = [imagesx($im), imagesy($im)];
         }
 
         // If just a single size was passed, put it in array.
         if ( ! is_array( $sizes[0] ) ) {
-            $sizes = array( $sizes );
+            $sizes = [$sizes];
         }
 
         foreach ( (array) $sizes as $size ) {
@@ -723,6 +728,11 @@ class ImageManagerCore
 
     /**
      * Generate the final ICO data by creating a file header and adding the image data.
+     *
+     * @copyright 2011-2016  Chris Jean
+     * @author Chris Jean
+     * @license GNU General Public License v2.0
+     * @source https://github.com/chrisbliss18/php-ico
      */
     protected static function getIcoData($images)
     {
@@ -744,13 +754,18 @@ class ImageManagerCore
 
     /**
      * Take a GD image resource and change it into a raw BMP format.
+     *
+     * @copyright 2011-2016  Chris Jean
+     * @author Chris Jean
+     * @license GNU General Public License v2.0
+     * @source https://github.com/chrisbliss18/php-ico
      */
     protected static function addFaviconImageData($im, &$images)
     {
         $width = imagesx($im);
         $height = imagesy($im);
-        $pixel_data = array();
-        $opacity_data = array();
+        $pixel_data = [];
+        $opacity_data = [];
         $current_opacity_val = 0;
         for ($y = $height - 1; $y >= 0; $y--) {
             for ($x = 0; $x < $width; $x++) {
@@ -768,8 +783,9 @@ class ImageManagerCore
                 }
             }
             if (($x % 32) > 0) {
-                while (($x++ % 32) > 0)
+                while (($x++ % 32) > 0) {
                     $current_opacity_val = $current_opacity_val << 1;
+                }
                 $opacity_data[] = $current_opacity_val;
                 $current_opacity_val = 0;
             }
@@ -778,18 +794,20 @@ class ImageManagerCore
         $color_mask_size = $width * $height * 4;
         $opacity_mask_size = (ceil($width / 32) * 4) * $height;
         $data = pack('VVVvvVVVVVV', 40, $width, ($height * 2), 1, 32, 0, 0, 0, 0, 0, 0);
-        foreach ($pixel_data as $color)
+        foreach ($pixel_data as $color) {
             $data .= pack('V', $color);
-        foreach ($opacity_data as $opacity)
+        }
+        foreach ($opacity_data as $opacity) {
             $data .= pack('N', $opacity);
-        $image = array(
+        }
+        $image = [
             'width'                => $width,
             'height'               => $height,
             'color_palette_colors' => 0,
             'bits_per_pixel'       => 32,
             'size'                 => $image_header_size + $color_mask_size + $opacity_mask_size,
             'data'                 => $data,
-        );
+        ];
         $images[] = $image;
     }
 }
