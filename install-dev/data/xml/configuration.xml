@@ -877,8 +877,37 @@
     <configuration id="PS_ROUTE_cms_category_rule" name="PS_ROUTE_cms_category_rule">
       <value>info/{rewrite}</value>
     </configuration>
-    <configuration id="PS_SHOW_CONDITION'" name="PS_SHOW_CONDITION'">
+    <configuration id="PS_SHOW_CONDITION" name="PS_SHOW_CONDITION">
       <value>1</value>
+    </configuration>
+    <configuration id="TB_SOURCE_FAVICON_CODE" name="TB_SOURCE_FAVICON_CODE">
+      <value><![CDATA[<link rel="apple-touch-icon" sizes="57x57" href="{src size=57x57 type=png}">
+<link rel="apple-touch-icon" sizes="60x60" href="{src size=60x60 type=png}">
+<link rel="apple-touch-icon" sizes="72x72" href="{src size=72x72 type=png}">
+<link rel="apple-touch-icon" sizes="76x76" href="{src size=76x76 type=png}">
+<link rel="apple-touch-icon" sizes="114x114" href="{src size=114x114 type=png}">
+<link rel="apple-touch-icon" sizes="120x120" href="{src size=120x120 type=png}">
+<link rel="apple-touch-icon" sizes="144x144" href="{src size=144x144 type=png}">
+<link rel="apple-touch-icon" sizes="152x152" href="{src size=152x152 type=png}">
+<link rel="apple-touch-icon" sizes="180x180" href="{src size=180x180 type=png}">
+<link rel="icon" type="image/png" sizes="16x16" href="{src size=16x16 type=png}">
+<link rel="icon" type="image/png" sizes="32x32" href="{src size=32x32 type=png}">
+<link rel="icon" type="image/png" sizes="36x36" href="{src size=36x36 type=png}">
+<link rel="icon" type="image/png" sizes="48x48" href="{src size=48x48 type=png}">
+<link rel="icon" type="image/png" sizes="72x72" href="{src size=72x72 type=png}">
+<link rel="icon" type="image/png" sizes="96x96" href="{src size=96x96 type=png}">
+<link rel="icon" type="image/png" sizes="144x144" href="{src size=144x144 type=png}">
+<link rel="icon" type="image/png" sizes="192x192" href="{src size=192x192 type=png}">
+<link rel="icon" type="image/png" sizes="256x256" href="{src size=256x256 type=png}">
+<link rel="icon" type="image/png" sizes="384x384" href="{src size=384x384 type=png}">
+<link rel="icon" type="image/png" sizes="512x512" href="{src size=512x512 type=png}">
+<meta name="msapplication-square70x70logo" content="{src size=70x70 type=png}" />
+<meta name="msapplication-square150x150logo" content="{src size=150x150 type=png}" />
+<meta name="msapplication-wide310x150logo" content="{src size=310x150 type=png}" />
+<meta name="msapplication-square310x310logo" content="{src size=310x310 type=png}" />
+<meta name="msapplication-config" content="none"/>
+<meta name="msapplication-TileColor" content="#da532c" />
+<meta name="theme-color" content="#ffffff">]]></value>
     </configuration>
   </entities>
 </entity_configuration>
