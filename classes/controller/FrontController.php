@@ -1683,6 +1683,7 @@ class FrontControllerCore extends Controller
             [
                 // Useful for layout.tpl
                 'mobile_device'       => $this->context->getMobileDevice(),
+                'lazy_load'           => (bool) Configuration::get('TB_LAZY_LOAD'),
                 'link'                => $link,
                 'cart'                => $cart,
                 'currency'            => $currency,

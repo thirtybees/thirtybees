@@ -561,6 +561,26 @@ class AdminPerformanceControllerCore extends AdminController
             ],
         ];
 
+        $themeConfiguration = $this->context->theme->getConfiguration();
+        if (!empty($themeConfiguration['lazy_load'])) {
+            $this->fields_form[3]['form']['input'][] = [
+                'type'   => 'switch',
+                'label'  => $this->l('Lazy load images'),
+                'desc'   => $this->l('Defer the loading of images until they scroll into view'),
+                'name'   => 'TB_LAZY_LOAD',
+                'values' => [
+                    [
+                        'id'    => 'TB_LAZY_LOAD_1',
+                        'value' => 1,
+                    ],
+                    [
+                        'id'    => 'TB_LAZY_LOAD_0',
+                        'value' => 0,
+                    ],
+                ],
+            ];
+        }
+
 
         $this->fields_value['PS_CSS_THEME_CACHE'] = Configuration::get('PS_CSS_THEME_CACHE');
         $this->fields_value['PS_JS_THEME_CACHE'] = Configuration::get('PS_JS_THEME_CACHE');
@@ -568,6 +588,7 @@ class AdminPerformanceControllerCore extends AdminController
         $this->fields_value['PS_HTACCESS_CACHE_CONTROL'] = Configuration::get('PS_HTACCESS_CACHE_CONTROL');
         $this->fields_value['PS_JS_DEFER'] = Configuration::get('PS_JS_DEFER');
         $this->fields_value['TB_KEEP_CCC_FILES'] = Configuration::get('TB_KEEP_CCC_FILES');
+        $this->fields_value['TB_LAZY_LOAD'] = Configuration::get('TB_LAZY_LOAD');
         $this->fields_value['ccc_up'] = 1;
     }
 
@@ -1064,7 +1085,8 @@ class AdminPerformanceControllerCore extends AdminController
                     !Configuration::updateValue('PS_JS_HTML_THEME_COMPRESSION', (int) Tools::getValue('PS_JS_HTML_THEME_COMPRESSION')) ||
                     !Configuration::updateValue('PS_JS_DEFER', (int) Tools::getValue('PS_JS_DEFER')) ||
                     !Configuration::updateValue('TB_KEEP_CCC_FILES', (int) Tools::getValue('TB_KEEP_CCC_FILES')) ||
-                    !Configuration::updateValue('PS_HTACCESS_CACHE_CONTROL', (int) Tools::getValue('PS_HTACCESS_CACHE_CONTROL'))
+                    !Configuration::updateValue('PS_HTACCESS_CACHE_CONTROL', (int) Tools::getValue('PS_HTACCESS_CACHE_CONTROL')) ||
+                    !Configuration::updateValue('TB_LAZY_LOAD', (bool) Tools::getValue('TB_LAZY_LOAD'))
                 ) {
                     $this->errors[] = Tools::displayError('Unknown error.');
                 } else {

@@ -547,4 +547,27 @@ class ThemeCore extends ObjectModel
 
         return $this->update(false);
     }
+
+    /**
+     * Get the configuration file as an array
+     *
+     * @return array
+     *
+     * @since 1.0.4
+     */
+    public function getConfiguration()
+    {
+        $target = _PS_ROOT_DIR_.'/themes/'.$this->name.'/Config.xml';
+        if (!file_exists($target)) {
+            $target = _PS_ROOT_DIR_.'/themes/'.$this->name.'/config.xml';
+            if (!file_exists($target)) {
+                return [];
+            }
+        }
+
+        $xmlfile = file_get_contents($target);
+        $ob = simplexml_load_string($xmlfile);
+        $json = json_encode($ob);
+        return json_decode($json, true);
+    }
 }
