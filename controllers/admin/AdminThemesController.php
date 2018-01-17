@@ -211,7 +211,7 @@ class AdminThemesControllerCore extends AdminController
                         'type'  => 'file',
                         'name'  => 'TB_SOURCE_FAVICON',
                         'tab'   => 'icons',
-                        'thumb' => $this->thumbnail(_PS_IMG_DIR_."favicon/favicon_{$this->context->shop->id}_source.png", 'favicon_source.png', 512, true, true),
+                        'thumb' => $this->thumbnail(_PS_IMG_DIR_."favicon/favicon_{$this->context->shop->id}_source.png", 'favicon_source.png', 512, 'png', true, true),
                     ],
                     'TB_SOURCE_FAVICON_CODE'   => [
                         'title'                     => $this->l('Favicon metas'),
@@ -3062,8 +3062,8 @@ class AdminThemesControllerCore extends AdminController
         $manifest = [
             'name'             => Configuration::get('PS_SHOP_NAME'),
             'icons'            => [],
-            'theme_color'      => '#ffffff',
-            'background_color' => '#000000',
+            'theme_color'      => '#fad629',
+            'background_color' => '#fad629',
             'display'          => 'standalone',
         ];
 
@@ -3086,7 +3086,7 @@ class AdminThemesControllerCore extends AdminController
                         _PS_IMG_DIR_."favicon/favicon_{$idShop}_{$favicon['width']}_{$favicon['height']}.png",
                         (int) $favicon['width'],
                         (int) $favicon['height'],
-                        $favicon['type']
+                        'png'
                     );
 
                     if (in_array("{$favicon['width']}x{$favicon['height']}", [
@@ -3107,6 +3107,13 @@ class AdminThemesControllerCore extends AdminController
                         'sizes' => "{$favicon['width']}x{$favicon['height']}",
                         'type'  => "image/{$favicon['type']}",
                     ];
+                }
+
+                if ($link->hasAttribute('name') && $link->getAttribute('name') === 'theme-color') {
+                    $manifest['theme_color'] = $link->getAttribute('content');
+                }
+                if ($link->hasAttribute('name') && $link->getAttribute('name') === 'background-color') {
+                    $manifest['background_color'] = $link->getAttribute('content');
                 }
             }
             $filteredHtml .= $dom->saveHTML($link);
@@ -3137,8 +3144,10 @@ class AdminThemesControllerCore extends AdminController
             // Check ico validity
             if ($error = ImageManager::validateIconUpload($_FILES[$name])) {
                 $this->errors[] = $name . ': ' . $error;
-            } elseif (!@file_put_contents($dest, ImageManager::generateFavicon($_FILES[$name]['tmp_name']))) {
+            } elseif (mb_substr($dest, -3) === 'ico' && !@file_put_contents($dest, ImageManager::generateFavicon($_FILES[$name]['tmp_name']))) {
                 // Copy new ico
+                $this->errors[] = sprintf(Tools::displayError('An error occurred while uploading the favicon: cannot copy file "%s" to folder "%s".'), $_FILES[$name]['tmp_name'], $dest);
+            } elseif (mb_substr($dest, -3) !== 'ico' && !@copy($_FILES[$name]['tmp_name'], $dest)) {
                 $this->errors[] = sprintf(Tools::displayError('An error occurred while uploading the favicon: cannot copy file "%s" to folder "%s".'), $_FILES[$name]['tmp_name'], $dest);
             }
         }

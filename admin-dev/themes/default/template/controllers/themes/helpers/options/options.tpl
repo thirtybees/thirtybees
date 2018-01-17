@@ -95,11 +95,12 @@
       </div>
     {/if}
   {elseif $field['type'] == 'code'}
-    {if $key === 'TB_SOURCE_FAVICON_CODE'}
+    {if !empty($field['grab_favicon_template'])}
       <script type="text/javascript">
         (function () {
           function resetRefreshButton(target) {
             target.innerHTML = '<i class="icon icon-download"></i> <span>{l s='Download a new template' js=1}</span>';
+            target.disabled = false;
           }
 
           window.downloadNewFaviconTemplate = function (e) {
@@ -112,6 +113,7 @@
             i.className = i.className.replace('icon-download', 'icon-refresh icon-spin');
             var span = target.querySelector('span');
             span.innerHTML = '{l s='Refreshing...' js=1}';
+            target.disabled = true;
 
             var request = new XMLHttpRequest();
             request.open('GET', currentIndex + '&ajax=1&action=refreshFaviconTemplate&controller=AdminThemes&token=' + token, true);
@@ -123,7 +125,7 @@
                   if (!response.hasError) {
                     document.getElementById('{$key|escape:'htmlall':'UTF-8'}').value = atob(response.template);
                     window.aces['{$key|escape:'javascript':'UTF-8'}'].setValue(atob(response.template), -1);
-                    window.showSuccessMessage('{l s='Successfully refreshed the favicon template' js=1}');
+                    window.showSuccessMessage('{l s='Successfully refreshed the favicon template. Do not forget to click "Save" below.' js=1}');
                   } else {
                    {if $smarty.const._PS_MODE_DEV_}
                      window.showErrorMessage(response.error);
@@ -155,7 +157,7 @@
     <div class="ace-container col-lg-9">
       <div class="ace-editor" data-name="{$key|escape:'htmlall':'UTF-8'}" id="ace{$key|escape:'htmlall':'UTF-8'}">{$field['value']|escape:'html':'UTF-8'}</div>
       <input type="hidden" id="{$key|escape:'htmlall':'UTF-8'}" name="{$key|escape:'htmlall':'UTF-8'}" value="{$field['value']|escape:'html':'UTF-8'}">
-      {if $key === 'TB_SOURCE_FAVICON_CODE'}
+      {if !empty($field['grab_favicon_template'])}
         <br />
         <button type="button" class="btn btn-default clearfix" onclick="downloadNewFaviconTemplate(event);"><i class="icon icon-download"></i> <span>{l s='Download a new template'}</span></button>
       {/if}
