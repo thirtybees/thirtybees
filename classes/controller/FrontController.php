@@ -261,18 +261,33 @@ class FrontControllerCore extends Controller
             // Needed hooks are called in the tpl files.
 
             $hookHeader = Hook::exec('displayHeader');
-            foreach ([
-                         Media::FAVICON_57  => '57',
-                         Media::FAVICON_72  => '72',
-                         Media::FAVICON_114 => '114',
-                         Media::FAVICON_192 => '192',
-                     ] as $faviconType => $size) {
-                if ($path = Media::getFaviconPath($faviconType)) {
-                    $hookHeader .= '<link rel="icon" sizes="'.$size.'x'.$size.'" href="'.$path.'">';
+
+            $faviconTemplate = Configuration::get('TB_SOURCE_FAVICON_CODE');
+            if ($faviconTemplate) {
+                $dom = new DOMDocument();
+                $dom->loadHTML($faviconTemplate);
+                $links = [];
+                foreach ($dom->getElementsByTagName('link') as $elem) {
+                    $links[] = $elem;
                 }
-            }
-            if ($path = Media::getFaviconPath(Media::FAVICON_144)) {
-                $hookHeader .= '<link rel="apple-touch-icon" sizes="144x144" href="'.$path.'">';
+                foreach ($dom->getElementsByTagName('meta') as $elem) {
+                    $links[] = $elem;
+                }
+                $faviconHtml = '';
+                foreach ($links as $link) {
+                    foreach ($link->attributes as $attribute) {
+                        /** @var DOMElement $link */
+                        if ($favicon = Tools::parseFaviconSizeTag(urldecode($attribute->value))) {
+                            $attribute->value = Media::getMediaPath(_PS_IMG_DIR_."favicon/favicon_{$this->context->shop->id}_{$favicon['width']}_{$favicon['height']}.{$favicon['type']}");
+                        }
+                    }
+                    $faviconHtml .= $dom->saveHTML($link);
+                }
+                if ($faviconHtml) {
+                    $hookHeader .= $faviconHtml;
+                }
+                $hookHeader .= '<meta name="msapplication-config" content="'.Media::getMediaPath(_PS_IMG_DIR_."favicon/browserconfig_{$this->context->shop->id}.xml").'">';
+                $hookHeader .= '<link rel="manifest" href="'.Media::getMediaPath(_PS_IMG_DIR_."favicon/manifest_{$this->context->shop->id}.json").'">';
             }
 
             if (isset($this->php_self)) { // append some seo fields, canonical, hrefLang, rel prev/next
