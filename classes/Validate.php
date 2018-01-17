@@ -243,7 +243,7 @@ class ValidateCore
      */
     public static function isName($name)
     {
-        return (bool) preg_match(Tools::cleanNonUnicodeSupport('/^[^0-9!<>,;?=+()@#"°{}_$%:]*$/u'), stripslashes($name));
+        return (bool) preg_match(Tools::cleanNonUnicodeSupport('/^[^0-9!<>,;?()@"°{}_$%:]*$/u'), stripslashes($name));
     }
 
     /**
@@ -432,7 +432,7 @@ class ValidateCore
      */
     public static function isDiscountName($voucher)
     {
-        return (bool) preg_match(Tools::cleanNonUnicodeSupport('/^[^!<>,;?=+()@"°{}_$%:]{3,32}$/u'), $voucher);
+        return (bool) preg_match(Tools::cleanNonUnicodeSupport('/^[^!<>,;?()@"°{}_$%:]{3,32}$/u'), $voucher);
     }
 
     /**
@@ -447,7 +447,7 @@ class ValidateCore
      */
     public static function isCatalogName($name)
     {
-        return (bool) preg_match(Tools::cleanNonUnicodeSupport('/^[^<>;=#{}]*$/u'), $name);
+        return (bool) preg_match(Tools::cleanNonUnicodeSupport('/^[^<>;{}]*$/u'), $name);
     }
 
     /**
