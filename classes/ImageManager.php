@@ -686,7 +686,7 @@ class ImageManagerCore
      * @license GNU General Public License v2.0
      * @source https://github.com/chrisbliss18/php-ico
      */
-    public static function generateFavicon($source, $sizes = [['16', '16'], ['32', '32'], ['48', '48']])
+    public static function generateFavicon($source, $sizes = [['16', '16'], ['24', '24'], ['32', '32'], ['48', '48'], ['64', '64']])
     {
         $images = [];
 
