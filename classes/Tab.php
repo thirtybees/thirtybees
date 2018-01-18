@@ -859,7 +859,7 @@ class TabCore extends ObjectModel
         && Db::getInstance()->update(
             'tab',
             [
-                '`position`' => (int) $position,
+                'position' => (int) $position,
             ],
             '`id_parent` = '.(int) $movedTab['id_parent'].' AND `id_tab`='.(int) $movedTab['id_tab']
         ));
