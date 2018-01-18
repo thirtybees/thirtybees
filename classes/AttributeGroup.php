@@ -377,7 +377,7 @@ class AttributeGroupCore extends ObjectModel
             $result = Db::getInstance()->update(
                 'attribute',
                 [
-                    '`id_attribute_group`' => (int) $this->id,
+                    'id_attribute_group' => (int) $this->id,
                 ],
                 '`id_attribute` = '.(int) $value['id']
             );
