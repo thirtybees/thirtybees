@@ -170,11 +170,7 @@ class ImageManagerCore
         &$srcWidth = null,
         &$srcHeight = null
     ) {
-        if (PHP_VERSION_ID < 50300) {
-            clearstatcache();
-        } else {
-            clearstatcache(true, $srcFile);
-        }
+        clearstatcache(true, $srcFile);
 
         if (!file_exists($srcFile) || !filesize($srcFile)) {
             return !($error = static::ERROR_FILE_NOT_EXIST);
@@ -221,8 +217,8 @@ class ImageManagerCore
         // If PS_IMAGE_QUALITY is activated, the generated image will be a PNG with .jpg as a file extension.
         // This allow for higher quality and for transparency. JPG source files will also benefit from a higher quality
         // because JPG reencoding by GD, even with max quality setting, degrades the image.
-        if (Configuration::get('PS_IMAGE_QUALITY') == 'png_all'
-            || (Configuration::get('PS_IMAGE_QUALITY') == 'png' && $type == IMAGETYPE_PNG) && !$forceType
+        if ($fileType !== 'webp' && (Configuration::get('PS_IMAGE_QUALITY') == 'png_all'
+            || (Configuration::get('PS_IMAGE_QUALITY') == 'png' && $type == IMAGETYPE_PNG) && !$forceType)
         ) {
             $fileType = 'png';
         }
@@ -266,7 +262,7 @@ class ImageManagerCore
         $destImage = imagecreatetruecolor($dstWidth, $dstHeight);
 
         // If image is a PNG and the output is PNG, fill with transparency. Else fill with white background.
-        if ($fileType == 'png' && $type == IMAGETYPE_PNG) {
+        if ($fileType == 'png' && $type == IMAGETYPE_PNG || $fileType === 'webp') {
             imagealphablending($destImage, false);
             imagesavealpha($destImage, true);
             $transparent = imagecolorallocatealpha($destImage, 255, 255, 255, 127);
@@ -308,11 +304,12 @@ class ImageManagerCore
         switch ($type) {
             case IMAGETYPE_GIF :
                 return imagecreatefromgif($filename);
-                break;
 
             case IMAGETYPE_PNG :
                 return imagecreatefrompng($filename);
-                break;
+
+            case 18:
+                return imagecreatefromwebp($filename);
 
             case IMAGETYPE_JPEG :
             default:
@@ -386,6 +383,7 @@ class ImageManagerCore
     {
         static $psPngQuality = null;
         static $psJpegQuality = null;
+        static $psWebpQuality = null;
 
         if ($psPngQuality === null) {
             $psPngQuality = Configuration::get('PS_PNG_QUALITY');
@@ -393,6 +391,10 @@ class ImageManagerCore
 
         if ($psJpegQuality === null) {
             $psJpegQuality = Configuration::get('PS_JPEG_QUALITY');
+        }
+
+        if ($psWebpQuality === null) {
+            $psWebpQuality = Configuration::get('PS_WEBP_QUALITY');
         }
 
         switch ($type) {
@@ -403,6 +405,11 @@ class ImageManagerCore
             case 'png':
                 $quality = ($psPngQuality === false ? 7 : $psPngQuality);
                 $success = imagepng($resource, $filename, (int) $quality);
+                break;
+
+            case 'webp':
+                $quality = ($psWebpQuality === false ? 90 : $psWebpQuality);
+                $success = imagewebp($resource, $filename, (int) $quality);
                 break;
 
             case 'jpg':

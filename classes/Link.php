@@ -303,42 +303,52 @@ class LinkCore
      * @param string $name rewrite link of the image
      * @param string $ids  id part of the image filename - can be "id_product-id_image" (legacy support, recommended) or "id_image" (new)
      * @param string $type
+     * @param string $format
      *
      * @return string
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @throws PrestaShopException
      */
     public function getImageLink($name, $ids, $type = null, $format = 'jpg')
     {
+        $highDpi = (bool) Configuration::get('PS_HIGHT_DPI');
         $notDefault = false;
+        if ($format === 'webp') {
+            $format = 'jpg.webp';
+        }
 
         // Check if module is installed, enabled, customer is logged in and watermark logged option is on
-        if (($type != '') && Configuration::get('WATERMARK_LOGGED') && (Module::isInstalled('watermark') && Module::isEnabled('watermark')) && isset(Context::getContext()->customer->id)) {
+        if (($type != '')
+            && Configuration::get('WATERMARK_LOGGED')
+            && (Module::isInstalled('watermark')
+                && Module::isEnabled('watermark'))
+            && isset(Context::getContext()->customer->id)
+        ) {
             $type .= '-'.Configuration::get('WATERMARK_HASH');
         }
 
         // legacy mode or default image
-        $theme = ((Shop::isFeatureActive() && file_exists(_PS_PROD_IMG_DIR_.$ids.($type ? '-'.$type : '').'-'.(int) Context::getContext()->shop->id_theme.'.'.$format)) ? '-'.Context::getContext()->shop->id_theme : '');
+        $theme = ((Shop::isFeatureActive() && file_exists(_PS_PROD_IMG_DIR_.$ids.($type ? '-'.$type : '').'-'.(int) Context::getContext()->shop->id_theme.'.'.($highDpi ? '2x.' : '').$format)) ? '-'.Context::getContext()->shop->id_theme : '');
         if ((Configuration::get('PS_LEGACY_IMAGES')
-                && (file_exists(_PS_PROD_IMG_DIR_.$ids.($type ? '-'.$type : '').$theme.'.'.$format)))
+                && (file_exists(_PS_PROD_IMG_DIR_.$ids.($type ? '-'.$type : '').$theme.'.'.($highDpi ? '2x.' : '').$format)))
             || ($notDefault = strpos($ids, 'default') !== false)
         ) {
             if ($this->allow == 1 && !$notDefault) {
-                $uriPath = __PS_BASE_URI__.$ids.($type ? '-'.$type : '').$theme.'/'.$name.'.'.$format;
+                $uriPath = __PS_BASE_URI__.$ids.($type ? '-'.$type : '').$theme.'/'.$name.'.'.($highDpi ? '2x.' : '').$format;
             } else {
-                $uriPath = _THEME_PROD_DIR_.$ids.($type ? '-'.$type : '').$theme.'.'.$format;
+                $uriPath = _THEME_PROD_DIR_.$ids.($type ? '-'.$type : '').$theme.'.'.($highDpi ? '2x.' : '').$format;
             }
         } else {
             // if ids if of the form id_product-id_image, we want to extract the id_image part
             $splitIds = explode('-', $ids);
             $idImage = (isset($splitIds[1]) ? $splitIds[1] : $splitIds[0]);
-            $theme = ((Shop::isFeatureActive() && file_exists(_PS_PROD_IMG_DIR_.Image::getImgFolderStatic($idImage).$idImage.($type ? '-'.$type : '').'-'.(int) Context::getContext()->shop->id_theme.'.'.$format)) ? '-'.Context::getContext()->shop->id_theme : '');
+            $theme = ((Shop::isFeatureActive() && file_exists(_PS_PROD_IMG_DIR_.Image::getImgFolderStatic($idImage).$idImage.($type ? '-'.$type : '').'-'.(int) Context::getContext()->shop->id_theme.'.'.($highDpi ? '2x.' : '').$format)) ? '-'.Context::getContext()->shop->id_theme : '');
             if ($this->allow == 1) {
-                $uriPath = __PS_BASE_URI__.$idImage.($type ? '-'.$type : '').$theme.'/'.$name.'.'.$format;
+                $uriPath = __PS_BASE_URI__.$idImage.($type ? '-'.$type : '').$theme.'/'.$name.'.'.($highDpi ? '2x.' : '').$format;
             } else {
-                $uriPath = _THEME_PROD_DIR_.Image::getImgFolderStatic($idImage).$idImage.($type ? '-'.$type : '').$theme.'.'.$format;
+                $uriPath = _THEME_PROD_DIR_.Image::getImgFolderStatic($idImage).$idImage.($type ? '-'.$type : '').$theme.'.'.($highDpi ? '2x.' : '').$format;
             }
         }
 
@@ -362,18 +372,25 @@ class LinkCore
      * @param string      $name
      * @param int         $idCategory
      * @param string|null $type
+     * @param string      $format
      *
      * @return string
      *
+     * @throws PrestaShopException
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function getCatImageLink($name, $idCategory, $type = null)
+    public function getCatImageLink($name, $idCategory, $type = null, $format = 'jpg')
     {
+        if ($format === 'webp') {
+            $format = 'jpg.webp';
+        }
+
+        $highDpi = (bool) Configuration::get('PS_HIGHT_DPI');
         if ($this->allow == 1 && $type) {
-            $uriPath = __PS_BASE_URI__.'c/'.$idCategory.'-'.$type.'/'.$name.'.jpg';
+            $uriPath = __PS_BASE_URI__.'c/'.$idCategory.'-'.$type.'/'.$name.'.'.($highDpi ? '2x.' : '').$format;
         } else {
-            $uriPath = _THEME_CAT_DIR_.$idCategory.($type ? '-'.$type : '').'.jpg';
+            $uriPath = _THEME_CAT_DIR_.$idCategory.($type ? '-'.$type : '').($highDpi ? '2x.' : '').'.'.$format;
         }
 
         return $this->protocol_content.Tools::getMediaServer($uriPath).$uriPath;

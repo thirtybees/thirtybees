@@ -1698,7 +1698,6 @@ class FrontControllerCore extends Controller
             [
                 // Useful for layout.tpl
                 'mobile_device'       => $this->context->getMobileDevice(),
-                'lazy_load'           => (bool) Configuration::get('TB_LAZY_LOAD'),
                 'link'                => $link,
                 'cart'                => $cart,
                 'currency'            => $currency,
@@ -1747,6 +1746,13 @@ class FrontControllerCore extends Controller
                 'currencySign'        => $currency->sign, // backward compat, see global.tpl
                 'currencyFormat'      => $currency->format, // backward compat
                 'currencyBlank'       => $currency->blank, // backward compat
+                'high_dpi'            => (bool) Configuration::get('PS_HIGHT_DPI'),
+                'lazy_load'           => (bool) Configuration::get('TB_LAZY_LOAD'),
+                'webp'                => (bool) Configuration::get('TB_USE_WEBP')
+                    && function_exists('imagewebp')
+                    && isset($_SERVER['HTTP_ACCEPT'])
+                    && strpos($_SERVER['HTTP_ACCEPT'], 'image/webp') > -1
+                ,
             ]
         );
 
