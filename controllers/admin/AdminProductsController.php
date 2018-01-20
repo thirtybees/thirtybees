@@ -1806,8 +1806,7 @@ class AdminProductsControllerCore extends AdminController
                             'webp'
                         );
 
-                        $lastId = (int) Configuration::get('TB_IMAGES_LAST_UPD_PRODUCTS');
-                        if ($lastId < $idProduct) {
+                        if ((int) Configuration::get('TB_IMAGES_LAST_UPD_PRODUCTS') < $idProduct) {
                             Configuration::updateValue('TB_IMAGES_LAST_UPD_PRODUCTS', $idProduct);
                         }
                     }
