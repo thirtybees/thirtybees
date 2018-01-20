@@ -588,6 +588,38 @@ class AdminImagesControllerCore extends AdminController
     }
 
     /**
+     * Ajax - delete all previous images
+     *
+     * @since 1.0.4
+     */
+    public function ajaxProcessResetImageStats()
+    {
+        $process = [
+            ['type' => 'categories',    'dir' => _PS_CAT_IMG_DIR_],
+            ['type' => 'manufacturers', 'dir' => _PS_MANU_IMG_DIR_],
+            ['type' => 'suppliers',     'dir' => _PS_SUPP_IMG_DIR_],
+            ['type' => 'scenes',        'dir' => _PS_SCENE_IMG_DIR_],
+            ['type' => 'products',      'dir' => _PS_PROD_IMG_DIR_],
+            ['type' => 'stores',        'dir' => _PS_STORE_IMG_DIR_],
+        ];
+
+        foreach ($process as $proc) {
+            try {
+                // Getting format generation
+                Configuration::updateValue('TB_IMAGES_LAST_UPD_'.strtoupper($proc['type']), 0);
+            } catch (PrestaShopException $e) {
+                $this->errors[] = $e->getMessage();
+            }
+        }
+
+        $this->ajaxDie(json_encode([
+            'hasError'    => !empty($this->errors),
+            'errors'      => $this->errors,
+            'indexStatus' => $this->getIndexationStatus(),
+        ]));
+    }
+
+    /**
      * Regenerate thumbnails
      *
      * @param string $type

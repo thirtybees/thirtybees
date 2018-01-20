@@ -143,6 +143,12 @@
         stores: false,
       };
 
+      var pendingRequests = [];
+      function removeRequest(request) {
+        const index = pendingRequests.indexOf(request);
+        pendingRequests.splice(index, 1);
+      }
+
       function getMax() {
         var max = 0;
         $('.ajax-regenerate-button').each(function (index, elem) {
@@ -200,11 +206,13 @@
         function enableButtons() {
           $('#regenerateAllImages').removeAttr('disabled');
           $('#deleteOldImages').removeAttr('disabled');
+          $('#resetImageStats').removeAttr('disabled');
         }
 
         function disableButtons() {
           $('#regenerateAllImages').attr('disabled', 'disabled');
           $('#deleteOldImages').attr('disabled', 'disabled');
+          $('#resetImageStats').attr('disabled', 'disabled');
         }
 
         function spinDeleteButton() {
@@ -212,6 +220,9 @@
             .find('i')
             .removeClass('process-icon-delete')
             .addClass('process-icon-refresh')
+            .addClass('icon-spin');
+          $('#resetImageStats')
+            .find('i')
             .addClass('icon-spin');
         }
 
@@ -221,6 +232,9 @@
             .removeClass('process-icon-refresh')
             .removeClass('icon-spin')
             .addClass('process-icon-delete');
+          $('#resetImageStats')
+            .find('i')
+            .removeClass('icon-spin')
         }
 
         function checkRegenerationButton() {
@@ -235,12 +249,19 @@
         }
 
         function deleteOldImages() {
+          $.each(pendingRequests, function (index, request) {
+            if (request != null && typeof request.abort === 'function') {
+              request.abort();
+            }
+          });
+          pendingRequests = [];
+
           disableButtons();
           spinDeleteButton();
           $.each(regenerating, function (entityType) {
             pauseGenerating(entityType);
           });
-          $.ajax({
+          var req = $.ajax({
             url: currentIndex + '&token=' + token + '&ajax=1&action=DeleteOldImages',
             method: 'post',
             dataType: 'json',
@@ -273,12 +294,68 @@
             complete: function () {
               unspinDeleteButton();
               enableButtons();
+
+              removeRequest(req);
             }
           });
+          pendingRequests.push(req);
+        }
+
+        function resetImageStats() {
+          $.each(pendingRequests, function (index, request) {
+            if (request != null && typeof request.abort === 'function') {
+              request.abort();
+            }
+          });
+          pendingRequests = [];
+
+          disableButtons();
+          spinDeleteButton();
+          $.each(regenerating, function (entityType) {
+            pauseGenerating(entityType);
+          });
+          var req = $.ajax({
+            url: currentIndex + '&token=' + token + '&ajax=1&action=ResetImageStats',
+            method: 'post',
+            dataType: 'json',
+            success: function (response) {
+              if (response == null) {
+                return;
+              }
+
+              if (response.indexStatus) {
+                $.each(response.indexStatus, function (entityType) {
+                  $('#regen-indexed-' + entityType).text(response.indexStatus[entityType].indexed);
+                  $('#regen-total-' + entityType).text(response.indexStatus[entityType].total);
+                  $('#progress-bar-' + entityType).css('width', (response.indexStatus[entityType].indexed / response.indexStatus[entityType].total) * 100);
+                });
+              }
+            },
+            error: function (jqXhr) {
+              showErrorMessage('{l s='Server timed out before all images could be deleted. You might want to increase the `max_execution_time`' js=1}');
+
+              if (parseInt(jqXhr.status, 10) === 504) {
+                $.each(regenerating, function (entityType) {
+                  $('#regen-indexed-' + entityType).text('0');
+                  $('#regen-total-' + entityType).text('0');
+                  $('#progress-bar-' + entityType).css('width', 0);
+                });
+              } else if (parseInt(jqXhr.status, 10) >= 500 < 600) {
+                showErrorMessage('{l s='Received a 5xx response (generic error). Make the rate limit of the server has been (temporarily) increased' js=1}');
+              }
+            },
+            complete: function () {
+              unspinDeleteButton();
+              enableButtons();
+
+              removeRequest(req);
+            }
+          });
+          pendingRequests.push(req);
         }
 
         function doAjaxRequest(entityType) {
-          $.ajax({
+          var req = $.ajax({
             url: currentIndex + '&token=' + token + '&ajax=1&action=RegenerateThumbnails',
             method: 'post',
             dataType: 'json',
@@ -320,8 +397,11 @@
               if (regenerating[entityType]) {
                 doAjaxRequest(entityType);
               }
+
+              removeRequest(req);
             }
           });
+          pendingRequests.push(req);
         }
 
         function toggleGeneratingAll(event) {
@@ -358,8 +438,10 @@
           });
           var $regenerateAllImages = $('#regenerateAllImages');
           $regenerateAllImages.click(toggleGeneratingAll);
+          $regenerateAllImages.parent().prepend('<button style="margin-left: 5px" type="button" id="resetImageStats" name="resetImageStats" class="btn btn-default"><i class="process-icon-refresh"></i> {l s='Reset indexation status' js=1}</button>');
           $regenerateAllImages.parent().prepend('<button type="button" id="deleteOldImages" name="regenerateAllImages" class="btn btn-default"><i class="process-icon-delete"></i> {l s='Delete generated thumbnails' js=1}</button>');
           $('#deleteOldImages').click(deleteOldImages);
+          $('#resetImageStats').click(resetImageStats);
         });
       }
 
