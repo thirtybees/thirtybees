@@ -491,7 +491,9 @@ class AdminImagesControllerCore extends AdminController
 
     /**
      * @return void
-     * @throws Adapter_Exception
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      *
      * @since 1.0.4
      */
@@ -525,10 +527,29 @@ class AdminImagesControllerCore extends AdminController
         } catch (Exception $e) {
             $this->errors[] = $e->getMessage();
         }
+        $indexationStatus = $this->getIndexationStatus();
+        if ($indexationStatus['indexed'] <= 1) {
+            // First run, regenerate no picture images, too
+            $process = array(
+                'categories'    => _PS_CAT_IMG_DIR_,
+                'manufacturers' => _PS_MANU_IMG_DIR_,
+                'suppliers'     => _PS_SUPP_IMG_DIR_,
+                'scenes'        => _PS_SCENE_IMG_DIR_,
+                'products'      => _PS_PROD_IMG_DIR_,
+                'stores'        => _PS_STORE_IMG_DIR_,
+            );
+
+            $this->_regenerateNoPictureImages(
+                $process[$request->entity_type],
+                ImageType::getImagesTypes($request->entity_type),
+                Language::getLanguages(false)
+            );
+        }
+
         $this->ajaxDie(json_encode([
             'hasError' => true,
             'errors'   => $this->errors,
-            'indexStatus' => $this->getIndexationStatus(),
+            'indexStatus' => $indexationStatus,
         ]));
     }
 
@@ -1010,9 +1031,9 @@ class AdminImagesControllerCore extends AdminController
     /**
      * Regenerate no-pictures images
      *
-     * @param string $dir
-     * @param string $type
-     * @param array  $languages
+     * @param string     $dir
+     * @param string[][] $type
+     * @param string[][] $languages
      *
      * @return bool
      *
@@ -1035,9 +1056,29 @@ class AdminImagesControllerCore extends AdminController
                         $errors = true;
                     }
 
+                    if (function_exists('imagewebp') && Configuration::get('TB_USE_WEBP')) {
+                        ImageManager::resize(
+                            $file,
+                            $dir.$language['iso_code'].'-default-'.stripslashes($imageType['name']).'.webp',
+                            (int) $imageType['width'],
+                            (int) $imageType['height'],
+                            'webp'
+                        );
+                    }
+
                     if ($generateHighDpiImages) {
                         if (!ImageManager::resize($file, $dir.$language['iso_code'].'-default-'.stripslashes($imageType['name']).'2x.jpg', (int) $imageType['width'] * 2, (int) $imageType['height'] * 2)) {
                             $errors = true;
+                        }
+
+                        if (function_exists('imagewebp') && Configuration::get('TB_USE_WEBP')) {
+                            ImageManager::resize(
+                                $file,
+                                $dir.$language['iso_code'].'-default-'.stripslashes($imageType['name']).'2x.webp',
+                                (int) $imageType['width'],
+                                (int) $imageType['height'],
+                                'webp'
+                            );
                         }
                     }
                 }
