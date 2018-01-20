@@ -1094,8 +1094,7 @@ class AdminCategoriesControllerCore extends AdminController
                                 _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'.'.$this->imageType,
                                 (int) $imageType['width'],
                                 (int) $imageType['height']
-                            )
-                            ) {
+                            )) {
                                 $this->errors = Tools::displayError('An error occurred while uploading thumbnail image.');
                             } elseif (($infos = getimagesize($tmpName)) && is_array($infos)) {
                                 ImageManager::resize(
