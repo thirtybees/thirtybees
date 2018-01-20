@@ -363,7 +363,7 @@
               entity_type: entityType,
             }),
             success: function (response) {
-              if (response == null) {
+              if (response == null || !regenerating[entityType]) {
                 return;
               }
 
