@@ -539,11 +539,13 @@ class AdminImagesControllerCore extends AdminController
                 'stores'        => _PS_STORE_IMG_DIR_,
             );
 
-            $this->_regenerateNoPictureImages(
-                $process[$request->entity_type],
-                ImageType::getImagesTypes($request->entity_type),
-                Language::getLanguages(false)
-            );
+            foreach ($process as $type => $dir) {
+                $this->_regenerateNoPictureImages(
+                    $dir,
+                    ImageType::getImagesTypes($type),
+                    Language::getLanguages(false)
+                );
+            }
         }
 
         $this->ajaxDie(json_encode([
