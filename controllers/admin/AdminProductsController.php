@@ -1805,6 +1805,11 @@ class AdminProductsControllerCore extends AdminController
                             (int) $imageType['height'],
                             'webp'
                         );
+
+                        $lastId = (int) Configuration::get('TB_IMAGES_LAST_UPD_PRODUCTS');
+                        if ($lastId < $idProduct) {
+                            Configuration::updateValue('TB_IMAGES_LAST_UPD_PRODUCTS', $idProduct);
+                        }
                     }
                 }
             }
