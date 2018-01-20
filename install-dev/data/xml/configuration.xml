@@ -880,6 +880,12 @@
     <configuration id="PS_SHOW_CONDITION" name="PS_SHOW_CONDITION">
       <value>1</value>
     </configuration>
+    <configuration id="TB_USE_WEBP" name="TB_USE_WEBP">
+      <value>0</value>
+    </configuration>
+    <configuration id="TB_WEBP_QUALITY" name="TB_WEBP_QUALITY">
+      <value>90</value>
+    </configuration>
     <configuration id="TB_SOURCE_FAVICON_CODE" name="TB_SOURCE_FAVICON_CODE">
       <value><![CDATA[<link rel="apple-touch-icon" sizes="57x57" href="{src size=57x57 type=png}">
 <link rel="apple-touch-icon" sizes="60x60" href="{src size=60x60 type=png}">

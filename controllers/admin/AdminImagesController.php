@@ -49,6 +49,8 @@ class AdminImagesControllerCore extends AdminController
      * AdminImagesControllerCore constructor.
      *
      * @since 1.0.0
+     *
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -196,6 +198,7 @@ class AdminImagesControllerCore extends AdminController
                         'desc'       => $this->l('Enable to optimize the display of your images on high pixel density screens.'),
                         'visibility' => Shop::CONTEXT_ALL,
                     ],
+
                 ],
                 'submit'      => ['title' => $this->l('Save')],
             ],
@@ -223,6 +226,25 @@ class AdminImagesControllerCore extends AdminController
                 'title'      => $this->l('Lazy load images'),
                 'desc'       => $this->l('Defer the loading of images until they scroll into view'),
                 'visibility' => Shop::CONTEXT_ALL,
+            ];
+        }
+        if (!empty($themeConfiguration['webp']) && function_exists('imagewebp')) {
+            $this->fields_options['images']['fields']['TB_USE_WEBP'] = [
+                'type'       => 'bool',
+                'validation' => 'isBool',
+                'cast'       => 'intval',
+                'required'   => false,
+                'title'      => $this->l('Enable webp images'),
+                'desc'       => $this->l('Serve smaller images in the webp format to browsers that support it'),
+                'visibility' => Shop::CONTEXT_ALL,
+            ];
+            $this->fields_options['images']['fields']['TB_WEBP_QUALITY'] = [
+                'title'      => $this->l('WEBP compression'),
+                'hint'       => $this->l('Ranges from 0 (worst quality, smallest file) to 100 (best quality, biggest file).').' '.$this->l('Recommended: 90.'),
+                'validation' => 'isUnsignedId',
+                'required'   => true,
+                'cast'       => 'intval',
+                'type'       => 'text',
             ];
         }
 
@@ -409,6 +431,8 @@ class AdminImagesControllerCore extends AdminController
      * @return bool
      *
      * @since 1.0.0
+     * @throws PrestaShopException
+     * @throws Adapter_Exception
      */
     public function postProcess()
     {
@@ -439,6 +463,10 @@ class AdminImagesControllerCore extends AdminController
                     || (int) Tools::getValue('PS_JPEG_QUALITY') > 100
                 ) {
                     $this->errors[] = Tools::displayError('Incorrect value for the selected JPEG image compression.');
+                } elseif (function_exists('imagewebp')
+                    && ((int) Tools::getValue('TB_WEBP_QUALITY') < 0 || (int) Tools::getValue('TB_WEBP_QUALITY') > 100)
+                ) {
+                    $this->errors[] = Tools::displayError('Incorrect value for the selected WEBP image compression.');
                 } elseif ((int) Tools::getValue('PS_PNG_QUALITY') < 0
                     || (int) Tools::getValue('PS_PNG_QUALITY') > 9
                 ) {
@@ -462,6 +490,83 @@ class AdminImagesControllerCore extends AdminController
     }
 
     /**
+     * @return void
+     * @throws Adapter_Exception
+     *
+     * @since 1.0.4
+     */
+    public function ajaxProcessRegenerateThumbnails()
+    {
+        $request = json_decode(file_get_contents('php://input'));
+        $entityType = $request->entity_type;
+        if (!$entityType) {
+            $this->ajaxDie(json_encode([
+                'hasError' => true,
+                'errors'   => [$this->l('Entity type missing')],
+            ]));
+        } elseif (!in_array($entityType, ['products', 'categories', 'manufacturers', 'suppliers', 'scenes', 'stores'])) {
+            $this->ajaxDie(json_encode([
+                'hasError' => true,
+                'errors'   => [$this->l('Wrong entity type')],
+            ]));
+        }
+
+        try {
+            $idEntity = $this->getNextEntityId($request->entity_type);
+            if (!$idEntity) {
+                $this->ajaxDie(json_encode([
+                    'hasError'    => true,
+                    'errors'      => [$this->l('Thumbnails of this type have already been generated')],
+                    'indexStatus' => $this->getIndexationStatus(),
+                ]));
+            }
+            $this->regenerateNewImage($request->entity_type, $idEntity);
+            Configuration::updateValue('TB_IMAGES_LAST_UPD_'.strtoupper($request->entity_type), $idEntity);
+        } catch (Exception $e) {
+            $this->errors[] = $e->getMessage();
+        }
+        $this->ajaxDie(json_encode([
+            'hasError' => true,
+            'errors'   => $this->errors,
+            'indexStatus' => $this->getIndexationStatus(),
+        ]));
+    }
+
+    /**
+     * Ajax - delete all previous images
+     *
+     * @since 1.0.4
+     */
+    public function ajaxProcessDeleteOldImages()
+    {
+        $process = [
+            ['type' => 'categories',    'dir' => _PS_CAT_IMG_DIR_],
+            ['type' => 'manufacturers', 'dir' => _PS_MANU_IMG_DIR_],
+            ['type' => 'suppliers',     'dir' => _PS_SUPP_IMG_DIR_],
+            ['type' => 'scenes',        'dir' => _PS_SCENE_IMG_DIR_],
+            ['type' => 'products',      'dir' => _PS_PROD_IMG_DIR_],
+            ['type' => 'stores',        'dir' => _PS_STORE_IMG_DIR_],
+        ];
+
+        foreach ($process as $proc) {
+            try {
+                // Getting format generation
+                $formats = ImageType::getImagesTypes($proc['type']);
+                Configuration::updateValue('TB_IMAGES_LAST_UPD_'.strtoupper($proc['type']), 0);
+                $this->_deleteOldImages($proc['dir'], $formats, ($proc['type'] == 'products' ? true : false));
+            } catch (PrestaShopException $e) {
+                $this->errors[] = $e->getMessage();
+            }
+        }
+
+        $this->ajaxDie(json_encode([
+            'hasError'    => !empty($this->errors),
+            'errors'      => $this->errors,
+            'indexStatus' => $this->getIndexationStatus(),
+        ]));
+    }
+
+    /**
      * Regenerate thumbnails
      *
      * @param string $type
@@ -469,7 +574,11 @@ class AdminImagesControllerCore extends AdminController
      *
      * @return bool
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
+     * @deprecatd 1.0.4 Replaced by ajax regeneration
      */
     protected function _regenerateThumbnails($type = 'all', $deleteOldImages = false)
     {
@@ -479,12 +588,12 @@ class AdminImagesControllerCore extends AdminController
         $languages = Language::getLanguages(false);
 
         $process = [
-            ['type' => 'categories', 'dir' => _PS_CAT_IMG_DIR_],
+            ['type' => 'categories',    'dir' => _PS_CAT_IMG_DIR_],
             ['type' => 'manufacturers', 'dir' => _PS_MANU_IMG_DIR_],
-            ['type' => 'suppliers', 'dir' => _PS_SUPP_IMG_DIR_],
-            ['type' => 'scenes', 'dir' => _PS_SCENE_IMG_DIR_],
-            ['type' => 'products', 'dir' => _PS_PROD_IMG_DIR_],
-            ['type' => 'stores', 'dir' => _PS_STORE_IMG_DIR_],
+            ['type' => 'suppliers',     'dir' => _PS_SUPP_IMG_DIR_],
+            ['type' => 'scenes',        'dir' => _PS_SCENE_IMG_DIR_],
+            ['type' => 'products',      'dir' => _PS_PROD_IMG_DIR_],
+            ['type' => 'stores',        'dir' => _PS_STORE_IMG_DIR_],
         ];
 
         // Launching generation process
@@ -514,17 +623,17 @@ class AdminImagesControllerCore extends AdminController
                     $this->errors[] = sprintf(Tools::displayError('Cannot write images for this type: %s. Please check the %s folder\'s writing permissions.'), $proc['type'], $proc['dir']);
                 }
             } elseif ($return == 'timeout') {
-                $this->errors[] = Tools::displayError('Only part of the images have been regenerated. The server timed out before finishing.');
-            } else {
-                if ($proc['type'] == 'products') {
-                    if ($this->_regenerateWatermark($proc['dir'], $formats) == 'timeout') {
-                        $this->errors[] = Tools::displayError('Server timed out. The watermark may not have been applied to all images.');
-                    }
+                $this->errors[] = Tools::displayError('Only a part of the images have been regenerated. The server timed out before finishing.');
+            }
+
+            if ($proc['type'] == 'products') {
+                if ($this->_regenerateWatermark($proc['dir'], $formats) == 'timeout') {
+                    $this->errors[] = Tools::displayError('Server timed out. The watermark may not have been applied to all images.');
                 }
-                if (!count($this->errors)) {
-                    if ($this->_regenerateNoPictureImages($proc['dir'], $formats, $languages)) {
-                        $this->errors[] = sprintf(Tools::displayError('Cannot write "No picture" image to (%s) images folder. Please check the folder\'s writing permissions.'), $proc['type']);
-                    }
+            }
+            if (!count($this->errors)) {
+                if ($this->_regenerateNoPictureImages($proc['dir'], $formats, $languages)) {
+                    $this->errors[] = sprintf(Tools::displayError('Cannot write "No picture" image to (%s) images folder. Please check the folder\'s writing permissions.'), $proc['type']);
                 }
             }
         }
@@ -539,15 +648,29 @@ class AdminImagesControllerCore extends AdminController
      * @param array  $type
      * @param bool   $product
      *
-     * @return bool
+     * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function _deleteOldImages($dir, $type, $product = false)
     {
         if (!is_dir($dir)) {
-            return false;
+            return;
         }
+
+        // Faster delete on servers that support it
+        if (function_exists('chdir') && function_exists('exec') && shell_exec('which find')) {
+            exec('cd '.escapeshellarg($dir).' && find . -name "*_default.jpg" -type f -delete');
+            exec('cd '.escapeshellarg($dir).' && find . -name "*_thumbs.jpg" -type f -delete');
+            exec('cd '.escapeshellarg($dir).' && find . -name "*2x.jpg" -type f -delete');
+            exec('cd '.escapeshellarg($dir).' && find . -name "*-watermark.jpg" -type f -delete');
+            exec('cd '.escapeshellarg($dir).' && find . -name "*.webp" -type f -delete');
+
+            return;
+        }
+
         $toDel = scandir($dir);
 
         foreach ($toDel as $d) {
@@ -586,6 +709,162 @@ class AdminImagesControllerCore extends AdminController
     }
 
     /**
+     * Regenerate images for one entity
+     *
+     * @param string $entityType
+     * @param int    $idEntity
+     *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     *
+     * @since 1.0.4
+     */
+    protected function regenerateNewImage($entityType, $idEntity)
+    {
+        $process = array(
+            'categories'    => _PS_CAT_IMG_DIR_,
+            'manufacturers' => _PS_MANU_IMG_DIR_,
+            'suppliers'     => _PS_SUPP_IMG_DIR_,
+            'scenes'        => _PS_SCENE_IMG_DIR_,
+            'products'      => _PS_PROD_IMG_DIR_,
+            'stores'        => _PS_STORE_IMG_DIR_,
+        );
+        $type = ImageType::getImagesTypes($entityType);
+        $highDpi = Configuration::get('PS_HIGHT_DPI');
+
+        $watermarkModules = Db::getInstance()->executeS(
+            (new DbQuery())
+                ->select('m.`name`')
+                ->from('module', 'm')
+                ->leftJoin('hook_module', 'hm', 'hm.`id_module` = m.`id_module`')
+                ->leftJoin('hook', 'h', 'hm.`id_hook` = h.`id_hook`')
+                ->where('h.`name` = \'actionWatermark\'')
+                ->where('m.`active` = 1')
+        );
+
+        if ($entityType !== 'products') {
+            foreach ($type as $k => $imageType) {
+                // Customizable writing dir
+                $dir = $newDir = $process[$entityType];
+                $image = $idEntity.'.jpg';
+                if ($imageType['name'] == 'thumb_scene')
+                    $newDir .= 'thumbs/';
+                if (!file_exists($newDir)) {
+                    $this->errors[] = $this->l('Unable to generate new image');
+                }
+                $newFile = $newDir.substr($image, 0, -4).'-'.stripslashes($imageType['name']).'.jpg';
+                if (file_exists($newFile) && !unlink($newFile)) {
+                    $this->errors[] = $this->l('Unable to generate new image');
+                }
+                if (!file_exists($newFile)) {
+                    if (!file_exists($dir.$image) || !filesize($dir.$image)) {
+                        $this->errors[] = sprintf($this->l('Source file for type %s and ID %s does not exist', $entityType, $idEntity));
+                    } else {
+                        if (!ImageManager::resize($dir.$image, $newFile, (int) $imageType['width'], (int) $imageType['height'])) {
+                            $this->errors[] = $this->l('Unable to resize image');
+                        }
+                        if ($highDpi) {
+                            if (!ImageManager::resize($dir.$image, $newDir.substr($image, 0, -4).'-'.stripslashes($imageType['name']).'2x.jpg', (int) $imageType['width'] * 2, (int) $imageType['height'] * 2)) {
+                                $this->errors[] = sprintf(Tools::displayError('Failed to resize image file to high resolution (%s)'), $dir.$image);
+                            }
+                        }
+                        if (function_exists('imagewebp') && Configuration::get('TB_USE_WEBP')) {
+                            ImageManager::resize(
+                                $dir.$image,
+                                $newDir.substr($image, 0, -4).'-'.stripslashes($imageType['name']).'.webp',
+                                (int) $imageType['width'],
+                                (int) $imageType['height'],
+                                'webp'
+                            );
+                            if ($highDpi) {
+                                if (!ImageManager::resize($dir.$image, $newDir.substr($image, 0, -4).'-'.stripslashes($imageType['name']).'2x.webp', (int) $imageType['width'] * 2, (int) $imageType['height'] * 2)) {
+                                    $this->errors[] = sprintf(Tools::displayError('Failed to resize image file to high resolution (%s)'), $dir.$image);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            $productsImages = array_column((array) Db::getInstance()->executeS(
+                (new DbQuery())
+                    ->select('`id_image`')
+                    ->from('image')
+                    ->where('`id_product` = '.(int) $idEntity)
+            ), 'id_image');
+            foreach ($productsImages as $idImage) {
+                $imageObj = new Image($idImage);
+                $existingImage = $process[$entityType].$imageObj->getExistingImgPath().'.jpg';
+                if (count($type) > 0) {
+                    foreach ($type as $imageType) {
+                        $newFile = $process[$entityType].$imageObj->getExistingImgPath().'-'.stripslashes($imageType['name']).'.jpg';
+                        if (file_exists($newFile) && !unlink($newFile)) {
+                            $this->errors[] = $this->l('Unable to generate new file');
+                        }
+                        if (!file_exists($newFile)) {
+                            if (!ImageManager::resize($existingImage, $newFile, (int) ($imageType['width']), (int) ($imageType['height']))) {
+                                $this->errors[] = sprintf($this->l('Original image is corrupt (%s) or bad permission on folder'), $existingImage);
+                            }
+                            if (function_exists('imagewebp') && Configuration::get('TB_USE_WEBP')) {
+                                ImageManager::resize(
+                                    $existingImage,
+                                    $process[$entityType].$imageObj->getExistingImgPath().'-'.stripslashes($imageType['name']).'.webp',
+                                    (int) $imageType['width'],
+                                    (int) $imageType['height'],
+                                    'webp'
+                                );
+                            }
+                        }
+                    }
+                }
+                if (is_array($watermarkModules) && count($watermarkModules)) {
+                    if (file_exists($process[$entityType].$imageObj->getExistingImgPath().'.jpg')) {
+                        foreach ($watermarkModules as $module) {
+                            $moduleInstance = Module::getInstanceByName($module['name']);
+                            if ($moduleInstance && is_callable([$moduleInstance, 'hookActionWatermark'])) {
+                                call_user_func([$moduleInstance, 'hookActionWatermark'], [
+                                    'id_image'   => $imageObj->id,
+                                    'id_product' => $imageObj->id_product,
+                                    'image_type' => $type,
+                                ]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @param string $entityType
+     *
+     * @return int
+     * @throws PrestaShopException
+     *
+     * @since 1.0.4
+     */
+    protected function getNextEntityId($entityType)
+    {
+        if ($entityType === 'categories') {
+            $primary = 'id_category';
+            $table = 'category';
+        } else {
+            $primary = 'id_'.rtrim($entityType, 's');
+            $table = rtrim($entityType, 's');
+        }
+
+        $lastId = (int) Configuration::get('TB_IMAGES_LAST_UPD_'.strtoupper($entityType));
+
+        return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('MIN(`'.bqSQL($primary).'`)')
+                ->from($table)
+                ->where('`'.bqSQL($primary).'` > '.(int) $lastId)
+        );
+    }
+
+    /**
      * Regenerate images
      *
      * @param      $dir
@@ -594,7 +873,11 @@ class AdminImagesControllerCore extends AdminController
      *
      * @return bool|string
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     *
      * @since 1.0.0
+     * @deprecated 1.0.4
      */
     protected function _regenerateNewImages($dir, $type, $productsImages = false)
     {
@@ -659,8 +942,7 @@ class AdminImagesControllerCore extends AdminController
                                     $this->errors[] = sprintf(Tools::displayError('Original image is corrupt (%s) for product ID %2$d or bad permission on folder'), $existingImg, (int) $imageObj->id_product);
                                 }
                             }
-                            if(!$this->errors && Configuration::get('PS_USE_WEBP') && function_exists('imagewebp'))
-                            {   
+                            if(!$this->errors && Configuration::get('TB_USE_WEBP') && function_exists('imagewebp')) {
                                 $imgRes = imagecreatefromjpeg($dir.$imageObj->getExistingImgPath().'-'.stripslashes($imageType['name']).'.jpg');
                                 imagewebp($imgRes, $dir.$imageObj->getExistingImgPath().'-'.stripslashes($imageType['name']).'.webp');
                             }
@@ -686,16 +968,21 @@ class AdminImagesControllerCore extends AdminController
      *
      * @return string
      *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function _regenerateWatermark($dir, $type = null)
     {
         $result = Db::getInstance()->executeS(
-            '
-		SELECT m.`name` FROM `'._DB_PREFIX_.'module` m
-		LEFT JOIN `'._DB_PREFIX_.'hook_module` hm ON hm.`id_module` = m.`id_module`
-		LEFT JOIN `'._DB_PREFIX_.'hook` h ON hm.`id_hook` = h.`id_hook`
-		WHERE h.`name` = \'actionWatermark\' AND m.`active` = 1'
+            (new DbQuery())
+                ->select('m.`name`')
+                ->from('module', 'm')
+                ->leftJoin('hook_module', 'hm', 'hm.`id_module` = m.`id_module`')
+                ->leftJoin('hook', 'h', 'hm.`id_hook` = h.`id_hook`')
+                ->where('h.`name` = \'actionWatermark\'')
+                ->where('m.`active` = 1')
         );
 
         if ($result && count($result)) {
@@ -716,18 +1003,21 @@ class AdminImagesControllerCore extends AdminController
                 }
             }
         }
+
+        return '';
     }
 
     /**
      * Regenerate no-pictures images
      *
-     * @param $dir
-     * @param $type
-     * @param $languages
+     * @param string $dir
+     * @param string $type
+     * @param array  $languages
      *
      * @return bool
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function _regenerateNoPictureImages($dir, $type, $languages)
     {
@@ -807,6 +1097,10 @@ class AdminImagesControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function initContent()
@@ -819,6 +1113,7 @@ class AdminImagesControllerCore extends AdminController
                 [
                     'display_regenerate' => true,
                     'display_move'       => $this->display_move,
+                    'image_indexation' => $this->getIndexationStatus(),
                 ]
             );
         }
@@ -835,6 +1130,8 @@ class AdminImagesControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function initRegenerate()
@@ -862,10 +1159,12 @@ class AdminImagesControllerCore extends AdminController
     }
 
     /**
-     * Init display for move images block
+     * Init display for moving the images block
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function initMoveImages()
@@ -883,12 +1182,107 @@ class AdminImagesControllerCore extends AdminController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function _childValidation()
     {
         if (!Tools::getValue('id_image_type') && Validate::isImageTypeName($typeName = Tools::getValue('name')) && ImageType::typeAlreadyExists($typeName)) {
             $this->errors[] = Tools::displayError('This name already exists.');
+        }
+    }
+
+    /**
+     * @return array|false
+     *
+     * @since 1.0.4
+     */
+    protected function getIndexationStatus()
+    {
+        try {
+            return [
+                'products'      => [
+                    'indexed' => (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                        (new DbQuery())
+                            ->select('COUNT(*)')
+                            ->from(bqSQL(Product::$definition['table']))
+                            ->where('`'.bqSQL(Product::$definition['primary']).'` <= '.(int) Configuration::get('TB_IMAGES_LAST_UPD_PRODUCTS'))
+                    ),
+                    'total'   => (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                        (new DbQuery())
+                            ->select('COUNT(*)')
+                            ->from(bqSQL(Product::$definition['table']))
+                    ),
+                ],
+                'categories'    => [
+                    'indexed' => (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                        (new DbQuery())
+                            ->select('COUNT(*)')
+                            ->from(bqSQL(Category::$definition['table']))
+                            ->where('`'.bqSQL(Category::$definition['primary']).'` <= '.(int) Configuration::get('TB_IMAGES_LAST_UPD_CATEGORIES'))
+                    ),
+                    'total'   => (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                        (new DbQuery())
+                            ->select('COUNT(*)')
+                            ->from(bqSQL(Category::$definition['table']))
+                    ),
+                ],
+                'suppliers'     => [
+                    'indexed' => (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                        (new DbQuery())
+                            ->select('COUNT(*)')
+                            ->from(bqSQL(Supplier::$definition['table']))
+                            ->where('`'.bqSQL(Supplier::$definition['primary']).'` <= '.(int) Configuration::get('TB_IMAGES_LAST_UPD_SUPPLIERS'))
+                    ),
+                    'total'   => (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                        (new DbQuery())
+                            ->select('COUNT(*)')
+                            ->from(bqSQL(Supplier::$definition['table']))
+                    ),
+                ],
+                'manufacturers' => [
+                    'indexed' => (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                        (new DbQuery())
+                            ->select('COUNT(*)')
+                            ->from(bqSQL(Manufacturer::$definition['table']))
+                            ->where('`'.bqSQL(Manufacturer::$definition['primary']).'` <= '.(int) Configuration::get('TB_IMAGES_LAST_UPD_MANUFACTURERS'))
+                    ),
+                    'total'   => (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                        (new DbQuery())
+                            ->select('COUNT(*)')
+                            ->from(bqSQL(Manufacturer::$definition['table']))
+                    ),
+                ],
+                'scenes'        => [
+                    'indexed' => (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                        (new DbQuery())
+                            ->select('COUNT(*)')
+                            ->from('scene_category')
+                            ->where('`id_scene` <= '.(int) Configuration::get('TB_IMAGES_LAST_UPD_SCENES'))
+                    ),
+                    'total'   => (int) Db::getInstance()->getValue(
+                        (new DbQuery())
+                            ->select('COUNT(*)')
+                            ->from('scene_category')
+                    ),
+                ],
+                'stores'        => [
+                    'indexed' => (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                        (new DbQuery())
+                            ->select('COUNT(*)')
+                            ->from(bqSQL(Store::$definition['table']))
+                            ->where('`'.bqSQL(Store::$definition['primary']).'` <= '.(int) Configuration::get('TB_IMAGES_LAST_UPD_STORES'))
+                    ),
+                    'total'   => (int) Db::getInstance()->getValue(
+                        (new DbQuery())
+                            ->select('COUNT(*)')
+                            ->from(bqSQL(Store::$definition['table']))
+                    ),
+                ],
+            ];
+        } catch (Exception $e) {
+            return false;
         }
     }
 }
