@@ -2110,6 +2110,9 @@ class AdminImportControllerCore extends AdminController
             $srcWidth = $srcHeight = 0;
             $error = 0;
             ImageManager::resize($tmpfile, $path.'.jpg', null, null, 'jpg', false, $error, $tgtWidth, $tgtHeight, 5, $srcWidth, $srcHeight);
+            if (function_exists('imagewebp') && Configuration::get('TB_USE_WEBP')) {
+                ImageManager::resize($tmpfile, $path.'.webp', null, null, 'webp', false, $error, $tgtWidth, $tgtHeight, 5, $srcWidth, $srcHeight);
+            }
             $imagesTypes = ImageType::getImagesTypes($entity, true);
 
             if ($regenerate) {
@@ -2132,7 +2135,21 @@ class AdminImportControllerCore extends AdminController
                         5,
                         $srcWidth,
                         $srcHeight
-                    )
+                    ) && (!function_exists('imagewebp') && Configuration::get('TB_USE_WEBP')
+                            || ImageManager::resize(
+                                $tmpfile,
+                                $path.'-'.stripslashes($imageType['name']).'.webp',
+                                $imageType['width'],
+                                $imageType['height'],
+                                'webp',
+                                false,
+                                $error,
+                                $tgtWidth,
+                                $tgtHeight,
+                                5,
+                                $srcWidth,
+                                $srcHeight
+                            ))
                     ) {
                         // the last image should not be added in the candidate list if it's bigger than the original image
                         if ($tgtWidth <= $srcWidth && $tgtHeight <= $srcHeight) {
