@@ -1784,8 +1784,27 @@ class AdminProductsControllerCore extends AdminController
             } elseif ($method == 'auto') {
                 $imagesTypes = ImageType::getImagesTypes('products');
                 foreach ($imagesTypes as $k => $imageType) {
-                    if (!ImageManager::resize($tmpName, $newPath.'-'.stripslashes($imageType['name']).'.'.$image->image_format, $imageType['width'], $imageType['height'], $image->image_format)) {
+                    if (
+                        !ImageManager::resize($tmpName, $newPath.'-'.stripslashes($imageType['name']).'.'.$image->image_format, $imageType['width'], $imageType['height'], $image->image_format)
+                        || (function_exists('imagewebp') && Configuration::get('TB_USE_WEBP')
+                            && !ImageManager::resize(
+                                $tmpName,
+                                $newPath.'-'.stripslashes($imageType['name']).'.webp',
+                                (int) $imageType['width'],
+                                (int) $imageType['height'],
+                                'webp'
+                            ))
+                    ) {
                         $this->errors[] = Tools::displayError('An error occurred while copying this image:').' '.stripslashes($imageType['name']);
+                    }
+                    if (function_exists('imagewebp') && Configuration::get('TB_USE_WEBP')) {
+                        ImageManager::resize(
+                            $tmpName,
+                            $newPath.'-'.stripslashes($imageType['name']).'.webp',
+                            (int) $imageType['width'],
+                            (int) $imageType['height'],
+                            'webp'
+                        );
                     }
                 }
             }
