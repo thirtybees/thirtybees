@@ -315,9 +315,6 @@ class LinkCore
     {
         $highDpi = (bool) Configuration::get('PS_HIGHT_DPI');
         $notDefault = false;
-        if ($format === 'webp') {
-            $format = 'jpg.webp';
-        }
 
         // Check if module is installed, enabled, customer is logged in and watermark logged option is on
         if (($type != '')
@@ -382,10 +379,6 @@ class LinkCore
      */
     public function getCatImageLink($name, $idCategory, $type = null, $format = 'jpg')
     {
-        if ($format === 'webp') {
-            $format = 'jpg.webp';
-        }
-
         $highDpi = (bool) Configuration::get('PS_HIGHT_DPI');
         if ($this->allow == 1 && $type) {
             $uriPath = __PS_BASE_URI__.'c/'.$idCategory.'-'.$type.'/'.$name.'.'.($highDpi ? '2x.' : '').$format;

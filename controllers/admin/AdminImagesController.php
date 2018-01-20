@@ -666,7 +666,7 @@ class AdminImagesControllerCore extends AdminController
             exec('cd '.escapeshellarg($dir).' && find . -name "*_thumbs.jpg" -type f -delete');
             exec('cd '.escapeshellarg($dir).' && find . -name "*2x.jpg" -type f -delete');
             exec('cd '.escapeshellarg($dir).' && find . -name "*-watermark.jpg" -type f -delete');
-            exec('cd '.escapeshellarg($dir).' && find . -name "*.jpg.webp" -type f -delete');
+            exec('cd '.escapeshellarg($dir).' && find . -name "*.webp" -type f -delete');
 
             return;
         }
@@ -772,13 +772,13 @@ class AdminImagesControllerCore extends AdminController
                         if (function_exists('imagewebp') && Configuration::get('TB_USE_WEBP')) {
                             ImageManager::resize(
                                 $dir.$image,
-                                "{$newFile}.webp",
+                                $newDir.substr($image, 0, -4).'-'.stripslashes($imageType['name']).'.webp',
                                 (int) $imageType['width'],
                                 (int) $imageType['height'],
                                 'webp'
                             );
                             if ($highDpi) {
-                                if (!ImageManager::resize($dir.$image, $newDir.substr($image, 0, -4).'-'.stripslashes($imageType['name']).'2x.jpg.webp', (int) $imageType['width'] * 2, (int) $imageType['height'] * 2)) {
+                                if (!ImageManager::resize($dir.$image, $newDir.substr($image, 0, -4).'-'.stripslashes($imageType['name']).'2x.webp', (int) $imageType['width'] * 2, (int) $imageType['height'] * 2)) {
                                     $this->errors[] = sprintf(Tools::displayError('Failed to resize image file to high resolution (%s)'), $dir.$image);
                                 }
                             }
@@ -809,7 +809,7 @@ class AdminImagesControllerCore extends AdminController
                             if (function_exists('imagewebp') && Configuration::get('TB_USE_WEBP')) {
                                 ImageManager::resize(
                                     $existingImage,
-                                    "{$newFile}.webp",
+                                    $process[$entityType].$imageObj->getExistingImgPath().'-'.stripslashes($imageType['name']).'.webp',
                                     (int) $imageType['width'],
                                     (int) $imageType['height'],
                                     'webp'

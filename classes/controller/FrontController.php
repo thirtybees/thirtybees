@@ -1748,11 +1748,7 @@ class FrontControllerCore extends Controller
                 'currencyBlank'       => $currency->blank, // backward compat
                 'high_dpi'            => (bool) Configuration::get('PS_HIGHT_DPI'),
                 'lazy_load'           => (bool) Configuration::get('TB_LAZY_LOAD'),
-                'webp'                => (bool) Configuration::get('TB_USE_WEBP')
-                    && function_exists('imagewebp')
-                    && isset($_SERVER['HTTP_ACCEPT'])
-                    && strpos($_SERVER['HTTP_ACCEPT'], 'image/webp') > -1
-                ,
+                'webp'                => (bool) Configuration::get('TB_USE_WEBP') && function_exists('imagewebp'),
             ]
         );
 
