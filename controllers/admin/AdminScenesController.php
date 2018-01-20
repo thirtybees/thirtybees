@@ -386,6 +386,14 @@ class AdminScenesControllerCore extends AdminController
                         (int) $imageType['width'],
                         (int) $imageType['height']
                     );
+                    if (function_exists('imagewebp') && Configuration::get('TB_USE_WEBP')) {
+                        ImageManager::resize(
+                            $baseThumbPath,
+                            _PS_SCENE_THUMB_IMG_DIR_.$obj->id.'-'.stripslashes($imageType['name']).'.webp',
+                            (int) $imageType['width'],
+                            (int) $imageType['height']
+                        );
+                    }
                 } elseif (isset($_FILES['image']) && isset($_FILES['image']['tmp_name']) && !$_FILES['image']['error']) {
                     ImageManager::resize(
                         $baseImgPath,
@@ -393,7 +401,20 @@ class AdminScenesControllerCore extends AdminController
                         (int) $imageType['width'],
                         (int) $imageType['height']
                     );
+                    if (function_exists('imagewebp') && Configuration::get('TB_USE_WEBP')) {
+                        ImageManager::resize(
+                            $baseImgPath,
+                            _PS_SCENE_IMG_DIR_.$obj->id.'-'.stripslashes($imageType['name']).'.webp',
+                            (int) $imageType['width'],
+                            (int) $imageType['height'],
+                            'webp'
+                        );
+                    }
                 }
+            }
+
+            if ((int) Configuration::get('TB_IMAGES_LAST_UPD_SCENES') < $obj->id) {
+                Configuration::updateValue('TB_IMAGES_LAST_UPD_SCENES', $obj->id);
             }
         }
 
