@@ -226,6 +226,8 @@ class AdminThemesControllerCore extends AdminController
                         'maxLines'                  => 30,
                         'tab'                       => 'icons',
                         'grab_favicon_template'     => true,
+                        'auto_value'                => false,
+                        'value'                     => preg_replace('/\<br(\s*)?\/?\>/i', "\n", Configuration::get('TB_SOURCE_FAVICON_CODE')),
                     ],
                     'PS_STORES_ICON'  => [
                         'title' => $this->l('Store icon'),
@@ -3121,7 +3123,7 @@ class AdminThemesControllerCore extends AdminController
 
         file_put_contents(_PS_IMG_DIR_."favicon/browserconfig_{$idShop}.xml", $browserConfig->saveXML());
         file_put_contents(_PS_IMG_DIR_."favicon/manifest_{$idShop}.json", json_encode($manifest, JSON_UNESCAPED_SLASHES + JSON_PRETTY_PRINT));
-        Configuration::updateValue('TB_SOURCE_FAVICON_CODE', urldecode($filteredHtml), true);
+        Configuration::updateValue('TB_SOURCE_FAVICON_CODE', nl2br(urldecode($filteredHtml)), true);
 
         if (!$this->errors) {
             $this->redirect_after = static::$currentIndex.'&token='.$this->token;
