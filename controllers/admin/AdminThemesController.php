@@ -628,7 +628,7 @@ class AdminThemesControllerCore extends AdminController
                         mkdir($targetDir.$file, Theme::$access_rights);
                     }
 
-                    $res &= AdminThemesController::copyTheme($baseThemeDir.$file, $targetThemeDir.$file);
+                    $res &= static::copyTheme($baseThemeDir.$file, $targetThemeDir.$file);
                 } elseif (!file_exists($targetDir.$file)) {
                     $res &= copy($baseDir.$file, $targetDir.$file);
                 }
