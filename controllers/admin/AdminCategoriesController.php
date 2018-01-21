@@ -53,6 +53,7 @@ class AdminCategoriesControllerCore extends AdminController
      * AdminCategoriesControllerCore constructor.
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -129,6 +130,8 @@ class AdminCategoriesControllerCore extends AdminController
 
     /**
      * @since 1.0.0
+     *
+     * @throws PrestaShopException
      */
     public function init()
     {
@@ -1050,11 +1053,12 @@ class AdminCategoriesControllerCore extends AdminController
     }
 
     /**
-     * @param int $id
+     * @param int $id Category ID
      *
      * @return bool
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function postImage($id)
     {
@@ -1062,15 +1066,26 @@ class AdminCategoriesControllerCore extends AdminController
         if (($idCategory = (int) Tools::getValue('id_category')) && isset($_FILES) && count($_FILES)) {
             $name = 'image';
             if ($_FILES[$name]['name'] != null && file_exists(_PS_CAT_IMG_DIR_.$idCategory.'.'.$this->imageType)) {
-                $imagesTypes = ImageType::getImagesTypes('categories');
+                try {
+                    $imagesTypes = ImageType::getImagesTypes('categories');
+                } catch (PrestaShopException $e) {
+                    Logger::addLog("Error while generating category image: {$e->getMessage()}");
+
+                    return false;
+                }
                 foreach ($imagesTypes as $k => $imageType) {
                     if (!ImageManager::resize(
                         _PS_CAT_IMG_DIR_.$idCategory.'.'.$this->imageType,
                         _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'.'.$this->imageType,
                         (int) $imageType['width'],
                         (int) $imageType['height']
-                    )
-                    ) {
+                    ) || (function_exists('imagewebp') && Configuration::get('TB_USE_WEBP') && !ImageManager::resize(
+                                _PS_CAT_IMG_DIR_.$idCategory.'.'.$this->imageType,
+                                _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'.webp',
+                                (int) $imageType['width'],
+                                (int) $imageType['height'],
+                                'webp'
+                    ))) {
                         $this->errors = Tools::displayError('An error occurred while uploading category image.');
                     }
                 }
@@ -1079,9 +1094,21 @@ class AdminCategoriesControllerCore extends AdminController
             $name = 'thumb';
             if ($_FILES[$name]['name'] != null) {
                 if (!isset($imagesTypes)) {
-                    $imagesTypes = ImageType::getImagesTypes('categories');
+                    try {
+                        $imagesTypes = ImageType::getImagesTypes('categories');
+                    } catch (PrestaShopException $e) {
+                        Logger::addLog("Error while generating category image: {$e->getMessage()}");
+
+                        return false;
+                    }
                 }
-                $formattedMedium = ImageType::getFormatedName('medium');
+                try {
+                    $formattedMedium = ImageType::getFormatedName('medium');
+                } catch (PrestaShopException $e) {
+                    Logger::addLog("Error while generating category image: {$e->getMessage()}");
+
+                    return false;
+                }
                 foreach ($imagesTypes as $k => $imageType) {
                     if ($formattedMedium == $imageType['name']) {
                         if ($error = ImageManager::validateUpload($_FILES[$name], Tools::getMaxUploadSize())) {
@@ -1094,7 +1121,13 @@ class AdminCategoriesControllerCore extends AdminController
                                 _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'.'.$this->imageType,
                                 (int) $imageType['width'],
                                 (int) $imageType['height']
-                            )) {
+                            ) || (function_exists('imagewebp') && Configuration::get('TB_USEWEBP') && !ImageManager::resize(
+                                $tmpName,
+                                _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'.webp',
+                                (int) $imageType['width'],
+                                (int) $imageType['height'],
+                                'webp'
+                            ))) {
                                 $this->errors = Tools::displayError('An error occurred while uploading thumbnail image.');
                             } elseif (($infos = getimagesize($tmpName)) && is_array($infos)) {
                                 ImageManager::resize(
@@ -1103,12 +1136,22 @@ class AdminCategoriesControllerCore extends AdminController
                                     (int) $infos[0],
                                     (int) $infos[1]
                                 );
+                                if (function_exists('imagewebp') && Configuration::get('TB_USE_WEBP')) {
+                                    ImageManager::resize(
+                                        $tmpName,
+                                        _PS_CAT_IMG_DIR_.$idCategory.'_'.$name.'.webp',
+                                        (int) $imageType['width'],
+                                        (int) $imageType['height'],
+                                        'webp'
+                                    );
+                                }
                             }
                             if (count($this->errors)) {
                                 $ret = false;
+                            } else {
+                                $ret = true;
                             }
                             unlink($tmpName);
-                            $ret = true;
                         }
                     }
                 }
