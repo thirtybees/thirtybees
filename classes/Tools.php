@@ -4577,8 +4577,8 @@ exit;
 
     /**
      * @param      $html
-     * @param null $uri_unescape
-     * @param bool $allow_style
+     * @param null $uriUnescape
+     * @param bool $allowStyle
      *
      * @return string
      *
@@ -4589,7 +4589,7 @@ exit;
      * @throws PrestaShopException
      * @throws HTMLPurifier_Exception
      */
-    public static function purifyHTML($html, $uri_unescape = null, $allow_style = false)
+    public static function purifyHTML($html, $uriUnescape = null, $allowStyle = false)
     {
         static $use_html_purifier = null;
         static $purifier = null;
@@ -4610,8 +4610,9 @@ exit;
                 $config->set('HTML.Trusted', true);
                 $config->set('Cache.SerializerPath', _PS_CACHE_DIR_.'purifier');
                 $config->set('Attr.AllowedFrameTargets', ['_blank', '_self', '_parent', '_top']);
-                if (is_array($uri_unescape)) {
-                    $config->set('URI.UnescapeCharacters', implode('', $uri_unescape));
+                $config->set('Core.NormalizeNewlines', false);
+                if (is_array($uriUnescape)) {
+                    $config->set('URI.UnescapeCharacters', implode('', $uriUnescape));
                 }
 
                 if (Configuration::get('PS_ALLOW_HTML_IFRAME')) {
@@ -4624,7 +4625,11 @@ exit;
                 // http://developers.whatwg.org/the-video-element.html#the-video-element
                 if ($def = $config->getHTMLDefinition(true)) {
                     $def->addElement(
-                        'video', 'Block', 'Optional: (source, Flow) | (Flow, source) | Flow', 'Common', [
+                        'video',
+                        'Block',
+                        'Optional: (source, Flow) | (Flow, source) | Flow',
+                        'Common',
+                        [
                             'src'      => 'URI',
                             'type'     => 'Text',
                             'width'    => 'Length',
@@ -4635,12 +4640,40 @@ exit;
                         ]
                     );
                     $def->addElement(
-                        'source', 'Block', 'Flow', 'Common', [
+                        'source',
+                        'Block',
+                        'Flow',
+                        'Common',
+                        [
                             'src'  => 'URI',
                             'type' => 'Text',
                         ]
                     );
-                    if ($allow_style) {
+                    $def->addElement(
+                        'meta',
+                        'Inline',
+                        'Flow',
+                        'Common',
+                        [
+                            'itemprop'  => 'Text',
+                            'itemscope' => 'Bool',
+                            'itemtype'  => 'URI',
+                            'name'      => 'Text',
+                            'content'   => 'Text',
+                        ]
+                    );
+                    $def->addElement(
+                        'link',
+                        'Inline',
+                        'Flow',
+                        'Common',
+                        [
+                            'rel'   => 'Text',
+                            'href'  => 'Text',
+                            'sizes' => 'Text',
+                        ]
+                    );
+                    if ($allowStyle) {
                         $def->addElement('style', 'Block', 'Flow', 'Common', ['type' => 'Text']);
                     }
                 }
