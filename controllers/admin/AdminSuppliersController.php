@@ -557,6 +557,14 @@ class AdminSuppliersControllerCore extends AdminController
         return false;
     }
 
+    /**
+     * @return bool
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     *
+     * @since 1.0.0
+     */
     protected function afterImageUpload()
     {
         $return = true;
@@ -569,13 +577,37 @@ class AdminSuppliersControllerCore extends AdminController
             $imagesTypes = ImageType::getImagesTypes('suppliers');
             foreach ($imagesTypes as $k => $imageType) {
                 $file = _PS_SUPP_IMG_DIR_.$idSupplier.'.jpg';
-                if (!ImageManager::resize($file, _PS_SUPP_IMG_DIR_.$idSupplier.'-'.stripslashes($imageType['name']).'.jpg', (int) $imageType['width'], (int) $imageType['height'])) {
-                    $return = false;
+                $return &= ImageManager::resize(
+                    $file,
+                    _PS_SUPP_IMG_DIR_.$idSupplier.'-'.stripslashes($imageType['name']).'.jpg',
+                    (int) $imageType['width'],
+                    (int) $imageType['height']
+                );
+                if (function_exists('imagewebp') && Configuration::get('TB_USE_WEBP')) {
+                    $return &= ImageManager::resize(
+                        $file,
+                        _PS_SUPP_IMG_DIR_.$idSupplier.'-'.stripslashes($imageType['name']).'.webp',
+                        (int) $imageType['width'],
+                        (int) $imageType['height'],
+                        'webp'
+                    );
                 }
 
                 if ($generateHiDpiImages) {
-                    if (!ImageManager::resize($file, _PS_SUPP_IMG_DIR_.$idSupplier.'-'.stripslashes($imageType['name']).'2x.jpg', (int) $imageType['width'] * 2, (int) $imageType['height'] * 2)) {
-                        $return = false;
+                    $return &= ImageManager::resize(
+                        $file,
+                        _PS_SUPP_IMG_DIR_.$idSupplier.'-'.stripslashes($imageType['name']).'2x.jpg',
+                        (int) $imageType['width'] * 2,
+                        (int) $imageType['height'] * 2
+                    );
+                    if (function_exists('imagewebp') && Configuration::get('TB_USE_WEBP')) {
+                        $return &= ImageManager::resize(
+                            $file,
+                            _PS_SUPP_IMG_DIR_.$idSupplier.'-'.stripslashes($imageType['name']).'.webp',
+                            (int) $imageType['width'] * 2,
+                            (int) $imageType['height'] * 2,
+                            'webp'
+                        );
                     }
                 }
             }
@@ -584,6 +616,12 @@ class AdminSuppliersControllerCore extends AdminController
 
             if (file_exists($currentLogoFile)) {
                 unlink($currentLogoFile);
+            }
+        }
+
+        if ($return) {
+            if ((int) Configuration::get('TB_IMAGES_LAST_UPD_SUPPLIERS') < $idSupplier) {
+                Configuration::updateValue('TB_IMAGES_LAST_UPD_SUPPLIERS', $idSupplier);
             }
         }
 
