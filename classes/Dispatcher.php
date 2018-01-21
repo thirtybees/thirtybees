@@ -609,6 +609,30 @@ class DispatcherCore
                 }
             }
 
+            foreach (Language::getLanguages(false, false, true) as $idLang) {
+                // Set favicon.ico route
+                $this->addRoute(
+                    'favicon',
+                    'favicon.ico',
+                    'favicon',
+                    $idLang,
+                    [],
+                    [],
+                    $idShop
+                );
+
+                // Set apple-touch-icon.png route
+                $this->addRoute(
+                    'apple-touch-icon',
+                    'apple-touch-icon.png',
+                    'favicon',
+                    $idLang,
+                    [],
+                    ['icon' => 'apple-touch-icon'],
+                    $idShop
+                );
+            }
+
             // Set default empty route if no empty route (that's weird I know)
             if (!$this->empty_route) {
                 $this->empty_route = [
@@ -814,7 +838,7 @@ class DispatcherCore
             // Check basic controllers & params
             $controller = $this->controller_not_found;
             $testRequestUri = preg_replace('/(=http:\/\/)/', '=', $this->request_uri);
-            if (!preg_match('/\.(gif|jpe?g|png|css|js|ico)$/i', parse_url($testRequestUri, PHP_URL_PATH))) {
+            if (!preg_match('/\.(gif|jpe?g|css|js)$/i', parse_url($testRequestUri, PHP_URL_PATH))) {
                 // Add empty route as last route to prevent this greedy regexp to match request uri before right time
                 if ($this->empty_route) {
                     $this->addRoute(
