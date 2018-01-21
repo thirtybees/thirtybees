@@ -2070,11 +2070,14 @@ class AdminSupplyOrdersControllerCore extends AdminController
 			IFNULL(pa.`ean13`, IFNULL(p.`ean13`, \'\')) as ean13,
 			IFNULL(pa.`upc`, IFNULL(p.`upc`, \'\')) as upc,
 			md5(CONCAT(\''._COOKIE_KEY_.'\', p.`id_product`, \'_\', IFNULL(pa.`id_product_attribute`, \'0\'))) as checksum,
-			IFNULL(CONCAT(pl.`name`, \' : \', GROUP_CONCAT(DISTINCT agl.`name`, \' - \', al.`name` ORDER BY agl.`name` SEPARATOR \', \')), pl.`name`) as name
+			IFNULL(CONCAT(pl.`name`, \' : \', GROUP_CONCAT(DISTINCT agl.`name`, \' - \', al.`name` ORDER BY agl.`name` SEPARATOR \', \')), pl.`name`) as name,
+			t.rate as rate
 		'
         );
         $query->from('product', 'p');
         $query->innerJoin('product_lang', 'pl', 'pl.`id_product` = p.`id_product` AND pl.`id_lang` = '.$idLang);
+    	$query->leftJoin('tax_rule', 'tr', 'p.id_tax_rules_group = tr.id_tax_rules_group');
+        $query->leftJoin('tax', 't', 'tr.id_tax = t.id_tax');
         $query->leftJoin('product_attribute', 'pa', 'pa.`id_product` = p.`id_product`');
         $query->leftJoin('product_attribute_combination', 'pac', 'pac.`id_product_attribute` = pa.`id_product_attribute`');
         $query->leftJoin('attribute', 'atr', 'atr.`id_attribute` = pac.`id_attribute`');
