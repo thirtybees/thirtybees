@@ -967,7 +967,6 @@ class AdminManufacturersControllerCore extends AdminController
     protected function afterImageUpload()
     {
         $res = true;
-        $generateHightDpiImages = (bool) Configuration::get('PS_HIGHT_DPI');
 
         /* Generate image with differents size */
         if (($idManufacturer = (int) Tools::getValue('id_manufacturer')) &&
@@ -983,14 +982,31 @@ class AdminManufacturersControllerCore extends AdminController
                     (int) $imageType['width'],
                     (int) $imageType['height']
                 );
-
-                if ($generateHightDpiImages) {
+                if (ImageManager::webpSupport()) {
+                    $res &= ImageManager::resize(
+                        _PS_MANU_IMG_DIR_.$idManufacturer.'.jpg',
+                        _PS_MANU_IMG_DIR_.$idManufacturer.'-'.stripslashes($imageType['name']).'.webp',
+                        (int) $imageType['width'],
+                        (int) $imageType['height'],
+                        'webp'
+                    );
+                }
+                if (ImageManager::retinaSupport()) {
                     $res &= ImageManager::resize(
                         _PS_MANU_IMG_DIR_.$idManufacturer.'.jpg',
                         _PS_MANU_IMG_DIR_.$idManufacturer.'-'.stripslashes($imageType['name']).'2x.jpg',
                         (int) $imageType['width'] * 2,
                         (int) $imageType['height'] * 2
                     );
+                    if (ImageManager::webpSupport()) {
+                        $res &= ImageManager::resize(
+                            _PS_MANU_IMG_DIR_.$idManufacturer.'.jpg',
+                            _PS_MANU_IMG_DIR_.$idManufacturer.'-'.stripslashes($imageType['name']).'2x.webp',
+                            (int) $imageType['width'] * 2,
+                            (int) $imageType['height'] * 2,
+                            'webp'
+                        );
+                    }
                 }
             }
 

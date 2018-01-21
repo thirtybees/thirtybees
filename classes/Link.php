@@ -300,10 +300,11 @@ class LinkCore
      * Returns a link to a product image for display
      * Note: the new image filesystem stores product images in subdirectories of img/p/
      *
-     * @param string $name rewrite link of the image
-     * @param string $ids  id part of the image filename - can be "id_product-id_image" (legacy support, recommended) or "id_image" (new)
-     * @param string $type
-     * @param string $format
+     * @param string $name    Rewrite link of the image
+     * @param string $ids     ID part of the image filename - can be "id_product-id_image" (legacy support, recommended) or "id_image" (new)
+     * @param string $type    Image type
+     * @param string $format  Image format (jpg/png/webp)
+     * @param bool   $highDpi Higher resolution
      *
      * @return string
      *
@@ -311,9 +312,8 @@ class LinkCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public function getImageLink($name, $ids, $type = null, $format = 'jpg')
+    public function getImageLink($name, $ids, $type = null, $format = 'jpg', $highDpi = false)
     {
-        $highDpi = (bool) Configuration::get('PS_HIGHT_DPI');
         $notDefault = false;
 
         // Check if module is installed, enabled, customer is logged in and watermark logged option is on
@@ -327,25 +327,25 @@ class LinkCore
         }
 
         // legacy mode or default image
-        $theme = ((Shop::isFeatureActive() && file_exists(_PS_PROD_IMG_DIR_.$ids.($type ? '-'.$type : '').'-'.(int) Context::getContext()->shop->id_theme.'.'.($highDpi ? '2x.' : '').$format)) ? '-'.Context::getContext()->shop->id_theme : '');
+        $theme = ((Shop::isFeatureActive() && file_exists(_PS_PROD_IMG_DIR_.$ids.($type ? '-'.$type : '').'-'.(int) Context::getContext()->shop->id_theme.($highDpi ? '2x.' : '.').$format)) ? '-'.Context::getContext()->shop->id_theme : '');
         if ((Configuration::get('PS_LEGACY_IMAGES')
-                && (file_exists(_PS_PROD_IMG_DIR_.$ids.($type ? '-'.$type : '').$theme.'.'.($highDpi ? '2x.' : '').$format)))
+                && (file_exists(_PS_PROD_IMG_DIR_.$ids.($type ? '-'.$type : '').$theme.($highDpi ? '2x.' : '.').$format)))
             || ($notDefault = strpos($ids, 'default') !== false)
         ) {
             if ($this->allow == 1 && !$notDefault) {
-                $uriPath = __PS_BASE_URI__.$ids.($type ? '-'.$type : '').$theme.'/'.$name.'.'.($highDpi ? '2x.' : '').$format;
+                $uriPath = __PS_BASE_URI__.$ids.($type ? '-'.$type : '').$theme.'/'.$name.($highDpi ? '2x.' : '.').$format;
             } else {
-                $uriPath = _THEME_PROD_DIR_.$ids.($type ? '-'.$type : '').$theme.'.'.($highDpi ? '2x.' : '').$format;
+                $uriPath = _THEME_PROD_DIR_.$ids.($type ? '-'.$type : '').$theme.($highDpi ? '2x.' : '.').$format;
             }
         } else {
             // if ids if of the form id_product-id_image, we want to extract the id_image part
             $splitIds = explode('-', $ids);
             $idImage = (isset($splitIds[1]) ? $splitIds[1] : $splitIds[0]);
-            $theme = ((Shop::isFeatureActive() && file_exists(_PS_PROD_IMG_DIR_.Image::getImgFolderStatic($idImage).$idImage.($type ? '-'.$type : '').'-'.(int) Context::getContext()->shop->id_theme.'.'.($highDpi ? '2x.' : '').$format)) ? '-'.Context::getContext()->shop->id_theme : '');
+            $theme = ((Shop::isFeatureActive() && file_exists(_PS_PROD_IMG_DIR_.Image::getImgFolderStatic($idImage).$idImage.($type ? '-'.$type : '').'-'.(int) Context::getContext()->shop->id_theme.($highDpi ? '2x.' : '.').$format)) ? '-'.Context::getContext()->shop->id_theme : '');
             if ($this->allow == 1) {
-                $uriPath = __PS_BASE_URI__.$idImage.($type ? '-'.$type : '').$theme.'/'.$name.'.'.($highDpi ? '2x.' : '').$format;
+                $uriPath = __PS_BASE_URI__.$idImage.($type ? '-'.$type : '').$theme.'/'.$name.($highDpi ? '2x.' : '.').$format;
             } else {
-                $uriPath = _THEME_PROD_DIR_.Image::getImgFolderStatic($idImage).$idImage.($type ? '-'.$type : '').$theme.'.'.($highDpi ? '2x.' : '').$format;
+                $uriPath = _THEME_PROD_DIR_.Image::getImgFolderStatic($idImage).$idImage.($type ? '-'.$type : '').$theme.($highDpi ? '2x.' : '.').$format;
             }
         }
 

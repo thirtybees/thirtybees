@@ -817,4 +817,44 @@ class ImageManagerCore
         ];
         $images[] = $image;
     }
+
+    /**
+     * @return bool
+     *
+     * @since 1.0.4
+     */
+    public static function webpSupport()
+    {
+        static $supported = null;
+        if ($supported === null) {
+            $config = Context::getContext()->theme->getConfiguration();
+
+            try {
+                $supported = Configuration::get('TB_USE_WEBP') && !empty($config['webp']);
+            } catch (PrestaShopException $e) {
+                $supported = false;
+            }
+        }
+
+        return $supported;
+    }
+
+    /**
+     * @return bool
+     *
+     * @since 1.0.4
+     */
+    public static function retinaSupport()
+    {
+        static $supported = null;
+        if ($supported === null) {
+            try {
+                $supported = (bool) Configuration::get('PS_HIGHT_DPI');
+            } catch (PrestaShopException $e) {
+                $supported = false;
+            }
+        }
+
+        return $supported;
+    }
 }

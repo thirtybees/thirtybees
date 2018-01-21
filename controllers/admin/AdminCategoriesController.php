@@ -1079,7 +1079,7 @@ class AdminCategoriesControllerCore extends AdminController
                         _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'.'.$this->imageType,
                         (int) $imageType['width'],
                         (int) $imageType['height']
-                    ) || (function_exists('imagewebp') && Configuration::get('TB_USE_WEBP') && !ImageManager::resize(
+                    ) || (Configuration::get('TB_USE_WEBP') && !ImageManager::resize(
                                 _PS_CAT_IMG_DIR_.$idCategory.'.'.$this->imageType,
                                 _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'.webp',
                                 (int) $imageType['width'],
@@ -1116,36 +1116,45 @@ class AdminCategoriesControllerCore extends AdminController
                         } elseif (!($tmpName = tempnam(_PS_TMP_IMG_DIR_, 'PS')) || !move_uploaded_file($_FILES[$name]['tmp_name'], $tmpName)) {
                             $ret = false;
                         } else {
-                            if (!ImageManager::resize(
+                            $success = ImageManager::resize(
                                 $tmpName,
                                 _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'.'.$this->imageType,
                                 (int) $imageType['width'],
                                 (int) $imageType['height']
-                            ) || (function_exists('imagewebp') && Configuration::get('TB_USEWEBP') && !ImageManager::resize(
-                                $tmpName,
-                                _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'.webp',
-                                (int) $imageType['width'],
-                                (int) $imageType['height'],
-                                'webp'
-                            ))) {
-                                $this->errors = Tools::displayError('An error occurred while uploading thumbnail image.');
-                            } elseif (($infos = getimagesize($tmpName)) && is_array($infos)) {
+                            );
+
+                            if (ImageManager::webpSupport()) {
                                 ImageManager::resize(
                                     $tmpName,
-                                    _PS_CAT_IMG_DIR_.$idCategory.'_'.$name.'.'.$this->imageType,
-                                    (int) $infos[0],
-                                    (int) $infos[1]
+                                    _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'.webp',
+                                    (int) $imageType['width'],
+                                    (int) $imageType['height'],
+                                    'webp'
                                 );
-                                if (function_exists('imagewebp') && Configuration::get('TB_USE_WEBP')) {
+                            }
+                            if (ImageManager::retinaSupport()) {
+                                ImageManager::resize(
+                                    $tmpName,
+                                    _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'2x.'.$this->imageType,
+                                    (int) $imageType['width'] * 2,
+                                    (int) $imageType['height'] * 2
+                                );
+
+                                if (ImageManager::webpSupport()) {
                                     ImageManager::resize(
                                         $tmpName,
-                                        _PS_CAT_IMG_DIR_.$idCategory.'_'.$name.'.webp',
-                                        (int) $imageType['width'],
-                                        (int) $imageType['height'],
+                                        _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'2x.webp',
+                                        (int) $imageType['width'] * 2,
+                                        (int) $imageType['height'] * 2,
                                         'webp'
                                     );
                                 }
                             }
+
+                            if (!$success)  {
+                                $this->errors = Tools::displayError('An error occurred while uploading thumbnail image.');
+                            }
+
                             if (count($this->errors)) {
                                 $ret = false;
                             } else {

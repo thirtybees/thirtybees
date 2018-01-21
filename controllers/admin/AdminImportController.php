@@ -2110,7 +2110,7 @@ class AdminImportControllerCore extends AdminController
             $srcWidth = $srcHeight = 0;
             $error = 0;
             ImageManager::resize($tmpfile, $path.'.jpg', null, null, 'jpg', false, $error, $tgtWidth, $tgtHeight, 5, $srcWidth, $srcHeight);
-            if (function_exists('imagewebp') && Configuration::get('TB_USE_WEBP')) {
+            if (ImageManager::webpSupport()) {
                 ImageManager::resize($tmpfile, $path.'.webp', null, null, 'webp', false, $error, $tgtWidth, $tgtHeight, 5, $srcWidth, $srcHeight);
             }
             $imagesTypes = ImageType::getImagesTypes($entity, true);
@@ -2122,7 +2122,7 @@ class AdminImportControllerCore extends AdminController
                 foreach ($imagesTypes as $imageType) {
                     $tmpfile = static::get_best_path($imageType['width'], $imageType['height'], $pathInfos);
 
-                    if (ImageManager::resize(
+                    $success = ImageManager::resize(
                         $tmpfile,
                         $path.'-'.stripslashes($imageType['name']).'.jpg',
                         $imageType['width'],
@@ -2135,22 +2135,56 @@ class AdminImportControllerCore extends AdminController
                         5,
                         $srcWidth,
                         $srcHeight
-                    ) && (!function_exists('imagewebp') && Configuration::get('TB_USE_WEBP')
-                            || ImageManager::resize(
+                    );
+                    if (ImageManager::retinaSupport()) {
+                        $success &= ImageManager::resize(
+                            $tmpfile,
+                            $path.'-'.stripslashes($imageType['name']).'2x.jpg',
+                            $imageType['width'] * 2,
+                            $imageType['height'] * 2,
+                            'jpg',
+                            false,
+                            $error,
+                            $tgtWidth * 2,
+                            $tgtHeight * 2,
+                            5,
+                            $srcWidth,
+                            $srcHeight
+                        );
+                    }
+                    if (ImageManager::webpSupport()) {
+                        ImageManager::resize(
+                            $tmpfile,
+                            $path.'-'.stripslashes($imageType['name']).'.webp',
+                            $imageType['width'],
+                            $imageType['height'],
+                            'webp',
+                            false,
+                            $error,
+                            $tgtWidth,
+                            $tgtHeight,
+                            5,
+                            $srcWidth,
+                            $srcHeight
+                        );
+                        if (ImageManager::retinaSupport())
+                            ImageManager::resize(
                                 $tmpfile,
-                                $path.'-'.stripslashes($imageType['name']).'.webp',
-                                $imageType['width'],
-                                $imageType['height'],
+                                $path.'-'.stripslashes($imageType['name']).'2x.webp',
+                                $imageType['width'] * 2,
+                                $imageType['height'] * 2,
                                 'webp',
                                 false,
                                 $error,
-                                $tgtWidth,
-                                $tgtHeight,
+                                $tgtWidth * 2,
+                                $tgtHeight * 2,
                                 5,
                                 $srcWidth,
                                 $srcHeight
-                            ))
-                    ) {
+                            );
+                    }
+
+                    if ($success) {
                         // the last image should not be added in the candidate list if it's bigger than the original image
                         if ($tgtWidth <= $srcWidth && $tgtHeight <= $srcHeight) {
                             $pathInfos[] = [$tgtWidth, $tgtHeight, $path.'-'.stripslashes($imageType['name']).'.jpg'];

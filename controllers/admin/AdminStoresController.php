@@ -667,7 +667,6 @@ class AdminStoresControllerCore extends AdminController
     protected function postImage($id)
     {
         $ret = parent::postImage($id);
-        $generateHighDpiImages = (bool) Configuration::get('PS_HIGHT_DPI');
 
         if (($idStore = (int) Tools::getValue('id_store')) && isset($_FILES) && count($_FILES) && file_exists(_PS_STORE_IMG_DIR_.$idStore.'.jpg')) {
             $imageTypes = ImageType::getImagesTypes('stores');
@@ -675,15 +674,34 @@ class AdminStoresControllerCore extends AdminController
                 ImageManager::resize(
                     _PS_STORE_IMG_DIR_.$idStore.'.jpg',
                     _PS_STORE_IMG_DIR_.$idStore.'-'.stripslashes($imageType['name']).'.jpg',
-                    (int) $imageType['width'], (int) $imageType['height']
+                    (int) $imageType['width'],
+                    (int) $imageType['height']
                 );
-
-                if ($generateHighDpiImages) {
+                if (ImageManager::retinaSupport()) {
                     ImageManager::resize(
                         _PS_STORE_IMG_DIR_.$idStore.'.jpg',
                         _PS_STORE_IMG_DIR_.$idStore.'-'.stripslashes($imageType['name']).'2x.jpg',
-                        (int) $imageType['width'] * 2, (int) $imageType['height'] * 2
+                        (int) $imageType['width'] * 2,
+                        (int) $imageType['height'] * 2
                     );
+                }
+                if (ImageManager::webpSupport()) {
+                    ImageManager::resize(
+                        _PS_STORE_IMG_DIR_.$idStore.'.jpg',
+                        _PS_STORE_IMG_DIR_.$idStore.'-'.stripslashes($imageType['name']).'.webp',
+                        (int) $imageType['width'],
+                        (int) $imageType['height'],
+                        'webp'
+                    );
+                    if (ImageManager::retinaSupport()) {
+                        ImageManager::resize(
+                            _PS_STORE_IMG_DIR_.$idStore.'.jpg',
+                            _PS_STORE_IMG_DIR_.$idStore.'-'.stripslashes($imageType['name']).'2x.webp',
+                            (int) $imageType['width'] * 2,
+                            (int) $imageType['height'] * 2,
+                            'webp'
+                        );
+                    }
                 }
             }
         }

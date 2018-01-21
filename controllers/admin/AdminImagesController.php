@@ -228,7 +228,7 @@ class AdminImagesControllerCore extends AdminController
                 'visibility' => Shop::CONTEXT_ALL,
             ];
         }
-        if (!empty($themeConfiguration['webp']) && function_exists('imagewebp')) {
+        if (!empty($themeConfiguration['webp'])) {
             $this->fields_options['images']['fields']['TB_USE_WEBP'] = [
                 'type'       => 'bool',
                 'validation' => 'isBool',
@@ -463,9 +463,7 @@ class AdminImagesControllerCore extends AdminController
                     || (int) Tools::getValue('PS_JPEG_QUALITY') > 100
                 ) {
                     $this->errors[] = Tools::displayError('Incorrect value for the selected JPEG image compression.');
-                } elseif (function_exists('imagewebp')
-                    && ((int) Tools::getValue('TB_WEBP_QUALITY') < 0 || (int) Tools::getValue('TB_WEBP_QUALITY') > 100)
-                ) {
+                } elseif (((int) Tools::getValue('TB_WEBP_QUALITY') < 0 || (int) Tools::getValue('TB_WEBP_QUALITY') > 100)) {
                     $this->errors[] = Tools::displayError('Incorrect value for the selected WEBP image compression.');
                 } elseif ((int) Tools::getValue('PS_PNG_QUALITY') < 0
                     || (int) Tools::getValue('PS_PNG_QUALITY') > 9
@@ -786,7 +784,6 @@ class AdminImagesControllerCore extends AdminController
             'stores'        => _PS_STORE_IMG_DIR_,
         );
         $type = ImageType::getImagesTypes($entityType);
-        $highDpi = Configuration::get('PS_HIGHT_DPI');
 
         $watermarkModules = Db::getInstance()->executeS(
             (new DbQuery())
@@ -816,27 +813,43 @@ class AdminImagesControllerCore extends AdminController
                     if (!file_exists($dir.$image) || !filesize($dir.$image)) {
                         $this->errors[] = sprintf($this->l('Source file for type %s and ID %s does not exist', $entityType, $idEntity));
                     } else {
-                        if (!ImageManager::resize($dir.$image, $newFile, (int) $imageType['width'], (int) $imageType['height'])) {
-                            $this->errors[] = $this->l('Unable to resize image');
-                        }
-                        if ($highDpi) {
-                            if (!ImageManager::resize($dir.$image, $newDir.substr($image, 0, -4).'-'.stripslashes($imageType['name']).'2x.jpg', (int) $imageType['width'] * 2, (int) $imageType['height'] * 2)) {
+                        $success = ImageManager::resize(
+                            $dir.$image,
+                            $newFile,
+                            (int) $imageType['width'],
+                            (int) $imageType['height']
+                        );
+
+                        if (ImageManager::retinaSupport()) {
+                            if (!ImageManager::resize(
+                                $dir.$image,
+                                $newDir.substr($image, 0, -4).'-'.stripslashes($imageType['name']).'2x.jpg',
+                                (int) $imageType['width'] * 2,
+                                (int) $imageType['height'] * 2
+                            )) {
                                 $this->errors[] = sprintf(Tools::displayError('Failed to resize image file to high resolution (%s)'), $dir.$image);
                             }
                         }
-                        if (function_exists('imagewebp') && Configuration::get('TB_USE_WEBP')) {
-                            ImageManager::resize(
+                        if (ImageManager::webpSupport()) {
+                            $success &= ImageManager::resize(
                                 $dir.$image,
                                 $newDir.substr($image, 0, -4).'-'.stripslashes($imageType['name']).'.webp',
                                 (int) $imageType['width'],
                                 (int) $imageType['height'],
                                 'webp'
                             );
-                            if ($highDpi) {
-                                if (!ImageManager::resize($dir.$image, $newDir.substr($image, 0, -4).'-'.stripslashes($imageType['name']).'2x.webp', (int) $imageType['width'] * 2, (int) $imageType['height'] * 2)) {
-                                    $this->errors[] = sprintf(Tools::displayError('Failed to resize image file to high resolution (%s)'), $dir.$image);
-                                }
+                            if (ImageManager::retinaSupport()) {
+                                $success &= ImageManager::resize(
+                                    $dir.$image,
+                                    $newDir.substr($image, 0, -4).'-'.stripslashes($imageType['name']).'2x.webp',
+                                    (int) $imageType['width'] * 2,
+                                    (int) $imageType['height'] * 2
+                                );
                             }
+                        }
+
+                        if (!$success) {
+                            $this->errors[] = $this->l('Unable to resize image');
                         }
                     }
                 }
@@ -861,7 +874,7 @@ class AdminImagesControllerCore extends AdminController
                             if (!ImageManager::resize($existingImage, $newFile, (int) ($imageType['width']), (int) ($imageType['height']))) {
                                 $this->errors[] = sprintf($this->l('Original image is corrupt (%s) or bad permission on folder'), $existingImage);
                             }
-                            if (function_exists('imagewebp') && Configuration::get('TB_USE_WEBP')) {
+                            if (ImageManager::webpSupport()) {
                                 ImageManager::resize(
                                     $existingImage,
                                     $process[$entityType].$imageObj->getExistingImgPath().'-'.stripslashes($imageType['name']).'.webp',
@@ -992,14 +1005,20 @@ class AdminImagesControllerCore extends AdminController
                                 $this->errors[] = sprintf(Tools::displayError('Original image is corrupt (%s) for product ID %2$d or bad permission on folder'), $existingImg, (int) $imageObj->id_product);
                             }
 
-                            if ($generateHighDpiImages) {
+                            if (ImageManager::retinaSupport()) {
                                 if (!ImageManager::resize($existingImg, $dir.$imageObj->getExistingImgPath().'-'.stripslashes($imageType['name']).'2x.jpg', (int) $imageType['width'] * 2, (int) $imageType['height'] * 2)) {
                                     $this->errors[] = sprintf(Tools::displayError('Original image is corrupt (%s) for product ID %2$d or bad permission on folder'), $existingImg, (int) $imageObj->id_product);
                                 }
                             }
-                            if(!$this->errors && Configuration::get('TB_USE_WEBP') && function_exists('imagewebp')) {
+                            if(!$this->errors && ImageManager::webpSupport()) {
                                 $imgRes = imagecreatefromjpeg($dir.$imageObj->getExistingImgPath().'-'.stripslashes($imageType['name']).'.jpg');
-                                imagewebp($imgRes, $dir.$imageObj->getExistingImgPath().'-'.stripslashes($imageType['name']).'.webp');
+                                ImageManager::resize(
+                                    $imgRes,
+                                    $dir.$imageObj->getExistingImgPath().'-'.stripslashes($imageType['name']).'.webp',
+                                    (int) $imageType['width'] * 2,
+                                    (int) $imageType['height'] * 2,
+                                    'webp'
+                                );
                             }
                         }
                     }
@@ -1077,7 +1096,6 @@ class AdminImagesControllerCore extends AdminController
     protected function _regenerateNoPictureImages($dir, $type, $languages)
     {
         $errors = false;
-        $generateHighDpiImages = (bool) Configuration::get('PS_HIGHT_DPI');
 
         foreach ($type as $imageType) {
             foreach ($languages as $language) {
@@ -1090,7 +1108,7 @@ class AdminImagesControllerCore extends AdminController
                         $errors = true;
                     }
 
-                    if (function_exists('imagewebp') && Configuration::get('TB_USE_WEBP')) {
+                    if (ImageManager::webpSupport()) {
                         ImageManager::resize(
                             $file,
                             $dir.$language['iso_code'].'-default-'.stripslashes($imageType['name']).'.webp',
@@ -1100,12 +1118,12 @@ class AdminImagesControllerCore extends AdminController
                         );
                     }
 
-                    if ($generateHighDpiImages) {
+                    if (ImageManager::retinaSupport()) {
                         if (!ImageManager::resize($file, $dir.$language['iso_code'].'-default-'.stripslashes($imageType['name']).'2x.jpg', (int) $imageType['width'] * 2, (int) $imageType['height'] * 2)) {
                             $errors = true;
                         }
 
-                        if (function_exists('imagewebp') && Configuration::get('TB_USE_WEBP')) {
+                        if (ImageManager::webpSupport()) {
                             ImageManager::resize(
                                 $file,
                                 $dir.$language['iso_code'].'-default-'.stripslashes($imageType['name']).'2x.webp',

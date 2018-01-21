@@ -386,13 +386,31 @@ class AdminScenesControllerCore extends AdminController
                         (int) $imageType['width'],
                         (int) $imageType['height']
                     );
-                    if (function_exists('imagewebp') && Configuration::get('TB_USE_WEBP')) {
+                    if (ImageManager::retinaSupport()) {
+                        ImageManager::resize(
+                            $baseThumbPath,
+                            _PS_SCENE_THUMB_IMG_DIR_.$obj->id.'-'.stripslashes($imageType['name']).'2x.jpg',
+                            (int) $imageType['width'] * 2,
+                            (int) $imageType['height'] * 2
+                        );
+                    }
+                    if (ImageManager::webpSupport()) {
                         ImageManager::resize(
                             $baseThumbPath,
                             _PS_SCENE_THUMB_IMG_DIR_.$obj->id.'-'.stripslashes($imageType['name']).'.webp',
                             (int) $imageType['width'],
-                            (int) $imageType['height']
+                            (int) $imageType['height'],
+                            'webp'
                         );
+                        if (ImageManager::retinaSupport()) {
+                            ImageManager::resize(
+                                $baseThumbPath,
+                                _PS_SCENE_THUMB_IMG_DIR_.$obj->id.'-'.stripslashes($imageType['name']).'2x.webp',
+                                (int) $imageType['width'] * 2,
+                                (int) $imageType['height'] * 2,
+                                'webp'
+                            );
+                        }
                     }
                 } elseif (isset($_FILES['image']) && isset($_FILES['image']['tmp_name']) && !$_FILES['image']['error']) {
                     ImageManager::resize(
@@ -401,7 +419,15 @@ class AdminScenesControllerCore extends AdminController
                         (int) $imageType['width'],
                         (int) $imageType['height']
                     );
-                    if (function_exists('imagewebp') && Configuration::get('TB_USE_WEBP')) {
+                    if (ImageManager::retinaSupport()) {
+                        ImageManager::resize(
+                            $baseImgPath,
+                            _PS_SCENE_IMG_DIR_.$obj->id.'-'.stripslashes($imageType['name']).'2x.jpg',
+                            (int) $imageType['width'] * 2,
+                            (int) $imageType['height'] * 2
+                        );
+                    }
+                    if (ImageManager::webpSupport()) {
                         ImageManager::resize(
                             $baseImgPath,
                             _PS_SCENE_IMG_DIR_.$obj->id.'-'.stripslashes($imageType['name']).'.webp',
@@ -409,6 +435,15 @@ class AdminScenesControllerCore extends AdminController
                             (int) $imageType['height'],
                             'webp'
                         );
+                        if (ImageManager::retinaSupport()) {
+                            ImageManager::resize(
+                                $baseImgPath,
+                                _PS_SCENE_IMG_DIR_.$obj->id.'-'.stripslashes($imageType['name']).'2x.webp',
+                                (int) $imageType['width'] * 2,
+                                (int) $imageType['height'] * 2,
+                                'webp'
+                            );
+                        }
                     }
                 }
             }

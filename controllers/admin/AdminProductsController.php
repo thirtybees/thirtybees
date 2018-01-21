@@ -1798,14 +1798,14 @@ class AdminProductsControllerCore extends AdminController
                         if ($highDpi) {
                             ImageManager::resize(
                                 $tmpName,
-                                $newPath.'-'.stripslashes($imageType['name']).'.2x.'.$image->image_format,
+                                $newPath.'-'.stripslashes($imageType['name']).'2x.'.$image->image_format,
                                 (int) $imageType['width'] * 2,
                                 (int) $imageType['height'] * 2,
                                 $image->image_format
                             );
                         }
 
-                        if (function_exists('imagewebp') && Configuration::get('TB_USE_WEBP')) {
+                        if (ImageManager::webpSupport()) {
                             ImageManager::resize(
                                 $tmpName,
                                 $newPath.'-'.stripslashes($imageType['name']).'.webp',
@@ -1817,7 +1817,7 @@ class AdminProductsControllerCore extends AdminController
                             if ($highDpi) {
                                 ImageManager::resize(
                                     $tmpName,
-                                    $newPath.'-'.stripslashes($imageType['name']).'.2x.webp',
+                                    $newPath.'-'.stripslashes($imageType['name']).'2x.webp',
                                     (int) $imageType['width'] * 2,
                                     (int) $imageType['height'] * 2,
                                     'webp'
