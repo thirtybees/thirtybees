@@ -703,6 +703,10 @@ class AdminStoresControllerCore extends AdminController
                         );
                     }
                 }
+
+                if (Configuration::get('TB_IMAGE_LAST_UPD_STORES') < $idStore) {
+                    Configuration::updateValue('TB_IMAGE_LAST_UPD_STORES', $idStore);
+                }
             }
         }
 
