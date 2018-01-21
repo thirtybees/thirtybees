@@ -838,7 +838,7 @@ class DispatcherCore
             // Check basic controllers & params
             $controller = $this->controller_not_found;
             $testRequestUri = preg_replace('/(=http:\/\/)/', '=', $this->request_uri);
-            if (!preg_match('/\.(gif|jpe?g|css|js)$/i', parse_url($testRequestUri, PHP_URL_PATH))) {
+            if (!preg_match('/\.(css|js)$/i', parse_url($testRequestUri, PHP_URL_PATH))) {
                 // Add empty route as last route to prevent this greedy regexp to match request uri before right time
                 if ($this->empty_route) {
                     $this->addRoute(

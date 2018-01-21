@@ -819,7 +819,6 @@ class AdminImagesControllerCore extends AdminController
                             (int) $imageType['width'],
                             (int) $imageType['height']
                         );
-
                         if (ImageManager::retinaSupport()) {
                             if (!ImageManager::resize(
                                 $dir.$image,

@@ -381,9 +381,9 @@ class LinkCore
     {
         $highDpi = (bool) Configuration::get('PS_HIGHT_DPI');
         if ($this->allow == 1 && $type) {
-            $uriPath = __PS_BASE_URI__.'c/'.$idCategory.'-'.$type.'/'.$name.'.'.($highDpi ? '2x.' : '').$format;
+            $uriPath = __PS_BASE_URI__.'c/'.$idCategory.'-'.$type.'/'.$name.'.jpg';
         } else {
-            $uriPath = _THEME_CAT_DIR_.$idCategory.($type ? '-'.$type : '').($highDpi ? '2x.' : '').'.'.$format;
+            $uriPath = _THEME_CAT_DIR_.$idCategory.($type ? '-'.$type : '').($highDpi ? '2x.' : '.').$format;
         }
 
         return $this->protocol_content.Tools::getMediaServer($uriPath).$uriPath;
