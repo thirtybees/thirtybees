@@ -1772,6 +1772,8 @@ class AdminProductsControllerCore extends AdminController
         if ($error = ImageManager::validateUpload($_FILES['image_product'])) {
             $this->errors[] = $error;
         } else {
+            $highDpi = (bool) Configuration::get('PS_HIGHT_DPI');
+
             $image = new Image($idImage);
 
             if (!$newPath = $image->getPathForCreation()) {
@@ -1784,27 +1786,44 @@ class AdminProductsControllerCore extends AdminController
             } elseif ($method == 'auto') {
                 $imagesTypes = ImageType::getImagesTypes('products');
                 foreach ($imagesTypes as $k => $imageType) {
-                    if (
-                        !ImageManager::resize($tmpName, $newPath.'-'.stripslashes($imageType['name']).'.'.$image->image_format, $imageType['width'], $imageType['height'], $image->image_format)
-                        || (function_exists('imagewebp') && Configuration::get('TB_USE_WEBP')
-                            && !ImageManager::resize(
+                    if (!ImageManager::resize(
+                        $tmpName,
+                        $newPath.'-'.stripslashes($imageType['name']).'.'.$image->image_format,
+                        (int) $imageType['width'],
+                        (int) $imageType['height'],
+                        $image->image_format
+                    )) {
+                        $this->errors[] = Tools::displayError('An error occurred while copying this image:').' '.stripslashes($imageType['name']);
+                    } else {
+                        if ($highDpi) {
+                            ImageManager::resize(
+                                $tmpName,
+                                $newPath.'-'.stripslashes($imageType['name']).'.2x.'.$image->image_format,
+                                (int) $imageType['width'] * 2,
+                                (int) $imageType['height'] * 2,
+                                $image->image_format
+                            );
+                        }
+
+                        if (function_exists('imagewebp') && Configuration::get('TB_USE_WEBP')) {
+                            ImageManager::resize(
                                 $tmpName,
                                 $newPath.'-'.stripslashes($imageType['name']).'.webp',
                                 (int) $imageType['width'],
                                 (int) $imageType['height'],
                                 'webp'
-                            ))
-                    ) {
-                        $this->errors[] = Tools::displayError('An error occurred while copying this image:').' '.stripslashes($imageType['name']);
-                    }
-                    if (function_exists('imagewebp') && Configuration::get('TB_USE_WEBP')) {
-                        ImageManager::resize(
-                            $tmpName,
-                            $newPath.'-'.stripslashes($imageType['name']).'.webp',
-                            (int) $imageType['width'],
-                            (int) $imageType['height'],
-                            'webp'
-                        );
+                            );
+
+                            if ($highDpi) {
+                                ImageManager::resize(
+                                    $tmpName,
+                                    $newPath.'-'.stripslashes($imageType['name']).'.2x.webp',
+                                    (int) $imageType['width'] * 2,
+                                    (int) $imageType['height'] * 2,
+                                    'webp'
+                                );
+                            }
+                        }
 
                         if ((int) Configuration::get('TB_IMAGES_LAST_UPD_PRODUCTS') < $idProduct) {
                             Configuration::updateValue('TB_IMAGES_LAST_UPD_PRODUCTS', $idProduct);
