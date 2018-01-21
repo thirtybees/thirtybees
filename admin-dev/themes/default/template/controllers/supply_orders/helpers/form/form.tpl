@@ -155,7 +155,7 @@
 				'<td><div class="input-group fixed-width-md">{if isset($currency->prefix) && trim($currency->prefix) != ''}<span class="input-group-addon">{$currency->prefix}</span>{/if}<input type="text" name="input_unit_price_te_'+product_infos.id+'" value="'+product_infos.unit_price_te+'" />{if isset($currency->suffix) && trim($currency->suffix) != ''}<span class="input-group-addon">{$currency->suffix}</span>{/if}</div></td>'+
 				'<td><input type="text" name="input_quantity_expected_'+product_infos.id+'" value="0" class="fixed-width-xs" /></td>'+
 				'<td><div class="input-group fixed-width-md"><input type="text" name="input_discount_rate_'+product_infos.id+'" value="0" /><span class="input-group-addon">%</span></div></td>'+
-				'<td><div class="input-group fixed-width-md"><input type="text" name="input_tax_rate_'+product_infos.id+'" value="0" /><span class="input-group-addon">%</span></div></td>'+
+				'<td><div class="input-group fixed-width-md"><input type="text" name="input_tax_rate_'+product_infos.id+'" value="'+product_infos.rate+'" /><span class="input-group-addon">%</span></div></td>'+
 				'<td><a href="#" id="deletelink|'+product_infos.id+'" class="btn btn-default removeProductFromSupplyOrderLink"><i class="icon-trash"></i> {l s="Remove"}'+
 				'</a></td></tr>'
 			);
