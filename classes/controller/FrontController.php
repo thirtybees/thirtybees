@@ -262,7 +262,7 @@ class FrontControllerCore extends Controller
 
             $hookHeader = Hook::exec('displayHeader');
 
-            $faviconTemplate = Configuration::get('TB_SOURCE_FAVICON_CODE');
+            $faviconTemplate = preg_replace('/\<br(\s*)?\/?\>/i', "\n", Configuration::get('TB_SOURCE_FAVICON_CODE'));
             if ($faviconTemplate) {
                 $dom = new DOMDocument();
                 $dom->loadHTML($faviconTemplate);

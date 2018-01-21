@@ -4652,7 +4652,7 @@ exit;
                     $def->addElement(
                         'meta',
                         'Inline',
-                        'Flow',
+                        'Empty',
                         'Common',
                         [
                             'itemprop'  => 'Text',
@@ -4665,7 +4665,7 @@ exit;
                     $def->addElement(
                         'link',
                         'Inline',
-                        'Flow',
+                        'Empty',
                         'Common',
                         [
                             'rel'   => 'Text',
