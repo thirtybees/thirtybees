@@ -1019,6 +1019,10 @@ class AdminManufacturersControllerCore extends AdminController
 
         if (!$res) {
             $this->errors[] = Tools::displayError('Unable to resize one or more of your pictures.');
+        } else {
+            if ((int) Configuration::get('TB_IMAGES_LAST_UPD_MANUFACTURERS') < $idManufacturer) {
+                Configuration::updateValue('TB_IMAGES_LAST_UPD_MANUFACTURERS', $idManufacturer);
+            }
         }
 
         return $res;

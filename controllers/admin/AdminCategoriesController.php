@@ -1074,19 +1074,45 @@ class AdminCategoriesControllerCore extends AdminController
                     return false;
                 }
                 foreach ($imagesTypes as $k => $imageType) {
-                    if (!ImageManager::resize(
+                    $success = ImageManager::resize(
                         _PS_CAT_IMG_DIR_.$idCategory.'.'.$this->imageType,
                         _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'.'.$this->imageType,
                         (int) $imageType['width'],
                         (int) $imageType['height']
-                    ) || (Configuration::get('TB_USE_WEBP') && !ImageManager::resize(
+                    );
+                    if (ImageManager::webpSupport()) {
+                        $success &= ImageManager::resize(
+                            _PS_CAT_IMG_DIR_.$idCategory.'.'.$this->imageType,
+                            _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'.webp',
+                            (int) $imageType['width'],
+                            (int) $imageType['height'],
+                            'webp'
+                        );
+                    }
+                    if (ImageManager::retinaSupport()) {
+                        $success &= ImageManager::resize(
+                            _PS_CAT_IMG_DIR_.$idCategory.'.'.$this->imageType,
+                            _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'2x.'.$this->imageType,
+                            (int) $imageType['width'] * 2,
+                            (int) $imageType['height'] * 2
+                        );
+                        if (ImageManager::webpSupport()) {
+                            $success &= ImageManager::resize(
                                 _PS_CAT_IMG_DIR_.$idCategory.'.'.$this->imageType,
-                                _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'.webp',
-                                (int) $imageType['width'],
-                                (int) $imageType['height'],
+                                _PS_CAT_IMG_DIR_.$idCategory.'-'.stripslashes($imageType['name']).'2x.webp',
+                                (int) $imageType['width'] * 2,
+                                (int) $imageType['height'] * 2,
                                 'webp'
-                    ))) {
+                            );
+                        }
+                    }
+
+                    if (!$success) {
                         $this->errors = Tools::displayError('An error occurred while uploading category image.');
+                    } else {
+                        if (Configuration::get('TB_IMAGE_LAST_UPD_CATEGORIES') < $idCategory) {
+                            Configuration::updateValue('TB_IMAGE_LAST_UPD_CATEGORIES', $idCategory);
+                        }
                     }
                 }
             }
@@ -1149,6 +1175,10 @@ class AdminCategoriesControllerCore extends AdminController
                                         'webp'
                                     );
                                 }
+                            }
+
+                            if (Configuration::get('TB_IMAGE_LAST_UPD_CATEGORIES') < $idCategory) {
+                                Configuration::updateValue('TB_IMAGE_LAST_UPD_CATEGORIES', $idCategory);
                             }
 
                             if (!$success)  {
