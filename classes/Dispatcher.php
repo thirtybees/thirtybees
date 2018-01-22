@@ -628,7 +628,70 @@ class DispatcherCore
                     'favicon',
                     $idLang,
                     [],
-                    ['icon' => 'apple-touch-icon'],
+                    [
+                        'icon'        => 'apple-touch-icon',
+                        'precomposed' => false,
+                    ],
+                    $idShop
+                );
+
+                // Set apple-touch-icon.png route
+                $this->addRoute(
+                    'apple-touch-icon-precomposed',
+                    'apple-touch-icon-precomposed.png',
+                    'favicon',
+                    $idLang,
+                    [],
+                    [
+                        'icon'        => 'apple-touch-icon',
+                        'precomposed' => true,
+                    ],
+                    $idShop
+                );
+
+                // Set apple-touch-icon-width-height.png route
+                $this->addRoute(
+                    'apple-touch-icon-size',
+                    'apple-touch-icon-{width}x{height}.png',
+                    'favicon',
+                    $idLang,
+                    [
+                        'width'  => [
+                            'regexp' => '[0-9]+',
+                            'alias'  => 'width',
+                        ],
+                        'height' => [
+                            'regexp' => '[0-9]+',
+                            'alias'  => 'height',
+                        ],
+                    ],
+                    [
+                        'icon'        => 'apple-touch-icon',
+                        'precomposed' => false,
+                    ],
+                    $idShop
+                );
+
+                // Set apple-touch-icon-width-height-precomposed.png route
+                $this->addRoute(
+                    'apple-touch-icon-size-precomposed',
+                    'apple-touch-icon-{width}x{height}-precomposed.png',
+                    'favicon',
+                    $idLang,
+                    [
+                        'width'  => [
+                            'regexp' => '[0-9]+',
+                            'alias'  => 'width',
+                        ],
+                        'height' => [
+                            'regexp' => '[0-9]+',
+                            'alias'  => 'height',
+                        ],
+                    ],
+                    [
+                        'icon'        => 'apple-touch-icon',
+                        'precomposed' => true,
+                    ],
                     $idShop
                 );
             }

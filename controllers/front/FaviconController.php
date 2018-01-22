@@ -51,11 +51,22 @@ class FaviconControllerCore extends FrontController
     public function init()
     {
         if (Tools::getValue('icon') === 'apple-touch-icon') {
+            if (Tools::getIsset('width') && Tools::getIsset('height')) {
+                $width = Tools::getValue('width');
+                $height = Tools::getValue('height');
+
+                header('Content-Type: image/png');
+                readfile(_PS_IMG_DIR_."favicon/favicon_{$this->context->shop->id}_{$width}_{$height}.png");
+                exit;
+            }
+
             header('Content-Type: image/png');
             readfile(_PS_IMG_DIR_."favicon/favicon_{$this->context->shop->id}_180_180.png");
-        } else {
-            header('Content-Type: image/x-icon');
-            readfile(_PS_IMG_DIR_."favicon_{$this->context->shop->id}.ico");
+            exit;
         }
+
+        header('Content-Type: image/x-icon');
+        readfile(_PS_IMG_DIR_."favicon_{$this->context->shop->id}.ico");
+        exit;
     }
 }
