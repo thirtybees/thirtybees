@@ -819,11 +819,13 @@ class ImageManagerCore
     }
 
     /**
+     * @param bool $checkAccept Check the accept header
+     *
      * @return bool
      *
      * @since 1.0.4
      */
-    public static function webpSupport()
+    public static function webpSupport($checkAccept = false)
     {
         static $supported = null;
         if ($supported === null) {
@@ -834,6 +836,10 @@ class ImageManagerCore
             } catch (PrestaShopException $e) {
                 $supported = false;
             }
+        }
+
+        if ($checkAccept) {
+            $supported &= !empty($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'image/webp' ) !== false;
         }
 
         return $supported;
