@@ -824,6 +824,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
      * @return void
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initPageHeaderToolbar()
     {
@@ -1578,6 +1579,8 @@ class AdminSupplyOrdersControllerCore extends AdminController
      *
      * @param int $threshold
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function loadProducts($threshold)
@@ -2039,9 +2042,10 @@ class AdminSupplyOrdersControllerCore extends AdminController
     /**
      * method call when ajax request is made for search product to add to the order
      *
-     * @TODO - Update this method to retreive the reference, ean13, upc corresponding to a product attribute
+     * @TODO  - Update this method to retreive the reference, ean13, upc corresponding to a product attribute
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function ajaxProcessSearchProduct()
     {
@@ -2076,7 +2080,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
         );
         $query->from('product', 'p');
         $query->innerJoin('product_lang', 'pl', 'pl.`id_product` = p.`id_product` AND pl.`id_lang` = '.$idLang);
-    	$query->leftJoin('tax_rule', 'tr', 'p.id_tax_rules_group = tr.id_tax_rules_group');
+        $query->leftJoin('tax_rule', 'tr', 'p.id_tax_rules_group = tr.id_tax_rules_group');
         $query->leftJoin('tax', 't', 'tr.id_tax = t.id_tax');
         $query->leftJoin('product_attribute', 'pa', 'pa.`id_product` = p.`id_product`');
         $query->leftJoin('product_attribute_combination', 'pac', 'pac.`id_product_attribute` = pa.`id_product_attribute`');
@@ -2116,6 +2120,9 @@ class AdminSupplyOrdersControllerCore extends AdminController
     /**
      * @return string
      *
+     * @throws Exception
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function renderView()
@@ -2332,6 +2339,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
      * @param string $tr
      *
      * @return string
+     * @throws PrestaShopException
      */
     public function printExportIcons($idSupplyOrder, $tr)
     {
@@ -2385,6 +2393,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
      * @return bool
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function initProcess()
     {
@@ -2400,12 +2409,14 @@ class AdminSupplyOrdersControllerCore extends AdminController
     /**
      * Overrides AdminController::afterAdd()
      *
-     * @see AdminController::afterAdd()
+     * @see   AdminController::afterAdd()
      *
      * @param ObjectModel $object
      *
      * @return bool
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function afterAdd($object)
