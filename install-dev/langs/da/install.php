@@ -6,7 +6,7 @@ return array (
     'documentation' => 'http://docs.thirtybees.com/',
     'documentation_upgrade' => 'http://docs.thirtybees.com/',
     'forum' => 'http://www.thirtybees.com/forums/',
-    'blog' => 'http://www.thirtbees.com/blog/',
+    'blog' => 'http://www.thirtybees.com/blog/',
     'support' => 'http://www.thirtybees.com/forums/',
     'tutorial' => 'http://docs.thirtybees.com/',
     'tailored_help' => 'http://docs.thirtybees.com/',
