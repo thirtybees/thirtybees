@@ -658,11 +658,11 @@ class DispatcherCore
                     [
                         'width'  => [
                             'regexp' => '[0-9]+',
-                            'alias'  => 'width',
+                            'param'  => 'width',
                         ],
                         'height' => [
                             'regexp' => '[0-9]+',
-                            'alias'  => 'height',
+                            'param'  => 'height',
                         ],
                     ],
                     [
@@ -681,11 +681,11 @@ class DispatcherCore
                     [
                         'width'  => [
                             'regexp' => '[0-9]+',
-                            'alias'  => 'width',
+                            'param'  => 'width',
                         ],
                         'height' => [
                             'regexp' => '[0-9]+',
-                            'alias'  => 'height',
+                            'param'  => 'height',
                         ],
                     ],
                     [
