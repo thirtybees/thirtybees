@@ -104,9 +104,11 @@ a {
 #container {
 	position: relative;
 	margin: 0 auto;
-	padding: 0;
+	padding: 10px;
 	width: 990px;
 	background: #fff;
+	margin-top: 3%;
+	border-radius: 15px;
 }
 
 #header {
@@ -193,7 +195,7 @@ div#phone_help {
 **************************************************************************** */
 body {
 	font: normal 13px/18px Roboto, Arial, Helvetica, sans-serif;
-	color: #333;
+	color: #333c4e;
 	background: #e1e2e2;
 }
 
@@ -233,6 +235,8 @@ p {
 a, a:active, a:visited {
 	color: #efc100;
 	text-decoration: none;
+	font-weight: bold;
+	text-decoration: underline;
 }
 
 a:hover {
@@ -250,7 +254,7 @@ sup.required {
 	padding: 0 30px;
 	height: 31px;
 	line-height: 31px;
-	color: #fff;
+	color: #333c4e;
 	border: 1px solid transparent;
 	background-color: #efc100;
 	-moz-border-radius: 3px;
@@ -264,7 +268,7 @@ sup.required {
 }
 
 #btBack {
-	color: #666;
+	color: #333c4e;
 	background-color: #fff;
 	border: 1px solid #666
 }
@@ -469,7 +473,7 @@ ol#tabs {
 ol#tabs li {
 	padding: 9px 0 9px 16px;
 	font-size: 14px;
-	color: #adadad;
+	color: #333c4e;
 }
 
 ol#tabs li.selected {
