@@ -55,7 +55,7 @@ class FaviconControllerCore extends FrontController
             readfile(_PS_IMG_DIR_."favicon/favicon_{$this->context->shop->id}_180_180.png");
         } else {
             header('Content-Type: image/x-icon');
-            readfile(_PS_IMG_DIR_."favicon/favicon_{$this->context->shop->id}.ico");
+            readfile(_PS_IMG_DIR_."favicon_{$this->context->shop->id}.ico");
         }
     }
 }
