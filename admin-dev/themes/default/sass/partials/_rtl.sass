@@ -191,8 +191,6 @@ html
 .mce-btn-group
 	.mce-last
 		border-right: solid 1px #ccc
-		border-top-left-radius: 3px
-		border-bottom-left-radius: 3px
 		-webkit-border-radius: 3px 0 0 3px
 		border-radius: 3px 0 0 3px
 .mce-widget
@@ -210,22 +208,32 @@ html
 	.daterangepicker
 		td
 			&.start-selected:not(.old):not(.new):not(.end-selected)
-				@include border-left-radius(0)
+				@include border-left-radius(0 !important)
 				@include border-right-radius(15px)
 				&.range-compare
-					@include border-right-radius(0)
+					@include border-right-radius(0 !important)
 			&.end-selected:not(.old):not(.new):not(.start-selected)
-				@include border-right-radius(0)
+				@include border-right-radius(0 !important)
 				@include border-left-radius(15px)
 				&.range-compare
-					@include border-left-radius(0)
+					@include border-left-radius(0 !important)
 			&.start-selected-compare:not(.old):not(.new):not(.end-selected-compare)
-				@include border-left-radius(0)
+				@include border-left-radius(0 !important)
 				@include border-right-radius(15px)
 				&.range
-					@include border-right-radius(0)
+					@include border-right-radius(0 !important)
 			&.end-selected-compare:not(.old):not(.new):not(.start-selected-compare)
-				@include border-right-radius(0)
+				@include border-right-radius(0 !important)
 				@include border-left-radius(15px)
 				&.range
-					@include border-left-radius(0)
+					@include border-left-radius(0 !important)
+
+// Bootstrap
+#content.bootstrap
+	h3:not(.modal-title)
+		font-size: 1.1em
+	.form-horizontal, #module-list
+		.pull-right
+			&>.dropdown-menu
+				right: auto
+				left: 0
