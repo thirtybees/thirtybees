@@ -261,7 +261,7 @@ class ImageManagerCore
 
         $destImage = imagecreatetruecolor($dstWidth, $dstHeight);
 
-        // If image is a PNG and the output is PNG, fill with transparency. Else fill with white background.
+        // If image is a PNG or WEBP and the output is PNG/WEBP, fill with transparency. Else fill with white background.
         if ($fileType == 'png' && $type == IMAGETYPE_PNG || $fileType === 'webp') {
             imagealphablending($destImage, false);
             imagesavealpha($destImage, true);
@@ -832,7 +832,9 @@ class ImageManagerCore
             $config = Context::getContext()->theme->getConfiguration();
 
             try {
-                $supported = Configuration::get('TB_USE_WEBP') && !empty($config['webp']);
+                $supported = Configuration::get('TB_USE_WEBP')
+                    && !empty($config['webp'])
+                    && function_exists(' imagewebp');
             } catch (PrestaShopException $e) {
                 $supported = false;
             }
