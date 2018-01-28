@@ -1953,8 +1953,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      * @param array    $data
      * @param int|null $idLang
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @since 1.0.0
      */
     public function hydrate(array $data, $idLang = null)
     {
@@ -1966,6 +1965,43 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         foreach ($data as $key => $value) {
             if (array_key_exists($key, $this)) {
                 $this->$key = $value;
+            }
+        }
+    }
+
+    /**
+     * Fill an object with given data. Data must be an array with this syntax:
+     * array(
+     *   array(id_lang => 1, objProperty => value, objProperty2 => value, etc.),
+     *   array(id_lang => 2, objProperty => value, objProperty2 => value, etc.),
+     * );
+     *
+     * @param array    $data
+     *
+     * @since 1.0.4
+     */
+    public function hydrateMultilang(array $data)
+    {
+        foreach ($data as $row) {
+            if (isset($row[$this->def['primary']])) {
+                $this->id = $row[$this->def['primary']];
+            }
+
+            foreach ($row as $key => $value) {
+                if (array_key_exists($key, $this)) {
+                    if (!empty($this->def['fields'][$key]['lang']) && !empty($row['id_lang'])) {
+                        // Multilang
+                        if (!is_array($this->$key)) {
+                            $this->$key = [];
+                        }
+                        $this->$key[(int) $row['id_lang']] = $value;
+                    } else {
+                        // Normal
+                        if (array_key_exists($key, $this)) {
+                            $this->$key = $value;
+                        }
+                    }
+                }
             }
         }
     }

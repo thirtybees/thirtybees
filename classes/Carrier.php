@@ -224,7 +224,41 @@ class CarrierCore extends ObjectModel
          *
          * @deprecated PS 1.5
          */
-        if ($this->id) {
+        if ($this->id && !$this->id_tax_rules_group) {
+            $this->id_tax_rules_group = $this->getIdTaxRulesGroup(Context::getContext());
+        }
+
+        if ($this->name === '0' && static::getCarrierNameFromShopName()) {
+            $this->name = static::getCarrierNameFromShopName();
+        }
+    }
+
+    /**
+     * Multilang-hydrate function for the Carrier
+     *
+     * Fill an object with given data. Data must be an array with this syntax:
+     * array(
+     *   array(id_lang => 1, objProperty => value, objProperty2 => value, etc.),
+     *   array(id_lang => 2, objProperty => value, objProperty2 => value, etc.),
+     * );
+     *
+     * @param array    $data
+     *
+     * @return void
+     *
+     * @since 1.0.2 Fix the hydrate function of the carrier
+     * @throws PrestaShopException
+     */
+    public function hydrateMultilang(array $data)
+    {
+        parent::hydrateMultilang($data);
+
+        /**
+         * keep retrocompatibility id_tax_rules_group
+         *
+         * @deprecated PS 1.5
+         */
+        if ($this->id && !$this->id_tax_rules_group) {
             $this->id_tax_rules_group = $this->getIdTaxRulesGroup(Context::getContext());
         }
 
@@ -485,20 +519,22 @@ class CarrierCore extends ObjectModel
      */
     public static function getCarrierByReference($idReference)
     {
-        $carrierData = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+        $carrierData = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
                 ->select('*')
-                ->from('carrier')
-                ->where('`id_reference` = '.(int) $idReference)
-                ->where('`deleted` = 0')
-                ->orderBy('`id_carrier` DESC')
+                ->from('carrier', 'c')
+                ->innerJoin('carrier_lang', 'cl', 'cl.`id_carrier` = c.`id_carrier`')
+                ->where('c.`id_reference` = '.(int) $idReference)
+                ->where('c.`deleted` = 0')
+                ->where('cl.`id_shop` = '.(int) Context::getContext()->shop->id)
+                ->orderBy('c.`id_carrier` DESC')
         );
         if (!$carrierData) {
             return false;
         }
 
         $carrier = new Carrier();
-        $carrier->hydrate($carrierData);
+        $carrier->hydrateMultilang($carrierData);
 
         return $carrier;
     }
