@@ -2744,8 +2744,7 @@ class ToolsCore
                 if (isset($opts['http']['method']) && mb_strtolower($opts['http']['method']) == 'post') {
                     curl_setopt($curl, CURLOPT_POST, true);
                     if (isset($opts['http']['content'])) {
-                        parse_str($opts['http']['content'], $post_data);
-                        curl_setopt($curl, CURLOPT_POSTFIELDS, $post_data);
+                        curl_setopt($curl, CURLOPT_POSTFIELDS, $opts['http']['content']);
                     }
                 }
             }
