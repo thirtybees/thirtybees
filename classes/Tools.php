@@ -2715,15 +2715,17 @@ class ToolsCore
             $streamContext = @stream_context_create(['http' => ['timeout' => $curlTimeout]]);
         }
 
+        $opts = stream_context_get_options($streamContext);
         // Remove the Content-Length header -- let cURL/fopen handle it
-        if (!empty($streamContext['http']['header'])) {
-            $headers = explode("\r\n", $streamContext['http']['header']);
+        if (!empty($opts['http']['header'])) {
+            $headers = explode("\r\n", $opts['http']['header']);
             foreach ($headers as $index => $header) {
                 if (substr(strtolower($header), 0, 14) === 'content-length') {
                     unset($headers[$index]);
                 }
             }
-            $streamContext['http']['header'] = implode("\r\n", $headers);
+            $opts['http']['header'] = implode("\r\n", $headers);
+            stream_context_set_option($streamContext, array('http' => $opts['http']));
         }
 
         if (!preg_match('/^https?:\/\//', $url)) {
@@ -2735,8 +2737,10 @@ class ToolsCore
             curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
             curl_setopt($curl, CURLOPT_TIMEOUT, $curlTimeout);
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+            if (!empty($opts['http']['header'])) {
+                curl_setopt($curl, CURLOPT_HTTPHEADER, explode("\r\n", $opts['http']['header']));
+            }
             if ($streamContext != null) {
-                $opts = stream_context_get_options($streamContext);
                 if (isset($opts['http']['method']) && mb_strtolower($opts['http']['method']) == 'post') {
                     curl_setopt($curl, CURLOPT_POST, true);
                     if (isset($opts['http']['content'])) {
