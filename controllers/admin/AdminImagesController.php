@@ -526,7 +526,7 @@ class AdminImagesControllerCore extends AdminController
             $this->errors[] = $e->getMessage();
         }
         $indexationStatus = $this->getIndexationStatus();
-        if ($indexationStatus['indexed'] <= 1) {
+        if (!$indexationStatus || $indexationStatus['indexed'] <= 1) {
             // First run, regenerate no picture images, too
             $process = array(
                 'categories'    => _PS_CAT_IMG_DIR_,
