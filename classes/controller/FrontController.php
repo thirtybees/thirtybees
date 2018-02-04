@@ -1050,6 +1050,11 @@ class FrontControllerCore extends Controller
 
         // @since 1.0.2
         Media::addJsDef(['currencyModes' => Currency::getModes()]);
+        // @since 1.0.4
+        Media::addJsDef([
+            'useLazyLoad' => (bool) Configuration::get('TB_LAZY_LOAD'),
+            'useWebp'     => (bool) Configuration::get('TB_USE_WEBP') && function_exists('imagewebp'),
+        ]);
 
         // Automatically add js files from js/autoload directory in the template
         if (@filemtime($this->getThemeDir().'js/autoload/')) {
