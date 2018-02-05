@@ -623,17 +623,6 @@ class TabCore extends ObjectModel
             return false;
         }
 
-        /* Profile selection */
-        $profiles = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            (new DbQuery())
-                ->select('`id_profile`')
-                ->from('profile')
-                ->where('`id_profile` != 1')
-        );
-        if (!$profiles) {
-            return false;
-        }
-
         /* Query definition */
         $replace = [];
         $replace[] = [
@@ -644,6 +633,14 @@ class TabCore extends ObjectModel
             'edit'       => 1,
             'delete'     => 1,
         ];
+
+        /* Profile selection */
+        $profiles = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+            (new DbQuery())
+                ->select('`id_profile`')
+                ->from('profile')
+                ->where('`id_profile` != 1')
+        );
         foreach ($profiles as $profile) {
             $rights = $profile['id_profile'] == $context->employee->id_profile ? 1 : 0;
             $replace[] = [
