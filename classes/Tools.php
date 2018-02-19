@@ -2714,8 +2714,10 @@ class ToolsCore
         if ($streamContext == null && preg_match('/^https?:\/\//', $url)) {
             $streamContext = @stream_context_create(['http' => ['timeout' => $curlTimeout]]);
         }
+        if (is_resource($streamContext)) {
+            $opts = stream_context_get_options($streamContext);
+        }
 
-        $opts = stream_context_get_options($streamContext);
         // Remove the Content-Length header -- let cURL/fopen handle it
         if (!empty($opts['http']['header'])) {
             $headers = explode("\r\n", $opts['http']['header']);
