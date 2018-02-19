@@ -1034,19 +1034,21 @@ class CartCore extends ObjectModel
 
         // The delivery option was selected
         if (isset($this->delivery_option) && $this->delivery_option != '') {
-            $deliveryOption = unserialize($this->delivery_option);
+            $deliveryOption = json_decode($this->delivery_option);
             $validated = true;
-            foreach ($deliveryOption as $idAddress => $key) {
-                if (!isset($deliveryOptionList[$idAddress][$key])) {
-                    $validated = false;
-                    break;
+            if (is_array($delivery_option)) {
+                foreach ($deliveryOption as $idAddress => $key) {
+                    if (!isset($deliveryOptionList[$idAddress][$key])) {
+                        $validated = false;
+                        break;
+                    }
                 }
-            }
 
-            if ($validated) {
-                $cache[$cacheId] = $deliveryOption;
+                if ($validated) {
+                    $cache[$cacheId] = $deliveryOption;
 
-                return $deliveryOption;
+                    return $deliveryOption;
+                }
             }
         }
 
@@ -1118,7 +1120,7 @@ class CartCore extends ObjectModel
             $this->id_carrier = $this->getIdCarrierFromDeliveryOption($deliveryOption);
         }
 
-        $this->delivery_option = serialize($deliveryOption);
+        $this->delivery_option = json_encode($deliveryOption);
     }
 
     /**
