@@ -258,11 +258,11 @@ class OrderSlipCore extends ObjectModel
     {
         Tools::displayAsDeprecated();
 
-        $productList = [];
+        $newProductList = [];
         $shipping = false;
         foreach ($productList as $idOrderDetail) {
             $orderDetail = new OrderDetail((int) $idOrderDetail);
-            $productList[$idOrderDetail] = [
+            $newProductList[$idOrderDetail] = [
                 'id_order_detail' => $idOrderDetail,
                 'quantity'        => $qtyList[$idOrderDetail],
                 'unit_price'      => $orderDetail->unit_price_tax_excl,
@@ -272,7 +272,7 @@ class OrderSlipCore extends ObjectModel
             $shipping = $shippingCost ? null : false;
         }
 
-        return OrderSlip::create($order, $productList, $shipping);
+        return OrderSlip::create($order, $newProductList, $shipping);
     }
 
     /**
