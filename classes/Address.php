@@ -361,6 +361,8 @@ class AddressCore extends ObjectModel
      * @return bool
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
+     *
+     * @since 1.0.4
      */
     public static function isDeleted($idAddress)
     {
