@@ -354,6 +354,30 @@ class AddressCore extends ObjectModel
     }
 
     /**
+     * Check if the address is deleted in the database
+     *
+     * @param int $idAddress
+     *
+     * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public static function isDeleted($idAddress)
+    {
+        $row = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
+            (new DbQuery())
+                ->select('a.`deleted`')
+                ->from(bqSQL(Address::$definition['table']), 'a')
+                ->where('`id_address` = '.(int) $idAddress)
+        );
+        if (!is_array($row) || !isset($row['deleted'])) {
+            return true;
+        }
+
+        return (bool) $row['deleted'];
+    }
+
+    /**
      * Check if address is used (at least one order placed)
      *
      * @return int Order count for this address
