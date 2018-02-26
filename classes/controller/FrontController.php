@@ -489,7 +489,7 @@ class FrontControllerCore extends Controller
                 $lnk .= "?p=$p";
             }
 
-            $links[] = '<link rel="alternate" href="'.$lnk.'" hreflang="'.$lang['iso_code'].'">';
+            $links[] = '<link rel="alternate" href="'.$lnk.'" hreflang="'.$lang['language_code'].'">';
             if ($lang['id_lang'] == $idLangDefault) {
                 $links[] = '<link rel="alternate" href="'.$lnk.'" hreflang="x-default">';
             }
