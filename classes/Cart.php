@@ -2725,7 +2725,7 @@ class CartCore extends ObjectModel
 
         $this->_products = null;
         $return = parent::update($nullValues);
-        Hook::exec('actionCartSave');
+        Hook::exec('actionCartSave', ['cart' => $this);
 
         return $return;
     }
@@ -4452,7 +4452,7 @@ class CartCore extends ObjectModel
         }
 
         $return = parent::add($autoDate, $nullValues);
-        Hook::exec('actionCartSave');
+        Hook::exec('actionCartSave', ['cart' => $this]);
 
         return $return;
     }
