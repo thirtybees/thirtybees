@@ -2725,7 +2725,7 @@ class CartCore extends ObjectModel
 
         $this->_products = null;
         $return = parent::update($nullValues);
-        Hook::exec('actionCartSave', ['cart' => $this);
+        Hook::exec('actionCartSave', ['cart' => $this]);
 
         return $return;
     }
