@@ -364,12 +364,16 @@ class SupplierCore extends ObjectModel
 
         /* Return only the number of products */
         if ($getTotal) {
-                $sql = (new DbQuery())
-                    ->select('cp.`id_product`')
-                    ->from('category_product', 'cp')
-                    ->join(Group::isFeatureActive() ? 'LEFT JOIN `'._DB_PREFIX_.'category_group` cg ON (cp.`id_category` = cg.`id_category`)' : '')
-                    ->join($activeCategory ? ' INNER JOIN `'._DB_PREFIX_.'category` ca ON cp.`id_category` = ca.`id_category` AND ca.`active` = 1' : '')
-                    ->where($sqlGroups);
+            $sql = new DbQuery();
+            $sql->select('cp.`id_product`');
+            $sql->from('category_product', 'cp');
+            if (Group::isFeatureActive()) {
+	            $sql->leftJoin('category_group', 'cg', 'cp.`id_category` = cg.`id_category`');
+            }
+            if ($activeCategory) {
+	            $sql->innerJoin('category', 'ca', 'cp.`id_category` = ca.`id_category` AND ca.`active` = 1');
+            }
+	        $sql->where($sqlGroups);
 
             return (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 (new DbQuery())
@@ -379,8 +383,8 @@ class SupplierCore extends ObjectModel
                     ->join(Shop::addSqlAssociation('product', 'p'))
                     ->where('ps.`id_supplier` = '.(int) $idSupplier)
                     ->where('ps.`id_product_attribute` = 0')
-                    ->where($active ? ' AND product_shop.`active` = 1' : '')
-                    ->where($front ? ' AND product_shop.`visibility` IN ("both", "catalog")' : '')
+                    ->where($active ? 'product_shop.`active` = 1' : '')
+                    ->where($front ? 'product_shop.`visibility` IN ("both", "catalog")' : '')
                     ->where('p.`id_product` IN ('.$sql->build().')')
             );
         }
