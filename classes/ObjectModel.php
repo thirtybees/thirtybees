@@ -2359,10 +2359,13 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
             $sql .= ')';
 
-            $success &= Db::getInstance()->execute($sql);
-            static::dropDatabase($className);
+	        try {
+		        $success &= Db::getInstance()->execute($sql);
+	        } catch (\PrestaShopDatabaseException $exception) {
+		        static::dropDatabase($className);
 
-            return false;
+		        return false;
+	        }
         }
 
         if (isset($definition['multishop']) && $definition['multishop']
