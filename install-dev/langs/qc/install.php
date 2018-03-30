@@ -3,13 +3,13 @@
 return array (
   'informations' => 
   array (
-    'documentation' => 'http://doc.prestashop.com/display/PS16/Installer+PrestaShop',
-    'documentation_upgrade' => 'http://doc.prestashop.com/pages/viewpage.action?pageId=23069387',
-    'forum' => 'http://www.prestashop.com/forums/forum/18-forum-francophone/',
-    'blog' => 'http://www.prestashop.com/blog/fr/',
-    'support' => 'https://www.prestashop.com/fr/support',
-    'tutorial' => 'https://www.youtube.com/watch?v=psz4aIPZZuk',
-    'tailored_help' => 'http://addons.prestashop.com/fr/388-support',
+    'documentation' => 'https://docs.thirtybees.com/',
+    'documentation_upgrade' => 'https://docs.thirtybees.com/',
+    'forum' => 'https://forum.thirtybees.com/',
+    'blog' => 'http://www.thirtybees.com/blog/',
+    'support' => 'http://www.thirtybees.com/forums/',
+    'tutorial' => 'https://docs.thirtybees.com/',
+    'documentation_upgrade' => 'https://store.thirtybees.com/services',
   ),
   'translations' => 
   array (

@@ -6,10 +6,10 @@ return array (
     'documentation' => 'https://docs.thirtybees.com/',
     'documentation_upgrade' => 'https://docs.thirtybees.com/',
     'forum' => 'https://forum.thirtybees.com/',
-    'blog' => 'https://www.thirtybees.com/blog/',
-    'support' => 'https://forum.thirtybees.com/',
+    'blog' => 'http://www.thirtybees.com/blog/',
+    'support' => 'http://www.thirtybees.com/forums/',
     'tutorial' => 'https://docs.thirtybees.com/',
-    'tailored_help' => 'https://docs.thirtybees.com/',
+    'documentation_upgrade' => 'https://store.thirtybees.com/services',
   ),
   'translations' => 
   array (
