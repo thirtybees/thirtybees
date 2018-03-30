@@ -9,7 +9,7 @@ return array (
     'blog' => 'http://www.thirtybees.com/blog/',
     'support' => 'http://www.thirtybees.com/forums/',
     'tutorial' => 'http://docs.thirtybees.com/',
-    'documentation_upgrade' => 'https://store.thirtybees.com/services',
+    'tailored_help' => 'https://store.thirtybees.com/services',
   ),
   'translations' => 
   array (
