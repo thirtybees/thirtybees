@@ -775,7 +775,7 @@ class AdminThemesControllerCore extends AdminController
                         ->select('m.`id_module`, m.`name`, m.`active`, ms.`id_shop`')
                         ->from('module', 'm')
                         ->leftJoin('module_shop', 'ms', 'm.`id_module` = ms.`id_module`')
-                        ->where('md.`id_shop` = '.(int) $idShop)
+                        ->where('ms.`id_shop` = '.(int) $idShop)
                 );
 
                 // Select the list of hook for this shop
@@ -785,6 +785,7 @@ class AdminThemesControllerCore extends AdminController
                         ->from('hook', 'h')
                         ->leftJoin('hook_module', 'hm', 'hm.`id_hook` = h.`id_hook`')
                         ->leftJoin('module', 'm', 'hm.`id_module` = m.`id_module`')
+                        ->leftOuterJoin('hook_module_exceptions', 'hme', 'hme.`id_module` = hm.`id_module` AND hme.`id_hook` = h.`id_hook`')
                         ->where('hm.`id_shop` = '.(int) $idShop)
                         ->groupBy('hm.`id_module`, h.`id_hook`')
                         ->orderBy('name_module')
