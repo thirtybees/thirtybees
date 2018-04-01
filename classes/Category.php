@@ -866,7 +866,7 @@ class CategoryCore extends ObjectModel
                     ->select('c.*, cl.*')
                     ->from('category', 'c')
                     ->leftJoin('category_lang', 'cl', 'c.`id_category` = cl.`id_category` AND `id_lang` = '.(int) $idLang.' '.Shop::addSqlRestrictionOnLang('cl'))
-                    ->where('WHERE `name` LIKE \'%'.pSQL($query).'%\'')
+                    ->where('`name` LIKE \'%'.pSQL($query).'%\'')
                     ->where('c.`id_category` != '.(int) Configuration::get('PS_HOME_CATEGORY'))
             );
         }
