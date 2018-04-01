@@ -31,7 +31,7 @@
 
 /* Debug only */
 if (!defined('_PS_MODE_DEV_')) {
-define('_PS_MODE_DEV_', false);
+    define('_PS_MODE_DEV_', false);
 }
 /* Compatibility warning */
 define('_PS_DISPLAY_COMPATIBILITY_WARNING_', false);
@@ -45,8 +45,12 @@ if (_PS_MODE_DEV_ === true) {
     define('_PS_DEBUG_SQL_', false);
 }
 
-define('_PS_DEBUG_PROFILING_', false);
-define('_PS_MODE_DEMO_', false);
+if (!defined('_PS_DEBUG_PROFILING_')) {
+    define('_PS_DEBUG_PROFILING_', false);
+}
+if (!defined('_PS_MODE_DEMO_')) {
+    define('_PS_MODE_DEMO_', false);
+}
 
 $currentDir = dirname(__FILE__);
 
