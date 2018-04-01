@@ -40,6 +40,9 @@ composer.lock
 /config/xml/*
 /!config/xml/themes/default.xml
 
+/config/defines_custom.inc.php
+/config/settings_custom.inc.php
+
 # Themes, modules and overrides
 
 /modules/*
