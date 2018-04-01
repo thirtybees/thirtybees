@@ -33,6 +33,9 @@ composer.lock
 /themes/*/cache/*
 /admin-dev/themes/*/cache/*
 
+/config/defines_custom.inc.php
+/config/settings_custom.inc.php
+
 # Config
 
 /config/settings.inc.php
