@@ -3,13 +3,13 @@
 return array (
   'informations' => 
   array (
-    'documentation' => 'http://doc.prestashop.com/display/PS16/Installing+PrestaShop',
-    'documentation_upgrade' => 'http://doc.prestashop.com/display/PS16/Installing+PrestaShop',
-    'forum' => 'http://www.prestashop.com/forums/',
-    'blog' => 'http://www.prestashop.com/blog/',
-    'support' => 'http://www.prestashop.com/forums/',
-    'tutorial' => 'http://doc.prestashop.com/display/PS16/Installing+PrestaShop',
-    'tailored_help' => 'http://doc.prestashop.com/display/PS16/Installing+PrestaShop',
+    'documentation' => 'https://docs.thirtybees.com/',
+    'documentation_upgrade' => 'https://docs.thirtybees.com/',
+    'forum' => 'https://forum.thirtybees.com/',
+    'blog' => 'https://thirtybees.com/blog/',
+    'support' => 'https://forum.thirtybees.com/',
+    'tutorial' => 'https://docs.thirtybees.com/',
+    'tailored_help' => 'https://store.thirtybees.com/services',
   ),
   'translations' => 
   array (
