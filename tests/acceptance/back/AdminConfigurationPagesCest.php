@@ -118,8 +118,11 @@ class AdminConfigurationPagesCest
 
     private function checkAdminPage(AcceptanceTester $I, $child)
     {
-        $I->waitForElementVisible(['css' => "#subtab-{$child}"], 30);
-        $I->click(['css' => "#subtab-{$child} a"]);
+        $childElement = ['css' => "#subtab-{$child}"];
+
+        $I->seeElementInDOM($childElement);
+        $I->waitForElementVisible($childElement, 30);
+        $I->click($childElement);
 
         $I->see('Quick Access');
     }
@@ -129,11 +132,17 @@ class AdminConfigurationPagesCest
         $this->login($I);
 
         foreach ($this->adminPages as $parent => $children) {
-            $I->waitForElementVisible(['css' => "#maintab-{$parent}"], 30);
-            $I->click(['css' => "#maintab-{$parent} a"]);
+            $parentElement = ['css' => "#maintab-{$parent}"];
+
+            $I->waitForElementVisible($parentElement, 30);
+            $I->click($parentElement);
 
             $I->see('Quick Access');
             foreach ($children as $child) {
+                // Move mouse out and back in to make the submenu visible.
+                $I->moveMouseOver(null, 0, 0);
+                $I->moveMouseOver($parentElement);
+
                 $this->checkAdminPage($I, $child);
             }
         }
