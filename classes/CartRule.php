@@ -996,7 +996,7 @@ class CartRuleCore extends ObjectModel
                 (new DbQuery())
                     ->select('COUNT(*)')
                     ->from('orders', 'o')
-                    ->leftJoin('order_cart_rule', 'od', 'o.`id_order` = o.`id_order`')
+                    ->leftJoin('order_cart_rule', 'od', 'od.`id_order` = o.`id_order`')
                     ->where('o.`id_customer` = '.(int) $context->cart->id_customer)
                     ->where('od.`id_cart_rule` = '.(int) $this->id)
                     ->where('o.`current_state` != '.(int) Configuration::get('PS_OS_ERROR'))
