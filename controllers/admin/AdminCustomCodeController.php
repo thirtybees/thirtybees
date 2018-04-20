@@ -13,6 +13,7 @@ class AdminCustomCodeControllerCore extends AdminController
      * AdminCustomCodeControllerCore constructor.
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -50,6 +51,8 @@ class AdminCustomCodeControllerCore extends AdminController
                 'enableSnippets'            => true,
                 'enableLiveAutocompletion'  => true,
                 'visibility'                => Shop::CONTEXT_ALL,
+                'auto_value'                => ($this->updateOptionTbCustomcodeJs()) ? false : false,
+                'value'                     => Configuration::get(Configuration::CUSTOMCODE_JS),
             ],
         ];
 
@@ -63,6 +66,8 @@ class AdminCustomCodeControllerCore extends AdminController
                 'enableSnippets'            => true,
                 'enableLiveAutocompletion'  => true,
                 'visibility'                => Shop::CONTEXT_ALL,
+                'auto_value'                => ($this->updateOptionTbCustomcodeOrderconfJs()) ? false : false,
+                'value'                     => Configuration::get(Configuration::CUSTOMCODE_ORDERCONF_JS),
             ],
         ];
 
@@ -86,4 +91,109 @@ class AdminCustomCodeControllerCore extends AdminController
         parent::__construct();
     }
 
+    /**
+     * @throws PrestaShopException
+     */
+    public function updateOptionTbCustomcodeOrderconfJs()
+    {
+        static $called = false;
+        if ($called) {
+            return;
+        }
+        $called = true;
+
+        $this->updateOptionUnescaped(Configuration::CUSTOMCODE_ORDERCONF_JS, Tools::getValue(Configuration::CUSTOMCODE_ORDERCONF_JS));
+    }
+
+    /**
+     * @throws PrestaShopException
+     */
+    public function updateOptionTbCustomcodeJs()
+    {
+        static $called = false;
+        if ($called) {
+            return;
+        }
+        $called = true;
+
+        $this->updateOptionUnescaped(Configuration::CUSTOMCODE_ORDERCONF_JS, Tools::getValue(Configuration::CUSTOMCODE_ORDERCONF_JS));
+    }
+
+    /**
+     * @param string $key
+     * @param string $value
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected function updateOptionUnescaped($key, $value)
+    {
+        if (Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('`'.bqSQL(Configuration::$definition['primary']).'`')
+                ->from(bqSQL(Configuration::$definition['table']))
+                ->where('`id_shop` IS NULL AND `id_shop_group` IS NULL AND `name` = \''.pSQL($key).'\'')
+        )) {
+            Db::getInstance()->update(
+                bqSQL(Configuration::$definition['table']),
+                [
+                    'value'    => pSQL($value),
+                    'date_upd' => ['type' => 'sql', 'value' => 'NOW()'],
+                ],
+                '`id_shop` IS NULL AND `id_shop_group` IS NULL AND `name` = \''.pSQL($key).'\'',
+                0,
+                true
+            );
+        } else {
+            Db::getInstance()->insert(
+                bqSQL(Configuration::$definition['table']),
+                [
+                    'name'          => pSQL($key),
+                    'value'         => pSQL($value),
+                    'id_shop'       => null,
+                    'id_shop_group' => null,
+                    'date_add'      => ['type' => 'sql', 'value' => 'NOW()'],
+                    'date_upd'      => ['type' => 'sql', 'value' => 'NOW()'],
+                ],
+                true
+            );
+        }
+        Configuration::set($key, $value, null, null);
+        foreach (Shop::getContextListShopID() as $idShop) {
+            $idShopGroup = Shop::getGroupFromShop($idShop, true);
+            if (Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                    ->select('`'.bqSQL(Configuration::$definition['primary']).'`')
+                    ->from(bqSQL(Configuration::$definition['table']))
+                    ->where('`id_shop` = '.(int) $idShop.' AND `id_shop_group` = '.(int) $idShopGroup.' AND `name` = \''.pSQL($key).'\'')
+            )) {
+                Db::getInstance()->update(
+                    bqSQL(Configuration::$definition['table']),
+                    [
+                        'value'    => pSQL($value),
+                        'date_upd' => ['type' => 'sql', 'value' => 'NOW()'],
+                    ],
+                    '`id_shop` = '.(int) $idShop.' AND `id_shop_group` = '.$idShopGroup.' AND `name` = \''.pSQL($key).'\'',
+                    0,
+                    true
+                );
+            } else {
+                Db::getInstance()->insert(
+                    bqSQL(Configuration::$definition['table']),
+                    [
+                        'name'          => pSQL($key),
+                        'value'         => pSQL($value),
+                        'id_shop'       => $idShop,
+                        'id_shop_group' => $idShopGroup,
+                        'date_add'      => ['type' => 'sql', 'value' => 'NOW()'],
+                        'date_upd'      => ['type' => 'sql', 'value' => 'NOW()'],
+                    ],
+                    true
+                );
+            }
+            Configuration::set($key, $value, $idShopGroup, $idShop);
+        }
+
+
+    }
 }
