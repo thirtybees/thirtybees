@@ -207,7 +207,7 @@ class AdminThemesControllerCore extends AdminController
                     'TB_SOURCE_FAVICON'  => [
                         'title' => $this->l('Source favicon (PNG)'),
                         'hint'  => $this->l('Will appear in the address bar of your web browser.'),
-                        'desc'  => $this->l('Make sure you upload a big enough favicon. Preferrably one that covers all sizes and a square size.'),
+                        'desc'  => $this->l('Make sure you upload a big enough favicon. Preferably one that covers all sizes and a square size.'),
                         'type'  => 'file',
                         'name'  => 'TB_SOURCE_FAVICON',
                         'tab'   => 'icons',
