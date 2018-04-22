@@ -61,13 +61,14 @@ class PageNotFoundControllerCore extends FrontController
 
         if (preg_match('/\.(gif|jpe?g|png|ico)$/i', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH))) {
             $this->context->cookie->disallowWriting();
-            if (!isset($_SERVER['REDIRECT_URL'])) {
-                $_SERVER['REDIRECT_URL'] = '';
-                if (preg_match('@^'.__PS_BASE_URI__.'([0-9]+)\-([_a-zA-Z0-9-]+)(/[_a-zA-Z0-9-]+)?\.jpg$@', $_SERVER['REQUEST_URI'], $matches)) {
-                    $_SERVER['REDIRECT_URL'] = __PS_BASE_URI__.'p/'.Image::getImgFolderStatic($matches[0]).'/'.$matches[0].'-'.$matches[1].'.jpg';
-                }
-            }
-            if (preg_match('#/p[0-9/]*/([0-9]+)\-([_a-zA-Z]*)\.(png|jpe?g|gif)$#', $_SERVER['REDIRECT_URL'], $matches)) {
+
+            // First preg_match() matches friendly URLs, second one plain URLs.
+            if (preg_match('@^'.__PS_BASE_URI__
+                .'([0-9]+)\-([_a-zA-Z-]+)(/[_a-zA-Z-]+)?\.(png|jpe?g|gif)$@',
+                $_SERVER['REQUEST_URI'], $matches)
+                || preg_match('@^'._PS_PROD_IMG_
+                   .'[0-9/]+/([0-9]+)\-([_a-zA-Z]+)(\.)(png|jpe?g|gif)$@',
+                   $_SERVER['REQUEST_URI'], $matches)) {
                 // Backward compatibility since we suffixed the template image with _default
                 if (mb_strtolower(substr($matches[2], -8)) != '_default') {
                     header('Location: '.$this->context->link->getImageLink('', $matches[1], $matches[2]), true, 302);
@@ -78,7 +79,7 @@ class PageNotFoundControllerCore extends FrontController
                         $root = _PS_PROD_IMG_DIR_;
                         $folder = Image::getImgFolderStatic($matches[1]);
                         $file = $matches[1];
-                        $ext = '.'.$matches[3];
+                        $ext = '.'.$matches[4];
 
                         if (file_exists($root.$folder.$file.$ext)) {
                             if (ImageManager::resize($root.$folder.$file.$ext, $root.$folder.$file.'-'.$matches[2].$ext, (int) $imageType['width'], (int) $imageType['height'])) {
@@ -91,12 +92,17 @@ class PageNotFoundControllerCore extends FrontController
                         }
                     }
                 }
-            } elseif (preg_match('#/c/([0-9]+)\-([_a-zA-Z]*)\.(png|jpe?g|gif)$#', $_SERVER['REDIRECT_URL'], $matches)) {
+            } elseif (preg_match('@^'.__PS_BASE_URI__
+                      .'c/([0-9]+)\-([_a-zA-Z-]+)(/[_a-zA-Z0-9-]+)?\.(png|jpe?g|gif)$@',
+                      $_SERVER['REQUEST_URI'], $matches)
+                      || preg_match('@^'._THEME_CAT_DIR_
+                         .'([0-9]+)\-([_a-zA-Z-]+)(\.)(png|jpe?g|gif)$@',
+                         $_SERVER['REQUEST_URI'], $matches)) {
                 $imageType = ImageType::getByNameNType($matches[2], 'categories');
                 if ($imageType && count($imageType)) {
                     $root = _PS_CAT_IMG_DIR_;
                     $file = $matches[1];
-                    $ext = '.'.$matches[3];
+                    $ext = '.'.$matches[4];
 
                     if (file_exists($root.$file.$ext)) {
                         if (ImageManager::resize($root.$file.$ext, $root.$file.'-'.$matches[2].$ext, (int) $imageType['width'], (int) $imageType['height'])) {
