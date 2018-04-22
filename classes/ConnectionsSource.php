@@ -113,8 +113,6 @@ class ConnectionsSourceCore extends ObjectModel
 
         if (isset($_SERVER['REQUEST_URI'])) {
             $source->request_uri .= $_SERVER['REQUEST_URI'];
-        } elseif (isset($_SERVER['REDIRECT_URL'])) {
-            $source->request_uri .= $_SERVER['REDIRECT_URL'];
         }
 
         if (!Validate::isUrl($source->request_uri)) {
