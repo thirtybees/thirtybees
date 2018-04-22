@@ -69,26 +69,20 @@ class PageNotFoundControllerCore extends FrontController
                 || preg_match('@^'._PS_PROD_IMG_
                    .'[0-9/]+/([0-9]+)\-([_a-zA-Z]+)(\.)(png|jpe?g|gif)$@',
                    $_SERVER['REQUEST_URI'], $matches)) {
-                // Backward compatibility since we suffixed the template image with _default
-                if (mb_strtolower(substr($matches[2], -8)) != '_default') {
-                    header('Location: '.$this->context->link->getImageLink('', $matches[1], $matches[2]), true, 302);
-                    exit;
-                } else {
-                    $imageType = ImageType::getByNameNType($matches[2], 'products');
-                    if ($imageType && count($imageType)) {
-                        $root = _PS_PROD_IMG_DIR_;
-                        $folder = Image::getImgFolderStatic($matches[1]);
-                        $file = $matches[1];
-                        $ext = '.'.$matches[4];
+                $imageType = ImageType::getByNameNType($matches[2], 'products');
+                if ($imageType && count($imageType)) {
+                    $root = _PS_PROD_IMG_DIR_;
+                    $folder = Image::getImgFolderStatic($matches[1]);
+                    $file = $matches[1];
+                    $ext = '.'.$matches[4];
 
-                        if (file_exists($root.$folder.$file.$ext)) {
-                            if (ImageManager::resize($root.$folder.$file.$ext, $root.$folder.$file.'-'.$matches[2].$ext, (int) $imageType['width'], (int) $imageType['height'])) {
-                                header('HTTP/1.1 200 Found');
-                                header('Status: 200 Found');
-                                header('Content-Type: image/jpg');
-                                readfile($root.$folder.$file.'-'.$matches[2].$ext);
-                                exit;
-                            }
+                    if (file_exists($root.$folder.$file.$ext)) {
+                        if (ImageManager::resize($root.$folder.$file.$ext, $root.$folder.$file.'-'.$matches[2].$ext, (int) $imageType['width'], (int) $imageType['height'])) {
+                            header('HTTP/1.1 200 Found');
+                            header('Status: 200 Found');
+                            header('Content-Type: image/jpg');
+                            readfile($root.$folder.$file.'-'.$matches[2].$ext);
+                            exit;
                         }
                     }
                 }
