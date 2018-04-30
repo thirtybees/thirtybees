@@ -50,9 +50,9 @@
 	$(document).ready(function() {
 
 		$('#customer').typeWatch({
-			captureLength: 3,
+			captureLength: 1,
 			highlight: true,
-			wait: 100,
+			wait: 750,
 			callback: function(){ searchCustomers(); }
 			});
 		$('#product').typeWatch({
