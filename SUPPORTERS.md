@@ -1,9 +1,9 @@
 
 These are the people that help make thirty bees possible. We at thirty bees would like to thank them for their support! If you would like you or your company to be listed here, you can help support us on [Patreon](https://www.patreon.com/thirtybees)
 
-## Super Awesome Backers
+## Bronze Sponsor
 
-Quinnan Stone - [Nothing but Tea](https://nbtea.co.uk/)
+Raf Smolak [Mind Nutrition](https://store.mindnutrition.com/)
 
 ## Awesome Backers
 
@@ -13,10 +13,6 @@ Ian Osaka
 
 Emanuel Schiendorfer
 
-Kubilay Erdogan
-
-MpA1 Aps
-
 Tomik
 
 Bayou Witch Incense
@@ -25,11 +21,11 @@ Edwin Kleijn
 
 Joseph Jones
 
-Martin Long
-
-Vincent Schillevoort
-
 Yaniv Mirel
+
+Boris Köring
+
+Chris Fotiou
 
 ## Backers
 
@@ -38,3 +34,11 @@ Gerdus van Zyl
 Radomir van Dalen
 
 Reservdelaronline
+
+Selwyn Oren
+
+Lesielle Cosmetics
+
+Kauri Tervashonka
+
+Radomir van Dalen
