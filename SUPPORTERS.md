@@ -27,6 +27,8 @@ Boris Köring
 
 Chris Fotiou
 
+Arkadiusz Karnia-Sierż
+
 ## Backers
 
 Gerdus van Zyl
