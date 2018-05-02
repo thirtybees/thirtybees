@@ -19,13 +19,19 @@ ORIGINAL_REVISION="${ORIGINAL_REVISION##*/}";
 echo "Checking out Git revision ${GIT_REVISION}."
 git checkout -q "${GIT_REVISION}"                           || exit 1
 
+# Similar for submodules.
+echo "Updating submodules. This may take a while."
+git submodule foreach -q --recursive 'git stash -q'
+git submodule foreach -q --recursive 'git fetch -q'         || exit 1
+git submodule update --recursive --init                     || exit 1
+
 
 TB_VERSION=$((cat install-dev/install_version.php &&
               echo 'print(_TB_INSTALL_VERSION_);') | \
              php)
 
 echo "Packaging thirty bees version ${TB_VERSION}."
-echo "Assuming all module repositories are up to date."
+
 
 # Create packaging directory.
 DIR=$(mktemp -d)
@@ -140,8 +146,12 @@ echo "Created $(basename "${DIR}").zip successfully."
 
 # Restore the repository to the previous state.
 # Should always work, because we changed nothing.
-echo "Restoring Git repository state."
+echo "Restoring Git repository and submodules states."
 git checkout -q "${ORIGINAL_REVISION}"
 git stash pop -q
+git submodule update -q --recursive
+git submodule foreach -q --recursive 'git stash pop -q 2>&1 | \
+                                      grep -v "No stash entries found." \
+                                      || true'
 
 exit 0
