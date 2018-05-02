@@ -2,13 +2,23 @@
 
 # This script builds an installation package from the current repository.
 #
-# Usage: ./build.sh [<git branch>]
+# Usage: ./build.sh [<git revision>]
 #
-# Currently, only Git branches 'master' and 'HEAD' make sense, because the
-# same branch name is used for each submodule, too. Default is branch 'master'.
+# Default is revision 'master'.
 
 
-GIT_BRANCH="${1:-master}"
+GIT_REVISION="${1:-master}"
+
+# Because 'git submodule' works with the currently checked out revision, only,
+# we have to check that out.
+echo "Saving Git repository state."
+git stash -q
+ORIGINAL_REVISION=$(cat .git/HEAD)
+ORIGINAL_REVISION="${ORIGINAL_REVISION##*/}";
+
+echo "Checking out Git revision ${GIT_REVISION}."
+git checkout -q "${GIT_REVISION}"                           || exit 1
+
 
 TB_VERSION=$((cat install-dev/install_version.php &&
               echo 'print(_TB_INSTALL_VERSION_);') | \
@@ -78,7 +88,7 @@ for D in "${REPOS_GIT[@]}"; do
     cd ${D} || continue
 
     mkdir -p "${DIR}/${D}"
-    git archive "${GIT_BRANCH}" | tar -C "${DIR}/${D}" -xf-
+    git archive HEAD | tar -C "${DIR}/${D}" -xf-
 
     cd "${DIR}/${D}"
     if [ -d admin-dev ]; then
@@ -126,5 +136,12 @@ done
 
 mv "${DIR}"/$(basename "${DIR}").zip .
 echo "Created $(basename "${DIR}").zip successfully."
+
+
+# Restore the repository to the previous state.
+# Should always work, because we changed nothing.
+echo "Restoring Git repository state."
+git checkout -q "${ORIGINAL_REVISION}"
+git stash pop -q
 
 exit 0
