@@ -7,13 +7,23 @@ function usage {
   echo "Default revision is 'master'."
 }
 
-if [ ${#} -gt 1 ]; then
-  usage
-  exit 1
-fi
 
+GIT_REVISION=''
 
-GIT_REVISION="${1:-master}"
+for OPTION in "$@"; do
+  case "${OPTION}" in
+    *)
+      if ! git show -q "${OPTION}" >/dev/null 2>&1; then
+        echo "Git revision '${OPTION}' doesn't exist. Aborting."
+        exit 1
+      fi
+      GIT_REVISION="${OPTION}"
+      ;;
+  esac
+done
+
+GIT_REVISION="${GIT_REVISION:-master}"
+
 
 # Because 'git submodule' works with the currently checked out revision, only,
 # we have to check that out.
