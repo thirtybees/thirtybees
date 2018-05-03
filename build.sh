@@ -1,10 +1,16 @@
 #!/usr/bin/env bash
 
-# This script builds an installation package from the current repository.
-#
-# Usage: ./build.sh [<git revision>]
-#
-# Default is revision 'master'.
+function usage {
+  echo "Usage: ./build.sh [<git revision>]"
+  echo
+  echo "This script builds an installation package from the current repository."
+  echo "Default revision is 'master'."
+}
+
+if [ ${#} -gt 1 ]; then
+  usage
+  exit 1
+fi
 
 
 GIT_REVISION="${1:-master}"
