@@ -22,7 +22,30 @@ git checkout -q "${GIT_REVISION}"                           || exit 1
 # Similar for submodules.
 echo "Updating submodules. This may take a while."
 git submodule foreach -q --recursive 'git stash -q'
-git submodule foreach -q --recursive 'git fetch -q'         || exit 1
+
+# This fetches submodule commits and checks out remote branch 'master'.
+git submodule update --recursive --init --remote            || exit 1
+
+# Heuristics on wether newest commits were forgotten to commit in the core
+# repository. Heuristics:
+# - Less than 20 commits on the branch of the to be packaged commit.
+# - Dirty submodules exist.
+GIT_BRANCH=$(git branch --contains "${GIT_REVISION}" | \
+             grep -v "detached" | head -1 | cut -b 3-)
+COMMITS_ON_TOP=$(git log --oneline "${GIT_REVISION}".."${GIT_BRANCH}" | wc -l)
+if [ "${COMMITS_ON_TOP}" -lt 20 ] \
+   && git submodule | grep -q '^+'; then
+  echo "Request to package a recent release and dirty submodules exist,"
+  echo "refusing to continue packaging."
+
+  # Revert packaging preparations done so far.
+  git checkout -q "${ORIGINAL_REVISION}"
+  git stash pop -q
+  git submodule foreach -q --recursive 'git stash pop -q 2>/dev/null || true'
+  exit 1
+fi
+
+# This checks out submodule commits matching the requested package.
 git submodule update --recursive --init                     || exit 1
 
 
