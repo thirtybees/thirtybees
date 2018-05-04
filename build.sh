@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 
 function usage {
-  echo "Usage: ./build.sh [<git revision>]"
+  echo "Usage: ./build.sh [-h|--help] [<git revision>]"
   echo
   echo "This script builds an installation package from the current repository."
   echo "Default revision is 'master'."
+  echo
+  echo "    -h, --help            Show this help and exit."
+  echo
 }
 
 
@@ -12,6 +15,10 @@ GIT_REVISION=''
 
 for OPTION in "$@"; do
   case "${OPTION}" in
+    '-h'|'--help')
+      usage
+      exit 0
+      ;;
     *)
       if ! git show -q "${OPTION}" >/dev/null 2>&1; then
         echo "Git revision '${OPTION}' doesn't exist. Aborting."
