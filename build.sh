@@ -7,17 +7,24 @@ function usage {
   echo "Default revision is 'master'."
   echo
   echo "    -h, --help            Show this help and exit."
+  echo "    -d, --allow-dirty     Package even with dirty submodules existing."
+  echo "                          This is for packaging older releases when"
+  echo "                          the dirty submodule heuristics fails."
   echo
 }
 
 
 GIT_REVISION=''
+ALLOW_DIRTY='false'
 
 for OPTION in "$@"; do
   case "${OPTION}" in
     '-h'|'--help')
       usage
       exit 0
+      ;;
+    '-d'|'--allow-dirty')
+      ALLOW_DIRTY='true'
       ;;
     *)
       if ! git show -q "${OPTION}" >/dev/null 2>&1; then
@@ -51,12 +58,13 @@ git submodule update --recursive --init --remote            || exit 1
 
 # Heuristics on wether newest commits were forgotten to commit in the core
 # repository. Heuristics:
-# - Less than 20 commits on the branch of the to be packaged commit.
+# - Less than 30 commits on the branch of the to be packaged commit.
 # - Dirty submodules exist.
 GIT_BRANCH=$(git branch --contains "${GIT_REVISION}" | \
              grep -v "detached" | head -1 | cut -b 3-)
 COMMITS_ON_TOP=$(git log --oneline "${GIT_REVISION}".."${GIT_BRANCH}" | wc -l)
-if [ "${COMMITS_ON_TOP}" -lt 20 ] \
+if [ "${ALLOW_DIRTY}" = 'false' ] \
+   && [ "${COMMITS_ON_TOP}" -lt 30 ] \
    && git submodule | grep -q '^+'; then
   echo "Request to package a recent release and dirty submodules exist,"
   echo "refusing to continue packaging."
