@@ -42,7 +42,7 @@ GIT_REVISION="${GIT_REVISION:-master}"
 # Because 'git submodule' works with the currently checked out revision, only,
 # we have to check that out.
 echo "Saving Git repository state."
-git stash -q
+git stash -q --include-untracked 2>&1 | grep -v '^Ignoring path'
 ORIGINAL_REVISION=$(cat .git/HEAD)
 ORIGINAL_REVISION="${ORIGINAL_REVISION##*/}";
 
@@ -51,7 +51,7 @@ git checkout -q "${GIT_REVISION}"                           || exit 1
 
 # Similar for submodules.
 echo "Updating submodules. This may take a while."
-git submodule foreach -q --recursive 'git stash -q'
+git submodule foreach -q --recursive 'git stash -q --include-untracked'
 
 # This fetches submodule commits and checks out remote branch 'master'.
 git submodule update --recursive --init --remote            || exit 1
@@ -202,9 +202,10 @@ echo "Created $(basename "${DIR}").zip successfully."
 # Should always work, because we changed nothing.
 echo "Restoring Git repository and submodules states."
 git checkout -q "${ORIGINAL_REVISION}"
-git stash pop -q
+git stash pop -q | grep -v "Already up to date!"
 git submodule update -q --recursive
 git submodule foreach -q --recursive 'git stash pop -q 2>&1 | \
+                                      grep -v "Already up to date!" | \
                                       grep -v "No stash entries found." \
                                       || true'
 
