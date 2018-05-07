@@ -110,17 +110,25 @@ if [ "${ALLOW_DIRTY}" = 'false' ] \
   exit 1
 fi
 
-
-### Actual packaging.
-
-# This checks out submodule commits matching the requested package.
-git submodule update --recursive --init                     || exit 1
-
-
+# Heuristics: if the requested revision is a Git tag ( = release), it should
+# match the version in install-dev/install_version.php.
 TB_VERSION=$((cat install-dev/install_version.php &&
               echo 'print(_TB_INSTALL_VERSION_);') | \
              php)
-echo "Packaging thirty bees version ${TB_VERSION}."
+if git tag | grep -q "${GIT_REVISION}" \
+   && [ "${GIT_REVISION}" != "${TB_VERSION}" ]; then
+  echo "Request to package a release with _TB_INSTALL_VERSION_ not matching,"
+  echo "see install-dev/install_version.php. Refusing to continue packaging."
+  exit 1
+fi
+
+
+### Actual packaging.
+
+echo "Packaging thirty bees version ${GIT_REVISION}."
+
+# This checks out submodule commits matching the requested package.
+git submodule update --recursive --init                     || exit 1
 
 # Create packaging directory.
 PACKAGING_DIR=$(mktemp -d)
