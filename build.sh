@@ -63,6 +63,7 @@ for OPTION in "$@"; do
 done
 
 GIT_REVISION="${GIT_REVISION:-master}"
+PACKAGE_NAME="thirtybees-v${GIT_REVISION}"
 
 
 ### Saving repository state.
@@ -123,7 +124,7 @@ echo "Packaging thirty bees version ${TB_VERSION}."
 # Create packaging directory.
 PACKAGING_DIR=$(mktemp -d)
 
-PACKAGING_DIR+="/thirtybees-v${TB_VERSION}"
+PACKAGING_DIR+="${PACKAGE_NAME}"
 mkdir "${PACKAGING_DIR}"
 export PACKAGING_DIR
 
@@ -218,12 +219,12 @@ done
   echo -n "Creating package ... "
   cd "${PACKAGING_DIR}"
   php ./tools/generatemd5list.php
-  zip -r -q $(basename "${PACKAGING_DIR}").zip .
+  zip -r -q "${PACKAGE_NAME}".zip .
   echo "done."
 )
 
-mv "${PACKAGING_DIR}"/$(basename "${PACKAGING_DIR}").zip .
-echo "Created $(basename "${PACKAGING_DIR}").zip successfully."
+mv "${PACKAGING_DIR}"/"${PACKAGE_NAME}".zip .
+echo "Created ${PACKAGE_NAME}.zip successfully."
 
 
 # Cleanup happens via a trap.
