@@ -102,12 +102,12 @@ TB_VERSION=$((cat install-dev/install_version.php &&
 echo "Packaging thirty bees version ${TB_VERSION}."
 
 # Create packaging directory.
-DIR=$(mktemp -d)
-trap "rm -rf ${DIR}" 0
+PACKAGING_DIR=$(mktemp -d)
+trap "rm -rf ${PACKAGING_DIR}" 0
 
-DIR+="/thirtybees-v${TB_VERSION}"
-mkdir "${DIR}"
-export DIR
+PACKAGING_DIR+="/thirtybees-v${TB_VERSION}"
+mkdir "${PACKAGING_DIR}"
+export PACKAGING_DIR
 
 # Collect Git repositories to deal with. This is a bit slow, but parsing
 # .gitmodules directly is unreliable.
@@ -158,10 +158,10 @@ for D in "${REPOS_GIT[@]}"; do
     echo -n "Copying ${D} ... "
     cd ${D} || continue
 
-    mkdir -p "${DIR}/${D}"
-    git archive HEAD | tar -C "${DIR}/${D}" -xf-
+    mkdir -p "${PACKAGING_DIR}/${D}"
+    git archive HEAD | tar -C "${PACKAGING_DIR}/${D}" -xf-
 
-    cd "${DIR}/${D}"
+    cd "${PACKAGING_DIR}/${D}"
     if [ -d admin-dev ]; then
       mv admin-dev admin
     fi
@@ -176,7 +176,7 @@ done
 # Composer repositories. Not reasonably doable without network access,
 # but fortunately composer maintains a cache, so no heavy downloads.
 (
-  cd "${DIR}" || exit 1
+  cd "${PACKAGING_DIR}" || exit 1
   composer install --no-dev
   composer dump-autoload -o
 )
@@ -184,7 +184,7 @@ done
 
 # Cleaning :-)
 (
-  cd "${DIR}"
+  cd "${PACKAGING_DIR}"
   for E in "${EXCLUDE_FILE[@]}"; do
     find . "${KEEP_FLAGS[@]}" -type f -name "${E}" -delete
   done
@@ -198,14 +198,14 @@ done
 # Make the full package.
 (
   echo -n "Creating package ... "
-  cd "${DIR}"
+  cd "${PACKAGING_DIR}"
   php ./tools/generatemd5list.php
-  zip -r -q $(basename "${DIR}").zip .
+  zip -r -q $(basename "${PACKAGING_DIR}").zip .
   echo "done."
 )
 
-mv "${DIR}"/$(basename "${DIR}").zip .
-echo "Created $(basename "${DIR}").zip successfully."
+mv "${PACKAGING_DIR}"/$(basename "${PACKAGING_DIR}").zip .
+echo "Created $(basename "${PACKAGING_DIR}").zip successfully."
 
 
 ### Repository restoring.
