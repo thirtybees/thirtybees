@@ -64,6 +64,7 @@ done
 
 GIT_REVISION="${GIT_REVISION:-master}"
 PACKAGE_NAME="thirtybees-v${GIT_REVISION}"
+rm -f "${PACKAGE_NAME}".zip
 
 
 ### Saving repository state.
