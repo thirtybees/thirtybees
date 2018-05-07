@@ -14,6 +14,8 @@ function usage {
 }
 
 
+### Options parsing.
+
 GIT_REVISION=''
 ALLOW_DIRTY='false'
 
@@ -39,8 +41,11 @@ done
 GIT_REVISION="${GIT_REVISION:-master}"
 
 
+### Saving repository state.
+#
 # Because 'git submodule' works with the currently checked out revision, only,
 # we have to check that out.
+
 echo "Saving Git repository state."
 git stash -q --include-untracked 2>&1 | grep -v '^Ignoring path'
 ORIGINAL_REVISION=$(cat .git/HEAD)
@@ -53,13 +58,21 @@ git checkout -q "${GIT_REVISION}"                           || exit 1
 echo "Updating submodules. This may take a while."
 git submodule foreach -q --recursive 'git stash -q --include-untracked'
 
-# This fetches submodule commits and checks out remote branch 'master'.
-git submodule update --recursive --init --remote            || exit 1
+
+### Plausibility heuristics.
+#
+# Suboptimal releases have been packaged due to (whatever), so let's try to
+# catch all the situations where some pre-release work steps have been
+# forgotten.
 
 # Heuristics on wether newest commits were forgotten to commit in the core
 # repository. Heuristics:
 # - Less than 30 commits on the branch of the to be packaged commit.
 # - Dirty submodules exist.
+
+# This fetches submodule commits and checks out remote branch 'master'.
+git submodule update --recursive --init --remote            || exit 1
+
 GIT_BRANCH=$(git branch --contains "${GIT_REVISION}" | \
              grep -v "detached" | head -1 | cut -b 3-)
 COMMITS_ON_TOP=$(git log --oneline "${GIT_REVISION}".."${GIT_BRANCH}" | wc -l)
@@ -76,6 +89,9 @@ if [ "${ALLOW_DIRTY}" = 'false' ] \
   exit 1
 fi
 
+
+### Actual packaging.
+
 # This checks out submodule commits matching the requested package.
 git submodule update --recursive --init                     || exit 1
 
@@ -83,9 +99,7 @@ git submodule update --recursive --init                     || exit 1
 TB_VERSION=$((cat install-dev/install_version.php &&
               echo 'print(_TB_INSTALL_VERSION_);') | \
              php)
-
 echo "Packaging thirty bees version ${TB_VERSION}."
-
 
 # Create packaging directory.
 DIR=$(mktemp -d)
@@ -95,7 +109,6 @@ DIR+="/thirtybees-v${TB_VERSION}"
 mkdir "${DIR}"
 export DIR
 
-
 # Collect Git repositories to deal with. This is a bit slow, but parsing
 # .gitmodules directly is unreliable.
 REPOS_GIT=($(
@@ -104,7 +117,6 @@ REPOS_GIT=($(
     cut -d ' ' -f 2
 ))
 REPOS_GIT+=(".")
-
 
 # Files not needed in the release package.
 EXCLUDE_FILE=(".coveralls.yml")
@@ -135,7 +147,6 @@ for E in "${KEEP[@]}"; do
   KEEP_FLAGS+=("-path")
   KEEP_FLAGS+=("\*${E}\*")
 done
-
 
 # Create copies of all the stuff.
 # Try to copy not much more than what's needed.
@@ -184,7 +195,6 @@ done
   done
 )
 
-
 # Make the full package.
 (
   echo -n "Creating package ... "
@@ -198,8 +208,10 @@ mv "${DIR}"/$(basename "${DIR}").zip .
 echo "Created $(basename "${DIR}").zip successfully."
 
 
-# Restore the repository to the previous state.
+### Repository restoring.
+#
 # Should always work, because we changed nothing.
+
 echo "Restoring Git repository and submodules states."
 git checkout -q "${ORIGINAL_REVISION}"
 git stash pop -q | grep -v "Already up to date!"
