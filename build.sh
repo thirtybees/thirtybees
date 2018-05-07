@@ -14,6 +14,30 @@ function usage {
 }
 
 
+### Repository restoring.
+#
+# Triggered by a trap, because we have multiple exit points.
+function cleanup {
+  if [ -n "${PACKAGING_DIR}" ]; then
+    echo "Deleting temporary packaging directory."
+    rm -rf ${PACKAGING_DIR}
+  fi
+
+  if [ -n "${ORIGINAL_REVISION}" ]; then
+    # Should always work, because we changed nothing.
+    echo "Restoring Git repository and submodules states."
+    git checkout -q "${ORIGINAL_REVISION}"
+    git stash pop -q | grep -v "Already up to date!"
+    git submodule update -q --recursive
+    git submodule foreach -q --recursive 'git stash pop -q 2>&1 | \
+                                          grep -v "Already up to date!" | \
+                                          grep -v "No stash entries found." \
+                                          || true'
+  fi
+}
+trap cleanup 0
+
+
 ### Options parsing.
 
 GIT_REVISION=''
@@ -81,11 +105,6 @@ if [ "${ALLOW_DIRTY}" = 'false' ] \
    && git submodule | grep -q '^+'; then
   echo "Request to package a recent release and dirty submodules exist,"
   echo "refusing to continue packaging."
-
-  # Revert packaging preparations done so far.
-  git checkout -q "${ORIGINAL_REVISION}"
-  git stash pop -q
-  git submodule foreach -q --recursive 'git stash pop -q 2>/dev/null || true'
   exit 1
 fi
 
@@ -103,7 +122,6 @@ echo "Packaging thirty bees version ${TB_VERSION}."
 
 # Create packaging directory.
 PACKAGING_DIR=$(mktemp -d)
-trap "rm -rf ${PACKAGING_DIR}" 0
 
 PACKAGING_DIR+="/thirtybees-v${TB_VERSION}"
 mkdir "${PACKAGING_DIR}"
@@ -208,17 +226,5 @@ mv "${PACKAGING_DIR}"/$(basename "${PACKAGING_DIR}").zip .
 echo "Created $(basename "${PACKAGING_DIR}").zip successfully."
 
 
-### Repository restoring.
-#
-# Should always work, because we changed nothing.
-
-echo "Restoring Git repository and submodules states."
-git checkout -q "${ORIGINAL_REVISION}"
-git stash pop -q | grep -v "Already up to date!"
-git submodule update -q --recursive
-git submodule foreach -q --recursive 'git stash pop -q 2>&1 | \
-                                      grep -v "Already up to date!" | \
-                                      grep -v "No stash entries found." \
-                                      || true'
-
+# Cleanup happens via a trap.
 exit 0
