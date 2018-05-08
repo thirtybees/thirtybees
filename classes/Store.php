@@ -55,7 +55,7 @@ class StoreCore extends ObjectModel
     public $latitude;
     /** @var float Longitude */
     public $longitude;
-    /** @var string Store hours (PHP serialized) */
+    /** @var string Store hours (JSON encoded array) */
     public $hours;
     /** @var string Phone number */
     public $phone;
@@ -89,7 +89,7 @@ class StoreCore extends ObjectModel
             'city'       => ['type' => self::TYPE_STRING, 'validate' => 'isCityName', 'required' => true, 'size' => 64],
             'latitude'   => ['type' => self::TYPE_FLOAT, 'validate' => 'isCoordinate', 'size' => 13],
             'longitude'  => ['type' => self::TYPE_FLOAT, 'validate' => 'isCoordinate', 'size' => 13],
-            'hours'      => ['type' => self::TYPE_STRING, 'validate' => 'isSerializedArray', 'size' => 65000],
+            'hours'      => ['type' => self::TYPE_STRING, 'validate' => 'isJSON', 'size' => 65000],
             'phone'      => ['type' => self::TYPE_STRING, 'validate' => 'isPhoneNumber', 'size' => 16],
             'fax'        => ['type' => self::TYPE_STRING, 'validate' => 'isPhoneNumber', 'size' => 16],
             'note'       => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 65000],
@@ -132,7 +132,17 @@ class StoreCore extends ObjectModel
      */
     public function getWsHours()
     {
-        return implode(';', Tools::unSerialize($this->hours));
+        $hours = json_decode($this->hours);
+
+        // Retrocompatibility for thirty bees <= 1.0.4.
+        //
+        // To get rid of this, introduce a data converter executed by the
+        // upgrader over a couple of releases, making this obsolete.
+        if (!$hours) {
+            $hours = Tools::unSerialize($this->hours);
+        }
+
+        return implode(';', $hours);
     }
 
     /**
@@ -145,7 +155,7 @@ class StoreCore extends ObjectModel
      */
     public function setWsHours($hours)
     {
-        $this->hours = serialize(explode(';', $hours));
+        $this->hours = json_encode(explode(';', $hours));
 
         return true;
     }

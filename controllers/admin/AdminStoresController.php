@@ -519,16 +519,21 @@ class AdminStoresControllerCore extends AdminController
         $days[6] = $this->l('Saturday');
         $days[7] = $this->l('Sunday');
 
-        $hours = $this->getFieldValue($obj, 'hours');
-        if (!empty($hours)) {
-            $hoursUnserialized = Tools::unSerialize($hours);
+        $hours = json_decode($this->getFieldValue($obj, 'hours'));
+
+        // Retrocompatibility for thirty bees <= 1.0.4.
+        //
+        // To get rid of this, introduce a data converter executed by the
+        // upgrader over a couple of releases, making this obsolete.
+        if (!$hours) {
+            $hours = Tools::unSerialize($this->getFieldValue($obj, 'hours'));
         }
 
         $this->fields_value = [
             'latitude'  => $this->getFieldValue($obj, 'latitude') ? $this->getFieldValue($obj, 'latitude') : Configuration::get('PS_STORES_CENTER_LAT'),
             'longitude' => $this->getFieldValue($obj, 'longitude') ? $this->getFieldValue($obj, 'longitude') : Configuration::get('PS_STORES_CENTER_LONG'),
             'days'      => $days,
-            'hours'     => isset($hoursUnserialized) ? $hoursUnserialized : false,
+            'hours'     => isset($hours) ? $hours : false,
         ];
 
         return parent::renderForm();
@@ -591,7 +596,7 @@ class AdminStoresControllerCore extends AdminController
             for ($i = 1; $i < 8; $i++) {
                 $_POST['hours'][] .= Tools::getValue('hours_'.(int) $i);
             }
-            $_POST['hours'] = serialize($_POST['hours']);
+            $_POST['hours'] = json_encode($_POST['hours']);
         }
 
         if (!count($this->errors)) {

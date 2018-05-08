@@ -343,7 +343,16 @@ class StoresControllerCore extends FrontController
         $hours = [];
 
         if ($store['hours']) {
-            $hours = Tools::unSerialize($store['hours']);
+            $hours = json_decode($store['hours']);
+
+            // Retrocompatibility for thirty bees <= 1.0.4.
+            //
+            // To get rid of this, introduce a data converter executed by the
+            // upgrader over a couple of releases, making this obsolete.
+            if (!$hours) {
+                $hours = Tools::unSerialize($store['hours']);
+            }
+
             if (is_array($hours)) {
                 $hours = array_filter($hours);
             }
