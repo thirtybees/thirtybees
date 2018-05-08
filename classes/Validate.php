@@ -1383,8 +1383,11 @@ class ValidateCore
      *
      * @return bool Validity is ok or not
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @deprecated Use the generally safer JSON format instead of serialize().
+     *
+     * @since      1.0.0
+     * @version    1.0.0 Initial version
+     * @deprecated 1.0.5
      */
     public static function isSerializedArray($data)
     {
