@@ -1392,6 +1392,23 @@ class ValidateCore
     }
 
     /**
+     * Check for JSON encoded data.
+     *
+     * @param string $data JSON encoded data to validate.
+     *
+     * @return bool Validity is ok or not
+     *
+     * @since   1.0.4
+     * @version 1.0.4 Initial version
+     */
+    public static function isJSON($data)
+    {
+        json_decode($data);
+
+        return (json_last_error() === JSON_ERROR_NONE);
+    }
+
+    /**
      * Check for Latitude/Longitude
      *
      * @param string $data Coordinate to validate
