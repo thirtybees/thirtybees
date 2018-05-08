@@ -86,7 +86,7 @@ class UpgraderCore
      */
     public function loadFromConfig()
     {
-        $lastVersionCheck = Tools::unSerialize(Configuration::get('PS_LAST_VERSION'));
+        $lastVersionCheck = json_decode(Configuration::get('PS_LAST_VERSION'));
         if ($lastVersionCheck) {
             if (isset($lastVersionCheck['name'])) {
                 $this->version_name = $lastVersionCheck['name'];
@@ -169,7 +169,7 @@ class UpgraderCore
                     'desc'                     => $this->desc,
                 ];
                 if (class_exists('Configuration')) {
-                    Configuration::updateValue('PS_LAST_VERSION', serialize($configLastVersion));
+                    Configuration::updateValue('PS_LAST_VERSION', json_encode($configLastVersion));
                     Configuration::updateValue('PS_LAST_VERSION_CHECK', time());
                 }
             }
