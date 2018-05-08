@@ -4325,7 +4325,9 @@ exit;
      *
      * @return bool|mixed
      *
-     * @deprecated Use unserialize instead
+     * @deprecated Switch to using json_{en|de}code(). Serializing isn't safe
+     *             for untrusted data and JSON is more compact anyways.
+     *             See http://php.net/manual/en/function.unserialize.php.
      */
     public static function unSerialize($serialized, $object = false)
     {
