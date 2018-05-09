@@ -210,3 +210,4 @@
 [submodule "modules/statsmodule"]
 	path = modules/statsmodule
 	url = https://github.com/thirtybees/statsmodule.git
+	ignore = dirty
