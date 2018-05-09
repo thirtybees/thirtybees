@@ -183,16 +183,6 @@
 	url = https://github.com/thirtybees/dashtrends.git
 	branch = master
 	ignore = dirty
-[submodule "modules/graphnvd3"]
-	path = modules/graphnvd3
-	url = https://github.com/thirtybees/graphnvd3.git
-	branch = master
-	ignore = dirty
-[submodule "modules/gridhtml"]
-	path = modules/gridhtml
-	url = https://github.com/thirtybees/gridhtml.git
-	branch = master
-	ignore = dirty
 [submodule "modules/homefeatured"]
 	path = modules/homefeatured
 	url = https://github.com/thirtybees/homefeatured.git
@@ -201,11 +191,6 @@
 [submodule "modules/homeslider"]
 	path = modules/homeslider
 	url = https://github.com/thirtybees/homeslider.git
-	branch = master
-	ignore = dirty
-[submodule "modules/pagesnotfound"]
-	path = modules/pagesnotfound
-	url = https://github.com/thirtybees/pagesnotfound.git
 	branch = master
 	ignore = dirty
 [submodule "modules/productpaymentlogos"]
@@ -223,119 +208,14 @@
 	url = https://github.com/thirtybees/producttooltip.git
 	branch = master
 	ignore = dirty
-[submodule "modules/sekeywords"]
-	path = modules/sekeywords
-	url = https://github.com/thirtybees/sekeywords.git
-	branch = master
-	ignore = dirty
 [submodule "modules/socialsharing"]
 	path = modules/socialsharing
 	url = https://github.com/thirtybees/socialsharing.git
 	branch = master
 	ignore = dirty
-[submodule "modules/statsbestcategories"]
-	path = modules/statsbestcategories
-	url = https://github.com/thirtybees/statsbestcategories.git
-	branch = master
-	ignore = dirty
-[submodule "modules/statsbestcustomers"]
-	path = modules/statsbestcustomers
-	url = https://github.com/thirtybees/statsbestcustomers.git
-	branch = master
-	ignore = dirty
-[submodule "modules/statsbestproducts"]
-	path = modules/statsbestproducts
-	url = https://github.com/thirtybees/statsbestproducts.git
-	branch = master
-	ignore = dirty
-[submodule "modules/statsbestsuppliers"]
-	path = modules/statsbestsuppliers
-	url = https://github.com/thirtybees/statsbestsuppliers.git
-	branch = master
-	ignore = dirty
-[submodule "modules/statsbestvouchers"]
-	path = modules/statsbestvouchers
-	url = https://github.com/thirtybees/statsbestvouchers.git
-	branch = master
-	ignore = dirty
-[submodule "modules/statscarrier"]
-	path = modules/statscarrier
-	url = https://github.com/thirtybees/statscarrier.git
-	branch = master
-	ignore = dirty
-[submodule "modules/statscatalog"]
-	path = modules/statscatalog
-	url = https://github.com/thirtybees/statscatalog.git
-	branch = master
-	ignore = dirty
-[submodule "modules/statscheckup"]
-	path = modules/statscheckup
-	url = https://github.com/thirtybees/statscheckup.git
-	branch = master
-	ignore = dirty
 [submodule "modules/statsdata"]
 	path = modules/statsdata
 	url = https://github.com/thirtybees/statsdata.git
-	branch = master
-	ignore = dirty
-[submodule "modules/statsequipment"]
-	path = modules/statsequipment
-	url = https://github.com/thirtybees/statsequipment.git
-	branch = master
-	ignore = dirty
-[submodule "modules/statsforecast"]
-	path = modules/statsforecast
-	url = https://github.com/thirtybees/statsforecast.git
-	branch = master
-	ignore = dirty
-[submodule "modules/statslive"]
-	path = modules/statslive
-	url = https://github.com/thirtybees/statslive.git
-	branch = master
-	ignore = dirty
-[submodule "modules/statsnewsletter"]
-	path = modules/statsnewsletter
-	url = https://github.com/thirtybees/statsnewsletter.git
-	branch = master
-	ignore = dirty
-[submodule "modules/statsorigin"]
-	path = modules/statsorigin
-	url = https://github.com/thirtybees/statsorigin.git
-	branch = master
-	ignore = dirty
-[submodule "modules/statspersonalinfos"]
-	path = modules/statspersonalinfos
-	url = https://github.com/thirtybees/statspersonalinfos.git
-	branch = master
-	ignore = dirty
-[submodule "modules/statsproduct"]
-	path = modules/statsproduct
-	url = https://github.com/thirtybees/statsproduct.git
-	branch = master
-	ignore = dirty
-[submodule "modules/statsregistrations"]
-	path = modules/statsregistrations
-	url = https://github.com/thirtybees/statsregistrations.git
-	branch = master
-	ignore = dirty
-[submodule "modules/statssales"]
-	path = modules/statssales
-	url = https://github.com/thirtybees/statssales.git
-	branch = master
-	ignore = dirty
-[submodule "modules/statssearch"]
-	path = modules/statssearch
-	url = https://github.com/thirtybees/statssearch.git
-	branch = master
-	ignore = dirty
-[submodule "modules/statsstock"]
-	path = modules/statsstock
-	url = https://github.com/thirtybees/statsstock.git
-	branch = master
-	ignore = dirty
-[submodule "modules/statsvisits"]
-	path = modules/statsvisits
-	url = https://github.com/thirtybees/statsvisits.git
 	branch = master
 	ignore = dirty
 [submodule "modules/trackingfront"]
