@@ -1,237 +1,190 @@
 [submodule "modules/bankwire"]
 	path = modules/bankwire
 	url = https://github.com/thirtybees/bankwire.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blockbanner"]
 	path = modules/blockbanner
 	url = https://github.com/thirtybees/blockbanner.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blockbestsellers"]
 	path = modules/blockbestsellers
 	url = https://github.com/thirtybees/blockbestsellers.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blockcart"]
 	path = modules/blockcart
 	url = https://github.com/thirtybees/blockcart.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blockcategories"]
 	path = modules/blockcategories
 	url = https://github.com/thirtybees/blockcategories.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blockcms"]
 	path = modules/blockcms
 	url = https://github.com/thirtybees/blockcms.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blockcmsinfo"]
 	path = modules/blockcmsinfo
 	url = https://github.com/thirtybees/blockcmsinfo.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blockcontact"]
 	path = modules/blockcontact
 	url = https://github.com/thirtybees/blockcontact.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blockcontactinfos"]
 	path = modules/blockcontactinfos
 	url = https://github.com/thirtybees/blockcontactinfos.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blockcurrencies"]
 	path = modules/blockcurrencies
 	url = https://github.com/thirtybees/blockcurrencies.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blockcustomerprivacy"]
 	path = modules/blockcustomerprivacy
 	url = https://github.com/thirtybees/blockcustomerprivacy.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blockfacebook"]
 	path = modules/blockfacebook
 	url = https://github.com/thirtybees/blockfacebook.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blocklanguages"]
 	path = modules/blocklanguages
 	url = https://github.com/thirtybees/blocklanguages.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blocklayered"]
 	path = modules/blocklayered
 	url = https://github.com/thirtybees/blocklayered.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blocklink"]
 	path = modules/blocklink
 	url = https://github.com/thirtybees/blocklink.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blockmanufacturer"]
 	path = modules/blockmanufacturer
 	url = https://github.com/thirtybees/blockmanufacturer.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blockmyaccount"]
 	path = modules/blockmyaccount
 	url = https://github.com/thirtybees/blockmyaccount.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blockmyaccountfooter"]
 	path = modules/blockmyaccountfooter
 	url = https://github.com/thirtybees/blockmyaccountfooter.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blocknewproducts"]
 	path = modules/blocknewproducts
 	url = https://github.com/thirtybees/blocknewproducts.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blocknewsletter"]
 	path = modules/blocknewsletter
 	url = https://github.com/thirtybees/blocknewsletter.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blockpaymentlogo"]
 	path = modules/blockpaymentlogo
 	url = https://github.com/thirtybees/blockpaymentlogo.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blockpermanentlinks"]
 	path = modules/blockpermanentlinks
 	url = https://github.com/thirtybees/blockpermanentlinks.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blockreinsurance"]
 	path = modules/blockreinsurance
 	url = https://github.com/thirtybees/blockreinsurance.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blocksearch"]
 	path = modules/blocksearch
 	url = https://github.com/thirtybees/blocksearch.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blocksharefb"]
 	path = modules/blocksharefb
 	url = https://github.com/thirtybees/blocksharefb.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blocksocial"]
 	path = modules/blocksocial
 	url = https://github.com/thirtybees/blocksocial.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blockspecials"]
 	path = modules/blockspecials
 	url = https://github.com/thirtybees/blockspecials.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blockstore"]
 	path = modules/blockstore
 	url = https://github.com/thirtybees/blockstore.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blocksupplier"]
 	path = modules/blocksupplier
 	url = https://github.com/thirtybees/blocksupplier.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blocktags"]
 	path = modules/blocktags
 	url = https://github.com/thirtybees/blocktags.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blockuserinfo"]
 	path = modules/blockuserinfo
 	url = https://github.com/thirtybees/blockuserinfo.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blockviewed"]
 	path = modules/blockviewed
 	url = https://github.com/thirtybees/blockviewed.git
-	branch = master
 	ignore = dirty
 [submodule "modules/crossselling"]
 	path = modules/crossselling
 	url = https://github.com/thirtybees/crossselling.git
-	branch = master
 	ignore = dirty
 [submodule "modules/dashactivity"]
 	path = modules/dashactivity
 	url = https://github.com/thirtybees/dashactivity.git
-	branch = master
 	ignore = dirty
 [submodule "modules/dashgoals"]
 	path = modules/dashgoals
 	url = https://github.com/thirtybees/dashgoals.git
-	branch = master
 	ignore = dirty
 [submodule "modules/dashproducts"]
 	path = modules/dashproducts
 	url = https://github.com/thirtybees/dashproducts.git
-	branch = master
 	ignore = dirty
 [submodule "modules/dashtrends"]
 	path = modules/dashtrends
 	url = https://github.com/thirtybees/dashtrends.git
-	branch = master
 	ignore = dirty
 [submodule "modules/homefeatured"]
 	path = modules/homefeatured
 	url = https://github.com/thirtybees/homefeatured.git
-	branch = master
 	ignore = dirty
 [submodule "modules/homeslider"]
 	path = modules/homeslider
 	url = https://github.com/thirtybees/homeslider.git
-	branch = master
 	ignore = dirty
 [submodule "modules/productpaymentlogos"]
 	path = modules/productpaymentlogos
 	url = https://github.com/thirtybees/productpaymentlogos.git
-	branch = master
 	ignore = dirty
 [submodule "modules/productscategory"]
 	path = modules/productscategory
 	url = https://github.com/thirtybees/productscategory.git
-	branch = master
 	ignore = dirty
 [submodule "modules/producttooltip"]
 	path = modules/producttooltip
 	url = https://github.com/thirtybees/producttooltip.git
-	branch = master
 	ignore = dirty
 [submodule "modules/socialsharing"]
 	path = modules/socialsharing
 	url = https://github.com/thirtybees/socialsharing.git
-	branch = master
 	ignore = dirty
 [submodule "modules/statsdata"]
 	path = modules/statsdata
 	url = https://github.com/thirtybees/statsdata.git
-	branch = master
 	ignore = dirty
 [submodule "modules/trackingfront"]
 	path = modules/trackingfront
 	url = https://github.com/thirtybees/trackingfront.git
-	branch = master
 	ignore = dirty
 [submodule "modules/sendtoafriend"]
 	path = modules/sendtoafriend
 	url = https://github.com/thirtybees/sendtoafriend.git
-	branch = master
 	ignore = dirty
 [submodule "modules/ctconfiguration"]
 	path = modules/ctconfiguration
 	url = https://github.com/thirtybees/ctconfiguration.git
-	branch = master
 	ignore = dirty
 [submodule "themes/community-theme-default"]
 	path = themes/community-theme-default
@@ -241,22 +194,18 @@
 [submodule "modules/fixerio"]
 	path = modules/fixerio
 	url = https://github.com/thirtybees/fixerio
-	branch = master
 	ignore = dirty
 [submodule "modules/themeconfigurator"]
 	path = modules/themeconfigurator
 	url = https://github.com/thirtybees/themeconfigurator.git
-	branch = master
 	ignore = dirty
 [submodule "modules/tbupdater"]
 	path = modules/tbupdater
 	url = https://github.com/thirtybees/tbupdater.git
-	branch = master
 	ignore = dirty
 [submodule "modules/blocktopmenu"]
 	path = modules/blocktopmenu
 	url = https://github.com/thirtybees/blocktopmenu.git
-	branch = master
 	ignore = dirty
 [submodule "modules/statsmodule"]
 	path = modules/statsmodule
