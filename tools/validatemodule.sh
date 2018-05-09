@@ -37,6 +37,18 @@ function usage {
 }
 
 
+### Cleanup.
+#
+# Triggered by a trap to clean on unexpected exit as well.
+
+function cleanup {
+  if [ -n ${REPORT} ]; then
+    rm -f ${REPORT}
+  fi
+}
+trap cleanup 0
+
+
 ### Options parsing.
 
 for OPTION in "$@"; do
@@ -53,15 +65,44 @@ for OPTION in "$@"; do
 done
 
 
+### Preparations.
+
+# We write into a report file to allow us to a) collect multiple findings and
+# b) evaluate the collection before exiting.
+REPORT=$(mktemp)
+export REPORT
+
+
+### Auxilliary functions.
+
+# Report an error.
+function e {
+  echo "Error: ${1}" >> ${REPORT}
+}
+
+# Report a warning.
+function w {
+  echo "Warning: ${1}" >> ${REPORT}
+}
+
+
 ### .gitignore
 
 # .gitignore should contain a minimum set of entries.
-grep -q '^/translations/\*$' .gitignore || (
-  echo ".gitignore is missing a line with '/translations/*'."
-  exit 1 )
-grep -q '^!/translations/index\.php$' .gitignore || (
-  echo ".gitignore is missing a line with '!/translations/index.php'."
-  exit 1 )
-grep -q "^$(basename $(pwd))-\\*\\.zip$" .gitignore || (
-  echo ".gitignore is missing a line with '$(basename $(pwd))-*.zip'."
-  exit 1 )
+grep -q '^/translations/\*$' .gitignore || \
+  e "line with '/translations/*' missing in .gitignore."
+grep -q '^!/translations/index\.php$' .gitignore || \
+  e "line with '!/translations/index.php' missing in .gitignore."
+grep -q "^$(basename $(pwd))-\\*\\.zip$" .gitignore || \
+  e "line with '$(basename $(pwd))-*.zip' missing in .gitignore."
+
+
+### Evaluation of findings.
+
+cat ${REPORT}
+
+if grep -q '^Error:' ${REPORT}; then
+  exit 1
+fi
+
+exit 0
