@@ -97,6 +97,18 @@ grep -q "^$(basename $(pwd))-\\*\\.zip$" .gitignore || \
   e "line with '$(basename $(pwd))-*.zip' missing in .gitignore."
 
 
+### Translations stuff.
+#
+# Even modules not adding to the user interface have translations, e.g.
+# name and description in the list of modules in backoffice.
+
+# Note: 'grep -q .' is needed because 'git ls-files' always returns success.
+git ls-files translations/index.php | grep -q '.' || \
+  e "file translations/index.php doesn't exist."
+git ls-files translations/\* | grep -vq '^translations/index\.php$' && \
+  e "files other than index.php in translations/."
+
+
 ### Evaluation of findings.
 
 cat ${REPORT}
