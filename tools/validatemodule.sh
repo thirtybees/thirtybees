@@ -51,3 +51,17 @@ for OPTION in "$@"; do
       ;;
   esac
 done
+
+
+### .gitignore
+
+# .gitignore should contain a minimum set of entries.
+grep -q '^/translations/\*$' .gitignore || (
+  echo ".gitignore is missing a line with '/translations/*'."
+  exit 1 )
+grep -q '^!/translations/index\.php$' .gitignore || (
+  echo ".gitignore is missing a line with '!/translations/index.php'."
+  exit 1 )
+grep -q "^$(basename $(pwd))-\\*\\.zip$" .gitignore || (
+  echo ".gitignore is missing a line with '$(basename $(pwd))-*.zip'."
+  exit 1 )
