@@ -158,6 +158,7 @@ EXCLUDE_FILE+=("composer.lock")
 EXCLUDE_FILE+=("Vagrantfile")
 EXCLUDE_FILE+=("build.sh")
 # EXCLUDE_FILE+=("generatemd5list.php")  <- Can't get removed.
+EXCLUDE_FILE+=("validatemodule.sh")
 
 # Directories not needed in the release package.
 EXCLUDE_DIR+=("examples")
