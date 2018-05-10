@@ -133,6 +133,7 @@ cat ${REPORT}
 
 if grep -q '^Error:' ${REPORT}; then
   exit 1
+else
+  echo "Validation succeeded."
+  exit 0
 fi
-
-exit 0
