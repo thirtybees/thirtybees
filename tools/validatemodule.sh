@@ -127,6 +127,18 @@ ${LS} translations/\* | grep -vq '^translations/index\.php$' && \
   e "files other than index.php in translations/."
 
 
+### Mail templates stuff.
+
+if ${LS} mails | grep -q '.'; then
+  ${LS} mails/index.php | grep -q '.' || \
+    e "mails folder, but no file mails/index.php."
+  ${LS} mails/en/index.php | grep -q '.' || \
+    e "mails folder, but no file mails/en/index.php."
+  ${LS} mails/\* | grep -v '^mails/index\.php$' | grep -vq '^mails/en' && \
+    e "mail templates other than english exist."
+fi
+
+
 ### Evaluation of findings.
 
 cat ${REPORT}
