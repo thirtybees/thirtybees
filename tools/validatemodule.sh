@@ -72,6 +72,24 @@ done
 REPORT=$(mktemp)
 export REPORT
 
+if [ -f .git ]; then
+  IS_GIT='true'
+  echo "Git repository detected. Looking at branch 'master'."
+
+  # Abstract 'cat' and 'ls' to allow validating non-repositories as well.
+  function git-cat { for F in "${@}"; do git show master:"${F}"; done }
+  CAT='git-cat'
+  LS='git ls-files master'
+else
+  IS_GIT='false'
+  echo "Not a Git repository. Validating bare file trees not tested. Aborting."
+
+  CAT='cat'
+  LS='ls'
+
+  exit 1
+fi
+
 
 ### Auxilliary functions.
 
@@ -89,11 +107,11 @@ function w {
 ### .gitignore
 
 # .gitignore should contain a minimum set of entries.
-grep -q '^/translations/\*$' .gitignore || \
+${CAT} .gitignore | grep -q '^/translations/\*$' || \
   e "line with '/translations/*' missing in .gitignore."
-grep -q '^!/translations/index\.php$' .gitignore || \
+${CAT} .gitignore | grep -q '^!/translations/index\.php$' || \
   e "line with '!/translations/index.php' missing in .gitignore."
-grep -q "^$(basename $(pwd))-\\*\\.zip$" .gitignore || \
+${CAT} .gitignore | grep -q "^$(basename $(pwd))-\\*\\.zip$" || \
   e "line with '$(basename $(pwd))-*.zip' missing in .gitignore."
 
 
@@ -103,9 +121,9 @@ grep -q "^$(basename $(pwd))-\\*\\.zip$" .gitignore || \
 # name and description in the list of modules in backoffice.
 
 # Note: 'grep -q .' is needed because 'git ls-files' always returns success.
-git ls-files translations/index.php | grep -q '.' || \
+${LS} translations/index.php | grep -q '.' || \
   e "file translations/index.php doesn't exist."
-git ls-files translations/\* | grep -vq '^translations/index\.php$' && \
+${LS} translations/\* | grep -vq '^translations/index\.php$' && \
   e "files other than index.php in translations/."
 
 
