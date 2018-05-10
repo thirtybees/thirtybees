@@ -93,7 +93,7 @@
 					<i class="icon-info"></i>
 					{l s='Server information'}
 				</h3>
-				{if count($uname)}
+				{if $uname}
 				<p>
 					<strong>{l s='Server information:'}</strong> {$uname|escape:'html':'UTF-8'}
 				</p>
