@@ -36,7 +36,7 @@ composer.lock
 /config/settings.inc.php
 /config/settings.old.php
 /config/xml/*
-/!config/xml/themes/default.xml
+!/config/xml/themes/default.xml
 
 /config/defines_custom.inc.php
 /config/settings_custom.inc.php
@@ -58,7 +58,7 @@ composer.lock
 
 /translations/*
 /mails/*
-/!mails/en/
+!/mails/en/*
 
 # MISC
 
