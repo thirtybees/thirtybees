@@ -111,6 +111,8 @@ ${CAT} .gitignore | grep -q '^/translations/\*$' || \
   e "line with '/translations/*' missing in .gitignore."
 ${CAT} .gitignore | grep -q '^!/translations/index\.php$' || \
   e "line with '!/translations/index.php' missing in .gitignore."
+${CAT} .gitignore | grep -q '^/config\*\.xml$' || \
+  e "line with 'config*.xml' missing in .gitignore."
 ${CAT} .gitignore | grep -q "^$(basename $(pwd))-\\*\\.zip$" || \
   e "line with '$(basename $(pwd))-*.zip' missing in .gitignore."
 
@@ -137,6 +139,18 @@ if ${LS} mails | grep -q '.'; then
   ${LS} mails/\* | grep -v '^mails/index\.php$' | grep -vq '^mails/en' && \
     e "mail templates other than english exist."
 fi
+
+
+### config.xml
+#
+# We insist on no such file to exist. These files get auto-generated. Trusting
+# the auto-generated one means there can't be a content mismatch against the
+# module's main class definitions.
+
+${LS} config\.xml | grep -q '.' && \
+  e "file config.xml exists."
+${LS} config_\*\.xml | grep -q '.' && \
+  e "at least one file config_<lang>.xml exists."
 
 
 ### Evaluation of findings.
