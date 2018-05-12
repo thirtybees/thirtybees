@@ -85,6 +85,8 @@ else
   echo "Not a Git repository. Validating bare file trees not tested. Aborting."
 
   CAT='cat'
+  # Note that 'git ls-files' lists paths recursively, similar to 'find', and
+  # that we take advantage of this.
   LS='ls'
 
   exit 1
@@ -151,6 +153,16 @@ ${LS} config\.xml | grep -q '.' && \
   e "file config.xml exists."
 ${LS} config_\*\.xml | grep -q '.' && \
   e "at least one file config_<lang>.xml exists."
+
+
+### 'thirty bees' is lowercase.
+
+${LS} . | while read F; do
+  ${CAT} "${F}" | grep -q 'Thirty Bees' && \
+    e "file ${F} contains 'Thirty Bees'; should be 'thirty bees'."
+  ${CAT} "${F}" | grep -q 'ThirtyBees' && \
+    e "file ${F} contains 'ThirtyBees'; should be 'thirtybees'."
+done
 
 
 ### Evaluation of findings.
