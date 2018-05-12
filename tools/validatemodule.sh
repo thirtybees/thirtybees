@@ -167,6 +167,31 @@ ${LS} . | while read F; do
 done
 
 
+### thirty bees store files.
+
+if [ ${IS_GIT} = 'true' ]; then
+  FILES=('.tbstore.yml')
+  FILES+=('.tbstore/configuration.yml')
+  FILES+=('.tbstore/description.md')
+  FILES+=('.tbstore/images/image-1.png')
+
+  # Each mandatory file should exist in the repository.
+  for F in "${FILES[@]}"; do
+    ${LS} "${F}" | grep -q '.' || \
+      e "mandatory file ${F} missing."
+  done
+  unset FILES
+
+  # .tbstore.yml and .tbstore/configuration.yml should be identical.
+  if ${LS} .tbstore.yml | grep -q '.' \
+     && ${LS} .tbstore/configuration.yml | grep -q '.'; then
+    [ "$(${CAT} .tbstore.yml)" = "$(${CAT} .tbstore/configuration.yml)" ] || \
+      e "files .tbstore.yml and .tbstore/configuration.yml not identical."
+  fi
+
+fi
+
+
 ### Evaluation of findings.
 
 cat ${REPORT}
