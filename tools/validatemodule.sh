@@ -187,14 +187,32 @@ ${LS} config_\*\.xml | grep -q '.' && \
   e "at least one file config_<lang>.xml exists."
 
 
-### 'thirty bees' is lowercase.
+### Capitalization.
 
+# 'thirty bees' should be lowercase everywhere.
 ${LS} . | while read F; do
   ${CAT} "${F}" | grep -q 'Thirty Bees' && \
     e "file ${F} contains 'Thirty Bees'; should be 'thirty bees'."
   ${CAT} "${F}" | grep -q 'ThirtyBees' && \
     e "file ${F} contains 'ThirtyBees'; should be 'thirtybees'."
 done
+
+# Module name should be all uppercase, except for small words and 'thirty bees'.
+NAME=$(constructorentry 'displayName')
+FAULT='false'
+
+for W in ${NAME}; do
+  if [ ${#W} -gt 3 ] \
+     && [ ${W} != 'thirty' ] \
+     && [ ${W} != 'bees' ] \
+     && [ ${W} != ${W^} ]; then
+    e "'${W}' in module name should be uppercase."
+    FAULT='true'
+  fi
+done
+[ ${FAULT} = 'true' ] && \
+  n "see PHP main class constructor, '\$this->displayName'."
+unset NAME FAULT
 
 
 ### thirty bees store files.
