@@ -219,6 +219,18 @@ if [ ${IS_GIT} = 'true' ]; then
       e "files .tbstore.yml and .tbstore/configuration.yml not identical."
   fi
 
+  # Field 'author:' should match 'author' main class property.
+  if ${LS} .tbstore.yml | grep -q '.'; then
+    CODE_AUTHOR=$(constructorentry 'author')
+    TBSTORE_AUTHOR=$(${CAT} .tbstore.yml | sed -n 's/^author:\s*// p')
+
+    if [ "${CODE_AUTHOR}" != "${TBSTORE_AUTHOR}" ]; then
+      e "'.tbstore.yml' and PHP main class module authors not identical."
+      n "PHP main class property 'author': '${CODE_AUTHOR}'"
+      n "'author' in .tbstore.yml: '${TBSTORE_AUTHOR}'"
+    fi
+    unset CODE_AUTHOR TBSTORE_AUTHOR
+  fi
 fi
 
 
