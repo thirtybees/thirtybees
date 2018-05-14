@@ -105,12 +105,17 @@ fi
 
 # Report an error.
 function e {
-  echo "Error: ${1}" >> ${REPORT}
+  echo "  Error: ${1}" >> ${REPORT}
 }
 
 # Report a warning.
 function w {
   echo "Warning: ${1}" >> ${REPORT}
+}
+
+# Report a note.
+function n {
+  echo "   Note: ${1}" >> ${REPORT}
 }
 
 
@@ -204,7 +209,7 @@ fi
 
 cat ${REPORT}
 
-if grep -q '^Error:' ${REPORT}; then
+if grep -q '^  Error:' ${REPORT}; then
   if grep -q 'Thirty Bees' ${REPORT} || grep -q 'ThirtyBees' ${REPORT}; then
     echo
     echo "For the 'Thirty Bees' vs. 'thirty bees' issue, these commands"
