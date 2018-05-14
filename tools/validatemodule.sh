@@ -80,6 +80,14 @@ if [ -f .git ]; then
   function git-cat { for F in "${@}"; do git show master:"${F}"; done }
   CAT='git-cat'
   LS='git ls-files master'
+
+  # Don't continue if there is no branch 'master'. This currently applies to
+  # the default theme, only.
+  if ! git branch | grep -q 'master'; then
+    echo "Error: there is no branch 'master', can't continue."
+    # Exiting with 0 anyways to not stop 'git submodule foreach' runs.
+    exit 0
+  fi
 else
   IS_GIT='false'
   echo "Not a Git repository. Validating bare file trees not tested. Aborting."
