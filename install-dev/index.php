@@ -39,6 +39,10 @@ if (version_compare(PHP_VERSION, '5.5.0', '<')) {
 if (!extension_loaded('simplexml')) {
 	$errors[] = 'SimpleXML is not installed';
 }
+// Check for cURL
+if (!extension_loaded('curl')) {
+    $errors[] = 'cURL is not installed';
+}
 
 // Check if composer packages are available
 if (!file_exists(dirname(__FILE__).'/../vendor/autoload.php')) {
