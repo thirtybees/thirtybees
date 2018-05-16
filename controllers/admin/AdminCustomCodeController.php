@@ -21,6 +21,13 @@ class AdminCustomCodeControllerCore extends AdminController
         $this->table = 'configuration';
         $this->bootstrap = true;
 
+        $this->updateOptionTbCustomcodeJs();
+        $this->updateOptionTbCustomcodeOrderconfJs();
+
+        if (Configuration::get('PS_USE_HTMLPURIFIER')) {
+            $this->warnings[] = $this->l('Note that the HTMLPurifier library has been activated. Not all HTML tags will be accepted.');
+        }
+
         $fields = [
             Configuration::CUSTOMCODE_METAS => [
                 'title'                     => $this->l('Add extra metas to the header'),
@@ -51,7 +58,7 @@ class AdminCustomCodeControllerCore extends AdminController
                 'enableSnippets'            => true,
                 'enableLiveAutocompletion'  => true,
                 'visibility'                => Shop::CONTEXT_ALL,
-                'auto_value'                => ($this->updateOptionTbCustomcodeJs()) ? false : false,
+                'auto_value'                => false,
                 'value'                     => Configuration::get(Configuration::CUSTOMCODE_JS),
             ],
         ];
@@ -66,7 +73,7 @@ class AdminCustomCodeControllerCore extends AdminController
                 'enableSnippets'            => true,
                 'enableLiveAutocompletion'  => true,
                 'visibility'                => Shop::CONTEXT_ALL,
-                'auto_value'                => ($this->updateOptionTbCustomcodeOrderconfJs()) ? false : false,
+                'auto_value'                => false,
                 'value'                     => Configuration::get(Configuration::CUSTOMCODE_ORDERCONF_JS),
             ],
         ];
@@ -75,7 +82,7 @@ class AdminCustomCodeControllerCore extends AdminController
             'general' => [
                 'title'       => $this->l('General'),
                 'icon'        => 'icon-cogs',
-                'description' => $this->l('On this page you can add extra HTML between the &lt;head&gt; tags, extra CSS or JavaScript to your pages. JavaScript should NOT be enclosed with &lt;script&gt; tags. This is done by thirty bees already.', null, false, false).((Configuration::get('PS_USE_HTMLPURIFIER') ? '<br><strong>'.$this->l('Note that the HTMLPurifier library has been activated. Not all HTML tags will be accepted.').'</strong>' : '')),
+                'description' => $this->l('On this page you can add extra HTML between the &lt;head&gt; tags, extra CSS or JavaScript to your pages. JavaScript should NOT be enclosed with &lt;script&gt; tags. This is done by thirty bees already.', null, false, false),
                 'fields'      => $fields,
                 'submit'      => ['title' => $this->l('Save')],
             ],
@@ -94,8 +101,48 @@ class AdminCustomCodeControllerCore extends AdminController
     /**
      * @throws PrestaShopException
      */
+    public function updateOptionTbCustomcodeMetas()
+    {
+        if (!Tools::isSubmit(Configuration::CUSTOMCODE_METAS)) {
+            return;
+        }
+
+        static $called = false;
+        if ($called) {
+            return;
+        }
+        $called = true;
+
+        $this->updateOptionUnescaped(Configuration::CUSTOMCODE_METAS, Tools::getValue(Configuration::CUSTOMCODE_METAS));
+    }
+
+    /**
+     * @throws PrestaShopException
+     */
+    public function updateOptionTbCustomcodeCss()
+    {
+        if (!Tools::isSubmit(Configuration::CUSTOMCODE_CSS)) {
+            return;
+        }
+
+        static $called = false;
+        if ($called) {
+            return;
+        }
+        $called = true;
+
+        $this->updateOptionUnescaped(Configuration::CUSTOMCODE_CSS, Tools::getValue(Configuration::CUSTOMCODE_CSS));
+    }
+
+    /**
+     * @throws PrestaShopException
+     */
     public function updateOptionTbCustomcodeOrderconfJs()
     {
+        if (!Tools::isSubmit(Configuration::CUSTOMCODE_ORDERCONF_JS)) {
+            return;
+        }
+
         static $called = false;
         if ($called) {
             return;
@@ -110,13 +157,17 @@ class AdminCustomCodeControllerCore extends AdminController
      */
     public function updateOptionTbCustomcodeJs()
     {
+        if (!Tools::isSubmit(Configuration::CUSTOMCODE_JS)) {
+            return;
+        }
+
         static $called = false;
         if ($called) {
             return;
         }
         $called = true;
 
-        $this->updateOptionUnescaped(Configuration::CUSTOMCODE_ORDERCONF_JS, Tools::getValue(Configuration::CUSTOMCODE_ORDERCONF_JS));
+        $this->updateOptionUnescaped(Configuration::CUSTOMCODE_JS, Tools::getValue(Configuration::CUSTOMCODE_JS));
     }
 
     /**
@@ -193,7 +244,5 @@ class AdminCustomCodeControllerCore extends AdminController
             }
             Configuration::set($key, $value, $idShopGroup, $idShop);
         }
-
-
     }
 }
