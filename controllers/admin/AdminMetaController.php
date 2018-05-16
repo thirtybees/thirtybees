@@ -606,10 +606,10 @@ class AdminMetaControllerCore extends AdminController
                     foreach ($files as $file) {
                         if ($activeLanguageCount > 1) {
                             // Friendly URLs have language ISO code when multiple languages are active
-                            fwrite($writeFd, 'Disallow: /*'.$isoCode.'/'.$file."\n");
+                            fwrite($writeFd, 'Disallow: /'.$isoCode.'/'.$file."\n");
                         } elseif ($activeLanguageCount == 1) {
                             // Friendly URL does not have language ISO when only one language is active
-                            fwrite($writeFd, 'Disallow: /*'.$file."\n");
+                            fwrite($writeFd, 'Disallow: /'.$file."\n");
                         } else {
                             fwrite($writeFd, 'Disallow: /'.$file."\n");
                         }
