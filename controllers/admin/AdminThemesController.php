@@ -196,9 +196,9 @@ class AdminThemesControllerCore extends AdminController
                         'thumb' => (Configuration::get('PS_LOGO_INVOICE') !== false && file_exists(_PS_IMG_DIR_.Configuration::get('PS_LOGO_INVOICE'))) ? _PS_IMG_.Configuration::get('PS_LOGO_INVOICE') : _PS_IMG_.Configuration::get('PS_LOGO'),
                     ],
                     'PS_FAVICON'      => [
-                        'title' => $this->l('Favicon'),
-                        'hint'  => $this->l('Will appear in the address bar of your web browser.'),
-                        'desc'  => $this->l('Make sure you upload a square image.'),
+                        'title' => $this->l('Favicon and phone icon'),
+                        'hint'  => $this->l('Will appear in the address bar of your web browser or home phone screen'),
+                        'desc'  => $this->l('Use a square image 512 x 512 for best results.'),
                         'type'  => 'file',
                         'name'  => 'PS_FAVICON',
                         'tab'   => 'icons',
