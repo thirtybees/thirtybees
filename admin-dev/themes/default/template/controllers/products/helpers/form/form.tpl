@@ -27,35 +27,62 @@
 
 {block name="autoload_tinyMCE"}
 	// Execute when tab Informations has finished loading
-	tabs_manager.onLoad('Informations', function(){
-		tinySetup({
-			editor_selector :"autoload_rte",
-			setup : function(ed) {
-				ed.on('init', function(ed)
-				{
-					if (typeof ProductMultishop.load_tinymce[ed.target.id] != 'undefined')
-					{
-						if (typeof ProductMultishop.load_tinymce[ed.target.id])
-							tinyMCE.get(ed.target.id).hide();
-						else
-							tinyMCE.get(ed.target.id).show();
-					}
-				});
+	tabs_manager.onLoad('Informations', function() {
+	function tinyMceInit(ed) {
+			ed.on('init', function (ed) {
+				if (typeof ProductMultishop.load_tinymce[ed.target.id] != 'undefined') {
+					if (typeof ProductMultishop.load_tinymce[ed.target.id])
+						tinyMCE.get(ed.target.id).hide();
+					else
+						tinyMCE.get(ed.target.id).show();
+				}
+			});
 
-				ed.on('keydown', function(ed, e) {
-					tinyMCE.triggerSave();
-					textarea = $('#'+tinymce.activeEditor.id);
-					var max = textarea.parent('div').find('span.counter').data('max');
-					if (max != 'none')
-					{
-						count = tinyMCE.activeEditor.getBody().textContent.length;
-						rest = max - count;
-						if (rest < 0)
-							textarea.parent('div').find('span.counter').html('<span style="color:red;">{l s='Maximum'} '+ max +' {l s='characters'} : '+rest+'</span>');
-						else
-							textarea.parent('div').find('span.counter').html(' ');
-					}
+			ed.on('keydown', function(ed, e) {
+				tinyMCE.triggerSave();
+				textarea = $('#'+tinymce.activeEditor.id);
+				var max = textarea.parent('div').find('span.counter').data('max');
+				if (max != 'none')
+				{
+					count = tinyMCE.activeEditor.getBody().textContent.length;
+					rest = max - count;
+					if (rest < 0)
+						textarea.parent('div').find('span.counter').html('<span style="color:red;">{l s='Maximum'} '+ max +' {l s='characters'} : '+rest+'</span>');
+					else
+						textarea.parent('div').find('span.counter').html(' ');
+				}
+			});
+		}
+
+		$('.autoload_rte').each(function (index, elem) {
+			var tempClass = 'autoload_rte' + Math.floor(Math.random() * 99999999).toString().padStart(8, '0');
+			$(elem).addClass(tempClass);
+			if (typeof window.IntersectionObserver !== 'undefined') {
+				var observer = new IntersectionObserver(function (changes) {
+					changes.forEach(function (change) {
+						if (change.intersectionRatio > 0) {
+							tinySetup({
+								editor_selector: tempClass,
+								setup: tinyMceInit,
+							});
+						}
+					});
+				}, {
+					root: null,
+					rootMargin: '0px',
+					threshold: 0.5,
 				});
+				observer.observe(document.querySelector('.' + tempClass));
+			} else {
+				var interval = setInterval(function () {
+					if ($('.' + tempClass).is(':visible')) {
+						tinySetup({
+							editor_selector: tempClass,
+							setup: tinyMceInit,
+						});
+						clearInterval(interval);
+					}
+				}, 500);
 			}
 		});
 	});

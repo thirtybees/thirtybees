@@ -959,8 +959,34 @@
 
 	$(document).ready(function(){
 		{block name="autoload_tinyMCE"}
-			tinySetup({
-				editor_selector :"autoload_rte"
+			$('.autoload_rte').each(function (index, elem) {
+				var tempClass = 'autoload_rte' + Math.floor(Math.random() * 99999999).toString().padStart(8, '0');
+				$(elem).addClass(tempClass);
+				if (typeof window.IntersectionObserver !== 'undefined') {
+					var observer = new IntersectionObserver(function (changes) {
+						changes.forEach(function (change) {
+							if (change.intersectionRatio > 0) {
+								tinySetup({
+									editor_selector: tempClass,
+								});
+							}
+						});
+					}, {
+						root: null,
+						rootMargin: '0px',
+						threshold: 0.5,
+					});
+					observer.observe(document.querySelector('.' + tempClass));
+				} else {
+					var interval = setInterval(function () {
+						if ($('.' + tempClass).is(':visible')) {
+							tinySetup({
+								editor_selector: tempClass,
+							});
+							clearInterval(interval);
+						}
+					}, 500);
+				}
 			});
 		{/block}
 	});
