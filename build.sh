@@ -157,7 +157,7 @@ EXCLUDE_FILE+=("codeception.yml")
 EXCLUDE_FILE+=("composer.lock")
 EXCLUDE_FILE+=("Vagrantfile")
 EXCLUDE_FILE+=("build.sh")
-# EXCLUDE_FILE+=("generatemd5list.php")  <- Removed later.
+# EXCLUDE_FILE+=("generatemd5list.php")  <- Can't get removed.
 
 # Directories not needed in the release package.
 EXCLUDE_DIR+=("examples")
@@ -229,7 +229,6 @@ done
   echo -n "Creating package ... "
   cd "${PACKAGING_DIR}"
   php ./tools/generatemd5list.php
-  rm ./tools/generatemd5list.php
   zip -r -q "${PACKAGE_NAME}".zip .
   echo "done."
 )
