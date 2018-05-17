@@ -299,6 +299,19 @@ done
 unset FILES FAULT UNWANTED
 
 if ${LS} README.md | grep -q '.'; then
+  # These are needed as delimiters, so check for their presence early.
+  HEADINGS=('Description')
+  HEADINGS+=('License')
+  HEADINGS+=('Roadmap')
+
+  HEADING_MISSING='false'
+  for H in "${HEADINGS[@]}"; do
+    if ! ${CAT} README.md | grep -q "^## ${H}$"; then
+      e "Heading '## ${H}' missing in README.md."
+      HEADING_MISSING='true'
+    fi
+  done
+
   # First line of README.md should match module_name: in .tbstore.yml.
   TBSTORE_LINE="# $(${CAT} .tbstore.yml | sed -n 's/^module_name:\s*// p')"
   README_LINE=$(${CAT} README.md | sed -n '1 p')
@@ -319,7 +332,7 @@ if ${LS} README.md | grep -q '.'; then
     n "by    README.md: '${README_LINE}'"
   fi
 
-  unset TBSTORE_LINE README_LINE
+  unset HEADINGS HEADING_MISSING TBSTORE_LINE README_LINE
 fi
 
 
