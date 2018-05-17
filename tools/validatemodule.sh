@@ -298,6 +298,19 @@ done
   n "content of such former documentation files goes into README.md now."
 unset FILES FAULT UNWANTED
 
+if ${LS} README.md | grep -q '.'; then
+  # First line of README.md should match module_name: in .tbstore.yml.
+  TBSTORE_LINE="# $(${CAT} .tbstore.yml | sed -n 's/^module_name:\s*// p')"
+  README_LINE=$(${CAT} README.md | sed -n '1 p')
+
+  if [ "${TBSTORE_LINE}" != "${README_LINE}" ]; then
+    e "first line of README.md doesn't match 'module_name' in .tbstore.yml."
+    n "by .tbstore.yml: '${TBSTORE_LINE}'"
+    n "by    README.md: '${README_LINE}'"
+  fi
+  unset TBSTORE_LINE README_LINE
+fi
+
 
 ### Evaluation of findings.
 
