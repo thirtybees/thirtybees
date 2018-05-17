@@ -308,6 +308,17 @@ if ${LS} README.md | grep -q '.'; then
     n "by .tbstore.yml: '${TBSTORE_LINE}'"
     n "by    README.md: '${README_LINE}'"
   fi
+
+  # Third line of README.md should match description_short: in .tbstore.yml.
+  TBSTORE_LINE=$(${CAT} .tbstore.yml | sed -n 's/^description_short:\s*// p')
+  README_LINE=$(${CAT} README.md | sed -n '3 p')
+
+  if [ "${TBSTORE_LINE}" != "${README_LINE}" ]; then
+    e "third line of README.md doesn't match 'description_short' in .tbstore.yml."
+    n "by .tbstore.yml: '${TBSTORE_LINE}'"
+    n "by    README.md: '${README_LINE}'"
+  fi
+
   unset TBSTORE_LINE README_LINE
 fi
 
