@@ -118,6 +118,11 @@ function n {
   echo "   Note: ${1}" >> ${REPORT}
 }
 
+# Report unchanged.
+function u {
+  echo "${1}" >> ${REPORT}
+}
+
 # Extract a property of the module main class. More precisely, those properies
 # which are set by '$this-><property>' in the constructor.
 #
