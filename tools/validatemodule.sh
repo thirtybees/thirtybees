@@ -337,6 +337,25 @@ if ${LS} README.md | grep -q '.'; then
     n "by    README.md: '${README_LINE}'"
   fi
 
+  if [ ${HEADING_MISSING} = 'false' ]; then
+    # Section 'Description' ( = stuff between '## Description' and '## License')
+    # should match the content of .tbstore.yml/description.md.
+    TBSTORE_LINE=$(${CAT} .tbstore/description.md)
+    README_LINE=$(${CAT} README.md | sed -n '/^## Description$/, /^## License$/ {
+                                               /^## Description$/ n
+                                               /^## License$/ ! p
+                                             }')
+    # Trailing newline was removed by the $() already.
+    README_LINE="${README_LINE#$'\n'}"  # Remove leading newline.
+
+    if [ "${TBSTORE_LINE}" != "${README_LINE}" ]; then
+      e "Section 'Description' in README.md doesn't match content of description.md."
+      n "diff between README.md (+) and .tbstore.yml/description.md (-):"
+      u "$(diff -u0 <(echo "${TBSTORE_LINE}") <(echo "${README_LINE}") | \
+             tail -n+3)"
+    fi
+  fi
+
   unset HEADINGS HEADING_MISSING TBSTORE_LINE README_LINE
 fi
 
