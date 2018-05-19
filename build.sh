@@ -157,26 +157,31 @@ EXCLUDE_FILE+=("codeception.yml")
 EXCLUDE_FILE+=("composer.lock")
 EXCLUDE_FILE+=("Vagrantfile")
 EXCLUDE_FILE+=("build.sh")
-# EXCLUDE_FILE+=("generatemd5list.php")  <- Can't get removed.
-EXCLUDE_FILE+=("validatemodule.sh")
 
 # Directories not needed in the release package.
-EXCLUDE_DIR+=("examples")
+EXCLUDE_DIR=("examples")
 EXCLUDE_DIR+=("Examples")
 EXCLUDE_DIR+=("tests")
 EXCLUDE_DIR+=("Tests")
 EXCLUDE_DIR+=("unitTests")
 EXCLUDE_DIR+=("vagrant")
 
-# As always, there are some exceptions :-)
+# As always, there are some exceptions from the above :-) Full paths, please.
 KEEP=("lib/Twig/Node/Expression/Test")
 
+# Exclude paths, for individual files and directories to be excluded.
+# EXCLUDE_PATH=("generatemd5list.php")  <- Can't get removed.
+EXCLUDE_PATH=("tools/validatemodule.sh")
+
+
+# Build a list of parameters for 'find' to actually keep ${KEEP}.
 KEEP_FLAGS=()
 for E in "${KEEP[@]}"; do
   KEEP_FLAGS+=("!")
   KEEP_FLAGS+=("-path")
   KEEP_FLAGS+=("\*${E}\*")
 done
+
 
 # Create copies of all the stuff.
 # Try to copy not much more than what's needed.
@@ -222,6 +227,9 @@ done
     find . "${KEEP_FLAGS[@]}" -type d -name "${E}" | while read D; do
       rm -rf "${D}"
     done
+  done
+  for E in "${EXCLUDE_PATH[@]}"; do
+    rm -rf "${E}"
   done
 )
 
