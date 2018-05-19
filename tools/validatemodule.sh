@@ -362,9 +362,29 @@ if ${LS} README.md | grep -q '.'; then
       u "$(diff -u0 <(echo "${TBSTORE_LINE}") <(echo "${README_LINE}") | \
              tail -n+3)"
     fi
+
+    # Sections 'License' up to 'Packaging' ( = stuff between '## License' and
+    # '## Roadmap') should match the content of the README.md template for
+    # modules.
+    TEMPLATE_LINE=$(cat "${TEMPLATES_DIR}/README.md.module" | \
+                      sed -n '/^## License$/, /^## Roadmap$/ {
+                        /^## License$/ n
+                        /^## Roadmap$/ ! p
+                      }')
+    README_LINE=$(${CAT} README.md | sed -n '/^## License$/, /^## Roadmap$/ {
+                                               /^## License$/ n
+                                               /^## Roadmap$/ ! p
+                                             }')
+
+    if [ "${TEMPLATE_LINE}" != "${README_LINE}" ]; then
+      e "sections 'License' up to 'Packaging' in README.md don't match the template."
+      n "diff between README.md (+) and ${TEMPLATES_DIR}/README.md.module (-):"
+      u "$(diff -u0 <(echo "${TEMPLATE_LINE}") <(echo "${README_LINE}") | \
+             tail -n+3)"
+    fi
   fi
 
-  unset HEADINGS HEADING_MISSING TBSTORE_LINE README_LINE
+  unset HEADINGS HEADING_MISSING TBSTORE_LINE README_LINE TEMPLATE_LINE
 fi
 
 
