@@ -100,6 +100,14 @@ else
   exit 1
 fi
 
+# Find directory with verification templates.
+TEMPLATES_DIR="${0%/*}/templates"
+if [ ! -r "${TEMPLATES_DIR}/README.md.module" ]; then
+  echo "Verification templates directory should be ${TEMPLATES_DIR},"
+  echo "but there is no file README.md.module inside it. Aborting."
+  exit 1
+fi
+
 
 ### Auxilliary functions.
 
