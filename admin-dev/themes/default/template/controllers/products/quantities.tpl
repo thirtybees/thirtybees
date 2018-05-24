@@ -282,6 +282,10 @@
 					<p class="help-block">{l s='The next date of availability for this product when it is out of stock.'}</p>
 				</div>
 			</div>
+			{else}
+			<div class="form-group">
+				<p class="help-block col-lg-12">{l s='This product has combinations, set eventual availability dates there.'}</p>
+			</div>
 			{/if}
 		{/if}
 		<div class="panel-footer">
