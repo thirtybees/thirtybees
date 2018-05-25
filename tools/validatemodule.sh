@@ -236,10 +236,14 @@ if [ ${IS_GIT} = 'true' ]; then
   FILES+=('.tbstore/description.md')
   FILES+=('.tbstore/images/image-1.png')
 
-  # Each mandatory file should exist in the repository.
+  # Each mandatory file should exist in the repository and be not empty.
   for F in "${FILES[@]}"; do
-    ${LS} "${F}" | grep -q '.' || \
+    if ${LS} "${F}" | grep -q '.'; then
+      [ $(${CAT} "${F}" | wc -c) -gt 1 ] || \
+        e "file ${F} exists, but is empty."
+    else
       e "mandatory file ${F} missing."
+    fi
   done
   unset FILES
 
