@@ -391,6 +391,17 @@ if ${LS} README.md | grep -q '.'; then
     fi
   fi
 
+  # There should be a '#### Short Term' and a '#### Long Term' heading in
+  # the Roadmap section.
+  README_LINE=$(${CAT} README.md | \
+                sed -n '/^## Roadmap$/,$ { /^#### Short Term$/ p }')
+  [ -n "${README_LINE}" ] ||
+    e "header '#### Short Term' missing in the 'Roadmap' section in README.md."
+  README_LINE=$(${CAT} README.md | \
+                sed -n '/^## Roadmap$/,$ { /^#### Long Term$/ p }')
+  [ -n "${README_LINE}" ] ||
+    e "header '#### Long Term' missing in the 'Roadmap' section in README.md."
+
   unset HEADINGS HEADING_MISSING TBSTORE_LINE README_LINE TEMPLATE_LINE
 fi
 
