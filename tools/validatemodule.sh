@@ -246,8 +246,15 @@ if [ ${IS_GIT} = 'true' ]; then
   # .tbstore.yml and .tbstore/configuration.yml should be identical.
   if ${LS} .tbstore.yml | grep -q '.' \
      && ${LS} .tbstore/configuration.yml | grep -q '.'; then
-    [ "$(${CAT} .tbstore.yml)" = "$(${CAT} .tbstore/configuration.yml)" ] || \
+    TBSTORE_TEXT=$(${CAT} .tbstore.yml)
+    CONFIG_TEXT=$(${CAT} .tbstore/configuration.yml)
+    if [ "${TBSTORE_TEXT}" != "${CONFIG_TEXT}" ]; then
       e "files .tbstore.yml and .tbstore/configuration.yml not identical."
+      n "diff between .tbstore.yml (+) and .tbstore/configuration.yml (-):"
+      u "$(diff -u0 <(echo "${CONFIG_TEXT}") <(echo "${TBSTORE_TEXT}") | \
+        tail -n+3)"
+    fi
+    unset TBSTORE_TEXT CONFIG_TEXT
   fi
 
   if ${LS} .tbstore.yml | grep -q '.'; then
