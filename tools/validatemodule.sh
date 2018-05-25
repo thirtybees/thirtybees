@@ -402,6 +402,10 @@ if ${LS} README.md | grep -q '.'; then
   [ -n "${README_LINE}" ] ||
     e "header '#### Long Term' missing in the 'Roadmap' section in README.md."
 
+  # Section 'Roadmap' should be at least 8 lines long.
+  [ $(${CAT} README.md | sed -n '/^## Roadmap$/,$ p' | wc -l) -ge 8 ] || \
+    e "section 'Roadmap' in README.md should be at least 8 lines long."
+
   unset HEADINGS HEADING_MISSING TBSTORE_LINE README_LINE TEMPLATE_LINE
 fi
 
