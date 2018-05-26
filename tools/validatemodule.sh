@@ -148,6 +148,13 @@ function constructorentry {
     cut -d "'" -f 2
 }
 
+# Remove copyright years in lines declaring a copyright. This makes file
+# contents of different vintages comparable.
+function removecopyrightyears {
+  sed '/Copyright (C)/ s/ [0-9-]* //
+       /@copyright/ s/ [0-9-]* //'
+}
+
 
 ### .gitignore
 
@@ -430,6 +437,30 @@ for D in . $(${LS} .); do
   fi
 done
 unset PREV_DIR
+
+# Each index.php should match either the version for thirty bees or the version
+# for thirty bees and PrestaShop combined.
+TB_VERSION=$(cat "${TEMPLATES_DIR}/index.php.tb.module" | removecopyrightyears)
+TBPS_VERSION=$(cat "${TEMPLATES_DIR}/index.php.tbps.module" | removecopyrightyears)
+for I in $(${LS} index.php \*\*/index.php); do
+  THIS_VERSION=$(${CAT} "${I}" | removecopyrightyears)
+  if [ "${THIS_VERSION}" != "${TB_VERSION}" ] \
+     && [ "${THIS_VERSION}" != "${TBPS_VERSION}" ]; then
+    e "${I} matches neither the thirty bees nor the thirty bees / PS template."
+    if echo "${THIS_VERSION}" | grep -q 'PrestaShop SA'; then
+      # Should be a combined thirty bees / PS version.
+      n "diff between ${I} (+) and ${TEMPLATES_DIR}/index.php.tbps (-):"
+      u "$(diff -u0 <(echo "${TBPS_VERSION}") <(echo "${THIS_VERSION}") | \
+             tail -n+3)"
+    else
+      # thirty bees only version.
+      n "diff between ${I} (+) and ${TEMPLATES_DIR}/index.php.tb (-):"
+      u "$(diff -u0 <(echo "${TB_VERSION}") <(echo "${THIS_VERSION}") | \
+             tail -n+3)"
+    fi
+  fi
+done
+unset TB_VERSION TBPS_VERSION THIS_VERSION
 
 
 ### Evaluation of findings.
