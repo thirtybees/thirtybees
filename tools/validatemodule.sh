@@ -414,6 +414,24 @@ if ${LS} README.md | grep -q '.'; then
 fi
 
 
+### index.php files.
+
+# There should be an index.php file in every (packaged) directory.
+PREV_DIR=''
+for D in . $(${LS} .); do
+  D="${D%/*}"
+  if [ -d "${D}" ] \
+     && [ "${D}" != "${PREV_DIR}" ] \
+     && [ "${D::8}" != '.tbstore' ]; then
+    ${LS} "${D}/index.php" | grep -q '.' || \
+      e "file index.php missing in ${D}/."
+
+    PREV_DIR="${D}"
+  fi
+done
+unset PREV_DIR
+
+
 ### Evaluation of findings.
 
 cat ${REPORT}
