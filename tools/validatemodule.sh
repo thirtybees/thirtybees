@@ -424,19 +424,22 @@ fi
 ### index.php files.
 
 # There should be an index.php file in every (packaged) directory.
-PREV_DIR=''
-for D in . $(${LS} .); do
-  D="${D%/*}"
-  if [ -d "${D}" ] \
-     && [ "${D}" != "${PREV_DIR}" ] \
-     && [ "${D::8}" != '.tbstore' ]; then
+DIRS=('.')
+for D in $(${LS} .); do
+  [ "${D::8}" = '.tbstore' ] && continue
+
+  while [ "${D}" != "${D%/*}" ]; do
+    D="${D%/*}"
+    DIRS+=("${D}")
+  done
+done
+( for E in "${DIRS[@]}"; do echo "${E}"; done ) | sort | uniq | while read D; do
+  if [ -d "${D}" ]; then
     ${LS} "${D}/index.php" | grep -q '.' || \
       e "file index.php missing in ${D}/."
-
-    PREV_DIR="${D}"
   fi
 done
-unset PREV_DIR
+unset DIRS
 
 # Each index.php should match either the version for thirty bees or the version
 # for thirty bees and PrestaShop combined.
