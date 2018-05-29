@@ -356,6 +356,8 @@ class AdminCurrenciesControllerCore extends AdminController
     public function processUpdate()
     {
         parent::processUpdate();
+
+        Configuration::updateValue('TB_NO_AUTO_FORMAT_'.(int) $this->object->id, !Tools::getValue('auto_format'));
     }
 
     /**
