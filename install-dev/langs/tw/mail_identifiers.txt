@@ -5,6 +5,7 @@
 密碼： {passwd}
 信箱： {email}
 
+
 {shop_name} - {shop_url}
 
-{shop_url} 是透過 PrestaShop™ 建置
+{shop_url} 是透過 thirty bees 建置

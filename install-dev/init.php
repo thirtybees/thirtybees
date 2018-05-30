@@ -69,7 +69,7 @@ define('_TB_PRICE_DATABASE_PRECISION_', 6);
 
 require_once(_TB_INSTALL_PATH_.'install_version.php');
 
-// PrestaShop autoload is used to load some helpfull classes like Tools.
+// thirty bees autoload is used to load some helpfull classes like Tools.
 // Add classes used by installer bellow.
 
 require_once(_PS_CORE_DIR_.'/config/alias.php');

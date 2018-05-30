@@ -1,7 +1,7 @@
 <?php
 
 return array (
-  'informations' => 
+  'informations' =>
   array (
     'documentation' => 'https://docs.thirtybees.com/',
     'documentation_upgrade' => 'https://docs.thirtybees.com/',
@@ -11,7 +11,7 @@ return array (
     'tutorial' => 'https://docs.thirtybees.com/',
     'tailored_help' => 'https://store.thirtybees.com/services',
   ),
-  'translations' => 
+  'translations' =>
   array (
     'Cannot create image "%1$s" for entity "%2$s"' => 'Tidak dapat membuat image "%1$s" untuk objek "%2$s"',
     'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => 'Tidak dapat membuat image "%1$s" (masalah hak akses di "%2$s")',
@@ -156,7 +156,7 @@ return array (
     'menu_configure' => 'Informasi toko',
     'menu_database' => 'Konfigurasi sistem',
     'menu_process' => 'Instalasi toko',
-    'Installation Assistant' => 'Instalasi Prestashop',
+    'Installation Assistant' => 'Instalasi thirty bees',
     'To install thirty bees, you need to have JavaScript enabled in your browser.' => 'To install thirty bees, you need to have JavaScript enabled in your browser.',
     'http://enable-javascript.com/' => 'http://enable-javascript.com/',
     'License Agreements' => 'Perjanjian lisensi',

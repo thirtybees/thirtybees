@@ -49,7 +49,7 @@
     <template/>
   </order_state>
   <order_state id="Payment_remotely_accepted">
-    <name>Zahlung ausserhalb von PrestaShop eingegangen</name>
+    <name>Zahlung ausserhalb von thirty bees eingegangen</name>
     <template>payment</template>
   </order_state>
   <order_state id="Awaiting_cod_validation">

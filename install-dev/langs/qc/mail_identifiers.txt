@@ -8,6 +8,4 @@ Adresse électronique : {email}
 
 {shop_name} - {shop_url}
 
-
-
-{shop_url} propulsé par PrestaShop™
+{shop_url} propulsé par thirty bees.

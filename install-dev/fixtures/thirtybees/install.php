@@ -30,10 +30,8 @@
  */
 
 /**
- * This class is only here to show the possibility of extending InstallXmlLoader, which is the
- * class parsing all XML files, copying all images, etc.
- *
- * Please read documentation in ~/install/dev/ folder if you want to customize PrestaShop install / fixtures.
+ * This class demonstrates the possibility of extending InstallXmlLoader, which
+ * is the class parsing all XML files, copying all images, etc.
  */
 class InstallFixturesthirtybees extends InstallXmlLoader
 {

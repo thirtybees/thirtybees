@@ -5,6 +5,7 @@
 סיסמה: {passwd}
 כתובת מייל: {email}
 
+
 {shop_name} - {shop_url}
 
-{shop_url} מופעל באמצעות thirty bees™
+{shop_url} מופעל באמצעות thirty bees.

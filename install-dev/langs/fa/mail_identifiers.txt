@@ -5,6 +5,7 @@
 رمزعبور: {passwd}
 آدرس ایمیل: {email}
 
+
 {shop_name} - {shop_url}
 
-{shop_url} thirty bees powered ecommerce™
+{shop_name}, powered by thirty bees.

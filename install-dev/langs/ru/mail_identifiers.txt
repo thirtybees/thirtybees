@@ -5,6 +5,7 @@
 Электронная почта: {email}
 Пароль: {passwd}
 
+
 {shop_name} - {shop_url}
 
-{shop_url} под управлением PrestaShop™
+{shop_url} под управлением thirty bees.

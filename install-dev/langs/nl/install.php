@@ -1,7 +1,7 @@
 <?php
 
 return array (
-  'informations' => 
+  'informations' =>
   array (
     'documentation' => 'https://docs.thirtybees.com/',
     'documentation_upgrade' => 'https://docs.thirtybees.com/',
@@ -11,7 +11,7 @@ return array (
     'tutorial' => 'https://docs.thirtybees.com/',
     'tailored_help' => 'https://store.thirtybees.com/services',
   ),
-  'translations' => 
+  'translations' =>
   array (
     'Cannot create image "%1$s" for entity "%2$s"' => 'Kan afbeelding "%1$s" voor entiteit "%2$s" niet creëren',
     'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => 'Kan afbeelding "%1$s" (verkeerde rechten op map "%2$s") niet creëren',
@@ -179,7 +179,7 @@ return array (
     'Front Office' => 'Frontoffice',
     'Discover your store as your future customers will see it!' => 'Ontdek uw winkel zoals uw toekomstige klanten het zullen zien!',
     'Discover your store' => 'Ontdek uw winkel',
-    'Share your experience with your friends!' => 'Vertel Uw vrienden over Uw PrestaShop ervaringen!',
+    'Share your experience with your friends!' => 'Vertel Uw vrienden over Uw thirty bees ervaringen!',
     'I just built an online store with thirty bees!' => 'Ik heb zojuist een webwinkel gebouwd met thirty bees!',
     'Tweet' => 'Tweet',
     'Share' => 'Delen',

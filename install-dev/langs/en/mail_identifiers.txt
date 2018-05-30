@@ -7,4 +7,4 @@ E-mail address: {email}
 
 {shop_name} - {shop_url}
 
-{shop_url} thirty bees powered ecommerce™
+{shop_url}, powered by thirty bees.

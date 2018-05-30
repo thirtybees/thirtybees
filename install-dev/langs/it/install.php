@@ -1,7 +1,7 @@
 <?php
 
 return array (
-  'informations' => 
+  'informations' =>
   array (
     'documentation' => 'https://docs.thirtybees.com/',
     'documentation_upgrade' => 'https://docs.thirtybees.com/',
@@ -11,7 +11,7 @@ return array (
     'tutorial' => 'https://docs.thirtybees.com/',
     'tailored_help' => 'https://store.thirtybees.com/services',
   ),
-  'translations' => 
+  'translations' =>
   array (
     'Cannot create image "%1$s" for entity "%2$s"' => 'Impossibile creare l\'immagine "%1$s" per l\'entità "%2$s"',
     'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => 'Impossibile creare l\'immagine "%1$s" (errore permessi nella cartella "%2$s")',
@@ -189,7 +189,7 @@ return array (
     'We are currently checking thirty bees compatibility with your system environment' => 'Stiamo verificando la compatibilità di thirty bees con il tuo sistema',
     'If you have any questions, please visit our <a href="%1$s" target="_blank">documentation</a> and <a href="%2$s" target="_blank">community forum</a>.' => 'Se hai domande o dubbi, visita la nostra <a href="%1$s" target="_blank">documentazione</a> e il <a href="%2$s" target="_blank">forum dedicato alla nostra comunità</a>.',
     'thirty bees compatibility with your system environment has been verified!' => 'E\' stata verificata la compatibilità di thirty bees con il tuo sistema!',
-    'Oops! Please correct the item(s) below, and then click "Refresh information" to test the compatibility of your new system.' => 'Ops! Correggi i seguenti punti, quindi clicca sul pulsante "Aggiorna" per verificare la compatibilità di PrestaShop del tuo nuovo sistema.',
+    'Oops! Please correct the item(s) below, and then click "Refresh information" to test the compatibility of your new system.' => 'Ops! Correggi i seguenti punti, quindi clicca sul pulsante "Aggiorna" per verificare la compatibilità di thirty bees del tuo nuovo sistema.',
     'Refresh these settings' => 'Aggiorna le impostazioni',
     'thirty bees requires at least 32 MB of memory to run: please check the memory_limit directive in your php.ini file or contact your host provider about this.' => 'thirty bees richiede almeno 32 MB di memoria per funzionare: controlla la direttiva memory_limit nel tuo file php.ini o contatta il tuo fornitore di hosting.',
     '<b>Warning: You cannot use this tool to upgrade your store anymore.</b><br /><br />You already have <b>thirty bees version %1$s installed</b>.<br /><br />If you want to upgrade to the latest version, please read our documentation: <a href="%2$s">%2$s</a>' => '<b>Attenzione: Non puoi utilizzare più questo strumento per aggiornare il tuo negozio.</b><br /><br />Hai già <b>installato thirty bees versione %1$s</b>.<br /><br />Se vuoi aggiornare all\'ultima versione leggi la nostra documentazione: <a href="%2$s">%2$s</a>',

@@ -31,7 +31,7 @@ $(document).ready(function () {
 current_step = 0;
 
 function start_install() {
-  // If we are already installing PrestaShop, do not trigger action again
+  // If we're already installing thirty bees, do not trigger the action again.
   if (is_installing) {
     return;
   }

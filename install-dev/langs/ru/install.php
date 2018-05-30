@@ -1,7 +1,7 @@
 <?php
 
 return array (
-  'informations' => 
+  'informations' =>
   array (
     'documentation' => 'https://docs.thirtybees.com/',
     'documentation_upgrade' => 'https://docs.thirtybees.com/',
@@ -11,7 +11,7 @@ return array (
     'tutorial' => 'https://docs.thirtybees.com/',
     'tailored_help' => 'https://store.thirtybees.com/services',
   ),
-  'translations' => 
+  'translations' =>
   array (
     'Cannot create image "%1$s" for entity "%2$s"' => 'Невозможно создать изображение "%1$s" для значения "%2$s"',
     'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => 'Невозможно создать изображение "%1$s" (недостаточно разрешений для папки "%2$s")',
@@ -160,7 +160,7 @@ return array (
     'To install thirty bees, you need to have JavaScript enabled in your browser.' => 'Чтобы установить thirty bees, Вам нужно включить JavaScript в Вашем браузере.',
     'http://enable-javascript.com/' => 'http://enable-javascript.com/ru/',
     'License Agreements' => 'Лицензионные соглашения',
-    'To enjoy the many features that are offered for free by thirty bees, please read the license terms below. thirty bees core is licensed under OSL 3.0, while the modules and themes are licensed under AFL 3.0.' => 'Чтобы пользоваться всем функционалом thirty bees, прочтите лицензионное соглашение. Ядро PrestaShop разработано на OSL 3.0, модули и темы - на AFL 3.0.',
+    'To enjoy the many features that are offered for free by thirty bees, please read the license terms below. thirty bees core is licensed under OSL 3.0, while the modules and themes are licensed under AFL 3.0.' => 'Чтобы пользоваться всем функционалом thirty bees, прочтите лицензионное соглашение. Ядро thirty bees разработано на OSL 3.0, модули и темы - на AFL 3.0.',
     'I agree to the above terms and conditions.' => 'Я принимаю правила и условия.',
     'Done!' => 'Готово!',
     'An error occurred during installation...' => 'Во время инсталляции произошла ошибка...',

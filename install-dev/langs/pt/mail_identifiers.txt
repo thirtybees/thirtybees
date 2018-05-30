@@ -5,6 +5,7 @@ Aqui estão os seus dados para iniciar sessão na loja {shop_name}:
 Palavra-passe: {passwd}
 Endereço de e-mail: {email}
 
+
 {shop_name} - {shop_url}
 
-{shop_url} thirty bees powered ecommerce™
+{shop_name}, powered by thirty bees.

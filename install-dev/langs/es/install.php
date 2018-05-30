@@ -1,7 +1,7 @@
 <?php
 
 return array (
-  'informations' => 
+  'informations' =>
   array (
     'documentation' => 'https://docs.thirtybees.com/',
     'documentation_upgrade' => 'https://docs.thirtybees.com/',
@@ -11,7 +11,7 @@ return array (
     'tutorial' => 'http://docs.thirtybees.com/',
     'tailored_help' => 'https://store.thirtybees.com/services',
   ),
-  'translations' => 
+  'translations' =>
   array (
     'Cannot create image "%1$s" for entity "%2$s"' => 'No se puede crear la imagen "%1$s" para la entidad "%2$s"',
     'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => 'No se puede crear la imagen "%1$s" (permisos incorrectos en el directorio "%2$s")',
@@ -131,7 +131,7 @@ return array (
     'All information you give us is collected by us and is subject to data processing and statistics, it is necessary for the members of the thirty bees company in order to respond to your requests. Your personal data may be communicated to service providers and partners as part of partner relationships. Under the current "Act on Data Processing, Data Files and Individual Liberties" you have the right to access, rectify and oppose to the processing of your personal data through this <a href="%s" onclick="return !window.open(this.href)">link</a>.' => 'Toda la información que nos proporciona es recolectada por nosotros y está sujeta al procesamiento de datos y estadísticas, es necesario para que los miembros de thirty bees puedan responder a sus peticiones. Sus datos personales podrán ser comunicados a los proveedores de servicios y socios como parte de las relaciones de thirty bees con terceros. Bajo la actual "ley sobre informática, ficheros y libertades individuales" usted tiene el derecho de acceso, rectificación y oposición al tratamiento de sus datos personales a través de este <a href="%s" onclick="return!window.open(this.href)"> enlace</a>.',
     'Configure your database by filling out the following fields' => 'Configura tu base de datos rellenando los siguientes campos',
     'To use thirty bees, you must create a database to collect all of your store\'s data-related activities.' => 'Para utilizar thirty bees, debe crear una base de datos para recoger todas las actividades relacionadas con los datos de tu tienda.',
-    'Please complete the fields below in order for thirty bees to connect to your database. ' => 'Por favor, rellene los siguientes campos para que PrestaShop pueda conectarse a su base de datos. ',
+    'Please complete the fields below in order for thirty bees to connect to your database. ' => 'Por favor, rellene los siguientes campos para que thirty bees pueda conectarse a su base de datos. ',
     'Database server address' => 'Dirección del servidor de base de datos',
     'The default port is 3306. To use a different port, add the port number at the end of your server\'s address i.e ":4242".' => 'El puerto utilizado por defecto es el 3306. Si utilizas un puerto diferente, añade este número de puerto al final de la dirección del servidor con dos puntos, por ejemplo ":4242".',
     'Database name' => 'Nombre de la base de datos',
@@ -147,7 +147,7 @@ return array (
     'Support' => 'Soporte',
     'Documentation' => 'Documentación',
     'Contact us' => 'Contacte con nosotros',
-    'thirty bees Installation Assistant' => 'Asistente para la instalación de PrestaShop',
+    'thirty bees Installation Assistant' => 'Asistente para la instalación de thirty bees',
     'Forum' => 'Foro',
     'Blog' => 'Blog',
     'menu_welcome' => 'Elegir el idioma',
@@ -157,10 +157,10 @@ return array (
     'menu_database' => 'Configuración del sistema',
     'menu_process' => 'Instalación de la tienda',
     'Installation Assistant' => 'Asistente de instalación',
-    'To install thirty bees, you need to have JavaScript enabled in your browser.' => 'Para instalar PrestaShop, debe tener Javascript activado en su navegador.',
+    'To install thirty bees, you need to have JavaScript enabled in your browser.' => 'Para instalar thirty bees, debe tener Javascript activado en su navegador.',
     'http://enable-javascript.com/' => 'http://enable-javascript.com/',
     'License Agreements' => 'Validación de los contratos de licencias',
-    'To enjoy the many features that are offered for free by thirty bees, please read the license terms below. thirty bees core is licensed under OSL 3.0, while the modules and themes are licensed under AFL 3.0.' => 'Para disfrutar de las numerosas funcionalidades ofrecidas de forma gratuita por thirty bees, por favor lea los términos de la licencia a continuación. Core PrestaShop está disponible bajo la licencia OSL 3.0, mientras que los módulos y los temas están licenciados bajo la AFL 3.0.',
+    'To enjoy the many features that are offered for free by thirty bees, please read the license terms below. thirty bees core is licensed under OSL 3.0, while the modules and themes are licensed under AFL 3.0.' => 'Para disfrutar de las numerosas funcionalidades ofrecidas de forma gratuita por thirty bees, por favor lea los términos de la licencia a continuación. Core thirty bees está disponible bajo la licencia OSL 3.0, mientras que los módulos y los temas están licenciados bajo la AFL 3.0.',
     'I agree to the above terms and conditions.' => 'Acepto los términos y condiciones arriba indicados.',
     'Done!' => '¡Ya está!',
     'An error occurred during installation...' => 'Se ha producido un error durante la instalación...',
