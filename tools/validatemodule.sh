@@ -436,6 +436,14 @@ else
   n "a template is in tools/templates/ in thirty bees core."
 fi
 
+# Alternative license file variations should be absent.
+LICENSE=$(${LS} . | grep -i '^license' | grep -v '^LICENSE.md$')
+for F in ${LICENSE}; do
+  e "file ${F} shouldn't exist."
+  n "The license of this module goes into file LICENSE.md."
+done
+unset LICENSE
+
 
 ### index.php files.
 
