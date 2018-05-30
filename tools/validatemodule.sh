@@ -420,6 +420,22 @@ if ${LS} README.md | grep -q '.'; then
   unset HEADINGS HEADING_MISSING TBSTORE_LINE README_LINE TEMPLATE_LINE
 fi
 
+# File LICENSE.md should exist and match the template.
+if ${LS} LICENSE.md | grep -q '.'; then
+  TEMPLATE=$(cat "${TEMPLATES_DIR}/LICENSE.md.module")
+  LICENSE=$(${CAT} LICENSE.md)
+
+  if [ "${TEMPLATE}" != "${LICENSE}" ]; then
+    e "content of LICENSE.md doesn't match the template."
+    n "diff between LICENSE.md (+) and ${TEMPLATES_DIR}/LICENSE.md (-):"
+    u "$(diff -u0 <(echo "${TEMPLATE}") <(echo "${LICENSE}") | tail -n+3)"
+  fi
+  unset TEMPLATE LICENSE
+else
+  e "file LICENSE.md doesn't exist."
+  n "a template is in tools/templates/ in thirty bees core."
+fi
+
 
 ### index.php files.
 
