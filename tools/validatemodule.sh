@@ -510,6 +510,52 @@ templatecompare
 unset COMPARE_TB COMPARE_TBPS COMPARE_LIST
 
 
+### Code file headers.
+#
+# Each code file's header is compared against the template for either thirty
+# bees or thirty bees and PrestaShop combined and should match one of them.
+
+# PHP files.
+COMPARE_TB="${TEMPLATES_DIR}/header.php.tb.module"
+COMPARE_TBPS="${TEMPLATES_DIR}/header.php.tbps.module"
+readarray -t LIST <<< $(${LS} \*\*.php)
+[ -z "${LIST[*]}" ] && LIST=()
+
+for F in "${LIST[@]}"; do
+  # index.php files were validated earlier already.
+  [ "${F##*/}" = 'index.php' ] && continue
+
+  # Exemption are most classes in module tbupdater, which happen to be copies
+  # of files in the core repository and as such, have an OSL license.
+  if [ "${PWD##*/}" = 'tbupdater' ] && [ "${F%%/*}" = 'classes' ]; then
+    w "Skipping PHP header validation in ${F}."
+    continue
+  fi
+
+  # If the file contains a 'thirty bees' or a 'prestashop' it's most
+  # likely one of our files.
+  if [ -n "$(${CAT} "${F}" | \
+             sed -n 's/thirty bees/&/i p; s/prestashop/&/i p;')" ]; then
+    COMPARE_LIST+=("${F}")
+    continue
+  fi
+
+  # If the path contains a well known name it's likely a vendor file.
+  if [ -n "$(sed -n '/^vendor\// p;
+                     /\/GuzzleHttp\// p;
+                     /\/Psr\// p;
+                     /\/SemVer\// p' <<< "${F}")" ]; then
+    continue
+  fi
+
+  # Else it's probably a file with entirely missing header.
+  COMPARE_LIST+=("${F}")
+done
+
+templatecompare
+unset COMPARE_TB COMPARE_TBPS LIST COMPARE_LIST
+
+
 ### Evaluation of findings.
 
 cat ${REPORT}
