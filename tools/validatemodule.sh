@@ -155,6 +155,41 @@ function removecopyrightyears {
        /@copyright/ s/ [0-9-]* //'
 }
 
+# Compare a list of files, e.g. index.phps or a code files, against two
+# templates. Typically a template for a thirty bees only version and a version
+# for thirty bees and PrestaShop combined.
+#
+# Parameters get accepted by variables:
+#
+#   COMPARE_TB: Path of the template containing the thirty bees only version.
+# COMPARE_TBPS: Path of the template containing the combined version.
+# COMPARE_LIST: Array with paths of files to compare.
+function templatecompare {
+  local TB_VERSION TBPS_VERSION THIS_VERSION
+
+  TB_VERSION=$(cat "${COMPARE_TB}" | removecopyrightyears)
+  TBPS_VERSION=$(cat "${COMPARE_TBPS}" | removecopyrightyears)
+
+  for F in "${COMPARE_LIST[@]}"; do
+    THIS_VERSION=$(${CAT} "${F}" | removecopyrightyears)
+    if [ "${THIS_VERSION}" != "${TB_VERSION}" ] \
+       && [ "${THIS_VERSION}" != "${TBPS_VERSION}" ]; then
+      e "${F} matches neither the thirty bees nor the thirty bees / PS template."
+      if grep -q 'PrestaShop SA' <<< "${THIS_VERSION}"; then
+        # Should be a combined thirty bees / PS version.
+        n "diff between ${F} (+) and ${COMPARE_TBPS} (-):"
+        u "$(diff -u0 <(echo "${TBPS_VERSION}") <(echo "${THIS_VERSION}") | \
+               tail -n+3)"
+      else
+        # thirty bees only version.
+        n "diff between ${F} (+) and ${COMPARE_TB} (-):"
+        u "$(diff -u0 <(echo "${TB_VERSION}") <(echo "${THIS_VERSION}") | \
+               tail -n+3)"
+      fi
+    fi
+  done
+}
+
 
 ### .gitignore
 
@@ -467,27 +502,12 @@ unset DIRS
 
 # Each index.php should match either the version for thirty bees or the version
 # for thirty bees and PrestaShop combined.
-TB_VERSION=$(cat "${TEMPLATES_DIR}/index.php.tb.module" | removecopyrightyears)
-TBPS_VERSION=$(cat "${TEMPLATES_DIR}/index.php.tbps.module" | removecopyrightyears)
-for I in $(${LS} index.php \*\*/index.php); do
-  THIS_VERSION=$(${CAT} "${I}" | removecopyrightyears)
-  if [ "${THIS_VERSION}" != "${TB_VERSION}" ] \
-     && [ "${THIS_VERSION}" != "${TBPS_VERSION}" ]; then
-    e "${I} matches neither the thirty bees nor the thirty bees / PS template."
-    if echo "${THIS_VERSION}" | grep -q 'PrestaShop SA'; then
-      # Should be a combined thirty bees / PS version.
-      n "diff between ${I} (+) and ${TEMPLATES_DIR}/index.php.tbps (-):"
-      u "$(diff -u0 <(echo "${TBPS_VERSION}") <(echo "${THIS_VERSION}") | \
-             tail -n+3)"
-    else
-      # thirty bees only version.
-      n "diff between ${I} (+) and ${TEMPLATES_DIR}/index.php.tb (-):"
-      u "$(diff -u0 <(echo "${TB_VERSION}") <(echo "${THIS_VERSION}") | \
-             tail -n+3)"
-    fi
-  fi
-done
-unset TB_VERSION TBPS_VERSION THIS_VERSION
+COMPARE_TB="${TEMPLATES_DIR}/index.php.tb.module"
+COMPARE_TBPS="${TEMPLATES_DIR}/index.php.tbps.module"
+readarray -t COMPARE_LIST <<< $(${LS} index.php \*\*/index.php)
+[ -z "${COMPARE_LIST[*]}" ] && COMPARE_LIST=()
+templatecompare
+unset COMPARE_TB COMPARE_TBPS COMPARE_LIST
 
 
 ### Evaluation of findings.
