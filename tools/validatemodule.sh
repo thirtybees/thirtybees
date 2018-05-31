@@ -165,25 +165,28 @@ function removecopyrightyears {
 # COMPARE_TBPS: Path of the template containing the combined version.
 # COMPARE_LIST: Array with paths of files to compare.
 function templatecompare {
-  local TB_VERSION TBPS_VERSION THIS_VERSION
+  local TB_VERSION TBPS_VERSION TB_LEN TBPS_LEN TB_THIS TBPS_THIS
 
   TB_VERSION=$(cat "${COMPARE_TB}" | removecopyrightyears)
   TBPS_VERSION=$(cat "${COMPARE_TBPS}" | removecopyrightyears)
+  TB_LEN=$(wc -l < "${COMPARE_TB}")
+  TBPS_LEN=$(wc -l < "${COMPARE_TBPS}")
 
   for F in "${COMPARE_LIST[@]}"; do
-    THIS_VERSION=$(${CAT} "${F}" | removecopyrightyears)
-    if [ "${THIS_VERSION}" != "${TB_VERSION}" ] \
-       && [ "${THIS_VERSION}" != "${TBPS_VERSION}" ]; then
+    TB_THIS=$(${CAT} "${F}" | head -${TB_LEN} | removecopyrightyears)
+    TBPS_THIS=$(${CAT} "${F}" | head -${TBPS_LEN} | removecopyrightyears)
+    if [ "${TB_THIS}" != "${TB_VERSION}" ] \
+       && [ "${TBPS_THIS}" != "${TBPS_VERSION}" ]; then
       e "${F} matches neither the thirty bees nor the thirty bees / PS template."
-      if grep -q 'PrestaShop SA' <<< "${THIS_VERSION}"; then
+      if grep -q 'PrestaShop SA' <<< "${TBPS_THIS}"; then
         # Should be a combined thirty bees / PS version.
         n "diff between ${F} (+) and ${COMPARE_TBPS} (-):"
-        u "$(diff -u0 <(echo "${TBPS_VERSION}") <(echo "${THIS_VERSION}") | \
+        u "$(diff -u0 <(echo "${TBPS_VERSION}") <(echo "${TBPS_THIS}") | \
                tail -n+3)"
       else
         # thirty bees only version.
         n "diff between ${F} (+) and ${COMPARE_TB} (-):"
-        u "$(diff -u0 <(echo "${TB_VERSION}") <(echo "${THIS_VERSION}") | \
+        u "$(diff -u0 <(echo "${TB_VERSION}") <(echo "${TB_THIS}") | \
                tail -n+3)"
       fi
     fi
