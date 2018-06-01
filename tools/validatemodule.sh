@@ -163,7 +163,11 @@ function removecopyrightyears {
 #
 #   COMPARE_TB: Path of the template containing the thirty bees only version.
 # COMPARE_TBPS: Path of the template containing the combined version.
+# COMPARE_SKIP: Optional. Number of initial lines in the candidate file to
+#               skip. Typically 1 for PHP files, 0 or unset for other languages.
 # COMPARE_LIST: Array with paths of files to compare.
+#
+# Parameters get unset after the operation.
 function templatecompare {
   local TB_VERSION TBPS_VERSION TB_LEN TBPS_LEN TB_THIS TBPS_THIS
 
@@ -172,9 +176,20 @@ function templatecompare {
   TB_LEN=$(wc -l < "${COMPARE_TB}")
   TBPS_LEN=$(wc -l < "${COMPARE_TBPS}")
 
+  COMPARE_SKIP=${COMPARE_SKIP:-0}
+  let TB_LEN=${TB_LEN}+${COMPARE_SKIP}
+  let TBPS_LEN=${TBPS_LEN}+${COMPARE_SKIP}
+  let COMPARE_SKIP=${COMPARE_SKIP}+1  # 'tail' does "start at line ...".
+
   for F in "${COMPARE_LIST[@]}"; do
-    TB_THIS=$(${CAT} "${F}" | head -${TB_LEN} | removecopyrightyears)
-    TBPS_THIS=$(${CAT} "${F}" | head -${TBPS_LEN} | removecopyrightyears)
+    TB_THIS=$(${CAT} "${F}" | \
+                head -${TB_LEN} | tail -n+${COMPARE_SKIP} | \
+                removecopyrightyears
+              )
+    TBPS_THIS=$(${CAT} "${F}" | \
+                  head -${TBPS_LEN} | tail -n+${COMPARE_SKIP} | \
+                  removecopyrightyears
+                )
     if [ "${TB_THIS}" != "${TB_VERSION}" ] \
        && [ "${TBPS_THIS}" != "${TBPS_VERSION}" ]; then
       e "${F} matches neither the thirty bees nor the thirty bees / PS template."
@@ -191,6 +206,7 @@ function templatecompare {
       fi
     fi
   done
+  unset COMPARE_TB COMPARE_TBPS COMPARE_SKIP COMPARE_LIST
 }
 
 
@@ -507,10 +523,10 @@ unset DIRS
 # for thirty bees and PrestaShop combined.
 COMPARE_TB="${TEMPLATES_DIR}/index.php.tb.module"
 COMPARE_TBPS="${TEMPLATES_DIR}/index.php.tbps.module"
+COMPARE_SKIP=0
 readarray -t COMPARE_LIST <<< $(${LS} index.php \*\*/index.php)
 [ -z "${COMPARE_LIST[*]}" ] && COMPARE_LIST=()
 templatecompare
-unset COMPARE_TB COMPARE_TBPS COMPARE_LIST
 
 
 ### Code file headers.
@@ -521,6 +537,7 @@ unset COMPARE_TB COMPARE_TBPS COMPARE_LIST
 # PHP files.
 COMPARE_TB="${TEMPLATES_DIR}/header.php.tb.module"
 COMPARE_TBPS="${TEMPLATES_DIR}/header.php.tbps.module"
+COMPARE_SKIP=1
 readarray -t LIST <<< $(${LS} \*\*.php)
 [ -z "${LIST[*]}" ] && LIST=()
 
@@ -554,9 +571,8 @@ for F in "${LIST[@]}"; do
   # Else it's probably a file with entirely missing header.
   COMPARE_LIST+=("${F}")
 done
-
+unset LIST
 templatecompare
-unset COMPARE_TB COMPARE_TBPS LIST COMPARE_LIST
 
 
 ### Evaluation of findings.
