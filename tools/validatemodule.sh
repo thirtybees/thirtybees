@@ -589,6 +589,15 @@ for F in "${LIST[@]}"; do
   # that such a file gets served, if not empty.
   [ $(${CAT} "${F}" | wc -c) -gt 0 ] || continue
 
+  # Warn about and ignore not minimized vendor files.
+  B="${F##*/}"
+  if [ "${B}" != "${B#jquery.}" ] \
+     || [ "${B}" != "${B#superfish}" ] \
+     || [ "${B}" != "${B#hoverIntent}" ]; then
+    w "vendor file ${F} should be minimized."
+    continue
+  fi
+
   COMPARE_LIST+=("${F}")
 done
 unset LIST
