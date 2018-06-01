@@ -535,8 +535,8 @@ templatecompare
 # bees or thirty bees and PrestaShop combined and should match one of them.
 
 # PHP files.
-COMPARE_TB="${TEMPLATES_DIR}/header.php.tb.module"
-COMPARE_TBPS="${TEMPLATES_DIR}/header.php.tbps.module"
+COMPARE_TB="${TEMPLATES_DIR}/header.php-js.tb.module"
+COMPARE_TBPS="${TEMPLATES_DIR}/header.php-js.tbps.module"
 COMPARE_SKIP=1
 readarray -t LIST <<< $(${LS} \*\*.php)
 [ -z "${LIST[*]}" ] && LIST=()
@@ -569,6 +569,26 @@ for F in "${LIST[@]}"; do
   fi
 
   # Else it's probably a file with entirely missing header.
+  COMPARE_LIST+=("${F}")
+done
+unset LIST
+templatecompare
+
+# JavaScript files.
+COMPARE_TB="${TEMPLATES_DIR}/header.php-js.tb.module"
+COMPARE_TBPS="${TEMPLATES_DIR}/header.php-js.tbps.module"
+COMPARE_SKIP=0
+readarray -t LIST <<< $(${LS} \*\*.js)
+[ -z "${LIST[*]}" ] && LIST=()
+
+for F in "${LIST[@]}"; do
+  # Ignore minimized files.
+  [ "${F}" = "${F%.min.js}" ] || continue
+
+  # Ignore empty files. They exist only to show developers
+  # that such a file gets served, if not empty.
+  [ $(${CAT} "${F}" | wc -c) -gt 0 ] || continue
+
   COMPARE_LIST+=("${F}")
 done
 unset LIST
