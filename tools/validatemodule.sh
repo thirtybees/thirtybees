@@ -535,8 +535,8 @@ templatecompare
 # bees or thirty bees and PrestaShop combined and should match one of them.
 
 # PHP files.
-COMPARE_TB="${TEMPLATES_DIR}/header.php-js.tb.module"
-COMPARE_TBPS="${TEMPLATES_DIR}/header.php-js.tbps.module"
+COMPARE_TB="${TEMPLATES_DIR}/header.php-js-css.tb.module"
+COMPARE_TBPS="${TEMPLATES_DIR}/header.php-js-css.tbps.module"
 COMPARE_SKIP=1
 readarray -t LIST <<< $(${LS} \*\*.php)
 [ -z "${LIST[*]}" ] && LIST=()
@@ -575,8 +575,8 @@ unset LIST
 templatecompare
 
 # JavaScript files.
-COMPARE_TB="${TEMPLATES_DIR}/header.php-js.tb.module"
-COMPARE_TBPS="${TEMPLATES_DIR}/header.php-js.tbps.module"
+COMPARE_TB="${TEMPLATES_DIR}/header.php-js-css.tb.module"
+COMPARE_TBPS="${TEMPLATES_DIR}/header.php-js-css.tbps.module"
 COMPARE_SKIP=0
 readarray -t LIST <<< $(${LS} \*\*.js)
 [ -z "${LIST[*]}" ] && LIST=()
@@ -597,6 +597,31 @@ for F in "${LIST[@]}"; do
     w "vendor file ${F} should be minimized."
     continue
   fi
+
+  COMPARE_LIST+=("${F}")
+done
+unset LIST
+templatecompare
+
+# CSS files.
+COMPARE_TB="${TEMPLATES_DIR}/header.php-js-css.tb.module"
+COMPARE_TBPS="${TEMPLATES_DIR}/header.php-js-css.tbps.module"
+COMPARE_SKIP=0
+readarray -t LIST <<< $(${LS} \*\*.css)
+[ -z "${LIST[*]}" ] && LIST=()
+
+for F in "${LIST[@]}"; do
+  # Ignore minimized files.
+  [ "${F}" = "${F%.min.css}" ] || continue
+
+  # Ignore empty files. They exist only to show developers
+  # that such a file gets served, if not empty.
+  [ $(${CAT} "${F}" | wc -c) -gt 0 ] || continue
+
+  # Known exceptions.
+  #
+  # Module themeconfigurator, it's FontAwesome.
+  [ "${F}" = 'views/css/font/font.css' ] && continue
 
   COMPARE_LIST+=("${F}")
 done
