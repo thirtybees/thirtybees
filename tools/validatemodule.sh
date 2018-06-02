@@ -628,6 +628,14 @@ done
 unset LIST
 templatecompare
 
+# Smarty templates.
+COMPARE_TB="${TEMPLATES_DIR}/header.tpl.tb.module"
+COMPARE_TBPS="${TEMPLATES_DIR}/header.tpl.tbps.module"
+COMPARE_SKIP=0
+readarray -t COMPARE_LIST <<< $(${LS} \*\*.tpl)
+[ -z "${COMPARE_LIST[*]}" ] && COMPARE_LIST=()
+templatecompare
+
 
 ### Evaluation of findings.
 
