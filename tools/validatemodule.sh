@@ -534,11 +534,11 @@ templatecompare
 # Each code file's header is compared against the template for either thirty
 # bees or thirty bees and PrestaShop combined and should match one of them.
 
-# PHP files.
+# PHP and PHTML files.
 COMPARE_TB="${TEMPLATES_DIR}/header.php-js-css.tb.module"
 COMPARE_TBPS="${TEMPLATES_DIR}/header.php-js-css.tbps.module"
 COMPARE_SKIP=1
-readarray -t LIST <<< $(${LS} \*\*.php)
+readarray -t LIST <<< $(${LS} \*\*.php \*\*.phtml)
 [ -z "${LIST[*]}" ] && LIST=()
 
 for F in "${LIST[@]}"; do
