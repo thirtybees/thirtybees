@@ -280,6 +280,9 @@ readarray -t -O ${#FILES[@]} FILES <<< $(${LS} \*\*.xml \*\*.yml \*\*.md)
 
 FAULT='false'
 for F in "${FILES[@]}"; do
+  # Ignore empty files.
+  [ $(${CAT} "${F}" | wc -c) -gt 0 ] || continue
+
   # Test against trailing whitespace.
   if ${CAT} "${F}" | grep -q $'[ \t]$'; then
     e "file ${F} contains trailing whitespace."
