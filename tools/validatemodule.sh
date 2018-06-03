@@ -25,6 +25,11 @@ function usage {
   echo
   echo "    -h, --help            Show this help and exit."
   echo
+  echo "    -v, --verbose         Show (hopefully) helpful hints regarding the"
+  echo "                          errors found, like diffs for file content"
+  echo "                          mismatches and/or script snippets to fix such"
+  echo "                          misalignments."
+  echo
   echo "Example to test a single module:"
   echo
   echo "  cd modules/bankwire"
@@ -51,11 +56,16 @@ trap cleanup 0
 
 ### Options parsing.
 
+OPTION_VERBOSE='false'
+
 for OPTION in "$@"; do
   case "${OPTION}" in
     '-h'|'--help')
       usage
       exit 0
+      ;;
+    '-v'|'--verbose')
+      OPTION_VERBOSE='true'
       ;;
     *)
       echo "Unknown option '${OPTION}'. Try ${0} --help."
@@ -123,12 +133,12 @@ function w {
 
 # Report a note.
 function n {
-  echo "   Note: ${1}" >> ${REPORT}
+  [ ${OPTION_VERBOSE} = 'true' ] && echo "   Note: ${1}" >> ${REPORT}
 }
 
 # Report unchanged.
 function u {
-  echo "${1}" >> ${REPORT}
+  [ ${OPTION_VERBOSE} = 'true' ] && echo "${1}" >> ${REPORT}
 }
 
 # Extract a property of the module main class. More precisely, those properies
@@ -644,17 +654,21 @@ templatecompare
 cat ${REPORT}
 
 if grep -q '^  Error:' ${REPORT}; then
-  if grep -q 'Thirty Bees' ${REPORT} || grep -q 'ThirtyBees' ${REPORT}; then
-    echo
-    echo "For the 'Thirty Bees' vs. 'thirty bees' issue, these commands"
-    echo "should cover most of the cases (and only these cases):"
-    echo
-    echo "find . -type f -exec grep -q 'Thirty Bees' {} \; -exec sed -i 's/@author    Thirty Bees/@author    thirty bees/' {} \;"
-    echo "find . -type f -exec grep -q 'Thirty Bees' {} \; -exec sed -i 's/Thirty Bees is an extension/thirty bees is an extension/' {} \;"
-    echo "find . -type f -exec grep -q 'Thirty Bees' {} \; -exec sed -i 's/Copyright (C) 2017 Thirty Bees/Copyright (C) 2017 thirty bees/' {} \;"
-    echo "find . -type f -exec grep -q 'Thirty Bees' {} \; -exec sed -i 's/copyright 2017 Thirty Bees/copyright 2017 thirty bees/' {} \;"
-    echo "find . -type f -exec grep -q 'ThirtyBees' {} \; -exec sed -i 's/username\/ThirtyBees\.git/username\/thirtybees.git/' {} \;"
-    echo "find . -type f -exec grep -q 'ThirtyBees' {} \; -exec sed -i 's/github.com\/thirtybees\/ThirtyBees/github.com\/thirtybees\/thirtybees/' {} \;"
+  if [ ${OPTION_VERBOSE} = 'true' ]; then
+    if grep -q 'Thirty Bees' ${REPORT} || grep -q 'ThirtyBees' ${REPORT}; then
+      echo
+      echo "For the 'Thirty Bees' vs. 'thirty bees' issue, these commands"
+      echo "should cover most of the cases (and only these cases):"
+      echo
+      echo "find . -type f -exec grep -q 'Thirty Bees' {} \; -exec sed -i 's/@author    Thirty Bees/@author    thirty bees/' {} \;"
+      echo "find . -type f -exec grep -q 'Thirty Bees' {} \; -exec sed -i 's/Thirty Bees is an extension/thirty bees is an extension/' {} \;"
+      echo "find . -type f -exec grep -q 'Thirty Bees' {} \; -exec sed -i 's/Copyright (C) 2017 Thirty Bees/Copyright (C) 2017 thirty bees/' {} \;"
+      echo "find . -type f -exec grep -q 'Thirty Bees' {} \; -exec sed -i 's/copyright 2017 Thirty Bees/copyright 2017 thirty bees/' {} \;"
+      echo "find . -type f -exec grep -q 'ThirtyBees' {} \; -exec sed -i 's/username\/ThirtyBees\.git/username\/thirtybees.git/' {} \;"
+      echo "find . -type f -exec grep -q 'ThirtyBees' {} \; -exec sed -i 's/github.com\/thirtybees\/ThirtyBees/github.com\/thirtybees\/thirtybees/' {} \;"
+    fi
+  else
+    echo "Errors found. Use --verbose for additional hints."
   fi
 
   exit 1
