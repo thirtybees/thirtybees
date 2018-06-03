@@ -271,6 +271,29 @@ ${LS} config_\*\.xml | grep -q '.' && \
   e "at least one file config_<lang>.xml exists."
 
 
+### General text file maintenance.
+
+# All files we consider to be text files.
+readarray -t FILES <<< $(${LS} \*\*.php \*\*.css \*\*.js \*\*.tpl \*\*.phtml)
+readarray -t -O ${#FILES[@]} FILES <<< $(${LS} \*\*.xml \*\*.yml \*\*.md)
+[ -z "${FILES[*]}" ] && FILES=()
+
+FAULT='false'
+for F in "${FILES[@]}"; do
+  # Test against trailing whitespace.
+  if ${CAT} "${F}" | grep -q $'[ \t]$'; then
+    e "file ${F} contains trailing whitespace."
+    FAULT='true'
+  fi
+done
+
+if [ ${FAULT} = 'true' ]; then
+  n "Most code editors have an option to remove trailing whitespace on save"
+  u "         automatically."
+fi
+unset FILES FAULT
+
+
 ### Capitalization.
 
 # 'thirty bees' should be lowercase everywhere.
