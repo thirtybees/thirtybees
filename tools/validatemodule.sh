@@ -547,8 +547,10 @@ for F in "${LIST[@]}"; do
 
   # Exemption are most classes in module tbupdater, which happen to be copies
   # of files in the core repository and as such, have an OSL license.
-  if [ "${PWD##*/}" = 'tbupdater' ] && [ "${F%%/*}" = 'classes' ]; then
-    w "Skipping PHP header validation in ${F}."
+  if [ "${PWD##*/}" = 'tbupdater' ] \
+     && [ "${F%%/*}" = 'classes' ] \
+     && ! ${CAT} "${F}" | grep -q '(AFL 3.0)'; then
+    w "Skipping PHP header validation in not AFL-licensed file ${F}."
     continue
   fi
 
