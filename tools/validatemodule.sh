@@ -715,6 +715,57 @@ readarray -t COMPARE_LIST <<< $(${LS} \*\*.tpl)
 templatecompare
 
 
+### Copyright mentions.
+#
+# As time goes on, the years in copyright mentions have to get updated. Make
+# sure this doesn't get forgotten.
+
+# All files we consider to mention the copyright.
+readarray -t FILES <<< $(${LS} \*\*.php \*\*.css \*\*.js \*\*.tpl \*\*.phtml)
+[ -z "${FILES[*]}" ] && FILES=()
+
+for F in "${FILES[@]}"; do
+  testignore "${F}" && continue
+
+  THIS_YEAR=$(date +%Y)
+  CR_LINES=$(${CAT} "${F}" | \
+               sed -n '1, /\*\/$/ { /thirty bees/ { s/copyright/&/i p } }')
+
+  # Test lines with 'Copyright (C)'.
+  if grep -q 'Copyright (C)' <<< "${CR_LINES}"; then
+    CR_YEAR=$(sed -n '1, /\*\/$/ {
+                        /Copyright (C)/ {
+                          s/.* \([0-9-]*\) .*/\1/;
+                          s/[0-9]*-//;
+                          p;
+                        }
+                      }' <<< "${CR_LINES}")
+    [ "${CR_YEAR}" = "${THIS_YEAR}" ] || \
+      e "'Copyright (C)' in ${F} goes up to ${CR_YEAR}, should be ${THIS_YEAR}."
+    unset CR_YEAR
+  else
+    e "file ${F} has no 'Copyright (C)' line for thirty bees in the header."
+  fi
+
+  # Test lines with '@copyright'.
+  if grep -q '@copyright' <<< "${CR_LINES}"; then
+    CR_YEAR=$(sed -n '1, /\*\/$/ {
+                        /@copyright/ {
+                          s/.* \([0-9-]*\) .*/\1/;
+                          s/[0-9]*-//;
+                          p;
+                        }
+                      }' <<< "${CR_LINES}")
+    [ "${CR_YEAR}" = "${THIS_YEAR}" ] || \
+      e "'@copyright' in ${F} goes up to ${CR_YEAR}, should be ${THIS_YEAR}."
+    unset CR_YEAR
+  else
+    e "file ${F} has no '@copyright' line for thirty bees in the header."
+  fi
+done
+unset FILES THIS_YEAR CR_LINES
+
+
 ### Evaluation of findings.
 
 cat ${REPORT}
