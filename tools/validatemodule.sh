@@ -182,6 +182,7 @@ function removecopyrightyears {
 # COMPARE_TBPS: Path of the template containing the combined version.
 # COMPARE_SKIP: Optional. Number of initial lines in the candidate file to
 #               skip. Typically 1 for PHP files, 0 or unset for other languages.
+# COMPARE_HINT: Optional. User hint on which part mismatches.
 # COMPARE_LIST: Array with paths of files to compare.
 #
 # Parameters get unset after the operation.
@@ -198,6 +199,10 @@ function templatecompare {
   let TBPS_LEN=${TBPS_LEN}+${COMPARE_SKIP}
   let COMPARE_SKIP=${COMPARE_SKIP}+1  # 'tail' does "start at line ...".
 
+  COMPARE_HINT=${COMPARE_HINT:-''}
+  [ "${COMPARE_HINT}" = "${COMPARE_HINT# }" ] && \
+    COMPARE_HINT=" ${COMPARE_HINT}"
+
   for F in "${COMPARE_LIST[@]}"; do
     TB_THIS=$(${CAT} "${F}" | \
                 head -${TB_LEN} | tail -n+${COMPARE_SKIP} | \
@@ -209,7 +214,7 @@ function templatecompare {
                 )
     if [ "${TB_THIS}" != "${TB_VERSION}" ] \
        && [ "${TBPS_THIS}" != "${TBPS_VERSION}" ]; then
-      e "${F} matches neither the thirty bees nor the thirty bees / PS template."
+      e "${F}${COMPARE_HINT} matches none of the templates."
       if grep -q 'PrestaShop SA' <<< "${TBPS_THIS}"; then
         # Should be a combined thirty bees / PS version.
         n "diff between ${F} (+) and ${COMPARE_TBPS} (-):"
@@ -223,7 +228,7 @@ function templatecompare {
       fi
     fi
   done
-  unset COMPARE_TB COMPARE_TBPS COMPARE_SKIP COMPARE_LIST
+  unset COMPARE_TB COMPARE_TBPS COMPARE_SKIP COMPARE_HINT COMPARE_LIST
 }
 
 
@@ -577,6 +582,7 @@ unset DIRS
 COMPARE_TB="${TEMPLATES_DIR}/index.php.tb.module"
 COMPARE_TBPS="${TEMPLATES_DIR}/index.php.tbps.module"
 COMPARE_SKIP=0
+COMPARE_HINT=''
 readarray -t COMPARE_LIST <<< $(${LS} index.php \*\*/index.php)
 [ -z "${COMPARE_LIST[*]}" ] && COMPARE_LIST=()
 templatecompare
@@ -591,6 +597,7 @@ templatecompare
 COMPARE_TB="${TEMPLATES_DIR}/header.php-js-css.tb.module"
 COMPARE_TBPS="${TEMPLATES_DIR}/header.php-js-css.tbps.module"
 COMPARE_SKIP=1
+COMPARE_HINT='header'
 readarray -t LIST <<< $(${LS} \*\*.php \*\*.phtml)
 [ -z "${LIST[*]}" ] && LIST=()
 
@@ -633,6 +640,7 @@ templatecompare
 COMPARE_TB="${TEMPLATES_DIR}/header.php-js-css.tb.module"
 COMPARE_TBPS="${TEMPLATES_DIR}/header.php-js-css.tbps.module"
 COMPARE_SKIP=0
+COMPARE_HINT='header'
 readarray -t LIST <<< $(${LS} \*\*.js)
 [ -z "${LIST[*]}" ] && LIST=()
 
@@ -662,6 +670,7 @@ templatecompare
 COMPARE_TB="${TEMPLATES_DIR}/header.php-js-css.tb.module"
 COMPARE_TBPS="${TEMPLATES_DIR}/header.php-js-css.tbps.module"
 COMPARE_SKIP=0
+COMPARE_HINT='header'
 readarray -t LIST <<< $(${LS} \*\*.css)
 [ -z "${LIST[*]}" ] && LIST=()
 
@@ -687,6 +696,7 @@ templatecompare
 COMPARE_TB="${TEMPLATES_DIR}/header.tpl.tb.module"
 COMPARE_TBPS="${TEMPLATES_DIR}/header.tpl.tbps.module"
 COMPARE_SKIP=0
+COMPARE_HINT='header'
 readarray -t COMPARE_LIST <<< $(${LS} \*\*.tpl)
 [ -z "${COMPARE_LIST[*]}" ] && COMPARE_LIST=()
 templatecompare
