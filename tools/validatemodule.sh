@@ -98,6 +98,13 @@ if [ -f .git ]; then
     # Exiting with 0 anyways to not stop 'git submodule foreach' runs.
     exit 0
   fi
+
+  # Don't continue if there are staged changes.
+  if [ $(git diff | wc -l) -ne 0 ] \
+     || [ $(git diff --staged | wc -l) -ne 0 ]; then
+    echo "Error: there are uncommitted changes, can't continue."
+    exit 1
+  fi
 else
   IS_GIT='false'
   echo "Not a Git repository. Validating bare file trees not tested. Aborting."
