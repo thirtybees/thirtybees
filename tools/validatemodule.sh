@@ -667,6 +667,10 @@ if grep -q '^  Error:' ${REPORT}; then
       echo "find . -type f -exec grep -q 'ThirtyBees' {} \; -exec sed -i 's/username\/ThirtyBees\.git/username\/thirtybees.git/' {} \;"
       echo "find . -type f -exec grep -q 'ThirtyBees' {} \; -exec sed -i 's/github.com\/thirtybees\/ThirtyBees/github.com\/thirtybees\/thirtybees/' {} \;"
     fi
+
+    echo
+    echo "If these errors were introduced with your last commit, fix them,"
+    echo "then use 'git commit --amend' to correct that last commit."
   else
     echo "Errors found. Use --verbose for additional hints."
   fi
