@@ -283,6 +283,10 @@ for F in "${FILES[@]}"; do
   # Ignore empty files.
   [ $(${CAT} "${F}" | wc -c) -gt 0 ] || continue
 
+  # Test against DOS line endings.
+  ${CAT} "${F}" | grep -q $'\r' && \
+    e "file ${F} contains DOS/Windows line endings."
+
   # Test against trailing whitespace.
   if ${CAT} "${F}" | grep -q $'[ \t]$'; then
     e "file ${F} contains trailing whitespace."
