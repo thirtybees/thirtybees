@@ -292,11 +292,17 @@ for F in "${FILES[@]}"; do
     e "file ${F} contains trailing whitespace."
     FAULT='true'
   fi
+
+  # Test for a newline at end of file.
+  if [ $(${CAT} "${F}" | sed -n '$ p' | wc -l) -eq 0 ]; then
+    e "file ${F} misses a newline at end of file."
+    FAULT='true'
+  fi
 done
 
 if [ ${FAULT} = 'true' ]; then
-  n "Most code editors have an option to remove trailing whitespace on save"
-  u "         automatically."
+  n "Most code editors have an option to remove trailing whitespace and"
+  u "         add a newline at end of file on save automatically."
 fi
 unset FILES FAULT
 
