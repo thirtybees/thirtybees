@@ -234,13 +234,16 @@ function templatecompare {
 # Test wether we should skip this file from tests.
 #
 # Parameter 1: Path of the file in question, relative to repository root.
+# Parameter 2: 'true' or default: print warnings about some files. To avoid
+#              duplicate warnings about the same file.
 #
 #      Return: 0/true if the file should be skipped, 1/false otherwise.
 function testignore {
-  local SUFFIX
+  local SUFFIX WARN
 
   SUFFIX="${1##*.}"
   SUFFIX="${SUFFIX,,}"
+  WARN=${2:-'true'}
 
   # Ignore empty CSS and JS files. They exist only to show developers
   # that such a file gets served, if not empty.
@@ -260,7 +263,7 @@ function testignore {
      && [ "${PWD##*/}" = 'tbupdater' ] \
      && [ "${1%%/*}" = 'classes' ] \
      && ! ${CAT} "${1}" | grep -q '(AFL 3.0)'; then
-    w "Skipping not AFL-licensed file ${1}."
+    [ ${WARN} = 'true' ] && w "Skipping not AFL-licensed file ${1}."
     return 0
   fi
 
@@ -282,7 +285,7 @@ function testignore {
   if [ "${B}" != "${B#jquery.}" ] \
      || [ "${B}" != "${B#superfish}" ] \
      || [ "${B}" != "${B#hoverIntent}" ]; then
-    w "vendor file ${1} should be minimized."
+    [ ${WARN} = 'true' ] && w "vendor file ${1} should be minimized."
     return 0
   fi
 
@@ -725,7 +728,7 @@ readarray -t FILES <<< $(${LS} \*\*.php \*\*.css \*\*.js \*\*.tpl \*\*.phtml)
 [ -z "${FILES[*]}" ] && FILES=()
 
 for F in "${FILES[@]}"; do
-  testignore "${F}" && continue
+  testignore "${F}" 'false' && continue
 
   THIS_YEAR=$(date +%Y)
   CR_LINES=$(${CAT} "${F}" | \
