@@ -231,6 +231,70 @@ function templatecompare {
   unset COMPARE_TB COMPARE_TBPS COMPARE_SKIP COMPARE_HINT COMPARE_LIST
 }
 
+# Test wether we should skip this file from tests.
+#
+# Parameter 1: Path of the file in question, relative to repository root.
+#
+#      Return: 0/true if the file should be skipped, 1/false otherwise.
+function testignore {
+  local SUFFIX
+
+  SUFFIX="${1##*.}"
+  SUFFIX="${SUFFIX,,}"
+
+  # Ignore empty CSS and JS files. They exist only to show developers
+  # that such a file gets served, if not empty.
+  ( [ ${SUFFIX} = 'js' ] || [ ${SUFFIX} = 'css' ] ) \
+    && [ $(${CAT} "${1}" | wc -c) -eq 0 ] \
+    && return 0
+
+  # Ignore minimized files.
+  [ "${1}" != "${1%.min.js}" ] \
+    && return 0
+  [ "${1}" != "${1%.min.css}" ] \
+    && return 0
+
+  # Skip most PHP classes in module tbupdater, which happen to be copies
+  # of files in the core repository and as such, have an OSL license.
+  if [ ${SUFFIX} = 'php' ] \
+     && [ "${PWD##*/}" = 'tbupdater' ] \
+     && [ "${1%%/*}" = 'classes' ] \
+     && ! ${CAT} "${1}" | grep -q '(AFL 3.0)'; then
+    w "Skipping not AFL-licensed file ${1}."
+    return 0
+  fi
+
+  # If the file contains a 'thirty bees' or a 'prestashop' it's most
+  # likely one of our files.
+  [ -n "$(${CAT} "${1}" | \
+            sed -n 's/thirty bees/&/i p; s/prestashop/&/i p;')" ] \
+    && return 1
+
+  # If the path contains a well known name it's likely a vendor file.
+  [ -n "$(sed -n '/^vendor\// p;
+                  /\/GuzzleHttp\// p;
+                  /\/Psr\// p;
+                  /\/SemVer\// p' <<< "${1}")" ] \
+    && return 0
+
+  # Warn about and ignore not minimized vendor files.
+  B="${1##*/}"
+  if [ "${B}" != "${B#jquery.}" ] \
+     || [ "${B}" != "${B#superfish}" ] \
+     || [ "${B}" != "${B#hoverIntent}" ]; then
+    w "vendor file ${1} should be minimized."
+    return 0
+  fi
+
+  # Known CSS exceptions.
+  #
+  # Module themeconfigurator, it's FontAwesome.
+  [ "${1}" = 'views/css/font/font.css' ] \
+    && return 0
+
+  return 1
+}
+
 
 ### .gitignore
 
@@ -605,32 +669,7 @@ for F in "${LIST[@]}"; do
   # index.php files were validated earlier already.
   [ "${F##*/}" = 'index.php' ] && continue
 
-  # Exemption are most classes in module tbupdater, which happen to be copies
-  # of files in the core repository and as such, have an OSL license.
-  if [ "${PWD##*/}" = 'tbupdater' ] \
-     && [ "${F%%/*}" = 'classes' ] \
-     && ! ${CAT} "${F}" | grep -q '(AFL 3.0)'; then
-    w "Skipping PHP header validation in not AFL-licensed file ${F}."
-    continue
-  fi
-
-  # If the file contains a 'thirty bees' or a 'prestashop' it's most
-  # likely one of our files.
-  if [ -n "$(${CAT} "${F}" | \
-             sed -n 's/thirty bees/&/i p; s/prestashop/&/i p;')" ]; then
-    COMPARE_LIST+=("${F}")
-    continue
-  fi
-
-  # If the path contains a well known name it's likely a vendor file.
-  if [ -n "$(sed -n '/^vendor\// p;
-                     /\/GuzzleHttp\// p;
-                     /\/Psr\// p;
-                     /\/SemVer\// p' <<< "${F}")" ]; then
-    continue
-  fi
-
-  # Else it's probably a file with entirely missing header.
+  testignore "${F}" && continue
   COMPARE_LIST+=("${F}")
 done
 unset LIST
@@ -645,22 +684,7 @@ readarray -t LIST <<< $(${LS} \*\*.js)
 [ -z "${LIST[*]}" ] && LIST=()
 
 for F in "${LIST[@]}"; do
-  # Ignore minimized files.
-  [ "${F}" = "${F%.min.js}" ] || continue
-
-  # Ignore empty files. They exist only to show developers
-  # that such a file gets served, if not empty.
-  [ $(${CAT} "${F}" | wc -c) -gt 0 ] || continue
-
-  # Warn about and ignore not minimized vendor files.
-  B="${F##*/}"
-  if [ "${B}" != "${B#jquery.}" ] \
-     || [ "${B}" != "${B#superfish}" ] \
-     || [ "${B}" != "${B#hoverIntent}" ]; then
-    w "vendor file ${F} should be minimized."
-    continue
-  fi
-
+  testignore "${F}" && continue
   COMPARE_LIST+=("${F}")
 done
 unset LIST
@@ -675,18 +699,7 @@ readarray -t LIST <<< $(${LS} \*\*.css)
 [ -z "${LIST[*]}" ] && LIST=()
 
 for F in "${LIST[@]}"; do
-  # Ignore minimized files.
-  [ "${F}" = "${F%.min.css}" ] || continue
-
-  # Ignore empty files. They exist only to show developers
-  # that such a file gets served, if not empty.
-  [ $(${CAT} "${F}" | wc -c) -gt 0 ] || continue
-
-  # Known exceptions.
-  #
-  # Module themeconfigurator, it's FontAwesome.
-  [ "${F}" = 'views/css/font/font.css' ] && continue
-
+  testignore "${F}" && continue
   COMPARE_LIST+=("${F}")
 done
 unset LIST
