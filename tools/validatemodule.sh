@@ -25,6 +25,9 @@ function usage {
   echo
   echo "    -h, --help            Show this help and exit."
   echo
+  echo "    -r, --release         Run additional tests for making a release,"
+  echo "                          like testing Git tags and versions declared."
+  echo
   echo "    -v, --verbose         Show (hopefully) helpful hints regarding the"
   echo "                          errors found, like diffs for file content"
   echo "                          mismatches and/or script snippets to fix such"
@@ -56,6 +59,7 @@ trap cleanup 0
 
 ### Options parsing.
 
+OPTION_RELEASE='false'
 OPTION_VERBOSE='false'
 
 for OPTION in "$@"; do
@@ -63,6 +67,9 @@ for OPTION in "$@"; do
     '-h'|'--help')
       usage
       exit 0
+      ;;
+    '-r'|'--release')
+      OPTION_RELEASE='true'
       ;;
     '-v'|'--verbose')
       OPTION_VERBOSE='true'
