@@ -433,6 +433,35 @@ if [ ${IS_GIT} = 'true' ]; then
   done
   unset FILES
 
+  # Test for all the mandatory keys.
+  # See https://docs.thirtybees.com/store/free-modules/#explanation-of-files
+  if ${LS} .tbstore.yml | grep -q '.'; then
+    KEYS=('module_name')
+    KEYS+=('compatible_versions')
+    KEYS+=('author')
+    KEYS+=('category')
+    # KEYS+=('localization')  # Not mandatory.
+    KEYS+=('tags')
+    KEYS+=('description_short')
+    KEYS+=('description')
+    KEYS+=('images')
+    KEYS+=('license')
+    KEYS+=('php_version')
+    KEYS+=('gdpr_compliant')
+
+    FAULT='false'
+    for K in "${KEYS[@]}"; do
+      if ! ${CAT} .tbstore.yml | grep -q "^${K}:"; then
+        e "key '${K}' missing in .tbstore.yml."
+        FAULT='true'
+      fi
+    done
+
+    [ ${FAULT} = 'true' ] && \
+      n "see https://docs.thirtybees.com/store/free-modules/#explanation-of-files"
+    unset KEYS FAULT
+  fi
+
   # .tbstore.yml and .tbstore/configuration.yml should be identical.
   if ${LS} .tbstore.yml | grep -q '.' \
      && ${LS} .tbstore/configuration.yml | grep -q '.'; then
