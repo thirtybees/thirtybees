@@ -386,6 +386,32 @@ fi
 unset FILES FAULT
 
 
+### Main class validity.
+
+# Test wether mandatory constructor entries exist.
+ENTRIES=('name')
+ENTRIES+=('tab')
+ENTRIES+=('version')
+ENTRIES+=('author')
+ENTRIES+=('need_instance')
+ENTRIES+=('displayName')
+ENTRIES+=('description')
+ENTRIES+=('tb_versions_compliancy')
+
+FAULT='false'
+for E in "${ENTRIES[@]}"; do
+  if [ -z "$(constructorentry ${E})" ]; then
+    e "mandatory PHP main class constructor entry '${E}' missing."
+    FAULT='true'
+  fi
+done
+
+# TODO: replace this lame text with a documentation link.
+[ ${FAULT} = 'true' ] && \
+  n "see PHP main class constructor, '\$this-><entry>'."
+unset ENTRIES FAULT
+
+
 ### Capitalization.
 
 # 'thirty bees' should be lowercase everywhere.
