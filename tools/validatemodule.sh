@@ -852,6 +852,14 @@ if [ ${IS_GIT} = 'true' ] && [ ${OPTION_RELEASE} = 'true' ]; then
   fi
   unset SURPLUS
 
+  # Branch 'master' should be pushed and up to date.
+  MASTER_LOCAL=$(git show -q master | head -1 | cut -d ' ' -f 2)
+  MASTER_REMOTE=$(grep 'refs/heads/master' <<< "${REMOTE_CACHE}" | \
+                    cut -d $'\t' -f 1)
+  [ ${MASTER_LOCAL} = ${MASTER_REMOTE} ] || \
+    e "branches 'master' and '${REMOTE}/master' don't match, a push is needed."
+  unset MASTER_LOCAL MASTER_REMOTE
+
   unset REMOTE REMOTE_CACHE
 fi
 
