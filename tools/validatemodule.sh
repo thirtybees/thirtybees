@@ -920,8 +920,31 @@ if [ ${IS_GIT} = 'true' ] && [ ${OPTION_RELEASE} = 'true' ]; then
   CHANGED_FILES=$(sed "${SED_SCRIPT}" <<< "${CHANGED_FILES}")
   [ -z "${CHANGED_FILES}" ] || \
     e "significant changes since the last release, a new release is needed."
-  unset MASTER_LOCAL LATEST_NAME LATEST_LOCAL CHANGED_FILES
+  unset MASTER_LOCAL LATEST_NAME CHANGED_FILES
   unset EXCLUDE_FILE EXCLUDE_DIR KEEP EXCLUDE_PATH SED_SCRIPT
+
+  # Latest tag ( = latest release) should be committed in the core repository,
+  # if this module is a submodule there.
+  THIS_REPO="${PWD}"
+  CORE_REPO="$(cd ${TEMPLATES_DIR}/../.. && pwd)"
+  CORE_REPO_COPY="${CORE_REPO}"
+  while [ "${THIS_REPO:0:1}" = "${CORE_REPO_COPY:0:1}" ]; do
+    THIS_REPO="${THIS_REPO:1}"
+    CORE_REPO_COPY="${CORE_REPO_COPY:1}"
+    [ -z "${THIS_REPO}" ] && break;
+  done
+  THIS_REPO="${THIS_REPO##/}"
+
+  COMMIT_STATUS=$(cd "${CORE_REPO}" && \
+                    git submodule status --cached "${THIS_REPO}" 2> /dev/null)
+  if [ -n "${COMMIT_STATUS}" ]; then
+    # This module is a submodule in core.
+    COMMIT_STATUS="${COMMIT_STATUS:1}"
+    COMMIT_STATUS="${COMMIT_STATUS%% *}"
+    [ "${COMMIT_STATUS}" = "${LATEST_LOCAL}" ] || \
+      e "module is submodule in core, but latest tag not committed there."
+  fi
+  unset LATEST_LOCAL THIS_REPO CORE_REPO CORE_REPO_COPY COMMIT_STATUS
 
   unset REMOTE REMOTE_CACHE
 fi
