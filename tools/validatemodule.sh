@@ -831,6 +831,31 @@ done
 unset FILES THIS_YEAR CR_LINES
 
 
+### Repository and release related stuff.
+
+if [ ${IS_GIT} = 'true' ] && [ ${OPTION_RELEASE} = 'true' ]; then
+  # First, grab remote branches and tags. That's a real
+  # remote operation, so let's cache the result.
+  REMOTE=$(git remote | head -1)
+  REMOTE_CACHE=$(git ls-remote --refs ${REMOTE})
+
+  # Warn if there are remote branches besides 'master'.
+  SURPLUS=$(sed '/\trefs\/heads/ !d
+                 /\trefs\/heads\/master/ d
+                 s/^[0-9a-f]*//
+                 s/refs\/heads/   '${REMOTE}'/' <<< "${REMOTE_CACHE}"
+            )
+  if [ -n "${SURPLUS}" ]; then
+    w "there are remote branches besides 'master'."
+    n "These are:"
+    u "${SURPLUS}"
+  fi
+  unset SURPLUS
+
+  unset REMOTE REMOTE_CACHE
+fi
+
+
 ### Evaluation of findings.
 
 cat ${REPORT}
