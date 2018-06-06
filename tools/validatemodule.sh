@@ -860,6 +860,12 @@ if [ ${IS_GIT} = 'true' ] && [ ${OPTION_RELEASE} = 'true' ]; then
     e "branches 'master' and '${REMOTE}/master' don't match, a push is needed."
   unset MASTER_LOCAL MASTER_REMOTE
 
+  # Latest tag should be a version tag.
+  LATEST_NAME=$(git tag | tr -d 'v' | sort --reverse --version-sort | head -1)
+  [ -z "$(tr -d '.[:digit:]' <<< ${LATEST_NAME})" ] || \
+    e "Git tag '${LATEST_NAME}' isn't a well formatted release tag."
+  unset LATEST_NAME
+
   unset REMOTE REMOTE_CACHE
 fi
 
