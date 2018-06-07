@@ -865,6 +865,17 @@ if [ ${IS_GIT} = 'true' ] && [ ${OPTION_RELEASE} = 'true' ]; then
   [ -z "$(tr -d '.[:digit:]' <<< ${LATEST_NAME})" ] || \
     e "Git tag '${LATEST_NAME}' isn't a well formatted release tag."
 
+  # Latest tag should be pushed.
+  grep $'\trefs/tags/'"${LATEST_NAME}" <<< "${REMOTE_CACHE}" || \
+    e "latest tag '${LATEST_NAME}' not in the remote repository, needs a push."
+
+  # All remote tags should exist locally.
+  grep $'\trefs/tags/' <<< "${REMOTE_CACHE}" | while read T; do
+    T=${T##*/}
+    [ -n "$(git tag -l ${T})" ] || \
+      e "remote tag ${T} doesn't exist locally."
+  done
+
   # If there are significant changes between the latest tag ( = the latest
   # release) and current 'master', call for a release.
   #
