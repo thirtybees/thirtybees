@@ -46,3 +46,34 @@ for OPTION in "$@"; do
       ;;
   esac
 done
+
+
+### Test for prerequisites.
+
+# Test availability of Git.
+if ! which git > /dev/null; then
+  echo "Git not available. Aborting."
+  exit 1
+fi
+
+# Test for a Git repository.
+if [ ! -f .git ]; then
+  echo "Not at the root of a Git repository. Aborting."
+  exit 1
+fi
+
+# Test wether this is a module directory.
+DIR="${PWD%/*}"
+DIR="${DIR##*/}"
+if [ "${DIR}" != 'modules' ]; then
+  echo "Not in modules/<module>/, this is apparently not a module. Aborting."
+  exit 1
+fi
+unset DIR
+
+# There should be no staged changes.
+if [ $(git diff | wc -l) -ne 0 ] \
+   || [ $(git diff --staged | wc -l) -ne 0 ]; then
+  echo "There are uncommitted changes. Aborting."
+  exit 1
+fi
