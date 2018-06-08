@@ -105,3 +105,56 @@ else
   fi
 fi
 echo "Packaging Git revision '${GIT_REVISION}'."
+
+
+### Set up packaging filters.
+#
+# These filters define which files get ignored during packaging. We set up
+# a standard set here, which should be fine for most modules. To extend this
+# list for a particular module, place (and commit) a file 'buildfilter.sh' in
+# its root directory. It gets included after defining the standards, before
+# assembling the filter script.
+
+# Files filtered by name, in any directory.
+EXCLUDE_FILE=('.gitignore')
+EXCLUDE_FILE+=('build.sh')
+EXCLUDE_FILE+=('buildfilter.sh')
+EXCLUDE_FILE+=('.tbstore.yml')
+EXCLUDE_FILE+=('LICENSE.md')
+EXCLUDE_FILE+=('README.md')
+
+# Directories filtered by name, in any parent directory.
+EXCLUDE_DIR=('.tbstore')
+
+# Paths to not filter (to exempt from above). Starting at the module root
+# directory.
+KEEP_PATH=()
+
+# Paths to exclude, typically used for single files or directories. Starting
+# at the module root directory.
+EXCLUDE_PATH=()
+
+# Allow additions.
+EXTRAS=$(git show ${GIT_REVISION}:buildfilter.sh 2>/dev/null)
+[ -n "${EXTRAS}" ] && eval "${EXTRAS}"
+unset EXTRAS
+
+# Assemble a sed script as filter.
+PATH_FILTER=''
+for I in "${KEEP_PATH[@]}"; do
+  I=$(echo "${I}" | sed 's/\//\\\//g')
+  PATH_FILTER+=' /^'"${I}"'/ { p; d; };'
+done
+for I in "${EXCLUDE_FILE[@]}"; do
+  PATH_FILTER+=' /^'"${I}"'$/ d;'
+  PATH_FILTER+=' /\/'"${I}"'$/ d;'
+done
+for I in "${EXCLUDE_DIR[@]}"; do
+  PATH_FILTER+=' /'"${I}"'\// d;'
+done
+for I in "${EXCLUDE_PATH[@]}"; do
+  I=$(echo "${I}" | sed 's/\//\\\//g')
+  PATH_FILTER+=' /^'"${I}"'$/ d;'
+  PATH_FILTER+=' /^'"${I}"'\// d;'
+done
+unset EXCLUDE_FILE EXCLUDE_DIR KEEP_PATH EXCLUDE_PATH
