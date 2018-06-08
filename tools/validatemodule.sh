@@ -872,7 +872,7 @@ if [ ${IS_GIT} = 'true' ] && [ ${OPTION_RELEASE} = 'true' ]; then
   unset CODE_VERSION
 
   # Latest tag should be pushed.
-  grep $'\trefs/tags/'"${LATEST_NAME}" <<< "${REMOTE_CACHE}" || \
+  grep -q $'\trefs/tags/'"${LATEST_NAME}" <<< "${REMOTE_CACHE}" || \
     e "latest tag '${LATEST_NAME}' not in the remote repository, needs a push."
 
   # All remote tags should exist locally.
