@@ -865,6 +865,12 @@ if [ ${IS_GIT} = 'true' ] && [ ${OPTION_RELEASE} = 'true' ]; then
   [ -z "$(tr -d '.[:digit:]' <<< ${LATEST_NAME})" ] || \
     e "Git tag '${LATEST_NAME}' isn't a well formatted release tag."
 
+  # Latest tag should match $this->version in the main class constructor.
+  CODE_VERSION=$(constructorentry 'version')
+  [ "${LATEST_NAME}" = "${CODE_VERSION}" ] || \
+    e "latest tag '${LATEST_NAME}' should match \$this->version in the main class."
+  unset CODE_VERSION
+
   # Latest tag should be pushed.
   grep $'\trefs/tags/'"${LATEST_NAME}" <<< "${REMOTE_CACHE}" || \
     e "latest tag '${LATEST_NAME}' not in the remote repository, needs a push."
