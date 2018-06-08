@@ -171,6 +171,7 @@ KEEP=("lib/Twig/Node/Expression/Test")
 
 # Exclude paths, for individual files and directories to be excluded.
 # EXCLUDE_PATH=("generatemd5list.php")  <- Can't get removed.
+EXCLUDE_PATH=("tools/buildmodule.sh")
 EXCLUDE_PATH=("tools/validatemodule.sh")
 EXCLUDE_PATH+=("tools/templates/")
 
