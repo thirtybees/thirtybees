@@ -53,7 +53,7 @@ for OPTION in "$@"; do
       ALLOW_DIRTY='true'
       ;;
     *)
-      if ! git show -q "${OPTION}" >/dev/null 2>&1; then
+      if ! git show -q "${OPTION}" 2>/dev/null | grep -q '.'; then
         echo "Git revision '${OPTION}' doesn't exist. Aborting."
         exit 1
       fi
