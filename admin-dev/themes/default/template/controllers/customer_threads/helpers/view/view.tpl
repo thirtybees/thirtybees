@@ -33,14 +33,14 @@
 		{if isset($next_thread) && $next_thread}
 			<a class="btn btn-default pull-right" href="{$next_thread.href|escape:'html':'UTF-8'}">
 				{$next_thread.name|escape:'htmlall':'UTF-8'} <i class="icon-forward"></i>
-			</a> 
+			</a>
 		{/if}
 	</div>
 	<div class="well">
 		<form action="{$link->getAdminLink('AdminCustomerThreads')|escape:'html':'UTF-8'}&amp;viewcustomer_thread&amp;id_customer_thread={$id_customer_thread|intval}" method="post" enctype="multipart/form-data" class="form-horizontal">
 			{foreach $actions as $action}
 				<button class="btn btn-default" name="{$action.name|escape:'html':'UTF-8'}" value="{$action.value|intval}">
-					{if isset($action.icon)}<i class="{$action.icon|escape:'html':'UTF-8'}"></i>{/if}{$action.label|escape:'htmlall':'UTF-8'}
+					{if isset($action.icon)}<i class="{$action.icon|escape:'html':'UTF-8'}"></i>{/if}{$action.label}
 				</button>
 			{/foreach}
 			<button class="btn btn-default" type="button" data-toggle="modal" data-target="#myModal">
@@ -115,7 +115,7 @@
 			<i class="icon-magic icon-2x"></i><br>
 			{l s="Choose a template"}
 		</button>
-		-->		
+		-->
 		<button class="btn btn-default pull-right" name="submitReply"><i class="process-icon-mail-reply"></i> {l s='Send'}</button>
 		<input type="hidden" name="id_customer_thread" value="{$thread->id|intval}" />
 		<input type="hidden" name="msg_email" value="{$thread->email|escape:'htmlall':'UTF-8'}" />
@@ -159,7 +159,7 @@
 			});
 			timer = setInterval("markAsRead()", 3000);
 		});
-	
+
 	function markAsRead()
 	{
 		$.ajax({
