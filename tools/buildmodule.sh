@@ -17,12 +17,15 @@
 # @license   Academic Free License (AFL 3.0)
 
 function usage {
-  echo "Usage: buildmodule.sh [-h|--help]"
+  echo "Usage: buildmodule.sh [-h|--help] [<git revision>]"
   echo
   echo "This script builds a module release. It expects to be run in the root"
   echo "of the modules' repository, inside the thirty bees core repository."
   echo
   echo "    -h, --help            Show this help and exit."
+  echo
+  echo "    <git revision>        Any Git tag, branch or commit. Defaults to"
+  echo "                          the latest tag ( = latest release)."
   echo
   echo "Example:"
   echo
@@ -34,6 +37,8 @@ function usage {
 
 ### Options parsing.
 
+GIT_REVISION=''
+
 for OPTION in "$@"; do
   case "${OPTION}" in
     '-h'|'--help')
@@ -41,8 +46,7 @@ for OPTION in "$@"; do
       exit 0
       ;;
     *)
-      echo "Unknown option '${OPTION}'. Try ${0} --help."
-      exit 1
+      GIT_REVISION="${OPTION}"
       ;;
   esac
 done
@@ -77,3 +81,27 @@ if [ $(git diff | wc -l) -ne 0 ] \
   echo "There are uncommitted changes. Aborting."
   exit 1
 fi
+
+
+### Find Git revision to package.
+
+if [ -z "${GIT_REVISION}" ]; then
+  # Default to the latest tag.
+  GIT_REVISION=$(git tag | tr -d 'v' | sort --reverse --version-sort | head -1)
+
+  if [ -z "${GIT_REVISION}" ]; then
+    # No tags? Default to master.
+    git branch --list master | grep -q '.' && GIT_REVISION='master'
+
+    if [ -z "${GIT_REVISION}" ]; then
+      echo "No revision given, no tags, no branch 'master'. Aborting."
+      exit 1
+    fi
+  fi
+else
+  if ! git show -q "${GIT_REVISION}" 2>/dev/null | grep -q '.'; then
+    echo "Git revision '${GIT_REVISION}' doesn't exist. Aborting."
+    exit 1
+  fi
+fi
+echo "Packaging Git revision '${GIT_REVISION}'."
