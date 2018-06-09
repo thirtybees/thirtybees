@@ -880,7 +880,7 @@ if [ ${IS_GIT} = 'true' ] && [ ${OPTION_RELEASE} = 'true' ]; then
   unset CODE_VERSION
 
   # Latest tag should be pushed.
-  grep -q $'\trefs/tags/'"${LATEST_NAME}" <<< "${REMOTE_CACHE}" || \
+  grep -q $'\trefs/tags/'${LATEST_NAME} <<< "${REMOTE_CACHE}" || \
     e "latest tag '${LATEST_NAME}' not in the remote repository, needs a push."
 
   # All remote tags should exist locally.
@@ -911,7 +911,7 @@ if [ ${IS_GIT} = 'true' ] && [ ${OPTION_RELEASE} = 'true' ]; then
   # Latest tag ( = latest release) should be committed in the core repository,
   # if this module is a submodule there.
   THIS_REPO="${PWD}"
-  CORE_REPO="$(cd ${TEMPLATES_DIR}/../.. && pwd)"
+  CORE_REPO="$(cd "${TEMPLATES_DIR}/../.." && pwd)"
   CORE_REPO_COPY="${CORE_REPO}"
   while [ "${THIS_REPO:0:1}" = "${CORE_REPO_COPY:0:1}" ]; do
     THIS_REPO="${THIS_REPO:1}"
