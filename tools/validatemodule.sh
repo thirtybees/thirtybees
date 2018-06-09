@@ -93,10 +93,10 @@ if [ -f .git ]; then
   IS_GIT='true'
   echo "Git repository detected. Looking at branch 'master'."
 
-  # Abstract 'cat' and 'ls' to allow validating non-repositories as well.
+  # Abstract 'cat' and 'find' to allow validating non-repositories as well.
   function git-cat { for F in "${@}"; do git show master:"${F}"; done }
   CAT='git-cat'
-  LS='git ls-files master'
+  FIND='git ls-tree -r --name-only master'
 
   # Don't continue if there is no branch 'master'. This currently applies to
   # the default theme, only.
@@ -117,9 +117,7 @@ else
   echo "Not a Git repository. Validating bare file trees not tested. Aborting."
 
   CAT='cat'
-  # Note that 'git ls-files' lists paths recursively, similar to 'find', and
-  # that we take advantage of this.
-  LS='ls'
+  FIND='find'
 
   exit 1
 fi
@@ -326,21 +324,21 @@ fi
 # Even modules not adding to the user interface have translations, e.g.
 # name and description in the list of modules in backoffice.
 
-# Note: 'grep -q .' is needed because 'git ls-files' always returns success.
-${LS} translations/index.php | grep -q '.' || \
+# Note: 'grep -q .' is needed because Git commands always return success.
+${FIND} translations/index.php | grep -q '.' || \
   e "file translations/index.php doesn't exist."
-${LS} translations/\* | grep -vq '^translations/index\.php$' && \
+${FIND} translations/ | grep -vq '^translations/index\.php$' && \
   e "files other than index.php in translations/."
 
 
 ### Mail templates stuff.
 
-if ${LS} mails | grep -q '.'; then
-  ${LS} mails/index.php | grep -q '.' || \
+if ${FIND} mails/ | grep -q '.'; then
+  ${FIND} mails/index.php | grep -q '.' || \
     e "mails folder, but no file mails/index.php."
-  ${LS} mails/en/index.php | grep -q '.' || \
+  ${FIND} mails/en/index.php | grep -q '.' || \
     e "mails folder, but no file mails/en/index.php."
-  ${LS} mails/\* | grep -v '^mails/index\.php$' | grep -vq '^mails/en' && \
+  ${FIND} mails/ | grep -v '^mails/index\.php$' | grep -vq '^mails/en' && \
     e "mail templates other than english exist."
 fi
 
@@ -351,17 +349,23 @@ fi
 # the auto-generated one means there can't be a content mismatch against the
 # module's main class definitions.
 
-${LS} config\.xml | grep -q '.' && \
+${FIND} config.xml | grep -q '.' && \
   e "file config.xml exists."
-${LS} config_\*\.xml | grep -q '.' && \
+${FIND} . | grep -q 'config_.*\.xml' && \
   e "at least one file config_<lang>.xml exists."
 
 
 ### General text file maintenance.
 
 # All files we consider to be text files.
-readarray -t FILES <<< $(${LS} \*\*.php \*\*.css \*\*.js \*\*.tpl \*\*.phtml)
-readarray -t -O ${#FILES[@]} FILES <<< $(${LS} \*\*.xml \*\*.yml \*\*.md)
+readarray -t FILES <<< $(${FIND} . | sed -n '/\.php$/ p
+                                             /\.css$/ p
+                                             /\.js$/ p
+                                             /\.tpl$/ p
+                                             /\.phtml$/ p
+                                             /\.xml$/ p
+                                             /\.yml$/ p
+                                             /\.md$/ p')
 [ -z "${FILES[*]}" ] && FILES=()
 
 FAULT='false'
@@ -422,7 +426,7 @@ unset ENTRIES FAULT
 ### Capitalization.
 
 # 'thirty bees' should be lowercase everywhere.
-${LS} . | while read F; do
+${FIND} . | while read F; do
   ${CAT} "${F}" | grep -q 'Thirty Bees' && \
     e "file ${F} contains 'Thirty Bees'; should be 'thirty bees'."
   ${CAT} "${F}" | grep -q 'ThirtyBees' && \
@@ -457,7 +461,7 @@ if [ ${IS_GIT} = 'true' ]; then
 
   # Each mandatory file should exist in the repository and be not empty.
   for F in "${FILES[@]}"; do
-    if ${LS} "${F}" | grep -q '.'; then
+    if ${FIND} "${F}" | grep -q '.'; then
       [ $(${CAT} "${F}" | wc -c) -gt 1 ] || \
         e "file ${F} exists, but is empty."
     else
@@ -468,7 +472,7 @@ if [ ${IS_GIT} = 'true' ]; then
 
   # Test for all the mandatory keys.
   # See https://docs.thirtybees.com/store/free-modules/#explanation-of-files
-  if ${LS} .tbstore.yml | grep -q '.'; then
+  if ${FIND} .tbstore.yml | grep -q '.'; then
     KEYS=('module_name')
     KEYS+=('compatible_versions')
     KEYS+=('author')
@@ -496,8 +500,8 @@ if [ ${IS_GIT} = 'true' ]; then
   fi
 
   # .tbstore.yml and .tbstore/configuration.yml should be identical.
-  if ${LS} .tbstore.yml | grep -q '.' \
-     && ${LS} .tbstore/configuration.yml | grep -q '.'; then
+  if ${FIND} .tbstore.yml | grep -q '.' \
+     && ${FIND} .tbstore/configuration.yml | grep -q '.'; then
     TBSTORE_TEXT=$(${CAT} .tbstore.yml)
     CONFIG_TEXT=$(${CAT} .tbstore/configuration.yml)
     if [ "${TBSTORE_TEXT}" != "${CONFIG_TEXT}" ]; then
@@ -509,7 +513,7 @@ if [ ${IS_GIT} = 'true' ]; then
     unset TBSTORE_TEXT CONFIG_TEXT
   fi
 
-  if ${LS} .tbstore.yml | grep -q '.'; then
+  if ${FIND} .tbstore.yml | grep -q '.'; then
     # Field 'author:' should match 'author' main class property.
     CODE_AUTHOR=$(constructorentry 'author')
     TBSTORE_AUTHOR=$(${CAT} .tbstore.yml | sed -n 's/^author:\s*// p')
@@ -538,9 +542,9 @@ fi
 ### Documentation files.
 
 # A README.md should exist.
-README=$(${LS} . | grep -i '^readme.md$' | grep -v '^README.md$')
+README=$(${FIND} . | grep -i '^readme.md$' | grep -v '^README.md$')
 if [ -z ${README} ]; then
-  ${LS} README.md | grep -q '.' || \
+  ${FIND} README.md | grep -q '.' || \
     e "file README.md missing."
 else
   # Wrong capitalization.
@@ -560,7 +564,7 @@ FILES+=('contributing.txt')
 
 FAULT='false'
 for F in "${FILES[@]}"; do
-  UNWANTED=$(${LS} . | grep -i '^'"${F}"'$')
+  UNWANTED=$(${FIND} . | grep -i '^'"${F}"'$')
   if [ -n "${UNWANTED}" ]; then
     e "file ${UNWANTED} shouldn't exist."
     FAULT='true'
@@ -570,7 +574,7 @@ done
   n "content of such former documentation files goes into README.md now."
 unset FILES FAULT UNWANTED
 
-if ${LS} README.md | grep -q '.'; then
+if ${FIND} README.md | grep -q '.'; then
   # These are needed as delimiters, so check for their presence early.
   HEADINGS=('Description')
   HEADINGS+=('License')
@@ -662,7 +666,7 @@ if ${LS} README.md | grep -q '.'; then
 fi
 
 # File LICENSE.md should exist and match the template.
-if ${LS} LICENSE.md | grep -q '.'; then
+if ${FIND} LICENSE.md | grep -q '.'; then
   TEMPLATE=$(cat "${TEMPLATES_DIR}/LICENSE.md.module")
   LICENSE=$(${CAT} LICENSE.md)
 
@@ -678,7 +682,7 @@ else
 fi
 
 # Alternative license file variations should be absent.
-LICENSE=$(${LS} . | grep -i '^license' | grep -v '^LICENSE.md$')
+LICENSE=$(${FIND} . | grep -i '^license' | grep -v '^LICENSE.md$')
 for F in ${LICENSE}; do
   e "file ${F} shouldn't exist."
   n "The license of this module goes into file LICENSE.md."
@@ -690,7 +694,7 @@ unset LICENSE
 
 # There should be an index.php file in every (packaged) directory.
 DIRS=('.')
-for D in $(${LS} .); do
+for D in $(${FIND} .); do
   [ "${D::8}" = '.tbstore' ] && continue
 
   while [ "${D}" != "${D%/*}" ]; do
@@ -700,7 +704,7 @@ for D in $(${LS} .); do
 done
 ( for E in "${DIRS[@]}"; do echo "${E}"; done ) | sort | uniq | while read D; do
   if [ -d "${D}" ]; then
-    ${LS} "${D}/index.php" | grep -q '.' || \
+    ${FIND} "${D}/index.php" | grep -q '.' || \
       e "file index.php missing in ${D}/."
   fi
 done
@@ -712,7 +716,7 @@ COMPARE_TB="${TEMPLATES_DIR}/index.php.tb.module"
 COMPARE_TBPS="${TEMPLATES_DIR}/index.php.tbps.module"
 COMPARE_SKIP=0
 COMPARE_HINT=''
-readarray -t COMPARE_LIST <<< $(${LS} index.php \*\*/index.php)
+readarray -t COMPARE_LIST <<< $(${FIND} . | grep 'index\.php$')
 [ -z "${COMPARE_LIST[*]}" ] && COMPARE_LIST=()
 templatecompare
 
@@ -727,7 +731,7 @@ COMPARE_TB="${TEMPLATES_DIR}/header.php-js-css.tb.module"
 COMPARE_TBPS="${TEMPLATES_DIR}/header.php-js-css.tbps.module"
 COMPARE_SKIP=1
 COMPARE_HINT='header'
-readarray -t LIST <<< $(${LS} \*\*.php \*\*.phtml)
+readarray -t LIST <<< $(${FIND} . | sed -n '/\.php$/ p; /\.phtml$/ p;')
 [ -z "${LIST[*]}" ] && LIST=()
 
 for F in "${LIST[@]}"; do
@@ -745,7 +749,7 @@ COMPARE_TB="${TEMPLATES_DIR}/header.php-js-css.tb.module"
 COMPARE_TBPS="${TEMPLATES_DIR}/header.php-js-css.tbps.module"
 COMPARE_SKIP=0
 COMPARE_HINT='header'
-readarray -t LIST <<< $(${LS} \*\*.js)
+readarray -t LIST <<< $(${FIND} . | grep '\.js$')
 [ -z "${LIST[*]}" ] && LIST=()
 
 for F in "${LIST[@]}"; do
@@ -760,7 +764,7 @@ COMPARE_TB="${TEMPLATES_DIR}/header.php-js-css.tb.module"
 COMPARE_TBPS="${TEMPLATES_DIR}/header.php-js-css.tbps.module"
 COMPARE_SKIP=0
 COMPARE_HINT='header'
-readarray -t LIST <<< $(${LS} \*\*.css)
+readarray -t LIST <<< $(${FIND} . | grep '\.css$')
 [ -z "${LIST[*]}" ] && LIST=()
 
 for F in "${LIST[@]}"; do
@@ -775,7 +779,7 @@ COMPARE_TB="${TEMPLATES_DIR}/header.tpl.tb.module"
 COMPARE_TBPS="${TEMPLATES_DIR}/header.tpl.tbps.module"
 COMPARE_SKIP=0
 COMPARE_HINT='header'
-readarray -t COMPARE_LIST <<< $(${LS} \*\*.tpl)
+readarray -t COMPARE_LIST <<< $(${FIND} . | grep '\.tpl$')
 [ -z "${COMPARE_LIST[*]}" ] && COMPARE_LIST=()
 templatecompare
 
@@ -786,7 +790,11 @@ templatecompare
 # sure this doesn't get forgotten.
 
 # All files we consider to mention the copyright.
-readarray -t FILES <<< $(${LS} \*\*.php \*\*.css \*\*.js \*\*.tpl \*\*.phtml)
+readarray -t FILES <<< $(${FIND} . | sed -n '/\.php$/ p
+                                             /\.css$/ p
+                                             /\.js$/ p
+                                             /\.tpl$/ p
+                                             /\.phtml$/ p')
 [ -z "${FILES[*]}" ] && FILES=()
 
 for F in "${FILES[@]}"; do
