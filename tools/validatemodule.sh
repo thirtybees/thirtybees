@@ -894,59 +894,19 @@ if [ ${IS_GIT} = 'true' ] && [ ${OPTION_RELEASE} = 'true' ]; then
   # release) and current 'master', call for a release.
   #
   # Key is the definition of 'significant changes' here. For the time being, we
-  # define this as any change to files other than .tbstore and build.sh.
-  #
-  # TODO: (quite a bit)
-  # - Introduce a build.sh for every module, along with proper header
-  #   verification here in validatemodule.sh.
-  # - Each build.sh should support an option -f/--filters-only, which sets just
-  #   the filter arrays EXCLUDE_FILE, EXCLUDE_DIR, KEEP and EXCLUDE_PATH, like
-  #   in core/build.sh (verify this support by grep'ing for '--filters-only').
-  # - Alternatively, put a 'buildfilter.sh' into each module which requires
-  #   it, defining stuff to be filtered from a module build. Simply not sure
-  #   which is the more elegant solution.
-  # - Craft a buildcommon.sh in core, which delivers functions for doing the
-  #   building stuff common to all modules. Or make it a full build script
-  #   for all modules, which takes buildfilter.sh into account.
-  # - Do a '. build.sh --filters-only' here to find out which files would
-  #   change for the next release and call for a release only if there are
-  #   changed files actually going into a release.
+  # define this as a change to files going into the distribution package.
+
   LATEST_LOCAL=$(git show -q ${LATEST_NAME} | head -1 | cut -d ' ' -f 2)
   CHANGED_FILES=$(git diff --name-only ${LATEST_LOCAL}..${MASTER_LOCAL})
 
-  # Definitions for the time being, until the above got implemented.
-  EXCLUDE_FILE=('.gitignore')
-  EXCLUDE_FILE+=('build.sh')
-  EXCLUDE_FILE+=('.tbstore.yml')
-  EXCLUDE_FILE+=('LICENSE.md')
-  EXCLUDE_FILE+=('README.md')
-  EXCLUDE_DIR=('.tbstore')
-  KEEP=()
-  EXCLUDE_PATH=()
+  # Get PATH_FILTER from buildmodule.sh.
+  . "${TEMPLATES_DIR}/../buildmodule.sh" --filter-only master
 
-  # Assemble, then execute a sed script as filter.
-  SED_SCRIPT=''
-  for I in "${KEEP[@]}"; do
-    I=$(echo "${I}" | sed 's/\//\\\//g')
-    SED_SCRIPT+=' /'"${I}"'/ { p; d; };'
-  done
-  for I in "${EXCLUDE_FILE[@]}"; do
-    SED_SCRIPT+=' /^'"${I}"'$/ d;'
-    SED_SCRIPT+=' /\/'"${I}"'$/ d;'
-  done
-  for I in "${EXCLUDE_DIR[@]}"; do
-    SED_SCRIPT+=' /'"${I}"'\// d;'
-  done
-  for I in "${EXCLUDE_PATH[@]}"; do
-    I=$(echo "${I}" | sed 's/\//\\\//g')
-    SED_SCRIPT+=' /^'"${I}"'$/ d;'
-    SED_SCRIPT+=' /^'"${I}"'\// d;'
-  done
-  CHANGED_FILES=$(sed "${SED_SCRIPT}" <<< "${CHANGED_FILES}")
+  CHANGED_FILES=$(sed "${PATH_FILTER}" <<< "${CHANGED_FILES}")
   [ -z "${CHANGED_FILES}" ] || \
     e "significant changes since the last release, a new release is needed."
   unset MASTER_LOCAL LATEST_NAME CHANGED_FILES
-  unset EXCLUDE_FILE EXCLUDE_DIR KEEP EXCLUDE_PATH SED_SCRIPT
+  unset EXCLUDE_FILE EXCLUDE_DIR KEEP EXCLUDE_PATH PATH_FILTER
 
   # Latest tag ( = latest release) should be committed in the core repository,
   # if this module is a submodule there.
