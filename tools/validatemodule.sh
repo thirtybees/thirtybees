@@ -870,6 +870,8 @@ if [ ${IS_GIT} = 'true' ] && [ ${OPTION_RELEASE} = 'true' ]; then
 
   # Latest tag should be a version tag.
   LATEST_NAME=$(git tag | tr -d 'v' | sort --reverse --version-sort | head -1)
+  [ -n "$(git tag --list ${LATEST_NAME})" ] || \
+    LATEST_NAME="v${LATEST_NAME}"  # Re-add the 'v'.
   [ -z "$(tr -d '.[:digit:]' <<< ${LATEST_NAME})" ] || \
     e "Git tag '${LATEST_NAME}' isn't a well formatted release tag."
 

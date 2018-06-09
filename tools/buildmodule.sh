@@ -191,6 +191,9 @@ if [ ${OPTION_VALIDATION} = 'true' ]; then
   VALIDATEMODULE="${0/buildmodule.sh/validatemodule.sh}"
 
   LATEST_TAG=$(git tag | tr -d 'v' | sort --reverse --version-sort | head -1)
+  [ -n "$(git tag --list ${LATEST_TAG})" ] || \
+    LATEST_TAG="v${LATEST_TAG}"  # Re-add the 'v'.
+
   if [ "${GIT_REVISION}" = "${LATEST_TAG}" ]; then
     VALIDATE='true'
     VALIDATE_PARAMETERS+=('-r')
