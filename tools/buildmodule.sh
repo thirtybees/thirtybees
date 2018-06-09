@@ -189,3 +189,31 @@ else
   echo "Packaging older revision, skipping validation."
 fi
 unset VALIDATE VALIDATEMODULE LATEST_TAG VALIDATE_PARAMETERS
+
+
+### Actually build the package.
+
+MODULE_NAME="${PWD##*/}"
+if [ -z "$(tr -d '.[:digit:]' <<< "${GIT_REVISION}")" ]; then
+  # ${GIT_REVISION} is a release number.
+  PACKAGE_NAME="${MODULE_NAME}-v${GIT_REVISION}.zip"
+else
+  # Without 'v'.
+  PACKAGE_NAME="${MODULE_NAME}-${GIT_REVISION}.zip"
+fi
+rm -f "${PACKAGE_NAME}"
+
+git archive --format=zip -9 \
+            --prefix="${MODULE_NAME}/" \
+            --output="${PACKAGE_NAME}" \
+            "${GIT_REVISION}" \
+            $(git ls-tree -r --name-only "${GIT_REVISION}" . | \
+                sed "${PATH_FILTER}")
+
+if [ -s "${PACKAGE_NAME}" ]; then
+  echo "Created package ${PACKAGE_NAME} successfully."
+else
+  echo "Tried hard, but package ${PACKAGE_NAME} ended up empty."
+  exit 1
+fi
+unset MODULE_NAME PACKAGE_NAME
