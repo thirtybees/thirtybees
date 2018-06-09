@@ -24,6 +24,12 @@ function usage {
   echo
   echo "    -h, --help            Show this help and exit."
   echo
+  echo "    --filter-only         Just build file filters, then exit. This is"
+  echo "                          used by validatemodule.sh to make sure it"
+  echo "                          always uses the same filters as this script."
+  echo "                          The filter is returned in PATH_FILTER, so use"
+  echo "                          this script as an include."
+  echo
   echo "    --no-validation       Skip validation, even if it should be done."
   echo "                          Should be used during development, only."
   echo
@@ -40,6 +46,7 @@ function usage {
 
 ### Options parsing.
 
+OPTION_FILTER_ONLY='false'
 OPTION_VALIDATION='true'
 GIT_REVISION=''
 
@@ -48,6 +55,9 @@ for OPTION in "$@"; do
     '-h'|'--help')
       usage
       exit 0
+      ;;
+    '--filter-only')
+      OPTION_FILTER_ONLY='true'
       ;;
     '--no-validation')
       OPTION_VALIDATION='false'
@@ -111,7 +121,8 @@ else
     exit 1
   fi
 fi
-echo "Packaging Git revision '${GIT_REVISION}'."
+[ ${OPTION_FILTER_ONLY} = 'false' ] && \
+  echo "Packaging Git revision '${GIT_REVISION}'."
 
 
 ### Set up packaging filters.
@@ -165,6 +176,8 @@ for I in "${EXCLUDE_PATH[@]}"; do
   PATH_FILTER+=' /^'"${I}"'\// d;'
 done
 unset EXCLUDE_FILE EXCLUDE_DIR KEEP_PATH EXCLUDE_PATH
+
+[ ${OPTION_FILTER_ONLY} = 'true' ] && return
 
 
 ### Quality assurance.
