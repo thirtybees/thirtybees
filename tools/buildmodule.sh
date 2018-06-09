@@ -24,6 +24,9 @@ function usage {
   echo
   echo "    -h, --help            Show this help and exit."
   echo
+  echo "    --no-validation       Skip validation, even if it should be done."
+  echo "                          Should be used during development, only."
+  echo
   echo "    <git revision>        Any Git tag, branch or commit. Defaults to"
   echo "                          the latest tag ( = latest release)."
   echo
@@ -37,6 +40,7 @@ function usage {
 
 ### Options parsing.
 
+OPTION_VALIDATION='true'
 GIT_REVISION=''
 
 for OPTION in "$@"; do
@@ -44,6 +48,9 @@ for OPTION in "$@"; do
     '-h'|'--help')
       usage
       exit 0
+      ;;
+    '--no-validation')
+      OPTION_VALIDATION='false'
       ;;
     *)
       GIT_REVISION="${OPTION}"
@@ -166,29 +173,31 @@ unset EXCLUDE_FILE EXCLUDE_DIR KEEP_PATH EXCLUDE_PATH
 # going to be packaged. Validation of older revisions is neither supported by
 # validatemodule.sh nor does it make sense.
 
-VALIDATE='false'
-VALIDATEMODULE="${0/buildmodule.sh/validatemodule.sh}"
+if [ ${OPTION_VALIDATION} = 'true' ]; then
+  VALIDATE='false'
+  VALIDATEMODULE="${0/buildmodule.sh/validatemodule.sh}"
 
-LATEST_TAG=$(git tag | tr -d 'v' | sort --reverse --version-sort | head -1)
-if [ "${GIT_REVISION}" = "${LATEST_TAG}" ]; then
-  VALIDATE='true'
-  VALIDATE_PARAMETERS+=('-r')
-fi
-if [ "${GIT_REVISION}" = 'master' ]; then
-  VALIDATE='true'
-  VALIDATE_PARAMETERS+=()
-fi
-
-if [ ${VALIDATE} = 'true' ]; then
-  echo "Running validatemodule.sh ${VALIDATE_PARAMETERS[*]}."
-  if ! "${VALIDATEMODULE}" "${VALIDATE_PARAMETERS[@]}"; then
-    echo "buildmodule.sh: validatemodule.sh detected errors. Aborting."
-    exit 1
+  LATEST_TAG=$(git tag | tr -d 'v' | sort --reverse --version-sort | head -1)
+  if [ "${GIT_REVISION}" = "${LATEST_TAG}" ]; then
+    VALIDATE='true'
+    VALIDATE_PARAMETERS+=('-r')
   fi
-else
-  echo "Packaging older revision, skipping validation."
+  if [ "${GIT_REVISION}" = 'master' ]; then
+    VALIDATE='true'
+    VALIDATE_PARAMETERS+=()
+  fi
+
+  if [ ${VALIDATE} = 'true' ]; then
+    echo "Running validatemodule.sh ${VALIDATE_PARAMETERS[*]}."
+    if ! "${VALIDATEMODULE}" "${VALIDATE_PARAMETERS[@]}"; then
+      echo "buildmodule.sh: validatemodule.sh detected errors. Aborting."
+      exit 1
+    fi
+  else
+    echo "Packaging older revision, skipping validation."
+  fi
+  unset VALIDATE VALIDATEMODULE LATEST_TAG VALIDATE_PARAMETERS
 fi
-unset VALIDATE VALIDATEMODULE LATEST_TAG VALIDATE_PARAMETERS
 
 
 ### Actually build the package.
