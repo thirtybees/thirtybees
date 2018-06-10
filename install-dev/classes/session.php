@@ -137,8 +137,8 @@ class InstallSession
     {
         if (InstallSession::$cookieMode) {
             $ref = InstallSession::$cookie->{$varname};
-            if (0 === strncmp($ref, 'serialized_array:', strlen('serialized_array:'))) {
-                $ref = unserialize(substr($ref, strlen('serialized_array:')));
+            if (0 === strncmp($ref, 'json_array:', strlen('json_array:'))) {
+                $ref = json_decode(substr($ref, strlen('json_array:')));
             }
         } else {
             if (isset($_SESSION[$varname])) {
@@ -158,7 +158,7 @@ class InstallSession
                 return;
             }
             if (is_array($value)) {
-                $value = 'serialized_array:'.serialize($value);
+                $value = 'json_array:'.json_encode($value);
             }
             InstallSession::$cookie->{$varname} = $value;
         } else {
