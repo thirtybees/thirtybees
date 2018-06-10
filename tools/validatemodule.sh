@@ -363,6 +363,7 @@ readarray -t FILES <<< $(${FIND} . | sed -n '/\.php$/ p
                                              /\.js$/ p
                                              /\.tpl$/ p
                                              /\.phtml$/ p
+                                             /\.sh$/ p
                                              /\.xml$/ p
                                              /\.yml$/ p
                                              /\.md$/ p')
@@ -699,6 +700,13 @@ if ${FIND} build.sh | grep -q '.'; then
   n "module specific adjustments go into buildfilter.sh in the module root."
 fi
 
+# Header of buildfilter.sh should match the template.
+#
+# Well, for the time being, warn about no validation existing. Currently no
+# module uses such a file.
+${FIND} buildfilter.sh | grep -q '.' && \
+  w "there is a file buildfilter.sh, validating that is not yet implemented."
+
 
 ### index.php files.
 
@@ -804,7 +812,8 @@ readarray -t FILES <<< $(${FIND} . | sed -n '/\.php$/ p
                                              /\.css$/ p
                                              /\.js$/ p
                                              /\.tpl$/ p
-                                             /\.phtml$/ p')
+                                             /\.phtml$/ p
+                                             /\.sh$/ p')
 [ -z "${FILES[*]}" ] && FILES=()
 
 for F in "${FILES[@]}"; do
