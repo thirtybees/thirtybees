@@ -690,6 +690,16 @@ done
 unset LICENSE
 
 
+### Build infrastructure files.
+
+# A build.sh should be absent.
+if ${FIND} build.sh | grep -q '.'; then
+  e "there is a file build.sh."
+  n "building the module should be handled in buildmodule.sh in core."
+  n "module specific adjustments go into buildfilter.sh in the module root."
+fi
+
+
 ### index.php files.
 
 # There should be an index.php file in every (packaged) directory.
