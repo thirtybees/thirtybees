@@ -814,9 +814,6 @@ abstract class AdminTabCore
 
                 case 'date':
                 case 'datetime':
-                    if (is_string($value)) {
-                        $value = Tools::unSerialize($value);
-                    }
                     if (!Validate::isCleanHtml($value[0]) || !Validate::isCleanHtml($value[1])) {
                         $value = '';
                     }
@@ -1655,9 +1652,6 @@ abstract class AdminTabCore
                     $filter = count($tmpTab) > 1 ? $tmpTab[1] : $tmpTab[0];
                     if ($field = $this->filterToField($key, $filter)) {
                         $type = (array_key_exists('filter_type', $field) ? $field['filter_type'] : (array_key_exists('type', $field) ? $field['type'] : false));
-                        if (($type == 'date' || $type == 'datetime') && is_string($value)) {
-                            $value = Tools::unSerialize($value);
-                        }
                         $key = isset($tmpTab[1]) ? $tmpTab[0].'.`'.bqSQL($tmpTab[1]).'`' : '`'.bqSQL($tmpTab[0]).'`';
                         if (array_key_exists('tmpTableFilter', $field)) {
                             $sqlFilter = &$this->_tmpTableFilter;
