@@ -54,7 +54,7 @@ class CacheFsCore extends Cache
 
         $keysFilename = $this->getFilename(static::KEYS_NAME);
         if (@filemtime($keysFilename)) {
-            $this->keys = unserialize(file_get_contents($keysFilename));
+            $this->keys = json_decode(file_get_contents($keysFilename));
         }
     }
 
@@ -67,7 +67,7 @@ class CacheFsCore extends Cache
 
         $previousUmask = @umask($definedUmask);
 
-        $result = @file_put_contents($this->getFilename($key), serialize($value));
+        $result = @file_put_contents($this->getFilename($key), json_encode($value));
 
         @umask($previousUmask);
 
@@ -94,7 +94,7 @@ class CacheFsCore extends Cache
         }
         $file = file_get_contents($filename);
 
-        return unserialize($file);
+        return json_decode($file);
     }
 
     /**
@@ -133,7 +133,7 @@ class CacheFsCore extends Cache
 
         $previousUmask = @umask($definedUmask);
 
-        @file_put_contents($this->getFilename(static::KEYS_NAME), serialize($this->keys));
+        @file_put_contents($this->getFilename(static::KEYS_NAME), json_encode($this->keys));
 
         @umask($previousUmask);
     }
