@@ -250,7 +250,7 @@ abstract class Controller extends ControllerCore
     {
         $start_memory = memory_get_usage();
         try {
-            $tmp = Tools::unSerialize(serialize($var));
+            $tmp = json_decode(json_encode($var));
         } catch (Exception $e) {
             $tmp = $this->getVarData($var);
         }
