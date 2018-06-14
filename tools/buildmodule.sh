@@ -78,7 +78,7 @@ if ! which git > /dev/null; then
 fi
 
 # Test for a Git repository.
-if [ ! -f .git ]; then
+if [ ! -e .git ]; then
   echo "Not at the root of a Git repository. Aborting."
   exit 1
 fi
