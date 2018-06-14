@@ -89,7 +89,7 @@ done
 REPORT=$(mktemp)
 export REPORT
 
-if [ -f .git ]; then
+if [ -e .git ]; then
   IS_GIT='true'
   echo "Git repository detected. Looking at branch 'master'."
 
