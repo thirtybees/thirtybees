@@ -611,7 +611,7 @@ if ${FIND} README.md | grep -q '.'; then
 
   if [ ${HEADING_MISSING} = 'false' ]; then
     # Section 'Description' ( = stuff between '## Description' and '## License')
-    # should match the content of .tbstore.yml/description.md.
+    # should match the content of .tbstore/description.md.
     TBSTORE_LINE=$(${CAT} .tbstore/description.md)
     README_LINE=$(${CAT} README.md | sed -n '/^## Description$/, /^## License$/ {
                                                /^## Description$/ n
@@ -622,7 +622,7 @@ if ${FIND} README.md | grep -q '.'; then
 
     if [ "${TBSTORE_LINE}" != "${README_LINE}" ]; then
       e "Section 'Description' in README.md doesn't match content of description.md."
-      n "diff between README.md (+) and .tbstore.yml/description.md (-):"
+      n "diff between README.md (+) and .tbstore/description.md (-):"
       u "$(diff -u0 <(echo "${TBSTORE_LINE}") <(echo "${README_LINE}") | \
              tail -n+3)"
     fi
