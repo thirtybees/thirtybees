@@ -191,9 +191,9 @@
 	url = https://github.com/thirtybees/community-theme-default.git
 	branch = 1.0.x
 	ignore = dirty
-[submodule "modules/fixerio"]
-	path = modules/fixerio
-	url = https://github.com/thirtybees/fixerio
+[submodule "modules/ecbexchange"]
+	path = modules/ecbexchange
+	url = https://github.com/thirtybees/ecbexchange
 	ignore = dirty
 [submodule "modules/themeconfigurator"]
 	path = modules/themeconfigurator
