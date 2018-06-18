@@ -23,6 +23,13 @@ function cleanup {
     rm -rf ${PACKAGING_DIR}
   fi
 
+  if [ -n "${SUBMODULES_ADDED[*]}" ]; then
+    echo "Removing submodules added earlier."
+    for S in "${SUBMODULES_ADDED[@]}"; do
+      rm -rf "${S}"
+    done
+  fi
+
   if [ -n "${ORIGINAL_REVISION}" ]; then
     # Should always work, because we changed nothing.
     echo "Restoring Git repository and submodules states."
@@ -122,6 +129,38 @@ if git tag | grep -q "${GIT_REVISION}" \
   echo "see install-dev/install_version.php. Refusing to continue packaging."
   exit 1
 fi
+
+
+### Submodule preparations.
+
+# Make sure each submodule needed by the requested Git revision exists.
+#
+# Agreed, this is a bit cumbersome. But it's pretty much the only cumbersome
+# part needed to allow packaging arbitrary revisions without checking them out.
+SUBMODULES_ADDED=()
+readarray -t SUBMODULE_LIST <<< $(
+  git cat-file -p ${GIT_REVISION}:modules | grep '^160000' | cut -d ' ' -f 3 | \
+  while read M; do
+    echo "modules/${M#*$'\t'}"
+  done
+  git cat-file -p ${GIT_REVISION}:themes | grep '^160000' | cut -d ' ' -f 3 | \
+  while read T; do
+    echo "themes/${T#*$'\t'}"
+  done
+)
+[ -z "${SUBMODULE_LIST[*]}" ] && SUBMODULE_LIST=()
+
+for S in "${SUBMODULE_LIST[@]}"; do
+  if [ ! -e "${S}/.git" ]; then
+    SUBMODULES_ADDED+=("${S}")
+    SUBMODULE_URL=$(git cat-file -p ${GIT_REVISION}:.gitmodules | sed -n '
+                      /^\[submodule.*'"${S/\//\\\/}"'/, /^\[submodule/ {
+                        s/\s*url = // p
+                      }
+                    ')
+    git clone ${SUBMODULE_URL} "${S}" 2>&1 | grep -v '^remote:'
+  fi
+done
 
 
 ### Actual packaging.
