@@ -43,8 +43,8 @@ trap cleanup 0
 GIT_REVISION=''
 ALLOW_DIRTY='false'
 
-for OPTION in "$@"; do
-  case "${OPTION}" in
+while [ ${#} -ne 0 ]; do
+  case "${1}" in
     '-h'|'--help')
       usage
       exit 0
@@ -53,13 +53,14 @@ for OPTION in "$@"; do
       ALLOW_DIRTY='true'
       ;;
     *)
-      if ! git show -q "${OPTION}" 2>/dev/null | grep -q '.'; then
-        echo "Git revision '${OPTION}' doesn't exist. Aborting."
+      if ! git show -q "${1}" 2>/dev/null | grep -q '.'; then
+        echo "Git revision '${1}' doesn't exist. Aborting."
         exit 1
       fi
-      GIT_REVISION="${OPTION}"
+      GIT_REVISION="${1}"
       ;;
   esac
+  shift
 done
 
 GIT_REVISION="${GIT_REVISION:-master}"
