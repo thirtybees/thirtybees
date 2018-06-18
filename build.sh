@@ -82,7 +82,6 @@ echo "Checking out Git revision ${GIT_REVISION}."
 git checkout -q "${GIT_REVISION}"                           || exit 1
 
 # Similar for submodules.
-echo "Updating submodules. This may take a while."
 git submodule foreach -q --recursive 'git stash -q --include-untracked'
 
 
@@ -98,6 +97,7 @@ git submodule foreach -q --recursive 'git stash -q --include-untracked'
 # - Dirty submodules exist.
 
 # This fetches submodule commits and checks out remote branch 'master'.
+echo "Updating submodules. This may take a while."
 git submodule update --recursive --init --remote            || exit 1
 
 GIT_BRANCH=$(git branch --contains "${GIT_REVISION}" | \
