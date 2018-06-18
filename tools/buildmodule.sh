@@ -124,6 +124,19 @@ fi
 [ ${OPTION_FILTER_ONLY} = 'false' ] && \
   echo "Packaging Git revision '${GIT_REVISION}'."
 
+# Warn for older revisions.
+AGE_COMMITS=$(git log --oneline ${GIT_REVISION}..HEAD | wc -l)
+let AGE_TIME=$(date +%s)-$(git show -q --pretty=tformat:%at ${GIT_REVISION})
+let AGE_TIME=${AGE_TIME}/2592000  # 2592000 = 1 month in seconds
+
+if [ ${AGE_COMMITS} -gt 10 ] || [ ${AGE_TIME} -gt 1 ]; then
+  echo "You're about to package a revision more than 10 commits or more than"
+  echo "a month old. You may want to make sure to check out thirty bees core"
+  echo "of that age to get the package build tools used back then."
+  echo
+fi
+unset AGE_COMMITS AGE_TIME
+
 
 ### Set up packaging filters.
 #
