@@ -17,7 +17,8 @@
 # @license   Academic Free License (AFL 3.0)
 
 function usage {
-  echo "Usage: buildmodule.sh [-h|--help] [<git revision>]"
+  echo "Usage: buildmodule.sh [-h|--help] [--filter-only] [--no-validation]"
+  echo "          [--target-dir=<dir>] [<git revision>]"
   echo
   echo "This script builds a module release. It expects to be run in the root"
   echo "of the modules' repository, inside the thirty bees core repository."
@@ -32,6 +33,11 @@ function usage {
   echo
   echo "    --no-validation       Skip validation, even if it should be done."
   echo "                          Should be used during development, only."
+  echo
+  echo "    --target-dir=<dir>    Instead of building a package, drop the to be"
+  echo "                          packaged files in <dir>. Helpful for e.g."
+  echo "                          creating a package with multiple modules"
+  echo "                          inside."
   echo
   echo "    <git revision>        Any Git tag, branch or commit. Defaults to"
   echo "                          the latest tag ( = latest release)."
@@ -49,6 +55,7 @@ function usage {
 OPTION_FILTER_ONLY='false'
 OPTION_VALIDATION='true'
 GIT_REVISION=''
+TARGET_DIR=''
 
 while [ ${#} -ne 0 ]; do
   case "${1}" in
@@ -61,6 +68,21 @@ while [ ${#} -ne 0 ]; do
       ;;
     '--no-validation')
       OPTION_VALIDATION='false'
+      ;;
+    '--target-dir')
+      if [ -z "${2}" ]; then
+        echo "Option --target-dir missing parameter. Aborting."
+        exit 1
+      fi
+      TARGET_DIR="${2}"
+      shift
+      ;;
+    '--target-dir='*)
+      TARGET_DIR="${1#*=}"
+      if [ -z "${TARGET_DIR}" ]; then
+        echo "Option --target-dir= missing parameter. Aborting."
+        exit 1
+      fi
       ;;
     *)
       GIT_REVISION="${1}"
