@@ -254,6 +254,31 @@ fi
 
 ### Actually build the package.
 
+# If wanted, forward package files to a target directory.
+if [ -n "${TARGET_DIR}" ]; then
+  rm -rf "${TARGET_DIR}"
+  mkdir -p "${TARGET_DIR}"
+
+  git archive --format=tar \
+              "${GIT_REVISION}" \
+              $(git ls-tree -r --name-only "${GIT_REVISION}" . | \
+                  sed "${PATH_FILTER}") | \
+    tar -C "${TARGET_DIR}" -xf-
+
+  # Success control.
+  FILE_COUNT=$(find "${TARGET_DIR}" -type f | wc -l)
+  if [ ${FILE_COUNT} -gt 0 ]; then
+    echo "Placed ${FILE_COUNT} files in ${TARGET_DIR} successfully."
+  else
+    echo "Tried hard, but directory ${TARGET_DIR} ended up empty."
+    exit 1
+  fi
+  unset FILE_COUNT
+
+  exit 0
+fi
+
+# Else, build a ZIP file.
 MODULE_NAME="${PWD##*/}"
 if [ -z "$(tr -d '.[:digit:]' <<< "${GIT_REVISION}")" ]; then
   # ${GIT_REVISION} is a release number.
