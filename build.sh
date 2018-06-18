@@ -189,7 +189,7 @@ done
 # Core repository.
 (
   echo -n "Copying core ... "
-  git archive HEAD | tar -C "${PACKAGING_DIR}" -xf-
+  git archive ${GIT_REVISION} | tar -C "${PACKAGING_DIR}" -xf-
 
   cd "${PACKAGING_DIR}"
   if [ -d admin-dev ]; then
@@ -210,34 +210,38 @@ done
 )
 
 # Module repositories.
-git submodule status modules/\*\* | cut -b 2- | cut -d ' ' -f 2 | \
-  while read MODULE; do
+git cat-file -p ${GIT_REVISION}:modules | grep '^160000' | cut -d ' ' -f 3 | \
+  while read M; do
   (
+    MODULE="modules/${M#*$'\t'}"
+    HASH=${M%$'\t'*}
+
     echo -n "Copying ${MODULE} ... "
     cd "${MODULE}" || continue
 
     mkdir -p "${PACKAGING_DIR}/${MODULE}"
-    git archive HEAD | tar -C "${PACKAGING_DIR}/${MODULE}" -xf-
+    git archive ${HASH} | tar -C "${PACKAGING_DIR}/${MODULE}" -xf-
 
     echo "done."
   )
 done
-unset MODULE
 
 # Theme repositories.
-git submodule status themes/\*\* | cut -b 2- | cut -d ' ' -f 2 | \
-  while read THEME; do
+git cat-file -p ${GIT_REVISION}:themes | grep '^160000' | cut -d ' ' -f 3 | \
+  while read T; do
   (
+    THEME="themes/${T#*$'\t'}"
+    HASH=${T%$'\t'*}
+
     echo -n "Copying ${THEME} ... "
     cd "${THEME}" || continue
 
     mkdir -p "${PACKAGING_DIR}/${THEME}"
-    git archive HEAD | tar -C "${PACKAGING_DIR}/${THEME}" -xf-
+    git archive ${HASH} | tar -C "${PACKAGING_DIR}/${THEME}" -xf-
 
     echo "done."
   )
 done
-unset THEME
 
 # Cleaning :-)
 (
