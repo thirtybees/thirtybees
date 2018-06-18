@@ -138,14 +138,11 @@ PACKAGING_DIR+="${PACKAGE_NAME}"
 mkdir "${PACKAGING_DIR}"
 export PACKAGING_DIR
 
-# Collect Git repositories to deal with. This is a bit slow, but parsing
-# .gitmodules directly is unreliable.
-REPOS_GIT=($(
-  git submodule | \
-    cut -b 2- | \
-    cut -d ' ' -f 2
-))
-REPOS_GIT+=(".")
+
+### Build packaging filters.
+#
+# As we have not much control over what composer does, we first put everything
+# into a directory, then remove surplus file.
 
 # Files not needed in the release package.
 EXCLUDE_FILE=(".coveralls.yml")
@@ -189,27 +186,20 @@ done
 # Create copies of all the stuff.
 # Try to copy not much more than what's needed.
 
-# Git repositories.
-export D
-for D in "${REPOS_GIT[@]}"; do
-  (
-    echo -n "Copying ${D} ... "
-    cd ${D} || continue
+# Core repository.
+(
+  echo -n "Copying core ... "
+  git archive HEAD | tar -C "${PACKAGING_DIR}" -xf-
 
-    mkdir -p "${PACKAGING_DIR}/${D}"
-    git archive HEAD | tar -C "${PACKAGING_DIR}/${D}" -xf-
-
-    cd "${PACKAGING_DIR}/${D}"
-    if [ -d admin-dev ]; then
-      mv admin-dev admin
-    fi
-    if [ -d install-dev ]; then
-      mv install-dev install
-    fi
-
-    echo "done."
-  )
-done
+  cd "${PACKAGING_DIR}"
+  if [ -d admin-dev ]; then
+    mv admin-dev admin
+  fi
+  if [ -d install-dev ]; then
+    mv install-dev install
+  fi
+  echo "done."
+)
 
 # Composer repositories. Not reasonably doable without network access,
 # but fortunately composer maintains a cache, so no heavy downloads.
@@ -219,6 +209,35 @@ done
   composer dump-autoload -o
 )
 
+# Module repositories.
+git submodule status modules/\*\* | cut -b 2- | cut -d ' ' -f 2 | \
+  while read MODULE; do
+  (
+    echo -n "Copying ${MODULE} ... "
+    cd "${MODULE}" || continue
+
+    mkdir -p "${PACKAGING_DIR}/${MODULE}"
+    git archive HEAD | tar -C "${PACKAGING_DIR}/${MODULE}" -xf-
+
+    echo "done."
+  )
+done
+unset MODULE
+
+# Theme repositories.
+git submodule status themes/\*\* | cut -b 2- | cut -d ' ' -f 2 | \
+  while read THEME; do
+  (
+    echo -n "Copying ${THEME} ... "
+    cd "${THEME}" || continue
+
+    mkdir -p "${PACKAGING_DIR}/${THEME}"
+    git archive HEAD | tar -C "${PACKAGING_DIR}/${THEME}" -xf-
+
+    echo "done."
+  )
+done
+unset THEME
 
 # Cleaning :-)
 (
@@ -236,7 +255,10 @@ done
   done
 )
 
-# Make the full package.
+
+### Make the full package.
+
+# Generate the MD5 list and zip up everything. That simple.
 (
   echo -n "Creating package ... "
   cd "${PACKAGING_DIR}"
