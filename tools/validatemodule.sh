@@ -62,8 +62,8 @@ trap cleanup 0
 OPTION_RELEASE='false'
 OPTION_VERBOSE='false'
 
-for OPTION in "$@"; do
-  case "${OPTION}" in
+while [ ${#} -ne 0 ]; do
+  case "${1}" in
     '-h'|'--help')
       usage
       exit 0
@@ -75,10 +75,11 @@ for OPTION in "$@"; do
       OPTION_VERBOSE='true'
       ;;
     *)
-      echo "Unknown option '${OPTION}'. Try ${0} --help."
+      echo "Unknown option '${1}'. Try ${0} --help."
       exit 1
       ;;
   esac
+  shift
 done
 
 

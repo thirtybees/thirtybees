@@ -50,8 +50,8 @@ OPTION_FILTER_ONLY='false'
 OPTION_VALIDATION='true'
 GIT_REVISION=''
 
-for OPTION in "$@"; do
-  case "${OPTION}" in
+while [ ${#} -ne 0 ]; do
+  case "${1}" in
     '-h'|'--help')
       usage
       exit 0
@@ -63,9 +63,10 @@ for OPTION in "$@"; do
       OPTION_VALIDATION='false'
       ;;
     *)
-      GIT_REVISION="${OPTION}"
+      GIT_REVISION="${1}"
       ;;
   esac
+  shift
 done
 
 
