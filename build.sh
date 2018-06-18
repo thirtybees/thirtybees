@@ -29,18 +29,6 @@ function cleanup {
       rm -rf "${S}"
     done
   fi
-
-  if [ -n "${ORIGINAL_REVISION}" ]; then
-    # Should always work, because we changed nothing.
-    echo "Restoring Git repository and submodules states."
-    git checkout -q "${ORIGINAL_REVISION}"
-    git stash pop -q | grep -v "Already up to date!"
-    git submodule update -q --recursive
-    git submodule foreach -q --recursive 'git stash pop -q 2>&1 | \
-                                          grep -v "Already up to date!" | \
-                                          grep -v "No stash entries found." \
-                                          || true'
-  fi
 }
 trap cleanup 0
 
@@ -73,23 +61,6 @@ done
 GIT_REVISION="${GIT_REVISION:-master}"
 PACKAGE_NAME="thirtybees-v${GIT_REVISION}"
 rm -f "${PACKAGE_NAME}".zip
-
-
-### Saving repository state.
-#
-# Because 'git submodule' works with the currently checked out revision, only,
-# we have to check that out.
-
-echo "Saving Git repository state."
-git stash -q --include-untracked 2>&1 | grep -v '^Ignoring path'
-ORIGINAL_REVISION=$(cat .git/HEAD)
-ORIGINAL_REVISION="${ORIGINAL_REVISION##*/}";
-
-echo "Checking out Git revision ${GIT_REVISION}."
-git checkout -q "${GIT_REVISION}"                           || exit 1
-
-# Similar for submodules.
-git submodule foreach -q --recursive 'git stash -q --include-untracked'
 
 
 ### Plausibility heuristics.
@@ -166,9 +137,6 @@ done
 ### Actual packaging.
 
 echo "Packaging thirty bees version ${GIT_REVISION}."
-
-# This checks out submodule commits matching the requested package.
-git submodule update --recursive --init                     || exit 1
 
 # Create packaging directory.
 PACKAGING_DIR=$(mktemp -d)
