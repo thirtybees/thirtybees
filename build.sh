@@ -261,7 +261,8 @@ git cat-file -p ${GIT_REVISION}:modules | grep '^160000' | cut -d ' ' -f 3 | \
     cd "${MODULE}" || continue
 
     mkdir -p "${PACKAGING_DIR}/${MODULE}"
-    ../../tools/buildmodule.sh --target-dir "${PACKAGING_DIR}/${MODULE}" ${HASH}
+    ../../tools/buildmodule.sh --target-dir "${PACKAGING_DIR}/${MODULE}" \
+      --quiet ${HASH}
 
     echo "done."
   )

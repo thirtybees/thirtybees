@@ -31,6 +31,8 @@ function usage {
   echo "                          The filter is returned in PATH_FILTER, so use"
   echo "                          this script as an include."
   echo
+  echo "    -q, --quiet           Don't give hints."
+  echo
   echo "    --no-validation       Skip validation, even if it should be done."
   echo "                          Should be used during development, only."
   echo
@@ -53,6 +55,7 @@ function usage {
 ### Options parsing.
 
 OPTION_FILTER_ONLY='false'
+OPTION_QUIET='false'
 OPTION_VALIDATION='true'
 GIT_REVISION=''
 TARGET_DIR=''
@@ -65,6 +68,9 @@ while [ ${#} -ne 0 ]; do
       ;;
     '--filter-only')
       OPTION_FILTER_ONLY='true'
+      ;;
+    '-q'|'--quiet')
+      OPTION_QUIET='true'
       ;;
     '--no-validation')
       OPTION_VALIDATION='false'
@@ -144,21 +150,23 @@ else
     exit 1
   fi
 fi
-[ ${OPTION_FILTER_ONLY} = 'false' ] && \
+[ ${OPTION_FILTER_ONLY} = 'false' ] && [ ${OPTION_QUIET} = 'false' ] && \
   echo "Packaging Git revision '${GIT_REVISION}'."
 
 # Warn for older revisions.
-AGE_COMMITS=$(git log --oneline ${GIT_REVISION}..HEAD | wc -l)
-let AGE_TIME=$(date +%s)-$(git show -q --pretty=tformat:%at ${GIT_REVISION})
-let AGE_TIME=${AGE_TIME}/2592000  # 2592000 = 1 month in seconds
+if [ ${OPTION_QUIET} = 'false' ]; then
+  AGE_COMMITS=$(git log --oneline ${GIT_REVISION}..HEAD | wc -l)
+  let AGE_TIME=$(date +%s)-$(git show -q --pretty=tformat:%at ${GIT_REVISION})
+  let AGE_TIME=${AGE_TIME}/2592000  # 2592000 = 1 month in seconds
 
-if [ ${AGE_COMMITS} -gt 10 ] || [ ${AGE_TIME} -gt 1 ]; then
-  echo "You're about to package a revision more than 10 commits or more than"
-  echo "a month old. You may want to make sure to check out thirty bees core"
-  echo "of that age to get the package build tools used back then."
-  echo
+  if [ ${AGE_COMMITS} -gt 10 ] || [ ${AGE_TIME} -gt 1 ]; then
+    echo "You're about to package a revision more than 10 commits or more than"
+    echo "a month old. You may want to make sure to check out thirty bees core"
+    echo "of that age to get the package build tools used back then."
+    echo
+  fi
+  unset AGE_COMMITS AGE_TIME
 fi
-unset AGE_COMMITS AGE_TIME
 
 
 ### Set up packaging filters.
