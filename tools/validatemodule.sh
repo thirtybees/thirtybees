@@ -165,10 +165,19 @@ function constructorentry {
   local MODULE_NAME
 
   MODULE_NAME=$(basename $(pwd))
-  ${CAT} "${MODULE_NAME}".php | sed -n '/__construct/,/^    \}$/p' | \
-    grep '$this->'"${1}" | \
-    head -1 | \
-    cut -d "'" -f 2
+  ${CAT} "${MODULE_NAME}".php | \
+    sed -n '/__construct/,/^{    |\t}\}$/ {
+      /\$this->'"${1}"'\s*=/ {
+        # Extract strings in single quotes. Also ones in l()
+        # and ones containing escaped single quotes.
+        s/.*[ (]'"'"'\(.*\)'"'"'[);]*$/\1/
+        /\$this->/ {
+          # Above didnt match, not a string.
+          s/.*\=\s*\(.*\);$/\1/
+        }
+        p
+      }
+    }'
 }
 
 # Remove copyright years in lines declaring a copyright. This makes file
