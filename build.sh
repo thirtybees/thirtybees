@@ -229,16 +229,48 @@ git cat-file -p ${GIT_REVISION}:themes | grep '^160000' | cut -d ' ' -f 3 | \
   (
     THEME="themes/${T#*$'\t'}"
     HASH=${T%$'\t'*}
+    DEFAULT_BRANCH=$(git cat-file -p ${GIT_REVISION}:.gitmodules | sed -n '
+                      /^\[submodule.*'"${S/\//\\\/}"'/, /^\[submodule/ {
+                        s/\s*branch = // p
+                      }
+                    ')
 
-    echo -n "Copying ${THEME} ... "
+    echo "Copying ${THEME} ... "
     cd "${THEME}" || continue
+
+    # Validation section. Does a 'git fetch', but doesn't change anything else.
+    if [ ${OPTION_VALIDATE} = 'true' ]; then
+      if [ $(git diff | wc -l) -ne 0 ] \
+         || [ $(git diff --staged | wc -l) -ne 0 ]; then
+        echo "There are uncommitted changes in ${THEME}. Aborting."
+        exit 1
+      fi
+
+      LOCAL=$(git show -q ${DEFAULT_BRANCH} | head -1 | cut -d ' ' -f 2)
+      if [ ${HASH} != ${LOCAL} ]; then
+        echo "Repository ${THEME} not up to date, branch ${DEFAULT_BRANCH} not"
+        echo "committed in thirty bees core. Aborting."
+        exit 1
+      fi
+
+      git fetch
+      REMOTE=$(git show -q origin/${DEFAULT_BRANCH} | head -1 | cut -d ' ' -f 2)
+      if [ ${LOCAL} != ${REMOTE} ]; then
+        echo "Repository ${THEME} not up to date, branches ${DEFAULT_BRANCH}"
+        echo "and origin/${DEFAULT_BRANCH} don't match. Aborting."
+        exit 1
+      fi
+
+      unset LOCAL MASTER
+    fi
+    unset DEFAULT_BRANCH
 
     mkdir -p "${PACKAGING_DIR}/${THEME}"
     git archive ${HASH} | tar -C "${PACKAGING_DIR}/${THEME}" -xf-
 
     echo "done."
-  )
-done
+  ) || exit ${?}
+done || exit ${?}
 
 # Cleaning :-)
 (
