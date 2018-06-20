@@ -4,7 +4,7 @@ function usage {
   echo "Usage: ./build.sh [-h|--help] [<git revision>]"
   echo
   echo "This script builds an installation package from the current repository."
-  echo "Default revision is 'master'."
+  echo "Default revision is the latest tag ( = latest release)."
   echo
   echo "    -h, --help            Show this help and exit."
   echo "    -d, --allow-dirty     Package even with dirty submodules existing."
@@ -58,7 +58,15 @@ while [ ${#} -ne 0 ]; do
   shift
 done
 
-GIT_REVISION="${GIT_REVISION:-master}"
+# Latest tag = latest release. Ignore PS version tags.
+LATEST_TAG=$(git tag | \
+               sed -n '/^[1-9]\.[0-4]\.[0-9]*$/ p' | \
+               sort --reverse --version-sort | \
+               head -1)
+[ -n "${GIT_REVISION}" ] || GIT_REVISION=${LATEST_TAG}
+echo "Packaging Git revision '${GIT_REVISION}'."
+unset LATEST_TAG
+
 PACKAGE_NAME="thirtybees-v${GIT_REVISION}"
 rm -f "${PACKAGE_NAME}".zip
 
@@ -135,8 +143,6 @@ done
 
 
 ### Actual packaging.
-
-echo "Packaging thirty bees version ${GIT_REVISION}."
 
 # Create packaging directory.
 PACKAGING_DIR=$(mktemp -d)
