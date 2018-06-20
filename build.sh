@@ -141,7 +141,7 @@ echo "Packaging thirty bees version ${GIT_REVISION}."
 # Create packaging directory.
 PACKAGING_DIR=$(mktemp -d)
 
-PACKAGING_DIR+="${PACKAGE_NAME}"
+PACKAGING_DIR+="/${PACKAGE_NAME}"
 mkdir "${PACKAGING_DIR}"
 export PACKAGING_DIR
 
