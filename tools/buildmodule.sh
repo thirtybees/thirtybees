@@ -17,7 +17,7 @@
 # @license   Academic Free License (AFL 3.0)
 
 function usage {
-  echo "Usage: buildmodule.sh [-h|--help] [--filter-only] [--no-validation]"
+  echo "Usage: buildmodule.sh [-h|--help] [--filter-only] [--no-validate]"
   echo "          [--target-dir=<dir>] [<git revision>]"
   echo
   echo "This script builds a module release. It expects to be run in the root"
@@ -33,7 +33,7 @@ function usage {
   echo
   echo "    -q, --quiet           Don't give hints."
   echo
-  echo "    --no-validation       Skip validation, even if it should be done."
+  echo "    --no-validate         Skip validation, even if it should be done."
   echo "                          Should be used during development, only."
   echo
   echo "    --target-dir=<dir>    Instead of building a package, drop the to be"
@@ -56,7 +56,7 @@ function usage {
 
 OPTION_FILTER_ONLY='false'
 OPTION_QUIET='false'
-OPTION_VALIDATION='true'
+OPTION_VALIDATE='true'
 GIT_REVISION=''
 TARGET_DIR=''
 
@@ -72,8 +72,8 @@ while [ ${#} -ne 0 ]; do
     '-q'|'--quiet')
       OPTION_QUIET='true'
       ;;
-    '--no-validation')
-      OPTION_VALIDATION='false'
+    '--no-validate')
+      OPTION_VALIDATE='false'
       ;;
     '--target-dir')
       if [ -z "${2}" ]; then
@@ -230,7 +230,7 @@ unset EXCLUDE_FILE EXCLUDE_DIR KEEP_PATH EXCLUDE_PATH
 # going to be packaged. Validation of older revisions is neither supported by
 # validatemodule.sh nor does it make sense.
 
-if [ ${OPTION_VALIDATION} = 'true' ]; then
+if [ ${OPTION_VALIDATE} = 'true' ]; then
   VALIDATE='false'
   VALIDATEMODULE="${0/buildmodule.sh/validatemodule.sh}"
 
