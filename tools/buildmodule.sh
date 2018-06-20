@@ -33,8 +33,9 @@ function usage {
   echo
   echo "    -q, --quiet           Don't give hints."
   echo
-  echo "    --no-validate         Skip validation, even if it should be done."
-  echo "                          Should be used during development, only."
+  echo "    --[no-]validate       Enforce [no] validation. Default is to"
+  echo "                          validate when packaging 'master' or the"
+  echo "                          latest tag, but not when packaging others."
   echo
   echo "    --target-dir=<dir>    Instead of building a package, drop the to be"
   echo "                          packaged files in <dir>. Helpful for e.g."
@@ -56,7 +57,7 @@ function usage {
 
 OPTION_FILTER_ONLY='false'
 OPTION_QUIET='false'
-OPTION_VALIDATE='true'
+OPTION_VALIDATE='auto'
 GIT_REVISION=''
 TARGET_DIR=''
 
@@ -71,6 +72,9 @@ while [ ${#} -ne 0 ]; do
       ;;
     '-q'|'--quiet')
       OPTION_QUIET='true'
+      ;;
+    '--validate')
+      OPTION_VALIDATE='true'
       ;;
     '--no-validate')
       OPTION_VALIDATE='false'
@@ -230,21 +234,26 @@ unset EXCLUDE_FILE EXCLUDE_DIR KEEP_PATH EXCLUDE_PATH
 # going to be packaged. Validation of older revisions is neither supported by
 # validatemodule.sh nor does it make sense.
 
-if [ ${OPTION_VALIDATE} = 'true' ]; then
+if [ ${OPTION_VALIDATE} = 'true' ] || [ ${OPTION_VALIDATE} = 'auto' ]; then
   VALIDATE='false'
   VALIDATEMODULE="${0/buildmodule.sh/validatemodule.sh}"
+  VALIDATE_PARAMETERS=()
 
-  LATEST_TAG=$(git tag | tr -d 'v' | sort --reverse --version-sort | head -1)
-  [ -n "$(git tag --list ${LATEST_TAG})" ] || \
-    LATEST_TAG="v${LATEST_TAG}"  # Re-add the 'v'.
-
-  if [ "${GIT_REVISION}" = "${LATEST_TAG}" ]; then
+  if [ ${OPTION_VALIDATE} = 'true' ]; then
     VALIDATE='true'
     VALIDATE_PARAMETERS+=('-r')
-  fi
-  if [ "${GIT_REVISION}" = 'master' ]; then
-    VALIDATE='true'
-    VALIDATE_PARAMETERS+=()
+  else
+    LATEST_TAG=$(git tag | tr -d 'v' | sort --reverse --version-sort | head -1)
+    [ -n "$(git tag --list ${LATEST_TAG})" ] || \
+      LATEST_TAG="v${LATEST_TAG}"  # Re-add the 'v'.
+
+    if [ "${GIT_REVISION}" = "${LATEST_TAG}" ]; then
+      VALIDATE='true'
+      VALIDATE_PARAMETERS+=('-r')
+    fi
+    if [ "${GIT_REVISION}" = 'master' ]; then
+      VALIDATE='true'
+    fi
   fi
 
   if [ ${VALIDATE} = 'true' ]; then
