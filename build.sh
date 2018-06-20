@@ -216,23 +216,6 @@ done
   composer dump-autoload -o
 )
 
-# Module repositories.
-git cat-file -p ${GIT_REVISION}:modules | grep '^160000' | cut -d ' ' -f 3 | \
-  while read M; do
-  (
-    MODULE="modules/${M#*$'\t'}"
-    HASH=${M%$'\t'*}
-
-    echo -n "Copying ${MODULE} ... "
-    cd "${MODULE}" || continue
-
-    mkdir -p "${PACKAGING_DIR}/${MODULE}"
-    git archive ${HASH} | tar -C "${PACKAGING_DIR}/${MODULE}" -xf-
-
-    echo "done."
-  )
-done
-
 # Theme repositories.
 git cat-file -p ${GIT_REVISION}:themes | grep '^160000' | cut -d ' ' -f 3 | \
   while read T; do
@@ -265,6 +248,24 @@ done
     rm -rf "${E}"
   done
 )
+
+# Module repositories. After cleaning, because they have their own build
+# script, producing already clean output (and cleaning differently).
+git cat-file -p ${GIT_REVISION}:modules | grep '^160000' | cut -d ' ' -f 3 | \
+  while read M; do
+  (
+    MODULE="modules/${M#*$'\t'}"
+    HASH=${M%$'\t'*}
+
+    echo "Copying ${MODULE} ... "
+    cd "${MODULE}" || continue
+
+    mkdir -p "${PACKAGING_DIR}/${MODULE}"
+    ../../tools/buildmodule.sh --target-dir "${PACKAGING_DIR}/${MODULE}" ${HASH}
+
+    echo "done."
+  )
+done
 
 
 ### Make the full package.
