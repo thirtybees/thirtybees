@@ -7,9 +7,10 @@ function usage {
   echo "Default revision is the latest tag ( = latest release)."
   echo
   echo "    -h, --help            Show this help and exit."
-  echo "    -d, --allow-dirty     Package even with dirty submodules existing."
-  echo "                          This is for packaging older releases when"
-  echo "                          the dirty submodule heuristics fails."
+  echo
+  echo "    --[no-]validate       Enforce [no] validation. Default is to"
+  echo "                          validate when packaging 'master' or the"
+  echo "                          latest tag, but not when packaging others."
   echo
 }
 
@@ -35,8 +36,8 @@ trap cleanup 0
 
 ### Options parsing.
 
+OPTION_VALIDATE='auto'
 GIT_REVISION=''
-ALLOW_DIRTY='false'
 
 while [ ${#} -ne 0 ]; do
   case "${1}" in
@@ -44,8 +45,11 @@ while [ ${#} -ne 0 ]; do
       usage
       exit 0
       ;;
-    '-d'|'--allow-dirty')
-      ALLOW_DIRTY='true'
+    '--validate')
+      OPTION_VALIDATE='true'
+      ;;
+    '--no-validate')
+      OPTION_VALIDATE='false'
       ;;
     *)
       if ! git show -q "${1}" 2>/dev/null | grep -q '.'; then
@@ -77,35 +81,32 @@ rm -f "${PACKAGE_NAME}".zip
 # catch all the situations where some pre-release work steps have been
 # forgotten.
 
-# Heuristics on wether newest commits were forgotten to commit in the core
-# repository. Heuristics:
+# Heuristics on wether to validate the stuff to be packaged. This should detect
+# 'forgotten' commits in core as well as modules in need of a new release.
+# Heuristics:
 # - Less than 30 commits on the branch of the to be packaged commit.
-# - Dirty submodules exist.
-
-# This fetches submodule commits and checks out remote branch 'master'.
-echo "Updating submodules. This may take a while."
-git submodule update --recursive --init --remote            || exit 1
 
 GIT_BRANCH=$(git branch --contains "${GIT_REVISION}" | \
              grep -v "detached" | head -1 | cut -b 3-)
 COMMITS_ON_TOP=$(git log --oneline "${GIT_REVISION}".."${GIT_BRANCH}" | wc -l)
-if [ "${ALLOW_DIRTY}" = 'false' ] \
-   && [ "${COMMITS_ON_TOP}" -lt 30 ] \
-   && git submodule | grep -q '^+'; then
-  echo "Request to package a recent release and dirty submodules exist,"
-  echo "refusing to continue packaging."
-  exit 1
+if [ ${OPTION_VALIDATE} = 'auto' ]; then
+  if [ ${COMMITS_ON_TOP} -lt 30 ]; then
+    OPTION_VALIDATE='true'
+  else
+    OPTION_VALIDATE='false'
+  fi
 fi
 
 # Heuristics: if the requested revision is a Git tag ( = release), it should
 # match the version in install-dev/install_version.php.
-TB_VERSION=$((cat install-dev/install_version.php &&
+TB_VERSION=$((git cat-file -p ${GIT_REVISION}:install-dev/install_version.php &&
               echo 'print(_TB_INSTALL_VERSION_);') | \
              php)
-if git tag | grep -q "${GIT_REVISION}" \
+if [ ${OPTION_VALIDATE} != 'false' ] \
+   && git tag | grep -q "${GIT_REVISION}" \
    && [ "${GIT_REVISION}" != "${TB_VERSION}" ]; then
-  echo "Request to package a release with _TB_INSTALL_VERSION_ not matching,"
-  echo "see install-dev/install_version.php. Refusing to continue packaging."
+  echo "Request to package revision '${GIT_REVISION}', but _TB_INSTALL_VERSION_"
+  echo "in install-dev/install_version.php is '${TB_VERSION}'. Aborting."
   exit 1
 fi
 
