@@ -138,7 +138,7 @@ for S in "${SUBMODULE_LIST[@]}"; do
                         s/\s*url = // p
                       }
                     ')
-    git clone ${SUBMODULE_URL} "${S}" 2>&1 | grep -v '^remote:'
+    git clone ${SUBMODULE_URL} "${S}" 2>&1 | grep -v '^remote:'   || exit ${?}
   fi
 done
 
@@ -203,7 +203,7 @@ done
 # Core repository.
 (
   echo -n "Copying core ... "
-  git archive ${GIT_REVISION} | tar -C "${PACKAGING_DIR}" -xf-
+  git archive ${GIT_REVISION} | tar -C "${PACKAGING_DIR}" -xf-    || exit ${?}
 
   cd "${PACKAGING_DIR}"
   if [ -d admin-dev ]; then
@@ -213,15 +213,15 @@ done
     mv install-dev install
   fi
   echo "done."
-)
+) || exit ${?}
 
 # Composer repositories. Not reasonably doable without network access,
 # but fortunately composer maintains a cache, so no heavy downloads.
 (
-  cd "${PACKAGING_DIR}" || exit 1
-  composer install --no-dev
-  composer dump-autoload -o
-)
+  cd "${PACKAGING_DIR}"
+  composer install --no-dev                                       || exit ${?}
+  composer dump-autoload -o                                       || exit ${?}
+) || exit ${?}
 
 # Theme repositories.
 git cat-file -p ${GIT_REVISION}:themes | grep '^160000' | cut -d ' ' -f 3 | \
@@ -266,7 +266,7 @@ git cat-file -p ${GIT_REVISION}:themes | grep '^160000' | cut -d ' ' -f 3 | \
     unset DEFAULT_BRANCH
 
     mkdir -p "${PACKAGING_DIR}/${THEME}"
-    git archive ${HASH} | tar -C "${PACKAGING_DIR}/${THEME}" -xf-
+    git archive ${HASH} | tar -C "${PACKAGING_DIR}/${THEME}" -xf- || exit ${?}
 
     echo "done."
   ) || exit ${?}
@@ -301,11 +301,11 @@ git cat-file -p ${GIT_REVISION}:modules | grep '^160000' | cut -d ' ' -f 3 | \
 
     mkdir -p "${PACKAGING_DIR}/${MODULE}"
     ../../tools/buildmodule.sh --target-dir "${PACKAGING_DIR}/${MODULE}" \
-      --quiet ${HASH}
+      --quiet ${HASH}                                             || exit ${?}
 
     echo "done."
-  )
-done
+  ) || exit ${?}
+done || exit ${?}
 
 
 ### Make the full package.
@@ -314,10 +314,10 @@ done
 (
   echo -n "Creating package ... "
   cd "${PACKAGING_DIR}"
-  php ./tools/generatemd5list.php
-  zip -r -q "${PACKAGE_NAME}".zip .
+  php ./tools/generatemd5list.php                                 || exit ${?}
+  zip -r -q "${PACKAGE_NAME}".zip .                               || exit ${?}
   echo "done."
-)
+) || exit ${?}
 
 mv "${PACKAGING_DIR}"/"${PACKAGE_NAME}".zip .
 echo "Created ${PACKAGE_NAME}.zip successfully."
