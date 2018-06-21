@@ -3484,35 +3484,55 @@ abstract class ModuleCore
     /**
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @version 1.0.5 Use DOMDocument instead of a manually crafted string.
      */
     protected function _generateConfigXml()
     {
-        $author_uri = '';
-        if (isset($this->author_uri) && $this->author_uri) {
-            $author_uri = '<author_uri><![CDATA['.Tools::htmlentitiesUTF8($this->author_uri).']]></author_uri>';
+        $xml = new DOMDocument('1.0', 'UTF-8');
+        $xml->formatOutput = true;
+        $moduleXML = $xml->createElement('module');
+        $xml->appendChild($moduleXML);
+
+        $authorUri = '';
+        if (isset($this->author_uri)) {
+            $authorUri = $this->author_uri;
+        }
+        $isConfigurable = 0;
+        if (isset($this->is_configurable)) {
+            $isConfigurable = (int) $this->is_configurable;
+        }
+        $limitedCountries = '';
+        if (count($this->limited_countries) == 1) {
+            $limitedCountries = $this->limited_countries[0];
         }
 
-        $xml = '<?xml version="1.0" encoding="UTF-8" ?>
-<module>
-	<name>'.$this->name.'</name>
-	<displayName><![CDATA['.str_replace(']]>', '', html_entity_decode($this->displayName)).']]></displayName>
-	<version><![CDATA['.$this->version.']]></version>
-	<description><![CDATA['.str_replace(']]>' , '', html_entity_decode($this->description)).']]></description>
-	<author><![CDATA['.str_replace(']]>' , '', html_entity_decode($this->author)).']]></author>'
-            .$author_uri.'
-	<tab><![CDATA['.Tools::htmlentitiesUTF8($this->tab).']]></tab>'.(isset($this->confirmUninstall) ? "\n\t".'<confirmUninstall><![CDATA['.$this->confirmUninstall.']]></confirmUninstall>' : '').'
-	<is_configurable>'.(isset($this->is_configurable) ? (int) $this->is_configurable : 0).'</is_configurable>
-	<need_instance>'.(int) $this->need_instance.'</need_instance>'.(isset($this->limited_countries) ? "\n\t".'<limited_countries>'.(count($this->limited_countries) == 1 ? $this->limited_countries[0] : '').'</limited_countries>' : '').'
-</module>';
+        foreach ([
+            'name'              => $this->name,
+            'displayName'       => $this->displayName,
+            'version'           => $this->version,
+            'description'       => $this->description,
+            'author'            => $this->author,
+            'author_uri'        => $authorUri,
+            'tab'               => $this->tab,
+            'confirmUninstall'  => $this->confirmUninstall,
+            'is_configurable'   => $isConfigurable,
+            'need_instance'     => $this->need_instance,
+            'limited_countries' => $limitedCountries,
+        ] as $node => $value) {
+            if (is_string($value) && strlen($value)) {
+                $element = $xml->createElement($node);
+                $element->appendChild($xml->createCDATASection($value));
+            } else {
+                $element = $xml->createElement($node, $value);
+            }
+            $moduleXML->appendChild($element);
+        }
+
         if (is_writable(_PS_MODULE_DIR_.$this->name.'/')) {
             $iso = substr(Context::getContext()->language->iso_code, 0, 2);
             $file = _PS_MODULE_DIR_.$this->name.'/'.($iso == 'en' ? 'config.xml' : 'config_'.$iso.'.xml');
-            if (!@file_put_contents($file, $xml)) {
-                if (!is_writable($file)) {
-                    @unlink($file);
-                    @file_put_contents($file, $xml);
-                }
-            }
+            @unlink($file);
+            @file_put_contents($file, $xml->saveXml());
             @chmod($file, 0664);
         }
     }
