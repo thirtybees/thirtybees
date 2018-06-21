@@ -3468,48 +3468,19 @@ FileETag none
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @version 1.0.5 Use existing index.php as template, drop license.
      */
     public static function getDefaultIndexContent()
     {
-        return '<?php
-/**
- * 2016-'.date('Y').' PrestaShop
- *
- * thirty bees is an extension to the PrestaShop e-commerce software developed by PrestaShop SA
- * Copyright (C) 2017-2018 thirty bees
- *
- * NOTICE OF LICENSE
- *
- * This source file is subject to the Open Software License (OSL 3.0)
- * that is bundled with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://opensource.org/licenses/osl-3.0.php
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@thirtybees.com so we can send you a copy immediately.
- *
- * DISCLAIMER
- *
- * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
- * versions in the future. If you wish to customize PrestaShop for your
- * needs please refer to https://www.thirtybees.com for more information.
- *
- * @author    thirty bees <contact@thirtybees.com>
- * @copyright 2016-'.date('Y').' thirty bees
- * @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
- *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
- */
+        // Use a random, existing index.php as template.
+        $content = file_get_contents(_PS_ROOT_DIR_.'/classes/index.php');
 
-header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
+        // Drop the license section, we can't really claim a license for an
+        // auto-generated file.
+        $replacement = '/* Auto-generated file, don\'t edit. */';
+        $content = preg_replace('/\/\*.*\*\//s', $replacement, $content);
 
-header("Cache-Control: no-store, no-cache, must-revalidate");
-header("Cache-Control: post-check=0, pre-check=0", false);
-header("Pragma: no-cache");
-
-header("Location: ../");
-exit;
-';
+        return $content;
     }
 
     /**
