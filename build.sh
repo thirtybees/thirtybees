@@ -93,6 +93,9 @@ if [ ${OPTION_VALIDATE} = 'auto' ]; then
   if [ ${COMMITS_ON_TOP} -lt 30 ]; then
     OPTION_VALIDATE='true'
   else
+    echo "You're about to package a revision more than 30 commits old. You may"
+    echo "want to make sure to check out thirty bees core of that age to get"
+    echo "the package build tools used back then."
     OPTION_VALIDATE='false'
   fi
 fi
