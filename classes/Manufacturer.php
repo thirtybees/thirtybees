@@ -151,11 +151,15 @@ class ManufacturerCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @version 1.0.5 Set $groupBy to true by default and deprecate it.
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getManufacturers($getNbProducts = false, $idLang = 0, $active = true, $p = false, $n = false, $allGroup = false, $groupBy = false)
+    public static function getManufacturers($getNbProducts = false, $idLang = 0, $active = true, $p = false, $n = false, $allGroup = false, $groupBy = true)
     {
+        if (!$groupBy) {
+            Tools::displayParameterAsDeprecated('$groupBy');
+        }
         if (!$idLang) {
             $idLang = (int) Configuration::get('PS_LANG_DEFAULT');
         }
