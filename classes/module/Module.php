@@ -3497,6 +3497,10 @@ abstract class ModuleCore
         if (isset($this->author_uri)) {
             $authorUri = $this->author_uri;
         }
+        $confirmUninstall = '';
+        if (isset($this->confirmUninstall)) {
+            $confirmUninstall = $this->confirmUninstall;
+        }
         $isConfigurable = 0;
         if (isset($this->is_configurable)) {
             $isConfigurable = (int) $this->is_configurable;
@@ -3514,7 +3518,7 @@ abstract class ModuleCore
             'author'            => $this->author,
             'author_uri'        => $authorUri,
             'tab'               => $this->tab,
-            'confirmUninstall'  => $this->confirmUninstall,
+            'confirmUninstall'  => $confirmUninstall,
             'is_configurable'   => $isConfigurable,
             'need_instance'     => $this->need_instance,
             'limited_countries' => $limitedCountries,
