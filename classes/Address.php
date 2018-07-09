@@ -251,6 +251,7 @@ class AddressCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @version 1.0.6 Use VatNumber::validateNumber(), if present.
      *
      * @param bool $htmlEntities
      *
@@ -260,15 +261,32 @@ class AddressCore extends ObjectModel
     public function validateController($htmlEntities = true)
     {
         $errors = parent::validateController($htmlEntities);
-        if (!Configuration::get('VATNUMBER_MANAGEMENT') || !Configuration::get('VATNUMBER_CHECKING')) {
-            return $errors;
-        }
 
-        if (file_exists(_PS_MODULE_DIR_.'vatnumber/vatnumber.php')) {
-            include_once(_PS_MODULE_DIR_.'vatnumber/vatnumber.php');
+        if (Module::isInstalled('vatnumber')
+            && Module::isEnabled('vatnumber')
+            && file_exists(_PS_MODULE_DIR_.'vatnumber/vatnumber.php')) {
+            include_once _PS_MODULE_DIR_.'vatnumber/vatnumber.php';
 
-            if (class_exists('VatNumber', false)) {
-                return array_merge($errors, VatNumber::WebServiceCheck($this->vat_number));
+            if (method_exists('VatNumber', 'validateNumber')) {
+                /*
+                 * Even better would be to execute such stuff as a hook, but
+                 * the current hook mechanism is designed with front office
+                 * display stuff in mind, so not really suitable here. A better
+                 * hook mechanism would allow to give arbitrary parameters, not
+                 * just arrays. And it would return results unchanged, not
+                 * casted to a string and results of all hooks concatenated.
+                 * --Traumflug, 2018-07-12
+                 */
+                $result = VatNumber::validateNumber($this);
+                if (is_string($result)) {
+                    $errors[] = $result;
+                }
+            } else {
+                // Retrocompatibility for module version < 2.1.0 (07/2018).
+                if (Configuration::get('VATNUMBER_MANAGEMENT')
+                    && Configuration::get('VATNUMBER_CHECKING')) {
+                    $errors = array_merge($errors, VatNumber::WebServiceCheck($this->vat_number));
+                }
             }
         }
 
