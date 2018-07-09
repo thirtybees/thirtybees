@@ -662,6 +662,8 @@ class ProductCore extends ObjectModel
             $usetax = false;
         }
 
+        // @TODO: move this evaluation into the vatnumber module,
+        //        VatNumber::taxExemption($addressInfos['vat_number'])
         if ($usetax != false
             && !empty($addressInfos['vat_number'])
             && $addressInfos['id_country'] != Configuration::get('VATNUMBER_COUNTRY')
@@ -1194,6 +1196,8 @@ class ProductCore extends ObjectModel
             }
             $addressInfos = Address::getCountryAndState($idAddress);
 
+            // @TODO: move this evaluation into the vatnumber module.
+            //        VatNumber::taxExemption($addressInfos['vat_number'])
             if (static::$_taxCalculationMethod != PS_TAX_EXC
                 && !empty($addressInfos['vat_number'])
                 && $addressInfos['id_country'] != Configuration::get('VATNUMBER_COUNTRY')
