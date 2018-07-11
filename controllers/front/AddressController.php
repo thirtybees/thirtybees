@@ -144,15 +144,29 @@ class AddressControllerCore extends FrontController
      * Assign template vars related to page content
      * @see FrontController::initContent()
      *
-     * @since 1.0.0
+     * @since   1.0.0
+     * @version 1.0.0 Initial version.
+     * @version 1.0.6 Use VatNumber::assignTemplateVars(), if present.
      */
     public function initContent()
     {
         parent::initContent();
 
         $this->assignCountries();
-        $this->assignVatNumber();
         $this->assignAddressFormat();
+
+        if (Module::isInstalled('vatnumber')
+            && Module::isEnabled('vatnumber')
+            && file_exists(_PS_MODULE_DIR_.'vatnumber/vatnumber.php')) {
+            include_once _PS_MODULE_DIR_.'vatnumber/vatnumber.php';
+
+            if (method_exists('VatNumber', 'assignTemplateVars')) {
+                VatNumber::assignTemplateVars($this->context);
+            } else {
+                // Retrocompatibility for module version < 2.1.0 (07/2018).
+                $this->assignVatNumber();
+            }
+        }
 
         // Assign common vars
         $this->context->smarty->assign(
@@ -389,9 +403,11 @@ class AddressControllerCore extends FrontController
 
     /**
      * Assign template vars related to vat number
-     * @todo move this in vatnumber module !
+     * For retrocompatibility with vatnumber module version < 2.1.0 (07/2018).
      *
      * @since 1.0.0
+     * @deprecated 1.0.6 Moved into the vatnumber module,
+     *                   VatNumber::assignTemplateVars().
      */
     protected function assignVatNumber()
     {
