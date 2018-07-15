@@ -146,7 +146,8 @@ class AddressControllerCore extends FrontController
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version.
-     * @version 1.0.6 Use VatNumber::assignTemplateVars(), if present.
+     * @version 1.0.6 Use VatNumber::assignTemplateVars() and
+     *                VatNumber::adjustAddressForLayout(), if present.
      */
     public function initContent()
     {
@@ -160,7 +161,8 @@ class AddressControllerCore extends FrontController
             && file_exists(_PS_MODULE_DIR_.'vatnumber/vatnumber.php')) {
             include_once _PS_MODULE_DIR_.'vatnumber/vatnumber.php';
 
-            if (method_exists('VatNumber', 'assignTemplateVars')) {
+            if (method_exists('VatNumber', 'adjustAddressForLayout')) {
+                VatNumber::adjustAddressForLayout($this->_address);
                 VatNumber::assignTemplateVars($this->context);
             } else {
                 // Retrocompatibility for module version < 2.1.0 (07/2018).

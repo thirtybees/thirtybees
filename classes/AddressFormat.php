@@ -331,14 +331,15 @@ class AddressFormatCore extends ObjectModel
     /**
      * Returns the formatted fields with associated values
      *
-     * @since         1.0.0
-     * @version       1.0.0 Initial version
-     *
      * @param Address  $address
      * @param array    $addressFormat
      * @param int|null $idLang
      *
      * @return array
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version.
+     * @version 1.0.6 Use VatNumber::adjustAddressForLayout().
      */
     public static function getFormattedAddressFieldsValues($address, $addressFormat, $idLang = null)
     {
@@ -350,6 +351,16 @@ class AddressFormatCore extends ObjectModel
 
         // Check if $address exist and it's an instanciate object of Address
         if ($address && ($address instanceof Address)) {
+            if (Module::isInstalled('vatnumber')
+                && Module::isEnabled('vatnumber')
+                && file_exists(_PS_MODULE_DIR_.'vatnumber/vatnumber.php')) {
+                include_once _PS_MODULE_DIR_.'vatnumber/vatnumber.php';
+
+                if (method_exists('VatNumber', 'adjustAddressForLayout')) {
+                    VatNumber::adjustAddressForLayout($address);
+                }
+            }
+
             foreach ($addressFormat as $line) {
                 if (($keyList = preg_split(static::_CLEANING_REGEX_, $line, -1, PREG_SPLIT_NO_EMPTY)) && is_array($keyList)) {
                     foreach ($keyList as $pattern) {
@@ -569,12 +580,23 @@ class AddressFormatCore extends ObjectModel
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @version 1.0.6 Use VatNumber::adjustAddressForLayout().
      */
     public static function getFormattedLayoutData($address)
     {
         $layoutData = [];
 
         if ($address && $address instanceof Address) {
+            if (Module::isInstalled('vatnumber')
+                && Module::isEnabled('vatnumber')
+                && file_exists(_PS_MODULE_DIR_.'vatnumber/vatnumber.php')) {
+                include_once _PS_MODULE_DIR_.'vatnumber/vatnumber.php';
+
+                if (method_exists('VatNumber', 'adjustAddressForLayout')) {
+                    VatNumber::adjustAddressForLayout($address);
+                }
+            }
+
             $layoutData['ordered'] = AddressFormat::getOrderedAddressFields((int) $address->id_country);
             $layoutData['formated'] = AddressFormat::getFormattedAddressFieldsValues($address, $layoutData['ordered']);
             $layoutData['object'] = [];
