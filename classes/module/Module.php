@@ -3052,11 +3052,12 @@ abstract class ModuleCore
             }
 
             $this->resetCurrentSubTemplate($template, $cache_id, $compile_id);
-            if($result && _PS_MODE_DEV_ === true)
-            {
+
+            if ($result && _PS_MODE_DEV_ && !Validate::isJSON($result)) {
                 $tpl_path = $this->getTemplatePath($template);
                 $result = '<!-- START ' . $tpl_path .' -->' . $result . '<!-- END ' . $tpl_path .' -->';
             }
+
             return $result;
         }
     }
