@@ -138,7 +138,7 @@ class InstallSession
         if (InstallSession::$cookieMode) {
             $ref = InstallSession::$cookie->{$varname};
             if (0 === strncmp($ref, 'json_array:', strlen('json_array:'))) {
-                $ref = json_decode(substr($ref, strlen('json_array:')));
+                $ref = json_decode(substr($ref, strlen('json_array:')), true);
             }
         } else {
             if (isset($_SESSION[$varname])) {

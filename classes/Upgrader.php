@@ -86,7 +86,7 @@ class UpgraderCore
      */
     public function loadFromConfig()
     {
-        $lastVersionCheck = json_decode(Configuration::get('PS_LAST_VERSION'));
+        $lastVersionCheck = json_decode(Configuration::get('PS_LAST_VERSION'), true);
         if ($lastVersionCheck) {
             if (isset($lastVersionCheck['name'])) {
                 $this->version_name = $lastVersionCheck['name'];

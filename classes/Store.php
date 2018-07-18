@@ -132,7 +132,7 @@ class StoreCore extends ObjectModel
      */
     public function getWsHours()
     {
-        $hours = json_decode($this->hours);
+        $hours = json_decode($this->hours, true);
 
         // Retrocompatibility for thirty bees <= 1.0.4.
         //

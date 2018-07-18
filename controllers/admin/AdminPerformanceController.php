@@ -882,7 +882,7 @@ class AdminPerformanceControllerCore extends AdminController
             'dynamicHooks' => true,
         ];
 
-        $controllerList = $this->displayControllerList(json_decode(Configuration::get('TB_PAGE_CACHE_CONTROLLERS')), $this->context->shop->id);
+        $controllerList = $this->displayControllerList(json_decode(Configuration::get('TB_PAGE_CACHE_CONTROLLERS'), true), $this->context->shop->id);
 
         $this->tpl_form_vars['controllerList'] = $controllerList;
         $this->tpl_form_vars['moduleSettings'] = $moduleSettings;

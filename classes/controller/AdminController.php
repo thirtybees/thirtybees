@@ -661,7 +661,7 @@ class AdminControllerCore extends Controller
                 if ($field = $this->filterToField($key, $filter)) {
                     $type = (array_key_exists('filter_type', $field) ? $field['filter_type'] : (array_key_exists('type', $field) ? $field['type'] : false));
                     if (($type == 'date' || $type == 'datetime') && is_string($value)) {
-                        $value = json_decode($value);
+                        $value = json_decode($value, true);
                     }
                     $key = isset($tmpTab[1]) ? $tmpTab[0].'.`'.$tmpTab[1].'`' : '`'.$tmpTab[0].'`';
 
@@ -2806,7 +2806,7 @@ class AdminControllerCore extends Controller
                         if (isset($t['type']) && $t['type'] == 'bool') {
                             $filterValue = ((bool) $val) ? $this->l('yes') : $this->l('no');
                         } elseif (isset($t['type']) && $t['type'] == 'date' || isset($t['type']) && $t['type'] == 'datetime') {
-                            $date = json_decode($val);
+                            $date = json_decode($val, true);
                             if (isset($date[0])) {
                                 $filterValue = $date[0];
                                 if (isset($date[1]) && !empty($date[1])) {

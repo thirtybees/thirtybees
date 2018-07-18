@@ -519,7 +519,7 @@ class AdminStoresControllerCore extends AdminController
         $days[6] = $this->l('Saturday');
         $days[7] = $this->l('Sunday');
 
-        $hours = json_decode($this->getFieldValue($obj, 'hours'));
+        $hours = json_decode($this->getFieldValue($obj, 'hours'), true);
 
         // Retrocompatibility for thirty bees <= 1.0.4.
         //

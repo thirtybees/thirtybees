@@ -828,7 +828,7 @@ class FrontControllerCore extends Controller
 
         if (!Tools::getValue('no_cache') && !$ajaxCalling) {
             $entityType = Dispatcher::getInstance()->getController();
-            $cachedControllers = json_decode(Configuration::get('TB_PAGE_CACHE_CONTROLLERS'));
+            $cachedControllers = json_decode(Configuration::get('TB_PAGE_CACHE_CONTROLLERS'), true);
             if (in_array($entityType, $cachedControllers) && !Tools::isSubmit('live_edit') && !Tools::isSubmit('live_configurator_token')) {
                 $idPage = Tools::encrypt($newUrl);
                 $idCurrency = (int) $this->context->currency->id;

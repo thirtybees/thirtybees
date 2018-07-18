@@ -343,7 +343,7 @@ class StoresControllerCore extends FrontController
         $hours = [];
 
         if ($store['hours']) {
-            $hours = json_decode($store['hours']);
+            $hours = json_decode($store['hours'], true);
 
             // Retrocompatibility for thirty bees <= 1.0.4.
             //
