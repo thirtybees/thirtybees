@@ -1034,7 +1034,7 @@ class CartCore extends ObjectModel
 
         // The delivery option was selected
         if (isset($this->delivery_option) && $this->delivery_option != '') {
-            $deliveryOption = json_decode($this->delivery_option);
+            $deliveryOption = json_decode($this->delivery_option, true);
             $validated = true;
             if (is_array($deliveryOption)) {
                 foreach ($deliveryOption as $idAddress => $key) {
