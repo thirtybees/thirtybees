@@ -181,8 +181,9 @@ EXCLUDE_DIR+=("Tests")
 EXCLUDE_DIR+=("unitTests")
 EXCLUDE_DIR+=("vagrant")
 
-# As always, there are some exceptions from the above :-) Full paths, please.
-KEEP=
+# As always, there are some exceptions from the above :-)
+# Paths starting at repository root, directories without trailing '/', please.
+KEEP=()
 
 # Exclude paths, for individual files and directories to be excluded.
 # EXCLUDE_PATH=("generatemd5list.php")  <- Can't get removed.
@@ -194,9 +195,10 @@ EXCLUDE_PATH+=("tools/templates/")
 # Build a list of parameters for 'find' to actually keep ${KEEP}.
 KEEP_FLAGS=()
 for E in "${KEEP[@]}"; do
-  KEEP_FLAGS+=("!")
   KEEP_FLAGS+=("-path")
-  KEEP_FLAGS+=("\*${E}\*")
+  KEEP_FLAGS+=("./${E}")
+  KEEP_FLAGS+=("-prune")
+  KEEP_FLAGS+=("-o")
 done
 
 
@@ -279,10 +281,12 @@ done || exit ${?}
 (
   cd "${PACKAGING_DIR}"
   for E in "${EXCLUDE_FILE[@]}"; do
-    find . "${KEEP_FLAGS[@]}" -type f -name "${E}" -delete
+    find . "${KEEP_FLAGS[@]}" -type f -name "${E}" -print | while read F; do
+      rm -f "${F}"
+    done
   done
   for E in "${EXCLUDE_DIR[@]}"; do
-    find . "${KEEP_FLAGS[@]}" -type d -name "${E}" | while read D; do
+    find . "${KEEP_FLAGS[@]}" -type d -name "${E}" -print | while read D; do
       rm -rf "${D}"
     done
   done
