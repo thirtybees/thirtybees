@@ -162,34 +162,34 @@ export PACKAGING_DIR
 # into a directory, then remove surplus file.
 
 # Files not needed in the release package.
-EXCLUDE_FILE=(".coveralls.yml")
-EXCLUDE_FILE+=(".gitignore")
-EXCLUDE_FILE+=(".gitmodules")
-EXCLUDE_FILE+=(".scrutinizer.yml")
-EXCLUDE_FILE+=(".travis.yml")
-EXCLUDE_FILE+=("architecture.md")
-EXCLUDE_FILE+=("codeception.yml")
-EXCLUDE_FILE+=("composer.lock")
-EXCLUDE_FILE+=("Vagrantfile")
-EXCLUDE_FILE+=("build.sh")
+EXCLUDE_FILE=('.coveralls.yml')
+EXCLUDE_FILE+=('.gitignore')
+EXCLUDE_FILE+=('.gitmodules')
+EXCLUDE_FILE+=('.scrutinizer.yml')
+EXCLUDE_FILE+=('.travis.yml')
+EXCLUDE_FILE+=('architecture.md')
+EXCLUDE_FILE+=('codeception.yml')
+EXCLUDE_FILE+=('composer.lock')
+EXCLUDE_FILE+=('Vagrantfile')
+EXCLUDE_FILE+=('build.sh')
 
 # Directories not needed in the release package.
-EXCLUDE_DIR=("examples")
-EXCLUDE_DIR+=("Examples")
-EXCLUDE_DIR+=("tests")
-EXCLUDE_DIR+=("Tests")
-EXCLUDE_DIR+=("unitTests")
-EXCLUDE_DIR+=("vagrant")
+EXCLUDE_DIR=('examples')
+EXCLUDE_DIR+=('Examples')
+EXCLUDE_DIR+=('tests')
+EXCLUDE_DIR+=('Tests')
+EXCLUDE_DIR+=('unitTests')
+EXCLUDE_DIR+=('vagrant')
 
 # As always, there are some exceptions from the above :-)
 # Paths starting at repository root, directories without trailing '/', please.
 KEEP=()
 
 # Exclude paths, for individual files and directories to be excluded.
-# EXCLUDE_PATH=("generatemd5list.php")  <- Can't get removed.
-EXCLUDE_PATH=("tools/buildmodule.sh")
-EXCLUDE_PATH=("tools/validatemodule.sh")
-EXCLUDE_PATH+=("tools/templates/")
+# EXCLUDE_PATH=('generatemd5list.php')  <- Can't get removed.
+EXCLUDE_PATH=('tools/buildmodule.sh')
+EXCLUDE_PATH=('tools/validatemodule.sh')
+EXCLUDE_PATH+=('tools/templates/')
 
 
 # Build a list of parameters for 'find' to actually keep ${KEEP}.
