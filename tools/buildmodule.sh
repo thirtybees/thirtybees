@@ -126,8 +126,10 @@ fi
 unset DIR
 
 # There should be no staged changes.
-if [ $(git diff | wc -l) -ne 0 ] \
-   || [ $(git diff --staged | wc -l) -ne 0 ]; then
+if ([ ${OPTION_VALIDATE} = 'true' ] \
+    || [ ${OPTION_VALIDATE} = 'auto' ]) \
+   && ([ $(git diff | wc -l) -ne 0 ] \
+       || [ $(git diff --staged | wc -l) -ne 0 ]); then
   echo "There are uncommitted changes. Aborting."
   exit 1
 fi
