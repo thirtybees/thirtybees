@@ -174,7 +174,8 @@ EXCLUDE_FILE+=('Vagrantfile')
 EXCLUDE_FILE+=('build.sh')
 
 # Directories not needed in the release package.
-EXCLUDE_DIR=('examples')
+EXCLUDE_DIR=('docs')
+EXCLUDE_DIR+=('examples')
 EXCLUDE_DIR+=('Examples')
 EXCLUDE_DIR+=('tests')
 EXCLUDE_DIR+=('Tests')
@@ -183,7 +184,7 @@ EXCLUDE_DIR+=('vagrant')
 
 # As always, there are some exceptions from the above :-)
 # Paths starting at repository root, directories without trailing '/', please.
-KEEP=()
+KEEP=('docs')
 
 # Exclude paths, for individual files and directories to be excluded.
 # EXCLUDE_PATH=('generatemd5list.php')  <- Can't get removed.
