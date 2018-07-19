@@ -304,8 +304,8 @@ git cat-file -p ${GIT_REVISION}:modules | grep '^160000' | cut -d ' ' -f 3 | \
 
     mkdir -p "${PACKAGING_DIR}/${MODULE}"
 
-    VALIDATE_FLAGS=''
-    [ ${OPTION_VALIDATE} = 'true' ] && VALIDATE_FLAGS='--validate'
+    VALIDATE_FLAGS='--validate'
+    [ ${OPTION_VALIDATE} = 'false' ] && VALIDATE_FLAGS='--no-validate'
 
     ../../tools/buildmodule.sh --target-dir "${PACKAGING_DIR}/${MODULE}" \
       --quiet ${VALIDATE_FLAGS} ${HASH}                           || exit ${?}
