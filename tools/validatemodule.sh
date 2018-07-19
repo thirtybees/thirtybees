@@ -873,7 +873,8 @@ unset FILES THIS_YEAR CR_LINES
 if [ ${IS_GIT} = 'true' ] && [ ${OPTION_RELEASE} = 'true' ]; then
   # First, grab remote branches and tags. That's a real
   # remote operation, so let's cache the result.
-  REMOTE=$(git branch -a | sed -n 's/ *remotes\/\([a-zA-Z_-]*\)\/master/\1/ p')
+  REMOTE=$(git remote -v | grep '[x/]thirtybees/' | head -1 | tr '\t' ' ')
+  REMOTE="${REMOTE%% *}"
   [ -z "${REMOTE}" ] && REMOTE='origin'
   REMOTE_CACHE=$(git ls-remote --refs ${REMOTE})
 
