@@ -17,7 +17,7 @@
 # @license   Academic Free License (AFL 3.0)
 
 function usage {
-  echo "Usage: validatemodule.sh [-h|--help]"
+  echo "Usage: validatemodule.sh [-h|--help] [-r|--release] [-v|--verbose]"
   echo
   echo "This script runs a couple of plausibility and conformance tests on"
   echo "thirty bees modules contained in a Git repository. Note that files"
