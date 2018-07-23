@@ -649,7 +649,9 @@ class OrderOpcControllerCore extends ParentOrderController
      *
      * @return void
      *
-     * @since 1.0.0
+     * @since   1.0.0
+     * @version 1.0.0 Initial version.
+     * @version 1.0.6 Use VatNumber::assignTemplateVars().
      */
     public function initContent()
     {
@@ -682,6 +684,16 @@ class OrderOpcControllerCore extends ParentOrderController
             if ($rule['free_shipping'] && !$rule['carrier_restriction']) {
                 $freeShipping = true;
                 break;
+            }
+        }
+
+        if (Module::isInstalled('vatnumber')
+            && Module::isEnabled('vatnumber')
+            && file_exists(_PS_MODULE_DIR_.'vatnumber/vatnumber.php')) {
+            include_once _PS_MODULE_DIR_.'vatnumber/vatnumber.php';
+
+            if (method_exists('VatNumber', 'assignTemplateVars')) {
+                VatNumber::assignTemplateVars($this->context);
             }
         }
 
