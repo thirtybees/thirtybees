@@ -4174,12 +4174,12 @@ class CartCore extends ObjectModel
         );
 
         if ($exisingCustomization) {
-            // If the customization field is alreay filled, delete it
+            // If the customization field is already filled, delete it
             foreach ($exisingCustomization as $customization) {
                 if ($customization['type'] == $type && $customization['index'] == $index) {
                     Db::getInstance()->delete(
                         'customized_data',
-                        'WHERE id_customization = '.(int) $customization['id_customization'].' AND type = '.(int) $customization['type'].' AND `index` = '.(int) $customization['index']
+                        'id_customization = '.(int) $customization['id_customization'].' AND type = '.(int) $customization['type'].' AND `index` = '.(int) $customization['index']
 
                     );
                     if ($type == Product::CUSTOMIZE_FILE) {
