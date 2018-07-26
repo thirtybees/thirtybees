@@ -4587,6 +4587,7 @@ class ProductCore extends ObjectModel
         $sql->select('c.`id_category`');
         $sql->from('category_product', 'cp');
         $sql->leftJoin('category', 'c', 'c.`id_category` = cp.`id_category`');
+        $sql->join(Shop::addSqlAssociation('category', 'c', true));
         $sql->where('cp.`id_category` NOT IN ('.implode(',', array_map('intval', $categories)).')');
         $sql->where('cp.`id_product` = '.(int) $this->id);
         $result = Db::getInstance()->executeS($sql);
