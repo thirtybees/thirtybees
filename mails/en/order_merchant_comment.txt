@@ -8,6 +8,5 @@ the reference {order_name}.
 
 MESSAGE: {message} 		 
 
-{shop_name} [{shop_url}] powered by
-thirty bees(tm) [https://thirtybees.com/]
+{shop_name} [{shop_url}]
 

@@ -8,6 +8,5 @@ Here is the code of your voucher: {voucher_num}
 Simply copy/paste this code during the payment process for your next
 order. 		 
 
-{shop_name} [{shop_url}] powered by
-thirty bees(tm) [https://thirtybees.com/]
+{shop_name} [{shop_url}]
 

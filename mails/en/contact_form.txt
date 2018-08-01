@@ -15,6 +15,5 @@ ATTACHED FILE: {attached_file}
 
 We will answer as soon as possible. 
 
-{shop_name} [{shop_url}] powered by
-thirty bees(tm) [https://thirtybees.com/]
+{shop_name} [{shop_url}]
 

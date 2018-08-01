@@ -9,6 +9,5 @@ DISCUSSION HISTORY: {messages}
 
 {employee} added "{comment}" 		 
 
-{shop_name} [{shop_url}] powered by
-thirty bees(tm) [https://thirtybees.com/]
+{shop_name} [{shop_url}]
 

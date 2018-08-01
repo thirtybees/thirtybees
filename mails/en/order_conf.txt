@@ -65,6 +65,5 @@ If you have a guest account, you can follow your order via the
 [{guest_tracking_url}?id_order={order_name}] section
 on our shop. 
 
-{shop_name} [{shop_url}] powered by
-thirty bees(tm) [https://thirtybees.com/]
+{shop_name} [{shop_url}]
 

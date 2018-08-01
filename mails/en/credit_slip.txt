@@ -11,6 +11,5 @@ You can review this credit slip and download your invoice from the
 account by clicking "My account" [{my_account_url}]
 on our shop. 
 
-{shop_name} [{shop_url}] powered by
-thirty bees(tm) [https://thirtybees.com/]
+{shop_name} [{shop_url}]
 
