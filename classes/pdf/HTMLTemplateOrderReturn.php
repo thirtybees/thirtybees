@@ -122,7 +122,7 @@ class HTMLTemplateOrderReturnCore extends HTMLTemplate
      */
     public function getFilename()
     {
-        return sprintf('%06d', $this->order_return->id).'.pdf';
+        return Configuration::get('PS_RETURN_PREFIX', Context::getContext()->language->id).sprintf('%06d', $this->order_return->id).'.pdf';
     }
 
     /**
