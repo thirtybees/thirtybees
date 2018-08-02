@@ -1771,7 +1771,7 @@ class AdminThemesControllerCore extends AdminController
                 mkdir($sandbox);
                 Tools::recurseCopy(_PS_ALL_THEMES_DIR_.$themeDir, $sandbox.$themeDir);
             }
-            $xmlFile = $sandbox.$themeDir.'/Config.xml';
+            $xmlFile = $sandbox.$themeDir.'/config.xml';
             if (!$this->checkXmlFields($xmlFile)) {
                 $this->errors[] = $this->l('Bad configuration file');
             } else {
