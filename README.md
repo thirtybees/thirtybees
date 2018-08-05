@@ -1,10 +1,10 @@
-# thirty bees 
+# thirty bees
 [![Build Status](https://travis-ci.org/thirtybees/thirtybees.svg?branch=master)](https://travis-ci.org/thirtybees/thirtybees)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/thirtybees/thirtybees/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/thirtybees/thirtybees/?branch=master)
 [![Crowdin](https://d322cqt584bo4o.cloudfront.net/thirty-bees/localized.svg)](https://crowdin.com/project/thirty-bees)
 [![Gitter](https://img.shields.io/gitter/room/thirtybees/General.svg)](https://gitter.im/thirtybees/General)
 
-thirty bees is an open-source fork of PrestaShop 1.6. Our aim with this fork is to provide a feature set that merchants need. We are rewriting a lot of the core modules and cleaning up the legacy code. We aim to provide a stable, feature-rich e-commerce platform to grow businesses.  
+thirty bees is an open-source fork of PrestaShop 1.6. Our aim with this fork is to provide a feature set that merchants need. We are rewriting a lot of the core modules and cleaning up the legacy code. We aim to provide a stable, feature-rich e-commerce platform to grow businesses.
 ## Supporters
 
 thirty bees is commited to being free and open source. We are also committed to making all software that thirty bees develops free and open source. For that reason we have setup a [Patreon](https://www.patreon.com/thirtybees) page so our community can help support us. You can [view our current list of supporters here](https://github.com/thirtybees/thirtybees/blob/1.0.x/SUPPORTERS.md) which will be shipped will all thirty bees versions moving forward.
@@ -16,7 +16,7 @@ thirty bees is commited to being free and open source. We are also committed to 
 
 **Overview of the general goal:**
 
-With version 1.0.x we are striving to fix as many bugs as possible, while maintaining compatibility with existing themes and modules. We want to provide the stablest platform for current users to migrate into. 
+With version 1.0.x we are striving to fix as many bugs as possible, while maintaining compatibility with existing themes and modules. We want to provide the stablest platform for current users to migrate into.
 
 **New Features being added into v1.0.x of thirty bees:**
 
@@ -69,7 +69,7 @@ You can find the latest version of the roadmap here: https://thirtybees.com/road
     - curl
     - opcache
     - apcu/redis/memcache(d)
-    
+
 ## Browser support
 
 | [<img src="https://raw.githubusercontent.com/godban/browsers-support-badges/master/src/images/edge.png" alt="IE / Edge" width="16px" height="16px" />](http://godban.github.io/browsers-support-badges/)</br>IE / Edge | [<img src="https://raw.githubusercontent.com/godban/browsers-support-badges/master/src/images/firefox.png" alt="Firefox" width="16px" height="16px" />](http://godban.github.io/browsers-support-badges/)</br>Firefox | [<img src="https://raw.githubusercontent.com/godban/browsers-support-badges/master/src/images/chrome.png" alt="Chrome" width="16px" height="16px" />](http://godban.github.io/browsers-support-badges/)</br>Chrome | [<img src="https://raw.githubusercontent.com/godban/browsers-support-badges/master/src/images/safari.png" alt="Safari" width="16px" height="16px" />](http://godban.github.io/browsers-support-badges/)</br>Safari | [<img src="https://raw.githubusercontent.com/godban/browsers-support-badges/master/src/images/opera.png" alt="Opera" width="16px" height="16px" />](http://godban.github.io/browsers-support-badges/)</br>Opera | [<img src="https://raw.githubusercontent.com/godban/browsers-support-badges/master/src/images/safari-ios.png" alt="iOS Safari" width="16px" height="16px" />](http://godban.github.io/browsers-support-badges/)</br>iOS Safari | [<img src="https://raw.githubusercontent.com/godban/browsers-support-badges/master/src/images/chrome-android.png" alt="Chrome for Android" width="16px" height="16px" />](http://godban.github.io/browsers-support-badges/)</br>Chrome for Android |
@@ -79,7 +79,7 @@ You can find the latest version of the roadmap here: https://thirtybees.com/road
 Browserlist string: <code>[defaults, ie >= 9, ie_mob >= 10, edge >= 12, chrome >= 30, chromeandroid >= 30, android >= 4.4, ff >= 30, safari >= 9, ios >= 9, opera >= 36](http://browserl.ist/?q=defaults%2C+ie+%3E%3D+9%2C+ie_mob+%3E%3D+10%2C+edge+%3E%3D+12%2C+chrome+%3E%3D+30%2C+chromeandroid+%3E%3D+30%2C+android+%3E%3D+4.4%2C+ff+%3E%3D+30%2C+safari+%3E%3D+9%2C+ios+%3E%3D+9%2C+opera+%3E%3D+36)</code>
 
 ## Installation
-You can install the master or follow a [release package](https://github.com/thirtybees/thirtybees/releases) 
+You can install the master or follow a [release package](https://github.com/thirtybees/thirtybees/releases)
 - Recursively clone the repository and choose tag release version number from the -b parameter:
 ```shell
 $ git clone https://github.com/thirtybees/thirtybees.git --recursive -b #.##
@@ -89,8 +89,8 @@ $ git clone https://github.com/thirtybees/thirtybees.git --recursive -b #.##
 ```shell
 $ composer install
 ```
-- Then install the software as usual, using either a web browser (https://example.com/install-dev) 
-- Or install via command line 
+- Then install the software as usual, using either a web browser (https://example.com/install-dev)
+- Or install via command line
 ```shell
 $  php install-dev/index_cli.php --newsletter=1 --language=en --country=us --domain=thirty.bees:8888 --db_name=thirtybees --db_create=1 --name=thirtybees --email=test@thirty.bees --firstname=thirty --lastname=bees --password=thirtybees
 ```
@@ -121,19 +121,6 @@ $  php install-dev/index_cli.php --newsletter=1 --language=en --country=us --dom
 --newsletter    Get news from thirty bees                               (Default: 1)
 --send_email    Send an email to the administrator after installation   (Default: 1)
 ```
-
-## Building a release package
-
-- Clone recursively:
-```shell
-$ git clone --recursive --depth 1 https://github.com/thirtybees/thirtybees
-```
-- Build `HEAD` as follows:
-```shell
-$ cd build
-$ ./build.sh HEAD
-```
-- This should result in a package called `thirtybees-v<version>.zip`
 
 ## Contributing
 See [CONTRIBUTING.md](CONTRIBUTING.md)
