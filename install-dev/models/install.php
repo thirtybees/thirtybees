@@ -797,70 +797,17 @@ class InstallModelInstall extends InstallAbstractModel
     }
 
     /**
-     * @return array
+     * @return array List of modules to install.
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @version 1.0.6 Move the hardcoded list to default_modules.php.
      */
     public function getModulesList()
     {
-        $modules = [];
-        if (false) {
-            foreach (scandir(_PS_MODULE_DIR_) as $module) {
-                if ($module[0] != '.' && is_dir(_PS_MODULE_DIR_.$module) && file_exists(_PS_MODULE_DIR_.$module.'/'.$module.'.php')) {
-                    $modules[] = $module;
-                }
-            }
-        } else {
-            $modules = [
-                'bankwire',
-                'blockbanner',
-                'blockbestsellers',
-                'blockcart',
-                'blocksocial',
-                'blockcategories',
-                'blockcurrencies',
-                'blockfacebook',
-                'blocklanguages',
-                'blocklayered',
-                'blockcms',
-                'blockcmsinfo',
-                'blockcontact',
-                'blockcontactinfos',
-                'blockmanufacturer',
-                'blockmyaccount',
-                'blockmyaccountfooter',
-                'blocknewproducts',
-                'blocknewsletter',
-                'blockpaymentlogo',
-                'blocksearch',
-                'blockspecials',
-                'blockstore',
-                'blocksupplier',
-                'blocktags',
-                'blocktopmenu',
-                'blockuserinfo',
-                'blockviewed',
-                'cheque',
-                'ctconfiguration',
-                'ctdev',
-                'cttopmenu',
-                'dashactivity',
-                'dashtrends',
-                'dashgoals',
-                'dashproducts',
-                'homeslider',
-                'homefeatured',
-                'productpaymentlogos',
-                'socialsharing',
-                'statsdata',
-                'statsmodule',
-                'tbupdater',
-                'themeconfigurator',
-            ];
-        }
+        global $_TB_DEFAULT_MODULES_;
 
-        return $modules;
+        return $_TB_DEFAULT_MODULES_;
     }
 
     /**
