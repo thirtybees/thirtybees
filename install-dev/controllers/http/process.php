@@ -291,46 +291,45 @@ class InstallControllerHttpProcess extends InstallControllerHttp
      */
     public function display()
     {
-        // The installer SHOULD take less than 32M, but may take up to 35/36M sometimes. So 42M is a good value :)
-        $lowMemory = true;
-
         // We fill the process step used for Ajax queries
         $this->processSteps[] = ['key' => 'generateSettingsFile', 'lang' => $this->l('Create settings.inc file')];
         $this->processSteps[] = ['key' => 'installDatabase', 'lang' => $this->l('Create database tables')];
         $this->processSteps[] = ['key' => 'installDefaultData', 'lang' => $this->l('Create default shop and languages')];
 
-        // If low memory, create subtasks for populateDatabase step (entity per entity)
-        $populateStep = ['key' => 'populateDatabase', 'lang' => $this->l('Populate database tables')];
-        if ($lowMemory) {
-            $populateStep['subtasks'] = [];
-            $xmlLoader = new InstallXmlLoader();
-            foreach (array_chunk($xmlLoader->getSortedEntities(), 10) as $entity) {
-                $populateStep['subtasks'][] = ['entity' => $entity];
-            }
+        $populateStep = [
+            'key'       => 'populateDatabase',
+            'lang'      => $this->l('Populate database tables'),
+            'subtasks'  => [],
+        ];
+        $xmlLoader = new InstallXmlLoader();
+        foreach (array_chunk($xmlLoader->getSortedEntities(), 10) as $entity) {
+            $populateStep['subtasks'][] = ['entity' => $entity];
         }
-
         $this->processSteps[] = $populateStep;
+
         $this->processSteps[] = ['key' => 'configureShop', 'lang' => $this->l('Configure shop information')];
 
         if ($this->session->installType == 'full') {
-            // If low memory, create subtasks for installFixtures step (entity per entity)
-            $fixturesStep = ['key' => 'installFixtures', 'lang' => $this->l('Install demonstration data')];
-            if ($lowMemory) {
-                $fixturesStep['subtasks'] = [];
-                $xmlLoader = new InstallXmlLoader();
-                $xmlLoader->setFixturesPath();
-                foreach (array_chunk($xmlLoader->getSortedEntities(), 10) as $entity) {
-                    $fixturesStep['subtasks'][] = ['entity' => $entity];
-                }
+            $fixturesStep = [
+                'key'       => 'installFixtures',
+                'lang'      => $this->l('Install demonstration data'),
+                'subtasks'  => [],
+            ];
+            $xmlLoader = new InstallXmlLoader();
+            $xmlLoader->setFixturesPath();
+            foreach (array_chunk($xmlLoader->getSortedEntities(), 10) as $entity) {
+                $fixturesStep['subtasks'][] = ['entity' => $entity];
             }
             $this->processSteps[] = $fixturesStep;
         }
 
-        $installModules = ['key' => 'installModules', 'lang' => $this->l('Install modules')];
-        if ($lowMemory) {
-            foreach (array_chunk($this->modelInstall->getModulesList(), 5) as $module) {
-                $installModules['subtasks'][] = ['module' => $module];
-            }
+        $installModules = [
+            'key'       => 'installModules',
+            'lang'      => $this->l('Install modules'),
+            'subtasks'  => [],
+        ];
+        foreach (array_chunk($this->modelInstall->getModulesList(), 5) as $module) {
+            $installModules['subtasks'][] = ['module' => $module];
         }
         $this->processSteps[] = $installModules;
 
