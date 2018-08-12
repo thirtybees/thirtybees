@@ -30,6 +30,10 @@ function cleanup {
       rm -rf "${S}"
     done
   fi
+
+  if [ -n "${PHP_TMP}" ]; then
+    rm -f ${PHP_TMP}
+  fi
 }
 trap cleanup 0
 
@@ -116,15 +120,46 @@ fi
 
 ### Submodule preparations.
 
+# If available, get a list of modules needed in the release package.
+TBMODULE_LIST=()
+if git ls-tree --name-only ${GIT_REVISION} install-dev/default_modules.php \
+  | grep -q '.'; then
+  # 'php -r' is pretty lame, we need a temporary file.
+  PHP_TMP=$(mktemp)
+  git cat-file -p ${GIT_REVISION}:install-dev/default_modules.php >> ${PHP_TMP}
+  echo 'foreach ($_TB_DEFAULT_MODULES_ as $module) {'             >> ${PHP_TMP}
+  echo '  print($module."\n");'                                   >> ${PHP_TMP}
+  echo '}'                                                        >> ${PHP_TMP}
+
+  TBMODULE_LIST=($(php -f ${PHP_TMP}))
+  rm ${PHP_TMP}
+  unset PHP_TMP
+fi
+
 # Make sure each submodule needed by the requested Git revision exists.
 #
 # Agreed, this is a bit cumbersome. But it's pretty much the only cumbersome
 # part needed to allow packaging arbitrary revisions without checking them out.
 SUBMODULE_LIST=()
 while read M; do
-  SUBMODULE_LIST+=("modules/${M#*$'\t'}")
+  SUBMODULE_LIST+=("modules/${M}")
 done < <(
-  git cat-file -p ${GIT_REVISION}:modules | grep '^160000' | cut -d ' ' -f 3
+  git cat-file -p ${GIT_REVISION}:modules \
+  | grep '^160000' \
+  | cut -d ' ' -f 3 \
+  | cut -f 2 \
+  | while read M; do
+    if [ -n "${TBMODULE_LIST[*]}" ]; then
+      for MM in "${TBMODULE_LIST[@]}"; do
+        if [ "${MM}" = "${M}" ]; then
+          echo ${M}
+          break
+        fi
+      done
+    else
+      echo ${M}
+    fi
+  done
 )
 while read T; do
   SUBMODULE_LIST+=("themes/${T#*$'\t'}")
@@ -301,8 +336,22 @@ done || exit ${?}
 git cat-file -p ${GIT_REVISION}:modules | grep '^160000' | cut -d ' ' -f 3 | \
   while read M; do
   (
-    MODULE="modules/${M#*$'\t'}"
     HASH=${M%$'\t'*}
+    M="${M#*$'\t'}"
+    MODULE="modules/${M}"
+
+    # Don't package modules not required for installation.
+    PACKAGE='true'
+    if [ -n "${TBMODULE_LIST[*]}" ]; then
+      PACKAGE='false'
+      for MM in "${TBMODULE_LIST[@]}"; do
+        if [ "${MM}" = "${M}" ]; then
+          PACKAGE='true'
+          break
+        fi
+      done
+    fi
+    [ "${PACKAGE}" = 'false' ] && continue
 
     echo "Copying ${MODULE} ... "
     cd "${MODULE}"                                                || exit ${?}
