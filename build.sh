@@ -120,19 +120,19 @@ fi
 #
 # Agreed, this is a bit cumbersome. But it's pretty much the only cumbersome
 # part needed to allow packaging arbitrary revisions without checking them out.
-SUBMODULES_ADDED=()
-readarray -t SUBMODULE_LIST <<< $(
-  git cat-file -p ${GIT_REVISION}:modules | grep '^160000' | cut -d ' ' -f 3 | \
-  while read M; do
-    echo "modules/${M#*$'\t'}"
-  done
-  git cat-file -p ${GIT_REVISION}:themes | grep '^160000' | cut -d ' ' -f 3 | \
-  while read T; do
-    echo "themes/${T#*$'\t'}"
-  done
+SUBMODULE_LIST=()
+while read M; do
+  SUBMODULE_LIST+=("modules/${M#*$'\t'}")
+done < <(
+  git cat-file -p ${GIT_REVISION}:modules | grep '^160000' | cut -d ' ' -f 3
 )
-[ -z "${SUBMODULE_LIST[*]}" ] && SUBMODULE_LIST=()
+while read T; do
+  SUBMODULE_LIST+=("themes/${T#*$'\t'}")
+done < <(
+  git cat-file -p ${GIT_REVISION}:themes | grep '^160000' | cut -d ' ' -f 3
+)
 
+SUBMODULES_ADDED=()
 for S in "${SUBMODULE_LIST[@]}"; do
   if [ ! -e "${S}/.git" ]; then
     SUBMODULES_ADDED+=("${S}")
