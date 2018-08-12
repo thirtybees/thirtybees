@@ -211,7 +211,7 @@ done
   echo -n "Copying core ... "
   git archive ${GIT_REVISION} | tar -C "${PACKAGING_DIR}" -xf-    || exit ${?}
 
-  cd "${PACKAGING_DIR}"
+  cd "${PACKAGING_DIR}"                                           || exit ${?}
   if [ -d admin-dev ]; then
     mv admin-dev admin
   fi
@@ -224,7 +224,7 @@ done
 # Composer repositories. Not reasonably doable without network access,
 # but fortunately composer maintains a cache, so no heavy downloads.
 (
-  cd "${PACKAGING_DIR}"
+  cd "${PACKAGING_DIR}"                                           || exit ${?}
   composer install --no-dev                                       || exit ${?}
   composer dump-autoload -o                                       || exit ${?}
 ) || exit ${?}
@@ -242,7 +242,7 @@ git cat-file -p ${GIT_REVISION}:themes | grep '^160000' | cut -d ' ' -f 3 | \
                     ')
 
     echo "Copying ${THEME} ... "
-    cd "${THEME}" || continue
+    cd "${THEME}"                                                 || exit ${?}
 
     # Validation section. Does a 'git fetch', but doesn't change anything else.
     if [ ${OPTION_VALIDATE} = 'true' ]; then
@@ -280,7 +280,7 @@ done || exit ${?}
 
 # Cleaning :-)
 (
-  cd "${PACKAGING_DIR}"
+  cd "${PACKAGING_DIR}"                                           || exit ${?}
   for E in "${EXCLUDE_FILE[@]}"; do
     find . "${KEEP_FLAGS[@]}" -type f -name "${E}" -print | while read F; do
       rm -f "${F}"
@@ -305,7 +305,7 @@ git cat-file -p ${GIT_REVISION}:modules | grep '^160000' | cut -d ' ' -f 3 | \
     HASH=${M%$'\t'*}
 
     echo "Copying ${MODULE} ... "
-    cd "${MODULE}" || continue
+    cd "${MODULE}"                                                || exit ${?}
 
     mkdir -p "${PACKAGING_DIR}/${MODULE}"
 
@@ -326,13 +326,13 @@ done || exit ${?}
 # Generate the MD5 list and zip up everything. That simple.
 (
   echo -n "Creating package ... "
-  cd "${PACKAGING_DIR}"
+  cd "${PACKAGING_DIR}"                                           || exit ${?}
   php ./tools/generatemd5list.php                                 || exit ${?}
   zip -r -q "${PACKAGE_NAME}".zip .                               || exit ${?}
   echo "done."
 ) || exit ${?}
 
-mv "${PACKAGING_DIR}"/"${PACKAGE_NAME}".zip .
+mv "${PACKAGING_DIR}"/"${PACKAGE_NAME}".zip .                     || exit ${?}
 echo "Created ${PACKAGE_NAME}.zip successfully."
 
 
