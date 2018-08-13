@@ -29,6 +29,8 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use \GuzzleHttp\Exception\RequestException;
+
 /**
  * Class EmployeeCore
  *
@@ -305,24 +307,53 @@ class EmployeeCore extends ObjectModel
     }
 
     /**
+     * Subscribe to the thirty bees newsletter. Also resets $this->optin on
+     * failure.
+     *
+     * @return bool Wether un/registration was successful.
+     *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @version 1.0.6 Added return value.
      */
     protected function saveOptin()
     {
-        if ($this->optin && !defined('TB_INSTALLATION_IN_PROGRESS')) {
-            $language = new Language($this->id_lang);
-            $guzzle = new \GuzzleHttp\Client([
-                'http_errors' => false,
-                'verify' => _PS_TOOL_DIR_.'cacert.pem',
-                'timeout' => 5,
-            ]);
-            try {
-                //FIXME: insert mailchimp hook
-            } catch (Exception $e) {
-                // Don't care
+        $success = true;
+
+        if (!defined('TB_INSTALLATION_IN_PROGRESS')) {
+            if ($this->optin) {
+                $context = Context::getContext();
+
+                $guzzle = new \GuzzleHttp\Client([
+                    'base_uri'    => 'https://api.thirtybees.com',
+                    'timeout'     => 20,
+                    'http_errors' => false,
+                    'verify'      => _PS_TOOL_DIR_.'cacert.pem',
+                ]);
+
+                try {
+                    $guzzle->post(
+                        '/newsletter/', [
+                            'json' => [
+                                'email'    => $this->email,
+                                'fname'    => $this->firstname,
+                                'lname'    => $this->lastname,
+                                'activity' => Configuration::get('PS_SHOP_ACTIVITY'),
+                                'country'  => $context->country->iso_code,
+                                'language' => $context->language->iso_code,
+                            ],
+                        ]
+                    );
+                } catch (RequestException $e) {
+                    $success = false;
+                    $this->optin = false;
+                }
+            } else {
+                // TODO: actually unregister
             }
         }
+
+        return $success;
     }
 
     /**
@@ -354,6 +385,9 @@ class EmployeeCore extends ObjectModel
     }
 
     /**
+     * Update the database record. Also used by AdminDashboardController for
+     * newsletter registration.
+     *
      * @param bool $nullValues
      *
      * @return bool
@@ -363,6 +397,8 @@ class EmployeeCore extends ObjectModel
      */
     public function update($nullValues = false)
     {
+        $success = true;
+
         if (empty($this->stats_date_from) || $this->stats_date_from == '0000-00-00') {
             $this->stats_date_from = date('Y-m-d');
         }
@@ -372,14 +408,14 @@ class EmployeeCore extends ObjectModel
         }
 
         $currentEmployee = new Employee((int) $this->id);
-
-        if ($currentEmployee->optin != $this->optin) {
-            $this->saveOptin();
+        if ($currentEmployee->optin != $this->optin
+            || !Configuration::get('TB_STORE_REGISTERED')) {
+            $success = $this->saveOptin();
         }
 
         $this->updateTextDirection();
 
-        return parent::update($nullValues);
+        return $success && parent::update($nullValues);
     }
 
     /**

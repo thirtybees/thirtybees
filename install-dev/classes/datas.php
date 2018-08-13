@@ -151,11 +151,6 @@ class Datas
             'default' => 0,
             'help'    => 'show thirty bees license',
         ],
-        'newsletter'        => [
-            'name'    => 'newsletter',
-            'default' => 1,
-            'help'    => 'get news from thirty bees',
-        ],
         'sendEmail'        => [
             'name'    => 'send_email',
             'default' => 1,

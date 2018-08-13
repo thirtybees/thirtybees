@@ -117,34 +117,6 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
             }
         }
 
-        if ($this->datas->newsletter) {
-            $guzzle = new GuzzleHttp\Client([
-                'base_uri'    => 'https://api.thirtybees.com',
-                'timeout'     => 5,
-                'http_errors' => false,
-                'verify'      => __DIR__.'/../../../tools/cacert.pem',
-            ]);
-
-            try {
-                $guzzle->post(
-                    '/newsletter/',
-                    [
-                        'json' =>
-                            [
-                                'email'    => $this->datas->adminEmail,
-                                'fname'    => $this->datas->adminFirstname,
-                                'lname'    => $this->datas->adminLastname,
-                                'activity' => $this->datas->shopActivity,
-                                'country'  => $this->datas->shopCountry,
-                                'language' => $this->datas->lang,
-                            ],
-                    ]
-                );
-            } catch (Exception $e) {
-                // Don't care
-            }
-        }
-
         if ($this->datas->sendEmail) {
             if (!$this->processSendEmail()) {
                 $this->printErrors();

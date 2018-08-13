@@ -221,6 +221,13 @@ class AdminDashboardControllerCore extends AdminController
      */
     public function renderView()
     {
+        if (!Configuration::get('TB_STORE_REGISTERED')) {
+            $this->context->employee->optin = true;
+            if ($this->context->employee->update()) {
+                Configuration::updateValue('TB_STORE_REGISTERED', 1);
+            }
+        }
+
         if (Tools::isSubmit('profitability_conf')) {
             return parent::renderOptions();
         }
