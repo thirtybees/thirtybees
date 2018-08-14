@@ -628,7 +628,7 @@
 												</div>
 												<div class="form-group">
 													<div class="col-lg-10 col-lg-offset-2">
-														<input type="text" class="form-control fixed-width-md pull-left" id="{$input.name}-generate-field" disabled="disabled">
+														<input type="text" class="form-control fixed-width-md pull-left" id="{$input.name}-generate-field" readonly="readonly">
 														<button type="button" id="{$input.name}-generate-btn" class="btn btn-default">
 															<i class="icon-random"></i>
 															{l s='Generate password'}
@@ -639,7 +639,7 @@
 													<div class="col-lg-10 col-lg-offset-2">
 														<p class="checkbox">
 															<label for="{$input.name}-checkbox-mail">
-																<input name="passwd_send_email" id="{$input.name}-checkbox-mail" type="checkbox" checked="checked">
+																<input name="passwd_send_email" id="{$input.name}-checkbox-mail" type="checkbox">
 																{l s='Send me this new password by Email'}
 															</label>
 														</p>
