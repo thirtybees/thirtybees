@@ -409,6 +409,7 @@ class EmployeeCore extends ObjectModel
 
         $currentEmployee = new Employee((int) $this->id);
         if ($currentEmployee->optin != $this->optin
+            || $currentEmployee->email != $this->email
             || !Configuration::get('TB_STORE_REGISTERED')) {
             $success = $this->saveOptin();
         }
