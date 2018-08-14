@@ -645,14 +645,6 @@
 														</p>
 													</div>
 												</div>
-												<div class="row">
-													<div class="col-lg-12">
-														<button type="button" id="{$input.name}-cancel-btn" class="btn btn-default">
-															<i class="icon-remove"></i>
-															{l s='Cancel'}
-														</button>
-													</div>
-												</div>
 											</div>
 										</div>
 									</div>
@@ -663,7 +655,6 @@
 											var $output = $('#{$input.name}-output');
 											var $generateBtn = $('#{$input.name}-generate-btn');
 											var $generateField = $('#{$input.name}-generate-field');
-											var $cancelBtn = $('#{$input.name}-cancel-btn');
 
 											var feedback = [
 												{ badge: 'text-danger', text: '{l s="Invalid" js=1}' },
@@ -697,11 +688,6 @@
 												var generatedPassword = $generateField.val();
 												$passwordField.val(generatedPassword);
 												$confirmPwd.val(generatedPassword);
-											});
-											$cancelBtn.on('click',function() {
-												$container.find("input").val("");
-												$container.addClass('hide');
-												$changeBtn.removeClass('hide');
 											});
 
 											$.validator.addMethod('password_same', function(value, element) {
