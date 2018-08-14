@@ -435,7 +435,7 @@ class EmployeeCore extends ObjectModel
      */
     public function getByEmail($email, $plainTextPassword = null, $activeOnly = true)
     {
-        if (!Validate::isEmail($email) || empty($plainTextPassword)) {
+        if (!Validate::isEmail($email)) {
             return false;
         }
 
