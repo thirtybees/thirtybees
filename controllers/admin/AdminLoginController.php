@@ -229,8 +229,8 @@ class AdminLoginControllerCore extends AdminController
         if (!Validate::isEmail($email)) {
             $this->errors[] = Tools::displayError('Invalid email address.');
         }
-        if (!$passwd) {
-            $this->errors[] = Tools::displayError('The password field is blank.');
+        if (!Validate::isPasswdAdmin($passwd)) {
+            $this->errors[] = Tools::displayError('Invalid password.');
         }
 
         if (!count($this->errors)) {
