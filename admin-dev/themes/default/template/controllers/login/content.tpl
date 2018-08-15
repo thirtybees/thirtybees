@@ -25,7 +25,7 @@
 <div id="login-panel">
 	<div id="login-header">
 		<h1 class="text-center">
-			<img id="logo" src="{$img_dir}thirty-bees@2x.png" width="155px" height="39px" alt="PrestaShop" />
+			<img id="logo" src="{$img_dir}thirty-bees@2x.png" width="155px" height="39px" alt="thirty bees" />
 		</h1>
 		<div class="text-center">{$ps_version}</div>
 		<div id="error" class="hide alert alert-danger">
