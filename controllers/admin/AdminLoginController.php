@@ -226,13 +226,10 @@ class AdminLoginControllerCore extends AdminController
         /* Check fields validity */
         $passwd = trim(Tools::getValue('passwd'));
         $email = trim(Tools::getValue('email'));
-        if (empty($email)) {
-            $this->errors[] = Tools::displayError('Email is empty.');
-        } elseif (!Validate::isEmail($email)) {
+        if (!Validate::isEmail($email)) {
             $this->errors[] = Tools::displayError('Invalid email address.');
         }
-
-        if (empty($passwd)) {
+        if (!$passwd) {
             $this->errors[] = Tools::displayError('The password field is blank.');
         }
 
@@ -241,11 +238,9 @@ class AdminLoginControllerCore extends AdminController
             $this->context->employee = new Employee();
             $isEmployeeLoaded = $this->context->employee->getByEmail($email, $passwd);
             $employeeAssociatedShop = $this->context->employee->getAssociatedShops();
-            if (!$isEmployeeLoaded) {
-                $this->errors[] = Tools::displayError('The Employee does not exist, or the password provided is incorrect.');
-                $this->context->employee->logout();
-            } elseif (empty($employeeAssociatedShop) && !$this->context->employee->isSuperAdmin()) {
-                $this->errors[] = Tools::displayError('This employee does not manage the shop anymore (Either the shop has been deleted or permissions have been revoked).');
+            if (!$isEmployeeLoaded
+                || (!$employeeAssociatedShop && !$this->context->employee->isSuperAdmin())) {
+                $this->errors[] = Tools::displayError('The employee does not exist, or the password provided is incorrect.');
                 $this->context->employee->logout();
             } else {
                 Logger::addLog(sprintf($this->l('Back Office connection from %s', 'AdminTab', false, false), Tools::getRemoteAddr()), 1, null, '', 0, true, (int) $this->context->employee->id);
@@ -298,24 +293,26 @@ class AdminLoginControllerCore extends AdminController
     public function processForgot()
     {
         $employee = new Employee();
+        $employeeExists = false;
+        $nextEmailTime = PHP_INT_MAX;
+
         if (_PS_MODE_DEMO_) {
             $this->errors[] = Tools::displayError('This functionality has been disabled.');
-        } elseif (!($email = trim(Tools::getValue('email_forgot')))) {
-            $this->errors[] = Tools::displayError('Email is empty.');
-        } elseif (!Validate::isEmail($email)) {
-            $this->errors[] = Tools::displayError('Invalid email address.');
         } else {
-            if (!$employee->getByEmail($email) || !$employee) {
-                $this->errors[] = Tools::displayError('This account does not exist.');
-            } elseif ((strtotime($employee->last_passwd_gen.'+'.Configuration::get('PS_PASSWD_TIME_BACK').' minutes') - time()) > 0) {
-                $this->errors[] = sprintf(
-                    Tools::displayError('You can regenerate your password only every %d minute(s)'),
-                    Configuration::get('PS_PASSWD_TIME_BACK')
-                );
+            $email = trim(Tools::getValue('email_forgot'));
+            if (!Validate::isEmail($email)) {
+                $this->errors[] = Tools::displayError('Invalid email address.');
+            } else {
+                $employeeExists = $employee->getByEmail($email);
+                if ($employeeExists) {
+                    $nextEmailTime = strtotime($employee->last_passwd_gen.'+'.Configuration::get('PS_PASSWD_TIME_BACK').' minutes');
+                }
             }
         }
 
-        if (!count($this->errors)) {
+        if (!count($this->errors)
+            && $employeeExists
+            && $nextEmailTime < time()) {
             $pwd = Tools::passwdGen(10, 'RANDOM');
             $employee->passwd = Tools::hash($pwd);
             $employee->last_passwd_gen = date('Y-m-d H:i:s', time());
@@ -330,30 +327,15 @@ class AdminLoginControllerCore extends AdminController
             if (Mail::Send($employee->id_lang, 'employee_password', Mail::l('Your new password', $employee->id_lang), $params, $employee->email, $employee->firstname.' '.$employee->lastname)) {
                 // Update employee only if the mail can be sent
                 Shop::setContext(Shop::CONTEXT_SHOP, (int) min($employee->getAssociatedShops()));
-
-                $result = $employee->update();
-                if (!$result) {
-                    $this->errors[] = Tools::displayError('An error occurred while attempting to change your password.');
-                } else {
-                    $this->ajaxDie(
-                        json_encode(
-                            [
-                                'hasErrors' => false,
-                                'confirm'   => $this->l('Your password has been emailed to you.', 'AdminTab', false, false),
-                            ]
-                        )
-                    );
-                }
-            } else {
-                $this->ajaxDie(
-                    json_encode(
-                        [
-                            'hasErrors' => true,
-                            'errors'    => [Tools::displayError('An error occurred while attempting to change your password.')],
-                        ]
-                    )
-                );
+                $employee->update(); // Ignore errors, nothing crucial changed.
             }
+        }
+
+        if (!count($this->errors)) {
+            $this->ajaxDie(json_encode([
+                'hasErrors' => false,
+                'confirm'   => sprintf($this->l('A new password has been emailed to the given email address, if it wasn\'t done within the last %s minutes before.', 'AdminTab', false, false), Configuration::get('PS_PASSWD_TIME_BACK')),
+            ]));
         } elseif (Tools::isSubmit('ajax')) {
             $this->ajaxDie(json_encode(['hasErrors' => true, 'errors' => $this->errors]));
         }
