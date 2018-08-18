@@ -54,7 +54,7 @@ class CacheFsCore extends Cache
 
         $keysFilename = $this->getFilename(static::KEYS_NAME);
         if (@filemtime($keysFilename)) {
-            $this->keys = json_decode(file_get_contents($keysFilename));
+            $this->keys = json_decode(file_get_contents($keysFilename), true);
         }
     }
 
