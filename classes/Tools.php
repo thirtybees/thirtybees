@@ -3838,9 +3838,15 @@ FileETag none
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @deprecated 1.0.7 This function always terminates execution in debug
+     *                   mode, which is dangerous behaviour that can lead to
+     *                   data corruption. For logging, use Logger::addLog()
+     *                   directly.
      */
     public static function dieOrLog($msg, $die = true)
     {
+        Tools::displayAsDeprecated();
+
         if ($die || (defined('_PS_MODE_DEV_') && _PS_MODE_DEV_)) {
             die($msg);
         }

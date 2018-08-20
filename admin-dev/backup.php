@@ -59,7 +59,7 @@ if (!$backupfile = Tools::getValue('filename')) {
 $backupfile = realpath($backupdir.DIRECTORY_SEPARATOR.$backupfile);
 
 if ($backupfile === false or strncmp($backupdir, $backupfile, strlen($backupdir)) != 0) {
-    die(Tools::dieOrLog('The backup file does not exist.'));
+    die('The backup file does not exist.');
 }
 
 if (substr($backupfile, -4) == '.bz2') {

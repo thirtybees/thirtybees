@@ -750,9 +750,9 @@ class AdminTranslationsControllerCore extends AdminController
 
     /**
      * @throws PrestaShopException
-     * 
+     *
      * @return void
-     * 
+     *
      * @since 1.0.0
      */
     public function exportTabs()
@@ -2786,7 +2786,7 @@ class AdminTranslationsControllerCore extends AdminController
 
                     $success = file_put_contents($file['to'], $content);
                     if ($success === false) {
-                        Tools::dieOrLog(sprintf("%s cannot be copied to %s", $file['from'], $file['to']), false);
+                        Logger::addLog(sprintf("%s cannot be copied to %s", $file['from'], $file['to']));
                     }
                 }
             }

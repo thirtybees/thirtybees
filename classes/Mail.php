@@ -128,11 +128,6 @@ class MailCore extends ObjectModel
             $idShop
         );
 
-        // Returns immediatly if emails are deactivated
-        if ($configuration['PS_MAIL_METHOD'] == 3) {
-            return true;
-        }
-
         $themePath = _PS_THEME_DIR_;
 
         // Get the path of theme by id_shop if exist
@@ -173,9 +168,7 @@ class MailCore extends ObjectModel
 
         // It would be difficult to send an e-mail if the e-mail is not valid, so this time we can die if there is a problem
         if (!is_array($to) && !Validate::isEmail($to)) {
-            Tools::dieOrLog(Tools::displayError('Error: parameter "to" is corrupted'), $die);
-
-            return false;
+            return self::logError(Tools::displayError('Error: parameter "to" is corrupted'), $die);
         }
         if (is_array($to)) {
             foreach ($to as &$address) {
@@ -187,7 +180,7 @@ class MailCore extends ObjectModel
 
         // if bcc is not null, make sure it's a vaild e-mail
         if (!is_null($bcc) && !is_array($bcc) && !Validate::isEmail($bcc)) {
-            Tools::dieOrLog(Tools::displayError('Error: parameter "bcc" is corrupted'), $die);
+            self::logError(Tools::displayError('Error: parameter "bcc" is corrupted'), $die);
             $bcc = null;
         }
         if (is_array($bcc)) {
@@ -208,15 +201,11 @@ class MailCore extends ObjectModel
         }
 
         if (!Validate::isTplName($template)) {
-            Tools::dieOrLog(Tools::displayError('Error: invalid e-mail template'), $die);
-
-            return false;
+            return self::logError(Tools::displayError('Error: invalid e-mail template'), $die);
         }
 
         if (!Validate::isMailSubject($subject)) {
-            Tools::dieOrLog(Tools::displayError('Error: invalid e-mail subject'), $die);
-
-            return false;
+            return self::logError(Tools::displayError('Error: invalid e-mail subject'), $die);
         }
 
         /* Construct multiple recipients list if needed */
@@ -225,9 +214,7 @@ class MailCore extends ObjectModel
             foreach ($to as $key => $addr) {
                 $addr = trim($addr);
                 if (!Validate::isEmail($addr)) {
-                    Tools::dieOrLog(Tools::displayError('Error: invalid e-mail address'), $die);
-
-                    return false;
+                    return self::logError(Tools::displayError('Error: invalid e-mail address'), $die);
                 }
 
                 if (is_array($toName) && isset($toName[$key])) {
@@ -251,9 +238,7 @@ class MailCore extends ObjectModel
             foreach ($bcc as $addr) {
                 $addr = trim($addr);
                 if (!Validate::isEmail($addr)) {
-                    Tools::dieOrLog(Tools::displayError('Error: invalid e-mail address'), $die);
-
-                    return false;
+                    return self::logError(Tools::displayError('Error: invalid e-mail address'), $die);
                 }
                 $message->addBcc($addr);
             }
@@ -265,9 +250,7 @@ class MailCore extends ObjectModel
             /* Connect with the appropriate configuration */
             if ($configuration['PS_MAIL_METHOD'] == 2) {
                 if (empty($configuration['PS_MAIL_SERVER']) || empty($configuration['PS_MAIL_SMTP_PORT'])) {
-                    Tools::dieOrLog(Tools::displayError('Error: invalid SMTP server or SMTP port'), $die);
-
-                    return false;
+                    return self::logError(Tools::displayError('Error: invalid SMTP server or SMTP port'), $die);
                 }
 
                 $connection = Swift_SmtpTransport::newInstance($configuration['PS_MAIL_SERVER'], $configuration['PS_MAIL_SMTP_PORT'], $configuration['PS_MAIL_SMTP_ENCRYPTION'])
@@ -285,9 +268,7 @@ class MailCore extends ObjectModel
             /* Get templates content */
             $iso = Language::getIsoById((int) $idLang);
             if (!$iso) {
-                Tools::dieOrLog(Tools::displayError('Error - No ISO code for email'), $die);
-
-                return false;
+                return self::logError(Tools::displayError('Error - No ISO code for email'), $die);
             }
             $isoTemplate = $iso.'/'.$template;
 
@@ -308,13 +289,9 @@ class MailCore extends ObjectModel
                 $overrideMail = true;
             }
             if (!file_exists($templatePath.$isoTemplate.'.txt') && ($configuration['PS_MAIL_TYPE'] == Mail::TYPE_BOTH || $configuration['PS_MAIL_TYPE'] == Mail::TYPE_TEXT)) {
-                Tools::dieOrLog(Tools::displayError('Error - The following e-mail template is missing:').' '.$templatePath.$isoTemplate.'.txt', $die);
-
-                return false;
+                return self::logError(Tools::displayError('Error - The following e-mail template is missing:').' '.$templatePath.$isoTemplate.'.txt', $die);
             } elseif (!file_exists($templatePath.$isoTemplate.'.html') && ($configuration['PS_MAIL_TYPE'] == Mail::TYPE_BOTH || $configuration['PS_MAIL_TYPE'] == Mail::TYPE_HTML)) {
-                Tools::dieOrLog(Tools::displayError('Error - The following e-mail template is missing:').' '.$templatePath.$isoTemplate.'.html', $die);
-
-                return false;
+                return self::logError(Tools::displayError('Error - The following e-mail template is missing:').' '.$templatePath.$isoTemplate.'.html', $die);
             }
             $templateHtml = '';
             $templateTxt = '';
@@ -343,9 +320,7 @@ class MailCore extends ObjectModel
             } elseif (file_exists(_PS_MAIL_DIR_.$iso.'/lang.php')) {
                 include_once(_PS_MAIL_DIR_.$iso.'/lang.php');
             } else {
-                Tools::dieOrLog(Tools::displayError('Error - The language file is missing for:').' '.$iso, $die);
-
-                return false;
+                return self::logError(Tools::displayError('Error - The language file is missing for:').' '.$iso, $die);
             }
 
             /* Create mail and attach differents parts */
@@ -425,7 +400,8 @@ class MailCore extends ObjectModel
             }
             /* Send mail */
             $message->setFrom([$from => $fromName]);
-            $send = $swift->send($message);
+            $shouldSend = $configuration['PS_MAIL_METHOD'] != 3;
+            $send = $shouldSend ? $swift->send($message) : true;
 
             ShopUrl::resetMainDomainCache();
 
@@ -684,5 +660,28 @@ class MailCore extends ObjectModel
         $key = str_replace('\'', '\\\'', $string);
 
         return str_replace('"', '&quot;', Tools::stripslashes((array_key_exists($key, $_LANGMAIL) && !empty($_LANGMAIL[$key])) ? $_LANGMAIL[$key] : $string));
+    }
+
+    /**
+     * This method logs an error message and optionally terminates execution of
+     * the script.
+     *
+     * @param string $message Error message to be logged.
+     * @param bool   $die     Wether to die instead of returning.
+     *
+     * @return false This method always, if it returns, returns false.
+     *
+     * @since   1.0.7
+     * @version 1.0.7 Initial version
+     * @throws PrestaShopException
+     */
+    private static function logError($message, $die)
+    {
+      Logger::addLog($message);
+      if ($die) {
+        die($message);
+      } else {
+        return false;
+      }
     }
 }
