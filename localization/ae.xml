@@ -20,8 +20,8 @@
     <language name="اللغة العربية (Arabic)"
               iso_code="ar"
               language_code="ar-sa"
-              date_format_lite="Y-m-d"
-              date_format_full="Y-m-d H:i:s"
+              date_format_lite="d-m-Y"
+              date_format_full="d-m-Y H:i:s"
               is_rtl="1" />
   </languages>
   <taxes />
