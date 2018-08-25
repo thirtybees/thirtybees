@@ -229,6 +229,7 @@ class AdminTranslationsControllerCore extends AdminController
         $version = implode('.', array_map('intval', explode('.', _TB_VERSION_, 3)));
         $fileName = "{$this->link_lang_pack}/{$version}/index.json";
 
+        $langPacks = false;
         $guzzle = new \GuzzleHttp\Client([
             'verify'      => _PS_TOOL_DIR_.'cacert.pem',
             'timeout'     => 20,
@@ -236,16 +237,14 @@ class AdminTranslationsControllerCore extends AdminController
         try {
             $langPacks = (string) $guzzle->get($fileName)->getBody();
         } catch (Exception $e) {
-            $langPacks = null;
         }
-        if ($langPacks) {
-            if ($langPacks != '' && $langPacks = json_decode($langPacks, true)) {
-                foreach ($langPacks as $key => $langPack) {
-                    if (!Language::isInstalled($langPack['iso_code'])) {
-                        $packsToInstall[$key] = $langPack;
-                    } else {
-                        $packsToUpdate[$key] = $langPack;
-                    }
+
+        if ($langPacks && $langPacks = json_decode($langPacks, true)) {
+            foreach ($langPacks as $key => $langPack) {
+                if (!Language::isInstalled($langPack['iso_code'])) {
+                    $packsToInstall[$key] = $langPack;
+                } else {
+                    $packsToUpdate[$key] = $langPack;
                 }
             }
         }
