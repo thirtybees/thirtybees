@@ -2777,7 +2777,7 @@ class ToolsCore
             $guzzle = new \GuzzleHttp\Client([
                 'http_errors' => false,
                 'verify' => _PS_TOOL_DIR_.'cacert.pem',
-                'timeout' => 5,
+                'timeout' => 20,
             ]);
             try {
                 $result = @simplexml_load_string((string) $guzzle->get($url)->getBody(), $class_name);

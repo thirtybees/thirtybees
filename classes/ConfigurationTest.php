@@ -297,7 +297,7 @@ class ConfigurationTestCore
         $guzzle = new GuzzleHttp\Client([
             'http_errors' => false,
             'verify' => _PS_TOOL_DIR_.'cacert.pem',
-            'timeout' => 5,
+            'timeout' => 20,
         ]);
         try {
             $response = $guzzle->get('https://tlstest.paypal.com/');

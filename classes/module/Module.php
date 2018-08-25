@@ -1048,7 +1048,12 @@ abstract class ModuleCore
 
         // This array gets filled with requested module images to download (key = module code, value = guzzle promise)
         $imagePromises = [];
-        $guzzle = new \GuzzleHttp\Client(['http_errors' => false]);
+        $guzzle = new \GuzzleHttp\Client([
+            'http_errors' => false,
+            'verify'      => _PS_TOOL_DIR_.'cacert.pem',
+            'timeout'     => 20,
+        ]);
+
         if (Validate::isLoadedObject($updater) && $modules = $updater->getCachedModulesInfo()) {
             foreach ($modules as $name => $module) {
                 if (isset($modulesNameToCursor[mb_strtolower(strval($name))])) {
