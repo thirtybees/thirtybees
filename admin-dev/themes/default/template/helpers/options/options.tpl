@@ -189,7 +189,7 @@
 												   id="{$field['id']}"{/if}
 												   size="{if isset($field['size'])}{$field['size']|intval}{else}5{/if}"
 												   name="{$key}"
-												   value="{if isset($field['no_escape']) && $field['no_escape']}{$field['value']|escape:'UTF-8'}{elseif $field['type'] == 'email'}{$field['value']|idnToUtf8|escape:'html':'UTF-8'}{else}{$field['value']|escape:'html':'UTF-8'}{/if}"
+												   value="{if isset($field['no_escape']) && $field['no_escape']}{$field['value']|escape:'UTF-8'}{else}{$field['value']|escape:'html':'UTF-8'}{/if}"
 												   {if isset($field['placeholder']) && $field['placeholder']}placeholder="{$field['placeholder']|escape:'htmlall':'UTF-8'}"{/if}
 												   {if isset($field['autocomplete']) && !$field['autocomplete']}autocomplete="off"{/if}
 												/>
