@@ -341,7 +341,7 @@ class EmployeeCore extends ObjectModel
                                 'activity' => Configuration::get('PS_SHOP_ACTIVITY'),
                                 'country'  => $context->country->iso_code,
                                 'language' => $context->language->iso_code,
-                                'URL'      => Context::getContext()->link->getPageLink('index', true, Context::getContext()->language->id, null, false, $idShop),
+                                'URL'      => $context->shop->getBaseURL(),
                             ],
                         ]
                     );
