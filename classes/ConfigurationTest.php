@@ -295,15 +295,15 @@ class ConfigurationTestCore
     public static function testTlsv12()
     {
         $guzzle = new GuzzleHttp\Client([
-            'http_errors' => false,
-            'verify' => _PS_TOOL_DIR_.'cacert.pem',
+            'verify'  => _PS_TOOL_DIR_.'cacert.pem',
             'timeout' => 20,
         ]);
+
+        $success = false;
         try {
             $response = $guzzle->get('https://tlstest.paypal.com/');
             $success = (string) $response->getBody() === 'PayPal_Connection_OK';
         } catch (Exception $e) {
-            $success = false;
         }
 
         return $success;

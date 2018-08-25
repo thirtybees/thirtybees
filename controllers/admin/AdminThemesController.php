@@ -3294,7 +3294,6 @@ class AdminThemesControllerCore extends AdminController
     {
         try {
             $template = (string) (new \GuzzleHttp\Client([
-                'http_errors' => false,
                 'verify'      => _PS_TOOL_DIR_.'cacert.pem',
                 'timeout'     => 20,
             ]))->get('https://raw.githubusercontent.com/thirtybees/favicons/master/template.html')->getBody();

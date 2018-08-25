@@ -230,7 +230,6 @@ class AdminTranslationsControllerCore extends AdminController
         $fileName = "{$this->link_lang_pack}/{$version}/index.json";
 
         $guzzle = new \GuzzleHttp\Client([
-            'http_errors' => false,
             'verify'      => _PS_TOOL_DIR_.'cacert.pem',
             'timeout'     => 20,
         ]);

@@ -2775,7 +2775,6 @@ class ToolsCore
         $cache_id = 'Tools::simplexml_load_file'.$url;
         if (!Cache::isStored($cache_id)) {
             $guzzle = new \GuzzleHttp\Client([
-                'http_errors' => false,
                 'verify' => _PS_TOOL_DIR_.'cacert.pem',
                 'timeout' => 20,
             ]);
