@@ -1090,10 +1090,7 @@ abstract class ModuleCore
 
                 if (isset($module['img'])) {
                     if (!file_exists(_PS_TMP_IMG_DIR_.md5($name).'.png')) {
-                        try {
-                            $imagePromises[$name] = $guzzle->getAsync($module['img'], ['sink' => _PS_TMP_IMG_DIR_.md5($name).'.png']);
-                        } catch (Exception $e) {
-                        }
+                        $imagePromises[$name] = $guzzle->getAsync($module['img'], ['sink' => _PS_TMP_IMG_DIR_.md5($name).'.png']);
                     }
 
                     $item['image'] = '../img/tmp/'.md5($name).'.png';
@@ -1103,7 +1100,7 @@ abstract class ModuleCore
             }
         }
         // Download images simultaneously
-        if (!empty($imagePromises)) {
+        if ($imagePromises) {
             GuzzleHttp\Promise\settle($imagePromises)->wait();
         }
 
