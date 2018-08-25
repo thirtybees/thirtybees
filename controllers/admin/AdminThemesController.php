@@ -3290,7 +3290,7 @@ class AdminThemesControllerCore extends AdminController
      *
      * @since 1.0.4 to enable the favicon template
      */
-    function ajaxProcessRefreshFaviconTemplate()
+    public function ajaxProcessRefreshFaviconTemplate()
     {
         try {
             $template = (string) (new \GuzzleHttp\Client([
