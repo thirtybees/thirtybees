@@ -92,6 +92,15 @@ class AdminLocalizationControllerCore extends AdminController
                         'identifier' => 'id_currency',
                         'list'       => Currency::getCurrencies(false, true, true),
                     ],
+                    'PS_TIMEZONE' => [
+                        'title'      => $this->l('Time zone'),
+                        'validation' => 'isAnything',
+                        'type'       => 'select',
+                        'class'      => 'chosen',
+                        'list'       => Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS((new DbQuery())->select('`name`')->from('timezone')),
+                        'identifier' => 'name',
+                        'visibility' => Shop::CONTEXT_ALL,
+                    ],
                 ],
                 'submit' => ['title' => $this->l('Save')],
             ],
@@ -157,18 +166,6 @@ class AdminLocalizationControllerCore extends AdminController
                 'submit' => ['title' => $this->l('Save')],
             ],
         ];
-
-        if (function_exists('date_default_timezone_set')) {
-            $this->fields_options['general']['fields']['PS_TIMEZONE'] = [
-                'title'      => $this->l('Time zone'),
-                'validation' => 'isAnything',
-                'type'       => 'select',
-                'class'      => 'chosen',
-                'list'       => Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS((new DbQuery())->select('`name`')->from('timezone')),
-                'identifier' => 'name',
-                'visibility' => Shop::CONTEXT_ALL,
-            ];
-        }
     }
 
     /**
