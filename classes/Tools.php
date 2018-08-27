@@ -5305,21 +5305,13 @@ FileETag none
      */
     public static function getTimeZone()
     {
-        // take the value from configuration
         $timezone = Configuration::get('PS_TIMEZONE');
-        if (in_array($timezone, DateTimeZone::listIdentifiers())) {
-          return $timezone;
+        if (! $timezone) {
+            // Fallback use php timezone settings.
+            $timezone = date_default_timezone_get();
         }
-        // fallback use php timezone settings
-        $timezone = @date_default_timezone_get();
-        if (in_array($timezone, DateTimeZone::listIdentifiers())) {
-          return $timezone;
-        }
-        $timezone = @ini_get('date.timezone');
-        if (in_array($timezone, DateTimeZone::listIdentifiers())) {
-          return $timezone;
-        }
-        return 'UTC';
+
+        return $timezone;
     }
 }
 
