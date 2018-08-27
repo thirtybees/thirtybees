@@ -5294,6 +5294,33 @@ FileETag none
 
         return false;
     }
+
+    /**
+     * Returns current server timezone setting.
+     *
+     * @return string
+     *
+     * @since   1.0.7
+     * @version 1.0.7 Initial version.
+     */
+    public static function getTimeZone()
+    {
+        // take the value from configuration
+        $timezone = Configuration::get('PS_TIMEZONE');
+        if (in_array($timezone, DateTimeZone::listIdentifiers())) {
+          return $timezone;
+        }
+        // fallback use php timezone settings
+        $timezone = @date_default_timezone_get();
+        if (in_array($timezone, DateTimeZone::listIdentifiers())) {
+          return $timezone;
+        }
+        $timezone = @ini_get('date.timezone');
+        if (in_array($timezone, DateTimeZone::listIdentifiers())) {
+          return $timezone;
+        }
+        return 'UTC';
+    }
 }
 
 /**

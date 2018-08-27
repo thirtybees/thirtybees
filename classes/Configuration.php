@@ -417,9 +417,22 @@ class ConfigurationCore extends ObjectModel
      */
     public static function loadConfiguration()
     {
+        return static::loadConfigurationFromDB(Db::getInstance(_PS_USE_SQL_SLAVE_));
+    }
+
+    /**
+     * Load all configuration data, using an existing database connection.
+     *
+     * @param Db $connection Database connection to be used for data retrieval.
+     *
+     * @since   1.0.7
+     * @version 1.0.7 Initial version
+     */
+    public static function loadConfigurationFromDB($connection)
+    {
         static::$_cache[static::$definition['table']] = [];
 
-        $rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+        $rows = $connection->executeS(
             (new DbQuery())
                 ->select('c.`name`, cl.`id_lang`, IFNULL(cl.`value`, c.`value`) AS `value`, c.`id_shop_group`, c.`id_shop`')
                 ->from(bqSQL(static::$definition['table']), 'c')

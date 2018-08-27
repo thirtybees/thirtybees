@@ -70,6 +70,8 @@ class Db extends DbCore
     public function set_db($dbName) {}
 
     public function getBestEngine() {}
+
+    public function setTimeZone($timezone) {}
 }
 
 

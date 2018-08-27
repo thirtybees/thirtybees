@@ -126,23 +126,6 @@ class DbPDOCore extends Db
 
         $this->link->exec('SET SESSION sql_mode = \'\'');
 
-        // Synchronize MySQL timezone with current PHP timezone
-        $timezone = @date_default_timezone_get();
-        if (!in_array($timezone, DateTimeZone::listIdentifiers())) {
-            $timezone = ini_get('date.timezone');
-            if (!in_array($timezone, DateTimeZone::listIdentifiers())) {
-                $timezone = 'UTC';
-            }
-        }
-        $now = new DateTime('now', new DateTimeZone($timezone));
-        $minutes = $now->getOffset() / 60;
-        $sign = ($minutes < 0 ? -1 : 1);
-        $minutes = abs($minutes);
-        $hours = floor($minutes / 60);
-        $minutes -= $hours * 60;
-        $offset = sprintf('%+d:%02d', $hours * $sign, $minutes);
-        $this->link->exec("SET time_zone='$offset'");
-
         return $this->link;
     }
 
@@ -511,5 +494,25 @@ class DbPDOCore extends Db
         unset($link);
 
         return $ret;
+    }
+
+    /**
+     * Set timezone on current connection.
+     *
+     * @param string $timezone
+     *
+     * @since   1.0.7
+     * @version 1.0.7 Initial version.
+     */
+    public function setTimeZone($timezone)
+    {
+        $now = new DateTime('now', new DateTimeZone($timezone));
+        $minutes = $now->getOffset() / 60;
+        $sign = ($minutes < 0 ? -1 : 1);
+        $minutes = abs($minutes);
+        $hours = floor($minutes / 60);
+        $minutes -= $hours * 60;
+        $offset = sprintf('%+d:%02d', $hours * $sign, $minutes);
+        $this->link->exec("SET time_zone='$offset'");
     }
 }

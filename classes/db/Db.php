@@ -208,7 +208,7 @@ abstract class DbCore
      *
      * @param string $dbName
      *
-*@return bool|int
+     * @return bool|int
      */
     abstract public function set_db($dbName);
 
@@ -218,6 +218,13 @@ abstract class DbCore
      * @return string
      */
     abstract public function getBestEngine();
+
+    /**
+     * Sets time zone for database connection.
+     *
+     * @return string
+     */
+    abstract public function setTimeZone($timezone);
 
     /**
      * Returns database object instance.
@@ -259,6 +266,11 @@ abstract class DbCore
                 static::$_servers[$idServer]['password'],
                 static::$_servers[$idServer]['database']
             );
+            $connection = static::$instance[$idServer];
+            if (! Configuration::configurationIsLoaded()) {
+                Configuration::loadConfigurationFromDB($connection);
+            }
+            $connection->setTimeZone(Tools::getTimeZone());
         }
 
         return static::$instance[$idServer];
