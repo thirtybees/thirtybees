@@ -727,7 +727,8 @@ ${FIND} buildfilter.sh | grep -q '.' && \
 # There should be an index.php file in every (packaged) directory.
 DIRS=('.')
 for D in $(${FIND} .); do
-  [ "${D::8}" = '.tbstore' ] && continue
+  [ "${D::9}" = '.tbstore/' ] && continue
+  [ "${D::6}" = 'tests/' ] && continue
 
   while [ "${D}" != "${D%/*}" ]; do
     D="${D%/*}"
