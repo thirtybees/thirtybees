@@ -317,15 +317,19 @@ function testignore {
 ### .gitignore
 
 if [ ${IS_GIT} = 'true' ]; then
-  # .gitignore should contain a minimum set of entries.
-  ${CAT} .gitignore | grep -q '^/translations/\*$' || \
-    e "line with '/translations/*' missing in .gitignore."
-  ${CAT} .gitignore | grep -q '^!/translations/index\.php$' || \
-    e "line with '!/translations/index.php' missing in .gitignore."
-  ${CAT} .gitignore | grep -q '^/config\*\.xml$' || \
-    e "line with 'config*.xml' missing in .gitignore."
-  ${CAT} .gitignore | grep -q "^$(basename $(pwd))-\\*\\.zip$" || \
-    e "line with '$(basename $(pwd))-*.zip' missing in .gitignore."
+  if ${FIND} .gitignore | grep -q '.'; then
+    # .gitignore should contain a minimum set of entries.
+    ${CAT} .gitignore | grep -q '^/translations/\*$' || \
+      e "line with '/translations/*' missing in .gitignore."
+    ${CAT} .gitignore | grep -q '^!/translations/index\.php$' || \
+      e "line with '!/translations/index.php' missing in .gitignore."
+    ${CAT} .gitignore | grep -q '^/config\*\.xml$' || \
+      e "line with 'config*.xml' missing in .gitignore."
+    ${CAT} .gitignore | grep -q "^$(basename $(pwd))-\\*\\.zip$" || \
+      e "line with '$(basename $(pwd))-*.zip' missing in .gitignore."
+  else
+    e "there is no .gitignore file."
+  fi
 fi
 
 
