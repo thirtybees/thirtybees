@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ##
 # Copyright (C) 2018 thirty bees
 #
@@ -206,8 +206,8 @@ function templatecompare {
 
   TB_VERSION=$(cat "${COMPARE_TB}" | removecopyrightyears)
   TBPS_VERSION=$(cat "${COMPARE_TBPS}" | removecopyrightyears)
-  TB_LEN=$(wc -l < "${COMPARE_TB}")
-  TBPS_LEN=$(wc -l < "${COMPARE_TBPS}")
+  TB_LEN=$(wc -l < "${COMPARE_TB}" | sed -e "s/\s*//g")
+  TBPS_LEN=$(wc -l < "${COMPARE_TBPS}" | sed -e "s/\s*//g")
 
   COMPARE_SKIP=${COMPARE_SKIP:-0}
   let TB_LEN=${TB_LEN}+${COMPARE_SKIP}
