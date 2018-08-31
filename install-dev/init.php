@@ -54,6 +54,7 @@ require_once(_PS_CORE_DIR_.'/config/defines.inc.php');
 require_once(_PS_CORE_DIR_.'/config/autoload.php');
 require_once(_PS_CORE_DIR_.'/config/bootstrap.php');
 require_once(_PS_CORE_DIR_.'/config/defines_uri.inc.php');
+require_once(_PS_CORE_DIR_.'/config/default_modules.php');
 
 // Generate common constants
 define('TB_INSTALLATION_IN_PROGRESS', true);
@@ -68,7 +69,6 @@ define('_PS_PRICE_COMPUTE_PRECISION_', _PS_PRICE_DISPLAY_PRECISION_);
 define('_TB_PRICE_DATABASE_PRECISION_', 6);
 
 require_once(_TB_INSTALL_PATH_.'install_version.php');
-require_once(_TB_INSTALL_PATH_.'default_modules.php');
 
 // thirty bees autoload is used to load some helpfull classes like Tools.
 // Add classes used by installer bellow.

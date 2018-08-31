@@ -122,14 +122,14 @@ fi
 
 # If available, get a list of modules needed in the release package.
 TBMODULE_LIST=()
-if git ls-tree --name-only ${GIT_REVISION} install-dev/default_modules.php \
+if git ls-tree --name-only ${GIT_REVISION} config/default_modules.php \
   | grep -q '.'; then
   # 'php -r' is pretty lame, we need a temporary file.
   PHP_TMP=$(mktemp)
-  git cat-file -p ${GIT_REVISION}:install-dev/default_modules.php >> ${PHP_TMP}
-  echo 'foreach ($_TB_DEFAULT_MODULES_ as $module) {'             >> ${PHP_TMP}
-  echo '  print($module."\n");'                                   >> ${PHP_TMP}
-  echo '}'                                                        >> ${PHP_TMP}
+  git cat-file -p ${GIT_REVISION}:config/default_modules.php >> ${PHP_TMP}
+  echo 'foreach ($_TB_DEFAULT_MODULES_ as $module) {'        >> ${PHP_TMP}
+  echo '  print($module."\n");'                              >> ${PHP_TMP}
+  echo '}'                                                   >> ${PHP_TMP}
 
   TBMODULE_LIST=($(php -f ${PHP_TMP}))
   rm ${PHP_TMP}
