@@ -637,11 +637,14 @@ class AdminCustomersControllerCore extends AdminController
                 'type'  => 'text',
                 'label' => $this->l('SIRET'),
                 'name'  => 'siret',
+				'hint'  => $this->l('To skip validation, add a dash at the beginning of the SIRET code'),
             ];
+
             $this->fields_form['input'][] = [
                 'type'  => 'text',
                 'label' => $this->l('APE'),
                 'name'  => 'ape',
+				'hint'  => $this->l('To skip validation, add a dash at the beginning of the APE code'),
             ];
             $this->fields_form['input'][] = [
                 'type'  => 'text',
