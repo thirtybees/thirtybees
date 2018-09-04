@@ -1209,8 +1209,8 @@ abstract class ModuleCore
      */
     public static function getNativeModuleList()
     {
-        require_once(_PS_CONFIG_DIR_.'default_modules.php');
-        global $_TB_DEFAULT_MODULES_;
+        require(_PS_CONFIG_DIR_.'default_modules.php');
+
         return $_TB_DEFAULT_MODULES_;
     }
 
@@ -1229,8 +1229,9 @@ abstract class ModuleCore
         $query = (new DbQuery())->select('*')->from('module');
         $nativeModules = static::getNativeModuleList();
         if ($nativeModules) {
-          $query->where("`name` NOT IN ('".implode("', '", array_map('pSQL', $nativeModules))."')");
+            $query->where("`name` NOT IN ('".implode("', '", array_map('pSQL', $nativeModules))."')");
         }
+
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
     }
 
