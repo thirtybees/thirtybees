@@ -274,6 +274,7 @@ function testignore {
 
   # Skip most PHP classes in module tbupdater, which happen to be copies
   # of files in the core repository and as such, have an OSL license.
+  # @todo: these exceptions should all go away.
   if [ ${SUFFIX} = 'php' ] \
      && [ "${PWD##*/}" = 'tbupdater' ] \
      && [ "${1%%/*}" = 'classes' ] \
@@ -287,13 +288,6 @@ function testignore {
   [ -n "$(${CAT} "${1}" | \
             sed -n 's/thirty bees/&/i p; s/prestashop/&/i p;')" ] \
     && return 1
-
-  # If the path contains a well known name it's likely a vendor file.
-  [ -n "$(sed -n '/^vendor\// p;
-                  /\/GuzzleHttp\// p;
-                  /\/Psr\// p;
-                  /\/SemVer\// p' <<< "${1}")" ] \
-    && return 0
 
   # Warn about and ignore not minimized vendor files.
   B="${1##*/}"
