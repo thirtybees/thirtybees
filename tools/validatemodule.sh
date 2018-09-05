@@ -450,7 +450,8 @@ ${FIND} . | while read F; do
     e "file ${F} contains 'ThirtyBees'; should be 'thirtybees'."
 done
 
-# Module name should be all uppercase, except for small words and 'thirty bees'.
+# Module name should be all uppercase, except for small words, 'thirty bees'
+# and a few other well known names.
 NAME=$(constructorentry 'displayName')
 FAULT='false'
 
@@ -458,6 +459,7 @@ for W in ${NAME}; do
   if [ ${#W} -gt 3 ] \
      && [ ${W} != 'thirty' ] \
      && [ ${W} != 'bees' ] \
+     && [ ${W} != 'reCaptcha' ] \
      && [ ${W} != ${W^} ]; then
     e "'${W}' in module name should be uppercase."
     FAULT='true'
