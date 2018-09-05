@@ -387,12 +387,11 @@ readarray -t FILES <<< $(${FIND} . | sed -n '/\.php$/ p
 
 FAULT='false'
 for F in "${FILES[@]}"; do
-  # Ignore empty files.
-  [ $(${CAT} "${F}" | wc -c) -gt 0 ] || continue
-
   # Test against DOS line endings.
   ${CAT} "${F}" | grep -q $'\r' && \
     e "file ${F} contains DOS/Windows line endings."
+
+  testignore "${F}" && continue
 
   # Test against trailing whitespace.
   if ${CAT} "${F}" | grep -q $'[ \t]$'; then
