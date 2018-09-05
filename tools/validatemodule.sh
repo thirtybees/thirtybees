@@ -306,11 +306,13 @@ function testignore {
     return 0
   fi
 
-  # Known CSS exceptions.
+  # Known, deprecated CSS exceptions.
   #
   # Module themeconfigurator, it's FontAwesome.
-  [ "${1}" = 'views/css/font/font.css' ] \
-    && return 0
+  if [ "${1}" = 'views/css/font/font.css' ]; then
+    [ ${WARN} = 'true' ] && w "file ${1} should get moved into views/css/libs/."
+    return 0
+  fi
 
   return 1
 }
