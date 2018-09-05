@@ -298,6 +298,14 @@ function testignore {
     return 0
   fi
 
+  # Ignore library files. Other than composer modules these get committed
+  # to the repository.
+  if [ "${1}" != "${1#libs/}" ] \
+     || [ "${1}" != "${1#views/js/libs/}" ] \
+     || [ "${1}" != "${1#views/css/libs/}" ]; then
+    return 0
+  fi
+
   # Known CSS exceptions.
   #
   # Module themeconfigurator, it's FontAwesome.
