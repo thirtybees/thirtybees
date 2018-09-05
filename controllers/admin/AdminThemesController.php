@@ -289,16 +289,14 @@ class AdminThemesControllerCore extends AdminController
         if ($this->object) {
             if ((int) $this->object->id > 0) {
                 $theme = new Theme((int) $this->object->id);
-                $themeMetas = Db::getInstance()->executeS(
-                    (new DbQuery())
+                $themeMetasQuery = (new DbQuery())
                     ->select('ml.`title`, m.`page`, tm.`left_column` as `left`, tm.`right_column` as `right`, m.`id_meta`, tm.`id_theme_meta`')
                     ->from('theme_meta', 'tm')
-                    ->leftJoin('meta', 'm', 'm.`id_meta` = tm.`id_meta`')
-                    ->leftJoin('meta_lang', 'ml', 'ml.`id_meta` = m.`id_meta`')
-                    ->where('ml.`id_lang` = '.(int) $this->context->language->id)
-                    ->where('ml.`id_shop` = '.(int) $this->context->shop->id)
-                    ->where('tm.`id_theme` = '.(int) $this->object->id)
-                );
+                    ->innerJoin('meta', 'm', 'm.`id_meta` = tm.`id_meta`')
+                    ->leftJoin('meta_lang', 'ml', 'ml.`id_meta` = m.`id_meta` AND ml.`id_lang` = '.(int)$this->context->language->id.' AND ml.`id_shop` = '.(int)$this->context->shop->id)
+                    ->where('tm.`id_theme` = '.(int) $this->object->id);
+
+                $themeMetas = Db::getInstance()->executeS($themeMetasQuery);
 
                 // if no theme_meta are found, we must create them
                 if (empty($themeMetas)) {
@@ -315,15 +313,7 @@ class AdminThemesControllerCore extends AdminController
                         $metasDefault[] = $tmpMeta;
                     }
                     $theme->updateMetas($metasDefault);
-                    $themeMetas = Db::getInstance()->executeS(
-                        (new DbQuery())
-                        ->select('ml.`title`, m.`page`, tm.`left_column` as `left`, tm.`right_column` as `right`, m.`id_meta`, tm.`id_theme_meta`')
-                        ->from('theme_meta', 'tm')
-                        ->leftJoin('meta', 'm', 'm.`id_meta` = tm.`id_meta`')
-                        ->leftJoin('meta_lang', 'ml', 'ml.`id_meta` = m.`id_meta`')
-                        ->where('ml.`id_lang` = '.(int) $this->context->language->id)
-                        ->where('tm.`id_theme` = '.(int) $this->object->id)
-                    );
+                    $themeMetas = Db::getInstance()->executeS($themeMetasQuery);
                 }
 
                 $imageUrl = '<img alt="preview" src="'.__PS_BASE_URI__.'themes/'.$theme->directory.'/preview.jpg">';
