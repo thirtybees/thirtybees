@@ -1616,17 +1616,22 @@ abstract class ModuleCore
      */
     public function checkCompliancy()
     {
-        if (isset($this->tb_versions_compliancy) && $this->tb_versions_compliancy) {
-            $range = new Expression($this->tb_versions_compliancy);
+        if (version_compare(_PS_VERSION_, $this->ps_versions_compliancy['min'], '<')) {
+            return false;
         }
 
-        if (version_compare(_PS_VERSION_, $this->ps_versions_compliancy['min'], '<') || version_compare(_PS_VERSION_, $this->ps_versions_compliancy['max'], '>')) {
+        if (version_compare('1.6.1.20', $this->ps_versions_compliancy['max'], '>')) {
             return false;
-        } elseif (isset($range) && !$range->satisfiedBy(new Version(_TB_VERSION_))) {
-            return false;
-        } else {
-            return true;
         }
+
+        if (isset($this->tb_versions_compliancy) && $this->tb_versions_compliancy) {
+            $range = new Expression($this->tb_versions_compliancy);
+            if (! $range->satisfiedBy(new Version(_TB_VERSION_))) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

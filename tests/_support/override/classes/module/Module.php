@@ -1,7 +1,6 @@
 <?php
 
-abstract class Module extends ModuleCore
+class Module extends ModuleCore
 {
 
 }
-
