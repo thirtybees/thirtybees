@@ -36,7 +36,10 @@ composer.lock
 /config/settings.inc.php
 /config/settings.old.php
 /config/xml/*
+!/config/xml/themes/
+/config/xml/themes/*
 !/config/xml/themes/default.xml
+!/config/xml/themes/community-theme-default.xml
 
 /config/defines_custom.inc.php
 /config/settings_custom.inc.php

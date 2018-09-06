@@ -192,30 +192,20 @@ class ThemeCore extends ObjectModel
         $theme = new Theme((int) $idTheme);
         $themeArr = [];
 
-        if (file_exists(_PS_ROOT_DIR_.'/config/xml/themes/'.$theme->directory.'.xml')) {
-            $configFile = _PS_ROOT_DIR_.'/config/xml/themes/'.$theme->directory.'.xml';
-        } elseif ($theme->name == 'community-theme-default') {
-            $configFile = _PS_ROOT_DIR_.'/config/xml/themes/default.xml';
-        } else {
-            $configFile = false;
-        }
-
-        if ($configFile) {
+        $xmlTheme = $theme->loadConfigFile();
+        if ($xmlTheme) {
             $themeArr['theme_id'] = (int) $theme->id;
-            $xmlTheme = @simplexml_load_file($configFile);
 
-            if ($xmlTheme !== false) {
-                foreach ($xmlTheme->attributes() as $key => $value) {
-                    $themeArr['theme_'.$key] = (string) $value;
-                }
+            foreach ($xmlTheme->attributes() as $key => $value) {
+                $themeArr['theme_'.$key] = (string) $value;
+            }
 
-                foreach ($xmlTheme->author->attributes() as $key => $value) {
-                    $themeArr['author_'.$key] = (string) $value;
-                }
+            foreach ($xmlTheme->author->attributes() as $key => $value) {
+                $themeArr['author_'.$key] = (string) $value;
+            }
 
-                if ($themeArr['theme_name'] == 'community-theme-default') {
-                    $themeArr['tc'] = Module::isEnabled('themeconfigurator');
-                }
+            if ($themeArr['theme_name'] == 'community-theme-default') {
+                $themeArr['tc'] = Module::isEnabled('themeconfigurator');
             }
         } else {
             // If no xml we use data from database
@@ -241,9 +231,12 @@ class ThemeCore extends ObjectModel
         $notInstalledTheme = [];
         foreach (glob(_PS_ALL_THEMES_DIR_.'*', GLOB_ONLYDIR) as $themeDir) {
             $dir = basename($themeDir);
-            $configFile = _PS_ALL_THEMES_DIR_.$dir.'/config.xml';
-            if (!in_array($dir, $installedThemeDirectories) && @filemtime($configFile)) {
-                if ($xmlTheme = @simplexml_load_file($configFile)) {
+            if (!in_array($dir, $installedThemeDirectories)) {
+                $xmlTheme = static::loadConfigFromFile(_PS_ALL_THEMES_DIR_.$dir.'/Config.xml', true);
+                if (! $xmlTheme) {
+                    $xmlTheme = static::loadConfigFromFile(_PS_ALL_THEMES_DIR_.$dir.'/config.xml', true);
+                }
+                if ($xmlTheme) {
                     $theme = [];
                     foreach ($xmlTheme->attributes() as $key => $value) {
                         $theme[$key] = (string) $value;
@@ -557,18 +550,75 @@ class ThemeCore extends ObjectModel
      */
     public function getConfiguration()
     {
-        $target = _PS_ROOT_DIR_.'/themes/'.$this->name.'/Config.xml';
-        if (!file_exists($target)) {
-            $target = _PS_ROOT_DIR_.'/themes/'.$this->name.'/config.xml';
-            if (!file_exists($target)) {
-                return [];
+        $ob = $this->loadConfigFile();
+        if ($ob) {
+            // convert SimpleXMLElement to array
+            return json_decode(json_encode($ob), true);
+        }
+
+        return [];
+    }
+
+    /**
+     * Get the configuration file as SimpleXMLElement
+     *
+     * @param boolean $validate - if true, configuration file will be validated
+     *
+     * @return SimpleXMLElement | false
+     *
+     * @since 1.0.7
+     */
+    public function loadConfigFile($validate = false)
+    {
+        return static::loadConfigFromFile($this->getConfigFilePath(), $validate);
+    }
+
+    /**
+     * Get the path to configuration file
+     *
+     * @return string | false
+     *
+     * @since 1.0.7
+     */
+    protected function getConfigFilePath()
+    {
+        $path = _PS_ROOT_DIR_.'/config/xml/themes/'.$this->directory.'.xml';
+        if (file_exists($path)) {
+            return $path;
+        }
+
+        if ($this->name == 'community-theme-default') {
+            $path = _PS_ROOT_DIR_.'/config/xml/themes/default.xml';
+            if (file_exists($path)) {
+                return $path;
             }
         }
 
-        $xmlfile = file_get_contents($target);
-        $ob = simplexml_load_string($xmlfile);
-        $json = json_encode($ob);
-        return json_decode($json, true);
+        return false;
+    }
+
+    /**
+     * Get the configuration file as SimpleXMLElement
+     *
+     * @param string $filePath - path to xml config file to load
+     * @param boolean $validate - if true, configuration file will be validated
+     *
+     * @return SimpleXMLElement | false
+     *
+     * @since 1.0.7
+     */
+    public static function loadConfigFromFile($filePath, $validate)
+    {
+        if (file_exists($filePath)) {
+            $content = @simplexml_load_file($filePath);
+            if ($content && $validate && !static::validateConfigFile($content)) {
+                return false;
+            }
+
+            return $content;
+        }
+
+        return false;
     }
 
     /**
