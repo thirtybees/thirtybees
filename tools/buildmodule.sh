@@ -185,6 +185,11 @@ fi
 
 # Files filtered by name, in any directory.
 EXCLUDE_FILE=('.gitignore')
+EXCLUDE_FILE+=('.gitmodules')
+EXCLUDE_FILE+=('codeception.yml')
+EXCLUDE_FILE+=('composer.json')
+EXCLUDE_FILE+=('composer.lock')
+EXCLUDE_FILE+=('Vagrantfile')
 EXCLUDE_FILE+=('build.sh')
 EXCLUDE_FILE+=('buildfilter.sh')
 EXCLUDE_FILE+=('.tbstore.yml')
@@ -193,6 +198,13 @@ EXCLUDE_FILE+=('README.md')
 
 # Directories filtered by name, in any parent directory.
 EXCLUDE_DIR=('.tbstore')
+EXCLUDE_DIR+=('docs')
+EXCLUDE_DIR+=('examples')
+EXCLUDE_DIR+=('Examples')
+EXCLUDE_DIR+=('tests')
+EXCLUDE_DIR+=('Tests')
+EXCLUDE_DIR+=('unitTests')
+EXCLUDE_DIR+=('vagrant')
 
 # Paths to not filter (to exempt from above). Starting at the module root
 # directory.
