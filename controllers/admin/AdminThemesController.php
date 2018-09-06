@@ -2729,7 +2729,7 @@ class AdminThemesControllerCore extends AdminController
             'image_link'     => $this->context->link->getAdminLink('AdminImages'),
         ];
 
-        parent::renderView();
+        return parent::renderView();
     }
 
     /**
