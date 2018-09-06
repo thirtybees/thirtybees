@@ -460,7 +460,7 @@ for W in ${NAME}; do
   if [ ${#W} -gt 3 ] \
      && [ ${W} != 'thirty' ] \
      && [ ${W} != 'bees' ] \
-     && [ ${W} != 'reCaptcha' ] \
+     && [ ${W} != 'reCAPTCHA' ] \
      && [ ${W} != ${W^} ]; then
     e "'${W}' in module name should be uppercase."
     FAULT='true'
