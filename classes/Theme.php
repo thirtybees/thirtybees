@@ -570,4 +570,40 @@ class ThemeCore extends ObjectModel
         $json = json_encode($ob);
         return json_decode($json, true);
     }
+
+    /**
+     * Validate xml fields in config file
+     *
+     * @param SimpleXMLElement $xml
+     *
+     * @return boolean
+     *
+     * @since 1.0.7
+     */
+    public static function validateConfigFile($xml)
+    {
+        if (! $xml) {
+            return false;
+        }
+        if (!$xml['version'] || !$xml['name']) {
+            return false;
+        }
+        foreach ($xml->variations->variation as $val) {
+            if (!$val['name'] || !$val['directory'] || !$val['from'] || !$val['to']) {
+                return false;
+            }
+        }
+        foreach ($xml->modules->module as $val) {
+            if (!$val['action'] || !$val['name']) {
+                return false;
+            }
+        }
+        foreach ($xml->modules->hooks->hook as $val) {
+            if (!$val['module'] || !$val['hook'] || !$val['position']) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

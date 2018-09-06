@@ -1744,32 +1744,17 @@ class AdminThemesControllerCore extends AdminController
      * @return bool
      *
      * @since 1.0.0
+     * @deprecated 1.0.7 Use Theme::validateConfigFile() instead.
      */
     protected function checkXmlFields($xmlFile)
     {
-        if (!file_exists($xmlFile) || !$xml = @simplexml_load_file($xmlFile)) {
+        Tools::displayAsDeprecated();
+
+        if (! file_exists($xmlFile)) {
             return false;
-        }
-        if (!$xml['version'] || !$xml['name']) {
-            return false;
-        }
-        foreach ($xml->variations->variation as $val) {
-            if (!$val['name'] || !$val['directory'] || !$val['from'] || !$val['to']) {
-                return false;
-            }
-        }
-        foreach ($xml->modules->module as $val) {
-            if (!$val['action'] || !$val['name']) {
-                return false;
-            }
-        }
-        foreach ($xml->modules->hooks->hook as $val) {
-            if (!$val['module'] || !$val['hook'] || !$val['position']) {
-                return false;
-            }
         }
 
-        return true;
+        return Theme::validateConfigFile(@simplexml_load_file($xmlFile));
     }
 
     /**
