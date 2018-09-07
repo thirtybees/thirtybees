@@ -710,7 +710,7 @@ done
 unset LICENSE
 
 
-### Build infrastructure files.
+### Infrastructure files.
 
 # A build.sh should be absent.
 if ${FIND} build.sh | grep -q '.'; then
@@ -725,6 +725,16 @@ fi
 # module uses such a file.
 ${FIND} buildfilter.sh | grep -q '.' && \
   w "there is a file buildfilter.sh, validating that is not yet implemented."
+
+# .htaccess files are deprecated. Don't work with Nginx.
+FAULT='false'
+for F in $(${FIND} . | grep '.htaccess'); do
+  e "file ${F} shouldn't exist."
+  FAULT='true'
+done
+[ ${FAULT} = 'true' ] && \
+  n ".htaccess files ar not supported by Nginx and accordingly not safe."
+unset FAULT
 
 
 ### index.php files.
