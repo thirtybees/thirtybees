@@ -570,31 +570,17 @@ class ThemeCore extends ObjectModel
      */
     public function loadConfigFile($validate = false)
     {
-        return static::loadConfigFromFile($this->getConfigFilePath(), $validate);
-    }
-
-    /**
-     * Get the path to configuration file
-     *
-     * @return string | false
-     *
-     * @since 1.0.7
-     */
-    protected function getConfigFilePath()
-    {
         $path = _PS_ROOT_DIR_.'/config/xml/themes/'.$this->directory.'.xml';
-        if (file_exists($path)) {
-            return $path;
-        }
-
-        if ($this->name == 'community-theme-default') {
+        if (! file_exists($path)
+            && $this->name === 'community-theme-default') {
             $path = _PS_ROOT_DIR_.'/config/xml/themes/default.xml';
-            if (file_exists($path)) {
-                return $path;
-            }
         }
 
-        return false;
+        if (! file_exists($path)) {
+            return false;
+        }
+
+        return static::loadConfigFromFile($path, $validate);
     }
 
     /**
