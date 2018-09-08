@@ -1701,10 +1701,12 @@ class AdminThemesControllerCore extends AdminController
             if (! $xml) {
                 $configFile = '/config.xml';
                 $xml = Theme::loadConfigFromFile($sandbox.$themeDir.$configFile, true);
+                if (! $xml) {
+                    $this->errors[] = $this->l('Bad or missing configuration file.');
+                }
             }
-            if (! $xml) {
-                $this->errors[] = $this->l('Bad configuration file');
-            } else {
+
+            if ($xml) {
                 $importedTheme = $this->importThemeXmlConfig($xml);
                 foreach ($importedTheme as $theme) {
                     if (Validate::isLoadedObject($theme)) {
