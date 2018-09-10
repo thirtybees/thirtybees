@@ -950,6 +950,11 @@ class InstallModelInstall extends InstallAbstractModel
      *
      * @since   1.0.7
      * @version 1.0.7 Initial version
+     * @deprecated 1.1.0 Introduced for working around a broken Cloudways
+     *                   distribution, only. Plan for 1.1.0 is to remove all
+     *                   but one encryption algorithms. Also to remove the
+     *                   direct dependency on paragonie/random_compat, which
+     *                   was introduced for the same reason.
      */
     public function getCipherAlgorightm()
     {
