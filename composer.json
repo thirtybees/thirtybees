@@ -18,7 +18,8 @@
         "symfony/polyfill-mbstring": "^1.3",
         "defuse/php-encryption": "^2.0",
         "pclzip/pclzip": "~2.8.2",
-        "vierbergenlars/php-semver": "~2.1.0"
+        "vierbergenlars/php-semver": "~2.1.0",
+        "paragonie/random_compat": "<9.99"
     },
     "require-dev": {
         "satooshi/php-coveralls": "^1.0",
