@@ -775,12 +775,12 @@ class AdminPerformanceControllerCore extends AdminController
             'redisServers' => true,
         ];
         $depth = Configuration::get('PS_CACHEFS_DIRECTORY_DEPTH');
-        $this->fields_value['TB_CACHE_ENABLED'] = (bool) Configuration::get('TB_CACHE_ENABLED');
+        $this->fields_value['TB_CACHE_ENABLED'] = Cache::isEnabled();
         $this->fields_value['TB_CACHE_SYSTEM'] = Configuration::get('TB_CACHE_SYSTEM') ?: 'CacheFs';
         $this->fields_value['ps_cache_fs_directory_depth'] = $depth ? $depth : 1;
         $this->tpl_form_vars['memcached_servers'] = CacheMemcache::getMemcachedServers();
         $this->tpl_form_vars['redis_servers'] = CacheRedis::getRedisServers();
-        $this->tpl_form_vars['_PS_CACHE_ENABLED_'] = Configuration::get('TB_CACHE_ENABLED');
+        $this->tpl_form_vars['_PS_CACHE_ENABLED_'] = Cache::isEnabled();
     }
 
     /**
@@ -842,7 +842,7 @@ class AdminPerformanceControllerCore extends AdminController
                             'label' => $this->l('Disabled'),
                         ],
                     ],
-                    'disabled' => !Configuration::get('TB_CACHE_ENABLED'),
+                    'disabled' => !Cache::isEnabled()
                 ],
                 [
                     'type'    => 'switch',
@@ -1242,7 +1242,7 @@ class AdminPerformanceControllerCore extends AdminController
                             $this->errors[] = sprintf(Tools::displayError('To use CacheFS, the directory %s must be writable.'), realpath(_PS_CACHEFS_DIRECTORY_));
                         }
                     }
-                    $cacheEnabled = Configuration::get('TB_CACHE_ENABLED');
+                    $cacheEnabled = Cache::isEnabled();
                     $cacheSystem = Configuration::get('TB_CACHE_SYSTEM');
                     if ($cachingSystem == 'CacheFs') {
                         if (!($depth = Tools::getValue('ps_cache_fs_directory_depth'))) {
