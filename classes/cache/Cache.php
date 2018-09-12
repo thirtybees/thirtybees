@@ -155,6 +155,16 @@ abstract class CacheCore
     abstract public function flush();
 
     /**
+     * Returns true if server-side caching is
+     *
+     * @since: 1.0.7
+     */
+    public static function isEnabled()
+    {
+        return Configuration::get('TB_CACHE_ENABLED');
+    }
+
+    /**
      * @return Cache
      *
      * @since   1.0.0

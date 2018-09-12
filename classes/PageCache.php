@@ -37,6 +37,17 @@
  */
 class PageCacheCore
 {
+
+    /**
+     * Returns true if full page cache is enabled
+     *
+     * @since: 1.0.7
+     */
+    public static function isEnabled()
+    {
+        return Cache::isEnabled() && Configuration::get('TB_PAGE_CACHE_ENABLED');
+    }
+
     /**
      * Register cache key and set its metadata
      *
@@ -151,7 +162,7 @@ class PageCacheCore
      */
     public static function flush()
     {
-        if (defined('_PS_CACHE_ENABLED_') && _PS_CACHE_ENABLED_) {
+        if (static::isEnabled()) {
             Cache::getInstance()->flush();
         }
 
