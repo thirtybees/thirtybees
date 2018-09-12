@@ -161,7 +161,7 @@ abstract class CacheCore
      */
     public static function isEnabled()
     {
-        return Configuration::get('TB_CACHE_ENABLED');
+        return (bool)Configuration::get('TB_CACHE_ENABLED');
     }
 
     /**

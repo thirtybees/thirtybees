@@ -45,7 +45,7 @@ class PageCacheCore
      */
     public static function isEnabled()
     {
-        return Cache::isEnabled() && Configuration::get('TB_PAGE_CACHE_ENABLED');
+        return Cache::isEnabled() && (bool)Configuration::get('TB_PAGE_CACHE_ENABLED');
     }
 
     /**
