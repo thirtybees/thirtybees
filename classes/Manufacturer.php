@@ -502,7 +502,7 @@ class ManufacturerCore extends ObjectModel
             return false;
         }
 
-        if (Configuration::get('TB_CACHE_ENABLED') && Configuration::get('TB_PAGE_CACHE_ENABLED')) {
+        if (PageCache::isEnabled()) {
             PageCache::invalidateEntity('manufacturer', $this->id);
         }
 

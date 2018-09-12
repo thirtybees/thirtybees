@@ -886,7 +886,7 @@ class AdminPerformanceControllerCore extends AdminController
 
         $this->tpl_form_vars['controllerList'] = $controllerList;
         $this->tpl_form_vars['moduleSettings'] = $moduleSettings;
-        $this->fields_value['TB_PAGE_CACHE_ENABLED'] = Configuration::get('TB_PAGE_CACHE_ENABLED') && Configuration::get('TB_CACHE_ENABLED');
+        $this->fields_value['TB_PAGE_CACHE_ENABLED'] = PageCache::isEnabled();
         $this->fields_value['TB_PAGE_CACHE_DEBUG'] = (bool) Configuration::get('TB_PAGE_CACHE_DEBUG');
         $this->fields_value['TB_PAGE_CACHE_IGNOREPARAMS'] = Configuration::get('TB_PAGE_CACHE_IGNOREPARAMS');
     }

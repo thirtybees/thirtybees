@@ -244,7 +244,7 @@ abstract class ControllerCore
     {
         $cached = false;
         $content = '';
-        if (Configuration::get('TB_PAGE_CACHE_ENABLED') && Configuration::get('TB_CACHE_ENABLED')) {
+        if (PageCache::isEnabled()) {
             $pageName = Dispatcher::getInstance()->getController();
             $cacheableControllers = json_decode(Configuration::get('TB_PAGE_CACHE_CONTROLLERS'), true);
             $ajaxCalling = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && mb_strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';

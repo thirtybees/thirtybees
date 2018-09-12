@@ -285,7 +285,7 @@ class HookCore extends ObjectModel
         $usePush = false,
         $idShop = null
     ) {
-        if (!Configuration::get('TB_PAGE_CACHE_ENABLED')) {
+        if (! PageCache::isEnabled()) {
             return static::execWithoutCache($hookName, $hookArgs, $idModule, $arrayReturn, $checkExceptions, $usePush, $idShop);
         }
 

@@ -308,7 +308,7 @@ class CMSCore extends ObjectModel
      */
     public function update($nullValues = false)
     {
-        if (Configuration::get('TB_CACHE_ENABLED') && Configuration::get('TB_PAGE_CACHE_ENABLED')) {
+        if (PageCache::isEnabled()) {
             PageCache::invalidateEntity('cms', $this->id);
         }
 
@@ -362,7 +362,7 @@ class CMSCore extends ObjectModel
      */
     public function delete()
     {
-        if (Configuration::get('TB_CACHE_ENABLED') && Configuration::get('TB_PAGE_CACHE_ENABLED')) {
+        if (PageCache::isEnabled()) {
             PageCache::invalidateEntity('cms', $this->id);
         }
 
