@@ -285,7 +285,7 @@ abstract class CacheCore
         // Get list of keys to delete
         $keys = [];
         if ($key == '*') {
-            $keys = $this->keys;
+            $keys = array_keys($this->keys);
         } elseif (strpos($key, '*') === false) {
             $keys = [$key];
         } else {
