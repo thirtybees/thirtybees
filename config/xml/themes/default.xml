@@ -327,4 +327,7 @@
         <image name="m_scene_default" width="161" height="58" products="false" categories="false" manufacturers="false"
                suppliers="false" scenes="true"/>
     </images>
+    <lazy_load>1</lazy_load>
+    <high_dpi>1</high_dpi>
+    <webp>1</webp>
 </theme>
