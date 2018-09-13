@@ -834,7 +834,7 @@ class ImageManagerCore
             try {
                 $supported = Configuration::get('TB_USE_WEBP')
                     && !empty($config['webp'])
-                    && function_exists(' imagewebp');
+                    && function_exists('imagewebp');
             } catch (PrestaShopException $e) {
                 $supported = false;
             }
