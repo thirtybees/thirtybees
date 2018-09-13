@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<theme version="1.1.0" name="community-theme-default" directory="community-theme-default">
-    <author name="Gytis Škema &amp; Krystian Podemski" email="info@thirtybees.com" url="https://thirtybees.com"/>
+<!-- Copyright Prestashop -->
+<theme version="1.0" name="community-theme-default" directory="community-theme-default">
+    <author name="PrestaShop" email="contact@prestashop.com" url="http://www.prestashop.com"/>
     <descriptions>
-        <description iso="en">Community theme is a theme developed and maintained by the thirty bees community.</description>
+        <description iso="en"></description>
     </descriptions>
     <variations>
-        <variation name="community-theme-default" directory="community-theme-default" responsive="1"
-                   default_left_column="1" default_right_column="0" product_per_page="12" from="1.6.1.3" to="1.6.1.6"/>
+        <variation name="community-theme-default" directory="community-theme-default" responsive="1" default_left_column="1"
+                   default_right_column="0" product_per_page="12" from="1.6.0.5" to="1.6.0.5"/>
     </variations>
-    <docs></docs>
+    <docs>
+        <doc name="documentation" path="doc/"/>
+    </docs>
     <metas>
         <meta meta_page="404" left="0" right="0"/>
         <meta meta_page="best-sales" left="1" right="0"/>
@@ -72,10 +75,9 @@
         <module action="enable" name="blockstore"/>
         <module action="enable" name="blocksupplier"/>
         <module action="enable" name="blocktags"/>
+        <module action="enable" name="blocktopmenu"/>
         <module action="enable" name="blockuserinfo"/>
         <module action="enable" name="blockviewed"/>
-        <module action="enable" name="ctconfiguration"/>
-        <module action="enable" name="cttopmenu"/>
         <module action="enable" name="dashactivity"/>
         <module action="enable" name="dashtrends"/>
         <module action="enable" name="dashgoals"/>
@@ -96,7 +98,6 @@
         <module action="disable" name="blockreinsurance"/>
         <module action="disable" name="blockrss"/>
         <module action="disable" name="blocksharefb"/>
-        <module action="disable" name="blocktopmenu"/>
         <module action="disable" name="crossselling"/>
         <module action="disable" name="editorial"/>
         <module action="disable" name="favoriteproducts"/>
@@ -111,7 +112,7 @@
         <module action="disable" name="addshoppers"/>
         <hooks>
             <hook module="socialsharing" hook="displayHeader" position="1"/>
-            <hook module="socialsharing" hook="displayRightColumnProduct" position="2"/>
+            <hook module="socialsharing" hook="displayRightColumnProduct" position="1"/>
             <hook module="socialsharing" hook="actionObjectProductUpdateAfter" position="1"/>
             <hook module="socialsharing" hook="actionObjectProductDeleteAfter" position="1"/>
             <hook module="socialsharing" hook="displayCompareExtraInformation" position="1"/>
@@ -130,10 +131,10 @@
             <hook module="blockcart" hook="displayTop" position="2"/>
             <hook module="blockcart" hook="actionCartListOverride" position="1"/>
             <hook module="blocksocial" hook="displayHeader" position="5"/>
-            <hook module="blocksocial" hook="displayFooter" position="1"/>
+            <hook module="blocksocial" hook="displayFooter" position="2"/>
             <hook module="blockcategories" hook="displayLeftColumn" position="2"/>
             <hook module="blockcategories" hook="displayHeader" position="6"/>
-            <!-- hook module="blockcategories" hook="displayFooter" position="3"/ -->
+            <hook module="blockcategories" hook="displayFooter" position="3"/>
             <hook module="blockcategories" hook="actionCategoryAdd" position="1"/>
             <hook module="blockcategories" hook="actionCategoryUpdate" position="1"/>
             <hook module="blockcategories" hook="actionCategoryDelete" position="1"/>
@@ -171,16 +172,16 @@
             <hook module="blocklayered" hook="actionAttributeSave" position="1"/>
             <hook module="blockcms" hook="displayLeftColumn" position="4"/>
             <hook module="blockcms" hook="displayHeader" position="11"/>
-            <hook module="blockcms" hook="displayFooter" position="3"/>
+            <hook module="blockcms" hook="displayFooter" position="4"/>
             <hook module="blockcms" hook="actionObjectCmsUpdateAfter" position="1"/>
             <hook module="blockcms" hook="actionObjectCmsDeleteAfter" position="1"/>
             <hook module="blockcms" hook="actionShopDataDuplication" position="1"/>
             <hook module="blockcms" hook="actionAdminStoresControllerUpdate_optionsAfter" position="1"/>
             <hook module="blockcmsinfo" hook="displayHome" position="3"/>
             <hook module="blockcontact" hook="displayHeader" position="12"/>
-            <hook module="blockcontact" hook="displayNav" position="1"/>
+            <hook module="blockcontact" hook="displayNav" position="4"/>
             <hook module="blockcontactinfos" hook="displayHeader" position="13"/>
-            <hook module="blockcontactinfos" hook="displayFooter" position="5"/>
+            <hook module="blockcontactinfos" hook="displayFooter" position="6"/>
             <hook module="blockmanufacturer" hook="displayLeftColumn" position="5" exceptions="category"/>
             <hook module="blockmanufacturer" hook="displayHeader" position="14"/>
             <hook module="blockmanufacturer" hook="actionObjectManufacturerDeleteAfter" position="1"/>
@@ -191,7 +192,7 @@
             <hook module="blockmyaccount" hook="actionModuleRegisterHookAfter" position="1"/>
             <hook module="blockmyaccount" hook="actionModuleUnRegisterHookAfter" position="1"/>
             <hook module="blockmyaccountfooter" hook="displayHeader" position="16"/>
-            <hook module="blockmyaccountfooter" hook="displayFooter" position="4"/>
+            <hook module="blockmyaccountfooter" hook="displayFooter" position="5"/>
             <hook module="blockmyaccountfooter" hook="actionModuleRegisterHookAfter" position="2"/>
             <hook module="blockmyaccountfooter" hook="actionModuleUnRegisterHookAfter" position="2"/>
             <hook module="blocknewproducts" hook="displayLeftColumn" position="7"/>
@@ -202,7 +203,7 @@
             <hook module="blocknewproducts" hook="displayHomeTab" position="1"/>
             <hook module="blocknewproducts" hook="displayHomeTabContent" position="1"/>
             <hook module="blocknewsletter" hook="displayHeader" position="18"/>
-            <hook module="blocknewsletter" hook="displayFooter" position="2"/>
+            <hook module="blocknewsletter" hook="displayFooter" position="1"/>
             <hook module="blocknewsletter" hook="actionCustomerAccountAdd" position="1"/>
             <hook module="blockpaymentlogo" hook="displayLeftColumn" position="8" exceptions="category"/>
             <hook module="blockpaymentlogo" hook="displayHeader" position="19"/>
@@ -223,33 +224,30 @@
             <hook module="blocksupplier" hook="actionObjectSupplierUpdateAfter" position="1"/>
             <hook module="blocktags" hook="displayLeftColumn" position="12"/>
             <hook module="blocktags" hook="displayHeader" position="24"/>
+            <hook module="blocktopmenu" hook="displayTop" position="3"/>
+            <hook module="blocktopmenu" hook="actionCategoryUpdate" position="3"/>
+            <hook module="blocktopmenu" hook="actionObjectProductUpdateAfter" position="2"/>
+            <hook module="blocktopmenu" hook="actionObjectProductDeleteAfter" position="2"/>
+            <hook module="blocktopmenu" hook="actionObjectCmsUpdateAfter" position="2"/>
+            <hook module="blocktopmenu" hook="actionObjectCmsDeleteAfter" position="2"/>
+            <hook module="blocktopmenu" hook="actionShopDataDuplication" position="2"/>
+            <hook module="blocktopmenu" hook="actionObjectManufacturerDeleteAfter" position="2"/>
+            <hook module="blocktopmenu" hook="actionObjectManufacturerAddAfter" position="2"/>
+            <hook module="blocktopmenu" hook="actionObjectManufacturerUpdateAfter" position="2"/>
+            <hook module="blocktopmenu" hook="actionObjectSupplierDeleteAfter" position="2"/>
+            <hook module="blocktopmenu" hook="actionObjectSupplierAddAfter" position="2"/>
+            <hook module="blocktopmenu" hook="actionObjectSupplierUpdateAfter" position="2"/>
+            <hook module="blocktopmenu" hook="actionObjectCategoryUpdateAfter" position="1"/>
+            <hook module="blocktopmenu" hook="actionObjectCategoryDeleteAfter" position="1"/>
+            <hook module="blocktopmenu" hook="actionObjectCategoryAddAfter" position="1"/>
+            <hook module="blocktopmenu" hook="actionObjectCmsAddAfter" position="1"/>
+            <hook module="blocktopmenu" hook="actionObjectProductAddAfter" position="1"/>
+            <hook module="blocktopmenu" hook="displayHeader" position="34"/>
             <hook module="blockuserinfo" hook="displayHeader" position="25"/>
             <hook module="blockuserinfo" hook="displayTop" position="4"/>
-            <hook module="blockuserinfo" hook="displayNav" position="4"/>
+            <hook module="blockuserinfo" hook="displayNav" position="1"/>
             <hook module="blockviewed" hook="displayLeftColumn" position="13"/>
             <hook module="blockviewed" hook="displayHeader" position="26"/>
-            <hook module="ctconfiguration" hook="displayHeader" position="35"/>
-            <hook module="cttopmenu" hook="displayTop" position="3"/>
-            <hook module="cttopmenu" hook="actionCategoryUpdate" position="3"/>
-            <hook module="cttopmenu" hook="actionCTTopMenuCompositionChanged" position="1"/>
-            <hook module="cttopmenu" hook="actionObjectProductUpdateAfter" position="2"/>
-            <hook module="cttopmenu" hook="actionObjectProductDeleteAfter" position="2"/>
-            <hook module="cttopmenu" hook="actionObjectCategoryUpdateAfter" position="1"/>
-            <hook module="cttopmenu" hook="actionObjectCategoryDeleteAfter" position="1"/>
-            <hook module="cttopmenu" hook="actionObjectCategoryAddAfter" position="1"/>
-            <hook module="cttopmenu" hook="actionObjectCmsUpdateAfter" position="2"/>
-            <hook module="cttopmenu" hook="actionObjectCmsDeleteAfter" position="2"/>
-            <hook module="cttopmenu" hook="actionObjectCmsAddAfter" position="2"/>
-            <hook module="cttopmenu" hook="actionObjectCmsCategoryUpdateAfter" position="2"/>
-            <hook module="cttopmenu" hook="actionObjectCmsCategoryDeleteAfter" position="2"/>
-            <hook module="cttopmenu" hook="actionObjectCmsCategoryAddAfter" position="2"/>
-            <hook module="cttopmenu" hook="actionObjectSupplierDeleteAfter" position="2"/>
-            <hook module="cttopmenu" hook="actionObjectSupplierAddAfter" position="2"/>
-            <hook module="cttopmenu" hook="actionObjectSupplierUpdateAfter" position="2"/>
-            <hook module="cttopmenu" hook="actionObjectManufacturerDeleteAfter" position="2"/>
-            <hook module="cttopmenu" hook="actionObjectManufacturerAddAfter" position="2"/>
-            <hook module="cttopmenu" hook="actionObjectManufacturerUpdateAfter" position="2"/>
-            <hook module="cttopmenu" hook="displayHeader" position="34"/>
             <hook module="dashactivity" hook="dashboardZoneOne" position="1"/>
             <hook module="dashactivity" hook="dashboardData" position="1"/>
             <hook module="dashactivity" hook="actionObjectOrderAddAfter" position="1"/>
@@ -282,12 +280,12 @@
             <hook module="productpaymentlogos" hook="displayHeader" position="29"/>
             <hook module="productpaymentlogos" hook="displayProductButtons" position="2"/>
             <hook module="statsdata" hook="actionAuthentication" position="1"/>
-            <hook module="statsdata" hook="displayFooter" position="6"/>
+            <hook module="statsdata" hook="displayFooter" position="7"/>
             <hook module="statsdata" hook="actionCustomerAccountAdd" position="2"/>
             <hook module="themeconfigurator" hook="displayLeftColumn" position="14"/>
             <hook module="themeconfigurator" hook="displayHome" position="1"/>
             <hook module="themeconfigurator" hook="displayHeader" position="30"/>
-            <hook module="themeconfigurator" hook="displayFooter" position="7"/>
+            <hook module="themeconfigurator" hook="displayFooter" position="8"/>
             <hook module="themeconfigurator" hook="displayBackOfficeHeader" position="1"/>
             <hook module="themeconfigurator" hook="displayTopColumn" position="2"/>
             <hook module="themeconfigurator" hook="actionObjectLanguageAddAfter" position="2"/>
@@ -300,7 +298,7 @@
             <hook module="blockwishlist" hook="displayMyAccountBlock" position="1"/>
             <hook module="blockwishlist" hook="displayProductListFunctionalButtons" position="1"/>
             <hook module="productcomments" hook="displayHeader" position="32"/>
-            <hook module="productcomments" hook="displayRightColumnProduct" position="1"/>
+            <hook module="productcomments" hook="displayRightColumnProduct" position="2"/>
             <hook module="productcomments" hook="displayProductTab" position="1"/>
             <hook module="productcomments" hook="displayProductTabContent" position="1"/>
             <hook module="productcomments" hook="displayProductComparison" position="1"/>
@@ -329,7 +327,4 @@
         <image name="m_scene_default" width="161" height="58" products="false" categories="false" manufacturers="false"
                suppliers="false" scenes="true"/>
     </images>
-    <lazy_load>1</lazy_load>
-    <high_dpi>1</high_dpi>
-    <webp>1</webp>
 </theme>
