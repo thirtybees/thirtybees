@@ -983,12 +983,18 @@ class AdminTranslationsControllerCore extends AdminController
                 continue;
             }
             // Global variable initialization
-            if ($global != false && preg_match('/^\$'.preg_quote($global, '/').'\s*=\s*array\(\s*\)\s*;$/i', $line)) {
+            if ($global && (
+                preg_match('/^\$'.preg_quote($global, '/').'\s*=\s*array\(\s*\)\s*;$/i', $line)
+                || preg_match('/^\$'.preg_quote($global, '/').'\s*=\s*\[\s*\]\s*;$/i', $line)
+            )) {
                 continue;
             }
 
             // Global variable initialization without declaration
-            if (!$global && preg_match('/^\$([a-z0-9-_]+)\s*=\s*array\(\s*\)\s*;$/i', $line, $matches)) {
+            if (!$global && (
+                preg_match('/^\$([a-z0-9-_]+)\s*=\s*array\(\s*\)\s*;$/i', $line, $matches)
+                || preg_match('/^\$([a-z0-9-_]+)\s*=\s*\[\s*\]\s*;$/i', $line, $matches)
+            )) {
                 $global = $matches[1];
                 continue;
             }
