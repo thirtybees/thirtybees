@@ -72,13 +72,11 @@ class RijndaelCore
         }
 
         if (function_exists('openssl_encrypt')) {
-            $ivsize = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
+            $ivsize = openssl_cipher_iv_length('aes-256-cbc');
             try {
                 $iv = random_bytes($ivsize);
             } catch (Exception $e) {
-                if (function_exists('mcrypt_create_iv')) {
-                    $iv = mcrypt_create_iv($ivsize, MCRYPT_RAND);
-                } elseif (extension_loaded('openssl_random_pseudo_bytes')) {
+                if (function_exists('openssl_random_pseudo_bytes')) {
                     $iv = openssl_random_pseudo_bytes($ivsize);
                 } else {
                     throw new Exception('No secure random number generator found on your system.');
