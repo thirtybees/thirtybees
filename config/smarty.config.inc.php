@@ -88,17 +88,17 @@ smartyRegisterFunction($smarty, 'function', 'implode', array('Tools', 'smartyImp
 smartyRegisterFunction($smarty, 'modifier', 'utf8ToIdn', array('Tools', 'convertEmailToIdn'));
 smartyRegisterFunction($smarty, 'modifier', 'idnToUtf8', array('Tools', 'convertEmailFromIdn'));
 
-function smartyDieObject($params, &$smarty)
+function smartyDieObject($params, $smarty)
 {
     return Tools::d($params['var']);
 }
 
-function smartyShowObject($params, &$smarty)
+function smartyShowObject($params, $smarty)
 {
     return Tools::p($params['var']);
 }
 
-function smartyMaxWords($params, &$smarty)
+function smartyMaxWords($params, $smarty)
 {
     Tools::displayAsDeprecated();
     $params['s'] = str_replace('...', ' ...', html_entity_decode($params['s'], ENT_QUOTES, 'UTF-8'));
@@ -113,7 +113,7 @@ function smartyMaxWords($params, &$smarty)
     return implode(' ',  Tools::htmlentitiesUTF8($words));
 }
 
-function smartyTruncate($params, &$smarty)
+function smartyTruncate($params, $smarty)
 {
     Tools::displayAsDeprecated();
     $text = isset($params['strip']) ? strip_tags($params['text']) : $params['text'];
@@ -150,7 +150,7 @@ function smarty_modifier_htmlentitiesUTF8($string)
 {
     return Tools::htmlentitiesUTF8($string);
 }
-function smartyMinifyHTML($tpl_output, &$smarty)
+function smartyMinifyHTML($tpl_output, $smarty)
 {
     $context = Context::getContext();
     if (isset($context->controller) && in_array($context->controller->php_self, ['pdf-invoice', 'pdf-order-return', 'pdf-order-slip'])) {
@@ -160,7 +160,7 @@ function smartyMinifyHTML($tpl_output, &$smarty)
     return $tpl_output;
 }
 
-function smartyPackJSinHTML($tpl_output, &$smarty)
+function smartyPackJSinHTML($tpl_output, $smarty)
 {
     $context = Context::getContext();
     if (isset($context->controller) && in_array($context->controller->php_self, ['pdf-invoice', 'pdf-order-return', 'pdf-order-slip'])) {
@@ -189,7 +189,7 @@ function smartyRegisterFunction($smarty, $type, $function, $params, $lazy = true
     }
 }
 
-function smartyHook($params, &$smarty)
+function smartyHook($params, $smarty)
 {
     if (!empty($params['h'])) {
         $id_module = null;
@@ -217,7 +217,7 @@ function smartyCleanHtml($data)
     }
 }
 
-function toolsConvertPrice($params, &$smarty)
+function toolsConvertPrice($params, $smarty)
 {
     return Tools::convertPrice($params['price'], Context::getContext()->currency);
 }

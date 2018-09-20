@@ -560,7 +560,7 @@ class ImageCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function getWidth($params, &$smarty)
+    public static function getWidth($params, $smarty)
     {
         $result = static::getSize($params['type']);
 
@@ -602,7 +602,7 @@ class ImageCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function getHeight($params, &$smarty)
+    public static function getHeight($params, $smarty)
     {
         $result = static::getSize($params['type']);
 

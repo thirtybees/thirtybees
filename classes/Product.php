@@ -2399,7 +2399,7 @@ class ProductCore extends ObjectModel
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
-    public static function convertPrice($params, &$smarty)
+    public static function convertPrice($params, $smarty)
     {
         return Tools::displayPrice($params['price'], Context::getContext()->currency);
     }
@@ -2416,7 +2416,7 @@ class ProductCore extends ObjectModel
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
-    public static function convertPriceWithCurrency($params, &$smarty)
+    public static function convertPriceWithCurrency($params, $smarty)
     {
         return Tools::displayPrice($params['price'], $params['currency'], false);
     }
@@ -2431,7 +2431,7 @@ class ProductCore extends ObjectModel
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
-    public static function displayWtPrice($params, &$smarty)
+    public static function displayWtPrice($params, $smarty)
     {
         return Tools::displayPrice($params['p'], Context::getContext()->currency);
     }
@@ -2448,7 +2448,7 @@ class ProductCore extends ObjectModel
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
-    public static function displayWtPriceWithCurrency($params, &$smarty)
+    public static function displayWtPriceWithCurrency($params, $smarty)
     {
         return Tools::displayPrice($params['price'], $params['currency'], false);
     }
