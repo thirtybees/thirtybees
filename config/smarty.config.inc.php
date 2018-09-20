@@ -178,11 +178,12 @@ function smartyRegisterFunction($smarty, $type, $function, $params, $lazy = true
 
     // lazy is better if the function is not called on every page
     if ($lazy && is_array($params)) {
+        $name = $params[1];
         $lazy_register = SmartyLazyRegister::getInstance();
-        $lazy_register->register($params);
+        $lazy_register->register($name, $type, $params);
 
         // SmartyLazyRegister allows to only load external class when they are needed
-        $smarty->registerPlugin($type, $function, [$lazy_register, $params[1]]);
+        $smarty->registerPlugin($type, $function, [$lazy_register, $name]);
     } else {
         $smarty->registerPlugin($type, $function, $params);
     }
@@ -233,13 +234,12 @@ class SmartyLazyRegister
      * Register a function or method to be dynamically called later
      * @param string|array $params function name or array(object name, method name)
      */
-    public function register($params)
+    public function register($name, $type, $callable)
     {
-        if (is_array($params)) {
-            $this->registry[$params[1]] = $params;
-        } else {
-            $this->registry[$params] = $params;
-        }
+        $this->registry[$name] = [
+            'callable' => $callable,
+            'type' => $type
+        ];
     }
 
     /**
@@ -252,15 +252,18 @@ class SmartyLazyRegister
     public function __call($name, $arguments)
     {
         $item = $this->registry[$name];
-        $args = [];
-        foreach ($arguments as $a => $argument) {
-            if ($a == 0) {
-                $args[] = $arguments[0];
-            } else {
-                $args[] = &$arguments[$a];
-            }
+        $callable = $item['callable'];
+        $type = $item['type'];
+        if ($type === 'block') {
+            // signature of smarty block plugin is: function($params, $content, $template, &$repeat)
+            // we need to pass 4th parameter as reference
+            return call_user_func_array($callable, [$arguments[0], $arguments[1], $arguments[2], &$arguments[3]]);
+        } else {
+            // signature of smarty function plugin is: function($params, $smarty)
+            // signature of smarty function plugin is: function modifier($value, [$param1, $param2, $param3])
+            // there are no references, we can simply forward the call with input arguments
+            return call_user_func_array($callable, $arguments);
         }
-        return call_user_func_array($item, $args);
     }
 
     public static function getInstance()
