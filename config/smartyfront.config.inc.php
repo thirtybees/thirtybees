@@ -36,7 +36,7 @@ if (Configuration::get('PS_JS_HTML_THEME_COMPRESSION')) {
     $smarty->registerFilter('output', 'smartyPackJSinHTML');
 }
 
-function smartyTranslate($params, &$smarty)
+function smartyTranslate($params, $smarty)
 {
     global $_LANG;
 

@@ -457,7 +457,7 @@ class AddressFormatCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function generateAddressSmarty($params, &$smarty)
+    public static function generateAddressSmarty($params, $smarty)
     {
         return AddressFormat::generateAddress(
             $params['address'],

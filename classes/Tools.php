@@ -762,7 +762,7 @@ class ToolsCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function displayPriceSmarty($params, &$smarty)
+    public static function displayPriceSmarty($params, $smarty)
     {
         if (array_key_exists('currency', $params)) {
             $currency = Currency::getCurrencyInstance((int) $params['currency']);
@@ -1244,7 +1244,7 @@ class ToolsCore
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
-    public static function dateFormat($params, &$smarty)
+    public static function dateFormat($params, $smarty)
     {
         return Tools::displayDate($params['date'], null, (isset($params['full']) ? $params['full'] : false));
     }
@@ -1707,7 +1707,7 @@ class ToolsCore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function getAdminTokenLiteSmarty($params, &$smarty)
+    public static function getAdminTokenLiteSmarty($params, $smarty)
     {
         $context = Context::getContext();
 
