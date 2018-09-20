@@ -177,16 +177,12 @@ function smartyRegisterFunction($smarty, $type, $function, $params, $lazy = true
     }
 
     // lazy is better if the function is not called on every page
-    if ($lazy) {
+    if ($lazy && is_array($params)) {
         $lazy_register = SmartyLazyRegister::getInstance();
         $lazy_register->register($params);
 
-        if (is_array($params)) {
-            $params = $params[1];
-        }
-
         // SmartyLazyRegister allows to only load external class when they are needed
-        $smarty->registerPlugin($type, $function, [$lazy_register, $params]);
+        $smarty->registerPlugin($type, $function, [$lazy_register, $params[1]]);
     } else {
         $smarty->registerPlugin($type, $function, $params);
     }
