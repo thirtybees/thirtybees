@@ -16,6 +16,5 @@ $kernel->init([
 
 require_once __DIR__.'/../../config/defines.inc.php';
 require_once __DIR__.'/../../config/settings.inc.php';
-define('_PS_DEFAULT_THEME_NAME_', 'community_theme_default');
 require_once __DIR__.'/../_support/unitloadclasses.php';
 require_once __DIR__.'/../../config/alias.php';
