@@ -2839,7 +2839,7 @@ class AdminTranslationsControllerCore extends AdminController
                 if (is_array($tab2) && isset($tab2[1])) {
                     $template = trim(str_replace('\'', '', $tab2[1]));
                     foreach ($tab2 as $tab3) {
-                        if (preg_match('/Mail::l\(\''._PS_TRANS_PATTERN_.'\'\)/Us', $tab3.')', $matches)) {
+                        if (preg_match('/Mail::l\(\s*\''._PS_TRANS_PATTERN_.'\'\s*\)/Us', $tab3.')', $matches)) {
                             if (!isset($subjectMail[$template])) {
                                 $subjectMail[$template] = [];
                             }

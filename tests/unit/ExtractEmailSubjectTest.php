@@ -36,6 +36,30 @@ class ExtractEmailSubjectTest extends \Codeception\Test\Unit
         );
     }
 
+    public function testWhitespace()
+    {
+        $this->emailSubject([
+            't1' => ['s1'],
+            't2' => ['s2'],
+            't3' => ['s3']
+        ], "
+            ...;
+            Mail::Send(1, 't1', Mail::l('s1'), ...);
+            ...;
+            Mail::Send(
+              1,
+              't2',
+              Mail::l(
+                's2'
+              ),
+              ...);
+            ...
+            Mail::Send(1, 't3'  , Mail::l(   's3'  , 1), ...);
+            ...
+            "
+        );
+    }
+
     public function testIgnoreLiteralSubjects()
     {
         $this->emailSubject([
