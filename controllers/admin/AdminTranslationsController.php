@@ -2817,26 +2817,7 @@ class AdminTranslationsControllerCore extends AdminController
         if (is_file($dir.'/'.$file) && !in_array($file, static::$ignore_folder) && preg_match('/\.php$/', $file)) {
             $content = file_get_contents($dir.'/'.$file);
             $content = str_replace("\n", ' ', $content);
-
-            // Subject must match with a template, therefore we first grep the Mail::Send() function then the Mail::l() inside.
-            if (preg_match_all('/Mail::Send([^;]*);/si', $content, $tab)) {
-                for ($i = 0; isset($tab[1][$i]); $i++) {
-                    $tab2 = explode(',', $tab[1][$i]);
-                    if (is_array($tab2) && isset($tab2[1])) {
-                        $template = trim(str_replace('\'', '', $tab2[1]));
-                        foreach ($tab2 as $tab3) {
-                            if (preg_match('/Mail::l\(\''._PS_TRANS_PATTERN_.'\'\)/Us', $tab3.')', $matches)) {
-                                if (!isset($subjectMail[$template])) {
-                                    $subjectMail[$template] = [];
-                                }
-                                if (!in_array($matches[1], $subjectMail[$template])) {
-                                    $subjectMail[$template][] = $matches[1];
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            static::extractMailSubjects($content, $subjectMail);
         } // Or if is folder, we scan folder for check if found in folder and subfolder
         elseif (!in_array($file, static::$ignore_folder) && is_dir($dir.'/'.$file)) {
             foreach (scandir($dir.'/'.$file) as $temp) {
@@ -2847,6 +2828,29 @@ class AdminTranslationsControllerCore extends AdminController
         }
 
         return $subjectMail;
+    }
+
+    protected static function extractMailSubjects($content, &$subjectMail)
+    {
+        // Subject must match with a template, therefore we first grep the Mail::Send() function then the Mail::l() inside.
+        if (preg_match_all('/Mail::Send([^;]*);/si', $content, $tab)) {
+            for ($i = 0; isset($tab[1][$i]); $i++) {
+                $tab2 = explode(',', $tab[1][$i]);
+                if (is_array($tab2) && isset($tab2[1])) {
+                    $template = trim(str_replace('\'', '', $tab2[1]));
+                    foreach ($tab2 as $tab3) {
+                        if (preg_match('/Mail::l\(\''._PS_TRANS_PATTERN_.'\'\)/Us', $tab3.')', $matches)) {
+                            if (!isset($subjectMail[$template])) {
+                                $subjectMail[$template] = [];
+                            }
+                            if (!in_array($matches[1], $subjectMail[$template])) {
+                                $subjectMail[$template][] = $matches[1];
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
