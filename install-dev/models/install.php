@@ -831,29 +831,6 @@ class InstallModelInstall extends InstallAbstractModel
     {
         $fixturesPath = _PS_INSTALL_FIXTURES_PATH_.'thirtybees/';
         $fixturesName = 'thirtybees';
-        $zipFile = _PS_ROOT_DIR_.'/download/fixtures.zip';
-        $tempDir = _PS_ROOT_DIR_.'/download/fixtures/';
-
-        // try to download fixtures if no low memory mode
-        if ($entity === null) {
-            if (Tools::copy('http://api.thirtybees.com/fixtures/'.$data['shopCountry'].'/'.$data['shopActivity'].'/fixtures.zip', $zipFile)) {
-                Tools::deleteDirectory($tempDir, true);
-                if (Tools::ZipTest($zipFile)) {
-                    if (Tools::ZipExtract($zipFile, $tempDir)) {
-                        $files = scandir($tempDir);
-                        if (count($files)) {
-                            foreach ($files as $file) {
-                                if (!preg_match('/^\./', $file) && is_dir($tempDir.$file.'/')) {
-                                    $fixturesPath = $tempDir.$file.'/';
-                                    $fixturesName = $file;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
 
         // Load class (use fixture class if one exists, or use InstallXmlLoader)
         if (file_exists($fixturesPath.'/install.php')) {
@@ -897,8 +874,6 @@ class InstallModelInstall extends InstallAbstractModel
             }
         } else {
             $xmlLoader->populateFromXmlFiles();
-            Tools::deleteDirectory($tempDir, true);
-            @unlink($zipFile);
         }
 
         if ($errors = $xmlLoader->getErrors()) {
