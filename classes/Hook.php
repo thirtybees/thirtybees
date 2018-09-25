@@ -325,7 +325,10 @@ class HookCore extends ObjectModel
                     $return[$m['module']] = $data;
                 } else {
                     if (isset($activehooks[$m['id_module']]) && in_array($hookName, $activehooks[$m['id_module']])) {
-                        $dataWrapped = '<!--[hook '.$hookName.'] [id_module '.$m['id_module'].']-->'.$data.'<!--[hook '.$hookName.'] [id_module '.$m['id_module'].']-->';
+                        $idHook = (int) static::getIdByName($hookName);
+                        $idModule = (int) $m['id_module'];
+                        $delimiter = "<!--[hook:$idModule:$idHook]-->";
+                        $dataWrapped = $delimiter.$data.$delimiter;
                     } else {
                         $dataWrapped = $data;
                     }

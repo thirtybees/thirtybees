@@ -269,21 +269,24 @@ abstract class ControllerCore
             $this->init();
             $this->context->cookie->write();
             $hookInfo = json_decode(Configuration::get('TB_PAGE_CACHE_HOOKS'), true);
-
             if (is_array($hookInfo)) {
                 foreach ($hookInfo as $idModule => $hookArray) {
-                    if (is_array($hookArray)) {
+                    $module = Module::getInstanceById($idModule);
+                    if ($module && $module->active && is_array($hookArray)) {
                         foreach ($hookArray as $hookName => $value) {
-                            $hookContent = Hook::execWithoutCache($hookName, [], $idModule, false, true, false, null);
+                            $idHook = (int) Hook::getIdByName($hookName);
+                            if ($idHook) {
+                                $hookContent = Hook::execWithoutCache($hookName, [], $idModule, false, true, false, null);
 
-                            $pattern = "/<!--\[hook $hookName\] \[id\_module $idModule\]-->.*?<!--\[hook $hookName\] \[id\_module $idModule\]-->/s";
+                                $pattern = "/<!--\[hook:$idModule:$idHook\]-->.*?<!--\[hook:$idModule:$idHook\]-->/s";
 
-                            $hookContent = preg_replace('/\$(\d)/', '\\\$$1', $hookContent);
-                            $count = 0;
-                            $pageContent = preg_replace($pattern, $hookContent, $content, 1, $count);
+                                $hookContent = preg_replace('/\$(\d)/', '\\\$$1', $hookContent);
+                                $count = 0;
+                                $pageContent = preg_replace($pattern, $hookContent, $content, 1, $count);
 
-                            if (preg_last_error() === PREG_NO_ERROR && $count > 0) {
-                                $content = $pageContent;
+                                if (preg_last_error() === PREG_NO_ERROR && $count > 0) {
+                                    $content = $pageContent;
+                                }
                             }
                         }
                     }
