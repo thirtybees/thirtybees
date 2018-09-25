@@ -871,56 +871,67 @@ abstract class ControllerCore
      *
      * @param Currency $currency - currency object
      *
-     * @return string | null
+     * @return string | false
      * @since   1.0.7
      * @version 1.0.7 Initial version
      */
     protected function getPageCacheKey(Currency $currency)
     {
-        $pageName = Dispatcher::getInstance()->getController();
-        $cacheableControllers = json_decode(Configuration::get('TB_PAGE_CACHE_CONTROLLERS'), true);
-        $ajaxCalling = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && mb_strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
-
-        if (in_array($pageName, $cacheableControllers) && !Tools::isSubmit('live_edit') && !Tools::isSubmit('live_configurator_token') && !$ajaxCalling) {
-            $protocol = Configuration::get('PS_SSL_ENABLED') ? 'https://' : 'http://';
-            $paramsToIgnore = ['refresh_cache', 'no_cache'];
-            $paramsToIgnoreSaved = Configuration::get('TB_PAGE_CACHE_IGNOREPARAMS');
-
-            if ($paramsToIgnoreSaved) {
-                $paramsToIgnoreSaved = explode(',', $paramsToIgnoreSaved);
-            }
-            if (is_array($paramsToIgnoreSaved)) {
-                $paramsToIgnore = array_merge($paramsToIgnore, $paramsToIgnoreSaved);
-            }
-
-            $url = explode('?', $_SERVER['REQUEST_URI']);
-            $uri = $url[0];
-            $queryString = isset($url[1]) ? $url[1] : '';
-            parse_str($queryString, $queryStringParams);
-
-            foreach ($paramsToIgnore as $param) {
-                if (isset($queryStringParams[$param])) {
-                    unset($queryStringParams[$param]);
-                }
-            }
-
-            $newQueryString = http_build_query($queryStringParams);
-
-            if ($queryString === '') {
-                $newUrl = $protocol.$_SERVER['HTTP_HOST'].$uri;
-            } else {
-                $newUrl = $protocol.$_SERVER['HTTP_HOST'].$uri.'?'.$newQueryString;
-            }
-
-            $idPage = Tools::encrypt($newUrl);
-            $idCurrency = (int) $currency->id;
-            $idLang = (int) $this->context->language->id;
-            $idCountry = (int) $this->context->country->id;
-            $idShop = (int) $this->context->shop->id;
-
-            return Tools::encrypt('pagecache_public_'.$idPage.$idCurrency.$idLang.$idCountry.$idShop);
+        // don't cache pages when live edit mode is enabled
+        if (Tools::isSubmit('live_edit') || Tools::isSubmit('live_configurator_token')) {
+            return false;
         }
 
-        return null;
+        // ajax calls are not cached
+        $ajaxCalling = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && mb_strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+        if ($ajaxCalling) {
+            return false;
+        }
+
+        // check that current controller can be cached
+        $pageName = Dispatcher::getInstance()->getController();
+        $cacheableControllers = json_decode(Configuration::get('TB_PAGE_CACHE_CONTROLLERS'), true);
+        if (! in_array($pageName, $cacheableControllers)) {
+            return false;
+        }
+
+        // this page can be cached -- let's compute cache key
+        $protocol = Configuration::get('PS_SSL_ENABLED') ? 'https://' : 'http://';
+        $paramsToIgnore = ['refresh_cache', 'no_cache'];
+        $paramsToIgnoreSaved = Configuration::get('TB_PAGE_CACHE_IGNOREPARAMS');
+
+        if ($paramsToIgnoreSaved) {
+            $paramsToIgnoreSaved = explode(',', $paramsToIgnoreSaved);
+        }
+        if (is_array($paramsToIgnoreSaved)) {
+            $paramsToIgnore = array_merge($paramsToIgnore, $paramsToIgnoreSaved);
+        }
+
+        $url = explode('?', $_SERVER['REQUEST_URI']);
+        $uri = $url[0];
+        $queryString = isset($url[1]) ? $url[1] : '';
+        parse_str($queryString, $queryStringParams);
+
+        foreach ($paramsToIgnore as $param) {
+            if (isset($queryStringParams[$param])) {
+                unset($queryStringParams[$param]);
+            }
+        }
+
+        $newQueryString = http_build_query($queryStringParams);
+
+        if ($queryString === '') {
+            $newUrl = $protocol.$_SERVER['HTTP_HOST'].$uri;
+        } else {
+            $newUrl = $protocol.$_SERVER['HTTP_HOST'].$uri.'?'.$newQueryString;
+        }
+
+        $idPage = Tools::encrypt($newUrl);
+        $idCurrency = (int) $currency->id;
+        $idLang = (int) $this->context->language->id;
+        $idCountry = (int) $this->context->country->id;
+        $idShop = (int) $this->context->shop->id;
+
+        return Tools::encrypt('pagecache_public_'.$idPage.$idCurrency.$idLang.$idCountry.$idShop);
     }
 }
