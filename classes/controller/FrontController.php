@@ -792,60 +792,18 @@ class FrontControllerCore extends Controller
             $templ = $html;
         }
 
-        //merge two arrays 1- static params to be removed and 2 - dynamic ones from the config.
-        $paramsToIgnore = ['refresh_cache', 'no_cache'];
-        $paramsToIgnoreSaved = Configuration::get('TB_PAGE_CACHE_IGNOREPARAMS');
-
-        if ($paramsToIgnoreSaved) {
-            $paramsToIgnoreSaved = explode(',', $paramsToIgnoreSaved);
-        }
-        if (is_array($paramsToIgnoreSaved)) {
-            $paramsToIgnore = array_merge($paramsToIgnore, $paramsToIgnoreSaved);
-        }
-
-        $url = explode('?', $_SERVER['REQUEST_URI']);
-        $uri = $url[0];
-        $queryString = isset($url[1]) ? $url[1] : '';
-        parse_str($queryString, $queryStringParams);
-
-        foreach ($paramsToIgnore as $param) {
-            if (isset($queryStringParams[$param])) {
-                unset($queryStringParams[$param]);
-            }
-        }
-
-        $protocol = Configuration::get('PS_SSL_ENABLED') ? 'https://' : 'http://';
-
-        $newQueryString = http_build_query($queryStringParams);
-
-        if ($queryString == '') {
-            $newUrl = $protocol.$_SERVER['HTTP_HOST'].$uri;
-        } else {
-            $newUrl = $protocol.$_SERVER['HTTP_HOST'].$uri.'?'.$newQueryString;
-        }
-
-        $ajaxCalling = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && mb_strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
-
-        if (!Tools::getValue('no_cache') && !$ajaxCalling) {
+        // cache page output
+        $pageKey = $this->getPageCacheKey($this->context->currency);
+        if ($pageKey) {
+            $cache = Cache::getInstance();
+            $cache->set($pageKey, $templ);
             $entityType = Dispatcher::getInstance()->getController();
-            $cachedControllers = json_decode(Configuration::get('TB_PAGE_CACHE_CONTROLLERS'), true);
-            if (in_array($entityType, $cachedControllers) && !Tools::isSubmit('live_edit') && !Tools::isSubmit('live_configurator_token')) {
-                $idPage = Tools::encrypt($newUrl);
-                $idCurrency = (int) $this->context->currency->id;
-                $idLang = (int) $this->context->language->id;
-                $idCountry = (int) $this->context->country->id;
-                $idShop = (int) $this->context->shop->id;
-
-                $pageKey = Tools::encrypt('pagecache_public_'.$idPage.$idCurrency.$idLang.$idCountry.$idShop);
-
-                $idEntity = (int) Tools::getValue('id_'.$entityType);
-
-                $cache = Cache::getInstance();
-                $cache->set($pageKey, $templ);
-
-                PageCache::cacheKey($pageKey, $idCurrency, $idLang, $idCountry, $idShop, $entityType, $idEntity);
-
-            }
+            $idEntity = (int) Tools::getValue('id_'.$entityType);
+            $idCurrency = (int) $this->context->currency->id;
+            $idLang = (int) $this->context->language->id;
+            $idCountry = (int) $this->context->country->id;
+            $idShop = (int) $this->context->shop->id;
+            PageCache::cacheKey($pageKey, $idCurrency, $idLang, $idCountry, $idShop, $entityType, $idEntity);
         }
 
         echo $templ;
