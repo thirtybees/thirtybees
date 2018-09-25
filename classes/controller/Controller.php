@@ -877,6 +877,11 @@ abstract class ControllerCore
      */
     protected function getPageCacheKey(Currency $currency)
     {
+        // don't cache when request contains 'no_cache=1'
+        if (Tools::getValue('no_cache')) {
+            return false;
+        }
+
         // don't cache pages when live edit mode is enabled
         if (Tools::isSubmit('live_edit') || Tools::isSubmit('live_configurator_token')) {
             return false;
