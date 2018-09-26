@@ -247,14 +247,15 @@ abstract class ControllerCore
 
         // try to retrieve cached version
         if (PageCache::isEnabled()) {
+            $debug = Configuration::get('TB_PAGE_CACHE_DEBUG');
             if ($fromCache = PageCache::get()) {
-                if (Configuration::get('TB_PAGE_CACHE_DEBUG')) {
+                if ($debug) {
                     header('X-thirtybees-PageCache: HIT');
                 }
                 $cached = true;
                 $content = $fromCache;
             } else {
-                if (Configuration::get('TB_PAGE_CACHE_DEBUG')) {
+                if ($debug) {
                     header('X-thirtybees-PageCache: MISS');
                 }
             }
@@ -263,26 +264,32 @@ abstract class ControllerCore
         if ($cached) {
             $this->init();
             $this->context->cookie->write();
-            $hookInfo = json_decode(Configuration::get('TB_PAGE_CACHE_HOOKS'), true);
-            if (is_array($hookInfo)) {
-                foreach ($hookInfo as $idModule => $hookArray) {
-                    $module = Module::getInstanceById($idModule);
-                    if ($module && $module->active && is_array($hookArray)) {
-                        foreach ($hookArray as $hookName => $value) {
-                            $idHook = (int) Hook::getIdByName($hookName);
-                            if ($idHook) {
-                                $hookContent = Hook::execWithoutCache($hookName, [], $idModule, false, true, false, null);
+            preg_match_all("/<!--\[hook:([0-9]+):([0-9]+)\]-->/", $content, $matches, PREG_SET_ORDER);
+            if ($matches) {
+                $replaced = [];
+                foreach ($matches as $match) {
+                    $moduleId = (int) $match[1];
+                    $hookId = (int) $match[2];
+                    $key = "hook:$moduleId:$hookId";
+                    if (! isset($replaced[$key])) {
+                        $replaced[$key] = true;
 
-                                $pattern = "/<!--\[hook:$idModule:$idHook\]-->.*?<!--\[hook:$idModule:$idHook\]-->/s";
+                        $hookContent = '';
+                        $hookName = Hook::getNameById($hookId);
+                        if ($hookName) {
+                            $hookContent = Hook::execWithoutCache($hookName, [], $moduleId, false, true, false, null);
+                            $hookContent = preg_replace('/\$(\d)/', '\\\$$1', $hookContent);
+                        }
+                        if ($debug) {
+                            $hookContent = "<!--[$key]-->$hookContent<!--[$key]-->";
+                        }
 
-                                $hookContent = preg_replace('/\$(\d)/', '\\\$$1', $hookContent);
-                                $count = 0;
-                                $pageContent = preg_replace($pattern, $hookContent, $content, 1, $count);
+                        $pattern = "/<!--\[$key\]-->.*?<!--\[$key\]-->/s";
+                        $count = 0;
+                        $pageContent = preg_replace($pattern, $hookContent, $content, 1, $count);
 
-                                if (preg_last_error() === PREG_NO_ERROR && $count > 0) {
-                                    $content = $pageContent;
-                                }
-                            }
+                        if (preg_last_error() === PREG_NO_ERROR && $count > 0) {
+                            $content = $pageContent;
                         }
                     }
                 }
