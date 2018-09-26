@@ -1750,6 +1750,7 @@ class AdminPerformanceControllerCore extends AdminController
         }
 
         if (Configuration::updateGlobalValue('TB_PAGE_CACHE_HOOKS', json_encode($hookSettings))) {
+            PageCache::flush();
             $this->ajaxDie(json_encode([
                 'success' => true,
             ]));
