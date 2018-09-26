@@ -247,20 +247,15 @@ abstract class ControllerCore
 
         // try to retrieve cached version
         if (PageCache::isEnabled()) {
-            // initialize currency
-            $pageKey = $this->getPageCacheKey(Tools::setCurrency($this->context->cookie));
-            if ($pageKey) {
-                $cache = Cache::getInstance();
-                if ($fromCache = $cache->get($pageKey)) {
-                    if (Configuration::get('TB_PAGE_CACHE_DEBUG')) {
-                        header('X-thirtybees-PageCache: HIT');
-                    }
-                    $cached = true;
-                    $content = $fromCache;
-                } else {
-                    if (Configuration::get('TB_PAGE_CACHE_DEBUG')) {
-                        header('X-thirtybees-PageCache: MISS');
-                    }
+            if ($fromCache = PageCache::get()) {
+                if (Configuration::get('TB_PAGE_CACHE_DEBUG')) {
+                    header('X-thirtybees-PageCache: HIT');
+                }
+                $cached = true;
+                $content = $fromCache;
+            } else {
+                if (Configuration::get('TB_PAGE_CACHE_DEBUG')) {
+                    header('X-thirtybees-PageCache: MISS');
                 }
             }
         } // End check if pagecache is enabled
@@ -867,72 +862,5 @@ abstract class ControllerCore
         Hook::exec('actionBeforeAjaxDie'.$controller.$method, ['value' => $value]);
 
         die($value);
-    }
-
-    /**
-     * Returns full page cache key for current request
-     *
-     * @param Currency $currency - currency object
-     *
-     * @return string | false
-     * @since   1.0.7
-     * @version 1.0.7 Initial version
-     */
-    protected function getPageCacheKey(Currency $currency)
-    {
-        // don't cache when request contains 'no_cache=1'
-        if (Tools::getValue('no_cache')) {
-            return false;
-        }
-
-        // don't cache pages when live edit mode is enabled
-        if (Tools::isSubmit('live_edit') || Tools::isSubmit('live_configurator_token')) {
-            return false;
-        }
-
-        // ajax calls are not cached
-        $ajaxCalling = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && mb_strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
-        if ($ajaxCalling) {
-            return false;
-        }
-
-        // check that current controller can be cached
-        $pageName = Dispatcher::getInstance()->getController();
-        $cacheableControllers = json_decode(Configuration::get('TB_PAGE_CACHE_CONTROLLERS'), true);
-        if (! in_array($pageName, $cacheableControllers)) {
-            return false;
-        }
-
-        // this page can be cached -- let's compute cache key
-        $protocol = Configuration::get('PS_SSL_ENABLED') ? 'https://' : 'http://';
-        $url = explode('?', $_SERVER['REQUEST_URI']);
-        $uri = $url[0];
-        $queryString = isset($url[1]) ? $url[1] : '';
-        if ($queryString === '') {
-          $newUrl = $protocol.$_SERVER['HTTP_HOST'].$uri;
-        } else {
-          parse_str($queryString, $queryStringParams);
-          $paramsToIgnoreStr = Configuration::get('TB_PAGE_CACHE_IGNOREPARAMS');
-          if ($paramsToIgnoreStr) {
-              $paramsToIgnore = explode(',', $paramsToIgnoreStr);
-              if (is_array($paramsToIgnore)) {
-                  foreach ($paramsToIgnore as $param) {
-                      if (isset($queryStringParams[$param])) {
-                          unset($queryStringParams[$param]);
-                      }
-                  }
-              }
-          }
-          ksort($queryStringParams);
-          $newQueryString = http_build_query($queryStringParams);
-          $newUrl = $protocol.$_SERVER['HTTP_HOST'].$uri.'?'.$newQueryString;
-        }
-
-        $idCurrency = (int) $currency->id;
-        $idLang = (int) $this->context->language->id;
-        $idCountry = (int) $this->context->country->id;
-        $idShop = (int) $this->context->shop->id;
-
-        return Tools::encrypt('pagecache_public_'.$newUrl.$idCurrency.$idLang.$idCountry.$idShop);
     }
 }

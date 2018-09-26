@@ -793,18 +793,7 @@ class FrontControllerCore extends Controller
         }
 
         // cache page output
-        $pageKey = $this->getPageCacheKey($this->context->currency);
-        if ($pageKey) {
-            $cache = Cache::getInstance();
-            $cache->set($pageKey, $templ);
-            $entityType = Dispatcher::getInstance()->getController();
-            $idEntity = (int) Tools::getValue('id_'.$entityType);
-            $idCurrency = (int) $this->context->currency->id;
-            $idLang = (int) $this->context->language->id;
-            $idCountry = (int) $this->context->country->id;
-            $idShop = (int) $this->context->shop->id;
-            PageCache::cacheKey($pageKey, $idCurrency, $idLang, $idCountry, $idShop, $entityType, $idEntity);
-        }
+        PageCache::set($templ);
 
         echo $templ;
     }

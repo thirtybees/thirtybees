@@ -48,6 +48,48 @@ class PageCacheCore
         return Cache::isEnabled() && (bool)Configuration::get('TB_PAGE_CACHE_ENABLED');
     }
 
+
+    /**
+     * Insert new entry for current request into full page cache
+     *
+     * @param string $template
+     *
+     * @since 1.0.7
+     */
+    public static function set($template)
+    {
+        if (static::isEnabled()) {
+            $key = PageCacheKey::get();
+            if ($key) {
+                $hash = $key->getHash();
+                $cache = Cache::getInstance();
+                $cache->set($hash, $template);
+                static::cacheKey($hash, $key->idCurrency, $key->idLanguage, $key->idCountry, $key->idShop, $key->entityType, $key->entityId);
+            }
+        }
+    }
+
+    /**
+     * Returns full page cache entry for current request
+     *
+     * @return string | null
+     *
+     * @since 1.0.7
+     */
+    public static function get()
+    {
+        if (static::isEnabled()) {
+            $key = PageCacheKey::get();
+            if ($key) {
+                $cache = Cache::getInstance();
+
+                return $cache->get($key->getHash());
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Register cache key and set its metadata
      *
