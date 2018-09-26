@@ -240,4 +240,66 @@ class PageCacheCore
 
         return array_column($results, 'cache_hash');
     }
+
+    /**
+     * Return normalized list of all hooks that should be cached
+     */
+    public static function getCachedHooks()
+    {
+        $hookSettings = json_decode(Configuration::get('TB_PAGE_CACHE_HOOKS'), true);
+        $cachedHooks = [];
+        foreach ($hookSettings as $idModule => $hookArr) {
+            $idModule = (int) $idModule;
+            if ($idModule) {
+                $moduleHooks = [];
+                foreach ($hookArr as $idHook => $bool) {
+                    $idHook = (int) $idHook;
+                    if ($idHook && $bool) {
+                        $moduleHooks[$idHook] = 1;
+                    }
+                }
+                if ($moduleHooks) {
+                    $cachedHooks[$idModule] = $moduleHooks;
+                }
+            }
+        }
+
+        return $cachedHooks;
+    }
+
+    /**
+     * Modify hook cached status
+     *
+     * If $status is true, hook output will be cached. Otherwise content of
+     * this hook will be refreshed with every page load
+     *
+     * @param int $idModule
+     * @param int $idHook
+     * @param bool $status
+     */
+    public static function setHookCacheStatus($idModule, $idHook, $status)
+    {
+        $hookSettings = static::getCachedHooks();
+        $idModule = (int) $idModule;
+        $idHook = (int) $idHook;
+        if (!isset($hookSettings[$idModule])) {
+            $hookSettings[$idModule] = [];
+        }
+        if ($status) {
+            $hookSettings[$idModule][$idHook] = 1;
+        } else {
+            unset($hookSettings[$idModule][$idHook]);
+            if (empty($hookSettings[$idModule])) {
+                unset($hookSettings[$idModule]);
+            }
+        }
+
+        if (Configuration::updateGlobalValue('TB_PAGE_CACHE_HOOKS', json_encode($hookSettings))) {
+            static::flush();
+
+            return true;
+        }
+
+        return false;
+    }
 }

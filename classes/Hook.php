@@ -289,22 +289,6 @@ class HookCore extends ObjectModel
             return static::execWithoutCache($hookName, $hookArgs, $idModule, $arrayReturn, $checkExceptions, $usePush, $idShop);
         }
 
-        $activehooks = json_decode(Configuration::get('TB_PAGE_CACHE_HOOKS'), true);
-
-        $found = false;
-        if (is_array($activehooks)) {
-            foreach ($activehooks as $hookArr) {
-                if (is_array($hookArr) && in_array($hookName, $hookArr)) {
-                    $found = true;
-                    break;
-                }
-            }
-        }
-
-        if (!$found) {
-            return static::execWithoutCache($hookName, $hookArgs, $idModule, $arrayReturn, $checkExceptions, $usePush, $idShop);
-        }
-
         if (!$moduleList = static::getHookModuleExecList($hookName)) {
             return '';
         }
@@ -316,21 +300,23 @@ class HookCore extends ObjectModel
         }
 
         if (!$idModule) {
+            $cachedHooks = PageCache::getCachedHooks();
             foreach ($moduleList as $m) {
-                $data = static::execWithoutCache($hookName, $hookArgs, $m['id_module'], $arrayReturn, $checkExceptions, $usePush, $idShop);
+                $idModule = (int) $m['id_module'];
+                $data = static::execWithoutCache($hookName, $hookArgs, $idModule, $arrayReturn, $checkExceptions, $usePush, $idShop);
                 if (is_array($data)) {
                     $data = array_shift($data);
                 }
                 if (is_array($data)) {
                     $return[$m['module']] = $data;
                 } else {
-                    if (isset($activehooks[$m['id_module']]) && in_array($hookName, $activehooks[$m['id_module']])) {
-                        $idHook = (int) static::getIdByName($hookName);
-                        $idModule = (int) $m['id_module'];
+                    $idHook = (int) static::getIdByName($hookName);
+                    if (isset($cachedHooks[$idModule][$idHook])) {
+                        $dataWrapped = $data;
+                    } else {
+                        // wrap dynamic hooks
                         $delimiter = "<!--[hook:$idModule:$idHook]-->";
                         $dataWrapped = $delimiter.$data.$delimiter;
-                    } else {
-                        $dataWrapped = $data;
                     }
 
                     if ($arrayReturn) {

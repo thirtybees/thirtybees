@@ -790,14 +790,15 @@ class AdminPerformanceControllerCore extends AdminController
     {
         Cache::clean('hook_module_list');
         $hooks = Hook::getHookModuleList();
-        $hookSettings = json_decode(Configuration::get('TB_PAGE_CACHE_HOOKS'), true);
+        $hookSettings = PageCache::getCachedHooks();
         $moduleSettings = [];
         foreach ($hooks as $hook) {
             foreach ($hook as &$hookInfo) {
-                $idModule = $hookInfo['id_module'];
+                $idModule = (int)$hookInfo['id_module'];
+                $idHook = (int)$hookInfo['id_hook'];
                 $moduleName = $hookInfo['name'];
                 $moduleDisplayName = Module::getModuleName($moduleName);
-                $hookName = Hook::getNameById($hookInfo['id_hook']);
+                $hookName = Hook::getNameById($idHook);
                 // We only want display hooks
                 if (strpos($hookName, 'action') === 0
                     || strpos($hookName, 'displayAdmin') === 0
@@ -814,7 +815,7 @@ class AdminPerformanceControllerCore extends AdminController
                         'hooks' => [],
                     ];
                 }
-                $moduleSettings[$hookInfo['id_module']]['hooks'][$hookName] = isset($hookSettings[$idModule][$hookName]);
+                $moduleSettings[$hookInfo['id_module']]['hooks'][$hookName] = isset($hookSettings[$idModule][$idHook]);
             }
         }
 
@@ -1736,27 +1737,12 @@ class AdminPerformanceControllerCore extends AdminController
      */
     public function displayAjaxUpdateDynamicHooks()
     {
-        $hookSettings = json_decode(Configuration::get('TB_PAGE_CACHE_HOOKS'), true);
         $idModule = (int) Tools::getValue('idModule');
         $status = Tools::getValue('status') === 'true';
         $hookName = Tools::getValue('hookName');
-        if ($status) {
-            if (!isset($hookSettings[$idModule])) {
-                $hookSettings[$idModule] = [];
-            }
-            $hookSettings[$idModule][$hookName] = $status;
-        } else {
-            unset($hookSettings[$idModule][$hookName]);
-        }
-
-        if (Configuration::updateGlobalValue('TB_PAGE_CACHE_HOOKS', json_encode($hookSettings))) {
-            PageCache::flush();
-            $this->ajaxDie(json_encode([
-                'success' => true,
-            ]));
-        }
+        $idHook = Hook::getIdByName($hookName);
         $this->ajaxDie(json_encode([
-            'success' => false,
+            'success' => PageCache::setHookCacheStatus($idModule, $idHook, $status)
         ]));
     }
 }
