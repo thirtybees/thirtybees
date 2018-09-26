@@ -34,6 +34,7 @@ class PageCacheKeyCore
     public $idCountry;
     public $idShop;
     public $idGroup;
+    public $idCustomer;
 
     /**
      * Creates new cache key and set its metadata
@@ -46,10 +47,11 @@ class PageCacheKeyCore
      * @param int    $idCountry
      * @param int    $idShop
      * @param int    $idGroup
+     * @param int    $idCustomer id of logged-in customer, zero otherwise
      *
      * @since 1.0.7
      */
-    protected function __construct($entityType, $entityId, $url, $idCurrency, $idLanguage, $idCountry, $idShop, $idGroup)
+    protected function __construct($entityType, $entityId, $url, $idCurrency, $idLanguage, $idCountry, $idShop, $idGroup, $idCustomer)
     {
         $this->entityType = $entityType;
         $this->entityId = $entityId;
@@ -59,6 +61,7 @@ class PageCacheKeyCore
         $this->idCountry = $idCountry;
         $this->idShop = $idShop;
         $this->idGroup = $idGroup;
+        $this->idCustomer = $idCustomer;
     }
 
 
@@ -77,6 +80,7 @@ class PageCacheKeyCore
             .$this->idCountry
             .$this->idShop
             .$this->idGroup
+            .$this->idCustomer
         );
     }
 
@@ -170,7 +174,8 @@ class PageCacheKeyCore
             (int) $context->language->id,
             (int) $context->country->id,
             (int) $context->shop->id,
-            (int) Group::getCurrent()->id
+            (int) Group::getCurrent()->id,
+            (int) $context->customer->id
         );
     }
 }
