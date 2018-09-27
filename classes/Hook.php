@@ -200,13 +200,12 @@ class HookCore extends ObjectModel
     {
         $cacheId = 'hook_module_list';
         if (!Cache::isStored($cacheId)) {
-            $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-                '
-			SELECT h.id_hook, h.name AS h_name, title, description, h.position, live_edit, hm.position AS hm_position, m.id_module, m.name, active
-			FROM `'._DB_PREFIX_.'hook_module` hm
-			STRAIGHT_JOIN `'._DB_PREFIX_.'hook` h ON (h.id_hook = hm.id_hook AND hm.id_shop = '.(int) Context::getContext()->shop->id.')
-			STRAIGHT_JOIN `'._DB_PREFIX_.'module` AS m ON (m.id_module = hm.id_module)
-			ORDER BY hm.position'
+            $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('
+                SELECT h.id_hook, h.name AS h_name, h.title, h.description, h.position, h.live_edit, hm.position AS hm_position, m.id_module, m.name, m.active
+                FROM `'._DB_PREFIX_.'hook_module` hm
+                STRAIGHT_JOIN `'._DB_PREFIX_.'hook` h ON (h.id_hook = hm.id_hook AND hm.id_shop = '.(int) Context::getContext()->shop->id.')
+                STRAIGHT_JOIN `'._DB_PREFIX_.'module` AS m ON (m.id_module = hm.id_module)
+                ORDER BY hm.position'
             );
             $list = [];
             foreach ($results as $result) {

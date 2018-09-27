@@ -79,6 +79,16 @@ class PageCacheCore
     public static function get()
     {
         if (static::isEnabled()) {
+
+            // check that there were no changes to hook list
+            $hookListHash = static::getHookListFingerprint();
+            if ($hookListHash != Configuration::get('TB_HOOK_LIST_HASH')) {
+                // drain the cache if the hook list changed
+                Configuration::updateValue('TB_HOOK_LIST_HASH', $hookListHash);
+                static::flush();
+                return null;
+            }
+
             $key = PageCacheKey::get();
             if ($key) {
                 $cache = Cache::getInstance();
@@ -301,5 +311,30 @@ class PageCacheCore
         }
 
         return false;
+    }
+
+    /**
+     * Calculates md5 hash of hook list
+     *
+     * This has is used to detect any changes to hook execution list, including
+     * hook position, new modules, enabled/disabled modules, etc...
+     *
+     * In multistore environment, every shop will have different hash. That's fine,
+     * because PageCacheKey has id_shop as a dimension
+     *
+     * @return string
+     */
+    public static function getHookListFingerprint()
+    {
+        $hookList = Hook::getHookModuleList();
+        $ctx = hash_init('md5');
+        foreach ($hookList as $idHook => $moduleList) {
+            hash_update($ctx, $idHook);
+            foreach ($moduleList as $idModule => $moduleInfo) {
+              hash_update($ctx, $idModule);
+              hash_update($ctx, $moduleInfo['active']);
+            }
+        }
+        return hash_final($ctx);
     }
 }
