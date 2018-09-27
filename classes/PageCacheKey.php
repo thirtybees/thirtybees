@@ -109,6 +109,11 @@ class PageCacheKeyCore
      */
     protected static function resolvePageKey()
     {
+        // we can cache only GET request
+        if (! isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] != 'GET') {
+            return false;
+        }
+
         // don't cache when request contains 'no_cache=1'
         if (Tools::getValue('no_cache')) {
             return false;
