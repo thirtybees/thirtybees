@@ -235,127 +235,56 @@ abstract class ControllerCore
     }
 
     /**
-     * Starts the controller process (this method should not be overridden!)
+     * Starts the controller process
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function run()
     {
-        $cached = false;
-        $content = '';
+        $this->init();
+        if ($this->checkAccess()) {
+            if (!$this->content_only && ($this->display_header || (isset($this->className) && $this->className))) {
+                $this->setMedia();
+            }
 
-        // try to retrieve cached version
-        if (PageCache::isEnabled()) {
-            $debug = Configuration::get('TB_PAGE_CACHE_DEBUG');
-            if ($fromCache = PageCache::get()) {
-                if ($debug) {
-                    header('X-thirtybees-PageCache: HIT');
-                }
-                $cached = true;
-                $content = $fromCache;
+            $this->postProcess();
+
+            if (!empty($this->redirect_after)) {
+                $this->redirect();
+            }
+
+            if (!$this->content_only && ($this->display_header || (isset($this->className) && $this->className))) {
+                $this->initHeader();
+            }
+
+            if ($this->viewAccess()) {
+                $this->initContent();
             } else {
-                if ($debug) {
-                    header('X-thirtybees-PageCache: MISS');
-                }
-            }
-        } // End check if pagecache is enabled
-
-        if ($cached) {
-            $this->init();
-            $this->context->cookie->write();
-            preg_match_all("/<!--\[hook:([0-9]+):([0-9]+)\]-->/", $content, $matches, PREG_SET_ORDER);
-            if ($matches) {
-                $replaced = [];
-                foreach ($matches as $match) {
-                    $moduleId = (int) $match[1];
-                    $hookId = (int) $match[2];
-                    $key = "hook:$moduleId:$hookId";
-                    if (! isset($replaced[$key])) {
-                        $replaced[$key] = true;
-
-                        $hookContent = '';
-                        $hookName = Hook::getNameById($hookId);
-                        if ($hookName) {
-                            $hookContent = Hook::execWithoutCache($hookName, [], $moduleId, false, true, false, null);
-                            $hookContent = preg_replace('/\$(\d)/', '\\\$$1', $hookContent);
-                        }
-                        if ($debug) {
-                            $hookContent = "<!--[$key]-->$hookContent<!--[$key]-->";
-                        }
-
-                        $pattern = "/<!--\[$key\]-->.*?<!--\[$key\]-->/s";
-                        $count = 0;
-                        $pageContent = preg_replace($pattern, $hookContent, $content, 1, $count);
-
-                        if (preg_last_error() === PREG_NO_ERROR && $count > 0) {
-                            $content = $pageContent;
-                        }
-                    }
-                }
+                $this->errors[] = Tools::displayError('Access denied.');
             }
 
-            if (Configuration::get('PS_TOKEN_ENABLE')) {
-                $newToken = Tools::getToken(false);
-                if (preg_match("/static_token[ ]?=[ ]?'([a-f0-9]{32})'/", $content, $matches)) {
-                    if (count($matches) > 1 && $matches[1] != '') {
-                        $oldToken = $matches[1];
-                        $content = preg_replace("/$oldToken/", $newToken, $content);
-                    }
-                } else {
-                    $content = preg_replace('/name="token" value="[a-f0-9]{32}/', 'name="token" value="'.$newToken, $content);
-                    $content = preg_replace('/token=[a-f0-9]{32}"/', 'token='.$newToken.'"', $content);
-                    $content = preg_replace('/static_token[ ]?=[ ]?\'[a-f0-9]{32}/', 'static_token = \''.$newToken, $content);
-                }
+            if (!$this->content_only && ($this->display_footer || (isset($this->className) && $this->className))) {
+                $this->initFooter();
             }
-            echo $content;
 
+            if ($this->ajax) {
+                $action = Tools::toCamelCase(Tools::getValue('action'), true);
+
+                if (!empty($action) && method_exists($this, 'displayAjax'.$action)) {
+                    $this->{'displayAjax'.$action}();
+                } elseif (method_exists($this, 'displayAjax')) {
+                    $this->displayAjax();
+                }
+            } else {
+                $this->display();
+            }
         } else {
-            $this->init();
-            if ($this->checkAccess()) {
-                if (!$this->content_only && ($this->display_header || (isset($this->className) && $this->className))) {
-                    $this->setMedia();
-                }
-
-                $this->postProcess();
-
-                if (!empty($this->redirect_after)) {
-                    $this->redirect();
-                }
-
-                if (!$this->content_only && ($this->display_header || (isset($this->className) && $this->className))) {
-                    $this->initHeader();
-                }
-
-                if ($this->viewAccess()) {
-                    $this->initContent();
-                } else {
-                    $this->errors[] = Tools::displayError('Access denied.');
-                }
-
-                if (!$this->content_only && ($this->display_footer || (isset($this->className) && $this->className))) {
-                    $this->initFooter();
-                }
-
-                if ($this->ajax) {
-                    $action = Tools::toCamelCase(Tools::getValue('action'), true);
-
-                    if (!empty($action) && method_exists($this, 'displayAjax'.$action)) {
-                        $this->{'displayAjax'.$action}();
-                    } elseif (method_exists($this, 'displayAjax')) {
-                        $this->displayAjax();
-                    }
-                } else {
-                    $this->display();
-                }
-            } else {
-                $this->initCursedPage();
-                if (isset($this->layout)) {
-                    $this->smartyOutputContent($this->layout);
-                }
+            $this->initCursedPage();
+            if (isset($this->layout)) {
+                $this->smartyOutputContent($this->layout);
             }
         }
-
     }
 
     /**
