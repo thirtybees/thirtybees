@@ -37,6 +37,10 @@
  */
 class PageCacheCore
 {
+    /**
+     * How many seconds should the page remain in cache
+     */
+    const CACHE_ENTRY_TTL = 86400;
 
     /**
      * Returns true if full page cache is enabled
@@ -63,7 +67,7 @@ class PageCacheCore
             if ($key) {
                 $hash = $key->getHash();
                 $cache = Cache::getInstance();
-                $cache->set($hash, $template);
+                $cache->set($hash, $template, static::CACHE_ENTRY_TTL);
                 static::cacheKey($hash, $key->idCurrency, $key->idLanguage, $key->idCountry, $key->idShop, $key->entityType, $key->entityId);
             }
         }
