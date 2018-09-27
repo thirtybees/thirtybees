@@ -261,6 +261,10 @@ class PageCacheCore
     public static function getCachedHooks()
     {
         $hookSettings = json_decode(Configuration::get('TB_PAGE_CACHE_HOOKS'), true);
+        if (! is_array($hookSettings)) {
+          return [];
+        }
+
         $cachedHooks = [];
         foreach ($hookSettings as $idModule => $hookArr) {
             $idModule = (int) $idModule;
