@@ -331,7 +331,7 @@ class EmployeeCore extends ObjectModel
                 ]);
 
                 try {
-                    $guzzle->post(
+                    $body = $guzzle->post(
                         '/newsletter/', [
                             'json' => [
                                 'email'    => $this->email,
@@ -343,8 +343,13 @@ class EmployeeCore extends ObjectModel
                                 'URL'      => $context->shop->getBaseURL(),
                             ],
                         ]
-                    );
+                    )->getBody();
                 } catch (RequestException $e) {
+                    $success = false;
+                    $this->optin = false;
+                }
+                if ((string) $body) {
+                    // Service itsself wasn't successful.
                     $success = false;
                     $this->optin = false;
                 }
