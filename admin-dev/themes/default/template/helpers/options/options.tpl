@@ -136,8 +136,8 @@
 														<option value="{$option[$field['identifier']]}"{if $field['value'] == $option[$field['identifier']]} selected="selected"{/if}>{$option['name']}</option>
 													{/foreach}
 												</select>
-											{elseif isset($input.empty_message)}
-												{$input.empty_message}
+											{elseif isset($field.empty_message)}
+												{$field.empty_message}
 											{/if}
 										</div>
 									{elseif $field['type'] == 'bool'}
@@ -253,7 +253,7 @@
 									{elseif $field['type'] == 'color'}
 										<div class="col-lg-2">
 											<div class="input-group">
-												<input type="color" size="{$field['size']}" data-hex="true" {if isset($input.class)}class="{$field['class']}" {else}class="color mColorPickerInput"{/if} name="{$field['name']}" class="{if isset($field['class'])}{$field['class']}{/if}" value="{$field['value']|escape:'html':'UTF-8'}" />
+												<input type="color" size="{$field['size']}" data-hex="true" {if isset($field.class)}class="{$field['class']}" {else}class="color mColorPickerInput"{/if} name="{$field['name']}" class="{if isset($field['class'])}{$field['class']}{/if}" value="{$field['value']|escape:'html':'UTF-8'}" />
 											</div>
 							            </div>
 									{elseif $field['type'] == 'price'}
@@ -282,7 +282,7 @@
 															<input type="text"
 																name="{$key}_{$id_lang}"
 																value="{$value|escape:'html':'UTF-8'}"
-																{if isset($input.class)}class="{$input.class}"{/if}
+																{if isset($field.class)}class="{$field.class}"{/if}
 															/>
 													{if $field['languages']|count > 1}
 														</div>

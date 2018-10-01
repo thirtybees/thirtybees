@@ -27,7 +27,7 @@ function disableTreeItem(item) {
 }
 
 function organizeTree() {
-  if ($('#id_category').length != 0) {
+  if ($('#id_category').length && $('input[name=id_parent]').length) {
     var id = $('#id_category').val();
     var item = getCategoryById(id).parent().parent();
     disableTreeItem(item);

@@ -241,6 +241,82 @@ class FrontControllerCore extends Controller
     }
 
     /**
+     * Starts the controller process
+     *
+     * Overrides Controller::run() to allow full page cache
+     *
+     * @since   1.0.7
+     */
+    public function run()
+    {
+        if (! PageCache::isEnabled()) {
+            return parent::run();
+        }
+
+        $debug = Configuration::get('TB_PAGE_CACHE_DEBUG');
+        $content = PageCache::get();
+        if (! $content) {
+            if ($debug) {
+                header('X-thirtybees-PageCache: MISS');
+            }
+            return parent::run();
+        }
+
+        if ($debug) {
+            header('X-thirtybees-PageCache: HIT');
+        }
+
+        $this->init();
+        $this->context->cookie->write();
+        preg_match_all("/<!--\[hook:([0-9]+):([0-9]+)\]-->/", $content, $matches, PREG_SET_ORDER);
+        if ($matches) {
+            $replaced = [];
+            foreach ($matches as $match) {
+                $moduleId = (int) $match[1];
+                $hookId = (int) $match[2];
+                $key = "hook:$moduleId:$hookId";
+                if (! isset($replaced[$key])) {
+                    $replaced[$key] = true;
+
+                    $hookContent = '';
+                    $hookName = Hook::getNameById($hookId);
+                    if ($hookName) {
+                        $hookContent = Hook::execWithoutCache($hookName, [], $moduleId, false, true, false, null);
+                        $hookContent = preg_replace('/\$(\d)/', '\\\$$1', $hookContent);
+                    }
+                    if ($debug) {
+                        $hookContent = "<!--[$key]-->$hookContent<!--[$key]-->";
+                    }
+
+                    $pattern = "/<!--\[$key\]-->.*?<!--\[$key\]-->/s";
+                    $count = 0;
+                    $pageContent = preg_replace($pattern, $hookContent, $content, 1, $count);
+
+                    if (preg_last_error() === PREG_NO_ERROR && $count > 0) {
+                        $content = $pageContent;
+                    }
+                }
+            }
+        }
+
+        if (Configuration::get('PS_TOKEN_ENABLE')) {
+            $newToken = Tools::getToken(false);
+            if (preg_match("/static_token[ ]?=[ ]?'([a-f0-9]{32})'/", $content, $matches)) {
+                if (count($matches) > 1 && $matches[1] != '') {
+                    $oldToken = $matches[1];
+                    $content = preg_replace("/$oldToken/", $newToken, $content);
+                }
+            } else {
+                $content = preg_replace('/name="token" value="[a-f0-9]{32}/', 'name="token" value="'.$newToken, $content);
+                $content = preg_replace('/token=[a-f0-9]{32}"/', 'token='.$newToken.'"', $content);
+                $content = preg_replace('/static_token[ ]?=[ ]?\'[a-f0-9]{32}/', 'static_token = \''.$newToken, $content);
+            }
+        }
+
+        echo $content;
+    }
+
+    /**
      * Initializes common front page content: header, footer and side columns.
      *
      * @since   1.0.0
@@ -792,61 +868,8 @@ class FrontControllerCore extends Controller
             $templ = $html;
         }
 
-        //merge two arrays 1- static params to be removed and 2 - dynamic ones from the config.
-        $paramsToIgnore = ['refresh_cache', 'no_cache'];
-        $paramsToIgnoreSaved = Configuration::get('TB_PAGE_CACHE_IGNOREPARAMS');
-
-        if ($paramsToIgnoreSaved) {
-            $paramsToIgnoreSaved = explode(',', $paramsToIgnoreSaved);
-        }
-        if (is_array($paramsToIgnoreSaved)) {
-            $paramsToIgnore = array_merge($paramsToIgnore, $paramsToIgnoreSaved);
-        }
-
-        $url = explode('?', $_SERVER['REQUEST_URI']);
-        $uri = $url[0];
-        $queryString = isset($url[1]) ? $url[1] : '';
-        parse_str($queryString, $queryStringParams);
-
-        foreach ($paramsToIgnore as $param) {
-            if (isset($queryStringParams[$param])) {
-                unset($queryStringParams[$param]);
-            }
-        }
-
-        $protocol = Configuration::get('PS_SSL_ENABLED') ? 'https://' : 'http://';
-
-        $newQueryString = http_build_query($queryStringParams);
-
-        if ($queryString == '') {
-            $newUrl = $protocol.$_SERVER['HTTP_HOST'].$uri;
-        } else {
-            $newUrl = $protocol.$_SERVER['HTTP_HOST'].$uri.'?'.$newQueryString;
-        }
-
-        $ajaxCalling = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && mb_strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
-
-        if (!Tools::getValue('no_cache') && !$ajaxCalling) {
-            $entityType = Dispatcher::getInstance()->getController();
-            $cachedControllers = json_decode(Configuration::get('TB_PAGE_CACHE_CONTROLLERS'), true);
-            if (in_array($entityType, $cachedControllers) && !Tools::isSubmit('live_edit') && !Tools::isSubmit('live_configurator_token')) {
-                $idPage = Tools::encrypt($newUrl);
-                $idCurrency = (int) $this->context->currency->id;
-                $idLang = (int) $this->context->language->id;
-                $idCountry = (int) $this->context->country->id;
-                $idShop = (int) $this->context->shop->id;
-
-                $pageKey = Tools::encrypt('pagecache_public_'.$idPage.$idCurrency.$idLang.$idCountry.$idShop);
-
-                $idEntity = (int) Tools::getValue('id_'.$entityType);
-
-                $cache = Cache::getInstance();
-                $cache->set($pageKey, $templ);
-
-                PageCache::cacheKey($pageKey, $idCurrency, $idLang, $idCountry, $idShop, $entityType, $idEntity);
-
-            }
-        }
+        // cache page output
+        PageCache::set($templ);
 
         echo $templ;
     }

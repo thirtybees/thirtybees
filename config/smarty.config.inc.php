@@ -88,17 +88,17 @@ smartyRegisterFunction($smarty, 'function', 'implode', array('Tools', 'smartyImp
 smartyRegisterFunction($smarty, 'modifier', 'utf8ToIdn', array('Tools', 'convertEmailToIdn'));
 smartyRegisterFunction($smarty, 'modifier', 'idnToUtf8', array('Tools', 'convertEmailFromIdn'));
 
-function smartyDieObject($params, &$smarty)
+function smartyDieObject($params, $smarty)
 {
     return Tools::d($params['var']);
 }
 
-function smartyShowObject($params, &$smarty)
+function smartyShowObject($params, $smarty)
 {
     return Tools::p($params['var']);
 }
 
-function smartyMaxWords($params, &$smarty)
+function smartyMaxWords($params, $smarty)
 {
     Tools::displayAsDeprecated();
     $params['s'] = str_replace('...', ' ...', html_entity_decode($params['s'], ENT_QUOTES, 'UTF-8'));
@@ -113,7 +113,7 @@ function smartyMaxWords($params, &$smarty)
     return implode(' ',  Tools::htmlentitiesUTF8($words));
 }
 
-function smartyTruncate($params, &$smarty)
+function smartyTruncate($params, $smarty)
 {
     Tools::displayAsDeprecated();
     $text = isset($params['strip']) ? strip_tags($params['text']) : $params['text'];
@@ -150,7 +150,7 @@ function smarty_modifier_htmlentitiesUTF8($string)
 {
     return Tools::htmlentitiesUTF8($string);
 }
-function smartyMinifyHTML($tpl_output, &$smarty)
+function smartyMinifyHTML($tpl_output, $smarty)
 {
     $context = Context::getContext();
     if (isset($context->controller) && in_array($context->controller->php_self, ['pdf-invoice', 'pdf-order-return', 'pdf-order-slip'])) {
@@ -160,7 +160,7 @@ function smartyMinifyHTML($tpl_output, &$smarty)
     return $tpl_output;
 }
 
-function smartyPackJSinHTML($tpl_output, &$smarty)
+function smartyPackJSinHTML($tpl_output, $smarty)
 {
     $context = Context::getContext();
     if (isset($context->controller) && in_array($context->controller->php_self, ['pdf-invoice', 'pdf-order-return', 'pdf-order-slip'])) {
@@ -177,22 +177,19 @@ function smartyRegisterFunction($smarty, $type, $function, $params, $lazy = true
     }
 
     // lazy is better if the function is not called on every page
-    if ($lazy) {
+    if ($lazy && is_array($params)) {
+        $name = $params[1];
         $lazy_register = SmartyLazyRegister::getInstance();
-        $lazy_register->register($params);
-
-        if (is_array($params)) {
-            $params = $params[1];
-        }
+        $lazy_register->register($name, $type, $params);
 
         // SmartyLazyRegister allows to only load external class when they are needed
-        $smarty->registerPlugin($type, $function, [$lazy_register, $params]);
+        $smarty->registerPlugin($type, $function, [$lazy_register, $name]);
     } else {
         $smarty->registerPlugin($type, $function, $params);
     }
 }
 
-function smartyHook($params, &$smarty)
+function smartyHook($params, $smarty)
 {
     if (!empty($params['h'])) {
         $id_module = null;
@@ -220,7 +217,7 @@ function smartyCleanHtml($data)
     }
 }
 
-function toolsConvertPrice($params, &$smarty)
+function toolsConvertPrice($params, $smarty)
 {
     return Tools::convertPrice($params['price'], Context::getContext()->currency);
 }
@@ -237,13 +234,12 @@ class SmartyLazyRegister
      * Register a function or method to be dynamically called later
      * @param string|array $params function name or array(object name, method name)
      */
-    public function register($params)
+    public function register($name, $type, $callable)
     {
-        if (is_array($params)) {
-            $this->registry[$params[1]] = $params;
-        } else {
-            $this->registry[$params] = $params;
-        }
+        $this->registry[$name] = [
+            'callable' => $callable,
+            'type' => $type
+        ];
     }
 
     /**
@@ -256,22 +252,17 @@ class SmartyLazyRegister
     public function __call($name, $arguments)
     {
         $item = $this->registry[$name];
-
-        // case 1: call to static method - case 2 : call to static function
-        if (is_array($item[1])) {
-            return call_user_func_array($item[1].'::'.$item[0], [$arguments[0], &$arguments[1]]);
+        $callable = $item['callable'];
+        $type = $item['type'];
+        if ($type === 'block') {
+            // signature of smarty block plugin is: function($params, $content, $template, &$repeat)
+            // we need to pass 4th parameter as reference
+            return call_user_func_array($callable, [$arguments[0], $arguments[1], $arguments[2], &$arguments[3]]);
         } else {
-            $args = [];
-
-            foreach ($arguments as $a => $argument) {
-                if ($a == 0) {
-                    $args[] = $arguments[0];
-                } else {
-                    $args[] = &$arguments[$a];
-                }
-            }
-
-            return call_user_func_array($item, $args);
+            // signature of smarty function plugin is: function($params, $smarty)
+            // signature of smarty function plugin is: function modifier($value, [$param1, $param2, $param3])
+            // there are no references, we can simply forward the call with input arguments
+            return call_user_func_array($callable, $arguments);
         }
     }
 

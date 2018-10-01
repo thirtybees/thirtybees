@@ -653,9 +653,9 @@ class CustomerCore extends ObjectModel
     }
 
     /**
-     * Return customer instance from its e-mail (optionnaly check password)
+     * Return customer instance from its e-mail (optionally check password)
      *
-     * @param string $email             e-mail
+     * @param string $email             E-mail
      * @param string $plainTextPassword Password is also checked if specified
      * @param bool   $ignoreGuest
      *
@@ -680,26 +680,16 @@ class CustomerCore extends ObjectModel
         if ($ignoreGuest) {
             $sql->where('`is_guest` = 0');
         }
-
         $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
-        if ($plainTextPassword && !password_verify($plainTextPassword, $result['passwd'])) {
-            if (!$plainTextPassword) {
-                return false;
-            }
 
-            $sql = new DbQuery();
-            $sql->select('*');
-            $sql->from(bqSQL(static::$definition['table']));
-            $sql->where('`email` = \''.pSQL($email).'\' '.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER));
-            if ($plainTextPassword) {
-                $sql->where('`passwd` = \''.md5(_COOKIE_KEY_.$plainTextPassword).'\'');
-            }
-            $sql->where('`deleted` = 0');
-            if ($ignoreGuest) {
-                $sql->where('`is_guest` = 0');
-            }
-            $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow($sql);
-            if ($result) {
+        if (!$result) {
+            return false;
+        }
+
+        // If password is provided but doesn't match.
+        if ($plainTextPassword && !password_verify($plainTextPassword, $result['passwd'])) {
+            // Check if it matches the legacy md5 hashing and, if it does, rehash it.
+            if (Validate::isMd5($result['passwd']) && $result['passwd'] === md5(_COOKIE_KEY_.$plainTextPassword)) {
                 $newHash = Tools::hash($plainTextPassword);
                 Db::getInstance()->update(
                     bqSQL(static::$definition['table']),
@@ -712,10 +702,6 @@ class CustomerCore extends ObjectModel
             } else {
                 return false;
             }
-        }
-
-        if (!$result) {
-            return false;
         }
 
         $this->id = $result['id_customer'];

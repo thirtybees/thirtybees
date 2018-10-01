@@ -72,19 +72,8 @@ class RijndaelCore
         }
 
         if (function_exists('openssl_encrypt')) {
-            $ivsize = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
-            try {
-                $iv = random_bytes($ivsize);
-            } catch (Exception $e) {
-                if (function_exists('mcrypt_create_iv')) {
-                    $iv = mcrypt_create_iv($ivsize, MCRYPT_RAND);
-                } elseif (extension_loaded('openssl_random_pseudo_bytes')) {
-                    $iv = openssl_random_pseudo_bytes($ivsize);
-                } else {
-                    throw new Exception('No secure random number generator found on your system.');
-                }
-            }
-
+            $ivsize = openssl_cipher_iv_length('aes-256-cbc');
+            $iv = openssl_random_pseudo_bytes($ivsize);
             $ciphertext = openssl_encrypt(
                 $plaintext,
                 'aes-256-cbc',
@@ -99,7 +88,7 @@ class RijndaelCore
             } catch (Exception $e) {
                 if (function_exists('mcrypt_create_iv')) {
                     $iv = mcrypt_create_iv($ivsize, MCRYPT_RAND);
-                } elseif (extension_loaded('openssl_random_pseudo_bytes')) {
+                } elseif (function_exists('openssl_random_pseudo_bytes')) {
                     $iv = openssl_random_pseudo_bytes($ivsize);
                 } else {
                     throw new Exception('No secure random number generator found on your system.');

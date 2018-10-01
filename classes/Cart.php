@@ -2537,7 +2537,8 @@ class CartCore extends ObjectModel
 
     /**
      * @param int  $idCustomer
-     * @param bool $withOrder
+     * @param bool $dontRejectOrdered if true, all carts will be returned, otherwise
+     *             already ordered carts will be filtered out
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
@@ -2546,14 +2547,14 @@ class CartCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function getCustomerCarts($idCustomer, $withOrder = true)
+    public static function getCustomerCarts($idCustomer, $dontRejectOrdered = true)
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
                 ->select('*')
                 ->from('cart', 'c')
                 ->where('c.`id_customer` = '.(int) $idCustomer)
-                ->where($withOrder ? 'NOT EXISTS (SELECT 1 FROM '._DB_PREFIX_.'orders o WHERE o.`id_cart` = c.`id_cart`)' : '')
+                ->where($dontRejectOrdered ? '' : 'NOT EXISTS (SELECT 1 FROM '._DB_PREFIX_.'orders o WHERE o.`id_cart` = c.`id_cart`)')
                 ->orderBy('c.`date_add` DESC')
         );
     }

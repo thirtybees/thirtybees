@@ -983,12 +983,18 @@ class AdminTranslationsControllerCore extends AdminController
                 continue;
             }
             // Global variable initialization
-            if ($global != false && preg_match('/^\$'.preg_quote($global, '/').'\s*=\s*array\(\s*\)\s*;$/i', $line)) {
+            if ($global && (
+                preg_match('/^\$'.preg_quote($global, '/').'\s*=\s*array\(\s*\)\s*;$/i', $line)
+                || preg_match('/^\$'.preg_quote($global, '/').'\s*=\s*\[\s*\]\s*;$/i', $line)
+            )) {
                 continue;
             }
 
             // Global variable initialization without declaration
-            if (!$global && preg_match('/^\$([a-z0-9-_]+)\s*=\s*array\(\s*\)\s*;$/i', $line, $matches)) {
+            if (!$global && (
+                preg_match('/^\$([a-z0-9-_]+)\s*=\s*array\(\s*\)\s*;$/i', $line, $matches)
+                || preg_match('/^\$([a-z0-9-_]+)\s*=\s*\[\s*\]\s*;$/i', $line, $matches)
+            )) {
                 $global = $matches[1];
                 continue;
             }
@@ -2811,26 +2817,7 @@ class AdminTranslationsControllerCore extends AdminController
         if (is_file($dir.'/'.$file) && !in_array($file, static::$ignore_folder) && preg_match('/\.php$/', $file)) {
             $content = file_get_contents($dir.'/'.$file);
             $content = str_replace("\n", ' ', $content);
-
-            // Subject must match with a template, therefore we first grep the Mail::Send() function then the Mail::l() inside.
-            if (preg_match_all('/Mail::Send([^;]*);/si', $content, $tab)) {
-                for ($i = 0; isset($tab[1][$i]); $i++) {
-                    $tab2 = explode(',', $tab[1][$i]);
-                    if (is_array($tab2) && isset($tab2[1])) {
-                        $template = trim(str_replace('\'', '', $tab2[1]));
-                        foreach ($tab2 as $tab3) {
-                            if (preg_match('/Mail::l\(\''._PS_TRANS_PATTERN_.'\'\)/Us', $tab3.')', $matches)) {
-                                if (!isset($subjectMail[$template])) {
-                                    $subjectMail[$template] = [];
-                                }
-                                if (!in_array($matches[1], $subjectMail[$template])) {
-                                    $subjectMail[$template][] = $matches[1];
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            static::extractMailSubjects($content, $subjectMail);
         } // Or if is folder, we scan folder for check if found in folder and subfolder
         elseif (!in_array($file, static::$ignore_folder) && is_dir($dir.'/'.$file)) {
             foreach (scandir($dir.'/'.$file) as $temp) {
@@ -2841,6 +2828,29 @@ class AdminTranslationsControllerCore extends AdminController
         }
 
         return $subjectMail;
+    }
+
+    protected static function extractMailSubjects($content, &$subjectMail)
+    {
+        // Subject must match with a template, therefore we first grep the Mail::Send() function then the Mail::l() inside.
+        if (preg_match_all('/Mail::Send([^;]*);/si', $content, $tab)) {
+            for ($i = 0; isset($tab[1][$i]); $i++) {
+                $tab2 = explode(',', $tab[1][$i]);
+                if (is_array($tab2) && isset($tab2[1])) {
+                    $template = trim(str_replace('\'', '', $tab2[1]));
+                    foreach ($tab2 as $tab3) {
+                        if (preg_match('/Mail::l\(\s*\''._PS_TRANS_PATTERN_.'\'\s*\)/Us', $tab3.')', $matches)) {
+                            if (!isset($subjectMail[$template])) {
+                                $subjectMail[$template] = [];
+                            }
+                            if (!in_array($matches[1], $subjectMail[$template])) {
+                                $subjectMail[$template][] = $matches[1];
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
