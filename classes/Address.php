@@ -328,7 +328,7 @@ class AddressCore extends ObjectModel
                 ->select('s.`id_zone` AS `id_zone_state`, c.`id_zone`')
                 ->from('address', 'a')
                 ->leftJoin('country', 'c', 'c.`id_country` = a.`id_country`')
-                ->leftJoin('state', 's', 's.`id_state` = a.`id_state`')
+                ->leftJoin('state', 's', 's.`id_state` = a.`id_state` AND c.`contains_states` = 1')
                 ->where('a.`id_address` = '.(int) $idAddress)
         );
 
