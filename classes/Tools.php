@@ -2794,20 +2794,41 @@ class ToolsCore
     /**
      * @param      $source
      * @param      $destination
-     * @param null $streamContext
      *
      * @return bool|int
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @version 1.0.8 Use Guzzle, deprecate $streamContext.
      */
     public static function copy($source, $destination, $streamContext = null)
     {
-        if (is_null($streamContext) && !preg_match('/^https?:\/\//', $source)) {
+        if ($streamContext) {
+            Tools::displayParameterAsDeprecated('streamContext');
+        }
+
+        if ( ! preg_match('/^https?:\/\//', $source)) {
             return @copy($source, $destination);
         }
 
-        return @file_put_contents($destination, Tools::file_get_contents($source, false, $streamContext));
+        $timeout = ini_get('max_execution_time');
+        if ( ! $timeout || $timeout > 600) {
+            $timeout = 600;
+        }
+        $timeout -= 5; // Room for other processing.
+
+        $guzzle = new \GuzzleHttp\Client([
+            'verify'   => __DIR__.'/../cacert.pem',
+            'timeout'  => $timeout,
+        ]);
+
+        try {
+            $guzzle->get($source, ['sink' => $destination]);
+        } catch (Exception $e) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
