@@ -220,7 +220,8 @@ EXCLUDE_DIR+=('vagrant')
 
 # As always, there are some exceptions from the above :-)
 # Paths starting at repository root, directories without trailing '/', please.
-KEEP=('docs')
+KEEP=('docs')               # For CSV import samples, linked in back office.
+KEEP+=('composer.json')     # Allow merchants to upgrade vendor packages.
 
 # Exclude paths, for individual files and directories to be excluded.
 # EXCLUDE_PATH=('generatemd5list.php')  <- Can't get removed.
