@@ -4418,8 +4418,8 @@ class CartCore extends ObjectModel
 
                 if ((int) $custom['type'] == 0) {
                     $customizedValue = md5(uniqid(rand(), true));
-                    Tools::copy(_PS_UPLOAD_DIR_.$custom['value'], _PS_UPLOAD_DIR_.$customizedValue);
-                    Tools::copy(_PS_UPLOAD_DIR_.$custom['value'].'_small', _PS_UPLOAD_DIR_.$customizedValue.'_small');
+                    copy(_PS_UPLOAD_DIR_.$custom['value'], _PS_UPLOAD_DIR_.$customizedValue);
+                    copy(_PS_UPLOAD_DIR_.$custom['value'].'_small', _PS_UPLOAD_DIR_.$customizedValue.'_small');
                 }
 
                 $insert[] = [
