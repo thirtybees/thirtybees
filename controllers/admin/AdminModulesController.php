@@ -140,10 +140,16 @@ class AdminModulesControllerCore extends AdminController
         );
 
         if (!Module::isEnabled('tbupdater')) {
+            $linkOpen = '<a href="'
+                        .$this->context->link->getAdminLink('AdminModules')
+                        .'&anchor=tbupdater">';
+            $linkClose = '</a>';
+
             if (Module::isInstalled('tbupdater')) {
                 $this->warnings[] = $this->l('The thirty bees updater module has not been enabled. Make sure you enable the module to keep thirty bees updated.');
             } else {
-                $this->warnings[] = sprintf($this->l('The thirty bees updater module has not been installed. Install the %sthirty bees updater%s to keep thirty bees updated.'), '<a href="https://thirtybees.com/updates" target="_blank">', '</a>');
+                // Linking directly to the install action would be frivolous.
+                $this->warnings[] = sprintf($this->l('The thirty bees updater module is not installed. %sGet it installed%s to keep thirty bees updated.'), $linkOpen, $linkClose);
             }
         }
     }
