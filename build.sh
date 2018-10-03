@@ -207,6 +207,10 @@ EXCLUDE_FILE+=('codeception.yml')
 EXCLUDE_FILE+=('composer.json')
 EXCLUDE_FILE+=('composer.lock')
 EXCLUDE_FILE+=('Vagrantfile')
+EXCLUDE_FILE+=('CHANGELOG*')
+EXCLUDE_FILE+=('ChangeLog*')
+EXCLUDE_FILE+=('Changelog*')
+EXCLUDE_FILE+=('changelog*')
 EXCLUDE_FILE+=('build.sh')
 
 # Directories not needed in the release package.
