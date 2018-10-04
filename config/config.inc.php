@@ -270,5 +270,11 @@ if (!defined('_MEDIA_SERVER_3_')) {
     define('_MEDIA_SERVER_3_', Configuration::get('PS_MEDIA_SERVER_3'));
 }
 
+// This constant is no longer used anywhere in the core, it exits solely
+// for retrocompatibility with prestashop modules
+if (!defined('_PS_CACHE_ENABLED_')) {
+    define('_PS_CACHE_ENABLED_', Cache::isEnabled());
+}
+
 Hook::exec('actionRegisterAutoloader');
 Hook::exec('actionRegisterErrorHandlers');
