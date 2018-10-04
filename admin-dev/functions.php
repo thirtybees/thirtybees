@@ -92,7 +92,6 @@ function rewriteSettingsFile($base_urls = null, $theme = null, $array_db = null)
 {
     $defines = [];
     $defines['_PS_CACHING_SYSTEM_'] = _PS_CACHING_SYSTEM_;
-    $defines['_PS_CACHE_ENABLED_'] = _PS_CACHE_ENABLED_;
     $defines['_DB_NAME_'] = (($array_db && isset($array_db['_DB_NAME_'])) ? $array_db['_DB_NAME_'] : _DB_NAME_);
     $defines['_MYSQL_ENGINE_'] = (($array_db && isset($array_db['_MYSQL_ENGINE_'])) ? $array_db['_MYSQL_ENGINE_'] : _MYSQL_ENGINE_);
     $defines['_DB_SERVER_'] = (($array_db && isset($array_db['_DB_SERVER_'])) ? $array_db['_DB_SERVER_'] : _DB_SERVER_);

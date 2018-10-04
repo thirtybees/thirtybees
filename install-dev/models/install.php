@@ -98,7 +98,6 @@ class InstallModelInstall extends InstallAbstractModel
             '_DB_PREFIX_'         => $databasePrefix,
             '_MYSQL_ENGINE_'      => 'InnoDB',
             '_PS_CACHING_SYSTEM_' => 'CacheMemcache',
-            '_PS_CACHE_ENABLED_'  => '0',
             '_COOKIE_KEY_'        => Tools::passwdGen(56),
             '_COOKIE_IV_'         => Tools::passwdGen(8),
             '_PS_CREATION_DATE_'  => date('Y-m-d'),

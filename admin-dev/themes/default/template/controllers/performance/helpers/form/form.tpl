@@ -26,7 +26,7 @@
 
 {block name="input_row"}
 {if $input.name == 'TB_CACHE_SYSTEM'}
-<div id="{$input.name}_wrapper"{if isset($_PS_CACHE_ENABLED_) && !$_PS_CACHE_ENABLED_} style="display:none"{/if}>{/if}
+<div id="{$input.name}_wrapper"{if $cacheDisabled} style="display:none"{/if}>{/if}
 	{if $input.name == 'smarty_caching_type' || $input.name == 'smarty_clear_cache'}
 	<div id="{$input.name}_wrapper"{if isset($fields_value.smarty_cache) && !$fields_value.smarty_cache} style="display:none"{/if}>{/if}
 		{$smarty.block.parent}
