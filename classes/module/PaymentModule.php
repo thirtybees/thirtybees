@@ -1010,6 +1010,7 @@ abstract class PaymentModuleCore extends Module
                             '{invoice_phone}'        => ($invoice->phone) ? $invoice->phone : $invoice->phone_mobile,
                             '{invoice_other}'        => $invoice->other,
                             '{order_name}'           => $order->getUniqReference(),
+                            '{order_id}'             => $order->id,
                             '{date}'                 => Tools::displayDate(date('Y-m-d H:i:s'), null, 1),
                             '{carrier}'              => ($virtualProduct || !isset($carrier->name)) ? Tools::displayError('No carrier') : $carrier->name,
                             '{payment}'              => mb_substr($order->payment, 0, 32),
