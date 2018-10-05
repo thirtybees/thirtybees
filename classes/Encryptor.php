@@ -36,14 +36,18 @@
  */
 class EncryptorCore
 {
-    /** @var string Contain cookie content in a key => value format */
-    protected $content;
+    const ALGO_BLOWFISH = 0;
+    const ALGO_RIJNDAEL = 1;
+    const ALGO_PHP_ENCRYPTION = 2;
 
-    /** @var array cipher tool instance */
+    /** @var Blowfish|Rijndael|PhpEncryption cipher tool instance */
     protected $cipherTool;
 
     /** @var Encryptor $instance */
     protected static $instance;
+
+    /** @var Encryptor $standalone */
+    protected static $standalone;
 
     /**
      * Encryptor singleton
@@ -53,33 +57,47 @@ class EncryptorCore
     public static function getInstance()
     {
         if (!static::$instance) {
-            static::$instance = new Encryptor();
+            $cipherTool = static::getCipherTool();
+            if (! $cipherTool) {
+                // we need some ciphering capability to encode error message
+                static::$instance = new Encryptor(static::getStandaloneCipherTool(__FILE__));
+                throw new PrestaShopException('No encryption tool available');
+            } else {
+                static::$instance = new Encryptor($cipherTool);
+            }
         }
-
         return static::$instance;
     }
 
     /**
-     * Get data if the cookie exists and else initialize an new one
+     * Encryptor singleton for standalone
+     *
+     * This encryptor is used in special situations when encryption settings is not
+     * set up yet. For example during installation
+     *
+     * @return Encryptor instance
+     */
+    public static function getStandaloneInstance($salt)
+    {
+        if (!static::$standalone) {
+            static::$standalone = new Encryptor(static::getStandaloneCipherTool($salt));
+        }
+
+        return static::$standalone;
+    }
+
+    /**
+     * Creates encryptor instance
+     *
+     * @param Blowfish|Rijndael|PhpEncryption optional cipher tool to use
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
-    protected function __construct()
+    protected function __construct($cipherTool)
     {
-        $this->content = [];
-
-        // Get cipher tool from cookie first
-        if (!Validate::isLoadedObject(Context::getContext()->cookie) || !$this->cipherTool = Context::getContext()->cookie->getCipherTool()) {
-            if ((int) Configuration::get('PS_CIPHER_ALGORITHM') === 1 && defined('_RIJNDAEL_KEY_')) {
-                $this->cipherTool = new Rijndael(_RIJNDAEL_KEY_, _RIJNDAEL_IV_);
-            } elseif ((int) Configuration::get('PS_CIPHER_ALGORITHM') === 2 && defined('_PHP_ENCRYPTION_KEY_')) {
-                $this->cipherTool = new PhpEncryption(_PHP_ENCRYPTION_KEY_);
-            } else {
-                $this->cipherTool = new Blowfish(_COOKIE_KEY_, _COOKIE_IV_);
-            }
-        }
+        $this->cipherTool = $cipherTool;
     }
 
     /**
@@ -107,5 +125,70 @@ class EncryptorCore
     public function decrypt($content)
     {
         return $this->cipherTool->decrypt($content);
+    }
+
+    /**
+     * Returns ciphering tool according to settings
+     */
+    private static function getCipherTool()
+    {
+        $algo = (int) Configuration::get('PS_CIPHER_ALGORITHM');
+
+        if ($algo === static::ALGO_PHP_ENCRYPTION && static::supportsPhpEncryption()) {
+            return new PhpEncryption(_PHP_ENCRYPTION_KEY_);
+        }
+
+        if ($algo === static::ALGO_RIJNDAEL && static::supportsRijndael()) {
+            return new Rijndael(_RIJNDAEL_KEY_, _RIJNDAEL_IV_);
+        }
+
+        // always fallback to blowfish
+        if (static::supportsBlowfish()) {
+            return new Blowfish(_COOKIE_KEY_, _COOKIE_IV_);
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns blowfish ciphering tool used in standalone environment
+     */
+    private static function getStandaloneCipherTool($salt)
+    {
+        return new Blowfish(str_pad('', 56, md5('ps'.$salt)), str_pad('', 56, md5('iv'.$salt)));
+    }
+
+    /**
+     * Check if PhpEncryption can be used
+     */
+    private static function supportsPhpEncryption()
+    {
+        return defined('_PHP_ENCRYPTION_KEY_') && extension_loaded('openssl') && function_exists('openssl_encrypt');
+    }
+
+    /**
+     * Check if Rijndael encryption can be used
+     */
+    private static function supportsRijndael()
+    {
+        if (defined('_RIJNDAEL_KEY_') && defined('__RIJNDAEL_IV_')) {
+            // Rijndael is supported by openssl directly
+            if (extension_loaded('openssl') && function_exists('openssl_encrypt')) {
+                return true;
+            }
+            // if openssl is not present, we can use mcrypt on php < 7.1
+            if (function_exists('mcrypt_encrypt') && PHP_VERSION_ID < 70100) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Check if Blowfish encryption can be used
+     */
+    private static function supportsBlowfish()
+    {
+        return defined('_COOKIE_KEY_') && defined('_COOKIE_IV_');
     }
 }

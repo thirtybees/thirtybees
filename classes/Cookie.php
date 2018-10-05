@@ -47,8 +47,6 @@ class CookieCore
     protected $_domain;
     /** @var array Path for setcookie() */
     protected $_path;
-    /** @var Blowfish|Rijndael|PhpEncryption cipher tool instance */
-    protected $_cipherTool;
     /** @var bool $_modified */
     protected $_modified = false;
     protected $_allow_writing;
@@ -94,15 +92,6 @@ class CookieCore
         $this->_name = 'thirtybees-'.md5($name.$this->_domain);
         $this->_allow_writing = true;
         $this->_salt = $this->_standalone ? str_pad('', 8, md5('ps'.__FILE__)) : _COOKIE_IV_;
-        if ($this->_standalone) {
-            $this->_cipherTool = new Blowfish(str_pad('', 56, md5('ps'.__FILE__)), str_pad('', 56, md5('iv'.__FILE__)));
-        } elseif (extension_loaded('mcrypt') && (int) Configuration::get('PS_CIPHER_ALGORITHM') === 1 && defined('_RIJNDAEL_KEY_')) {
-            $this->_cipherTool = new Rijndael(_RIJNDAEL_KEY_, _RIJNDAEL_IV_);
-        } elseif ((int) Configuration::get('PS_CIPHER_ALGORITHM') === 2 && defined('_PHP_ENCRYPTION_KEY_')) {
-            $this->_cipherTool = new PhpEncryption(_PHP_ENCRYPTION_KEY_);
-        } else {
-            $this->_cipherTool = new Blowfish(_COOKIE_KEY_, _COOKIE_IV_);
-        }
         $this->_secure = (bool) $secure;
 
         $this->update();
@@ -165,7 +154,7 @@ class CookieCore
     {
         if (isset($_COOKIE[$this->_name])) {
             /* Decrypt cookie content */
-            $content = $this->_cipherTool->decrypt(Tools::base64UrlDecode($_COOKIE[$this->_name]));
+            $content = $this->getCipherTool()->decrypt(Tools::base64UrlDecode($_COOKIE[$this->_name]));
 
             /* Get cookie checksum */
             $tmpTab = explode('¤', $content);
@@ -227,7 +216,7 @@ class CookieCore
     protected function _setcookie($cookie = null)
     {
         if ($cookie) {
-            $content = $this->_cipherTool->encrypt($cookie);
+            $content = $this->getCipherTool()->encrypt($cookie);
             $time = $this->_expire;
         } else {
             $content = 0;
@@ -538,6 +527,6 @@ class CookieCore
      */
     public function getCipherTool()
     {
-        return $this->_cipherTool;
+        return $this->_standalone ? Encryptor::getStandaloneInstance(__FILE__) : Encryptor::getInstance();
     }
 }
