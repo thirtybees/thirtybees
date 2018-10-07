@@ -1529,7 +1529,7 @@ window.product_tabs.Quantities = new function () {
         showSuccessMessage(window.quantities_ajax_success);
       },
       error: function (jqXHR, textStatus, errorThrown) {
-        if (textStatus === 'error' || errorThrown) {
+        if (jqXHR.status && (textStatus === 'error' || errorThrown)) {
           showErrorMessage(textStatus + ': ' + errorThrown);
         }
       }
