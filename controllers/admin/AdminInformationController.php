@@ -311,12 +311,12 @@ class AdminInformationControllerCore extends AdminController
             }
 
             if (!file_exists($basePath.$file)) {
-                $this->fileList['missing'][] = $basePath.$file;
+                $this->fileList['missing'][] = ltrim($file, '/');
                 continue;
             }
 
             if (md5_file($basePath.$file) != $md5) {
-                $this->fileList['updated'][] = $basePath.$file;
+                $this->fileList['updated'][] = ltrim($file, '/');
                 continue;
             }
         }
