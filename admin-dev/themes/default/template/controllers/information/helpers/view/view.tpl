@@ -45,14 +45,16 @@
 						'updated': '{l s='Updated files'}'
 					};
 
-          if (json.missing.length || json.updated.length) {
-						$('#changedFiles').html('<div class="alert alert-warning">{l s='Changed/missing files have been detected.'}</div>');
-          } else if (json.listMissing) {
+          if (json.missing.length || json.updated.length || json.listMissing) {
             let text = '<div class="alert alert-warning">';
             if (json.isDevelopment) {
-              text += '{l s='This is a development installation, so the following is expected: '}'
+              text += '{l s='This is a development installation, so the following is not unexpected: '}';
             }
-            text += '{l s='File @s1 missing, can\'t check any files.'}'.replace('@s1', json.listMissing);
+            if (json.listMissing) {
+              text += '{l s='File @s1 missing, can\'t check any files.'}'.replace('@s1', json.listMissing);
+            } else {
+              text += '{l s='Changed/missing files have been detected.'}';
+            }
             text += '</div>';
             $('#changedFiles').html(text);
           } else {

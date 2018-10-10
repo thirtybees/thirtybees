@@ -227,9 +227,10 @@ class AdminInformationControllerCore extends AdminController
             $this->getListOfUpdatedFiles($files);
         } else {
             $this->fileList['listMissing'] = $filesFile;
-            if (file_exists(_PS_ROOT_DIR_.'/admin-dev/')) {
-                $this->fileList['isDevelopment'] = true;
-            }
+        }
+
+        if (file_exists(_PS_ROOT_DIR_.'/admin-dev/')) {
+            $this->fileList['isDevelopment'] = true;
         }
 
         $this->ajaxDie(json_encode($this->fileList));
