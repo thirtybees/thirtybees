@@ -237,7 +237,7 @@ class AdminInformationControllerCore extends AdminController
     }
 
     /**
-     * Generate the list of files to be checked and also save it in
+     * Get the list of files to be checked and save it in
      * config/json/files.json. This can't be done from back office, but
      * is done automatically when building a distribution package.
      *
@@ -247,13 +247,8 @@ class AdminInformationControllerCore extends AdminController
     {
         $md5List = [];
         $adminDir = str_replace(_PS_ROOT_DIR_, '', _PS_ADMIN_DIR_);
-        $iterator = new AppendIterator();
-        $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_PS_CLASS_DIR_)));
-        $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_PS_CONTROLLER_DIR_)));
-        $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_PS_ROOT_DIR_.'/Core')));
-        $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_PS_ROOT_DIR_.'/Adapter')));
-        $iterator->append(new DirectoryIterator(_PS_ADMIN_DIR_));
 
+        $iterator = $this->getCheckFileIterator();
         foreach ($iterator as $file) {
             /** @var DirectoryIterator $file */
             $filePath = $file->getPathname();
@@ -274,6 +269,23 @@ class AdminInformationControllerCore extends AdminController
         );
 
         return $md5List;
+    }
+
+    /**
+     * Generate a list of files to be checked.
+     *
+     * @return AppendIterator Iterator of all files to be checked.
+     */
+    protected function getCheckFileIterator()
+    {
+        $iterator = new AppendIterator();
+        $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_PS_CLASS_DIR_)));
+        $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_PS_CONTROLLER_DIR_)));
+        $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_PS_ROOT_DIR_.'/Core')));
+        $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_PS_ROOT_DIR_.'/Adapter')));
+        $iterator->append(new DirectoryIterator(_PS_ADMIN_DIR_));
+
+        return $iterator;
     }
 
     /**
