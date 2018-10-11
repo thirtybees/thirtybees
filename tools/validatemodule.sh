@@ -337,6 +337,25 @@ if [ ${IS_GIT} = 'true' ]; then
 fi
 
 
+### File permissions.
+
+# None of the files should have executable permissions.
+if [ ${IS_GIT} = 'true' ]; then
+  while read L; do
+    PERMS="${L%% *}"
+    PERMS="${PERMS:3:3}"
+    FILE="${L##*$'\t'}"
+
+    # Exclude shell scripts, they don't go into the release package anyways.
+    [ "${FILE##*.}" = 'sh' ] && continue
+
+    e "file ${FILE} has executable permissions (${PERMS})."
+  done < <(git ls-tree -r master | grep -v '^100644')
+else
+  e "validating permissions not yet implemented for non-repositories."
+fi
+
+
 ### Translations stuff.
 #
 # Even modules not adding to the user interface have translations, e.g.
