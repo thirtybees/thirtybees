@@ -220,6 +220,7 @@ class AdminInformationControllerCore extends AdminController
             'isDevelopment' => false,
             'missing'       => [],
             'updated'       => [],
+            'obsolete'      => [],
         ];
         $filesFile = _PS_CONFIG_DIR_.'json/files.json';
         if (file_exists($filesFile)) {
@@ -318,6 +319,21 @@ class AdminInformationControllerCore extends AdminController
             if (md5_file($basePath.$file) != $md5) {
                 $this->fileList['updated'][] = ltrim($file, '/');
                 continue;
+            }
+        }
+
+        $fileList = array_keys($md5List);
+
+        $iterator = $this->getCheckFileIterator();
+        foreach ($iterator as $file) {
+            if (in_array($file->getFilename(), ['.', '..', 'index.php'])) {
+                continue;
+            }
+
+            $path = str_replace($basePath, '', $file->getPathname());
+            $path = str_replace($adminDir, '/admin', $path);
+            if ( ! in_array($path, $fileList)) {
+                $this->fileList['obsolete'][] = ltrim($path, '/');
             }
         }
     }

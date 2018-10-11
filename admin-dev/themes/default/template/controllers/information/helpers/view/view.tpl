@@ -42,10 +42,12 @@
 				{
 					var tab = {
 						'missing': '{l s='Missing files'}',
-						'updated': '{l s='Updated files'}'
+            'updated': '{l s='Updated files'}',
+            'obsolete': '{l s='Obsolete files'}'
 					};
 
-          if (json.missing.length || json.updated.length || json.listMissing) {
+          if (json.missing.length || json.updated.length
+              || json.obsolete.length || json.listMissing) {
             let text = '<div class="alert alert-warning">';
             if (json.isDevelopment) {
               text += '{l s='This is a development installation, so the following is not unexpected: '}';
@@ -53,7 +55,7 @@
             if (json.listMissing) {
               text += '{l s='File @s1 missing, can\'t check any files.'}'.replace('@s1', json.listMissing);
             } else {
-              text += '{l s='Changed/missing files have been detected.'}';
+              text += '{l s='Changed/missing/obsolete files have been detected.'}';
             }
             text += '</div>';
             $('#changedFiles').html(text);
