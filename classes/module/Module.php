@@ -1564,8 +1564,6 @@ abstract class ModuleCore
         }
         $this->id = Db::getInstance()->Insert_ID();
 
-        Cache::clean('Module::isInstalled'.$this->name);
-
         // Enable the module for current shops in context
         $this->enable();
 
@@ -1637,22 +1635,17 @@ abstract class ModuleCore
     /**
      * @param string $moduleName
      *
-     * @return bool|null
+     * @return bool
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @version 1.0.8 Removed caching, which just duplicated the caching in
+     *                getModuleIdByName().
      * @throws PrestaShopException
      */
     public static function isInstalled($moduleName)
     {
-        if (!Cache::isStored('Module::isInstalled'.$moduleName)) {
-            $idModule = Module::getModuleIdByName($moduleName);
-            Cache::store('Module::isInstalled'.$moduleName, (bool) $idModule);
-
-            return (bool) $idModule;
-        }
-
-        return Cache::retrieve('Module::isInstalled'.$moduleName);
+        return (bool) Module::getModuleIdByName($moduleName);
     }
 
     /**
@@ -2357,7 +2350,6 @@ abstract class ModuleCore
 
         // Uninstall the module
         if (Db::getInstance()->delete('module' , '`id_module` = '.(int) $this->id)) {
-            Cache::clean('Module::isInstalled'.$this->name);
             Cache::clean('Module::getModuleIdByName_'.pSQL($this->name));
 
             return true;
