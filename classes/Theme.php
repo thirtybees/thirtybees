@@ -571,16 +571,20 @@ class ThemeCore extends ObjectModel
     public function loadConfigFile($validate = false)
     {
         $path = _PS_ROOT_DIR_.'/config/xml/themes/'.$this->name.'.xml';
-        if (! file_exists($path)
-            && $this->name === 'community-theme-default') {
+        if ( ! file_exists($path)) {
             $path = _PS_ROOT_DIR_.'/config/xml/themes/default.xml';
         }
 
-        if (! file_exists($path)) {
+        if ( ! file_exists($path)) {
             return false;
         }
 
-        return static::loadConfigFromFile($path, $validate);
+        $xml = static::loadConfigFromFile($path, $validate);
+        if ((string) $xml->attributes()->name !== $this->name) {
+            return false;
+        }
+
+        return $xml;
     }
 
     /**
