@@ -570,7 +570,7 @@ class ThemeCore extends ObjectModel
      */
     public function loadConfigFile($validate = false)
     {
-        $path = _PS_ROOT_DIR_.'/config/xml/themes/'.$this->directory.'.xml';
+        $path = _PS_ROOT_DIR_.'/config/xml/themes/'.$this->name.'.xml';
         if (! file_exists($path)
             && $this->name === 'community-theme-default') {
             $path = _PS_ROOT_DIR_.'/config/xml/themes/default.xml';
