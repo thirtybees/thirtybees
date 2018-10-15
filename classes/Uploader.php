@@ -285,7 +285,7 @@ class UploaderCore
     {
         $postMaxSize = ini_get('post_max_size');
         $bytes = (int) trim($postMaxSize);
-        $last = strtolower($postMaxSize[strlen($postMaxSize) - 1]);
+        $last = strtolower(substr($postMaxSize, -1));
 
         switch ($last) {
             case 'g':
