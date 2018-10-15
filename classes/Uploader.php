@@ -276,7 +276,7 @@ class UploaderCore
     }
 
     /**
-     * @return int|null|string
+     * @return int PHP setting 'post_max_size', converted to bytes.
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -294,10 +294,6 @@ class UploaderCore
                 $bytes *= 1024;
             case 'k':
                 $bytes *= 1024;
-        }
-
-        if ($bytes == '') {
-            $bytes = null;
         }
 
         return $bytes;
