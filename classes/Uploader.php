@@ -284,6 +284,10 @@ class UploaderCore
     public function getPostMaxSizeBytes()
     {
         $postMaxSize = ini_get('post_max_size');
+        if (!$post_max_size) {
+            return static::DEFAULT_MAX_SIZE;
+        }
+        
         $bytes = (int) trim($postMaxSize);
         $last = strtolower($postMaxSize[strlen($postMaxSize) - 1]);
 
