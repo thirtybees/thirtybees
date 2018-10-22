@@ -214,7 +214,7 @@ class ShopCore extends ObjectModel
         Configuration::updateValue('PS_ROUTE_cms_category_rule', array_map(function() {return '{categories:/}{rewrite}';}, $langs));
         // @codingStandardsIgnoreEnd
 
-        Shop::cacheShops(true);
+        static::cacheShops(true);
 
         return $res;
     }
@@ -244,11 +244,11 @@ class ShopCore extends ObjectModel
      */
     public function delete()
     {
-        if (Shop::hasDependency($this->id) || !$res = parent::delete()) {
+        if (static::hasDependency($this->id) || !$res = parent::delete()) {
             return false;
         }
 
-        foreach (Shop::getAssoTables() as $tableName => $row) {
+        foreach (static::getAssoTables() as $tableName => $row) {
             $id = 'id_'.$row['type'];
             if ($row['type'] == 'fk_shop') {
                 $id = 'id_shop';
@@ -276,7 +276,7 @@ class ShopCore extends ObjectModel
         // Remove carrier restrictions
         $res &= Db::getInstance()->delete('module_carrier', '`id_shop` = '.(int) $this->id);
 
-        Shop::cacheShops(true);
+        static::cacheShops(true);
 
         return $res;
     }
@@ -612,12 +612,12 @@ class ShopCore extends ObjectModel
      */
     public static function getAssoTable($table)
     {
-        if (!Shop::$initialized) {
-            Shop::init();
+        if (!static::$initialized) {
+            static::init();
         }
 
         // @codingStandardsIgnoreStart
-        return (isset(Shop::$asso_tables[$table]) ? Shop::$asso_tables[$table] : false);
+        return (isset(static::$asso_tables[$table]) ? static::$asso_tables[$table] : false);
         // @codingStandardsIgnoreEnd
     }
 
@@ -632,8 +632,8 @@ class ShopCore extends ObjectModel
      */
     public static function checkIdShopDefault($table)
     {
-        if (!Shop::$initialized) {
-            Shop::init();
+        if (!static::$initialized) {
+            static::init();
         }
 
         // @codingStandardsIgnoreStart
@@ -651,12 +651,12 @@ class ShopCore extends ObjectModel
      */
     public static function getAssoTables()
     {
-        if (!Shop::$initialized) {
-            Shop::init();
+        if (!static::$initialized) {
+            static::init();
         }
 
         // @codingStandardsIgnoreStart
-        return Shop::$asso_tables;
+        return static::$asso_tables;
         // @codingStandardsIgnoreEnd
     }
 
@@ -674,8 +674,8 @@ class ShopCore extends ObjectModel
     public static function addTableAssociation($tableName, $tableDetails)
     {
         // @codingStandardsIgnoreStart
-        if (!isset(Shop::$asso_tables[$tableName])) {
-            Shop::$asso_tables[$tableName] = $tableDetails;
+        if (!isset(static::$asso_tables[$tableName])) {
+            static::$asso_tables[$tableName] = $tableDetails;
         } else {
             return false;
         }
@@ -696,12 +696,12 @@ class ShopCore extends ObjectModel
      */
     public static function isTableAssociated($table)
     {
-        if (!Shop::$initialized) {
-            Shop::init();
+        if (!static::$initialized) {
+            static::init();
         }
 
         // @codingStandardsIgnoreStart
-        return isset(Shop::$asso_tables[$table]) && Shop::$asso_tables[$table]['type'] == 'shop';
+        return isset(static::$asso_tables[$table]) && static::$asso_tables[$table]['type'] == 'shop';
         // @codingStandardsIgnoreEnd
     }
 
@@ -811,7 +811,7 @@ class ShopCore extends ObjectModel
      */
     public static function getShops($active = true, $idShopGroup = null, $getAsListId = false)
     {
-        Shop::cacheShops();
+        static::cacheShops();
 
         $results = [];
         foreach (static::$shops as $idGroup => $groupData) {
@@ -848,7 +848,7 @@ class ShopCore extends ObjectModel
         $query->from('shop_url');
         $query->where('main = 1');
         $query->where('active = 1');
-        $query .= $this->addSqlRestriction(Shop::SHARE_ORDER);
+        $query .= $this->addSqlRestriction(self::SHARE_ORDER);
         $domains = [];
         foreach (Db::getInstance()->executeS($query) as $row) {
             $domains[] = $row['domain'];
@@ -897,7 +897,7 @@ class ShopCore extends ObjectModel
      */
     public static function getShop($shopId)
     {
-        Shop::cacheShops();
+        static::cacheShops();
         foreach (static::$shops as $idGroup => $groupData) {
             if (array_key_exists($shopId, $groupData['shops'])) {
                 return $groupData['shops'][$shopId];
@@ -921,7 +921,7 @@ class ShopCore extends ObjectModel
      */
     public static function getIdByName($name)
     {
-        Shop::cacheShops();
+        static::cacheShops();
         foreach (static::$shops as $groupData) {
             foreach ($groupData['shops'] as $idShop => $shopData) {
                 if (mb_strtolower($shopData['name']) == mb_strtolower($name)) {
@@ -944,7 +944,7 @@ class ShopCore extends ObjectModel
      */
     public static function getTotalShops($active = true, $idShopGroup = null)
     {
-        return count(Shop::getShops($active, $idShopGroup));
+        return count(static::getShops($active, $idShopGroup));
     }
 
     /**
@@ -962,7 +962,7 @@ class ShopCore extends ObjectModel
      */
     public static function getGroupFromShop($shopId, $asId = true)
     {
-        Shop::cacheShops();
+        static::cacheShops();
         foreach (static::$shops as $groupId => $groupData) {
             if (array_key_exists($shopId, $groupData['shops'])) {
                 return ($asId) ? $groupId : $groupData;
@@ -976,7 +976,7 @@ class ShopCore extends ObjectModel
      * If the shop group has the option $type activated, get all shops ID of this group, else get current shop ID
      *
      * @param int $shopId
-     * @param int $type   Shop::SHARE_CUSTOMER | Shop::SHARE_ORDER
+     * @param int $type   self::SHARE_CUSTOMER | self::SHARE_ORDER
      *
      * @return array
      * @throws PrestaShopException
@@ -985,11 +985,11 @@ class ShopCore extends ObjectModel
      */
     public static function getSharedShops($shopId, $type)
     {
-        if (!in_array($type, [Shop::SHARE_CUSTOMER, Shop::SHARE_ORDER, SHOP::SHARE_STOCK])) {
+        if (!in_array($type, [self::SHARE_CUSTOMER, self::SHARE_ORDER, self::SHARE_STOCK])) {
             throw new PrestaShopException('Wrong argument ($type) in Shop::getSharedShops() method');
         }
 
-        Shop::cacheShops();
+        static::cacheShops();
         foreach (static::$shops as $groupData) {
             if (array_key_exists($shopId, $groupData['shops']) && $groupData[$type]) {
                 return array_keys($groupData['shops']);
@@ -1012,12 +1012,12 @@ class ShopCore extends ObjectModel
      */
     public static function getContextListShopID($share = false)
     {
-        if (Shop::getContext() == Shop::CONTEXT_SHOP) {
-            $list = ($share) ? Shop::getSharedShops(Shop::getContextShopID(), $share) : [Shop::getContextShopID()];
-        } elseif (Shop::getContext() == Shop::CONTEXT_GROUP) {
-            $list = Shop::getShops(true, Shop::getContextShopGroupID(), true);
+        if (static::getContext() == self::CONTEXT_SHOP) {
+            $list = ($share) ? static::getSharedShops(static::getContextShopID(), $share) : [static::getContextShopID()];
+        } elseif (static::getContext() == self::CONTEXT_GROUP) {
+            $list = static::getShops(true, static::getContextShopGroupID(), true);
         } else {
-            $list = Shop::getShops(true, null, true);
+            $list = static::getShops(true, null, true);
         }
 
         return $list;
@@ -1073,7 +1073,7 @@ class ShopCore extends ObjectModel
 
             case static::CONTEXT_SHOP :
                 static::$context_id_shop = (int) $id;
-                static::$context_id_shop_group = Shop::getGroupFromShop($id);
+                static::$context_id_shop_group = static::getGroupFromShop($id);
                 break;
 
             default :
@@ -1108,7 +1108,7 @@ class ShopCore extends ObjectModel
      */
     public static function getContextShopID($nullValueWithoutMultishop = false)
     {
-        if ($nullValueWithoutMultishop && !Shop::isFeatureActive()) {
+        if ($nullValueWithoutMultishop && !static::isFeatureActive()) {
             return null;
         }
 
@@ -1128,7 +1128,7 @@ class ShopCore extends ObjectModel
      */
     public static function getContextShopGroupID($nullValueWithoutMultishop = false)
     {
-        if ($nullValueWithoutMultishop && !Shop::isFeatureActive()) {
+        if ($nullValueWithoutMultishop && !static::isFeatureActive()) {
             return null;
         }
 
@@ -1167,11 +1167,11 @@ class ShopCore extends ObjectModel
             $alias .= '.';
         }
 
-        $group = Shop::getGroupFromShop(Shop::getContextShopID(), false);
-        if ($share == Shop::SHARE_CUSTOMER && Shop::getContext() == Shop::CONTEXT_SHOP && $group['share_customer']) {
-            $restriction = ' AND '.$alias.'id_shop_group = '.(int) Shop::getContextShopGroupID().' ';
+        $group = static::getGroupFromShop(static::getContextShopID(), false);
+        if ($share == self::SHARE_CUSTOMER && static::getContext() == self::CONTEXT_SHOP && $group['share_customer']) {
+            $restriction = ' AND '.$alias.'id_shop_group = '.(int) static::getContextShopGroupID().' ';
         } else {
-            $restriction = ' AND '.$alias.'id_shop IN ('.implode(', ', Shop::getContextListShopID($share)).') ';
+            $restriction = ' AND '.$alias.'id_shop IN ('.implode(', ', static::getContextListShopID($share)).') ';
         }
 
         return $restriction;
@@ -1198,7 +1198,7 @@ class ShopCore extends ObjectModel
             list($tableAlias, $table) = explode('.', $table);
         }
 
-        $assoTable = Shop::getAssoTable($table);
+        $assoTable = static::getAssoTable($table);
         if ($assoTable === false || $assoTable['type'] != 'shop') {
             return '';
         }
@@ -1206,10 +1206,10 @@ class ShopCore extends ObjectModel
 		ON ('.$tableAlias.'.id_'.$table.' = '.$alias.'.id_'.$table;
         // @codingStandardsIgnoreStart
         if ((int) static::$context_id_shop) {$sql .= ' AND '.$tableAlias.'.id_shop = '.(int) static::$context_id_shop;
-        } elseif (Shop::checkIdShopDefault($table) && !$forceNotDefault) {
+        } elseif (static::checkIdShopDefault($table) && !$forceNotDefault) {
             $sql .= ' AND '.$tableAlias.'.id_shop = '.$alias.'.id_shop_default';
         } else {
-            $sql .= ' AND '.$tableAlias.'.id_shop IN ('.implode(', ', Shop::getContextListShopID()).')';
+            $sql .= ' AND '.$tableAlias.'.id_shop IN ('.implode(', ', static::getContextListShopID()).')';
         }
         $sql .= (($on) ? ' AND '.$on : '').')';
         // @codingStandardsIgnoreEnd
@@ -1253,7 +1253,7 @@ class ShopCore extends ObjectModel
      */
     public static function getTree()
     {
-        Shop::cacheShops();
+        static::cacheShops();
 
         return static::$shops;
     }
@@ -1327,7 +1327,7 @@ class ShopCore extends ObjectModel
         }
 
         // Browse and duplicate data
-        foreach (Shop::getAssoTables() as $tableName => $row) {
+        foreach (static::getAssoTables() as $tableName => $row) {
             if ($tablesImport && !isset($tablesImport[$tableName])) {
                 continue;
             }
@@ -1452,7 +1452,7 @@ class ShopCore extends ObjectModel
      */
     public static function getEntityIds($entity, $idShop, $active = false, $delete = false)
     {
-        if (!Shop::isTableAssociated($entity)) {
+        if (!static::isTableAssociated($entity)) {
             return false;
         }
 
@@ -1476,7 +1476,7 @@ class ShopCore extends ObjectModel
     protected static function init()
     {
         // @codingStandardsIgnoreStart
-        Shop::$id_shop_default_tables = ['product', 'category'];
+        static::$id_shop_default_tables = ['product', 'category'];
         // @codingStandardsIgnoreEnd
 
         $assoTables = [
@@ -1522,9 +1522,9 @@ class ShopCore extends ObjectModel
         ];
 
         foreach ($assoTables as $tableName => $tableDetails) {
-            Shop::addTableAssociation($tableName, $tableDetails);
+            static::addTableAssociation($tableName, $tableDetails);
         }
 
-        Shop::$initialized = true;
+        static::$initialized = true;
     }
 }
