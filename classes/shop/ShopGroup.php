@@ -247,7 +247,7 @@ class ShopGroupCore extends ObjectModel
                 ->from('shop')
                 ->where('`name` = \''.pSQL($name).'\'')
                 ->where('`id_shop_group` = '.(int) $this->id)
-                ->where($idShop ? 'AND id_shop != '.(int) $idShop : '')
+                ->where($idShop ? 'id_shop != '.(int) $idShop : '')
         );
     }
 }
