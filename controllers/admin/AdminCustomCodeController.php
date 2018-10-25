@@ -181,6 +181,10 @@ class AdminCustomCodeControllerCore extends AdminController
      */
     protected function updateOptionUnescaped($key, $value, $htmlOK = false)
     {
+        if(!$htmlOK) {
+            $value = strip_tags($value);
+            $htmlOK = true;
+        }
         if (Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
                 ->select('`'.bqSQL(Configuration::$definition['primary']).'`')
