@@ -113,7 +113,8 @@ class AdminCustomCodeControllerCore extends AdminController
         }
         $called = true;
 
-        $this->updateOptionUnescaped(Configuration::CUSTOMCODE_METAS, Tools::getValue(Configuration::CUSTOMCODE_METAS));
+        $safeMetas = strip_tags(Tools::getValue(Configuration::CUSTOMCODE_METAS), '<meta>');
+        $this->updateOptionUnescaped(Configuration::CUSTOMCODE_METAS, $safeMetas, true);
     }
 
     /**
