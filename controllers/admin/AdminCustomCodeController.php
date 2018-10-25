@@ -173,11 +173,13 @@ class AdminCustomCodeControllerCore extends AdminController
     /**
      * @param string $key
      * @param string $value
+     * @param bool   $htmlOK Wether HTML tags are allowed in the saved string,
+     *                       else they get stripped.
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    protected function updateOptionUnescaped($key, $value)
+    protected function updateOptionUnescaped($key, $value, $htmlOK = false)
     {
         if (Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
@@ -188,7 +190,7 @@ class AdminCustomCodeControllerCore extends AdminController
             Db::getInstance()->update(
                 bqSQL(Configuration::$definition['table']),
                 [
-                    'value'    => pSQL($value),
+                    'value'    => pSQL($value, $htmlOK),
                     'date_upd' => ['type' => 'sql', 'value' => 'NOW()'],
                 ],
                 '`id_shop` IS NULL AND `id_shop_group` IS NULL AND `name` = \''.pSQL($key).'\'',
@@ -200,7 +202,7 @@ class AdminCustomCodeControllerCore extends AdminController
                 bqSQL(Configuration::$definition['table']),
                 [
                     'name'          => pSQL($key),
-                    'value'         => pSQL($value),
+                    'value'         => pSQL($value, $htmlOK),
                     'id_shop'       => null,
                     'id_shop_group' => null,
                     'date_add'      => ['type' => 'sql', 'value' => 'NOW()'],
@@ -221,7 +223,7 @@ class AdminCustomCodeControllerCore extends AdminController
                 Db::getInstance()->update(
                     bqSQL(Configuration::$definition['table']),
                     [
-                        'value'    => pSQL($value),
+                        'value'    => pSQL($value, $htmlOK),
                         'date_upd' => ['type' => 'sql', 'value' => 'NOW()'],
                     ],
                     '`id_shop` = '.(int) $idShop.' AND `id_shop_group` = '.$idShopGroup.' AND `name` = \''.pSQL($key).'\'',
@@ -233,7 +235,7 @@ class AdminCustomCodeControllerCore extends AdminController
                     bqSQL(Configuration::$definition['table']),
                     [
                         'name'          => pSQL($key),
-                        'value'         => pSQL($value),
+                        'value'         => pSQL($value, $htmlOK),
                         'id_shop'       => $idShop,
                         'id_shop_group' => $idShopGroup,
                         'date_add'      => ['type' => 'sql', 'value' => 'NOW()'],
