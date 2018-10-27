@@ -234,8 +234,17 @@ class SmartyLazyRegister
      * Register a function or method to be dynamically called later
      * @param string|array $params function name or array(object name, method name)
      */
-    public function register($name, $type, $callable)
+    public function register($name, $type = 'function', $callable = null)
     {
+        if (is_null($callable)) {
+            if (is_array($name) && count($name) === 2) {
+                $callable = $name;
+                $name = $name[1];
+            } else {
+                throw new PrestaShopException('Invalid usage of SmartyLazyRegister::register');
+            }
+        }
+
         $this->registry[$name] = [
             'callable' => $callable,
             'type' => $type
