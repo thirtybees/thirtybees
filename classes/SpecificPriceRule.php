@@ -203,7 +203,7 @@ class SpecificPriceRuleCore extends ObjectModel
             foreach ($conditionsGroup as $idConditionGroup => $conditionGroup) {
                 // Base request
                 $query = (new DbQuery())
-                    ->select('p.`id_product`')
+                    ->select('DISTINCT p.`id_product`')
                     ->from('product', 'p')
                     ->leftJoin('product_shop', 'ps', 'p.`id_product` = ps.`id_product`')
                     ->where('ps.id_shop = '.(int) $currentShopId)
