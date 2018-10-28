@@ -364,6 +364,7 @@ class ConfigurationCore extends ObjectModel
         if (defined('_PS_DO_NOT_LOAD_CONFIGURATION_') && _PS_DO_NOT_LOAD_CONFIGURATION_) {
             return false;
         }
+        static::validateKey($key);
 
         // If conf if not initialized, try manual query
         if (!isset(static::$_cache[static::$definition['table']])) {
@@ -373,7 +374,7 @@ class ConfigurationCore extends ObjectModel
                     (new DbQuery())
                         ->select('`value`')
                         ->from(static::$definition['table'])
-                        ->where('`name` = "'.pSQL($key).'"')
+                        ->where('`name` = "'.$key.'"')
                 );
             }
         }
@@ -470,9 +471,7 @@ class ConfigurationCore extends ObjectModel
      */
     public static function hasKey($key, $idLang = null, $idShopGroup = null, $idShop = null)
     {
-        if (!is_int($key) && !is_string($key)) {
-            return false;
-        }
+        static::validateKey($key);
 
         $idLang = (int) $idLang;
 
@@ -614,9 +613,7 @@ class ConfigurationCore extends ObjectModel
      */
     public static function updateValue($key, $values, $html = false, $idShopGroup = null, $idShop = null)
     {
-        if (!Validate::isConfigName($key)) {
-            die(sprintf(Tools::displayError('[%s] is not a valid configuration key'), Tools::htmlentitiesUTF8($key)));
-        }
+        static::validateKey($key);
 
         if ($idShop === null || !Shop::isFeatureActive()) {
             $idShop = Shop::getContextShopID(true);
@@ -648,7 +645,7 @@ class ConfigurationCore extends ObjectModel
                             'value'    => pSQL($value, $html),
                             'date_upd' => date('Y-m-d H:i:s'),
                         ],
-                        '`name` = \''.pSQL($key).'\''.Configuration::sqlRestriction($idShopGroup, $idShop),
+                        '`name` = \''.$key.'\''.Configuration::sqlRestriction($idShopGroup, $idShop),
                         1,
                         true
                     );
@@ -661,7 +658,7 @@ class ConfigurationCore extends ObjectModel
                                 AND cl.`'.static::$definition['primary'].'` = (
                                     SELECT c.`'.static::$definition['primary'].'`
                                     FROM `'._DB_PREFIX_.static::$definition['table'].'` c
-                                    WHERE c.name = \''.pSQL($key).'\''
+                                    WHERE c.name = \''.$key.'\''
                         .Configuration::sqlRestriction($idShopGroup, $idShop)
                         .')';
                     $result &= Db::getInstance()->execute($sql);
@@ -672,7 +669,7 @@ class ConfigurationCore extends ObjectModel
                     $data = [
                         'id_shop_group' => $idShopGroup ? (int) $idShopGroup : null,
                         'id_shop'       => $idShop ? (int) $idShop : null,
-                        'name'          => pSQL($key),
+                        'name'          => $key,
                         'value'         => $lang ? null : pSQL($value, $html),
                         'date_add'      => ['type' => 'sql', 'value' => 'NOW()'],
                         'date_upd'      => ['type' => 'sql', 'value' => 'NOW()'],
@@ -737,6 +734,8 @@ class ConfigurationCore extends ObjectModel
      */
     public static function getIdByName($key, $idShopGroup = null, $idShop = null)
     {
+        static::validateKey($key);
+
         if ($idShop === null) {
             $idShop = Shop::getContextShopID(true);
         }
@@ -746,7 +745,7 @@ class ConfigurationCore extends ObjectModel
 
         $sql = 'SELECT `'.static::$definition['primary'].'`
                 FROM `'._DB_PREFIX_.static::$definition['table'].'`
-                WHERE name = \''.pSQL($key).'\'
+                WHERE name = \''.$key.'\'
                 '.Configuration::sqlRestriction($idShopGroup, $idShop);
 
         return (int) Db::getInstance()->getValue($sql);
@@ -768,9 +767,7 @@ class ConfigurationCore extends ObjectModel
      */
     public static function set($key, $values, $idShopGroup = null, $idShop = null)
     {
-        if (!Validate::isConfigName($key)) {
-            die(sprintf(Tools::displayError('[%s] is not a valid configuration key'), Tools::htmlentitiesUTF8($key)));
-        }
+        static::validateKey($key);
 
         if ($idShop === null) {
             $idShop = Shop::getContextShopID(true);
@@ -808,9 +805,7 @@ class ConfigurationCore extends ObjectModel
      */
     public static function deleteByName($key)
     {
-        if (!Validate::isConfigName($key)) {
-            return false;
-        }
+        static::validateKey($key);
 
         $result = Db::getInstance()->execute(
             '
@@ -818,11 +813,11 @@ class ConfigurationCore extends ObjectModel
         WHERE `'.static::$definition['primary'].'` IN (
             SELECT `'.static::$definition['primary'].'`
             FROM `'._DB_PREFIX_.static::$definition['table'].'`
-            WHERE `name` = "'.pSQL($key).'"
+            WHERE `name` = "'.$key.'"
         )'
         );
 
-        $result2 = Db::getInstance()->delete(static::$definition['table'], '`name` = "'.pSQL($key).'"');
+        $result2 = Db::getInstance()->delete(static::$definition['table'], '`name` = "'.$key.'"');
 
         static::$_cache[static::$definition['table']] = null;
 
@@ -904,6 +899,8 @@ class ConfigurationCore extends ObjectModel
      */
     public static function isLangKey($key)
     {
+        static::validateKey($key);
+
         return (isset(static::$types[$key]) && static::$types[$key] == 'lang') ? true : false;
     }
 
@@ -987,5 +984,24 @@ class ConfigurationCore extends ObjectModel
         '.($sqlLimit != '' ? $sqlLimit : '');
 
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+    }
+
+    /**
+     * Validate a configuration key. Throws an exception for invalid keys.
+     *
+     * @param string $key
+     *
+     * @throws PrestaShopException
+     * @since   1.0.8
+     */
+    protected static function validateKey($key)
+    {
+        if ( ! Validate::isConfigName($key)) {
+            $e = new PrestaShopException(sprintf(
+                Tools::displayError('[%s] is not a valid configuration key'),
+                Tools::htmlentitiesUTF8($key)
+            ));
+            die($e->displayMessage());
+        }
     }
 }
