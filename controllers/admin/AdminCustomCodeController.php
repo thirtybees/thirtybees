@@ -21,9 +21,6 @@ class AdminCustomCodeControllerCore extends AdminController
         $this->table = 'configuration';
         $this->bootstrap = true;
 
-        $this->updateOptionTbCustomcodeJs();
-        $this->updateOptionTbCustomcodeOrderconfJs();
-
         if (Configuration::get('PS_USE_HTMLPURIFIER')) {
             $this->warnings[] = $this->l('Note that the HTMLPurifier library has been activated. Not all HTML tags will be accepted.');
         }
