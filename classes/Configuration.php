@@ -648,8 +648,8 @@ class ConfigurationCore extends ObjectModel
 
         $result = true;
         foreach ($values as $lang => $value) {
-            // If key already exists, update value
             if (Configuration::hasKey($key, $lang, $idShopGroup, $idShop)) {
+                // If key exists already, update value.
                 if (!$lang) {
                     // Update config not linked to lang
                     $result &= Db::getInstance()->update(
@@ -676,8 +676,8 @@ class ConfigurationCore extends ObjectModel
                         .')';
                     $result &= Db::getInstance()->execute($sql);
                 }
-            } // If key does not exists, create it
-            else {
+            } else {
+                // If key doesn't exist, create it.
                 if (!$configID = Configuration::getIdByName($key, $idShopGroup, $idShop)) {
                     $data = [
                         'id_shop_group' => $idShopGroup ? (int) $idShopGroup : null,
