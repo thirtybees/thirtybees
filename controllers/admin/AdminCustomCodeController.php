@@ -38,6 +38,8 @@ class AdminCustomCodeControllerCore extends AdminController
                 'enableSnippets'            => true,
                 'enableLiveAutocompletion'  => true,
                 'visibility'                => Shop::CONTEXT_ALL,
+                'auto_value'                => false,
+                'value'                     => Configuration::get(Configuration::CUSTOMCODE_METAS),
             ],
             Configuration::CUSTOMCODE_CSS   => [
                 'title'                     => $this->l('Add extra css to your pages'),
@@ -48,6 +50,8 @@ class AdminCustomCodeControllerCore extends AdminController
                 'enableSnippets'            => true,
                 'enableLiveAutocompletion'  => true,
                 'visibility'                => Shop::CONTEXT_ALL,
+                'auto_value'                => false,
+                'value'                     => Configuration::get(Configuration::CUSTOMCODE_CSS),
             ],
             Configuration::CUSTOMCODE_JS    => [
                 'title'                     => $this->l('Add extra JavaScript to your pages'),
