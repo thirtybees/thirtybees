@@ -113,8 +113,7 @@ class AdminCustomCodeControllerCore extends AdminController
         }
         $called = true;
 
-        $safeMetas = strip_tags(Tools::getValue(Configuration::CUSTOMCODE_METAS), '<meta>');
-        $this->updateOptionUnescaped(Configuration::CUSTOMCODE_METAS, $safeMetas, true);
+        $this->updateOptionUnescaped(Configuration::CUSTOMCODE_METAS, Tools::getValue(Configuration::CUSTOMCODE_METAS), true);
     }
 
     /**
@@ -150,7 +149,7 @@ class AdminCustomCodeControllerCore extends AdminController
         }
         $called = true;
 
-        $this->updateOptionUnescaped(Configuration::CUSTOMCODE_ORDERCONF_JS, Tools::getValue(Configuration::CUSTOMCODE_ORDERCONF_JS));
+        $this->updateOptionUnescaped(Configuration::CUSTOMCODE_ORDERCONF_JS, Tools::getValue(Configuration::CUSTOMCODE_ORDERCONF_JS), true);
     }
 
     /**
