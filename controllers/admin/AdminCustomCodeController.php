@@ -167,7 +167,7 @@ class AdminCustomCodeControllerCore extends AdminController
         }
         $called = true;
 
-        $this->updateOptionUnescaped(Configuration::CUSTOMCODE_JS, Tools::getValue(Configuration::CUSTOMCODE_JS));
+        $this->updateOptionUnescaped(Configuration::CUSTOMCODE_JS, Tools::getValue(Configuration::CUSTOMCODE_JS), true);
     }
 
     /**
