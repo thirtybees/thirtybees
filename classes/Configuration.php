@@ -576,6 +576,8 @@ class ConfigurationCore extends ObjectModel
     /**
      * Update configuration key for global context only
      *
+     * This method escapes $values with pSQL().
+     *
      * @param string $key
      * @param mixed  $values
      * @param bool   $html
@@ -597,7 +599,7 @@ class ConfigurationCore extends ObjectModel
      * Values are inserted/updated directly using SQL, because using (Configuration) ObjectModel
      * may not insert values correctly (for example, HTML is escaped, when it should not be).
      *
-     * @TODO    Fix saving HTML values in Configuration model
+     * This method escapes $values with pSQL().
      *
      * @param string $key    Key
      * @param mixed  $values $values is an array if the configuration is multilingual, a single string else.
@@ -633,6 +635,10 @@ class ConfigurationCore extends ObjectModel
             unset($value);
         }
 
+        foreach ($values as &$value) {
+            $value = pSQL($value, $html);
+        }
+
         $result = true;
         foreach ($values as $lang => $value) {
             if (Configuration::hasKey($key, $lang, $idShopGroup, $idShop)) {
@@ -642,7 +648,7 @@ class ConfigurationCore extends ObjectModel
                     $result &= Db::getInstance()->update(
                         static::$definition['table'],
                         [
-                            'value'    => pSQL($value, $html),
+                            'value'    => $value,
                             'date_upd' => date('Y-m-d H:i:s'),
                         ],
                         '`name` = \''.$key.'\''.Configuration::sqlRestriction($idShopGroup, $idShop),
@@ -652,7 +658,7 @@ class ConfigurationCore extends ObjectModel
                 } else {
                     // Update multi lang
                     $sql = 'UPDATE `'._DB_PREFIX_.static::$definition['table'].'_lang` cl
-                            SET cl.value = \''.pSQL($value, $html).'\',
+                            SET cl.value = \''.$value.'\',
                                 cl.date_upd = NOW()
                             WHERE cl.id_lang = '.(int) $lang.'
                                 AND cl.`'.static::$definition['primary'].'` = (
@@ -670,7 +676,7 @@ class ConfigurationCore extends ObjectModel
                         'id_shop_group' => $idShopGroup ? (int) $idShopGroup : null,
                         'id_shop'       => $idShop ? (int) $idShop : null,
                         'name'          => $key,
-                        'value'         => $lang ? null : pSQL($value, $html),
+                        'value'         => $lang ? null : $value,
                         'date_add'      => ['type' => 'sql', 'value' => 'NOW()'],
                         'date_upd'      => ['type' => 'sql', 'value' => 'NOW()'],
                     ];
@@ -684,7 +690,7 @@ class ConfigurationCore extends ObjectModel
                         [
                             static::$definition['primary'] => $configID,
                             'id_lang'                    => (int) $lang,
-                            'value'                      => pSQL($value, $html),
+                            'value'                      => $value,
                             'date_upd'                   => date('Y-m-d H:i:s'),
                         ]
                     );
@@ -753,6 +759,9 @@ class ConfigurationCore extends ObjectModel
 
     /**
      * Set TEMPORARY a single configuration value (in one language only)
+     *
+     * This method expects $values to be escaped with pSQL() already (to change
+     * this, we'd need $html in the signature).
      *
      * Note: a need for calling this method directly should be rare.
      *       updateValue() and updateGlobalValue() do this on their own already.
