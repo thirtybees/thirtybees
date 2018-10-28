@@ -381,7 +381,7 @@ class ConfigurationCore extends ObjectModel
                 return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                     (new DbQuery())
                         ->select('`value`')
-                        ->from(bqSQL(static::$definition['table']))
+                        ->from(static::$definition['table'])
                         ->where('`name` = "'.pSQL($key).'"')
                 );
             }
@@ -435,12 +435,9 @@ class ConfigurationCore extends ObjectModel
         $rows = $connection->executeS(
             (new DbQuery())
                 ->select('c.`name`, cl.`id_lang`, IFNULL(cl.`value`, c.`value`) AS `value`, c.`id_shop_group`, c.`id_shop`')
-                ->from(bqSQL(static::$definition['table']), 'c')
-                ->leftJoin(static::$definition['table'].'_lang', 'cl', 'c.`'.bqSQL(static::$definition['primary']).'` = cl.`'.bqSQL(static::$definition['primary']).'`')
+                ->from(static::$definition['table'], 'c')
+                ->leftJoin(static::$definition['table'].'_lang', 'cl', 'c.`'.static::$definition['primary'].'` = cl.`'.static::$definition['primary'].'`')
         );
-
-        // Backwards compatible keys
-
 
         if (!is_array($rows)) {
             return;
@@ -672,13 +669,13 @@ class ConfigurationCore extends ObjectModel
                     );
                 } else {
                     // Update multi lang
-                    $sql = 'UPDATE `'._DB_PREFIX_.bqSQL(static::$definition['table']).'_lang` cl
+                    $sql = 'UPDATE `'._DB_PREFIX_.static::$definition['table'].'_lang` cl
                             SET cl.value = \''.pSQL($value, $html).'\',
                                 cl.date_upd = NOW()
                             WHERE cl.id_lang = '.(int) $lang.'
-                                AND cl.`'.bqSQL(static::$definition['primary']).'` = (
-                                    SELECT c.`'.bqSQL(static::$definition['primary']).'`
-                                    FROM `'._DB_PREFIX_.bqSQL(static::$definition['table']).'` c
+                                AND cl.`'.static::$definition['primary'].'` = (
+                                    SELECT c.`'.static::$definition['primary'].'`
+                                    FROM `'._DB_PREFIX_.static::$definition['table'].'` c
                                     WHERE c.name = \''.pSQL($key).'\''
                         .Configuration::sqlRestriction($idShopGroup, $idShop)
                         .')';
@@ -762,8 +759,8 @@ class ConfigurationCore extends ObjectModel
             $idShopGroup = Shop::getContextShopGroupID(true);
         }
 
-        $sql = 'SELECT `'.bqSQL(static::$definition['primary']).'`
-                FROM `'._DB_PREFIX_.bqSQL(static::$definition['table']).'`
+        $sql = 'SELECT `'.static::$definition['primary'].'`
+                FROM `'._DB_PREFIX_.static::$definition['table'].'`
                 WHERE name = \''.pSQL($key).'\'
                 '.Configuration::sqlRestriction($idShopGroup, $idShop);
 
@@ -829,15 +826,15 @@ class ConfigurationCore extends ObjectModel
 
         $result = Db::getInstance()->execute(
             '
-        DELETE FROM `'._DB_PREFIX_.bqSQL(static::$definition['table']).'_lang`
-        WHERE `'.bqSQL(static::$definition['primary']).'` IN (
-            SELECT `'.bqSQL(static::$definition['primary']).'`
-            FROM `'._DB_PREFIX_.bqSQL(static::$definition['table']).'`
+        DELETE FROM `'._DB_PREFIX_.static::$definition['table'].'_lang`
+        WHERE `'.static::$definition['primary'].'` IN (
+            SELECT `'.static::$definition['primary'].'`
+            FROM `'._DB_PREFIX_.static::$definition['table'].'`
             WHERE `name` = "'.pSQL($key).'"
         )'
         );
 
-        $result2 = Db::getInstance()->delete(bqSQL(static::$definition['table']), '`name` = "'.pSQL($key).'"');
+        $result2 = Db::getInstance()->delete(static::$definition['table'], '`name` = "'.pSQL($key).'"');
 
         static::$_cache[static::$definition['table']] = null;
 
@@ -868,12 +865,12 @@ class ConfigurationCore extends ObjectModel
 
         $id = Configuration::getIdByName($key, $idShopGroup, $idShop);
         Db::getInstance()->delete(
-            bqSQL(static::$definition['table']),
-            '`'.bqSQL(static::$definition['primary']).'` = '.(int) $id
+            static::$definition['table'],
+            '`'.static::$definition['primary'].'` = '.(int) $id
         );
         Db::getInstance()->delete(
-            bqSQL(static::$definition['table']).'_lang',
-            '`'.bqSQL(static::$definition['primary']).'` = '.(int) $id
+            static::$definition['table'].'_lang',
+            '`'.static::$definition['primary'].'` = '.(int) $id
         );
 
         static::$_cache[static::$definition['table']] = null;
@@ -991,12 +988,12 @@ class ConfigurationCore extends ObjectModel
     public function getWebserviceObjectList($sqlJoin, $sqlFilter, $sqlSort, $sqlLimit)
     {
         $query = '
-        SELECT DISTINCT main.`'.bqSQL(static::$definition['primary']).'`
-        FROM `'._DB_PREFIX_.bqSQL(static::$definition['table']).'` main
+        SELECT DISTINCT main.`'.static::$definition['primary'].'`
+        FROM `'._DB_PREFIX_.static::$definition['table'].'` main
         '.$sqlJoin.'
-        WHERE `'.bqSQL(static::$definition['primary']).'` NOT IN (
-            SELECT `'.bqSQL(static::$definition['primary']).'`
-            FROM '._DB_PREFIX_.bqSQL(static::$definition['table']).'_lang
+        WHERE `'.static::$definition['primary'].'` NOT IN (
+            SELECT `'.static::$definition['primary'].'`
+            FROM '._DB_PREFIX_.static::$definition['table'].'_lang
         ) '.$sqlFilter.'
         '.($sqlSort != '' ? $sqlSort : '').'
         '.($sqlLimit != '' ? $sqlLimit : '');
