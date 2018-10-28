@@ -188,12 +188,12 @@ class AdminCustomCodeControllerCore extends AdminController
     {
         if (Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
-                ->select('`'.bqSQL(Configuration::$definition['primary']).'`')
-                ->from(bqSQL(Configuration::$definition['table']))
+                ->select('`'.Configuration::$definition['primary'].'`')
+                ->from(Configuration::$definition['table'])
                 ->where('`id_shop` IS NULL AND `id_shop_group` IS NULL AND `name` = \''.pSQL($key).'\'')
         )) {
             Db::getInstance()->update(
-                bqSQL(Configuration::$definition['table']),
+                Configuration::$definition['table'],
                 [
                     'value'    => pSQL($value, $htmlOK),
                     'date_upd' => ['type' => 'sql', 'value' => 'NOW()'],
@@ -204,7 +204,7 @@ class AdminCustomCodeControllerCore extends AdminController
             );
         } else {
             Db::getInstance()->insert(
-                bqSQL(Configuration::$definition['table']),
+                Configuration::$definition['table'],
                 [
                     'name'          => pSQL($key),
                     'value'         => pSQL($value, $htmlOK),
@@ -221,12 +221,12 @@ class AdminCustomCodeControllerCore extends AdminController
             $idShopGroup = Shop::getGroupFromShop($idShop, true);
             if (Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 (new DbQuery())
-                    ->select('`'.bqSQL(Configuration::$definition['primary']).'`')
-                    ->from(bqSQL(Configuration::$definition['table']))
+                    ->select('`'.Configuration::$definition['primary'].'`')
+                    ->from(Configuration::$definition['table'])
                     ->where('`id_shop` = '.(int) $idShop.' AND `id_shop_group` = '.(int) $idShopGroup.' AND `name` = \''.pSQL($key).'\'')
             )) {
                 Db::getInstance()->update(
-                    bqSQL(Configuration::$definition['table']),
+                    Configuration::$definition['table'],
                     [
                         'value'    => pSQL($value, $htmlOK),
                         'date_upd' => ['type' => 'sql', 'value' => 'NOW()'],
@@ -237,7 +237,7 @@ class AdminCustomCodeControllerCore extends AdminController
                 );
             } else {
                 Db::getInstance()->insert(
-                    bqSQL(Configuration::$definition['table']),
+                    Configuration::$definition['table'],
                     [
                         'name'          => pSQL($key),
                         'value'         => pSQL($value, $htmlOK),
