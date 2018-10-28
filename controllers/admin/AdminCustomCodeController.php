@@ -186,19 +186,22 @@ class AdminCustomCodeControllerCore extends AdminController
      */
     protected function updateOptionUnescaped($key, $value, $htmlOK = false)
     {
+        $key = pSQL($key);
+        $value = pSQL($value, $htmlOK);
+
         if (Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
             (new DbQuery())
                 ->select('`'.Configuration::$definition['primary'].'`')
                 ->from(Configuration::$definition['table'])
-                ->where('`id_shop` IS NULL AND `id_shop_group` IS NULL AND `name` = \''.pSQL($key).'\'')
+                ->where('`id_shop` IS NULL AND `id_shop_group` IS NULL AND `name` = \''.$key.'\'')
         )) {
             Db::getInstance()->update(
                 Configuration::$definition['table'],
                 [
-                    'value'    => pSQL($value, $htmlOK),
+                    'value'    => $value,
                     'date_upd' => ['type' => 'sql', 'value' => 'NOW()'],
                 ],
-                '`id_shop` IS NULL AND `id_shop_group` IS NULL AND `name` = \''.pSQL($key).'\'',
+                '`id_shop` IS NULL AND `id_shop_group` IS NULL AND `name` = \''.$key.'\'',
                 0,
                 true
             );
@@ -206,8 +209,8 @@ class AdminCustomCodeControllerCore extends AdminController
             Db::getInstance()->insert(
                 Configuration::$definition['table'],
                 [
-                    'name'          => pSQL($key),
-                    'value'         => pSQL($value, $htmlOK),
+                    'name'          => $key,
+                    'value'         => $value,
                     'id_shop'       => null,
                     'id_shop_group' => null,
                     'date_add'      => ['type' => 'sql', 'value' => 'NOW()'],
@@ -223,15 +226,15 @@ class AdminCustomCodeControllerCore extends AdminController
                 (new DbQuery())
                     ->select('`'.Configuration::$definition['primary'].'`')
                     ->from(Configuration::$definition['table'])
-                    ->where('`id_shop` = '.(int) $idShop.' AND `id_shop_group` = '.(int) $idShopGroup.' AND `name` = \''.pSQL($key).'\'')
+                    ->where('`id_shop` = '.(int) $idShop.' AND `id_shop_group` = '.(int) $idShopGroup.' AND `name` = \''.$key.'\'')
             )) {
                 Db::getInstance()->update(
                     Configuration::$definition['table'],
                     [
-                        'value'    => pSQL($value, $htmlOK),
+                        'value'    => $value,
                         'date_upd' => ['type' => 'sql', 'value' => 'NOW()'],
                     ],
-                    '`id_shop` = '.(int) $idShop.' AND `id_shop_group` = '.$idShopGroup.' AND `name` = \''.pSQL($key).'\'',
+                    '`id_shop` = '.(int) $idShop.' AND `id_shop_group` = '.$idShopGroup.' AND `name` = \''.$key.'\'',
                     0,
                     true
                 );
@@ -239,8 +242,8 @@ class AdminCustomCodeControllerCore extends AdminController
                 Db::getInstance()->insert(
                     Configuration::$definition['table'],
                     [
-                        'name'          => pSQL($key),
-                        'value'         => pSQL($value, $htmlOK),
+                        'name'          => $key,
+                        'value'         => $value,
                         'id_shop'       => $idShop,
                         'id_shop_group' => $idShopGroup,
                         'date_add'      => ['type' => 'sql', 'value' => 'NOW()'],
