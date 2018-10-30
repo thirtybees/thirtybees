@@ -29,7 +29,7 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-if (defined('_PS_ROOT_DIR')) {
+if (defined('_PS_ROOT_DIR_')) {
     require_once _PS_ROOT_DIR_.'/vendor/autoload.php';
 } else {
     require_once __DIR__.'/../../../../vendor/autoload.php';
