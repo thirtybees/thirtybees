@@ -194,6 +194,7 @@ class AdminCurrenciesControllerCore extends AdminController
                             ['key' => 3, 'name' => 'X0.000,00'],
                             ['key' => 4, 'name' => '0,000.00X'],
                             ['key' => 5, 'name' => '0\'000.00X'],
+                            ['key' => 6, 'name' => '0.000,00X'],
                         ],
                         'name'  => 'name',
                         'id'    => 'key',
