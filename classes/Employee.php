@@ -364,13 +364,10 @@ class EmployeeCore extends ObjectModel
     /**
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @version 1.0.8 Operate during initial shop installation as well.
      */
     protected function updateTextDirection()
     {
-        if (!defined('_PS_ADMIN_DIR_')) {
-            return;
-        }
-
         $path = _PS_ADMIN_DIR_.DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.$this->bo_theme.DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR;
         $language = new Language($this->id_lang);
 
