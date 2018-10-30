@@ -368,7 +368,20 @@ class EmployeeCore extends ObjectModel
      */
     protected function updateTextDirection()
     {
-        $path = _PS_ADMIN_DIR_.DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.$this->bo_theme.DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR;
+        if (defined('_PS_ADMIN_DIR_')) {
+            $path = _PS_ADMIN_DIR_.'/themes/'.$this->bo_theme.'/css/';
+        } else {
+            // Probably installation in progress.
+            $path = _PS_ROOT_DIR_.'/admin/themes/'.$this->bo_theme.'/css/';
+            if ( ! is_dir($path)) {
+                $path = _PS_ROOT_DIR_.'/admin-dev/themes/'.$this->bo_theme.'/css/';
+                if ( ! is_dir($path)) {
+                    // Give up.
+                    return;
+                }
+            }
+        }
+
         $language = new Language($this->id_lang);
 
         if ($language->is_rtl && !strpos($this->bo_css, '_rtl')) {
