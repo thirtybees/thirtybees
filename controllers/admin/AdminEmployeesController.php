@@ -145,8 +145,31 @@ class AdminEmployeesControllerCore extends AdminController
         $path = _PS_ADMIN_DIR_.DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR;
         foreach (scandir($path) as $theme) {
             if ($theme[0] != '.' && is_dir($path.$theme) && (@filemtime($path.$theme.DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR.'admin-theme.css'))) {
-                $this->themes[] = ['id' => $theme.'|admin-theme'.$rtl.'.css', 'name' => $theme == 'default' ? $this->l('Default') : ucfirst($theme)];
-                if (file_exists($path.$theme.DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR.'schemes'.$rtl)) {
+                if ($theme === 'default') {
+                    // Use thirty bees style as default.
+                    $cssFile = 'schemes'.$rtl.'/admin-theme-thirtybees'.$rtl.'.css';
+                    if ( ! is_readable($path.$theme.'/css/'.$cssFile)) {
+                        // Fall back to unstyled.
+                        $cssFile = 'admin-theme'.$rtl.'.css';
+                    }
+                    $this->themes[] = [
+                        'id'    => $theme.'|'.$cssFile,
+                        'name'  => $this->l('Default'),
+                    ];
+                    // Add unstyled as a separate entity.
+                    $this->themes[] = [
+                        'id'    => $theme.'|admin-theme'.$rtl.'.css',
+                        'name'  => 'Bootstrap',
+                    ];
+                } else {
+                    $this->themes[] = [
+                        'id'    => $theme.'|admin-theme'.$rtl.'.css',
+                        'name'  => ucfirst($theme),
+                    ];
+                }
+
+                // Add all available styles.
+                if (is_readable($path.$theme.DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR.'schemes'.$rtl)) {
                     foreach (scandir($path.$theme.DIRECTORY_SEPARATOR.'css'.DIRECTORY_SEPARATOR.'schemes'.$rtl) as $css) {
                         if ($css[0] != '.' && preg_match('/\.css$/', $css)) {
                             $name = strpos($css, 'admin-theme-') !== false ? Tools::ucfirst(preg_replace('/^admin-theme-(.*)\.css$/', '$1', $css)) : $css;
