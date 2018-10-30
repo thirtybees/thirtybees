@@ -116,6 +116,10 @@ function formatCurrency(price, currencyFormat, currencySign, currencyBlank) {
     return (currencySign + blank + formatNumber(price, priceDisplayPrecision, '\'', '.'));
   }
 
+  if (currencyFormat == 6) {
+    return (formatNumber(price, priceDisplayPrecision, '.', ',') + blank + currencySign);
+  }
+
   return price;
 }
 
