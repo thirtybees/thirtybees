@@ -373,12 +373,13 @@ class EmployeeCore extends ObjectModel
 
         if ($language->is_rtl && !strpos($this->bo_css, '_rtl')) {
             $boCss = preg_replace('/^(.*)\.css$/', '$1_rtl.css', $this->bo_css);
+            $boCss = str_replace('schemes/', 'schemes_rtl/', $boCss);
 
             if (file_exists($path.$boCss)) {
                 $this->bo_css = $boCss;
             }
         } elseif (!$language->is_rtl && strpos($this->bo_css, '_rtl')) {
-            $boCss = preg_replace('/^(.*)_rtl\.css$/', '$1.css', $this->bo_css);
+            $boCss = str_replace('_rtl', '', $this->bo_css);
 
             if (file_exists($path.$boCss)) {
                 $this->bo_css = $boCss;
