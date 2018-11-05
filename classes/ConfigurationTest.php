@@ -161,12 +161,18 @@ class ConfigurationTestCore
     public static function run($ptr, $arg = 0)
     {
         $report = '';
-        $result = call_user_func_array(['static', 'test'.$ptr], [$arg, &$report]);
+        if ($arg) {
+            $result = call_user_func_array(['static', 'test'.$ptr], [$arg, &$report]);
+        } else {
+            $result = call_user_func_array(['static', 'test'.$ptr], [&$report]);
+        }
 
-        if (strlen($report)) {
-            return $report;
-        } elseif (!$result) {
-            return 'fail';
+        if ( ! $result) {
+            if (strlen($report)) {
+                return $report;
+            } else {
+                return 'fail';
+            }
         }
 
         return 'ok';
