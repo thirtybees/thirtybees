@@ -67,7 +67,10 @@ class AdminInformationControllerCore extends AdminController
     public function initContent()
     {
         $this->show_toolbar = false;
-        $this->display = 'view';
+        if ( ! $this->ajax) {
+            $this->display = 'view';
+        }
+
         parent::initContent();
     }
 
