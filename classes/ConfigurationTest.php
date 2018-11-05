@@ -99,6 +99,7 @@ class ConfigurationTestCore
             'MailsDir'                => 'mails',
             'MaxExecutionTime'        => false,
             'PdoMysql'                => false,
+            'MysqlVersion'            => false,
             'Bcmath'                  => false,
             'Xml'                     => false,
             'Json'                    => false,
@@ -214,6 +215,26 @@ class ConfigurationTestCore
     public static function testPdoMysql()
     {
         return extension_loaded('pdo_mysql');
+    }
+
+    /**
+     * @return bool
+     *
+     * @since   1.0.8
+     */
+    public static function testMysqlVersion()
+    {
+        if (defined('_DB_SERVER_') && defined('_DB_USER_')
+            && defined('_DB_PASSWD_') && defined('_DB_NAME_')) {
+            $version = Db::getInstance()->getVersion();
+
+            if (version_compare($version, '5.5', '<')) {
+                return false;
+            }
+        }
+        // Else probably installation time.
+
+        return true;
     }
 
     /**

@@ -34,6 +34,7 @@ class ConfigurationTestTest extends \Codeception\Test\Unit
             'MailsDir'                => 'mails',
             'MaxExecutionTime'        => false,
             'PdoMysql'                => false,
+            'MysqlVersion'            => false,
             'Bcmath'                  => false,
             'Xml'                     => false,
             'Json'                    => false,
