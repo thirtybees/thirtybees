@@ -140,7 +140,7 @@ class ConfigurationTestCore
     {
         $res = [];
         foreach ($tests as $key => $test) {
-            $res[$key] = ConfigurationTest::run($key, $test);
+            $res[$key] = static::run($key, $test);
         }
 
         return $res;
@@ -159,7 +159,7 @@ class ConfigurationTestCore
     public static function run($ptr, $arg = 0)
     {
         $report = '';
-        $result = call_user_func_array(['ConfigurationTest', 'test'.$ptr], [$arg, &$report]);
+        $result = call_user_func_array(['static', 'test'.$ptr], [$arg, &$report]);
 
         if (strlen($report)) {
             return $report;
@@ -378,7 +378,7 @@ class ConfigurationTestCore
      */
     public static function testConfigDir($dir, &$report = null)
     {
-        return ConfigurationTest::testDir($dir, false, $report);
+        return static::testDir($dir, false, $report);
     }
 
     /**
@@ -424,7 +424,7 @@ class ConfigurationTestCore
                 }
 
                 if (is_dir($path)) {
-                    if (!ConfigurationTest::testDir($path, $recursive, $fullReport, true)) {
+                    if (!static::testDir($path, $recursive, $fullReport, true)) {
                         return false;
                     }
                 }
@@ -450,7 +450,7 @@ class ConfigurationTestCore
      */
     public static function testSitemap($dir, &$report = null)
     {
-        if (!ConfigurationTest::testFile($dir)) {
+        if (!static::testFile($dir)) {
             $report = 'File or directory '.$dir.' is not writable.';
             return false;
         }
@@ -495,7 +495,7 @@ class ConfigurationTestCore
      */
     public static function testRootDir($dir, &$report = null)
     {
-        return ConfigurationTest::testDir($dir, false, $report);
+        return static::testDir($dir, false, $report);
     }
 
     /**
@@ -509,7 +509,7 @@ class ConfigurationTestCore
      */
     public static function testLogDir($dir, &$report = null)
     {
-        return ConfigurationTest::testDir($dir, false, $report);
+        return static::testDir($dir, false, $report);
     }
 
     /**
@@ -523,7 +523,7 @@ class ConfigurationTestCore
      */
     public static function testAdminDir($dir, &$report = null)
     {
-        return ConfigurationTest::testDir($dir, false, $report);
+        return static::testDir($dir, false, $report);
     }
 
     /**
@@ -537,7 +537,7 @@ class ConfigurationTestCore
      */
     public static function testImgDir($dir, &$report = null)
     {
-        return ConfigurationTest::testDir($dir, true, $report);
+        return static::testDir($dir, true, $report);
     }
 
     /**
@@ -551,7 +551,7 @@ class ConfigurationTestCore
      */
     public static function testModuleDir($dir, &$report = null)
     {
-        return ConfigurationTest::testDir($dir, true, $report);
+        return static::testDir($dir, true, $report);
     }
 
     /**
@@ -565,7 +565,7 @@ class ConfigurationTestCore
      */
     public static function testCacheDir($dir, &$report = null)
     {
-        return ConfigurationTest::testDir($dir, true, $report);
+        return static::testDir($dir, true, $report);
     }
 
     /**
@@ -579,7 +579,7 @@ class ConfigurationTestCore
      */
     public static function testToolsV2Dir($dir, &$report = null)
     {
-        return ConfigurationTest::testDir($dir, false, $report);
+        return static::testDir($dir, false, $report);
     }
 
     /**
@@ -593,7 +593,7 @@ class ConfigurationTestCore
      */
     public static function testCacheV2Dir($dir, &$report = null)
     {
-        return ConfigurationTest::testDir($dir, false, $report);
+        return static::testDir($dir, false, $report);
     }
 
     /**
@@ -607,7 +607,7 @@ class ConfigurationTestCore
      */
     public static function testDownloadDir($dir, &$report = null)
     {
-        return ConfigurationTest::testDir($dir, false, $report);
+        return static::testDir($dir, false, $report);
     }
 
     /**
@@ -621,7 +621,7 @@ class ConfigurationTestCore
      */
     public static function testMailsDir($dir, &$report = null)
     {
-        return ConfigurationTest::testDir($dir, true, $report);
+        return static::testDir($dir, true, $report);
     }
 
     /**
@@ -635,7 +635,7 @@ class ConfigurationTestCore
      */
     public static function testTranslationsDir($dir, &$report = null)
     {
-        return ConfigurationTest::testDir($dir, true, $report);
+        return static::testDir($dir, true, $report);
     }
 
     /**
@@ -654,7 +654,7 @@ class ConfigurationTestCore
             return false;
         }
 
-        return ConfigurationTest::testDir($dir, true, $report);
+        return static::testDir($dir, true, $report);
     }
 
     /**
@@ -673,7 +673,7 @@ class ConfigurationTestCore
             return true;
         }
 
-        return ConfigurationTest::testDir($dir, true, $report);
+        return static::testDir($dir, true, $report);
     }
 
     /**
@@ -692,7 +692,7 @@ class ConfigurationTestCore
             return true;
         }
 
-        return ConfigurationTest::testDir($dir, true, $report);
+        return static::testDir($dir, true, $report);
     }
 
     /**
@@ -706,7 +706,7 @@ class ConfigurationTestCore
      */
     public static function testCustomizableProductsDir($dir, &$report = null)
     {
-        return ConfigurationTest::testDir($dir, false, $report);
+        return static::testDir($dir, false, $report);
     }
 
     /**
@@ -720,7 +720,7 @@ class ConfigurationTestCore
      */
     public static function testVirtualProductsDir($dir, &$report = null)
     {
-        return ConfigurationTest::testDir($dir, false, $report);
+        return static::testDir($dir, false, $report);
     }
 
     /**
@@ -787,7 +787,7 @@ class ConfigurationTestCore
     public static function testFiles($full = false)
     {
         $return = [];
-        foreach (ConfigurationTest::$testFiles as $file) {
+        foreach (static::$testFiles as $file) {
             if (!file_exists(rtrim(_PS_ROOT_DIR_, DIRECTORY_SEPARATOR).str_replace('/', DIRECTORY_SEPARATOR, $file))) {
                 if ($full) {
                     array_push($return, $file);
