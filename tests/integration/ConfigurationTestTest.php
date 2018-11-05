@@ -27,6 +27,7 @@ class ConfigurationTestTest extends \Codeception\Test\Unit
                 'getcwd', 'chdir', 'chmod',
             ],
             'PhpVersion'              => false,
+            'Fopen'                   => false,
             'Gd'                      => false,
             'ConfigDir'               => 'config',
             'Files'                   => false,
