@@ -195,12 +195,13 @@ class ConfigurationTestCore
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @deprecated 1.0.8
      */
     public static function testMysqlSupport()
     {
-        return extension_loaded('mysql') || extension_loaded('mysqli') || extension_loaded('pdo_mysql');
+        Tools::displayAsDeprecated();
+
+        return true;
     }
 
     /**
@@ -257,12 +258,13 @@ class ConfigurationTestCore
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @deprecated 1.0.8
      */
     public static function testMagicQuotes()
     {
-        return !get_magic_quotes_gpc();
+        Tools::displayAsDeprecated();
+
+        return true;
     }
 
     /**
@@ -349,7 +351,8 @@ class ConfigurationTestCore
      */
     public static function testMaxExecutionTime()
     {
-        return ini_get('max_execution_time') <= 0 || ini_get('max_execution_time') >= 30;
+        return ini_get('max_execution_time') <= 0
+               || ini_get('max_execution_time') >= 30;
     }
 
     /**
@@ -444,16 +447,11 @@ class ConfigurationTestCore
      *
      * @return bool
      *
-     * @since   1.0.2 Add $report.
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @deprecated 1.0.8
      */
     public static function testSitemap($dir, &$report = null)
     {
-        if (!static::testFile($dir)) {
-            $report = 'File or directory '.$dir.' is not writable.';
-            return false;
-        }
+        Tools::displayAsDeprecated();
 
         return true;
     }
@@ -489,13 +487,13 @@ class ConfigurationTestCore
      *
      * @return bool
      *
-     * @since   1.0.2 Add $report.
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @deprecated 1.0.8
      */
     public static function testRootDir($dir, &$report = null)
     {
-        return static::testDir($dir, false, $report);
+        Tools::displayAsDeprecated();
+
+        return true;
     }
 
     /**
@@ -517,13 +515,13 @@ class ConfigurationTestCore
      *
      * @return bool
      *
-     * @since   1.0.2 Add $report.
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @deprecated 1.0.8
      */
     public static function testAdminDir($dir, &$report = null)
     {
-        return static::testDir($dir, false, $report);
+        Tools::displayAsDeprecated();
+
+        return true;
     }
 
     /**
@@ -573,13 +571,13 @@ class ConfigurationTestCore
      *
      * @return bool
      *
-     * @since   1.0.2 Add $report.
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @deprecated 1.0.8
      */
     public static function testToolsV2Dir($dir, &$report = null)
     {
-        return static::testDir($dir, false, $report);
+        Tools::displayAsDeprecated();
+
+        return true;
     }
 
     /**
@@ -587,13 +585,13 @@ class ConfigurationTestCore
      *
      * @return bool
      *
-     * @since   1.0.2 Add $report.
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @deprecated 1.0.8
      */
     public static function testCacheV2Dir($dir, &$report = null)
     {
-        return static::testDir($dir, false, $report);
+        Tools::displayAsDeprecated();
+
+        return true;
     }
 
     /**
@@ -601,13 +599,13 @@ class ConfigurationTestCore
      *
      * @return bool
      *
-     * @since   1.0.2 Add $report.
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @deprecated 1.0.8
      */
     public static function testDownloadDir($dir, &$report = null)
     {
-        return static::testDir($dir, false, $report);
+        Tools::displayAsDeprecated();
+
+        return true;
     }
 
     /**
@@ -737,40 +735,38 @@ class ConfigurationTestCore
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     *
+     * @deprecated 1.0.8
      * @deprecated since PHP 7.1
      */
     public static function testMcrypt()
     {
-        return function_exists('mcrypt_encrypt');
+        Tools::displayAsDeprecated();
+
+        return true;
     }
 
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @deprecated 1.0.8
      */
     public static function testSessions()
     {
-        if (!$path = @ini_get('session.save_path')) {
-            return true;
-        }
+        Tools::displayAsDeprecated();
 
-        return is_writable($path);
+        return true;
     }
 
     /**
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @deprecated 1.0.8
      */
     public static function testDom()
     {
-        return extension_loaded('Dom');
+        Tools::displayAsDeprecated();
+
+        return true;
     }
 
     /**
