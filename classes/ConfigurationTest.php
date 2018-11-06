@@ -179,14 +179,21 @@ class ConfigurationTestCore
     }
 
     /**
-     * @return mixed
+     * @return bool
      *
      * @since   1.0.0
+     * @since   1.0.8 Fill error report.
      * @version 1.0.0 Initial version
      */
-    public static function testPhpVersion()
+    public static function testPhpVersion(&$report = null)
     {
-        return version_compare(PHP_VERSION, '5.5.0', '>=');
+        if (version_compare(PHP_VERSION, '5.5', '<')) {
+            $report = sprintf('PHP version is %s, should be at least version 5.5.', PHP_VERSION);
+
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -228,13 +235,15 @@ class ConfigurationTestCore
      *
      * @since   1.0.8
      */
-    public static function testMysqlVersion()
+    public static function testMysqlVersion(&$report = null)
     {
         if (defined('_DB_SERVER_') && defined('_DB_USER_')
             && defined('_DB_PASSWD_') && defined('_DB_NAME_')) {
             $version = Db::getInstance()->getVersion();
 
             if (version_compare($version, '5.5', '<')) {
+                $report = sprintf('DB server is v%s, should be at least MySQL v5.5.3 or MariaDB v5.5.', $version);
+
                 return false;
             }
         }
