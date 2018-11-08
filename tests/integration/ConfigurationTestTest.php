@@ -99,11 +99,22 @@ class ConfigurationTestTest extends \Codeception\Test\Unit
      * @dataProvider checkProvider
      *
      * @param string     $test
-     * @param array|null $args
+     * @param array|null $args (string|null?)
      */
     public function testTestsShouldBeOk($test, $args)
     {
-        $this->assertTrue((bool) call_user_func(['ConfigurationTest', 'test'.$test], $args ? $args : null));
+        if ($args) {
+            // Use call_user_func_array() rather than call_user_func()
+            // to allow $args to be a reference.
+            $this->assertTrue(
+                (bool) call_user_func_array(['ConfigurationTest', 'test'.$test],
+                                            [$args])
+            );
+        } else {
+            $this->assertTrue(
+                (bool) call_user_func(['ConfigurationTest', 'test'.$test])
+            );
+        }
     }
 
     protected function _before()
