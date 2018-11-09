@@ -21,17 +21,14 @@ notifications:
   slack: thirtybees:L2Dyesn7En8jZ008IUwCrMnl
 
 before_install:
-  - source tests/xdebug.sh
-  - xdebug-disable
   - composer install --prefer-dist --no-interaction --no-progress
 
 install:
   - php install-dev/index_cli.php --newsletter=0 --language=en --country=us --domain=thirty.bees:8888 --db_name=thirtybees --db_create=1 --name=thirtybees --email=test@thirty.bees --firstname=thirty --lastname=bees --password=thirtybees
 
 script:
-  - xdebug-enable
   - vendor/bin/codecept run unit,integration -c . --coverage --coverage-xml
-  - xdebug-disable
+  - phpenv config-rm xdebug.ini
   - php -S thirty.bees:8888 -t . >/dev/null 2>&1 &
   - phantomjs --webdriver=4444 >/dev/null 2>&1 &
   - sleep 10
