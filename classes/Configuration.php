@@ -755,6 +755,9 @@ class ConfigurationCore extends ObjectModel
     /**
      * Set TEMPORARY a single configuration value (in one language only)
      *
+     * Note: a need for calling this method directly should be rare.
+     *       updateValue() and updateGlobalValue() do this on their own already.
+     *
      * @param string $key         Key wanted
      * @param mixed  $values      $values is an array if the configuration is multilingual, a single string else.
      * @param int    $idShopGroup
