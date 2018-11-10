@@ -36,6 +36,34 @@ class ShopMaintenanceCore
      */
     public static function run()
     {
-        sleep(15); // Just to prove the request works, should go away.
+        static::adjustThemeHeaders();
+    }
+
+    /**
+     * Correct the "generator" meta tag in templates. Technology detection
+     * sites like builtwith.com don't recognize thirty bees technology if the
+     * theme template inserts a meta tag "generator" for PrestaShop.
+     *
+     * @since 1.0.8
+     */
+    public static function adjustThemeHeaders()
+    {
+        foreach (scandir(_PS_ALL_THEMES_DIR_) as $themeDir) {
+            if ( ! is_dir(_PS_ALL_THEMES_DIR_.$themeDir)
+                || in_array($themeDir, ['.', '..'])) {
+                continue;
+            }
+
+            $headerPath = _PS_ALL_THEMES_DIR_.$themeDir.'/header.tpl';
+            if (is_writable($headerPath)) {
+                $header = file_get_contents($headerPath);
+                $newHeader = preg_replace('/<\s*meta\s*name\s*=\s*["\']generator["\']\s*content\s*=\s*["\'].*["\']\s*>/i',
+                    '<meta name="generator" content="thirty bees">', $header);
+                if ($newHeader !== $header) {
+                    file_put_contents($headerPath, $newHeader);
+                    Tools::clearSmartyCache();
+                }
+            }
+        }
     }
 }
