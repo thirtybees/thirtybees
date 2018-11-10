@@ -129,3 +129,9 @@ if (Tools::isSubmit('getEmailHTML') && $email = Tools::getValue('email')) {
     $email_html = AdminTranslationsController::getEmailHTML($email);
     die($email_html);
 }
+
+if (Tools::isSubmit('shopMaintenance')) {
+    ShopMaintenance::run();
+
+    die();
+}
