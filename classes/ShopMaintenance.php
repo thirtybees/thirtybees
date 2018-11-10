@@ -41,6 +41,7 @@ class ShopMaintenanceCore
         if ($now - $lastRun > 86400) {
             // Run daily tasks.
             static::adjustThemeHeaders();
+            static::optinShop();
 
             Configuration::updateGlobalValue('SHOP_MAINTENANCE_LAST_RUN', $now);
         }
@@ -69,6 +70,26 @@ class ShopMaintenanceCore
                 if ($newHeader !== $header) {
                     file_put_contents($headerPath, $newHeader);
                     Tools::clearSmartyCache();
+                }
+            }
+        }
+    }
+
+    /**
+     * Handle shop optin.
+     *
+     * @since 1.0.8
+     */
+    public static function optinShop()
+    {
+        if ( ! Configuration::get('TB_STORE_REGISTERED')) {
+            $employees = Employee::getEmployeesByProfile(_PS_ADMIN_PROFILE_);
+            // Usually there's only one employee when we run this code.
+            foreach ($employees as $employee) {
+                $employee = new Employee($employee);
+                $employee->optin = true;
+                if ($employee->update()) {
+                    Configuration::updateGlobalValue('TB_STORE_REGISTERED', 1);
                 }
             }
         }
