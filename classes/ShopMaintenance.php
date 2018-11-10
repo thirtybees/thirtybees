@@ -92,7 +92,7 @@ class ShopMaintenanceCore
                 $employee = new Employee($employee);
                 $employee->optin = true;
                 if ($employee->update()) {
-                    Configuration::updateGlobalValue('TB_STORE_REGISTERED', 1);
+                    Configuration::updateValue('TB_STORE_REGISTERED', 1);
                 }
             }
         }
