@@ -313,19 +313,9 @@ class ConfigurationCore extends ObjectModel
      */
     public static function configurationIsLoaded()
     {
-        static $loaded = null;
-
-        if ($loaded !== null) {
-            return $loaded;
-        }
-
-        if (isset(static::$_cache) && isset(static::$_cache[static::$definition['table']]) && count(static::$_cache[static::$definition['table']])) {
-            $loaded = true;
-
-            return $loaded;
-        }
-
-        return false;
+        return isset(static::$_cache[static::$definition['table']])
+               && is_array(static::$_cache[static::$definition['table']])
+               && count(static::$_cache[static::$definition['table']]);
     }
 
     /**
