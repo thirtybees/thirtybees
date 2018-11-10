@@ -294,7 +294,7 @@ class HelperCore
         // Generate HTML
         $url = $_SERVER['REQUEST_URI'].(($_SERVER['QUERY_STRING']) ? '&' : '?').'setShopContext=';
         // $html = '<a href="#"><i class="icon-home"></i> '.$shop->name.'</a>';
-        $html = '<select class="shopList" onchange="location.href = \''.htmlspecialchars($url).'\'+$(this).val();">';
+        $html = '<select class="shopList" onchange="location.href = \''.htmlspecialchars(addslashes($url)).'\'+$(this).val();">';
         $html .= '<option value="" class="first">'.Translate::getAdminTranslation('All shops').'</option>';
 
         foreach ($tree as $groupId => $groupData) {
