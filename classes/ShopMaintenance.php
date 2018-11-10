@@ -36,7 +36,14 @@ class ShopMaintenanceCore
      */
     public static function run()
     {
-        static::adjustThemeHeaders();
+        $now = time();
+        $lastRun = Configuration::get('SHOP_MAINTENANCE_LAST_RUN');
+        if ($now - $lastRun > 86400) {
+            // Run daily tasks.
+            static::adjustThemeHeaders();
+
+            Configuration::updateGlobalValue('SHOP_MAINTENANCE_LAST_RUN', $now);
+        }
     }
 
     /**
