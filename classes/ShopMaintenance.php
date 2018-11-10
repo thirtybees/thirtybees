@@ -85,14 +85,15 @@ class ShopMaintenanceCore
      */
     public static function optinShop()
     {
-        if ( ! Configuration::get('TB_STORE_REGISTERED')) {
+        $name = Configuration::STORE_REGISTERED;
+        if ( ! Configuration::get($name)) {
             $employees = Employee::getEmployeesByProfile(_PS_ADMIN_PROFILE_);
             // Usually there's only one employee when we run this code.
             foreach ($employees as $employee) {
                 $employee = new Employee($employee);
                 $employee->optin = true;
                 if ($employee->update()) {
-                    Configuration::updateValue('TB_STORE_REGISTERED', 1);
+                    Configuration::updateValue($name, 1);
                 }
             }
         }

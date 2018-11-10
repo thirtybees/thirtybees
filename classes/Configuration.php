@@ -266,6 +266,7 @@ class ConfigurationCore extends ObjectModel
     const CUSTOMCODE_CSS = 'TB_CUSTOMCODE_CSS';
     const CUSTOMCODE_JS = 'TB_CUSTOMCODE_JS';
     const CUSTOMCODE_ORDERCONF_JS = 'TB_CUSTOMCODE_ORDERCONF_JS';
+    const STORE_REGISTERED = 'TB_STORE_REGISTERED';
     // @codingStandardsIgnoreStart
     /**
      * @see ObjectModel::$definition
