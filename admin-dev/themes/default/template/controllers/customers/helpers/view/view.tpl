@@ -646,6 +646,9 @@
 					<p class="text-muted text-center">
 						{l s='%1$s %2$s has not registered any addresses yet' sprintf=[$customer->firstname, $customer->lastname]}
 					</p>
+					<p>
+						<a href="index.php?controller=AdminAddresses&addaddress&id_customer={$customer->id}&token={getAdminToken tab='AdminAddresses'}" target="_blank">{l s='Add new address'}</a>
+					</p>
 				{/if}
 			</div>
 		</div>
