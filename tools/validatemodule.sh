@@ -574,6 +574,17 @@ if [ ${IS_GIT} = 'true' ]; then
       n "'module_name' in .tbstore.yml: '${TBSTORE_NAME}'"
     fi
     unset CODE_NAME TBSTORE_NAME
+
+    # Field 'tags:' (a list) should contain the module name to bring it up
+    # in results when searching for it on store.thirtybees.com.
+    MODULE_NAME=$(basename $(pwd))
+    if [ -z "$(${CAT} .tbstore.yml | sed -n '/^tags:/, /^[a-z_]*:/ {
+                                               /^  - '${MODULE_NAME}'/ p
+                                             }')" ]; then
+      e "list 'tabs:' in '.tbstore.yml' should contain the module name."
+      n "Entry for the module name would be '  - ${MODULE_NAME}'."
+    fi
+    unset MODULE_NAME
   fi
 fi
 
