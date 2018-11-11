@@ -366,18 +366,10 @@ class ConfigurationCore extends ObjectModel
         }
         static::validateKey($key);
 
-        // If conf if not initialized, try manual query
-        if (!isset(static::$_cache[static::$definition['table']])) {
+        if ( ! static::configurationIsLoaded()) {
             Configuration::loadConfiguration();
-            if (!static::$_cache[static::$definition['table']]) {
-                return Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-                    (new DbQuery())
-                        ->select('`value`')
-                        ->from(static::$definition['table'])
-                        ->where('`name` = "'.$key.'"')
-                );
-            }
         }
+
         $idLang = (int) $idLang;
         if ($idShop === null || !Shop::isFeatureActive()) {
             $idShop = Shop::getContextShopID(true);
