@@ -35,8 +35,6 @@ class AdminCustomCodeControllerCore extends AdminController
                 'enableSnippets'            => true,
                 'enableLiveAutocompletion'  => true,
                 'visibility'                => Shop::CONTEXT_ALL,
-                'auto_value'                => false,
-                'value'                     => Configuration::get(Configuration::CUSTOMCODE_METAS),
             ],
             Configuration::CUSTOMCODE_CSS   => [
                 'title'                     => $this->l('Add extra css to your pages'),
@@ -47,8 +45,6 @@ class AdminCustomCodeControllerCore extends AdminController
                 'enableSnippets'            => true,
                 'enableLiveAutocompletion'  => true,
                 'visibility'                => Shop::CONTEXT_ALL,
-                'auto_value'                => false,
-                'value'                     => Configuration::get(Configuration::CUSTOMCODE_CSS),
             ],
             Configuration::CUSTOMCODE_JS    => [
                 'title'                     => $this->l('Add extra JavaScript to your pages'),
@@ -59,8 +55,6 @@ class AdminCustomCodeControllerCore extends AdminController
                 'enableSnippets'            => true,
                 'enableLiveAutocompletion'  => true,
                 'visibility'                => Shop::CONTEXT_ALL,
-                'auto_value'                => false,
-                'value'                     => Configuration::get(Configuration::CUSTOMCODE_JS),
             ],
         ];
 
@@ -74,8 +68,6 @@ class AdminCustomCodeControllerCore extends AdminController
                 'enableSnippets'            => true,
                 'enableLiveAutocompletion'  => true,
                 'visibility'                => Shop::CONTEXT_ALL,
-                'auto_value'                => false,
-                'value'                     => Configuration::get(Configuration::CUSTOMCODE_ORDERCONF_JS),
             ],
         ];
 
@@ -97,159 +89,5 @@ class AdminCustomCodeControllerCore extends AdminController
         ];
 
         parent::__construct();
-    }
-
-    /**
-     * @throws PrestaShopException
-     */
-    public function updateOptionTbCustomcodeMetas()
-    {
-        if (!Tools::isSubmit(Configuration::CUSTOMCODE_METAS)) {
-            return;
-        }
-
-        static $called = false;
-        if ($called) {
-            return;
-        }
-        $called = true;
-
-        $safeMetas = strip_tags(Tools::getValue(Configuration::CUSTOMCODE_METAS), '<meta>');
-        $this->updateOptionUnescaped(Configuration::CUSTOMCODE_METAS, $safeMetas, true);
-    }
-
-    /**
-     * @throws PrestaShopException
-     */
-    public function updateOptionTbCustomcodeCss()
-    {
-        if (!Tools::isSubmit(Configuration::CUSTOMCODE_CSS)) {
-            return;
-        }
-
-        static $called = false;
-        if ($called) {
-            return;
-        }
-        $called = true;
-
-        $this->updateOptionUnescaped(Configuration::CUSTOMCODE_CSS, Tools::getValue(Configuration::CUSTOMCODE_CSS));
-    }
-
-    /**
-     * @throws PrestaShopException
-     */
-    public function updateOptionTbCustomcodeOrderconfJs()
-    {
-        if (!Tools::isSubmit(Configuration::CUSTOMCODE_ORDERCONF_JS)) {
-            return;
-        }
-
-        static $called = false;
-        if ($called) {
-            return;
-        }
-        $called = true;
-
-        $this->updateOptionUnescaped(Configuration::CUSTOMCODE_ORDERCONF_JS, Tools::getValue(Configuration::CUSTOMCODE_ORDERCONF_JS));
-    }
-
-    /**
-     * @throws PrestaShopException
-     */
-    public function updateOptionTbCustomcodeJs()
-    {
-        if (!Tools::isSubmit(Configuration::CUSTOMCODE_JS)) {
-            return;
-        }
-
-        static $called = false;
-        if ($called) {
-            return;
-        }
-        $called = true;
-
-        $this->updateOptionUnescaped(Configuration::CUSTOMCODE_JS, Tools::getValue(Configuration::CUSTOMCODE_JS), true);
-    }
-
-    /**
-     * @param string $key
-     * @param string $value
-     * @param bool   $htmlOK Wether HTML tags are allowed in the saved string,
-     *                       else they get stripped.
-     *
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     */
-    protected function updateOptionUnescaped($key, $value, $htmlOK = false)
-    {
-        $key = pSQL($key);
-        $value = pSQL($value, $htmlOK);
-
-        if (Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-            (new DbQuery())
-                ->select('`'.Configuration::$definition['primary'].'`')
-                ->from(Configuration::$definition['table'])
-                ->where('`id_shop` IS NULL AND `id_shop_group` IS NULL AND `name` = \''.$key.'\'')
-        )) {
-            Db::getInstance()->update(
-                Configuration::$definition['table'],
-                [
-                    'value'    => $value,
-                    'date_upd' => ['type' => 'sql', 'value' => 'NOW()'],
-                ],
-                '`id_shop` IS NULL AND `id_shop_group` IS NULL AND `name` = \''.$key.'\'',
-                0,
-                true
-            );
-        } else {
-            Db::getInstance()->insert(
-                Configuration::$definition['table'],
-                [
-                    'name'          => $key,
-                    'value'         => $value,
-                    'id_shop'       => null,
-                    'id_shop_group' => null,
-                    'date_add'      => ['type' => 'sql', 'value' => 'NOW()'],
-                    'date_upd'      => ['type' => 'sql', 'value' => 'NOW()'],
-                ],
-                true
-            );
-        }
-        Configuration::set($key, $value, null, null);
-        foreach (Shop::getContextListShopID() as $idShop) {
-            $idShopGroup = Shop::getGroupFromShop($idShop, true);
-            if (Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-                (new DbQuery())
-                    ->select('`'.Configuration::$definition['primary'].'`')
-                    ->from(Configuration::$definition['table'])
-                    ->where('`id_shop` = '.(int) $idShop.' AND `id_shop_group` = '.(int) $idShopGroup.' AND `name` = \''.$key.'\'')
-            )) {
-                Db::getInstance()->update(
-                    Configuration::$definition['table'],
-                    [
-                        'value'    => $value,
-                        'date_upd' => ['type' => 'sql', 'value' => 'NOW()'],
-                    ],
-                    '`id_shop` = '.(int) $idShop.' AND `id_shop_group` = '.$idShopGroup.' AND `name` = \''.$key.'\'',
-                    0,
-                    true
-                );
-            } else {
-                Db::getInstance()->insert(
-                    Configuration::$definition['table'],
-                    [
-                        'name'          => $key,
-                        'value'         => $value,
-                        'id_shop'       => $idShop,
-                        'id_shop_group' => $idShopGroup,
-                        'date_add'      => ['type' => 'sql', 'value' => 'NOW()'],
-                        'date_upd'      => ['type' => 'sql', 'value' => 'NOW()'],
-                    ],
-                    true
-                );
-            }
-            Configuration::set($key, $value, $idShopGroup, $idShop);
-        }
     }
 }
