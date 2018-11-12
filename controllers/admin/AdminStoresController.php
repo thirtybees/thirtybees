@@ -639,7 +639,7 @@ class AdminStoresControllerCore extends AdminController
             $country = new Country($value, $this->context->language->id);
             if ($country->id) {
                 Configuration::updateValue('PS_SHOP_COUNTRY_ID', $value);
-                Configuration::updateValue('PS_SHOP_COUNTRY', pSQL($country->name));
+                Configuration::updateValue('PS_SHOP_COUNTRY', $country->name);
             }
         }
     }
@@ -657,7 +657,7 @@ class AdminStoresControllerCore extends AdminController
             $state = new State($value);
             if ($state->id) {
                 Configuration::updateValue('PS_SHOP_STATE_ID', $value);
-                Configuration::updateValue('PS_SHOP_STATE', pSQL($state->name));
+                Configuration::updateValue('PS_SHOP_STATE', $state->name);
             }
         }
     }
