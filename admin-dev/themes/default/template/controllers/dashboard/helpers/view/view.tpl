@@ -28,15 +28,6 @@
 	var no_results_translation = '{l s='No result' js=1}';
 	var dashboard_use_push = '{$dashboard_use_push|intval}';
 	var read_more = '{l s='Read more' js=1}';
-
-  $.ajax({
-    type: 'POST',
-    url: 'ajax.php',
-    async: true,
-    dataType: 'json',
-    data: 'shopMaintenance=true',
-    // No response expected.
-  });
 </script>
 
 <div id="dashboard">

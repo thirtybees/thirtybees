@@ -77,6 +77,8 @@ if (Tools::isSubmit('getChildrenCategories') && Tools::isSubmit('id_category_par
 }
 
 if (Tools::isSubmit('getNotifications')) {
+    ShopMaintenance::run();
+
     $notification = new Notification;
     die(json_encode($notification->getLastElements()));
 }
@@ -128,10 +130,4 @@ if (Tools::isSubmit('getZones')) {
 if (Tools::isSubmit('getEmailHTML') && $email = Tools::getValue('email')) {
     $email_html = AdminTranslationsController::getEmailHTML($email);
     die($email_html);
-}
-
-if (Tools::isSubmit('shopMaintenance')) {
-    ShopMaintenance::run();
-
-    die();
 }
