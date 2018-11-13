@@ -23,6 +23,10 @@ function cleanup {
     echo "Deleting temporary packaging directory."
     rm -rf ${PACKAGING_DIR}
   fi
+  if [ -n "${PACKAGING_DIR_EXTRA}" ]; then
+    echo "Deleting temporary packaging Extra directory."
+    rm -rf ${PACKAGING_DIR_EXTRA}
+  fi
 
   if [ -n "${SUBMODULES_ADDED[*]}" ]; then
     echo "Removing submodules added earlier."
@@ -389,6 +393,35 @@ done || exit ${?}
 
 mv "${PACKAGING_DIR}"/"${PACKAGE_NAME}".zip .                     || exit ${?}
 echo "Created ${PACKAGE_NAME}.zip successfully."
+
+
+### Also build the Extras package.
+
+# As 'git archive' always packages the full path repository, we have to use
+# a packaging directory.
+PACKAGING_DIR_EXTRA=$(mktemp -d)
+
+# Copy what we need.
+git archive ${GIT_REVISION} "install-dev/upgrade" \
+| tar -C "${PACKAGING_DIR_EXTRA}" -xf- --strip-components=2       || exit ${?}
+
+# Package.
+EXTRA_PACKAGE="thirtybees-extra-v${GIT_REVISION}".zip
+(
+  cd "${PACKAGING_DIR_EXTRA}"                                     || exit ${?}
+
+  # No need for index files.
+  find . -name index.php -delete                                  || exit ${?}
+  # No need for the README.md either.
+  rm -f README.md                                                 || exit ${?}
+  # 1.0.0.sql is needed in the migration package, only.
+  rm -f sql/1.0.0.sql                                             || exit ${?}
+
+  zip -r -q "${EXTRA_PACKAGE}" .                                  || exit ${?}
+)
+
+mv "${PACKAGING_DIR_EXTRA}"/"${EXTRA_PACKAGE}" .                  || exit ${?}
+echo "Created ${EXTRA_PACKAGE} successfully."
 
 
 # Cleanup happens via a trap.
