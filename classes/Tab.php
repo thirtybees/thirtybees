@@ -718,7 +718,7 @@ class TabCore extends ObjectModel
             Db::getInstance()->update(
                 'tab',
                 [
-                    'position' => ($i + 1),
+                    'position'  => $i,
                 ],
                 '`id_tab` = '.(int) $result[$i]['id_tab']
             );
