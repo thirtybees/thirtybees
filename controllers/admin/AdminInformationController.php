@@ -296,7 +296,8 @@ class AdminInformationControllerCore extends AdminController
         $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_PS_ROOT_DIR_.'/Core')));
         $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_PS_ROOT_DIR_.'/Adapter')));
         // if() for retrocompatibility, only. Make it unconditional after 1.0.8.
-        if (version_compare(_TB_VERSION_, '1.0.7', '>')) {
+        if ( ! defined('_TB_VERSION_')
+            || version_compare(_TB_VERSION_, '1.0.7', '>')) {
             $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_PS_ROOT_DIR_.'/vendor')));
         }
         $iterator->append(new DirectoryIterator(_PS_ADMIN_DIR_));
