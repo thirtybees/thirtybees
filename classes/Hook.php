@@ -532,7 +532,7 @@ class HookCore extends ObjectModel
     {
         $context = Context::getContext();
         $cacheId = 'hook_module_exec_list_'.(isset($context->shop->id) ? '_'.$context->shop->id : '').((isset($context->customer)) ? '_'.$context->customer->id : '');
-        if (!Cache::isStored($cacheId) || $hookName == 'displayPayment' || $hookName == 'displayPaymentEU' || $hookName == 'displayBackOfficeHeader') {
+        if (!Cache::isStored($cacheId) || $hookName == 'displayPayment' || $hookName == 'displayPaymentEU') {
             $frontend = true;
             $groups = [];
             $useGroups = Group::isFeatureActive();
@@ -555,10 +555,8 @@ class HookCore extends ObjectModel
             $sql = new DbQuery();
             $sql->select('h.`name` as hook, m.`id_module`, h.`id_hook`, m.`name` as module, h.`live_edit`');
             $sql->from('module', 'm');
-            if ($hookName != 'displayBackOfficeHeader') {
-                $sql->join(Shop::addSqlAssociation('module', 'm', true, 'module_shop.enable_device & '.(int) Context::getContext()->getDevice()));
-                $sql->innerJoin('module_shop', 'ms', 'ms.`id_module` = m.`id_module`');
-            }
+            $sql->join(Shop::addSqlAssociation('module', 'm', true, 'module_shop.enable_device & '.(int) Context::getContext()->getDevice()));
+            $sql->innerJoin('module_shop', 'ms', 'ms.`id_module` = m.`id_module`');
             $sql->innerJoin('hook_module', 'hm', 'hm.`id_module` = m.`id_module`');
             $sql->innerJoin('hook', 'h', 'hm.`id_hook` = h.`id_hook`');
             if ($hookName != 'displayPayment' && $hookName != 'displayPaymentEU') {
@@ -612,7 +610,7 @@ class HookCore extends ObjectModel
                     ];
                 }
             }
-            if ($hookName != 'displayPayment' && $hookName != 'displayPaymentEU' && $hookName != 'displayBackOfficeHeader') {
+            if ($hookName != 'displayPayment' && $hookName != 'displayPaymentEU') {
                 Cache::store($cacheId, $list);
                 // @todo remove this in 1.6, we keep it in 1.5 for backward compatibility
                 static::$_hook_modules_cache_exec = $list;
