@@ -255,12 +255,12 @@ class AdminInformationControllerCore extends AdminController
      *
      * @return array md5 list
      */
-    public function generateMd5List()
+    public static function generateMd5List()
     {
         $md5List = [];
         $adminDir = str_replace(_PS_ROOT_DIR_, '', _PS_ADMIN_DIR_);
 
-        $iterator = $this->getCheckFileIterator();
+        $iterator = static::getCheckFileIterator();
         foreach ($iterator as $file) {
             /** @var DirectoryIterator $file */
             $filePath = $file->getPathname();
@@ -288,7 +288,7 @@ class AdminInformationControllerCore extends AdminController
      *
      * @return AppendIterator Iterator of all files to be checked.
      */
-    protected function getCheckFileIterator()
+    protected static function getCheckFileIterator()
     {
         $iterator = new AppendIterator();
         $iterator->append(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(_PS_CLASS_DIR_)));
@@ -335,7 +335,7 @@ class AdminInformationControllerCore extends AdminController
 
         $fileList = array_keys($md5List);
 
-        $iterator = $this->getCheckFileIterator();
+        $iterator = static::getCheckFileIterator();
         foreach ($iterator as $file) {
             if (in_array($file->getFilename(), ['.', '..', 'index.php'])) {
                 continue;
