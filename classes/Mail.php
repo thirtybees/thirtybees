@@ -108,23 +108,23 @@ class MailCore extends ObjectModel
         $replyTo = null
     ) {
 
-      // allow hooks to modify input parameters
-      $result = Hook::exec('actionEmailSendBefore', [
-            'idLang' => &$idLang,
-            'template' => &$template,
-            'subject' => &$subject,
-            'templateVars' => &$templateVars,
-            'to' => &$to,
-            'toName' => &$toName,
-            'from' => &$from,
-            'fromName' => &$fromName,
-            'fileAttachment' => &$fileAttachment,
-            'modeSmtp' => &$modeSmtp,
-            'templatePath' => &$templatePath,
-            'die' => &$die,
-            'idShop' => &$idShop,
-            'bcc' => &$bcc,
-            'replyTo' => &$replyTo
+        // allow hooks to modify input parameters
+        $result = Hook::exec('actionEmailSendBefore', [
+            'idLang'          => &$idLang,
+            'template'        => &$template,
+            'subject'         => &$subject,
+            'templateVars'    => &$templateVars,
+            'to'              => &$to,
+            'toName'          => &$toName,
+            'from'            => &$from,
+            'fromName'        => &$fromName,
+            'fileAttachment'  => &$fileAttachment,
+            'modeSmtp'        => &$modeSmtp,
+            'templatePath'    => &$templatePath,
+            'die'             => &$die,
+            'idShop'          => &$idShop,
+            'bcc'             => &$bcc,
+            'replyTo'         => &$replyTo,
         ], null, true);
 
         // do NOT continue if any module returned false
