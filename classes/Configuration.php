@@ -465,6 +465,10 @@ class ConfigurationCore extends ObjectModel
     {
         static::validateKey($key);
 
+        if ( ! static::configurationIsLoaded()) {
+            Configuration::loadConfiguration();
+        }
+
         $idLang = (int) $idLang;
 
         if ($idShop) {
