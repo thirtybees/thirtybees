@@ -324,7 +324,7 @@ class MailCore extends ObjectModel
             }
 
             /* Create mail and attach differents parts */
-            $subject = '['.Configuration::get('PS_SHOP_NAME', null, null, $idShop).'] '.$subject;
+            $subject = static::formatSubject($subject);
             $message->setSubject($subject);
 
             $message->setCharset('utf-8');
@@ -539,6 +539,39 @@ class MailCore extends ObjectModel
     }
 
     /**
+     * Format email subject using email subject template
+     *
+     * @param $subject Unformatted email subject
+     *
+     * @return string
+     *
+     * @since   1.0.8
+     * @version 1.0.8 Initial version
+     */
+    protected static function formatSubject($subject)
+    {
+        $idShop = Context::getContext()->shop->id;
+        $template = Configuration::get('TB_MAIL_SUBJECT_TEMPLATE', null, null, $idShop);
+        if (! $template || strpos($template, '{subject}') === false) {
+            $template = "[{shop_name}] {subject}";
+        }
+        if (preg_match_all('#\{[a-z0-9_]+\}#i', $template, $m)) {
+            for ($i = 0, $total = count($m[0]); $i < $total; $i++) {
+                $key = $m[0][$i];
+                switch ($key) {
+                    case '{shop_name}':
+                      $template = str_replace($key, Configuration::get('PS_SHOP_NAME', null, null, $idShop), $template);
+                      break;
+                    case '{subject}':
+                      $template = str_replace($key, $subject, $template);
+                      break;
+                }
+            }
+        }
+        return $template;
+    }
+
+    /**
      * @param int $idMail Mail ID
      *
      * @return bool Whether removal succeeded
@@ -605,7 +638,7 @@ class MailCore extends ObjectModel
             $message
                 ->setFrom(Tools::convertEmailToIdn($from))
                 ->setTo(Tools::convertEmailToIdn($to))
-                ->setSubject($subject)
+                ->setSubject(static::formatSubject($subject))
                 ->setBody($content);
 
             if ($swift->send($message)) {

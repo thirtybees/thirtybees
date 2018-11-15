@@ -915,5 +915,8 @@
 <meta name="msapplication-TileColor" content="#da532c" />
 <meta name="theme-color" content="#ffffff">]]></value>
     </configuration>
+    <configuration id="TB_MAIL_SUBJECT_TEMPLATE" name="TB_MAIL_SUBJECT_TEMPLATE">
+      <value>[{shop_name}] {subject}</value>
+    </configuration>
   </entities>
 </entity_configuration>

@@ -140,6 +140,12 @@ class AdminEmailsControllerCore extends AdminController
                         'cast'       => 'intval',
                         'type'       => 'bool',
                     ],
+                    'TB_MAIL_SUBJECT_TEMPLATE'         => [
+                        'title'      => $this->l('Email subject template'),
+                        'desc'       => $this->l('You can use following placeholders: {subject} {shop_name}'),
+                        'validation' => 'isString',
+                        'type'       => 'text',
+                    ],
                 ],
                 'submit' => ['title' => $this->l('Save')],
             ],
@@ -241,9 +247,9 @@ class AdminEmailsControllerCore extends AdminController
 
     /**
      * Set media
-     * 
+     *
      * @return void
-     * 
+     *
      * @since 1.0.0
      */
     public function setMedia()
@@ -372,6 +378,10 @@ class AdminEmailsControllerCore extends AdminController
             && (empty($_POST['PS_MAIL_SERVER']) || empty($_POST['PS_MAIL_SMTP_PORT']))
         ) {
             $this->errors[] = Tools::displayError('You must define an SMTP server and an SMTP port. If you do not know it, use the PHP mail() function instead.');
+        }
+
+        if (isset($_POST['TB_MAIL_SUBJECT_TEMPLATE']) && strpos($_POST['TB_MAIL_SUBJECT_TEMPLATE'], '{subject}') === false) {
+            $this->errors[] = Tools::displayError('Email template must contains {subject} placeholder');
         }
     }
 
