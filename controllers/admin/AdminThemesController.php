@@ -155,7 +155,6 @@ class AdminThemesControllerCore extends AdminController
                         'enableBasicAutocompletion' => true,
                         'enableSnippets'            => true,
                         'enableLiveAutocompletion'  => true,
-                        'visibility'                => Shop::CONTEXT_ALL,
                         'minLines'                  => 20,
                         'maxLines'                  => 30,
                         'tab'                       => 'icons',
