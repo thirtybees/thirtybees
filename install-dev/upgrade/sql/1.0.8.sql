@@ -12,3 +12,7 @@ WHERE (
     FROM `PREFIX_configuration`
     WHERE `name` = 'TB_MAIL_SUBJECT_TEMPLATE'
 ) = 0;
+
+/* Delete tabs coming with PrestaShop but no longer used in thirty bees. */;
+/* PHP:deleteTab('AdminMarketing'); */;
+/* PHP:deleteTab('AdminAddonsCatalog'); */;
