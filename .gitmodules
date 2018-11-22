@@ -211,3 +211,7 @@
 	path = modules/statsmodule
 	url = https://github.com/thirtybees/statsmodule.git
 	ignore = dirty
+[submodule "modules/vatnumber"]
+	path = modules/vatnumber
+	url = https://github.com/thirtybees/vatnumber.git
+	ignore = dirty
