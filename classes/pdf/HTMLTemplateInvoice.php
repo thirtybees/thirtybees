@@ -352,11 +352,15 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
 
         $address = new Address((int) $this->order->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
 
-        // @TODO: move this evaluation into the vatnumber module.
-        //        VatNumber::taxExemption($address->vat_number)
-        $taxExempt = Configuration::get('VATNUMBER_MANAGEMENT')
-                            && !empty($address->vat_number)
-                            && $address->id_country != Configuration::get('VATNUMBER_COUNTRY');
+        $taxExempt = false;
+        // @TODO: Use a hook for this. Like:
+        //        Hook::exec('isVatExemption', ['address' => &$address]);
+        if (Module::isEnabled('vatnumber')) {
+            require_once _PS_MODULE_DIR_.'/vatnumber/VATNumberTaxManager.php';
+
+            $taxExempt = VATNumberTaxManager::isAvailableForThisAddress($address);
+        }
+
         $carrier = new Carrier($this->order->id_carrier);
 
         $taxBreakdowns = $this->getTaxBreakdown();

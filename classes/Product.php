@@ -662,14 +662,14 @@ class ProductCore extends ObjectModel
             $usetax = false;
         }
 
-        // @TODO: move this evaluation into the vatnumber module,
-        //        VatNumber::taxExemption($addressInfos['vat_number'])
-        if ($usetax != false
-            && !empty($addressInfos['vat_number'])
-            && $addressInfos['id_country'] != Configuration::get('VATNUMBER_COUNTRY')
-            && Configuration::get('VATNUMBER_MANAGEMENT')
-        ) {
-            $usetax = false;
+        // @TODO: Use a hook for this. Like:
+        //        Hook::exec('isVatExemption', ['address' => &$address]);
+        if (Module::isEnabled('vatnumber') && $idAddress) {
+            require_once _PS_MODULE_DIR_.'/vatnumber/VATNumberTaxManager.php';
+
+            $address = new Address($idAddress);
+            $usetax = $usetax
+                      && ! VATNumberTaxManager::isAvailableForThisAddress($address);
         }
 
         if (is_null($idCustomer) && Validate::isLoadedObject($context->customer)) {
@@ -1194,16 +1194,17 @@ class ProductCore extends ObjectModel
             if (Validate::isLoadedObject($curCart)) {
                 $idAddress = (int) $curCart->{Configuration::get('PS_TAX_ADDRESS_TYPE')};
             }
-            $addressInfos = Address::getCountryAndState($idAddress);
 
-            // @TODO: move this evaluation into the vatnumber module.
-            //        VatNumber::taxExemption($addressInfos['vat_number'])
-            if (static::$_taxCalculationMethod != PS_TAX_EXC
-                && !empty($addressInfos['vat_number'])
-                && $addressInfos['id_country'] != Configuration::get('VATNUMBER_COUNTRY')
-                && Configuration::get('VATNUMBER_MANAGEMENT')
-            ) {
-                static::$_taxCalculationMethod = PS_TAX_EXC;
+            // @TODO: Use a hook for this. Like:
+            //        Hook::exec('isVatExemption', ['address' => &$address]);
+            if (Module::isEnabled('vatnumber')
+                && static::$_taxCalculationMethod != PS_TAX_EXC) {
+                require_once _PS_MODULE_DIR_.'/vatnumber/VATNumberTaxManager.php';
+
+                $address = new Address($idAddress);
+                if (VATNumberTaxManager::isAvailableForThisAddress($address)) {
+                    static::$_taxCalculationMethod = PS_TAX_EXC;
+                }
             }
         } else {
             static::$_taxCalculationMethod = Group::getPriceDisplayMethod(Group::getCurrent()->id);
