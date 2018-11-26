@@ -384,14 +384,6 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                     $fields[$idLang]['id_shop'] = (int) $this->id_shop;
                 }
             }
-        } elseif (is_array($this->id_lang)) {
-            foreach ($this->id_lang as $idLang) {
-                $fields[$idLang] = $this->formatFields(static::FORMAT_LANG, $idLang);
-                $fields[$idLang]['id_lang'] = $idLang;
-                if ($this->id_shop && $isLangMultishop) {
-                    $fields[$idLang]['id_shop'] = (int) $this->id_shop;
-                }
-            }
         } else {
             $fields = [$this->id_lang => $this->formatFields(static::FORMAT_LANG, $this->id_lang)];
             $fields[$this->id_lang]['id_lang'] = $this->id_lang;
