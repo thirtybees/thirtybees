@@ -88,7 +88,9 @@ class Adapter_EntityMapper
                     if ($objectDatasLang = Db::getInstance()->executeS($sql)) {
                         foreach ($objectDatasLang as $row) {
                             foreach ($row as $key => $value) {
-                                if ($key != $entityDefs['primary'] && property_exists($entity, $key)) {
+                                if ($key !== $entityDefs['primary']
+                                    && $key !== 'id_lang' && $key !== 'id_shop'
+                                    && property_exists($entity, $key)) {
                                     if (!isset($objectData[$key]) || !is_array($objectData[$key])) {
                                         $objectData[$key] = [];
                                     }
