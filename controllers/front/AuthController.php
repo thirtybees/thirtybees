@@ -252,9 +252,20 @@ class AuthControllerCore extends FrontController
      * Assign address var to smarty
      *
      * @since 1.0.0
+     * @since 1.0.6 Consult module VatNumber.
      */
     protected function assignAddressFormat()
     {
+        if (Module::isInstalled('vatnumber')
+            && Module::isEnabled('vatnumber')
+            && file_exists(_PS_MODULE_DIR_.'vatnumber/vatnumber.php')) {
+            include_once _PS_MODULE_DIR_.'vatnumber/vatnumber.php';
+
+            if (method_exists('VatNumber', 'adjustAddressForLayout')) {
+                VatNumber::assignTemplateVars($this->context);
+            }
+        }
+
         $addressItems = [];
         $addressFormat = AddressFormat::getOrderedAddressFields((int) $this->id_country, false, true);
         $requireFormFieldsList = AddressFormat::getFieldsRequired();
