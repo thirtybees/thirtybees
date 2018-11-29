@@ -6,4 +6,9 @@ WHERE `name` LIKE "%CUSTOMCODE%" AND `id_shop` NOT LIKE 0;
 
 /* Add email subject template */;
 INSERT INTO `PREFIX_configuration`(`name`, `value`, `date_add`, `date_upd`)
-VALUES ('TB_MAIL_SUBJECT_TEMPLATE', '[{shop_name}] {subject}', NOW(), NOW());
+SELECT 'TB_MAIL_SUBJECT_TEMPLATE', '[{shop_name}] {subject}', NOW(), NOW()
+WHERE (
+    SELECT COUNT(*)
+    FROM `PREFIX_configuration`
+    WHERE `name` = 'TB_MAIL_SUBJECT_TEMPLATE'
+) = 0;
