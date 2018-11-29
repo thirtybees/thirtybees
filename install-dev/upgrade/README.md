@@ -36,7 +36,8 @@ PHP scripts go into directory `php`.
   - File suffix is `.php`.
   - Each file contains at least a function PHP function matching the file name.
   - This PHP function can accept zero or more strings as parameters.
-  - Name of the file matches the name of the function, plus the suffix.
+  - Name of the file matches the name of the function, all lowercase, plus the
+    suffix.
   - There are no version numbers. Each Extras file contains all necessary
     scripts.
 
@@ -64,7 +65,8 @@ SQL scripts go into directory `sql`.
     matters), it injects another SQL command to drop this table before executing
     the actual command.
   - Note: in SQL, `/*` and `*/` are comment delimiters, so one can also add
-    comments in these SQL scripts.
+    comments in these SQL scripts. It's good style to add a `;` after a comment,
+    so comments get reported in their own line.
   - If a command contains exactly the string `/* PHP:` (casing and spacing
     matters), the updater module parses the line up to a `*/` and executes this
     PHP function, using the like-named file and converting parameters to
