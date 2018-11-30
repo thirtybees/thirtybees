@@ -82,7 +82,7 @@ class TabCore extends ObjectModel
             'active'         => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
             'hide_host_mode' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
             /* Lang fields */
-            'name'           => ['type' => self::TYPE_STRING, 'lang' => true, 'required' => true, 'validate' => 'isTabName', 'size' => 64],
+            'name'           => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isTabName', 'size' => 64],
         ],
     ];
 

@@ -173,7 +173,6 @@ class AdminTabsControllerCore extends AdminController
                     'label'    => $this->l('Name'),
                     'name'     => 'name',
                     'lang'     => true,
-                    'required' => true,
                     'hint'     => $this->l('Invalid characters:').' &lt;&gt;;=#{}',
                 ],
                 [
