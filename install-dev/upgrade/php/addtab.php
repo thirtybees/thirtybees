@@ -61,5 +61,24 @@ function addTab($tabClassName, $tabName = false,
     } catch (Exception $e) {
     }
 
-    // TODO: move the tab upwards if necessary.
+    // Move the new tab to just under the tab with class $aboveClassName.
+    if ($aboveClassName) {
+        $tabList = Tab::getTabs(0, $tab->id_parent);
+
+        // Find positions of relevant tabs.
+        $posMe = false;
+        $posAbove = false;
+        foreach ($tabList as $item) {
+            if ($item['class_name'] === $tabClassName) {
+                $posMe = $item['position'];
+            } elseif ($item['class_name'] === $aboveClassName) {
+                $posAbove = $item['position'];
+            }
+        }
+
+        // Move.
+        if ($posMe !== false && $posAbove !== false) {
+            $tab->updatePosition($posMe < $posAbove, $posAbove + 1);
+        }
+    }
 }
