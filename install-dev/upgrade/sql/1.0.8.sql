@@ -16,3 +16,7 @@ WHERE (
 /* Delete tabs coming with PrestaShop but no longer used in thirty bees. */;
 /* PHP:deleteTab('AdminMarketing'); */;
 /* PHP:deleteTab('AdminAddonsCatalog'); */;
+
+/* Add tabs new in thirty bees. */;
+/* PHP:addTab('AdminDuplicateUrls', 'AdminParentPreferences', 'AdminMeta'); */;
+/* PHP:addTab('AdminCustomCode', 'AdminParentPreferences'); */;
