@@ -18,5 +18,5 @@ WHERE (
 /* PHP:deleteTab('AdminAddonsCatalog'); */;
 
 /* Add tabs new in thirty bees. */;
-/* PHP:addTab('AdminDuplicateUrls', 'AdminParentPreferences', 'AdminMeta'); */;
-/* PHP:addTab('AdminCustomCode', 'AdminParentPreferences'); */;
+/* PHP:addTab('AdminDuplicateUrls', 'Duplicate URLs', 'AdminParentPreferences', 'AdminMeta'); */;
+/* PHP:addTab('AdminCustomCode', 'Custom Code', 'AdminParentPreferences'); */;

@@ -22,6 +22,7 @@
  * another tab. Does nothing if a tab for the class exists already.
  *
  * @param string $tabClassName    Name of the specific class.
+ * @param string $tabName         Name of the tab. Defaults to the class name.
  * @param string $parentClassName Name of the class of the parent menu.
  *                                Defaults to the top level menu.
  * @param string $aboveClassName  Name of the class of the tab just above the
@@ -30,7 +31,8 @@
  *
  * @since 1.0.8
  */
-function addTab($tabClassName, $parentClassName = false, $aboveClassName = false)
+function addTab($tabClassName, $tabName = false,
+                $parentClassName = false, $aboveClassName = false)
 {
     require_once __DIR__.'/environment.php';
 
@@ -45,6 +47,14 @@ function addTab($tabClassName, $parentClassName = false, $aboveClassName = false
         if ($parentClassName
             && $idParent = Tab::getIdFromClassName($parentClassName)) {
             $tab->id_parent = $idParent;
+        }
+
+        if ($tabName) {
+            $langs = Language::getLanguages();
+            foreach ($langs as $lang) {
+                $translation = Translate::getAdminTranslation($tabName);
+                $tab->name[$lang['id_lang']] = $translation;
+            }
         }
 
         $tab->save();
