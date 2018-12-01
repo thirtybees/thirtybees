@@ -652,9 +652,14 @@ class AdminThemesControllerCore extends AdminController
                         $themes[] = $theme->directory;
                     }
                 }
-                if (is_dir(_PS_ALL_THEMES_DIR_.$obj->directory) && !in_array($obj->directory, $themes)) {
-                    Tools::deleteDirectory(_PS_ALL_THEMES_DIR_.$obj->directory.'/');
+
+                $themePath = _PS_ALL_THEMES_DIR_.$obj->directory;
+                if (is_dir($themePath) && !in_array($obj->directory, $themes)) {
+                    if ( ! Tools::deleteDirectory($themePath)) {
+                        $this->warnings[] = sprintf(Tools::displayError('Could not remove theme directory "%s".'), $themePath);
+                    }
                 }
+
                 $obj->removeMetas();
             } elseif ($obj === false && $themeDir = Tools::getValue('theme_dir')) {
                 $themeDir = basename($themeDir);
