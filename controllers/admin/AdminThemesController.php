@@ -483,13 +483,15 @@ class AdminThemesControllerCore extends AdminController
         if (($newDir = Tools::getValue('directory')) != '') {
             if (!Validate::isDirName($newDir)) {
                 $this->display = 'add';
+                $this->errors[] = sprintf(Tools::displayError('"%s" is not a valid directory name'), $newDir);
 
-                return !($this->errors[] = sprintf(Tools::displayError('"%s" is not a valid directory name'), $newDir));
+                return false;
             }
             if (Theme::getByDirectory($newDir)) {
                 $this->display = 'add';
+                $this->errors[] = Tools::displayError('A theme for this directory exists already.');
 
-                return !($this->errors[] = Tools::displayError('A directory with this name already exists.'));
+                return false;
             }
 
             if (mkdir(_PS_ALL_THEMES_DIR_.$newDir, Theme::$access_rights)) {
