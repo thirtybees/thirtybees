@@ -1223,8 +1223,9 @@ class AdminControllerCore extends Controller
                     }
                 } elseif ($res = $object->delete()) {
                     $this->redirect_after = static::$currentIndex.'&conf=1&token='.$this->token;
+                } else {
+                    $this->errors[] = Tools::displayError('An error occurred during deletion.');
                 }
-                $this->errors[] = Tools::displayError('An error occurred during deletion.');
                 if ($res) {
                     Logger::addLog(sprintf($this->l('%s deletion', 'AdminTab', false, false), $this->className), 1, null, $this->className, (int) $this->object->id, true, (int) $this->context->employee->id);
                 }
