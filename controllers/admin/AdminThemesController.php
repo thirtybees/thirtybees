@@ -467,12 +467,19 @@ class AdminThemesControllerCore extends AdminController
      */
     public function processAdd()
     {
-        if (Tools::getValue('directory') == '' || Tools::getValue('name') == '') {
-            $this->errors[] = $this->l('Form invalid');
-            $this->display = 'form';
+        if ( ! Tools::getValue('directory')) {
+            $this->errors[] = $this->l('Field "directory" is empty.');
+            $this->display = 'add';
 
             return false;
         }
+        if ( ! Tools::getValue('name')) {
+            $this->errors[] = $this->l('Field "name" is empty.');
+            $this->display = 'add';
+
+            return false;
+        }
+
         if (($newDir = Tools::getValue('directory')) != '') {
             if (!Validate::isDirName($newDir)) {
                 $this->display = 'add';
