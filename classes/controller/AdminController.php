@@ -41,6 +41,10 @@ class AdminControllerCore extends Controller
     const LEVEL_ADD = 3;
     const LEVEL_DELETE = 4;
 
+    // Cache file to make errors/warnings/informations/confirmations
+    // survive redirects.
+    const MESSAGE_CACHE_PATH = 'AdminControllerMessages.php';
+
     // @codingStandardsIgnoreStart
     /** @var string */
     public static $currentIndex;
@@ -304,6 +308,13 @@ class AdminControllerCore extends Controller
         $this->timer_start = $timer_start;
         // Has to be remove for the next Prestashop version
         global $token;
+
+        $messageCachePath = _PS_CACHE_DIR_.'/'.static::MESSAGE_CACHE_PATH
+                            .'-'.Tools::getValue('token');
+        if (is_readable($messageCachePath)) {
+            include $messageCachePath;
+            unlink($messageCachePath);
+        }
 
         $this->controller_type = 'admin';
         $this->controller_name = get_class($this);
@@ -4495,6 +4506,20 @@ class AdminControllerCore extends Controller
      */
     protected function redirect()
     {
+        if ($this->errors || $this->warnings
+            || $this->informations || $this->confirmations) {
+            $token = Tools::getValue('token');
+            $messageCachePath = _PS_CACHE_DIR_.'/'.static::MESSAGE_CACHE_PATH
+                                .'-'.$token;
+
+            file_put_contents($messageCachePath, '<?php
+                $this->errors = '.var_export($this->errors, true).';
+                $this->warnings = '.var_export($this->warnings, true).';
+                $this->informations = '.var_export($this->informations, true).';
+                $this->confirmations = '.var_export($this->confirmations, true).';
+            ');
+        }
+
         Tools::redirectAdmin($this->redirect_after);
     }
 
