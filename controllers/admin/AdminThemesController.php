@@ -494,8 +494,17 @@ class AdminThemesControllerCore extends AdminController
                 return false;
             }
 
-            if (mkdir(_PS_ALL_THEMES_DIR_.$newDir, Theme::$access_rights)) {
-                $this->confirmations[] = $this->l('The directory was successfully created.');
+            if (is_dir(_PS_ALL_THEMES_DIR_.$newDir)) {
+                $this->informations[] = $this->l('Theme directory existed already.');
+            } else {
+                if (mkdir(_PS_ALL_THEMES_DIR_.$newDir, Theme::$access_rights)) {
+                    $this->confirmations[] = $this->l('Theme directory was successfully created.');
+                } else {
+                    $this->display = 'add';
+                    $this->errors[] = sprintf(Tools::displayError('Could not create directory "%s".'), _PS_ALL_THEMES_DIR_.$newDir);
+
+                  return false;
+                }
             }
 
             if (0 !== $idBased = (int) Tools::getValue('based_on')) {
