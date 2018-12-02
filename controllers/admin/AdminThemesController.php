@@ -89,6 +89,11 @@ class AdminThemesControllerCore extends AdminController
 
         libxml_use_internal_errors(true);
 
+        $faviconUrl = Media::getMediaPath(_PS_IMG_DIR_."favicon_{$this->context->shop->id}.ico");
+        if ($faviconUrl) {
+            $faviconUrl .= '?'.time();
+        }
+
         // Employee languages used for link and utm_source
         $lang = new Language($this->context->language->id);
         $isoLangUc = strtoupper($lang->iso_code);
@@ -136,7 +141,7 @@ class AdminThemesControllerCore extends AdminController
                         'type'  => 'file',
                         'name'  => 'PS_FAVICON',
                         'tab'   => 'icons',
-                        'thumb' => Media::getMediaPath(_PS_IMG_DIR_."favicon_{$this->context->shop->id}.ico").'?'.time(),
+                        'thumb' => $faviconUrl,
                     ],
                     'TB_SOURCE_FAVICON'  => [
                         'title' => $this->l('Source favicon (PNG)'),
