@@ -45,6 +45,7 @@ class ShopMaintenanceCore
             // Run daily tasks.
             static::adjustThemeHeaders();
             static::optinShop();
+            static::cleanAdminControllerMessages();
 
             Configuration::updateGlobalValue('SHOP_MAINTENANCE_LAST_RUN', $now);
         }
@@ -94,6 +95,25 @@ class ShopMaintenanceCore
                 $employee->optin = true;
                 if ($employee->update()) {
                     Configuration::updateValue($name, 1);
+                }
+            }
+        }
+    }
+
+    /**
+     * Delete lost AdminController messages.
+     *
+     * @since 1.0.8
+     */
+    public static function cleanAdminControllerMessages()
+    {
+        $name = AdminController::MESSAGE_CACHE_PATH;
+        $nameLength = strlen($name);
+        foreach (scandir(_PS_CACHE_DIR_) as $candidate) {
+            if (substr($candidate, 0, $nameLength) === $name) {
+                $path = _PS_CACHE_DIR_.'/'.$candidate;
+                if (time() - filemtime($path) > 3600) {
+                    unlink($path);
                 }
             }
         }
