@@ -2682,12 +2682,12 @@ class AdminThemesControllerCore extends AdminController
         ) {
             $themeDir = Tools::getValue('theme_dir');
             $this->installTheme($themeDir);
-        } else {
-            Configuration::updateValue('PS_IMG_UPDATE_TIME', time());
-            Tools::clearCache($this->context->smarty);
-
-            return parent::postProcess();
         }
+
+        Configuration::updateValue('PS_IMG_UPDATE_TIME', time());
+        Tools::clearCache($this->context->smarty);
+
+        return parent::postProcess();
     }
 
     /**
