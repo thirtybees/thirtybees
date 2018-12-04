@@ -231,6 +231,9 @@
     <tab id="Geolocation" id_parent="Preferences" active="1" hide_host_mode="0">
       <class_name>AdminGeolocation</class_name>
     </tab>
+    <tab id="Custom_Code" id_parent="Preferences" active="1" hide_host_mode="0">
+      <class_name>AdminCustomCode</class_name>
+    </tab>
     <tab id="Configuration_Information" id_parent="Advanced_Parameters" active="1" hide_host_mode="0">
       <class_name>AdminInformation</class_name>
     </tab>
@@ -305,9 +308,6 @@
     </tab>
     <tab id="Configuration" id_parent="Stock" active="1" hide_host_mode="0">
       <class_name>AdminStockConfiguration</class_name>
-    </tab>
-    <tab id="Custom_Code" id_parent="Preferences" active="1" hide_host_mode="0">
-      <class_name>AdminCustomCode</class_name>
     </tab>
   </entities>
 </entity_tab>
