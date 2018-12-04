@@ -17,6 +17,8 @@
  * @license   Open Software License (OSL 3.0)
  */
 
+use \GuzzleHttp\Exception\RequestException;
+
 class AdminAddonsCatalogControllerCore extends AdminController
 {
     const ADDONS_URL = 'https://api.thirtybees.com/catalog/catalog.json';
@@ -32,8 +34,19 @@ class AdminAddonsCatalogControllerCore extends AdminController
     {
         $parentDomain = Tools::getHttpHost(true).substr($_SERVER['REQUEST_URI'], 0, -1 * strlen(basename($_SERVER['REQUEST_URI'])));
 
-        $addonsContent = Tools::file_get_contents(static::ADDONS_URL);
-        $addonsContent = json_decode($addonsContent, true);
+        $addonsContent = false;
+        $guzzle = new \GuzzleHttp\Client([
+            'http_errors' => true,
+            'verify'      => _PS_TOOL_DIR_.'cacert.pem',
+            'timeout'     => 20,
+        ]);
+        try {
+            $addonsContent = $guzzle->get(static::ADDONS_URL)->getBody();
+        } catch (RequestException $e) {
+        }
+        if ($addonsContent) {
+            $addonsContent = json_decode($addonsContent, true);
+        }
 
         $this->context->smarty->assign([
             'iso_lang'        => $this->context->language->iso_code,
