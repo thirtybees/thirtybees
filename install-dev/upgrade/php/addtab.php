@@ -52,7 +52,9 @@ function addTab($tabClassName, $tabName = false,
         if ($tabName) {
             $langs = Language::getLanguages();
             foreach ($langs as $lang) {
-                $translation = Translate::getAdminTranslation($tabName);
+                $translation = Translate::getAdminTranslation($tabName,
+                                                              'AdminTab',
+                                                              false, false);
                 $tab->name[$lang['id_lang']] = $translation;
             }
         }
