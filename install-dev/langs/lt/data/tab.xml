@@ -46,7 +46,6 @@
   <tab id="Outstanding" name="Neapmokėta"/>
   <tab id="Cart_Rules" name="Krepšelio taisyklės"/>
   <tab id="Catalog_Price_Rules" name="Katalogo kainų taisyklės"/>
-  <tab id="Marketing" name="Marketingas"/>
   <tab id="Shipping_1" name="Nustatymai"/>
   <tab id="Carriers" name="Kurjeriai"/>
   <tab id="Localization_1" name="Lokalizacija"/>

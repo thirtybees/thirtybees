@@ -46,7 +46,6 @@
   <tab id="Outstanding" name="Openstaand"/>
   <tab id="Cart_Rules" name="Winkelwagenregels"/>
   <tab id="Catalog_Price_Rules" name="Catalogus prijsregels"/>
-  <tab id="Marketing" name="Marketing"/>
   <tab id="Shipping_1" name="Instellingen"/>
   <tab id="Carriers" name="Vervoerders"/>
   <tab id="Price_Ranges" name="Prijsklasse"/>

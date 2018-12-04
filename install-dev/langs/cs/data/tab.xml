@@ -46,7 +46,6 @@
   <tab id="Outstanding" name="Outstanding"/>
   <tab id="Cart_Rules" name="Pravidla pro košík"/>
   <tab id="Catalog_Price_Rules" name="Pravidla pro katalog"/>
-  <tab id="Marketing" name="Marketing"/>
   <tab id="Shipping_1" name="Konfigurace"/>
   <tab id="Carriers" name="Dopravci"/>
   <tab id="Localization_1" name="Lokalizace"/>

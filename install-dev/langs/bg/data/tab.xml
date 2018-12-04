@@ -46,7 +46,6 @@
   <tab id="Outstanding" name="Отличаващи се"/>
   <tab id="Cart_Rules" name="Règles panier"/>
   <tab id="Catalog_Price_Rules" name="Правила за цените в каталога"/>
-  <tab id="Marketing" name="Маркетинг"/>
   <tab id="Shipping_1" name="Предпочитания"/>
   <tab id="Carriers" name="Превозвачи"/>
   <tab id="Localization_1" name="Локализация"/>

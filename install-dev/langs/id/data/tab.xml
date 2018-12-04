@@ -46,7 +46,6 @@
   <tab id="Outstanding" name="Outstanding"/>
   <tab id="Cart_Rules" name="Aturan harga"/>
   <tab id="Catalog_Price_Rules" name="Aturan harga produk"/>
-  <tab id="Marketing" name="Marketing"/>
   <tab id="Shipping_1" name="Seting"/>
   <tab id="Carriers" name="Kurir"/>
   <tab id="Localization_1" name="Lokalisasi"/>

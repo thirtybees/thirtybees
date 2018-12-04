@@ -45,7 +45,6 @@
   <tab id="Outstanding" name="Cuentas por pagar"/>
   <tab id="Cart_Rules" name="Vales descuento"/>
   <tab id="Catalog_Price_Rules" name="Reglas del catálogo"/>
-  <tab id="Marketing" name="Márketing"/>
   <tab id="Shipping_1" name="Preferencias"/>
   <tab id="Carriers" name="Transportistas"/>
   <tab id="Localization_1" name="Localización"/>

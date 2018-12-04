@@ -46,7 +46,6 @@
   <tab id="Outstanding" name="יוצאי דופן"/>
   <tab id="Cart_Rules" name="כללי עגלת קניות"/>
   <tab id="Catalog_Price_Rules" name="כללי תמחור עבור קטלוג המוצרים"/>
-  <tab id="Marketing" name="שיווק"/>
   <tab id="Shipping_1" name="העדפות"/>
   <tab id="Carriers" name="מובילים"/>
   <tab id="Localization_1" name="לוקליזציה"/>
