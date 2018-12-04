@@ -19,33 +19,29 @@
 
 class AdminAddonsCatalogControllerCore extends AdminController
 {
+    const ADDONS_URL = 'https://api.thirtybees.com/catalog/catalog.json';
+
     public function __construct()
     {
         $this->bootstrap = true;
+
         parent::__construct();
     }
 
     public function initContent()
     {
-        $addons_url = 'https://api.thirtybees.com/catalog/catalog.json';
+        $parentDomain = Tools::getHttpHost(true).substr($_SERVER['REQUEST_URI'], 0, -1 * strlen(basename($_SERVER['REQUEST_URI'])));
 
-        $parent_domain = Tools::getHttpHost(true).substr($_SERVER['REQUEST_URI'], 0, -1 * strlen(basename($_SERVER['REQUEST_URI'])));
-        $iso_lang = $this->context->language->iso_code;
-        $iso_currency = $this->context->currency->iso_code;
-        $iso_country = $this->context->country->iso_code;
-        $activity = Configuration::get('PS_SHOP_ACTIVITY');
+        $addonsContent = Tools::file_get_contents(static::ADDONS_URL);
+        $addonsContent = json_decode($addonsContent, true);
 
-        $addons_content = Tools::file_get_contents($addons_url);
-
-        $parsed_content = Tools::jsonDecode($addons_content, true);
-
-        $this->context->smarty->assign(array(
-            'iso_lang' => $iso_lang,
-            'iso_currency' => $iso_currency,
-            'iso_country' => $iso_country,
-            'parsed_content' => $parsed_content,
-            'parent_domain' => $parent_domain,
-        ));
+        $this->context->smarty->assign([
+            'iso_lang'        => $this->context->language->iso_code,
+            'iso_currency'    => $this->context->currency->iso_code,
+            'iso_country'     => $this->context->country->iso_code,
+            'addons_content'  => $addonsContent,
+            'parent_domain'   => $parentDomain,
+        ]);
 
         parent::initContent();
     }
