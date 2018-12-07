@@ -20,3 +20,12 @@ WHERE (
 /* PHP:addTab('AdminDuplicateUrls', 'Duplicate URLs', 'AdminParentPreferences', 'AdminMeta'); */;
 /* PHP:addTab('AdminCustomCode', 'Custom Code', 'AdminParentPreferences'); */;
 /* PHP:addTab('AdminAddonsCatalog', 'Modules & Themes Catalog', 'AdminParentModules', 'AdminModules'); */;
+
+/* Convert single-language URL routes to multi-language ones. */;
+/* PHP:configSingleLangToMultiLang('PS_ROUTE_product_rule'); */;
+/* PHP:configSingleLangToMultiLang('PS_ROUTE_category_rule'); */;
+/* PHP:configSingleLangToMultiLang('PS_ROUTE_layered_rule'); */;
+/* PHP:configSingleLangToMultiLang('PS_ROUTE_supplier_rule'); */;
+/* PHP:configSingleLangToMultiLang('PS_ROUTE_manufacturer_rule'); */;
+/* PHP:configSingleLangToMultiLang('PS_ROUTE_cms_rule'); */;
+/* PHP:configSingleLangToMultiLang('PS_ROUTE_cms_category_rule'); */;
