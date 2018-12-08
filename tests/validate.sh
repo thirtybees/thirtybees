@@ -43,6 +43,27 @@ while [ ${#} -ne 0 ]; do
 done
 
 
+### Auxilliary functions.
+
+# $1: revision
+# $2: file path
+function git-cat {
+  git show ${1}:"${2}"
+}
+
+# $1: revision
+# $2: path
+function git-find {
+  git ls-tree -r --name-only ${1} "${2}"
+}
+
+# $1: error message.
+function e {
+  echo "${1} Aborting."
+  exit 1
+}
+
+
 ### Test (and fix some) prerequisites.
 
 # Location.
