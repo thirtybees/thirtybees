@@ -27,6 +27,7 @@ install:
   - php install-dev/index_cli.php --newsletter=0 --language=en --country=us --domain=thirty.bees:8888 --db_name=thirtybees --db_create=1 --name=thirtybees --email=test@thirty.bees --firstname=thirty --lastname=bees --password=thirtybees
 
 script:
+  - tests/validate.sh
   - vendor/bin/codecept run unit,integration -c . --coverage --coverage-xml
   - phpenv config-rm xdebug.ini
   - php -S thirty.bees:8888 -t . >/dev/null 2>&1 &
