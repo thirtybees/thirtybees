@@ -75,3 +75,27 @@ if [ ! -d 'tests' ] && [ ! -f 'install-dev/install_version.php' ]; then
   exit 1
 fi
 # This script now runs in the repository root.
+
+
+### Verify class loaders.
+#
+# The test suite simply loads all classes and controllers and overrides of
+# each to verify they actually load fine. This catches syntax errors and
+# similar stuff.
+
+# Make a list of all candidates.
+CANDIDATES=()
+while read F; do
+  [ "${F##*/}" = 'index.php' ] && continue
+  [ "${F##*/}" = '.htaccess' ] && continue
+
+  CANDIDATES+=("${F}")
+done < <(git-find HEAD 'classes'; git-find HEAD 'controllers';)
+
+# Verify each candidate has a dummy override.
+for C in "${CANDIDATES[@]}"; do
+  OVERRIDE="tests/_support/override/${C}"
+  [ -s "${OVERRIDE}" ] \
+    || e "Dummy override ${OVERRIDE} missing."
+done
+unset OVERRIDE
