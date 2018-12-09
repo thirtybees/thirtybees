@@ -99,3 +99,24 @@ for C in "${CANDIDATES[@]}"; do
     || e "Dummy override ${OVERRIDE} missing."
 done
 unset OVERRIDE
+
+# Find obsolete overrides.
+while read OVERRIDE; do
+  [ "${OVERRIDE##*/}" = 'index.php' ] && continue
+  [ "${OVERRIDE##*/}" = '.htaccess' ] && continue
+
+  NEEDED='false'
+  S="${OVERRIDE#*/}"
+  S="${S#*/}"
+  S="${S#*/}"
+
+  for C in "${CANDIDATES[@]}"; do
+    if [ "${C}" = "${S}" ]; then
+      NEEDED='true'
+      break
+    fi
+  done
+
+  [ ${NEEDED} = 'true' ] \
+    || e "Dummy override ${OVERRIDE} is obsolete."
+done < <(git-find HEAD 'tests/_support/override')
