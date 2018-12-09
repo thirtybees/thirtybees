@@ -120,3 +120,15 @@ while read OVERRIDE; do
   [ ${NEEDED} = 'true' ] \
     || e "Dummy override ${OVERRIDE} is obsolete."
 done < <(git-find HEAD 'tests/_support/override')
+
+# Make sure each override actually contains the class given by its file name.
+for C in "${CANDIDATES[@]}"; do
+  CLASS="${C##*/}"
+  CLASS="${CLASS%.php}"
+  OVERRIDE="tests/_support/override/${C}"
+
+  grep -q "${CLASS}" "${OVERRIDE}" \
+    || e "Override ${OVERRIDE}: file name and class name mismatch."
+  grep -q "${CLASS}Core" "${OVERRIDE}" \
+    || e "Override ${OVERRIDE}: file name and extend class name mismatch."
+done
