@@ -2,6 +2,17 @@
 // Here you can initialize variables that will be available to your tests
 require_once __DIR__.'/../../vendor/autoload.php';
 
+/**
+ * Turn any notice/warning/error into a full error, causing the Travis CI
+ * build to fail. Else it won't get noticed in day to day operations.
+ */
+function errorHandlerThirty($errno, $errstr)
+{
+  trigger_error($errstr, E_USER_ERROR);
+
+  return true;
+}
+
 $kernel = AspectMock\Kernel::getInstance();
 $kernel->init([
     'appDir' => __DIR__,
@@ -16,5 +27,9 @@ $kernel->init([
 
 require_once __DIR__.'/../../config/defines.inc.php';
 require_once __DIR__.'/../../config/settings.inc.php';
+
+$oldErrorHandler = set_error_handler('errorHandlerThirty');
 require_once __DIR__.'/../_support/unitloadclasses.php';
+set_error_handler($oldErrorHandler);
+
 require_once __DIR__.'/../../config/alias.php';
