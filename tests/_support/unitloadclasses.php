@@ -283,7 +283,7 @@ $kernel->loadFile(__DIR__.'/override/classes/Hook.php');
 $kernel->loadFile(__DIR__.'/override/classes/Tab.php');
 $kernel->loadFile(__DIR__.'/override/classes/Alias.php');
 $kernel->loadFile(__DIR__.'/override/classes/Group.php');
-$kernel->loadFile(__DIR__.'/override/classes/PaymentModule.php');
+$kernel->loadFile(__DIR__.'/override/classes/module/PaymentModule.php');
 $kernel->loadFile(__DIR__.'/override/classes/TranslatedConfiguration.php');
 $kernel->loadFile(__DIR__.'/override/classes/FileUploader.php');
 $kernel->loadFile(__DIR__.'/override/classes/stock/StockManager.php');
