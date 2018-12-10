@@ -2117,10 +2117,9 @@ class AdminImportControllerCore extends AdminController
 
             if ($regenerate) {
                 $previousPath = null;
-                $pathInfos = [];
-                $pathInfos[] = [$tgtWidth, $tgtHeight, $path.'.jpg'];
                 foreach ($imagesTypes as $imageType) {
-                    $tmpfile = static::get_best_path($imageType['width'], $imageType['height'], $pathInfos);
+                    $tmpfile = static::get_best_path($imageType['width'], $imageType['height'],
+                                                     [$tgtWidth, $tgtHeight, $path.'.jpg']);
 
                     $tgtWidthX2 = $tgtWidth * 2;
                     $tgtHeightX2 = $tgtHeight * 2;
@@ -2187,10 +2186,6 @@ class AdminImportControllerCore extends AdminController
                     }
 
                     if ($success) {
-                        // the last image should not be added in the candidate list if it's bigger than the original image
-                        if ($tgtWidth <= $srcWidth && $tgtHeight <= $srcHeight) {
-                            $pathInfos[] = [$tgtWidth, $tgtHeight, $path.'-'.stripslashes($imageType['name']).'.jpg'];
-                        }
                         if ($entity == 'products') {
                             if (is_file(_PS_TMP_IMG_DIR_.'product_mini_'.(int) $idEntity.'.jpg')) {
                                 unlink(_PS_TMP_IMG_DIR_.'product_mini_'.(int) $idEntity.'.jpg');
