@@ -1,5 +1,5 @@
 <?php
 
-class ModuleStats extends ModuleStatsCore
+abstract class ModuleStats extends ModuleStatsCore
 {
 }

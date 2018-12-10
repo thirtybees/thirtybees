@@ -1,5 +1,5 @@
 <?php
 
-class TreeToolbarButton extends TreeToolbarButtonCore
+abstract class TreeToolbarButton extends TreeToolbarButtonCore
 {
 }

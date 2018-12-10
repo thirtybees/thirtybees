@@ -34,7 +34,7 @@
  *
  * @since 1.0.0
  */
-class Db extends DbCore
+abstract class Db extends DbCore
 {
     public function connect() {}
 

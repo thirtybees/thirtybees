@@ -1,5 +1,5 @@
 <?php
 
-class ErrorModule extends ErrorModuleCore
+abstract class ErrorModule extends ErrorModuleCore
 {
 }

@@ -1,5 +1,5 @@
 <?php
 
-class CurrencyRateModule extends CurrencyRateModuleCore
+abstract class CurrencyRateModule extends CurrencyRateModuleCore
 {
 }

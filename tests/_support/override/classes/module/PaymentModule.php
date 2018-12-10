@@ -1,5 +1,5 @@
 <?php
 
-class PaymentModule extends PaymentModuleCore
+abstract class PaymentModule extends PaymentModuleCore
 {
 }

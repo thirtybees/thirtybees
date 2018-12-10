@@ -1,5 +1,5 @@
 <?php
 
-class LibraryModule extends LibraryModuleCore
+abstract class LibraryModule extends LibraryModuleCore
 {
 }
