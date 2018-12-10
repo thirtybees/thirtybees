@@ -340,8 +340,6 @@ $kernel->loadFile(__DIR__.'/override/classes/pdf/PDF.php');
 $kernel->loadFile(__DIR__.'/../../classes/PhpEncryption.php');
 $kernel->loadFile(__DIR__.'/override/classes/PhpEncryption.php');
 $kernel->loadFile(__DIR__.'/../../classes/PrestaShopAutoload.php');
-// Can't override autoloader.
-//$kernel->loadFile(__DIR__.'/override/classes/PrestaShopAutoload.php');
 $kernel->loadFile(__DIR__.'/../../classes/PrestaShopBackup.php');
 $kernel->loadFile(__DIR__.'/override/classes/PrestaShopBackup.php');
 $kernel->loadFile(__DIR__.'/../../classes/PrestaShopCollection.php');
@@ -400,8 +398,6 @@ $kernel->loadFile(__DIR__.'/override/classes/stock/StockAvailable.php');
 $kernel->loadFile(__DIR__.'/../../classes/stock/StockManagerFactory.php');
 $kernel->loadFile(__DIR__.'/override/classes/stock/StockManagerFactory.php');
 $kernel->loadFile(__DIR__.'/../../classes/stock/StockManagerInterface.php');
-// This is an interface, can't get overridden.
-//$kernel->loadFile(__DIR__.'/override/classes/stock/StockManagerInterface.php');
 $kernel->loadFile(__DIR__.'/../../classes/stock/StockManagerModule.php');
 $kernel->loadFile(__DIR__.'/override/classes/stock/StockManagerModule.php');
 $kernel->loadFile(__DIR__.'/../../classes/stock/StockManager.php');
@@ -443,8 +439,6 @@ $kernel->loadFile(__DIR__.'/override/classes/tax/TaxCalculator.php');
 $kernel->loadFile(__DIR__.'/../../classes/tax/TaxManagerFactory.php');
 $kernel->loadFile(__DIR__.'/override/classes/tax/TaxManagerFactory.php');
 $kernel->loadFile(__DIR__.'/../../classes/tax/TaxManagerInterface.php');
-// This is an interface, can't get overridden.
-//$kernel->loadFile(__DIR__.'/override/classes/tax/TaxManagerInterface.php');
 $kernel->loadFile(__DIR__.'/../../classes/tax/TaxManagerModule.php');
 $kernel->loadFile(__DIR__.'/override/classes/tax/TaxManagerModule.php');
 $kernel->loadFile(__DIR__.'/../../classes/tax/Tax.php');
@@ -464,11 +458,7 @@ $kernel->loadFile(__DIR__.'/override/classes/TranslatedConfiguration.php');
 $kernel->loadFile(__DIR__.'/../../classes/Translate.php');
 $kernel->loadFile(__DIR__.'/override/classes/Translate.php');
 $kernel->loadFile(__DIR__.'/../../classes/tree/ITreeToolbarButton.php');
-// This is an interface, can't get overridden.
-//$kernel->loadFile(__DIR__.'/override/classes/tree/ITreeToolbarButton.php');
 $kernel->loadFile(__DIR__.'/../../classes/tree/ITreeToolbar.php');
-// This is an interface, can't get overridden.
-//$kernel->loadFile(__DIR__.'/override/classes/tree/ITreeToolbar.php');
 $kernel->loadFile(__DIR__.'/../../classes/tree/TreeToolbarButton.php');
 $kernel->loadFile(__DIR__.'/override/classes/tree/TreeToolbarButton.php');
 $kernel->loadFile(__DIR__.'/../../classes/tree/TreeToolbarLink.php');
@@ -492,8 +482,6 @@ $kernel->loadFile(__DIR__.'/override/classes/webservice/WebserviceKey.php');
 $kernel->loadFile(__DIR__.'/../../classes/webservice/WebserviceOutputBuilder.php');
 $kernel->loadFile(__DIR__.'/override/classes/webservice/WebserviceOutputBuilder.php');
 $kernel->loadFile(__DIR__.'/../../classes/webservice/WebserviceOutputInterface.php');
-// This is an interface, can't get overridden.
-//$kernel->loadFile(__DIR__.'/override/classes/webservice/WebserviceOutputInterface.php');
 $kernel->loadFile(__DIR__.'/../../classes/webservice/WebserviceOutputJSON.php');
 $kernel->loadFile(__DIR__.'/override/classes/webservice/WebserviceOutputJSON.php');
 $kernel->loadFile(__DIR__.'/../../classes/webservice/WebserviceOutputXML.php');
@@ -501,8 +489,6 @@ $kernel->loadFile(__DIR__.'/override/classes/webservice/WebserviceOutputXML.php'
 $kernel->loadFile(__DIR__.'/../../classes/webservice/WebserviceRequest.php');
 $kernel->loadFile(__DIR__.'/override/classes/webservice/WebserviceRequest.php');
 $kernel->loadFile(__DIR__.'/../../classes/webservice/WebserviceSpecificManagementInterface.php');
-// This is an interface, can't get overridden.
-//$kernel->loadFile(__DIR__.'/override/classes/webservice/WebserviceSpecificManagementInterface.php');
 $kernel->loadFile(__DIR__.'/../../classes/webservice/WebserviceSpecificManagementImages.php');
 $kernel->loadFile(__DIR__.'/override/classes/webservice/WebserviceSpecificManagementImages.php');
 $kernel->loadFile(__DIR__.'/../../classes/webservice/WebserviceSpecificManagementSearch.php');

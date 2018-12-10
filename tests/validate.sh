@@ -92,10 +92,34 @@ while read F; do
   CANDIDATES+=("${F}")
 done < <(git-find HEAD 'classes'; git-find HEAD 'controllers';)
 
+# Some classes are not overridable.
+UNOVERRIDABLES=()
+UNOVERRIDABLES+=('classes/PrestaShopAutoload.php')
+# Interfaces.
+UNOVERRIDABLES+=('classes/tax/TaxManagerInterface.php')
+UNOVERRIDABLES+=('classes/stock/StockManagerInterface.php')
+UNOVERRIDABLES+=('classes/tree/ITreeToolbarButton.php')
+UNOVERRIDABLES+=('classes/tree/ITreeToolbar.php')
+UNOVERRIDABLES+=('classes/webservice/WebserviceOutputInterface.php')
+UNOVERRIDABLES+=('classes/webservice/WebserviceSpecificManagementInterface.php')
+
+# Local function to test overridability.
+# $1: candidate.
+function unoverridable {
+  for U in "${UNOVERRIDABLES[@]}"; do
+    if [ "${1}" = "${U}" ]; then
+      return 0
+    fi
+  done
+
+  return 1
+}
+
 # Verify each candidate has a dummy override.
 for C in "${CANDIDATES[@]}"; do
   OVERRIDE="tests/_support/override/${C}"
-  [ -s "${OVERRIDE}" ] \
+
+  unoverridable "${C}" || [ -s "${OVERRIDE}" ] \
     || e "Dummy override ${OVERRIDE} missing."
 done
 unset OVERRIDE
@@ -112,7 +136,7 @@ while read OVERRIDE; do
 
   for C in "${CANDIDATES[@]}"; do
     if [ "${C}" = "${S}" ]; then
-      NEEDED='true'
+      unoverridable "${C}" || NEEDED='true'
       break
     fi
   done
@@ -123,6 +147,8 @@ done < <(git-find HEAD 'tests/_support/override')
 
 # Make sure each override actually contains the class given by its file name.
 for C in "${CANDIDATES[@]}"; do
+  unoverridable "${C}" && continue
+
   CLASS="${C##*/}"
   CLASS="${CLASS%.php}"
   OVERRIDE="tests/_support/override/${C}"
