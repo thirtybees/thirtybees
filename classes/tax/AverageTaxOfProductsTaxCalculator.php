@@ -35,7 +35,7 @@
  * @since   1.0.0
  * @version 1.0.0 Initial version
  */
-class AverageTaxOfProductsTaxCalculator
+class AverageTaxOfProductsTaxCalculatorCore
 {
     // @codingStandardsIgnoreStart
     /** @var int $id_order */

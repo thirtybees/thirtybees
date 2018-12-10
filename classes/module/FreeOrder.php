@@ -32,7 +32,7 @@
 /**
  * Class FreeOrder
  */
-class FreeOrder extends PaymentModule
+class FreeOrderCore extends PaymentModule
 {
     public $active = 1;
     public $name = 'free_order';

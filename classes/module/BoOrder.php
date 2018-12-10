@@ -34,7 +34,7 @@
  *
  * @since 1.0.0
  */
-class BoOrder extends PaymentModule
+class BoOrderCore extends PaymentModule
 {
     // @codingStandardsIgnoreStart
     /** @var int $active */
