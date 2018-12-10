@@ -2122,6 +2122,8 @@ class AdminImportControllerCore extends AdminController
                 foreach ($imagesTypes as $imageType) {
                     $tmpfile = static::get_best_path($imageType['width'], $imageType['height'], $pathInfos);
 
+                    $tgtWidthX2 = $tgtWidth * 2;
+                    $tgtHeightX2 = $tgtHeight * 2;
                     $success = ImageManager::resize(
                         $tmpfile,
                         $path.'-'.stripslashes($imageType['name']).'.jpg',
@@ -2145,8 +2147,8 @@ class AdminImportControllerCore extends AdminController
                             'jpg',
                             false,
                             $error,
-                            $tgtWidth * 2,
-                            $tgtHeight * 2,
+                            $tgtWidthX2,
+                            $tgtHeightX2,
                             5,
                             $srcWidth,
                             $srcHeight
@@ -2176,8 +2178,8 @@ class AdminImportControllerCore extends AdminController
                                 'webp',
                                 false,
                                 $error,
-                                $tgtWidth * 2,
-                                $tgtHeight * 2,
+                                $tgtWidthX2,
+                                $tgtHeightX2,
                                 5,
                                 $srcWidth,
                                 $srcHeight
