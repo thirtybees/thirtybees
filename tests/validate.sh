@@ -14,8 +14,8 @@ function usage {
   echo "is considered to be fine."
   echo
   echo "Notably this script operates on files committed into the Git repository,"
-  echo "not on the files currently checked out. Which means, to fix something,"
-  echo "the fix has to be committed before it gets recognized."
+  echo "revision 'HEAD', not on the files currently checked out. Which means,"
+  echo "to fix something, the fix has to be committed before it gets recognized."
   echo
   echo "    -h, --help          Show this help and exit."
   echo
@@ -119,7 +119,7 @@ function unoverridable {
 for C in "${CANDIDATES[@]}"; do
   OVERRIDE="tests/_support/override/${C}"
 
-  unoverridable "${C}" || [ -s "${OVERRIDE}" ] \
+  unoverridable "${C}" || git-find HEAD "${OVERRIDE}" | grep -q '.' \
     || e "Dummy override ${OVERRIDE} missing."
 done
 unset OVERRIDE
@@ -153,8 +153,8 @@ for C in "${CANDIDATES[@]}"; do
   CLASS="${CLASS%.php}"
   OVERRIDE="tests/_support/override/${C}"
 
-  grep -q "${CLASS}" "${OVERRIDE}" \
+  git-cat HEAD "${OVERRIDE}" | grep -q "${CLASS}" \
     || e "Override ${OVERRIDE}: file name and class name mismatch."
-  grep -q "${CLASS}Core" "${OVERRIDE}" \
+  git-cat HEAD "${OVERRIDE}" | grep -q "${CLASS}Core" \
     || e "Override ${OVERRIDE}: file name and extend class name mismatch."
 done
