@@ -158,3 +158,16 @@ for C in "${CANDIDATES[@]}"; do
   git-cat HEAD "${OVERRIDE}" | grep -q "${CLASS}Core" \
     || e "Override ${OVERRIDE}: file name and extend class name mismatch."
 done
+
+# Make sure each override gets loaded in the class load test.
+LOAD_FILE='tests/_support/unitloadclasses.php'
+for C in "${CANDIDATES[@]}"; do
+  git-cat HEAD "${LOAD_FILE}" \
+    | grep -q "\$kernel->loadFile(__DIR__.'/../../${C}');" \
+    || e "${C} missing in ${LOAD_FILE}."
+
+  unoverridable "${C}" && continue
+  git-cat HEAD "${LOAD_FILE}" \
+    | grep -q "\$kernel->loadFile(__DIR__.'/override/${C}');" \
+    || e "${C} override missing in ${LOAD_FILE}."
+done
