@@ -103,6 +103,15 @@ UNOVERRIDABLES+=('classes/tree/ITreeToolbar.php')
 UNOVERRIDABLES+=('classes/webservice/WebserviceOutputInterface.php')
 UNOVERRIDABLES+=('classes/webservice/WebserviceSpecificManagementInterface.php')
 
+# Also classes in Adapter and Core, none of which are overridable.
+while read F; do
+  [ "${F##*/}" = 'index.php' ] && continue
+  [ "${F##*/}" = '.htaccess' ] && continue
+
+  CANDIDATES+=("${F}")
+  UNOVERRIDABLES+=("${F}")
+done < <(git-find HEAD 'Adapter'; git-find HEAD 'Core';)
+
 # Local function to test overridability.
 # $1: candidate.
 function unoverridable {
