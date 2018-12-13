@@ -29,4 +29,4 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
-define('_TB_INSTALL_VERSION_', '1.0.7');
+define('_TB_INSTALL_VERSION_', '1.0.8');
