@@ -25,7 +25,7 @@
 
 {* Assign product price *}
 {if ($order->getTaxCalculationMethod() == $smarty.const.PS_TAX_EXC)}
-	{assign var=product_price value=($product['unit_price_tax_excl'] + $product['ecotax'])}
+	{assign var=product_price value=$product['unit_price_tax_excl']}
 {else}
 	{assign var=product_price value=$product['unit_price_tax_incl']}
 {/if}
@@ -51,7 +51,7 @@
 	</td>
 	{/if}
 	<td>
-		<span class="product_price_show">{displayPrice price=$product_price currency=$currency->id}</span>
+		<span class="product_price_show">{displayPrice price=$product_price currency=$currency->id}{if $product['ecotax']>0}<br /><small>{l s='ecotax:'} {$product['ecotax']|number_format:2}</small>{/if}</span>
 		{if $can_edit}
 		<div class="product_price_edit" style="display:none;">
 			<input type="hidden" name="product_id_order_detail" class="edit_product_id_order_detail" value="{$product['id_order_detail']}" />
