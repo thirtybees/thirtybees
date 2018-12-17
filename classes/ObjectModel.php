@@ -801,7 +801,8 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                     // If this table is linked to multishop system, update / insert for all shops from context
                     if ($this->isLangMultishop()) {
                         $idShopList = Shop::getContextListShopID();
-                        if (count($this->id_shop_list) > 0) {
+                        if (is_array($this->id_shop_list)
+                            && count($this->id_shop_list) > 0) {
                             $idShopList = $this->id_shop_list;
                         }
                         foreach ($idShopList as $idShop) {
@@ -854,7 +855,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         // Remove association to multishop table
         if (Shop::isTableAssociated($this->def['table'])) {
             $idShopList = Shop::getContextListShopID();
-            if (count($this->id_shop_list)) {
+            if (is_array($this->id_shop_list) && count($this->id_shop_list) > 0) {
                 $idShopList = $this->id_shop_list;
             }
 
