@@ -38,6 +38,7 @@ class ConfigurationCore extends ObjectModel
 {
     // Default configuration consts
     // @since 1.0.1
+    // Benefit of these constants unclear. --Traumflug 2018-12-18
     const SEARCH_INDEXATION = 'PS_SEARCH_INDEXATION';
     const ONE_PHONE_AT_LEAST = 'PS_ONE_PHONE_AT_LEAST';
     const GROUP_FEATURE_ACTIVE = 'PS_GROUP_FEATURE_ACTIVE';
@@ -267,6 +268,7 @@ class ConfigurationCore extends ObjectModel
     const CUSTOMCODE_JS = 'TB_CUSTOMCODE_JS';
     const CUSTOMCODE_ORDERCONF_JS = 'TB_CUSTOMCODE_ORDERCONF_JS';
     const STORE_REGISTERED = 'TB_STORE_REGISTERED';
+    const MAIL_SUBJECT_TEMPLATE = 'TB_MAIL_SUBJECT_TEMPLATE';
     // @codingStandardsIgnoreStart
     /**
      * @see ObjectModel::$definition
