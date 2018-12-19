@@ -5299,11 +5299,10 @@ FileETag none
                     break;
                 case 'size':
                     $dimension = explode('x', $components[1]);
-                    if (count($dimension) !== 2) {
-                        continue;
+                    if (count($dimension) === 2) {
+                        $favicon['width'] = $dimension[0];
+                        $favicon['height'] = $dimension[1];
                     }
-                    $favicon['width'] = $dimension[0];
-                    $favicon['height'] = $dimension[1];
                     break;
             }
         }
