@@ -2822,7 +2822,7 @@ class ToolsCore
         $timeout -= 5; // Room for other processing.
 
         $guzzle = new \GuzzleHttp\Client([
-            'verify'   => __DIR__.'/../cacert.pem',
+            'verify'   => _PS_TOOL_DIR_.'cacert.pem',
             'timeout'  => $timeout,
         ]);
 
