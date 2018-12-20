@@ -197,20 +197,18 @@
 						</select>
 					</div>
 				</div>
-				<div id="csv-fields">
-					<div class="form-group">
-						<label for="separator" class="control-label col-lg-4">{l s='Field separator'}</label>
-						<div class="col-lg-8">
-							<input id="separator" name="separator" class="fixed-width-xs form-control" type="text" value="{if isset($separator_selected)}{$separator_selected|escape:'html':'UTF-8'}{else};{/if}" />
-							<div class="help-block">{l s='e.g. '} 1, Blouse, 129.90, 5</div>
-						</div>
-						<div class="form-group">
-							<label for="multiple_value_separator" class="control-label col-lg-4">{l s='Multiple value separator'}</label>
-							<div class="col-lg-8">
-								<input id="multiple_value_separator" name="multiple_value_separator" class="fixed-width-xs form-control" type="text" value="{if isset($multiple_value_separator_selected)}{$multiple_value_separator_selected|escape:'html':'UTF-8'}{else},{/if}" />
-								<div class="help-block">{l s='e.g. '} red.jpg; blue.jpg; green.jpg</div>
-							</div>
-						</div>
+				<div id="separator-field" class="form-group">
+					<label for="separator" class="control-label col-lg-4">{l s='Field separator'}</label>
+					<div class="col-lg-8">
+						<input id="separator" name="separator" class="fixed-width-xs form-control" type="text" value="{if isset($separator_selected)}{$separator_selected|escape:'html':'UTF-8'}{else};{/if}" />
+						<div class="help-block">{l s='e.g. '} 1, Blouse, 129.90, 5</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="multiple_value_separator" class="control-label col-lg-4">{l s='Multiple value separator'}</label>
+					<div class="col-lg-8">
+						<input id="multiple_value_separator" name="multiple_value_separator" class="fixed-width-xs form-control" type="text" value="{if isset($multiple_value_separator_selected)}{$multiple_value_separator_selected|escape:'html':'UTF-8'}{else},{/if}" />
+						<div class="help-block">{l s='e.g. '} red.jpg; blue.jpg; green.jpg</div>
 					</div>
 				</div>
 				<hr />
@@ -381,9 +379,9 @@
 		$('#csv_files_history').hide();
 		var pattern = /(\.)?(xls[xt]?|o[td]s)$/mgi;
 		if (pattern.exec(filename) != null) {
-			$("#csv-fields").hide();
+			$("#separator-field").hide();
 		} else {
-			$("#csv-fields").show();
+			$("#separator-field").show();
 		}
 	}
 	// when user unselect the .csv
