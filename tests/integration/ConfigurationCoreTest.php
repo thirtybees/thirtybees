@@ -1,7 +1,7 @@
 <?php
 
 
-class ConfigurationTest extends \Codeception\Test\Unit
+class ConfigurationCoreTest extends \Codeception\Test\Unit
 {
     public function testUpdateEscapingTest()
     {
