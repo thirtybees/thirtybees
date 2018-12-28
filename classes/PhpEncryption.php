@@ -72,6 +72,10 @@ class PhpEncryptionCore
      */
     public function decrypt($ciphertext)
     {
+        if (! is_string($ciphertext)) {
+            return null;
+        }
+
         try {
             return Crypto::decrypt($ciphertext, $this->key);
         } catch (Exception $exception) {
