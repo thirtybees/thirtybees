@@ -157,6 +157,10 @@ abstract class ControllerCore
             case E_NOTICE:
                 $type = 'Notice';
                 break;
+            case E_USER_DEPRECATED:
+            case E_DEPRECATED:
+                $type = 'Deprecation';
+                break;
             default:
                 $type = 'Unknown error';
                 break;
