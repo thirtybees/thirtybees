@@ -783,10 +783,7 @@ class OrderDetailCore extends ObjectModel
     protected function checkProductStock($product, $idOrderState)
     {
         if ($idOrderState != Configuration::get('PS_OS_CANCELED') && $idOrderState != Configuration::get('PS_OS_ERROR')) {
-            $updateQuantity = true;
-            if (!StockAvailable::dependsOnStock($product['id_product'])) {
-                $updateQuantity = StockAvailable::updateQuantity($product['id_product'], $product['id_product_attribute'], -(int) $product['cart_quantity']);
-            }
+            $updateQuantity = StockAvailable::updateQuantity($product['id_product'], $product['id_product_attribute'], -(int) $product['cart_quantity']);
 
             if ($updateQuantity) {
                 $product['stock_quantity'] -= $product['cart_quantity'];
