@@ -39,7 +39,7 @@ class ErrorHandlerCore
      *
      * @return ErrorHandlerCore
      *
-     * @since   1.0.9
+     * @since 1.0.9
      */
     public static function getInstance()
     {
@@ -55,13 +55,32 @@ class ErrorHandlerCore
      *
      * @throws PrestaShopException
      *
-     * @since   1.0.9
+     * @since 1.0.9
      */
     public function init()
     {
         if ($this->initialized) {
             throw new PrestaShopException('Error handler already initialized');
         }
+
+        set_exception_handler([$this, 'uncaughtExceptionHandler']);
+
         $this->initialized = true;
+    }
+
+    /**
+     * Uncaught exception handler - any uncaught exception will be processed by
+     * this method
+     *
+     * @param Exception $e uncaught exception
+     *
+     * @since 1.0.9
+     */
+    public function uncaughtExceptionHandler(Exception $e)
+    {
+        $exception = new PrestaShopException($e->getMessage(), $e->getCode(),
+                                             null, $e->getTrace(),
+                                             $e->getFile(), $e->getLine());
+        $exception->displayMessage();
     }
 }
