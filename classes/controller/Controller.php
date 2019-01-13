@@ -37,8 +37,6 @@
 abstract class ControllerCore
 {
     // @codingStandardsIgnoreStart
-    /** @var array List of PHP errors */
-    public static $php_errors = [];
     /** @var array List of CSS files */
     public $css_files = [];
 
@@ -123,62 +121,6 @@ abstract class ControllerCore
     public static function getController($className, $auth = false, $ssl = false)
     {
         return new $className($auth, $ssl);
-    }
-
-    /**
-     * Custom error handler
-     *
-     * @param string $errno
-     * @param string $errstr
-     * @param string $errfile
-     * @param int    $errline
-     *
-     * @return bool
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public static function myErrorHandler($errno, $errstr, $errfile, $errline)
-    {
-        if (error_reporting() === 0) {
-            return false;
-        }
-
-        switch ($errno) {
-            case E_USER_ERROR:
-            case E_ERROR:
-                die('Fatal error: '.$errstr.' in '.$errfile.' on line '.$errline);
-                break;
-            case E_USER_WARNING:
-            case E_WARNING:
-                $type = 'Warning';
-                break;
-            case E_USER_NOTICE:
-            case E_NOTICE:
-                $type = 'Notice';
-                break;
-            case E_USER_DEPRECATED:
-            case E_DEPRECATED:
-                $type = 'Deprecation';
-                break;
-            default:
-                $type = 'Unknown error';
-                break;
-        }
-
-        // @codingStandardsIgnoreStart
-        static::$php_errors[] = [
-            'type'    => $type,
-            'errline' => (int) $errline,
-            'errfile' => str_replace('\\', '\\\\', $errfile), // Hack for Windows paths
-            'errno'   => (int) $errno,
-            'errstr'  => $errstr,
-        ];
-
-        Context::getContext()->smarty->assign('php_errors', static::$php_errors);
-        // @codingStandardsIgnoreEnd
-
-        return true;
     }
 
     /**
@@ -299,10 +241,6 @@ abstract class ControllerCore
      */
     public function init()
     {
-        if (_PS_MODE_DEV_ && $this->controller_type == 'admin') {
-            set_error_handler([__CLASS__, 'myErrorHandler']);
-        }
-
         if (!defined('_PS_BASE_URL_')) {
             define('_PS_BASE_URL_', Tools::getShopDomain(true));
         }
