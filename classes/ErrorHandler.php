@@ -73,7 +73,24 @@ class ErrorHandlerCore
         if ($this->initialized) {
             throw new PrestaShopException("Error handler already initialized");
         }
+
+        /* Set uncaught exception handler */
+        set_exception_handler([$this, 'uncaughtExceptionHandler']);
+
         $this->initialized = true;
+    }
+
+    /**
+     * Uncaught exception handler - any uncaught exception will be processed by this method
+     *
+     * @since   1.0.9
+     * @version 1.0.9 Initial version
+     * @param Exception $e uncaught exception
+     */
+    public function uncaughtExceptionHandler(Exception $e)
+    {
+        $exception = new PrestaShopException($e->getMessage(), $e->getCode(), null, $e->getTrace(), $e->getFile(), $e->getLine());
+        $exception->displayMessage();
     }
 
 }
