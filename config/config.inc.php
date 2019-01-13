@@ -66,6 +66,9 @@ if (!file_exists(_PS_ROOT_DIR_.'/config/settings.inc.php')) {
 require_once(_PS_ROOT_DIR_.'/config/settings.inc.php');
 require_once(_PS_CONFIG_DIR_.'autoload.php');
 
+/* Initialize error reporting logic */
+ErrorHandler::getInstance()->init();
+
 require_once $currentDir . DIRECTORY_SEPARATOR . 'bootstrap.php';
 
 /* Custom config made by users */
