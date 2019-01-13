@@ -2134,6 +2134,13 @@ class AdminControllerCore extends Controller
             );
         }
 
+        if (_PS_MODE_DEV_) {
+            $messages = ErrorHandler::getInstance()->getErrorMessages();
+            if ($messages) {
+                $this->context->smarty->assign('php_errors', $messages);
+            }
+        }
+
         $this->context->smarty->assign(
             [
                 'page'   => $this->json ? json_encode($page) : $page,
