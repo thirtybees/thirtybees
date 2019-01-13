@@ -175,6 +175,8 @@ $kernel->loadFile(__DIR__.'/../../classes/Employee.php');
 $kernel->loadFile(__DIR__.'/override/classes/Employee.php');
 $kernel->loadFile(__DIR__.'/../../classes/Encryptor.php');
 $kernel->loadFile(__DIR__.'/override/classes/Encryptor.php');
+$kernel->loadFile(__DIR__.'/../../classes/ErrorHandler.php');
+$kernel->loadFile(__DIR__.'/override/classes/ErrorHandler.php');
 $kernel->loadFile(__DIR__.'/../../classes/exception/PrestaShopException.php');
 $kernel->loadFile(__DIR__.'/override/classes/exception/PrestaShopException.php');
 $kernel->loadFile(__DIR__.'/../../classes/exception/PrestaShopDatabaseException.php');
