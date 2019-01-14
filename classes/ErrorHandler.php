@@ -121,7 +121,7 @@ class ErrorHandlerCore
      * @version 1.0.9 Initial version
      * @param Exception $e uncaught exception
      */
-    public function uncaughtExceptionHandler(Exception $e)
+    public function uncaughtExceptionHandler(Throwable $e)
     {
         $exception = new PrestaShopException($e->getMessage(), $e->getCode(), null, $e->getTrace(), $e->getFile(), $e->getLine());
         $exception->displayMessage();
