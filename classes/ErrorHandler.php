@@ -51,11 +51,6 @@ class ErrorHandlerCore
     protected $errorMessages = [];
 
     /**
-     * @var bool indicates, whether we should prevent default error handler or not
-     */
-    protected $preventDefaultErrorHandler = false;
-
-    /**
      * @var object psr compliant logger
      */
     protected $logger = null;
@@ -91,9 +86,6 @@ class ErrorHandlerCore
 
         @ini_set('display_errors', 'off');
         @error_reporting(E_ALL | E_STRICT);
-
-        // if we can't turn off display errors, we have to prevent default error handler instead
-        $this->preventDefaultErrorHandler = @ini_get('display_errors') !== 'off';
 
         // Set uncaught exception handler
         set_exception_handler([$this, 'uncaughtExceptionHandler']);
@@ -165,7 +157,7 @@ class ErrorHandlerCore
         if (! $suppressed) {
             $this->logMessage($error);
         }
-        return $suppressed || $this->preventDefaultErrorHandler;
+        return $suppressed || static::displayErrorEnabled();
     }
 
     /**
@@ -327,6 +319,31 @@ class ErrorHandlerCore
                 return 'notice';
             default:
                 return 'warning';
+        }
+    }
+
+
+    /**
+     * Returns true, if display_errors settings is turned on
+     * @since   1.0.9
+     * @version 1.0.9 Initial version
+     */
+    public static function displayErrorEnabled() {
+        $value = @ini_get('display_errors');
+        switch (strtolower($value)) {
+            case 'on':
+            case 'yes':
+            case 'true':
+            case 'stdout':
+            case 'stderr':
+            case '1':
+                return true;
+            case 'off':
+            case 'no':
+            case '0':
+                return false;
+            default:
+                return (bool)(int)$value;
         }
     }
 
