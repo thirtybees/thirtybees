@@ -101,7 +101,8 @@ class ErrorHandlerCore
         // Set error handler
         set_error_handler([$this, 'errorHandler']);
 
-
+        // register shutdown handler to catch fatal errors
+        register_shutdown_function([$this, 'shutdown']);
 
         $this->initialized = true;
     }
@@ -164,8 +165,26 @@ class ErrorHandlerCore
         if (! $suppressed) {
             $this->logMessage($error);
         }
-
         return $suppressed || $this->preventDefaultErrorHandler;
+    }
+
+    /**
+     * Shutdown handler let us detect and react to fatal errors
+     */
+    public function shutdown()
+    {
+        $error = error_get_last();
+        if (static::isFatalError($error['type'])) {
+            $stack = [
+                1 => [
+                    'file' => $error['file'],
+                    'line' => $error['line'],
+                    'type' => 'Fatal error'
+                ]
+            ];
+            $exception = new PrestaShopException($error['message'], 0, null, $stack, $error['file'], $error['line']);
+            $exception->displayMessage();
+        }
     }
 
     /**
@@ -267,6 +286,20 @@ class ErrorHandlerCore
                 return 'Unknown error';
         }
     }
+
+    /**
+     * Returns true if errno is a fatal error
+     *
+     * @return boolean
+     *
+     * @since   1.0.9
+     * @version 1.0.9 Initial version
+     */
+    public static function isFatalError($errno)
+    {
+       return ($errno === E_USER_ERROR || $errno === E_ERROR);
+    }
+
 
     /**
      * Returns error PSR log level for given error level
