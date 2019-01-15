@@ -844,14 +844,14 @@ class WebserviceOutputBuilderCore
     /**
      * @param $field
      *
-     * @return string
+     * @return array
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public function getSynopsisDetails($field)
     {
-        $arrDetails = '';
+        $arrDetails = [];
         if (array_key_exists('required', $field) && $field['required']) {
             $arrDetails['required'] = 'true';
         }
