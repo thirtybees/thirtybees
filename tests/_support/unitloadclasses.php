@@ -495,6 +495,8 @@ $kernel->loadFile(__DIR__.'/../../classes/webservice/WebserviceSpecificManagemen
 $kernel->loadFile(__DIR__.'/override/classes/webservice/WebserviceSpecificManagementSearch.php');
 $kernel->loadFile(__DIR__.'/../../classes/Zone.php');
 $kernel->loadFile(__DIR__.'/override/classes/Zone.php');
+$kernel->loadFile(__DIR__.'/../../classes/ErrorHandler.php');
+$kernel->loadFile(__DIR__.'/override/classes/ErrorHandler.php');
 
 $kernel->loadFile(__DIR__.'/../../controllers/admin/AdminAccessController.php');
 $kernel->loadFile(__DIR__.'/override/controllers/admin/AdminAccessController.php');
