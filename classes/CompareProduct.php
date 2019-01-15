@@ -80,7 +80,7 @@ class CompareProductCore extends ObjectModel
                 ->where('cp.`id_compare` = '.(int) $idCompare)
         );
 
-        $compareProducts = null;
+        $compareProducts = [];
 
         if ($results) {
             foreach ($results as $result) {

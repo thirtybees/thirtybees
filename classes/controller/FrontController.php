@@ -1769,7 +1769,7 @@ class FrontControllerCore extends Controller
                 'PS_STOCK_MANAGEMENT' => Configuration::get('PS_STOCK_MANAGEMENT'),
                 'quick_view'          => (bool) Configuration::get('PS_QUICK_VIEW'),
                 'shop_phone'          => Configuration::get('PS_SHOP_PHONE'),
-                'compared_products'   => is_array($comparedProducts) ? $comparedProducts : [],
+                'compared_products'   => $comparedProducts,
                 'comparator_max_item' => (int) Configuration::get('PS_COMPARATOR_MAX_ITEM'),
                 'currencySign'        => $currency->sign, // backward compat, see global.tpl
                 'currencyFormat'      => $currency->format, // backward compat
