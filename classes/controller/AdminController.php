@@ -2135,10 +2135,7 @@ class AdminControllerCore extends Controller
         }
 
         if (_PS_MODE_DEV_) {
-            $messages = ErrorHandler::getInstance()->getErrorMessages();
-            if ($messages) {
-                $this->context->smarty->assign('php_errors', $messages);
-            }
+            $this->assignErrorMessages();
         }
 
         $this->context->smarty->assign(
@@ -4716,4 +4713,17 @@ class AdminControllerCore extends Controller
 
         return $result;
     }
+
+    /**
+     * Retrieves collected error messages and assign them to
+     * smarty variable 'php_errors'
+     */
+    protected function assignErrorMessages()
+    {
+        $messages = ErrorHandler::getInstance()->getErrorMessages();
+        if ($messages) {
+            $this->context->smarty->assign('php_errors', $messages);
+        }
+    }
+
 }
