@@ -1259,20 +1259,42 @@ class FrontControllerCore extends Controller
     /**
      * Initializes page footer variables.
      *
-     * @since   1.0.0
-     *
-     * @version 1.0.0 Initial version
+     * @since 1.0.0
+     * @since 1.0.9 Add debug messages as JavaScript console messages.
      */
     public function initFooter()
     {
         $hookFooter = Hook::exec('displayFooter');
+
         $extraJs = Configuration::get(Configuration::CUSTOMCODE_JS);
         $extraJsConf = '';
         if (isset($this->php_self) && $this->php_self == 'order-confirmation') {
             $extraJsConf = Configuration::get(Configuration::CUSTOMCODE_ORDERCONF_JS);
         }
 
-        $hookFooter .= '<script>'.$extraJs.$extraJsConf.'</script>';
+        $debugMessages = '';
+        if (_PS_MODE_DEV_) {
+            $debugMessages .= "\n";
+            forEach(ErrorHandler::getInstance()->getErrorMessages(false) as $errorMessage) {
+                $printMessage = 'console.';
+                switch ($errorMessage['level']) {
+                    case 'warning':
+                    case 'notice':
+                        $printMessage .= 'warn';
+                        break;
+                    case 'error':
+                        $printMessage .= 'error';
+                        break;
+                    default:
+                        $printMessage .= 'log';
+                }
+                $strMessage = ErrorHandler::formatErrorMessage($errorMessage);
+                $printMessage .= '('.json_encode($strMessage).');';
+                $debugMessages .= $printMessage."\n";
+            }
+        }
+
+        $hookFooter .= '<script>'.$extraJs.$extraJsConf.$debugMessages.'</script>';
 
         $this->context->smarty->assign(
             [
