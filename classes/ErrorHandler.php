@@ -45,6 +45,11 @@ class ErrorHandlerCore
     protected $preventDefaultErrorHandler = false;
 
     /**
+     * @var object psr compliant logger
+     */
+    protected $logger = null;
+
+    /**
      * Get instance of error handler
      *
      * @return ErrorHandlerCore
@@ -144,11 +149,94 @@ class ErrorHandlerCore
             'errline'     => $errline,
             'suppressed'  => $suppressed,
             'type'        => static::getErrorType($errno),
+            'level'       => static::getLogLevel($errno),
         ];
         $this->errorMessages[] = $error;
+        if (! $suppressed) {
+            $this->logMessage($error);
+        }
 
         return $suppressed || $this->preventDefaultErrorHandler;
     }
+
+    /**
+     * Sets external logger. If $replay parameter is true, then any already
+     * collected error messages will be emitted
+     *
+     * @param $logger
+     * @param bool $replay
+     *
+     * @since 1.0.9
+     */
+    public function setLogger(LoggerInterface $logger, $replay=false)
+    {
+        $this->logger = $logger;
+        if ($replay) {
+            foreach($this->getErrorMessages(false) as $errorMessage) {
+                $this->logMessage($errorMessage);
+            }
+        }
+    }
+
+    /**
+     * Forward error message to psr compliant logger
+     *
+     * @param $msg
+     *
+     * @since 1.0.9
+     */
+    protected function logMessage($msg)
+    {
+        if (! $this->logger) {
+            return;
+        }
+
+        $file = static::normalizeFileName($msg['errfile']);
+        $message = $msg['type'].': '
+                   .$msg['errstr'].' in '.$file.' at line '.$msg['errline'];
+
+        switch ($msg['level']) {
+            case LogLevel::EMERGENCY:
+                $this->logger->emergency($message);
+                break;
+            case LogLevel::ALERT:
+                $this->logger->alert($message);
+                break;
+            case LogLevel::CRITICAL:
+                $this->logger->critical($message);
+                break;
+            case LogLevel::ERROR:
+                $this->logger->error($message);
+                break;
+            case LogLevel::WARNING:
+                $this->logger->warning($message);
+                break;
+            case LogLevel::NOTICE:
+                $this->logger->notice($message);
+                break;
+            case LogLevel::INFO:
+                $this->logger->info($message);
+                break;
+            case LogLevel::DEBUG:
+                $this->logger->debug($message);
+                break;
+        }
+    }
+
+    /**
+     * Returns file name relative to thirtybees root directory
+     *
+     * @param $file
+     *
+     * @return string file
+     *
+     * @since 1.0.9
+     */
+    private static function normalizeFileName($file)
+    {
+        return ltrim(str_replace([_PS_ROOT_DIR_, '\\'], ['', '/'], $file), '/');
+    }
+
 
     /**
      * Returns error type for given error level
@@ -176,6 +264,34 @@ class ErrorHandlerCore
                 return 'Deprecation';
             default:
                 return 'Unknown error';
+        }
+    }
+
+    /**
+     * Returns error PSR log level for given error level
+     *
+     * @param int $errno level of the error raised
+     *
+     * @return string error log level
+     *
+     * @since 1.0.9
+     */
+    public static function getLogLevel($errno)
+    {
+        switch ($errno) {
+            case E_USER_ERROR:
+            case E_ERROR:
+                return 'error';
+            case E_USER_WARNING:
+            case E_WARNING:
+            case E_USER_DEPRECATED:
+            case E_DEPRECATED:
+                return 'warning';
+            case E_USER_NOTICE:
+            case E_NOTICE:
+                return 'notice';
+            default:
+                return 'warning';
         }
     }
 }
