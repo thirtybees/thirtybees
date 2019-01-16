@@ -255,7 +255,7 @@ class ErrorHandlerCore
      * @param $file
      * @return string file
      */
-    private static function normalizeFileName($file)
+    public static function normalizeFileName($file)
     {
         return ltrim(str_replace([_PS_ROOT_DIR_, '\\'], ['', '/'], $file), '/');
     }
