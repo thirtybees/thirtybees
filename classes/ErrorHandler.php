@@ -207,8 +207,8 @@ class ErrorHandlerCore
             return;
         }
 
-        $file = static::normalizeFileName($msg['errfile']);
-        $message = $msg['type'] . ': ' . $msg['errstr'] . ' in ' . $file . ' at line ' . $msg['errline'];
+        $message = static::formatErrorMessage($msg);
+
         switch ($msg['level']) {
             case LogLevel::EMERGENCY:
                 $this->logger->emergency($message);
@@ -235,6 +235,18 @@ class ErrorHandlerCore
                 $this->logger->debug($message);
                 break;
         }
+    }
+
+    /**
+     * Converts $msg to string representation
+     *
+     * @param $msg array error message
+     * @return string
+     */
+    public static function formatErrorMessage($msg)
+    {
+        $file = static::normalizeFileName($msg['errfile']);
+        return $msg['type'] . ': ' . $msg['errstr'] . ' in ' . $file . ' at line ' . $msg['errline'];
     }
 
     /**

@@ -1271,8 +1271,29 @@ class FrontControllerCore extends Controller
         if (isset($this->php_self) && $this->php_self == 'order-confirmation') {
             $extraJsConf = Configuration::get(Configuration::CUSTOMCODE_ORDERCONF_JS);
         }
+        $debugMessages = '';
+        if (_PS_MODE_DEV_) {
+            $debugMessages .= "\n";
+            forEach(ErrorHandler::getInstance()->getErrorMessages(false) as $errorMessage) {
+                $printMessage = 'console.';
+                switch ($errorMessage['level']) {
+                    case 'warning':
+                    case 'notice':
+                        $printMessage .= 'warn';
+                        break;
+                    case 'error':
+                        $printMessage .= 'error';
+                        break;
+                    default:
+                        $printMessage .= 'log';
+                }
+                $strMessage = ErrorHandler::formatErrorMessage($errorMessage);
+                $printMessage .= '(' . json_encode($strMessage) . ');';
+                $debugMessages .= $printMessage . "\n";
+            }
+        }
 
-        $hookFooter .= '<script>'.$extraJs.$extraJsConf.'</script>';
+        $hookFooter .= '<script>'.$extraJs.$extraJsConf.$debugMessages.'</script>';
 
         $this->context->smarty->assign(
             [
