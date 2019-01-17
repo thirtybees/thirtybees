@@ -169,8 +169,9 @@ class PrestaShopLoggerCore extends ObjectModel
      */
     protected function _isPresent()
     {
-        if (!isset(static::$is_present[md5($this->message)])) {
-            static::$is_present[$this->getHash()] = Db::getInstance()->getValue(
+        $key = $this->getHash();
+        if (! isset(static::$is_present[$key])) {
+            static::$is_present[$key] = Db::getInstance()->getValue(
                 'SELECT COUNT(*)
 				FROM `'._DB_PREFIX_.'log`
 				WHERE
@@ -183,7 +184,7 @@ class PrestaShopLoggerCore extends ObjectModel
             );
         }
 
-        return static::$is_present[$this->getHash()];
+        return static::$is_present[$key];
     }
 
     /**
