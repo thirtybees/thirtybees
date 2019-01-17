@@ -592,14 +592,50 @@ class ConfigurationCore extends ObjectModel
     /**
      * Update configuration key and value into database (automatically insert if key does not exist)
      *
+     *
+     * @param string $key Key
+     * @param mixed $values $values is an array if the configuration is multilingual, a single string else.
+     * @param bool $html Specify if html is authorized in value
+     * @param int $idShopGroup
+     * @param int $idShop
+     *
+     * @return bool Update result
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     * @throws PrestaShopException
+     * @throws HTMLPurifier_Exception
+     */
+    public static function updateValue($key, $values, $html = false, $idShopGroup = null, $idShop = null)
+    {
+        if (!is_array($values)) {
+            $values = [$values];
+        }
+
+        // sanitize values
+        foreach ($values as &$value) {
+            if (! is_numeric($value)) {
+                if ($html) {
+                    // if html values are allowed, just purify html code
+                    $value = Tools::purifyHTML($value);
+                } else {
+                    // if html values are not allowed, strip tags
+                    $value = strip_tags(Tools::nl2br($value));
+                }
+            }
+        }
+
+        return self::updateValueRaw($key, $values, $idShopGroup, $idShop);
+    }
+
+    /**
+     * Update configuration key and value into database and cache
+     *
      * Values are inserted/updated directly using SQL, because using (Configuration) ObjectModel
      * may not insert values correctly (for example, HTML is escaped, when it should not be).
      *
-     * This method escapes $values with pSQL().
-     *
      * @param string $key    Key
      * @param mixed  $values $values is an array if the configuration is multilingual, a single string else.
-     * @param bool   $html   Specify if html is authorized in value
      * @param int    $idShopGroup
      * @param int    $idShop
      *
@@ -609,13 +645,14 @@ class ConfigurationCore extends ObjectModel
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
-    public static function updateValue($key, $values, $html = false, $idShopGroup = null, $idShop = null)
+    public static function updateValueRaw($key, $values, $idShopGroup = null, $idShop = null)
     {
         static::validateKey($key);
 
         if ($idShop === null || !Shop::isFeatureActive()) {
             $idShop = Shop::getContextShopID(true);
         }
+
         if ($idShopGroup === null || !Shop::isFeatureActive()) {
             $idShopGroup = Shop::getContextShopGroupID(true);
         }
@@ -624,19 +661,9 @@ class ConfigurationCore extends ObjectModel
             $values = [$values];
         }
 
-        if ($html) {
-            foreach ($values as &$value) {
-                $value = Tools::purifyHTML($value);
-            }
-            unset($value);
-        }
-
-        foreach ($values as &$value) {
-            $value = pSQL($value, $html);
-        }
-
         $result = true;
-        foreach ($values as $lang => $value) {
+        foreach ($values as $lang => $rawValue) {
+            $value = pSQL($rawValue, true);
             if (Configuration::hasKey($key, $lang, $idShopGroup, $idShop)) {
                 // If key exists already, update value.
                 if (!$lang) {
