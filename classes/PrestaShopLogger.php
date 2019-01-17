@@ -56,6 +56,8 @@ class PrestaShopLoggerCore extends ObjectModel
     public $date_add;
     /** @var string Object last modification date */
     public $date_upd;
+    /** @var string hash code for this log object */
+    protected $hash;
     // @codingStandardsIgnoreEnd
 
     /**
@@ -185,7 +187,7 @@ class PrestaShopLoggerCore extends ObjectModel
     }
 
     /**
-     * this function md5($this->message.$this->severity.$this->error_code.$this->object_type.$this->object_id)
+     * Calculates hash key for current log entry
      *
      * @return string hash
      *
@@ -195,7 +197,13 @@ class PrestaShopLoggerCore extends ObjectModel
     public function getHash()
     {
         if (empty($this->hash)) {
-            $this->hash = md5($this->message.$this->severity.$this->error_code.$this->object_type.$this->object_id);
+            $this->hash = md5(
+                $this->message .
+                $this->severity .
+                $this->error_code .
+                $this->object_type .
+                $this->object_id
+            );
         }
 
         return $this->hash;
