@@ -216,8 +216,8 @@
 										</div>
 									{elseif $field['type'] == 'code'}
 									<div class="ace-container col-lg-9">
-										<div class="ace-editor" data-name="{$key|escape:'htmlall':'UTF-8'}" id="ace{$key|escape:'htmlall':'UTF-8'}">{$field['value']|escape:'html':'UTF-8'}</div>
-										<input type="hidden" id="{$key|escape:'htmlall':'UTF-8'}" name="{$key|escape:'htmlall':'UTF-8'}" value="{$field['value']|escape:'html':'UTF-8'}">
+										<div class="ace-editor" data-name="{$key|escape:'htmlall':'UTF-8'}" id="ace{$key|escape:'htmlall':'UTF-8'}">{$field['value']}</div>
+										<input type="hidden" id="{$key|escape:'htmlall':'UTF-8'}" name="{$key|escape:'htmlall':'UTF-8'}" value="{$field['value']}">
 									</div>
 										<script>
 											(function () {

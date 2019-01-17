@@ -4453,7 +4453,7 @@ class AdminControllerCore extends Controller
                         $val = (isset($options['cast']) ? $options['cast'](Tools::getValue($key)) : Tools::getValue($key));
                         if ($this->validateField($val, $options)) {
                             if ($options['type'] === 'code') {
-                                Configuration::updateValue($key, $val, true);
+                                Configuration::updateValueRaw($key, $val);
                             } elseif (Validate::isCleanHtml($val)) {
                                 Configuration::updateValue($key, $val);
                             } else {
