@@ -1737,7 +1737,7 @@ class AdminThemesControllerCore extends AdminController
                 $importedTheme = $this->importThemeXmlConfig($xml);
                 foreach ($importedTheme as $theme) {
                     if (Validate::isLoadedObject($theme)) {
-                        if (!copy($sandbox.$themeDir.$configFile, _PS_ROOT_DIR_.'/config/xml/themes/'.$theme->directory.'.xml')) {
+                        if (!copy($sandbox.$themeDir.$configFile, $theme->getConfigFilePath())) {
                             $this->errors[] = $this->l('Can\'t copy configuration file');
                         }
                         $targetDir = _PS_ALL_THEMES_DIR_.$theme->directory;
@@ -2364,9 +2364,7 @@ class AdminThemesControllerCore extends AdminController
             return $helper->generateForm([$fieldsForm]);
         }
 
-        Tools::redirectAdmin($this->context->link->getAdminLink('AdminThemes'));
-
-        return '';
+        throw new PrestaShopException('Could not load theme configuration file: ' . $theme->getConfigFilePath());
     }
 
     /**
@@ -2682,6 +2680,7 @@ class AdminThemesControllerCore extends AdminController
             && $this->context->shop->id_theme != Tools::getValue('id_theme')
         ) {
             $this->display = 'ChooseThemeModule';
+            return true;
         } elseif (Tools::isSubmit('installThemeFromFolder')
                   && ($this->context->mode != Context::MODE_HOST)
         ) {

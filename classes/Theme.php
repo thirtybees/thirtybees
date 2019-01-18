@@ -570,9 +570,15 @@ class ThemeCore extends ObjectModel
      */
     public function loadConfigFile($validate = false)
     {
-        $path = _PS_ROOT_DIR_.'/config/xml/themes/'.$this->name.'.xml';
+        $path = $this->getConfigFilePath();
         if ( ! file_exists($path)) {
-            $path = _PS_ROOT_DIR_.'/config/xml/themes/default.xml';
+            // fallback to xml files named by theme name
+            $path = _PS_ROOT_DIR_.'/config/xml/themes/'.$this->name.'.xml';
+
+            // community theme xml file can be stored under default.xml as well
+            if (! file_exists($path) && $this->name === 'community-theme-default') {
+                $path = _PS_ROOT_DIR_ . '/config/xml/themes/default.xml';
+            }
         }
 
         if ( ! file_exists($path)) {
@@ -585,6 +591,16 @@ class ThemeCore extends ObjectModel
         }
 
         return $xml;
+    }
+
+    /**
+     * Returns path to theme's configuration file
+     *
+     * @return string
+     */
+    public function getConfigFilePath()
+    {
+        return _PS_ROOT_DIR_ . '/config/xml/themes/' . $this->directory . '.xml';
     }
 
     /**
