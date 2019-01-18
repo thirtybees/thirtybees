@@ -1649,7 +1649,6 @@ class FrontControllerCore extends Controller
             }
 
             if (Validate::isLoadedObject($cart) && $cart->OrderExists()) {
-                Logger::addLog('Frontcontroller::init - Cart cannot be loaded or an order has already been placed using this cart', 1, null, 'Cart', (int) $this->context->cookie->id_cart, true);
                 unset($this->context->cookie->id_cart, $cart, $this->context->cookie->checkedTOS);
                 $this->context->cookie->check_cgv = false;
             } /* Delete product of cart, if user can't make an order from his country */
