@@ -76,6 +76,11 @@ class PrestaShopExceptionCore extends Exception
     {
         header('HTTP/1.1 500 Internal Server Error');
 
+        //clean any output buffer there might be
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+
         if (_PS_MODE_DEV_ || getenv('CI')) {
             // Display error message
             echo '<style>
