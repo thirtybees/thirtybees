@@ -2941,12 +2941,13 @@ class AdminThemesControllerCore extends AdminController
                     $manifest['background_color'] = $link->getAttribute('content');
                 }
             }
-            $filteredHtml .= $dom->saveHTML($link);
+            $filteredHtml .= $dom->saveHTML($link) . "\n";
         }
 
         file_put_contents(_PS_IMG_DIR_."favicon/browserconfig_{$idShop}.xml", $browserConfig->saveXML());
         file_put_contents(_PS_IMG_DIR_."favicon/manifest_{$idShop}.json", json_encode($manifest, JSON_UNESCAPED_SLASHES + JSON_PRETTY_PRINT));
-        Configuration::updateValue('TB_SOURCE_FAVICON_CODE', nl2br(urldecode($filteredHtml)), true);
+
+        Configuration::updateValueRaw('TB_SOURCE_FAVICON_CODE', urldecode($filteredHtml));
 
         if (!$this->errors) {
             $this->redirect_after = static::$currentIndex.'&token='.$this->token;
