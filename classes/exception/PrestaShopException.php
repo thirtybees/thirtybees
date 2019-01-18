@@ -245,7 +245,7 @@ class PrestaShopExceptionCore extends Exception
             $ret .= '```';
             foreach ($args as $arg => $value) {
                 $ret .= 'Argument ['.Tools::safeOutput($arg)."]  \n";
-                $ret .= Tools::safeOutput(print_r($value, true));
+                $ret .= Tools::safeOutput($this->displayArgument($value));
                 $ret .= "\n";
             }
             $ret .= "```  \n";
@@ -253,13 +253,101 @@ class PrestaShopExceptionCore extends Exception
             echo '<div class="psArgs" id="psArgs_'.$id.'"><pre>';
             foreach ($args as $arg => $value) {
                 echo '<b>Argument ['.Tools::safeOutput($arg)."]</b>\n";
-                echo Tools::safeOutput(print_r($value, true));
+                echo Tools::safeOutput($this->displayArgument($value));
                 echo "\n";
             }
             echo '</pre>';
         }
 
         return $ret;
+    }
+
+    /**
+     * Method will render argument into string. Similar to var_dump, but will product smaller output
+     *
+     * @param $variable variable to be rendered
+     * @param int $strlen max length of string. If longer then string will be truncated and ... will be added
+     * @param int $width maximal number of array items to be rendered
+     * @param int $depth maximaln depth that we will traverse
+     * @param int $i current depth
+     * @param array $objects array of seen objects
+     *
+     * @return string
+     */
+    protected function displayArgument($variable, $strlen = 80, $width = 50, $depth = 2, $i = 0, $objects = [])
+    {
+        $search = array("\0", "\a", "\b", "\f", "\n", "\r", "\t", "\v");
+        $replace = array('\0', '\a', '\b', '\f', '\n', '\r', '\t', '\v');
+
+        switch (gettype($variable)) {
+            case 'boolean':
+                return $variable ? 'true' : 'false';
+            case 'integer':
+            case 'double':
+                return (string)$variable;
+            case 'resource':
+                return '[resource]';
+            case 'NULL':
+                return 'null';
+            case 'unknown type':
+                return '???';
+            case 'string':
+                $len = strlen($variable);
+                $variable = str_replace($search, $replace, substr($variable,0,$strlen),$count);
+                $variable = substr($variable,0, $strlen);
+                if ($len<$strlen) {
+                    return '"'.$variable.'"';
+                } else {
+                    return 'string('.$len.'): "'.$variable.'"...';
+                }
+            case 'array':
+                $len = count($variable);
+                if ($i == $depth) {
+                    return 'array('.$len.') [...]';
+                }
+                if (!$len) {
+                    return 'array(0) []';
+                }
+                $string = '';
+                $keys = array_keys($variable);
+                $spaces = str_repeat(' ',$i*2);
+                $string.= "array($len)\n".$spaces.'[';
+                $count=0;
+                foreach($keys as $key) {
+                    if ($count==$width) {
+                        $string.= "\n".$spaces."  ...";
+                        break;
+                    }
+                    $string.= "\n".$spaces."  [$key] => ";
+                    $string.= $this->displayArgument($variable[$key], $strlen, $width, $depth,$i+1, $objects);
+                    $count++;
+                }
+                $string.="\n".$spaces.']';
+                return $string;
+            case 'object':
+                $id = array_search($variable, $objects,true);
+                if ($id !== false) {
+                    return get_class($variable) . '#' . ($id + 1) . ' {...}';
+                }
+                if ($i==$depth) {
+                    return get_class($variable).' {...}';
+                }
+                $string = '';
+                $id = array_push($objects, $variable);
+                $array = (array)$variable;
+                $spaces = str_repeat(' ',$i*2);
+                $string.= get_class($variable)."#$id\n".$spaces.'{';
+                $properties = array_keys($array);
+                foreach($properties as $property) {
+                    $name = str_replace("\0",':', trim($property));
+                    $string .= "\n".$spaces."  [$name] => ";
+                    $string .= $this->displayArgument($array[$property], $strlen, $width, $depth,$i+1, $objects);
+                }
+                $string .= "\n".$spaces.'}';
+                return $string;
+            default:
+                return print_r($variable, true);
+        }
     }
 
     /**
