@@ -1312,7 +1312,15 @@ class FrontControllerCore extends Controller
             }
         }
 
-        $hookFooter .= '<script>'.$extraJs.$extraJsConf.$debugMessages.'</script>';
+        if ($extraJs) {
+            $hookFooter .= '<script type="text/javascript">'.$extraJs.'</script>';
+        }
+        if ($extraJsConf) {
+            $hookFooter .= '<script type="text/javascript">'.$extraJsConf.'</script>';
+        }
+        if ($debugMessages) {
+            $hookFooter .= '<script type="text/javascript">'.$debugMessages.'</script>';
+        }
 
         $this->context->smarty->assign(
             [
