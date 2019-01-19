@@ -4525,6 +4525,9 @@ class AdminControllerCore extends Controller
                 $this->informations = '.var_export($this->informations, true).';
                 $this->confirmations = '.var_export($this->confirmations, true).';
             ');
+            if (function_exists('opcache_invalidate')) {
+                opcache_invalidate($messageCachePath);
+            }
         }
 
         Tools::redirectAdmin($this->redirect_after);
