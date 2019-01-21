@@ -356,6 +356,11 @@ abstract class ControllerCore
             $html = $this->context->smarty->fetch($content);
         }
         $html = trim($html);
+
+        $debugScript = _PS_MODE_DEV_ ? $this->getErrorMessagesScript() : '';
+        if ($debugScript) {
+            $html = str_replace("</body>", $debugScript . "</body>", $html);
+        }
         if (in_array($this->controller_type, ['front', 'modulefront']) && !empty($html) && $this->getLayout()) {
             $liveEditContent = '';
             if (!$this->useMobileTheme() && $this->checkLiveEditAccess()) {
@@ -380,8 +385,10 @@ abstract class ControllerCore
             } else {
                 echo preg_replace('/(?<!\$)'.$jsTag.'/', $javascript, $html);
             }
+
             echo $liveEditContent.((!isset($this->ajax) || !$this->ajax) ? '</body></html>' : '');
         } else {
+
             echo $html;
         }
     }
@@ -740,5 +747,52 @@ abstract class ControllerCore
         Hook::exec('actionBeforeAjaxDie'.$controller.$method, ['value' => $value]);
 
         die($value);
+    }
+
+    /**
+     * This method returns javascript code that outputs all encountered php errors and warnings
+     * to javascript console. This script should be inserted just before </body> tag
+     *
+     * @return string javascript code, or null if no errors were encountered
+     */
+    protected function getErrorMessagesScript()
+    {
+        $messages = ErrorHandler::getInstance()->getErrorMessages(false);
+        if ($messages) {
+            $debugMessages = "\n";
+            $debugMessages .= 'if(window.console && window.console.group && window.console.log && window.console.warn && window.console.error) {' . "\n";
+            $debugMessages .= '  console.group("PHP error messages");' . "\n";
+            foreach (ErrorHandler::getInstance()->getErrorMessages(false) as $errorMessage) {
+                $printMessage = '  console.';
+                $color = "black";
+                switch ($errorMessage['level']) {
+                    case 'warning':
+                    case 'notice':
+                        $printMessage .= 'warn';
+                        $color = "#B23B13";
+                        break;
+                    case 'error':
+                        $printMessage .= 'error';
+                        $color = "red";
+                        break;
+                    default:
+                        $printMessage .= 'log';
+                }
+                $file = ErrorHandler::normalizeFileName($errorMessage['errfile']);
+                $strMessage = '%c' . $errorMessage['type'] . ':'
+                    . ' %c' . $errorMessage['errstr']
+                    . ' %cin %c' . $file
+                    . ' %cat line %c' . $errorMessage['errline'];
+                $printMessage .= '(' . json_encode($strMessage) . ', '
+                    . '"color: ' . $color . '", '
+                    . '"color: blue; font-weight: bold", '
+                    . '"color: grey", "color:green", '
+                    . '"color: grey", "color:green");';
+                $debugMessages .= $printMessage . "\n";
+            }
+            $debugMessages .= "  console.groupEnd();\n";
+            $debugMessages .= "}\n";
+            return '<script type="text/javascript">' . $debugMessages . '</script>';
+        }
     }
 }

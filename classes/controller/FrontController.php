@@ -1272,54 +1272,11 @@ class FrontControllerCore extends Controller
             $extraJsConf = Configuration::get(Configuration::CUSTOMCODE_ORDERCONF_JS);
         }
 
-        $debugMessages = '';
-        if (_PS_MODE_DEV_) {
-            $messages = ErrorHandler::getInstance()->getErrorMessages(false);
-            if ($messages) {
-                $debugMessages = "\n";
-                $debugMessages .= 'if(window.console && window.console.group && window.console.log && window.console.warn && window.console.error) {'."\n";
-                $debugMessages .= '  console.group("PHP error messages");'."\n";
-                foreach (ErrorHandler::getInstance()->getErrorMessages(false) as $errorMessage) {
-                    $printMessage = '  console.';
-                    $color = "black";
-                    switch ($errorMessage['level']) {
-                        case 'warning':
-                        case 'notice':
-                            $printMessage .= 'warn';
-                            $color = "#B23B13";
-                            break;
-                        case 'error':
-                            $printMessage .= 'error';
-                            $color = "red";
-                            break;
-                        default:
-                            $printMessage .= 'log';
-                    }
-                    $file = ErrorHandler::normalizeFileName($errorMessage['errfile']);
-                    $strMessage = '%c'.$errorMessage['type'].':'
-                                  .' %c'.$errorMessage['errstr']
-                                  .' %cin %c'.$file
-                                  .' %cat line %c'.$errorMessage['errline'];
-                    $printMessage .= '('.json_encode($strMessage).', '
-                                     .'"color: '.$color.'", '
-                                     .'"color: blue; font-weight: bold", '
-                                     .'"color: grey", "color:green", '
-                                     .'"color: grey", "color:green");';
-                    $debugMessages .= $printMessage."\n";
-                }
-                $debugMessages .= "  console.groupEnd();\n";
-                $debugMessages .= "}\n";
-            }
-        }
-
         if ($extraJs) {
             $hookFooter .= '<script type="text/javascript">'.$extraJs.'</script>';
         }
         if ($extraJsConf) {
             $hookFooter .= '<script type="text/javascript">'.$extraJsConf.'</script>';
-        }
-        if ($debugMessages) {
-            $hookFooter .= '<script type="text/javascript">'.$debugMessages.'</script>';
         }
 
         $this->context->smarty->assign(
