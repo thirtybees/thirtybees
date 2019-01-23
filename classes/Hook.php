@@ -284,7 +284,7 @@ class HookCore extends ObjectModel
         $usePush = false,
         $idShop = null
     ) {
-        if (! PageCache::isEnabled()) {
+        if ($arrayReturn || !PageCache::isEnabled() || PageCacheKey::get() === false) {
             return static::execWithoutCache($hookName, $hookArgs, $idModule, $arrayReturn, $checkExceptions, $usePush, $idShop);
         }
 
@@ -292,41 +292,26 @@ class HookCore extends ObjectModel
             return '';
         }
 
-        if ($arrayReturn) {
-            $return = [];
-        } else {
-            $return = '';
-        }
+        $return = '';
 
         if (!$idModule) {
+            $cacheEntry = PageCache::get();
             $cachedHooks = PageCache::getCachedHooks();
             foreach ($moduleList as $m) {
                 $idModule = (int) $m['id_module'];
-                $data = static::execWithoutCache($hookName, $hookArgs, $idModule, $arrayReturn, $checkExceptions, $usePush, $idShop);
-                if (is_array($data)) {
-                    $data = array_shift($data);
-                }
-                if (is_array($data)) {
-                    $return[$m['module']] = $data;
+                $data = static::execWithoutCache($hookName, $hookArgs, $idModule, false, $checkExceptions, $usePush, $idShop);
+                $idHook = (int) static::getIdByName($hookName);
+                if (isset($cachedHooks[$idModule][$idHook])) {
+                    $return .= $data;
                 } else {
-                    $idHook = (int) static::getIdByName($hookName);
-                    if (isset($cachedHooks[$idModule][$idHook])) {
-                        $dataWrapped = $data;
-                    } else {
-                        // wrap dynamic hooks
-                        $delimiter = "<!--[hook:$idModule:$idHook]-->";
-                        $dataWrapped = $delimiter.$data.$delimiter;
-                    }
-
-                    if ($arrayReturn) {
-                        $return[$m['module']] = $dataWrapped;
-                    } else {
-                        $return .= $dataWrapped;
-                    }
+                    // wrap dynamic hooks
+                    $key = $cacheEntry->setHook($idModule, $idHook, $hookName, $hookArgs);
+                    $delimiter = "<!--[$key]-->";
+                    $return .= $delimiter.$data.$delimiter;
                 }
             }
         } else {
-            $return = static::execWithoutCache($hookName, $hookArgs, $idModule, $arrayReturn, $checkExceptions, $usePush, $idShop);
+            $return = static::execWithoutCache($hookName, $hookArgs, $idModule, false, $checkExceptions, $usePush, $idShop);
         }
 
         return $return;

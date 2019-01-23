@@ -43,6 +43,11 @@ class PageCacheCore
     const CACHE_ENTRY_TTL = 86400;
 
     /**
+     * @var PageCacheEntry holds current page cache entry
+     */
+    protected static $entry = null;
+
+    /**
      * Returns true if full page cache is enabled
      *
      * @since: 1.0.7
@@ -57,6 +62,7 @@ class PageCacheCore
      * Insert new entry for current request into full page cache
      *
      * @param string $template
+     * @throws PrestaShopException
      *
      * @since 1.0.7
      */
@@ -65,10 +71,14 @@ class PageCacheCore
         if (static::isEnabled()) {
             $key = PageCacheKey::get();
             if ($key) {
-                $hash = $key->getHash();
-                $cache = Cache::getInstance();
-                $cache->set($hash, $template, static::CACHE_ENTRY_TTL);
-                static::cacheKey($hash, $key->idCurrency, $key->idLanguage, $key->idCountry, $key->idShop, $key->entityType, $key->entityId);
+                $cacheEntry = static::get();
+                $cacheEntry->setContent($template);
+                if ($cacheEntry->isValid()) {
+                    $hash = $key->getHash();
+                    $cache = Cache::getInstance();
+                    $cache->set($hash, $cacheEntry->serialize(), static::CACHE_ENTRY_TTL);
+                    static::cacheKey($hash, $key->idCurrency, $key->idLanguage, $key->idCountry, $key->idShop, $key->entityType, $key->entityId);
+                }
             }
         }
     }
@@ -76,32 +86,39 @@ class PageCacheCore
     /**
      * Returns full page cache entry for current request
      *
-     * @return string | null
+     * @return PageCacheEntry
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws HTMLPurifier_Exception
      *
      * @since 1.0.7
      */
     public static function get()
     {
-        if (static::isEnabled()) {
+        if (is_null(static::$entry)) {
+            static::$entry = new PageCacheEntry();
+            if (static::isEnabled()) {
 
-            // check that there were no changes to hook list
-            $hookListHash = static::getHookListFingerprint();
-            if ($hookListHash != Configuration::get('TB_HOOK_LIST_HASH')) {
-                // drain the cache if the hook list changed
-                Configuration::updateValue('TB_HOOK_LIST_HASH', $hookListHash);
-                static::flush();
-                return null;
-            }
-
-            $key = PageCacheKey::get();
-            if ($key) {
-                $cache = Cache::getInstance();
-
-                return $cache->get($key->getHash());
+                // check that there were no changes to hook list
+                $hookListHash = static::getHookListFingerprint();
+                if ($hookListHash != Configuration::get('TB_HOOK_LIST_HASH')) {
+                    // drain the cache if the hook list changed
+                    Configuration::updateValue('TB_HOOK_LIST_HASH', $hookListHash);
+                    static::flush();
+                } else {
+                    $key = PageCacheKey::get();
+                    if ($key) {
+                        $cache = Cache::getInstance();
+                        $serialized = $cache->get($key->getHash());
+                        if ($serialized) {
+                            static::$entry->setFromCache($serialized);
+                        }
+                    }
+                }
             }
         }
-
-        return null;
+        return static::$entry;
     }
 
     /**
@@ -257,6 +274,7 @@ class PageCacheCore
 
     /**
      * Return normalized list of all hooks that should be cached
+     * @throws PrestaShopException
      */
     public static function getCachedHooks()
     {
@@ -294,6 +312,9 @@ class PageCacheCore
      * @param int $idModule
      * @param int $idHook
      * @param bool $status
+     *
+     * @return boolean
+     * @throws PrestaShopException
      */
     public static function setHookCacheStatus($idModule, $idHook, $status)
     {
@@ -331,6 +352,8 @@ class PageCacheCore
      * because PageCacheKey has id_shop as a dimension
      *
      * @return string
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public static function getHookListFingerprint()
     {

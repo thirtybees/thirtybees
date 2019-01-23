@@ -317,6 +317,8 @@ $kernel->loadFile(__DIR__.'/../../classes/Pack.php');
 $kernel->loadFile(__DIR__.'/override/classes/Pack.php');
 $kernel->loadFile(__DIR__.'/../../classes/PageCacheKey.php');
 $kernel->loadFile(__DIR__.'/override/classes/PageCacheKey.php');
+$kernel->loadFile(__DIR__.'/../../classes/PageCacheEntry.php');
+$kernel->loadFile(__DIR__.'/override/classes/PageCacheEntry.php');
 $kernel->loadFile(__DIR__.'/../../classes/PageCache.php');
 $kernel->loadFile(__DIR__.'/override/classes/PageCache.php');
 $kernel->loadFile(__DIR__.'/../../classes/Page.php');

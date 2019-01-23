@@ -254,8 +254,8 @@ class FrontControllerCore extends Controller
         }
 
         $debug = Configuration::get('TB_PAGE_CACHE_DEBUG');
-        $content = PageCache::get();
-        if (! $content) {
+        $cacheEntry = PageCache::get();
+        if (! $cacheEntry->exists()) {
             if ($debug) {
                 header('X-thirtybees-PageCache: MISS');
             }
@@ -268,50 +268,7 @@ class FrontControllerCore extends Controller
 
         $this->init();
         $this->context->cookie->write();
-        preg_match_all("/<!--\[hook:([0-9]+):([0-9]+)\]-->/", $content, $matches, PREG_SET_ORDER);
-        if ($matches) {
-            $replaced = [];
-            foreach ($matches as $match) {
-                $moduleId = (int) $match[1];
-                $hookId = (int) $match[2];
-                $key = "hook:$moduleId:$hookId";
-                if (! isset($replaced[$key])) {
-                    $replaced[$key] = true;
-
-                    $hookContent = '';
-                    $hookName = Hook::getNameById($hookId);
-                    if ($hookName) {
-                        $hookContent = Hook::execWithoutCache($hookName, [], $moduleId, false, true, false, null);
-                        $hookContent = preg_replace('/\$(\d)/', '\\\$$1', $hookContent);
-                    }
-                    if ($debug) {
-                        $hookContent = "<!--[$key]-->$hookContent<!--[$key]-->";
-                    }
-
-                    $pattern = "/<!--\[$key\]-->.*?<!--\[$key\]-->/s";
-                    $count = 0;
-                    $pageContent = preg_replace($pattern, $hookContent, $content, 1, $count);
-
-                    if (preg_last_error() === PREG_NO_ERROR && $count > 0) {
-                        $content = $pageContent;
-                    }
-                }
-            }
-        }
-
-        if (Configuration::get('PS_TOKEN_ENABLE')) {
-            $newToken = Tools::getToken(false);
-            if (preg_match("/static_token[ ]?=[ ]?'([a-f0-9]{32})'/", $content, $matches)) {
-                if (count($matches) > 1 && $matches[1] != '') {
-                    $oldToken = $matches[1];
-                    $content = preg_replace("/$oldToken/", $newToken, $content);
-                }
-            } else {
-                $content = preg_replace('/name="token" value="[a-f0-9]{32}/', 'name="token" value="'.$newToken, $content);
-                $content = preg_replace('/token=[a-f0-9]{32}"/', 'token='.$newToken.'"', $content);
-                $content = preg_replace('/static_token[ ]?=[ ]?\'[a-f0-9]{32}/', 'static_token = \''.$newToken, $content);
-            }
-        }
+        $content = $cacheEntry->getFreshContent();
 
         echo $content;
     }
