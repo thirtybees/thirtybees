@@ -2257,10 +2257,21 @@ class FrontControllerCore extends Controller
      * @since   1.0.0
      *
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     public function getOverrideTemplate()
     {
-        return Hook::exec('DisplayOverrideTemplate', ['controller' => $this]);
+        $result = Hook::exec('DisplayOverrideTemplate', ['controller' => $this], null, true);
+        $count = is_array($result) ? count($result) : 0;
+        if ($count) {
+            if ($count > 1) {
+                $modules = implode(', ', array_keys($result));
+                Logger::addLog("Multiple modules [$modules] are attached to 'displayOverrideTemplate' hook, thirtybees can't decide what template should be displayed");
+                return false;
+            }
+            return array_pop($result);
+        }
+        return false;
     }
 
     /**
