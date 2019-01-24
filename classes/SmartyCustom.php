@@ -37,6 +37,11 @@
 class SmartyCustomCore extends Smarty
 {
     /**
+     * @var array stack trace for currently rendering templates
+     */
+    public static $trace = [];
+
+    /**
      * SmartyCustomCore constructor.
      *
      * @since   1.0.0
@@ -171,7 +176,10 @@ class SmartyCustomCore extends Smarty
     {
         $this->check_compile_cache_invalidation();
 
-        return parent::fetch($template, $cacheId, $compileId, $parent, $display, $mergeTplVars, $noOutputFilter);
+        static::beforeFetch($template);
+        $ret = parent::fetch($template, $cacheId, $compileId, $parent, $display, $mergeTplVars, $noOutputFilter);
+        static::afterFetch();
+        return $ret;
     }
 
     /**
@@ -381,6 +389,58 @@ class SmartyCustomCore extends Smarty
         $sql .= ' AND compile_id="'.pSQL((string) $compileId).'"';
         Db::getInstance()->execute($sql, false);
     }
+
+    /**
+     * Callback called before template rendering. It is used to track
+     * current template stack
+     *
+     * @param $template
+     */
+    public static function beforeFetch($template)
+    {
+        static::$trace[] = $template;
+    }
+
+    /**
+     * Callback called after template rendering
+     */
+    public static function afterFetch()
+    {
+        array_pop(static::$trace);
+    }
+
+    /**
+     * Method returns true, if $file is compiled template
+     *
+     * @param $file string filepath
+     * @return bool
+     */
+    public static function isCompiledTemplate($file)
+    {
+        // dynamically evaluated templates -- path from stack contains eval()'d
+        if (strpos($file, "eval()") > -1 && strpos($file, 'smarty_internal_templatebase.php') > -1) {
+            return true;
+        }
+
+        // compiled templates are found in compile directory
+        if (strpos($file, 'cache/smarty/compile/') > -1) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Returns currently rendering template, if any
+     *
+     * @return string | null
+     */
+    public static function getCurrentTemplate()
+    {
+        if (static::$trace) {
+            $length = count(static::$trace);
+            return static::$trace[$length - 1];
+        }
+    }
 }
 
 /**
@@ -412,46 +472,50 @@ class Smarty_Custom_Template extends Smarty_Internal_Template
     public function fetch($template = null, $cacheId = null, $compileId = null, $parent = null, $display = false, $mergeTplVars = true, $noOutputFilter = false)
     {
         if ($this->smarty->caching) {
-            $count = 0;
-            $maxTries = 3;
-            while (true) {
-                try {
-                    $tpl = parent::fetch($template, $cacheId, $compileId, $parent, $display, $mergeTplVars, $noOutputFilter);
-                    break;
-                } catch (SmartyException $e) {
-                    // handle exception
-                    if (++$count === $maxTries) {
-                        throw $e;
-                    }
-                    usleep(1);
-                }
-            }
+            $tpl = $this->fetchWithRetries($template, $cacheId, $compileId, $parent, $display, $mergeTplVars, $noOutputFilter);
             if (property_exists($this, 'cached')) {
                 $filepath = str_replace($this->smarty->getCacheDir(), '', $this->cached->filepath);
                 if ($this->smarty->is_in_lazy_cache($this->template_resource, $this->cache_id, $this->compile_id) != $filepath) {
                     $this->smarty->update_filepath($filepath, $this->template_resource, $this->cache_id, $this->compile_id);
                 }
             }
-
-            return isset($tpl) ? $tpl : '';
+            return $tpl;
         } else {
-            $count = 0;
-            $maxTries = 3;
-            while (true) {
-                try {
-                    $tpl = parent::fetch($template, $cacheId, $compileId, $parent, $display, $mergeTplVars, $noOutputFilter);
-                    break;
-                } catch (SmartyException $e) {
-                    // handle exception
-                    if (++$count === $maxTries) {
-                        throw $e;
-                    }
-                    usleep(1);
-                }
-            }
-
-            return isset($tpl) ? $tpl : '';
+            return $this->fetchWithRetries($template, $cacheId, $compileId, $parent, $display, $mergeTplVars, $noOutputFilter);
         }
 
+    }
+
+    /**
+     * Helper method to render template
+     *
+     * @param $template
+     * @param $cacheId
+     * @param $compileId
+     * @param $parent
+     * @param $display
+     * @param $mergeTplVars
+     * @param $noOutputFilter
+     * @return string
+     * @throws SmartyException
+     */
+    public function fetchWithRetries($template, $cacheId, $compileId, $parent, $display, $mergeTplVars, $noOutputFilter)
+    {
+        $count = 0;
+        $maxTries = 3;
+        while (true) {
+            try {
+                SmartyCustom::beforeFetch($this->source->filepath);
+                $tpl = parent::fetch($template, $cacheId, $compileId, $parent, $display, $mergeTplVars, $noOutputFilter);
+                SmartyCustom::afterFetch();
+                return isset($tpl) ? $tpl : '';
+            } catch (SmartyException $e) {
+                // handle exception
+                if (++$count === $maxTries) {
+                    throw $e;
+                }
+                usleep(1);
+            }
+        }
     }
 }
