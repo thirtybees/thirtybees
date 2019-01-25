@@ -102,61 +102,39 @@
     <body>
         <div class="container">
             <h2 id="errorTitle"><span>500</span> Server Error</h2>
-            <p id="errorMessage">Oops, something went wrong.<br /><br />Try to refresh this page or feel free to contact us if the problem persists.</p>
-            <pre><code id="encryptedError"><?php echo $markdown; ?></code></pre>
+            <p id="errorMessage">
+                Oops, something went wrong. You can try to refresh this page
+            </p>
+            <p>
+                If the problem persists please feel free to <a href="mailto:<?= $shopEmail ?>?subject=Server%20Error">contact us</a>.
+                Make sure to <a id="downloadError">download</a> encrypted error message and
+                attach it to your email. That will help our engineers to solve this problem quickly.
+            </p>
+            <br/>
         </div>
         <script type="text/javascript">
           (function() {
-            var encryptedError = document.getElementById('encryptedError');
-            var previousmessage = encryptedError.innerHTML;
-            var copyBtn = '<a href="javascript:copyAllText();" id="copyError" title="Copy">Copy Error</a><br/>';
-
-            window.readAll = function() {
-              encryptedError.innerHTML = copyBtn + '<span id="errorContent">' + previousmessage + '</span>';
-            };
-
-            window.copyAllText = function() {
-                var errorContent = document.getElementById('errorContent');
-                var range = document.createRange();
-                range.selectNodeContents(errorContent);
-                var sel = window.getSelection();
-                sel.removeAllRanges();
-                sel.addRange(range);
-                try {
-                    succeed = document.execCommand("copy");
-                } catch(e) {
-                    succeed = false;
-                }
-                if(succeed)
-                    alert('Encrypted error copied!')
-                else
-                    alert('Error, try copying manually')
-            }
-
-            encryptedError.innerHTML = '<a href="javascript:readAll();">' + previousmessage.substring(0, 20) + '...</a>';
-
-            var translations = {
-              en: {
-                errorTitle: '<span>500</span> Server Error',
-                errorMessage: 'Oops, something went wrong.<br /><br />Try to refresh this page or feel free to contact us if the problem persists.<br/>Please make sure to expand and include the following error code in your message, so we can help you better:',
-              },
-              nl: {
-                errorTitle: '<span>500</span> Serverfout',
-                errorMessage: 'Oops, er ging iets mis.<br /><br />Probeer deze pagina te vernieuwen of neem contact op als dit het probleem niet verhelpt.<br/>Om u beter te van dienst te kunnen zijn, kunt u de onderstaande foutcode uitklappen en toevoegen aan uw bericht?',
-              }
-            };
-            var browserLanguage = window.navigator.userLanguage || window.navigator.language;
-            if (typeof translations[browserLanguage] === 'undefined') {
-              if (typeof translations[browserLanguage.substring(0, 2)] !== 'undefined') {
-                browserLanguage = browserLanguage.substring(0, 2);
+              var data = '<?= $encrypted ?>';
+              var date = new Date();
+              var year = date.getFullYear();
+              var month = date.getMonth() + 1;
+              var day = date.getDate();
+              var hours = date.getHours();
+              var minutes = date.getMinutes();
+              var seconds = date.getSeconds();
+              var fileName = 'exception_' + year + month + day + hours + minutes + seconds + '.txt';
+              var element = document.getElementById('downloadError');
+              if(window.navigator.msSaveOrOpenBlob) {
+                  var fileData = [data];
+                  blobObject = new Blob(fileData);
+                  element.addEventListener('click', function(){
+                     window.navigator.msSaveOrOpenBlob(blobObject, fileName);
+                  });
               } else {
-                browserLanguage = 'en';
+                  var url = "data:text/plain;charset=utf-8," + encodeURIComponent(data);
+                  element.setAttribute("download", fileName);
+                  element.setAttribute("href", url);
               }
-            }
-            document.getElementById('errorTitle').innerHTML = translations[browserLanguage].errorTitle;
-            document.getElementById('errorMessage').innerHTML = translations[browserLanguage].errorMessage;
-
-
           }());
         </script>
     </body>
