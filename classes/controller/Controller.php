@@ -779,15 +779,22 @@ abstract class ControllerCore
                         $printMessage .= 'log';
                 }
                 $file = ErrorHandler::normalizeFileName($errorMessage['errfile']);
+                $line = $errorMessage['errline'];
                 $strMessage = '%c' . $errorMessage['type'] . ':'
                     . ' %c' . $errorMessage['errstr']
-                    . ' %cin %c' . $file
-                    . ' %cat line %c' . $errorMessage['errline'];
+                    . ' %cin %c' . $file;
+                if ($line) {
+                    $strMessage .= ' %cat line %c' . $errorMessage['errline'];
+                }
                 $printMessage .= '(' . json_encode($strMessage) . ', '
                     . '"color: ' . $color . '", '
                     . '"color: blue; font-weight: bold", '
-                    . '"color: grey", "color:green", '
-                    . '"color: grey", "color:green");';
+                    . '"color: grey", "color:green"';
+                if ($line) {
+                    $printMessage .= ', "color: grey", "color:green");';
+                } else {
+                    $printMessage .= ');';
+                }
                 $debugMessages .= $printMessage . "\n";
             }
             $debugMessages .= "  console.groupEnd();\n";

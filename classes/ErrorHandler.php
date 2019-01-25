@@ -136,11 +136,19 @@ class ErrorHandlerCore
     public function errorHandler($errno, $errstr, $errfile, $errline)
     {
         $suppressed = error_reporting() === 0;
+        $file = $errfile;
+        $line = $errline;
+
+        if (SmartyCustom::isCompiledTemplate($file)) {
+            $file = SmartyCustom::getCurrentTemplate();
+            $line = 0;
+        }
+
         $error = [
             'errno'       => $errno,
             'errstr'      => $errstr,
-            'errfile'     => $errfile,
-            'errline'     => $errline,
+            'errfile'     => $file,
+            'errline'     => $line,
             'suppressed'  => $suppressed,
             'type'        => static::getErrorType($errno),
             'level'       => static::getLogLevel($errno),
