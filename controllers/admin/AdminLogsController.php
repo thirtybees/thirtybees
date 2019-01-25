@@ -115,16 +115,15 @@ class AdminLogsControllerCore extends AdminController
                 'icon'   => 'icon-bug',
                 'fields' => [
                     'encrypted_exception' => [
+                        'type' => 'hidden',
+                        'value' => true
+                    ],
+                    'filename' => [
+                        'type' => 'file',
+                        'name' => 'exception',
                         'title' => $this->l('Decrypt an exception message'),
-                        'label'  => $this->l('Paste your encrypted exception message here to see the actual message.'),
-                        'type'                      => 'code',
-                        'mode'                      => 'text',
-                        'enableBasicAutocompletion' => true,
-                        'enableSnippets'            => true,
-                        'enableLiveAutocompletion'  => true,
-                        'visibility'                => Shop::CONTEXT_ALL,
-                        'auto_value'                => false,
-                        'value'                     => '',
+                        'label'  => $this->l('Upload encrypted exception message to see the actual message.'),
+                        'value' => true,
                     ],
                 ],
                 'submit' => [
@@ -134,34 +133,30 @@ class AdminLogsControllerCore extends AdminController
             ],
         ];
 
-        if (Tools::isSubmit('encrypted_exception')) {
+        if (isset($_FILES['exception'])) {
             try {
-                $markdown = Encryptor::getInstance()->decrypt(Tools::getValue('encrypted_exception'));
+                $upload = Tools::fileAttachment('exception');
+                if ($upload && $upload['content']) {
+                    $errorDescription = json_decode(Encryptor::getInstance()->decrypt($upload['content']), true);
+                    if (is_array($errorDescription)) {
+                        $errorDescription['errorName'] = 'Decoded exception';
+                        $decoded = PrestaShopException::renderDebugPage($errorDescription);
+                        $this->fields_options = array_merge($this->fields_options, [
+                            'decrypted_exception' => [
+                                'title'  => $this->l('Decrypted exception message'),
+                                'icon'   => 'icon-bug',
+                                'fields' => [
+                                    'decrypted_exception'    => [
+                                        'type'                      => 'iframe',
+                                        'srcdoc'                    => $decoded,
+                                    ],
+                                ],
+                            ],
+                        ]);
+                    }
+                }
             } catch (Exception $e) {
-                $markdown = 'kanker';
             }
-
-            $this->fields_options = array_merge($this->fields_options, [
-                'decrypted_exception' => [
-                    'title'  => $this->l('Decrypted exception message'),
-                    'icon'   => 'icon-bug',
-                    'description'   => $this->l('This is the decrypted exception message in markdown (can be directly posted on GitHub or the forum)'),
-                    'fields' => [
-                        'decrypted_exception'    => [
-                            'title'                     => $this->l('Decrypted exception'),
-                            'type'                      => 'code',
-                            'mode'                      => 'markdown',
-                            'maxLines'                  => substr_count($markdown, "\n") + 10,
-                            'enableBasicAutocompletion' => true,
-                            'enableSnippets'            => true,
-                            'enableLiveAutocompletion'  => true,
-                            'visibility'                => Shop::CONTEXT_ALL,
-                            'auto_value'                => false,
-                            'value'                     => $markdown,
-                        ],
-                    ],
-                ],
-            ]);
         }
 
         $this->list_no_link = true;
