@@ -38,6 +38,8 @@ class PrestaShopExceptionCore extends Exception
 {
     protected $trace;
 
+    const FILE_CONTEXT_LINES = 30;
+
     /**
      * PrestaShopExceptionCore constructor.
      *
@@ -75,92 +77,32 @@ class PrestaShopExceptionCore extends Exception
     public function displayMessage()
     {
         header('HTTP/1.1 500 Internal Server Error');
+        header('Content-Type: text/html');
 
         //clean any output buffer there might be
         while (ob_get_level()) {
             ob_end_clean();
         }
 
+        // generate array describing this exception
+        $errorDescription = $this->getErrorDescription();
+
         if (_PS_MODE_DEV_ || getenv('CI')) {
-            // Display error message
-            echo '<style>
-				#psException{font-family: Verdana; font-size: 14px}
-				#psException h2{color: #F20000}
-				#psException p{padding-left: 20px}
-				#psException ul li{margin-bottom: 10px}
-				#psException a{font-size: 12px; color: #000000}
-				#psException .psTrace, #psException .psArgs{display: none}
-				#psException pre{border: 1px solid #236B04; background-color: #EAFEE1; padding: 5px; font-family: Courier; width: 99%; overflow-x: auto; margin-bottom: 30px;}
-				#psException .psArgs pre{background-color: #F1FDFE;}
-				#psException pre .selected{color: #F20000; font-weight: bold;}
-			</style>';
-            echo '<div id="psException">';
-            echo '<h2>['.str_replace('PrestaShop', 'ThirtyBees', get_class($this)).']</h2>';
-            echo $this->getExtendedMessage();
-
-            echo $this->displayFileDebug($this->file, $this->line);
-
-            // Display debug backtrace
-            echo '<ul>';
-            foreach ($this->trace as $id => $trace) {
-                $relativeFile = (isset($trace['file'])) ? ltrim(str_replace([_PS_ROOT_DIR_, '\\'], ['', '/'], $trace['file']), '/') : '';
-                $currentLine = (isset($trace['line'])) ? $trace['line'] : '';
-                if (defined('_PS_ADMIN_DIR_')) {
-                    $relativeFile = str_replace(basename(_PS_ADMIN_DIR_).DIRECTORY_SEPARATOR, 'admin'.DIRECTORY_SEPARATOR, $relativeFile);
-                }
-                echo '<li>';
-                echo '<b>'.((isset($trace['class'])) ? $trace['class'] : '').((isset($trace['type'])) ? $trace['type'] : '').$trace['function'].'</b>';
-                echo ' - <a style="font-size: 12px; color: #000000; cursor:pointer; color: blue;" onclick="document.getElementById(\'psTrace_'.$id.'\').style.display = (document.getElementById(\'psTrace_'.$id.'\').style.display != \'block\') ? \'block\' : \'none\'; return false">[line '.$currentLine.' - '.$relativeFile.']</a>';
-
-                if (isset($trace['args']) && count($trace['args'])) {
-                    echo ' - <a style="font-size: 12px; color: #000000; cursor:pointer; color: blue;" onclick="document.getElementById(\'psArgs_'.$id.'\').style.display = (document.getElementById(\'psArgs_'.$id.'\').style.display != \'block\') ? \'block\' : \'none\'; return false">['.count($trace['args']).' Arguments]</a>';
-                }
-
-                if ($relativeFile) {
-                    $this->displayFileDebug($trace['file'], $trace['line'], $id);
-                }
-                if (isset($trace['args']) && count($trace['args'])) {
-                    $this->displayArgsDebug($trace['args'], $id);
-                }
-                echo '</li>';
-            }
-            echo '</ul>';
-            echo '</div>';
+            // in debug mode, we can render debug page
+            echo static::renderDebugPage($errorDescription);
         } else {
-            header('Content-Type: text/plain; charset=UTF-8');
-            // Display error message
-            $markdown = '';
-            $markdown .= '## '.str_replace('PrestaShop', 'ThirtyBees', get_class($this)).'  ';
-            $markdown .= $this->getExtendedMessageMarkdown();
-
-            $markdown .= $this->displayFileDebug($this->file, $this->line, null, true);
-
-            // Display debug backtrace
-            foreach ($this->trace as $id => $trace) {
-                $relativeFile = (isset($trace['file'])) ? ltrim(str_replace([_PS_ROOT_DIR_, '\\'], ['', '/'], $trace['file']), '/') : '';
-                $currentLine = (isset($trace['line'])) ? $trace['line'] : '';
-                if (defined('_PS_ADMIN_DIR_')) {
-                    $relativeFile = str_replace(basename(_PS_ADMIN_DIR_).DIRECTORY_SEPARATOR, 'admin'.DIRECTORY_SEPARATOR, $relativeFile);
-                }
-                $markdown .=  '- ';
-                $markdown .=  '**'.((isset($trace['class'])) ? $trace['class'] : '').((isset($trace['type'])) ? $trace['type'] : '').$trace['function'].'**';
-                $markdown .=  " - [line `".$currentLine.'` - `'.$relativeFile."`]  \n";
-
-                if (isset($trace['args']) && count($trace['args'])) {
-                    $markdown .=  " - [".count($trace['args'])." Arguments]  \n";
-                }
-
-                if ($relativeFile) {
-                    $markdown .= $this->displayFileDebug($trace['file'], $trace['line'], $id, true);
-                }
-                if (isset($trace['args']) && count($trace['args'])) {
-                    $markdown .= $this->displayArgsDebug($trace['args'], $id, true);
-                }
+            // in production mode, we will serialize and encrypt error description, and display
+            // generic error500 page. Visitor can download encrypted error and send it to
+            // merchant for investigation
+            try {
+                $encrypted = Encryptor::getInstance()->encrypt(json_encode($errorDescription));
+            } catch (PrestaShopException $e) {
+                $encrypted = false;
             }
-            header('Content-Type: text/html');
-            $markdown = Encryptor::getInstance()->encrypt($markdown);
-
-            echo $this->displayErrorTemplate(_PS_ROOT_DIR_.'/error500.phtml', ['markdown' => $markdown]);
+            echo static::displayErrorTemplate(_PS_ROOT_DIR_.'/error500.phtml', [
+                'encrypted' => $encrypted,
+                'shopEmail' => Configuration::get('PS_SHOP_EMAIL'),
+            ]);
         }
         // Log the error to the disk
         $this->logError();
@@ -168,98 +110,137 @@ class PrestaShopExceptionCore extends Exception
     }
 
     /**
-     * Display lines around current line
+     * $this method can be overridden by subclasses to include additional sections into output
+     * See PrestaShopDatabaseException for example how to add new section displaying SQL query
      *
-     * Markdown is returned instead of being printed
-     * (HTML is printed because old backwards stuff blabla)
-     *
-     * @param string $file
-     * @param int    $line
-     * @param string $id
-     * @param bool   $markdown
-     *
-     * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
-     * @version 1.0.1 Add markdown support - return string
+     * @return array
      */
-    protected function displayFileDebug($file, $line, $id = null, $markdown = false)
+    protected function getExtraSections() {
+        return [];
+    }
+
+    /**
+     * Helper method to render debug page from $errorDescription array generated by
+     * getErrorDescription method. This method can be used either to directly render
+     * error page (dev mode), or to display encrypted error
+     *
+     * @param $errorDescription array
+     * @return string html page
+     */
+    public static function renderDebugPage($errorDescription)
     {
+        return static::displayErrorTemplate(_PS_ROOT_DIR_.'/error500_debug.phtml', $errorDescription);
+    }
+
+    /**
+     * Reads $file from disk, and returns $total lines around $line. Result is an array
+     * of arrays, with information about line number in file, if the line is highlighted,
+     * and actual line
+     *
+     * @param $file string input file
+     * @param $line integer index of line in the file. This line will be highlighted
+     * @param $total integer total number of lines to read. Pass zero to return all lines
+     *
+     * @return array|null
+     */
+    protected static function readFile($file, $line, $total) {
         if (! file_exists($file)) {
             return null;
         }
         $lines = (array) file($file);
-        $offset = $line - 6;
-        $total = 11;
-        if ($offset < 0) {
-            $total += $offset;
+        if ($total > 0) {
+            $third = (int)($total / 3);
+            $offset = $line - (2 * $third);
+            if ($offset < 0) {
+                $offset = 0;
+            }
+            $lines = array_slice($lines, $offset, $total);
+        } else {
             $offset = 0;
         }
-        $lines = array_slice($lines, $offset, $total);
-        ++$offset;
 
-        $ret = '';
-
-        if ($markdown) {
-            $ret .= "```php  \n";
-            foreach ($lines as $k => $l) {
-                $ret .= ($offset + $k).'. '.(($offset + $k == $line) ? '=>' : '  ').' '.$l;
-            }
-            $ret .= "```  \n";
-        } else {
-            echo '<div class="psTrace" id="psTrace_'.$id.'" '.((is_null($id) ? 'style="display: block"' : '')).'><pre>';
-            foreach ($lines as $k => $l) {
-                $string = ($offset + $k).'. '.htmlspecialchars($l);
-                if ($offset + $k == $line) {
-                    echo '<span class="selected">'.$string.'</span>';
-                } else {
-                    echo $string;
-                }
-            }
-            echo '</pre></div>';
+        $ret = [];
+        foreach ($lines as $k => $l) {
+            $number = $offset + $k + 1;
+            $ret[] = [
+                'number' => $number,
+                'highlighted' => $number === $line,
+                'line' => $l
+            ];
         }
-
         return $ret;
     }
 
     /**
-     * Display arguments list of traced function
-     * Markdown is returned instead of being printed
-     * (HTML is printed because old backwards stuff blabla)
+     * This method generates array that describes this exception. This description can be used to
+     * display debug page. It can also be serialized
      *
-     * @param array  $args List of arguments
-     * @param string $id ID of argument
-     * @param bool   $markdown
-     *
-     * @return string
-     *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
-     * @version 1.0.1 Add markdown support - return string
+     * @return array exception description
      */
-    protected function displayArgsDebug($args, $id, $markdown = false)
+    public function getErrorDescription()
     {
-        $ret = '';
-        if ($markdown) {
-            $ret .= '```';
-            foreach ($args as $arg => $value) {
-                $ret .= 'Argument ['.Tools::safeOutput($arg)."]  \n";
-                $ret .= Tools::safeOutput($this->displayArgument($value));
-                $ret .= "\n";
-            }
-            $ret .= "```  \n";
+        $smartyTrace = SmartyCustom::$trace;
+
+        $file = $this->getFile();
+        if (SmartyCustom::isCompiledTemplate($file)) {
+            $file = array_pop($smartyTrace);
+            $fileType = 'smarty';
+            $line = 0;
+            $fileContent = static::readFile($file, 0, -1);
         } else {
-            echo '<div class="psArgs" id="psArgs_'.$id.'"><pre>';
-            foreach ($args as $arg => $value) {
-                echo '<b>Argument ['.Tools::safeOutput($arg)."]</b>\n";
-                echo Tools::safeOutput($this->displayArgument($value));
-                echo "\n";
-            }
-            echo '</pre>';
+            $fileType = 'php';
+            $line = $this->getLine();
+            $fileContent = static::readFile($file, $line, static::FILE_CONTEXT_LINES);
         }
 
-        return $ret;
+        $stacktrace = [];
+        foreach ($this->trace as $id => $trace) {
+            $class = isset($trace['class']) ? $trace['class'] : '';
+            $function = isset($trace['function']) ? $trace['function'] : '';
+            $type = isset($trace['type']) ? $trace['type'] : '';
+            $fileName = isset($trace['file']) ? $trace['file'] : '';
+            $lineNumber = isset($trace['line']) ? $trace['line'] : 0;
+            $args = isset($trace['args']) ? $trace['args'] : [];
+            $isTemplate = false;
+            $showLines = static::FILE_CONTEXT_LINES;
+            if (SmartyCustom::isCompiledTemplate($fileName)) {
+                $isTemplate = true;
+                $fileName = array_pop($smartyTrace);
+                $lineNumber = 0;
+                $showLines = -1;
+            }
+            $relativeFile = static::getRelativeFile($fileName);
+            $nextId = $id + 1;
+            $currentFunction = '';
+            $currentClass = '';
+            if (isset($this->trace[$nextId]['class'])) {
+                $currentClass = $this->trace[$nextId]['class'];
+                $currentFunction = $this->trace[$nextId]['function'];
+            }
+            $stacktrace[] = [
+                'class' => $class,
+                'function' => $function,
+                'type' => $type,
+                'fileType' => $isTemplate ? 'template' : 'php',
+                'fileName' => $relativeFile,
+                'line' => $lineNumber,
+                'args' => array_map([$this, 'displayArgument'], $args),
+                'fileContent' => static::readFile($fileName, $lineNumber, $showLines),
+                'description' => static::describeOperation($class, $function, $args),
+                'suppressed' => static::isSuppressed($relativeFile, $currentClass, $currentFunction, $class, $function)
+            ];
+        }
+
+        return [
+            'errorName' => str_replace('PrestaShop', 'ThirtyBees', get_class($this)),
+            'errorMessage' => $this->getMessage(),
+            'fileType' => $fileType,
+            'fileName' => static::getRelativeFile($file),
+            'line' => $line,
+            'fileContent' => $fileContent,
+            'stacktrace' => $stacktrace,
+            'extraSections' => $this->getExtraSections()
+        ];
     }
 
     /**
@@ -360,7 +341,7 @@ class PrestaShopExceptionCore extends Exception
     {
         $logger = new FileLogger();
         $logger->setFilename(_PS_ROOT_DIR_.'/log/'.date('Ymd').'_exception.log');
-        $logger->logError($this->getExtendedMessage(false));
+        $logger->logError($this->getExtendedMessage());
     }
 
     /**
@@ -370,7 +351,7 @@ class PrestaShopExceptionCore extends Exception
     {
         Tools::displayAsDeprecated();
 
-        return $this->getExtendedMessage($html);
+        return $this->getExtendedMessage();
     }
 
     /**
@@ -382,36 +363,26 @@ class PrestaShopExceptionCore extends Exception
      */
     protected function getExtendedMessage($html = true)
     {
-        $format = '<p><b>%s</b><br /><i>at line </i><b>%d</b><i> in file </i><b>%s</b></p>';
-        if (!$html) {
-            $format = strip_tags(str_replace('<br />', ' ', $format));
+        if (SmartyCustom::isCompiledTemplate($this->file)) {
+            return $this->getMessage() . ' in template file ' . static::getRelativeFile(SmartyCustom::getCurrentTemplate());
+        } else {
+            return $this->getMessage() . ' at line ' . $this->getLine() . ' in file ' . static::getRelativeFile($this->file);
         }
-
-        return sprintf(
-            $format,
-            $this->getMessage(),
-            $this->getLine(),
-            ltrim(str_replace([_PS_ROOT_DIR_, '\\'], ['', '/'], $this->getFile()), '/')
-        );
     }
 
     /**
-     * Return the content of the Exception
-     * @return string content of the exception.
+     * Returns file path relative to thirtybees root
      *
-     * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @param $file
+     * @return string
      */
-    protected function getExtendedMessageMarkdown()
+    protected static function getRelativeFile($file)
     {
-        $format = "\n**%s**  \n *at line* **%d** *in file* `%s`  \n";
-
-        return sprintf(
-            $format,
-            $this->getMessage(),
-            $this->getLine(),
-            ltrim(str_replace([_PS_ROOT_DIR_, '\\'], ['', '/'], $this->getFile()), '/')
-        );
+        if ($file) {
+            return ltrim(str_replace([_PS_ROOT_DIR_, '\\'], ['', '/'], $file), '/');
+        } else {
+            return '';
+        }
     }
 
     /**
@@ -424,7 +395,7 @@ class PrestaShopExceptionCore extends Exception
      *
      * @since 1.0.0
      */
-    protected function displayErrorTemplate($file, $params = [])
+    protected static function displayErrorTemplate($file, $params = [])
     {
         foreach ($params as $name => $param) {
             $$name = $param;
@@ -441,4 +412,89 @@ class PrestaShopExceptionCore extends Exception
 
         return $content;
     }
+
+    /**
+     * Helper method to downplay some entries from stacktrace. Some entries from stacktrace
+     * will be greyed out, and displayed with smaller font, so it does not distract reader
+     * when investigating source of error
+     *
+     * @param $relativePath string relative path of file
+     * @param $class string current classname
+     * @param $function string currently evaluating function
+     * @param $calledClass string class that's being called
+     * @param $calledFunction string function being called
+     *
+     * @return bool if this entry should be suppressed
+     */
+    private static function isSuppressed($relativePath, $class, $function, $calledClass, $calledFunction)
+    {
+        // suppress any entries that calls following methods
+        $suppressCalls = [
+            [ 'DispatcherCore',  'dispatch' ],
+            [ 'Smarty_Custom_Template', 'fetch' ],
+            [ 'ControllerCore', 'run' ]
+        ];
+        foreach ($suppressCalls as $callable) {
+            if ($callable[0] === $calledClass && $callable[1] === $calledFunction) {
+                return true;
+            }
+        }
+
+        // suppress these methods
+        $suppressMethods = [
+            [ 'DispatcherCore',  'dispatch' ],
+            [ 'DbCore', 'execute' ],
+            [ 'DbCore', 'query' ],
+            [ 'Smarty_Custom_Template', 'fetch' ],
+            [ 'ControllerCore', 'run' ],
+            [ 'HookCore', 'exec' ],
+            [ 'HookCore', 'execWithoutCache' ],
+            [ 'HookCore', 'coreCallHook' ]
+        ];
+        foreach ($suppressMethods as $callable) {
+            if ($callable[0] === $class && $callable[1] === $function) {
+                return true;
+            }
+        }
+
+        // suppress any entries if filepath starts with following substring
+        $paths = [
+            'vendor/',
+            'classes/SmartyCustom.php',
+            'config/smarty'
+        ];
+        foreach ($paths as $match) {
+            if (strpos($relativePath, $match) === 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Helper method to describe special functions in thirtybees codebase, such as
+     * method to include sub-template from within smarty, or smarty function to trigger
+     * hook.
+     *
+     * This makes the stacktrace more readable
+     *
+     * @param $class string class name
+     * @param $function string called function
+     * @param $args array parameters passed to $class::$function() method
+     *
+     * @return string | null
+     */
+    private static function describeOperation($class, $function, $args)
+    {
+        if ($class === 'Smarty_Internal_Template' && $function === 'getSubTemplate') {
+            $templateName = isset($args['0']) && is_string($args['0']) ? static::getRelativeFile($args['0']) : '';
+            return 'Include sub-template <b>' . $templateName . '</b>';
+        }
+        if (!$class && $function === 'smartyHook') {
+            $hookName = isset($args[0]['h']) ? $args[0]['h'] : '';
+            return 'Execute hook <b>' . $hookName . '</b>';
+        }
+    }
+
 }

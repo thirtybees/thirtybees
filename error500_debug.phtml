@@ -1,0 +1,331 @@
+<?php
+/**
+ * Copyright (C) 2019 thirty bees
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@thirtybees.com so we can send you a copy immediately.
+ *
+ * @author    thirty bees <contact@thirtybees.com>
+ * @copyright 2019 thirty bees
+ * @license   Open Software License (OSL 3.0)
+ */
+
+if (! defined('_TB_VERSION_')) {
+    exit;
+}
+
+/**
+ * Helper function to render file lines
+ *
+ * @param $lines array of file lines
+ * @return string output
+ */
+function errDisplayLines($lines)
+{
+    $ret = '';
+    if ($lines) {
+        $ret = '<pre>';
+        foreach ($lines as $currentLine) {
+            if ($currentLine['highlighted']) {
+                $ret .= "<span class='selected'>";
+            }
+            $ret .= "<span class='line'>" . $currentLine['number'] . ":</span>" . htmlspecialchars($currentLine['line']);
+            if ($currentLine['highlighted']) {
+                $ret .= "</span>";
+            }
+        }
+        $ret .= '</pre>';
+    }
+    return $ret;
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="description" content="This store is powered by thirty bees." />
+        <style>
+            html {
+                padding: 0;
+                margin: 0;
+                font-size: 16px;
+                line-height: 1.4;
+                color: #222;
+                background: white;
+            }
+
+            body {
+                padding: 0;
+                margin: 0;
+                font-size: 14px;
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            }
+
+            .header {
+                background-color: #f6d426;
+                color: black;
+                padding: 10px 25px;
+            }
+
+            .type {
+                margin: 1em 0;
+                color: #444;
+            }
+
+            .subtype {
+                margin: 0;
+                color: #444;
+            }
+
+            .header h1 {
+                font-size: 170%;
+                font-weight: bold;
+                margin: 0.5em 0;
+            }
+
+            h2 {
+                margin: 25px 0px 0px 0px;
+                color: #F20000;
+            }
+
+            p {
+                padding-left: 20px;
+            }
+
+            ul li {
+                margin-bottom: 10px;
+            }
+
+            a {
+                font-size: 14px;
+                color: blue;
+                font-weight: bold;
+                cursor: pointer;
+            }
+
+            pre {
+                background-color: #FDF5CE;
+                color: #111;
+                padding: 5px;
+                font-size: 12px;
+                line-height: 1.5;
+                font-family: Consolas, monospace;
+                width: 99%;
+                overflow-x: auto;
+                margin: 12px 0px;
+            }
+
+            .panel {
+                padding: 1px 25px;
+            }
+
+            .stacktrace {
+                margin: 12px 0px;
+                background: #F4F3F1;
+                padding: .1em 1em 1em;
+                border-radius: 8px;
+            }
+
+            .stacktrace-header {
+                margin: .8em 0;
+            }
+
+            .suppressed {
+                font-size: 80%;
+                color: #bbb;
+            }
+
+            .suppressed a {
+                color: #888;
+                font-weight: normal;
+            }
+
+            .stacktrace-file {
+                border-bottom: 1px dotted rgba(0, 0, 0, .3);
+            }
+
+            .arguments pre{
+                background-color: #F1FDFE;
+            }
+
+            .collapsed {
+                display: none;
+            }
+
+            .selected {
+                background: #CD1818;
+                color: white;
+                font-weight: bold;
+                font-style: normal;
+                display: block;
+                padding: 0 .4em;
+                margin: 0 -.4em;
+            }
+
+            .line {
+                display: inline-block;
+                width: 50px;
+                color: #9F9C7F;
+            }
+
+            .selected .line {
+                color: white;
+            }
+
+            .trace-args {
+                border-collapse: collapse;
+                width: 100%;
+                background: #FDF5CE;
+                padding: .4em .7em;
+                border: 1px dotted silver;
+                overflow: auto;
+                font-size: 12px;
+                line-height: 1.5;
+                font-family: Consolas, monospace;
+            }
+
+            .trace-args td:first-child {
+               width: 20%;
+                font-weight: bold;
+            }
+
+            .trace-args td {
+                vertical-align: top;
+                text-align: left;
+                padding: 2px 6px;
+                border: 1px solid #e6dfbf;
+            }
+
+            .trace-args pre {
+                margin: 0;
+                padding: 0;
+            }
+
+            [data-toggle] {
+                cursor: pointer;
+                color: #328ADC;
+            }
+            [data-toggle].opened:after {
+                content: " ▼";
+                opacity: 0.5;
+
+            }
+            [data-toggle].closed:after {
+                content: " ►";
+                opacity: 0.5;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <span class="type"><?= $errorName ?></span>
+            <h1><?= $errorMessage ?></h1>
+            <div class="subtype">
+                <?php
+                    if ($fileType === 'smarty') {
+                        echo "when rendering smarty template <b>$fileName</b>";
+                    } else {
+                        echo "in file <b>$fileName</b> at line <b>$line</b>";
+                    }
+                ?>
+            </div>
+        </div>
+
+        <?php foreach ($extraSections as $id => $section) { ?>
+        <div class="panel">
+            <h2 data-toggle="extra-section-<?= $id ?>" class="opened"><?= $section['label'] ?></h2>
+            <div id="extra-section-<?= $id ?>" class="collapsible">
+                <?= $section['content'] ?>
+            </div>
+        </div>
+        <?php } ?>
+
+        <?php if (isset($fileContent) && $fileContent) { ?>
+        <div class="panel">
+            <h2 data-toggle="main-source" class="opened">Source file: <?= $fileName ?></h2>
+            <div id="main-source" class="collapsible">
+                <?= errDisplayLines($fileContent) ?>
+            </div>
+        </div>
+        <?php } ?>
+
+        <div class="panel">
+            <h2 data-toggle="stack-trace" class="closed">Stack trace</h2>
+            <div id="stack-trace" class="collapsed stacktrace">
+                <?php foreach ($stacktrace as $traceId => $trace) { ?>
+                <div>
+                    <div class="stacktrace-header <?= $trace['suppressed'] ? 'suppressed' : '' ?>">
+                        <span class="line"><?= $traceId+1 ?>.</span>
+                        <span class="stacktrace-file">
+                            <?php
+                                if ($trace['fileName']) {
+                                    echo dirname($trace['fileName']) . '/';
+                                    echo '<b>' . basename($trace['fileName']) . '</b>';
+                                }
+                                if ($trace['line']) {
+                                    echo ':' . $trace['line'];
+                                }
+                            ?>
+                        </span>
+                        <?php if ($trace['fileContent']) { ?>
+                        <a data-toggle="trace-<?= $traceId ?>" class="closed">source</a>
+                        <?php } ?>
+                        <?php
+                            if ($trace['description']) {
+                                echo $trace['description'];
+                            } else {
+                                echo $trace['class'] . $trace['type'] . $trace['function'] . '(';
+                                if ($trace['args']) {
+                                    echo '<a data-toggle="trace-args-'. $traceId .'" class="closed">arguments</a>';
+                                }
+                                echo ')';
+                            }
+                        ?>
+                    </div>
+                    <div id="trace-<?= $traceId ?>" class="collapsed">
+                        <?= errDisplayLines($trace['fileContent']) ?>
+                    </div>
+                    <?php if ($trace['args']) { ?>
+                     <div id="trace-args-<?= $traceId ?>" class="collapsed">
+                         <table class="trace-args">
+                             <?php foreach ($trace['args'] as $argName => $arg) {  ?>
+                                 <tr>
+                                     <td>#<?= $argName+1 ?></td>
+                                     <td><pre><?= Tools::safeOutput($arg, true) ?></pre></td>
+                                 </tr>
+                            <?php } ?>
+                         </table>
+                    </div>
+                    <?php } ?>
+                </div>
+                <?php } ?>
+            </div>
+        </div>
+
+        <script type="text/javascript">
+            document.querySelectorAll('[data-toggle]').forEach(function (el) {
+                var targetId = el.getAttribute('data-toggle');
+                var target = document.getElementById(targetId);
+                el.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    if (el.classList.contains('closed')) {
+                        target.style.display = 'block';
+                        el.classList.remove('closed');
+                        el.classList.add('opened');
+                    } else {
+                        target.style.display = 'none';
+                        el.classList.add('closed');
+                        el.classList.remove('opened');
+                    }
+                })
+            })
+        </script>
+    </body>
+</html>
