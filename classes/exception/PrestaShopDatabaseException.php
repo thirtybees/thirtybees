@@ -37,6 +37,37 @@
 class PrestaShopDatabaseExceptionCore extends PrestaShopException
 {
     /**
+     * @var string|null contains sql statement associated with error
+     */
+    private $sql = null;
+
+    public function __construct($message = '', $sql = null)
+    {
+        parent::__construct($message);
+
+        if ($sql instanceof DbQuery) {
+            $this->sql = $sql->build();
+        } else {
+            $this->sql = $sql;
+        }
+
+        if ($this->trace) {
+            // we want to report on different
+            foreach ($this->trace as $row) {
+                if (strpos($row['file'], 'classes/db/Db.php') === false) {
+                    array_unshift($this->trace, [
+                        'file' => $this->file,
+                        'line' => $this->line,
+                    ]);
+                    $this->file = $row['file'];
+                    $this->line = $row['line'];
+                    return;
+                }
+            }
+        }
+    }
+
+    /**
      * @return mixed
      *
      * @since 1.0.0
@@ -45,5 +76,23 @@ class PrestaShopDatabaseExceptionCore extends PrestaShopException
     public function __toString()
     {
         return $this->message;
+    }
+
+    /**
+     * Display additional SQL section on error message page
+     *
+     * @return array describing sections
+     */
+    protected function getExtraSections()
+    {
+        $sections = [];
+        if ($this->sql) {
+          $sections [] = [
+              'label' => 'SQL',
+              'content' => '<pre>' . $this->sql . '</pre>'
+          ]   ;
+        }
+        return $sections;
+
     }
 }
