@@ -3184,7 +3184,7 @@ class ToolsCore
         $specific_before = $specific_after = '';
         if (file_exists($path)) {
             if (static::isSubmit('htaccess')) {
-                $content = static::getValue('htaccess');
+                $content = $_POST['htaccess'];
             } else {
                 $content = file_get_contents($path);
             }

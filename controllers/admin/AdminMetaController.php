@@ -279,7 +279,7 @@ class AdminMetaControllerCore extends AdminController
                     'enableLiveAutocompletion'  => true,
                     'maxLines'                  => 400,
                     'visibility'                => Shop::CONTEXT_ALL,
-                    'value'                     => Tools::isSubmit('htaccess') ? Tools::getValue('htaccess') : @file_get_contents(_PS_ROOT_DIR_.'/.htaccess'),
+                    'value'                     => Tools::isSubmit('htaccess') ? $_POST['htaccess'] : @file_get_contents(_PS_ROOT_DIR_.'/.htaccess'),
                     'auto_value'                => false,
                 ],
             ],
@@ -896,7 +896,7 @@ class AdminMetaControllerCore extends AdminController
      */
     public function saveHtaccessFile()
     {
-        @file_put_contents(_PS_ROOT_DIR_.'/.htaccess', Tools::getValue('htaccess'));
+        @file_put_contents(_PS_ROOT_DIR_.'/.htaccess', $_POST['htaccess']);
     }
 
     /**
