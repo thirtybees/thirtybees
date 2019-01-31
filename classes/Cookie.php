@@ -276,6 +276,10 @@ class CookieCore
      */
     public function __set($key, $value)
     {
+        if ($key === '_cipherTool') {
+            Tools::displayAsDeprecated('Cookie object no longer contains _cipherTool property');
+            return;
+        }
         if (is_array($value)) {
             die(Tools::displayError());
         }
