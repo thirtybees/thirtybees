@@ -1304,7 +1304,7 @@ class ToolsCore
     {
         $backtrace = debug_backtrace();
         $callee = next($backtrace);
-        $error = 'Parameter <b>'.$parameter.'</b> in function <b>'.(isset($callee['function']) ? $callee['function'] : '').'()</b> is deprecated in <b>'.$callee['file'].'</b> on line <b>'.(isset($callee['line']) ? $callee['line'] : '(undefined)').'</b><br />';
+        $error = 'Parameter '.$parameter.' in function '.(isset($callee['function']) ? $callee['function'] : '').'() is deprecated in '.$callee['file'].' on line '.(isset($callee['line']) ? $callee['line'] : '(undefined)');
         $message = 'The parameter '.$parameter.' in function '.$callee['function'].' (Line '.(isset($callee['line']) ? $callee['line'] : 'undefined').') is deprecated and will be removed in the next major version.';
         $class = isset($callee['class']) ? $callee['class'] : null;
 
@@ -1591,7 +1591,7 @@ class ToolsCore
         if ($message === null) {
             $message = 'The function '.$callee['function'].' (Line '.$callee['line'].') is deprecated and will be removed in the next major version.';
         }
-        $error = 'Function <b>'.$callee['function'].'()</b> is deprecated in <b>'.$callee['file'].'</b> on line <b>'.$callee['line'].'</b><br />';
+        $error = 'Function '.$callee['function'].'() is deprecated in '.$callee['file'].' on line '.$callee['line'];
 
         Tools::throwDeprecated($error, $message, $class);
     }
@@ -3528,7 +3528,7 @@ FileETag none
     {
         $backtrace = debug_backtrace();
         $callee = current($backtrace);
-        $error = 'File <b>'.$callee['file'].'</b> is deprecated<br />';
+        $error = 'File '.$callee['file'].' is deprecated';
         $message = 'The file '.$callee['file'].' is deprecated and will be removed in the next major version.';
         $class = isset($callee['class']) ? $callee['class'] : null;
 
