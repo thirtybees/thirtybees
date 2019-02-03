@@ -89,15 +89,22 @@ class ErrorHandlerCore
     }
 
     /**
+     * Returns list of collected php error messags
+     *
+     * @param bool $includeSuppressed if true, result will include even messages that were suppressed using @ operator
+     * @param int $mask message types to return, defaults to E_ALL
      * @return array of collected error messages
      *
      * @since 1.0.9
      */
-    public function getErrorMessages($includeSuppressed = false)
+    public function getErrorMessages($includeSuppressed = false, $mask = E_ALL)
     {
         if ($this->errorMessages) {
-            return $includeSuppressed ? $this->errorMessages : array_filter($this->errorMessages, function ($error) {
-                return !$error['suppressed'];
+            return array_filter($this->errorMessages, function ($error) use ($includeSuppressed, $mask) {
+                if (!$includeSuppressed && $error['suppressed']) {
+                    return false;
+                }
+                return (bool)($error['errno'] & $mask);
             });
         }
 
