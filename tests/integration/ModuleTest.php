@@ -36,6 +36,16 @@ class ModuleTest extends \Codeception\Test\Unit
     public function testInstallationAndUninstallation($moduleName)
     {
         $module = ModuleCore::getInstanceByName($moduleName);
+
+        // Modules prohibited from installing on PHP 5.5.
+        if (version_compare(phpversion(), '5.6', '<')) {
+            if (in_array($moduleName, [
+                'coreupdater',
+            ])) {
+                return;
+            }
+        }
+
         if ($module->id) {
             $this->assertTrue((bool)$module->uninstall(), 'Module uninstall failed : '.$moduleName);
             $this->assertTrue((bool)$module->install(), 'Module install failed : '.$moduleName);

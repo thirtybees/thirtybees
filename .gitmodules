@@ -126,6 +126,10 @@
 	path = modules/blockviewed
 	url = https://github.com/thirtybees/blockviewed.git
 	ignore = dirty
+[submodule "modules/coreupdater"]
+	path = modules/coreupdater
+	url = https://github.com/thirtybees/coreupdater.git
+	ignore = dirty
 [submodule "modules/crossselling"]
 	path = modules/crossselling
 	url = https://github.com/thirtybees/crossselling.git
