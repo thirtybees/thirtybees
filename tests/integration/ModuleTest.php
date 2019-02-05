@@ -7,6 +7,12 @@ class ModuleTest extends \Codeception\Test\Unit
     {
         parent::setUpBeforeClass();
         Module::updateTranslationsAfterInstall(false);
+
+        // Some modules create a back office menu item (tab), which needs an
+        // employee to be defined. Employee with ID 1 is the one created at
+        // installation time.
+        $employee = new Employee(1);
+        Context::getContext()->employee = $employee;
     }
 
     public function listModulesOnDisk()
