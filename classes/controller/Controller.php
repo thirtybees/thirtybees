@@ -759,47 +759,19 @@ abstract class ControllerCore
     {
         $messages = ErrorHandler::getInstance()->getErrorMessages(false);
         if ($messages) {
-            $debugMessages = "\n";
-            $debugMessages .= 'if(window.console && window.console.group && window.console.log && window.console.warn && window.console.error) {' . "\n";
-            $debugMessages .= '  console.group("PHP error messages");' . "\n";
-            foreach (ErrorHandler::getInstance()->getErrorMessages(false) as $errorMessage) {
-                $printMessage = '  console.';
-                $color = "black";
-                switch ($errorMessage['level']) {
-                    case 'warning':
-                    case 'notice':
-                        $printMessage .= 'warn';
-                        $color = "#B23B13";
-                        break;
-                    case 'error':
-                        $printMessage .= 'error';
-                        $color = "red";
-                        break;
-                    default:
-                        $printMessage .= 'log';
-                }
-                $file = ErrorHandler::normalizeFileName($errorMessage['errfile']);
-                $line = $errorMessage['errline'];
-                $strMessage = '%c' . $errorMessage['type'] . ':'
-                    . ' %c' . $errorMessage['errstr']
-                    . ' %cin %c' . $file;
-                if ($line) {
-                    $strMessage .= ' %cat line %c' . $errorMessage['errline'];
-                }
-                $printMessage .= '(' . json_encode($strMessage) . ', '
-                    . '"color: ' . $color . '", '
-                    . '"color: blue; font-weight: bold", '
-                    . '"color: grey", "color:green"';
-                if ($line) {
-                    $printMessage .= ', "color: grey", "color:green");';
-                } else {
-                    $printMessage .= ');';
-                }
-                $debugMessages .= $printMessage . "\n";
+            $messagesList = [];
+            foreach ($messages as $msg) {
+                $messagesList[] = [
+                    'level' => $msg['level'],
+                    'type' => $msg['type'],
+                    'message' => $msg['errstr'],
+                    'file' => ErrorHandler::normalizeFileName($msg['errfile']),
+                    'line' => (int)$msg['errline']
+                ];
             }
-            $debugMessages .= "  console.groupEnd();\n";
-            $debugMessages .= "}\n";
-            return '<script type="text/javascript">' . $debugMessages . '</script>';
+            $messages = '<script type="text/javascript">' . "\n" . 'window.phpMessages=' . json_encode($messagesList, JSON_PRETTY_PRINT). ";\n</script>\n";
+            $debugJs = '<script type="text/javascript" src="' . Media::getJSPath(_PS_JS_DIR_ . 'php-debug.js') . '" async defer></script>' . "\n";
+            return $messages . $debugJs;
         }
     }
 }
