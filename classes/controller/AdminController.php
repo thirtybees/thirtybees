@@ -4598,8 +4598,9 @@ class AdminControllerCore extends Controller
                 }
                 if ($result) {
                     $this->redirect_after = static::$currentIndex.'&conf=2&token='.$this->token;
-                }
-                $this->errors[] = Tools::displayError('An error occurred while deleting this selection.');
+                } else {
+		    $this->errors[] = Tools::displayError('An error occurred while deleting this selection.');
+		}
             }
         } else {
             $this->errors[] = Tools::displayError('You must select at least one element to delete.');
