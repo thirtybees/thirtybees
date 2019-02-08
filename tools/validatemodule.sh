@@ -464,9 +464,9 @@ unset ENTRIES FAULT
 
 # 'thirty bees' should be lowercase everywhere.
 ${FIND} . | while read F; do
-  ${CAT} "${F}" | grep -q 'Thirty Bees' && \
+  ${CAT} "${F}" | grep -q '\bThirty Bees\b' && \
     e "file ${F} contains 'Thirty Bees'; should be 'thirty bees'."
-  ${CAT} "${F}" | grep -q 'ThirtyBees' && \
+  ${CAT} "${F}" | grep -q '\bThirtyBees\b' && \
     e "file ${F} contains 'ThirtyBees'; should be 'thirtybees'."
 done
 
