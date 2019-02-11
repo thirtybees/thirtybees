@@ -463,7 +463,21 @@ class ProductCore extends ObjectModel
             // Keep base price
             $this->base_price = $this->price;
 
-            $this->price = Product::getPriceStatic((int) $this->id, false, null, 6, null, false, true, 1, false, null, null, null, $this->specificPrice);
+            $this->price = Product::getPriceStatic(
+                (int) $this->id,
+                false,
+                null,
+                _TB_PRICE_DATABASE_PRECISION_,
+                null,
+                false,
+                true,
+                1,
+                false,
+                null,
+                null,
+                null,
+                $this->specificPrice
+            );
             $this->unit_price = ($this->unit_price_ratio != 0 ? $this->price / $this->unit_price_ratio : 0);
             $this->tags = Tag::getProductTags((int) $this->id);
 
@@ -564,7 +578,7 @@ class ProductCore extends ObjectModel
         $idProduct,
         $usetax = true,
         $idProductAttribute = null,
-        $decimals = 6,
+        $decimals = _TB_PRICE_DATABASE_PRECISION_,
         $divisor = null,
         $onlyReduc = false,
         $usereduc = true,
@@ -1759,7 +1773,7 @@ class ProductCore extends ObjectModel
             (int) $row['id_product'],
             static::$_taxCalculationMethod != PS_TAX_EXC,
             $idProductAttribute,
-            6,
+            _TB_PRICE_DATABASE_PRECISION_,
             null,
             true,
             true,
@@ -5845,7 +5859,7 @@ class ProductCore extends ObjectModel
     public function getPrice(
         $tax = true,
         $idProductAttribute = null,
-        $decimals = 6,
+        $decimals = _TB_PRICE_DATABASE_PRECISION_,
         $divisor = null,
         $onlyReduc = false,
         $usereduc = true,
@@ -5876,7 +5890,7 @@ class ProductCore extends ObjectModel
     public function getPublicPrice(
         $tax = true,
         $idProductAttribute = null,
-        $decimals = 6,
+        $decimals = _TB_PRICE_DATABASE_PRECISION_,
         $divisor = null,
         $onlyReduc = false,
         $usereduc = true,
@@ -5944,7 +5958,7 @@ class ProductCore extends ObjectModel
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
-    public function getPriceWithoutReduct($notax = false, $idProductAttribute = false, $decimals = 6)
+    public function getPriceWithoutReduct($notax = false, $idProductAttribute = false, $decimals = _TB_PRICE_DATABASE_PRECISION_)
     {
         return Product::getPriceStatic((int) $this->id, !$notax, $idProductAttribute, $decimals, null, false, false);
     }
