@@ -2672,8 +2672,8 @@ class ProductCore extends ObjectModel
 
         $resultsArray = [];
         foreach ($result as $row) {
-            $row['price_tax_incl'] = Product::getPriceStatic($row['id_product'], true, null, 2);
-            $row['price_tax_excl'] = Product::getPriceStatic($row['id_product'], false, null, 2);
+            $row['price_tax_incl'] = Product::getPriceStatic($row['id_product'], true);
+            $row['price_tax_excl'] = Product::getPriceStatic($row['id_product'], false);
             $resultsArray[] = $row;
         }
 
