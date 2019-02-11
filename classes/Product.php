@@ -1739,44 +1739,22 @@ class ProductCore extends ObjectModel
         $row['price_tax_exc'] = Product::getPriceStatic(
             (int) $row['id_product'],
             false,
-            $idProductAttribute,
-            (static::$_taxCalculationMethod == PS_TAX_EXC ? 2 : 6)
+            $idProductAttribute
         );
-
-        if (static::$_taxCalculationMethod == PS_TAX_EXC) {
-            $row['price'] = Product::getPriceStatic(
-                (int) $row['id_product'],
-                true,
-                $idProductAttribute,
-                6
-            );
-            $row['price_without_reduction'] = Product::getPriceStatic(
-                (int) $row['id_product'],
-                false,
-                $idProductAttribute,
-                2,
-                null,
-                false,
-                false
-            );
-        } else {
-            $row['price'] = Product::getPriceStatic(
-                (int) $row['id_product'],
-                true,
-                $idProductAttribute,
-                (int) Configuration::get('PS_PRICE_DISPLAY_PRECISION')
-            );
-            $row['price_without_reduction'] = Product::getPriceStatic(
-                (int) $row['id_product'],
-                true,
-                $idProductAttribute,
-                6,
-                null,
-                false,
-                false
-            );
-        }
-
+        $row['price'] = Product::getPriceStatic(
+            (int) $row['id_product'],
+            true,
+            $idProductAttribute
+        );
+        $row['price_without_reduction'] = Product::getPriceStatic(
+            (int) $row['id_product'],
+            static::$_taxCalculationMethod != PS_TAX_EXC,
+            $idProductAttribute,
+            _TB_PRICE_DATABASE_PRECISION_,
+            null,
+            false,
+            false
+        );
         $row['reduction'] = Product::getPriceStatic(
             (int) $row['id_product'],
             (bool) $usetax,
