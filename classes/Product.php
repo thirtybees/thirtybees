@@ -1757,7 +1757,7 @@ class ProductCore extends ObjectModel
         );
         $row['reduction'] = Product::getPriceStatic(
             (int) $row['id_product'],
-            (bool) $usetax,
+            static::$_taxCalculationMethod != PS_TAX_EXC,
             $idProductAttribute,
             6,
             null,
