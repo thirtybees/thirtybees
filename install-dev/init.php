@@ -92,7 +92,7 @@ if (!@ini_get('date.timezone')) {
 ini_set('magic_quotes_runtime', 0);
 
 // Try to improve memory limit if it's under 64M
-$currentMemoryLimit = psinstall_get_memory_limit();
+$currentMemoryLimit = psinstall_get_octets(@ini_get('memory_limit'));
 if ($currentMemoryLimit > 0 && $currentMemoryLimit < psinstall_get_octets('64M')) {
     ini_set('memory_limit', '64M');
 }
@@ -112,23 +112,4 @@ function psinstall_get_octets($option)
     }
 
     return $option;
-}
-
-function psinstall_get_memory_limit()
-{
-    $memoryLimit = @ini_get('memory_limit');
-
-    if (preg_match('/[0-9]+k/i', $memoryLimit)) {
-        return 1024 * (int) $memoryLimit;
-    }
-
-    if (preg_match('/[0-9]+m/i', $memoryLimit)) {
-        return 1024 * 1024 * (int) $memoryLimit;
-    }
-
-    if (preg_match('/[0-9]+g/i', $memoryLimit)) {
-        return 1024 * 1024 * 1024 * (int) $memoryLimit;
-    }
-
-    return $memoryLimit;
 }
