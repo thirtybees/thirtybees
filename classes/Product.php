@@ -1744,7 +1744,6 @@ class ProductCore extends ObjectModel
         );
 
         if (static::$_taxCalculationMethod == PS_TAX_EXC) {
-            $row['price_tax_exc'] = Tools::ps_round($row['price_tax_exc'], 2);
             $row['price'] = Product::getPriceStatic(
                 (int) $row['id_product'],
                 true,
@@ -1761,13 +1760,10 @@ class ProductCore extends ObjectModel
                 false
             );
         } else {
-            $row['price'] = Tools::ps_round(
-                Product::getPriceStatic(
-                    (int) $row['id_product'],
-                    true,
-                    $idProductAttribute,
-                    6
-                ),
+            $row['price'] = Product::getPriceStatic(
+                (int) $row['id_product'],
+                true,
+                $idProductAttribute,
                 (int) Configuration::get('PS_PRICE_DISPLAY_PRECISION')
             );
             $row['price_without_reduction'] = Product::getPriceStatic(
