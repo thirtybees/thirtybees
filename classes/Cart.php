@@ -826,27 +826,26 @@ class CartCore extends ObjectModel
                 $idTaxRulesGroup = 0;
             }
 
-            if (in_array($roundType, [Order::ROUND_ITEM, Order::ROUND_LINE])) {
-                if (!isset($productsTotal[$idTaxRulesGroup])) {
-                    $productsTotal[$idTaxRulesGroup] = 0;
-                }
-            } elseif (!isset($productsTotal[$idTaxRulesGroup.'_'.$idAddress])) {
-                $productsTotal[$idTaxRulesGroup.'_'.$idAddress] = 0;
+            $index = $idTaxRulesGroup;
+            if ($roundType === Order::ROUND_TOTAL) {
+                $index = $idTaxRulesGroup.'_'.$idAddress;
+            }
+            if ( ! isset($productsTotal[$index])) {
+                $productsTotal[$index] = 0;
             }
 
             switch ($roundType) {
                 case Order::ROUND_TOTAL:
-                    $productsTotal[$idTaxRulesGroup.'_'.$idAddress] += $price * (int) $product['cart_quantity'];
+                    $productsTotal[$index] += $price * (int) $product['cart_quantity'];
                     break;
 
                 case Order::ROUND_LINE:
-                    $productsTotal[$idTaxRulesGroup] += Tools::ps_round($price * $product['cart_quantity'], $displayPrecision);
+                    $productsTotal[$index] += Tools::ps_round($price * $product['cart_quantity'], $displayPrecision);
                     break;
 
                 case Order::ROUND_ITEM:
                 default:
-                    $productPrice = $price;
-                    $productsTotal[$idTaxRulesGroup] += Tools::ps_round($productPrice, $displayPrecision) * (int) $product['cart_quantity'];
+                    $productsTotal[$index] += Tools::ps_round($price, $displayPrecision) * (int) $product['cart_quantity'];
                     break;
             }
         }
