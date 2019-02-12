@@ -1428,14 +1428,16 @@ class CartRuleCore extends ObjectModel
                 // Do not give a reduction on free products!
                 $orderTotal = $context->cart->getOrderTotal($useTax, Cart::ONLY_PRODUCTS, $packageProducts);
                 foreach ($context->cart->getCartRules(static::FILTER_ACTION_GIFT) as $cartRule) {
-                    if (in_array($roundType, [1])) {
-                        // Round item
-                        $orderTotal -= Tools::ps_round($cartRule['obj']->getContextualValue($useTax, $context, static::FILTER_ACTION_GIFT, $package), _TB_PRICE_DATABASE_PRECISION_);
-                    } else {
-                        // Round line - deferring
-                        // Round total
-                        $orderTotal -= $cartRule['obj']->getContextualValue($useTax, $context, static::FILTER_ACTION_GIFT, $package);
+                    $reduction = $cartRule['obj']->getContextualValue(
+                        $useTax, $context,
+                        static::FILTER_ACTION_GIFT, $package
+                    );
+                    if ($roundType === Order::ROUND_ITEM) {
+                        Tools::ps_round($reduction,
+                            Configuration::get('PS_PRICE_DISPLAY_PRECISION')
+                        );
                     }
+                    $orderTotal -= $reduction;
                 }
 
                 $reductionValue += $orderTotal * $this->reduction_percent / 100;
@@ -1620,8 +1622,7 @@ class CartRuleCore extends ObjectModel
                 }
             }
 
-            if ($roundType === 2) {
-                // Round line
+            if ($roundType === Order::ROUND_LINE) {
                 $reductionValue = Tools::ps_round($reductionValue, _PS_PRICE_DISPLAY_PRECISION_);
             }
         }
