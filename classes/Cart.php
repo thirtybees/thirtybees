@@ -256,6 +256,9 @@ class CartCore extends ObjectModel
         if (!$this->id) {
             return [];
         }
+
+        $displayPrecision = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
+
         // Product cache must be strictly compared to NULL, or else an empty cart will add dozens of queries
         if ($this->_products !== null && !$refresh) {
             // Return product row with specified ID if it exists
@@ -498,18 +501,35 @@ class CartCore extends ObjectModel
 
             switch (Configuration::get('PS_ROUND_TYPE')) {
                 case Order::ROUND_TOTAL:
-                    $row['total'] = $row['price_with_reduction_without_tax'] * (int) $row['cart_quantity'];
-                    $row['total_wt'] = $row['price_with_reduction'] * (int) $row['cart_quantity'];
+                    $row['total'] = $row['price_with_reduction_without_tax']
+                                    * (int) $row['cart_quantity'];
+                    $row['total_wt'] = $row['price_with_reduction']
+                                       * (int) $row['cart_quantity'];
                     break;
                 case Order::ROUND_LINE:
-                    $row['total'] = Tools::ps_round($row['price_with_reduction_without_tax'] * (int) $row['cart_quantity'], _TB_PRICE_DATABASE_PRECISION_);
-                    $row['total_wt'] = Tools::ps_round($row['price_with_reduction'] * (int) $row['cart_quantity'], _TB_PRICE_DATABASE_PRECISION_);
+                    $row['total'] = Tools::ps_round(
+                        $row['price_with_reduction_without_tax']
+                        * (int) $row['cart_quantity'],
+                        $displayPrecision
+                    );
+                    $row['total_wt'] = Tools::ps_round(
+                        $row['price_with_reduction']
+                        * (int) $row['cart_quantity'],
+                        $displayPrecision
+                    );
                     break;
-
                 case Order::ROUND_ITEM:
                 default:
-                    $row['total'] = Tools::ps_round($row['price_with_reduction_without_tax'], _TB_PRICE_DATABASE_PRECISION_) * (int) $row['cart_quantity'];
-                    $row['total_wt'] = Tools::ps_round($row['price_with_reduction'], _TB_PRICE_DATABASE_PRECISION_) * (int) $row['cart_quantity'];
+                    $row['total'] = Tools::ps_round(
+                            $row['price_with_reduction_without_tax'],
+                            $displayPrecision
+                        )
+                        * (int) $row['cart_quantity'];
+                    $row['total_wt'] = Tools::ps_round(
+                            $row['price_with_reduction'],
+                            $displayPrecision
+                        )
+                        * (int) $row['cart_quantity'];
                     break;
             }
 
