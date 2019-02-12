@@ -257,9 +257,6 @@ class CartCore extends ObjectModel
             return [];
         }
 
-        $roundType = (int) Configuration::get('PS_ROUND_TYPE');
-        $displayPrecision = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
-
         // Product cache must be strictly compared to NULL, or else an empty cart will add dozens of queries
         if ($this->_products !== null && !$refresh) {
             // Return product row with specified ID if it exists
@@ -500,34 +497,14 @@ class CartCore extends ObjectModel
                 $cartShopContext
             );
 
-            switch ($roundType) {
-                case Order::ROUND_ITEM:
-                    $row['price_with_reduction_without_tax'] = Tools::ps_round(
-                        $row['price_with_reduction_without_tax'],
-                        $displayPrecision
-                    );
-                    $row['price_with_reduction'] = Tools::ps_round(
-                        $row['price_with_reduction'],
-                        $displayPrecision
-                    );
-                    // Intentionally fall through.
-                case Order::ROUND_LINE:
-                case Order::ROUND_TOTAL:
-                    $row['total'] = $row['price_with_reduction_without_tax']
-                                    * (int) $row['cart_quantity'];
-                    $row['total_wt'] = $row['price_with_reduction']
-                                       * (int) $row['cart_quantity'];
-            }
-            if ($roundType === Order::ROUND_LINE) {
-                $row['total'] = Tools::ps_round(
-                    $row['total'],
-                    $displayPrecision
-                );
-                $row['total_wt'] = Tools::ps_round(
-                    $row['total_wt'],
-                    $displayPrecision
-                );
-            }
+            $row['total'] = $this->roundPrice(
+                $row['price_with_reduction_without_tax'],
+                $row['cart_quantity']
+            );
+            $row['total_wt'] = $this->roundPrice(
+                $row['price_with_reduction'],
+                $row['cart_quantity']
+            );
 
             $row['price_wt'] = $row['price_with_reduction'];
             $row['description_short'] = Tools::nl2br($row['description_short']);
@@ -556,6 +533,37 @@ class CartCore extends ObjectModel
         }
 
         return $this->_products;
+    }
+
+    /**
+     * Round a quantity of a price for display. This is non-trivial, because
+     * thirty bees features multiple rounding strategies.
+     *
+     * @param float $price      Single price of the product.
+     * @param int   $quantity   Quantity of the product.
+     *
+     * return float Rounded and multiplied price.
+     *
+     * @since 1.1.0
+     */
+    protected function roundPrice($price, $quantity)
+    {
+        $roundType = (int) Configuration::get('PS_ROUND_TYPE');
+        $displayPrecision = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
+
+        switch ($roundType) {
+            case Order::ROUND_ITEM:
+                $price = Tools::ps_round($price, $displayPrecision);
+                // Intentionally fall through.
+            case Order::ROUND_LINE:
+            case Order::ROUND_TOTAL:
+                $total = $price * (int) $quantity;
+        }
+        if ($roundType === Order::ROUND_LINE) {
+            $total = Tools::ps_round($total, $displayPrecision);
+        }
+
+        return $total;
     }
 
     /**
