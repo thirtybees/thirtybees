@@ -675,7 +675,7 @@ class CartCore extends ObjectModel
         $psTaxAddressType = $configuration->get('PS_TAX_ADDRESS_TYPE');
         $psUseEcotax = $configuration->get('PS_USE_ECOTAX');
         $psRoundType = $configuration->get('PS_ROUND_TYPE');
-        $displayPrecision = $configuration->get('_PS_PRICE_DISPLAY_PRECISION_');
+        $displayPrecision = $configuration->get('PS_PRICE_DISPLAY_PRECISION');
 
         if (!$this->id) {
             return 0;
