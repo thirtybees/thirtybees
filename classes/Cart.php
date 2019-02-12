@@ -698,7 +698,6 @@ class CartCore extends ObjectModel
 
         $psTaxAddressType = $configuration->get('PS_TAX_ADDRESS_TYPE');
         $psUseEcotax = $configuration->get('PS_USE_ECOTAX');
-        $roundType = (int) $configuration->get('PS_ROUND_TYPE');
         $displayPrecision = $configuration->get('PS_PRICE_DISPLAY_PRECISION');
 
         if (!$this->id) {
@@ -827,27 +826,17 @@ class CartCore extends ObjectModel
             }
 
             $index = $idTaxRulesGroup;
-            if ($roundType === Order::ROUND_TOTAL) {
+            if (Configuration::get('PS_ROUND_TYPE') == Order::ROUND_TOTAL) {
                 $index = $idTaxRulesGroup.'_'.$idAddress;
             }
             if ( ! isset($productsTotal[$index])) {
                 $productsTotal[$index] = 0;
             }
 
-            switch ($roundType) {
-                case Order::ROUND_TOTAL:
-                    $productsTotal[$index] += $price * (int) $product['cart_quantity'];
-                    break;
-
-                case Order::ROUND_LINE:
-                    $productsTotal[$index] += Tools::ps_round($price * $product['cart_quantity'], $displayPrecision);
-                    break;
-
-                case Order::ROUND_ITEM:
-                default:
-                    $productsTotal[$index] += Tools::ps_round($price, $displayPrecision) * (int) $product['cart_quantity'];
-                    break;
-            }
+            $productsTotal[$index] += $this->roundPrice(
+                $price,
+                $product['cart_quantity']
+            );
         }
 
         foreach ($productsTotal as $key => $price) {
