@@ -257,6 +257,7 @@ class CartCore extends ObjectModel
             return [];
         }
 
+        $roundType = (int) Configuration::get('PS_ROUND_TYPE');
         $displayPrecision = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
 
         // Product cache must be strictly compared to NULL, or else an empty cart will add dozens of queries
@@ -499,38 +500,33 @@ class CartCore extends ObjectModel
                 $cartShopContext
             );
 
-            switch (Configuration::get('PS_ROUND_TYPE')) {
+            switch ($roundType) {
+                case Order::ROUND_ITEM:
+                    $row['price_with_reduction_without_tax'] = Tools::ps_round(
+                        $row['price_with_reduction_without_tax'],
+                        $displayPrecision
+                    );
+                    $row['price_with_reduction'] = Tools::ps_round(
+                        $row['price_with_reduction'],
+                        $displayPrecision
+                    );
+                    // Intentionally fall through.
+                case Order::ROUND_LINE:
                 case Order::ROUND_TOTAL:
                     $row['total'] = $row['price_with_reduction_without_tax']
                                     * (int) $row['cart_quantity'];
                     $row['total_wt'] = $row['price_with_reduction']
                                        * (int) $row['cart_quantity'];
-                    break;
-                case Order::ROUND_LINE:
-                    $row['total'] = Tools::ps_round(
-                        $row['price_with_reduction_without_tax']
-                        * (int) $row['cart_quantity'],
-                        $displayPrecision
-                    );
-                    $row['total_wt'] = Tools::ps_round(
-                        $row['price_with_reduction']
-                        * (int) $row['cart_quantity'],
-                        $displayPrecision
-                    );
-                    break;
-                case Order::ROUND_ITEM:
-                default:
-                    $row['total'] = Tools::ps_round(
-                            $row['price_with_reduction_without_tax'],
-                            $displayPrecision
-                        )
-                        * (int) $row['cart_quantity'];
-                    $row['total_wt'] = Tools::ps_round(
-                            $row['price_with_reduction'],
-                            $displayPrecision
-                        )
-                        * (int) $row['cart_quantity'];
-                    break;
+            }
+            if ($roundType === Order::ROUND_LINE) {
+                $row['total'] = Tools::ps_round(
+                    $row['total'],
+                    $displayPrecision
+                );
+                $row['total_wt'] = Tools::ps_round(
+                    $row['total_wt'],
+                    $displayPrecision
+                );
             }
 
             $row['price_wt'] = $row['price_with_reduction'];
