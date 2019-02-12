@@ -674,7 +674,7 @@ class CartCore extends ObjectModel
 
         $psTaxAddressType = $configuration->get('PS_TAX_ADDRESS_TYPE');
         $psUseEcotax = $configuration->get('PS_USE_ECOTAX');
-        $psRoundType = $configuration->get('PS_ROUND_TYPE');
+        $roundType = (int) $configuration->get('PS_ROUND_TYPE');
         $displayPrecision = $configuration->get('PS_PRICE_DISPLAY_PRECISION');
 
         if (!$this->id) {
@@ -802,7 +802,7 @@ class CartCore extends ObjectModel
                 $idTaxRulesGroup = 0;
             }
 
-            if (in_array($psRoundType, [Order::ROUND_ITEM, Order::ROUND_LINE])) {
+            if (in_array($roundType, [Order::ROUND_ITEM, Order::ROUND_LINE])) {
                 if (!isset($productsTotal[$idTaxRulesGroup])) {
                     $productsTotal[$idTaxRulesGroup] = 0;
                 }
@@ -810,7 +810,7 @@ class CartCore extends ObjectModel
                 $productsTotal[$idTaxRulesGroup.'_'.$idAddress] = 0;
             }
 
-            switch ($psRoundType) {
+            switch ($roundType) {
                 case Order::ROUND_TOTAL:
                     $productsTotal[$idTaxRulesGroup.'_'.$idAddress] += $price * (int) $product['cart_quantity'];
                     break;
@@ -2203,13 +2203,10 @@ class CartCore extends ObjectModel
         $cartAmountTaxIncluded = $this->getOrderTotal(true, static::ONLY_PRODUCTS);
         $cartAmountTaxExcluded = $this->getOrderTotal(false, static::ONLY_PRODUCTS);
 
-        // Get the rate according to the applied rounding method
-        $roundingMethod = (int) Configuration::get('PS_ROUND_TYPE');
         $precision = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
 
-        switch ($roundingMethod) {
+        switch (Configuration::get('PS_ROUND_TYPE')) {
             case Order::ROUND_ITEM:
-                // Round on item
                 $total = 0;
                 $totalTax = 0;
                 foreach ($this->getProducts() as $product) {
@@ -2229,7 +2226,6 @@ class CartCore extends ObjectModel
 
                 return $totalTax / $total;
             case Order::ROUND_LINE:
-                // Round on cart line
                 $total = 0;
                 $totalTax = 0;
                 foreach ($this->getProducts() as $product) {
@@ -2246,8 +2242,8 @@ class CartCore extends ObjectModel
                 }
 
                 return $totalTax / $total;
+            case Order::ROUND_TOTAL:
             default:
-                // Round on total
                 $cartVatAmount = $cartAmountTaxIncluded - $cartAmountTaxExcluded;
 
                 if ($cartVatAmount == 0 || $cartAmountTaxExcluded == 0) {
