@@ -2205,7 +2205,7 @@ class CartCore extends ObjectModel
 
         // Get the rate according to the applied rounding method
         $roundingMethod = (int) Configuration::get('PS_ROUND_TYPE');
-        $precision = _PS_PRICE_DISPLAY_PRECISION_;
+        $precision = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
 
         switch ($roundingMethod) {
             case Order::ROUND_ITEM:
@@ -2213,7 +2213,7 @@ class CartCore extends ObjectModel
                 $total = 0;
                 $totalTax = 0;
                 foreach ($this->getProducts() as $product) {
-		    if(!$product['price'])
+                    if( ! $product['price'])
                         continue;
                     $price = Tools::ps_round($product['price'], $precision);
                     $priceWithTax = Tools::ps_round($product['price_wt'], $precision);
