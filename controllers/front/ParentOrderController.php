@@ -357,8 +357,6 @@ class ParentOrderControllerCore extends FrontController
 
         $cartProductContext = $this->context->cloneContext();
         foreach ($summary['products'] as $key => &$product) {
-            $product['quantity'] = $product['cart_quantity'];// for compatibility with 1.2 themes
-
             if ($cartProductContext->shop->id != $product['id_shop']) {
                 $cartProductContext->shop = new Shop((int) $product['id_shop']);
             }
