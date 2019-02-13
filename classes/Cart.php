@@ -187,7 +187,9 @@ class CartCore extends ObjectModel
      */
     public function setTaxCalculationMethod()
     {
-        $this->_taxCalculationMethod = Group::getPriceDisplayMethod(Group::getCurrent()->id);
+        $this->_taxCalculationMethod = (int) Group::getPriceDisplayMethod(
+            Group::getCurrent()->id
+        );
     }
 
     /**
@@ -654,7 +656,7 @@ class CartCore extends ObjectModel
             die(Tools::displayError());
         }
 
-        $withTaxes = $useTaxDisplay ? $cart->_taxCalculationMethod != PS_TAX_EXC : true;
+        $withTaxes = $useTaxDisplay ? $cart->_taxCalculationMethod !== PS_TAX_EXC : true;
 
         return Tools::displayPrice($cart->getOrderTotal($withTaxes, $type), Currency::getCurrencyInstance((int) $cart->id_currency), false);
     }
