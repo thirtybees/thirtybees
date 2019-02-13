@@ -501,11 +501,15 @@ class CartCore extends ObjectModel
 
             $row['total'] = $this->roundPrice(
                 $row['price_with_reduction_without_tax'],
-                $row['cart_quantity']
+                $row['price_with_reduction'],
+                $row['cart_quantity'],
+                false
             );
             $row['total_wt'] = $this->roundPrice(
+                $row['price_with_reduction_without_tax'],
                 $row['price_with_reduction'],
-                $row['cart_quantity']
+                $row['cart_quantity'],
+                true
             );
 
             $row['price_wt'] = $row['price_with_reduction'];
@@ -541,17 +545,29 @@ class CartCore extends ObjectModel
      * Round a quantity of a price for display. This is non-trivial, because
      * thirty bees features multiple rounding strategies.
      *
-     * @param float $price      Single price of the product.
-     * @param int   $quantity   Quantity of the product.
+     * @param float $priceWithoutTax  Single price of the product, without tax.
+     * @param float $priceWithTax     Single price of the product, with tax.
+     * @param int   $quantity         Quantity of the product.
+     * @param bool  $withTax          Whether the price with or without tax
+     *                                should get returned. Rounding gets
+     *                                applied to the displayed price, so
+     *                                rounding the other variant requires to
+     *                                recalculate taxes.
      *
      * return float Rounded and multiplied price.
      *
      * @since 1.1.0
      */
-    protected function roundPrice($price, $quantity)
+    protected function roundPrice($priceWithoutTax, $priceWithTax,
+                                  $quantity, $withTax)
     {
         $roundType = (int) Configuration::get('PS_ROUND_TYPE');
         $displayPrecision = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
+
+        $price = $priceWithoutTax;
+        if ($this->_taxCalculationMethod === PS_TAX_INC) {
+            $price = $priceWithTax;
+        }
 
         switch ($roundType) {
             case Order::ROUND_ITEM:
@@ -561,6 +577,17 @@ class CartCore extends ObjectModel
             case Order::ROUND_TOTAL:
                 $total = $price * (int) $quantity;
         }
+
+        // Add/remove taxes as appropriate. Ignore the obvious calculation
+        // precision limitation, please, it should be negligible.
+        if ($this->_taxCalculationMethod === PS_TAX_INC && ! $withTax) {
+            // Remove taxes.
+            $total = $total / $priceWithTax * $priceWithoutTax;
+        } elseif ($this->_taxCalculationMethod === PS_TAX_EXC && $withTax) {
+            // Add taxes.
+            $total = $total * $priceWithTax / $priceWithoutTax;
+        } // else nothing to change.
+
         if ($roundType === Order::ROUND_LINE) {
             $total = Tools::ps_round($total, $displayPrecision);
         }
@@ -802,9 +829,27 @@ class CartCore extends ObjectModel
             // but it is necessary to pass it to getProductPrice because
             // it expects a reference.
             $null = null;
-            $price = $priceCalculator->getProductPrice(
+            $priceWithoutTax = $priceCalculator->getProductPrice(
                 (int) $product['id_product'],
-                $withTaxes,
+                false,
+                (int) $product['id_product_attribute'],
+                _TB_PRICE_DATABASE_PRECISION_,
+                null,
+                false,
+                true,
+                $product['cart_quantity'],
+                false,
+                (int) $this->id_customer ? (int) $this->id_customer : null,
+                (int) $this->id,
+                $idAddress,
+                $null,
+                $psUseEcotax,
+                true,
+                $virtualContext
+            );
+            $priceWithTax = $priceCalculator->getProductPrice(
+                (int) $product['id_product'],
+                true,
                 (int) $product['id_product_attribute'],
                 _TB_PRICE_DATABASE_PRECISION_,
                 null,
@@ -836,8 +881,10 @@ class CartCore extends ObjectModel
             }
 
             $productsTotal[$index] += $this->roundPrice(
-                $price,
-                $product['cart_quantity']
+                $priceWithoutTax,
+                $priceWithTax,
+                $product['cart_quantity'],
+                $withTaxes
             );
         }
 
