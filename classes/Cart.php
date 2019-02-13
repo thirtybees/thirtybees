@@ -2246,74 +2246,32 @@ class CartCore extends ObjectModel
     }
 
     /**
-     * The arguments are optional and only serve as return values in case caller needs the details.
+     * The arguments are optional and only serve as return values in case
+     * caller needs the details.
      *
-     * @param null $cartAmountTaxExcluded
-     * @param null $cartAmountTaxIncluded
+     * @param null $amountTaxExcluded
+     * @param null $amountTaxIncluded
      *
-     * @return float|int
+     * @return float
      *
      * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
+     *
      * @since   1.0.0
-     * @version 1.0.0 Initial version
      */
-    public function getAverageProductsTaxRate(&$cartAmountTaxExcluded = null, &$cartAmountTaxIncluded = null)
+    public function getAverageProductsTaxRate(&$amountTaxExcluded = null,
+                                              &$amountTaxIncluded = null)
     {
-        $cartAmountTaxIncluded = $this->getOrderTotal(true, static::ONLY_PRODUCTS);
-        $cartAmountTaxExcluded = $this->getOrderTotal(false, static::ONLY_PRODUCTS);
+        $amountTaxIncluded = $this->getOrderTotal(true, static::ONLY_PRODUCTS);
+        $amountTaxExcluded = $this->getOrderTotal(false, static::ONLY_PRODUCTS);
 
-        $precision = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
-
-        switch (Configuration::get('PS_ROUND_TYPE')) {
-            case Order::ROUND_ITEM:
-                $total = 0;
-                $totalTax = 0;
-                foreach ($this->getProducts() as $product) {
-                    if( ! $product['price'])
-                        continue;
-                    $price = Tools::ps_round($product['price'], $precision);
-                    $priceWithTax = Tools::ps_round($product['price_wt'], $precision);
-                    $appliedTaxRate = $priceWithTax / $price - 1;
-
-                    $total += $price * $product['quantity'];
-                    $totalTax += $appliedTaxRate * $price * $product['quantity'];
-                }
-
-                if ($total <= 0) {
-                    return $total;
-                }
-
-                return $totalTax / $total;
-            case Order::ROUND_LINE:
-                $total = 0;
-                $totalTax = 0;
-                foreach ($this->getProducts() as $product) {
-                    $lineTotal = Tools::ps_round($product['total'], $precision);
-                    $lineTotalWithTax = Tools::ps_round($product['total_wt'], $precision);
-                    $appliedTaxRate = $lineTotalWithTax / $lineTotal - 1;
-
-                    $total += $lineTotal;
-                    $totalTax += $appliedTaxRate * $lineTotal;
-                }
-
-                if ($total <= 0) {
-                    return $total;
-                }
-
-                return $totalTax / $total;
-            case Order::ROUND_TOTAL:
-            default:
-                $cartVatAmount = $cartAmountTaxIncluded - $cartAmountTaxExcluded;
-
-                if ($cartVatAmount == 0 || $cartAmountTaxExcluded == 0) {
-                    return 0;
-                } else {
-                    return $cartVatAmount / $cartAmountTaxExcluded;
-                }
-                break;
+        $tax = $amountTaxIncluded - $amountTaxExcluded;
+        if ($tax == 0 || $amountTaxExcluded == 0) {
+            return 0.0;
         }
+
+        return $tax / $amountTaxExcluded;
     }
 
     /**
