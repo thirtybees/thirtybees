@@ -212,7 +212,7 @@ abstract class PaymentModuleCore extends Module
         if (!$shops) {
             $shops = Shop::getShops(true, null, true);
         }
-        
+
         $currencies = Currency::getCurrencies();
 
         foreach ($shops as $idShop) {
@@ -546,7 +546,7 @@ abstract class PaymentModuleCore extends Module
                     $order->total_paid_tax_incl = (float) (float) $this->context->cart->getOrderTotal(true, Cart::BOTH, $order->product_list, $idCarrier);
                     $order->total_paid = $order->total_paid_tax_incl;
                     $order->round_mode = Configuration::get('PS_PRICE_ROUND_MODE');
-                    $order->round_type = Configuration::get('PS_ROUND_TYPE');
+                    $order->round_type = (int) Configuration::get('PS_ROUND_TYPE');
 
                     $order->invoice_date = '0000-00-00 00:00:00';
                     $order->delivery_date = '0000-00-00 00:00:00';
