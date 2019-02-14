@@ -190,7 +190,7 @@
 					<input onchange="checkPartialRefundProductAmount(this)" type="text" name="partialRefundProduct[{$product['id_order_detail']}]" />
 					{if !($currency->format % 2)}<div class="input-group-addon">{$currency->sign}</div>{/if}
 				</div>
-				<p class="help-block"><i class="icon-warning-sign"></i> {l s='(Max %s %s)' sprintf=[Tools::displayPrice(Tools::ps_round($amount_refundable, 2), $currency->id) , $smarty.capture.TaxMethod]}</p>
+				<p class="help-block"><i class="icon-warning-sign"></i> {l s='(Max %s %s)' sprintf=[Tools::displayPrice($amount_refundable, $currency->id) , $smarty.capture.TaxMethod]}</p>
 			</div>
 		</div>
 		{/if}
