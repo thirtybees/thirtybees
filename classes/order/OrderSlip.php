@@ -276,12 +276,12 @@ class OrderSlipCore extends ObjectModel
     }
 
     /**
-     * @param Order $order
-     * @param array $productList
-     * @param bool  $shippingCost
-     * @param int   $amount
-     * @param bool  $amountChoosen
-     * @param bool  $addTax
+     * @param Order $order          The order this refunding is related to.
+     * @param array $productList    List of arrays with product descriptions.
+     * @param bool  $shippingCost   Shipping costs.
+     * @param int   $amount         Appears to be always zero as of 1.0.8.
+     * @param bool  $amountChoosen  Appears to be always false as of 1.0.8.
+     * @param bool  $addTax         True if prices are without tax, else false.
      *
      * @return bool
      *
@@ -329,13 +329,11 @@ class OrderSlipCore extends ObjectModel
             $orderSlip->shipping_cost = false;
         }
 
-        $orderSlip->amount = 0;
-        $orderSlip->{'total_products_tax_'.$incOrEx1} = 0;
-        $orderSlip->{'total_products_tax_'.$incOrEx2} = 0;
+        $orderSlip->total_products_tax_excl = 0;
+        $orderSlip->total_products_tax_incl = 0;
 
         foreach ($productList as &$product) {
             $orderDetail = new OrderDetail((int) $product['id_order_detail']);
-            $price = (float) $product['unit_price'];
             $quantity = (int) $product['quantity'];
             $orderSlipResume = OrderSlip::getProductSlipResume((int) $orderDetail->id);
 
@@ -358,57 +356,58 @@ class OrderSlipCore extends ObjectModel
             $idTaxRulesGroup = Product::getIdTaxRulesGroupByIdProduct((int) $orderDetail->product_id);
             $taxCalculator = TaxManagerFactory::getManager($address, $idTaxRulesGroup)->getTaxCalculator();
 
-            $orderSlip->{'total_products_tax_'.$incOrEx1} += $price * $quantity;
-
-            if (in_array(Configuration::get('PS_ROUND_TYPE'), [Order::ROUND_ITEM, Order::ROUND_LINE])) {
-                if (!isset($totalProducts[$idTaxRulesGroup])) {
-                    $totalProducts[$idTaxRulesGroup] = 0;
-                }
+            // In case of a distinction between product value in the order and
+            // product value in the refund (choosen by the merchant on refund
+            // creation), these prices are reduced already.
+            if ($addTax) {
+                $product['unit_price_tax_excl'] = $product['unit_price'];
+                $product['unit_price_tax_incl'] = $taxCalculator->addTaxes(
+                    $product['unit_price']
+                );
             } else {
-                if (!isset($totalProducts[$idTaxRulesGroup.'_'.$idAddress])) {
-                    $totalProducts[$idTaxRulesGroup.'_'.$idAddress] = 0;
-                }
+                $product['unit_price_tax_incl'] = $product['unit_price'];
+                $product['unit_price_tax_excl'] = $taxCalculator->removeTaxes(
+                    $product['unit_price']
+                );
             }
 
-            $productTaxInclLine = Tools::ps_round($taxCalculator->{$addOrRemove.'Taxes'}($price) * $quantity, _TB_PRICE_DATABASE_PRECISION_);
+            $product['total_price_tax_excl'] =
+                $product['unit_price_tax_excl'] * $product['quantity'];
+            $product['total_price_tax_incl'] =
+                $product['unit_price_tax_incl'] * $product['quantity'];
+            $orderSlip->total_products_tax_excl
+                += $product['total_price_tax_excl'];
+            $orderSlip->total_products_tax_incl
+                += $product['total_price_tax_incl'];
 
-            switch (Configuration::get('PS_ROUND_TYPE')) {
-                case Order::ROUND_ITEM:
-                    $productTaxIncl = Tools::ps_round($taxCalculator->{$addOrRemove.'Taxes'}($price), _TB_PRICE_DATABASE_PRECISION_) * $quantity;
-                    $totalProducts[$idTaxRulesGroup] += $productTaxIncl;
-                    break;
-                case Order::ROUND_LINE:
-                    $productTaxIncl = $productTaxInclLine;
-                    $totalProducts[$idTaxRulesGroup] += $productTaxIncl;
-                    break;
-                case Order::ROUND_TOTAL:
-                    $productTaxIncl = $productTaxInclLine;
-                    $totalProducts[$idTaxRulesGroup.'_'.$idAddress] += $price * $quantity;
-                    break;
-            }
-
-            $product['unit_price_tax_'.$incOrEx1] = $price;
-            $product['unit_price_tax_'.$incOrEx2] = Tools::ps_round($taxCalculator->{$addOrRemove.'Taxes'}($price), _TB_PRICE_DATABASE_PRECISION_);
-            $product['total_price_tax_'.$incOrEx1] = Tools::ps_round($price * $quantity, _TB_PRICE_DATABASE_PRECISION_);
-            $product['total_price_tax_'.$incOrEx2] = Tools::ps_round($productTaxIncl, _TB_PRICE_DATABASE_PRECISION_);
+            // Do not round to display precision, because these values are
+            // taken from the order, which contains rounded values already.
+            // In case products get refunded at a lower value, not rounded
+            // prices are wanted, else the total might no longer match.
+            $product['total_price_tax_excl'] = Tools::ps_round(
+                $product['total_price_tax_excl'],
+                _TB_PRICE_DATABASE_PRECISION_
+            );
+            $product['total_price_tax_incl'] = Tools::ps_round(
+                $product['total_price_tax_incl'],
+                _TB_PRICE_DATABASE_PRECISION_
+            );
         }
-
         unset($product);
+        $orderSlip->total_products_tax_excl = Tools::ps_round(
+            $orderSlip->total_products_tax_excl,
+            _TB_PRICE_DATABASE_PRECISION_
+        );
+        $orderSlip->total_products_tax_incl = Tools::ps_round(
+            $orderSlip->total_products_tax_incl,
+            _TB_PRICE_DATABASE_PRECISION_
+        );
 
-        foreach ($totalProducts as $key => $price) {
-            if (Configuration::get('PS_ROUND_TYPE') == Order::ROUND_TOTAL) {
-                $tmp = explode('_', $key);
-                $address = Address::initialize((int) $tmp[1], true);
-                $taxCalculator = TaxManagerFactory::getManager($address, $tmp[0])->getTaxCalculator();
-                $orderSlip->{'total_products_tax_'.$incOrEx2} += Tools::ps_round($taxCalculator->{$addOrRemove.'Taxes'}($price), _TB_PRICE_DATABASE_PRECISION_);
-            } else {
-                $orderSlip->{'total_products_tax_'.$incOrEx2} += $price;
-            }
+        if ($addTax) {
+            $orderSlip->amount = $orderSlip->total_products_tax_excl;
+        } else {
+            $orderSlip->amount = $orderSlip->total_products_tax_incl;
         }
-
-        $orderSlip->{'total_products_tax_'.$incOrEx2} -= (float) $amount && !$amountChoosen ? (float) $amount : 0;
-        $orderSlip->amount = $amountChoosen ? (float) $amount : $orderSlip->{'total_products_tax_'.$incOrEx1};
-        $orderSlip->shipping_cost_amount = $orderSlip->total_shipping_tax_incl;
 
         if ((float) $amount && !$amountChoosen) {
             $orderSlip->order_slip_type = 1;
