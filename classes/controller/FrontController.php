@@ -394,7 +394,7 @@ class FrontControllerCore extends Controller
     public function getSeoFields()
     {
         $content = '';
-        $languages = Language::getLanguages();
+        $languages = Language::getLanguages(true, $this->context->shop->id);
         $defaultLang = Configuration::get('PS_LANG_DEFAULT');
         switch ($this->php_self) {
             case 'product': // product page
