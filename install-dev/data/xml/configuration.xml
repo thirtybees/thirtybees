@@ -918,5 +918,8 @@
     <configuration id="TB_MAIL_SUBJECT_TEMPLATE" name="TB_MAIL_SUBJECT_TEMPLATE">
       <value>[{shop_name}] {subject}</value>
     </configuration>
+    <configuration id="TB_EMIT_SEO_FIELDS" name="TB_EMIT_SEO_FIELDS">
+      <value>1</value>
+    </configuration>
   </entities>
 </entity_configuration>

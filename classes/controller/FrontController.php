@@ -323,7 +323,8 @@ class FrontControllerCore extends Controller
                 $hookHeader .= '<link rel="manifest" href="'.Media::getMediaPath(_PS_IMG_DIR_."favicon/manifest_{$this->context->shop->id}.json").'">';
             }
 
-            if (isset($this->php_self)) { // append some seo fields, canonical, hrefLang, rel prev/next
+            if (isset($this->php_self) && Configuration::getWithDefault('TB_EMIT_SEO_FIELDS', true)) {
+                // append some seo fields, canonical, hrefLang, rel prev/next
                 $hookHeader .= $this->getSeoFields();
             }
 

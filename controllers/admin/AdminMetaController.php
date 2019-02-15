@@ -124,6 +124,15 @@ class AdminMetaControllerCore extends AdminController
                 ],
                 'identifier' => 'value',
             ],
+            'TB_EMIT_SEO_FIELDS' => [
+                'title'      => $this->l('Emit SEO fields') ,
+                'hint'       => $this->l('Enable this option to include metadata for canonical url, hreflang, and next/prev page'),
+                'validation' => 'isBool',
+                'cast'       => 'intval',
+                'type'       => 'bool',
+                'value'      => Tools::isSubmit('TB_EMIT_SEO_FIELDS') ? (int)Tools::getValue('TB_EMIT_SEO_FIELDS') : Configuration::getWithDefault('TB_EMIT_SEO_FIELDS', true),
+                'auto_value' => false,
+            ]
         ];
 
         $urlDescription = '';
