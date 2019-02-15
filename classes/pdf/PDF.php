@@ -63,7 +63,7 @@ class PDFCore
      */
     public function __construct($objects, $template, $smarty, $orientation = 'P')
     {
-        $this->pdf_renderer = new PDFGenerator((bool) Configuration::get('PS_PDF_USE_CACHE'), $orientation);
+        $this->pdf_renderer = new PDFGenerator(false, $orientation);
         $this->template = $template;
         $this->smarty = $smarty;
 

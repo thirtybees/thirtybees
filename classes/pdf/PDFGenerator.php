@@ -19068,7 +19068,8 @@ public $font_by_lang = [
     // @codingStandardsIgnoreEnd
 
     /**
-     * @param bool   $useCache
+     * @param bool   $useCache    Deprecated and unused as per upstream (tcpdf
+     *                            by tecnick.com), tcpdf doesn't cache.
      * @param string $orientation
      *
      * @since   1.0.0
@@ -19076,7 +19077,7 @@ public $font_by_lang = [
      */
     public function __construct($useCache = false, $orientation = 'P')
     {
-        parent::__construct($orientation, 'mm', 'A4', true, 'UTF-8', $useCache, false);
+        parent::__construct($orientation, 'mm', 'A4', true, 'UTF-8', false, false);
         $this->setRTL(Context::getContext()->language->is_rtl);
     }
 
