@@ -512,7 +512,10 @@ class CartCore extends ObjectModel
                 true
             );
 
-            $row['price_wt'] = $row['price_with_reduction'];
+            // Recalculate prices after rounding, these go into an order.
+            $row['price'] = $row['total'] / $row['cart_quantity'];
+            $row['price_wt'] = $row['total_wt'] / $row['cart_quantity'];
+
             $row['description_short'] = Tools::nl2br($row['description_short']);
 
             // check if a image associated with the attribute exists
