@@ -299,35 +299,38 @@ class OrderSlipCore extends ObjectModel
         $orderSlip->id_order = (int) $order->id;
         $orderSlip->conversion_rate = $currency->conversion_rate;
 
-        if ($addTax) {
-            $addOrRemove = 'add';
-            $incOrEx1 = 'excl';
-            $incOrEx2 = 'incl';
-        } else {
-            $addOrRemove = 'remove';
-            $incOrEx1 = 'incl';
-            $incOrEx2 = 'excl';
-        }
-
-        $orderSlip->{'total_shipping_tax_'.$incOrEx1} = 0;
-        $orderSlip->{'total_shipping_tax_'.$incOrEx2} = 0;
+        $orderSlip->total_shipping_tax_excl = 0;
+        $orderSlip->total_shipping_tax_incl = 0;
+        // TODO: deprecate this, nowhere in use.
         $orderSlip->partial = 0;
 
-        if ($shippingCost !== false) {
+        if ($shippingCost) {
             $orderSlip->shipping_cost = true;
-            $carrier = new Carrier((int) $order->id_carrier);
-            $address = Address::initialize($order->id_address_delivery, false);
-            $taxCalculator = $carrier->getTaxCalculator($address);
-            $orderSlip->{'total_shipping_tax_'.$incOrEx1} = ($shippingCost === null ? $order->{'total_shipping_tax_'.$incOrEx1} : (float) $shippingCost);
 
-            if ($taxCalculator instanceof TaxCalculator) {
-                $orderSlip->{'total_shipping_tax_'.$incOrEx2} = Tools::ps_round($taxCalculator->{$addOrRemove.'Taxes'}($orderSlip->{'total_shipping_tax_'.$incOrEx1}), _TB_PRICE_DATABASE_PRECISION_);
+            // Use taxes from the given order.
+            $tax = new Tax();
+            $tax->rate = $order->carrier_tax_rate;
+            $taxCalculator = new TaxCalculator([$tax]);
+
+            $shippingCost = Tools::ps_round(
+                $shippingCost,
+                Configuration::get('PS_PRICE_DISPLAY_PRECISION')
+            );
+            if ($addTax) {
+                $orderSlip->total_shipping_tax_excl = $shippingCost;
+                $orderSlip->total_shipping_tax_incl = $taxCalculator->addTaxes(
+                    $shippingCost
+                );
             } else {
-                $orderSlip->{'total_shipping_tax_'.$incOrEx2} = $orderSlip->{'total_shipping_tax_'.$incOrEx1};
+                $orderSlip->total_shipping_tax_incl = $shippingCost;
+                $orderSlip->total_shipping_tax_excl = $taxCalculator->removeTaxes(
+                    $shippingCost
+                );
             }
         } else {
             $orderSlip->shipping_cost = false;
         }
+        $orderSlip->shipping_cost_amount = (float) $shippingCost;
 
         $orderSlip->total_products_tax_excl = 0;
         $orderSlip->total_products_tax_incl = 0;
