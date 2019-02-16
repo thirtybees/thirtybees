@@ -820,6 +820,9 @@ class OrderDetailCore extends ObjectModel
             $this->tax_computation_method = (int) $this->tax_calculator->computation_method;
         }
 
+        $this->tax_name = $product['tax_name'];
+        $this->tax_rate = $product['rate'];
+
         $this->ecotax_tax_rate = 0;
         if (!empty($product['ecotax'])) {
             $this->ecotax_tax_rate = Tax::getProductEcotaxRate($order->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
