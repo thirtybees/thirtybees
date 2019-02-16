@@ -351,10 +351,10 @@ class OrderSlipCore extends ObjectModel
 
             $orderDetail->save();
 
-            $address = Address::initialize($order->id_address_invoice, false);
-            $idAddress = (int) $address->id;
-            $idTaxRulesGroup = Product::getIdTaxRulesGroupByIdProduct((int) $orderDetail->product_id);
-            $taxCalculator = TaxManagerFactory::getManager($address, $idTaxRulesGroup)->getTaxCalculator();
+            // Use taxes from the given order detail.
+            $tax = new Tax();
+            $tax->rate = $orderDetail->tax_rate;
+            $taxCalculator = new TaxCalculator([$tax]);
 
             // In case of a distinction between product value in the order and
             // product value in the refund (choosen by the merchant on refund
