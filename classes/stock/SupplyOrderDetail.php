@@ -177,7 +177,7 @@ class SupplyOrderDetailCore extends ObjectModel
             'tax_rate'                      => ['type' => self::TYPE_FLOAT,  'validate' => 'isFloat',       'required' => true],
             'tax_value'                     => ['type' => self::TYPE_FLOAT,  'validate' => 'isPrice',       'required' => true],
             'price_ti'                      => ['type' => self::TYPE_FLOAT,  'validate' => 'isPrice',       'required' => true],
-            'tax_value_with_order_discount' => ['type' => self::TYPE_FLOAT,  'validate' => 'isFloat',       'required' => true],
+            'tax_value_with_order_discount' => ['type' => self::TYPE_FLOAT,  'validate' => 'isPrice',       'required' => true],
             'price_with_order_discount_te'  => ['type' => self::TYPE_FLOAT,  'validate' => 'isPrice',       'required' => true],
         ],
     ];

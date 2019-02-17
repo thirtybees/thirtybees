@@ -72,7 +72,7 @@ class OrderDetailCore extends ObjectModel
             'tax_rate'                      => ['type' => self::TYPE_FLOAT,  'validate' => 'isFloat'                          ],
             'tax_computation_method'        => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId'                     ],
             'id_tax_rules_group'            => ['type' => self::TYPE_INT,    'validate' => 'isInt'                            ],
-            'ecotax'                        => ['type' => self::TYPE_FLOAT,  'validate' => 'isFloat'                          ],
+            'ecotax'                        => ['type' => self::TYPE_FLOAT,  'validate' => 'isPrice'                          ],
             'ecotax_tax_rate'               => ['type' => self::TYPE_FLOAT,  'validate' => 'isFloat'                          ],
             'discount_quantity_applied'     => ['type' => self::TYPE_INT,    'validate' => 'isInt'                            ],
             'download_hash'                 => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName'                    ],
