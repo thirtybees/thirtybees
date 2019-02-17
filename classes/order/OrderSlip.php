@@ -463,11 +463,14 @@ class OrderSlipCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     *
+     * @since 1.0.0
+     * @since 1.1.0 Deprecated, because nowhere in use.
      */
     public static function createPartialOrderSlip($order, $amount, $shippingCostAmount, $orderDetailList)
     {
+        Tools::displayAsDeprecated();
+
         $currency = new Currency($order->id_currency);
         $orderSlip = new OrderSlip();
         $orderSlip->id_customer = (int) $order->id_customer;
@@ -489,14 +492,16 @@ class OrderSlipCore extends ObjectModel
     /**
      * @param array $orderDetailList
      *
-     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     *
+     * @since 1.0.0
+     * @since 1.1.0 Deprecated, because nowhere in use.
      */
     public function addPartialSlipDetail($orderDetailList)
     {
+        Tools::displayAsDeprecated();
+
         foreach ($orderDetailList as $idOrderDetail => $tab) {
             $orderDetail = new OrderDetail($idOrderDetail);
             $orderSlipResume = OrderSlip::getProductSlipResume($idOrderDetail);
@@ -559,11 +564,14 @@ class OrderSlipCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     *
+     * @since 1.0.0
+     * @since 1.1.0 Deprecated, because nowhere in use.
      */
     public function addSlipDetail($orderDetailList, $productQtyList)
     {
+        Tools::displayAsDeprecated();
+
         foreach ($orderDetailList as $key => $idOrderDetail) {
             if ($qty = (int) ($productQtyList[$key])) {
                 $orderDetail = new OrderDetail((int) $idOrderDetail);
@@ -647,11 +655,14 @@ class OrderSlipCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     *
+     * @since 1.0.0
+     * @since 1.1.0 Deprecated, because nowhere in use.
      */
     public function getWsOrderSlipDetails()
     {
+        Tools::displayAsDeprecated();
+
         $result = Db::getInstance()->executeS(
             (new DbQuery())
                 ->select('`id_order_slip` AS `id`, `id_order_detail`, `product_quantity`, `amount_tax_excl`, `amount_tax_incl`')
@@ -669,11 +680,14 @@ class OrderSlipCore extends ObjectModel
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     *
+     * @since 1.0.0
+     * @since 1.1.0 Deprecated, because nowhere in use.
      */
     public function setWsOrderSlipDetails($values)
     {
+        Tools::displayAsDeprecated();
+
         if (Db::getInstance()->delete('order_slip_detail', '`id_order_slip` = '.(int) $this->id)) {
             $insert = [];
             foreach ($values as $value) {
