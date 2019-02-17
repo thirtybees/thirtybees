@@ -683,24 +683,16 @@ class OrderDetailCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
      * @throws PrestaShopException
+     *
+     * @since 1.0.0
+     * @since 1.1.0 Don't drop invalid prices.
      */
     public function add($autoDate = true, $nullValues = false)
     {
-        foreach ($this->def['fields'] as $field => $data) {
-            if (!empty($data['required']) || !empty($data['lang'])) {
-                continue;
-            }
-            if ($this->validateField($field, $this->$field) !== true) {
-                $this->$field = '';
-            }
-        }
-
         $this->original_wholesale_price = $this->getWholeSalePrice();
 
-        return parent::add($autoDate = true, $nullValues = false);
+        return parent::add($autoDate, $nullValues);
     }
 
     /**
