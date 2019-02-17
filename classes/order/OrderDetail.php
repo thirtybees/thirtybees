@@ -398,29 +398,20 @@ class OrderDetailCore extends ObjectModel
 
         $values = [];
         foreach ($this->tax_calculator->getTaxesAmount($discountedPriceTaxExcl) as $idTax => $amount) {
-            $unitAmount = $totalAmount = 0;
-            switch ((int) Configuration::get('PS_ROUND_TYPE')) {
-                case Order::ROUND_ITEM:
-                    $unitAmount = (float) Tools::ps_round($amount, _PS_PRICE_DISPLAY_PRECISION_);
-                    $totalAmount = $unitAmount * $this->product_quantity;
-                    break;
-                case Order::ROUND_LINE:
-                    $unitAmount = $amount;
-                    $totalAmount = Tools::ps_round($unitAmount * $this->product_quantity, _PS_PRICE_DISPLAY_PRECISION_);
-                    break;
-                case Order::ROUND_TOTAL:
-                    $unitAmount = $amount;
-                    $totalAmount = $unitAmount * $this->product_quantity;
-                    break;
-                default:
-                    continue;
-            }
+            $totalAmount = round(
+                $amount * $this->product_quantity,
+                _TB_PRICE_DATABASE_PRECISION_
+            );
+            $amount = round(
+                $amount,
+                _TB_PRICE_DATABASE_PRECISION_
+            );
 
             $values[] = [
                 static::$definition['primary'] => (int) $this->id,
                 Tax::$definition['primary']    => (int) $idTax,
-                'unit_amount'                  => (float) $unitAmount,
-                'total_amount'                 => (float) $totalAmount,
+                'unit_amount'                  => $amount,
+                'total_amount'                 => $totalAmount,
             ];
         }
 
