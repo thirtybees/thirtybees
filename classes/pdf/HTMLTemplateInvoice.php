@@ -151,22 +151,6 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
 
             $orderDetail['order_detail_tax'] = $taxes;
             $orderDetail['order_detail_tax_label'] = implode(', ', $taxTemp);
-
-            // Apply rounding types
-            switch ((int) $order->round_type) {
-                case Order::ROUND_ITEM:
-                    $orderDetail['unit_price_tax_excl'] = Tools::ps_round($orderDetail['unit_price_tax_excl'], _PS_PRICE_DISPLAY_PRECISION_);
-                    $orderDetail['total_price_tax_excl'] = $orderDetail['unit_price_tax_excl'] * $orderDetail['product_quantity'];
-                    $orderDetail['unit_price_tax_excl_including_ecotax'] = Tools::ps_round($orderDetail['unit_price_tax_excl'] + $orderDetail['ecotax'], _PS_PRICE_DISPLAY_PRECISION_);
-                    $orderDetail['total_price_tax_excl_including_ecotax'] = $orderDetail['unit_price_tax_excl_including_ecotax'] * $orderDetail['product_quantity'];
-                    break;
-                case Order::ROUND_LINE:
-                    $orderDetail['total_price_tax_excl'] = Tools::ps_round(($orderDetail['total_price_tax_excl']), _PS_PRICE_DISPLAY_PRECISION_);
-                    $orderDetail['total_price_tax_excl_including_ecotax'] = Tools::ps_round(($orderDetail['unit_price_tax_excl_including_ecotax'] * $orderDetail['product_quantity']), _PS_PRICE_DISPLAY_PRECISION_);
-                    break;
-                default:
-                    break;
-            }
         }
         unset($taxTemp);
         unset($orderDetail);
