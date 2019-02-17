@@ -678,24 +678,6 @@ class OrderDetailCore extends ObjectModel
     }
 
     /**
-     * @param bool $autoDate
-     * @param bool $nullValues
-     *
-     * @return bool
-     *
-     * @throws PrestaShopException
-     *
-     * @since 1.0.0
-     * @since 1.1.0 Don't drop invalid prices.
-     */
-    public function add($autoDate = true, $nullValues = false)
-    {
-        $this->original_wholesale_price = $this->getWholeSalePrice();
-
-        return parent::add($autoDate, $nullValues);
-    }
-
-    /**
      * @return float
      *
      * @since 1.0.0
@@ -985,6 +967,7 @@ class OrderDetailCore extends ObjectModel
         }
         $this->setShippingCost($order, $product);
         $this->setDetailProductPrice($order, $cart, $product);
+        $this->original_wholesale_price = $this->getWholeSalePrice();
 
         // Set order invoice id
         $this->id_order_invoice = (int) $idOrderInvoice;
