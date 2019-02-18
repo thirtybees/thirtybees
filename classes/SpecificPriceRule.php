@@ -347,10 +347,19 @@ class SpecificPriceRuleCore extends ObjectModel
         $specificPrice->id_currency = (int) $rule->id_currency;
         $specificPrice->id_group = (int) $rule->id_group;
         $specificPrice->from_quantity = (int) $rule->from_quantity;
-        $specificPrice->price = (float) $rule->price;
+        $specificPrice->price = round(
+            $rule->price,
+            _TB_PRICE_DATABASE_PRECISION_
+        );
         $specificPrice->reduction_type = $rule->reduction_type;
         $specificPrice->reduction_tax = $rule->reduction_tax;
-        $specificPrice->reduction = ($rule->reduction_type == 'percentage' ? $rule->reduction / 100 : (float) $rule->reduction);
+        $specificPrice->reduction = ($rule->reduction_type === 'percentage' ?
+            round(
+                $rule->reduction / 100,
+                _TB_PRICE_DATABASE_PRECISION_
+            ) :
+            (float) $rule->reduction
+        );
         $specificPrice->from = $rule->from;
         $specificPrice->to = $rule->to;
 
@@ -427,7 +436,10 @@ class SpecificPriceRuleCore extends ObjectModel
                 [
                     'id_specific_price_rule_condition_group' => (int) $idSpecificPriceRuleConditionGroup,
                     'type'                                   => pSQL($condition['type']),
-                    'value'                                  => (float) $condition['value'],
+                    'value'                                  => round(
+                        $condition['value'],
+                        _TB_PRICE_DATABASE_PRECISION_
+                    ),
                 ]
             );
             if (!$result) {
