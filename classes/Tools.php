@@ -1146,17 +1146,23 @@ class ToolsCore
 
     /**
      *
-     * Convert amount from a currency to an other currency automatically
+     * Convert amount from a currency to an other currency automatically.
      *
      * @param float    $amount
      * @param Currency $currencyFrom if null we used the default currency
      * @param Currency $currencyTo   if null we used the default currency
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @return float Converted value, rounded to _TB_PRICE_DATABASE_PRECISION_.
+     *
+     * @since 1.0.0
+     * @since 1.1.0 Deprecated $round, rounds always now.
      */
     public static function convertPriceFull($amount, Currency $currencyFrom = null, Currency $currencyTo = null, $round = true)
     {
+        if ($round !== true) {
+            static::displayParameterAsDeprecated('round');
+        }
+
         if ($currencyFrom == $currencyTo) {
             return $amount;
         }
@@ -1178,9 +1184,7 @@ class ToolsCore
             // Convert to new currency
             $amount *= $currencyTo->conversion_rate;
         }
-        if ($round) {
-            $amount = Tools::ps_round($amount, _TB_PRICE_DATABASE_PRECISION_);
-        }
+        $amount = round($amount, _TB_PRICE_DATABASE_PRECISION_);
 
         return $amount;
     }
@@ -1219,7 +1223,7 @@ class ToolsCore
     public static function displayDate($date, $idLang = null, $full = false, $separator = null)
     {
         if ($idLang !== null) {
-            Tools::displayParameterAsDeprecated('id_lang');
+            Tools::displayParameterAsDeprecated('idLang');
         }
         if ($separator !== null) {
             Tools::displayParameterAsDeprecated('separator');

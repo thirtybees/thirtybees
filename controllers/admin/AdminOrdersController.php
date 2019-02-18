@@ -1422,8 +1422,8 @@ class AdminOrdersControllerCore extends AdminController
                     $idOrderCarrier = (int) $order->getIdOrderCarrier();
                     if ($idOrderCarrier) {
                         $orderCarrier = $orderCarrier = new OrderCarrier((int) $order->getIdOrderCarrier());
-                        $orderCarrier->shipping_cost_tax_excl = (float) Tools::convertPriceFull($orderCarrier->shipping_cost_tax_excl, $oldCurrency, $currency);
-                        $orderCarrier->shipping_cost_tax_incl = (float) Tools::convertPriceFull($orderCarrier->shipping_cost_tax_incl, $oldCurrency, $currency);
+                        $orderCarrier->shipping_cost_tax_excl = Tools::convertPriceFull($orderCarrier->shipping_cost_tax_excl, $oldCurrency, $currency);
+                        $orderCarrier->shipping_cost_tax_incl = Tools::convertPriceFull($orderCarrier->shipping_cost_tax_incl, $oldCurrency, $currency);
                         $orderCarrier->update();
                     }
 
