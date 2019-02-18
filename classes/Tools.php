@@ -1068,17 +1068,18 @@ class ToolsCore
     }
 
     /**
-     * Return price converted
+     * Convert a price to or from the default currency.
      *
-     * @param float        $price      Product price
-     * @param object|array $currency   Current currency object
-     * @param bool         $toCurrency convert to currency or from currency to default currency
-     * @param Context      $context
+     * @param float        $price      Price.
+     * @param object|array $currency   Currency (object or describing array)
+     *                                 to convert this price to/from. Defaults
+     *                                 to the currency of the context.
+     * @param bool         $toCurrency Conversion direction.
+     * @param Context      $context    Context. Defaults to the global context.
      *
-     * @return float Price
+     * @return float Price, rounded to _TB_PRICE_DATABASE_PRECISION_.
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @since 1.0.0
      */
     public static function convertPrice($price, $currency = null, $toCurrency = true, Context $context = null)
     {
@@ -1107,6 +1108,7 @@ class ToolsCore
                 $price /= $currencyRate;
             }
         }
+        $price = round($price, _TB_PRICE_DATABASE_PRECISION_);
 
         return $price;
     }
