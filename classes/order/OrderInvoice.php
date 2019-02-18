@@ -579,8 +579,9 @@ class OrderInvoiceCore extends ObjectModel
         }
 
         foreach ($breakdown as $rate => $data) {
-            $breakdown[$rate]['total_price_tax_excl'] = Tools::ps_round($data['total_price_tax_excl'], _TB_PRICE_DATABASE_PRECISION_, $order->round_mode);
-            $breakdown[$rate]['total_amount'] = Tools::ps_round($data['total_amount'], _TB_PRICE_DATABASE_PRECISION_, $order->round_mode);
+            $breakdown[$rate]['total_price_tax_excl']
+                = $data['total_price_tax_excl'];
+            $breakdown[$rate]['total_amount'] = $data['total_amount'];
         }
 
         ksort($breakdown);
@@ -645,13 +646,19 @@ class OrderInvoiceCore extends ObjectModel
             $sumOfTaxBases = 0;
             foreach ($shippingBreakdown as &$row) {
                 if (Configuration::get('PS_ATCP_SHIPWRAP')) {
-                    $row['total_tax_excl'] = Tools::ps_round($row['total_amount'] / $row['rate'] * 100, _TB_PRICE_DATABASE_PRECISION_, $this->getOrder()->round_mode);
+                    $row['total_tax_excl'] = round(
+                        $row['total_amount'] / $row['rate'] * 100,
+                        _TB_PRICE_DATABASE_PRECISION_
+                    );
                     $sumOfTaxBases += $row['total_tax_excl'];
                 } else {
                     $row['total_tax_excl'] = $this->total_shipping_tax_excl;
                 }
 
-                $row['total_amount'] = Tools::ps_round($row['total_amount'], _TB_PRICE_DATABASE_PRECISION_, $this->getOrder()->round_mode);
+                $row['total_amount'] = round(
+                    $row['total_amount'],
+                    _TB_PRICE_DATABASE_PRECISION_
+                );
                 $sumOfSplitTaxes += $row['total_amount'];
             }
             unset($row);
@@ -713,13 +720,19 @@ class OrderInvoiceCore extends ObjectModel
         $totalTaxRate = 0;
         foreach ($wrappingBreakdown as &$row) {
             if (Configuration::get('PS_ATCP_SHIPWRAP')) {
-                $row['total_tax_excl'] = Tools::ps_round($row['total_amount'] / $row['rate'] * 100, _TB_PRICE_DATABASE_PRECISION_, $this->getOrder()->round_mode);
+                $row['total_tax_excl'] = round(
+                    $row['total_amount'] / $row['rate'] * 100,
+                    _TB_PRICE_DATABASE_PRECISION_
+                );
                 $sumOfTaxBases += $row['total_tax_excl'];
             } else {
                 $row['total_tax_excl'] = $this->total_wrapping_tax_excl;
             }
 
-            $row['total_amount'] = Tools::ps_round($row['total_amount'], _TB_PRICE_DATABASE_PRECISION_, $this->getOrder()->round_mode);
+            $row['total_amount'] = round(
+                $row['total_amount'],
+                _TB_PRICE_DATABASE_PRECISION_
+            );
             $sumOfSplitTaxes += $row['total_amount'];
             $totalTaxRate += (float) $row['rate'];
         }
@@ -809,7 +822,9 @@ class OrderInvoiceCore extends ObjectModel
      */
     public function getRestPaid()
     {
-        return round($this->total_paid_tax_incl + $this->getSiblingTotal() - $this->getTotalPaid(), 2);
+        return $this->total_paid_tax_incl
+               + $this->getSiblingTotal()
+               - $this->getTotalPaid();
     }
 
     /**
@@ -951,7 +966,7 @@ class OrderInvoiceCore extends ObjectModel
 				GROUP BY op.id_order_payment
 			) sub'
             );
-            $cache[$this->id] = round($res['to_paid'] - $res['paid'], 2);
+            $cache[$this->id] = $res['to_paid'] - $res['paid'];
         }
 
         return $cache[$this->id];
@@ -967,7 +982,13 @@ class OrderInvoiceCore extends ObjectModel
      */
     public function isPaid()
     {
-        return $this->getTotalPaid() == $this->total_paid_tax_incl;
+        return (string) round(
+            $this->getTotalPaid(),
+            _TB_PRICE_DATABASE_PRECISION_
+        ) === (string) round(
+            $this->total_paid_tax_incl,
+            _TB_PRICE_DATABASE_PRECISION_
+        );
     }
 
     /**
@@ -1039,7 +1060,10 @@ class OrderInvoiceCore extends ObjectModel
                     'id_order_invoice' => (int) $this->id,
                     'type'             => 'shipping',
                     'id_tax'           => (int) $idTax,
-                    'amount'           => (float) $amount,
+                    'amount'           => round(
+                        $amount,
+                        _TB_PRICE_DATABASE_PRECISION_
+                    ),
                 ]
             );
         }
