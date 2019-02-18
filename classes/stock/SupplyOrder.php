@@ -240,7 +240,7 @@ class SupplyOrderCore extends ObjectModel
         $this->total_ti = 0;
         $isDiscount = false;
 
-        if (is_numeric($this->discount_rate) && (float) $this->discount_rate >= 0) {
+        if (is_numeric($this->discount_rate) && $this->discount_rate >= 0) {
             $isDiscount = true;
         }
 
@@ -570,10 +570,8 @@ class SupplyOrderCore extends ObjectModel
         foreach ($data as $key => $value) {
             if (array_key_exists($key, $this)) {
                 // formats prices and floats
-                if ($this->def['fields'][$key]['validate'] == 'isFloat' ||
-                    $this->def['fields'][$key]['validate'] == 'isPrice'
-                ) {
-                    $value = Tools::ps_round($value, 6);
+                if ($this->def['fields'][$key]['validate'] == 'isPrice') {
+                    $value = round($value, _TB_PRICE_DATABASE_PRECISION_);
                 }
                 $this->$key = $value;
             }
