@@ -363,21 +363,27 @@ class OrderSlipCore extends ObjectModel
             // product value in the refund (choosen by the merchant on refund
             // creation), these prices are reduced already.
             if ($addTax) {
-                $product['unit_price_tax_excl'] = $product['unit_price'];
+                $product['unit_price_tax_excl'] = round(
+                    $product['unit_price'],
+                    _TB_PRICE_DATABASE_PRECISION_
+                );
                 $product['unit_price_tax_incl'] = $taxCalculator->addTaxes(
                     $product['unit_price']
                 );
             } else {
-                $product['unit_price_tax_incl'] = $product['unit_price'];
+                $product['unit_price_tax_incl'] = round(
+                    $product['unit_price'],
+                    _TB_PRICE_DATABASE_PRECISION_
+                );
                 $product['unit_price_tax_excl'] = $taxCalculator->removeTaxes(
                     $product['unit_price']
                 );
             }
 
             $product['total_price_tax_excl'] =
-                $product['unit_price_tax_excl'] * $product['quantity'];
+                $product['unit_price_tax_excl'] * $quantity;
             $product['total_price_tax_incl'] =
-                $product['unit_price_tax_incl'] * $product['quantity'];
+                $product['unit_price_tax_incl'] * $quantity;
             $orderSlip->total_products_tax_excl
                 += $product['total_price_tax_excl'];
             $orderSlip->total_products_tax_incl
@@ -385,26 +391,8 @@ class OrderSlipCore extends ObjectModel
 
             // Do not round to display precision, because these values are
             // taken from the order, which contains rounded values already.
-            // In case products get refunded at a lower value, not rounded
-            // prices are wanted, else the total might no longer match.
-            $product['total_price_tax_excl'] = Tools::ps_round(
-                $product['total_price_tax_excl'],
-                _TB_PRICE_DATABASE_PRECISION_
-            );
-            $product['total_price_tax_incl'] = Tools::ps_round(
-                $product['total_price_tax_incl'],
-                _TB_PRICE_DATABASE_PRECISION_
-            );
         }
         unset($product);
-        $orderSlip->total_products_tax_excl = Tools::ps_round(
-            $orderSlip->total_products_tax_excl,
-            _TB_PRICE_DATABASE_PRECISION_
-        );
-        $orderSlip->total_products_tax_incl = Tools::ps_round(
-            $orderSlip->total_products_tax_incl,
-            _TB_PRICE_DATABASE_PRECISION_
-        );
 
         if ($addTax) {
             $orderSlip->amount = $orderSlip->total_products_tax_excl;
@@ -643,8 +631,16 @@ class OrderSlipCore extends ObjectModel
                 $ecotaxDetail[$row['rate']] = ['ecotax_tax_incl' => 0, 'ecotax_tax_excl' => 0, 'rate' => $row['rate']];
             }
 
-            $ecotaxDetail[$row['rate']]['ecotax_tax_incl'] += Tools::ps_round(($row['ecotax_tax_excl'] * $orderSlipDetails['product_quantity']) + ($row['ecotax_tax_excl'] * $orderSlipDetails['product_quantity'] * $row['rate'] / 100), 2);
-            $ecotaxDetail[$row['rate']]['ecotax_tax_excl'] += Tools::ps_round($row['ecotax_tax_excl'] * $orderSlipDetails['product_quantity'], 2);
+            $quantity = (int) $orderSlipDetails['product_quantity'];
+            $ecotaxDetail[$row['rate']]['ecotax_tax_incl'] += round(
+                $row['ecotax_tax_excl'] * $quantity
+                + $row['ecotax_tax_excl'] * $quantity * $row['rate'] / 100,
+                _TB_PRICE_DATABASE_PRECISION_
+            );
+            $ecotaxDetail[$row['rate']]['ecotax_tax_excl'] += round(
+                $row['ecotax_tax_excl'] * $quantity,
+                _TB_PRICE_DATABASE_PRECISION_
+            );
         }
 
         return $ecotaxDetail;
@@ -717,19 +713,34 @@ class OrderSlipCore extends ObjectModel
      */
     protected function addProductOrderSlip($product)
     {
-        return Db::getInstance()->insert(
-            'order_slip_detail',
-            [
-                'id_order_slip'        => (int) $this->id,
-                'id_order_detail'      => (int) $product['id_order_detail'],
-                'product_quantity'     => $product['quantity'],
-                'unit_price_tax_excl'  => $product['unit_price_tax_excl'],
-                'unit_price_tax_incl'  => $product['unit_price_tax_incl'],
-                'total_price_tax_excl' => $product['total_price_tax_excl'],
-                'total_price_tax_incl' => $product['total_price_tax_incl'],
-                'amount_tax_excl'      => $product['total_price_tax_excl'],
-                'amount_tax_incl'      => $product['total_price_tax_incl'],
-            ]
-        );
+        return Db::getInstance()->insert('order_slip_detail', [
+            'id_order_slip'        => (int) $this->id,
+            'id_order_detail'      => (int) $product['id_order_detail'],
+            'product_quantity'     => (int) $product['quantity'],
+            'unit_price_tax_excl'  => round(
+                $product['unit_price_tax_excl'],
+                _TB_PRICE_DATABASE_PRECISION_
+            ),
+            'unit_price_tax_incl'  => round(
+                $product['unit_price_tax_incl'],
+                _TB_PRICE_DATABASE_PRECISION_
+            ),
+            'total_price_tax_excl' => round(
+                $product['total_price_tax_excl'],
+                _TB_PRICE_DATABASE_PRECISION_
+            ),
+            'total_price_tax_incl' => round(
+                $product['total_price_tax_incl'],
+                _TB_PRICE_DATABASE_PRECISION_
+            ),
+            'amount_tax_excl'      => round(
+                $product['total_price_tax_excl'],
+                _TB_PRICE_DATABASE_PRECISION_
+            ),
+            'amount_tax_incl'      => round(
+                $product['total_price_tax_incl'],
+                _TB_PRICE_DATABASE_PRECISION_
+            ),
+        ]);
     }
 }
