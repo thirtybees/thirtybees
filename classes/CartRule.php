@@ -394,14 +394,14 @@ class CartRuleCore extends ObjectModel
             $cartRule['id_group'] = 0;
             if ($cartRule['free_shipping']) {
                 $cartRule['id_discount_type'] = 3;
-            } elseif ((int) $cartRule['reduction_percent'] > 0) {
+            } elseif ($cartRule['reduction_percent'] > 0) {
                 $cartRule['id_discount_type'] = 1;
-            } elseif ((int) $cartRule['reduction_amount'] > 0) {
+            } elseif ($cartRule['reduction_amount'] > 0) {
                 $cartRule['id_discount_type'] = 2;
             }
-            if ((int) $cartRule['reduction_percent'] > 0) {
+            if ($cartRule['reduction_percent'] > 0) {
                 $cartRule['value'] = $cartRule['reduction_percent'];
-            } elseif ((int) $cartRule['reduction_amount'] > 0) {
+            } elseif ($cartRule['reduction_amount'] > 0) {
                 $cartRule['value'] = $cartRule['reduction_amount'];
             }
             $cartRule['cumulable'] = $cartRule['cart_rule_restriction'];
@@ -1105,8 +1105,16 @@ class CartRuleCore extends ObjectModel
             foreach ($cartRules as &$cartRule) {
                 if ($cartRule['gift_product']) {
                     foreach ($products as $key => &$product) {
-                        if (empty($product['gift']) && $product['id_product'] == $cartRule['gift_product'] && $product['id_product_attribute'] == $cartRule['gift_product_attribute']) {
-                            $cartTotal = Tools::ps_round($cartTotal - $product[$this->minimum_amount_tax ? 'price_wt' : 'price'], (int) $context->currency->decimals * _TB_PRICE_DATABASE_PRECISION_);
+                        if (empty($product['gift'])
+                            && $product['id_product']
+                               == $cartRule['gift_product']
+                            && $product['id_product_attribute']
+                               == $cartRule['gift_product_attribute']) {
+                            if ($this->minimum_amount_tax) {
+                                $cartTotal = $cartTotal - $product['price_wt'];
+                            } else {
+                                $cartTotal = $cartTotal - $product['price'];
+                            }
                         }
                     }
                 }
@@ -1433,21 +1441,33 @@ class CartRuleCore extends ObjectModel
                         static::FILTER_ACTION_GIFT, $package
                     );
                     if ($roundType === Order::ROUND_ITEM) {
-                        Tools::ps_round($reduction,
+                        $reduction = round(
+                            $reduction,
                             Configuration::get('PS_PRICE_DISPLAY_PRECISION')
                         );
                     }
                     $orderTotal -= $reduction;
                 }
 
-                $reductionValue += $orderTotal * $this->reduction_percent / 100;
+                $reductionValue += round(
+                    $orderTotal * $this->reduction_percent / 100,
+                    _TB_PRICE_DATABASE_PRECISION_
+                );
             }
 
             // Discount (%) on a specific product
             if ($this->reduction_percent && $this->reduction_product > 0) {
                 foreach ($packageProducts as $product) {
                     if ($product['id_product'] == $this->reduction_product) {
-                        $reductionValue += ($useTax ? $product['total_wt'] : $product['total']) * $this->reduction_percent / 100;
+                        if ($useTax) {
+                            $reduction = $product['total_wt'];
+                        } else {
+                            $reduction = $product['total'];
+                        }
+                        $reductionValue += round(
+                            $reduction * $this->reduction_percent / 100,
+                            _TB_PRICE_DATABASE_PRECISION_
+                        );
                     }
                 }
             }
@@ -1466,7 +1486,10 @@ class CartRuleCore extends ObjectModel
 
                     $price = $product['price'];
                     if ($useTax) {
-                        $price *= (1 + (float) ($product['rate'] / 100));
+                        $price = round(
+                            $price * (1 + $product['rate'] / 100),
+                            _TB_PRICE_DATABASE_PRECISION_
+                        );
                     }
 
                     if ($price > 0 && ($minPrice === false || $minPrice > $price)) {
@@ -1483,7 +1506,10 @@ class CartRuleCore extends ObjectModel
                     }
                 }
                 if ($inPackage) {
-                    $reductionValue += $minPrice * $this->reduction_percent / 100;
+                    $reductionValue += round(
+                        $minPrice * $this->reduction_percent / 100,
+                        _TB_PRICE_DATABASE_PRECISION_
+                    );
                 }
             }
 
@@ -1498,18 +1524,24 @@ class CartRuleCore extends ObjectModel
                         ) {
                             $price = $product['price'];
                             if ($useTax) {
-                                $price *= (1 + (float) ($product['rate'] / 100));
+                                $price = round(
+                                    $price * (1 + $product['rate'] / 100),
+                                    _TB_PRICE_DATABASE_PRECISION_
+                                );
                             }
 
                             $selectedProductsReduction += $price * $product['cart_quantity'];
                         }
                     }
                 }
-                $reductionValue += $selectedProductsReduction * $this->reduction_percent / 100;
+                $reductionValue += round(
+                    $selectedProductsReduction * $this->reduction_percent / 100,
+                    _TB_PRICE_DATABASE_PRECISION_
+                );
             }
 
             // Discount (¤)
-            if ((float) $this->reduction_amount > 0) {
+            if ($this->reduction_amount > 0) {
                 $prorata = 1;
                 if (!is_null($package) && count($allProducts)) {
                     $totalProducts = $context->cart->getOrderTotal($useTax, Cart::ONLY_PRODUCTS);
@@ -1519,21 +1551,19 @@ class CartRuleCore extends ObjectModel
                 }
 
                 $reductionAmount = $this->reduction_amount;
-                // If we need to convert the voucher value to the cart currency
-                if (isset($context->currency) && $this->reduction_currency != $context->currency->id) {
-                    $voucherCurrency = new Currency($this->reduction_currency);
-
-                    // First we convert the voucher value to the default currency
-                    if ($reductionAmount == 0 || $voucherCurrency->conversion_rate == 0) {
-                        $reductionAmount = 0;
-                    } else {
-                        $reductionAmount /= $voucherCurrency->conversion_rate;
-                    }
-
-                    // Then we convert the voucher value in the default currency into the cart currency
-                    $reductionAmount *= $context->currency->conversion_rate;
-                    $reductionAmount = Tools::ps_round($reductionAmount, _TB_PRICE_DATABASE_PRECISION_);
-                }
+                $voucherCurrency = new Currency($this->reduction_currency);
+                // First we convert the voucher value to the default currency.
+                $reductionAmount = Tools::convertPrice(
+                    $reductionAmount,
+                    $voucherCurrency,
+                    false
+                );
+                // Then we convert the voucher value to the cart currency.
+                $reductionAmount = Tools::convertPrice(
+                    $reductionAmount,
+                    $context->currency,
+                    true
+                );
 
                 // If it has the same tax application that you need, then it's the right value, whatever the product!
                 if ($this->reduction_tax == $useTax) {
@@ -1610,9 +1640,19 @@ class CartRuleCore extends ObjectModel
                         $previousReductionAmount = $previousCartRule->reduction_amount;
 
                         if ($previousCartRule->reduction_tax && !$useTax) {
-                            $previousReductionAmount = $prorata * $previousReductionAmount / (1 + $cartAverageVatRate);
+                            $previousReductionAmount = round(
+                                $previousReductionAmount
+                                * $prorata
+                                / (1 + $cartAverageVatRate),
+                                _TB_PRICE_DATABASE_PRECISION_
+                            );
                         } elseif (!$previousCartRule->reduction_tax && $useTax) {
-                            $previousReductionAmount = $prorata * $previousReductionAmount * (1 + $cartAverageVatRate);
+                            $previousReductionAmount = round(
+                                $previousReductionAmount
+                                * $prorata
+                                * (1 + $cartAverageVatRate),
+                                _TB_PRICE_DATABASE_PRECISION_
+                            );
                         }
 
                         $currentCartAmount = max($currentCartAmount - (float) $previousReductionAmount, 0);
