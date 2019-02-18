@@ -1037,11 +1037,13 @@ class ToolsCore
      *
      * @return float
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @since      1.0.0
+     * @deprecated 1.1.0
      */
     public static function round_helper($value, $mode)
     {
+        static::displayAsDeprecated('This was needed for PHP <= 5.3, only.');
+
         if ($value >= 0.0) {
             $tmpValue = floor($value + 0.5);
 
