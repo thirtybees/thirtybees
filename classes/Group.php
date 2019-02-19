@@ -88,7 +88,8 @@ class GroupCore extends ObjectModel
     {
         parent::__construct($id, $idLang, $idShop);
         // @codingStandardsIgnoreStart
-        if ($this->id && !isset(Group::$group_price_display_method[$this->id])) {
+        if ($this->id
+            && ! isset(static::$group_price_display_method[$this->id])) {
             static::$group_price_display_method[$this->id] = $this->price_display_method;
         }
         // @codingStandardsIgnoreEnd
@@ -134,8 +135,11 @@ class GroupCore extends ObjectModel
     {
         // @codingStandardsIgnoreStart
         if (!isset(static::$cache_reduction['customer'][(int) $idCustomer])) {
-            $idGroup = $idCustomer ? Customer::getDefaultGroupId((int) $idCustomer) : (int) Group::getCurrent()->id;
-            static::$cache_reduction['customer'][(int) $idCustomer] = Group::getReductionByIdGroup($idGroup);
+            $idGroup = $idCustomer ?
+                Customer::getDefaultGroupId((int) $idCustomer) :
+                (int) static::getCurrent()->id;
+            static::$cache_reduction['customer'][(int) $idCustomer]
+                = static::getReductionByIdGroup($idGroup);
         }
 
         return static::$cache_reduction['customer'][(int) $idCustomer];
@@ -188,6 +192,8 @@ class GroupCore extends ObjectModel
     }
 
     /**
+     * Get reduction for a group, which happens to be a percentage.
+     *
      * @param int $idGroup
      *
      * @return mixed
@@ -221,7 +227,9 @@ class GroupCore extends ObjectModel
      */
     public static function getDefaultPriceDisplayMethod()
     {
-        return Group::getPriceDisplayMethod((int) Configuration::get('PS_CUSTOMER_GROUP'));
+        return static::getPriceDisplayMethod(
+            (int) Configuration::get('PS_CUSTOMER_GROUP')
+        );
     }
 
     /**
@@ -236,7 +244,7 @@ class GroupCore extends ObjectModel
     public static function getPriceDisplayMethod($idGroup)
     {
         // @codingStandardsIgnoreStart
-        if (!isset(Group::$group_price_display_method[$idGroup])) {
+        if ( ! isset(static::$group_price_display_method[$idGroup])) {
             static::$group_price_display_method[$idGroup] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
                 (new DbQuery())
                     ->select('`price_display_method`')
