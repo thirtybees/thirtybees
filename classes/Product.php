@@ -478,7 +478,13 @@ class ProductCore extends ObjectModel
                 null,
                 $this->specificPrice
             );
-            $this->unit_price = ($this->unit_price_ratio != 0 ? $this->price / $this->unit_price_ratio : 0);
+            $this->unit_price = ($this->unit_price_ratio ?
+                round(
+                    $this->price / $this->unit_price_ratio,
+                    _TB_PRICE_DATABASE_PRECISION_
+                ) :
+                0
+            );
             $this->tags = Tag::getProductTags((int) $this->id);
 
             $this->loadStockData();
@@ -935,7 +941,10 @@ class ProductCore extends ObjectModel
                     if (!$productTaxCalculator->getTotalRate()) {
                         $tax = new Tax(Configuration::get('TB_DEFAULT_SPECIFIC_PRICE_RULE_TAX'));
                         if (Validate::isLoadedObject($tax)) {
-                            $specificPriceReduction = $specificPriceReduction / (1 + (float) $tax->rate / 100);
+                            $specificPriceReduction = round(
+                                $specificPriceReduction / (1 + $tax->rate / 100),
+                                _TB_PRICE_DATABASE_PRECISION_
+                            );
                         }
                     } else {
                         $specificPriceReduction = $productTaxCalculator->removeTaxes($specificPriceReduction);
@@ -945,7 +954,10 @@ class ProductCore extends ObjectModel
                     $specificPriceReduction = $productTaxCalculator->addTaxes($specificPriceReduction);
                 }
             } else {
-                $specificPriceReduction = $price * $specificPrice['reduction'];
+                $specificPriceReduction = round(
+                    $price * $specificPrice['reduction'],
+                    _TB_PRICE_DATABASE_PRECISION_
+                );
             }
         }
 
@@ -957,19 +969,39 @@ class ProductCore extends ObjectModel
         if ($useGroupReduction) {
             $reductionFromCategory = GroupReduction::getValueForProduct($idProduct, $idGroup);
             if ($reductionFromCategory !== false) {
-                $groupReduction = $price * (float) $reductionFromCategory;
-            } else { // apply group reduction if there is no group reduction for this category
-                $groupReduction = (($reduc = Group::getReductionByIdGroup($idGroup)) != 0) ? ($price * $reduc / 100) : 0;
+                $groupReduction = round(
+                    $price * $reductionFromCategory,
+                    _TB_PRICE_DATABASE_PRECISION_
+                );
+            } else {
+                // Apply group reduction if there is no group reduction for
+                // this category.
+                $reduc = Group::getReductionByIdGroup($idGroup);
+                $groupReduction = ($reduc ?
+                    round($price * $reduc / 100, _TB_PRICE_DATABASE_PRECISION_) :
+                    0
+                );
             }
 
             $price -= $groupReduction;
         }
 
         if ($onlyReduc) {
-            return Tools::ps_round($specificPriceReduction, $decimals);
+            if ($decimals >= _TB_PRICE_DATABASE_PRECISION_) {
+                return round(
+                    $specificPriceReduction,
+                    _TB_PRICE_DATABASE_PRECISION_
+                );
+            } else {
+                return Tools::ps_round($specificPriceReduction, $decimals);
+            }
         }
 
-        $price = Tools::ps_round($price, $decimals);
+        if ($decimals >= _TB_PRICE_DATABASE_PRECISION_) {
+            $price = round($price, _TB_PRICE_DATABASE_PRECISION_);
+        } else {
+            $price = Tools::ps_round($price, $decimals);
+        }
 
         if ($price < 0) {
             $price = 0;
@@ -3352,7 +3384,13 @@ class ProductCore extends ObjectModel
                 if (isset($productUpdate['price_wt']) && $productUpdate['price_wt']) {
                     $priceWt = $productUpdate['price_wt'];
                 } else {
-                    $priceWt = $price * (1 + ((isset($productUpdate['tax_rate']) ? $productUpdate['tax_rate'] : $productUpdate['rate']) * 0.01));
+                    $taxRate = isset($productUpdate['tax_rate']) ?
+                        $productUpdate['tax_rate'] :
+                        $productUpdate['rate'];
+                    $priceWt = round(
+                        $price * (1 + $taxRate / 100),
+                        _TB_PRICE_DATABASE_PRECISION_
+                    );
                 }
 
                 if (!isset($customizedDatas[$idProduct][$idProductAttribute][$idAddressDelivery])) {
@@ -4831,11 +4869,14 @@ class ProductCore extends ObjectModel
 
         $combination = new Combination();
         $combination->id_product = (int) $this->id;
-        $combination->price = (float) $price;
-        $combination->ecotax = (float) $ecotax;
+        $combination->price = round($price, _TB_PRICE_DATABASE_PRECISION_);
+        $combination->ecotax = round($ecotax, _TB_PRICE_DATABASE_PRECISION_);
         $combination->quantity = 0;
         $combination->weight = (float) $weight;
-        $combination->unit_price_impact = (float) $unitImpact;
+        $combination->unit_price_impact = round(
+            $unitImpact,
+            _TB_PRICE_DATABASE_PRECISION_
+        );
         $combination->reference = pSQL($reference);
         $combination->location = pSQL($location);
         $combination->ean13 = pSQL($ean13);
@@ -5206,7 +5247,10 @@ class ProductCore extends ObjectModel
         $result = ObjectModel::updateMultishopTable(
             'Combination',
             [
-                'wholesale_price' => (float) $wholesalePrice,
+                'wholesale_price' => round(
+                    $wholesalePrice,
+                    _TB_PRICE_DATABASE_PRECISION_
+                ),
             ],
             'a.id_product_attribute = '.(int) $idProductAttribute
         );
@@ -5430,11 +5474,17 @@ class ProductCore extends ObjectModel
         $price = str_replace(',', '.', $price);
         $weight = str_replace(',', '.', $weight);
 
-        $combination->price = (float) $price;
-        $combination->wholesale_price = (float) $wholesalePrice;
-        $combination->ecotax = (float) $ecotax;
+        $combination->price = round($price, _TB_PRICE_DATABASE_PRECISION_);
+        $combination->wholesale_price = round(
+            $wholesalePrice,
+            _TB_PRICE_DATABASE_PRECISION_
+        );
+        $combination->ecotax = round($ecotax, _TB_PRICE_DATABASE_PRECISION_);
         $combination->weight = (float) $weight;
-        $combination->unit_price_impact = (float) $unit;
+        $combination->unit_price_impact = round(
+            $unit,
+            _TB_PRICE_DATABASE_PRECISION_
+        );
         $combination->reference = pSQL($reference);
         $combination->location = pSQL($location);
         $combination->ean13 = pSQL($ean13);
