@@ -334,8 +334,13 @@ class OrderCore extends ObjectModel
     public function roundAmounts()
     {
         foreach (static::$definition['fields'] as $fieldName => $field) {
-            if ($field['type'] === static::TYPE_FLOAT && isset($this->$fieldName)) {
-                $this->$fieldName = Tools::ps_round($this->$fieldName, _TB_PRICE_DATABASE_PRECISION_);
+            if (array_key_exists('validate', $field)
+                && $field['validate'] === 'isPrice'
+                && isset($this->$fieldName)) {
+                $this->$fieldName = round(
+                    $this->$fieldName,
+                    _TB_PRICE_DATABASE_PRECISION_
+                );
             }
         }
     }
@@ -434,8 +439,14 @@ class OrderCore extends ObjectModel
      */
     protected function _deleteProduct($orderDetail, $quantity)
     {
-        $productPriceTaxExcl = $orderDetail->unit_price_tax_excl * $quantity;
-        $productPriceTaxIncl = $orderDetail->unit_price_tax_incl * $quantity;
+        $productPriceTaxExcl = round(
+            $orderDetail->unit_price_tax_excl,
+            _TB_PRICE_DATABASE_PRECISION_
+        ) * (int) $quantity;
+        $productPriceTaxIncl = round(
+            $orderDetail->unit_price_tax_incl,
+            _TB_PRICE_DATABASE_PRECISION_
+        ) * (int) $quantity;
 
         /* Update cart */
         $cart = new Cart($this->id_cart);
@@ -443,8 +454,16 @@ class OrderCore extends ObjectModel
         $cart->update();
 
         /* Update order */
-        $shippingDiffTaxIncl = $this->total_shipping_tax_incl - $cart->getPackageShippingCost($this->id_carrier, true, null, $this->getCartProducts());
-        $shippingDiffTaxExcl = $this->total_shipping_tax_excl - $cart->getPackageShippingCost($this->id_carrier, false, null, $this->getCartProducts());
+        $shippingDiffTaxIncl = $this->total_shipping_tax_incl - round(
+            $cart->getPackageShippingCost($this->id_carrier, true, null,
+                                          $this->getCartProducts()),
+            _TB_PRICE_DATABASE_PRECISION_
+        );
+        $shippingDiffTaxExcl = $this->total_shipping_tax_excl - round(
+            $cart->getPackageShippingCost($this->id_carrier, false, null,
+                                          $this->getCartProducts()),
+            _TB_PRICE_DATABASE_PRECISION_
+        );
         $this->total_shipping -= $shippingDiffTaxIncl;
         $this->total_shipping_tax_excl -= $shippingDiffTaxExcl;
         $this->total_shipping_tax_incl -= $shippingDiffTaxIncl;
@@ -663,8 +682,14 @@ class OrderCore extends ObjectModel
         $row['tax_calculator'] = $taxCalculator;
         $row['tax_rate'] = $taxCalculator->getTotalRate();
 
-        $row['product_price'] = Tools::ps_round($row['unit_price_tax_excl'], 2);
-        $row['product_price_wt'] = Tools::ps_round($row['unit_price_tax_incl'], 2);
+        $row['product_price'] = round(
+            $row['unit_price_tax_excl'],
+            _TB_PRICE_DATABASE_PRECISION_
+        );
+        $row['product_price_wt'] = round(
+            $row['unit_price_tax_incl'],
+            _TB_PRICE_DATABASE_PRECISION_
+        );
 
         $row['product_price_wt_but_ecotax'] = $row['product_price_wt'] - $row['ecotax'];
 
@@ -2480,7 +2505,7 @@ class OrderCore extends ObjectModel
             }
         }
 
-        return Tools::ps_round($total, 2);
+        return $total;
     }
 
     /**
@@ -2972,14 +2997,6 @@ class OrderCore extends ObjectModel
      */
     public function getProductTaxesDetails($limitToOrderDetails = false)
     {
-        $roundType = (int) $this->round_type;
-        if ($roundType == 0) {
-            // if this is 0, it means the field did not exist
-            // at the time the order was made.
-            // Set it to old type, which was closest to line.
-            $roundType = Order::ROUND_LINE;
-        }
-
         // compute products discount
         $orderDiscountTaxExcl = $this->total_discounts_tax_excl;
 
@@ -3034,11 +3051,13 @@ class OrderCore extends ObjectModel
             $idOrderDetail = $orderDetail['id_order_detail'];
             $taxCalculator = OrderDetail::getTaxCalculatorStatic($idOrderDetail);
 
-            $unitEcotaxTax = $orderDetail['ecotax'] * $orderDetail['ecotax_tax_rate'] / 100.0;
+            $unitEcotaxTax = round(
+                $orderDetail['ecotax'] * $orderDetail['ecotax_tax_rate'] / 100.0,
+                _TB_PRICE_DATABASE_PRECISION_
+            );
             $orderEcotaxTax += $orderDetail['product_quantity'] * $unitEcotaxTax;
 
             $discountRatio = 0;
-
             if ($this->total_products > 0) {
                 $discountRatio = ($orderDetail['unit_price_tax_excl'] + $orderDetail['ecotax']) / $this->total_products;
             }
@@ -3057,42 +3076,12 @@ class OrderCore extends ObjectModel
             }
 
             foreach ($taxCalculator->getTaxesAmount($discountedPriceTaxExcl) as $idTax => $unitAmount) {
-                $totalTaxBase = 0;
-                $totalAmount = 0;
-                switch ($roundType) {
-                    case Order::ROUND_ITEM:
-                        $totalTaxBase = $quantity * Tools::ps_round($discountedPriceTaxExcl, _PS_PRICE_DISPLAY_PRECISION_, $this->round_mode);
-                        $totalAmount = $quantity * Tools::ps_round($unitAmount, _PS_PRICE_DISPLAY_PRECISION_, $this->round_mode);
+                $totalTaxBase = $quantity * $discountedPriceTaxExcl;
+                $totalAmount = $quantity * $unitAmount;
 
-                        if (isset($cheapestProductDiscounts[$orderDetail['product_id']]['tax_base'])) {
-                            $totalTaxBase -= Tools::ps_round($cheapestProductDiscounts[$orderDetail['product_id']]['tax_base'], _PS_PRICE_DISPLAY_PRECISION_, $this->round_mode);
-                            $totalAmount -= Tools::ps_round($cheapestProductDiscounts[$orderDetail['product_id']]['tax_amount'], _PS_PRICE_DISPLAY_PRECISION_, $this->round_mode);
-                        }
-
-                        break;
-                    case Order::ROUND_LINE:
-                        $totalTaxBase = $quantity * $discountedPriceTaxExcl;
-                        $totalAmount = $quantity * $unitAmount;
-
-                        if (isset($cheapestProductDiscounts[$orderDetail['product_id']]['tax_base'])) {
-                            $totalTaxBase -= $cheapestProductDiscounts[$orderDetail['product_id']]['tax_base'];
-                            $totalAmount -= $cheapestProductDiscounts[$orderDetail['product_id']]['tax_amount'];
-                        }
-
-                        $totalTaxBase = Tools::ps_round($totalTaxBase, _PS_PRICE_DISPLAY_PRECISION_, $this->round_mode);
-                        $totalAmount = Tools::ps_round($totalAmount, _PS_PRICE_DISPLAY_PRECISION_, $this->round_mode);
-
-                        break;
-                    case Order::ROUND_TOTAL:
-                        $totalTaxBase = $quantity * $discountedPriceTaxExcl;
-                        $totalAmount = $quantity * $unitAmount;
-
-                        if (isset($cheapestProductDiscounts[$orderDetail['product_id']]['tax_base'])) {
-                            $totalTaxBase -= $cheapestProductDiscounts[$orderDetail['product_id']]['tax_base'];
-                            $totalAmount -= $cheapestProductDiscounts[$orderDetail['product_id']]['tax_amount'];
-                        }
-
-                        break;
+                if (isset($cheapestProductDiscounts[$orderDetail['product_id']]['tax_base'])) {
+                    $totalTaxBase -= $cheapestProductDiscounts[$orderDetail['product_id']]['tax_base'];
+                    $totalAmount -= $cheapestProductDiscounts[$orderDetail['product_id']]['tax_amount'];
                 }
 
                 if (!isset($breakdown[$idTax])) {
@@ -3111,25 +3100,6 @@ class OrderCore extends ObjectModel
                     'unit_amount'     => $unitAmount,
                     'total_amount'    => $totalAmount,
                 ];
-            }
-        }
-
-        if (!empty($orderDetailTaxRows)) {
-            foreach ($breakdown as $data) {
-                $actualTotalTax += Tools::ps_round($data['tax_amount'], _TB_PRICE_DATABASE_PRECISION_, $this->round_mode);
-                $actualTotalBase += Tools::ps_round($data['tax_base'], _TB_PRICE_DATABASE_PRECISION_, $this->round_mode);
-            }
-
-            $orderEcotaxTax = Tools::ps_round($orderEcotaxTax, _TB_PRICE_DATABASE_PRECISION_, $this->round_mode);
-
-            $taxRoundingError = $expectedTotalTax - $actualTotalTax - $orderEcotaxTax;
-            if ($taxRoundingError !== 0) {
-                Tools::spreadAmount($taxRoundingError, _TB_PRICE_DATABASE_PRECISION_, $orderDetailTaxRows, 'total_amount');
-            }
-
-            $baseRoundingError = $expectedTotalBase - $actualTotalBase;
-            if ($baseRoundingError !== 0) {
-                Tools::spreadAmount($baseRoundingError, _TB_PRICE_DATABASE_PRECISION_, $orderDetailTaxRows, 'total_tax_base');
             }
         }
 
