@@ -1306,36 +1306,43 @@ class OrderCore extends ObjectModel
     /**
      * Get product total without taxes
      *
-     * @param mixed $products
+     * @param mixed $products Deprecated.
      *
      * @return float Product total without taxes
      *
      * @since 1.0.0
-     * @version 1.0.0 Initial version
+     * @since 1.1.0 Deprecated parameter $products. Was unused already.
      */
     public function getTotalProductsWithoutTaxes($products = false)
     {
+        if ($products !== false) {
+            Tools::displayParameterAsDeprecated('products');
+        }
+
         return $this->total_products;
     }
 
     /**
      * Get product total with taxes
      *
-     * @param mixed $products
+     * @param mixed $products Deprecated.
      *
      * @return float Product total with taxes
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     *
+     * @since 1.0.0
+     * @since 1.1.0 Deprecated parameter $products.
      */
     public function getTotalProductsWithTaxes($products = false)
     {
         if ($this->total_products_wt != '0.00' && !$products) {
             return $this->total_products_wt;
         }
+
         /* Retro-compatibility (now set directly on the validateOrder() method) */
+        Tools::displayParameterAsDeprecated('products');
 
         if (!$products) {
             $products = $this->getProductsDetail();
@@ -1700,7 +1707,7 @@ class OrderCore extends ObjectModel
                 '`id_order` = '.(int) $orderInvoice->id_order
             );
 
-            // Keep it for backward compatibility, to remove on 1.6 version
+            // Keep it for retrocompatibility, to remove on 1.6 version
             $this->invoice_date = $orderInvoice->date_add;
 
             if (Configuration::get('PS_INVOICE')) {
