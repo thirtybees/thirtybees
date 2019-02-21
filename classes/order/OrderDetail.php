@@ -318,7 +318,7 @@ class OrderDetailCore extends ObjectModel
      */
     public function getTaxCalculator()
     {
-        return OrderDetail::getTaxCalculatorStatic($this->id);
+        return static::getTaxCalculatorStatic($this->id);
     }
 
     /**
@@ -393,19 +393,15 @@ class OrderDetailCore extends ObjectModel
         }
 
         $ratio = $this->unit_price_tax_excl / $order->total_products;
-        $orderReductionAmount = ($order->total_discounts_tax_excl - $shippingTaxAmount) * $ratio;
+        $orderReductionAmount = round(
+            ($order->total_discounts_tax_excl - $shippingTaxAmount) * $ratio,
+            _TB_PRICE_DATABASE_PRECISION_
+        );
         $discountedPriceTaxExcl = $this->unit_price_tax_excl - $orderReductionAmount;
 
         $values = [];
         foreach ($this->tax_calculator->getTaxesAmount($discountedPriceTaxExcl) as $idTax => $amount) {
-            $totalAmount = round(
-                $amount * $this->product_quantity,
-                _TB_PRICE_DATABASE_PRECISION_
-            );
-            $amount = round(
-                $amount,
-                _TB_PRICE_DATABASE_PRECISION_
-            );
+            $totalAmount = $amount * (int) $this->product_quantity;
 
             $values[] = [
                 static::$definition['primary'] => (int) $this->id,
@@ -565,9 +561,14 @@ class OrderDetailCore extends ObjectModel
             $taxRate = $carrier->getTaxesRate(new Address((int) $order->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
         }
 
-        $this->total_shipping_price_tax_excl = (float) $product['additional_shipping_cost'];
-        $this->total_shipping_price_tax_incl = (float) ($this->total_shipping_price_tax_excl * (1 + ($taxRate / 100)));
-        $this->total_shipping_price_tax_incl = Tools::ps_round($this->total_shipping_price_tax_incl, 2);
+        $this->total_shipping_price_tax_excl = round(
+            $product['additional_shipping_cost'],
+            _TB_PRICE_DATABASE_PRECISION_
+        );
+        $this->total_shipping_price_tax_incl = round(
+            $this->total_shipping_price_tax_excl * (1 + $taxRate / 100),
+            _TB_PRICE_DATABASE_PRECISION_
+        );
     }
 
     /**
@@ -690,12 +691,12 @@ class OrderDetailCore extends ObjectModel
 
         if ($this->product_attribute_id) {
             $combination = new Combination((int) $this->product_attribute_id);
-            if ($combination && $combination->wholesale_price != '0.000000') {
+            if ($combination && $combination->wholesale_price != 0.0) {
                 $wholesalePrice = $combination->wholesale_price;
             }
         }
 
-        return $wholesalePrice;
+        return round($wholesalePrice, _TB_PRICE_DATABASE_PRECISION_);
     }
 
     /**
@@ -829,9 +830,9 @@ class OrderDetailCore extends ObjectModel
 
                     if ($this->specificPrice['reduction_tax']) {
                         $this->reduction_amount_tax_incl = $this->reduction_amount;
-                        $this->reduction_amount_tax_excl = Tools::ps_round($this->tax_calculator->removeTaxes($this->reduction_amount), _TB_PRICE_DATABASE_PRECISION_);
+                        $this->reduction_amount_tax_excl = $this->tax_calculator->removeTaxes($this->reduction_amount);
                     } else {
-                        $this->reduction_amount_tax_incl = Tools::ps_round($this->tax_calculator->addTaxes($this->reduction_amount), _TB_PRICE_DATABASE_PRECISION_);
+                        $this->reduction_amount_tax_incl = $this->tax_calculator->addTaxes($this->reduction_amount);
                         $this->reduction_amount_tax_excl = $this->reduction_amount;
                     }
                     break;
@@ -854,18 +855,75 @@ class OrderDetailCore extends ObjectModel
     protected function setDetailProductPrice(Order $order, Cart $cart, $product)
     {
         $this->setContext((int) $product['id_shop']);
-        Product::getPriceStatic((int) $product['id_product'], true, (int) $product['id_product_attribute'], 6, null, false, true, $product['cart_quantity'], false, (int) $order->id_customer, (int) $order->id_cart, (int) $order->{Configuration::get('PS_TAX_ADDRESS_TYPE')}, $specificPrice, true, true, $this->context);
+        Product::getPriceStatic(
+            (int) $product['id_product'],
+            true,
+            (int) $product['id_product_attribute'],
+            _TB_PRICE_DATABASE_PRECISION_,
+            null,
+            false,
+            true,
+            $product['cart_quantity'],
+            false,
+            (int) $order->id_customer,
+            (int) $order->id_cart,
+            (int) $order->{Configuration::get('PS_TAX_ADDRESS_TYPE')},
+            $specificPrice,
+            true,
+            true,
+            $this->context
+        );
         $this->specificPrice = $specificPrice;
-        $this->original_product_price = Product::getPriceStatic($product['id_product'], false, (int) $product['id_product_attribute'], 6, null, false, false, 1, false, null, null, null, $null, true, true, $this->context);
+        $this->original_product_price = Product::getPriceStatic(
+            $product['id_product'],
+            false,
+            (int) $product['id_product_attribute'],
+            _TB_PRICE_DATABASE_PRECISION_,
+            null,
+            false,
+            false,
+            1,
+            false,
+            null,
+            null,
+            null,
+            $null,
+            true,
+            true,
+            $this->context
+        );
         $this->product_price = $this->original_product_price;
-        $this->unit_price_tax_incl = (float) $product['price_wt'];
-        $this->unit_price_tax_excl = (float) $product['price'];
-        $this->total_price_tax_incl = (float) $product['total_wt'];
-        $this->total_price_tax_excl = (float) $product['total'];
+        $this->unit_price_tax_incl = round(
+            $product['price_wt'],
+            _TB_PRICE_DATABASE_PRECISION_
+        );
+        $this->unit_price_tax_excl = round(
+            $product['price'],
+            _TB_PRICE_DATABASE_PRECISION_
+        );
+        $this->total_price_tax_incl = round(
+            $product['total_wt'],
+            _TB_PRICE_DATABASE_PRECISION_
+        );
+        $this->total_price_tax_excl = round(
+            $product['total'],
+            _TB_PRICE_DATABASE_PRECISION_
+        );
 
-        $this->purchase_supplier_price = (float) $product['wholesale_price'];
-        if ($product['id_supplier'] > 0 && ($supplierPrice = ProductSupplier::getProductPrice((int) $product['id_supplier'], $product['id_product'], $product['id_product_attribute'], true)) > 0) {
-            $this->purchase_supplier_price = (float) $supplierPrice;
+        $this->purchase_supplier_price = round(
+            $product['wholesale_price'],
+            _TB_PRICE_DATABASE_PRECISION_
+        );
+        if ($product['id_supplier']) {
+            $supplierPrice = ProductSupplier::getProductPrice(
+                (int) $product['id_supplier'],
+                $product['id_product'],
+                $product['id_product_attribute'],
+                true
+            );
+            if ($supplierPrice !== false) {
+                $this->purchase_supplier_price = $supplierPrice;
+            }
         }
 
         $this->setSpecificPrice($order, $product);
@@ -884,7 +942,6 @@ class OrderDetailCore extends ObjectModel
             false,
             null
         );
-
         $unitPrice = Product::getPriceStatic(
             (int) $product['id_product'],
             true,
@@ -903,13 +960,9 @@ class OrderDetailCore extends ObjectModel
             true,
             $this->context
         );
-        $this->product_quantity_discount = 0.00;
+        $this->product_quantity_discount = 0.0;
         if ($quantityDiscount) {
             $this->product_quantity_discount = $unitPrice;
-            if (Product::getTaxCalculationMethod((int) $order->id_customer) == PS_TAX_EXC) {
-                $this->product_quantity_discount = Tools::ps_round($unitPrice, _TB_PRICE_DATABASE_PRECISION_);
-            }
-
             if (isset($this->tax_calculator)) {
                 $this->product_quantity_discount -= $this->tax_calculator->addTaxes($quantityDiscount['price']);
             }
