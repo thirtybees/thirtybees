@@ -148,7 +148,7 @@ class OrderSlipCore extends ObjectModel
      */
     public static function getOrdersSlipProducts($orderSlipId, $order)
     {
-        $productsRet = OrderSlip::getOrdersSlipDetail($orderSlipId);
+        $productsRet = static::getOrdersSlipDetail($orderSlipId);
         $orderDetails = $order->getProductsDetail();
 
         $slipQuantity = [];
@@ -272,7 +272,7 @@ class OrderSlipCore extends ObjectModel
             $shipping = $shippingCost ? null : false;
         }
 
-        return OrderSlip::create($order, $newProductList, $shipping);
+        return static::create($order, $newProductList, $shipping);
     }
 
     /**
@@ -338,7 +338,7 @@ class OrderSlipCore extends ObjectModel
         foreach ($productList as &$product) {
             $orderDetail = new OrderDetail((int) $product['id_order_detail']);
             $quantity = (int) $product['quantity'];
-            $orderSlipResume = OrderSlip::getProductSlipResume((int) $orderDetail->id);
+            $orderSlipResume = static::getProductSlipResume((int) $orderDetail->id);
 
             if ($quantity + $orderSlipResume['product_quantity'] > $orderDetail->product_quantity) {
                 $quantity = $orderDetail->product_quantity - $orderSlipResume['product_quantity'];
@@ -492,7 +492,7 @@ class OrderSlipCore extends ObjectModel
 
         foreach ($orderDetailList as $idOrderDetail => $tab) {
             $orderDetail = new OrderDetail($idOrderDetail);
-            $orderSlipResume = OrderSlip::getProductSlipResume($idOrderDetail);
+            $orderSlipResume = static::getProductSlipResume($idOrderDetail);
 
             if ($tab['amount'] + $orderSlipResume['amount_tax_incl'] > $orderDetail->total_price_tax_incl) {
                 $tab['amount'] = $orderDetail->total_price_tax_incl - $orderSlipResume['amount_tax_incl'];
