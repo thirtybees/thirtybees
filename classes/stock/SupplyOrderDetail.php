@@ -305,17 +305,12 @@ class SupplyOrderDetailCore extends ObjectModel
      */
     public function hydrate(array $data, $idLang = null)
     {
-        $this->id_lang = $idLang;
-        if (isset($data[$this->def['primary']])) {
-            $this->id = $data[$this->def['primary']];
-        }
+        parent::hydrate($data, $idLang);
+
         foreach ($data as $key => $value) {
-            if (array_key_exists($key, $this)) {
-                // formats prices and floats
-                if ($this->def['fields'][$key]['validate'] == 'isPrice') {
-                    $value = round($value, _TB_PRICE_DATABASE_PRECISION_);
-                }
-                $this->$key = $value;
+            if (array_key_exists($key, $this)
+                && $this->def['fields'][$key]['validate'] === 'isPrice') {
+                $this->$key = round($value, _TB_PRICE_DATABASE_PRECISION_);
             }
         }
     }
