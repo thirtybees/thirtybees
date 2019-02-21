@@ -171,10 +171,10 @@ class SupplyOrderDetailCore extends ObjectModel
             'quantity_expected'             => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt', 'required' => true],
             'quantity_received'             => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt'                    ],
             'price_te'                      => ['type' => self::TYPE_FLOAT,  'validate' => 'isPrice',       'required' => true],
-            'discount_rate'                 => ['type' => self::TYPE_FLOAT,  'validate' => 'isFloat',       'required' => true],
+            'discount_rate'                 => ['type' => self::TYPE_FLOAT,  'validate' => 'isPercentage',  'required' => true],
             'discount_value_te'             => ['type' => self::TYPE_FLOAT,  'validate' => 'isPrice',       'required' => true],
             'price_with_discount_te'        => ['type' => self::TYPE_FLOAT,  'validate' => 'isPrice',       'required' => true],
-            'tax_rate'                      => ['type' => self::TYPE_FLOAT,  'validate' => 'isFloat',       'required' => true],
+            'tax_rate'                      => ['type' => self::TYPE_FLOAT,  'validate' => 'isPercentage',  'required' => true],
             'tax_value'                     => ['type' => self::TYPE_FLOAT,  'validate' => 'isPrice',       'required' => true],
             'price_ti'                      => ['type' => self::TYPE_FLOAT,  'validate' => 'isPrice',       'required' => true],
             'tax_value_with_order_discount' => ['type' => self::TYPE_FLOAT,  'validate' => 'isPrice',       'required' => true],
@@ -242,7 +242,7 @@ class SupplyOrderDetailCore extends ObjectModel
         );
 
         // calculates entry discount value
-        if ($this->discount_rate != null && (is_float($this->discount_rate) || is_numeric($this->discount_rate)) && $this->discount_rate > 0) {
+        if ($this->discount_rate) {
             $this->discount_value_te = round(
                 (float) $this->price_te * ($this->discount_rate / 100),
                 _TB_PRICE_DATABASE_PRECISION_
@@ -295,80 +295,6 @@ class SupplyOrderDetailCore extends ObjectModel
 
             parent::update();
         }
-    }
-
-    /**
-     * @see ObjectModel::validateController()
-     *
-     * @param bool $htmlentities Optional
-     *
-     * @return array Errors, if any..
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public function validateController($htmlentities = true)
-    {
-        $errors = [];
-
-        /* required fields */
-        $fieldsRequired = $this->fieldsRequired;
-
-        if (isset(static::$fieldsRequiredDatabase[get_class($this)])) {
-            $fieldsRequired = array_merge(
-                $this->fieldsRequired,
-                static::$fieldsRequiredDatabase[get_class($this)]
-            );
-        }
-
-        foreach ($fieldsRequired as $field) {
-            if (($value = $this->{$field}) == false && (string) $value != '0') {
-                if (!$this->id || $field != 'passwd') {
-                    $errors[] = '<b>'.SupplyOrderDetail::displayFieldName($field, get_class($this), $htmlentities)
-                        .'</b> '.Tools::displayError('is required.');
-                }
-            }
-        }
-
-        /* Checks maximum fields sizes */
-        foreach ($this->fieldsSize as $field => $maxLength) {
-            if ($value = $this->{$field} && mb_strlen($value) > $maxLength) {
-                $errors[] = sprintf(
-                    Tools::displayError('%1$s is too long. Maximum length: %2$d'),
-                    SupplyOrderDetail::displayFieldName($field, get_class($this), $htmlentities),
-                    $maxLength
-                );
-            }
-        }
-
-        /* Checks fields validity */
-        foreach ($this->fieldsValidate as $field => $function) {
-            if ($value = $this->{$field}) {
-                if (!Validate::$function($value) && (!empty($value) || in_array($field, $this->fieldsRequired))) {
-                    $errors[] = '<b>'.SupplyOrderDetail::displayFieldName($field, get_class($this), $htmlentities).'</b> '.Tools::displayError('is invalid.');
-                } elseif ($field == 'passwd') {
-                    if ($value = Tools::getValue($field)) {
-                        $this->{$field} = Tools::encrypt($value);
-                    } else {
-                        $this->{$field} = $value;
-                    }
-                }
-            }
-        }
-
-        if ($this->quantity_expected <= 0) {
-            $errors[] = '<b>'.SupplyOrderDetail::displayFieldName('quantity_expected', get_class($this)).'</b> '.Tools::displayError('is invalid.');
-        }
-
-        if ($this->tax_rate < 0 || $this->tax_rate > 100) {
-            $errors[] = '<b>'.SupplyOrderDetail::displayFieldName('tax_rate', get_class($this)).'</b> '.Tools::displayError('is invalid.');
-        }
-
-        if ($this->discount_rate < 0 || $this->discount_rate > 100) {
-            $errors[] = '<b>'.SupplyOrderDetail::displayFieldName('discount_rate', get_class($this)).'</b> '.Tools::displayError('is invalid.');
-        }
-
-        return $errors;
     }
 
     /**
