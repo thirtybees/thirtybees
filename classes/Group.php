@@ -61,7 +61,7 @@ class GroupCore extends ObjectModel
         'primary'   => 'id_group',
         'multilang' => true,
         'fields'    => [
-            'reduction'            => ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat'],
+            'reduction'            => ['type' => self::TYPE_FLOAT, 'validate' => 'isPercentage'],
             'price_display_method' => ['type' => self::TYPE_INT, 'validate' => 'isPriceDisplayMethod', 'required' => true],
             'show_prices'          => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
             'date_add'             => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
