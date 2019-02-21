@@ -189,15 +189,17 @@ class ProductSupplierCore extends ObjectModel
      *
      * @param int  $idSupplier
      * @param int  $idProduct
-     * @param int  $idProductAttribute Optional
-     * @param bool $convertedPrice     Optional, only return the converted price
+     * @param int  $idProductAttribute
+     * @param bool $convertedPrice      Whether price should be converted to
+     *                                  the current currency.
      *
-     * @return false|float|array keys: price_te, id_currency
+     * @return bool|float Price, rounded to _TB_PRICE_DATABASE_PRECISION_, or
+     *                    false on failure.
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     *
+     * @since 1.0.0
      */
     public static function getProductPrice($idSupplier, $idProduct, $idProductAttribute = 0, $convertedPrice = false)
     {
