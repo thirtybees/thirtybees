@@ -633,8 +633,7 @@ class OrderSlipCore extends ObjectModel
 
             $quantity = (int) $orderSlipDetails['product_quantity'];
             $ecotaxDetail[$row['rate']]['ecotax_tax_incl'] += round(
-                $row['ecotax_tax_excl'] * $quantity
-                + $row['ecotax_tax_excl'] * $quantity * $row['rate'] / 100,
+                $row['ecotax_tax_excl'] * $quantity * (1 + $row['rate'] / 100),
                 _TB_PRICE_DATABASE_PRECISION_
             );
             $ecotaxDetail[$row['rate']]['ecotax_tax_excl'] += round(
