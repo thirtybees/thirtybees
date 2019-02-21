@@ -236,23 +236,35 @@ class SupplyOrderDetailCore extends ObjectModel
     protected function calculatePrices()
     {
         // calculates entry price
-        $this->price_te = Tools::ps_round((float) $this->unit_price_te * (int) $this->quantity_expected, 6);
+        $this->price_te = round(
+            (float) $this->unit_price_te * (int) $this->quantity_expected,
+            _TB_PRICE_DATABASE_PRECISION_
+        );
 
         // calculates entry discount value
         if ($this->discount_rate != null && (is_float($this->discount_rate) || is_numeric($this->discount_rate)) && $this->discount_rate > 0) {
-            $this->discount_value_te = Tools::ps_round((float) $this->price_te * ($this->discount_rate / 100), 6);
+            $this->discount_value_te = round(
+                (float) $this->price_te * ($this->discount_rate / 100),
+                _TB_PRICE_DATABASE_PRECISION_
+            );
         }
 
         // calculates entry price with discount
-        $this->price_with_discount_te = Tools::ps_round($this->price_te - $this->discount_value_te, 6);
+        $this->price_with_discount_te = round(
+            $this->price_te - $this->discount_value_te,
+            _TB_PRICE_DATABASE_PRECISION_
+        );
 
         // calculates tax value
-        $this->tax_value = Tools::ps_round($this->price_with_discount_te * ((float) $this->tax_rate / 100), 6);
-        $this->price_ti = Tools::ps_round($this->price_with_discount_te + $this->tax_value, 6);
+        $this->tax_value = round(
+            $this->price_with_discount_te * ($this->tax_rate / 100),
+            _TB_PRICE_DATABASE_PRECISION_
+        );
+        $this->price_ti = $this->price_with_discount_te + $this->tax_value;
 
         // defines default values for order discount fields
-        $this->tax_value_with_order_discount = Tools::ps_round($this->tax_value, 6);
-        $this->price_with_order_discount_te = Tools::ps_round($this->price_with_discount_te, 6);
+        $this->tax_value_with_order_discount = $this->tax_value;
+        $this->price_with_order_discount_te = $this->price_with_discount_te;
     }
 
     /**
@@ -269,12 +281,17 @@ class SupplyOrderDetailCore extends ObjectModel
     {
         if ($discountRate != null && is_numeric($discountRate) && (float) $discountRate > 0) {
             // calculates new price, with global order discount, tax ecluded
-            $discount_value = $this->price_with_discount_te - (($this->price_with_discount_te * (float) $discountRate) / 100);
-
-            $this->price_with_order_discount_te = Tools::ps_round($discount_value, 6);
+            $this->price_with_order_discount_te = round(
+                $this->price_with_discount_te
+                - $this->price_with_discount_te * $discountRate / 100,
+                _TB_PRICE_DATABASE_PRECISION_
+            );
 
             // calculates new tax value, with global order discount
-            $this->tax_value_with_order_discount = Tools::ps_round($this->price_with_order_discount_te * ((float) $this->tax_rate / 100), 6);
+            $this->tax_value_with_order_discount = round(
+                $this->price_with_order_discount_te * $this->tax_rate / 100,
+                _TB_PRICE_DATABASE_PRECISION_
+            );
 
             parent::update();
         }
@@ -369,10 +386,8 @@ class SupplyOrderDetailCore extends ObjectModel
         foreach ($data as $key => $value) {
             if (array_key_exists($key, $this)) {
                 // formats prices and floats
-                if ($this->def['fields'][$key]['validate'] == 'isFloat' ||
-                    $this->def['fields'][$key]['validate'] == 'isPrice'
-                ) {
-                    $value = Tools::ps_round($value, 6);
+                if ($this->def['fields'][$key]['validate'] == 'isPrice') {
+                    $value = round($value, _TB_PRICE_DATABASE_PRECISION_);
                 }
                 $this->$key = $value;
             }
