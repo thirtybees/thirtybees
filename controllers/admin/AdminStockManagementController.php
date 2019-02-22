@@ -229,19 +229,19 @@ class AdminStockManagementControllerCore extends AdminController
                 'havingFilter' => true,
             ],
             'price_te'          => [
-                'title'    => $this->l('Price (tax excl.)'),
-                'orderby'  => true,
-                'search'   => false,
-                'type'     => 'price',
-                'currency' => true,
+                'title'       => $this->l('Price (tax excl.)'),
+                'orderby'     => true,
+                'search'      => false,
+                'type'        => 'price',
+                'currency'    => true,
             ],
             'valuation'         => [
-                'title'    => $this->l('Valuation'),
-                'orderby'  => false,
-                'search'   => false,
-                'type'     => 'price',
-                'currency' => true,
-                'hint'     => $this->l('Total value of the physical quantity. The sum (for all prices) is not available for all warehouses, please filter by warehouse.'),
+                'title'       => $this->l('Valuation'),
+                'orderby'     => false,
+                'search'      => false,
+                'type'        => 'price',
+                'currency'    => true,
+                'hint'        => $this->l('Total value of the physical quantity. The sum (for all prices) is not available for all warehouses, please filter by warehouse.'),
             ],
             'physical_quantity' => [
                 'title'   => $this->l('Physical quantity'),
@@ -296,7 +296,7 @@ class AdminStockManagementControllerCore extends AdminController
             $this->_where .= ' AND a.id_warehouse = '.(int) $idWarehouse;
         }
 
-	$this->_filter = '';
+        $this->_filter = '';
         $this->_orderBy = 'pl.name';
         $this->_orderWay = 'ASC';
     }
@@ -465,11 +465,7 @@ class AdminStockManagementControllerCore extends AdminController
 
         if (Tools::isSubmit('addstock') && Tools::isSubmit('is_post')) {
             // get product unit price
-            $price = str_replace(',', '.', Tools::getValue('price', 0));
-            if (!is_numeric($price)) {
-                $this->errors[] = Tools::displayError('The product price is not valid.');
-            }
-            $price = round(floatval($price), 6);
+            $price = Tools::getValue('price', 0);
 
             // get product unit price currency id
             $idCurrency = (int) Tools::getValue('id_currency', 0);
@@ -1026,13 +1022,13 @@ class AdminStockManagementControllerCore extends AdminController
                     'hint'     => $this->l('Please select the warehouse that you\'ll be adding products to.'),
                 ],
                 [
-                    'type'      => 'text',
-                    'label'     => $this->l('Unit price (tax excl.)'),
-                    'name'      => 'price',
-                    'required'  => true,
-                    'size'      => 10,
-                    'maxlength' => 10,
-                    'hint'      => [
+                    'type'        => 'text',
+                    'label'       => $this->l('Unit price (tax excl.)'),
+                    'name'        => 'price',
+                    'validation'  => 'isPrice',
+                    'cast'        => 'priceval',
+                    'required'    => true,
+                    'hint'        => [
                         $this->l('Unit purchase price or unit manufacturing cost for this product (tax excl.).'),
                         sprintf($this->l('Last unit price (tax excl.): %s.'), $lastSmUnitPriceTe),
                     ],
