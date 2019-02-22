@@ -82,6 +82,19 @@ function includeDatepicker($id, $time = false)
 }
 
 /**
+ * Cast a number to a price.
+ *
+ * @param $price float|int|string The price to cast.
+ *
+ * @return float Casted price, rounded to _TB_PRICE_DATABASE_PRECISION_.
+ *
+ * @since 1.1.0
+ */
+function priceval($price) {
+    return round(floatval($price), _TB_PRICE_DATABASE_PRECISION_);
+}
+
+/**
  * Generate a new settings file, only transmitted parameters are updated
  *
  * @param string $baseUri Base URI
