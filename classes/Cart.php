@@ -584,13 +584,17 @@ class CartCore extends ObjectModel
 
         // Add/remove taxes as appropriate. Ignore the obvious calculation
         // precision limitation, please, it should be negligible.
-        if ($this->_taxCalculationMethod === PS_TAX_INC && ! $withTax) {
+        if ($priceWithTax
+            && $this->_taxCalculationMethod === PS_TAX_INC
+            && ! $withTax) {
             // Remove taxes.
             $total = round(
                 $total / $priceWithTax * $priceWithoutTax,
                 _TB_PRICE_DATABASE_PRECISION_
             );
-        } elseif ($this->_taxCalculationMethod === PS_TAX_EXC && $withTax) {
+        } elseif ($priceWithoutTax
+                  && $this->_taxCalculationMethod === PS_TAX_EXC
+                  && $withTax) {
             // Add taxes.
             $total = round(
                 $total * $priceWithTax / $priceWithoutTax,
