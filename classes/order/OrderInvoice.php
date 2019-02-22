@@ -407,41 +407,23 @@ class OrderInvoiceCore extends ObjectModel
             $row['id_address_delivery'] = $order->id_address_delivery;
 
             /* Ecotax */
-            $roundMode = (int) $order->round_mode;
-            $roundType = (int) $order->round_type;
+            $row['ecotax_tax_excl'] = round(
+                $row['ecotax'],
+                _TB_PRICE_DATABASE_PRECISION_
+            );
+            $row['ecotax_tax_incl'] = round(
+                $row['ecotax'] * (1 + $row['ecotax_tax_rate'] / 100),
+                _TB_PRICE_DATABASE_PRECISION_
+            );
+            $row['ecotax_tax']
+                = $row['ecotax_tax_incl'] - $row['ecotax_tax_excl'];
 
-            if ($roundType === Order::ROUND_ITEM) {
-                $row['ecotax_tax_excl'] = Tools::ps_round($row['ecotax'], _PS_PRICE_DISPLAY_PRECISION_, $roundMode); // alias for coherence
-            } else {
-                $row['ecotax_tax_excl'] = $row['ecotax'];
-            }
-            $row['ecotax_tax_incl'] = $row['ecotax'] * (100 + $row['ecotax_tax_rate']) / 100;
-            $row['ecotax_tax'] = $row['ecotax_tax_incl'] - $row['ecotax_tax_excl'];
-
-            if ($roundType === Order::ROUND_ITEM) {
-                $row['ecotax_tax_incl'] = Tools::ps_round($row['ecotax_tax_incl'], _PS_PRICE_DISPLAY_PRECISION_, $roundMode);
-            }
-
-            if ($roundType === Order::ROUND_LINE) {
-                $row['total_ecotax_tax_excl'] = Tools::ps_round($row['ecotax_tax_excl'] * $row['product_quantity'], _PS_PRICE_DISPLAY_PRECISION_, $roundMode);
-            } else {
-                $row['total_ecotax_tax_excl'] = $row['ecotax_tax_excl'] * $row['product_quantity'];
-            }
-
-            $row['total_ecotax_tax_incl'] = $row['ecotax_tax_incl'] * $row['product_quantity'];
-
-            $row['total_ecotax_tax'] = $row['total_ecotax_tax_incl'] - $row['total_ecotax_tax_excl'];
-
-            foreach ([
-                         'ecotax_tax_excl',
-                         'ecotax_tax_incl',
-                         'ecotax_tax',
-                         'total_ecotax_tax_excl',
-                         'total_ecotax_tax_incl',
-                         'total_ecotax_tax',
-                     ] as $ecotaxField) {
-                $row[$ecotaxField] = Tools::ps_round($row[$ecotaxField], _PS_PRICE_DISPLAY_PRECISION_, $roundMode);
-            }
+            $row['total_ecotax_tax_excl']
+                = $row['ecotax_tax_excl'] * $row['product_quantity'];
+            $row['total_ecotax_tax_incl']
+                = $row['ecotax_tax_incl'] * $row['product_quantity'];
+            $row['total_ecotax_tax']
+                = $row['total_ecotax_tax_incl'] - $row['total_ecotax_tax_excl'];
 
             // Aliases
             $row['unit_price_tax_excl_including_ecotax'] = $row['unit_price_tax_excl'];
@@ -783,19 +765,13 @@ class OrderInvoiceCore extends ObjectModel
                 ->where('`id_order_invoice` = '.(int) $this->id)
         );
 
-        $roundMode = (int) $this->getOrder()->round_mode;
-        $roundType = (int) $this->getOrder()->round_type;
         $taxes = [];
         foreach ($result as $row) {
             if ($row['ecotax_tax_excl'] > 0) {
-                if ($roundType === Order::ROUND_ITEM) {
-                    $row['ecotax_tax_excl'] = Tools::ps_round($row['ecotax_tax_excl'], _PS_PRICE_DISPLAY_PRECISION_, $roundMode); // alias for coherence
-                }
-                $row['ecotax_tax_incl'] = $row['ecotax_tax_excl'] * (100 + $row['rate']) / 100;
-
-                if ($roundType === Order::ROUND_ITEM) {
-                    $row['ecotax_tax_incl'] = Tools::ps_round($row['ecotax_tax_incl'], _PS_PRICE_DISPLAY_PRECISION_, $roundMode);
-                }
+                $row['ecotax_tax_incl']= round(
+                    $row['ecotax_tax_excl'] * (1 + $row['rate'] / 100),
+                    _TB_PRICE_DATABASE_PRECISION_
+                );
 
                 $row['ecotax_tax_excl'] *= $row['product_quantity'];
                 $row['ecotax_tax_incl'] *= $row['product_quantity'];
