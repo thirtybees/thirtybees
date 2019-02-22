@@ -275,10 +275,8 @@ class AdminSpecificPriceRuleControllerCore extends AdminController
                     'type'      => 'text',
                     'label'     => $this->l('Price (tax excl.)'),
                     'name'      => 'price',
-                    'disabled'  => ($this->object->price == -1 ? 1 : 0),
-                    'maxlength' => 10,
+                    'disabled'  => $this->object->price == -1,
                     'suffix'    => $this->context->currency->getSign('right'),
-
                 ],
                 [
                     'type'   => 'checkbox',
@@ -331,10 +329,14 @@ class AdminSpecificPriceRuleControllerCore extends AdminController
                     ],
                 ],
                 [
-                    'type'     => 'text',
-                    'label'    => $this->l('Reduction'),
-                    'name'     => 'reduction',
-                    'required' => true,
+                    // Can be either an amount or a percentage. Treating both
+                    // variants as price, except for field type, should work.
+                    'type'        => 'text',
+                    'label'       => $this->l('Reduction'),
+                    'name'        => 'reduction',
+                    'required'    => true,
+                    'validation'  => 'isPrice',
+                    'cast'        => 'priceval',
                 ],
             ],
             'submit' => [
@@ -342,7 +344,7 @@ class AdminSpecificPriceRuleControllerCore extends AdminController
             ],
         ];
         if (($value = $this->getFieldValue($this->object, 'price')) != -1) {
-            $price = number_format($value, 6);
+            $price = $value;
         } else {
             $price = '';
         }
@@ -350,7 +352,7 @@ class AdminSpecificPriceRuleControllerCore extends AdminController
         $this->fields_value = [
             'price'           => $price,
             'from_quantity'   => (($value = $this->getFieldValue($this->object, 'from_quantity')) ? $value : 1),
-            'reduction'       => number_format((($value = $this->getFieldValue($this->object, 'reduction')) ? $value : 0), 6),
+            'reduction'       => ($value = $this->getFieldValue($this->object, 'reduction')) ? $value : 0,
             'leave_bprice_on' => $price ? 0 : 1,
             'shop_id'         => (($value = $this->getFieldValue($this->object, 'id_shop')) ? $value : 1),
         ];
@@ -396,7 +398,9 @@ class AdminSpecificPriceRuleControllerCore extends AdminController
      */
     public function processSave()
     {
-        $_POST['price'] = Tools::getValue('leave_bprice_on') ? '-1' : Tools::getValue('price');
+        $_POST['price'] = Tools::getValue('leave_bprice_on') ?
+            '-1' :
+            priceval(Tools::getValue('price'));
         if (Validate::isLoadedObject(($object = parent::processSave()))) {
             /** @var SpecificPriceRule $object */
             $object->deleteConditions();
