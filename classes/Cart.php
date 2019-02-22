@@ -571,6 +571,7 @@ class CartCore extends ObjectModel
         if ($this->_taxCalculationMethod === PS_TAX_INC) {
             $price = $priceWithTax;
         }
+        $price = round($price, _TB_PRICE_DATABASE_PRECISION_);
 
         switch ($roundType) {
             case Order::ROUND_ITEM:
@@ -585,10 +586,16 @@ class CartCore extends ObjectModel
         // precision limitation, please, it should be negligible.
         if ($this->_taxCalculationMethod === PS_TAX_INC && ! $withTax) {
             // Remove taxes.
-            $total = $total / $priceWithTax * $priceWithoutTax;
+            $total = round(
+                $total / $priceWithTax * $priceWithoutTax,
+                _TB_PRICE_DATABASE_PRECISION_
+            );
         } elseif ($this->_taxCalculationMethod === PS_TAX_EXC && $withTax) {
             // Add taxes.
-            $total = $total * $priceWithTax / $priceWithoutTax;
+            $total = round(
+                $total * $priceWithTax / $priceWithoutTax,
+                _TB_PRICE_DATABASE_PRECISION_
+            );
         } // else nothing to change.
 
         if ($roundType === Order::ROUND_LINE) {
