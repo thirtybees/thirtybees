@@ -445,7 +445,7 @@ abstract class PaymentModuleCore extends Module
             $this->currentOrderReference = $reference;
 
             $orderCreationFailed = false;
-            $cartTotalPaid = (float) Tools::ps_round((float) $this->context->cart->getOrderTotal(true, Cart::BOTH), _PS_PRICE_DISPLAY_PRECISION_);
+            $cartTotalPaid = $this->context->cart->getOrderTotal(true, Cart::BOTH);
 
             foreach ($cartDeliveryOption as $idAddress => $keyCarriers) {
                 foreach ($deliveryOptionList[$idAddress][$keyCarriers]['carrier_list'] as $idCarrier => $data) {
