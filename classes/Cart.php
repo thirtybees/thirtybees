@@ -2337,7 +2337,7 @@ class CartCore extends ObjectModel
             if (Configuration::get('PS_ATCP_SHIPWRAP')) {
                 // With PS_ATCP_SHIPWRAP, wrapping fee is by default tax included, so we convert it
                 // when asked for the pre tax price.
-                $wrappingFees = Tools::ps_round(
+                $wrappingFees = round(
                     $wrappingFees * (1 + $this->getAverageProductsTaxRate()),
                     _TB_PRICE_DATABASE_PRECISION_
                 );
