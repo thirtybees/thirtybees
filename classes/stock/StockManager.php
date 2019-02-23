@@ -80,7 +80,7 @@ class StockManagerCore implements StockManagerInterface
             return false;
         }
 
-        $priceTe = round((float) $priceTe, 6);
+        $priceTe = round($priceTe, _TB_PRICE_DATABASE_PRECISION_);
         if ($priceTe < 0.0) { // why <= ?
             return false;
         }
@@ -938,7 +938,7 @@ class StockManagerCore implements StockManagerInterface
      * @param int                        $quantity
      * @param float                      $priceTe
      *
-     * @return int WA
+     * @return float Weight Average, rounded to _TB_PRICE_DATABASE_PRECISION_.
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -946,7 +946,11 @@ class StockManagerCore implements StockManagerInterface
      */
     protected function calculateWA(Stock $stock, $quantity, $priceTe)
     {
-        return (float) Tools::ps_round(((($stock->physical_quantity * $stock->price_te) + ($quantity * $priceTe)) / ($stock->physical_quantity + $quantity)), 6);
+        return round(
+            ($stock->physical_quantity * $stock->price_te + $quantity * $priceTe)
+            / ($stock->physical_quantity + $quantity),
+            _TB_PRICE_DATABASE_PRECISION_
+        );
     }
 
     /**
