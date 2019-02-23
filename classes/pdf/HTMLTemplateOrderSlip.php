@@ -260,9 +260,21 @@ class HTMLTemplateOrderSlipCore extends HTMLTemplateInvoice
             $breakdown[$rate]['total_amount'] += $row['total_amount'];
         }
 
+        $decimals = 0;
+        if ((new Currency($this->order->id_currency))->decimals) {
+            $decimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
+        }
         foreach ($breakdown as $rate => $data) {
-            $breakdown[$rate]['total_price_tax_excl'] = Tools::ps_round($data['total_price_tax_excl'], _TB_PRICE_DATABASE_PRECISION_, $this->order->round_mode);
-            $breakdown[$rate]['total_amount'] = Tools::ps_round($data['total_amount'], _TB_PRICE_DATABASE_PRECISION_, $this->order->round_mode);
+            $breakdown[$rate]['total_price_tax_excl'] = Tools::ps_round(
+                $data['total_price_tax_excl'],
+                $decimals,
+                $this->order->round_mode
+            );
+            $breakdown[$rate]['total_amount'] = Tools::ps_round(
+                $data['total_amount'],
+                $decimals,
+                $this->order->round_mode
+            );
         }
 
         ksort($breakdown);
