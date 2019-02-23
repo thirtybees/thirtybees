@@ -47,6 +47,8 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
     public $address_supplier;
     /** @var Context $context */
     public $context;
+    /** @var Currency $currency */
+    protected $currency;
     // @codingStandardsIgnoreEnd
 
     /**
@@ -63,6 +65,7 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
         $this->warehouse = new Warehouse((int) $supplyOrder->id_warehouse);
         $this->address_warehouse = new Address((int) $this->warehouse->id_address);
         $this->address_supplier = new Address(Address::getAddressIdBySupplierId((int) $supplyOrder->id_supplier));
+        $this->currency = new Currency((int) $this->supply_order->id_currency);
 
         // Header informations
         $this->date = Tools::displayDate($supplyOrder->date_add);
@@ -88,7 +91,6 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
         $this->roundSupplyOrder($this->supply_order);
 
         $taxOrderSummary = $this->getTaxOrderSummary();
-        $currency = new Currency((int) $this->supply_order->id_currency);
 
         $this->smarty->assign(
             [
@@ -98,7 +100,7 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
                 'supply_order'         => $this->supply_order,
                 'supply_order_details' => $supplyOrderDetails,
                 'tax_order_summary'    => $taxOrderSummary,
-                'currency'             => $currency,
+                'currency'             => $this->currency,
             ]
         );
 
@@ -180,10 +182,23 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
 
         $results = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
 
+        $decimals = 0;
+        if ($this->currency->decimals) {
+            $decimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
+        }
         foreach ($results as &$result) {
-            $result['base_te'] = Tools::ps_round($result['base_te'], 2);
-            $result['tax_rate'] = Tools::ps_round($result['tax_rate'], 2);
-            $result['total_tax_value'] = Tools::ps_round($result['total_tax_value'], 2);
+            $result['base_te'] = Tools::ps_round(
+                $result['base_te'],
+                $decimals
+            );
+            $result['tax_rate'] = Tools::ps_round(
+                $result['tax_rate'],
+                $decimals
+            );
+            $result['total_tax_value'] = Tools::ps_round(
+                $result['total_tax_value'],
+                $decimals
+            );
         }
 
         unset($result); // remove reference
@@ -267,14 +282,36 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
      */
     protected function roundSupplyOrderDetails(&$collection)
     {
+        $decimals = 0;
+        if ($this->currency->decimals) {
+            $decimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
+        }
         foreach ($collection as $supplyOrderDetail) {
             /** @var SupplyOrderDetail $supplyOrderDetail */
-            $supplyOrderDetail->unit_price_te = Tools::ps_round($supplyOrderDetail->unit_price_te, 2);
-            $supplyOrderDetail->price_te = Tools::ps_round($supplyOrderDetail->price_te, 2);
-            $supplyOrderDetail->discount_rate = Tools::ps_round($supplyOrderDetail->discount_rate, 2);
-            $supplyOrderDetail->price_with_discount_te = Tools::ps_round($supplyOrderDetail->price_with_discount_te, 2);
-            $supplyOrderDetail->tax_rate = Tools::ps_round($supplyOrderDetail->tax_rate, 2);
-            $supplyOrderDetail->price_ti = Tools::ps_round($supplyOrderDetail->price_ti, 2);
+            $supplyOrderDetail->unit_price_te = Tools::ps_round(
+                $supplyOrderDetail->unit_price_te,
+                $decimals
+            );
+            $supplyOrderDetail->price_te = Tools::ps_round(
+                $supplyOrderDetail->price_te,
+                $decimals
+            );
+            $supplyOrderDetail->discount_rate = Tools::ps_round(
+                $supplyOrderDetail->discount_rate,
+                $decimals
+            );
+            $supplyOrderDetail->price_with_discount_te = Tools::ps_round(
+                $supplyOrderDetail->price_with_discount_te,
+                $decimals
+            );
+            $supplyOrderDetail->tax_rate = Tools::ps_round(
+                $supplyOrderDetail->tax_rate,
+                $decimals
+            );
+            $supplyOrderDetail->price_ti = Tools::ps_round(
+                $supplyOrderDetail->price_ti,
+                $decimals
+            );
         }
     }
 
@@ -289,10 +326,29 @@ class HTMLTemplateSupplyOrderFormCore extends HTMLTemplate
      */
     protected function roundSupplyOrder(SupplyOrder &$supplyOrder)
     {
-        $supplyOrder->total_te = Tools::ps_round($supplyOrder->total_te, 2);
-        $supplyOrder->discount_value_te = Tools::ps_round($supplyOrder->discount_value_te, 2);
-        $supplyOrder->total_with_discount_te = Tools::ps_round($supplyOrder->total_with_discount_te, 2);
-        $supplyOrder->total_tax = Tools::ps_round($supplyOrder->total_tax, 2);
-        $supplyOrder->total_ti = Tools::ps_round($supplyOrder->total_ti, 2);
+        $decimals = 0;
+        if ($this->currency->decimals) {
+            $decimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
+        }
+        $supplyOrder->total_te = Tools::ps_round(
+            $supplyOrder->total_te,
+            $decimals
+        );
+        $supplyOrder->discount_value_te = Tools::ps_round(
+            $supplyOrder->discount_value_te,
+            $decimals
+        );
+        $supplyOrder->total_with_discount_te = Tools::ps_round(
+            $supplyOrder->total_with_discount_te,
+            $decimals
+        );
+        $supplyOrder->total_tax = Tools::ps_round(
+            $supplyOrder->total_tax,
+            $decimals
+        );
+        $supplyOrder->total_ti = Tools::ps_round(
+            $supplyOrder->total_ti,
+            $decimals
+        );
     }
 }
