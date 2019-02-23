@@ -340,7 +340,7 @@ class OrderHistoryCore extends ObjectModel
                     if ($payment->id_currency == $order->id_currency) {
                         $order->total_paid_real += $payment->amount;
                     } else {
-                        $order->total_paid_real += Tools::ps_round(Tools::convertPrice($payment->amount, $payment->id_currency, false), 2);
+                        $order->total_paid_real += Tools::convertPrice($payment->amount, $payment->id_currency, false);
                     }
                     $order->save();
 
