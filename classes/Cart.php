@@ -1776,15 +1776,17 @@ class CartCore extends ObjectModel
     /**
      * Return package shipping cost
      *
-     * @param int          $idCarrier      Carrier ID (default : current carrier)
+     * @param int          $idCarrier      Carrier ID (default: current carrier)
      * @param bool         $useTax
      * @param Country|null $defaultCountry
-     * @param array|null   $productList    List of product concerned by the shipping.
-     *                                     If null, all the product of the cart are used to calculate the shipping cost
+     * @param array|null   $productList    List of product concerned by the
+     *                                     shipping. If null, all the product
+     *                                     of the cart are used to calculate
+     *                                     the shipping cost.
      * @param int|null     $idZone
      *
-     * @return bool|float Shipping total
-     *                    `false` if shipping is not possible
+     * @return bool|float Shipping total, rounded to
+     *                    _TB_PRICE_DATABASE_PRECISION_, or false on failure.
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
@@ -1796,7 +1798,7 @@ class CartCore extends ObjectModel
     public function getPackageShippingCost($idCarrier = null, $useTax = true, Country $defaultCountry = null, $productList = null, $idZone = null)
     {
         if ($this->isVirtualCart()) {
-            return 0;
+            return 0.;
         }
 
         if (!$defaultCountry) {
@@ -1841,14 +1843,14 @@ class CartCore extends ObjectModel
         }
 
         if (Cache::isStored($cacheId)) {
-            return Cache::retrieve($cacheId);
+            return (float) Cache::retrieve($cacheId);
         }
 
         // Order total in default currency without fees
         $orderTotal = $this->getOrderTotal(true, static::ONLY_PHYSICAL_PRODUCTS_WITHOUT_SHIPPING, $productList);
 
         // Start with shipping cost at 0
-        $shippingCost = 0;
+        $shippingCost = 0.;
         // If no product added, return 0
         if (!count($products)) {
             Cache::store($cacheId, $shippingCost);
@@ -1960,9 +1962,9 @@ class CartCore extends ObjectModel
 
         // No valid Carrier or $id_carrier <= 0 ?
         if (!Validate::isLoadedObject($carrier)) {
-            Cache::store($cacheId, 0);
+            Cache::store($cacheId, 0.);
 
-            return 0;
+            return 0.;
         }
         $shippingMethod = $carrier->getShippingMethod();
 
@@ -1974,9 +1976,9 @@ class CartCore extends ObjectModel
 
         // Free fees if free carrier
         if ($carrier->is_free == 1) {
-            Cache::store($cacheId, 0);
+            Cache::store($cacheId, 0.);
 
-            return 0;
+            return 0.;
         }
 
         // Select carrier tax
@@ -2108,7 +2110,7 @@ class CartCore extends ObjectModel
             if ($useTax) {
                 // With PS_ATCP_SHIPWRAP, we apply the proportionate tax rate to the shipping
                 // costs. This is on purpose and required in many countries in the European Union.
-                $shippingCost *= (1 + $this->getAverageProductsTaxRate());
+                $shippingCost *= 1 + $this->getAverageProductsTaxRate();
             }
         } else {
             // Apply tax
@@ -2116,8 +2118,8 @@ class CartCore extends ObjectModel
                 $shippingCost *= 1 + ($carrierTax / 100);
             }
         }
+        $shippingCost = round($shippingCost, _TB_PRICE_DATABASE_PRECISION_);
 
-        $shippingCost = (float) Tools::ps_round((float) $shippingCost, (Currency::getCurrencyInstance((int) $this->id_currency)->decimals * _PS_PRICE_DISPLAY_PRECISION_));
         Cache::store($cacheId, $shippingCost);
 
         return $shippingCost;
