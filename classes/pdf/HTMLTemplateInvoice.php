@@ -243,8 +243,16 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
             'total_paid_tax_incl'                => $this->order_invoice->total_paid_tax_incl,
         ];
 
+        $decimals = 0;
+        if ((new Currency($this->order->id_currency))->decimals) {
+            $decimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
+        }
         foreach ($footer as $key => $value) {
-            $footer[$key] = Tools::ps_round($value, _TB_PRICE_DATABASE_PRECISION_, $this->order->round_mode);
+            $footer[$key] = Tools::ps_round(
+                $value,
+                $decimals,
+                $this->order->round_mode
+            );
         }
 
         /**
@@ -291,7 +299,7 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
             'tax_tab'                    => $this->getTaxTabContent(),
             'customer'                   => $customer,
             'footer'                     => $footer,
-            'ps_price_compute_precision' => _TB_PRICE_DATABASE_PRECISION_,
+            'ps_price_compute_precision' => $decimals,
             'round_type'                 => $roundType,
             'legal_free_text'            => $legalFreeText,
         ];
