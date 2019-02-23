@@ -3967,13 +3967,23 @@ class CartCore extends ObjectModel
         $totalDiscountsTaxExc = $this->getOrderTotal(false, static::ONLY_DISCOUNTS);
 
         // The cart content is altered for display
+        $decimals = 0;
+        if ($currency->decimals) {
+            $decimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
+        }
         foreach ($cartRules as &$cartRule) {
             // If the cart rule is automatic (wihtout any code) and include free shipping, it should not be displayed as a cart rule but only set the shipping cost to 0
             if ($cartRule['free_shipping'] && (empty($cartRule['code']) || preg_match('/^'.CartRule::BO_ORDER_CODE_PREFIX.'[0-9]+/', $cartRule['code']))) {
                 $cartRule['value_real'] -= $totalShipping;
                 $cartRule['value_tax_exc'] -= $totalShippingTaxExc;
-                $cartRule['value_real'] = Tools::ps_round($cartRule['value_real'], (int) $context->currency->decimals * _TB_PRICE_DATABASE_PRECISION_);
-                $cartRule['value_tax_exc'] = Tools::ps_round($cartRule['value_tax_exc'], (int) $context->currency->decimals * _TB_PRICE_DATABASE_PRECISION_);
+                $cartRule['value_real'] = Tools::ps_round(
+                    $cartRule['value_real'],
+                    $decimals
+                );
+                $cartRule['value_tax_exc'] = Tools::ps_round(
+                    $cartRule['value_tax_exc'],
+                    $decimals
+                );
                 if ($totalDiscounts > $cartRule['value_real']) {
                     $totalDiscounts -= $totalShipping;
                 }
@@ -3990,20 +4000,38 @@ class CartCore extends ObjectModel
                 foreach ($products as $key => &$product) {
                     if (empty($product['gift']) && $product['id_product'] == $cartRule['gift_product'] && $product['id_product_attribute'] == $cartRule['gift_product_attribute']) {
                         // Update total products
-                        $totalProductsWt = Tools::ps_round($totalProductsWt - $product['price_wt'], (int) $context->currency->decimals * _TB_PRICE_DATABASE_PRECISION_);
-                        $totalProducts = Tools::ps_round($totalProducts - $product['price'], (int) $context->currency->decimals * _TB_PRICE_DATABASE_PRECISION_);
+                        $totalProductsWt = Tools::ps_round(
+                            $totalProductsWt - $product['price_wt'],
+                            $decimals
+                        );
+                        $totalProducts = Tools::ps_round(
+                            $totalProducts - $product['price'],
+                            $decimals
+                        );
 
                         // Update total discounts
                         $totalDiscounts = $totalDiscounts - $product['price_wt'];
                         $totalDiscountsTaxExc = $totalDiscountsTaxExc - $product['price'];
 
                         // Update cart rule value
-                        $cartRule['value_real'] = Tools::ps_round($cartRule['value_real'] - $product['price_wt'], (int) $context->currency->decimals * _TB_PRICE_DATABASE_PRECISION_);
-                        $cartRule['value_tax_exc'] = Tools::ps_round($cartRule['value_tax_exc'] - $product['price'], (int) $context->currency->decimals * _TB_PRICE_DATABASE_PRECISION_);
+                        $cartRule['value_real'] = Tools::ps_round(
+                            $cartRule['value_real'] - $product['price_wt'],
+                            $decimals
+                        );
+                        $cartRule['value_tax_exc'] = Tools::ps_round(
+                            $cartRule['value_tax_exc'] - $product['price'],
+                            $decimals
+                        );
 
                         // Update product quantity
-                        $product['total_wt'] = Tools::ps_round($product['total_wt'] - $product['price_wt'], (int) $currency->decimals * _TB_PRICE_DATABASE_PRECISION_);
-                        $product['total'] = Tools::ps_round($product['total'] - $product['price'], (int) $currency->decimals * _TB_PRICE_DATABASE_PRECISION_);
+                        $product['total_wt'] = Tools::ps_round(
+                            $product['total_wt'] - $product['price_wt'],
+                            $decimals
+                        );
+                        $product['total'] = Tools::ps_round(
+                            $product['total'] - $product['price'],
+                            $decimals
+                        );
                         $product['cart_quantity']--;
 
                         if (!$product['cart_quantity']) {
