@@ -2297,7 +2297,7 @@ class OrderCore extends ObjectModel
         if ($orderPayment->id_currency == $this->id_currency) {
             $this->total_paid_real += $orderPayment->amount;
         } else {
-            $this->total_paid_real += Tools::ps_round(Tools::convertPrice($orderPayment->amount, $orderPayment->id_currency, false), 2);
+            $this->total_paid_real += Tools::convertPrice($orderPayment->amount, $orderPayment->id_currency, false);
         }
 
         // We put autodate parameter of add method to true if date_add field is null
