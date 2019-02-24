@@ -146,6 +146,9 @@ define('_PS_TMP_IMG_DIR_',           _PS_IMG_DIR_.'tmp/');
 /* settings php */
 define('_PS_TRANS_PATTERN_',            '(.*[^\\\\])');
 define('_PS_MIN_TIME_GENERATE_PASSWD_', '360');
+if ( ! defined('_TB_PRICE_DATABASE_PRECISION_')) {
+    define('_TB_PRICE_DATABASE_PRECISION_', 6);
+}
 
 if (!defined('_PS_MAGIC_QUOTES_GPC_')) {
     define('_PS_MAGIC_QUOTES_GPC_', false);
