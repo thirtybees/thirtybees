@@ -423,6 +423,7 @@ class InstallModelInstall extends InstallAbstractModel
                 $name = ($xml->name) ? $xml->name : $iso;
 
                 $this->setError($this->language->l('Translations for %s and thirty bees version %s not found.', $name, _TB_INSTALL_VERSION_));
+                $this->setError($errors);
 
                 $version = array_map('intval', explode('.', _TB_INSTALL_VERSION_, 3));
                 if (isset($version[2]) && $version[2] > 0) {
@@ -432,6 +433,7 @@ class InstallModelInstall extends InstallAbstractModel
                     $errors = Language::downloadAndInstallLanguagePack($iso, $version, $paramsLang);
                     if (is_array($errors)) {
                         $this->setError($this->language->l('Translations for thirty bees version %s not found either.', $version));
+                        $this->setError($errors);
                     } else {
                         $installed = true;
                         $this->setError($this->language->l('Installed translations for thirty bees version %s instead.', $version));
@@ -439,10 +441,7 @@ class InstallModelInstall extends InstallAbstractModel
                 }
 
                 if (!$installed) {
-                    $this->setError($this->language->l('Translations for %s not installed.', $name));
-                    foreach ($errors as $error) {
-                        $this->setError($errors[0]);
-                    }
+                    $this->setError($this->language->l('Translations for %s not installed. You can catch up on this later.', $name));
 
                     // XML is actually (almost) a language pack.
                     $xml->name = (string) $xml->name;
