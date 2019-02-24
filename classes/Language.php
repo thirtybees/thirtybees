@@ -453,7 +453,7 @@ class LanguageCore extends ObjectModel
 
         $langPack = false;
         $errors = [];
-        $file = _PS_TRANSLATIONS_DIR_.(string) $iso.'.gzip';
+        $file = _PS_TRANSLATIONS_DIR_.$iso.'.gzip';
         $guzzle = new GuzzleHttp\Client([
             'base_uri' => "https://translations.thirtybees.com/packs/{$version}/",
             'timeout'  => 20,
@@ -464,39 +464,41 @@ class LanguageCore extends ObjectModel
             $langPackLink = (string) $guzzle->get("{$iso}.json")->getBody();
         } catch (Exception $e) {
             $langPackLink = false;
+            $errors[] = Tools::displayError('Language pack cannot be downloaded from thirtybees.com.');
+            $errors[] = sprintf(Tools::displayError('Downloading %s failed (PHP message: %s).'), $e->getRequest()->getUri(), $e->getMessage());
         }
 
-        if (!$langPackLink) {
-            $errors[] = Tools::displayError('Language pack cannot be downloaded from thirtybees.com.');
-        } elseif (!$langPack = json_decode($langPackLink)) {
-            $errors[] = Tools::displayError('Error occurred when language was checked according to your thirty bees version.');
-        } elseif (!static::checkAndAddLanguage((string) $iso, $langPack, false, $params)) {
-            $errors[] = sprintf(Tools::displayError('An error occurred while creating the language: %s'), (string) $iso);
+        if ( ! count($errors)) {
+            if (!$langPack = json_decode($langPackLink)) {
+                $errors[] = Tools::displayError('Error occurred when language was checked according to your thirty bees version.');
+            } elseif (!static::checkAndAddLanguage($iso, $langPack, false, $params)) {
+                $errors[] = sprintf(Tools::displayError('An error occurred while creating the language: %s'), $iso);
+            }
         }
 
         if (!Language::getIdByIso($iso, true)) {
             return $errors;
         }
 
-        $success = null;
+        $success = false;
         if (isset($langPack->name)) {
             try {
                 $guzzle->get("{$iso}.gzip", ['sink' => $file]);
                 $success = true;
             } catch (Exception $e) {
                 $success = false;
+                $errors[] = Tools::displayError('No translations pack available for your version.');
+                $errors[] = sprintf(Tools::displayError('Downloading %s failed (PHP message: %s).'), $e->getRequest()->getUri(), $e->getMessage());
             }
 
             if ($success && !@file_exists($file)) {
                 if (!is_writable($file)) {
-                    $errors[] = Tools::displayError('Server does not have permissions for writing.').' ('.$file.')';
+                    $errors[] = sprintf(Tools::displayError('Server does not have permissions for writing %s.'), $file);
                 }
             }
         }
 
-        if (!file_exists($file)) {
-            $errors[] = Tools::displayError('No translations pack available for your version.');
-        } elseif ($install) {
+        if ($success && $install) {
             $gz = new Archive_Tar($file, true);
             $fileList = AdminTranslationsController::filterTranslationFiles(Language::getLanguagePackListContent((string) $iso, $gz));
             $filePaths = AdminTranslationsController::filesListToPaths($fileList);
