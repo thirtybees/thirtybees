@@ -438,13 +438,17 @@ class AdminProductsControllerCore extends AdminController
                     $context->shop = new Shop((int) $this->_list[$i]['id_shop_default']);
                 }
 
+                $decimals = 0;
+                if ($this->context->currency->decimals) {
+                    $decimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
+                }
                 // convert price with the currency from context
                 $this->_list[$i]['price'] = Tools::convertPrice($this->_list[$i]['price'], $this->context->currency, true, $this->context);
                 $this->_list[$i]['price_tmp'] = Product::getPriceStatic(
                     $this->_list[$i]['id_product'],
                     true,
                     null,
-                    (int) Configuration::get('PS_PRICE_DISPLAY_PRECISION'),
+                    $decimals,
                     null,
                     false,
                     true,
@@ -747,8 +751,8 @@ class AdminProductsControllerCore extends AdminController
                 $shops = ShopGroup::getShopsFromGroup(Shop::getContextShopGroupID());
                 foreach ($shops as $shop) {
                     if ($product->isAssociatedToShop($shop['id_shop'])) {
-                        $product_price = new Product($idProductOld, false, null, $shop['id_shop']);
-                        $product->price = $product_price->price;
+                        $productPrice = new Product($idProductOld, false, null, $shop['id_shop']);
+                        $product->price = $productPrice->price;
                     }
                 }
             }
@@ -940,7 +944,20 @@ class AdminProductsControllerCore extends AdminController
         foreach ($idSpecificPrices as $key => $idSpecificPrice) {
             if ($reductionTypes[$key] == 'percentage' && ((float) $reductions[$key] <= 0 || (float) $reductions[$key] > 100)) {
                 $this->errors[] = Tools::displayError('Submitted reduction value (0-100) is out-of-range');
-            } elseif ($this->_validateSpecificPrice($idShops[$key], $idCurrencies[$key], $idCountries[$key], $idGroups[$key], $idCustomers[$key], $prices[$key], $fromQuantities[$key], $reductions[$key], $reductionTypes[$key], $froms[$key], $tos[$key], $idCombinations[$key])) {
+            } elseif ($this->_validateSpecificPrice(
+                $idShops[$key],
+                $idCurrencies[$key],
+                $idCountries[$key],
+                $idGroups[$key],
+                $idCustomers[$key],
+                priceval($prices[$key]),
+                $fromQuantities[$key],
+                priceval($reductions[$key]),
+                $reductionTypes[$key],
+                $froms[$key],
+                $tos[$key],
+                $idCombinations[$key]
+            )) {
                 $specificPrice = new SpecificPrice((int) ($idSpecificPrice));
                 $specificPrice->id_shop = (int) $idShops[$key];
                 $specificPrice->id_product_attribute = (int) $idCombinations[$key];
@@ -948,9 +965,9 @@ class AdminProductsControllerCore extends AdminController
                 $specificPrice->id_country = (int) ($idCountries[$key]);
                 $specificPrice->id_group = (int) ($idGroups[$key]);
                 $specificPrice->id_customer = (int) $idCustomers[$key];
-                $specificPrice->price = (float) ($prices[$key]);
+                $specificPrice->price = priceval($prices[$key]);
                 $specificPrice->from_quantity = (int) ($fromQuantities[$key]);
-                $specificPrice->reduction = (float) ($reductionTypes[$key] == 'percentage' ? ($reductions[$key] / 100) : $reductions[$key]);
+                $specificPrice->reduction = ($reductionTypes[$key] == 'percentage' ? ($reductions[$key] / 100) : priceval($reductions[$key]));
                 $specificPrice->reduction_type = !$reductions[$key] ? 'amount' : $reductionTypes[$key];
                 $specificPrice->from = !$froms[$key] ? '0000-00-00 00:00:00' : $froms[$key];
                 $specificPrice->to = !$tos[$key] ? '0000-00-00 00:00:00' : $tos[$key];
@@ -1692,16 +1709,16 @@ class AdminProductsControllerCore extends AdminController
                 $object->meta_keywords[$idLang] = $_POST['meta_keywords_'.$idLang];
             }
         }
-        $_POST['width'] = empty($_POST['width']) ? '0' : str_replace(',', '.', $_POST['width']);
-        $_POST['height'] = empty($_POST['height']) ? '0' : str_replace(',', '.', $_POST['height']);
-        $_POST['depth'] = empty($_POST['depth']) ? '0' : str_replace(',', '.', $_POST['depth']);
-        $_POST['weight'] = empty($_POST['weight']) ? '0' : str_replace(',', '.', $_POST['weight']);
+        $_POST['width'] = empty($_POST['width']) ? '0' : $_POST['width'];
+        $_POST['height'] = empty($_POST['height']) ? '0' : $_POST['height'];
+        $_POST['depth'] = empty($_POST['depth']) ? '0' : $_POST['depth'];
+        $_POST['weight'] = empty($_POST['weight']) ? '0' : $_POST['weight'];
 
         if (Tools::getIsset('unit_price') != null) {
-            $object->unit_price = str_replace(',', '.', Tools::getValue('unit_price'));
+            $object->unit_price = priceval(Tools::getValue('unit_price'));
         }
         if (Tools::getIsset('ecotax') != null) {
-            $object->ecotax = str_replace(',', '.', Tools::getValue('ecotax'));
+            $object->ecotax = priceval(Tools::getValue('ecotax'));
         }
 
         if ($this->isTabSubmitted('Informations')) {
@@ -2141,7 +2158,8 @@ class AdminProductsControllerCore extends AdminController
     protected function _removeTaxFromEcotax()
     {
         if ($ecotax = Tools::getValue('ecotax')) {
-            $_POST['ecotax'] = Tools::ps_round($ecotax / (1 + Tax::getProductEcotaxRate() / 100), 6);
+            $_POST['ecotax']
+                = priceval($ecotax / (1 + Tax::getProductEcotaxRate() / 100));
         }
     }
 
@@ -2651,16 +2669,12 @@ class AdminProductsControllerCore extends AdminController
                             )
                         );
 
-                        $price = (float) str_replace(
-                            [' ', ','],
-                            ['', '.'],
+                        $price = priceval(
                             Tools::getValue(
                                 'product_price_'.$product->id.'_'.$attribute['id_product_attribute'].'_'.$supplier->id_supplier,
                                 0
                             )
                         );
-
-                        $price = Tools::ps_round($price, 6);
 
                         $idCurrency = (int) Tools::getValue(
                             'product_price_currency_'.$product->id.'_'.$attribute['id_product_attribute'].'_'.$supplier->id_supplier,
@@ -2680,14 +2694,14 @@ class AdminProductsControllerCore extends AdminController
                                 if ((int) $attribute['id_product_attribute'] > 0) {
                                     $data = [
                                         'supplier_reference' => pSQL($reference),
-                                        'wholesale_price'    => (float) Tools::convertPrice($price, $idCurrency),
+                                        'wholesale_price'    => Tools::convertPrice($price, $idCurrency),
                                     ];
                                     $where = '
 										a.id_product = '.(int) $product->id.'
 										AND a.id_product_attribute = '.(int) $attribute['id_product_attribute'];
                                     ObjectModel::updateMultishopTable('Combination', $data, $where);
                                 } else {
-                                    $product->wholesale_price = (float) Tools::convertPrice($price, $idCurrency); //converted in the default currency
+                                    $product->wholesale_price = Tools::convertPrice($price, $idCurrency);
                                     $product->supplier_reference = pSQL($reference);
                                     $product->update();
                                 }
@@ -2695,7 +2709,7 @@ class AdminProductsControllerCore extends AdminController
                         } else {
                             $productSupplier = new ProductSupplier($productSupplierId);
                             $productSupplier->id_currency = (int) $idCurrency;
-                            $productSupplier->product_supplier_price_te = (float) $price;
+                            $productSupplier->product_supplier_price_te = $price;
                             $productSupplier->product_supplier_reference = pSQL($reference);
                             $productSupplier->update();
                         }
@@ -2840,7 +2854,14 @@ class AdminProductsControllerCore extends AdminController
                 'available_date'     => 'isDateFormat',
             ];
             foreach ($arrayChecks as $property => $check) {
-                if (Tools::getValue('attribute_'.$property) !== false && !call_user_func(['Validate', $check], Tools::getValue('attribute_'.$property))) {
+                $key = 'attribute_'.$property;
+                $value = Tools::getValue($key);
+
+                if ($check === 'isPrice') {
+                    $value = priceval($value);
+                }
+                if ($value !== false
+                    && ! call_user_func(['Validate', $check], $value)) {
                     $this->errors[] = sprintf(Tools::displayError('Field %s is not valid'), $property);
                 }
             }
@@ -2870,11 +2891,11 @@ class AdminProductsControllerCore extends AdminController
                         } else {
                             $product->updateAttribute(
                                 (int) $idProductAttribute,
-                                $this->isProductFieldUpdated('attribute_wholesale_price') ? Tools::getValue('attribute_wholesale_price') : null,
-                                $this->isProductFieldUpdated('attribute_price_impact') ? Tools::getValue('attribute_price') * Tools::getValue('attribute_price_impact') : null,
+                                $this->isProductFieldUpdated('attribute_wholesale_price') ? priceval(Tools::getValue('attribute_wholesale_price')) : null,
+                                $this->isProductFieldUpdated('attribute_price_impact') ? priceval(Tools::getValue('attribute_price')) * Tools::getValue('attribute_price_impact') : null,
                                 $this->isProductFieldUpdated('attribute_weight_impact') ? Tools::getValue('attribute_weight') * Tools::getValue('attribute_weight_impact') : null,
                                 $this->isProductFieldUpdated('attribute_unit_impact') ? Tools::getValue('attribute_unity') * Tools::getValue('attribute_unit_impact') : null,
-                                $this->isProductFieldUpdated('attribute_ecotax') ? Tools::getValue('attribute_ecotax') : null,
+                                $this->isProductFieldUpdated('attribute_ecotax') ? priceval(Tools::getValue('attribute_ecotax')) : null,
                                 Tools::getValue('id_image_attr'),
                                 Tools::getValue('attribute_reference'),
                                 Tools::getValue('attribute_ean13'),
@@ -2899,11 +2920,11 @@ class AdminProductsControllerCore extends AdminController
                             $this->errors[] = Tools::displayError('This combination already exists.');
                         } else {
                             $idProductAttribute = $product->addCombinationEntity(
-                                Tools::getValue('attribute_wholesale_price'),
-                                Tools::getValue('attribute_price') * Tools::getValue('attribute_price_impact'),
+                                priceval(Tools::getValue('attribute_wholesale_price')),
+                                priceval(Tools::getValue('attribute_price')) * Tools::getValue('attribute_price_impact'),
                                 Tools::getValue('attribute_weight') * Tools::getValue('attribute_weight_impact'),
                                 Tools::getValue('attribute_unity') * Tools::getValue('attribute_unit_impact'),
-                                Tools::getValue('attribute_ecotax'),
+                                priceval(Tools::getValue('attribute_ecotax')),
                                 0,
                                 Tools::getValue('id_image_attr'),
                                 Tools::getValue('attribute_reference'),
@@ -2958,7 +2979,6 @@ class AdminProductsControllerCore extends AdminController
      */
     public function processPriceAddition()
     {
-        // Check if a specific price has been submitted
         if (!Tools::getIsset('submitPriceAddition')) {
             return;
         }
@@ -2970,10 +2990,10 @@ class AdminProductsControllerCore extends AdminController
         $idCountry = Tools::getValue('sp_id_country');
         $idGroup = Tools::getValue('sp_id_group');
         $idCustomer = Tools::getValue('sp_id_customer');
-        $price = Tools::getValue('leave_bprice') ? '-1' : Tools::getValue('sp_price');
+        $price = Tools::getValue('leave_bprice') ? '-1' : priceval(Tools::getValue('sp_price'));
         $fromQuantity = Tools::getValue('sp_from_quantity');
-        $reduction = (float) (Tools::getValue('sp_reduction'));
-        $reductionTax = Tools::getValue('sp_reduction_tax');
+        $reduction = priceval(Tools::getValue('sp_reduction'));
+        $reductionTax = priceval(Tools::getValue('sp_reduction_tax'));
         $reductionType = !$reduction ? 'amount' : Tools::getValue('sp_reduction_type');
         $reductionType = $reductionType == '-' ? 'amount' : $reductionType;
         $from = Tools::getValue('sp_from');
@@ -3883,7 +3903,9 @@ class AdminProductsControllerCore extends AdminController
 
         $product->price = Tools::convertPrice($product->price, $this->context->currency, true, $this->context);
         if ($product->unit_price_ratio != 0) {
-            $data->assign('unit_price', Tools::ps_round($product->price / $product->unit_price_ratio, 6));
+            $data->assign('unit_price', priceval(
+                $product->price / $product->unit_price_ratio
+            ));
         } else {
             $data->assign('unit_price', 0);
         }
@@ -3960,7 +3982,10 @@ class AdminProductsControllerCore extends AdminController
                 if ($specificPrice['reduction_type'] == 'percentage') {
                     $impact = '- '.($specificPrice['reduction'] * 100).' %';
                 } elseif ($specificPrice['reduction'] > 0) {
-                    $impact = '- '.Tools::displayPrice(Tools::ps_round($specificPrice['reduction'], 2), $currentSpecificCurrency).' ';
+                    $impact = '- '.Tools::displayPrice(
+                        $specificPrice['reduction'],
+                        $currentSpecificCurrency
+                    ).' ';
                     if ($specificPrice['reduction_tax']) {
                         $impact .= '('.$this->l('Tax incl.').')';
                     } else {
@@ -4140,7 +4165,9 @@ class AdminProductsControllerCore extends AdminController
     protected function _applyTaxToEcotax($product)
     {
         if ($product->ecotax) {
-            $product->ecotax = Tools::ps_round($product->ecotax * (1 + Tax::getProductEcotaxRate() / 100), 2);
+            $product->ecotax = priceval(
+                $product->ecotax * (1 + Tax::getProductEcotaxRate() / 100)
+            );
         }
     }
 
@@ -5918,7 +5945,16 @@ class AdminProductsControllerCore extends AdminController
      */
     protected function _getFinalPrice($specificPrice, $productPrice, $taxRate)
     {
-        return $this->object->getPrice(false, $specificPrice['id_product_attribute'], 2);
+        $decimals = 0;
+        if ($this->context->currency->decimals) {
+            $decimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
+        }
+
+        return $this->object->getPrice(
+            false,
+            $specificPrice['id_product_attribute'],
+            $decimals
+        );
     }
 
     /**
