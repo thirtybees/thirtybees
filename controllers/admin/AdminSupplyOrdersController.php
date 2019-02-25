@@ -641,13 +641,12 @@ class AdminSupplyOrdersControllerCore extends AdminController
 
             // overrides keys (in order to add FORMAT calls)
             $keys = [
-                'sod.id_product', 'sod.id_product_attribute', 'sod.reference', 'sod.supplier_reference', 'sod.ean13',
-                'sod.upc', 'sod.name',
-                'FORMAT(sod.unit_price_te, 2)', 'sod.quantity_expected', 'sod.quantity_received', 'FORMAT(sod.price_te, 2)',
-                'FORMAT(sod.discount_rate, 2)', 'FORMAT(sod.discount_value_te, 2)',
-                'FORMAT(sod.price_with_discount_te, 2)', 'FORMAT(sod.tax_rate, 2)', 'FORMAT(sod.tax_value, 2)',
-                'FORMAT(sod.price_ti, 2)', 'FORMAT(sod.tax_value_with_order_discount, 2)',
-                'FORMAT(sod.price_with_order_discount_te, 2)', 'sod.id_supply_order',
+                'sod.id_product', 'sod.id_product_attribute', 'sod.reference', 'sod.supplier_reference', 'sod.ean13', 'sod.upc', 'sod.name',
+                'sod.unit_price_te', 'sod.quantity_expected',
+                'sod.quantity_received', 'sod.price_te', 'sod.discount_rate', 'sod.discount_value_te', 'sod.price_with_discount_te',
+                'sod.tax_rate', 'sod.tax_value', 'sod.price_ti',
+                'sod.tax_value_with_order_discount',
+                'sod.price_with_order_discount_te', 'sod.id_supply_order',
             ];
             foreach ($ids as $id) {
                 $query = new DbQuery();
@@ -1145,7 +1144,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
                 foreach ($products as &$item) {
                     // calculate md5 checksum on each product for use in tpl
                     $item['checksum'] = md5(_COOKIE_KEY_.$item['id_product'].'_'.$item['id_product_attribute']);
-                    $item['unit_price_te'] = Tools::ps_round($item['unit_price_te'], 2);
+                    $item['unit_price_te'] = priceval($item['unit_price_te']);
 
                     // add id to ids list
                     $productIds[] = $item['id_product'].'_'.$item['id_product_attribute'];
@@ -1260,7 +1259,9 @@ class AdminSupplyOrdersControllerCore extends AdminController
                 $_POST['supplier_name'] = Supplier::getNameById($idSupplier);
 
                 //specific discount check
-                $_POST['discount_rate'] = (float) str_replace([' ', ','], ['', '.'], Tools::getValue('discount_rate', 0));
+                $_POST['discount_rate'] = priceval(
+                    Tools::getValue('discount_rate', 0)
+                );
             }
 
             // manage each associated product
@@ -1511,10 +1512,12 @@ class AdminSupplyOrdersControllerCore extends AdminController
                         // get product informations
                         $entry->id_product = substr($id, 0, $pos);
                         $entry->id_product_attribute = substr($id, $pos + 1);
-                        $entry->unit_price_te = (float) str_replace([' ', ','], ['', '.'], Tools::getValue('input_unit_price_te_'.$id, 0));
-                        $entry->quantity_expected = (int) str_replace([' ', ','], ['', '.'], Tools::getValue('input_quantity_expected_'.$id, 0));
-                        $entry->discount_rate = (float) str_replace([' ', ','], ['', '.'], Tools::getValue('input_discount_rate_'.$id, 0));
-                        $entry->tax_rate = (float) str_replace([' ', ','], ['', '.'], Tools::getValue('input_tax_rate_'.$id, 0));
+                        $entry->unit_price_te = priceval(
+                            Tools::getValue('input_unit_price_te_'.$id, 0)
+                        );
+                        $entry->quantity_expected = (int) Tools::getValue('input_quantity_expected_'.$id, 0);
+                        $entry->discount_rate = Tools::getValue('input_discount_rate_'.$id, 0);
+                        $entry->tax_rate = (float) Tools::getValue('input_tax_rate_'.$id, 0);
                         $entry->reference = Tools::getValue('input_reference_'.$id, '');
                         $entry->supplier_reference = Tools::getValue('input_supplier_reference_'.$id, '');
                         $entry->ean13 = Tools::getValue('input_ean13_'.$id, '');
@@ -1756,13 +1759,10 @@ class AdminSupplyOrdersControllerCore extends AdminController
                         );
 
                         // then, converts the newly calculated pri-ce from the default currency to the needed currency
-                        $price = Tools::ps_round(
-                            Tools::convertPrice(
-                                $priceConvertedToDefaultCurrency,
-                                $warehouse->id_currency,
-                                true
-                            ),
-                            6
+                        $price = Tools::convertPrice(
+                            $priceConvertedToDefaultCurrency,
+                            $warehouse->id_currency,
+                            true
                         );
                     }
 
