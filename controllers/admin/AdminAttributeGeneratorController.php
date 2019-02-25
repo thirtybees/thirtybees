@@ -97,8 +97,10 @@ class AdminAttributeGeneratorControllerCore extends AdminController
         $attributes = [];
         foreach ($tab as $group) {
             foreach ($group as $attribute) {
-                $price = preg_replace('/[^0-9.]/', '', str_replace(',', '.', Tools::getValue('price_impact_'.(int) $attribute)));
-                $weight = preg_replace('/[^0-9.]/', '', str_replace(',', '.', Tools::getValue('weight_impact_'.(int) $attribute)));
+                $price = priceval(
+                    Tools::getValue('price_impact_'.(int) $attribute)
+                );
+                $weight = Tools::getValue('weight_impact_'.(int) $attribute);
                 $attributes[] = '('.(int) $idProduct.', '.(int) $attribute.', '.(float) $price.', '.(float) $weight.')';
             }
         }
@@ -323,13 +325,15 @@ class AdminAttributeGeneratorControllerCore extends AdminController
     protected function addAttribute($attributes, $price = 0.0000, $weight = 0)
     {
         foreach ($attributes as $attribute) {
-            $price += (float) preg_replace('/[^0-9.-]/', '', str_replace(',', '.', Tools::getValue('price_impact_'.(int) $attribute)));
-            $weight += (float) preg_replace('/[^0-9.]/', '', str_replace(',', '.', Tools::getValue('weight_impact_'.(int) $attribute)));
+            $price += priceval(
+                Tools::getValue('price_impact_'.(int) $attribute)
+            );
+            $weight += (float) Tools::getValue('weight_impact_'.(int) $attribute);
         }
         if ($this->product->id) {
             return [
                 'id_product'     => (int) $this->product->id,
-                'price'          => (float) $price,
+                'price'          => priceval($price),
                 'weight'         => (float) $weight,
                 'ecotax'         => 0,
                 'quantity'       => (int) Tools::getValue('quantity'),
