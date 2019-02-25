@@ -832,8 +832,13 @@ class AdminOrdersControllerCore extends AdminController
                             $orderDetailList[$idOrderDetail]['unit_price'] = (!Tools::getValue('TaxMethod') ? $orderDetail->unit_price_tax_excl : $orderDetail->unit_price_tax_incl);
                             $orderDetailList[$idOrderDetail]['amount'] = $orderDetail->unit_price_tax_incl * $orderDetailList[$idOrderDetail]['quantity'];
                         } else {
-                            $orderDetailList[$idOrderDetail]['amount'] = (float) str_replace(',', '.', $amountDetail);
-                            $orderDetailList[$idOrderDetail]['unit_price'] = $orderDetailList[$idOrderDetail]['amount'] / $orderDetailList[$idOrderDetail]['quantity'];
+                            $orderDetailList[$idOrderDetail]['amount']
+                                = (float) $amountDetail;
+                            $orderDetailList[$idOrderDetail]['unit_price'] = round(
+                                $orderDetailList[$idOrderDetail]['amount']
+                                / $orderDetailList[$idOrderDetail]['quantity'],
+                                _TB_PRICE_DATABASE_PRECISION_
+                            );
                         }
                         $amount += $orderDetailList[$idOrderDetail]['amount'];
                         if (!$order->hasBeenDelivered() || ($order->hasBeenDelivered() && Tools::isSubmit('reinjectQuantities')) && $orderDetailList[$idOrderDetail]['quantity'] > 0) {
@@ -841,7 +846,10 @@ class AdminOrdersControllerCore extends AdminController
                         }
                     }
 
-                    $shippingCostAmount = (float) str_replace(',', '.', Tools::getValue('partialRefundShippingCost')) ? (float) str_replace(',', '.', Tools::getValue('partialRefundShippingCost')) : false;
+                    $shippingCostAmount
+                        = (float) Tools::getValue('partialRefundShippingCost') ?
+                            (float) Tools::getValue('partialRefundShippingCost') :
+                            false;
 
                     if ($amount == 0 && $shippingCostAmount == 0) {
                         if (!empty($refunds)) {
@@ -1270,7 +1278,7 @@ class AdminOrdersControllerCore extends AdminController
             Message::markAsReaded(Tools::getValue('messageReaded'), $this->context->employee->id);
         } elseif (Tools::isSubmit('submitAddPayment') && isset($order)) {
             if ($this->tabAccess['edit'] === '1') {
-                $amount = str_replace(',', '.', Tools::getValue('payment_amount'));
+                $amount = Tools::getValue('payment_amount');
                 $currency = new Currency(Tools::getValue('payment_currency'));
                 $orderHasInvoice = $order->hasInvoice();
                 if ($orderHasInvoice) {
@@ -1542,14 +1550,20 @@ class AdminOrdersControllerCore extends AdminController
                     }
 
                     $cartRules = [];
-                    $discountValue = (float) str_replace(',', '.', Tools::getValue('discount_value'));
+                    $discountValue = (float) Tools::getValue('discount_value');
                     switch (Tools::getValue('discount_type')) {
                         // Percent type
                         case 1:
                             if ($discountValue < 100) {
                                 if (isset($orderInvoice)) {
-                                    $cartRules[$orderInvoice->id]['value_tax_incl'] = Tools::ps_round($orderInvoice->total_paid_tax_incl * $discountValue / 100, 2);
-                                    $cartRules[$orderInvoice->id]['value_tax_excl'] = Tools::ps_round($orderInvoice->total_paid_tax_excl * $discountValue / 100, 2);
+                                    $cartRules[$orderInvoice->id]['value_tax_incl'] = round(
+                                        $orderInvoice->total_paid_tax_incl * $discountValue / 100,
+                                        _TB_PRICE_DATABASE_PRECISION_
+                                    );
+                                    $cartRules[$orderInvoice->id]['value_tax_excl'] = round(
+                                        $orderInvoice->total_paid_tax_excl * $discountValue / 100,
+                                        _TB_PRICE_DATABASE_PRECISION_
+                                    );
 
                                     // Update OrderInvoice
                                     $this->applyDiscountOnInvoice($orderInvoice, $cartRules[$orderInvoice->id]['value_tax_incl'], $cartRules[$orderInvoice->id]['value_tax_excl']);
@@ -1557,15 +1571,27 @@ class AdminOrdersControllerCore extends AdminController
                                     $orderInvoicesCollection = $order->getInvoicesCollection();
                                     foreach ($orderInvoicesCollection as $orderInvoice) {
                                         /** @var OrderInvoice $orderInvoice */
-                                        $cartRules[$orderInvoice->id]['value_tax_incl'] = Tools::ps_round($orderInvoice->total_paid_tax_incl * $discountValue / 100, 2);
-                                        $cartRules[$orderInvoice->id]['value_tax_excl'] = Tools::ps_round($orderInvoice->total_paid_tax_excl * $discountValue / 100, 2);
+                                        $cartRules[$orderInvoice->id]['value_tax_incl'] = round(
+                                            $orderInvoice->total_paid_tax_incl * $discountValue / 100,
+                                            _TB_PRICE_DATABASE_PRECISION_
+                                        );
+                                        $cartRules[$orderInvoice->id]['value_tax_excl'] = round(
+                                            $orderInvoice->total_paid_tax_excl * $discountValue / 100,
+                                            _TB_PRICE_DATABASE_PRECISION_
+                                        );
 
                                         // Update OrderInvoice
                                         $this->applyDiscountOnInvoice($orderInvoice, $cartRules[$orderInvoice->id]['value_tax_incl'], $cartRules[$orderInvoice->id]['value_tax_excl']);
                                     }
                                 } else {
-                                    $cartRules[0]['value_tax_incl'] = Tools::ps_round($order->total_paid_tax_incl * $discountValue / 100, 2);
-                                    $cartRules[0]['value_tax_excl'] = Tools::ps_round($order->total_paid_tax_excl * $discountValue / 100, 2);
+                                    $cartRules[0]['value_tax_incl'] = round(
+                                        $order->total_paid_tax_incl * $discountValue / 100,
+                                        _TB_PRICE_DATABASE_PRECISION_
+                                    );
+                                    $cartRules[0]['value_tax_excl'] = round(
+                                        $order->total_paid_tax_excl * $discountValue / 100,
+                                        _TB_PRICE_DATABASE_PRECISION_
+                                    );
                                 }
                             } else {
                                 $this->errors[] = Tools::displayError('The discount value is invalid.');
@@ -1577,8 +1603,14 @@ class AdminOrdersControllerCore extends AdminController
                                 if ($discountValue > $orderInvoice->total_paid_tax_incl) {
                                     $this->errors[] = Tools::displayError('The discount value is greater than the order invoice total.');
                                 } else {
-                                    $cartRules[$orderInvoice->id]['value_tax_incl'] = Tools::ps_round($discountValue, 2);
-                                    $cartRules[$orderInvoice->id]['value_tax_excl'] = Tools::ps_round($discountValue / (1 + ($order->getTaxesAverageUsed() / 100)), 2);
+                                    $cartRules[$orderInvoice->id]['value_tax_incl'] = round(
+                                        $discountValue,
+                                        _TB_PRICE_DATABASE_PRECISION_
+                                    );
+                                    $cartRules[$orderInvoice->id]['value_tax_excl'] = round(
+                                        $discountValue / (1 + $order->getTaxesAverageUsed() / 100),
+                                        _TB_PRICE_DATABASE_PRECISION_
+                                    );
 
                                     // Update OrderInvoice
                                     $this->applyDiscountOnInvoice($orderInvoice, $cartRules[$orderInvoice->id]['value_tax_incl'], $cartRules[$orderInvoice->id]['value_tax_excl']);
@@ -1590,8 +1622,14 @@ class AdminOrdersControllerCore extends AdminController
                                     if ($discountValue > $orderInvoice->total_paid_tax_incl) {
                                         $this->errors[] = Tools::displayError('The discount value is greater than the order invoice total.').$orderInvoice->getInvoiceNumberFormatted($this->context->language->id, (int) $order->id_shop).')';
                                     } else {
-                                        $cartRules[$orderInvoice->id]['value_tax_incl'] = Tools::ps_round($discountValue, 2);
-                                        $cartRules[$orderInvoice->id]['value_tax_excl'] = Tools::ps_round($discountValue / (1 + ($order->getTaxesAverageUsed() / 100)), 2);
+                                        $cartRules[$orderInvoice->id]['value_tax_incl'] = round(
+                                            $discountValue,
+                                            _TB_PRICE_DATABASE_PRECISION_
+                                        );
+                                        $cartRules[$orderInvoice->id]['value_tax_excl'] = round(
+                                            $discountValue / (1 + $order->getTaxesAverageUsed() / 100),
+                                            _TB_PRICE_DATABASE_PRECISION_
+                                        );
 
                                         // Update OrderInvoice
                                         $this->applyDiscountOnInvoice($orderInvoice, $cartRules[$orderInvoice->id]['value_tax_incl'], $cartRules[$orderInvoice->id]['value_tax_excl']);
@@ -1601,8 +1639,14 @@ class AdminOrdersControllerCore extends AdminController
                                 if ($discountValue > $order->total_paid_tax_incl) {
                                     $this->errors[] = Tools::displayError('The discount value is greater than the order total.');
                                 } else {
-                                    $cartRules[0]['value_tax_incl'] = Tools::ps_round($discountValue, 2);
-                                    $cartRules[0]['value_tax_excl'] = Tools::ps_round($discountValue / (1 + ($order->getTaxesAverageUsed() / 100)), 2);
+                                    $cartRules[0]['value_tax_incl'] = round(
+                                        $discountValue,
+                                        _TB_PRICE_DATABASE_PRECISION_
+                                    );
+                                    $cartRules[0]['value_tax_excl'] = round(
+                                        $discountValue / (1 + $order->getTaxesAverageUsed() / 100),
+                                        _TB_PRICE_DATABASE_PRECISION_
+                                    );
                                 }
                             }
                             break;
@@ -2056,12 +2100,22 @@ class AdminOrdersControllerCore extends AdminController
         $this->context->customer = new Customer((int) Tools::getValue('id_customer'));
         $currency = new Currency((int) Tools::getValue('id_currency'));
         if ($products = Product::searchByName((int) $this->context->language->id, pSQL(Tools::getValue('product_search')))) {
+            $decimals = 0;
+            if ($currency->decimals) {
+                $ecimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
+            }
             foreach ($products as &$product) {
                 // Formatted price
                 $product['formatted_price'] = Tools::displayPrice(Tools::convertPrice($product['price_tax_incl'], $currency), $currency);
                 // Concret price
-                $product['price_tax_incl'] = Tools::ps_round(Tools::convertPrice($product['price_tax_incl'], $currency), 2);
-                $product['price_tax_excl'] = Tools::ps_round(Tools::convertPrice($product['price_tax_excl'], $currency), 2);
+                $product['price_tax_incl'] = Tools::ps_round(
+                    Tools::convertPrice($product['price_tax_incl'], $currency),
+                    $decimals
+                );
+                $product['price_tax_excl'] = Tools::ps_round(
+                    Tools::convertPrice($product['price_tax_excl'], $currency),
+                    $decimals
+                );
                 $productObj = new Product((int) $product['id_product'], false, (int) $this->context->language->id);
                 $combinations = [];
                 $attributes = $productObj->getAttributesGroups((int) $this->context->language->id);
@@ -2083,8 +2137,14 @@ class AdminOrdersControllerCore extends AdminController
                     if (!isset($combinations[$attribute['id_product_attribute']]['price'])) {
                         $priceTaxIncl = Product::getPriceStatic((int) $product['id_product'], true, $attribute['id_product_attribute']);
                         $priceTaxExcl = Product::getPriceStatic((int) $product['id_product'], false, $attribute['id_product_attribute']);
-                        $combinations[$attribute['id_product_attribute']]['price_tax_incl'] = Tools::ps_round(Tools::convertPrice($priceTaxIncl, $currency), 2);
-                        $combinations[$attribute['id_product_attribute']]['price_tax_excl'] = Tools::ps_round(Tools::convertPrice($priceTaxExcl, $currency), 2);
+                        $combinations[$attribute['id_product_attribute']]['price_tax_incl'] = Tools::ps_round(
+                            Tools::convertPrice($priceTaxIncl, $currency),
+                            $decimals
+                        );
+                        $combinations[$attribute['id_product_attribute']]['price_tax_excl'] = Tools::ps_round(
+                            Tools::convertPrice($priceTaxExcl, $currency),
+                            $decimals
+                        );
                         $combinations[$attribute['id_product_attribute']]['formatted_price'] = Tools::displayPrice(Tools::convertPrice($priceTaxExcl, $currency), $currency);
                     }
                     if (!isset($combinations[$attribute['id_product_attribute']]['qty_in_stock'])) {
@@ -2268,7 +2328,7 @@ class AdminOrdersControllerCore extends AdminController
             $product->id,
             $useTaxes,
             isset($combination) ? $combination->id : null,
-            2,
+            _TB_PRICE_DATABASE_PRECISION_,
             null,
             false,
             true,
@@ -2280,7 +2340,8 @@ class AdminOrdersControllerCore extends AdminController
         );
 
         // Creating specific price if needed
-        if ($productInformations['product_price_tax_incl'] != $initialProductPriceTaxIncl) {
+        if ((string) $productInformations['product_price_tax_incl']
+            !== (string) $initialProductPriceTaxIncl) {
             $specificPrice = new SpecificPrice();
             $specificPrice->id_shop = 0;
             $specificPrice->id_shop_group = 0;
@@ -2367,15 +2428,23 @@ class AdminOrdersControllerCore extends AdminController
                 $carrier = new Carrier((int) $order->id_carrier);
                 $taxCalculator = $carrier->getTaxCalculator($invoiceAddress);
 
-                $orderInvoice->total_paid_tax_excl = Tools::ps_round((float) $cart->getOrderTotal(false, $totalMethod), 2);
-                $orderInvoice->total_paid_tax_incl = Tools::ps_round((float) $cart->getOrderTotal($useTaxes, $totalMethod), 2);
-                $orderInvoice->total_products = (float) $cart->getOrderTotal(false, Cart::ONLY_PRODUCTS);
-                $orderInvoice->total_products_wt = (float) $cart->getOrderTotal($useTaxes, Cart::ONLY_PRODUCTS);
-                $orderInvoice->total_shipping_tax_excl = (float) $cart->getTotalShippingCost(null, false);
-                $orderInvoice->total_shipping_tax_incl = (float) $cart->getTotalShippingCost();
+                $orderInvoice->total_paid_tax_excl
+                    = $cart->getOrderTotal(false, $totalMethod);
+                $orderInvoice->total_paid_tax_incl
+                    = $cart->getOrderTotal($useTaxes, $totalMethod);
+                $orderInvoice->total_products
+                    = $cart->getOrderTotal(false, Cart::ONLY_PRODUCTS);
+                $orderInvoice->total_products_wt
+                    = $cart->getOrderTotal($useTaxes, Cart::ONLY_PRODUCTS);
+                $orderInvoice->total_shipping_tax_excl
+                    = $cart->getTotalShippingCost(null, false);
+                $orderInvoice->total_shipping_tax_incl
+                    = $cart->getTotalShippingCost();
 
-                $orderInvoice->total_wrapping_tax_excl = abs($cart->getOrderTotal(false, Cart::ONLY_WRAPPING));
-                $orderInvoice->total_wrapping_tax_incl = abs($cart->getOrderTotal($useTaxes, Cart::ONLY_WRAPPING));
+                $orderInvoice->total_wrapping_tax_excl
+                  = $cart->getOrderTotal(false, Cart::ONLY_WRAPPING);
+                $orderInvoice->total_wrapping_tax_incl
+                    = $cart->getOrderTotal($useTaxes, Cart::ONLY_WRAPPING);
                 $orderInvoice->shipping_tax_computation_method = (int) $taxCalculator->computation_method;
 
                 // Update current order field, only shipping because other field is updated later
@@ -2383,9 +2452,12 @@ class AdminOrdersControllerCore extends AdminController
                 $order->total_shipping_tax_excl += $orderInvoice->total_shipping_tax_excl;
                 $order->total_shipping_tax_incl += ($useTaxes) ? $orderInvoice->total_shipping_tax_incl : $orderInvoice->total_shipping_tax_excl;
 
-                $order->total_wrapping += abs($cart->getOrderTotal($useTaxes, Cart::ONLY_WRAPPING));
-                $order->total_wrapping_tax_excl += abs($cart->getOrderTotal(false, Cart::ONLY_WRAPPING));
-                $order->total_wrapping_tax_incl += abs($cart->getOrderTotal($useTaxes, Cart::ONLY_WRAPPING));
+                $order->total_wrapping
+                    += $cart->getOrderTotal($useTaxes, Cart::ONLY_WRAPPING);
+                $order->total_wrapping_tax_excl
+                    += $cart->getOrderTotal(false, Cart::ONLY_WRAPPING);
+                $order->total_wrapping_tax_incl
+                    += $cart->getOrderTotal($useTaxes, Cart::ONLY_WRAPPING);
                 $orderInvoice->add();
 
                 $orderInvoice->saveCarrierTaxCalculator($taxCalculator->getTaxesAmount($orderInvoice->total_shipping_tax_excl));
@@ -2400,10 +2472,18 @@ class AdminOrdersControllerCore extends AdminController
                 $orderCarrier->add();
             } // Update current invoice
             else {
-                $orderInvoice->total_paid_tax_excl += Tools::ps_round((float) ($cart->getOrderTotal(false, $totalMethod)), 2);
-                $orderInvoice->total_paid_tax_incl += Tools::ps_round((float) ($cart->getOrderTotal($useTaxes, $totalMethod)), 2);
-                $orderInvoice->total_products += (float) $cart->getOrderTotal(false, Cart::ONLY_PRODUCTS);
-                $orderInvoice->total_products_wt += (float) $cart->getOrderTotal($useTaxes, Cart::ONLY_PRODUCTS);
+                $orderInvoice->total_paid_tax_excl += round(
+                    $cart->getOrderTotal(false, $totalMethod),
+                    _TB_PRICE_DATABASE_PRECISION_
+                );
+                $orderInvoice->total_paid_tax_incl += round(
+                    $cart->getOrderTotal($useTaxes, $totalMethod),
+                    _TB_PRICE_DATABASE_PRECISION_
+                );
+                $orderInvoice->total_products
+                    += $cart->getOrderTotal(false, Cart::ONLY_PRODUCTS);
+                $orderInvoice->total_products_wt
+                    += $cart->getOrderTotal($useTaxes, Cart::ONLY_PRODUCTS);
                 $orderInvoice->update();
             }
         }
@@ -2416,9 +2496,18 @@ class AdminOrdersControllerCore extends AdminController
         $order->total_products += (float) $cart->getOrderTotal(false, Cart::ONLY_PRODUCTS);
         $order->total_products_wt += (float) $cart->getOrderTotal($useTaxes, Cart::ONLY_PRODUCTS);
 
-        $order->total_paid += Tools::ps_round((float) ($cart->getOrderTotal(true, $totalMethod)), 2);
-        $order->total_paid_tax_excl += Tools::ps_round((float) ($cart->getOrderTotal(false, $totalMethod)), 2);
-        $order->total_paid_tax_incl += Tools::ps_round((float) ($cart->getOrderTotal($useTaxes, $totalMethod)), 2);
+        $order->total_paid += round(
+            $cart->getOrderTotal(true, $totalMethod),
+            _TB_PRICE_DATABASE_PRECISION_
+        );
+        $order->total_paid_tax_excl += round(
+            $cart->getOrderTotal(false, $totalMethod),
+            _TB_PRICE_DATABASE_PRECISION_
+        );
+        $order->total_paid_tax_incl += round(
+            $cart->getOrderTotal($useTaxes, $totalMethod),
+            _TB_PRICE_DATABASE_PRECISION_
+        );
 
         if (isset($orderInvoice) && Validate::isLoadedObject($orderInvoice)) {
             $order->total_shipping = $orderInvoice->total_shipping_tax_incl;
@@ -2427,9 +2516,12 @@ class AdminOrdersControllerCore extends AdminController
         }
 
         // discount
-        $order->total_discounts += (float) abs($cart->getOrderTotal(true, Cart::ONLY_DISCOUNTS));
-        $order->total_discounts_tax_excl += (float) abs($cart->getOrderTotal(false, Cart::ONLY_DISCOUNTS));
-        $order->total_discounts_tax_incl += (float) abs($cart->getOrderTotal(true, Cart::ONLY_DISCOUNTS));
+        $order->total_discounts
+            += $cart->getOrderTotal(true, Cart::ONLY_DISCOUNTS);
+        $order->total_discounts_tax_excl
+            += $cart->getOrderTotal(false, Cart::ONLY_DISCOUNTS);
+        $order->total_discounts_tax_incl
+            += $cart->getOrderTotal(true, Cart::ONLY_DISCOUNTS);
 
         // Save changes of order
         $order->update();
@@ -2615,12 +2707,26 @@ class AdminOrdersControllerCore extends AdminController
             );
         }
 
+        $decimals = 0;
+        if ($currency->decimals) {
+            $ecimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
+        }
         $this->ajaxDie(json_encode([
             'result'            => true,
             'product'           => $product,
             'tax_rate'          => $product->getTaxesRate($address),
-            'price_tax_incl'    => Product::getPriceStatic($product->id, true, $orderDetail->product_attribute_id, 2),
-            'price_tax_excl'    => Product::getPriceStatic($product->id, false, $orderDetail->product_attribute_id, 2),
+            'price_tax_incl'    => Product::getPriceStatic(
+                $product->id,
+                true,
+                $orderDetail->product_attribute_id,
+                $decimals
+            ),
+            'price_tax_excl'    => Product::getPriceStatic(
+                $product->id,
+                false,
+                $orderDetail->product_attribute_id,
+                $decimals
+            ),
             'reduction_percent' => $orderDetail->reduction_percent,
         ]));
     }
@@ -2682,8 +2788,14 @@ class AdminOrdersControllerCore extends AdminController
             $productQuantity = Tools::getValue('product_quantity');
         }
 
-        $productPriceTaxIncl = Tools::ps_round(Tools::getValue('product_price_tax_incl'), 2);
-        $productPriceTaxExcl = Tools::ps_round(Tools::getValue('product_price_tax_excl'), 2);
+        $productPriceTaxIncl = round(
+            Tools::getValue('product_price_tax_incl'),
+            _TB_PRICE_DATABASE_PRECISION_
+        );
+        $productPriceTaxExcl = round(
+            Tools::getValue('product_price_tax_excl'),
+            _TB_PRICE_DATABASE_PRECISION_
+        );
         $totalProductsTaxIncl = $productPriceTaxIncl * $productQuantity;
         $totalProductsTaxExcl = $productPriceTaxExcl * $productQuantity;
 
@@ -3081,11 +3193,8 @@ class AdminOrdersControllerCore extends AdminController
             ]));
         }
 
-        // Clean price
-        $productPriceTaxIncl = str_replace(',', '.', Tools::getValue('product_price_tax_incl'));
-        $productPriceTaxExcl = str_replace(',', '.', Tools::getValue('product_price_tax_excl'));
-
-        if (!Validate::isPrice($productPriceTaxIncl) || !Validate::isPrice($productPriceTaxExcl)) {
+        if ( ! Validate::isPrice(Tools::getValue('product_price_tax_incl'))
+            || ! Validate::isPrice(Tools::getValue('product_price_tax_excl'))) {
             $this->ajaxDie(json_encode([
                 'result' => false,
                 'error'  => Tools::displayError('Invalid price'),
