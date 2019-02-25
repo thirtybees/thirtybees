@@ -955,7 +955,18 @@ abstract class AdminTabCore
                         echo Tools::displayDate($tr[$key], null, true);
                     } elseif (isset($tr[$key])) {
                         if ($key == 'price') {
-                            $echo = round($tr[$key], 2);
+                            $currency = $this->context->currency;
+                            if (isset($params['currency'])) {
+                                $currency = Currency::getCurrencyInstance(
+                                    $tr['id_currency']
+                                );
+                            }
+                            if ($currency->decimals) {
+                                $decimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
+                            } else {
+                                $decimals = 0;
+                            }
+                            $echo = Tools::ps_round($tr[$key], $decimals);
                         } elseif (isset($params['maxlength']) && mb_strlen($tr[$key]) > $params['maxlength']) {
                             $echo = '<span title="'.$tr[$key].'">'.mb_substr($tr[$key], 0, $params['maxlength']).'...</span>';
                         } else {
