@@ -103,8 +103,8 @@ class AdminOrderPreferencesControllerCore extends AdminController
                     'PS_PURCHASE_MINIMUM'            => [
                         'title'      => $this->l('Minimum purchase total required in order to validate the order'),
                         'hint'       => $this->l('Set to 0 to disable this feature.'),
-                        'validation' => 'isFloat',
-                        'cast'       => 'floatval',
+                        'validation' => 'isPrice',
+                        'cast'       => 'priceval',
                         'type'       => 'price',
                     ],
                     'PS_ALLOW_MULTISHIPPING'         => [
@@ -159,7 +159,7 @@ class AdminOrderPreferencesControllerCore extends AdminController
                         'title'      => $this->l('Gift-wrapping price'),
                         'hint'       => $this->l('Set a price for gift wrapping.'),
                         'validation' => 'isPrice',
-                        'cast'       => 'floatval',
+                        'cast'       => 'priceval',
                         'type'       => 'price',
                     ],
                     'PS_GIFT_WRAPPING_TAX_RULES_GROUP' => [
