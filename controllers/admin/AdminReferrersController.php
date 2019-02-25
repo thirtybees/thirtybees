@@ -525,9 +525,12 @@ class AdminReferrersControllerCore extends AdminController
         }
 
         $this->fields_value = [
-            'click_fee'             => number_format((float) ($this->getFieldValue($obj, 'click_fee')), 2),
-            'base_fee'              => number_format((float) ($this->getFieldValue($obj, 'base_fee')), 2),
-            'percent_fee'           => number_format((float) ($this->getFieldValue($obj, 'percent_fee')), 2),
+            'click_fee'             =>
+                (float) $this->getFieldValue($obj, 'click_fee'),
+            'base_fee'              =>
+                (float) $this->getFieldValue($obj, 'base_fee'),
+            'percent_fee'           =>
+                (float) $this->getFieldValue($obj, 'percent_fee'),
             'http_referer_like'     => str_replace('\\', '\\\\', htmlentities($this->getFieldValue($obj, 'http_referer_like'), ENT_COMPAT, 'UTF-8')),
             'http_referer_like_not' => str_replace('\\', '\\\\', htmlentities($this->getFieldValue($obj, 'http_referer_like_not'), ENT_COMPAT, 'UTF-8')),
             'request_uri_like'      => str_replace('\\', '\\\\', htmlentities($this->getFieldValue($obj, 'request_uri_like'), ENT_COMPAT, 'UTF-8')),
