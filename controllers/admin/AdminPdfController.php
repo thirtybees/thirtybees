@@ -169,13 +169,11 @@ class AdminPdfControllerCore extends AdminController
     public function processGenerateOrderSlipPDF()
     {
         $orderSlip = new OrderSlip((int) Tools::getValue('id_order_slip'));
-        $order = new Order((int) $orderSlip->id_order);
 
-        if (!Validate::isLoadedObject($order)) {
-            die(Tools::displayError('The order cannot be found within your database.'));
+        if ( ! Validate::isLoadedObject($orderSlip)) {
+            die(Tools::displayError('The order slip cannot be found within your database.'));
         }
 
-        $order->products = OrderSlip::getOrdersSlipProducts($orderSlip->id, $order);
         $this->generatePDF($orderSlip, PDF::TEMPLATE_ORDER_SLIP);
     }
 
