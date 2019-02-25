@@ -76,15 +76,15 @@ class AdminShippingControllerCore extends AdminController
                     'PS_SHIPPING_HANDLING'    => [
                         'title'      => $this->l('Handling charges'),
                         'suffix'     => $this->context->currency->getSign().' '.$this->l('(tax excl.)'),
-                        'cast'       => 'floatval',
-                        'type'       => 'text',
+                        'cast'       => 'priceval',
+                        'type'       => 'price',
                         'validation' => 'isPrice',
                     ],
                     'PS_SHIPPING_FREE_PRICE'  => [
                         'title'      => $this->l('Free shipping starts at'),
                         'suffix'     => $this->context->currency->getSign(),
-                        'cast'       => 'floatval',
-                        'type'       => 'text',
+                        'cast'       => 'priceval',
+                        'type'       => 'price',
                         'validation' => 'isPrice',
                     ],
                     'PS_SHIPPING_FREE_WEIGHT' => [
@@ -169,7 +169,7 @@ class AdminShippingControllerCore extends AdminController
                             if (strstr($key, 'fees_')) {
                                 $tmpArray = explode('_', $key);
 
-                                $price = number_format(abs(str_replace(',', '.', $value)), 6, '.', '');
+                                $price = priceval($value);
                                 $current = 0;
                                 foreach ($currentList as $item) {
                                     if ($item['id_zone'] == $tmpArray[1] && $item['id_'.$rangeTable] == $tmpArray[2]) {
