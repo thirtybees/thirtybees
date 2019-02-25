@@ -253,6 +253,13 @@ class AdminCartRulesControllerCore extends AdminController
             if (Tools::getValue('apply_discount') == 'off' && !Tools::getValue('free_shipping') && !Tools::getValue('free_gift')) {
                 $this->errors[] = Tools::displayError('An action is required for this cart rule.');
             }
+
+            $_POST['minimum_amount'] = priceval(
+                Tools::getValue('minimum_amount')
+            );
+            $_POST['reduction_amount'] = priceval(
+                Tools::getValue('reduction_amount')
+            );
         }
 
         return parent::postProcess();
