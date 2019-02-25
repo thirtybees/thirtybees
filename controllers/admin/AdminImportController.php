@@ -2647,16 +2647,23 @@ class AdminImportControllerCore extends AdminController
             }
         }
 
-        if (isset($product->price_tex) && !isset($product->price_tin)) {
-            $product->price = $product->price_tex;
-        } elseif (isset($product->price_tin) && !isset($product->price_tex)) {
-            $product->price = $product->price_tin;
+        if (isset($product->price_tex)) {
+            $product->price = round(
+                $product->price_tex,
+                _TB_PRICE_DATABASE_PRECISION_
+            );
+        } elseif (isset($product->price_tin)) {
+            $product->price = round(
+                $product->price_tin,
+                _TB_PRICE_DATABASE_PRECISION_
+            );
             // If a tax is already included in price, withdraw it from price
             if ($product->tax_rate) {
-                $product->price = (float) number_format($product->price / (1 + $product->tax_rate / 100), 6, '.', '');
+                $product->price = round(
+                    $product->price_tin / (1 + $product->tax_rate / 100),
+                    _TB_PRICE_DATABASE_PRECISION_
+                );
             }
-        } elseif (isset($product->price_tin) && isset($product->price_tex)) {
-            $product->price = $product->price_tex;
         }
 
         if (!Configuration::get('PS_USE_ECOTAX')) {
@@ -2888,7 +2895,10 @@ class AdminImportControllerCore extends AdminController
                 $productSupplier->id_product = (int) $product->id;
                 $productSupplier->id_product_attribute = 0;
                 $productSupplier->id_supplier = (int) $product->id_supplier;
-                $productSupplier->product_supplier_price_te = $product->wholesale_price;
+                $productSupplier->product_supplier_price_te = round(
+                    $product->wholesale_price,
+                    _TB_PRICE_DATABASE_PRECISION_
+                );
                 $productSupplier->product_supplier_reference = $product->supplier_reference;
                 $productSupplier->save();
             }
@@ -2930,7 +2940,11 @@ class AdminImportControllerCore extends AdminController
                     $specificPrice->price = -1;
                     $specificPrice->id_customer = 0;
                     $specificPrice->from_quantity = 1;
-                    $specificPrice->reduction = (isset($info['reduction_price']) && $info['reduction_price']) ? $info['reduction_price'] : $info['reduction_percent'] / 100;
+                    $specificPrice->reduction = round(
+                        (isset($info['reduction_price']) && $info['reduction_price']) ?
+                        $info['reduction_price'] :
+                        $info['reduction_percent'] / 100
+                    );
                     $specificPrice->reduction_type = (isset($info['reduction_price']) && $info['reduction_price']) ? 'amount' : 'percentage';
                     $specificPrice->from = (isset($info['reduction_from']) && Validate::isDate($info['reduction_from'])) ? $info['reduction_from'] : '0000-00-00 00:00:00';
                     $specificPrice->to = (isset($info['reduction_to']) && Validate::isDate($info['reduction_to'])) ? $info['reduction_to'] : '0000-00-00 00:00:00';
@@ -3123,11 +3137,10 @@ class AdminImportControllerCore extends AdminController
                     // if depends on stock and quantity, add quantity to stock
                     if ($product->depends_on_stock == 1) {
                         $stockManager = StockManagerFactory::getManager();
-                        $price = str_replace(',', '.', $product->wholesale_price);
-                        if ($price == 0) {
-                            $price = 0.000001;
-                        }
-                        $price = round(floatval($price), 6);
+                        $price = round(
+                            str_replace(',', '.', $product->wholesale_price),
+                            _TB_PRICE_DATABASE_PRECISION_
+                        );
                         $warehouse = new Warehouse($product->warehouse);
                         if ($stockManager->addProduct((int) $product->id, 0, $warehouse, (int) $product->quantity, 1, $price, true)) {
                             StockAvailable::synchronize((int) $product->id);
@@ -4103,9 +4116,18 @@ class AdminImportControllerCore extends AdminController
 
                     $info['minimal_quantity'] = isset($info['minimal_quantity']) && $info['minimal_quantity'] ? (int) $info['minimal_quantity'] : 1;
 
-                    $info['wholesale_price'] = str_replace(',', '.', $info['wholesale_price']);
-                    $info['price'] = str_replace(',', '.', $info['price']);
-                    $info['ecotax'] = str_replace(',', '.', $info['ecotax']);
+                    $info['wholesale_price'] = round(
+                        str_replace(',', '.', $info['wholesale_price']),
+                        _TB_PRICE_DATABASE_PRECISION_
+                    );
+                    $info['price'] = round(
+                        str_replace(',', '.', $info['price']),
+                        _TB_PRICE_DATABASE_PRECISION_
+                    );
+                    $info['ecotax'] = round(
+                        str_replace(',', '.', $info['ecotax']),
+                        _TB_PRICE_DATABASE_PRECISION_
+                    );
                     $info['weight'] = str_replace(',', '.', $info['weight']);
                     $info['available_date'] = Validate::isDate($info['available_date']) ? $info['available_date'] : null;
 
@@ -4280,11 +4302,10 @@ class AdminImportControllerCore extends AdminController
                     // if depends on stock and quantity, add quantity to stock
                     if ($info['depends_on_stock'] == 1) {
                         $stockManager = StockManagerFactory::getManager();
-                        $price = str_replace(',', '.', $info['wholesale_price']);
-                        if ($price == 0) {
-                            $price = 0.000001;
-                        }
-                        $price = round(floatval($price), 6);
+                        $price = round(
+                            str_replace(',', '.', $info['wholesale_price']),
+                            _TB_PRICE_DATABASE_PRECISION_
+                        );
                         $warehouse = new Warehouse($info['warehouse']);
                         if (!$validateOnly && $stockManager->addProduct((int) $product->id, $idProductAttribute, $warehouse, (int) $info['quantity'], 1, $price, true)) {
                             StockAvailable::synchronize((int) $product->id);
@@ -5168,7 +5189,10 @@ class AdminImportControllerCore extends AdminController
                 $info['id_product_attribute'] = 0;
             }
             $idProductAttribute = (int) $info['id_product_attribute'];
-            $unitPriceTe = (float) $info['unit_price_te'];
+            $unitPriceTe = round(
+                $info['unit_price_te'],
+                _TB_PRICE_DATABASE_PRECISION_
+            );
             $quantityExpected = (int) $info['quantity_expected'];
             $discountRate = (float) $info['discount_rate'];
             $taxRate = (float) $info['tax_rate'];
