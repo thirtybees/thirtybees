@@ -312,10 +312,7 @@ class OrderSlipCore extends ObjectModel
             $tax->rate = $order->carrier_tax_rate;
             $taxCalculator = new TaxCalculator([$tax]);
 
-            $shippingCost = Tools::ps_round(
-                $shippingCost,
-                Configuration::get('PS_PRICE_DISPLAY_PRECISION')
-            );
+            $shippingCost = round($shippingCost, _TB_PRICE_DATABASE_PRECISION_);
             if ($addTax) {
                 $orderSlip->total_shipping_tax_excl = $shippingCost;
                 $orderSlip->total_shipping_tax_incl = $taxCalculator->addTaxes(
@@ -463,9 +460,12 @@ class OrderSlipCore extends ObjectModel
         $orderSlip = new OrderSlip();
         $orderSlip->id_customer = (int) $order->id_customer;
         $orderSlip->id_order = (int) $order->id;
-        $orderSlip->amount = (float) $amount;
+        $orderSlip->amount = round($amount, _TB_PRICE_DATABASE_PRECISION_);
         $orderSlip->shipping_cost = false;
-        $orderSlip->shipping_cost_amount = (float) $shippingCostAmount;
+        $orderSlip->shipping_cost_amount = round(
+            $shippingCostAmount,
+            _TB_PRICE_DATABASE_PRECISION_
+        );
         $orderSlip->conversion_rate = $currency->conversion_rate;
         $orderSlip->partial = 1;
         if (!$orderSlip->add()) {
@@ -525,7 +525,10 @@ class OrderSlipCore extends ObjectModel
 
                 if ($rate > 0) {
                     $rate = 1 + ($rate / 100);
-                    $tab['amount_tax_excl'] = $tab['amount_tax_excl'] / $rate;
+                    $tab['amount_tax_excl'] = round(
+                        $tab['amount_tax_excl'] / $rate,
+                        _TB_PRICE_DATABASE_PRECISION_
+                    );
                 }
             }
 
@@ -571,8 +574,14 @@ class OrderSlipCore extends ObjectModel
                             'id_order_slip'    => (int) $this->id,
                             'id_order_detail'  => (int) $idOrderDetail,
                             'product_quantity' => $qty,
-                            'amount_tax_excl'  => $orderDetail->unit_price_tax_excl * $qty,
-                            'amount_tax_incl'  => $orderDetail->unit_price_tax_incl * $qty,
+                            'amount_tax_excl'  => round(
+                                $orderDetail->unit_price_tax_excl * $qty,
+                                _TB_PRICE_DATABASE_PRECISION_
+                            ),
+                            'amount_tax_incl'  => round(
+                                $orderDetail->unit_price_tax_incl * $qty,
+                                _TB_PRICE_DATABASE_PRECISION_
+                            ),
                         ]
                     );
                 }
