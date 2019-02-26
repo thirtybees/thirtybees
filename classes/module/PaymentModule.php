@@ -521,7 +521,12 @@ abstract class PaymentModuleCore extends Module
                     $order->gift_message = $this->context->cart->gift_message;
                     $order->mobile_theme = $this->context->cart->mobile_theme;
                     $order->conversion_rate = $this->context->currency->conversion_rate;
-                    $amountPaid = !$dontTouchAmount ? Tools::ps_round((float) $amountPaid, _PS_PRICE_DISPLAY_PRECISION_) : $amountPaid;
+                    $displayDecimals = 0;
+                    if ($this->context->currency->decimals) {
+                        $displayDecimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
+                    }
+                    $amountPaid = $dontTouchAmount ? $amountPaid :
+                        Tools::ps_round($amountPaid, $displayDecimals);
                     $order->total_paid_real = 0;
 
                     $order->total_products = (float) $this->context->cart->getOrderTotal(false, Cart::ONLY_PRODUCTS, $order->product_list, $idCarrier);
@@ -567,7 +572,8 @@ abstract class PaymentModuleCore extends Module
                     // We don't use the following condition to avoid the float precision issues : http://www.php.net/manual/en/language.types.float.php
                     // if ($order->total_paid != $order->total_paid_real)
                     // We use number_format in order to compare two string
-                    if ($orderStatus->logable && number_format($cartTotalPaid, _TB_PRICE_DATABASE_PRECISION_) != number_format($amountPaid, _TB_PRICE_DATABASE_PRECISION_)) {
+                    if ($orderStatus->logable
+                        && (string) $cartTotalPaid !== (string) $amountPaid) {
                         $idOrderState = Configuration::get('PS_OS_ERROR');
                     }
 
@@ -672,10 +678,42 @@ abstract class PaymentModuleCore extends Module
 
                     $productVarTplList = [];
                     foreach ($order->product_list as $product) {
-                        $price = Product::getPriceStatic((int) $product['id_product'], false, ($product['id_product_attribute'] ? (int) $product['id_product_attribute'] : null), 6, null, false, true, $product['cart_quantity'], false, (int) $order->id_customer, (int) $order->id_cart, (int) $order->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
-                        $priceTaxIncluded = Product::getPriceStatic((int) $product['id_product'], true, ($product['id_product_attribute'] ? (int) $product['id_product_attribute'] : null), _PS_PRICE_DISPLAY_PRECISION_, null, false, true, $product['cart_quantity'], false, (int) $order->id_customer, (int) $order->id_cart, (int) $order->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
+                        $price = Product::getPriceStatic(
+                            (int) $product['id_product'],
+                            false,
+                            $product['id_product_attribute'] ?
+                                (int) $product['id_product_attribute'] :
+                                null,
+                            _TB_PRICE_DATABASE_PRECISION_,
+                            null,
+                            false,
+                            true,
+                            $product['cart_quantity'],
+                            false,
+                            (int) $order->id_customer,
+                            (int) $order->id_cart,
+                            (int) $order->{Configuration::get('PS_TAX_ADDRESS_TYPE')}
+                        );
+                        $priceTaxIncluded = Product::getPriceStatic(
+                            (int) $product['id_product'],
+                            true,
+                            $product['id_product_attribute'] ?
+                                (int) $product['id_product_attribute'] :
+                                null,
+                            _TB_PRICE_DATABASE_PRECISION_,
+                            null,
+                            false,
+                            true,
+                            $product['cart_quantity'],
+                            false,
+                            (int) $order->id_customer,
+                            (int) $order->id_cart,
+                            (int) $order->{Configuration::get('PS_TAX_ADDRESS_TYPE')}
+                        );
 
-                        $productPrice = Product::getTaxCalculationMethod() == PS_TAX_EXC ? Tools::ps_round($price, _PS_PRICE_DISPLAY_PRECISION_) : $priceTaxIncluded;
+                        $productPrice
+                            = Product::getTaxCalculationMethod() == PS_TAX_EXC ?
+                                $price : $priceTaxIncluded;
 
                         $productVarTpl = [
                             'reference'     => $product['reference'],
