@@ -4380,11 +4380,29 @@ class AdminControllerCore extends Controller
                 }
             }
 
-            // Validate fields
+            // Cast and validate fields.
             foreach ($fields as $field => $values) {
                 // We don't validate fields with no visibility
                 if (!$hideMultishopCheckbox && Shop::isFeatureActive() && isset($values['visibility']) && $values['visibility'] > Shop::getContext()) {
                     continue;
+                }
+
+                // Apply cast before validating.
+                if (array_key_exists('cast', $values)) {
+                    if (array_key_exists('type', $values)
+                        && in_array($values['type'], [
+                            'textLang',
+                            'textareaLang',
+                        ])) {
+                        foreach ($languages as $language) {
+                            $langField = $field.'_'.$language['id_lang'];
+                            $_POST[$langField]
+                                = $values['cast'](Tools::getValue($langField));
+                        }
+                    } else {
+                        $_POST[$field]
+                            = $values['cast'](Tools::getValue($field));
+                    }
                 }
 
                 // Check if field is required
@@ -4443,8 +4461,7 @@ class AdminControllerCore extends Controller
                     } elseif (isset($options['type']) && in_array($options['type'], ['textLang', 'textareaLang'])) {
                         $list = [];
                         foreach ($languages as $language) {
-                            $keyLang = Tools::getValue($key.'_'.$language['id_lang']);
-                            $val = (isset($options['cast']) ? $options['cast']($keyLang) : $keyLang);
+                            $val = Tools::getValue($key.'_'.$language['id_lang']);
                             if ($this->validateField($val, $options)) {
                                 if (Validate::isCleanHtml($val)) {
                                     $list[$language['id_lang']] = $val;
@@ -4455,7 +4472,7 @@ class AdminControllerCore extends Controller
                         }
                         Configuration::updateValue($key, $list, isset($values['validation']) && isset($options['validation']) && $options['validation'] == 'isCleanHtml' ? true : false);
                     } else {
-                        $val = (isset($options['cast']) ? $options['cast'](Tools::getValue($key)) : Tools::getValue($key));
+                        $val = Tools::getValue($key);
                         if ($this->validateField($val, $options)) {
                             if ($options['type'] === 'code') {
                                 Configuration::updateValueRaw($key, $val);
