@@ -1388,6 +1388,10 @@ class CartRuleCore extends ObjectModel
             $filter = static::FILTER_ACTION_ALL;
         }
         $roundType = (int) Configuration::get('PS_ROUND_TYPE');
+        $displayDecimals = 0;
+        if ($context->currency->decimals) {
+            $displayDecimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
+        }
 
         $allProducts = $context->cart->getProducts();
         $packageProducts = (is_null($package) ? $allProducts : $package['products']);
@@ -1441,10 +1445,7 @@ class CartRuleCore extends ObjectModel
                         static::FILTER_ACTION_GIFT, $package
                     );
                     if ($roundType === Order::ROUND_ITEM) {
-                        $reduction = round(
-                            $reduction,
-                            Configuration::get('PS_PRICE_DISPLAY_PRECISION')
-                        );
+                        $reduction = round($reduction, $displayDecimals);
                     }
                     $orderTotal -= $reduction;
                 }
@@ -1588,9 +1589,17 @@ class CartRuleCore extends ObjectModel
                                 }
 
                                 if ($this->reduction_tax && !$useTax) {
-                                    $reductionValue += $prorata * $reductionAmount / (1 + $productVatRate);
+                                    $reductionValue += round(
+                                        $prorata * $reductionAmount
+                                        / (1 + $productVatRate),
+                                        _TB_PRICE_DATABASE_PRECISION_
+                                    );
                                 } elseif (!$this->reduction_tax && $useTax) {
-                                    $reductionValue += $prorata * $reductionAmount * (1 + $productVatRate);
+                                    $reductionValue += round(
+                                        $prorata * $reductionAmount
+                                        * (1 + $productVatRate),
+                                        _TB_PRICE_DATABASE_PRECISION_
+                                    );
                                 }
                             }
                         }
@@ -1606,9 +1615,17 @@ class CartRuleCore extends ObjectModel
                         }
 
                         if ($this->reduction_tax && !$useTax) {
-                            $reductionValue += $prorata * $reductionAmount / (1 + $cartAverageVatRate);
+                            $reductionValue += round(
+                                $prorata * $reductionAmount
+                                / (1 + $cartAverageVatRate),
+                                _TB_PRICE_DATABASE_PRECISION_
+                            );
                         } elseif (!$this->reduction_tax && $useTax) {
-                            $reductionValue += $prorata * $reductionAmount * (1 + $cartAverageVatRate);
+                            $reductionValue += round(
+                                $prorata * $reductionAmount
+                                * (1 + $cartAverageVatRate),
+                                _TB_PRICE_DATABASE_PRECISION_
+                            );
                         }
                     }
                     /*
@@ -1663,7 +1680,10 @@ class CartRuleCore extends ObjectModel
             }
 
             if ($roundType === Order::ROUND_LINE) {
-                $reductionValue = Tools::ps_round($reductionValue, _PS_PRICE_DISPLAY_PRECISION_);
+                $reductionValue = Tools::ps_round(
+                    $reductionValue,
+                    $displayDecimals
+                );
             }
         }
 
