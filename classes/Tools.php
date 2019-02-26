@@ -816,13 +816,19 @@ class ToolsCore
 
         if (is_array($tbCurrency)) {
             $currencyIso = $tbCurrency['iso_code'];
-            $currencyDecimals = (int) $tbCurrency['decimals'] * _PS_PRICE_DISPLAY_PRECISION_;
+            $currencyDecimals
+                = (int) $tbCurrency['decimals'] ?
+                  Configuration::get('PS_PRICE_DISPLAY_PRECISION') :
+                  0;
             $currencyArray = $tbCurrency;
             $tbCurrency = new Currency();
             $tbCurrency->hydrate($currencyArray);
         } elseif (is_object($tbCurrency)) {
             $currencyIso = $tbCurrency->iso_code;
-            $currencyDecimals = (int) $tbCurrency->decimals * _PS_PRICE_DISPLAY_PRECISION_;
+            $currencyDecimals
+                = (int) $tbCurrency->decimals ?
+                  Configuration::get('PS_PRICE_DISPLAY_PRECISION') :
+                  0;
         } else {
             return '';
         }
@@ -838,7 +844,9 @@ class ToolsCore
         if (!$auto) {
             $cChar = $tbCurrency->sign;
             $cFormat = $tbCurrency->format;
-            $cDecimals = (int) $tbCurrency->decimals * _PS_PRICE_DISPLAY_PRECISION_;
+            $cDecimals = (int) $tbCurrency->decimals ?
+                         Configuration::get('PS_PRICE_DISPLAY_PRECISION') :
+                         0;
             $cBlank = $tbCurrency->blank;
             $blank = ($cBlank ? ' ' : '');
             $ret = 0;
