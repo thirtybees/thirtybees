@@ -1045,7 +1045,10 @@ class CarrierCore extends ObjectModel
         $priceByWeight = Hook::exec('actionDeliveryPriceByWeight', ['id_carrier' => $idCarrier, 'total_weight' => $totalWeight, 'id_zone' => $idZone]);
         if (is_numeric($priceByWeight)) {
             // @codingStandardsIgnoreStart
-            static::$price_by_weight2[$cacheKey] = $priceByWeight;
+            static::$price_by_weight2[$cacheKey] = round(
+                $priceByWeight,
+                _TB_PRICE_DATABASE_PRECISION_
+            );
             // @codingStandardsIgnoreEnd
         }
 
@@ -1096,7 +1099,10 @@ class CarrierCore extends ObjectModel
         $priceByPrice = Hook::exec('actionDeliveryPriceByPrice', ['id_carrier' => $idCarrier, 'order_total' => $orderTotal, 'id_zone' => $idZone]);
         if (is_numeric($priceByPrice)) {
             // @codingStandardsIgnoreStart
-            static::$price_by_price2[$cacheKey] = $priceByPrice;
+            static::$price_by_price2[$cacheKey] = round(
+                $priceByPrice,
+                _TB_PRICE_DATABASE_PRECISION_
+            );
             // @codingStandardsIgnoreEnd
         }
 
@@ -1353,7 +1359,10 @@ class CarrierCore extends ObjectModel
         $priceByWeight = Hook::exec('actionDeliveryPriceByWeight', ['id_carrier' => $idCarrier, 'total_weight' => $totalWeight, 'id_zone' => $idZone]);
         if (is_numeric($priceByWeight)) {
             // @codingStandardsIgnoreStart
-            static::$price_by_weight[$cacheKey] = $priceByWeight;
+            static::$price_by_weight[$cacheKey] = round(
+                $priceByWeight,
+                _TB_PRICE_DATABASE_PRECISION_
+            );
             // @codingStandardsIgnoreEnd
         }
 
@@ -1411,7 +1420,10 @@ class CarrierCore extends ObjectModel
         $priceByPrice = Hook::exec('actionDeliveryPriceByPrice', ['id_carrier' => $idCarrier, 'order_total' => $orderTotal, 'id_zone' => $idZone]);
         if (is_numeric($priceByPrice)) {
             // @codingStandardsIgnoreStart
-            static::$price_by_price[$cacheKey] = $priceByPrice;
+            static::$price_by_price[$cacheKey] = round(
+                $priceByPrice,
+                _TB_PRICE_DATABASE_PRECISION_
+            );
             // @codingStandardsIgnoreEnd
         }
 
