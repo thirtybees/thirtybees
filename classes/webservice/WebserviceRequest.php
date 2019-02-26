@@ -442,7 +442,10 @@ class WebserviceRequestCore
             $idGroup = (int) (isset($value['group']) ? $value['group'] : (int) Configuration::get('PS_CUSTOMER_GROUP'));
             $quantity = (int) (isset($value['quantity']) ? $value['quantity'] : 1);
             $useTax = (int) (isset($value['use_tax']) ? $value['use_tax'] : Configuration::get('PS_TAX'));
-            $decimals = (int) (isset($value['decimals']) ? $value['decimals'] : Configuration::get('PS_PRICE_ROUND_MODE'));
+            $decimals = (int) (isset($value['decimals']) ?
+                $value['decimals'] :
+                _TB_PRICE_DATABASE_PRECISION_
+            );
             $idProductAttribute = (int) (isset($value['product_attribute']) ? $value['product_attribute'] : null);
             $onlyReduc = (int) (isset($value['only_reduction']) ? $value['only_reduction'] : false);
             $useReduc = (int) (isset($value['use_reduction']) ? $value['use_reduction'] : true);
