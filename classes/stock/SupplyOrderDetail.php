@@ -237,23 +237,21 @@ class SupplyOrderDetailCore extends ObjectModel
     {
         // calculates entry price
         $this->price_te = round(
-            (float) $this->unit_price_te * (int) $this->quantity_expected,
+            $this->unit_price_te * (int) $this->quantity_expected,
             _TB_PRICE_DATABASE_PRECISION_
         );
 
         // calculates entry discount value
         if ($this->discount_rate) {
             $this->discount_value_te = round(
-                (float) $this->price_te * ($this->discount_rate / 100),
+                $this->price_te * ($this->discount_rate / 100),
                 _TB_PRICE_DATABASE_PRECISION_
             );
         }
 
         // calculates entry price with discount
-        $this->price_with_discount_te = round(
-            $this->price_te - $this->discount_value_te,
-            _TB_PRICE_DATABASE_PRECISION_
-        );
+        $this->price_with_discount_te = $this->price_te
+                                        - $this->discount_value_te;
 
         // calculates tax value
         $this->tax_value = round(
