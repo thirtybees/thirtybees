@@ -513,8 +513,14 @@ class CartCore extends ObjectModel
             );
 
             // Recalculate prices after rounding, these go into an order.
-            $row['price'] = $row['total'] / $row['cart_quantity'];
-            $row['price_wt'] = $row['total_wt'] / $row['cart_quantity'];
+            $row['price'] = round(
+                $row['total'] / $row['cart_quantity'],
+                _TB_PRICE_DATABASE_PRECISION_
+            );
+            $row['price_wt'] = round(
+                $row['total_wt'] / $row['cart_quantity'],
+                _TB_PRICE_DATABASE_PRECISION_
+            );
 
             $row['description_short'] = Tools::nl2br($row['description_short']);
 
@@ -564,8 +570,16 @@ class CartCore extends ObjectModel
     protected function roundPrice($priceWithoutTax, $priceWithTax,
                                   $quantity, $withTax)
     {
+        static $displayPrecision = false;
+        if ($displayPrecision === false) {
+            $displayPrecision = 0;
+            if (Currency::getCurrencyInstance($this->id_currency)->decimals) {
+                $displayPrecision =
+                    Configuration::get('PS_PRICE_DISPLAY_PRECISION');
+            }
+        }
+
         $roundType = (int) Configuration::get('PS_ROUND_TYPE');
-        $displayPrecision = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
 
         $price = $priceWithoutTax;
         if ($this->_taxCalculationMethod === PS_TAX_INC) {
@@ -731,6 +745,15 @@ class CartCore extends ObjectModel
      */
     public function getOrderTotal($withTaxes = true, $type = self::BOTH, $products = null, $idCarrier = null, $useCache = true)
     {
+        static $displayPrecision = false;
+        if ($displayPrecision === false) {
+            $displayPrecision = 0;
+            if (Currency::getCurrencyInstance($this->id_currency)->decimals) {
+                $displayPrecision =
+                    Configuration::get('PS_PRICE_DISPLAY_PRECISION');
+            }
+        }
+
         // Dependencies
         /** @var Adapter_AddressFactory $addressFactory */
         $addressFactory = Adapter_ServiceLocator::get('Adapter_AddressFactory');
@@ -741,7 +764,6 @@ class CartCore extends ObjectModel
 
         $psTaxAddressType = $configuration->get('PS_TAX_ADDRESS_TYPE');
         $psUseEcotax = $configuration->get('PS_USE_ECOTAX');
-        $displayPrecision = $configuration->get('PS_PRICE_DISPLAY_PRECISION');
 
         if (!$this->id) {
             return 0;
@@ -919,7 +941,13 @@ class CartCore extends ObjectModel
         $includeGiftWrapping = (!$configuration->get('PS_ATCP_SHIPWRAP') || $type !== static::ONLY_PRODUCTS);
 
         if ($this->gift && $includeGiftWrapping) {
-            $wrappingFees = Tools::convertPrice(Tools::ps_round($this->getGiftWrappingPrice($withTaxes), $displayPrecision), Currency::getCurrencyInstance((int) $this->id_currency));
+            $wrappingFees = Tools::ps_round(
+                Tools::convertPrice(
+                    $this->getGiftWrappingPrice($withTaxes),
+                    Currency::getCurrencyInstance((int) $this->id_currency)
+                ),
+                $displayPrecision
+            );
         }
         if ($type == static::ONLY_WRAPPING) {
             return $wrappingFees;
