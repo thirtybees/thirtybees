@@ -90,7 +90,7 @@ class AverageTaxOfProductsTaxCalculatorCore
      * @version 1.0.0 Initial version
      * @throws PrestaShopException
      */
-    public function getTaxesAmount($priceBeforeTax, $priceAfterTax = null, $roundPrecision = _PS_PRICE_DISPLAY_PRECISION_, $roundMode = null)
+    public function getTaxesAmount($priceBeforeTax, $priceAfterTax = null, $roundPrecision = _TB_PRICE_DATABASE_PRECISION_, $roundMode = null)
     {
         $amounts = [];
         $totalBase = 0;
