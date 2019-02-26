@@ -618,8 +618,6 @@ $kernel->loadFile(__DIR__.'/../../controllers/admin/AdminProfilesController.php'
 $kernel->loadFile(__DIR__.'/override/controllers/admin/AdminProfilesController.php');
 $kernel->loadFile(__DIR__.'/../../controllers/admin/AdminQuickAccessesController.php');
 $kernel->loadFile(__DIR__.'/override/controllers/admin/AdminQuickAccessesController.php');
-$kernel->loadFile(__DIR__.'/../../controllers/admin/AdminRangePriceController.php');
-$kernel->loadFile(__DIR__.'/override/controllers/admin/AdminRangePriceController.php');
 $kernel->loadFile(__DIR__.'/../../controllers/admin/AdminRangeWeightController.php');
 $kernel->loadFile(__DIR__.'/override/controllers/admin/AdminRangeWeightController.php');
 $kernel->loadFile(__DIR__.'/../../controllers/admin/AdminReferrersController.php');
