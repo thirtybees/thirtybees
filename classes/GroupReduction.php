@@ -52,7 +52,7 @@ class GroupReductionCore extends ObjectModel
         'fields'  => [
             'id_group'    => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
             'id_category' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'reduction'   => ['type' => self::TYPE_FLOAT, 'validate' => 'isPrice', 'required' => true],
+            'reduction'   => ['type' => self::TYPE_FLOAT, 'validate' => 'isPercentage', 'required' => true],
         ],
     ];
 
