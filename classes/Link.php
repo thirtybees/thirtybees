@@ -101,7 +101,7 @@ class LinkCore
         if (property_exists($this, $camelCaseProperty) && in_array($camelCaseProperty, ['categoryDisableRewrite'])) {
             return $this->$camelCaseProperty;
         }
-        
+
         return $this->$property;
     }
 
@@ -180,7 +180,23 @@ class LinkCore
         }
 
         if ($dispatcher->hasKeyword('product_rule', $idLang, 'price', $idShop)) {
-            $params['price'] = $product->isFullyLoaded ? $product->price : Product::getPriceStatic($product->id, false, null, 6, null, false, true, 1, false, null, null, null, $product->specificPrice);
+            $params['price'] = $product->isFullyLoaded ?
+                $product->price :
+                Product::getPriceStatic(
+                    $product->id,
+                    false,
+                    null,
+                    _TB_PRICE_DATABASE_PRECISION_,
+                    null,
+                    false,
+                    true,
+                    1,
+                    false,
+                    null,
+                    null,
+                    null,
+                    $product->specificPrice
+                );
         }
 
         if ($dispatcher->hasKeyword('product_rule', $idLang, 'tags', $idShop)) {
