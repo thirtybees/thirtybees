@@ -44,9 +44,9 @@ class RangePriceCore extends ObjectModel
         'table'   => 'range_price',
         'primary' => 'id_range_price',
         'fields'  => [
-            'id_carrier' => ['type' => self::TYPE_INT,   'validate' => 'isInt',           'required' => true],
-            'delimiter1' => ['type' => self::TYPE_FLOAT, 'validate' => 'isUnsignedFloat', 'required' => true],
-            'delimiter2' => ['type' => self::TYPE_FLOAT, 'validate' => 'isUnsignedFloat', 'required' => true],
+            'id_carrier' => ['type' => self::TYPE_INT,   'validate' => 'isInt',   'required' => true],
+            'delimiter1' => ['type' => self::TYPE_FLOAT, 'validate' => 'isPrice', 'required' => true],
+            'delimiter2' => ['type' => self::TYPE_FLOAT, 'validate' => 'isPrice', 'required' => true],
         ],
     ];
     /** @var int $id_carrier */
