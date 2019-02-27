@@ -55,7 +55,7 @@
 					<div class="fixed-width-xl">
 						<div class="input-group">
 							{if $currency->format % 2}<div class="input-group-addon">{$currency->sign} {l s='tax excl.'}</div>{/if}
-							<input type="text" name="product_price_tax_excl" class="edit_product_price_tax_excl edit_product_price" value="{Tools::ps_round($product['unit_price_tax_excl'], 2)}" size="5" />
+							<input type="text" name="product_price_tax_excl" class="edit_product_price_tax_excl edit_product_price" value="{$product['unit_price_tax_excl']}" size="5" />
 							{if !($currency->format % 2)}<div class="input-group-addon">{$currency->sign} {l s='tax excl.'}</div>{/if}
 						</div>
 					</div>
@@ -63,7 +63,7 @@
 					<div class="fixed-width-xl">
 						<div class="input-group">
 							{if $currency->format % 2}<div class="input-group-addon">{$currency->sign} {l s='tax incl.'}</div>{/if}
-							<input type="text" name="product_price_tax_incl" class="edit_product_price_tax_incl edit_product_price" value="{Tools::ps_round($product['unit_price_tax_incl'], 2)}" size="5" />
+							<input type="text" name="product_price_tax_incl" class="edit_product_price_tax_incl edit_product_price" value="{$product['unit_price_tax_incl']}" size="5" />
 							{if !($currency->format % 2)}<div class="input-group-addon">{$currency->sign} {l s='tax incl.'}</div>{/if}
 						</div>
 					</div>
@@ -78,9 +78,9 @@
 		{if $stock_management}<td class="text-center">{$product['current_stock']}</td>{/if}
 		<td class="total_product">
 		{if ($order->getTaxCalculationMethod() == $smarty.const.PS_TAX_EXC)}
-			{displayPrice price=Tools::ps_round($product['product_price'] * $product['customizationQuantityTotal'], 2) currency=$currency->id|intval}
+			{displayPrice price=$product['product_price']*$product['customizationQuantityTotal'] currency=$currency->id|intval}
 		{else}
-			{displayPrice price=Tools::ps_round($product['product_price_wt'] * $product['customizationQuantityTotal'], 2) currency=$currency->id|intval}
+			{displayPrice price=$product['product_price_wt']*$product['customizationQuantityTotal'] currency=$currency->id|intval}
 		{/if}
 		</td>
 		<td class="cancelQuantity standard_refund_fields current-edit" style="display:none" colspan="2">
@@ -170,16 +170,16 @@
 					{l s='%s (%s refund)' sprintf=[$customization['quantity_refunded'], $product['amount_refund']]}
 					{/if}
 					<input type="hidden" value="{$product['quantity_refundable']}" class="partialRefundProductQuantity" />
-					<input type="hidden" value="{(Tools::ps_round($product_price, 2) * ($product['product_quantity'] - $product['customizationQuantityTotal']))}" class="partialRefundProductAmount" />
+					<input type="hidden" value="{($product_price * ($product['product_quantity'] - $product['customizationQuantityTotal']))}" class="partialRefundProductAmount" />
 				</td>
 				{/if}
 				{if ($order->hasBeenDelivered())}<td class="text-center">{$customization['quantity_returned']}</td>{/if}
 				<td class="text-center">-</td>
 				<td class="total_product">
 					{if ($order->getTaxCalculationMethod() == $smarty.const.PS_TAX_EXC)}
-						{displayPrice price=Tools::ps_round($product['product_price'] * $customization['quantity'], 2) currency=$currency->id|intval}
+						{displayPrice price=$product['product_price']*$customization['quantity'] currency=$currency->id|intval}
 					{else}
-						{displayPrice price=Tools::ps_round($product['product_price_wt'] * $customization['quantity'], 2) currency=$currency->id|intval}
+						{displayPrice price=$product['product_price_wt']*$customization['quantity'] currency=$currency->id|intval}
 					{/if}
 				</td>
 				<td class="cancelCheck standard_refund_fields current-edit" style="display:none">
@@ -226,7 +226,7 @@
 								<input onchange="checkPartialRefundProductAmount(this)" type="text" name="partialRefundProduct[{$product['id_order_detail']|intval}]" />
 								{if !($currency->format % 2)}<div class="input-group-addon">{$currency->sign}</div>{/if}
 							</div>
-							<p class="help-block"><i class="icon-warning-sign"></i> {l s='(Max %s %s)' sprintf=[Tools::displayPrice(Tools::ps_round($amount_refundable, 2), $currency->id), $smarty.capture.TaxMethod]}</p>
+							<p class="help-block"><i class="icon-warning-sign"></i> {l s='(Max %s %s)' sprintf=[Tools::displayPrice($amount_refundable, $currency->id), $smarty.capture.TaxMethod]}</p>
 						</div>
 					</div>
 					{/if}

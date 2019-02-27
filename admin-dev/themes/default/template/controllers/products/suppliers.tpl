@@ -97,7 +97,7 @@
 							{foreach from=$associated_suppliers_collection item=asc}
 								{if $asc->id_product == $attribute['id_product'] && $asc->id_product_attribute == $attribute['id_product_attribute'] && $asc->id_supplier == $supplier->id_supplier}
 									{assign var=reference value=$asc->product_supplier_reference}
-									{assign var=price_te value=Tools::ps_round($asc->product_supplier_price_te, 2)}
+									{assign var=price_te value=$asc->product_supplier_price_te}
 									{if $asc->id_currency}
 										{assign var=id_currency value=$asc->id_currency}
 									{/if}

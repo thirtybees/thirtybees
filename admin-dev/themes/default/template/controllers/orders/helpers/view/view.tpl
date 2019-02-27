@@ -608,7 +608,7 @@
                   <dt>{l s='Valid orders placed'}</dt>
                   <dd><span class="badge">{$customerStats['nb_orders']|intval}</span></dd>
                   <dt>{l s='Total spent since registration'}</dt>
-                  <dd><span class="badge badge-success">{displayPrice price=Tools::ps_round(Tools::convertPrice($customerStats['total_orders'], $currency), 2) currency=$currency->id}</span></dd>
+                  <dd><span class="badge badge-success">{displayPrice price=Tools::convertPrice($customerStats['total_orders'], $currency) currency=$currency->id}</span></dd>
                   {if Configuration::get('PS_B2B_ENABLE')}
                     <dt>{l s='Siret'}</dt>
                     <dd>{$customer->siret}</dd>
