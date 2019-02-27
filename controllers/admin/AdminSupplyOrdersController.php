@@ -378,7 +378,7 @@ class AdminSupplyOrdersControllerCore extends AdminController
 
             //specific discount display
             if (isset($this->object->discount_rate)) {
-                $this->object->discount_rate = Tools::ps_round($this->object->discount_rate, 4);
+                $this->object->discount_rate = round($this->object->discount_rate, 4);
             }
 
             //specific date display
