@@ -529,26 +529,33 @@ class ProductControllerCore extends FrontController
             $groupReduction = Group::getReduction((int) $this->context->cookie->id_customer) / 100;
         }
 
+        $idCurrency = (int) $this->context->cookie->id_currency;
+        $idProduct = (int) $this->product->id;
+        $idShop = $this->context->shop->id;
+        $decimals = 0;
+        if (Currency::getCurrencyInstance($idCurrency)->decimals) {
+            $decimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
+        }
+
         // Tax
         $tax = (float) $this->product->getTaxesRate(new Address((int) $this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')}));
         $this->context->smarty->assign('tax_rate', $tax);
 
-        $productPriceWithTax = Product::getPriceStatic($this->product->id, true, null, 6);
-        if (Product::$_taxCalculationMethod == PS_TAX_INC) {
-            $productPriceWithTax = Tools::ps_round($productPriceWithTax, 2);
-        }
-        $productPriceWithoutEcoTax = (float) $productPriceWithTax - $this->product->ecotax;
+        $productPriceWithoutEcoTax = $this->product->getPrice()
+                                     - $this->product->ecotax;
 
         $ecotaxRate = (float) Tax::getProductEcotaxRate($this->context->cart->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
         if (Product::$_taxCalculationMethod == PS_TAX_INC && (int) Configuration::get('PS_TAX')) {
-            $ecotaxTaxAmount = Tools::ps_round($this->product->ecotax * (1 + $ecotaxRate / 100), 2);
+            $ecotaxTaxAmount = Tools::ps_round(
+                $this->product->ecotax * (1 + $ecotaxRate / 100),
+                $decimals
+            );
         } else {
-            $ecotaxTaxAmount = Tools::ps_round($this->product->ecotax, 2);
+            $ecotaxTaxAmount = Tools::ps_round(
+                $this->product->ecotax,
+                $decimals
+            );
         }
-
-        $idCurrency = (int) $this->context->cookie->id_currency;
-        $idProduct = (int) $this->product->id;
-        $idShop = $this->context->shop->id;
 
         $quantityDiscounts = SpecificPrice::getQuantityDiscounts($idProduct, $idShop, $idCurrency, $idCountry, $idGroup, null, true, (int) $this->context->customer->id);
         foreach ($quantityDiscounts as &$quantityDiscount) {
@@ -577,9 +584,12 @@ class ProductControllerCore extends FrontController
             [
                 'quantity_discounts'         => $this->formatQuantityDiscounts($quantityDiscounts, null, (float) $tax, $ecotaxTaxAmount),
                 'ecotax_tax_inc'             => $ecotaxTaxAmount,
-                'ecotax_tax_exc'             => Tools::ps_round($this->product->ecotax, 2),
+                'ecotax_tax_exc'             => Tools::ps_round(
+                    $this->product->ecotax,
+                    $decimals
+                ),
                 'ecotaxTax_rate'             => $ecotaxRate,
-                'productPriceWithoutEcoTax'  => (float) $productPriceWithoutEcoTax,
+                'productPriceWithoutEcoTax'  => $productPriceWithoutEcoTax,
                 'group_reduction'            => $groupReduction,
                 'no_tax'                     => Tax::excludeTaxeOption() || !$this->product->getTaxesRate($address),
                 'ecotax'                     => (!count($this->errors) && $this->product->ecotax > 0 ? Tools::convertPrice((float) $this->product->ecotax) : 0),
@@ -608,24 +618,58 @@ class ProductControllerCore extends FrontController
             if ($row['price'] >= 0) {
                 // The price may be directly set
 
-                $currentPrice = (!$row['reduction_tax'] ? $row['price'] : $row['price'] * (1 + $taxRate / 100)) + (float) $ecotaxAmount;
+                $currentPrice = (!$row['reduction_tax'] ?
+                    $row['price'] :
+                    round(
+                        $row['price'] * (1 + $taxRate / 100),
+                        _TB_PRICE_DATABASE_PRECISION_
+                    )
+                ) + (float) $ecotaxAmount;
 
                 if ($row['reduction_type'] == 'amount') {
-                    $currentPrice -= ($row['reduction_tax'] ? $row['reduction'] : $row['reduction'] / (1 + $taxRate / 100));
-                    $row['reduction_with_tax'] = $row['reduction_tax'] ? $row['reduction'] : $row['reduction'] / (1 + $taxRate / 100);
+                    $currentPrice -= $row['reduction_tax'] ?
+                        $row['reduction'] :
+                        round(
+                            $row['reduction'] / (1 + $taxRate / 100),
+                            _TB_PRICE_DATABASE_PRECISION_
+                        );
+                    $row['reduction_with_tax'] = $row['reduction_tax'] ?
+                        $row['reduction'] :
+                        round(
+                            $row['reduction'] / (1 + $taxRate / 100),
+                            _TB_PRICE_DATABASE_PRECISION_
+                        );
                 } else {
-                    $currentPrice *= 1 - $row['reduction'];
+                    $currentPrice = round(
+                        $currentPrice * (1 - $row['reduction']),
+                        _TB_PRICE_DATABASE_PRECISION_
+                    );
                 }
 
                 $row['real_value'] = $row['base_price'] > 0 ? $row['base_price'] - $currentPrice : $currentPrice;
             } else {
                 if ($row['reduction_type'] == 'amount') {
                     if (Product::$_taxCalculationMethod == PS_TAX_INC) {
-                        $row['real_value'] = $row['reduction_tax'] == 1 ? $row['reduction'] : $row['reduction'] * (1 + $taxRate / 100);
+                        $row['real_value'] = $row['reduction_tax'] == 1 ?
+                            $row['reduction'] :
+                            round(
+                                $row['reduction'] * (1 + $taxRate / 100),
+                                _TB_PRICE_DATABASE_PRECISION_
+                            );
                     } else {
-                        $row['real_value'] = $row['reduction_tax'] == 0 ? $row['reduction'] : $row['reduction'] / (1 + $taxRate / 100);
+                        $row['real_value'] = $row['reduction_tax'] == 0 ?
+                            $row['reduction'] :
+                            round(
+                                $row['reduction'] / (1 + $taxRate / 100),
+                                _TB_PRICE_DATABASE_PRECISION_
+                            );
                     }
-                    $row['reduction_with_tax'] = $row['reduction_tax'] ? $row['reduction'] : $row['reduction'] + ($row['reduction'] * $taxRate) / 100;
+                    $row['reduction_with_tax'] = $row['reduction_tax'] ?
+                        $row['reduction'] :
+                        $row['reduction'] + round(
+                            $row['reduction'] * $taxRate / 100,
+                            _TB_PRICE_DATABASE_PRECISION_
+                        );
                 } else {
                     $row['real_value'] = $row['reduction'] * 100;
                 }
@@ -743,7 +787,21 @@ class ProductControllerCore extends FrontController
 
                 // Call getPriceStatic in order to set $combination_specific_price
                 if (!isset($combinationPricesSet[(int) $row['id_product_attribute']])) {
-                    Product::getPriceStatic((int) $this->product->id, false, $row['id_product_attribute'], 6, null, false, false, 1, false, null, null, null, $combinationSpecificPrice);
+                    Product::getPriceStatic(
+                        (int) $this->product->id,
+                        false,
+                        $row['id_product_attribute'],
+                        _TB_PRICE_DATABASE_PRECISION_,
+                        null,
+                        false,
+                        false,
+                        1,
+                        false,
+                        null,
+                        null,
+                        null,
+                        $combinationSpecificPrice
+                    );
                     $combinationPricesSet[(int) $row['id_product_attribute']] = true;
                     $combinations[$row['id_product_attribute']]['specific_price'] = $combinationSpecificPrice;
                 }
