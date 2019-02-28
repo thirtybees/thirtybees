@@ -304,7 +304,7 @@ class OrderSlipCore extends ObjectModel
         // TODO: deprecate this, nowhere in use.
         $orderSlip->partial = 0;
 
-        if ($shippingCost) {
+        if ($shippingCost !== false) {
             $orderSlip->shipping_cost = true;
 
             // Use taxes from the given order.
@@ -313,7 +313,7 @@ class OrderSlipCore extends ObjectModel
             $taxCalculator = new TaxCalculator([$tax]);
 
             $shippingCost = round($shippingCost, _TB_PRICE_DATABASE_PRECISION_);
-            if ($addTax) {
+            if ($addTax == true) {
                 $orderSlip->total_shipping_tax_excl = $shippingCost;
                 $orderSlip->total_shipping_tax_incl = $taxCalculator->addTaxes(
                     $shippingCost
@@ -359,7 +359,7 @@ class OrderSlipCore extends ObjectModel
             // In case of a distinction between product value in the order and
             // product value in the refund (choosen by the merchant on refund
             // creation), these prices are reduced already.
-            if ($addTax) {
+            if ($addTax == true) {
                 $product['unit_price_tax_excl'] = round(
                     $product['unit_price'],
                     _TB_PRICE_DATABASE_PRECISION_
@@ -391,7 +391,7 @@ class OrderSlipCore extends ObjectModel
         }
         unset($product);
 
-        if ($addTax) {
+        if ($addTax == true) {
             $orderSlip->amount = $orderSlip->total_products_tax_excl;
         } else {
             $orderSlip->amount = $orderSlip->total_products_tax_incl;

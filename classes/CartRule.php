@@ -1460,7 +1460,7 @@ class CartRuleCore extends ObjectModel
             if ($this->reduction_percent && $this->reduction_product > 0) {
                 foreach ($packageProducts as $product) {
                     if ($product['id_product'] == $this->reduction_product) {
-                        if ($useTax) {
+                        if ($useTax == true) {
                             $reduction = $product['total_wt'];
                         } else {
                             $reduction = $product['total'];
@@ -1486,7 +1486,7 @@ class CartRuleCore extends ObjectModel
                     }
 
                     $price = $product['price'];
-                    if ($useTax) {
+                    if ($useTax == true) {
                         $price = round(
                             $price * (1 + $product['rate'] / 100),
                             _TB_PRICE_DATABASE_PRECISION_
@@ -1524,7 +1524,7 @@ class CartRuleCore extends ObjectModel
                             || in_array($product['id_product'].'-0', $selectedProducts)
                         ) {
                             $price = $product['price'];
-                            if ($useTax) {
+                            if ($useTax == true) {
                                 $price = round(
                                     $price * (1 + $product['rate'] / 100),
                                     _TB_PRICE_DATABASE_PRECISION_

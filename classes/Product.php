@@ -478,7 +478,7 @@ class ProductCore extends ObjectModel
                 null,
                 $this->specificPrice
             );
-            $this->unit_price = ($this->unit_price_ratio ?
+            $this->unit_price = ($this->unit_price_ratio != 0 ?
                 round(
                     $this->price / $this->unit_price_ratio,
                     _TB_PRICE_DATABASE_PRECISION_
