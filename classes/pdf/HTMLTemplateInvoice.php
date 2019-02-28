@@ -303,11 +303,6 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
             'round_type'                 => $roundType,
             'legal_free_text'            => $legalFreeText,
         ];
-
-        if (Tools::getValue('debug')) {
-            die(json_encode($data));
-        }
-
         $this->smarty->assign($data);
 
         $tpls = [
@@ -340,8 +335,6 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
      */
     public function getTaxTabContent()
     {
-        $debug = Tools::getValue('debug');
-
         $address = new Address((int) $this->order->{Configuration::get('PS_TAX_ADDRESS_TYPE')});
 
         $taxExempt = false;
@@ -352,8 +345,6 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
 
             $taxExempt = VATNumberTaxManager::isAvailableForThisAddress($address);
         }
-
-        $carrier = new Carrier($this->order->id_carrier);
 
         $taxBreakdowns = $this->getTaxBreakdown();
         $shippingTaxBreakdowns = $this->order_invoice->getShippingTaxesBreakdown($this->order);
@@ -372,15 +363,7 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
             'ecotax_tax_breakdown'            => $ecoTaxBreakdowns,
             'wrapping_tax_breakdown'          => $wrappingTaxBreakdowns,
             'tax_breakdowns'                  => $taxBreakdowns,
-            'order'                           => $debug ? null : $this->order,
-            'order_invoice'                   => $debug ? null : $this->order_invoice,
-            'carrier'                         => $debug ? null : $carrier,
         ];
-
-        if ($debug) {
-            return $data;
-        }
-
         $this->smarty->assign($data);
 
         return $this->smarty->fetch($this->getTemplate('invoice.tax-tab'));
