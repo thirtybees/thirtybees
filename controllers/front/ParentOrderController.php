@@ -364,7 +364,7 @@ class ParentOrderControllerCore extends FrontController
                 $product['id_product'],
                 !Product::getTaxCalculationMethod(),
                 $product['id_product_attribute'],
-                6,
+                _TB_PRICE_DATABASE_PRECISION_,
                 null,
                 false,
                 false,

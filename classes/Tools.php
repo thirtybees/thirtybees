@@ -2600,7 +2600,13 @@ class ToolsCore
     public static function orderbyPrice(&$array, $order_way)
     {
         foreach ($array as &$row) {
-            $row['price_tmp'] = Product::getPriceStatic($row['id_product'], true, ((isset($row['id_product_attribute']) && !empty($row['id_product_attribute'])) ? (int) $row['id_product_attribute'] : null), 2);
+            $row['price_tmp'] = Product::getPriceStatic(
+                $row['id_product'],
+                true,
+                (isset($row['id_product_attribute'])
+                && ! empty($row['id_product_attribute'])) ?
+                  (int) $row['id_product_attribute'] : null
+            );
         }
 
         unset($row);

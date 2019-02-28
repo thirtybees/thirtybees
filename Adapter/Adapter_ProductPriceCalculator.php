@@ -64,7 +64,7 @@ class Adapter_ProductPriceCalculator
         $idProduct,
         $usetax = true,
         $idProductAttribute = null,
-        $decimals = 6,
+        $decimals = _TB_PRICE_DATABASE_PRECISION_,
         $divisor = null,
         $onlyReduc = false,
         $usereduc = true,
