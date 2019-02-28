@@ -1,6 +1,6 @@
 <?php
 
-abstract class ModuleGridEngine extends ModuleGridEngineCore
+class ModuleGridEngine extends ModuleGridEngineCore
 {
 
 }
