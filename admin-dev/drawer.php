@@ -35,7 +35,6 @@ if (!defined('_PS_ADMIN_DIR_')) {
 include_once(_PS_ADMIN_DIR_.'/../config/config.inc.php');
 
 $module = Tools::getValue('module');
-$render = Tools::getValue('render');
 $type = Tools::getValue('type');
 $option = Tools::getValue('option');
 $layers = Tools::getValue('layers');
@@ -110,6 +109,5 @@ $graph->setLang($id_lang);
 if ($option) {
     $graph->setOption($option, $layers);
 }
-call_user_func_array([$graph, 'create'.Tools::getValue('engine')], [$render, $type, $width, $height, $layers]);
-//$graph->create($render, $type, $width, $height, $layers);
+$graph->createGraph(null, $type, $width, $height, $layers);
 $graph->draw();

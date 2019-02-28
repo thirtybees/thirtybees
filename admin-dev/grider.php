@@ -35,7 +35,6 @@ if (!defined('_PS_ADMIN_DIR_')) {
 include_once(_PS_ADMIN_DIR_.'/../config/config.inc.php');
 
 $module = Tools::getValue('module');
-$render = Tools::getValue('render');
 $type = Tools::getValue('type');
 $option = Tools::getValue('option');
 $width = (int) (Tools::getValue('width', 600));
@@ -115,7 +114,5 @@ $grid->setLang($id_lang);
 if ($option) {
     $grid->setOption($option);
 }
-
-call_user_func_array([$grid, 'create'.Tools::getValue('engine')], [$render, $type, $width, $height, $start, $limit, $sort, $dir]);
-// $grid->create($render, $type, $width, $height, $start, $limit, $sort, $dir);
+$grid->createGrid(null, $type, $width, $height, $start, $limit, $sort, $dir);
 $grid->render();

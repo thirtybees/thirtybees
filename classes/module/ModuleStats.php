@@ -36,6 +36,9 @@
  */
 abstract class ModuleStatsCore extends Module
 {
+    const ENGINE_GRAPH = 'graph';
+    const ENGINE_GRID = 'grid';
+
     // @codingStandardsIgnoreStart
     /** @var Employee $_employee */
     protected $_employee;
@@ -327,13 +330,7 @@ abstract class ModuleStatsCore extends Module
      */
     public function createGraph($render, $type, $width, $height, $layers)
     {
-        if (!file_exists($file = _PS_ROOT_DIR_.'/modules/'.$render.'/'.$render.'.php')) {
-            $render = 'ModuleGraphEngine';
-        } else {
-            require_once($file);
-        }
-
-        $this->_render = new $render($type);
+        $this->_render = static::getRenderingEngine(static::ENGINE_GRAPH, $type);
 
         $this->getData($layers);
         $this->_render->createValues($this->_values);
@@ -344,12 +341,7 @@ abstract class ModuleStatsCore extends Module
 
     public function createGrid($render, $type, $width, $height, $start, $limit, $sort, $dir)
     {
-        if (!file_exists($file = _PS_ROOT_DIR_.'/modules/'.$render.'/'.$render.'.php')) {
-            $render = 'ModuleGridEngine';
-        } else {
-            require_once($file);
-        }
-        $this->_render = new $render($type);
+        $this->_render = static::getRenderingEngine(static::ENGINE_GRID, $type);
 
         $this->_start = $start;
         $this->_limit = $limit;
@@ -396,7 +388,6 @@ abstract class ModuleStatsCore extends Module
     public function engineGraph($params)
     {
         $context = Context::getContext();
-        $render = Configuration::get('PS_STATS_RENDER');
         $idEmployee = (int) $context->employee->id;
         $idLang = (int) $context->language->id;
 
@@ -414,26 +405,19 @@ abstract class ModuleStatsCore extends Module
         }
 
         $urlParams = $params;
-        $urlParams['render'] = $render;
         $urlParams['module'] = Tools::getValue('module');
-        $urlParams['engine'] = 'graph';
         $urlParams['id_employee'] = $idEmployee;
         $urlParams['id_lang'] = $idLang;
         $drawer = 'drawer.php?'.http_build_query(array_map('Tools::safeOutput', $urlParams), '', '&');
 
-        if (file_exists(_PS_ROOT_DIR_.'/modules/'.$render.'/'.$render.'.php')) {
-            require_once(_PS_ROOT_DIR_.'/modules/'.$render.'/'.$render.'.php');
-
-            return call_user_func([$render, 'hookGraphEngine'], $params, $drawer);
-        } else {
-            return (new ModuleGraphEngine(isset($params['type']) ? $params['type'] : null))->hookGraphEngine($params, $drawer);
-        }
+        $type = isset($params['type']) ? $params['type'] : null;
+        $engine = static::getRenderingEngine(static::ENGINE_GRAPH, $type);
+        return $engine->hookGraphEngine($params, $drawer);
     }
 
     public function engineGrid($params)
     {
-        $render = Configuration::get('PS_STATS_GRID_RENDER');
-        $grider = 'grider.php?render='.$render.'&engine=grid&module='.Tools::safeOutput(Tools::getValue('module'));
+        $grider = 'grider.php?&module='.Tools::safeOutput(Tools::getValue('module'));
 
         $context = Context::getContext();
         $grider .= '&id_employee='.(int) $context->employee->id;
@@ -473,13 +457,9 @@ abstract class ModuleStatsCore extends Module
             $grider .= '&dir='.$params['dir'];
         }
 
-        if (file_exists(_PS_ROOT_DIR_.'/modules/'.$render.'/'.$render.'.php')) {
-            require_once(_PS_ROOT_DIR_.'/modules/'.$render.'/'.$render.'.php');
-
-            return call_user_func([$render, 'hookGridEngine'], $params, $grider);
-        } else {
-            return (new ModuleGridEngine(isset($params['type']) ? $params['type'] : null))->hookGridEngine($params, $grider);
-        }
+        $type = isset($params['type']) ? $params['type'] : null;
+        $engine = static::getRenderingEngine(static::ENGINE_GRID, $type);
+        return $engine->hookGridEngine($params, $grider);
     }
 
     /**
@@ -554,6 +534,46 @@ abstract class ModuleStatsCore extends Module
     public function getLang()
     {
         return $this->_id_lang;
+    }
+
+    /**
+     * Instantiates rendering engine
+     *
+     * @param $engineType string - type of engine, either ENGINE_GRAPH or ENGINE_GRID
+     * @param $type string - type parameter for engine
+     * @return ModuleGraphEngine or ModuleGridEngine instance
+     * @throws PrestaShopException
+     * @throws ReflectionException
+     */
+    protected static function getRenderingEngine($engineType, $type)
+    {
+        if ($engineType === static::ENGINE_GRAPH) {
+            $customEngine = Configuration::get('PS_STATS_RENDER');
+            $defaultEngine = 'ModuleGraphEngine';
+        } else if ($engineType === static::ENGINE_GRID) {
+            $customEngine = Configuration::get('PS_STATS_GRID_RENDER');
+            $defaultEngine = 'ModuleGridEngine';
+        } else {
+            throw new PrestaShopException('Invalid rendering engine: ' . $engineType);
+        }
+
+        // try to instantiate custom rendering engine
+        if ($customEngine) {
+            if (!class_exists($customEngine) && file_exists($file = _PS_ROOT_DIR_ . '/modules/' . $customEngine . '/' . $customEngine . '.php')) {
+                require_once($file);
+            }
+
+            // check that custom rendering engine is subclass of default engine
+            if (class_exists($customEngine)) {
+                $reflection = new ReflectionClass($customEngine);
+                if ($reflection->isSubclassOf($defaultEngine . 'Core')) {
+                    return new $customEngine($type);
+                }
+            }
+        }
+
+        // fallback to default rendering engine
+        return new $defaultEngine($type);
     }
 
     /**
