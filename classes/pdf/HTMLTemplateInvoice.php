@@ -255,25 +255,6 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
             );
         }
 
-        /**
-         * Need the $round_mode for the tests.
-         */
-        $roundType = null;
-        switch ($this->order->round_type) {
-            case Order::ROUND_TOTAL:
-                $roundType = 'total';
-                break;
-            case Order::ROUND_LINE:
-                $roundType = 'line';
-                break;
-            case Order::ROUND_ITEM:
-                $roundType = 'item';
-                break;
-            default:
-                $roundType = 'line';
-                break;
-        }
-
         $displayProductImages = Configuration::get('PS_PDF_IMG_INVOICE');
         $taxExcludedDisplay = Group::getPriceDisplayMethod($customer->id_default_group);
 
@@ -299,7 +280,6 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
             'tax_tab'                    => $this->getTaxTabContent(),
             'customer'                   => $customer,
             'footer'                     => $footer,
-            'round_type'                 => $roundType,
             'legal_free_text'            => $legalFreeText,
         ];
         $this->smarty->assign($data);
