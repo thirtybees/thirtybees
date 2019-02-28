@@ -1,6 +1,6 @@
 <?php
 
-abstract class ModuleGraphEngine extends ModuleGraphEngineCore
+class ModuleGraphEngine extends ModuleGraphEngineCore
 {
 
 }
