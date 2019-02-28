@@ -299,7 +299,6 @@ class HTMLTemplateInvoiceCore extends HTMLTemplate
             'tax_tab'                    => $this->getTaxTabContent(),
             'customer'                   => $customer,
             'footer'                     => $footer,
-            'ps_price_compute_precision' => $decimals,
             'round_type'                 => $roundType,
             'legal_free_text'            => $legalFreeText,
         ];
