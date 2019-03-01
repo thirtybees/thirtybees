@@ -5942,9 +5942,12 @@ class AdminProductsControllerCore extends AdminController
      * @return float
      *
      * @since 1.0.0
+     * @deprecated 1.1.0 Nowhere in use. Remove entirely for 1.2.0.
      */
     protected function _getFinalPrice($specificPrice, $productPrice, $taxRate)
     {
+        Tools::displayAsDeprecated('Use Product->getPrice() directly.');
+
         $decimals = 0;
         if ($this->context->currency->decimals) {
             $decimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
@@ -5961,9 +5964,12 @@ class AdminProductsControllerCore extends AdminController
      * Display product unavailable warning
      *
      * @since 1.0.0
+     * @deprecated 1.1.0 Nowhere in use. Remove entirely for 1.2.0.
      */
     protected function _displayUnavailableProductWarning()
     {
+        Tools::displayAsDeprecated();
+
         $content = '<div class="alert">
 			<span>'.$this->l('Your product will be saved as a draft.').'</span>
 				<a href="#" class="btn btn-default pull-right" onclick="submitAddProductAndPreview()" ><i class="icon-external-link-sign"></i> '.$this->l('Save and preview').'</a>
