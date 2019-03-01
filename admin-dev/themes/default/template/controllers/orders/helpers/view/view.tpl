@@ -38,7 +38,12 @@
     var currency_format = "{$currency->format}";
     var currency_blank = "{$currency->blank}";
     var currency_iso_code = "{$currency->iso_code}";
-    var priceDisplayPrecision = {$smarty.const._PS_PRICE_DISPLAY_PRECISION_|intval};
+    {if ($currency->decimals)}
+      var priceDisplayPrecision = {$smarty.const._PS_PRICE_DISPLAY_PRECISION_};
+    {else}
+      var priceDisplayPrecision = 0;
+    {/if}
+    var priceDatabasePrecision = {$smarty.const._TB_PRICE_DATABASE_PRECISION_};
     var use_taxes = {if $order->getTaxCalculationMethod() == $smarty.const.PS_TAX_INC}true{else}false{/if};
     var stock_management = {$stock_management|intval};
     var txt_add_product_stock_issue = "{l s='Are you sure you want to add this quantity?' js=1}";

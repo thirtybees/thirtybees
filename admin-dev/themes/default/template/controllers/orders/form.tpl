@@ -42,7 +42,12 @@
 	var currency_format = 5;
 	var currency_sign = '';
 	var currency_blank = false;
-	var priceDisplayPrecision = {$smarty.const._PS_PRICE_DISPLAY_PRECISION_|intval};
+  {if ($currency->decimals)}
+    var priceDisplayPrecision = {$smarty.const._PS_PRICE_DISPLAY_PRECISION_};
+  {else}
+    var priceDisplayPrecision = 0;
+  {/if}
+  var priceDatabasePrecision = {$smarty.const._TB_PRICE_DATABASE_PRECISION_};
 
 	{foreach from=$defaults_order_state key='module' item='id_order_state'}
 		defaults_order_state['{$module}'] = '{$id_order_state}';

@@ -27,7 +27,12 @@
 var Customer = new Object();
 var product_url = '{$link->getAdminLink('AdminProducts', true)|addslashes}';
 var ecotax_tax_excl = parseFloat({$ecotax_tax_excl});
-var priceDisplayPrecision = {$smarty.const._PS_PRICE_DISPLAY_PRECISION_|intval};
+{if ($currency->decimals)}
+  var priceDisplayPrecision = {$smarty.const._PS_PRICE_DISPLAY_PRECISION_};
+{else}
+  var priceDisplayPrecision = 0;
+{/if}
+var priceDatabasePrecision = {$smarty.const._TB_PRICE_DATABASE_PRECISION_};
 
 $(document).ready(function () {
 	Customer = {
