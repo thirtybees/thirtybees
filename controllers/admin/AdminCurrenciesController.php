@@ -178,7 +178,7 @@ class AdminCurrenciesControllerCore extends AdminController
                     'name'      => 'conversion_rate',
                     'maxlength' => 11,
                     'required'  => true,
-                    'hint'      => $this->l('Exchange rates are calculated from one unit of your shop\'s default currency. For example, if the default currency is euros and your chosen currency is dollars, type "1.20" (1&euro; = $1.20).'),
+                    'desc'      => $this->l('Exchange rates are calculated from one unit of your shop\'s default currency. For example, if the default currency is euros and your chosen currency is dollars, type "1.20" (1&euro; = $1.20).'),
                 ],
                 [
                     'type'      => 'select',
@@ -186,7 +186,6 @@ class AdminCurrenciesControllerCore extends AdminController
                     'name'      => 'format',
                     'maxlength' => 11,
                     'required'  => true,
-                    'hint'      => $this->l('Applies to all prices (e.g. $1,240.15).'),
                     'options'   => [
                         'query' => [
                             ['key' => 1, 'name' => 'X0,000.00 ('.$this->l('Such as with Dollars').')'],
@@ -199,6 +198,7 @@ class AdminCurrenciesControllerCore extends AdminController
                         'name'  => 'name',
                         'id'    => 'key',
                     ],
+                    'desc'      => $this->l('Applies to all prices (e.g. $1,240.15).'),
                 ],
                 [
                     'type'     => 'switch',
@@ -206,7 +206,6 @@ class AdminCurrenciesControllerCore extends AdminController
                     'name'     => 'decimals',
                     'required' => false,
                     'is_bool'  => true,
-                    'hint'     => $this->l('Display decimals in prices.'),
                     'values'   => [
                         [
                             'id'    => 'decimals_on',
@@ -219,6 +218,7 @@ class AdminCurrenciesControllerCore extends AdminController
                             'label' => $this->l('Disabled'),
                         ],
                     ],
+                    'desc'     => $this->l('Display decimals in prices. Works with Auto Format turned off, only.'),
                 ],
                 [
                     'type'     => 'switch',
@@ -226,7 +226,6 @@ class AdminCurrenciesControllerCore extends AdminController
                     'name'     => 'blank',
                     'required' => false,
                     'is_bool'  => true,
-                    'hint'     => $this->l('Include a space between symbol and price (e.g. $1,240.15 -> $ 1,240.15).'),
                     'values'   => [
                         [
                             'id'    => 'blank_on',
@@ -239,10 +238,11 @@ class AdminCurrenciesControllerCore extends AdminController
                             'label' => $this->l('Disabled'),
                         ],
                     ],
+                    'desc'     => $this->l('Include a space between symbol and price (e.g. $1,240.15 -> $ 1,240.15). Works with Auto Format turned off, only.'),
                 ],
                 [
                     'type'     => 'switch',
-                    'label'    => $this->l('Auto format'),
+                    'label'    => $this->l('Auto Format'),
                     'name'     => 'auto_format',
                     'required' => false,
                     'is_bool'  => true,
@@ -258,6 +258,7 @@ class AdminCurrenciesControllerCore extends AdminController
                             'label' => $this->l('Disabled'),
                         ],
                     ],
+                    'desc'     => $this->l('Turn on automatic formatting by the CommerceGuys library. In addition to \'Decimals\' and \'Spacing\' above, this also ignores the number of decimals configured in general preferences.'),
                 ],
                 [
                     'type'     => 'switch',
