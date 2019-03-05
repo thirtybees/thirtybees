@@ -198,7 +198,7 @@ class AdminCurrenciesControllerCore extends AdminController
                         'name'  => 'name',
                         'id'    => 'key',
                     ],
-                    'desc'      => $this->l('Applies to all prices (e.g. $1,240.15).'),
+                    'desc'      => $this->l('Applies to all prices (e.g. $1,240.15). Works with Auto Format turned off, only.'),
                 ],
                 [
                     'type'     => 'switch',
