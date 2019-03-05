@@ -134,7 +134,13 @@ $(document).ready(function () {
                              this.value = this.value.replace(/,/g, '.');"
                 />
 			</div>
-			{if isset($pack) && $pack->isPack($product->id)}<p class="help-block">{l s='The sum of wholesale prices of the products in the pack is %s%s%s' sprintf=[$currency->prefix,{toolsConvertPrice price=$pack->noPackWholesalePrice($product->id)|string_format:$priceDisplayPrecisionFormat},$currency->suffix]}</p>{/if}
+            {if isset($pack) && $pack->isPack($product->id)}
+                <p class="help-block">
+                    {l s='The sum of wholesale prices of the products in the pack is'}
+                    {displayPrice price=$pack->noPackWholesalePrice($product->id)
+                                  currency=$currency->id}
+                </p>
+            {/if}
 		</div>
 	</div>
 	<div class="form-group">
@@ -241,7 +247,13 @@ $(document).ready(function () {
                          calcPriceTE();"
             />
 		</div>
-		{if isset($pack) && $pack->isPack($product->id)}<p class="col-lg-9 col-lg-offset-3 help-block">{l s='The sum of prices of the products in the pack is %s%s%s' sprintf=[$currency->prefix,{toolsConvertPrice price=$pack->noPackPrice($product->id)|string_format:$priceDisplayPrecisionFormat},$currency->suffix]}</p>{/if}
+        {if isset($pack) && $pack->isPack($product->id)}
+            <p class="col-lg-9 col-lg-offset-3 help-block">
+                {l s='The sum of prices of the products in the pack is'}
+                {displayPrice price=$pack->noPackPrice($product->id)
+                              currency=$currency->id}
+            </p>
+        {/if}
 	</div>
 
 	<div class="form-group">
