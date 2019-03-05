@@ -260,12 +260,14 @@
 										<div class="col-lg-9">
 											<div class="input-group fixed-width-lg">
 												<span class="input-group-addon">{$currency_left_sign}{$currency_right_sign} {l s='(tax excl.)'}</span>
-													<input type="text"
-													   size="{if isset($field['size'])}{$field['size']|intval}{else}5{/if}"
-													   name="{$key}"
-													   value="{displayPriceValue price=$field['value']}"
-													   {if isset($field['placeholder']) && $field['placeholder']}placeholder="{$field['placeholder']|escape:'htmlall':'UTF-8'}"{/if}
-													/>
+                                                <input type="text"
+                                                    size="{if isset($field['size'])}{$field['size']|intval}{else}5{/if}"
+                                                    name="{$key}"
+                                                    value="{displayPriceValue price=$field['value']}"
+                                                    onkeyup="if (isArrowKey(event)) return;
+                                                             this.value = this.value.replace(/,/g, '.');"
+                                                    {if isset($field['placeholder']) && $field['placeholder']}placeholder="{$field['placeholder']|escape:'htmlall':'UTF-8'}"{/if}
+                                                />
 											</div>
 										</div>
 									{elseif $field['type'] == 'textLang' || $field['type'] == 'textareaLang' || $field['type'] == 'selectLang'}

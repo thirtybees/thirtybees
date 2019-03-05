@@ -83,7 +83,22 @@
 						</td>
 						<td>
 							<div class="input-group fixed-width-md">
-							{if isset($currency->prefix) && trim($currency->prefix) != ''}<span class="input-group-addon">{$currency->prefix}</span>{/if}<input type="text" name="input_unit_price_te_{$product.id_product}_{$product.id_product_attribute}" value="{displayPriceValue price=$product.unit_price_te}" />{if isset($currency->suffix) && trim($currency->suffix) != ''}<span class="input-group-addon">{$currency->suffix}</span>{/if}
+                                {if isset($currency->prefix) && trim($currency->prefix) != ''}
+                                    <span class="input-group-addon">
+                                        {$currency->prefix}
+                                    </span>
+                                {/if}
+                                <input type="text"
+                                    name="input_unit_price_te_{$product.id_product}_{$product.id_product_attribute}"
+                                    value="{displayPriceValue price=$product.unit_price_te}"
+                                    onkeyup="if (isArrowKey(event)) return;
+                                             this.value = this.value.replace(/,/g, '.');"
+                                />
+                                {if isset($currency->suffix) && trim($currency->suffix) != ''}
+                                    <span class="input-group-addon">
+                                        {$currency->suffix}
+                                    </span>
+                                {/if}
 							</div>
 						</td>
 						<td>
