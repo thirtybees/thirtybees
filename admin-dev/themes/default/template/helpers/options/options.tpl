@@ -263,7 +263,7 @@
 													<input type="text"
 													   size="{if isset($field['size'])}{$field['size']|intval}{else}5{/if}"
 													   name="{$key}"
-													   value="{$field['value']|escape:'html':'UTF-8'}"
+													   value="{displayPriceValue price=$field['value']}"
 													   {if isset($field['placeholder']) && $field['placeholder']}placeholder="{$field['placeholder']|escape:'htmlall':'UTF-8'}"{/if}
 													/>
 											</div>

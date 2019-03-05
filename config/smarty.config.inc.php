@@ -75,6 +75,7 @@ smartyRegisterFunction($smarty, 'function', 'convertPriceWithCurrency', ['Produc
 smartyRegisterFunction($smarty, 'function', 'displayWtPrice', ['Product', 'displayWtPrice']);
 smartyRegisterFunction($smarty, 'function', 'displayWtPriceWithCurrency', ['Product', 'displayWtPriceWithCurrency']);
 smartyRegisterFunction($smarty, 'function', 'displayPrice', ['Tools', 'displayPriceSmarty']);
+smartyRegisterFunction($smarty, 'function', 'displayPriceValue', 'displayPriceValue');
 smartyRegisterFunction($smarty, 'modifier', 'convertAndFormatPrice', ['Product', 'convertAndFormatPrice']); // used twice
 smartyRegisterFunction($smarty, 'function', 'getAdminToken', ['Tools', 'getAdminTokenLiteSmarty']);
 smartyRegisterFunction($smarty, 'function', 'displayAddressDetail', ['AddressFormat', 'generateAddressSmarty']);
@@ -220,6 +221,39 @@ function smartyCleanHtml($data)
 function toolsConvertPrice($params, $smarty)
 {
     return Tools::convertPrice($params['price'], Context::getContext()->currency);
+}
+
+/**
+ * Convert a price for display in an input field in back office. This means,
+ * allow full precision of _TB_PRICE_DATABASE_PRECISION_, but reduce the number
+ * of trailing zeros beyond PS_PRICE_DISPLAY_PRECISION. This should give the
+ * nicest display possible.
+ *
+ * @param float|string $params['price'] Raw price in context currency.
+ * @param float|string $smarty          Unused.
+ *
+ * @return string Price prettified, without currency sign.
+ *
+ * @since 1.1.0
+ */
+function displayPriceValue($params, $smarty)
+{
+    $displayDecimals = 0;
+    if (Context::getContext()->currency->decimals) {
+        $displayDecimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
+    }
+
+    $price = $params['price'];
+    // No need for the more expensive Tools::ps_round() here.
+    if ((string) $price === (string) round($price, $displayDecimals)) {
+        // Price more rounded than display precision.
+        $formatted = number_format($price, $displayDecimals, '.', '');
+    } else {
+        // Show full precision.
+        $formatted = (string) $price;
+    }
+
+    return $formatted;
 }
 
 /**
