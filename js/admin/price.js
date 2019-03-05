@@ -125,11 +125,11 @@ function calcPrice() {
 }
 
 function calcPriceTI() {
-  var priceTE = parseFloat(document.getElementById('priceTEReal').value.replace(/,/g, '.'));
-  var newPrice = addTaxes(priceTE);
+  let priceTE = parseFloat(document.getElementById('priceTEReal').value);
+  let newPrice = addTaxes(priceTE);
 
-  document.getElementById('priceTI').value = (isNaN(newPrice) || newPrice < 0) ? '' :
-    ps_round(newPrice, priceDisplayPrecision);
+  document.getElementById('priceTI').value =
+    displayPriceValue(newPrice + getEcotaxTaxIncluded());
   document.getElementById('finalPrice').innerHTML = (isNaN(newPrice) || newPrice < 0) ? '' :
     ps_round(newPrice, priceDisplayPrecision).toFixed(priceDisplayPrecision);
   document.getElementById('finalPriceWithoutTax').innerHTML = (isNaN(priceTE) || priceTE < 0) ? '' :
@@ -137,22 +137,21 @@ function calcPriceTI() {
   calcReduction();
 
   if (isNaN(parseFloat($('#priceTI').val()))) {
-    $('#priceTI').val('');
     $('#finalPrice').html('');
   }
   else {
-    $('#priceTI').val((parseFloat($('#priceTI').val()) + getEcotaxTaxIncluded()).toFixed(priceDisplayPrecision));
     $('#finalPrice').html(parseFloat($('#priceTI').val()).toFixed(priceDisplayPrecision));
   }
 }
 
 function calcPriceTE() {
-  ecotax_tax_excl = $('#ecotax').val() / (1 + ecotaxTaxRate);
-  var priceTI = parseFloat(document.getElementById('priceTI').value.replace(/,/g, '.'));
-  var newPrice = removeTaxes(ps_round(priceTI - getEcotaxTaxIncluded(), priceDisplayPrecision));
-  document.getElementById('priceTE').value = (isNaN(newPrice) || newPrice < 0) ? '' :
-    ps_round(newPrice, 6).toFixed(6);
-  document.getElementById('priceTEReal').value = (isNaN(newPrice) || newPrice < 0) ? 0 : ps_round(newPrice, 9);
+  let priceTI = parseFloat(document.getElementById('priceTI').value);
+  let newPrice = removeTaxes(priceTI);
+
+  document.getElementById('priceTE').value =
+    displayPriceValue(newPrice - getEcotaxTaxIncluded());
+  document.getElementById('priceTEReal').value =
+    displayPriceValue(newPrice);
   document.getElementById('finalPrice').innerHTML = (isNaN(newPrice) || newPrice < 0) ? '' :
     ps_round(priceTI, priceDisplayPrecision).toFixed(priceDisplayPrecision);
   document.getElementById('finalPriceWithoutTax').innerHTML = (isNaN(newPrice) || newPrice < 0) ? '' :
@@ -161,9 +160,11 @@ function calcPriceTE() {
 }
 
 function calcImpactPriceTI() {
-  var priceTE = parseFloat(document.getElementById('attribute_priceTEReal').value.replace(/,/g, '.'));
+  var priceTE = parseFloat(document.getElementById('attribute_priceTEReal').value);
   var newPrice = addTaxes(priceTE);
-  $('#attribute_priceTI').val((isNaN(newPrice) || newPrice < 0) ? '' : ps_round(newPrice, priceDisplayPrecision).toFixed(priceDisplayPrecision));
+
+  document.getElementById('attribute_priceTI').value =
+    displayPriceValue(newPrice);
   var total = ps_round((parseFloat($('#attribute_priceTI').val()) * parseInt($('#attribute_price_impact').val()) + parseFloat($('#finalPrice').html())), priceDisplayPrecision);
   if (isNaN(total) || total < 0) {
     $('#attribute_new_total_price').html('0.00');
@@ -173,11 +174,13 @@ function calcImpactPriceTI() {
 }
 
 function calcImpactPriceTE() {
-  var priceTI = parseFloat(document.getElementById('attribute_priceTI').value.replace(/,/g, '.'));
-  priceTI = (isNaN(priceTI)) ? 0 : ps_round(priceTI);
-  var newPrice = removeTaxes(ps_round(priceTI, priceDisplayPrecision));
-  $('#attribute_price').val((isNaN(newPrice) || newPrice < 0) ? '' : ps_round(newPrice, 6).toFixed(6));
-  $('#attribute_priceTEReal').val((isNaN(newPrice) || newPrice < 0) ? 0 : ps_round(newPrice, 9));
+  var priceTI = parseFloat(document.getElementById('attribute_priceTI').value);
+  var newPrice = removeTaxes(priceTI);
+
+  document.getElementById('attribute_price').value =
+    displayPriceValue(newPrice);
+  document.getElementById('attribute_priceTEReal').value =
+    displayPriceValue(newPrice);
   var total = ps_round((parseFloat($('#attribute_priceTI').val()) * parseInt($('#attribute_price_impact').val()) + parseFloat($('#finalPrice').html())), priceDisplayPrecision);
   if (isNaN(total) || total < 0) {
     $('#attribute_new_total_price').html('0.00');
