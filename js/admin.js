@@ -336,9 +336,6 @@ function formSubmit(e, button) {
     e.preventDefault();
   }
 }
-function noComma(elem) {
-  getE(elem).value = getE(elem).value.replace(new RegExp(',', 'g'), '.');
-}
 
 /* Code generator for Affiliation and vouchers */
 function gencode(size) {

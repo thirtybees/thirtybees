@@ -140,7 +140,14 @@ $(document).ready(function () {
 			<div class="input-group">
 				<span class="input-group-addon">{$currency->prefix}{$currency->suffix}</span>
 				<input type="hidden" id="priceTEReal" name="price" value="{toolsConvertPrice price=$product->price}"/>
-				<input size="11" maxlength="27" id="priceTE" name="price_displayed" type="text" value="{{toolsConvertPrice price=$product->price}|string_format:'%.6f'}" onchange="noComma('priceTE'); $('#priceTEReal').val(this.value);" onkeyup="$('#priceType').val('TE'); $('#priceTEReal').val(this.value.replace(/,/g, '.')); if (isArrowKey(event)) return; calcPriceTI();" />
+                <input type="text"
+                    id="priceTE"
+                    name="price_displayed"
+                    value="{{toolsConvertPrice price=$product->price}|string_format:'%.6f'}"
+                    onchange="this.value = this.value.replace(/,/g, '.');
+                              $('#priceTEReal').val(this.value);"
+                    onkeyup="$('#priceType').val('TE'); $('#priceTEReal').val(this.value.replace(/,/g, '.')); if (isArrowKey(event)) return; calcPriceTI();"
+                />
 			</div>
 		</div>
 	</div>
@@ -203,7 +210,13 @@ $(document).ready(function () {
 		<div class="input-group col-lg-2">
 			<span class="input-group-addon">{$currency->prefix}{$currency->suffix}</span>
 			<input id="priceType" name="priceType" type="hidden" value="TE" />
-			<input id="priceTI" name="priceTI" type="text" value="" onchange="noComma('priceTI');" maxlength="27" onkeyup="$('#priceType').val('TI');if (isArrowKey(event)) return;  calcPriceTE();" />
+            <input type="text"
+                id="priceTI"
+                name="priceTI"
+                value=""
+                onchange="this.value = this.value.replace(/,/g, '.');"
+                onkeyup="$('#priceType').val('TI');if (isArrowKey(event)) return;  calcPriceTE();"
+            />
 		</div>
 		{if isset($pack) && $pack->isPack($product->id)}<p class="col-lg-9 col-lg-offset-3 help-block">{l s='The sum of prices of the products in the pack is %s%s%s' sprintf=[$currency->prefix,{toolsConvertPrice price=$pack->noPackPrice($product->id)|string_format:$priceDisplayPrecisionFormat},$currency->suffix]}</p>{/if}
 	</div>
