@@ -98,8 +98,11 @@ function displayPrice(price, currencyFormat, currencySign, currencyBlank) {
     currency = window.currency.iso_code;
   }
 
+  if (isNaN(price) || price == '') {
+    price = 0;
+  }
+
   if (typeof window.currencyModes[currency] !== 'undefined' && window.currencyModes[currency]) {
-    price = parseFloat(price).toFixed(10);
     price = ps_round(price, priceDisplayPrecision);
     var locale = document.documentElement.lang;
     if (locale.length === 5) {
@@ -119,7 +122,6 @@ function displayPrice(price, currencyFormat, currencySign, currencyBlank) {
   }
 
   var blank = '';
-  price = parseFloat(price).toFixed(10);
   price = ps_round(price, priceDisplayPrecision);
   if (currencyBlank > 0) {
     blank = ' ';
