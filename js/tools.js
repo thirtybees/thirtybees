@@ -169,6 +169,10 @@ function ps_round(value, places) {
   if (typeof(places) === 'undefined') {
     places = 2;
   }
+  value = parseFloat(value);
+  if (isNaN(value)) {
+    return 0;
+  }
 
   var method = roundMode;
 
