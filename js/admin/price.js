@@ -130,18 +130,12 @@ function calcPriceTI() {
 
   document.getElementById('priceTI').value =
     displayPriceValue(newPrice + getEcotaxTaxIncluded());
-  document.getElementById('finalPrice').innerHTML = (isNaN(newPrice) || newPrice < 0) ? '' :
-    ps_round(newPrice, priceDisplayPrecision).toFixed(priceDisplayPrecision);
-  document.getElementById('finalPriceWithoutTax').innerHTML = (isNaN(priceTE) || priceTE < 0) ? '' :
-    (ps_round(priceTE, 6)).toFixed(6);
-  calcReduction();
+  document.getElementById('finalPrice').innerHTML =
+    displayPrice(newPrice);
+  document.getElementById('finalPriceWithoutTax').innerHTML =
+    displayPrice(priceTE);
 
-  if (isNaN(parseFloat($('#priceTI').val()))) {
-    $('#finalPrice').html('');
-  }
-  else {
-    $('#finalPrice').html(parseFloat($('#priceTI').val()).toFixed(priceDisplayPrecision));
-  }
+  calcReduction();
 }
 
 function calcPriceTE() {
@@ -152,10 +146,11 @@ function calcPriceTE() {
     displayPriceValue(newPrice - getEcotaxTaxIncluded());
   document.getElementById('priceTEReal').value =
     displayPriceValue(newPrice);
-  document.getElementById('finalPrice').innerHTML = (isNaN(newPrice) || newPrice < 0) ? '' :
-    ps_round(priceTI, priceDisplayPrecision).toFixed(priceDisplayPrecision);
-  document.getElementById('finalPriceWithoutTax').innerHTML = (isNaN(newPrice) || newPrice < 0) ? '' :
-    (ps_round(newPrice, 6)).toFixed(6);
+  document.getElementById('finalPrice').innerHTML =
+    displayPrice(priceTI);
+  document.getElementById('finalPriceWithoutTax').innerHTML =
+    displayPrice(newPrice);
+
   calcReduction();
 }
 
@@ -165,12 +160,12 @@ function calcImpactPriceTI() {
 
   document.getElementById('attribute_priceTI').value =
     displayPriceValue(newPrice);
-  var total = ps_round((parseFloat($('#attribute_priceTI').val()) * parseInt($('#attribute_price_impact').val()) + parseFloat($('#finalPrice').html())), priceDisplayPrecision);
-  if (isNaN(total) || total < 0) {
-    $('#attribute_new_total_price').html('0.00');
-  } else {
-    $('#attribute_new_total_price').html(total);
-  }
+
+  $('#attribute_new_total_price').html(displayPrice(
+    parseFloat($('#attribute_priceTI').val())
+    * parseInt($('#attribute_price_impact').val())
+    + parseFloat($('#finalPrice').html())
+  ));
 }
 
 function calcImpactPriceTE() {
@@ -181,12 +176,12 @@ function calcImpactPriceTE() {
     displayPriceValue(newPrice);
   document.getElementById('attribute_priceTEReal').value =
     displayPriceValue(newPrice);
-  var total = ps_round((parseFloat($('#attribute_priceTI').val()) * parseInt($('#attribute_price_impact').val()) + parseFloat($('#finalPrice').html())), priceDisplayPrecision);
-  if (isNaN(total) || total < 0) {
-    $('#attribute_new_total_price').html('0.00');
-  } else {
-    $('#attribute_new_total_price').html(total);
-  }
+
+  $('#attribute_new_total_price').html(displayPrice(
+    parseFloat($('#attribute_priceTI').val())
+    * parseInt($('#attribute_price_impact').val())
+    + parseFloat($('#finalPrice').html())
+  ));
 }
 
 function calcReduction() {
@@ -216,9 +211,10 @@ function reductionPrice() {
     curPrice = curPrice - rprice.value;
   }
 
-  newprice.innerHTML = (ps_round(parseFloat(curPrice), priceDisplayPrecision) + getEcotaxTaxIncluded()).toFixed(priceDisplayPrecision);
-  var rpriceWithoutTaxes = ps_round(removeTaxes(rprice.value), priceDisplayPrecision);
-  newpriceWithoutTax.innerHTML = ps_round(priceWhithoutTaxes.value - rpriceWithoutTaxes, priceDisplayPrecision).toFixed(priceDisplayPrecision);
+  newprice.innerHTML = displayPrice(curPrice + getEcotaxTaxIncluded());
+  newpriceWithoutTax.innerHTML = displayPrice(
+    priceWhithoutTaxes.value - removeTaxes(rprice.value)
+  );
 }
 
 function reductionPercent() {
@@ -241,8 +237,8 @@ function reductionPercent() {
     curPrice = price.value * (1 - (rpercent.value / 100));
   }
 
-  newprice.innerHTML = (ps_round(parseFloat(curPrice), priceDisplayPrecision) + getEcotaxTaxIncluded()).toFixed(priceDisplayPrecision);
-  newpriceWithoutTax.innerHTML = ps_round(parseFloat(removeTaxes(ps_round(curPrice, priceDisplayPrecision))), priceDisplayPrecision).toFixed(priceDisplayPrecision);
+  newprice.innerHTML = displayPrice(curPrice + getEcotaxTaxIncluded());
+  newpriceWithoutTax.innerHTML = displayPrice(removeTaxes(curPrice));
 }
 
 function isInReductionPeriod() {
@@ -270,9 +266,10 @@ function decimalTruncate(source, decimals) {
 }
 
 function unitPriceWithTax(type) {
-  var priceWithTax = parseFloat(document.getElementById(type + '_price').value.replace(/,/g, '.'));
-  var newPrice = addTaxes(priceWithTax);
-  $('#' + type + '_price_with_tax').html((isNaN(newPrice) || newPrice < 0) ? '0.00' : ps_round(newPrice, priceDisplayPrecision).toFixed(priceDisplayPrecision));
+  var newPrice = parseFloat(document.getElementById(type + '_price').value);
+  newPrice = addTaxes(newPrice);
+
+  $('#' + type + '_price_with_tax').html(displayPrice(newPrice));
 }
 
 function unitySecond() {
