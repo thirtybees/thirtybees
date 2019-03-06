@@ -243,7 +243,8 @@ function displayPriceValue($params, $smarty)
         $displayDecimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
     }
 
-    $price = $params['price'];
+    // String -> float -> string gets rid of trailing zeros.
+    $price = (float) $params['price'];
     // No need for the more expensive Tools::ps_round() here.
     if ((string) $price === (string) round($price, $displayDecimals)) {
         // Price more rounded than display precision.
