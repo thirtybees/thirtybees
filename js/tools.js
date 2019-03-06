@@ -29,16 +29,29 @@
  */
 
 function formatedNumberToFloat(price, currencyFormat, currencySign) {
-  price = price.replace(currencySign, '');
-  if (currencyFormat === 1) {
-    return parseFloat(price.replace(',', '').replace(' ', ''));
-  } else if (currencyFormat === 2) {
-    return parseFloat(price.replace(' ', '').replace(',', '.'));
-  } else if (currencyFormat === 3) {
-    return parseFloat(price.replace('.', '').replace(' ', '').replace(',', '.'));
-  } else if (currencyFormat === 4) {
-    return parseFloat(price.replace(',', '').replace(' ', ''));
+  price = price.replace(currencySign, '').replace(/ /g, '');
+
+  switch (currencyFormat) {
+    case 1:
+      price = parseFloat(price.replace(/,/g, ''));
+      break;
+    case 2:
+      price = parseFloat(replace(/,/, '.'));
+      break;
+    case 3:
+      price = parseFloat(price.replace(/./g, '').replace(/,/, '.'));
+      break;
+    case 4:
+    case 6:
+      price = parseFloat(price.replace(/,/, ''));
+      break;
+    case 5:
+      price = parseFloat(price.replace(/'/, ''));
+      break;
+    default:
+      price = parseFloat(price);
   }
+
   return price;
 }
 
