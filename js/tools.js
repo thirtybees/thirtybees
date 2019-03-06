@@ -77,8 +77,19 @@ function formatNumber(value, numberOfDecimal, thousenSeparator, virgule) {
 }
 
 function formatCurrency(price, currencyFormat, currencySign, currencyBlank) {
-  // if you modified this function, don't forget to modify the PHP function displayPrice (in the Tools.php class)
+  // Really? It's used quite a lot.
+  //console.log('Deprecated with v1.1.0. Use displayPrice() directly.');
+
+  return displayPrice(price, currencyFormat, currencySign, currencyBlank);
+}
+
+/*
+ * This also uses global priceDisplayPrecision, so this should be right.
+ * Formatting should match Tools::displayPrice().
+ */
+function displayPrice(price, currencyFormat, currencySign, currencyBlank) {
   var currency = 'EUR';
+
   if (typeof window.currency_iso_code !== 'undefined' && window.currency_iso_code.length === 3) {
     // Should be exposed in Back Office
     currency = window.currency_iso_code;

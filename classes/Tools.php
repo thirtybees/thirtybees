@@ -783,7 +783,10 @@ class ToolsCore
     }
 
     /**
-     * Return price with currency sign for a given product
+     * Return a formatted price string, with currency sign.
+     *
+     * Formatting should match JavaScript function displayPrice (in tools.js).
+     * Which means: don't forget to transport any changes made here to there.
      *
      * @param float        $price      Product price
      * @param object|array $tbCurrency Current (thirty bees) Currency
@@ -792,7 +795,6 @@ class ToolsCore
      * @param null|bool    $auto
      *
      * @return string Price correctly formatted (sign, decimal separator...)
-     * if you modify this function, don't forget to modify the Javascript function formatCurrency (in tools.js)
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
