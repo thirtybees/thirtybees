@@ -1384,6 +1384,25 @@ function parseDate(date) {
   return $.datepicker.parseDate("yy-mm-dd", date);
 }
 
+/* Formatting should match Smarty function displayPriceValue. */
+function displayPriceValue(price) {
+  if (isNaN(price) || price == '') {
+    price = 0;
+  }
+
+  priceDatabase = parseFloat(parseFloat(price).toFixed(priceDatabasePrecision));
+  priceDisplay = ps_round(price, priceDisplayPrecision);
+
+  let formatted;
+  if (priceDatabase.toString() === priceDisplay.toString()) {
+    formatted = priceDisplay.toFixed(priceDisplayPrecision);
+  } else {
+    formatted = priceDatabase.toString();
+  }
+
+  return formatted;
+}
+
 function refresh_kpis() {
   $('.box-stats').each(function () {
     if ($(this).attr('id')) {

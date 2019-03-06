@@ -229,6 +229,9 @@ function toolsConvertPrice($params, $smarty)
  * of trailing zeros beyond PS_PRICE_DISPLAY_PRECISION. This should give the
  * nicest display possible.
  *
+ * Formatting should match JavaScript function displayPriceValue (in admin.js).
+ * Which means: don't forget to transport any changes made here to there.
+ *
  * @param float|string $params['price'] Raw price in context currency.
  * @param float|string $smarty          Unused.
  *
