@@ -126,6 +126,8 @@ function displayPrice(price, currencyFormat, currencySign, currencyBlank) {
   if (currencyBlank > 0) {
     blank = ' ';
   }
+
+  // currencyFormat is available in front office, only.
   if (currencyFormat == 1) {
     return currencySign + blank + formatNumber(price, priceDisplayPrecision, ',', '.');
   }
@@ -145,7 +147,7 @@ function displayPrice(price, currencyFormat, currencySign, currencyBlank) {
     return (formatNumber(price, priceDisplayPrecision, '.', ',') + blank + currencySign);
   }
 
-  return price;
+  return price.toFixed(priceDisplayPrecision);
 }
 
 function ps_round_helper(value, mode) {
