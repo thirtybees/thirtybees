@@ -258,8 +258,10 @@ function isInReductionPeriod() {
 }
 
 function decimalTruncate(source, decimals) {
+  console.log('Deprecated with v1.1.0. Use toFixed() instead.');
+
   if (typeof decimals === 'undefined') {
-    decimals = 6;
+    decimals = priceDatabasePrecision;
   }
   source = source.toString();
   var pos = source.indexOf('.');
