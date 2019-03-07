@@ -61,7 +61,13 @@
 				<div class="fixed-width-xl">
 					<div class="input-group">
 						{if $currency->format % 2}<div class="input-group-addon">{$currency->sign} {l s='tax excl.'}</div>{/if}
-						<input type="text" name="product_price_tax_excl" class="edit_product_price_tax_excl edit_product_price" value="{$product['unit_price_tax_excl']}"/>
+                        <input type="text"
+                            name="product_price_tax_excl"
+                            class="edit_product_price_tax_excl edit_product_price"
+                            value="{displayPriceValue price=$product['unit_price_tax_excl']}"
+                            onkeyup="if (isArrowKey(event)) return;
+                                     this.value = this.value.replace(/,/g, '.');"
+                        />
 						{if !($currency->format % 2)}<div class="input-group-addon">{$currency->sign} {l s='tax excl.'}</div>{/if}
 					</div>
 				</div>
@@ -69,7 +75,13 @@
 				<div class="fixed-width-xl">
 					<div class="input-group">
 						{if $currency->format % 2}<div class="input-group-addon">{$currency->sign} {l s='tax incl.'}</div>{/if}
-						<input type="text" name="product_price_tax_incl" class="edit_product_price_tax_incl edit_product_price" value="{$product['unit_price_tax_incl']}"/>
+                        <input type="text"
+                            name="product_price_tax_incl"
+                            class="edit_product_price_tax_incl edit_product_price"
+                            value="{displayPriceValue price=$product['unit_price_tax_incl']}"
+                            onkeyup="if (isArrowKey(event)) return;
+                                     this.value = this.value.replace(/,/g, '.');"
+                        />
 						{if !($currency->format % 2)}<div class="input-group-addon">{$currency->sign} {l s='tax incl.'}</div>{/if}
 					</div>
 				</div>

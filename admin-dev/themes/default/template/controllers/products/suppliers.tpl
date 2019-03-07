@@ -109,7 +109,12 @@
 									<input type="text" value="{$reference|escape:'html':'UTF-8'}" name="supplier_reference_{$attribute['id_product']}_{$attribute['id_product_attribute']}_{$supplier->id_supplier}" />
 								</td>
 								<td>
-									<input type="text" value="{$price_te|htmlentities}" name="product_price_{$attribute['id_product']}_{$attribute['id_product_attribute']}_{$supplier->id_supplier}" />
+                                    <input type="text"
+                                        name="product_price_{$attribute['id_product']}_{$attribute['id_product_attribute']}_{$supplier->id_supplier}"
+                                        value="{displayPriceValue price=$price_te}"
+                                        onkeyup="if (isArrowKey(event)) return;
+                                                 this.value = this.value.replace(/,/g, '.');"
+                                    />
 								</td>
 								<td>
 									<select name="product_price_currency_{$attribute['id_product']}_{$attribute['id_product_attribute']}_{$supplier->id_supplier}">

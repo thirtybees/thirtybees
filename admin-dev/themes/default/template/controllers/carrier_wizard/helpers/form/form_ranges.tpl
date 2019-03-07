@@ -11,7 +11,13 @@
 							<div class="input-group fixed-width-md">
 								<span class="input-group-addon weight_unit">{$PS_WEIGHT_UNIT}</span>
 								<span class="input-group-addon price_unit">{$currency_sign}</span>
-								<input class="form-control" name="range_inf[{$range.id_range|intval}]" type="text" value="{$range.delimiter1|string_format:"%.6f"}" />
+                                <input type="text"
+                                    name="range_inf[{$range.id_range|intval}]"
+                                    class="form-control"
+                                    value="{displayPriceValue price=$range.delimiter1}"
+                                    onkeyup="if (isArrowKey(event)) return;
+                                             this.value = this.value.replace(/,/g, '.');"
+                                />
 							</div>
 						</td>
 						{foreachelse}
@@ -32,7 +38,17 @@
 							<div class="input-group fixed-width-md">
 								<span class="input-group-addon weight_unit">{$PS_WEIGHT_UNIT}</span>
 								<span class="input-group-addon price_unit">{$currency_sign}</span>
-								<input class="form-control" name="range_sup[{$range.id_range|intval}]" type="text" {if isset($form_id) && !$form_id} value="" {else} value="{if isset($change_ranges) && $range.id_range == 0} {else}{$range.delimiter2|string_format:"%.6f"}{/if}" {/if} autocomplete="off"/>
+                                <input type="text"
+                                    name="range_sup[{$range.id_range|intval}]"
+                                    class="form-control"
+                                    {if isset($form_id) && !$form_id}
+                                        value=""
+                                    {else}
+                                        value="{if isset($change_ranges) && $range.id_range == 0} {else}{displayPriceValue price=$range.delimiter2}{/if}"
+                                    {/if}
+                                    onkeyup="if (isArrowKey(event)) return;
+                                             this.value = this.value.replace(/,/g, '.');"
+                                />
 							</div>
 						</td>
 						{foreachelse}
@@ -80,10 +96,20 @@
 						<td>
 							<div class="input-group fixed-width-md">
 								<span class="input-group-addon">{$currency_sign}</span>
-								<input class="form-control" name="fees[{$zone.id_zone|intval}][{$range.id_range|intval}]" type="text"
-								{if !isset($fields_value['zones'][$zone.id_zone]) || (isset($fields_value['zones'][$zone.id_zone]) && !$fields_value['zones'][$zone.id_zone])} disabled="disabled"{/if}
-
-								{if isset($price_by_range[$range.id_range][$zone.id_zone]) && $price_by_range[$range.id_range][$zone.id_zone] && isset($fields_value['zones'][$zone.id_zone]) && $fields_value['zones'][$zone.id_zone]} value="{$price_by_range[$range.id_range][$zone.id_zone]|string_format:'%.6f'}" {else} value="" {/if} />
+                                <input type="text"
+                                    class="form-control"
+                                    name="fees[{$zone.id_zone|intval}][{$range.id_range|intval}]"
+                                    {if !isset($fields_value['zones'][$zone.id_zone]) || (isset($fields_value['zones'][$zone.id_zone]) && !$fields_value['zones'][$zone.id_zone])}
+                                        disabled="disabled"
+                                    {/if}
+                                    {if isset($price_by_range[$range.id_range][$zone.id_zone]) && $price_by_range[$range.id_range][$zone.id_zone] && isset($fields_value['zones'][$zone.id_zone]) && $fields_value['zones'][$zone.id_zone]}
+                                        value="{displayPriceValue price=$price_by_range[$range.id_range][$zone.id_zone]}"
+                                    {else}
+                                        value=""
+                                    {/if}
+                                    onkeyup="if (isArrowKey(event)) return;
+                                             this.value = this.value.replace(/,/g, '.');"
+                                />
 							</div>
 						</td>
 						{/foreach}

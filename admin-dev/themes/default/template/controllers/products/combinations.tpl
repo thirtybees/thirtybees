@@ -144,7 +144,13 @@
 						{if $currency->format % 2 != 0}{$currency->sign}{/if}
 						{if $currency->format % 2 == 0}{$currency->sign}{/if}
 					</span>
-					<input type="text" name="attribute_wholesale_price" id="attribute_wholesale_price" value="0" onKeyUp="if (isArrowKey(event)) return ;this.value = this.value.replace(/,/g, '.');" />
+                    <input type="text"
+                        id="attribute_wholesale_price"
+                        name="attribute_wholesale_price"
+                        value="{displayPriceValue price=0}"
+                        onkeyup="if (isArrowKey(event)) return;
+                                 this.value = this.value.replace(/,/g, '.');"
+                    />
 				</div>
 				<span style="display:none;" id="attribute_wholesale_price_full" class="help-block">{l s='Overrides the wholesale price from the "Prices" tab.'}</span>
 			</div>
@@ -179,7 +185,14 @@
 								</div>
 								<input type="hidden"  id="attribute_priceTEReal" name="attribute_price" value="0.00" />
 
-								<input type="text" id="attribute_price" value="0.00" onkeyup="$('#attribute_priceTEReal').val(this.value.replace(/,/g, '.')); if (isArrowKey(event)) return ;this.value = this.value.replace(/,/g, '.'); calcImpactPriceTI();"/>
+                                <input type="text"
+                                    id="attribute_price"
+                                    value="{displayPriceValue price=0}"
+                                    onkeyup="if (isArrowKey(event)) return;
+                                             this.value = this.value.replace(/,/g, '.');
+                                             $('#attribute_priceTEReal').val(this.value);
+                                             calcImpactPriceTI();"
+                                />
 							</div>
 						</div>
 						<div class="form-group">
@@ -192,7 +205,14 @@
 									{if $currency->format % 2 == 0} {$currency->sign}{/if}
 									{l s='(tax incl.)'}
 								</div>
-								<input type="text" name="attribute_priceTI" id="attribute_priceTI" value="0.00" onkeyup="if (isArrowKey(event)) return ;this.value = this.value.replace(/,/g, '.'); calcImpactPriceTE();"/>
+                                <input type="text"
+                                    name="attribute_priceTI"
+                                    id="attribute_priceTI"
+                                    value="{displayPriceValue price=0}"
+                                    onkeyup="if (isArrowKey(event)) return;
+                                             this.value = this.value.replace(/,/g, '.');
+                                             calcImpactPriceTE();"
+                                />
 							</div>
 						</div>
 						<div class="row">
@@ -262,7 +282,13 @@
 							{if $currency->format % 2 == 0}{$currency->sign}{/if}
 							/ <span id="unity_third">{$field_value_unity}</span>
 						</div>
-						<input type="text" name="attribute_unity" id="attribute_unity" value="0.00" onKeyUp="if (isArrowKey(event)) return ;this.value = this.value.replace(/,/g, '.');" />
+                        <input type="text"
+                            id="attribute_unity"
+                            name="attribute_unity"
+                            value="{displayPriceValue price=0}"
+                            onkeyup="if (isArrowKey(event)) return;
+                                     this.value = this.value.replace(/,/g, '.');"
+                        />
 					</div>
 				</div>
 			</div>
@@ -280,7 +306,13 @@
 					{if $currency->format % 2 != 0}{$currency->sign}{/if}
 					{if $currency->format % 2 == 0} {$currency->sign}{/if}
 				</div>
-				<input type="text" name="attribute_ecotax" id="attribute_ecotax" value="0.00" onKeyUp="if (isArrowKey(event)) return ;this.value = this.value.replace(/,/g, '.');" />
+                <input type="text"
+                    name="attribute_ecotax"
+                    id="attribute_ecotax"
+                    value="{displayPriceValue price=0}"
+                    onkeyup="if (isArrowKey(event)) return;
+                             this.value = this.value.replace(/,/g, '.');"
+                />
 			</div>
 		</div>
 		{/if}
