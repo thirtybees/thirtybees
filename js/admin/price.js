@@ -51,40 +51,35 @@ function getTaxes() {
   return window.taxesArray[taxId];
 }
 
-function addTaxes(price) {
-  var taxes = getTaxes();
-  var priceWithTaxes = price;
-  if (taxes.computation_method === 0) {
-    $.each(taxes.rates, function (i) {
-      priceWithTaxes *= (1 + (taxes.rates[i] / 100));
+function addTaxes(priceWithTaxes) {
+  let taxes = getTaxes();
 
-      return false;
-    });
+  if (taxes.computation_method === 0) {
+    priceWithTaxes *= 1 + taxes.rates[0] / 100;
   } else if (taxes.computation_method === 1) {
     var rate = 0;
     $.each(taxes.rates, function (i) {
       rate += taxes.rates[i];
     });
 
-    priceWithTaxes *= (1 + (rate / 100));
+    priceWithTaxes *= 1 + rate / 100;
   } else if (taxes.computation_method === 2) {
     $.each(taxes.rates, function (i) {
-      priceWithTaxes *= (1 + (taxes.rates[i] / 100));
+      priceWithTaxes = parseFloat(
+        (priceWithTaxes * (1 + taxes.rates[i] / 100))
+        .toFixed(priceDatabasePrecision)
+      );
     });
   }
 
-  return priceWithTaxes;
+  return parseFloat(priceWithTaxes.toFixed(priceDatabasePrecision));
 }
 
-function removeTaxes(price) {
-  var taxes = getTaxes();
-  var priceWithoutTaxes = price;
-  if (taxes.computation_method === 0) {
-    $.each(taxes.rates, function (i) {
-      priceWithoutTaxes /= (1 + (taxes.rates[i] / 100));
+function removeTaxes(priceWithoutTaxes) {
+  let taxes = getTaxes();
 
-      return false;
-    });
+  if (taxes.computation_method === 0) {
+    priceWithoutTaxes /= 1 + taxes.rates[0] / 100;
   }
   else if (taxes.computation_method === 1) {
     var rate = 0;
@@ -92,22 +87,30 @@ function removeTaxes(price) {
       rate += taxes.rates[i];
     });
 
-    priceWithoutTaxes /= (1 + (rate / 100));
+    priceWithoutTaxes /= 1 + rate / 100;
   } else if (taxes.computation_method === 2) {
     $.each(taxes.rates, function (i) {
-      priceWithoutTaxes /= (1 + (taxes.rates[i] / 100));
+      priceWithoutTaxes = parseFloat(
+        (priceWithoutTaxes / (1 + taxes.rates[i] / 100))
+        .toFixed(priceDatabasePrecision)
+      );
     });
   }
 
-  return priceWithoutTaxes;
+  return parseFloat(priceWithoutTaxes.toFixed(priceDatabasePrecision));
 }
 
 function getEcotaxTaxIncluded() {
-  return ps_round(window.ecotax_tax_excl * (1 + ecotaxTaxRate), 2);
+  return parseFloat(
+    (window.ecotax_tax_excl * (1 + ecotaxTaxRate))
+    .toFixed(priceDatabasePrecision)
+  );
 }
 
 function getEcotaxTaxExcluded() {
-  return window.ecotax_tax_excl;
+  return parseFloat(
+    parseFloat(window.ecotax_tax_excl).toFixed(priceDatabasePrecision)
+  );
 }
 
 function formatPrice(price) {
@@ -237,7 +240,10 @@ function reductionPercent() {
     if (parseFloat(rpercent.value) < 0) {
       rpercent.value = 0;
     }
-    curPrice = price.value * (1 - (rpercent.value / 100));
+    curPrice =  parseFloat(
+      (price.value * (1 - rpercent.value / 100))
+      .toFixed(priceDatabasePrecision)
+    );
   }
 
   newprice.innerHTML = displayPrice(curPrice + getEcotaxTaxIncluded());
