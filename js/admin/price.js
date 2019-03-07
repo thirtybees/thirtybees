@@ -135,8 +135,6 @@ function calcPriceTI() {
     displayPrice(newPrice);
   document.getElementById('finalPriceWithoutTax').innerHTML =
     displayPrice(priceTE);
-
-  calcReduction();
 }
 
 function calcPriceTE() {
@@ -151,8 +149,6 @@ function calcPriceTE() {
     displayPrice(priceTI);
   document.getElementById('finalPriceWithoutTax').innerHTML =
     displayPrice(newPrice);
-
-  calcReduction();
 }
 
 function calcImpactPriceTI() {
@@ -186,6 +182,8 @@ function calcImpactPriceTE() {
 }
 
 function calcReduction() {
+  console.log('Deprecated with v1.1.0. Nowhere in use.');
+
   if (parseFloat($('#reduction_price').val()) > 0) {
     reductionPrice();
   } else if (parseFloat($('#reduction_percent').val()) > 0) {
@@ -194,6 +192,8 @@ function calcReduction() {
 }
 
 function reductionPrice() {
+  console.log('Deprecated with v1.1.0. Nowhere in use.');
+
   var price = document.getElementById('priceTI');
   var priceWhithoutTaxes = document.getElementById('priceTE');
   var newprice = document.getElementById('finalPrice');
@@ -219,6 +219,8 @@ function reductionPrice() {
 }
 
 function reductionPercent() {
+  console.log('Deprecated with v1.1.0. Nowhere in use.');
+
   var price = document.getElementById('priceTI');
   var newprice = document.getElementById('finalPrice');
   var newpriceWithoutTax = document.getElementById('finalPriceWithoutTax');
