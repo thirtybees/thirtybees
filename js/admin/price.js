@@ -111,8 +111,9 @@ function getEcotaxTaxExcluded() {
 }
 
 function formatPrice(price) {
-  var fixedToSix = (Math.round(price * 1000000) / 1000000);
-  return (Math.round(fixedToSix) === fixedToSix + 0.000001 ? fixedToSix + 0.000001 : fixedToSix);
+  console.log('Deprecated with v1.1.0. Use displayPriceValue() directly.');
+
+  return displayPriceValue();
 }
 
 function calcPrice() {
