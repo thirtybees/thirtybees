@@ -383,9 +383,8 @@ function bind_inputs() {
       }
     } else {
       priceField.attr('disabled', 'disabled');
-      if (!priceField.val()) {
-        priceField.val('');
-      }
+      priceField.closest('div.input-group').removeClass('has-error');
+      priceField.val('');
     }
 
     return false;
