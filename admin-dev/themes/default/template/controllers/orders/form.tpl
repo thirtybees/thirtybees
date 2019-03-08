@@ -791,6 +791,8 @@
 
 	function fixPriceFormat(price)
 	{
+    console.log('Deprecated with v1.1.0. Use parseFloat() instead.');
+
 		if(price.indexOf(',') > 0 && price.indexOf('.') > 0) // if contains , and .
 			if(price.indexOf(',') < price.indexOf('.')) // if , is before .
 				price = price.replace(',','');  // remove ,
