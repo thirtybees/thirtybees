@@ -343,7 +343,7 @@ window.product_tabs.Combinations = new function () {
           $('#product_att_list').html('');
           self.removeButtonCombination('update');
           window.scroll_if_anchor('#add_new_combination');
-          var wholesalePrice = Math.abs(data[0].wholesale_price);
+          var wholesalePrice = data[0].wholesale_price;
           var price = data[0].price;
           var weight = data[0].weight;
           var unitImpact = data[0].unit_price_impact;
@@ -566,13 +566,13 @@ window.product_tabs.Combinations = new function () {
 
     getE('attribute_ean13').value = ean;
     getE('attribute_upc').value = upc;
-    getE('attribute_wholesale_price').value = Math.abs(wholesalePrice);
-    getE('attribute_price').value = ps_round(Math.abs(priceImpact), 2);
-    getE('attribute_priceTEReal').value = Math.abs(priceImpact);
-    getE('attribute_weight').value = Math.abs(weightImpact);
-    getE('attribute_unity').value = Math.abs(unitImpact);
+    getE('attribute_wholesale_price').value = displayPriceValue(wholesalePrice);
+    getE('attribute_price').value = displayPriceValue(priceImpact);
+    getE('attribute_priceTEReal').value = displayPriceValue(priceImpact);
+    getE('attribute_weight').value = weightImpact;
+    getE('attribute_unity').value = unitImpact;
     if ($('#attribute_ecotax').length > 0) {
-      getE('attribute_ecotax').value = ecoTax;
+      getE('attribute_ecotax').value = displayPriceValue(ecoTax);
     }
 
     getE('attribute_default').checked = parseInt(defaultAttribute, 10) === 1;
