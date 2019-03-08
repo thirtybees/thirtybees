@@ -137,7 +137,12 @@ function addProductRefreshTotal() {
     price = 0;
   }
   var total = makeTotalProductCaculation(quantity, price);
-  $('#add_product_product_total').html(formatCurrency(total, window.currency_format, window.currency_sign, window.currency_blank));
+  $('#add_product_product_total').html(displayPrice(
+    total,
+    window.currency_format,
+    window.currency_sign,
+    window.currency_blank
+  ));
 }
 
 function editProductRefreshTotal(element) {
@@ -173,23 +178,29 @@ function editProductRefreshTotal(element) {
       if ($(elm).find('.edit_product_quantity').length) {
         qty += parseInt($(elm).find('.edit_product_quantity').val());
         subtotal = makeTotalProductCaculation($(elm).find('.edit_product_quantity').val(), price);
-        $(elm).find('.total_product').html(formatCurrency(subtotal, currency_format, currency_sign, currency_blank));
+        $(elm).find('.total_product').html(displayPrice(
+          subtotal, currency_format, currency_sign, currency_blank
+        ));
       }
     });
 
     var total = makeTotalProductCaculation(qty, price);
-    element.find('td.total_product').html(formatCurrency(total, currency_format, currency_sign, currency_blank));
+    element.find('td.total_product').html(displayPrice(
+      total, currency_format, currency_sign, currency_blank
+    ));
     element.find('td.productQuantity').html(qty);
   }
   else {
     var total = makeTotalProductCaculation(quantity, price);
-    element.find('td.total_product').html(formatCurrency(total, currency_format, currency_sign, currency_blank));
+    element.find('td.total_product').html(displayPrice(
+      total, currency_format, currency_sign, currency_blank
+    ));
   }
 
 }
 
 function makeTotalProductCaculation(quantity, price) {
-  return Math.round(quantity * price * 100) / 100;
+  return parseFloat((quantity * price).toFixed(priceDatabasePrecision));
 }
 
 function addViewOrderDetailRow(view) {
@@ -234,33 +245,63 @@ function refreshProductLineView(element, view) {
 
 function updateAmounts(order) {
   $('#total_products td.amount').fadeOut('slow', function () {
-    $(this).html(formatCurrency(parseFloat(order.total_products_wt), window.currency_format, window.currency_sign, window.currency_blank));
+    $(this).html(displayPrice(
+      order.total_products_wt,
+      window.currency_format,
+      window.currency_sign,
+      window.currency_blank
+    ));
     $(this).fadeIn('slow');
   });
   $('#total_discounts td.amount').fadeOut('slow', function () {
-    $(this).html(formatCurrency(parseFloat(order.total_discounts_tax_incl), window.currency_format, window.currency_sign, window.currency_blank));
+    $(this).html(displayPrice(
+      order.total_discounts_tax_incl,
+      window.currency_format,
+      window.currency_sign,
+      window.currency_blank
+    ));
     $(this).fadeIn('slow');
   });
   if (order.total_discounts_tax_incl > 0) {
     $('#total_discounts').slideDown('slow');
   }
   $('#total_wrapping td.amount').fadeOut('slow', function () {
-    $(this).html(formatCurrency(parseFloat(order.total_wrapping_tax_incl), window.currency_format, window.currency_sign, window.currency_blank));
+    $(this).html(displayPrice(
+      order.total_wrapping_tax_incl,
+      window.currency_format,
+      window.currency_sign,
+      window.currency_blank
+    ));
     $(this).fadeIn('slow');
   });
   if (order.total_wrapping_tax_incl > 0) {
     $('#total_wrapping').slideDown('slow');
   }
   $('#total_shipping td.amount').fadeOut('slow', function () {
-    $(this).html(formatCurrency(parseFloat(order.total_shipping_tax_incl), window.currency_format, window.currency_sign, window.currency_blank));
+    $(this).html(displayPrice(
+      order.total_shipping_tax_incl,
+      window.currency_format,
+      window.currency_sign,
+      window.currency_blank
+    ));
     $(this).fadeIn('slow');
   });
   $('#total_order td.amount').fadeOut('slow', function () {
-    $(this).html(formatCurrency(parseFloat(order.total_paid_tax_incl), window.currency_format, window.currency_sign, window.currency_blank));
+    $(this).html(displayPrice(
+      order.total_paid_tax_incl,
+      window.currency_format,
+      window.currency_sign,
+      window.currency_blank
+    ));
     $(this).fadeIn('slow');
   });
   $('.total_paid').fadeOut('slow', function () {
-    $(this).html(formatCurrency(parseFloat(order.total_paid_tax_incl), window.currency_format, window.currency_sign, window.currency_blank));
+    $(this).html(displayPrice(
+      order.total_paid_tax_incl,
+      window.currency_format,
+      window.currency_sign,
+      window.currency_blank
+    ));
     $(this).fadeIn('slow');
   });
   $('.alert').slideDown('slow');
@@ -386,8 +427,12 @@ function init() {
         window.current_product = data;
         $('#add_product_product_id').val(data.id_product);
         $('#add_product_product_name').val(data.name);
-        $('#add_product_product_price_tax_incl').val(data.price_tax_incl);
-        $('#add_product_product_price_tax_excl').val(data.price_tax_excl);
+        $('#add_product_product_price_tax_incl').val(displayPriceValue(
+          data.price_tax_incl
+        ));
+        $('#add_product_product_price_tax_excl').val(displayPriceValue(
+          data.price_tax_excl
+        ));
         addProductRefreshTotal();
         if (window.stock_management) {
           $('#add_product_product_stock').html(data.stock[0]);
@@ -423,8 +468,12 @@ function init() {
 
   $('select#add_product_product_attribute_id').unbind('change');
   $('select#add_product_product_attribute_id').change(function () {
-    $('#add_product_product_price_tax_incl').val(current_product.combinations[$(this).val()].price_tax_incl);
-    $('#add_product_product_price_tax_excl').val(current_product.combinations[$(this).val()].price_tax_excl);
+    $('#add_product_product_price_tax_incl').val(displayPriceValue(
+      current_product.combinations[$(this).val()].price_tax_incl
+    ));
+    $('#add_product_product_price_tax_excl').val(displayPriceValue(
+      current_product.combinations[$(this).val()].price_tax_excl
+    ));
 
     populateWarehouseList(current_product.warehouse_list[$(this).val()]);
 
@@ -562,7 +611,9 @@ function init() {
     }
 
     var taxRate = (current_product.tax_rate / 100) + 1;
-    $('#add_product_product_price_tax_incl').val(ps_round(priceTaxExcl * taxRate, 2));
+    $('#add_product_product_price_tax_incl').val(displayPriceValue(
+      priceTaxExcl * taxRate
+    ));
 
     // Update total product
     addProductRefreshTotal();
@@ -575,7 +626,9 @@ function init() {
     }
 
     var taxRate = (current_product.tax_rate / 100) + 1;
-    $('#add_product_product_price_tax_excl').val(ps_round(priceTaxIncl / taxRate, 2));
+    $('#add_product_product_price_tax_excl').val(displayPriceValue(
+      priceTaxIncl / taxRate
+    ));
 
     // Update total product
     addProductRefreshTotal();
@@ -725,7 +778,9 @@ function init() {
       priceTaxExcl = 0;
     }
     var taxRate = (current_product.tax_rate / 100) + 1;
-    $('.edit_product_price_tax_incl:visible').val(ps_round(priceTaxExcl * taxRate, 2));
+    $('.edit_product_price_tax_incl:visible').val(displayPriceValue(
+      priceTaxExcl * taxRate
+    ));
     // Update total product
     editProductRefreshTotal($(this));
   });
@@ -739,7 +794,9 @@ function init() {
     }
 
     var taxRate = (current_product.tax_rate / 100) + 1;
-    $('.edit_product_price_tax_excl:visible').val(ps_round(priceTaxIncl / taxRate, 2));
+    $('.edit_product_price_tax_excl:visible').val(displayPriceValue(
+      priceTaxIncl / taxRate
+    ));
     // Update total product
     editProductRefreshTotal($(this));
   });
@@ -789,7 +846,7 @@ function init() {
 
   $('.js-set-payment').unbind('click').click(function (e) {
     var amount = $(this).attr('data-amount');
-    $('input[name=payment_amount]').val(amount);
+    $('input[name=payment_amount]').val(displayPriceValue(amount));
     var idInvoice = $(this).attr('data-id-invoice');
     $('select[name=payment_invoice] option[value=' + idInvoice + ']').attr('selected', true);
     e.preventDefault();
@@ -919,12 +976,12 @@ function actualizeRefundVoucher() {
     }
   });
   $('#total_refund_1').remove();
-  $('#lab_refund_1').append('<span id="total_refund_1">' + formatCurrency(total, window.currency_format, window.currency_sign, window.currency_blank) + '</span>');
+  $('#lab_refund_1').append('<span id="total_refund_1">' + displayPrice(total, window.currency_format, window.currency_sign, window.currency_blank) + '</span>');
   $('#lab_refund_1').append('<input type="hidden" name="order_discount_price" value=' + window.order_discount_price + '/>');
   $('#total_refund_2').remove();
   if (parseFloat(total - window.order_discount_price) > 0.0) {
     document.getElementById('refund_2').disabled = false;
-    $('#lab_refund_2').append('<span id="total_refund_2">' + formatCurrency((total - window.order_discount_price), window.currency_format, window.currency_sign, window.currency_blank) + '</span>');
+    $('#lab_refund_2').append('<span id="total_refund_2">' + displayPrice((total - window.order_discount_price), window.currency_format, window.currency_sign, window.currency_blank) + '</span>');
   } else {
     if (document.getElementById('refund_2').checked === true) {
       document.getElementById('refund_1').checked = true;
@@ -943,12 +1000,12 @@ function actualizeTotalRefundVoucher() {
     }
   });
   $('#total_refund_1').remove();
-  $('#lab_refund_total_1').append('<span id="total_refund_1">' + formatCurrency(total, window.currency_format, window.currency_sign, window.currency_blank) + '</span>');
+  $('#lab_refund_total_1').append('<span id="total_refund_1">' + displayPrice(total, window.currency_format, window.currency_sign, window.currency_blank) + '</span>');
   $('#lab_refund_total_1').append('<input type="hidden" name="order_discount_price" value=' + window.order_discount_price + '/>');
   $('#total_refund_2').remove();
   if (parseFloat(total - window.order_discount_price) > 0.0) {
     document.getElementById('refund_total_2').disabled = false;
-    $('#lab_refund_total_2').append('<span id="total_refund_2">' + formatCurrency((total - window.order_discount_price), window.currency_format, window.currency_sign, window.currency_blank) + '</span>');
+    $('#lab_refund_total_2').append('<span id="total_refund_2">' + displayPrice((total - window.order_discount_price), window.currency_format, window.currency_sign, window.currency_blank) + '</span>');
   }
   else {
     if (document.getElementById('refund_total_2').checked === true) {
