@@ -25,7 +25,13 @@
 {* Corresponds to the third input text (max, min and all). *}
 
 <script>
-    var zones_nbr = {$zones|count + 3};
+  var zones_nbr = {$zones|count + 3};
+  {if ($currency_decimals)}
+    var priceDisplayPrecision = {$smarty.const._PS_PRICE_DISPLAY_PRECISION_};
+  {else}
+    var priceDisplayPrecision = 0;
+  {/if}
+  var priceDatabasePrecision = {$smarty.const._TB_PRICE_DATABASE_PRECISION_};
 </script>
 <div id="zone_ranges" style="overflow:auto">
     <h4>{l s='Ranges'}</h4>

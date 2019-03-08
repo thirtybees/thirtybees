@@ -467,6 +467,7 @@ class AdminCarrierWizardControllerCore extends AdminController
         $currency = $this->getActualCurrency();
 
         $tplVars['currency_sign'] = $currency->sign;
+        $tplVars['currency_decimals'] = $currency->decimals;
 
         $fieldsValue = $this->getStepThreeFieldsValues($carrier);
 
