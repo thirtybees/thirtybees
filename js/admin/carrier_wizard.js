@@ -379,7 +379,7 @@ function bind_inputs() {
     if ($(this).prop('checked')) {
       priceField.removeAttr('disabled');
       if (priceField.val().length === 0) {
-        priceField.val((0).toFixed(6));
+        priceField.val(displayPriceValue(0));
       }
     } else {
       priceField.attr('disabled', 'disabled');
@@ -397,7 +397,8 @@ function bind_inputs() {
     if (val.length && $.isNumeric(val)) {
       $(this).val('');
       $('tr.fees').each(function () {
-        $(this).find('td:eq(' + index + ') input:text:enabled').val(val);
+        $(this).find('td:eq(' + index + ') input:text:enabled')
+               .val(displayPriceValue(val));
       });
     }
 
