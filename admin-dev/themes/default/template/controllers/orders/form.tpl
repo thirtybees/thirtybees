@@ -42,11 +42,7 @@
 	var currency_format = 5;
 	var currency_sign = '';
 	var currency_blank = false;
-  {if ($currency->decimals)}
-    var priceDisplayPrecision = {$smarty.const._PS_PRICE_DISPLAY_PRECISION_};
-  {else}
-    var priceDisplayPrecision = 0;
-  {/if}
+  var priceDisplayPrecision = 0; {* Set in displaySummary(). *}
   var priceDatabasePrecision = {$smarty.const._TB_PRICE_DATABASE_PRECISION_};
 
 	{foreach from=$defaults_order_state key='module' item='id_order_state'}
@@ -808,7 +804,11 @@
 		currency_format = jsonSummary.currency.format;
 		currency_sign = jsonSummary.currency.sign;
 		currency_blank = jsonSummary.currency.blank;
-		priceDisplayPrecision = jsonSummary.currency.decimals ? 2 : 0;
+    if (jsonSummary.currency.decimals) {
+      priceDisplayPrecision = {$smarty.const._PS_PRICE_DISPLAY_PRECISION_};
+    } else {
+      priceDisplayPrecision = 0;
+    }
 
 		updateCartProducts(jsonSummary.summary.products, jsonSummary.summary.gift_products, jsonSummary.cart.id_address_delivery);
 		updateCartVouchers(jsonSummary.summary.discounts);
