@@ -56,7 +56,8 @@ function populate_attrs() {
 
 function check_impact() {
   if (parseInt($('#attribute_price_impact').get(0).selectedIndex, 10) === 0) {
-    $('#attribute_price, #attribute_priceTEReal, #attribute_priceTI').val('0.00');
+    $('#attribute_price, #attribute_priceTEReal, #attribute_priceTI')
+    .val(displayPriceValue(0));
     $('#span_impact').hide();
   } else {
     $('#span_impact').show();
@@ -118,7 +119,7 @@ function create_attribute_row(id, idGroup, name, price, weight) {
   var html = '';
   html += '<tr id="result_' + id + '">';
   html += '<td><input type="hidden" value="' + id + '" name="options[' + idGroup + '][' + id + ']" />' + name + '</td>';
-  html += '<td>' + window.i18n_tax_exc + '<input id="related_to_price_impact_ti_' + id + '" class="price_impact" style="width:50px" type="text" value="' + price + '" name="price_impact_' + id + '" onkeyup="calcPrice($(this), false)"></td>';
+  html += '<td>' + window.i18n_tax_exc + '<input id="related_to_price_impact_ti_' + id + '" class="price_impact" style="width:50px" type="text" value="' + displayPriceValue(price) + '" name="price_impact_' + id + '" onkeyup="calcPrice($(this), false)"></td>';
   html += '<td>' + window.i18n_tax_inc + '<input id="related_to_price_impact_' + id + '" class="price_impact_ti" style="width:50px" type="text" value="" name="price_impact_ti_' + id + '" onkeyup="calcPrice($(this), true)"></td>';
   html += '<td><input style="width:50px" type="text" value="' + weight + '" name="weight_impact_' + id + '"></td>';
   html += '</tr>';
