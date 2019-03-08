@@ -364,13 +364,6 @@ window.product_tabs.Combinations = new function () {
           var minimalQuantity = data[0].minimal_quantity;
           var availableDate = data[0].available_date;
 
-          if (parseInt(wholesalePrice, 10) !== 0 && parseInt(wholesalePrice, 10) > 0) {
-            $('#attribute_wholesale_price_full').show();
-            $('#attribute_wholesale_price_blank').hide();
-          } else {
-            $('#attribute_wholesale_price_full').hide();
-            $('#attribute_wholesale_price_blank').show();
-          }
           self.fillCombination(
             wholesalePrice,
             price,

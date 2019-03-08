@@ -152,7 +152,10 @@
                                  this.value = this.value.replace(/,/g, '.');"
                     />
 				</div>
-				<span style="display:none;" id="attribute_wholesale_price_full" class="help-block">{l s='Overrides the wholesale price from the "Prices" tab.'}</span>
+                <span class="help-block">
+                    {l s='Overrides the wholesale price from the \'Prices\' tab.'}
+                    {l s='Leave blank if the price does not change.'}
+                </span>
 			</div>
 
 		</div>
