@@ -352,7 +352,7 @@
 				id_product: id_product,
 				id_product_attribute: id_product_attribute,
 				id_customer: id_customer,
-				price: new Number(new_price.replace(",",".")).toFixed(4).toString()
+				price: new Number(new_price.replace(",","."))
 				},
 			success : function(res)
 			{
@@ -729,7 +729,10 @@
 			cart_content += (!this.id_customization ? '<div class="input-group fixed-width-md"><div class="input-group-btn"><a href="#" class="btn btn-default increaseqty_product" rel="'+this.id_product+'_'+this.id_product_attribute+'_'+(this.id_customization ? this.id_customization : 0)+'" ><i class="icon-caret-up"></i></a><a href="#" class="btn btn-default decreaseqty_product" rel="'+this.id_product+'_'+this.id_product_attribute+'_'+(this.id_customization ? this.id_customization : 0)+'"><i class="icon-caret-down"></i></a></div>' : '');
 			cart_content += (!this.id_customization ? '<input type="text" rel="'+this.id_product+'_'+this.id_product_attribute+'_'+(this.id_customization ? this.id_customization : 0)+'" class="cart_quantity" value="'+this.cart_quantity+'" />' : '');
 			cart_content += (!this.id_customization ? '<div class="input-group-btn"><a href="#" class="delete_product btn btn-default" rel="delete_'+this.id_product+'_'+this.id_product_attribute+'_'+(this.id_customization ? this.id_customization : 0)+'" ><i class="icon-remove text-danger"></i></a></div></div>' : '');
-			cart_content += '</td><td>' + formatCurrency(this.numeric_total, currency_format, currency_sign, currency_blank) + '</td></tr>';
+            cart_content += '</td><td>' + displayPrice(
+                this.numeric_total,
+                currency_format, currency_sign, currency_blank
+            ) + '</td></tr>';
 
 			if (this.id_customization && this.id_customization != 0)
 			{
@@ -837,16 +840,38 @@
 			$('#free_shipping_off').attr('checked', true);
 
 		$('#gift_message').html(jsonSummary.cart.gift_message);
-		if (!changed_shipping_price)
-			$('#shipping_price').html('<b>' + formatCurrency(parseFloat(jsonSummary.summary.total_shipping), currency_format, currency_sign, currency_blank) + '</b>');
+        if ( ! changed_shipping_price) {
+            $('#shipping_price').html('<b>' + displayPrice(
+                jsonSummary.summary.total_shipping,
+                currency_format, currency_sign, currency_blank
+            ) + '</b>');
+        }
 		shipping_price_selected_carrier = jsonSummary.summary.total_shipping;
 
-		$('#total_vouchers').html(formatCurrency(parseFloat(jsonSummary.summary.total_discounts_tax_exc), currency_format, currency_sign, currency_blank));
-		$('#total_shipping').html(formatCurrency(parseFloat(jsonSummary.summary.total_shipping_tax_exc), currency_format, currency_sign, currency_blank));
-		$('#total_taxes').html(formatCurrency(parseFloat(jsonSummary.summary.total_tax), currency_format, currency_sign, currency_blank));
-		$('#total_without_taxes').html(formatCurrency(parseFloat(jsonSummary.summary.total_price_without_tax), currency_format, currency_sign, currency_blank));
-		$('#total_with_taxes').html(formatCurrency(parseFloat(jsonSummary.summary.total_price), currency_format, currency_sign, currency_blank));
-		$('#total_products').html(formatCurrency(parseFloat(jsonSummary.summary.total_products), currency_format, currency_sign, currency_blank));
+        $('#total_vouchers').html(displayPrice(
+            jsonSummary.summary.total_discounts_tax_exc,
+            currency_format, currency_sign, currency_blank
+        ));
+        $('#total_shipping').html(displayPrice(
+            jsonSummary.summary.total_shipping_tax_exc,
+            currency_format, currency_sign, currency_blank
+        ));
+        $('#total_taxes').html(displayPrice(
+            jsonSummary.summary.total_tax,
+            currency_format, currency_sign, currency_blank
+        ));
+        $('#total_without_taxes').html(displayPrice(
+            jsonSummary.summary.total_price_without_tax,
+            currency_format, currency_sign, currency_blank
+        ));
+        $('#total_with_taxes').html(displayPrice(
+            jsonSummary.summary.total_price,
+            currency_format, currency_sign, currency_blank
+        ));
+        $('#total_products').html(displayPrice(
+            jsonSummary.summary.total_products,
+            currency_format, currency_sign, currency_blank
+        ));
 		id_currency = jsonSummary.cart.id_currency;
 		$('#id_currency option').removeAttr('selected');
 		$('#id_currency option[value="'+id_currency+'"]').attr('selected', true);
@@ -898,7 +923,9 @@
 
 	function resetShippingPrice()
 	{
-		$('#shipping_price').val(shipping_price_selected_carrier);
+        $('#shipping_price').val(displayPriceValue(
+            shipping_price_selected_carrier
+        );
 		changed_shipping_price = false;
 	}
 
