@@ -27,30 +27,9 @@
 	<button class="btn btn-default" data-style="expand-right" data-size="s" type="button" id="{$id|escape:'html':'UTF-8'}-add-button">
 		<i class="icon-plus-sign"></i> {l s='Add file'}
 	</button>
-<!--
-	<div class="alert alert-success" id="{$id|escape:'html':'UTF-8'}-success" style="display:none">{l s='Upload successful'}</div>
-	<div class="alert alert-danger" id="{$id|escape:'html':'UTF-8'}-errors" style="display:none"></div>
--->
 </div>
 
 <script type="text/javascript">
-	function humanizeSize(bytes)
-	{
-		if (typeof bytes !== 'number') {
-			return '';
-		}
-
-		if (bytes >= 1000000000) {
-			return (bytes / 1000000000).toFixed(2) + ' GB';
-		}
-
-		if (bytes >= 1000000) {
-			return (bytes / 1000000).toFixed(2) + ' MB';
-		}
-
-		return (bytes / 1000).toFixed(2) + ' KB';
-	}
-
 	$( document ).ready(function() {
 		var {$id|escape:'html':'UTF-8'}_add_button = Ladda.create( document.querySelector('#{$id|escape:'html':'UTF-8'}-add-button' ));
 		var {$id|escape:'html':'UTF-8'}_total_files = 0;
@@ -61,10 +40,7 @@
 			autoUpload: true,
 			singleFileUploads: true,
 			maxFileSize: {$post_max_size},
-			success: function (e) {
-				//showSuccessMessage(success_message);
-			},
-			start: function (e) {				
+			start: function (e) {
 				{$id|escape:'html':'UTF-8'}_add_button.start();
 			},
 			fail: function (e, data) {
@@ -86,10 +62,6 @@
 			},
 		}).on('fileuploadalways', function (e, data) {
 			{$id|escape:'html':'UTF-8'}_add_button.stop();
-		}).on('fileuploadprocessalways', function (e, data) {
-			var index = data.index,	file = data.files[index];
-			//if (file.error)
-				//$('#{$id|escape:'html':'UTF-8'}-errors').append('<div class="row"><strong>'+file.name+'</strong> ('+humanizeSize(file.size)+') : '+file.error+'</div>').show();
 		}).on('fileuploadsubmit', function (e, data) {
 			var params = new Object();
 
@@ -105,13 +77,10 @@
 				params[id] = $(this).val();
 			});
 
-
-			data.formData = params;			
+			data.formData = params;
 		});
 
 		$('#{$id|escape:'html':'UTF-8'}-add-button').on('click', function() {
-			//$('#{$id|escape:'html':'UTF-8'}-success').hide();
-			//$('#{$id|escape:'html':'UTF-8'}-errors').html('').hide();
 			{$id|escape:'html':'UTF-8'}_total_files = 0;
 			$('#{$id|escape:'html':'UTF-8'}').trigger('click');
 		});
