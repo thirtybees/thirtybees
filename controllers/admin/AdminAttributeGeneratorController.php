@@ -304,13 +304,12 @@ class AdminAttributeGeneratorControllerCore extends AdminController
                 $target['weight'] = $impacts[$combination['id_attribute']]['weight'];
             }
         }
-        $this->context->smarty->assign(
-            [
-                'currency_sign' => $this->context->currency->sign,
-                'weight_unit'   => Configuration::get('PS_WEIGHT_UNIT'),
-                'attributes'    => $attributes,
-            ]
-        );
+        $this->context->smarty->assign([
+            'currency_sign'     => $this->context->currency->sign,
+            'currency_decimals' => $this->context->currency->decimals,
+            'weight_unit'       => Configuration::get('PS_WEIGHT_UNIT'),
+            'attributes'        => $attributes,
+        ]);
     }
 
     /**

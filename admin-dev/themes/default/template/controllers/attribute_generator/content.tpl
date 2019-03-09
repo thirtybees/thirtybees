@@ -24,6 +24,12 @@
 *}
 
 <script type="text/javascript">
+  {if ($currency_decimals)}
+    var priceDisplayPrecision = {$smarty.const._PS_PRICE_DISPLAY_PRECISION_};
+  {else}
+    var priceDisplayPrecision = 0;
+  {/if}
+  var priceDatabasePrecision = {$smarty.const._TB_PRICE_DATABASE_PRECISION_};
 	var attrs = new Array();
 	attrs[0] = new Array(0, '---');
 
@@ -42,20 +48,20 @@
 	i18n_tax_inc = '{l s='Tax Included'} ';
 
 	var product_tax = '{$tax_rates}';
-	function calcPrice(element, element_has_tax)
-	{
-			var element_price = element.val().replace(/,/g, '.');
-			var other_element_price = 0;
+  function calcPrice(element, element_has_tax) {
+    let element_price = element.val().replace(/,/g, '.');
+    let other_element_price = 0;
 
-			if (!isNaN(element_price))
-			{
-				if (element_has_tax)
-					other_element_price = parseFloat(element_price / ((product_tax / 100) + 1)).toFixed(6);
-				else
-					other_element_price = ps_round(parseFloat(element_price * ((product_tax / 100) + 1)), 2).toFixed(2);
-			}
+    if (element_has_tax) {
+      other_element_price = element_price / (1 + product_tax / 100);
+    } else {
+      other_element_price = element_price * (1 + product_tax / 100);
+    }
 
-			$('#related_to_'+element.attr('name')).val(other_element_price);
+    $('#related_to_'+element.attr('name')).val(displayPriceValue(
+      other_element_price
+    ));
+    element.val(element_price);
 	}
 
 	$(document).ready(function() { $('.price_impact').each(function() { calcPrice($(this), false); }); });
