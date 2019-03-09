@@ -44,9 +44,6 @@
 		{$row}
 	{/foreach}
 
-	i18n_tax_exc = '{l s='Tax Excluded'} ';
-	i18n_tax_inc = '{l s='Tax Included'} ';
-
 	var product_tax = '{$tax_rates}';
   function calcPrice(element, element_has_tax) {
     let element_price = element.val().replace(/,/g, '.');
@@ -110,7 +107,14 @@
 							<thead>
 								<tr>
 									<th id="tab_h1" class="fixed-width-md"><span class="title_box">{$attribute_group['name']|escape:'html':'UTF-8'}</span></th>
-									<th id="tab_h2" colspan="2"><span class="title_box">{l s='Impact on the product price'} ({$currency_sign})</span></th>
+                                    <th id="tab_h2"><span class="title_box">
+                                        {l s='Impact on the product price'}<br>
+                                        ({$currency_sign}, {l s='tax excluded'})
+                                    </span></th>
+                                    <th id="tab_h2"><span class="title_box">
+                                        &nbsp;<br>
+                                        ({$currency_sign}, {l s='tax included'})
+                                    </span></th>
 									<th><span class="title_box">{l s='Impact on the product weight'} ({$weight_unit})</span></th>
 								</tr>
 							</thead>
