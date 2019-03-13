@@ -106,7 +106,7 @@ class GroupCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function getGroups($idLang, $idShop = false)
+    public static function getGroups($idLang, $idShop = true)
     {
         $shopCriteria = '';
         if ($idShop) {
