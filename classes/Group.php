@@ -97,7 +97,11 @@ class GroupCore extends ObjectModel
 
     /**
      * @param int      $idLang
-     * @param int|bool $idShop
+     * @param int|bool $idShop: false  --> Return all groups.
+     *                          true   --> Return groups associated with
+     *                                     current shop (from context).
+     *                          number --> Return groups associated with the
+     *                                     specific shop with this ID.
      *
      * @return array|false|mysqli_result|null|PDOStatement|resource
      *
@@ -109,7 +113,9 @@ class GroupCore extends ObjectModel
     public static function getGroups($idLang, $idShop = false)
     {
         $shopCriteria = '';
-        if ($idShop) {
+        if (is_int($idShop)) {
+            $shopCriteria = ' INNER JOIN `'._DB_PREFIX_.'group_shop` gs ON (gs.`id_group` = g.`id_group` AND gs.`id_shop` = '.$idShop.')';
+        } elseif ($idShop) {
             $shopCriteria = Shop::addSqlAssociation('group', 'g');
         }
 
@@ -117,7 +123,7 @@ class GroupCore extends ObjectModel
             (new DbQuery())
                 ->select('DISTINCT g.`id_group`, g.`reduction`, g.`price_display_method`, gl.`name`')
                 ->from('group', 'g')
-                ->leftJoin('group_lang', 'gl', 'g.`id_group` = gl.`id_group` AND gl.`id_lang` = '.(int) $idLang)
+                ->leftJoin('group_lang', 'gl', 'g.`id_group` = gl.`id_group` AND gl.`id_lang` = '.(int) $idLang.$shopCriteria)
                 ->orderBy('g.`id_group` ASC')
         );
     }

@@ -685,7 +685,7 @@ class AdminCategoriesControllerCore extends AdminController
                     'type'              => 'group',
                     'label'             => $this->l('Group access'),
                     'name'              => 'groupBox',
-                    'values'            => Group::getGroups($this->context->language->id),
+                    'values'            => Group::getGroups($this->context->language->id, true),
                     'info_introduction' => $this->l('You now have three default customer groups.'),
                     'unidentified'      => $unidentifiedGroupInformation,
                     'guest'             => $guestGroupInformation,
