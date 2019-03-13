@@ -117,7 +117,7 @@ class GroupCore extends ObjectModel
             (new DbQuery())
                 ->select('DISTINCT g.`id_group`, g.`reduction`, g.`price_display_method`, gl.`name`')
                 ->from('group', 'g')
-                ->leftJoin('group_lang', 'gl', 'g.`id_group` = gl.`id_group` AND gl.`id_lang` = '.(int) $idLang)
+                ->leftJoin('group_lang', 'gl', 'g.`id_group` = gl.`id_group` AND gl.`id_lang` = '.(int) $idLang.$shopCriteria)
                 ->orderBy('g.`id_group` ASC')
         );
     }
