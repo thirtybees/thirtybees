@@ -106,10 +106,10 @@ class GroupCore extends ObjectModel
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
-    public static function getGroups($idLang, $allShops = false)
+    public static function getGroups($idLang, $idShop = false)
     {
         $shopCriteria = '';
-        if (!$allShops) {
+        if ($idShop) {
             $shopCriteria = Shop::addSqlAssociation('group', 'g');
         }
 

@@ -564,7 +564,7 @@ class AdminProductsControllerCore extends AdminController
      */
     public function ajaxProcessGetGroupsOptions()
     {
-        if (!$res = Group::getGroups((int) $this->context->language->id)) {
+        if (!$res = Group::getGroups((int) $this->context->language->id, (int) Tools::getValue('id_shop'))) {
             return;
         }
 
