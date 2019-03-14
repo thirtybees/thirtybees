@@ -104,7 +104,7 @@ class AdminGroupsControllerCore extends AdminController
 		AND jcg.`id_group` = a.`id_group`) AS nb';
         $this->_use_found_rows = false;
 
-        $groups = Group::getGroups($this->context->language->id, true);
+        $groups = Group::getGroups($this->context->language->id);
         if (Shop::isFeatureActive()) {
             $this->fields_options = [
                 'general' => [
