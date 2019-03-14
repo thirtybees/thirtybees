@@ -441,7 +441,7 @@ class AdminCustomersControllerCore extends AdminController
         $months = Tools::dateMonths();
         $days = Tools::dateDays();
 
-        $groups = Group::getGroups($this->default_form_language, true);
+        $groups = Group::getGroups($this->default_form_language);
         $this->fields_form = [
             'legend' => [
                 'title' => $this->l('Customer'),
