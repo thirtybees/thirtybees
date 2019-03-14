@@ -109,7 +109,9 @@ class GroupCore extends ObjectModel
     public static function getGroups($idLang, $idShop = false)
     {
         $shopCriteria = '';
-        if ($idShop) {
+        if(is_int($idShop)){
+            $shopCriteria = ' INNER JOIN '._DB_PREFIX_.'group_shop group_shop ON (group_shop.id_group = g.id_group AND group_shop.id_shop = '.$idShop.')';
+        }elseif ($idShop) {
             $shopCriteria = Shop::addSqlAssociation('group', 'g');
         }
 
