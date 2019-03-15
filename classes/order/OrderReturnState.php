@@ -91,6 +91,7 @@ class OrderReturnStateCore extends ObjectModel
             (new DbQuery())
                 ->select('*')
                 ->from('order_return_state', 'ors')
+                ->where('ors.`active` = 1')
                 ->leftJoin('order_return_state_lang', 'orsl', 'ors.`id_order_return_state` = orsl.`id_order_return_state` AND orsl.`id_lang` = '.(int) $idLang)
                 ->orderBy('ors.`id_order_return_state` ASC')
         );

@@ -45,6 +45,7 @@ class AdminStatusesControllerCore extends AdminController
     {
         // Retrocompatibility with < 1.1.0.
         OrderState::installationCheck();
+        OrderReturnState::installationCheck();
 
         $this->bootstrap = true;
         $this->table = 'order_state';
@@ -257,6 +258,15 @@ class AdminStatusesControllerCore extends AdminController
                 'width' => 'auto',
                 'color' => 'color',
             ],
+            'active'       => [
+                'title'   => $this->l('Active'),
+                'align'   => 'text-center',
+                'active'  => 'active',
+                'type'    => 'bool',
+                'ajax'    => true,
+                'orderby' => false,
+                'class'   => 'fixed-width-sm',
+            ],
         ];
     }
 
@@ -300,6 +310,7 @@ class AdminStatusesControllerCore extends AdminController
             $orderReturnState = new OrderReturnState((int) $idOrderReturnState);
 
             $orderReturnState->color = Tools::getValue('color');
+            $orderReturnState->active = Tools::getValue('active_on');
             $orderReturnState->name = [];
             foreach (Language::getIDs(false) as $idLang) {
                 $orderReturnState->name[$idLang] = Tools::getValue('name_'.$idLang);
@@ -678,6 +689,17 @@ class AdminStatusesControllerCore extends AdminController
                     'name'  => 'color',
                     'hint'  => $this->l('Status will be highlighted in this color. HTML colors only.').' "lightblue", "#CC6600")',
                 ],
+                [
+                    'type'   => 'checkbox',
+                    'name'   => 'active',
+                    'values' => [
+                        'query' => [
+                            ['id' => 'on', 'name' => $this->l('Status is active for return orders.'), 'val' => '1'],
+                        ],
+                        'id'    => 'id',
+                        'name'  => 'name',
+                    ],
+                ],
             ],
             'submit'  => [
                 'title' => $this->l('Save'),
@@ -719,13 +741,15 @@ class AdminStatusesControllerCore extends AdminController
 
         if ($orderReturnState->id) {
             $helper->fields_value = [
-                'name'  => $this->getFieldValue($orderReturnState, 'name'),
-                'color' => $this->getFieldValue($orderReturnState, 'color'),
+                'name'      => $this->getFieldValue($orderReturnState, 'name'),
+                'color'     => $this->getFieldValue($orderReturnState, 'color'),
+                'active_on' => $this->getFieldValue($orderReturnState, 'active'),
             ];
         } else {
             $helper->fields_value = [
-                'name'  => $this->getFieldValue($orderReturnState, 'name'),
-                'color' => "#ffffff",
+                'name'      => $this->getFieldValue($orderReturnState, 'name'),
+                'color'     => "#ffffff",
+                'active_on' => $this->getFieldValue($orderReturnState, 'active'),
             ];
         }
 
@@ -810,6 +834,27 @@ class AdminStatusesControllerCore extends AdminController
         $idOrderState = (int) Tools::getValue('id_order_state');
 
         $sql = 'UPDATE '._DB_PREFIX_.'order_state SET `active`= NOT `active` WHERE id_order_state='.$idOrderState;
+        $result = Db::getInstance()->execute($sql);
+
+        if ($result) {
+            $this->ajaxDie(json_encode(['success' => 1, 'text' => $this->l('The status has been updated successfully.')]));
+        } else {
+            $this->ajaxDie(json_encode(['success' => 0, 'text' => $this->l('An error occurred while updating this meta.')]));
+        }
+    }
+
+    /**
+     * Ajax process active order state
+     *
+     * @return void
+     *
+     * @since 1.1.0
+     */
+    public function ajaxProcessActiveOrderReturnState()
+    {
+        $idOrderState = (int) Tools::getValue('id_order_return_state');
+
+        $sql = 'UPDATE '._DB_PREFIX_.'order_return_state SET `active`= NOT `active` WHERE id_order_return_state='.$idOrderState;
         $result = Db::getInstance()->execute($sql);
 
         if ($result) {
