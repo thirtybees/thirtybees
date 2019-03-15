@@ -149,6 +149,7 @@ class OrderStateCore extends ObjectModel
                     ->leftJoin('order_state_lang', 'osl', 'os.`id_order_state` = osl.`id_order_state`')
                     ->where('osl.`id_lang` = '.(int) $idLang)
                     ->where('`deleted` = 0')
+                    ->where('`active` = 1')
                     ->orderBy('`name` ASC')
             );
             Cache::store($cacheId, $result);
