@@ -1086,34 +1086,12 @@ class AdminCarrierWizardControllerCore extends AdminController
                 if (!isset($rangeSup[$key])) {
                     continue;
                 }
-                $addRange = true;
-                if ($rangeType == Carrier::SHIPPING_METHOD_WEIGHT) {
-                    if (!RangeWeight::rangeExist(null, (float) $delimiter1, (float) $rangeSup[$key], $carrier->id_reference)) {
-                        $range = new RangeWeight();
-                    } else {
-                        $range = new RangeWeight((int) $key);
-                        $range->id_carrier = (int) $carrier->id;
-                        $range->save();
-                        $addRange = false;
-                    }
-                }
 
-                if ($rangeType == Carrier::SHIPPING_METHOD_PRICE) {
-                    if (!RangePrice::rangeExist(null, (float) $delimiter1, (float) $rangeSup[$key], $carrier->id_reference)) {
-                        $range = new RangePrice();
-                    } else {
-                        $range = new RangePrice((int) $key);
-                        $range->id_carrier = (int) $carrier->id;
-                        $range->save();
-                        $addRange = false;
-                    }
-                }
-                if ($addRange) {
-                    $range->id_carrier = (int) $carrier->id;
-                    $range->delimiter1 = (float) $delimiter1;
-                    $range->delimiter2 = (float) $rangeSup[$key];
-                    $range->save();
-                }
+                $range = $carrier->getRangeObject((int) $rangeType);
+                $range->id_carrier = (int) $carrier->id;
+                $range->delimiter1 = (float) $delimiter1;
+                $range->delimiter2 = (float) $rangeSup[$key];
+                $range->save();
 
                 if (!Validate::isLoadedObject($range)) {
                     return false;
