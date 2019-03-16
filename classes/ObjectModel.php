@@ -47,6 +47,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     const TYPE_HTML    = 6;
     const TYPE_NOTHING = 7;
     const TYPE_SQL     = 8;
+    const TYPE_PRICE   = 9;
 
     /**
      * List of data to format
@@ -480,6 +481,9 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
             case self::TYPE_FLOAT:
                 return (float) str_replace(',', '.', $value);
+
+            case self::TYPE_PRICE:
+                return round($value, _TB_PRICE_DATABASE_PRECISION_);
 
             case self::TYPE_DATE:
                 if (!$value) {
