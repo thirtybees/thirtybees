@@ -68,7 +68,7 @@ class DeliveryCore extends ObjectModel
             'id_zone'         => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
             'id_shop'         => ['type' => self::TYPE_INT],
             'id_shop_group'   => ['type' => self::TYPE_INT],
-            'price'           => ['type' => self::TYPE_FLOAT, 'validate' => 'isPrice', 'required' => true],
+            'price'           => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'required' => true],
         ],
     ];
     protected $webserviceParameters = [

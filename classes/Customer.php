@@ -60,7 +60,7 @@ class CustomerCore extends ObjectModel
             'company'                    => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName'],
             'siret'                      => ['type' => self::TYPE_STRING, 'validate' => 'isSiret'],
             'ape'                        => ['type' => self::TYPE_STRING, 'validate' => 'isApe'],
-            'outstanding_allow_amount'   => ['type' => self::TYPE_FLOAT, 'validate' => 'isPrice', 'copy_post' => false],
+            'outstanding_allow_amount'   => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'copy_post' => false],
             'show_public_prices'         => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'copy_post' => false],
             'id_risk'                    => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'copy_post' => false],
             'max_payment_days'           => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'copy_post' => false],

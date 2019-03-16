@@ -72,7 +72,7 @@ class StockCore extends ObjectModel
             'upc'                  => ['type' => self::TYPE_STRING, 'validate' => 'isUpc'                            ],
             'physical_quantity'    => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt', 'required' => true],
             'usable_quantity'      => ['type' => self::TYPE_INT,    'validate' => 'isInt',         'required' => true],
-            'price_te'             => ['type' => self::TYPE_FLOAT,  'validate' => 'isPrice',       'required' => true],
+            'price_te'             => ['type' => self::TYPE_PRICE,  'validate' => 'isPrice',       'required' => true],
         ],
     ];
 

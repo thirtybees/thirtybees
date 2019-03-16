@@ -53,11 +53,11 @@ class CombinationCore extends ObjectModel
             'supplier_reference' => ['type' => self::TYPE_STRING, 'size' => 32],
 
             /* Shop fields */
-            'wholesale_price'    => ['type' => self::TYPE_FLOAT, 'shop' => true, 'validate' => 'isPrice', 'size' => 27],
-            'price'              => ['type' => self::TYPE_FLOAT, 'shop' => true, 'validate' => 'isNegativePrice', 'size' => 20],
-            'ecotax'             => ['type' => self::TYPE_FLOAT, 'shop' => true, 'validate' => 'isPrice', 'size' => 20],
+            'wholesale_price'    => ['type' => self::TYPE_PRICE, 'shop' => true, 'validate' => 'isPrice', 'size' => 27],
+            'price'              => ['type' => self::TYPE_PRICE, 'shop' => true, 'validate' => 'isNegativePrice', 'size' => 20],
+            'ecotax'             => ['type' => self::TYPE_PRICE, 'shop' => true, 'validate' => 'isPrice', 'size' => 20],
             'weight'             => ['type' => self::TYPE_FLOAT, 'shop' => true, 'validate' => 'isFloat'],
-            'unit_price_impact'  => ['type' => self::TYPE_FLOAT, 'shop' => true, 'validate' => 'isNegativePrice', 'size' => 20],
+            'unit_price_impact'  => ['type' => self::TYPE_PRICE, 'shop' => true, 'validate' => 'isNegativePrice', 'size' => 20],
             'minimal_quantity'   => ['type' => self::TYPE_INT, 'shop' => true, 'validate' => 'isUnsignedId', 'required' => true],
             'default_on'         => ['type' => self::TYPE_BOOL, 'allow_null' => true, 'shop' => true, 'validate' => 'isBool'],
             'available_date'     => ['type' => self::TYPE_DATE, 'shop' => true, 'validate' => 'isDateFormat'],

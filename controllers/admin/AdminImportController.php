@@ -2764,7 +2764,8 @@ class AdminImportControllerCore extends AdminController
 
         // Convert comma into dot for all floating values
         foreach (Product::$definition['fields'] as $key => $array) {
-            if ($array['type'] == Product::TYPE_FLOAT) {
+            if ($array['type'] == Product::TYPE_FLOAT
+                || $array['type'] == Product::TYPE_PRICE) {
                 $product->{$key} = str_replace(',', '.', $product->{$key});
             }
         }
