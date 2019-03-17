@@ -1,9 +1,13 @@
 
 These are the people that help make thirty bees possible. We at thirty bees would like to thank them for their support! If you would like you or your company to be listed here, you can help support us on [Patreon](https://www.patreon.com/thirtybees)
 
+## Gold Sponsor
+
+# Lukas Hochtl
+
 ## Bronze Sponsor
 
-Raf Smolak [Mind Nutrition](https://store.mindnutrition.com/)
+
 
 ## Awesome Backers
 
