@@ -67,6 +67,8 @@ class OrderStateCore extends ObjectModel
     public $pdf_delivery;
     /** @var bool True if carrier has been deleted (staying in database as deleted) */
     public $deleted = 0;
+    /** @var bool Active */
+    public $active;
     // @codingStandardsIgnoreEnd
 
     /**
@@ -90,6 +92,7 @@ class OrderStateCore extends ObjectModel
             'pdf_delivery' => ['type' => self::TYPE_BOOL,    'validate' => 'isBool'      ],
             'pdf_invoice'  => ['type' => self::TYPE_BOOL,    'validate' => 'isBool'      ],
             'deleted'      => ['type' => self::TYPE_BOOL,    'validate' => 'isBool'      ],
+            'active'       => ['type' => self::TYPE_BOOL,    'validate' => 'isBool'      ],
 
             /* Lang fields */
             'name'         => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 64],
@@ -112,6 +115,16 @@ class OrderStateCore extends ObjectModel
     const FLAG_PAID        = 16; /* 10000 */
 
     /**
+     * @since 1.1.0
+     */
+    public function __construct($id = null, $idLang = null, $idShop = null)
+    {
+        static::installationCheck();
+
+        parent::__construct($id);
+    }
+
+    /**
      * Get all available order statuses
      *
      * @param int $idLang Language id for status name
@@ -125,6 +138,8 @@ class OrderStateCore extends ObjectModel
      */
     public static function getOrderStates($idLang)
     {
+        static::installationCheck();
+
         $cacheId = 'OrderState::getOrderStates_'.(int) $idLang;
         if (!Cache::isStored($cacheId)) {
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
@@ -157,6 +172,8 @@ class OrderStateCore extends ObjectModel
      */
     public static function invoiceAvailable($idOrderState)
     {
+        static::installationCheck();
+
         $result = false;
         if (Configuration::get('PS_INVOICE')) {
             $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
@@ -176,5 +193,37 @@ class OrderStateCore extends ObjectModel
     public function isRemovable()
     {
         return !($this->unremovable);
+    }
+
+    /**
+     * Test whether the database is up to date and fix it if not.
+     *
+     * Starting with v1.1.0, thirty bees no longer equips the updater module
+     * with database upgrade scripts, but equipped Core Updater with the
+     * capability to read each class' table description and to update the
+     * database accordingly.
+     *
+     * Retrocompatibility: as the above is just a plan and not yet true for
+     * the time being, this was added as a kludge to bridge the time until it
+     * actually gets true.
+     *
+     * @since 1.1.0
+     */
+    public static function installationCheck()
+    {
+        $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
+        $result = $db->executeS(
+            (new DbQuery())
+                ->select('`active`')
+                ->from(static::$definition['table'])
+                ->limit(1)
+        );
+
+        if ( ! $result) {
+            $db->executeS('ALTER TABLE '
+                ._DB_PREFIX_.static::$definition['table']
+                .' ADD COLUMN `active` TINYINT(1) UNSIGNED NOT NULL DEFAULT 1;'
+            );
+        }
     }
 }

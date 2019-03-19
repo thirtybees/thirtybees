@@ -1713,6 +1713,7 @@ CREATE TABLE `PREFIX_order_state` (
   `pdf_invoice`    TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
   `pdf_delivery`   TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
   `deleted`        TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
+  `active`         TINYINT(1) UNSIGNED NOT NULL DEFAULT '1',
   PRIMARY KEY (`id_order_state`),
   KEY `module_name` (`module_name`)
 )
