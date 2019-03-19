@@ -42,6 +42,9 @@ class OrderReturnStateCore extends ObjectModel
 
     /** @var string Display state in the specified color */
     public $color;
+
+    /** @var bool Active */
+    public $active;
     // @codingStandardsIgnoreEnd
 
     /**
@@ -52,10 +55,21 @@ class OrderReturnStateCore extends ObjectModel
         'primary'   => 'id_order_return_state',
         'multilang' => true,
         'fields'    => [
-            'color' => ['type' => self::TYPE_STRING,                 'validate' => 'isColor'                                        ],
-            'name'  => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 64],
+            'color'   => ['type' => self::TYPE_STRING,                 'validate' => 'isColor'                                        ],
+            'name'    => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 64],
+            'active'  => ['type' => self::TYPE_BOOL,                   'validate' => 'isBool'],
         ],
     ];
+
+    /**
+     * @since 1.1.0
+     */
+    public function __construct($id = null, $idLang = null, $idShop = null)
+    {
+        static::installationCheck();
+
+        parent::__construct($id);
+    }
 
     /**
      * Get all available order statuses
@@ -71,6 +85,8 @@ class OrderReturnStateCore extends ObjectModel
      */
     public static function getOrderReturnStates($idLang)
     {
+        static::installationCheck();
+
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
                 ->select('*')
@@ -78,5 +94,37 @@ class OrderReturnStateCore extends ObjectModel
                 ->leftJoin('order_return_state_lang', 'orsl', 'ors.`id_order_return_state` = orsl.`id_order_return_state` AND orsl.`id_lang` = '.(int) $idLang)
                 ->orderBy('ors.`id_order_return_state` ASC')
         );
+    }
+
+    /**
+     * Test whether the database is up to date and fix it if not.
+     *
+     * Starting with v1.1.0, thirty bees no longer equips the updater module
+     * with database upgrade scripts, but equipped Core Updater with the
+     * capability to read each class' table description and to update the
+     * database accordingly.
+     *
+     * Retrocompatibility: as the above is just a plan and not yet true for
+     * the time being, this was added as a kludge to bridge the time until it
+     * actually gets true.
+     *
+     * @since 1.1.0
+     */
+    public static function installationCheck()
+    {
+        $db = Db::getInstance(_PS_USE_SQL_SLAVE_);
+        $result = $db->executeS(
+            (new DbQuery())
+                ->select('`active`')
+                ->from(static::$definition['table'])
+                ->limit(1)
+        );
+
+        if ( ! $result) {
+            $db->executeS('ALTER TABLE '
+                ._DB_PREFIX_.static::$definition['table']
+                .' ADD COLUMN `active` TINYINT(1) UNSIGNED NOT NULL DEFAULT 1;'
+            );
+        }
     }
 }

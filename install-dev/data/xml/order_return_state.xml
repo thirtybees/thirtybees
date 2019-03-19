@@ -2,12 +2,13 @@
 <entity_order_return_state>
   <fields id="name" class="OrderReturnState">
     <field name="color"/>
+    <field name="active"/>
   </fields>
   <entities>
-    <order_return_state id="Waiting_for_confirmation" color="#4169E1"/>
-    <order_return_state id="Waiting_for_package" color="#8A2BE2"/>
-    <order_return_state id="Package_received" color="#32CD32"/>
-    <order_return_state id="Return_denied" color="#DC143C"/>
-    <order_return_state id="Return_completed" color="#108510"/>
+    <order_return_state id="Waiting_for_confirmation" color="#4169E1" active="1"/>
+    <order_return_state id="Waiting_for_package" color="#8A2BE2" active="1"/>
+    <order_return_state id="Package_received" color="#32CD32" active="1"/>
+    <order_return_state id="Return_denied" color="#DC143C" active="1"/>
+    <order_return_state id="Return_completed" color="#108510" active="1"/>
   </entities>
 </entity_order_return_state>

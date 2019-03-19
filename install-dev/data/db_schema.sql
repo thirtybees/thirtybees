@@ -1639,8 +1639,9 @@ CREATE TABLE `PREFIX_order_return_detail` (
   DEFAULT COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_order_return_state` (
-  `id_order_return_state` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `color`                 VARCHAR(32)               DEFAULT NULL,
+  `id_order_return_state`   INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `color`                   VARCHAR(32)               DEFAULT NULL,
+  `active`                  TINYINT(1) UNSIGNED NOT NULL DEFAULT '1',
   PRIMARY KEY (`id_order_return_state`)
 )
   ENGINE = InnoDB
