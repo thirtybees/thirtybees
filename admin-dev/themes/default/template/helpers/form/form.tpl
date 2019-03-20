@@ -268,6 +268,18 @@
 										</script>
 										{/if}
 									{/if}
+                                {elseif $input.type == 'price'}
+                                    <div class="input-group fixed-width-lg">
+                                        <span class="input-group-addon">
+                                            {$currency_left_sign}{$currency_right_sign} {l s='(tax excl.)'}
+                                        </span>
+                                        <input type="text"
+                                            name="{$input.name}"
+                                            value="{displayPriceValue price=$fields_value[$input.name]}"
+                                            onkeyup="if (isArrowKey(event)) return;
+                                                     this.value = this.value.replace(/,/g, '.');"
+                                        />
+                                    </div>
 								{elseif $input.type == 'textbutton'}
 									{assign var='value_text' value=$fields_value[$input.name]}
 									<div class="row">
