@@ -5420,7 +5420,7 @@ class AdminProductsControllerCore extends AdminController
                         'associated_suppliers'            => $associated_suppliers,
                         'associated_suppliers_collection' => $product_supplier_collection,
                         'product_designation'             => $product_designation,
-                        'currencies'                      => Currency::getCurrencies(),
+                        'currencies'                      => Currency::getCurrencies(false, true, true),
                         'product'                         => $obj,
                         'link'                            => $this->context->link,
                         'token'                           => $this->token,

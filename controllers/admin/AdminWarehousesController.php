@@ -375,7 +375,7 @@ class AdminWarehousesControllerCore extends AdminController
                 'name'     => 'id_currency',
                 'required' => true,
                 'options'  => [
-                    'query' => Currency::getCurrencies(),
+                    'query' => Currency::getCurrencies(false, true, true),
                     'id'    => 'id_currency',
                     'name'  => 'name',
                 ],
