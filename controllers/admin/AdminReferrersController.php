@@ -47,32 +47,6 @@ class AdminReferrersControllerCore extends AdminController
             define('_PS_ADMIN_DIR_', getcwd().'/..');
         }
 
-        if (Tools::getValue('token') == Tools::getAdminToken('AdminReferrers'.(int) Tab::getIdFromClassName('AdminReferrers').(int) Tools::getValue('id_employee'))) {
-            if (Tools::isSubmit('ajaxProductFilter')) {
-                Referrer::getAjaxProduct(
-                    (int) Tools::getValue('id_referrer'),
-                    (int) Tools::getValue('id_product'),
-                    new Employee((int) Tools::getValue('id_employee'))
-                );
-            } elseif (Tools::isSubmit('ajaxFillProducts')) {
-                $jsonArray = [];
-                $result = Db::getInstance()->executeS(
-                    '
-			SELECT p.id_product, pl.name
-			FROM '._DB_PREFIX_.'product p
-			LEFT JOIN '._DB_PREFIX_.'product_lang pl
-				ON (p.id_product = pl.id_product AND pl.id_lang = '.(int) Tools::getValue('id_lang').')
-			'.(Tools::getValue('filter') != 'undefined' ? 'WHERE name LIKE "%'.pSQL(Tools::getValue('filter')).'%"' : '')
-                );
-
-                foreach ($result as $row) {
-                    $jsonArray[] = '{id_product:'.(int) $row['id_product'].',name:\''.addslashes($row['name']).'\'}';
-                }
-
-                die('['.implode(',', $jsonArray).']');
-            }
-        }
-
         $this->bootstrap = true;
         $this->table = 'referrer';
         $this->className = 'Referrer';
