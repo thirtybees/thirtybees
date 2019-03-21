@@ -62,10 +62,7 @@ class PaymentCCCore extends OrderPayment
         'id_order' => 'isUnsignedId', 'id_currency' => 'isUnsignedId', 'amount' => 'isPrice',
         'transaction_id' => 'isAnything', 'card_number' => 'isAnything', 'card_brand' => 'isAnything', 'card_expiration' => 'isAnything', 'card_holder' => 'isAnything'
     ];
-    public static $definition = [
-        'table' => 'payment_cc',
-        'primary' => 'id_payment_cc',
-    ];
+    public static $definition = [];
     // @codingStandardsIgnoreEnd
 
     /**
