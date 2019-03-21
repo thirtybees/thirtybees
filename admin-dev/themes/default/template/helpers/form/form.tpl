@@ -274,8 +274,16 @@
                                             {$currency_left_sign}{$currency_right_sign} {l s='(tax excl.)'}
                                         </span>
                                         <input type="text"
+                                            {if isset($input.id)}
+                                                id="{$input.id}"
+                                            {else}
+                                                id="{$input.name}"
+                                            {/if}
                                             name="{$input.name}"
                                             value="{displayPriceValue price=$fields_value[$input.name]}"
+                                            {if isset($input.disabled) && $input.disabled}
+                                                disabled="disabled"
+                                            {/if}
                                             onkeyup="if (isArrowKey(event)) return;
                                                      this.value = this.value.replace(/,/g, '.');"
                                         />
