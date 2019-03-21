@@ -1022,8 +1022,8 @@ class AdminStockManagementControllerCore extends AdminController
                     'hint'     => $this->l('Please select the warehouse that you\'ll be adding products to.'),
                 ],
                 [
-                    'type'        => 'text',
-                    'label'       => $this->l('Unit price (tax excl.)'),
+                    'type'        => 'price',
+                    'label'       => $this->l('Unit price'),
                     'name'        => 'price',
                     'validation'  => 'isPrice',
                     'cast'        => 'priceval',

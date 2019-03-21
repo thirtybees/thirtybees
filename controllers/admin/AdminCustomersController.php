@@ -649,11 +649,9 @@ class AdminCustomersControllerCore extends AdminController
                 'name'  => 'website',
             ];
             $this->fields_form['input'][] = [
-                'type'   => 'text',
+                'type'   => 'price',
                 'label'  => $this->l('Allowed outstanding amount'),
                 'name'   => 'outstanding_allow_amount',
-                'hint'   => $this->l('Valid characters:').' 0-9',
-                'suffix' => $this->context->currency->sign,
             ];
             $this->fields_form['input'][] = [
                 'type'  => 'text',

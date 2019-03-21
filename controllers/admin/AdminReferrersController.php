@@ -400,13 +400,13 @@ class AdminReferrersControllerCore extends AdminController
                 ],
                 'input'  => [
                     [
-                        'type'  => 'text',
+                        'type'  => 'price',
                         'label' => $this->l('Click fee'),
                         'name'  => 'click_fee',
                         'desc'  => $this->l('Fee given for each visit.'),
                     ],
                     [
-                        'type'  => 'text',
+                        'type'  => 'price',
                         'label' => $this->l('Base fee'),
                         'name'  => 'base_fee',
                         'desc'  => $this->l('Fee given for each order placed.'),

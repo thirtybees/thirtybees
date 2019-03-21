@@ -272,11 +272,10 @@ class AdminSpecificPriceRuleControllerCore extends AdminController
                     'required'  => true,
                 ],
                 [
-                    'type'      => 'text',
-                    'label'     => $this->l('Price (tax excl.)'),
+                    'type'      => 'price',
+                    'label'     => $this->l('Price'),
                     'name'      => 'price',
                     'disabled'  => $this->object->price == -1,
-                    'suffix'    => $this->context->currency->getSign('right'),
                 ],
                 [
                     'type'   => 'checkbox',
