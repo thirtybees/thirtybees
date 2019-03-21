@@ -50,15 +50,7 @@ class CountyCore extends ObjectModel
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = [
-        'table'   => 'county',
-        'primary' => 'id_county',
-        'fields'  => [
-            'name'     => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 64],
-            'id_state' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
-            'active'   => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-        ],
-    ];
+    public static $definition = [];
 
     protected $webserviceParameters = [
         'fields' => [
