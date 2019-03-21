@@ -209,12 +209,14 @@ class StateCore extends ObjectModel
      *
      * @return int
      *
+     * @deprecated 1.1.0 counties not supported anymore
      * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function hasCounties($idState)
     {
-        return count(County::getCounties((int) $idState));
+        Tools::displayAsDeprecated();
+        return 0;
     }
 
     /**
