@@ -4472,9 +4472,10 @@ class AdminControllerCore extends Controller
                         }
                         Configuration::updateValue($key, $list, isset($values['validation']) && isset($options['validation']) && $options['validation'] == 'isCleanHtml' ? true : false);
                     } else {
-                        $val = Tools::getValue($key);
+                        $isCodeField = $options['type'] === 'code';
+                        $val = $isCodeField ? Tools::getValueRaw($key) : Tools::getValue($key);
                         if ($this->validateField($val, $options)) {
-                            if ($options['type'] === 'code') {
+                            if ($isCodeField) {
                                 Configuration::updateValueRaw($key, $val);
                             } elseif (Validate::isCleanHtml($val)) {
                                 Configuration::updateValue($key, $val);

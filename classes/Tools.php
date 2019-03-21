@@ -583,16 +583,35 @@ class ToolsCore
      *
      * @return mixed Value
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @since   1.1.0
+     * @version 1.1.0 Initial version
      */
-    public static function getValue($key, $defaultValue = false)
+    public static function getValueRaw($key, $defaultValue = false)
     {
         if (!isset($key) || empty($key) || !is_string($key)) {
             return false;
         }
 
-        $ret = (isset($_POST[$key]) ? $_POST[$key] : (isset($_GET[$key]) ? $_GET[$key] : $defaultValue));
+        return (isset($_POST[$key]) ? $_POST[$key] : (isset($_GET[$key]) ? $_GET[$key] : $defaultValue));
+    }
+
+    /**
+     * Get a value from $_POST / $_GET
+     * if unavailable, take a default value
+     *
+     * This method performs basic sanitization of input value
+     *
+     * @param string $key          Value key
+     * @param mixed  $defaultValue (optional)
+     *
+     * @return mixed Value
+     *
+     * @since   1.0.0
+     * @version 1.0.0 Initial version
+     */
+    public static function getValue($key, $defaultValue = false)
+    {
+        $ret = static::getValueRaw($key, $defaultValue);
 
         if (is_string($ret)) {
             return stripslashes(urldecode(preg_replace('/((\%5C0+)|(\%00+))/i', '', urlencode($ret))));

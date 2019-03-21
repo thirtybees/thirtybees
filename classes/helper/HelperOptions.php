@@ -345,6 +345,17 @@ class HelperOptionsCore extends Helper
      */
     public function getOptionValue($key, $field)
     {
+        if ($field['type'] === 'code') {
+            // don't perform any value sanitization and preprocessing for code fields
+            $value = Tools::getValueRaw($key, Configuration::get($key));
+
+            if (isset($field['defaultValue']) && !$value) {
+                return $field['defaultValue'];
+            }
+
+            return $value;
+        }
+
         $value = Tools::getValue($key, Configuration::get($key));
         if (!Validate::isCleanHtml($value)) {
             $value = Configuration::get($key);
