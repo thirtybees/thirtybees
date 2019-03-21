@@ -55,17 +55,7 @@ class UrlRewriteCore extends Objectmodel
     /**
      * @see ObjectModel::$definition
      */
-    public static $definition = [
-        'table'          => 'url_rewrite',
-        'primary'        => 'id_url_rewrite',
-        'multilang_shop' => true,
-        'fields'         => [
-            'entity'    => ['type' => self::TYPE_INT, 'required' => true, 'validate' => 'isUnsignedInt'],
-            'id_entity' => ['type' => self::TYPE_INT, 'required' => true, 'validate' => 'isUnsignedInt '],
-            'rewrite'   => ['type' => self::TYPE_STRING, 'lang' => true, 'required' => true, 'validate' => 'isString', 'size' => 2048],
-            'redirect'  => ['type' => self::TYPE_INT, 'lang' => true, 'required' => true, 'validate' => 'isUnsignedInt'],
-        ],
-    ];
+    public static $definition = [];
     /** @var int $entity */
     public $entity;
     /** @var int $id_entity */
