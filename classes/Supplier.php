@@ -211,21 +211,6 @@ class SupplierCore extends ObjectModel
     }
 
     /**
-     * @param bool $autoDate
-     * @param bool $nullValues
-     *
-     * @return bool Indicates whether adding succeeded
-     */
-    public function add($autoDate = true, $nullValues = false)
-    {
-        if (parent::add($autoDate, $nullValues)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
      * @param null $nullValues
      *
      * @return bool Indicates whether updating succeeded
