@@ -293,16 +293,13 @@ class OrderCore extends ObjectModel
      *
      * @return bool
      *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     *
-     * @since   1.0.2 Amounts are rounded before being saved to db
+     * @since 1.0.0
+     * @since 1.0.2 Amounts are rounded before being saved to db
+     * @since 1.1.0 Rounding no longer necessary, parent does this now.
      * @throws PrestaShopDatabaseException
      */
     public function add($autoDate = true, $nullValues = true)
     {
-        $this->roundAmounts();
-
         if (parent::add($autoDate, $nullValues)) {
             return SpecificPrice::deleteByIdCart($this->id_cart);
         }
@@ -311,38 +308,14 @@ class OrderCore extends ObjectModel
     }
 
     /**
-     * Update this Order
-     *
-     * @param bool $nullValues
-     *
-     * @return bool
-     *
-     * @since 1.0.2 Amounts are rounded before being saved to db
-     */
-    public function update($nullValues = true)
-    {
-        $this->roundAmounts();
-
-        return parent::update($nullValues);
-    }
-
-    /**
      * This function rounds all the decimal properties of this Object
      *
      * @since 1.0.2
+     * @deprecated 1.1.0
      */
     public function roundAmounts()
     {
-        foreach (static::$definition['fields'] as $fieldName => $field) {
-            if (array_key_exists('validate', $field)
-                && $field['validate'] === 'isPrice'
-                && isset($this->$fieldName)) {
-                $this->$fieldName = round(
-                    $this->$fieldName,
-                    _TB_PRICE_DATABASE_PRECISION_
-                );
-            }
-        }
+        Tools::displayAsDeprecated('No longer needed, ObjectModel rounds now its self.');
     }
 
     /**
@@ -491,10 +464,11 @@ class OrderCore extends ObjectModel
             if ($this->{$field} < 0) {
                 $this->{$field} = 0;
             }
+            $this->{$field} = round(
+                $this->{$field},
+                _TB_PRICE_DATABASE_PRECISION_
+            );
         }
-
-        /* Prevent from floating precision issues */
-        $this->roundAmounts();
 
         /* Update order detail */
         $orderDetail->product_quantity -= (int) $quantity;
