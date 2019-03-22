@@ -204,12 +204,13 @@ class ReferrerCore extends ObjectModel
                 ->select('COUNT(DISTINCT cs.`id_connections`) AS `visitors`')
                 ->select('COUNT(DISTINCT c.`id_guest`) AS `uniqs`')
                 ->select('COUNT(DISTINCT cp.`time_start`) AS `pages`')
+                ->from('referrer_cache', 'rc')
                 ->join($idProduct ? 'LEFT JOIN `'._DB_PREFIX_.'page` p ON cp.`id_page` = p.`id_page`' : '')
                 ->join($idProduct ? 'LEFT JOIN `'._DB_PREFIX_.'page_type` pt ON pt.`id_page_type` = p.`id_page_type`' : '')
-                ->leftJoin('referrer', 'r', 'rc.`id_referrer` = r.`id_referrer` AND ('.static::$_join.')')
+                ->leftJoin('referrer', 'r', 'rc.`id_referrer` = r.`id_referrer`'.($idProduct ? 'AND ('.static::$_join.')' : ''))
                 ->leftJoin('referrer_shop', 'rs', 'r.`id_referrer` = rs.`id_referrer`')
                 ->leftJoin('connections_source', 'cs', 'rc.`id_connections_source` = cs.`id_connections_source`')
-                ->leftJoin('connections', 's', 'cs.`id_connections` = c.`id_connections`')
+                ->leftJoin('connections', 'c', 'cs.`id_connections` = c.`id_connections`')
                 ->leftJoin('connections_page', 'cp', 'cp.`id_connections` = c.`id_connections`')
                 ->where((isset($employee->stats_date_from) && isset($employee->stats_date_to)) ? 'cs.`date_add` BETWEEN \''.pSQL($employee->stats_date_from).' 00:00:00\' AND \''.pSQL($employee->stats_date_to).' 23:59:59\'' : '')
                 ->where('1 '.Shop::addSqlRestriction(false, 'rs'))
@@ -217,7 +218,6 @@ class ReferrerCore extends ObjectModel
                 ->where('rc.`id_referrer` = '.(int) $this->id)
                 ->where($idProduct ? 'pt.`name` = \'product\'' : '')
                 ->where($idProduct ? 'p.`id_object` = '.(int) $idProduct : '')
-
         );
     }
 
