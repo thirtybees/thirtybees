@@ -270,11 +270,7 @@ class CMSCore extends ObjectModel
     {
         $this->position = CMS::getLastPosition((int) $this->id_cms_category);
 
-        if (!parent::add($autoDate, true)) {
-            return false;
-        }
-
-        return true;
+        return parent::add($autoDate, true);
     }
 
     /**
