@@ -923,9 +923,7 @@
 
 	function resetShippingPrice()
 	{
-        $('#shipping_price').val(displayPriceValue(
-            shipping_price_selected_carrier
-        );
+        $('#shipping_price').val(displayPriceValue(shipping_price_selected_carrier));
 		changed_shipping_price = false;
 	}
 
