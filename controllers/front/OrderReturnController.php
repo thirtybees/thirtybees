@@ -75,6 +75,7 @@ class OrderReturnControllerCore extends FrontController
                     $state = new OrderReturnState((int) $orderReturn->state);
                     $this->context->smarty->assign(
                         [
+                            'PS_RETURN_PREFIX' => Configuration::get('PS_RETURN_PREFIX', $this->context->language->id),
                             'orderRet'               => $orderReturn,
                             'order'                  => $order,
                             'state_name'             => $state->name[(int) $this->context->language->id],
