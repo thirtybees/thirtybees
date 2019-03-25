@@ -85,7 +85,7 @@ CREATE TABLE `PREFIX_attachment` (
   DEFAULT COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_attachment_lang` (
-  `id_attachment` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_attachment` INT(11) UNSIGNED NOT NULL,
   `id_lang`       INT(11) UNSIGNED NOT NULL,
   `name`          VARCHAR(32)               DEFAULT NULL,
   `description`   TEXT,
@@ -529,7 +529,7 @@ CREATE TABLE `PREFIX_cms_category_lang` (
   DEFAULT COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_cms_category_shop` (
-  `id_cms_category` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_cms_category` INT(11) UNSIGNED NOT NULL,
   `id_shop`         INT(11) UNSIGNED NOT NULL,
   PRIMARY KEY (`id_cms_category`, `id_shop`),
   KEY `id_shop` (`id_shop`)
@@ -2122,7 +2122,7 @@ CREATE TABLE `PREFIX_referrer_cache` (
   DEFAULT COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_referrer_shop` (
-  `id_referrer`         INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_referrer`         INT(11) UNSIGNED NOT NULL,
   `id_shop`             INT(11) UNSIGNED NOT NULL DEFAULT '1',
   `cache_visitors`      INT(11)                   DEFAULT NULL,
   `cache_visits`        INT(11)                   DEFAULT NULL,
