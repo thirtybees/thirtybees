@@ -505,7 +505,7 @@ class Smarty_Custom_Template extends Smarty_Internal_Template
         $maxTries = 3;
         while (true) {
             try {
-                SmartyCustom::beforeFetch($this->source->filepath);
+                SmartyCustom::beforeFetch($this->getTemplateSource());
                 $tpl = parent::fetch($template, $cacheId, $compileId, $parent, $display, $mergeTplVars, $noOutputFilter);
                 SmartyCustom::afterFetch();
                 return isset($tpl) ? $tpl : '';
@@ -517,5 +517,27 @@ class Smarty_Custom_Template extends Smarty_Internal_Template
                 usleep(1);
             }
         }
+    }
+
+    /**
+     * Helper method to returns file path to current template
+     *
+     * @return string
+     */
+    private function getTemplateSource()
+    {
+        // first check whether resource descriptor points directly to template file
+        if (@file_exists($this->template_resource)) {
+            return $this->template_resource;
+        }
+
+        // we need to parse resource
+        $filePath = Smarty_Resource::source($this)->filepath;
+        if ($filePath) {
+            return $filePath;
+        }
+
+        // return resource descriptor if it does not refers to physical file
+        return $this->template_resource;
     }
 }
