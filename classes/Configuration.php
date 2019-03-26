@@ -361,24 +361,6 @@ class ConfigurationCore extends ObjectModel
      */
     public static function get($key, $idLang = null, $idShopGroup = null, $idShop = null)
     {
-        return static::getWithDefault($key, false, $idLang, $idShopGroup, $idShop);
-    }
-
-    /**
-     * Returns single configuration value, or fallback value if not configuration key does not exist
-     *
-     * @param string $key Key wanted
-     * @param mixed $fallback fallback value
-     * @param int $idLang Language ID
-     * @param int|null $idShopGroup
-     * @param int|null $idShop
-     *
-     * @return mixed Value
-     *
-     * @throws PrestaShopException
-     */
-    public static function getWithDefault($key, $fallback, $idLang = null, $idShopGroup = null, $idShop = null)
-    {
         if (defined('_PS_DO_NOT_LOAD_CONFIGURATION_') && _PS_DO_NOT_LOAD_CONFIGURATION_) {
             return false;
         }
@@ -408,7 +390,7 @@ class ConfigurationCore extends ObjectModel
             return static::$_cache[static::$definition['table']][$idLang]['global'][$key];
         }
 
-        return $fallback;
+        return false;
     }
 
     /**
