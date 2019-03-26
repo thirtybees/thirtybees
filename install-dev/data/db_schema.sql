@@ -2123,7 +2123,7 @@ CREATE TABLE `PREFIX_referrer_cache` (
 
 CREATE TABLE `PREFIX_referrer_shop` (
   `id_referrer`         INT(11) UNSIGNED NOT NULL,
-  `id_shop`             INT(11) UNSIGNED NOT NULL DEFAULT '1',
+  `id_shop`             INT(11) UNSIGNED NOT NULL,
   `cache_visitors`      INT(11)                   DEFAULT NULL,
   `cache_visits`        INT(11)                   DEFAULT NULL,
   `cache_pages`         INT(11)                   DEFAULT NULL,
