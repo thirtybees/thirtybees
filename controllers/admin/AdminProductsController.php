@@ -3810,7 +3810,7 @@ class AdminProductsControllerCore extends AdminController
         if ($obj->id) {
             $shops = Shop::getShops();
             $countries = Country::getCountries($this->context->language->id);
-            $groups = Group::getGroups($this->context->language->id);
+            $groups = Group::getGroups($this->context->language->id, true);
             $currencies = Currency::getCurrencies();
             $attributes = $obj->getAttributesGroups((int) $this->context->language->id);
             $combinations = [];
