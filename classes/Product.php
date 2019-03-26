@@ -298,8 +298,8 @@ class ProductCore extends ObjectModel
             'supplier'         => ['type' => self::HAS_ONE],
             'default_category' => ['type' => self::HAS_ONE, 'field' => 'id_category_default', 'object' => 'Category'],
             'tax_rules_group'  => ['type' => self::HAS_ONE],
-            'categories'       => ['type' => self::HAS_MANY, 'field' => 'id_category', 'object' => 'Category', 'association' => 'category_product'],
-            'stock_availables' => ['type' => self::HAS_MANY, 'field' => 'id_stock_available', 'object' => 'StockAvailable', 'association' => 'stock_availables'],
+            'categories'       => ['type' => self::BELONGS_TO_MANY, 'object' => 'Category', 'joinTable' => 'category_product'],
+            'stock_availables' => ['type' => self::HAS_MANY, 'field' => 'id_product', 'foreignField' => 'id_product', 'object' => 'StockAvailable'],
         ],
     ];
 

@@ -61,6 +61,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      */
     const HAS_ONE  = 1;
     const HAS_MANY = 2;
+    const BELONGS_TO_MANY = 3;
 
     // @codingStandardsIgnoreStart
     /** @var int Object ID */

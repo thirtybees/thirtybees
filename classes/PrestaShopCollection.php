@@ -268,17 +268,34 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
                 $definition = ObjectModel::getDefinition($classname);
             }
 
+            $type = $currentDef['type'];
+
             // Get definition of associated entity and add information on current association
             $currentDef['name'] = $asso;
             if (!isset($currentDef['object'])) {
                 $currentDef['object'] = Tools::toCamelCase($asso, true);
             }
             if (!isset($currentDef['field'])) {
-                $currentDef['field'] = 'id_'.$asso;
+                $currentDef['field'] = ($type === ObjectModel::BELONGS_TO_MANY)
+                    ? $this->definition['primary']
+                    : 'id_'.$asso;
             }
             if (!isset($currentDef['foreign_field'])) {
-                $currentDef['foreign_field'] = 'id_'.$asso;
+                $currentDef['foreign_field'] = $definition['primary'];
             }
+
+            if ($type === ObjectModel::BELONGS_TO_MANY) {
+                if (!isset($currentDef['joinTable'])) {
+                    throw new PrestaShopException('Association ' . $this->definition['classname'] . ':' . $asso . ' is missing joinTable');
+                }
+                if (!isset($currentDef['joinSourceField'])) {
+                    $currentDef['joinSourceField'] = $this->definition['primary'];
+                }
+                if (!isset($currentDef['joinTargetField'])) {
+                    $currentDef['joinTargetField'] = $definition['primary'];
+                }
+            }
+
             if ($totalAssociation > 1) {
                 unset($split[$totalAssociation - 1]);
                 $currentDef['complete_field'] = implode('.', $split).'.'.$currentDef['field'];
@@ -317,14 +334,31 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
         }
 
         if (!isset($this->join_list[$association])) {
-            $definition = $this->getDefinition($association);
-            $on = '{'.$definition['asso']['complete_field'].'} = {'.$definition['asso']['complete_foreign_field'].'}';
             $type = static::LEFT_JOIN;
-            $this->join_list[$association] = [
-                'table' => ($definition['is_lang']) ? $definition['table'].'_lang' : $definition['table'],
-                'alias' => $this->generateAlias($association),
-                'on'    => [],
-            ];
+            $definition = $this->getDefinition($association);
+            $assocDefinition = $definition['asso'];
+            if (isset($assocDefinition['joinTable'])) {
+                $joinAlias = $this->generateAlias($association . '_' . $assocDefinition['joinTable']);
+                $targetAlias = $this->generateAlias($association);
+                $on = $joinAlias . '.`' . $assocDefinition['joinTargetField'] . '` = {' . $assocDefinition['complete_foreign_field'] . '}';
+                $this->join_list[$association] = [
+                    'joinTable' => $assocDefinition['joinTable'],
+                    'joinAlias' => $joinAlias,
+                    'joinTableJoin' => $this->parseFields('{' . $assocDefinition['complete_field'] . '} = ' . $joinAlias . '.`' . $assocDefinition['joinSourceField'].'`'),
+                    'table' => $definition['table'],
+                    'alias' => $targetAlias,
+                    'on' => [],
+                    'type' => $type
+                ];
+            } else {
+                $on = '{' . $assocDefinition['complete_field'] . '} = {' . $assocDefinition['complete_foreign_field'] . '}';
+                $this->join_list[$association] = [
+                    'table' => ($definition['is_lang']) ? $definition['table'] . '_lang' : $definition['table'],
+                    'alias' => $this->generateAlias($association),
+                    'on' => [],
+                    'type' => $type,
+                ];
+            }
         }
 
         if ($on) {
@@ -614,20 +648,11 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
 
         // Add join clause
         foreach ($this->join_list as $data) {
-            $on = '('.implode(') AND (', $data['on']).')';
-            switch ($data['type']) {
-                case static::LEFT_JOIN:
-                    $this->query->leftJoin($data['table'], $data['alias'], $on);
-                    break;
-
-                case static::INNER_JOIN:
-                    $this->query->innerJoin($data['table'], $data['alias'], $on);
-                    break;
-
-                case static::LEFT_OUTER_JOIN:
-                    $this->query->leftOuterJoin($data['table'], $data['alias'], $on);
-                    break;
+            if (isset($data['joinTable'])) {
+                $this->joinTable($data['joinTable'], $data['joinAlias'], $data['joinTableJoin'], $data['type']);
             }
+            $on = '(' . implode(') AND (', $data['on']) . ')';
+            $this->joinTable($data['table'], $data['alias'], $on, $data['type']);
         }
 
         // All limit clause
@@ -646,6 +671,27 @@ class PrestaShopCollectionCore implements Iterator, ArrayAccess, Countable
         }
 
         return $this;
+    }
+
+    /**
+     * @param $table
+     * @param $alias
+     * @param $on
+     * @param $joinType
+     */
+    private function joinTable($table, $alias, $on, $joinType)
+    {
+        switch ($joinType) {
+            case static::LEFT_JOIN:
+                $this->query->leftJoin($table, $alias, $on);
+                break;
+            case static::INNER_JOIN:
+                $this->query->innerJoin($table, $alias, $on);
+                break;
+            case static::LEFT_OUTER_JOIN:
+                $this->query->leftOuterJoin($table, $alias, $on);
+                break;
+        }
     }
 
     /**
