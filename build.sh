@@ -216,7 +216,6 @@ if [ ${OPTION_BUILD_INSTALLER} = 'true' ]; then
   EXCLUDE_FILE=('.coveralls.yml')
   EXCLUDE_FILE+=('.gitignore')
   EXCLUDE_FILE+=('.gitmodules')
-  EXCLUDE_FILE+=('.scrutinizer.yml')
   EXCLUDE_FILE+=('.travis.yml')
   EXCLUDE_FILE+=('architecture.md')
   EXCLUDE_FILE+=('codeception.yml')
