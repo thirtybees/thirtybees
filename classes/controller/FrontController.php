@@ -323,7 +323,11 @@ class FrontControllerCore extends Controller
                 $hookHeader .= '<link rel="manifest" href="'.Media::getMediaPath(_PS_IMG_DIR_."favicon/manifest_{$this->context->shop->id}.json").'">';
             }
 
-            if (isset($this->php_self) && Configuration::getWithDefault('TB_EMIT_SEO_FIELDS', true)) {
+            // Retrocompatibility with <= 1.0.8. Remove ::hasKey() when Core
+            // Updater has learned to add configuration keys.
+            $emitSeoFields = ! Configuration::hasKey('TB_EMIT_SEO_FIELDS')
+                             || Configuration::get('TB_EMIT_SEO_FIELDS');
+            if (isset($this->php_self) && $emitSeoFields) {
                 // append some seo fields, canonical, hrefLang, rel prev/next
                 $hookHeader .= $this->getSeoFields();
             }
