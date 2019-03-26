@@ -3216,8 +3216,8 @@ CREATE TABLE IF NOT EXISTS `PREFIX_risk_lang` (
   DEFAULT COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE `PREFIX_category_shop` (
-  `id_category` INT(11)          NOT NULL,
-  `id_shop`     INT(11)          NOT NULL,
+  `id_category` INT(11) UNSIGNED NOT NULL,
+  `id_shop`     INT(11) UNSIGNED NOT NULL,
   `position`    INT(11) UNSIGNED NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_category`, `id_shop`)
 )
