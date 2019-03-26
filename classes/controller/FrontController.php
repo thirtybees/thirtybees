@@ -1226,7 +1226,7 @@ class FrontControllerCore extends Controller
      * Initializes page footer variables.
      *
      * @since 1.0.0
-     * @since 1.0.9 Add debug messages as JavaScript console messages.
+     * @since 1.1.0 Add debug messages as JavaScript console messages.
      */
     public function initFooter()
     {

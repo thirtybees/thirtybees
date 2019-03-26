@@ -20,7 +20,7 @@
 /**
  * Class ErrorHandlerCore
  *
- * @since 1.0.9
+ * @since 1.1.0
  */
 class ErrorHandlerCore
 {
@@ -49,7 +49,7 @@ class ErrorHandlerCore
      *
      * @return ErrorHandlerCore
      *
-     * @since 1.0.9
+     * @since 1.1.0
      */
     public static function getInstance()
     {
@@ -65,7 +65,7 @@ class ErrorHandlerCore
      *
      * @throws PrestaShopException
      *
-     * @since 1.0.9
+     * @since 1.1.0
      */
     public function init()
     {
@@ -91,11 +91,13 @@ class ErrorHandlerCore
     /**
      * Returns list of collected php error messags
      *
-     * @param bool $includeSuppressed if true, result will include even messages that were suppressed using @ operator
-     * @param int $mask message types to return, defaults to E_ALL
+     * @param bool $includeSuppressed if true, result will include even
+     *             messages that were suppressed using @ operator
+     * @param int  $mask message types to return, defaults to E_ALL.
+     *
      * @return array of collected error messages
      *
-     * @since 1.0.9
+     * @since 1.1.0
      */
     public function getErrorMessages($includeSuppressed = false, $mask = E_ALL)
     {
@@ -113,11 +115,11 @@ class ErrorHandlerCore
 
     /**
      * Uncaught exception handler - any uncaught exception will be processed by
-     * this method
+     * this method.
      *
      * @param Exception $e uncaught exception
      *
-     * @since 1.0.9
+     * @since 1.1.0
      */
     public function uncaughtExceptionHandler($e)
     {
@@ -129,7 +131,7 @@ class ErrorHandlerCore
 
     /**
      * Error handler. It only records any error, warning or notice to $errors
-     * array and yields to default handler
+     * array and yields to default handler.
      *
      * @param int $errno level of the error raised
      * @param string $errstr error message
@@ -138,7 +140,7 @@ class ErrorHandlerCore
      *
      * @return bool
      *
-     * @since 1.0.9
+     * @since 1.1.0
      */
     public function errorHandler($errno, $errstr, $errfile, $errline)
     {
@@ -169,9 +171,9 @@ class ErrorHandlerCore
     }
 
     /**
-     * Shutdown handler let us detect and react to fatal errors
+     * Shutdown handler let us detect and react to fatal errors.
      *
-     * @since 1.0.9
+     * @since 1.1.0
      */
     public function shutdown()
     {
@@ -193,12 +195,12 @@ class ErrorHandlerCore
 
     /**
      * Sets external logger. If $replay parameter is true, then any already
-     * collected error messages will be emitted
+     * collected error messages will be emitted.
      *
      * @param $logger
      * @param bool $replay
      *
-     * @since 1.0.9
+     * @since 1.1.0
      */
     public function setLogger(LoggerInterface $logger, $replay=false)
     {
@@ -211,11 +213,11 @@ class ErrorHandlerCore
     }
 
     /**
-     * Forward error message to psr compliant logger
+     * Forward error message to psr compliant logger.
      *
      * @param $msg
      *
-     * @since 1.0.9
+     * @since 1.1.0
      */
     protected function logMessage($msg)
     {
@@ -269,13 +271,13 @@ class ErrorHandlerCore
     }
 
     /**
-     * Returns file name relative to thirtybees root directory
+     * Returns file name relative to thirtybees root directory.
      *
      * @param $file
      *
      * @return string file
      *
-     * @since 1.0.9
+     * @since 1.1.0
      */
     public static function normalizeFileName($file)
     {
@@ -284,13 +286,13 @@ class ErrorHandlerCore
 
 
     /**
-     * Returns error type for given error level
+     * Returns error type for given error level.
      *
      * @param int $errno level of the error raised
      *
      * @return string error type
      *
-     * @since 1.0.9
+     * @since 1.1.0
      */
     public static function getErrorType($errno)
     {
@@ -313,11 +315,11 @@ class ErrorHandlerCore
     }
 
     /**
-     * Returns true if errno is a fatal error
+     * Returns true if errno is a fatal error.
      *
      * @return boolean
      *
-     * @since 1.0.9
+     * @since 1.1.0
      */
     public static function isFatalError($errno)
     {
@@ -325,13 +327,13 @@ class ErrorHandlerCore
     }
 
     /**
-     * Returns error PSR log level for given error level
+     * Returns error PSR log level for given error level.
      *
      * @param int $errno level of the error raised
      *
      * @return string error log level
      *
-     * @since 1.0.9
+     * @since 1.1.0
      */
     public static function getLogLevel($errno)
     {
@@ -353,11 +355,11 @@ class ErrorHandlerCore
     }
 
     /**
-     * Returns true, if display_errors settings is turned on
+     * Returns true, if display_errors settings is turned on.
      *
      * @return boolean
      *
-     * @since 1.0.9
+     * @since 1.1.0
      */
     public static function displayErrorEnabled() {
         $value = @ini_get('display_errors');
