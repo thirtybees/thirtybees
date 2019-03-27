@@ -1312,6 +1312,9 @@ class AdminTranslationsControllerCore extends AdminController
         $thmName = str_replace('.', '', Tools::getValue('theme'));
         $kpiKey = substr(strtoupper($thmName.'_'.Tools::getValue('lang')), 0, 16);
 
+        require_once $filePath;
+        $translationsArray = $GLOBALS[$translationInformation['var']];
+
         if ($fd = fopen($filePath, 'w')) {
             // Get value of button save and stay
             $saveAndStay = Tools::isSubmit('submitTranslations'.$type.'AndStay');
@@ -1330,26 +1333,34 @@ class AdminTranslationsControllerCore extends AdminController
             );
 
             // Get all POST which aren't empty
-            $toInsert = [];
             foreach ($_POST as $key => $value) {
                 if (!empty($value)) {
-                    $toInsert[$key] = $value;
+                    $translationsArray[$key] = $value;
                 }
             }
 
             ConfigurationKPI::updateValue('FRONTOFFICE_TRANSLATIONS_EXPIRE', time());
-            ConfigurationKPI::updateValue('TRANSLATE_TOTAL_'.$kpiKey, count($_POST));
-            ConfigurationKPI::updateValue('TRANSLATE_DONE_'.$kpiKey, count($toInsert));
+            ConfigurationKPI::updateValue(
+                'TRANSLATE_TOTAL_'.$kpiKey,
+                count($translationsArray)
+            );
+            ConfigurationKPI::updateValue(
+                'TRANSLATE_DONE_'.$kpiKey,
+                count($translationsArray)
+            );
 
             // translations array is ordered by key (easy merge)
-            ksort($toInsert);
+            ksort($translationsArray);
             $tab = $translationInformation['var'];
             fwrite($fd, "<?php\n\nglobal \$".$tab.";\n\$".$tab." = array();\n");
-            foreach ($toInsert as $key => $value) {
+            foreach ($translationsArray as $key => $value) {
                 fwrite($fd, '$'.$tab.'[\''.pSQL($key, true).'\'] = \''.pSQL($value, true).'\';'."\n");
             }
-            fwrite($fd, "\n?>");
+            fwrite($fd, "\n\nreturn \$".$tab.";\n");
             fclose($fd);
+            if (function_exists('opcache_invalidate')) {
+                opcache_invalidate($filePath);
+            }
 
             // Redirect
             if ($saveAndStay) {

@@ -87,6 +87,9 @@
     {if !empty($newLang)}
       <form method="post" id="{$k}_form" action="{$url_submit|escape:'html':'UTF-8'}" class="form-horizontal">
         <div class="panel">
+          <input type="hidden" name="lang" value="{$lang}" />
+          <input type="hidden" name="type" value="{$type}" />
+          <input type="hidden" name="theme" value="{$theme}" />
           <h3>
             <a href="#" class="sidetoggle" data-slidetoggle="{$k}-tpl">
               <i class="icon-caret-down"></i>
