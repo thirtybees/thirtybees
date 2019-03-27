@@ -82,8 +82,10 @@
         <button type="submit" id="{$table}_form_submit_btn" name="submitTranslations{$type|ucfirst}AndStay" class="btn btn-default pull-right"><i class="process-icon-save"></i> {l s='Save and stay'}</button>
       </div>
     </div>
-    {foreach $tabsArray as $k => $newLang}
-      {if !empty($newLang)}
+  </form>
+  {foreach $tabsArray as $k => $newLang}
+    {if !empty($newLang)}
+      <form method="post" id="{$k}_form" action="{$url_submit|escape:'html':'UTF-8'}" class="form-horizontal">
         <div class="panel">
           <h3>
             <a href="#" class="sidetoggle" data-slidetoggle="{$k}-tpl">
@@ -128,7 +130,7 @@
             </div>
           </div>
         </div>
-      {/if}
-    {/foreach}
-  </form>
+      </form>
+    {/if}
+  {/foreach}
 {/block}
