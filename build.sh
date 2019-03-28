@@ -382,6 +382,7 @@ done || exit ${?}
   echo -n "Creating package ... "
   cd "${PACKAGING_DIR}"                                           || exit ${?}
   php ./tools/generatemd5list.php                                 || exit ${?}
+  rm -f cache/class_index.php # Gets created by running generatemd5list.php.
   zip -r -q "${PACKAGE_NAME}".zip .                               || exit ${?}
   echo "done."
 ) || exit ${?}
