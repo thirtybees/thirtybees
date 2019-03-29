@@ -360,6 +360,31 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     }
 
     /**
+     * Return fields that are stored in object model primary table
+     * Fields are sanitized (pSQL, intval, ...)
+     *
+     * @return array primary table fields
+     * @throws PrestaShopException
+     *
+     * @since   1.3.0
+     */
+    protected function getFieldsPrimary()
+    {
+        // although it would be better from performance point of view to build list of primary table fields directly
+        // by calling formatFields method, we can't do that.
+        // The reason is that some subclasses overridden getFields() method to include additional fields
+        $fields = $this->getFields();
+        $definitions = $this->def['fields'];
+        foreach ($fields as $field => $value) {
+            $shopOnlyField = isset($definitions[$field]['shopOnly']) && $definitions[$field]['shopOnly'];
+            if ($shopOnlyField) {
+                unset($fields[$field]);
+            }
+        }
+        return $fields;
+    }
+
+    /**
      * Prepare fields for multishop
      * Fields are not validated here, we consider they are already validated in getFields() method,
      * this is not the best solution but this is the only one possible for retro compatibility.
@@ -422,13 +447,14 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     /**
      * Formats values of each fields.
      *
-     * @param int $type   FORMAT_COMMON or FORMAT_LANG or FORMAT_SHOP
+     * @param int $type FORMAT_COMMON or FORMAT_LANG or FORMAT_SHOP
      * @param int $idLang If this parameter is given, only take lang fields
      *
      * @return array
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
+     * @throws PrestaShopException
      */
     protected function formatFields($type, $idLang = null)
     {
@@ -440,16 +466,24 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         }
 
         foreach ($this->def['fields'] as $field => $data) {
-            // Only get fields we need for the type
-            // E.g. if only lang fields are filtered, ignore fields without lang => true
-            if (($type == static::FORMAT_LANG && empty($data['lang']))
-                || ($type == static::FORMAT_SHOP && empty($data['shop']))
-                || ($type == static::FORMAT_COMMON && ((!empty($data['shop']) && $data['shop'] != 'both') || !empty($data['lang'])))) {
+
+            $langField = isset($data['lang']) && $data['lang'];
+            if ($type == static::FORMAT_LANG && !$langField) {
+                continue;
+            }
+
+            $shopOnlyField = isset($data['shopOnly']) && $data['shopOnly'];
+            $shopField = $shopOnlyField || isset($data['shop']) && $data['shop'];
+            if ($type == static::FORMAT_SHOP && !$shopField) {
+                continue;
+            }
+
+            if ($type == static::FORMAT_COMMON && ($shopOnlyField || $langField)) {
                 continue;
             }
 
             if (is_array($this->update_fields)) {
-                if ((!empty($data['lang']) || (!empty($data['shop']) && $data['shop'] != 'both')) && (empty($this->update_fields[$field]) || ($type == static::FORMAT_LANG && empty($this->update_fields[$field][$idLang])))) {
+                if (($langField || $shopField) && (empty($this->update_fields[$field]) || ($type == static::FORMAT_LANG && empty($this->update_fields[$field][$idLang])))) {
                     continue;
                 }
             }
@@ -601,11 +635,12 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
             }
         }
 
-        // Database insertion
         if (Shop::checkIdShopDefault($this->def['table'])) {
             $this->id_shop_default = (in_array(Configuration::get('PS_SHOP_DEFAULT'), $idShopList) == true) ? Configuration::get('PS_SHOP_DEFAULT') : min($idShopList);
         }
-        $fields = $this->getFields();
+
+        // Database insertion
+        $fields = $this->getFieldsPrimary();
         if (!$result = Db::getInstance()->insert($this->def['table'], $fields, $nullValues)) {
             return false;
         }
@@ -773,8 +808,10 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         if (Shop::checkIdShopDefault($this->def['table']) && !$this->id_shop_default) {
             $this->id_shop_default = (in_array(Configuration::get('PS_SHOP_DEFAULT'), $idShopList) == true) ? Configuration::get('PS_SHOP_DEFAULT') : min($idShopList);
         }
+
         // Database update
-        if (!$result = Db::getInstance()->update($this->def['table'], $this->getFields(), '`'.pSQL($this->def['primary']).'` = '.(int) $this->id, 0, $nullValues)) {
+        $primaryFields = $this->getFieldsPrimary();
+        if (!$result = Db::getInstance()->update($this->def['table'], $primaryFields, '`'.pSQL($this->def['primary']).'` = '.(int) $this->id, 0, $nullValues)) {
             return false;
         }
 

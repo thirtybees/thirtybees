@@ -44,7 +44,7 @@ class CombinationCore extends ObjectModel
         'table'   => 'product_attribute',
         'primary' => 'id_product_attribute',
         'fields'  => [
-            'id_product'         => ['type' => self::TYPE_INT, 'shop' => 'both', 'validate' => 'isUnsignedId', 'required' => true],
+            'id_product'         => ['type' => self::TYPE_INT, 'shop' => true, 'validate' => 'isUnsignedId', 'required' => true],
             'reference'          => ['type' => self::TYPE_STRING, 'size' => 32],
             'supplier_reference' => ['type' => self::TYPE_STRING, 'size' => 32],
             'location'           => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'size' => 64],
