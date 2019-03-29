@@ -2566,8 +2566,7 @@ CREATE TABLE `PREFIX_import_match` (
 
 CREATE TABLE IF NOT EXISTS `PREFIX_shop_group` (
   `id_shop_group`  INT(11) UNSIGNED   NOT NULL AUTO_INCREMENT,
-  `name`           VARCHAR(64)
-                   CHARACTER SET utf8 NOT NULL,
+  `name`           VARCHAR(64)        NOT NULL,
   `share_customer` TINYINT(1)         NOT NULL,
   `share_order`    TINYINT(1)         NOT NULL,
   `share_stock`    TINYINT(1)         NOT NULL,
@@ -2583,8 +2582,7 @@ CREATE TABLE IF NOT EXISTS `PREFIX_shop_group` (
 CREATE TABLE IF NOT EXISTS `PREFIX_shop` (
   `id_shop`       INT(11) UNSIGNED   NOT NULL AUTO_INCREMENT,
   `id_shop_group` INT(11) UNSIGNED   NOT NULL,
-  `name`          VARCHAR(64)
-                  CHARACTER SET utf8 NOT NULL,
+  `name`          VARCHAR(64)        NOT NULL,
   `id_category`   INT(11) UNSIGNED   NOT NULL DEFAULT '1',
   `id_theme`      INT(1) UNSIGNED    NOT NULL,
   `active`        TINYINT(1)         NOT NULL DEFAULT '1',
@@ -2899,8 +2897,7 @@ CREATE TABLE `PREFIX_stock_mvt_reason` (
 CREATE TABLE `PREFIX_stock_mvt_reason_lang` (
   `id_stock_mvt_reason` INT(11) UNSIGNED   NOT NULL,
   `id_lang`             INT(11) UNSIGNED   NOT NULL,
-  `name`                VARCHAR(255)
-                        CHARACTER SET utf8 NOT NULL,
+  `name`                VARCHAR(255)       NOT NULL,
   PRIMARY KEY (`id_stock_mvt_reason`, `id_lang`)
 )
   ENGINE = InnoDB
