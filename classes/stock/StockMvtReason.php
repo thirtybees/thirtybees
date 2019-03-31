@@ -65,10 +65,10 @@ class StockMvtReasonCore extends ObjectModel
         'primary'   => 'id_stock_mvt_reason',
         'multilang' => true,
         'fields'    => [
-            'sign'     => ['type' => self::TYPE_INT],
-            'deleted'  => ['type' => self::TYPE_BOOL],
-            'date_add' => ['type' => self::TYPE_DATE,                   'validate' => 'isDate'                                          ],
-            'date_upd' => ['type' => self::TYPE_DATE,                   'validate' => 'isDate'                                          ],
+            'sign'     => ['type' => self::TYPE_INT, 'size' => 1, 'signed' => true, 'dbDefault' => '1'],
+            'date_add' => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
+            'date_upd' => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
+            'deleted'  => ['type' => self::TYPE_BOOL, 'dbDefault' => '0'],
             'name'     => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 255],
         ],
     ];
