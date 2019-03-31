@@ -53,8 +53,9 @@ class AddressFormatCore extends ObjectModel
     public static $definition = [
         'table'   => 'address_format',
         'primary' => 'id_country',
+        'autoIncrement' => false,
         'fields'  => [
-            'format'     => ['type' => self::TYPE_HTML, 'validate' => 'isGenericName', 'required' => true],
+            'format'     => ['type' => self::TYPE_HTML, 'validate' => 'isGenericName', 'required' => true, 'dbDefault' => ''],
             'id_country' => ['type' => self::TYPE_INT],
         ],
     ];
