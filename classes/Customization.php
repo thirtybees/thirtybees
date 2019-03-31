@@ -63,14 +63,21 @@ class CustomizationCore extends ObjectModel
         'primary' => 'id_customization',
         'fields'  => [
             /* Classic fields */
-            'id_product_attribute' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'id_address_delivery'  => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'id_product_attribute' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true, 'dbDefault' => '0'],
+            'id_address_delivery'  => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true, 'dbDefault' => '0'],
             'id_cart'              => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'id_product'           => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'quantity'             => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'quantity_refunded'    => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'quantity_returned'    => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'in_cart'              => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true],
+            'id_product'           => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true, 'dbType' => 'int(10)'],
+            'quantity'             => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true, 'dbType' => 'int(10)'],
+            'quantity_refunded'    => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true, 'dbType' => 'int(11)', 'dbDefault' => '0'],
+            'quantity_returned'    => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true, 'dbType' => 'int(11)', 'dbDefault' => '0'],
+            'in_cart'              => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbDefault' => '0'],
+        ],
+        'keys' => [
+            'customization' => [
+                'primary'              => ['type' => ObjectModel::PRIMARY_KEY, 'columns' => ['id_customization', 'id_cart', 'id_product', 'id_address_delivery']],
+                'id_cart_product'      => ['type' => ObjectModel::KEY, 'columns' => ['id_cart', 'id_product', 'id_product_attribute']],
+                'id_product_attribute' => ['type' => ObjectModel::KEY, 'columns' => ['id_product_attribute']],
+            ],
         ],
     ];
     protected $webserviceParameters = [
