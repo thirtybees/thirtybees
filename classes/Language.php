@@ -66,12 +66,20 @@ class LanguageCore extends ObjectModel
         'primary' => 'id_lang',
         'fields'  => [
             'name'             => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 32],
-            'iso_code'         => ['type' => self::TYPE_STRING, 'validate' => 'isLanguageIsoCode', 'required' => true, 'size' => 2],
-            'language_code'    => ['type' => self::TYPE_STRING, 'validate' => 'isLanguageCode', 'size' => 5],
-            'active'           => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'is_rtl'           => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'date_format_lite' => ['type' => self::TYPE_STRING, 'validate' => 'isPhpDateFormat', 'required' => true, 'size' => 32],
-            'date_format_full' => ['type' => self::TYPE_STRING, 'validate' => 'isPhpDateFormat', 'required' => true, 'size' => 32],
+            'active'           => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(3) unsigned', 'dbDefault' => '0'],
+            'iso_code'         => ['type' => self::TYPE_STRING, 'validate' => 'isLanguageIsoCode', 'required' => true, 'size' => 2, 'dbType' => 'char(2)'],
+            'language_code'    => ['type' => self::TYPE_STRING, 'validate' => 'isLanguageCode', 'size' => 5, 'dbType' => 'char(5)', 'dbNullable' => false],
+            'date_format_lite' => ['type' => self::TYPE_STRING, 'validate' => 'isPhpDateFormat', 'required' => true, 'size' => 32, 'dbType' => 'char(32)', 'dbDefault' => 'Y-m-d'],
+            'date_format_full' => ['type' => self::TYPE_STRING, 'validate' => 'isPhpDateFormat', 'required' => true, 'size' => 32, 'dbType' => 'char(32)', 'dbDefault' => 'Y-m-d H:i:s'],
+            'is_rtl'           => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
+        ],
+        'keys' => [
+            'lang' => [
+                'lang_iso_code' => ['type' => ObjectModel::KEY, 'columns' => ['iso_code']],
+            ],
+            'lang_shop' => [
+                'id_shop' => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
+            ],
         ],
     ];
     protected $webserviceParameters = [
