@@ -46,20 +46,32 @@ class CMSCategoryCore extends ObjectModel
         'multilang'      => true,
         'multilang_shop' => true,
         'fields'         => [
-            'active'           => ['type' => self::TYPE_BOOL, 'validate' => 'isBool',        'required' => true],
-            'id_parent'        => ['type' => self::TYPE_INT,  'validate' => 'isUnsignedInt', 'required' => true],
-            'position'         => ['type' => self::TYPE_INT],
-            'level_depth'      => ['type' => self::TYPE_INT],
-            'date_add'         => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
-            'date_upd'         => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+            'id_parent'        => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true],
+            'level_depth'      => ['type' => self::TYPE_INT, 'dbType' => 'tinyint(3) unsigned', 'dbDefault' => '0'],
+            'active'           => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbDefault' => '0'],
+            'date_add'         => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
+            'date_upd'         => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
+            'position'         => ['type' => self::TYPE_INT, 'dbDefault' => '0'],
 
             /* Lang fields */
-            'name'             => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCatalogName', 'required' => true, 'size' => 64],
-            'link_rewrite'     => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isLinkRewrite', 'required' => true, 'size' => 64],
-            'description'      => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCleanHtml'],
+            'name'             => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCatalogName', 'required' => true, 'size' => 128],
+            'description'      => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => ObjectModel::SIZE_TEXT],
+            'link_rewrite'     => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isLinkRewrite', 'required' => true, 'size' => 128],
             'meta_title'       => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 128],
-            'meta_description' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255],
             'meta_keywords'    => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255],
+            'meta_description' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255],
+        ],
+        'keys' => [
+            'cms_category' => [
+                'category_parent' => ['type' => ObjectModel::KEY, 'columns' => ['id_parent']],
+            ],
+            'cms_category_lang' => [
+                'primary'       => ['type' => ObjectModel::PRIMARY_KEY, 'columns' => ['id_cms_category', 'id_shop', 'id_lang']],
+                'category_name' => ['type' => ObjectModel::KEY, 'columns' => ['name']],
+            ],
+            'cms_category_shop' => [
+                'id_shop' => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
+            ],
         ],
     ];
     protected static $_links = [];
