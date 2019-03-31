@@ -73,12 +73,17 @@ class ImageTypeCore extends ObjectModel
             'name'          => ['type' => self::TYPE_STRING, 'validate' => 'isImageTypeName', 'required' => true, 'size' => 64],
             'width'         => ['type' => self::TYPE_INT, 'validate' => 'isImageSize', 'required' => true],
             'height'        => ['type' => self::TYPE_INT, 'validate' => 'isImageSize', 'required' => true],
-            'categories'    => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'products'      => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'manufacturers' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'suppliers'     => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'scenes'        => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'stores'        => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'products'      => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '1'],
+            'categories'    => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '1'],
+            'manufacturers' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '1'],
+            'suppliers'     => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '1'],
+            'scenes'        => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '1'],
+            'stores'        => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '1'],
+        ],
+        'keys' => [
+            'image_type' => [
+                'image_type_name' => ['type' => ObjectModel::KEY, 'columns' => ['name']],
+            ],
         ],
     ];
 
