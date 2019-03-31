@@ -49,13 +49,14 @@ class ThemeCore extends ObjectModel
     public static $definition = [
         'table'   => 'theme',
         'primary' => 'id_theme',
+        'primaryKeyDbType' => 'int(11)',
         'fields'  => [
             'name'                 => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'size' => 64, 'required' => true],
             'directory'            => ['type' => self::TYPE_STRING, 'validate' => 'isDirName', 'size' => 64, 'required' => true],
-            'responsive'           => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'default_left_column'  => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'default_right_column' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'product_per_page'     => ['type' => self::TYPE_INT, 'validate' => 'isInt'],
+            'responsive'           => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
+            'default_left_column'  => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
+            'default_right_column' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
+            'product_per_page'     => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'dbNullable' => false],
         ],
     ];
     /** @var string $name */
