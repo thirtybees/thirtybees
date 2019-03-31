@@ -51,7 +51,7 @@ class ProfileCore extends ObjectModel
         'multilang' => true,
         'fields'    => [
             /* Lang fields */
-            'name' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 32],
+            'name' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128],
         ],
     ];
 
@@ -227,5 +227,15 @@ class ProfileCore extends ObjectModel
         }
 
         return false;
+    }
+
+    /**
+     * @param $table TableSchema
+     */
+    public static function processTableSchema($table)
+    {
+        if ($table->getNameWithoutPrefix() === 'profile_lang') {
+            $table->reorderColumns(['id_lang', 'id_profile']);
+        }
     }
 }
