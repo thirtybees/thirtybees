@@ -54,11 +54,16 @@ class ShopGroupCore extends ObjectModel
         'primary' => 'id_shop_group',
         'fields'  => [
             'name'           => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 64],
-            'share_customer' => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                         ],
-            'share_order'    => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                         ],
-            'share_stock'    => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                         ],
-            'active'         => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                         ],
-            'deleted'        => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                         ],
+            'share_customer' => ['type' => self::TYPE_BOOL,   'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbNullable' => false],
+            'share_order'    => ['type' => self::TYPE_BOOL,   'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbNullable' => false],
+            'share_stock'    => ['type' => self::TYPE_BOOL,   'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbNullable' => false],
+            'active'         => ['type' => self::TYPE_BOOL,   'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '1'],
+            'deleted'        => ['type' => self::TYPE_BOOL,   'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
+        ],
+        'keys' => [
+            'shop_group' => [
+                'deleted' => ['type' => ObjectModel::KEY, 'columns' => ['deleted', 'name']],
+            ],
         ],
     ];
 
