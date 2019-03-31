@@ -51,10 +51,18 @@ class FeatureCore extends ObjectModel
         'primary'   => 'id_feature',
         'multilang' => true,
         'fields'    => [
-            'position' => ['type' => self::TYPE_INT, 'validate' => 'isInt'],
+            'position' => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'dbDefault' => '0'],
 
             /* Lang fields */
-            'name'     => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128],
+            'name'     => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128, 'dbNullable' => true],
+        ],
+        'keys' => [
+            'feature_lang' => [
+                'id_lang' => ['type' => ObjectModel::KEY, 'columns' => ['id_lang', 'name']],
+            ],
+            'feature_shop' => [
+                'id_shop' => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
+            ],
         ],
     ];
 
