@@ -56,6 +56,11 @@ class RangeWeightCore extends ObjectModel
             'delimiter1' => ['type' => self::TYPE_FLOAT, 'validate' => 'isUnsignedFloat', 'required' => true],
             'delimiter2' => ['type' => self::TYPE_FLOAT, 'validate' => 'isUnsignedFloat', 'required' => true],
         ],
+        'keys' => [
+            'range_weight' => [
+                'id_carrier' => ['type' => ObjectModel::UNIQUE_KEY, 'columns' => ['id_carrier', 'delimiter1', 'delimiter2']],
+            ],
+        ],
     ];
 
     protected $webserviceParameters = [
