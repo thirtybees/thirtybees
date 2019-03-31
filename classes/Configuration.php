@@ -276,12 +276,26 @@ class ConfigurationCore extends ObjectModel
         'primary'   => 'id_configuration',
         'multilang' => true,
         'fields'    => [
+            'id_shop_group' => ['type' => self::TYPE_NOTHING, 'validate' => 'isUnsignedId', 'dbType' => 'int(11) unsigned'],
+            'id_shop'       => ['type' => self::TYPE_NOTHING, 'validate' => 'isUnsignedId', 'dbType' => 'int(11) unsigned'],
             'name'          => ['type' => self::TYPE_STRING, 'validate' => 'isConfigName', 'required' => true, 'size' => 254],
-            'id_shop_group' => ['type' => self::TYPE_NOTHING, 'validate' => 'isUnsignedId'],
-            'id_shop'       => ['type' => self::TYPE_NOTHING, 'validate' => 'isUnsignedId'],
-            'value'         => ['type' => self::TYPE_STRING],
-            'date_add'      => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
-            'date_upd'      => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+            'value'         => ['type' => self::TYPE_STRING, 'size' => ObjectModel::SIZE_TEXT],
+            'date_add'      => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
+            'date_upd'      => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
+        ],
+        'keys' => [
+            'configuration' => [
+                'id_shop'       => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
+                'id_shop_group' => ['type' => ObjectModel::KEY, 'columns' => ['id_shop_group']],
+            ],
+            'configuration_kpi' => [
+                'id_shop'       => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
+                'id_shop_group' => ['type' => ObjectModel::KEY, 'columns' => ['id_shop_group']],
+                'name'          => ['type' => ObjectModel::KEY, 'columns' => ['name']],
+            ],
+            'configuration_kpi_lang' => [
+                'primary' => ['type' => ObjectModel::PRIMARY_KEY, 'columns' => ['id_configuration_kpi', 'id_lang']],
+            ],
         ],
     ];
     /** @var array Configuration cache */
