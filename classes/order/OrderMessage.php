@@ -55,9 +55,9 @@ class OrderMessageCore extends ObjectModel
         'primary'   => 'id_order_message',
         'multilang' => true,
         'fields'    => [
-            'date_add' => ['type' => self::TYPE_DATE,                   'validate' => 'isDate'                                           ],
+            'date_add' => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
             'name'     => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128 ],
-            'message'  => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isMessage',     'required' => true, 'size' => 1200],
+            'message'  => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isMessage', 'required' => true, 'size' => 1200],
         ],
     ];
 
