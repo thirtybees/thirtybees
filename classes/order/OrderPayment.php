@@ -67,18 +67,24 @@ class OrderPaymentCore extends ObjectModel
     public static $definition = [
         'table'   => 'order_payment',
         'primary' => 'id_order_payment',
+        'primaryKeyDbType' => 'int(11)',
         'fields'  => [
-            'order_reference' => ['type' => self::TYPE_STRING, 'validate' => 'isAnything',       'size' => 9                       ],
-            'id_currency'     => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',                     'required' => true],
-            'amount'          => ['type' => self::TYPE_PRICE,  'validate' => 'isNegativePrice',                  'required' => true],
-            'payment_method'  => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName'                                       ],
-            'conversion_rate' => ['type' => self::TYPE_FLOAT,  'validate' => 'isFloat'                                             ],
-            'transaction_id'  => ['type' => self::TYPE_STRING, 'validate' => 'isAnything',       'size' => 254                     ],
-            'card_number'     => ['type' => self::TYPE_STRING, 'validate' => 'isAnything',       'size' => 254                     ],
-            'card_brand'      => ['type' => self::TYPE_STRING, 'validate' => 'isAnything',       'size' => 254                     ],
-            'card_expiration' => ['type' => self::TYPE_STRING, 'validate' => 'isAnything',       'size' => 254                     ],
-            'card_holder'     => ['type' => self::TYPE_STRING, 'validate' => 'isAnything',       'size' => 254                     ],
-            'date_add'        => ['type' => self::TYPE_DATE,   'validate' => 'isDate'                                              ],
+            'order_reference' => ['type' => self::TYPE_STRING, 'validate' => 'isAnything', 'size' => 9],
+            'id_currency'     => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true, 'size' => 10],
+            'amount'          => ['type' => self::TYPE_PRICE, 'validate' => 'isNegativePrice', 'required' => true],
+            'payment_method'  => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'dbNullable' => false],
+            'conversion_rate' => ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat', 'size' => 13, 'decimals' => 6, 'dbDefault' => '1.000000'],
+            'transaction_id'  => ['type' => self::TYPE_STRING, 'validate' => 'isAnything', 'size' => 254],
+            'card_number'     => ['type' => self::TYPE_STRING, 'validate' => 'isAnything', 'size' => 254],
+            'card_brand'      => ['type' => self::TYPE_STRING, 'validate' => 'isAnything', 'size' => 254                     ],
+            'card_expiration' => ['type' => self::TYPE_STRING, 'validate' => 'isAnything', 'size' => 7, 'dbType' => 'char(7)'],
+            'card_holder'     => ['type' => self::TYPE_STRING, 'validate' => 'isAnything', 'size' => 254],
+            'date_add'        => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
+        ],
+        'keys' => [
+            'order_payment' => [
+                'order_reference' => ['type' => ObjectModel::KEY, 'columns' => ['order_reference']],
+            ],
         ],
     ];
 
