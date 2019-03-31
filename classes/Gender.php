@@ -41,12 +41,18 @@ class GenderCore extends ObjectModel
     public static $definition = [
         'table'     => 'gender',
         'primary'   => 'id_gender',
+        'primaryKeyDbType' => 'int(11)',
         'multilang' => true,
         'fields'    => [
-            'type' => ['type' => self::TYPE_INT, 'required' => true],
+            'type' => ['type' => self::TYPE_INT, 'required' => true, 'dbType' => 'tinyint(1)'],
 
             /* Lang fields */
             'name' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isString', 'required' => true, 'size' => 20],
+        ],
+        'keys' => [
+            'gender_lang' => [
+                'id_gender' => ['type' => ObjectModel::KEY, 'columns' => ['id_gender']],
+            ],
         ],
     ];
     public $id_gender;
