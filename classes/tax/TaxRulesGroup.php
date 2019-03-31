@@ -57,13 +57,20 @@ class TaxRulesGroupCore extends ObjectModel
     public static $definition = [
         'table'   => 'tax_rules_group',
         'primary' => 'id_tax_rules_group',
+        'primaryKeyDbType' => 'int(11)',
         'fields'  => [
-            'name'     => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 64],
-            'active'   => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                         ],
-            'deleted'  => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                         ],
-            'date_add' => ['type' => self::TYPE_DATE,   'validate' => 'isDate'                                         ],
-            'date_upd' => ['type' => self::TYPE_DATE,   'validate' => 'isDate'                                         ],
+            'name'     => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 50],
+            'active'   => ['type' => self::TYPE_BOOL,   'validate' => 'isBool', 'dbType' => 'int(11)', 'dbNullable' => false],
+            'deleted'  => ['type' => self::TYPE_BOOL,   'validate' => 'isBool', 'dbNullable' => false],
+            'date_add' => ['type' => self::TYPE_DATE,   'validate' => 'isDate', 'dbNullable' => false],
+            'date_upd' => ['type' => self::TYPE_DATE,   'validate' => 'isDate', 'dbNullable' => false],
         ],
+        'keys' => [
+            'tax_rules_group_shop' => [
+                'id_shop' => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
+            ],
+        ],
+
     ];
 
     protected $webserviceParameters = [
