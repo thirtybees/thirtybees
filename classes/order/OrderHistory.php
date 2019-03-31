@@ -51,10 +51,17 @@ class OrderHistoryCore extends ObjectModel
         'table'   => 'order_history',
         'primary' => 'id_order_history',
         'fields'  => [
+            'id_employee'    => ['type' => self::TYPE_INT,  'validate' => 'isUnsignedId', 'dbNullable' => false],
             'id_order'       => ['type' => self::TYPE_INT,  'validate' => 'isUnsignedId', 'required' => true],
             'id_order_state' => ['type' => self::TYPE_INT,  'validate' => 'isUnsignedId', 'required' => true],
-            'id_employee'    => ['type' => self::TYPE_INT,  'validate' => 'isUnsignedId'                    ],
-            'date_add'       => ['type' => self::TYPE_DATE, 'validate' => 'isDate'                          ],
+            'date_add'       => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
+        ],
+        'keys' => [
+            'order_history' => [
+                'id_employee'         => ['type' => ObjectModel::KEY, 'columns' => ['id_employee']],
+                'id_order_state'      => ['type' => ObjectModel::KEY, 'columns' => ['id_order_state']],
+                'order_history_order' => ['type' => ObjectModel::KEY, 'columns' => ['id_order']],
+            ],
         ],
     ];
 
