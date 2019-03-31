@@ -45,13 +45,18 @@ class AttributeGroupCore extends ObjectModel
         'primary'   => 'id_attribute_group',
         'multilang' => true,
         'fields'    => [
-            'is_color_group' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'group_type'     => ['type' => self::TYPE_STRING, 'required' => true],
-            'position'       => ['type' => self::TYPE_INT, 'validate' => 'isInt'],
+            'is_color_group' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
+            'group_type'     => ['type' => self::TYPE_STRING, 'required' => true, 'values' => ['select', 'radio', 'color'], 'dbDefault' => 'select'],
+            'position'       => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'dbDefault' => '0'],
 
             /* Lang fields */
             'name'           => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128],
             'public_name'    => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 64],
+        ],
+        'keys' => [
+            'attribute_group_shop' => [
+                'id_shop' => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
+            ],
         ],
     ];
     /** @var string Name */
