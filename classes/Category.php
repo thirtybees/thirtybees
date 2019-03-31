@@ -46,24 +46,38 @@ class CategoryCore extends ObjectModel
         'multilang'      => true,
         'multilang_shop' => true,
         'fields'         => [
-            'nleft'            => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
-            'nright'           => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
-            'level_depth'      => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
-            'active'           => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true],
-            'display_from_sub' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'id_parent'        => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
-            'id_shop_default'  => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
-            'is_root_category' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'position'         => ['type' => self::TYPE_INT],
-            'date_add'         => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
-            'date_upd'         => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+            'id_parent'        => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbNullable' => false],
+            'id_shop_default'  => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'dbDefault' => '1'],
+            'level_depth'      => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbType' => 'tinyint(3) unsigned', 'dbDefault' => '0'],
+            'nleft'            => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbDefault' => '0'],
+            'nright'           => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbDefault' => '0'],
+            'active'           => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbDefault' => '0'],
+            'display_from_sub' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '0'],
+            'date_add'         => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
+            'date_upd'         => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
+            'position'         => ['type' => self::TYPE_INT, 'dbDefault' => '0', 'shop' => true],
+            'is_root_category' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
             /* Lang fields */
             'name'             => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCatalogName', 'required' => true, 'size' => 128],
+            'description'      => ['type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => ObjectModel::SIZE_TEXT],
             'link_rewrite'     => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isLinkRewrite', 'required' => true, 'size' => 128],
-            'description'      => ['type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml'],
             'meta_title'       => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 128],
-            'meta_description' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255],
             'meta_keywords'    => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255],
+            'meta_description' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255],
+        ],
+        'keys' => [
+            'category' => [
+                'activenleft'      => ['type' => ObjectModel::KEY, 'columns' => ['active', 'nleft']],
+                'activenright'     => ['type' => ObjectModel::KEY, 'columns' => ['active', 'nright']],
+                'category_parent'  => ['type' => ObjectModel::KEY, 'columns' => ['id_parent']],
+                'level_depth'      => ['type' => ObjectModel::KEY, 'columns' => ['level_depth']],
+                'nleftrightactive' => ['type' => ObjectModel::KEY, 'columns' => ['nleft', 'nright', 'active']],
+                'nright'           => ['type' => ObjectModel::KEY, 'columns' => ['nright']],
+            ],
+            'category_lang' => [
+                'primary'       => ['type' => ObjectModel::PRIMARY_KEY, 'columns' => ['id_category', 'id_shop', 'id_lang']],
+                'category_name' => ['type' => ObjectModel::KEY, 'columns' => ['name']],
+            ],
         ],
     ];
     protected static $_links = [];
@@ -2581,5 +2595,15 @@ class CategoryCore extends ObjectModel
                 ->from('category')
                 ->where('`nleft` > '.$this->nleft.' AND `nright` < '.$this->nright)
         );
+    }
+
+    /**
+     * @param $table TableSchema
+     */
+    public static function processTableSchema($table)
+    {
+        if ($table->getNameWithoutPrefix() === 'category_lang') {
+            $table->reorderColumns(['id_category', 'id_shop', 'id_lang']);
+        }
     }
 }
