@@ -63,7 +63,14 @@ class ReferrerCore extends ObjectModel
     public $percent_fee;
     public $click_fee;
     public $date_add;
-    // @codingStandardsIgnoreEnd
+    public $cache_visitors;
+    public $cache_visits;
+    public $cache_pages;
+    public $cache_registrations;
+    public $cache_orders;
+    public $cache_sales;
+    public $cache_reg_rate;
+    public $cache_order_rate;
 
     /**
      * @see ObjectModel::$definition
@@ -73,19 +80,29 @@ class ReferrerCore extends ObjectModel
         'primary' => 'id_referrer',
         'fields'  => [
             'name'                    => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 64],
-            'passwd'                  => ['type' => self::TYPE_STRING, 'validate' => 'isPasswd',                          'size' => 60],
-            'http_referer_regexp'     => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml',                       'size' => 64],
-            'request_uri_regexp'      => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml',                       'size' => 64],
-            'http_referer_like'       => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml',                       'size' => 64],
-            'request_uri_like'        => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml',                       'size' => 64],
-            'http_referer_regexp_not' => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml'],
-            'request_uri_regexp_not'  => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml'],
-            'http_referer_like_not'   => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml'],
-            'request_uri_like_not'    => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml'],
-            'base_fee'                => ['type' => self::TYPE_PRICE,  'validate' => 'isPrice'],
-            'percent_fee'             => ['type' => self::TYPE_FLOAT,  'validate' => 'isPercentage'],
-            'click_fee'               => ['type' => self::TYPE_PRICE,  'validate' => 'isPrice'],
-            'date_add'                => ['type' => self::TYPE_DATE,   'validate' => 'isDate'],
+            'passwd'                  => ['type' => self::TYPE_STRING, 'validate' => 'isPasswd', 'size' => 60],
+            'http_referer_regexp'     => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 64],
+            'http_referer_like'       => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 64],
+            'request_uri_regexp'      => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 64],
+            'request_uri_like'        => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 64],
+            'http_referer_regexp_not' => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 64],
+            'http_referer_like_not'   => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 64],
+            'request_uri_regexp_not'  => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 64],
+            'request_uri_like_not'    => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 64],
+            'base_fee'                => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'dbDefault' => '0.000000'],
+            'percent_fee'             => ['type' => self::TYPE_FLOAT, 'validate' => 'isPercentage', 'size' => 5, 'decimals' => 2, 'dbDefault' => '0.00'],
+            'click_fee'               => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'dbDefault' => '0.000000'],
+            'date_add'                => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
+
+            // shop only fields
+            'cache_visitors'          => ['type' => self::TYPE_INT, 'shop' => true, 'shopOnly' => true, 'dbType' => 'int(11)'],
+            'cache_visits'            => ['type' => self::TYPE_INT, 'shop' => true, 'shopOnly' => true, 'dbType' => 'int(11)'],
+            'cache_pages'             => ['type' => self::TYPE_INT, 'shop' => true, 'shopOnly' => true, 'dbType' => 'int(11)'],
+            'cache_registrations'     => ['type' => self::TYPE_INT, 'shop' => true, 'shopOnly' => true, 'dbType' => 'int(11)'],
+            'cache_orders'            => ['type' => self::TYPE_INT, 'shop' => true, 'shopOnly' => true, 'dbType' => 'int(11)'],
+            'cache_sales'             => ['type' => self::TYPE_FLOAT, 'shop' => true, 'shopOnly' => true, 'size' => 17, 'decimals' => 2],
+            'cache_reg_rate'          => ['type' => self::TYPE_FLOAT, 'shop' => true, 'shopOnly' => true, 'size' => 5, 'decimals' => 4],
+            'cache_order_rate'        => ['type' => self::TYPE_FLOAT, 'shop' => true, 'shopOnly' => true, 'size' => 5, 'decimals' => 4],
         ],
     ];
 
