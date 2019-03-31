@@ -78,9 +78,10 @@ class RequestSqlCore extends ObjectModel
     public static $definition = [
         'table'   => 'request_sql',
         'primary' => 'id_request_sql',
+        'primaryKeyDbType' => 'int(11)',
         'fields'  => [
             'name' => ['type' => self::TYPE_STRING, 'validate' => 'isString', 'required' => true, 'size' => 200],
-            'sql'  => ['type' => self::TYPE_SQL,    'validate' => 'isString', 'required' => true],
+            'sql'  => ['type' => self::TYPE_SQL,    'validate' => 'isString', 'required' => true, 'dbType' => 'text', 'charset' => ['utf8mb4' , 'utf8mb4_unicode_ci']],
         ],
     ];
 
