@@ -169,6 +169,7 @@ class AdminInformationControllerCore extends AdminController
             'Gd'                      => $this->l('Enable the GD library on your server.'),
             'Json'                    => $this->l('Install the `json` PHP extension on your server.'),
             'Mbstring'                => $this->l('The `mbstring` extension has not been installed/enabled. This has a severe impact on the store\'s performance.'),
+            'OpenSSL'                 => $this->l('The `openssl` extension has not been installed/enabled.'),
             'PdoMysql'                => $this->l('Install the PHP extension for MySQL with PDO support on your server.'),
             'Xml'                     => $this->l('Install the `xml` PHP extension on your server.'),
             'Zip'                     => $this->l('Install the `zip` PHP extension on your server.'),

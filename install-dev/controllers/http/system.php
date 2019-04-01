@@ -99,6 +99,7 @@ class InstallControllerHttpSystem extends InstallControllerHttp
                         'Json'             => $this->l('The PHP json extension is not enabled'),
                         'MaxExecutionTime' => $this->l('Max execution time is lower than 30'),
                         'Mbstring'         => $this->l('Mbstring extension is not enabled'),
+                        'OpenSSL'          => $this->l('OpenSSL extension is not enabled'),
                         'PdoMysql'         => $this->l('PDO MySQL extension is not loaded'),
                         'PhpVersion'       => $this->l('PHP 5.5.0 or later is not enabled'),
                         'System'           => $this->l('Cannot create new files and folders'),

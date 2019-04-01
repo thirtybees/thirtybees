@@ -60,6 +60,7 @@ Support for these general requirements (except recommendations) gets tested duri
     - gd
     - json
     - mbstring
+    - openssl
     - mysql (PDO only)
     - xml (SimpleXML, DOMDocument)
     - zip

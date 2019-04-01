@@ -103,6 +103,7 @@ class ConfigurationTestCore
             'Gd'                      => false,
             'Json'                    => false,
             'Mbstring'                => false,
+            'OpenSSL'                 => false,
             'PdoMysql'                => false,
             'Xml'                     => false,
             'Zip'                     => false,
@@ -768,6 +769,17 @@ class ConfigurationTestCore
     public static function testMbstring()
     {
         return extension_loaded('mbstring');
+    }
+
+    /**
+     * @return bool
+     *
+     * @since 1.1.0
+     */
+    public static function testOpenSSL()
+    {
+        return extension_loaded('openssl')
+               && function_exists('openssl_encrypt');
     }
 
     /**
