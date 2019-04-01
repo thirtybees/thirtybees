@@ -28,16 +28,17 @@ class ConfigurationTestTest extends \Codeception\Test\Unit
             ],
             'PhpVersion'              => false,
             'Fopen'                   => false,
-            'Gd'                      => false,
             'ConfigDir'               => 'config',
             'Files'                   => false,
             'MailsDir'                => 'mails',
             'MaxExecutionTime'        => false,
-            'PdoMysql'                => false,
             'MysqlVersion'            => false,
             'Bcmath'                  => false,
-            'Xml'                     => false,
+            'Gd'                      => false,
             'Json'                    => false,
+            'Mbstring'                => false,
+            'PdoMysql'                => false,
+            'Xml'                     => false,
             'Zip'                     => false,
         ];
 
@@ -49,7 +50,6 @@ class ConfigurationTestTest extends \Codeception\Test\Unit
         $expected = [
             'NewPhpVersion'   => false,
             'Gz'              => false,
-            'Mbstring'        => false,
             'Tlsv12'          => false,
         ];
 
@@ -80,6 +80,7 @@ class ConfigurationTestTest extends \Codeception\Test\Unit
             ['LogDir', 'log'],
             ['MailsDir', 'mails'],
             ['MaxExecutionTime', false],
+            ['Mbstring', false],
             ['ModuleDir', 'modules'],
             ['PdoMysql', false],
             ['PhpVersion', false],

@@ -98,6 +98,7 @@ class InstallControllerHttpSystem extends InstallControllerHttp
                         'Gd'               => $this->l('GD library is not installed'),
                         'Json'             => $this->l('The PHP json extension is not enabled'),
                         'MaxExecutionTime' => $this->l('Max execution time is lower than 30'),
+                        'Mbstring'         => $this->l('Mbstring extension is not enabled'),
                         'PdoMysql'         => $this->l('PDO MySQL extension is not loaded'),
                         'PhpVersion'       => $this->l('PHP 5.5.0 or later is not enabled'),
                         'System'           => $this->l('Cannot create new files and folders'),
@@ -139,7 +140,6 @@ class InstallControllerHttpSystem extends InstallControllerHttp
                     'checks'  => [
                         'NewPhpVersion'   => sprintf($this->l('You are using PHP %s version. The next minor version of thirty bees (1.1.0) will require PHP 5.6. To make sure you’re ready for the future, we recommend you to upgrade to PHP 5.6 now!'), phpversion()),
                         'Gz'              => $this->l('GZIP compression is not activated'),
-                        'Mbstring'        => $this->l('Mbstring extension is not enabled'),
                         'Tlsv12'          => $this->l('Could not make a secure connection with PayPal. Your store might not be able to process payments.'),
                     ],
                 ],

@@ -102,6 +102,7 @@ class ConfigurationTestCore
             'Bcmath'                  => false,
             'Gd'                      => false,
             'Json'                    => false,
+            'Mbstring'                => false,
             'PdoMysql'                => false,
             'Xml'                     => false,
             'Zip'                     => false,
@@ -123,7 +124,6 @@ class ConfigurationTestCore
     {
         return [
             'Gz'              => false,
-            'Mbstring'        => false,
             'NewPhpVersion'   => false,
             'Tlsv12'          => false,
         ];
