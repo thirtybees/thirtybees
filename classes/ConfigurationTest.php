@@ -93,16 +93,17 @@ class ConfigurationTestCore
             ],
             'PhpVersion'              => false,
             'Fopen'                   => false,
-            'Gd'                      => false,
             'ConfigDir'               => 'config',
             'Files'                   => false,
             'MailsDir'                => 'mails',
             'MaxExecutionTime'        => false,
-            'PdoMysql'                => false,
             'MysqlVersion'            => false,
+            // PHP extensions.
             'Bcmath'                  => false,
-            'Xml'                     => false,
+            'Gd'                      => false,
             'Json'                    => false,
+            'PdoMysql'                => false,
+            'Xml'                     => false,
             'Zip'                     => false,
         ];
 
@@ -121,9 +122,9 @@ class ConfigurationTestCore
     public static function getDefaultTestsOp()
     {
         return [
-            'NewPhpVersion'   => false,
             'Gz'              => false,
             'Mbstring'        => false,
+            'NewPhpVersion'   => false,
             'Tlsv12'          => false,
         ];
     }

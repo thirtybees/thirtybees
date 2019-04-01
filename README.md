@@ -48,7 +48,7 @@ Native modules will be refactored to remove legacy code. Code that supports prev
 You can find the latest version of the roadmap here: https://thirtybees.com/roadmap
 
 ## Requirements
-**General server requirements:**
+Support for these general requirements (except recommendations) gets tested during installation, so one can simply try to proceed. A proceeding installation means all requirements are met.
 
 - PHP 5.5 - PHP 7.2
 - Apache, nginx or IIS
@@ -56,13 +56,13 @@ You can find the latest version of the roadmap here: https://thirtybees.com/road
 - MySQL 5.5.3+ or MariaDB 5.5+
 - PHP extensions:
   - Required:
-    - gd
     - bcmath
-    - xml (SimpleXML, DOMDocument)
+    - gd
     - json
-    - zip
-    - mysql (PDO only)
     - mbstring
+    - mysql (PDO only)
+    - xml (SimpleXML, DOMDocument)
+    - zip
   - Recommended:
     - imap
     - curl
