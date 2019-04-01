@@ -171,7 +171,7 @@ class EncryptorCore
      */
     private static function supportsRijndael()
     {
-        if (defined('_RIJNDAEL_KEY_') && defined('__RIJNDAEL_IV_')) {
+        if (defined('_RIJNDAEL_KEY_') && defined('_RIJNDAEL_IV_')) {
             // Rijndael is supported by openssl directly
             if (extension_loaded('openssl') && function_exists('openssl_encrypt')) {
                 return true;
