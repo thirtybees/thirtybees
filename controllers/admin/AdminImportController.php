@@ -2964,8 +2964,10 @@ class AdminImportControllerCore extends AdminController
                         }
                         if (is_array($product->tags) && count($product->tags)) {
                             foreach ($product->tags as $key => $tag) {
-                                if (!empty($tag)) {
+                                if (!empty($tag) && !empty(trim($tag))) {
                                     $product->tags[$key] = trim($tag);
+                                } else {
+                                    unset($product->tags[$key]);
                                 }
                             }
                             $tags[$idLang] = $product->tags;
