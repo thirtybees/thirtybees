@@ -87,7 +87,7 @@ class PrestaShopExceptionCore extends Exception
         // generate array describing this exception
         $errorDescription = $this->getErrorDescription();
 
-        if (_PS_MODE_DEV_ || getenv('CI')) {
+        if (_PS_MODE_DEV_ || getenv('CI') || (defined('TESTS_RUNNING') && TESTS_RUNNING)) {
             // in debug mode, we can render debug page
             echo static::renderDebugPage($errorDescription);
         } else {
