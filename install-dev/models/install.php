@@ -203,30 +203,22 @@ class InstallModelInstall extends InstallAbstractModel
         }
 
         // Install database structure
-        $sqlLoader = new InstallSqlLoader();
-        $sqlLoader->setMetaData(
-            [
-                'PREFIX_' => _DB_PREFIX_,
-            ]
-        );
-
+        require_once(_PS_MODULE_DIR_ . '/coreupdater/classes/schema/autoload.php');
+        $schemaBuilder = new \CoreUpdater\ObjectModelSchemaBuilder();
         try {
-            $sqlLoader->parseFile(_PS_INSTALL_DATA_PATH_.'db_schema.sql');
-        } catch (PrestashopInstallerException $e) {
-            $this->setError($this->language->l('Database structure file not found'));
-
-            return false;
-        }
-
-        if ($errors = $sqlLoader->getErrors()) {
-            foreach ($errors as $error) {
-                $this->setError($this->language->l('SQL error on query <i>%s</i>', $error['error']));
+            $schema = $schemaBuilder->getSchema();
+            $db = Db::getInstance();
+            foreach ($schema->getTables() as $table) {
+                if (! $db->execute($table->getDDLStatement())) {
+                    $this->setError($this->language->l('SQL error on query: <i>%s</i>', $db->getMsgError()));
+                    return false;
+                }
             }
-
+            return true;
+        } catch (Exception $e) {
+            $this->setError($this->language->l('Failed to generate database schema: <i>%s</i>i>', $e->getMessage()));
             return false;
         }
-
-        return true;
     }
 
     /**
