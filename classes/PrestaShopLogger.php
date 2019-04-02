@@ -102,7 +102,7 @@ class PrestaShopLoggerCore extends ObjectModel
         $log = new Logger();
         $log->severity = (int) $severity;
         $log->error_code = (int) $errorCode;
-        $log->message = pSQL($message);
+        $log->message = pSQL($message ? $message : static::getEmptyMessageText());
         $log->date_add = date('Y-m-d H:i:s');
         $log->date_upd = date('Y-m-d H:i:s');
 
@@ -220,5 +220,23 @@ class PrestaShopLoggerCore extends ObjectModel
     public static function eraseAllLogs()
     {
         return Db::getInstance()->execute('TRUNCATE TABLE '._DB_PREFIX_.'log');
+    }
+
+    /**
+     * This function is called when empty message is passed to Logger::addLog(). In that case thirtybees will log
+     * information about the caller
+     *
+     * @since 1.1.0
+     * @return string
+     */
+    protected static function getEmptyMessageText()
+    {
+        foreach (debug_backtrace() as $trace) {
+            if (strpos($trace['file'], __FILE__) === false) {
+                $file = str_replace(_PS_ROOT_DIR_, '', $trace['file']);
+                $line = $trace['line'];
+                return sprintf(Tools::displayError('Logger::addLog called with empty message at %s on line %s', false), $file, $line);
+            }
+        }
     }
 }
