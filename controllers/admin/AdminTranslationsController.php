@@ -2246,19 +2246,9 @@ class AdminTranslationsControllerCore extends AdminController
      */
     public function displayLimitPostWarning($count)
     {
-        $return = [];
-        if ((ini_get('suhosin.post.max_vars') && ini_get('suhosin.post.max_vars') < $count) || (ini_get('suhosin.request.max_vars') && ini_get('suhosin.request.max_vars') < $count)) {
-            $return['error_type'] = 'suhosin';
-            $return['post.max_vars'] = ini_get('suhosin.post.max_vars');
-            $return['request.max_vars'] = ini_get('suhosin.request.max_vars');
-            $return['needed_limit'] = $count + 100;
-        } elseif (ini_get('max_input_vars') && ini_get('max_input_vars') < $count) {
-            $return['error_type'] = 'conf';
-            $return['max_input_vars'] = ini_get('max_input_vars');
-            $return['needed_limit'] = $count + 100;
-        }
+        Tools::displayAsDeprecated('Limit Post Warning is no longer used, now translating each panel separately.');
 
-        return $return;
+        return [];
     }
 
     /**
