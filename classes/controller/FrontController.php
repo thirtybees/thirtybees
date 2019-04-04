@@ -876,7 +876,10 @@ class FrontControllerCore extends Controller
     {
         if ($this->maintenance == true || !(int) Configuration::get('PS_SHOP_ENABLE')) {
             $this->maintenance = true;
-            if (!in_array(Tools::getRemoteAddr(), explode(',', Configuration::get('PS_MAINTENANCE_IP')))) {
+            $isCLI = Tools::isPHPCLI();
+            $excludedIP = in_array(Tools::getRemoteAddr(), explode(',', Configuration::get('PS_MAINTENANCE_IP')));
+            // don't show maintenance page to excluded IP addresses, or to CLI scripts
+            if (!$isCLI && !$excludedIP) {
                 header('HTTP/1.1 503 temporarily overloaded');
 
                 $this->context->smarty->assign($this->initLogoAndFavicon());
