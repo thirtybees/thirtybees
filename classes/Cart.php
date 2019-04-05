@@ -420,6 +420,7 @@ class CartCore extends ObjectModel
             }
 
             $row['stock_quantity'] = (int) $row['quantity'];
+            $row['quantity'] = (int) $row['cart_quantity'];
 
             if (isset($row['id_product_attribute']) && (int) $row['id_product_attribute'] && isset($row['weight_attribute'])) {
                 $row['weight'] = (float) $row['weight_attribute'];
