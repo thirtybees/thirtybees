@@ -121,7 +121,7 @@ class OrderStateCore extends ObjectModel
     {
         static::installationCheck();
 
-        parent::__construct($id);
+        parent::__construct($id, $idLang, $idShop);
     }
 
     /**
