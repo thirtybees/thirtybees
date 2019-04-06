@@ -1281,6 +1281,10 @@ class LanguageCore extends ObjectModel
      */
     public static function getIsoById($idLang)
     {
+        if (!static::$_LANGUAGES) {
+            static::loadLanguages();
+        }
+
         if (isset(static::$_LANGUAGES[(int) $idLang]['iso_code'])) {
             return static::$_LANGUAGES[(int) $idLang]['iso_code'];
         }
