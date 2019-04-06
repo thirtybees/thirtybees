@@ -2118,9 +2118,6 @@ class AdminImportControllerCore extends AdminController
             if ($regenerate) {
                 $previousPath = null;
                 foreach ($imagesTypes as $imageType) {
-                    $tmpfile = static::get_best_path($imageType['width'], $imageType['height'],
-                                                     [$tgtWidth, $tgtHeight, $path.'.jpg']);
-
                     $tgtWidthX2 = $tgtWidth * 2;
                     $tgtHeightX2 = $tgtHeight * 2;
                     $success = ImageManager::resize(
@@ -2208,29 +2205,6 @@ class AdminImportControllerCore extends AdminController
         unlink($origTmpfile);
 
         return true;
-    }
-
-    /**
-     * @param $tgtWidth
-     * @param $tgtHeight
-     * @param $pathInfos
-     *
-     * @return string
-     *
-     * @since 1.0.0
-     */
-    protected static function get_best_path($tgtWidth, $tgtHeight, $pathInfos)
-    {
-        $pathInfos = array_reverse($pathInfos);
-        $path = '';
-        foreach ($pathInfos as $pathInfo) {
-            list($width, $height, $path) = $pathInfo;
-            if ($width >= $tgtWidth && $height >= $tgtHeight) {
-                return $path;
-            }
-        }
-
-        return $path;
     }
 
     /**
