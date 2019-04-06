@@ -298,7 +298,6 @@ class MailCore extends ObjectModel
             $isoTemplate = $iso.'/'.$template;
 
             $moduleName = false;
-            $overrideMail = false;
 
             // get templatePath
             if (preg_match('#'.$shop->physical_uri.'modules/#', str_replace(DIRECTORY_SEPARATOR, '/', $templatePath)) && preg_match('#modules/([a-z0-9_-]+)/#ui', str_replace(DIRECTORY_SEPARATOR, '/', $templatePath), $res)) {
@@ -311,7 +310,6 @@ class MailCore extends ObjectModel
                 $templatePath = $themePath.'modules/'.$moduleName.'/mails/';
             } elseif (file_exists($themePath.'mails/'.$isoTemplate.'.txt') || file_exists($themePath.'mails/'.$isoTemplate.'.html')) {
                 $templatePath = $themePath.'mails/';
-                $overrideMail = true;
             }
             if (!file_exists($templatePath.$isoTemplate.'.txt') && ($configuration['PS_MAIL_TYPE'] == Mail::TYPE_BOTH || $configuration['PS_MAIL_TYPE'] == Mail::TYPE_TEXT)) {
                 return static::logError(Tools::displayError('Error - The following e-mail template is missing:').' '.$templatePath.$isoTemplate.'.txt', $die);
@@ -338,15 +336,6 @@ class MailCore extends ObjectModel
                 'id_lang'       => (int) $idLang,
             ], null, true
             );
-            if ($overrideMail && file_exists($templatePath.$iso.'/lang.php')) {
-                include_once($templatePath.$iso.'/lang.php');
-            } elseif ($moduleName && file_exists($themePath.'mails/'.$iso.'/lang.php')) {
-                include_once($themePath.'mails/'.$iso.'/lang.php');
-            } elseif (file_exists(_PS_MAIL_DIR_.$iso.'/lang.php')) {
-                include_once(_PS_MAIL_DIR_.$iso.'/lang.php');
-            } else {
-                return static::logError(Tools::displayError('Error - The language file is missing for:').' '.$iso, $die);
-            }
 
             /* Create mail and attach differents parts */
             $subject = static::formatSubject($subject);
