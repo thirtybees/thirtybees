@@ -289,6 +289,9 @@ class MailCore extends ObjectModel
             }
             $isoTemplate = $iso.'/'.$template;
 
+            $sendTxtContent = $configuration['PS_MAIL_TYPE'] == Mail::TYPE_BOTH || $configuration['PS_MAIL_TYPE'] == Mail::TYPE_TEXT;
+            $sendHtmlContent = $configuration['PS_MAIL_TYPE'] == Mail::TYPE_BOTH || $configuration['PS_MAIL_TYPE'] == Mail::TYPE_HTML;
+
             $moduleName = false;
 
             // get templatePath
@@ -303,9 +306,9 @@ class MailCore extends ObjectModel
             } elseif (file_exists($themePath.'mails/'.$isoTemplate.'.txt') || file_exists($themePath.'mails/'.$isoTemplate.'.html')) {
                 $templatePath = $themePath.'mails/';
             }
-            if (!file_exists($templatePath.$isoTemplate.'.txt') && ($configuration['PS_MAIL_TYPE'] == Mail::TYPE_BOTH || $configuration['PS_MAIL_TYPE'] == Mail::TYPE_TEXT)) {
+            if (!file_exists($templatePath.$isoTemplate.'.txt') && $sendTxtContent) {
                 return static::logError(Tools::displayError('Error - The following e-mail template is missing:').' '.$templatePath.$isoTemplate.'.txt', $die);
-            } elseif (!file_exists($templatePath.$isoTemplate.'.html') && ($configuration['PS_MAIL_TYPE'] == Mail::TYPE_BOTH || $configuration['PS_MAIL_TYPE'] == Mail::TYPE_HTML)) {
+            } elseif (!file_exists($templatePath.$isoTemplate.'.html') && $sendHtmlContent) {
                 return static::logError(Tools::displayError('Error - The following e-mail template is missing:').' '.$templatePath.$isoTemplate.'.html', $die);
             }
             $templateHtml = '';
@@ -386,10 +389,10 @@ class MailCore extends ObjectModel
             );
             $templateVars = array_merge($templateVars, $extraTemplateVars);
             $swift->registerPlugin(new Swift_Plugins_DecoratorPlugin([$toPlugin => $templateVars]));
-            if ($configuration['PS_MAIL_TYPE'] == Mail::TYPE_BOTH || $configuration['PS_MAIL_TYPE'] == Mail::TYPE_TEXT) {
+            if ($sendTxtContent) {
                 $message->addPart($templateTxt, 'text/plain', 'utf-8');
             }
-            if ($configuration['PS_MAIL_TYPE'] == Mail::TYPE_BOTH || $configuration['PS_MAIL_TYPE'] == Mail::TYPE_HTML) {
+            if ($sendHtmlContent) {
                 $message->addPart($templateHtml, 'text/html', 'utf-8');
             }
             if ($fileAttachment && !empty($fileAttachment)) {
