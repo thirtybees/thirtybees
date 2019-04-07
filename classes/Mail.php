@@ -132,8 +132,10 @@ class MailCore extends ObjectModel
             return true;
         }
 
-        if (!$idShop) {
-            $idShop = Context::getContext()->shop->id;
+        $idShop = (int)$idShop;
+        $shop = Context::getContext()->shop;
+        if ($idShop) {
+            $shop = new Shop($idShop);
         }
 
         $configuration = Configuration::getMultiple(
@@ -153,17 +155,7 @@ class MailCore extends ObjectModel
             $idShop
         );
 
-        $themePath = _PS_THEME_DIR_;
-
-        // Get the path of theme by id_shop if exist
-        if (is_numeric($idShop) && $idShop) {
-            $shop = new Shop((int) $idShop);
-            $themeName = $shop->getTheme();
-
-            if (_THEME_NAME_ != $themeName) {
-                $themePath = _PS_ROOT_DIR_.'/themes/'.$themeName.'/';
-            }
-        }
+        $themePath = _PS_ALL_THEMES_DIR_ . $shop->getTheme() . '/';
 
         if (!isset($configuration['PS_MAIL_SMTP_ENCRYPTION']) || mb_strtolower($configuration['PS_MAIL_SMTP_ENCRYPTION']) === 'off') {
             $configuration['PS_MAIL_SMTP_ENCRYPTION'] = false;
