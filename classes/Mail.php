@@ -292,14 +292,9 @@ class MailCore extends ObjectModel
             $sendTxtContent = $configuration['PS_MAIL_TYPE'] == Mail::TYPE_BOTH || $configuration['PS_MAIL_TYPE'] == Mail::TYPE_TEXT;
             $sendHtmlContent = $configuration['PS_MAIL_TYPE'] == Mail::TYPE_BOTH || $configuration['PS_MAIL_TYPE'] == Mail::TYPE_HTML;
 
-            $moduleName = false;
+            $moduleName = static::getModuleName($templatePath, $shop);
 
-            // get templatePath
-            if (preg_match('#'.$shop->physical_uri.'modules/#', str_replace(DIRECTORY_SEPARATOR, '/', $templatePath)) && preg_match('#modules/([a-z0-9_-]+)/#ui', str_replace(DIRECTORY_SEPARATOR, '/', $templatePath), $res)) {
-                $moduleName = $res[1];
-            }
-
-            if ($moduleName !== false && (file_exists($themePath.'modules/'.$moduleName.'/mails/'.$isoTemplate.'.txt') ||
+            if ($moduleName && (file_exists($themePath.'modules/'.$moduleName.'/mails/'.$isoTemplate.'.txt') ||
                     file_exists($themePath.'modules/'.$moduleName.'/mails/'.$isoTemplate.'.html'))
             ) {
                 $templatePath = $themePath.'modules/'.$moduleName.'/mails/';
@@ -702,6 +697,26 @@ class MailCore extends ObjectModel
         $key = str_replace('\'', '\\\'', $string);
 
         return str_replace('"', '&quot;', Tools::stripslashes((array_key_exists($key, $_LANGMAIL) && !empty($_LANGMAIL[$key])) ? $_LANGMAIL[$key] : $string));
+    }
+
+    /**
+     * Derives module name from template path
+     *
+     * @param string $baseTemplatePath
+     * @param Shop $shop
+     *
+     * @return string | null
+     * @since 1.1.0
+     */
+    private static function getModuleName($baseTemplatePath, Shop $shop)
+    {
+        $path = str_replace(DIRECTORY_SEPARATOR, '/', $baseTemplatePath);
+        $res = [];
+        if (preg_match('#' . $shop->physical_uri . 'modules/#', $path) &&
+            preg_match('#modules/([a-z0-9_-]+)/#ui', $path, $res)) {
+            return $res[1];
+        }
+        return null;
     }
 
     /**
