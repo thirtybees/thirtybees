@@ -155,8 +155,6 @@ class MailCore extends ObjectModel
             $idShop
         );
 
-        $themePath = _PS_ALL_THEMES_DIR_ . $shop->getTheme() . '/';
-
         if (!isset($configuration['PS_MAIL_SMTP_ENCRYPTION']) || mb_strtolower($configuration['PS_MAIL_SMTP_ENCRYPTION']) === 'off') {
             $configuration['PS_MAIL_SMTP_ENCRYPTION'] = false;
         }
@@ -287,25 +285,10 @@ class MailCore extends ObjectModel
             if (!$iso) {
                 return static::logError(Tools::displayError('Error - No ISO code for email'), $die);
             }
-            $isoTemplate = $iso.'/'.$template;
 
             $sendTxtContent = $configuration['PS_MAIL_TYPE'] == Mail::TYPE_BOTH || $configuration['PS_MAIL_TYPE'] == Mail::TYPE_TEXT;
             $sendHtmlContent = $configuration['PS_MAIL_TYPE'] == Mail::TYPE_BOTH || $configuration['PS_MAIL_TYPE'] == Mail::TYPE_HTML;
 
-            $moduleName = static::getModuleName($templatePath, $shop);
-
-            if ($moduleName && (file_exists($themePath.'modules/'.$moduleName.'/mails/'.$isoTemplate.'.txt') ||
-                    file_exists($themePath.'modules/'.$moduleName.'/mails/'.$isoTemplate.'.html'))
-            ) {
-                $templatePath = $themePath.'modules/'.$moduleName.'/mails/';
-            } elseif (file_exists($themePath.'mails/'.$isoTemplate.'.txt') || file_exists($themePath.'mails/'.$isoTemplate.'.html')) {
-                $templatePath = $themePath.'mails/';
-            }
-            if (!file_exists($templatePath.$isoTemplate.'.txt') && $sendTxtContent) {
-                return static::logError(Tools::displayError('Error - The following e-mail template is missing:').' '.$templatePath.$isoTemplate.'.txt', $die);
-            } elseif (!file_exists($templatePath.$isoTemplate.'.html') && $sendHtmlContent) {
-                return static::logError(Tools::displayError('Error - The following e-mail template is missing:').' '.$templatePath.$isoTemplate.'.html', $die);
-            }
             $templateHtml = '';
             $templateTxt = '';
             Hook::exec(
@@ -316,8 +299,24 @@ class MailCore extends ObjectModel
                 'id_lang'       => (int) $idLang,
             ], null, true
             );
-            $templateHtml .= file_get_contents($templatePath.$isoTemplate.'.html');
-            $templateTxt .= strip_tags(html_entity_decode(file_get_contents($templatePath.$isoTemplate.'.txt'), null, 'utf-8'));
+            // load html template content
+            if ($sendHtmlContent) {
+                $filePath = self::getTemplatePath($template, '.html', $iso, $shop, $templatePath);
+                if (!$filePath) {
+                    return static::logError(Tools::displayError('Html e-mail template is missing:') . ' ' . $template, $die);
+                }
+                $templateHtml .= file_get_contents($filePath);
+            }
+
+            // load txt template content
+            if ($sendTxtContent) {
+                $filePath = self::getTemplatePath($template, '.txt', $iso, $shop, $templatePath);
+                if (!$filePath) {
+                    return static::logError(Tools::displayError('Text e-mail template is missing:') . ' ' . $template, $die);
+                }
+                $templateTxt .= strip_tags(html_entity_decode(file_get_contents($filePath), null, 'utf-8'));
+            }
+
             Hook::exec(
                 'actionEmailAddAfterContent', [
                 'template'      => $template,
@@ -697,6 +696,75 @@ class MailCore extends ObjectModel
         $key = str_replace('\'', '\\\'', $string);
 
         return str_replace('"', '&quot;', Tools::stripslashes((array_key_exists($key, $_LANGMAIL) && !empty($_LANGMAIL[$key])) ? $_LANGMAIL[$key] : $string));
+    }
+
+    /**
+     * This method finds file path for email template in given language. If template does not exists, it fallbacks
+     * to english version. Returns null, if no email template can be used
+     *
+     * @param string $template template name
+     * @param string $suffix template suffix, either .txt or .html
+     * @param string $iso language iso code
+     * @param Shop $shop shop for which we are sending email
+     * @param string $baseTemplatePath base template path
+     *
+     * @return string | null
+     * @since 1.1.0
+     */
+    protected static function getTemplatePath($template, $suffix, $iso, Shop $shop, $baseTemplatePath)
+    {
+        $relativePath = $iso . '/' . $template . $suffix;
+        $themePath = _PS_ALL_THEMES_DIR_ . $shop->getTheme() . '/';
+
+        // create candidate file paths list
+        $paths = [];
+        $moduleName = self::getModuleName($baseTemplatePath, $shop);
+        if ($moduleName) {
+            $paths[] = $themePath . 'modules/' . $moduleName . '/mails/' . $relativePath;
+        }
+        $paths[] = $themePath . 'mails/' . $relativePath;
+        $paths[] = $baseTemplatePath . $relativePath;
+        $paths[] = _PS_MAIL_DIR_ . $relativePath;
+        $paths = array_unique($paths);
+
+        // return first template file in paths
+        foreach ($paths as $path) {
+            if (file_exists($path)) {
+                return $path;
+            }
+        }
+
+        // email template was not found, log missing template
+        static::logMissingTemplate($template, $suffix, $iso, $paths);
+
+        // If template wasn't found, let's try to fallback to english template
+        if ($iso !== 'en') {
+            return static::getTemplatePath($template, $suffix, 'en', $shop, $baseTemplatePath);
+        }
+
+        return null;
+    }
+
+    /**
+     * Logs information about missing email template to system log
+     *
+     * @param string $template template name
+     * @param string $suffix template suffix
+     * @param string $iso language iso code
+     * @param string[] $paths searched paths
+     */
+    private static function logMissingTemplate($template, $suffix, $iso, $paths)
+    {
+        $filename = $template . $suffix;
+        $localPaths = array_map(function($path) {
+            return str_replace(_PS_ROOT_DIR_, '', $path);
+        }, $paths);
+        Logger::addLog(sprintf(
+            'Email template %s for language %s not found in [%s]',
+            $filename,
+            $iso,
+            join(', ', $localPaths)
+        ));
     }
 
     /**
