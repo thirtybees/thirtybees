@@ -764,7 +764,7 @@ class MailCore extends ObjectModel
             $filename,
             $iso,
             join(', ', $localPaths)
-        ));
+        ), 3);
     }
 
     /**
@@ -802,7 +802,7 @@ class MailCore extends ObjectModel
      */
     private static function logError($message, $die)
     {
-      Logger::addLog($message);
+      Logger::addLog($message, 3);
       if ($die) {
         die($message);
       } else {
