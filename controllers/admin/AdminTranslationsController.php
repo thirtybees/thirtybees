@@ -65,8 +65,6 @@ class AdminTranslationsControllerCore extends AdminController
     protected $type_selected;
     /** @var Language $lang_selected Language for the selected language */
     protected $lang_selected;
-    /** @var bool $post_limit_exceed Is true if number of var exceed the suhosin request or post limit */
-    protected $post_limit_exceed = false;
     // @codingStandardsIgnoreEnd
 
     /**
@@ -178,7 +176,6 @@ class AdminTranslationsControllerCore extends AdminController
             'title'               => $title,
             'type'                => $this->type_selected,
             'theme'               => $this->theme_selected,
-            'post_limit_exceeded' => $this->post_limit_exceed,
             'url_submit'          => static::$currentIndex.'&submitTranslations'.ucfirst($this->type_selected).'=1&token='.$this->token,
             'toggle_button'       => $this->displayToggleButton(),
             'textarea_sized'      => AdminTranslationsControllerCore::TEXTAREA_SIZED,
