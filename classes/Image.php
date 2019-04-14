@@ -147,19 +147,19 @@ class ImageCore extends ObjectModel
      */
     public static function getImages($idLang, $idProduct, $idProductAttribute = null)
     {
-        $attributeFilter = ($idProductAttribute ? ' AND ai.`id_product_attribute` = '.(int) $idProductAttribute : '');
-        $sql = 'SELECT *
-			FROM `'._DB_PREFIX_.'image` i
-			LEFT JOIN `'._DB_PREFIX_.'image_lang` il ON (i.`id_image` = il.`id_image`)';
-
+        $sql = new DbQuery();
+        $sql->select('*');
+        $sql->from('image', 'i');
+        $sql->where('i.`id_product` = '.(int) $idProduct);
+        $sql->leftJoin('image_lang', 'il', 'i.`id_image` = il.`id_image`');
+        $sql->where('il.`id_lang` = '.(int) $idLang);
         if ($idProductAttribute) {
-            $sql .= ' LEFT JOIN `'._DB_PREFIX_.'product_attribute_image` ai ON (i.`id_image` = ai.`id_image`)';
+            $sql->leftJoin('product_attribute_image', 'ai', 'i.`id_image` = ai.`id_image`');
+            $sql->where('ai.`id_product_attribute` = '.(int) $idProductAttribute);
         }
+        $sql->orderBy('i.`position` ASC');
 
-        $sql .= ' WHERE i.`id_product` = '.(int) $idProduct.' AND il.`id_lang` = '.(int) $idLang.$attributeFilter.'
-			ORDER BY i.`position` ASC';
-
-        return Db::getInstance()->executeS($sql);
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
     }
 
     /**
