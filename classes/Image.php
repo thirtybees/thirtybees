@@ -134,7 +134,7 @@ class ImageCore extends ObjectModel
     /**
      * Return available images for a product
      *
-     * @param int $idLang             Language ID
+     * @param int $idLang             Language ID. Null/0/false = all languages.
      * @param int $idProduct          Product ID
      * @param int $idProductAttribute Product Attribute ID
      *
@@ -151,8 +151,10 @@ class ImageCore extends ObjectModel
         $sql->select('*');
         $sql->from('image', 'i');
         $sql->where('i.`id_product` = '.(int) $idProduct);
-        $sql->leftJoin('image_lang', 'il', 'i.`id_image` = il.`id_image`');
-        $sql->where('il.`id_lang` = '.(int) $idLang);
+        if ($idLang) {
+            $sql->leftJoin('image_lang', 'il', 'i.`id_image` = il.`id_image`');
+            $sql->where('il.`id_lang` = '.(int) $idLang);
+        }
         if ($idProductAttribute) {
             $sql->leftJoin('product_attribute_image', 'ai', 'i.`id_image` = ai.`id_image`');
             $sql->where('ai.`id_product_attribute` = '.(int) $idProductAttribute);
@@ -165,7 +167,7 @@ class ImageCore extends ObjectModel
     /**
      * Check if a product has an image available
      *
-     * @param int $idLang             Language ID
+     * @param int $idLang             Language ID. Null/0/false = all languages.
      * @param int $idProduct          Product ID
      * @param int $idProductAttribute Product Attribute ID
      *
@@ -181,8 +183,10 @@ class ImageCore extends ObjectModel
         $sql->select('1');
         $sql->from('image', 'i');
         $sql->where('i.`id_product` = '.(int) $idProduct);
-        $sql->leftJoin('image_lang', 'il', 'i.`id_image` = il.`id_image`');
-        $sql->where('il.`id_lang` = '.(int) $idLang);
+        if ($idLang) {
+            $sql->leftJoin('image_lang', 'il', 'i.`id_image` = il.`id_image`');
+            $sql->where('il.`id_lang` = '.(int) $idLang);
+        }
         if ($idProductAttribute) {
             $sql->leftJoin('product_attribute_image', 'ai', 'i.`id_image` = ai.`id_image`');
             $sql->where('ai.`id_product_attribute` = '.(int) $idProductAttribute);
