@@ -4939,7 +4939,7 @@ class AdminProductsControllerCore extends AdminController
 					WHERE id_product = '.(int) $obj->id
                 );
 
-                $images = Image::getImages($this->context->language->id, $obj->id);
+                $images = Image::getImages(null, $obj->id);
                 foreach ($images as $k => $image) {
                     $images[$k] = new Image($image['id_image']);
                 }
