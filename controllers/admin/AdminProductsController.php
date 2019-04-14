@@ -4932,13 +4932,6 @@ class AdminProductsControllerCore extends AdminController
 
                 $data->assign('shops', $shops);
 
-                $countImages = Db::getInstance()->getValue(
-                    '
-					SELECT COUNT(id_product)
-					FROM '._DB_PREFIX_.'image
-					WHERE id_product = '.(int) $obj->id
-                );
-
                 $images = Image::getImages(null, $obj->id);
                 foreach ($images as $k => $image) {
                     $images[$k] = new Image($image['id_image']);
@@ -4957,7 +4950,7 @@ class AdminProductsControllerCore extends AdminController
 
                 $data->assign(
                     [
-                        'countImages'         => $countImages,
+                        'countImages'         => count($images),
                         'id_product'          => (int) Tools::getValue('id_product'),
                         'id_category_default' => (int) $this->_category->id,
                         'images'              => $images,
