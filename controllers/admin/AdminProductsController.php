@@ -3121,7 +3121,7 @@ class AdminProductsControllerCore extends AdminController
             foreach ($_POST as $key => $val) {
                 if (preg_match('/^legend_([0-9]+)/', $key, $match)) {
                     foreach ($languageIds as $idLang) {
-                        if ($val && $idLang == $match[1]) {
+                        if ($idLang == $match[1]) {
                             Db::getInstance()->execute('UPDATE '._DB_PREFIX_.'image_lang SET legend = "'.pSQL($val).'" WHERE '.($idImage ? 'id_image = '.(int) $idImage : 'EXISTS (SELECT 1 FROM '._DB_PREFIX_.'image WHERE '._DB_PREFIX_.'image.id_image = '._DB_PREFIX_.'image_lang.id_image AND id_product = '.(int) $product->id.')').' AND id_lang = '.(int) $idLang);
                         }
                     }
