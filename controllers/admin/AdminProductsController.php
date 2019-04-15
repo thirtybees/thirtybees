@@ -3117,12 +3117,46 @@ class AdminProductsControllerCore extends AdminController
     {
         if (Tools::getValue('key_tab') == 'Images' && Tools::getValue('submitAddproductAndStay') == 'update_legends' && Validate::isLoadedObject($product = new Product((int) Tools::getValue('id_product')))) {
             $idImage = (int) Tools::getValue('id_caption');
+            $idImages = [];
+            if ($idImage) {
+                // Caption is for one image only.
+                $idImages[] = $idImage;
+            } else {
+                // Same caption for all images.
+                $images = Image::getImages(null, $product->id);
+                foreach ($images as $image) {
+                    $idImages[] = $image['id_image'];
+                }
+            }
             $languageIds = Language::getIDs(false);
             foreach ($_POST as $key => $val) {
                 if (preg_match('/^legend_([0-9]+)/', $key, $match)) {
                     foreach ($languageIds as $idLang) {
                         if ($idLang == $match[1]) {
-                            Db::getInstance()->execute('UPDATE '._DB_PREFIX_.'image_lang SET legend = "'.pSQL($val).'" WHERE '.($idImage ? 'id_image = '.(int) $idImage : 'EXISTS (SELECT 1 FROM '._DB_PREFIX_.'image WHERE '._DB_PREFIX_.'image.id_image = '._DB_PREFIX_.'image_lang.id_image AND id_product = '.(int) $product->id.')').' AND id_lang = '.(int) $idLang);
+                            foreach ($idImages as $idImage) {
+                                // Insert missing entries, update already
+                                // existing ones. As SQL features no 'insert if
+                                // missing, update otherwise', try both.
+                                Db::getInstance(_PS_USE_SQL_SLAVE_)->insert(
+                                    'image_lang',
+                                    [
+                                        'id_image'  => $idImage,
+                                        'id_lang'   => $idLang,
+                                        'legend'    => $val,
+                                    ],
+                                    false,
+                                    true,
+                                    Db::INSERT_IGNORE
+                                );
+                                Db::getInstance(_PS_USE_SQL_SLAVE_)->update(
+                                    'image_lang',
+                                    [
+                                        'legend'    => $val,
+                                    ],
+                                    '`id_image` = '.$idImage
+                                    .' AND `id_lang` = '.$idLang
+                                );
+                            }
                         }
                     }
                 }
