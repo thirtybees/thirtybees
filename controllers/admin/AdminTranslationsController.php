@@ -1833,6 +1833,8 @@ class AdminTranslationsControllerCore extends AdminController
                 if ($typeFile == 'php') {
                     $regex = [
                         '/HTMLTemplate.*::l\((\')'._PS_TRANS_PATTERN_.'\'[\)|\,]/U',
+                        '/static::l\((\')'._PS_TRANS_PATTERN_.'\'[\)|\,]/U',
+                        '/Translate::getPdfTranslation\((\')'._PS_TRANS_PATTERN_.'\'(?:,.*)*\)/U',
                         '/->l\((\')'._PS_TRANS_PATTERN_.'\'(, ?\'(.+)\')?(, ?(.+))?\)/U',
                     ];
                 } else {
