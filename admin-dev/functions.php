@@ -262,8 +262,8 @@ function translate($string)
     if (!is_array($_LANGADM)) {
         return str_replace('"', '&quot;', $string);
     }
-    $key = md5(str_replace('\'', '\\\'', $string));
-    $str = (array_key_exists('index'.$key, $_LANGADM)) ? $_LANGADM['index'.$key] : ((array_key_exists('index'.$key, $_LANGADM)) ? $_LANGADM['index'.$key] : $string);
+    $key = 'index' . md5(str_replace('\'', '\\\'', $string));
+    $str = (array_key_exists($key, $_LANGADM) && $_LANGADM[$key] !== '') ? $_LANGADM[$key] : $string;
     return str_replace('"', '&quot;', stripslashes($str));
 }
 

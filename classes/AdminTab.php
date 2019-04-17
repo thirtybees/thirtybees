@@ -221,8 +221,16 @@ abstract class AdminTabCore
             $class = 'AdminTab';
         }
 
-        $key = md5(str_replace('\'', '\\\'', $string));
-        $str = (array_key_exists(get_class($this).$key, $_LANGADM)) ? $_LANGADM[get_class($this).$key] : ((array_key_exists($class.$key, $_LANGADM)) ? $_LANGADM[$class.$key] : $string);
+        $md5Key = md5(str_replace('\'', '\\\'', $string));
+
+        $thisKey = get_class($this) . $md5Key;
+        $classKey = $class . $md5Key;
+        $str = $string;
+        if (array_key_exists($thisKey, $_LANGADM) && $_LANGADM[$thisKey] !== '') {
+            $str = $_LANGADM[$thisKey];
+        } else if (array_key_exists($classKey, $_LANGADM) && $_LANGADM[$classKey] !== '') {
+            $str = $_LANGADM[$classKey];
+        }
         $str = $htmlentities ? htmlentities($str, ENT_QUOTES, 'utf-8') : $str;
 
         return str_replace('"', '&quot;', ($addslashes ? addslashes($str) : stripslashes($str)));

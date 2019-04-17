@@ -87,7 +87,7 @@ class TranslateCore
 
         $string = preg_replace("/\\\*'/", "\'", $string);
         $key = md5($string);
-        if (isset($_LANGADM[$class.$key])) {
+        if (isset($_LANGADM[$class.$key]) && $_LANGADM[$class.$key] !== '') {
             $str = $_LANGADM[$class.$key];
         } else {
             $str = Translate::getGenericAdminTranslation($string, $key, $_LANGADM);
@@ -265,7 +265,7 @@ class TranslateCore
             $str = $string;
         }
 
-        return $str;
+        return $str !== '' ? $str : $string;
     }
 
     /**
