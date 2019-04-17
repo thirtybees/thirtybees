@@ -566,7 +566,7 @@ class AdminCustomersControllerCore extends AdminController
                     'hint'     => $this->l('This customer will receive your ads via email.'),
                 ],
                 [
-                    'type'     => 'select',
+                    'type'    => 'select',
                     'label'   => $this->l('Language'),
                     'name'    => 'id_lang',
                     'options' => [
@@ -575,7 +575,8 @@ class AdminCustomersControllerCore extends AdminController
                         'name'  => 'name',
                     ],
                     'col'     => '4',
-                    'hint'     => $this->l('Language used by this customer'),
+                    'hint'    => $this->l('Language used by this customer.'),
+                    'desc'    => $this->l('Existing customers set this automatically by logging in.'),
                 ],
             ],
         ];
