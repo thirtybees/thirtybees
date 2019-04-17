@@ -989,7 +989,7 @@ class AdminCartsControllerCore extends AdminController
             $specificPrice->id_customer = (int) $this->context->customer->id;
             $specificPrice->id_product = (int) Tools::getValue('id_product');
             $specificPrice->id_product_attribute = (int) Tools::getValue('id_product_attribute');
-            $specificPrice->price = priceval(Tools::getValue('price'));
+            $specificPrice->price = Tools::convertPrice(Tools::getValue('price'), (int)$this->context->cart->id_currency, false);
             $specificPrice->from_quantity = 1;
             $specificPrice->reduction = 0;
             $specificPrice->reduction_type = 'amount';
