@@ -304,9 +304,9 @@ class TranslateCore
         }
 
         $string = preg_replace("/\\\*'/", "\'", $string);
-        $key = md5($string);
+        $key = 'PDF' . md5($string);
 
-        $str = (array_key_exists('PDF'.$key, $_LANGPDF) ? $_LANGPDF['PDF'.$key] : $string);
+        $str = array_key_exists($key, $_LANGPDF) && $_LANGPDF[$key] !== '' ? $_LANGPDF[$key] : $string;
 
         if ($sprintf !== null) {
             $str = Translate::checkAndReplaceArgs($str, $sprintf);
