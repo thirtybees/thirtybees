@@ -69,15 +69,15 @@ function smartyTranslate($params, $smarty)
         return Translate::postProcessTranslation(Translate::getPdfTranslation($params['s'], $params['sprintf']), $params);
     }
 
-    if ($_LANG != null && isset($_LANG[$key])) {
+    if ($_LANG != null && isset($_LANG[$key]) && $_LANG[$key] !== '') {
         $msg = $_LANG[$key];
-    } elseif ($_LANG != null && isset($_LANG[mb_strtolower($key)])) {
+    } elseif ($_LANG != null && isset($_LANG[mb_strtolower($key)]) && $_LANG[mb_strtolower($key)] !== '') {
         $msg = $_LANG[mb_strtolower($key)];
     } else {
         $msg = $params['s'];
     }
 
-    if ($msg != $params['s'] && !$params['js']) {
+    if ($msg !== $params['s'] && !$params['js']) {
         $msg = stripslashes($msg);
     } elseif ($params['js']) {
         $msg = addslashes($msg);
