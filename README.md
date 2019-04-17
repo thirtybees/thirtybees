@@ -65,10 +65,10 @@ Support for these general requirements (except recommendations) gets tested duri
     - xml (SimpleXML, DOMDocument)
     - zip
   - Recommended:
-    - imap
-    - curl
-    - opcache
-    - apcu/redis/memcache(d)
+    - imap (for allowing to use an IMAP server rather than PHP's built-in mail function)
+    - curl (for better handling of background HTTPS requests)
+    - opcache (not mandatory because some hosters turn this off in favor of other caching mechanisms)
+    - apcu/redis/memcache(d) (for the (currently incomplete) full page cache)
 
 ## Browser support
 
