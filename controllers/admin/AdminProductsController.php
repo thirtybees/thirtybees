@@ -3466,7 +3466,7 @@ class AdminProductsControllerCore extends AdminController
                 }
 
                 // adding button for preview this product statistics
-                if (file_exists(_PS_MODULE_DIR_.'statsmodule/stats/statsproduct.php')) {
+                if (Module::isEnabled('statsdata')) {
                     $this->page_header_toolbar_btn['stats'] = [
                         'short' => $this->l('Statistics', null, null, false),
                         'href'  => $this->context->link->getAdminLink('AdminStats').'&module=statsproduct&id_product='.(int) $product->id,
