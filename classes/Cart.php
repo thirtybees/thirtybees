@@ -3392,6 +3392,9 @@ class CartCore extends ObjectModel
             '`id_product` = '.(int) $idProduct.' '.(!is_null($idProductAttribute) ? ' AND `id_product_attribute` = '.(int) $idProductAttribute : '').' AND `id_cart` = '.(int) $this->id.' '.((int) $idAddressDelivery ? 'AND `id_address_delivery` = '.(int) $idAddressDelivery : '')
         );
 
+        // Remove any specific price for this cart/product combination
+        SpecificPrice::deleteByIdCart((int) $this->id, (int) $idProduct, (int) $idProductAttribute);
+
         if ($result) {
             $return = $this->update();
             // refresh cache of static::_products
