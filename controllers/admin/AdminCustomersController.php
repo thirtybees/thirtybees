@@ -565,6 +565,18 @@ class AdminCustomersControllerCore extends AdminController
                     'disabled' => (bool) !Configuration::get('PS_CUSTOMER_OPTIN'),
                     'hint'     => $this->l('This customer will receive your ads via email.'),
                 ],
+                [
+                    'type'     => 'select',
+                    'label'   => $this->l('Language'),
+                    'name'    => 'id_lang',
+                    'options' => [
+                        'query' => Language::getLanguages(true),
+                        'id'    => 'id_lang',
+                        'name'  => 'name',
+                    ],
+                    'col'     => '4',
+                    'hint'     => $this->l('Language used by this customer'),
+                ],
             ],
         ];
 
