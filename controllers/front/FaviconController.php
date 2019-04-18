@@ -61,12 +61,12 @@ class FaviconControllerCore extends FrontController
             }
 
             header('Content-Type: image/png');
-            readfile(_PS_IMG_DIR_."favicon/favicon_{$this->context->shop->id}_180_180.png");
+            readfile(_PS_IMG_DIR_."favicon/favicon-{$this->context->shop->id}_180_180.png");
             exit;
         }
 
         header('Content-Type: image/x-icon');
-        readfile(_PS_IMG_DIR_."favicon_{$this->context->shop->id}.ico");
+        readfile(_PS_IMG_DIR_."favicon-{$this->context->shop->id}.ico");
         exit;
     }
 }
