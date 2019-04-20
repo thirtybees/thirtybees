@@ -4,7 +4,6 @@ return array (
   'informations' =>
   array (
     'documentation' => 'https://docs.thirtybees.com/',
-    'documentation_upgrade' => 'https://docs.thirtybees.com/',
     'forum' => 'https://forum.thirtybees.com/',
     'blog' => 'https://thirtybees.com/blog/',
     'support' => 'https://forum.thirtybees.com/',
@@ -192,7 +191,7 @@ return array (
     'Oops! Please correct the item(s) below, and then click "Refresh information" to test the compatibility of your new system.' => 'Ops! Correggi i seguenti punti, quindi clicca sul pulsante "Aggiorna" per verificare la compatibilità di thirty bees del tuo nuovo sistema.',
     'Refresh these settings' => 'Aggiorna le impostazioni',
     'thirty bees requires at least 32 MB of memory to run: please check the memory_limit directive in your php.ini file or contact your host provider about this.' => 'thirty bees richiede almeno 32 MB di memoria per funzionare: controlla la direttiva memory_limit nel tuo file php.ini o contatta il tuo fornitore di hosting.',
-    '<b>Warning: You cannot use this tool to upgrade your store anymore.</b><br /><br />You already have <b>thirty bees version %1$s installed</b>.<br /><br />If you want to upgrade to the latest version, please read our documentation: <a href="%2$s">%2$s</a>' => '<b>Attenzione: Non puoi utilizzare più questo strumento per aggiornare il tuo negozio.</b><br /><br />Hai già <b>installato thirty bees versione %1$s</b>.<br /><br />Se vuoi aggiornare all\'ultima versione leggi la nostra documentazione: <a href="%2$s">%2$s</a>',
+    '<b>Warning: You cannot use this tool to upgrade your store anymore.</b><br /><br />You already have <b>thirty bees version %1$s installed</b>.<br /><br />Use module Core Updater to update to the latest version.' => '<b>Attenzione: Non puoi utilizzare più questo strumento per aggiornare il tuo negozio.</b><br /><br />Hai già <b>installato thirty bees versione %1$s</b>.<br /><br />Use module Core Updater to update to the latest version.',
     'Welcome to the thirty bees %s Installer' => 'Benvenuto/a nell\'installazione di thirty bees %s',
     'Installing thirty bees is quick and easy. In just a few moments, you will become part of a community consisting of more than one merchant. You are on the way to creating your own unique online store that you can manage easily every day.' => 'Installare thirty bees è veloce e facile. In pochi istanti farai parte di una vasta comunità di venditori. Stai per creare il tuo personale negozio online che potrai gestire con facilità ogni giorno.',
     'If you need help, do not hesitate to read <a href="%2$s" target="_blank">our documentation</a>.' => 'Se hai bisogno di aiuto, non esitate a leggere <a href="%2$s" target="_blank"> la nostra documentazione</a>.',

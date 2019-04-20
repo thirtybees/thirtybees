@@ -4,7 +4,6 @@ return array (
   'informations' =>
   array (
     'documentation' => 'https://docs.thirtybees.com/',
-    'documentation_upgrade' => 'https://docs.thirtybees.com/',
     'forum' => 'https://forum.thirtybees.com/',
     'blog' => 'https://thirtybees.com/blog/',
     'support' => 'https://forum.thirtybees.com/',
@@ -192,7 +191,7 @@ return array (
     'Oops! Please correct the item(s) below, and then click "Refresh information" to test the compatibility of your new system.' => 'Oeps! Corrigeer de onderstaande item(s) en klik dan "Vernieuw informatie" om de compatibiliteit van uw nieuwe systeem te testen.',
     'Refresh these settings' => 'Vernieuw deze instellingen',
     'thirty bees requires at least 32 MB of memory to run: please check the memory_limit directive in your php.ini file or contact your host provider about this.' => 'thirty bees vereist tenminste 128MB geheugen om te draaien, controleer de memory_limit richtlijn in php.ini of neem contact op met uw hostingprovider.',
-    '<b>Warning: You cannot use this tool to upgrade your store anymore.</b><br /><br />You already have <b>thirty bees version %1$s installed</b>.<br /><br />If you want to upgrade to the latest version, please read our documentation: <a href="%2$s">%2$s</a>' => '<b>Waarschuwing: U kunt deze tool niet meer gebruiken om Uw winkel te upgraden.</b><br /><br />U gebruikt al <b>thirty bees versie %1$s</b>.<br /><br />Indien U wilt upgraden naar de laatste versie, dan kunt u meer hierover lezen in onze documentatie: <a href="%2$s">%2$s</a>',
+    '<b>Warning: You cannot use this tool to upgrade your store anymore.</b><br /><br />You already have <b>thirty bees version %1$s installed</b>.<br /><br />Use module Core Updater to update to the latest version.' => '<b>Waarschuwing: U kunt deze tool niet meer gebruiken om Uw winkel te upgraden.</b><br /><br />U gebruikt al <b>thirty bees versie %1$s</b>.<br /><br />Use module Core Updater to update to the latest version.',
     'Welcome to the thirty bees %s Installer' => 'Welkom bij het thirty bees %s installatieprogramma',
     'Installing thirty bees is quick and easy. In just a few moments, you will become part of a community consisting of more than one merchant. You are on the way to creating your own unique online store that you can manage easily every day.' => 'De installatie van thirty bees is snel en eenvoudig. In slechts enkele ogenblikken wordt u deelgenoot van een community van meer dan 200.000 verkopers. U heeft nu bijna uw eigen unieke Webwinkel gecreëerd die u elke dag eenvoudig kunt onderhouden.',
     'If you need help, do not hesitate to read <a href="%2$s" target="_blank">our documentation</a>.' => 'Als u hulp nodig hebt, aarzel dan niet om <a href="%2$s" target="_blank">onze documentatie</a> te lezen.',

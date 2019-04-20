@@ -4,7 +4,6 @@ return array (
   'informations' =>
   array (
     'documentation' => 'https://docs.thirtybees.com/',
-    'documentation_upgrade' => 'https://docs.thirtybees.com/',
     'forum' => 'https://forum.thirtybees.com/',
     'blog' => 'https://thirtybees.com/blog/',
     'support' => 'https://forum.thirtybees.com/',
@@ -192,7 +191,7 @@ return array (
     'Oops! Please correct the item(s) below, and then click "Refresh information" to test the compatibility of your new system.' => 'Ой! Исправьте настройки выше и нажмите "Повторная проверка", чтобы проверить совместимость с Вашей системой.',
     'Refresh these settings' => 'Повторная проверка',
     'thirty bees requires at least 32 MB of memory to run: please check the memory_limit directive in your php.ini file or contact your host provider about this.' => 'thirty bees требует по меньшей мере 32 Мб памяти для запуска: пожалуйста, проверьте строку "memory_limit" в файле php.ini или свяжитесь с Вашим хостинг-провайдером.',
-    '<b>Warning: You cannot use this tool to upgrade your store anymore.</b><br /><br />You already have <b>thirty bees version %1$s installed</b>.<br /><br />If you want to upgrade to the latest version, please read our documentation: <a href="%2$s">%2$s</a>' => '<b>Внимание: Вы больше не можете использовать этот инструмент для обновления магазина.</b><br /><br />У Вас уже <b>установлен thirty bees версии %1$s</b>.<br /><br />Если Вы хотите обновить до последней версии, пожалуйста, читайте нашу документацию: <a href="%2$s">%2$s</a>',
+    '<b>Warning: You cannot use this tool to upgrade your store anymore.</b><br /><br />You already have <b>thirty bees version %1$s installed</b>.<br /><br />Use module Core Updater to update to the latest version.' => '<b>Внимание: Вы больше не можете использовать этот инструмент для обновления магазина.</b><br /><br />У Вас уже <b>установлен thirty bees версии %1$s</b>.<br /><br />Use module Core Updater to update to the latest version.',
     'Welcome to the thirty bees %s Installer' => 'Добро пожаловать в установщик thirty bees %s',
     'Installing thirty bees is quick and easy. In just a few moments, you will become part of a community consisting of more than one merchant. You are on the way to creating your own unique online store that you can manage easily every day.' => 'Установка thirty bees легкая и займет мало времени. Вскоре Вы станете частью сообщества, состоящего из более чем единственного продавца. Вы вступаете на путь создания собственного уникального интернет-магазина, которым Вы можете управлять с легкостью каждый день.',
     'If you need help, do not hesitate to read <a href="%2$s" target="_blank">our documentation</a>.' => 'Если вам нужна помощь, не стесняйтесь прочитать <a href="%2$s" target="_blank"> нашу документацию</a>.',

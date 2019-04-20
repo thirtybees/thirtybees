@@ -1,17 +1,16 @@
 <?php
 
 return array (
-  'informations' => 
+  'informations' =>
   array (
     'documentation' => 'https://docs.thirtybees.com/',
-    'documentation_upgrade' => 'https://docs.thirtybees.com/',
     'forum' => 'https://forum.thirtybees.com/',
     'blog' => 'https://thirtybees.com/blog/',
     'support' => 'https://forum.thirtybees.com/',
     'tutorial' => 'https://docs.thirtybees.com/',
     'tailored_help' => 'https://store.thirtybees.com/services',
   ),
-  'translations' => 
+  'translations' =>
   array (
     'Cannot create image "%1$s" for entity "%2$s"' => 'Nie można utworzyć obrazu "%1$s" dla rekordu "%2$s"',
     'Cannot create image "%1$s" (bad permissions on folder "%2$s")' => 'Nie można utworzyć obrazu "%1$s" (brak uprawnień dla folderu "%2$s")',
@@ -192,7 +191,7 @@ return array (
     'Oops! Please correct the item(s) below, and then click "Refresh information" to test the compatibility of your new system.' => 'Proszę poprawić punkt/y znajdujące się poniżej i wybrać przycisk \'\'Odśwież informacje\'\' w celu przeprowadzenia testu kompatybilności nowego systemu. ',
     'Refresh these settings' => 'Odśwież ustawienia',
     'thirty bees requires at least 32 MB of memory to run: please check the memory_limit directive in your php.ini file or contact your host provider about this.' => 'thirty bees wymaga co najmniej 32 MB pamięci do działania: sprawdź dyrektywę memory_limit w pliku php.ini lub skontaktuj się w tej sprawie z administratorem swojego serwera.',
-    '<b>Warning: You cannot use this tool to upgrade your store anymore.</b><br /><br />You already have <b>thirty bees version %1$s installed</b>.<br /><br />If you want to upgrade to the latest version, please read our documentation: <a href="%2$s">%2$s</a>' => '<b>Ostrzeżenie: Nie można już korzystać z tego narzędzia, aby uaktualnić swój sklep.</b><br /><br />Masz aktualnie <b>zainstalowaną wersję thirty bees %1$s</b>.<br /><br />Jeśli chcesz uaktualnić do najnowszej wersji przeczytaj naszą dokumentację: <a href="%2$s">%2$s</a>',
+    '<b>Warning: You cannot use this tool to upgrade your store anymore.</b><br /><br />You already have <b>thirty bees version %1$s installed</b>.<br /><br />Use module Core Updater to update to the latest version.' => '<b>Ostrzeżenie: Nie można już korzystać z tego narzędzia, aby uaktualnić swój sklep.</b><br /><br />Masz aktualnie <b>zainstalowaną wersję thirty bees %1$s</b>.<br /><br />Use module Core Updater to update to the latest version.',
     'Welcome to the thirty bees %s Installer' => 'Witamy w Instalatorze %s thirty bees',
     'Installing thirty bees is quick and easy. In just a few moments, you will become part of a community consisting of more than one merchant. You are on the way to creating your own unique online store that you can manage easily every day.' => 'Instalacja thirty bees jest szybka i łatwa. W zaledwie kilka chwil, staniesz się częścią stale rosnącej społeczności sprzedawców. Jesteś na drodze do tworzenia własnego, unikalnego sklepu internetowego, którym można z łatwością zarządzać na co dzień.',
     'If you need help, do not hesitate to read <a href="%2$s" target="_blank">our documentation</a>.' => 'Jeśli potrzebujesz pomocy, nie wahaj się przeczytać <a href="%2$s" target="_blank"> naszej dokumentacji</a>.',
