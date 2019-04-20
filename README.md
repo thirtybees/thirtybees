@@ -50,7 +50,7 @@ You can find the latest version of the roadmap here: https://thirtybees.com/road
 ## Requirements
 Support for these general requirements (except recommendations) gets tested during installation, so one can simply try to proceed. A proceeding installation means all requirements are met.
 
-- PHP 5.6 - PHP 7.2
+- PHP 5.6 - PHP 7.2 with a minimum of 128 MiB RAM
 - Apache or nginx
 - Linux or MacOS
 - MySQL 5.5.3+ or MariaDB 5.5+
