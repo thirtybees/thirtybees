@@ -361,16 +361,6 @@ abstract class InstallControllerHttp
     }
 
     /**
-     * Get link to tutorial video for this language
-     *
-     * Enter description here ...
-     */
-    public function getTutorialLink()
-    {
-        return $this->language->getInformation('tutorial');
-    }
-
-    /**
      * Get link to tailored help for this language
      *
      * Enter description here ...

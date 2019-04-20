@@ -7,7 +7,6 @@ return array (
     'forum' => 'https://forum.thirtybees.com/',
     'blog' => 'https://thirtybees.com/blog/',
     'support' => 'https://forum.thirtybees.com/',
-    'tutorial' => 'https://docs.thirtybees.com/',
     'tailored_help' => 'https://store.thirtybees.com/services',
   ),
   'translations' =>
@@ -194,7 +193,7 @@ return array (
     '<b>Warning: You cannot use this tool to upgrade your store anymore.</b><br /><br />You already have <b>thirty bees version %1$s installed</b>.<br /><br />Use module Core Updater to update to the latest version.' => '<b>Warning: You cannot use this tool to upgrade your store anymore.</b><br /><br />You already have <b>thirty bees version %1$s installed</b>.<br /><br />Use module Core Updater to update to the latest version.',
     'Welcome to the thirty bees %s Installer' => 'Benvingut a l\'instal·lador del thirty bees %s',
     'Installing thirty bees is quick and easy. In just a few moments, you will become part of a community consisting of more than one merchant. You are on the way to creating your own unique online store that you can manage easily every day.' => 'Instal·lar el thirty bees és ràpid i fàcil. En tan sols uns moments, esdevindreu part d\'una comunitat de multitud de venedors. Esteu en el camí a crear la vostra pròpia botiga on-line única que podreu gestionar fàcilment cada dia.',
-    'If you need help, do not hesitate to read <a href="%2$s" target="_blank">our documentation</a>.' => 'Si necessiteu ajuda, no dubteu a llegir la <a href="%2$s" target="_blank">nostra documentació</a>.',
+    'If you need help, do not hesitate to read <a href="%1$s" target="_blank">our documentation</a>.' => 'Si necessiteu ajuda, no dubteu a llegir la <a href="%1$s" target="_blank">nostra documentació</a>.',
     'Continue the installation in:' => 'Continuar la instal·lació a:',
     'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => 'La secció d\'idiomes anterior només s\'aplica a l\'Assistent d\'Instal·lació. Quan la vostra botiga estigui instal·lada, podeu triar la llengua de la vostra botiga entre més de %d traduccions, totes de franc!',
   ),

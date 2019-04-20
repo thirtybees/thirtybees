@@ -7,7 +7,6 @@ return array (
     'forum' => 'https://forum.thirtybees.com/',
     'blog' => 'https://thirtybees.com/blog/',
     'support' => 'https://forum.thirtybees.com/',
-    'tutorial' => 'https://docs.thirtybees.com/',
     'tailored_help' => 'https://store.thirtybees.com/services',
   ),
   'translations' =>
@@ -194,7 +193,7 @@ return array (
     '<b>Warning: You cannot use this tool to upgrade your store anymore.</b><br /><br />You already have <b>thirty bees version %1$s installed</b>.<br /><br />Use module Core Updater to update to the latest version.' => '<b>Внимание: Вы больше не можете использовать этот инструмент для обновления магазина.</b><br /><br />У Вас уже <b>установлен thirty bees версии %1$s</b>.<br /><br />Use module Core Updater to update to the latest version.',
     'Welcome to the thirty bees %s Installer' => 'Добро пожаловать в установщик thirty bees %s',
     'Installing thirty bees is quick and easy. In just a few moments, you will become part of a community consisting of more than one merchant. You are on the way to creating your own unique online store that you can manage easily every day.' => 'Установка thirty bees легкая и займет мало времени. Вскоре Вы станете частью сообщества, состоящего из более чем единственного продавца. Вы вступаете на путь создания собственного уникального интернет-магазина, которым Вы можете управлять с легкостью каждый день.',
-    'If you need help, do not hesitate to read <a href="%2$s" target="_blank">our documentation</a>.' => 'Если вам нужна помощь, не стесняйтесь прочитать <a href="%2$s" target="_blank"> нашу документацию</a>.',
+    'If you need help, do not hesitate to read <a href="%1$s" target="_blank">our documentation</a>.' => 'Если вам нужна помощь, не стесняйтесь прочитать <a href="%1$s" target="_blank"> нашу документацию</a>.',
     'Continue the installation in:' => 'Продолжить установку на языке:',
     'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => 'Выбранный Вами язык будет использован только в Помощнике установки. По окончании установки Вы можете выбрать любой из %d бесплатных переводов!',
   ),

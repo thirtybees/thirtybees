@@ -7,7 +7,6 @@ return array (
     'forum' => 'https://forum.thirtybees.com/',
     'blog' => 'https://thirtybees.com/blog/',
     'support' => 'https://forum.thirtybees.com/',
-    'tutorial' => 'https://docs.thirtybees.com/',
     'tailored_help' => 'https://store.thirtybees.com/services',
   ),
   'translations' =>
@@ -194,7 +193,7 @@ return array (
     '<b>Warning: You cannot use this tool to upgrade your store anymore.</b><br /><br />You already have <b>thirty bees version %1$s installed</b>.<br /><br />Use module Core Updater to update to the latest version.' => '<b>Warning: You cannot use this tool to upgrade your store anymore.</b><br /><br />You already have <b>thirty bees version %1$s installed</b>.<br /><br />Use module Core Updater to update to the latest version.',
     'Welcome to the thirty bees %s Installer' => 'Welcome to the thirty bees %s Installer',
     'Installing thirty bees is quick and easy. In just a few moments, you will become part of a community consisting of more than one merchant. You are on the way to creating your own unique online store that you can manage easily every day.' => 'Installing thirty bees is quick and easy. In just a few moments, you will become part of a community consisting of more than one merchant. You are on the way to creating your own unique online store that you can manage easily every day.',
-    'If you need help, do not hesitate to read <a href="%2$s" target="_blank">our documentation</a>.' => 'If you need help, do not hesitate to read <a href="%2$s" target="_blank">our documentation</a>.',
+    'If you need help, do not hesitate to read <a href="%1$s" target="_blank">our documentation</a>.' => 'If you need help, do not hesitate to read <a href="%1$s" target="_blank">our documentation</a>.',
     'Continue the installation in:' => 'Lanjutkan instalasi di:',
     'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => 'Pilihan bahasa diatas hanya berlaku ketika proses instalasi. Setelah terinstall, Anda dapat memilih bahasa untuk toko Anda dari lebih %d bahasa yang tersedia secara gratis!',
   ),

@@ -7,7 +7,6 @@ return array (
     'forum' => 'https://forum.thirtybees.com/',
     'blog' => 'https://thirtybees.com/blog/',
     'support' => 'https://forum.thirtybees.com/',
-    'tutorial' => 'https://docs.thirtybees.com/',
     'tailored_help' => 'https://store.thirtybees.com/services',
   ),
   'translations' =>
@@ -194,7 +193,7 @@ return array (
     '<b>Warning: You cannot use this tool to upgrade your store anymore.</b><br /><br />You already have <b>thirty bees version %1$s installed</b>.<br /><br />Use module Core Updater to update to the latest version.' => '<b>אזהרה: אין באפשרותך להשתמש עוד בכלי זה לשדרוג חנותך.</b><br /><br />כבר <b>מותקנת אצלך גרסה %1$s</b> של thirty bees.<br /><br />Use module Core Updater to update to the latest version.',
     'Welcome to the thirty bees %s Installer' => 'ברוכים הבאים להתקנת thirty bees %s',
     'Installing thirty bees is quick and easy. In just a few moments, you will become part of a community consisting of more than one merchant. You are on the way to creating your own unique online store that you can manage easily every day.' => 'התקנת thirty bees היא קלה ופשוטה. תוך מספר דקות תהפוך לחלק מקהילה הכוללת יותר מסוחר אחד. אתה נמצא בדרכך ליצירת חנות וירטואלית ייחודית שתוכל לנהלה בקלות על בסיס יומי.',
-    'If you need help, do not hesitate to read <a href="%2$s" target="_blank">our documentation</a>.' => 'אם אתה זקוק לעזרה, אל תהססו לקרוא <a href="%2$s" target="_blank"> את התיעוד שלנו</a>.',
+    'If you need help, do not hesitate to read <a href="%1$s" target="_blank">our documentation</a>.' => 'אם אתה זקוק לעזרה, אל תהססו לקרוא <a href="%1$s" target="_blank"> את התיעוד שלנו</a>.',
     'Continue the installation in:' => 'המשך התקנה בשפה:',
     'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => 'בחירת השפה למעלה חלה על תהליך ההתקנה בלבד. לאחר שהחנות מותקנת, באפשרותך לבחור שפה עבור ממשק החנות מתוך מעל %d תרגומים, והכל בחינם!',
   ),

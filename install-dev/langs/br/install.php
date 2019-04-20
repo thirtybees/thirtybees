@@ -7,7 +7,6 @@ return array (
     'forum' => 'https://forum.thirtybees.com/',
     'blog' => 'https://thirtybees.com/blog/',
     'support' => 'https://forum.thirtybees.com/',
-    'tutorial' => 'https://docs.thirtybees.com/',
     'tailored_help' => 'https://store.thirtybees.com/services',
   ),
   'translations' =>
@@ -194,7 +193,7 @@ return array (
     '<b>Warning: You cannot use this tool to upgrade your store anymore.</b><br /><br />You already have <b>thirty bees version %1$s installed</b>.<br /><br />Use module Core Updater to update to the latest version.' => '<b>Atenção: Você não pode mais usar essa ferramenta para atualizar sua loja.</b><br /><br />Você já tem <b>a versão %1$s do thirty bees instalada.</b><br /><br />Use module Core Updater to update to the latest version.',
     'Welcome to the thirty bees %s Installer' => 'Bem-vindo ao instalador %s thirty bees',
     'Installing thirty bees is quick and easy. In just a few moments, you will become part of a community consisting of more than one merchant. You are on the way to creating your own unique online store that you can manage easily every day.' => 'A instalação do thirty bees é rápida e fácil. Em poucos minutos, você se tornará parte de uma comunidade que consiste em mais de um comerciante. Você está no caminho para a criação de sua própria loja online exclusiva que você pode gerenciar facilmente todos os dias.',
-    'If you need help, do not hesitate to read <a href="%2$s" target="_blank">our documentation</a>.' => 'Se precisar de ajuda, não hesite em ler <a href="%2$s" target="_blank"> nossa documentação</a>.',
+    'If you need help, do not hesitate to read <a href="%1$s" target="_blank">our documentation</a>.' => 'Se precisar de ajuda, não hesite em ler <a href="%1$s" target="_blank"> nossa documentação</a>.',
     'Continue the installation in:' => 'Continue a instalação em:',
     'The language selection above only applies to the Installation Assistant. Once your store is installed, you can choose the language of your store from over %d translations, all for free!' => 'A seleção de idioma acima é válida somente para o Assistente de Instalação. Uma vez que a loja for instalada, você pode escolher o idioma da sua loja entre mais de %d traduções disponíveis, totalmente grátis!',
   ),
