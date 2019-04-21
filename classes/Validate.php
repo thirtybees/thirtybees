@@ -240,14 +240,14 @@ class ValidateCore
      *
      * @since   1.0.0
      * @version 1.0.0 Initial version
-     * @version 1.1.0 Don't accept 'http', 'www' or '/', do accept ','.
+     * @version 1.1.0 Accept ',', don't accept 'http', 'www' and some more
+     *                unusual/risky characters.
      */
     public static function isName($name)
     {
-        $name = stripslashes($name);
         return ! preg_match('/www|http/ui', $name)
             && preg_match(
-                Tools::cleanNonUnicodeSupport('/^[^0-9\/!<>;?()@"°{}_$%:]*$/u'),
+                Tools::cleanNonUnicodeSupport('/^[^0-9!\[\]<>;?=+()@#"°{}_$%:\/\\\*\^]*$/u'),
                 $name
             );
     }
