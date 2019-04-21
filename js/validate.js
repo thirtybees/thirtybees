@@ -165,8 +165,7 @@ function validate_isPhoneNumber(s)
 
 function validate_isDniLite(s)
 {
-	var reg = /^[0-9a-z-.]{1,16}$/i;
-	return reg.test(s);
+  return /^[0-9A-Za-z-.]{1,16}$/.test(s);
 }
 
 function validate_isEmail(s)
