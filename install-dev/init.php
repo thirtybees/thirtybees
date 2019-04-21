@@ -32,7 +32,7 @@
 ob_start();
 
 // Check PHP version
-if (version_compare(preg_replace('/[^0-9.]/', '', PHP_VERSION), '5.6', '<')) {
+if (version_compare(PHP_VERSION, '5.6', '<')) {
     die('You need at least PHP 5.6 to run thirty bees. Your current PHP version is '.PHP_VERSION);
 }
 
