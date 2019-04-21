@@ -61,7 +61,7 @@ return array (
     'GD library is not installed' => '沒有安裝 GD 函式庫',
     'The PHP json extension is not enabled' => 'The PHP json extension is not enabled',
     'PDO MySQL extension is not loaded' => '沒有載入 PDO MySQL 外掛',
-    'PHP 5.5.0 or later is not enabled' => 'PHP 5.5.0 or later is not enabled',
+    'PHP 5.6.0 or later is not enabled' => 'PHP 5.6.0 or later is not enabled',
     'Max execution time is lower than 30' => 'Max execution time is lower than 30',
     'Cannot create new files and folders' => '無法建立新檔案與資料夾',
     'Cannot upload files' => '無法上傳檔案',

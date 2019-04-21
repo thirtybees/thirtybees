@@ -61,7 +61,7 @@ return array (
     'GD library is not installed' => 'La llibreria GD no està instal·lada',
     'The PHP json extension is not enabled' => 'The PHP json extension is not enabled',
     'PDO MySQL extension is not loaded' => 'L\'extensió PDO de MySQL no està carregada',
-    'PHP 5.5.0 or later is not enabled' => 'PHP 5.5.0 or later is not enabled',
+    'PHP 5.6.0 or later is not enabled' => 'PHP 5.6.0 or later is not enabled',
     'Max execution time is lower than 30' => 'Max execution time is lower than 30',
     'Cannot create new files and folders' => 'No es poden crear els nous fitxers i carpetes',
     'Cannot upload files' => 'No es poden pujar fitxers',

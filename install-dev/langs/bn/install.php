@@ -61,7 +61,7 @@ return array (
     'GD library is not installed' => 'জিডি লাইব্রেরী ইনস্টল করা নেই',
     'The PHP json extension is not enabled' => 'The PHP json extension is not enabled',
     'PDO MySQL extension is not loaded' => 'PDO MySQLএক্সটেনশন লোড করা হয় নি',
-    'PHP 5.5.0 or later is not enabled' => 'PHP 5.5.0 or later is not enabled',
+    'PHP 5.6.0 or later is not enabled' => 'PHP 5.6.0 or later is not enabled',
     'Max execution time is lower than 30' => 'Max execution time is lower than 30',
     'Cannot create new files and folders' => 'নতুন ফাইল এবং ফোল্ডার তৈরি করা যাচ্ছে না',
     'Cannot upload files' => 'ফাইল আপলোড করা যাচ্ছে না',

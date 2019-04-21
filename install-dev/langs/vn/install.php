@@ -61,7 +61,7 @@ return array (
     'GD library is not installed' => 'Thư viện GD không được cài đặt',
     'The PHP json extension is not enabled' => 'The PHP json extension is not enabled',
     'PDO MySQL extension is not loaded' => 'Bộ mở rộng PDO MySQL không được nạp',
-    'PHP 5.5.0 or later is not enabled' => 'PHP 5.5.0 or later is not enabled',
+    'PHP 5.6.0 or later is not enabled' => 'PHP 5.6.0 or later is not enabled',
     'Max execution time is lower than 30' => 'Max execution time is lower than 30',
     'Cannot create new files and folders' => 'Không thể tạo file và thư mục',
     'Cannot upload files' => 'Không thể tải file lên',

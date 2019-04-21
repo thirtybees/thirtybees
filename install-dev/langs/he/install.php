@@ -61,7 +61,7 @@ return array (
     'GD library is not installed' => 'GD Library אינה מותקנת',
     'The PHP json extension is not enabled' => 'התוסף PHP json אינו פעיל',
     'PDO MySQL extension is not loaded' => 'הרחבת PDO עבור MySQL לא נטענה',
-    'PHP 5.5.0 or later is not enabled' => 'PHP בגרסה 5.5.0 או יותר אינה פעילה',
+    'PHP 5.6.0 or later is not enabled' => 'PHP בגרסה 5.6.0 או יותר אינה פעילה',
     'Max execution time is lower than 30' => 'Max execution time נמוך מ-30',
     'Cannot create new files and folders' => 'לא ניתן ליצור קבצים וספריות חדשים',
     'Cannot upload files' => 'לא ניתן להעלות קבצים',

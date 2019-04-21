@@ -61,7 +61,7 @@ return array (
     'GD library is not installed' => 'GD Library tidak tersedia',
     'The PHP json extension is not enabled' => 'The PHP json extension is not enabled',
     'PDO MySQL extension is not loaded' => 'Extensi PDO MySQL tidak aktif',
-    'PHP 5.5.0 or later is not enabled' => 'PHP 5.5.0 or later is not enabled',
+    'PHP 5.6.0 or later is not enabled' => 'PHP 5.6.0 or later is not enabled',
     'Max execution time is lower than 30' => 'Max execution time is lower than 30',
     'Cannot create new files and folders' => 'Tidak dapat membuat file dan folder baru',
     'Cannot upload files' => 'Tidak dapat mengupload file',

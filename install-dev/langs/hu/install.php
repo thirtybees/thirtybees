@@ -61,7 +61,7 @@ return array (
     'GD library is not installed' => 'GD Library nincs telepítve',
     'The PHP json extension is not enabled' => 'The PHP json extension is not enabled',
     'PDO MySQL extension is not loaded' => 'PDO MySQL kiterjesztés nincs betöltve',
-    'PHP 5.5.0 or later is not enabled' => 'PHP 5.5.0 or later is not enabled',
+    'PHP 5.6.0 or later is not enabled' => 'PHP 5.6.0 or later is not enabled',
     'Max execution time is lower than 30' => 'Max execution time is lower than 30',
     'Cannot create new files and folders' => 'Új mappák és fájlok létrehozása sikertelen',
     'Cannot upload files' => 'Sikertelen fájlfeltöltés',

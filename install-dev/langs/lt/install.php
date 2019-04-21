@@ -61,7 +61,7 @@ return array (
     'GD library is not installed' => 'GD biblioteka neįdiegta',
     'The PHP json extension is not enabled' => 'PHP json plėtinys neįjungtas',
     'PDO MySQL extension is not loaded' => 'PDO MySQL plėtinys neužkrautas',
-    'PHP 5.5.0 or later is not enabled' => 'PHP 5.5.0 arba naujesnė versija neįjungta',
+    'PHP 5.6.0 or later is not enabled' => 'PHP 5.6.0 arba naujesnė versija neįjungta',
     'Max execution time is lower than 30' => 'Max execution time is lower than 30',
     'Cannot create new files and folders' => 'Nepavyko sukurti naujų failų ir katalogų',
     'Cannot upload files' => 'Nepavyko įkelti failų',

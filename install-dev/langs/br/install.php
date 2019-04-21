@@ -61,7 +61,7 @@ return array (
     'GD library is not installed' => 'Biblioteca GD não está instalada',
     'The PHP json extension is not enabled' => 'A extensão de json PHP não está habilitada',
     'PDO MySQL extension is not loaded' => 'Extensão PDO MySQL não está carregada',
-    'PHP 5.5.0 or later is not enabled' => 'PHP 5.5.0 ou superior não está habilitado',
+    'PHP 5.6.0 or later is not enabled' => 'PHP 5.6.0 ou superior não está habilitado',
     'Max execution time is lower than 30' => 'Tempo máximo de execução é inferior a 30',
     'Cannot create new files and folders' => 'Nâo é possível criar novos arquivos e pastas',
     'Cannot upload files' => 'Não é possível enviar arquivos',

@@ -61,7 +61,7 @@ return array (
     'GD library is not installed' => 'GD knjižnica ni nameščena',
     'The PHP json extension is not enabled' => 'The PHP json extension is not enabled',
     'PDO MySQL extension is not loaded' => 'PDO MySQL extension ni naložen',
-    'PHP 5.5.0 or later is not enabled' => 'PHP 5.5.0 or later is not enabled',
+    'PHP 5.6.0 or later is not enabled' => 'PHP 5.6.0 or later is not enabled',
     'Max execution time is lower than 30' => 'Max execution time is lower than 30',
     'Cannot create new files and folders' => 'Ne morem ustvariti novih datotek in map',
     'Cannot upload files' => 'Ne morem naložiti datotek',
