@@ -21,7 +21,7 @@
  * List of modules to install at installation time. Modules in this list, but
  * not present on disk, get ignored (see InstallModelInstall->installModules()).
  */
-// For retrocompatibility with PHP 5.5 and 5.6 we cannot use
+// For retrocompatibility with PHP 5.6 we cannot use
 // define('_TB_DEFAULT_MODULES_', [ ...
 $_TB_DEFAULT_MODULES_ = [
     'bankwire',
