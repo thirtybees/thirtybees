@@ -189,8 +189,8 @@ class ConfigurationTestCore
      */
     public static function testPhpVersion(&$report = null)
     {
-        if (version_compare(PHP_VERSION, '5.5', '<')) {
-            $report = sprintf('PHP version is %s, should be at least version 5.5.', PHP_VERSION);
+        if (version_compare(PHP_VERSION, '5.6', '<')) {
+            $report = sprintf('PHP version is %s, should be at least version 5.6.', PHP_VERSION);
 
             return false;
         }
