@@ -232,7 +232,8 @@ class ValidateCore
     }
 
     /**
-     * Check for name validity
+     * Check for name validity. This should match validate_isName() in
+     * js/validate.js.
      *
      * @param string $name Name to validate
      *

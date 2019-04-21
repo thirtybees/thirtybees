@@ -106,8 +106,8 @@ var unicode_hack = (function() {
  */
 function validate_isName(s)
 {
-	var reg = /^[^0-9!<>,;?=+()@#"°{}_$%:]+$/;
-	return reg.test(s);
+  return ! /www|http/i.test(s)
+      && /^[^0-9!\[\]<>;?=+()@#"°{}_$%:\/\\\*\^]*$/.test(s);
 }
 
 function validate_isGenericName(s)
