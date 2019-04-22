@@ -31,7 +31,6 @@
 
 include('../../../../../config/config.inc.php');
 ini_set('max_execution_time', 7200);
-ini_set('memory_limit', '512M');
 
 $types = ImageType::getImagesTypes('categories');
 $files = scandir(dirname(__FILE__));
