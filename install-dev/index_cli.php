@@ -35,10 +35,6 @@ $errors = array();
 if (version_compare(PHP_VERSION, '5.6.0', '<')) {
     $errors[] = 'Make sure your PHP version is at least 5.6.';
 }
-// Check geoip module
-if (extension_loaded('geoip')) {
-    $errors[] = 'The <code>geoip</code> PHP extension is loaded. This causes conflicts with thirty bees. We recommend to disable the PHP extension.';
-}
 
 // Check if composer packages are available
 if (!file_exists(dirname(__FILE__).'/../vendor/autoload.php')) {
