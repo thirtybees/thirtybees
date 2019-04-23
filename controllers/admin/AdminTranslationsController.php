@@ -2569,7 +2569,6 @@ class AdminTranslationsControllerCore extends AdminController
         $nameVar = $this->translations_informations[$this->type_selected]['var'];
         $GLOBALS[$nameVar] = $this->fileExists();
         $missingTranslationsFields = [];
-        $classArray = [];
         $tabsArray = [];
         $count = 0;
 
@@ -2592,46 +2591,24 @@ class AdminTranslationsControllerCore extends AdminController
                 if (!is_subclass_of($className.'Core', 'ObjectModel')) {
                     continue;
                 }
-                $classArray[$className] = call_user_func([$className, 'getValidationRules'], $className);
-            }
-        }
-        foreach ($classArray as $prefixKey => $rules) {
-            if (isset($rules['validate'])) {
-                foreach ($rules['validate'] as $key => $value) {
-                    if (isset($GLOBALS[$nameVar][$prefixKey.'_'.md5($key)])) {
-                        $tabsArray[$prefixKey][$key]['trad'] = html_entity_decode($GLOBALS[$nameVar][$prefixKey.'_'.md5($key)], ENT_COMPAT, 'UTF-8');
-                        $count++;
-                    } else {
-                        if (!isset($tabsArray[$prefixKey][$key]['trad'])) {
-                            $tabsArray[$prefixKey][$key]['trad'] = '';
-                            if (!isset($missingTranslationsFields[$prefixKey])) {
-                                $missingTranslationsFields[$prefixKey] = 1;
+                $definition = ObjectModel::getDefinition($className);
+                if (isset($definition['fields'])) {
+                    foreach ($definition['fields'] as $key => $fieldDefinition) {
+                        if (isset($fieldDefinition['validate'])) {
+                            if (isset($GLOBALS[$nameVar][$className . '_' . md5($key)])) {
+                                $tabsArray[$className][$key]['trad'] = html_entity_decode($GLOBALS[$nameVar][$className . '_' . md5($key)], ENT_COMPAT, 'UTF-8');
+                                $count++;
                             } else {
-                                $missingTranslationsFields[$prefixKey]++;
+                                if (!isset($tabsArray[$className][$key]['trad'])) {
+                                    $tabsArray[$className][$key]['trad'] = '';
+                                    if (!isset($missingTranslationsFields[$className])) {
+                                        $missingTranslationsFields[$className] = 1;
+                                    } else {
+                                        $missingTranslationsFields[$className]++;
+                                    }
+                                    $count++;
+                                }
                             }
-                            $count++;
-                        }
-                    }
-                }
-            }
-            if (isset($rules['validateLang'])) {
-                foreach ($rules['validateLang'] as $key => $value) {
-                    if (isset($GLOBALS[$nameVar][$prefixKey.'_'.md5($key)])) {
-                        $tabsArray[$prefixKey][$key]['trad'] = '';
-                        if (array_key_exists($prefixKey.'_'.md5(addslashes($key)), $GLOBALS[$nameVar])) {
-                            $tabsArray[$prefixKey][$key]['trad'] = html_entity_decode($GLOBALS[$nameVar][$prefixKey.'_'.md5(addslashes($key))], ENT_COMPAT, 'UTF-8');
-                        }
-
-                        $count++;
-                    } else {
-                        if (!isset($tabsArray[$prefixKey][$key]['trad'])) {
-                            $tabsArray[$prefixKey][$key]['trad'] = '';
-                            if (!isset($missingTranslationsFields[$prefixKey])) {
-                                $missingTranslationsFields[$prefixKey] = 1;
-                            } else {
-                                $missingTranslationsFields[$prefixKey]++;
-                            }
-                            $count++;
                         }
                     }
                 }
