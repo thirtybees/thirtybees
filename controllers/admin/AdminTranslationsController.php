@@ -1332,10 +1332,22 @@ class AdminTranslationsControllerCore extends AdminController
                 $translationsArray[$key] = $value;
             }
         }
+
         // translations array is ordered by key (easy merge)
         ksort($translationsArray);
+        $varName = $translationInformation['var'];
+        $result = file_put_contents(
+            $filePath,
+            "<?php\n\n"
+            ."global \$${varName};\n\n"
+            ."\$${varName} = ".var_export($translationsArray, true).";\n\n"
+            ."return \$${varName};\n"
+        );
+        if ($result !== false) {
+            if (function_exists('opcache_invalidate')) {
+                opcache_invalidate($filePath);
+            }
 
-        if ($fd = fopen($filePath, 'w')) {
             ConfigurationKPI::updateValue('FRONTOFFICE_TRANSLATIONS_EXPIRE', time());
             ConfigurationKPI::updateValue(
                 'TRANSLATE_TOTAL_'.$kpiKey,
@@ -1345,17 +1357,6 @@ class AdminTranslationsControllerCore extends AdminController
                 'TRANSLATE_DONE_'.$kpiKey,
                 count($translationsArray)
             );
-
-            $tab = $translationInformation['var'];
-            fwrite($fd, "<?php\n\nglobal \$".$tab.";\n\$".$tab." = array();\n");
-            foreach ($translationsArray as $key => $value) {
-                fwrite($fd, '$'.$tab.'[\''.pSQL($key, true).'\'] = \''.pSQL($value, true).'\';'."\n");
-            }
-            fwrite($fd, "\n\nreturn \$".$tab.";\n");
-            fclose($fd);
-            if (function_exists('opcache_invalidate')) {
-                opcache_invalidate($filePath);
-            }
 
             $this->redirect((bool) $saveAndStay);
         } else {
