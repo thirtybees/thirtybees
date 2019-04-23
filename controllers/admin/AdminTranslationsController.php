@@ -1314,31 +1314,28 @@ class AdminTranslationsControllerCore extends AdminController
 
         require_once $filePath;
         $translationsArray = $GLOBALS[$translationInformation['var']];
+        $saveAndStay = Tools::isSubmit('submitTranslations'.$type.'AndStay');
+
+        // Unset all POST which are not translations
+        unset(
+            $_POST['submitTranslations'.$type],
+            $_POST['submitTranslations'.$type.'AndStay'],
+            $_POST['lang'],
+            $_POST['token'],
+            $_POST['theme'],
+            $_POST['type']
+        );
+
+        // Get all POST which aren't empty
+        foreach ($_POST as $key => $value) {
+            if (!empty($value)) {
+                $translationsArray[$key] = $value;
+            }
+        }
+        // translations array is ordered by key (easy merge)
+        ksort($translationsArray);
 
         if ($fd = fopen($filePath, 'w')) {
-            // Get value of button save and stay
-            $saveAndStay = Tools::isSubmit('submitTranslations'.$type.'AndStay');
-
-            // Get language
-            $lang = strtolower(Tools::getValue('lang'));
-
-            // Unset all POST which are not translations
-            unset(
-                $_POST['submitTranslations'.$type],
-                $_POST['submitTranslations'.$type.'AndStay'],
-                $_POST['lang'],
-                $_POST['token'],
-                $_POST['theme'],
-                $_POST['type']
-            );
-
-            // Get all POST which aren't empty
-            foreach ($_POST as $key => $value) {
-                if (!empty($value)) {
-                    $translationsArray[$key] = $value;
-                }
-            }
-
             ConfigurationKPI::updateValue('FRONTOFFICE_TRANSLATIONS_EXPIRE', time());
             ConfigurationKPI::updateValue(
                 'TRANSLATE_TOTAL_'.$kpiKey,
@@ -1349,8 +1346,6 @@ class AdminTranslationsControllerCore extends AdminController
                 count($translationsArray)
             );
 
-            // translations array is ordered by key (easy merge)
-            ksort($translationsArray);
             $tab = $translationInformation['var'];
             fwrite($fd, "<?php\n\nglobal \$".$tab.";\n\$".$tab." = array();\n");
             foreach ($translationsArray as $key => $value) {
@@ -1362,12 +1357,7 @@ class AdminTranslationsControllerCore extends AdminController
                 opcache_invalidate($filePath);
             }
 
-            // Redirect
-            if ($saveAndStay) {
-                $this->redirect(true);
-            } else {
-                $this->redirect();
-            }
+            $this->redirect((bool) $saveAndStay);
         } else {
             throw new PrestaShopException(sprintf(Tools::displayError('Cannot write this file: "%s"'), $filePath));
         }
