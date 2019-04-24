@@ -125,7 +125,6 @@ class ConfigurationTestCore
     {
         return [
             'Gz'              => false,
-            'NewPhpVersion'   => false,
             'Tlsv12'          => false,
         ];
     }
@@ -196,17 +195,6 @@ class ConfigurationTestCore
         }
 
         return true;
-    }
-
-    /**
-     * @return mixed
-     *
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
-     */
-    public static function testNewPhpVersion()
-    {
-        return version_compare(PHP_VERSION, '5.6.0', '>=');
     }
 
     /**

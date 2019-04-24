@@ -49,7 +49,6 @@ class ConfigurationTestTest extends \Codeception\Test\Unit
     public function testGetDefaultTestsOption()
     {
         $expected = [
-            'NewPhpVersion'   => false,
             'Gz'              => false,
             'Tlsv12'          => false,
         ];

@@ -174,7 +174,6 @@ class AdminInformationControllerCore extends AdminController
             'Xml'                     => $this->l('Install the `xml` PHP extension on your server.'),
             'Zip'                     => $this->l('Install the `zip` PHP extension on your server.'),
             'Gz'                      => $this->l('Enable GZIP compression on your server.'),
-            'NewPhpVersion'           => sprintf($this->l('You are using PHP %s version. Soon, the oldest PHP version supported by thirty bees will be PHP 5.6. To make sure you’re ready for the future, we recommend you to upgrade to PHP 5.6 now!'), phpversion()),
             'Tlsv12'                  => $this->l('Install TLS v1.2 support on your server.'),
         ];
 
