@@ -285,7 +285,6 @@ class AdminOrdersControllerCore extends AdminController
         $this->addJqueryPlugin(['autocomplete', 'fancybox', 'typewatch']);
 
         $defaultsOrderState = [
-            'cheque'         => (int) Configuration::get('PS_OS_CHEQUE'),
             'bankwire'       => (int) Configuration::get('PS_OS_BANKWIRE'),
             'cashondelivery' => Configuration::get('PS_OS_COD_VALIDATION') ? (int) Configuration::get('PS_OS_COD_VALIDATION') : (int) Configuration::get('PS_OS_PREPARATION'),
             'other'          => (int) Configuration::get('PS_OS_PAYMENT'),

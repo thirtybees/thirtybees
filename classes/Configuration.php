@@ -153,7 +153,6 @@ class ConfigurationCore extends ObjectModel
     const CANONICAL_REDIRECT = 'PS_CANONICAL_REDIRECT';
     const IMG_UPDATE_TIME = 'PS_IMG_UPDATE_TIME';
     const BACKUP_DROP_TABLE = 'PS_BACKUP_DROP_TABLE';
-    const OS_CHEQUE = 'PS_OS_CHEQUE';
     const OS_PAYMENT = 'PS_OS_PAYMENT';
     const OS_PREPARATION = 'PS_OS_PREPARATION';
     const OS_SHIPPING = 'PS_OS_SHIPPING';
