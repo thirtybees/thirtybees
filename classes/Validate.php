@@ -248,7 +248,7 @@ class ValidateCore
     {
         return ! preg_match('/www|http/ui', $name)
             && preg_match(
-                Tools::cleanNonUnicodeSupport('/^[^0-9!\[\]<>;?=+()@#"°{}_$%:\/\\\*\^]*$/u'),
+                Tools::cleanNonUnicodeSupport('/^[^0-9!\[\]<>;?=+()@#"°{}_$%:\\\*\^]*$/u'),
                 $name
             );
     }
