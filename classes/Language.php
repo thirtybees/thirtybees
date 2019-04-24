@@ -1030,7 +1030,6 @@ class LanguageCore extends ObjectModel
             'account.html', 'account.txt',
             'backoffice_order.html', 'backoffice_order.txt',
             'bankwire.html', 'bankwire.txt',
-            'cheque.html', 'cheque.txt',
             'contact.html', 'contact.txt',
             'contact_form.html', 'contact_form.txt',
             'credit_slip.html', 'credit_slip.txt',
