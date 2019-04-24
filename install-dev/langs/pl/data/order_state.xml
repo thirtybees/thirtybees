@@ -1,9 +1,5 @@
 <?xml version="1.0"?>
 <entity_order_state>
-  <order_state id="Awaiting_cheque_payment">
-    <name>Oczekiwanie płatności czekiem</name>
-    <template>cheque</template>
-  </order_state>
   <order_state id="Payment_accepted">
     <name>Płatność zaakceptowana</name>
     <template>payment</template>

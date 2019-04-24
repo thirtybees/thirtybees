@@ -1,9 +1,5 @@
 <?xml version='1.0'?>
 <entity_order_state>
-  <order_state id='Awaiting_cheque_payment'>
-    <name>অপেক্ষমান চেক পেমেন্ট</name>
-    <template>cheque</template>
-  </order_state>
   <order_state id='Payment_accepted'>
     <name>পেমেন্ট গৃহীত</name>
     <template>payment</template>
