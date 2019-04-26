@@ -120,14 +120,6 @@
 			<page>cms</page>
 			<configurable>0</configurable>
 		</meta>
-		<meta id="module-cheque-payment">
-			<page>module-cheque-payment</page>
-			<configurable>0</configurable>
-		</meta>
-		<meta id="module-cheque-validation">
-			<page>module-cheque-validation</page>
-			<configurable>0</configurable>
-		</meta>
 		<meta id="module-bankwire-validation">
 			<page>module-bankwire-validation</page>
 			<configurable>0</configurable>
