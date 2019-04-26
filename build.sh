@@ -338,26 +338,26 @@ done || exit ${?}
 
 # Module repositories. After cleaning, because they have their own build
 # script, producing already clean output (and cleaning differently).
-git cat-file -p ${GIT_REVISION}:modules | grep '^160000' | cut -d ' ' -f 3 | \
-  while read M; do
+git cat-file -p ${GIT_REVISION}:modules | grep '^160000' | cut -d ' ' -f 3 \
+| while read M; do
+  HASH=${M%$'\t'*}
+  M="${M#*$'\t'}"
+  MODULE="modules/${M}"
+
+  # Don't package modules not required for installation.
+  PACKAGE='true'
+  if [ -n "${TBMODULE_LIST[*]}" ]; then
+    PACKAGE='false'
+    for MM in "${TBMODULE_LIST[@]}"; do
+      if [ "${MM}" = "${M}" ]; then
+        PACKAGE='true'
+        break
+      fi
+    done
+  fi
+  [ "${PACKAGE}" = 'false' ] && continue
+
   (
-    HASH=${M%$'\t'*}
-    M="${M#*$'\t'}"
-    MODULE="modules/${M}"
-
-    # Don't package modules not required for installation.
-    PACKAGE='true'
-    if [ -n "${TBMODULE_LIST[*]}" ]; then
-      PACKAGE='false'
-      for MM in "${TBMODULE_LIST[@]}"; do
-        if [ "${MM}" = "${M}" ]; then
-          PACKAGE='true'
-          break
-        fi
-      done
-    fi
-    [ "${PACKAGE}" = 'false' ] && continue
-
     echo "Copying ${MODULE} ... "
     cd "${MODULE}"                                                || exit ${?}
 
