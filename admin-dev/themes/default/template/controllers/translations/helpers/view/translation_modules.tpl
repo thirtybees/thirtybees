@@ -99,7 +99,7 @@
 				{/if}
 
 			{/foreach}
-			<form method="post" id="{$table}_form" action="{$url_submit|escape:'html':'UTF-8'}" class="form-horizontal">
+			<form method="post" id="{$module_name}_form" action="{$url_submit|escape:'html':'UTF-8'}" class="form-horizontal">
 				<div class="panel">
 					<input type="hidden" name="lang" value="{$lang}" />
 					<input type="hidden" name="type" value="{$type}" />
