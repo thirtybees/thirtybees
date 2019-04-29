@@ -1057,11 +1057,15 @@ abstract class ModuleCore
             foreach ($modules as $name => $module) {
                 if (isset($modulesNameToCursor[mb_strtolower(strval($name))])) {
                     $moduleFromList = $modulesNameToCursor[mb_strtolower(strval($name))];
-                    if ($moduleFromList->version && version_compare(
-                        $module['version'],
-                        $moduleFromList->version,
-                        '>'
-                    )) {
+                    if ($moduleFromList->author
+                        && $moduleFromList->author === $module['author']
+                        && $moduleFromList->version
+                        && version_compare(
+                            $module['version'],
+                            $moduleFromList->version,
+                            '>'
+                        )
+                    ) {
                         $moduleFromList->version_addons = $module['version'];
                         $modulesNameToCursor[mb_strtolower(strval($name))] = $moduleFromList;
                     }
