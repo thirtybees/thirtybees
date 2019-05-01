@@ -445,6 +445,7 @@ ENTRIES+=('need_instance')
 ENTRIES+=('displayName')
 ENTRIES+=('description')
 ENTRIES+=('tb_versions_compliancy')
+ENTRIES+=('tb_min_version')
 
 FAULT='false'
 for E in "${ENTRIES[@]}"; do
