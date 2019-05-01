@@ -461,6 +461,17 @@ done
 unset ENTRIES FAULT
 
 
+### Absence of deprecated code.
+
+# _PS_VERSION_ marks code which isn't needed for thirty bees. While core should
+# keep such code for retrocompatibility with third party modules, modules them
+# selfs have no such need.
+${FIND} . | while read F; do
+  ${CAT} "${F}" | grep -q '\b_PS_VERSION_\b' && \
+    e "file ${F} contains '_PS_VERSION_'; PS retrocompatibility code is pointless."
+done
+
+
 ### Capitalization.
 
 # 'thirty bees' should be lowercase everywhere.
