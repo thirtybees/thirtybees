@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright Prestashop -->
+<!-- Copyright thirty bees -->
 <theme version="1.0" name="community-theme-default" directory="community-theme-default">
-    <author name="PrestaShop" email="contact@prestashop.com" url="http://www.prestashop.com"/>
+    <author name="thirty bees" email="contact@thirtybees.com" url="https://thirtybees.com"/>
     <descriptions>
         <description iso="en"></description>
     </descriptions>
