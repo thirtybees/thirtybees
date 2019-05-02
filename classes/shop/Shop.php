@@ -343,6 +343,7 @@ class ShopCore extends ObjectModel
                     ->where('su.domain = \''.pSQL($host).'\' OR su.domain_ssl = \''.pSQL($host).'\'')
                     ->where('s.`active` = 1')
                     ->where('s.`deleted` = 0')
+                    ->orderBy('LENGTH(CONCAT(su.`physical_uri`, su.`virtual_uri`)) DESC')
             );
 
             $through = false;
