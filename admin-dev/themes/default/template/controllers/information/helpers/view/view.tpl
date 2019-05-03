@@ -48,7 +48,7 @@
 
           if (json.missing.length || json.updated.length
               || json.obsolete.length || json.listMissing) {
-            let text = '<div class="alert alert-warning">';
+            var text = '<div class="alert alert-warning">';
             if (json.isDevelopment) {
               text += '{l s='This is a development installation, so the following is not unexpected: '}';
             }
