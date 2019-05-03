@@ -52,6 +52,7 @@ $_TB_DEFAULT_MODULES_ = [
     'blocktopmenu',
     'blockuserinfo',
     'blockviewed',
+    'coreupdater',
     'ctconfiguration',
     'dashactivity',
     'dashtrends',
