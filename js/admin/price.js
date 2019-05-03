@@ -52,7 +52,7 @@ function getTaxes() {
 }
 
 function addTaxes(priceWithTaxes) {
-  let taxes = getTaxes();
+  var taxes = getTaxes();
 
   if (taxes.computation_method === 0) {
     priceWithTaxes *= 1 + taxes.rates[0] / 100;
@@ -76,7 +76,7 @@ function addTaxes(priceWithTaxes) {
 }
 
 function removeTaxes(priceWithoutTaxes) {
-  let taxes = getTaxes();
+  var taxes = getTaxes();
 
   if (taxes.computation_method === 0) {
     priceWithoutTaxes /= 1 + taxes.rates[0] / 100;
@@ -129,8 +129,8 @@ function calcPrice() {
 }
 
 function calcPriceTI() {
-  let priceTE = parseFloat(document.getElementById('priceTEReal').value);
-  let newPrice = addTaxes(priceTE);
+  var priceTE = parseFloat(document.getElementById('priceTEReal').value);
+  var newPrice = addTaxes(priceTE);
 
   document.getElementById('priceTI').value =
     displayPriceValue(newPrice + getEcotaxTaxIncluded());
@@ -141,8 +141,8 @@ function calcPriceTI() {
 }
 
 function calcPriceTE() {
-  let priceTI = parseFloat(document.getElementById('priceTI').value);
-  let newPrice = removeTaxes(priceTI);
+  var priceTI = parseFloat(document.getElementById('priceTI').value);
+  var newPrice = removeTaxes(priceTI);
 
   document.getElementById('priceTE').value =
     displayPriceValue(newPrice - getEcotaxTaxIncluded());
