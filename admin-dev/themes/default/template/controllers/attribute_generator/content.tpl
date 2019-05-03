@@ -46,8 +46,8 @@
 
 	var product_tax = '{$tax_rates}';
   function calcPrice(element, element_has_tax) {
-    let element_price = element.val().replace(/,/g, '.');
-    let other_element_price = 0;
+    var element_price = element.val().replace(/,/g, '.');
+    var other_element_price = 0;
 
     if (element_has_tax) {
       other_element_price = element_price / (1 + product_tax / 100);
