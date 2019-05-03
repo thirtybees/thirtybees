@@ -24,7 +24,7 @@
         }
     }
 
-    function getStyle(color, bold = false) {
+    function getStyle(color, bold) {
         var style = 'color:' + color;
         if (bold) {
            style += ';font-weight:bold';
