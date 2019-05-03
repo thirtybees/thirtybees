@@ -1393,7 +1393,7 @@ function displayPriceValue(price) {
   priceDatabase = parseFloat(parseFloat(price).toFixed(priceDatabasePrecision));
   priceDisplay = ps_round(price, priceDisplayPrecision);
 
-  let formatted;
+  var formatted;
   if (priceDatabase.toString() === priceDisplay.toString()) {
     formatted = priceDisplay.toFixed(priceDisplayPrecision);
   } else {
