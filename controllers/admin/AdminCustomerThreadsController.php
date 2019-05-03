@@ -284,7 +284,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
         }
 
         $this->_group = 'GROUP BY cm.id_customer_thread';
-        $this->_orderBy = 'id_customer_thread';
+        $this->_orderBy = 'date_upd';
         $this->_orderWay = 'DESC';
 
         $contacts = CustomerThread::getContacts();
