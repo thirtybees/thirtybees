@@ -749,12 +749,14 @@ if ${FIND} build.sh | grep -q '.'; then
   n "module specific adjustments go into buildfilter.sh in the module root."
 fi
 
-# Header of buildfilter.sh should match the template.
-#
-# Well, for the time being, warn about no validation existing. Currently no
-# module uses such a file.
-${FIND} buildfilter.sh | grep -q '.' && \
-  w "there is a file buildfilter.sh, validating that is not yet implemented."
+# Header of buildfilter.sh should match a template.
+COMPARE_TB="${TEMPLATES_DIR}/header.sh.tb.module"
+COMPARE_TBPS="${TEMPLATES_DIR}/header.sh.tbps.module"
+COMPARE_SKIP=0
+COMPARE_HINT=''
+readarray -t COMPARE_LIST <<< $(${FIND} buildfilter.sh)
+[ -z "${COMPARE_LIST[*]}" ] && COMPARE_LIST=()
+templatecompare
 
 # .htaccess files are deprecated. Don't work with Nginx.
 FAULT='false'
