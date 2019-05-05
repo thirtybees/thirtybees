@@ -6,9 +6,12 @@ require_once __DIR__.'/../../vendor/autoload.php';
  * Turn any notice/warning/error into a full error, causing the Travis CI
  * build to fail. Else it won't get noticed in day to day operations.
  */
-function errorHandlerThirty($errno, $errstr)
+function errorHandlerThirty($errno, $errstr, $errfile, $errline)
 {
-  trigger_error($errstr, E_USER_ERROR);
+  trigger_error(
+      'Original error: '.$errstr.' in '.$errfile.':'.$errline,
+      E_USER_ERROR
+  );
 
   return true;
 }
