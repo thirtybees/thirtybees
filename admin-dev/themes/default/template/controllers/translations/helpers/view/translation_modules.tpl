@@ -81,7 +81,6 @@
 		</div>
 	</form>	
 	{foreach $modules_translations as $theme_name => $theme}
-		{if $theme_name}<h2>{l s='Theme:'} <a href="javascript:void(0);" name="{$theme_name}">{$theme_name}</a></h2>{/if}
 		{foreach $theme as $module_name => $module}
 			
 			{assign var=counter value=0}
@@ -111,14 +110,15 @@
 							<i class="icon-caret-down"></i>&nbsp;{$module_name}
 						</a>
 						{l s='Module:'}
-						<span class="badge">{$counter}</span> {l s='expressions'} <span class="label label-danger">{$missing_translations_module}</span>{l s='missing'}
+						<span class="badge">{$counter}</span> {l s='expressions'}
+						{if $missing_translations_module > 0}<span class="label label-danger">{$missing_translations_module}</span>{l s='missing'}{/if}
 					</h3>
 
 					<div name="{$type}_div" id="{$theme_name}_{$module_name}_{$template_name|replace:'.':'_'}" style="display:{if $missing_translations_module}block{else}none{/if}">
-
+					<table class="table">
 					{foreach $module as $template_name => $newLang}
 						{if !empty($newLang)}
-							<table class="table">
+							
 								{foreach $newLang as $key => $value}
 									<tr>
 										<td width="40%">{$key|stripslashes}</td>
@@ -146,9 +146,10 @@
 										</td>
 									</tr>
 								{/foreach}
-							</table>
+							
 						{/if}
 					{/foreach}
+					</table>
 					</div>
 					<div class="panel-footer">
 						<a name="submitTranslations{$type|ucfirst}" href="{$cancel_url|escape:'html':'UTF-8'}" class="btn btn-default"><i class="process-icon-cancel"></i> {l s='Cancel'}</a>
