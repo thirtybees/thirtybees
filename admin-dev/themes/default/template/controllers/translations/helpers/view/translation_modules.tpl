@@ -103,11 +103,12 @@
 				<div class="panel">
 					<input type="hidden" name="lang" value="{$lang}" />
 					<input type="hidden" name="type" value="{$type}" />
-					<input type="hidden" name="theme" value="{$theme}" />
+					<input type="hidden" name="theme" value="{$theme_name}" />
+					<input type="hidden" name="module_name" value="{$module_name}" />
 
-					<h3 onclick="$('#{$theme_name}_{$module_name}_{$template_name|replace:'.':'_'}').slideToggle();"> 
+					<h3 onclick="$('#{$theme_name}_{$module_name}_{$template_name|replace:'.':'_'}').slideToggle();">
 						<a href="javascript:void(0);" name="{$module_name}">
-							<i class="icon-caret-down"></i>{$module_name}
+							<i class="icon-caret-down"></i>&nbsp;{$module_name}
 						</a>
 						{l s='Module:'}
 						<span class="badge">{$counter}</span> {l s='expressions'} <span class="label label-danger">{$missing_translations_module}</span>{l s='missing'}

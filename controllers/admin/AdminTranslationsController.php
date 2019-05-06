@@ -400,12 +400,12 @@ class AdminTranslationsControllerCore extends AdminController
                     if ($modules = $this->getListModules()) {
                         // Get files of all modules
                         $arrFiles = $this->getAllModuleFiles($modules, null, $this->lang_selected->iso_code, true);
-
                         // Find and write all translation modules files
                         foreach ($arrFiles as $value) {
-                            $this->findAndWriteTranslationsIntoFile($value['file_name'], $value['files'], $value['theme'], $value['module'], $value['dir']);
+                            if($_POST['module_name'] == $value['module']) {
+                                $this->findAndWriteTranslationsIntoFile($value['file_name'], $value['files'], $value['theme'], $value['module'], $value['dir']);
+                            }
                         }
-
                         // Clear modules cache
                         Tools::clearCache();
 
@@ -1793,6 +1793,9 @@ class AdminTranslationsControllerCore extends AdminController
 
         if (isset($cacheFile[$themeName.'-'.$fileName]) && $strWrite != "<?php\n\nglobal \$_MODULE;\n\$_MODULE = array();\n") {
             file_put_contents($fileName, $strWrite);
+            if (function_exists('opcache_invalidate')) {
+                opcache_invalidate($fileName);
+            }
         }
     }
 
