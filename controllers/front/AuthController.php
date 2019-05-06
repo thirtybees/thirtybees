@@ -572,13 +572,10 @@ class AuthControllerCore extends FrontController
             foreach ($addressesTypes as $addressType) {
                 $address = new Address();
                 $address->id_customer = 1;
-                switch ($addressType) {
-                    case 'address_invoice':
-                        $addressInvoice = $address;
-                        break;
-                    default:
-                        $addressDelivery = $address;
-                        break;
+                if ($addressType == 'address_invoice') {
+                    $addressInvoice = $address;
+                } else {
+                    $addressDelivery = $address;
                 }
 
                 if ($addressType == 'address_invoice') {
@@ -659,24 +656,18 @@ class AuthControllerCore extends FrontController
                     $this->errors[] = Tools::displayError('An error occurred while creating your account.');
                 } else {
                     foreach ($addressesTypes as $addressType) {
-                        switch ($addressType) {
-                            case 'address_invoice':
-                                if (!isset($addressInvoice)) {
-                                    continue;
-                                }
-                                $address = $addressInvoice;
-                                break;
-                            default:
-                                if (!isset($addressDelivery)) {
-                                    continue;
-                                }
-                                $address = $addressDelivery;
-                                break;
+                        if ($addressType == 'address_invoice') {
+                            if (!isset($addressInvoice)) {
+                                continue;
+                            }
+                            $address = $addressInvoice;
+                        } else {
+                            if (!isset($addressDelivery)) {
+                                continue;
+                            }
+                            $address = $addressDelivery;
                         }
 
-                        if (!isset($address)) {
-                            continue;
-                        }
                         $address->id_customer = (int) $customer->id;
                         if ($addressType == 'address_invoice') {
                             foreach ($_POST as $key => &$post) {
