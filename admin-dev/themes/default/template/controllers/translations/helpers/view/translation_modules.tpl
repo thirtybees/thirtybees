@@ -41,45 +41,37 @@
 		<p>{l s='Expressions to translate:'} <span class="badge">{l s='%d' sprintf=$count}</span></p>
 		<p>{l s='Total missing expressions:'} <span class="badge">{l s='%d' sprintf=$missing_translations}</p>
 	</div>
-
-	<form method="post" id="{$table}_form" action="{$url_submit|escape:'html':'UTF-8'}" class="form-horizontal">
-		<div class="panel">
-			<input type="hidden" name="lang" value="{$lang}" />
-			<input type="hidden" name="type" value="{$type}" />
-			<input type="hidden" name="theme" value="{$theme}" />
-			<div id="BoxUseSpecialSyntax">
-				<div class="alert alert-warning">
-					<p>
-						{l s='Some of these expressions use this special syntax: %s.' sprintf='%d'}
-						<br />
-						{l s='You MUST use this syntax in your translations. Here are several examples:'}
-					</p>
-					<ul>
-						<li>"{l s='There are [1]%d[/1] products' tags=['<strong>']}": {l s='"%s" will be replaced by a number.' sprintf='%d'}</li>
-						<li>"{l s='List of pages in [1]%s[/1]' tags=['<strong>']}": {l s='"%s" will be replaced by a string.' sprintf='%s'}</li>
-						<li>"{l s='Feature: [1]%1$s[/1] ([1]%2$d[/1] values)' tags=['<strong>']}": {l s='The numbers enable you to reorder the variables when necessary.'}</li>
-					</ul>
-				</div>
-			</div>
-			<script type="text/javascript">
-				$(document).ready(function(){
-					$('a.useSpecialSyntax').click(function(){
-						var syntax = $(this).find('img').attr('alt');
-						$('#BoxUseSpecialSyntax .syntax span').html(syntax+".");
-					});
-				});
-			</script>
-			<div class="panel-footer">
-				<a name="submitTranslations{$type|ucfirst}" href="{$cancel_url|escape:'html':'UTF-8'}" class="btn btn-default">
-					<i class="process-icon-cancel"></i>
-					{l s='Cancel'}
-				</a>
-				{$toggle_button}
-				<button type="submit" id="{$table}_form_submit_btn" name="submitTranslations{$type|ucfirst}" class="btn btn-default pull-right"><i class="process-icon-save"></i> {l s='Save'}</button>
-				<button type="submit" id="{$table}_form_submit_btn" name="submitTranslations{$type|ucfirst}AndStay" class="btn btn-default pull-right"><i class="process-icon-save"></i> {l s='Save and stay'}</button>
+	<div class="panel">
+		<div id="BoxUseSpecialSyntax">
+			<div class="alert alert-warning">
+				<p>
+					{l s='Some of these expressions use this special syntax: %s.' sprintf='%d'}
+					<br />
+					{l s='You MUST use this syntax in your translations. Here are several examples:'}
+				</p>
+				<ul>
+					<li>"{l s='There are [1]%d[/1] products' tags=['<strong>']}": {l s='"%s" will be replaced by a number.' sprintf='%d'}</li>
+					<li>"{l s='List of pages in [1]%s[/1]' tags=['<strong>']}": {l s='"%s" will be replaced by a string.' sprintf='%s'}</li>
+					<li>"{l s='Feature: [1]%1$s[/1] ([1]%2$d[/1] values)' tags=['<strong>']}": {l s='The numbers enable you to reorder the variables when necessary.'}</li>
+				</ul>
 			</div>
 		</div>
-	</form>	
+		<script type="text/javascript">
+			$(document).ready(function(){
+				$('a.useSpecialSyntax').click(function(){
+					var syntax = $(this).find('img').attr('alt');
+					$('#BoxUseSpecialSyntax .syntax span').html(syntax+".");
+				});
+			});
+		</script>
+		<div class="panel-footer">
+			<a name="submitTranslations{$type|ucfirst}" href="{$cancel_url|escape:'html':'UTF-8'}" class="btn btn-default">
+				<i class="process-icon-cancel"></i>
+				{l s='Cancel'}
+			</a>
+			{$toggle_button}
+		</div>
+	</div>
 	{foreach $theme_translations as $module_name => $module}
 		
 		{assign var=counter value=0}
