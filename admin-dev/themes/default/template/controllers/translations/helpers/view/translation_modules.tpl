@@ -80,84 +80,82 @@
 			</div>
 		</div>
 	</form>	
-	{foreach $modules_translations as $theme_name => $theme}
-		{foreach $theme as $module_name => $module}
-			
-			{assign var=counter value=0}
-			{foreach $module as $template_name => $newLang}
-				{assign var=counter value=$counter+$newLang|count}
+	{foreach $theme_translations as $module_name => $module}
+		
+		{assign var=counter value=0}
+		{foreach $module as $template_name => $newLang}
+			{assign var=counter value=$counter+$newLang|count}
 
-				{assign var=occurrences value=0}
-				{foreach $newLang as $key => $value}
-					{if empty($value['trad'])}{assign var=occurrences value=$occurrences+1}{/if}
-				{/foreach}
-				{if $occurrences > 0}
-					{$missing_translations_module = $occurrences}
-				{else}
-					{$missing_translations_module = 0}
-				{/if}
-
+			{assign var=occurrences value=0}
+			{foreach $newLang as $key => $value}
+				{if empty($value['trad'])}{assign var=occurrences value=$occurrences+1}{/if}
 			{/foreach}
-			<form method="post" id="{$module_name}_form" action="{$url_submit|escape:'html':'UTF-8'}" class="form-horizontal">
-				<div class="panel">
-					<input type="hidden" name="lang" value="{$lang}" />
-					<input type="hidden" name="type" value="{$type}" />
-					<input type="hidden" name="theme" value="{$theme_name}" />
-					<input type="hidden" name="module_name" value="{$module_name}" />
+			{if $occurrences > 0}
+				{$missing_translations_module = $occurrences}
+			{else}
+				{$missing_translations_module = 0}
+			{/if}
 
-					<h3 onclick="$('#{$theme_name}_{$module_name}_{$template_name|replace:'.':'_'}').slideToggle();">
-						<a href="javascript:void(0);" name="{$module_name}">
-							<i class="icon-caret-down"></i>&nbsp;{$module_name}
-						</a>
-						{l s='Module:'}
-						<span class="badge">{$counter}</span> {l s='expressions'}
-						{if $missing_translations_module > 0}<span class="label label-danger">{$missing_translations_module}</span>{l s='missing'}{/if}
-					</h3>
-
-					<div name="{$type}_div" id="{$theme_name}_{$module_name}_{$template_name|replace:'.':'_'}" style="display:{if $missing_translations_module}block{else}none{/if}">
-					<table class="table">
-					{foreach $module as $template_name => $newLang}
-						{if !empty($newLang)}
-							
-								{foreach $newLang as $key => $value}
-									<tr>
-										<td width="40%">{$key|stripslashes}</td>
-										<td>=</td>
-										<td>
-											{* Prepare name string for md5() *}
-											{capture assign="name"}{strtolower($module_name)}{if $theme_name}_{strtolower($theme_name)}{/if}_{strtolower($template_name)}_{md5($key)}{/capture}
-											{if $key|strlen < $textarea_sized}
-												<input type="text"
-													style="width: 450px{if empty($value.trad)};background:#FBB{/if}"
-													name="{$name|md5}"
-													value="{$value.trad|regex_replace:'#"#':'&quot;'|stripslashes}"' />
-											{else}
-												<textarea rows="{($key|strlen / $textarea_sized)|intval}"
-													style="width: 450px{if empty($value.trad)};background:#FBB{/if}"
-													name="{$name|md5}">{$value.trad|regex_replace:'#"#':'&quot;'|stripslashes}</textarea>
-											{/if}
-										</td>
-										<td>
-											{if isset($value.use_sprintf) && $value.use_sprintf}
-												<a class="useSpecialSyntax" title="{l s='This expression uses a special syntax:'} {$value.use_sprintf}">
-													<img src="{$smarty.const._PS_IMG_}admin/error.png" alt="{$value.use_sprintf}" />
-												</a>
-											{/if}
-										</td>
-									</tr>
-								{/foreach}
-							
-						{/if}
-					{/foreach}
-					</table>
-					</div>
-					<div class="panel-footer">
-						<a name="submitTranslations{$type|ucfirst}" href="{$cancel_url|escape:'html':'UTF-8'}" class="btn btn-default"><i class="process-icon-cancel"></i> {l s='Cancel'}</a>
-						<button type="submit" id="{$table}_form_submit_btn" name="submitTranslations{$type|ucfirst}" class="btn btn-default pull-right"><i class="process-icon-save"></i> {l s='Save'}</button>
-						<button type="submit" id="{$table}_form_submit_btn" name="submitTranslations{$type|ucfirst}AndStay" class="btn btn-default pull-right"><i class="process-icon-save"></i> {l s='Save and stay'}</button>
-					</div>
-				</div>
-			</form>
 		{/foreach}
+		<form method="post" id="{$module_name}_form" action="{$url_submit|escape:'html':'UTF-8'}" class="form-horizontal">
+			<div class="panel">
+				<input type="hidden" name="lang" value="{$lang}" />
+				<input type="hidden" name="type" value="{$type}" />
+				<input type="hidden" name="theme" value="{$default_theme_name}" />
+				<input type="hidden" name="module_name" value="{$module_name}" />
+
+				<h3 onclick="$('#{$default_theme_name}_{$module_name}_{$template_name|replace:'.':'_'}').slideToggle();">
+					<a href="javascript:void(0);" name="{$module_name}">
+						<i class="icon-caret-down"></i>&nbsp;{$module_name}
+					</a>
+					{l s='Module:'}
+					<span class="badge">{$counter}</span> {l s='expressions'}
+					{if $missing_translations_module > 0}<span class="label label-danger">{$missing_translations_module}</span>{l s='missing'}{/if}
+				</h3>
+
+				<div name="{$type}_div" id="{$default_theme_name}_{$module_name}_{$template_name|replace:'.':'_'}" style="display:{if $missing_translations_module}block{else}none{/if}">
+				<table class="table">
+				{foreach $module as $template_name => $newLang}
+					{if !empty($newLang)}
+						
+							{foreach $newLang as $key => $value}
+								<tr>
+									<td width="40%">{$key|stripslashes}</td>
+									<td>=</td>
+									<td>
+										{* Prepare name string for md5() *}
+										{capture assign="name"}{strtolower($module_name)}{if $default_theme_name}_{strtolower($default_theme_name)}{/if}_{strtolower($template_name)}_{md5($key)}{/capture}
+										{if $key|strlen < $textarea_sized}
+											<input type="text"
+												style="width: 450px{if empty($value.trad)};background:#FBB{/if}"
+												name="{$name|md5}"
+												value="{$value.trad|regex_replace:'#"#':'&quot;'|stripslashes}"' />
+										{else}
+											<textarea rows="{($key|strlen / $textarea_sized)|intval}"
+												style="width: 450px{if empty($value.trad)};background:#FBB{/if}"
+												name="{$name|md5}">{$value.trad|regex_replace:'#"#':'&quot;'|stripslashes}</textarea>
+										{/if}
+									</td>
+									<td>
+										{if isset($value.use_sprintf) && $value.use_sprintf}
+											<a class="useSpecialSyntax" title="{l s='This expression uses a special syntax:'} {$value.use_sprintf}">
+												<img src="{$smarty.const._PS_IMG_}admin/error.png" alt="{$value.use_sprintf}" />
+											</a>
+										{/if}
+									</td>
+								</tr>
+							{/foreach}
+						
+					{/if}
+				{/foreach}
+				</table>
+				</div>
+				<div class="panel-footer">
+					<a name="submitTranslations{$type|ucfirst}" href="{$cancel_url|escape:'html':'UTF-8'}" class="btn btn-default"><i class="process-icon-cancel"></i> {l s='Cancel'}</a>
+					<button type="submit" id="{$table}_form_submit_btn" name="submitTranslations{$type|ucfirst}" class="btn btn-default pull-right"><i class="process-icon-save"></i> {l s='Save'}</button>
+					<button type="submit" id="{$table}_form_submit_btn" name="submitTranslations{$type|ucfirst}AndStay" class="btn btn-default pull-right"><i class="process-icon-save"></i> {l s='Save and stay'}</button>
+				</div>
+			</div>
+		</form>
 	{/foreach}
 {/block}
