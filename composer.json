@@ -11,7 +11,7 @@
         "mrclay/minify": "^2.3",
         "greenlion/php-sql-parser": "^4.1",
         "thirtybees/geoip": "^1.17",
-        "smarty/smarty": "3.1.19",
+        "smarty/smarty": "3.1.31",
         "pear/archive_tar": "^1.4",
         "mobiledetect/mobiledetectlib": "^2.8",
         "dlundgren/css-splitter": "^1.0",
