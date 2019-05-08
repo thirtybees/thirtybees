@@ -219,3 +219,7 @@
 	path = modules/vatnumber
 	url = https://github.com/thirtybees/vatnumber.git
 	ignore = dirty
+[submodule "themes/niara"]
+	path = themes/niara
+	url = https://github.com/thirtybees/niara.git
+	ignore = dirty
