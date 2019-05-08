@@ -118,6 +118,10 @@
 	path = modules/blocktags
 	url = https://github.com/thirtybees/blocktags.git
 	ignore = dirty
+[submodule "modules/blocktopmenu"]
+	path = modules/blocktopmenu
+	url = https://github.com/thirtybees/blocktopmenu.git
+	ignore = dirty
 [submodule "modules/blockuserinfo"]
 	path = modules/blockuserinfo
 	url = https://github.com/thirtybees/blockuserinfo.git
@@ -134,6 +138,10 @@
 	path = modules/crossselling
 	url = https://github.com/thirtybees/crossselling.git
 	ignore = dirty
+[submodule "modules/ctconfiguration"]
+	path = modules/ctconfiguration
+	url = https://github.com/thirtybees/ctconfiguration.git
+	ignore = dirty
 [submodule "modules/dashactivity"]
 	path = modules/dashactivity
 	url = https://github.com/thirtybees/dashactivity.git
@@ -149,6 +157,10 @@
 [submodule "modules/dashtrends"]
 	path = modules/dashtrends
 	url = https://github.com/thirtybees/dashtrends.git
+	ignore = dirty
+[submodule "modules/ecbexchange"]
+	path = modules/ecbexchange
+	url = https://github.com/thirtybees/ecbexchange
 	ignore = dirty
 [submodule "modules/homefeatured"]
 	path = modules/homefeatured
@@ -170,6 +182,10 @@
 	path = modules/producttooltip
 	url = https://github.com/thirtybees/producttooltip.git
 	ignore = dirty
+[submodule "modules/sendtoafriend"]
+	path = modules/sendtoafriend
+	url = https://github.com/thirtybees/sendtoafriend.git
+	ignore = dirty
 [submodule "modules/socialsharing"]
 	path = modules/socialsharing
 	url = https://github.com/thirtybees/socialsharing.git
@@ -178,46 +194,30 @@
 	path = modules/statsdata
 	url = https://github.com/thirtybees/statsdata.git
 	ignore = dirty
-[submodule "modules/trackingfront"]
-	path = modules/trackingfront
-	url = https://github.com/thirtybees/trackingfront.git
-	ignore = dirty
-[submodule "modules/sendtoafriend"]
-	path = modules/sendtoafriend
-	url = https://github.com/thirtybees/sendtoafriend.git
-	ignore = dirty
-[submodule "modules/ctconfiguration"]
-	path = modules/ctconfiguration
-	url = https://github.com/thirtybees/ctconfiguration.git
-	ignore = dirty
-[submodule "themes/community-theme-default"]
-	path = themes/community-theme-default
-	url = https://github.com/thirtybees/community-theme-default.git
-	branch = 1.0.x
-	ignore = dirty
-[submodule "modules/ecbexchange"]
-	path = modules/ecbexchange
-	url = https://github.com/thirtybees/ecbexchange
-	ignore = dirty
-[submodule "modules/themeconfigurator"]
-	path = modules/themeconfigurator
-	url = https://github.com/thirtybees/themeconfigurator.git
+[submodule "modules/statsmodule"]
+	path = modules/statsmodule
+	url = https://github.com/thirtybees/statsmodule.git
 	ignore = dirty
 [submodule "modules/tbupdater"]
 	path = modules/tbupdater
 	url = https://github.com/thirtybees/tbupdater.git
 	ignore = dirty
-[submodule "modules/blocktopmenu"]
-	path = modules/blocktopmenu
-	url = https://github.com/thirtybees/blocktopmenu.git
+[submodule "modules/themeconfigurator"]
+	path = modules/themeconfigurator
+	url = https://github.com/thirtybees/themeconfigurator.git
 	ignore = dirty
-[submodule "modules/statsmodule"]
-	path = modules/statsmodule
-	url = https://github.com/thirtybees/statsmodule.git
+[submodule "modules/trackingfront"]
+	path = modules/trackingfront
+	url = https://github.com/thirtybees/trackingfront.git
 	ignore = dirty
 [submodule "modules/vatnumber"]
 	path = modules/vatnumber
 	url = https://github.com/thirtybees/vatnumber.git
+	ignore = dirty
+[submodule "themes/community-theme-default"]
+	path = themes/community-theme-default
+	url = https://github.com/thirtybees/community-theme-default.git
+	branch = 1.0.x
 	ignore = dirty
 [submodule "themes/niara"]
 	path = themes/niara
