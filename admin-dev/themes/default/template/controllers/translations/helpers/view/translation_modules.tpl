@@ -74,20 +74,18 @@
 	</div>
 	{foreach $theme_translations as $module_name => $module}
 		
-		{assign var=counter value=0}
+		{assign var=counter value=0}{assign var=occurrences value=0}{$missing_translations_module = 0}
 		{foreach $module as $template_name => $newLang}
 			{assign var=counter value=$counter+$newLang|count}
-
-			{assign var=occurrences value=0}
 			{foreach $newLang as $key => $value}
-				{if empty($value['trad'])}{assign var=occurrences value=$occurrences+1}{/if}
+				{if empty($value.trad)}
+					{assign var=occurrences value=$occurrences+1}
+				{/if}
 			{/foreach}
+
 			{if $occurrences > 0}
 				{$missing_translations_module = $occurrences}
-			{else}
-				{$missing_translations_module = 0}
 			{/if}
-
 		{/foreach}
 		<form method="post" id="{$module_name}_form" action="{$url_submit|escape:'html':'UTF-8'}" class="form-horizontal">
 			<div class="panel">
