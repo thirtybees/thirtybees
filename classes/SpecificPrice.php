@@ -160,6 +160,9 @@ class SpecificPriceCore extends ObjectModel
      */
     public static function deleteByIdCart($idCart, $idProduct = false, $idProductAttribute = false)
     {
+        if (! (int)$idCart) {
+            return false;
+        }
         return Db::getInstance()->delete(
             'specific_price',
             '`id_cart` = '.(int) $idCart.($idProduct ? ' AND `id_product` = '.(int) $idProduct.' AND `id_product_attribute` = '.(int) $idProductAttribute : '')
