@@ -932,16 +932,18 @@ class AdminThemesControllerCore extends AdminController
     }
 
     /**
+     * Return a list of modules which are not related to themes. These modules
+     * never get installed, enabled of disabled by a theme installation.
      *
-     * @param int $type
-     * $type = 0 both native & partner (default)
-     * $type = 1 native
-     * $type = 2 partner
+     * While this could also get achieved by removing these modules from
+     * config.xml of the themes, we have not much influence on what theme
+     * authors add in there.
      *
+     * @param int $type Deprecated, no longer in use.
      *
      * @return array
      *
-     * @since 1.0.0
+     * @version 1.0.0 Initial version.
      */
     protected function getNativeModule($type = 0)
     {
