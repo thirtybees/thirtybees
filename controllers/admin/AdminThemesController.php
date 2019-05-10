@@ -1058,7 +1058,7 @@ class AdminThemesControllerCore extends AdminController
      */
     protected function generateXML($themeToExport, $metas)
     {
-        $theme = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><!-- Copyright thirty bees --><theme></theme>');
+        $theme = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><theme></theme>');
         $theme->addAttribute('version', Tools::getValue('theme_version'));
         $theme->addAttribute('name', Tools::htmlentitiesUTF8(Tools::getValue('theme_name')));
         $theme->addAttribute('directory', Tools::htmlentitiesUTF8(Tools::getValue('theme_directory')));
