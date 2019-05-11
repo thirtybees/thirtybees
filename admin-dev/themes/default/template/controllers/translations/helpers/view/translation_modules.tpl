@@ -95,13 +95,13 @@
 				<input type="hidden" name="module_name" value="{$module_name}" />
 
 				<h3 onclick="$('#{$default_theme_name}_{$module_name}_{$template_name|replace:'.':'_'}').slideToggle();">
-					<a href="javascript:void(0);" name="{$module_name}">
-						<i class="icon-caret-down"></i>&nbsp;{$module_name}
-					</a>
-					{l s='Module:'}
-					<span class="badge">{$counter}</span> {l s='expressions'}
-					{if $missing_translations_module > 0}<span class="label label-danger">{$missing_translations_module}</span>{l s='missing'}{/if}
-				</h3>
+		            <a href="javascript:void(0);" name="{$module_name}">
+		              <i class="icon-caret-down"></i>
+		              &nbsp;{$module_name}
+		            </a>
+		            - {$counter	} {l s='expressions'}
+		            {if $missing_translations_module > 0} <span class="label label-danger">{$missing_translations_module} {l s='missing'}</span>{/if}
+	          	</h3>
 
 				<div name="{$type}_div" id="{$default_theme_name}_{$module_name}_{$template_name|replace:'.':'_'}" style="display:{if $missing_translations_module}block{else}none{/if}">
 				<table class="table">
