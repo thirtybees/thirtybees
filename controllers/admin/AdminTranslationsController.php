@@ -205,7 +205,7 @@ class AdminTranslationsControllerCore extends AdminController
             var openAll = \''.html_entity_decode($this->l('Expand all fieldsets'), ENT_NOQUOTES, 'UTF-8').'\';
             var closeAll = \''.html_entity_decode($this->l('Close all fieldsets'), ENT_NOQUOTES, 'UTF-8').'\';
         </script>
-        <button type="button" class="btn btn-default" id="buttonall" data-status="open" onclick="toggleDiv(\''.$this->type_selected.'_div\', $(this).data(\'status\')); toggleButtonValue(this.id, openAll, closeAll);"><i class="process-icon-compress"></i> <span>'.$this->l('Close all fieldsets').'</span></button>';
+        <button type="button" class="btn btn-default" id="buttonall" data-status="close" onclick="toggleDiv(\''.$this->type_selected.'_div\', $(this).data(\'status\')); toggleButtonValue(this.id, openAll, closeAll);"><i class="process-icon-expand"></i> <span>'.$this->l('Expand all fieldsets').'</span></button>';
 
         return $strOutput;
     }
@@ -3223,7 +3223,6 @@ class AdminTranslationsControllerCore extends AdminController
             foreach ($arrFiles as $value) {
                 $this->findAndFillTranslations($value['files'], $value['theme'], $value['module'], $value['dir']);
             }
-
             $this->tpl_view_vars = array_merge(
                 $this->tpl_view_vars,
                 [
