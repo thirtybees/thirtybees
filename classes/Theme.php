@@ -573,11 +573,11 @@ class ThemeCore extends ObjectModel
         $path = $this->getConfigFilePath();
         if ( ! file_exists($path)) {
             // fallback to xml files named by theme name
-            $path = _PS_ROOT_DIR_.'/config/xml/themes/'.$this->name.'.xml';
+            $path = _PS_CONFIG_DIR_.'xml/themes/'.$this->name.'.xml';
 
             // community theme xml file can be stored under default.xml as well
             if (! file_exists($path) && $this->name === 'community-theme-default') {
-                $path = _PS_ROOT_DIR_ . '/config/xml/themes/default.xml';
+                $path = _PS_CONFIG_DIR_.'xml/themes/default.xml';
             }
         }
 
@@ -600,7 +600,7 @@ class ThemeCore extends ObjectModel
      */
     public function getConfigFilePath()
     {
-        return _PS_ROOT_DIR_ . '/config/xml/themes/' . $this->directory . '.xml';
+        return _PS_CONFIG_DIR_.'xml/themes/'.$this->directory.'.xml';
     }
 
     /**
