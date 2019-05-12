@@ -41,6 +41,20 @@
     <p>{l s='Total missing expressions:'} <span class="badge">{l s='%d' sprintf=$missing_translations}</p>
   </div>
   <div class="panel">
+    <script type="text/javascript">
+      $(document).ready(function(){
+        $('a.useSpecialSyntax').click(function(){
+          var syntax = $(this).find('img').attr('alt');
+          $('#BoxUseSpecialSyntax .syntax span').html(syntax+".");
+        });
+
+        $('a.slidetoggle').click(function(){
+          $('#'+$(this).attr('data-slidetoggle')).slideToggle();
+          return false;
+        });
+      });
+    </script>
+
     <div id="BoxUseSpecialSyntax">
       <div class="alert alert-warning">
         <p>
@@ -55,14 +69,6 @@
         </ul>
       </div>
     </div>
-    <script type="text/javascript">
-      $(document).ready(function(){
-        $('a.useSpecialSyntax').click(function(){
-          var syntax = $(this).find('img').attr('alt');
-          $('#BoxUseSpecialSyntax .syntax span').html(syntax+".");
-        });
-      });
-    </script>
     <div class="panel-footer">
       <a name="submitTranslations{$type|ucfirst}" href="{$cancel_url|escape:'html':'UTF-8'}" class="btn btn-default">
         <i class="process-icon-cancel"></i>
@@ -93,16 +99,16 @@
         <input type="hidden" name="theme" value="{$default_theme_name}" />
         <input type="hidden" name="module_name" value="{$module_name}" />
 
-        <h3 onclick="$('#{$default_theme_name}_{$module_name}_{$template_name|replace:'.':'_'}').slideToggle();">
-                <a href="javascript:void(0);" name="{$module_name}">
-                  <i class="icon-caret-down"></i>
-                  &nbsp;{$module_name}
-                </a>
-                - {$counter } {l s='expressions'}
-                {if $missing_translations_module > 0} <span class="label label-danger">{$missing_translations_module} {l s='missing'}</span>{/if}
-              </h3>
+        <h3>
+          <a href="#" class="slidetoggle" data-slidetoggle="{$module_name}_{$template_name}">
+            <i class="icon-caret-down"></i>
+            {$module_name}
+          </a>
+          - {$counter } {l s='expressions'}
+          {if $missing_translations_module > 0} <span class="label label-danger">{$missing_translations_module} {l s='missing'}</span>{/if}
+        </h3>
 
-        <div name="{$type}_div" id="{$default_theme_name}_{$module_name}_{$template_name|replace:'.':'_'}" style="display:{if $missing_translations_module}block{else}none{/if}">
+        <div name="{$type}_div" id="{$module_name}_{$template_name}" style="display:{if $missing_translations_module}block{else}none{/if}">
         <table class="table">
         {foreach $module as $template_name => $newLang}
           {if !empty($newLang)}
