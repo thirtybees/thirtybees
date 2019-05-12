@@ -1691,16 +1691,7 @@ class AdminThemesControllerCore extends AdminController
                 Tools::recurseCopy(_PS_ALL_THEMES_DIR_.$themeDir, $sandbox.$themeDir);
             }
 
-            $configFile = '/Config.xml';
-            $xml = Theme::loadConfigFromFile($sandbox.$themeDir.$configFile, true);
-            if (! $xml) {
-                $configFile = '/config.xml';
-                $xml = Theme::loadConfigFromFile($sandbox.$themeDir.$configFile, true);
-                if (! $xml) {
-                    $this->errors[] = $this->l('Bad or missing configuration file.');
-                }
-            }
-
+            $xml = Theme::loadDefaultConfig($sandbox.$themeDir);
             if ($xml) {
                 $importedTheme = $this->importThemeXmlConfig($xml);
                 foreach ($importedTheme as $theme) {
@@ -1725,7 +1716,10 @@ class AdminThemesControllerCore extends AdminController
                         $this->errors[] = $theme;
                     }
                 }
+            } else {
+                $this->errors[] = $this->l('Bad or missing configuration file.');
             }
+
             Tools::deleteDirectory($sandbox);
         }
         if (!count($this->errors)) {

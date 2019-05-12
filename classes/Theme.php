@@ -229,13 +229,11 @@ class ThemeCore extends ObjectModel
     {
         $installedThemeDirectories = Theme::getInstalledThemeDirectories();
         $notInstalledTheme = [];
-        foreach (glob(_PS_ALL_THEMES_DIR_.'*', GLOB_ONLYDIR) as $themeDir) {
-            $dir = basename($themeDir);
-            if (!in_array($dir, $installedThemeDirectories)) {
-                $xmlTheme = static::loadConfigFromFile(_PS_ALL_THEMES_DIR_.$dir.'/Config.xml', true);
-                if (! $xmlTheme) {
-                    $xmlTheme = static::loadConfigFromFile(_PS_ALL_THEMES_DIR_.$dir.'/config.xml', true);
-                }
+        foreach (scandir(_PS_ALL_THEMES_DIR_) as $dir) {
+            if (is_dir(_PS_ALL_THEMES_DIR_.$dir)
+                && ! in_array($dir, ['.', '..'])
+                && ! in_array($dir, $installedThemeDirectories)) {
+                $xmlTheme = static::loadDefaultConfig(_PS_ALL_THEMES_DIR_.$dir);
                 if ($xmlTheme) {
                     $theme = [];
                     foreach ($xmlTheme->attributes() as $key => $value) {
@@ -617,7 +615,7 @@ class ThemeCore extends ObjectModel
      *
      * @return SimpleXMLElement | false
      *
-     * @since 1.0.7
+     * @version 1.0.7 Initial version.
      */
     public static function loadConfigFromFile($filePath, $validate)
     {
@@ -667,5 +665,33 @@ class ThemeCore extends ObjectModel
         }
 
         return true;
+    }
+
+    /**
+     * Get the default configuration file of a theme as SimpleXMLElement.
+     *
+     * @param string $themePath Directory of the theme. For installed themes
+     *                          that's _PS_ALL_THEMES_DIR_.$theme->directory.
+     *
+     * @return SimpleXMLElement | false
+     *
+     * @version 1.1.0 Initial version.
+     */
+    public static function loadDefaultConfig($themePath)
+    {
+        $themePath = rtrim($themePath, '/');
+
+        $path = $themePath.'/config.xml'; // Preferred name: all lowercase.
+        if ( ! file_exists($path)) {
+            // Try to find differently cased variants.
+            foreach (scandir($themePath) as $variant) {
+                if (strcasecmp($variant, 'config.xml') === 0) {
+                    $path = $themePath.'/'.$variant;
+                    break;
+                }
+            }
+        }
+
+        return static::loadConfigFromFile($path, true);
     }
 }
