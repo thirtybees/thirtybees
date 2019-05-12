@@ -49,7 +49,7 @@
           $('#BoxUseSpecialSyntax .syntax span').html(syntax+".");
         });
 
-        $("a.sidetoggle").click(function(){
+        $('a.slidetoggle').click(function(){
           $('#'+$(this).attr('data-slidetoggle')).slideToggle();
           return false;
         });
@@ -83,7 +83,7 @@
           <input type="hidden" name="type" value="{$type}" />
           <input type="hidden" name="theme" value="{$theme}" />
           <h3>
-            <a href="#" class="sidetoggle" data-slidetoggle="{$k}-tpl">
+            <a href="#" class="slidetoggle" data-slidetoggle="{$k}-tpl">
               <i class="icon-caret-down"></i>
               {$k}
             </a>
