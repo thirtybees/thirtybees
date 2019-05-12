@@ -2332,7 +2332,7 @@ class AdminThemesControllerCore extends AdminController
             return $helper->generateForm([$fieldsForm]);
         }
 
-        throw new PrestaShopException('Could not load theme configuration file: ' . $theme->getConfigFilePath());
+        throw new PrestaShopException('Could not load theme configuration file in '._PS_CONFIG_DIR_.'.');
     }
 
     /**

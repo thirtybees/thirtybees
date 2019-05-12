@@ -566,24 +566,11 @@ class ThemeCore extends ObjectModel
      *
      * @return SimpleXMLElement | false
      *
-     * @since 1.0.7
+     * @version 1.0.7 Initial version.
      */
     public function loadConfigFile($validate = false)
     {
         $path = $this->getConfigFilePath();
-        if ( ! file_exists($path)) {
-            // fallback to xml files named by theme name
-            $path = _PS_CONFIG_DIR_.'xml/themes/'.$this->name.'.xml';
-
-            // community theme xml file can be stored under default.xml as well
-            if (! file_exists($path) && $this->name === 'community-theme-default') {
-                $path = _PS_CONFIG_DIR_.'xml/themes/default.xml';
-            }
-        }
-
-        if ( ! file_exists($path)) {
-            return false;
-        }
 
         $xml = static::loadConfigFromFile($path, $validate);
         if ((string) $xml->attributes()->name !== $this->name) {
@@ -594,13 +581,32 @@ class ThemeCore extends ObjectModel
     }
 
     /**
-     * Returns path to theme's configuration file
+     * Return full path of theme's configuration file.
      *
-     * @return string
+     * @return string|bool Path of the config file or false if none found.
+     *
+     * @version 1.0.0 Initial version.
+     * @version 1.1.0 Return only existing paths.
      */
     public function getConfigFilePath()
     {
-        return _PS_CONFIG_DIR_.'xml/themes/'.$this->directory.'.xml';
+        $path = _PS_CONFIG_DIR_.'xml/themes/'.$this->directory.'.xml';
+        if ( ! file_exists($path)) {
+            // Retrocompatibility: fall back to xml files named by theme name.
+            $path = _PS_CONFIG_DIR_.'xml/themes/'.$this->name.'.xml';
+
+            // Retrocompatibility: community theme might be in default.xml.
+            if ( ! file_exists($path)
+                && $this->name === 'community-theme-default') {
+                $path = _PS_CONFIG_DIR_.'xml/themes/default.xml';
+            }
+        }
+
+        if ( ! file_exists($path)) {
+            return false;
+        }
+
+        return $path;
     }
 
     /**
