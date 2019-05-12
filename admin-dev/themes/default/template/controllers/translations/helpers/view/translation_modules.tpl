@@ -40,6 +40,7 @@
     <p>{l s='Expressions to translate:'} <span class="badge">{l s='%d' sprintf=$count}</span></p>
     <p>{l s='Total missing expressions:'} <span class="badge">{l s='%d' sprintf=$missing_translations}</p>
   </div>
+
   <div class="panel">
     <script type="text/javascript">
       $(document).ready(function(){
@@ -78,7 +79,6 @@
     </div>
   </div>
   {foreach $theme_translations as $module_name => $module}
-
     {assign var=counter value=0}{assign var=occurrences value=0}{$missing_translations_module = 0}
     {foreach $module as $template_name => $newLang}
       {assign var=counter value=$counter+$newLang|count}
@@ -116,22 +116,22 @@
               {foreach $newLang as $key => $value}
                 <tr>
                   <td width="40%">{$key|stripslashes}</td>
-                  <td>=</td>
-                  <td>
+                  <td width="2%">=</td>
+                  <td width="40%">
                     {* Prepare name string for md5() *}
                     {capture assign="name"}{strtolower($module_name)}{if $default_theme_name}_{strtolower($default_theme_name)}{/if}_{strtolower($template_name)}_{md5($key)}{/capture}
                     {if $key|strlen < $textarea_sized}
                       <input type="text"
                         style="width: 450px{if empty($value.trad)};background:#FBB{/if}"
                         name="{$name|md5}"
-                        value="{$value.trad|regex_replace:'#"#':'&quot;'|stripslashes}"' />
+                        value="{$value.trad|regex_replace:'/"/':'&quot;'|stripslashes}"' />
                     {else}
                       <textarea rows="{($key|strlen / $textarea_sized)|intval}"
                         style="width: 450px{if empty($value.trad)};background:#FBB{/if}"
-                        name="{$name|md5}">{$value.trad|regex_replace:'#"#':'&quot;'|stripslashes}</textarea>
+                        name="{$name|md5}">{$value.trad|regex_replace:'/"/':'&quot;'|stripslashes}</textarea>
                     {/if}
                   </td>
-                  <td>
+                  <td width="18%">
                     {if isset($value.use_sprintf) && $value.use_sprintf}
                       <a class="useSpecialSyntax" title="{l s='This expression uses a special syntax:'} {$value.use_sprintf}">
                         <img src="{$smarty.const._PS_IMG_}admin/error.png" alt="{$value.use_sprintf}" />
@@ -140,7 +140,6 @@
                   </td>
                 </tr>
               {/foreach}
-
           {/if}
         {/foreach}
         </table>

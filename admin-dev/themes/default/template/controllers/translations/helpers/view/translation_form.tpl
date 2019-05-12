@@ -71,7 +71,10 @@
       </div>
     </div>
     <div class="panel-footer">
-      <a name="submitTranslations{$type|ucfirst}" href="{$cancel_url|escape:'html':'UTF-8'}" class="btn btn-default"><i class="process-icon-cancel"></i> {l s='Cancel'}</a>
+      <a name="submitTranslations{$type|ucfirst}" href="{$cancel_url|escape:'html':'UTF-8'}" class="btn btn-default">
+        <i class="process-icon-cancel"></i>
+        {l s='Cancel'}
+      </a>
       {$toggle_button}
     </div>
   </div>
@@ -97,14 +100,16 @@
                 <tr>
                   <td width="40%">{$key|stripslashes}</td>
                   <td width="2%">=</td>
-                  <td width="40%"> {*todo : md5 is already calculated in AdminTranslationsController*}
+                  <td width="40%">
                     {if $key|strlen < $textarea_sized}
-                      <input type="text" style="width: 450px{if empty($value.trad)};background:#FBB{/if}"
+                      <input type="text"
+                        style="width: 450px{if empty($value.trad)};background:#FBB{/if}"
                         name="{if in_array($type, array('front', 'fields'))}{$k}_{$key|md5}{else}{$k}{$key|md5}{/if}"
                         value="{$value.trad|regex_replace:'/"/':'&quot;'|stripslashes}"' />
                     {else}
-                      <textarea rows="{($key|strlen / $textarea_sized)|intval}" style="width: 450px{if empty($value.trad)};background:#FBB{/if}"
-                      name="{if in_array($type, array('front', 'fields'))}{$k}_{$key|md5}{else}{$k}{$key|md5}{/if}"
+                      <textarea rows="{($key|strlen / $textarea_sized)|intval}"
+                        style="width: 450px{if empty($value.trad)};background:#FBB{/if}"
+                        name="{if in_array($type, array('front', 'fields'))}{$k}_{$key|md5}{else}{$k}{$key|md5}{/if}"
                       >{$value.trad|regex_replace:'/"/':'&quot;'|stripslashes}</textarea>
                     {/if}
                   </td>
