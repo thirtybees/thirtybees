@@ -1756,16 +1756,21 @@ class AdminThemesControllerCore extends AdminController
 
     /**
      * @param SimpleXMLElement $xml
-     * @param bool             $themeDir only used if the theme directory to import is already located on the shop
+     * @param bool             $themeDir Deprecated.
      *
      * @return array|string return array of themes on success, otherwise the error as a string is returned
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
+     * @version 1.0.0 Initial version.
+     * @version 1.1.0 Deprecated $themeDir.
      */
     protected function importThemeXmlConfig(SimpleXMLElement $xml, $themeDir = false)
     {
+        if ($themeDir !== false) {
+            Tools::displayParameterAsDeprecated('themeDir');
+        }
+
         $attr = $xml->attributes();
         $name = (string) $attr->name;
         if ($this->isThemeInstalled($name)) {
@@ -1779,11 +1784,6 @@ class AdminThemesControllerCore extends AdminController
             $newTheme = new Theme();
             $newTheme->name = $name;
             $newTheme->directory = strval($variation['directory']);
-
-            if ($themeDir) {
-                $newTheme->name = $themeDir;
-                $newTheme->directory = $themeDir;
-            }
 
             if ($this->isThemeInstalled($newTheme->name)) {
                 continue;
