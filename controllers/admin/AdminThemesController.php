@@ -1767,9 +1767,9 @@ class AdminThemesControllerCore extends AdminController
     protected function importThemeXmlConfig(SimpleXMLElement $xml, $themeDir = false)
     {
         $attr = $xml->attributes();
-        $thName = (string) $attr->name;
-        if ($this->isThemeInstalled($thName)) {
-            return [sprintf($this->l('Theme %s already installed.'), $thName)];
+        $name = (string) $attr->name;
+        if ($this->isThemeInstalled($name)) {
+            return [sprintf($this->l('Theme %s already installed.'), $name)];
         }
 
         $newThemeArray = [];
@@ -1778,7 +1778,6 @@ class AdminThemesControllerCore extends AdminController
 
             $newTheme = new Theme();
             $newTheme->name = $name;
-
             $newTheme->directory = strval($variation['directory']);
 
             if ($themeDir) {
@@ -1791,7 +1790,6 @@ class AdminThemesControllerCore extends AdminController
             }
 
             $newTheme->product_per_page = Configuration::get('PS_PRODUCTS_PER_PAGE');
-
             if (isset($variation['product_per_page'])) {
                 $newTheme->product_per_page = intval($variation['product_per_page']);
             }
@@ -1802,12 +1800,11 @@ class AdminThemesControllerCore extends AdminController
             }
 
             $newTheme->default_left_column = true;
-            $newTheme->default_right_column = true;
-
             if (isset($variation['default_left_column'])) {
                 $newTheme->default_left_column = (bool) strval($variation['default_left_column']);
             }
 
+            $newTheme->default_right_column = true;
             if (isset($variation['default_right_column'])) {
                 $newTheme->default_right_column = (bool) strval($variation['default_right_column']);
             }
