@@ -2382,7 +2382,10 @@ class AdminThemesControllerCore extends AdminController
      * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since 1.0.0
+     *
+     * @version 1.0.0 Initial version.
+     * @version 1.1.0 Install always the default configuration and always to
+     *                the current shop context (which can be multiple shops).
      */
     public function processThemeInstall()
     {
@@ -2422,70 +2425,66 @@ class AdminThemesControllerCore extends AdminController
 
             $this->img_error = $this->updateImages($xml);
 
+            $themeModules = $this->getModules($xml);
             $this->modules_errors = [];
             foreach ($shops as $idShop) {
-                foreach ($_POST as $key => $value) {
-                    if (strncmp($key, 'to_install', strlen('to_install')) == 0) {
-                        $module = Module::getInstanceByName($value);
-                        if ($module) {
-                            $isInstalledSuccess = true;
-                            if (!Module::isInstalled($module->name)) {
-                                $isInstalledSuccess = $module->install();
-                            }
-                            if ($isInstalledSuccess) {
-                                if (!Module::isEnabled($module->name)) {
-                                    $module->enable();
-                                }
-
-                                if ((int) $module->id > 0 && isset($moduleHook[$module->name])) {
-                                    $this->hookModule($module->id, $moduleHook[$module->name], $idShop);
-                                }
-                            } else {
-                                $this->modules_errors[] = ['module_name' => $module->name, 'errors' => $module->getErrors()];
-                            }
-
-                            unset($moduleHook[$module->name]);
+                foreach ($themeModules['to_install'] as $moduleName) {
+                    $module = Module::getInstanceByName($moduleName);
+                    if ($module) {
+                        $isInstalledSuccess = true;
+                        if ( ! Module::isInstalled($moduleName)) {
+                            $isInstalledSuccess = $module->install();
                         }
-                    } elseif (strncmp($key, 'to_enable', strlen('to_enable')) == 0) {
-                        $module = Module::getInstanceByName($value);
-                        if ($module) {
-                            $isInstalledSuccess = true;
-                            if (!Module::isInstalled($module->name)) {
-                                $isInstalledSuccess = $module->install();
-                            }
-
-                            if ($isInstalledSuccess) {
-                                if (!Module::isEnabled($module->name)) {
-                                    $module->enable();
-                                }
-
-                                if ((int) $module->id > 0 && isset($moduleHook[$module->name])) {
-                                    $this->hookModule($module->id, $moduleHook[$module->name], $idShop);
-                                }
-                            } else {
-                                $this->modules_errors[] = ['module_name' => $module->name, 'errors' => $module->getErrors()];
-                            }
-
-                            unset($moduleHook[$module->name]);
-                        }
-                    } elseif (strncmp($key, 'to_disable', strlen('to_disable')) == 0) {
-                        $keyExploded = explode('_', $key);
-                        $idShopModule = (int) substr($keyExploded[2], 4);
-
-                        if ((int) $idShopModule > 0 && $idShopModule != (int) $idShop) {
-                            continue;
+                        if ( ! $isInstalledSuccess) {
+                            $this->modules_errors[] = [
+                                'module_name' => $moduleName,
+                                'errors'      => $module->getErrors(),
+                            ];
                         }
 
-                        $moduleObj = Module::getInstanceByName($value);
-                        if (Validate::isLoadedObject($moduleObj)) {
-                            if (Module::isEnabled($moduleObj->name)) {
-                                $moduleObj->disable();
-                            }
-
-                            unset($moduleHook[$moduleObj->name]);
-                        }
+                        unset($moduleHook[$moduleName]);
                     }
                 }
+
+                foreach ($themeModules['to_enable'] as $moduleName) {
+                    $module = Module::getInstanceByName($moduleName);
+                    if ($module) {
+                        $isInstalledSuccess = true;
+                        if ( ! Module::isInstalled($moduleName)) {
+                            $isInstalledSuccess = $module->install();
+                        }
+
+                        if ($isInstalledSuccess) {
+                            if ( ! Module::isEnabled($moduleName)) {
+                                $module->enable();
+                            }
+
+                            if ((int) $module->id > 0 && isset($moduleHook[$moduleName])) {
+                                $this->hookModule($module->id, $moduleHook[$moduleName], $idShop);
+                            }
+                        } else {
+                            $this->modules_errors[] = [
+                                'module_name' => $moduleName,
+                                'errors'      => $module->getErrors(),
+                            ];
+                        }
+
+                        unset($moduleHook[$moduleName]);
+                    }
+                }
+
+                foreach ($themeModules['to_disable'] as $moduleName) {
+                    $module = Module::getInstanceByName($moduleName);
+
+                    if (Validate::isLoadedObject($module)) {
+                        if (Module::isEnabled($moduleName)) {
+                            $module->disable();
+                        }
+
+                        unset($moduleHook[$moduleName]);
+                    }
+                }
+
                 $shop = new Shop((int) $idShop);
                 $shop->id_theme = (int) Tools::getValue('id_theme');
                 $this->context->shop->id_theme = $shop->id_theme;
