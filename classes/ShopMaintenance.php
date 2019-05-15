@@ -185,40 +185,35 @@ class ShopMaintenanceCore
 			
 			$imagesRun = $key.'|'.$imagesMax;	
 			$imagesHere = $key;	
-			$imdigits = strlen($image_id); 
-
-			switch ($imdigits) {
+			$str = $image_id;
+			$imageDigits = strlen($image_id); 
+			switch ($imageDigits) {
 				case 1:
 					$directory=$image_id;
 					break;
 				case 2:
-					$str = $image_id;
 					$chars = preg_split('//', $str, -1, PREG_SPLIT_NO_EMPTY);
 					$directory = $chars[0]."/".$chars[1];
 					break;
 				case 3:
-					$str = $image_id;
 					$chars = preg_split('//', $str, -1, PREG_SPLIT_NO_EMPTY);
 					$directory = $chars[0]."/".$chars[1]."/".$chars[2];
 					break;
 				case 4:
-					$str = $image_id;
 					$chars = preg_split('//', $str, -1, PREG_SPLIT_NO_EMPTY);
 					$directory = $chars[0]."/".$chars[1]."/".$chars[2]."/".$chars[3];
 					break;
 				case 5:
-					$str = $image_id;
 					$chars = preg_split('//', $str, -1, PREG_SPLIT_NO_EMPTY);
 					$directory = $chars[0]."/".$chars[1]."/".$chars[2]."/".$chars[3]."/".$chars[4];
 					break;
 				case 6:
-					$str = $image_id;
 					$chars = preg_split('//', $str, -1, PREG_SPLIT_NO_EMPTY);
 					$directory = $chars[0]."/".$chars[1]."/".$chars[2]."/".$chars[3]."/".$chars[4]."/".$chars[5];
 				break;
 			}					
 			
-			$file_pointer = _PS_ROOT_DIR_."/img/p/".$directory."/".$image_id.".jpg";
+			$file_pointer = _PS_ROOT_DIR_."/img/p/".$directory."/".$str.".jpg";
 				
 			if (!file_exists($file_pointer)) {
 				$sql = "DELETE FROM "._DB_PREFIX_."image WHERE id_image=".$image_id;
