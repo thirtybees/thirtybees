@@ -691,130 +691,127 @@ class AdminThemesControllerCore extends AdminController
      */
     public function processExportTheme()
     {
-        if (Tools::isSubmit('name')) {
-            if ($this->checkPostedDatas()) {
-                $filename = Tools::htmlentitiesUTF8($_FILES['documentation']['name']);
-                $name = Tools::htmlentitiesUTF8(Tools::getValue('documentationName'));
-                $this->user_doc = [$name.'¤doc/'.$filename];
+        if (Tools::isSubmit('name')
+            && $this->checkPostedDatas()) {
+            $filename = Tools::htmlentitiesUTF8($_FILES['documentation']['name']);
+            $name = Tools::htmlentitiesUTF8(Tools::getValue('documentationName'));
+            $this->user_doc = [$name.'¤doc/'.$filename];
 
-                $table = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-                    (new DbQuery())
-                        ->select('`name`, `width`, `products`, `categories`, `manufacturers`, `suppliers`, `scenes`')
-                        ->from('image_type')
-                );
+            $table = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                    ->select('`name`, `width`, `products`, `categories`, `manufacturers`, `suppliers`, `scenes`')
+                    ->from('image_type')
+            );
 
-                $this->image_list = [];
-                foreach ($table as $row) {
-                    $this->image_list[] = $row['name'].';'.$row['width'].';'.$row['height'].';'.
-                        ($row['products'] == 1 ? 'true' : 'false').';'.
-                        ($row['categories'] == 1 ? 'true' : 'false').';'.
-                        ($row['manufacturers'] == 1 ? 'true' : 'false').';'.
-                        ($row['suppliers'] == 1 ? 'true' : 'false').';'.
-                        ($row['scenes'] == 1 ? 'true' : 'false');
-                }
-
-                $idShop = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-                    (new DbQuery())
-                        ->select('`id_shop`')
-                        ->from('shop')
-                        ->where('`id_theme` = '.(int) Tools::getValue('id_theme_export'))
-                );
-
-                // Select the list of module for this shop
-                $this->module_list = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-                    (new DbQuery())
-                        ->select('m.`id_module`, m.`name`, m.`active`, ms.`id_shop`')
-                        ->from('module', 'm')
-                        ->leftJoin('module_shop', 'ms', 'm.`id_module` = ms.`id_module`')
-                        ->where('ms.`id_shop` = '.(int) $idShop)
-                );
-
-                // Select the list of hook for this shop
-                $this->hook_list = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-                    (new DbQuery())
-                        ->select('h.`id_hook`, h.`name` AS `name_hook`, hm.`position`, hm.`id_module`, m.`name` AS `name_module`, GROUP_CONCAT(hme.`file_name`, ",") AS `exceptions`')
-                        ->from('hook', 'h')
-                        ->leftJoin('hook_module', 'hm', 'hm.`id_hook` = h.`id_hook`')
-                        ->leftJoin('module', 'm', 'hm.`id_module` = m.`id_module`')
-                        ->leftOuterJoin('hook_module_exceptions', 'hme', 'hme.`id_module` = hm.`id_module` AND hme.`id_hook` = h.`id_hook`')
-                        ->where('hm.`id_shop` = '.(int) $idShop)
-                        ->groupBy('hm.`id_module`, h.`id_hook`')
-                        ->orderBy('name_module')
-                );
-
-                $this->native_modules = $this->getNativeModule();
-
-                foreach ($this->hook_list as &$row) {
-                    $row['exceptions'] = trim(preg_replace('/(,,+)/', ',', $row['exceptions']), ',');
-                }
-
-                $this->to_install = [];
-                $this->to_enable = [];
-                $this->to_hook = [];
-
-                foreach ($this->module_list as $array) {
-                    if (!static::checkParentClass($array['name'])) {
-                        continue;
-                    }
-                    if (in_array($array['name'], $this->native_modules)) {
-                        if ($array['active'] == 1) {
-                            $this->to_enable[] = $array['name'];
-                        } else {
-                            $this->to_disable[] = $array['name'];
-                        }
-                    } elseif ($array['active'] == 1) {
-                        $this->to_install[] = $array['name'];
-                    }
-                }
-                foreach ($this->native_modules as $str) {
-                    $flag = 0;
-                    if (!static::checkParentClass($str)) {
-                        continue;
-                    }
-                    foreach ($this->module_list as $tmp) {
-                        if (in_array($str, $tmp)) {
-                            $flag = 1;
-                            break;
-                        }
-                    }
-                    if ($flag == 0) {
-                        $this->to_disable[] = $str;
-                    }
-                }
-
-                foreach ($_POST as $key => $value) {
-                    if (strncmp($key, 'modulesToExport_module', strlen('modulesToExport_module')) == 0) {
-                        $this->to_export[] = $value;
-                    }
-                }
-
-                if ($this->to_install) {
-                    foreach ($this->to_install as $string) {
-                        foreach ($this->hook_list as $tmp) {
-                            if ($tmp['name_module'] == $string) {
-                                $this->to_hook[] = $string.';'.$tmp['name_hook'].';'.$tmp['position'].';'.$tmp['exceptions'];
-                            }
-                        }
-                    }
-                }
-                if ($this->to_enable) {
-                    foreach ($this->to_enable as $string) {
-                        foreach ($this->hook_list as $tmp) {
-                            if ($tmp['name_module'] == $string) {
-                                $this->to_hook[] = $string.';'.$tmp['name_hook'].';'.$tmp['position'].';'.$tmp['exceptions'];
-                            }
-                        }
-                    }
-                }
-
-                $themeToExport = new Theme((int) Tools::getValue('id_theme_export'));
-                $metas = $themeToExport->getMetas();
-
-                $this->generateXML($themeToExport, $metas);
-                $this->generateArchive();
-            } else {
-                $this->display = 'exporttheme';
+            $this->image_list = [];
+            foreach ($table as $row) {
+                $this->image_list[] = $row['name'].';'.$row['width'].';'.$row['height'].';'.
+                    ($row['products'] == 1 ? 'true' : 'false').';'.
+                    ($row['categories'] == 1 ? 'true' : 'false').';'.
+                    ($row['manufacturers'] == 1 ? 'true' : 'false').';'.
+                    ($row['suppliers'] == 1 ? 'true' : 'false').';'.
+                    ($row['scenes'] == 1 ? 'true' : 'false');
             }
+
+            $idShop = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                (new DbQuery())
+                    ->select('`id_shop`')
+                    ->from('shop')
+                    ->where('`id_theme` = '.(int) Tools::getValue('id_theme_export'))
+            );
+
+            // Select the list of module for this shop
+            $this->module_list = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                    ->select('m.`id_module`, m.`name`, m.`active`, ms.`id_shop`')
+                    ->from('module', 'm')
+                    ->leftJoin('module_shop', 'ms', 'm.`id_module` = ms.`id_module`')
+                    ->where('ms.`id_shop` = '.(int) $idShop)
+            );
+
+            // Select the list of hook for this shop
+            $this->hook_list = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                    ->select('h.`id_hook`, h.`name` AS `name_hook`, hm.`position`, hm.`id_module`, m.`name` AS `name_module`, GROUP_CONCAT(hme.`file_name`, ",") AS `exceptions`')
+                    ->from('hook', 'h')
+                    ->leftJoin('hook_module', 'hm', 'hm.`id_hook` = h.`id_hook`')
+                    ->leftJoin('module', 'm', 'hm.`id_module` = m.`id_module`')
+                    ->leftOuterJoin('hook_module_exceptions', 'hme', 'hme.`id_module` = hm.`id_module` AND hme.`id_hook` = h.`id_hook`')
+                    ->where('hm.`id_shop` = '.(int) $idShop)
+                    ->groupBy('hm.`id_module`, h.`id_hook`')
+                    ->orderBy('name_module')
+            );
+
+            $this->native_modules = $this->getNativeModule();
+
+            foreach ($this->hook_list as &$row) {
+                $row['exceptions'] = trim(preg_replace('/(,,+)/', ',', $row['exceptions']), ',');
+            }
+
+            $this->to_install = [];
+            $this->to_enable = [];
+            $this->to_hook = [];
+
+            foreach ($this->module_list as $array) {
+                if (!static::checkParentClass($array['name'])) {
+                    continue;
+                }
+                if (in_array($array['name'], $this->native_modules)) {
+                    if ($array['active'] == 1) {
+                        $this->to_enable[] = $array['name'];
+                    } else {
+                        $this->to_disable[] = $array['name'];
+                    }
+                } elseif ($array['active'] == 1) {
+                    $this->to_install[] = $array['name'];
+                }
+            }
+            foreach ($this->native_modules as $str) {
+                $flag = 0;
+                if (!static::checkParentClass($str)) {
+                    continue;
+                }
+                foreach ($this->module_list as $tmp) {
+                    if (in_array($str, $tmp)) {
+                        $flag = 1;
+                        break;
+                    }
+                }
+                if ($flag == 0) {
+                    $this->to_disable[] = $str;
+                }
+            }
+
+            foreach ($_POST as $key => $value) {
+                if (strncmp($key, 'modulesToExport_module', strlen('modulesToExport_module')) == 0) {
+                    $this->to_export[] = $value;
+                }
+            }
+
+            if ($this->to_install) {
+                foreach ($this->to_install as $string) {
+                    foreach ($this->hook_list as $tmp) {
+                        if ($tmp['name_module'] == $string) {
+                            $this->to_hook[] = $string.';'.$tmp['name_hook'].';'.$tmp['position'].';'.$tmp['exceptions'];
+                        }
+                    }
+                }
+            }
+            if ($this->to_enable) {
+                foreach ($this->to_enable as $string) {
+                    foreach ($this->hook_list as $tmp) {
+                        if ($tmp['name_module'] == $string) {
+                            $this->to_hook[] = $string.';'.$tmp['name_hook'].';'.$tmp['position'].';'.$tmp['exceptions'];
+                        }
+                    }
+                }
+            }
+
+            $themeToExport = new Theme((int) Tools::getValue('id_theme_export'));
+            $metas = $themeToExport->getMetas();
+
+            $this->generateXML($themeToExport, $metas);
+            $this->generateArchive();
         } else {
             $this->display = 'exporttheme';
         }
