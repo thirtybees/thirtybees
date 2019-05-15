@@ -48,7 +48,14 @@ class ShopMaintenanceCore
             static::cleanAdminControllerMessages();
 
             Configuration::updateGlobalValue('SHOP_MAINTENANCE_LAST_RUN', $now);
+       		Configuration::updateGlobalValue('SHOP_MAINTENANCE_IMAGES_RUN', '0|0');
         }
+        
+        $imagesRun = Configuration::get('SHOP_MAINTENANCE_IMAGES_RUN');
+        $imgRun = explode("|", $imagesRun);
+		$imagesMax = intval($imgRun[1]);
+		$imagesNow = intval($imgRun[0]);
+        if ($imagesNow < $imagesMax || $imagesMax == 0) static::CheckAndFixImages($imagesNow,$imagesMax); 
     }
 
     /**
@@ -118,4 +125,125 @@ class ShopMaintenanceCore
             }
         }
     }
+    
+     /**
+     * Clean image products directories 'img/p'.
+     *
+     * @since 1.0.9
+     */
+    public static function CheckAndFixImages($imagesNow,$imagesMax)
+    {
+		$starttime = time(); 
+		$path = _PS_ROOT_DIR_.'/img/p/';
+		$directory = new \RecursiveDirectoryIterator($path);
+		$iterator = new \RecursiveIteratorIterator($directory);
+		$count_ko = 0 ;	
+		$count_noexist = 0;
+					
+		if ($imgtypes = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('SELECT name FROM '._DB_PREFIX_.'image_type WHERE products= 1')) {
+			foreach ($imgtypes as $type)
+			$Image_types_product[]=$type['name'];
+		}
+
+		if ($images_list = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('SELECT id_image FROM '._DB_PREFIX_.'image_shop WHERE 1')) {
+			foreach ($images_list as $img)
+			$Image_listing[]=$img['id_image'];
+		}
+
+		foreach ($iterator as $info) {
+			$filename = $info->getFilename();
+			$pathname = $info->getPathname();
+			   
+			if ($info->isDir() || $filename=='index.php'){ 
+				 continue;
+			}
+			$img_nbr = explode("-", $filename, 2);
+			$img_nbr[0] = str_replace(".jpg", "", $img_nbr[0]);
+
+			if (isset($img_nbr[1])) {
+				$img_type_name = str_replace(".jpg", "", $img_nbr[1]);
+				$images[] = array('id' => $img_nbr[0], 'path' => $pathname, 'type' => $img_type_name);
+			}
+			else {
+				$images[] = array('id' => $img_nbr[0], 'path' => $pathname, 'type' => 'default');
+			}
+		}
+			
+		$imagesMax = count($images)-1;
+					
+		foreach($images as $key => $value) {
+			if ($key < $imagesNow) continue;
+			$image_id = intval($value['id']);
+			if (!in_array($image_id, $Image_listing, true)) {
+				$count_ko++;
+				unlink($value['path']);
+			}
+			elseif (!in_array($value['type'], $Image_types_product, true) && $value['type']!='default') {
+				$count_ko++;
+				unlink($value['path']);
+			}
+			
+			$imagesRun = $key.'|'.$imagesMax;	
+			$imagesHere = $key;	
+			$imdigits = strlen($image_id); 
+
+			switch ($imdigits) {
+				case 1:
+					$directory=$image_id;
+					break;
+				case 2:
+					$str = $image_id;
+					$chars = preg_split('//', $str, -1, PREG_SPLIT_NO_EMPTY);
+					$directory = $chars[0]."/".$chars[1];
+					break;
+				case 3:
+					$str = $image_id;
+					$chars = preg_split('//', $str, -1, PREG_SPLIT_NO_EMPTY);
+					$directory = $chars[0]."/".$chars[1]."/".$chars[2];
+					break;
+				case 4:
+					$str = $image_id;
+					$chars = preg_split('//', $str, -1, PREG_SPLIT_NO_EMPTY);
+					$directory = $chars[0]."/".$chars[1]."/".$chars[2]."/".$chars[3];
+					break;
+				case 5:
+					$str = $image_id;
+					$chars = preg_split('//', $str, -1, PREG_SPLIT_NO_EMPTY);
+					$directory = $chars[0]."/".$chars[1]."/".$chars[2]."/".$chars[3]."/".$chars[4];
+					break;
+				case 6:
+					$str = $image_id;
+					$chars = preg_split('//', $str, -1, PREG_SPLIT_NO_EMPTY);
+					$directory = $chars[0]."/".$chars[1]."/".$chars[2]."/".$chars[3]."/".$chars[4]."/".$chars[5];
+				break;
+			}					
+			
+			$file_pointer = _PS_ROOT_DIR_."/img/p/".$directory."/".$image_id.".jpg";
+				
+			if (!file_exists($file_pointer)) {
+				$sql = "DELETE FROM "._DB_PREFIX_."image WHERE id_image=".$image_id;
+				Db::getInstance()->execute($sql);
+				$sql = "DELETE FROM "._DB_PREFIX_."image_lang WHERE id_image=".$image_id;
+				Db::getInstance()->execute($sql);
+				$sql = "DELETE FROM "._DB_PREFIX_."image_shop WHERE id_image=".$image_id;
+				Db::getInstance()->execute($sql);
+				$count_noexist++;
+			}
+			
+			$now = time()-$starttime;
+			if ($now > 2.99) {  
+				break;
+			}	
+		}
+	    
+		if ($imagesHere==$imagesMax) {
+			PrestaShopLoggerCore::addLog($imagesHere.' images processed, '.$count_ko.' file(s) deleted - This task is finished for today', 1, null, 'ImageClean', '199');
+			if ($count_noexist>0) PrestaShopLoggerCore::addLog( 'Found: '.$count_noexist.' database image product to delete', 1, null,'ImageClean', '199');
+		}
+		elseif ($imagesHere>0) {
+			PrestaShopLoggerCore::addLog($imagesHere.' images processed ('.$imagesMax.' total), '.$count_ko.' file(s) deleted', 1, null,'ImageClean', '199');
+			if ($count_noexist>0) PrestaShopLoggerCore::addLog( 'Found: '.$count_noexist.' database image product to delete', 1, null,'ImageClean', '199');
+		}
+		Configuration::updateGlobalValue('SHOP_MAINTENANCE_IMAGES_RUN', $imagesRun);
+    }   
 }
