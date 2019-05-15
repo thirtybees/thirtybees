@@ -2389,24 +2389,17 @@ class AdminThemesControllerCore extends AdminController
      */
     public function processThemeInstall()
     {
-        $shopsAsso = $this->context->employee->getAssociatedShops();
-        if (Shop::isFeatureActive() && !Tools::getIsset('checkBoxShopAsso_theme') && count($shopsAsso) > 1) {
-            $this->errors[] = $this->l('You must choose at least one shop.');
-            $this->display = 'ChooseThemeModule';
+        $shops = Shop::getContextListShopID();
+        if (array_diff(
+            $shops,
+            $this->context->employee->getAssociatedShops()
+        )) {
+            $this->errors[] = $this->l('You\'re not allowed to change the theme in current shop(s).');
 
             return;
         }
 
         $theme = new Theme((int) Tools::getValue('id_theme'));
-
-        if (count($shopsAsso) == 1) {
-            $shops = $shopsAsso;
-        } else {
-            $shops = [Configuration::get('PS_SHOP_DEFAULT')];
-            if (Tools::isSubmit('checkBoxShopAsso_theme')) {
-                $shops = Tools::getValue('checkBoxShopAsso_theme');
-            }
-        }
 
         $xml = $theme->loadConfigFile();
         if ($xml) {
