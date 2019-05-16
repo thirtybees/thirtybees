@@ -2375,6 +2375,16 @@ class AdminThemesControllerCore extends AdminController
     }
 
     /**
+     * @version 1.0.0 Initial version.
+     * @deprecated 1.1.0 After rename to processInstallTheme().
+     */
+    public function processThemeInstall()
+    {
+        Tools::displayAsDeprecated('Use AdminThemesController->processInstallTheme() directly.');
+        $this->processInstallTheme();
+    }
+
+    /**
      * Process theme install
      *
      * @return void
@@ -2383,11 +2393,12 @@ class AdminThemesControllerCore extends AdminController
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      *
-     * @version 1.0.0 Initial version.
+     * @version 1.0.0 Initial version as processThemeInstall().
      * @version 1.1.0 Install always the default configuration and always to
      *                the current shop context (which can be multiple shops).
+     *                Also renamed.
      */
-    public function processThemeInstall()
+    public function processInstallTheme()
     {
         $shops = Shop::getContextListShopID();
         if (array_diff(
