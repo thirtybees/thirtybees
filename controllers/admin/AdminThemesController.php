@@ -2191,8 +2191,9 @@ class AdminThemesControllerCore extends AdminController
                         continue;
                     }
 
-                    if ((string) $moduleRow['action'] === 'install') {
-                        $isInstalledSuccess = true;
+                    $isInstalledSuccess = true;
+                    if ((string) $moduleRow['action'] === 'install'
+                        || (string) $moduleRow['action'] === 'enable') {
                         if ( ! Module::isInstalled($moduleName)) {
                             $isInstalledSuccess = $module->install();
                         }
@@ -2202,37 +2203,23 @@ class AdminThemesControllerCore extends AdminController
                                 'errors'      => $module->getErrors(),
                             ];
                         }
-
-                        unset($moduleHook[$moduleName]);
                     }
 
                     if ((string) $moduleRow['action'] === 'enable') {
-                        $isInstalledSuccess = true;
-                        if ( ! Module::isInstalled($moduleName)) {
-                            $isInstalledSuccess = $module->install();
-                        }
-
                         if ($isInstalledSuccess) {
                             $module->enable();
 
                             if ((int) $module->id > 0 && isset($moduleHook[$moduleName])) {
                                 $this->hookModule($module->id, $moduleHook[$moduleName], $idShop);
                             }
-                        } else {
-                            $this->modules_errors[] = [
-                                'module_name' => $moduleName,
-                                'errors'      => $module->getErrors(),
-                            ];
                         }
-
-                        unset($moduleHook[$moduleName]);
                     }
 
                     if ((string) $moduleRow['action'] === 'disable') {
                         $module->disable();
-
-                        unset($moduleHook[$moduleName]);
                     }
+
+                    unset($moduleHook[$moduleName]);
                 }
 
                 $shop = new Shop((int) $idShop);
