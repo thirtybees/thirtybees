@@ -30,22 +30,6 @@
 
 /* global jQuery, $, window, showSuccessMessage, showErrorMessage */
 
-function toggleShopModuleCheckbox(idShop, toggle) {
-  var formGroup = $("[for='to_disable_shop" + idShop + "']").parent();
-  if (toggle === true) {
-    formGroup.removeClass('hide');
-    formGroup.find('input').each(function () {
-      $(this).prop('checked', 'checked');
-    });
-  }
-  else {
-    formGroup.addClass('hide');
-    formGroup.find('input').each(function () {
-      $(this).prop('checked', '');
-    });
-  }
-}
-
 $(function () {
   $('div.thumbnail-wrapper').hover(
     function () {
@@ -58,17 +42,4 @@ $(function () {
       $('.thumbnail-wrapper .action-wrapper').hide();
     }
   );
-
-  $("[name^='checkBoxShopGroupAsso_theme']").change(function () {
-    $(this).parents('.tree-folder').find("[name^='checkBoxShopAsso_theme']").each(function () {
-      var id = $(this).attr('value');
-      var checked = $(this).prop('checked');
-      toggleShopModuleCheckbox(id, checked);
-    });
-  });
-  $("[name^='checkBoxShopAsso_theme']").click(function () {
-    var id = $(this).attr('value');
-    var checked = $(this).prop('checked');
-    toggleShopModuleCheckbox(id, checked);
-  });
 });
