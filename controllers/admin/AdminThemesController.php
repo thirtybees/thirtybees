@@ -2158,27 +2158,6 @@ class AdminThemesControllerCore extends AdminController
     }
 
     /**
-     * Format helper values array
-     *
-     * @param array $originArr
-     *
-     * @return array
-     *
-     * @since 1.0.0
-     */
-    protected function formatHelperValuesArray($originArr)
-    {
-        $fmtArr = [];
-        foreach ($originArr as $key => $type) {
-            foreach ($type as $module) {
-                $fmtArr[$key.'_module'.$module] = true;
-            }
-        }
-
-        return $fmtArr;
-    }
-
-    /**
      * @version 1.0.0 Initial version.
      * @deprecated 1.1.0 After rename to processInstallTheme().
      */
