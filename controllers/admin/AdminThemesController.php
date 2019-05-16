@@ -2128,36 +2128,6 @@ class AdminThemesControllerCore extends AdminController
     }
 
     /**
-     * Get modules
-     *
-     * @param $xml
-     *
-     * @return array
-     *
-     * @since 1.0.0
-     */
-    protected function getModules($xml)
-    {
-        $nativeModules = $this->getNativeModule();
-        $themeModule = [];
-
-        $themeModule['to_install'] = [];
-        $themeModule['to_enable'] = [];
-        $themeModule['to_disable'] = [];
-        foreach ($xml->modules->module as $row) {
-            if (strval($row['action']) == 'install' && !in_array(strval($row['name']), $nativeModules)) {
-                $themeModule['to_install'][] = strval($row['name']);
-            } elseif (strval($row['action']) == 'enable') {
-                $themeModule['to_enable'][] = strval($row['name']);
-            } elseif (strval($row['action']) == 'disable') {
-                $themeModule['to_disable'][] = strval($row['name']);
-            }
-        }
-
-        return $themeModule;
-    }
-
-    /**
      * @version 1.0.0 Initial version.
      * @deprecated 1.1.0 After rename to processInstallTheme().
      */
@@ -2212,12 +2182,16 @@ class AdminThemesControllerCore extends AdminController
 
             $this->img_error = $this->updateImages($xml);
 
-            $themeModules = $this->getModules($xml);
             $this->modules_errors = [];
             foreach ($shops as $idShop) {
-                foreach ($themeModules['to_install'] as $moduleName) {
+                foreach ($xml->modules->module as $moduleRow) {
+                    $moduleName = (string) $moduleRow['name'];
                     $module = Module::getInstanceByName($moduleName);
-                    if ($module) {
+                    if ( ! $module) {
+                        continue;
+                    }
+
+                    if ((string) $moduleRow['action'] === 'install') {
                         $isInstalledSuccess = true;
                         if ( ! Module::isInstalled($moduleName)) {
                             $isInstalledSuccess = $module->install();
@@ -2231,11 +2205,8 @@ class AdminThemesControllerCore extends AdminController
 
                         unset($moduleHook[$moduleName]);
                     }
-                }
 
-                foreach ($themeModules['to_enable'] as $moduleName) {
-                    $module = Module::getInstanceByName($moduleName);
-                    if ($module) {
+                    if ((string) $moduleRow['action'] === 'enable') {
                         $isInstalledSuccess = true;
                         if ( ! Module::isInstalled($moduleName)) {
                             $isInstalledSuccess = $module->install();
@@ -2256,12 +2227,8 @@ class AdminThemesControllerCore extends AdminController
 
                         unset($moduleHook[$moduleName]);
                     }
-                }
 
-                foreach ($themeModules['to_disable'] as $moduleName) {
-                    $module = Module::getInstanceByName($moduleName);
-
-                    if (Validate::isLoadedObject($module)) {
+                    if ((string) $moduleRow['action'] === 'disable') {
                         $module->disable();
 
                         unset($moduleHook[$moduleName]);
