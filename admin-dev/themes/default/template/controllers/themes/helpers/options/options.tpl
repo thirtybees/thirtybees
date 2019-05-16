@@ -38,7 +38,7 @@
                     <div class="action-overlay"></div>
                     <div class="action-buttons">
                       <div class="btn-group">
-                        <a href="{$link->getAdminLink('AdminThemes')|escape:'html':'UTF-8'}&amp;submitOptionstheme&amp;id_theme={$theme->id}" class="btn btn-default">
+                        <a href="{$link->getAdminLink('AdminThemes')|escape:'html':'UTF-8'}&amp;action=installTheme&amp;id_theme={$theme->id}" class="btn btn-default">
                           <i class="icon-check"></i> {l s='Use this theme'}
                         </a>
                         {if $theme->name != 'community-theme-default' || ($theme->name == 'community-theme-default'  && $host_mode == 0)}

@@ -2628,16 +2628,8 @@ class AdminThemesControllerCore extends AdminController
      */
     public function postProcess()
     {
-        if (Tools::isSubmit('submitOptionstheme')
-            && Tools::isSubmit('id_theme')
-            && ! Tools::isSubmit('deletetheme')
-            && Tools::getValue('action') !== 'ThemeInstall'
-            && $this->context->shop->id_theme != Tools::getValue('id_theme')
-        ) {
-            $this->display = 'ChooseThemeModule';
-            return true;
-        } elseif (Tools::isSubmit('installThemeFromFolder')
-                  && ($this->context->mode != Context::MODE_HOST)
+        if (Tools::isSubmit('installThemeFromFolder')
+            && ($this->context->mode != Context::MODE_HOST)
         ) {
             $themeDir = Tools::getValue('theme_dir');
             $this->installTheme($themeDir);
