@@ -2119,19 +2119,6 @@ class AdminThemesControllerCore extends AdminController
         $theme = new Theme((int) Tools::getValue('id_theme'));
         $xml = $theme->loadConfigFile();
         if ($xml) {
-            $moduleHook = [];
-            foreach ($xml->modules->hooks->hook as $row) {
-                $name = strval($row['module']);
-
-                $exceptions = (isset($row['exceptions']) ? explode(',', strval($row['exceptions'])) : []);
-
-                $moduleHook[$name]['hook'][] = [
-                    'hook'       => strval($row['hook']),
-                    'position'   => strval($row['position']),
-                    'exceptions' => $exceptions,
-                ];
-            }
-
             $this->img_error = $this->updateImages($xml);
 
             $this->modules_errors = [];
@@ -2165,8 +2152,29 @@ class AdminThemesControllerCore extends AdminController
                         if ($isInstalledSuccess) {
                             $module->enable();
 
-                            if ((int) $module->id > 0 && isset($moduleHook[$moduleName])) {
-                                $this->hookModule($module->id, $moduleHook[$moduleName], $idShop);
+                            /**
+                             * Replace the modules' default hooks and hook
+                             * exceptions with those of the theme configuration.
+                             */
+                            $allHooks = $module->getPossibleHooksList();
+                            foreach ($allHooks as $hook) {
+                                $module->unregisterExceptions($hook['id_hook']);
+                                $module->unregisterHook($hook['id_hook']);
+                            }
+
+                            foreach ($xml->modules->hooks->hook as $hook) {
+                                if ((string) $hook['module'] === $moduleName) {
+                                    $idHook = Hook::getIdByName((string) $hook['hook']);
+
+                                    $module->registerHook((string) $hook['hook']);
+                                    if (isset($hook['position'])) {
+                                        $module->updatePosition($idHook, false, (int) $hook['position']);
+                                    }
+
+                                    if (isset($hook['exceptions'])) {
+                                        $module->registerExceptions($idHook, explode(',', (string) $hook['exceptions']));
+                                    }
+                                }
                             }
                         }
                     }
@@ -2174,8 +2182,6 @@ class AdminThemesControllerCore extends AdminController
                     if ((string) $moduleRow['action'] === 'disable') {
                         $module->disable();
                     }
-
-                    unset($moduleHook[$moduleName]);
                 }
 
                 $shop = new Shop((int) $idShop);
@@ -2242,52 +2248,6 @@ class AdminThemesControllerCore extends AdminController
         }
 
         return $return;
-    }
-
-    /**
-     * Hook module
-     *
-     * @param int   $idModule
-     * @param array $moduleHooks
-     * @param int   $shop
-     *
-     * @return void
-     *
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     * @since 1.0.0
-     */
-    protected function hookModule($idModule, $moduleHooks, $shop)
-    {
-        Db::getInstance()->execute('INSERT IGNORE INTO '._DB_PREFIX_.'module_shop (id_module, id_shop) VALUES('.(int) $idModule.', '.(int) $shop.')');
-
-        Db::getInstance()->execute($sql = 'DELETE FROM `'._DB_PREFIX_.'hook_module` WHERE `id_module` = '.(int) $idModule.' AND id_shop = '.(int) $shop);
-
-        foreach ($moduleHooks as $hooks) {
-            foreach ($hooks as $hook) {
-                $idHook = (int) Hook::getIdByName($hook['hook']);
-	            // Create new hook if module hook is not registered
-	            if (!$idHook) {
-		            $newHook = new Hook();
-		            $newHook->name = pSQL($hook['hook']);
-		            $newHook->title = pSQL($hook['hook']);
-		            $newHook->live_edit = (bool) preg_match('/^display/i', $newHook->name);
-		            $newHook->position = (bool) $newHook->live_edit;
-		            $newHook->add();
-		            $idHook = (int) $newHook->id;
-	            }
-                $sqlHookModule = 'INSERT INTO `'._DB_PREFIX_.'hook_module` (`id_module`, `id_shop`, `id_hook`, `position`)
-									VALUES ('.(int) $idModule.', '.(int) $shop.', '.$idHook.', '.(int) $hook['position'].')';
-
-                if (count($hook['exceptions']) > 0) {
-                    foreach ($hook['exceptions'] as $exception) {
-                        $sqlHookModuleExcept = 'INSERT INTO `'._DB_PREFIX_.'hook_module_exceptions` (`id_module`, `id_hook`, `file_name`) VALUES ('.(int) $idModule.', '.$idHook.', "'.pSQL($exception).'")';
-                        Db::getInstance()->execute($sqlHookModuleExcept);
-                    }
-                }
-                Db::getInstance()->execute($sqlHookModule);
-            }
-        }
     }
 
     /**
