@@ -742,7 +742,7 @@ class AdminThemesControllerCore extends AdminController
                     ->orderBy('name_module')
             );
 
-            $this->native_modules = $this->getNativeModule();
+            $this->native_modules = Module::getNotThemeRelatedModules();
 
             foreach ($this->hook_list as &$row) {
                 $row['exceptions'] = trim(preg_replace('/(,,+)/', ',', $row['exceptions']), ',');
@@ -926,86 +926,6 @@ class AdminThemesControllerCore extends AdminController
         }
 
         return true;
-    }
-
-    /**
-     * Return a list of modules which are not related to themes. These modules
-     * never get installed, enabled of disabled by a theme installation.
-     *
-     * While this could also get achieved by removing these modules from
-     * config.xml of the themes, we have not much influence on what theme
-     * authors add in there.
-     *
-     * @param int $type Deprecated, no longer in use.
-     *
-     * @return array
-     *
-     * @version 1.0.0 Initial version.
-     */
-    protected function getNativeModule($type = 0)
-    {
-        return [
-            'bankwire',
-            'blockbanner',
-            'blockbestsellers',
-            'blockcart',
-            'blockcategories',
-            'blockcms',
-            'blockcmsinfo',
-            'blockcontact',
-            'blockcontactinfos',
-            'blockcurrencies',
-            'blockcustomerprivacy',
-            'blockfacebook',
-            'blocklanguages',
-            'blocklayered',
-            'blocklink',
-            'blockmanufacturer',
-            'blockmyaccount',
-            'blockmyaccountfooter',
-            'blocknewproducts',
-            'blocknewsletter',
-            'blockpaymentlogo',
-            'blockpermanentlinks',
-            'blockreinsurance',
-            'blockrss',
-            'blocksearch',
-            'blocksharefb',
-            'blocksocial',
-            'blockspecials',
-            'blockstore',
-            'blocksupplier',
-            'blocktags',
-            'blocktopmenu',
-            'blockuserinfo',
-            'blockviewed',
-            'blockwishlist',
-            'crossselling',
-            'dashactivity',
-            'dashgoals',
-            'dashproducts',
-            'dashtrends',
-            'dateofdelivery',
-            'gapi',
-            'homefeatured',
-            'homeslider',
-            'loyalty',
-            'mailalerts',
-            'newsletter',
-            'productcomments',
-            'productpaymentlogos',
-            'productscategory',
-            'producttooltip',
-            'tbcleaner',
-            'referralprogram',
-            'sendtoafriend',
-            'socialsharing',
-            'statsdata',
-            'statsmodule',
-            'themeconfigurator',
-            'trackingfront',
-            'vatnumber',
-        ];
     }
 
     /**
@@ -1355,7 +1275,7 @@ class AdminThemesControllerCore extends AdminController
             $row['exceptions'] = trim(preg_replace('/(,,+)/', ',', $row['exceptions']), ',');
         }
 
-        $nativeModules = $this->getNativeModule();
+        $nativeModules = Module::getNotThemeRelatedModules();
 
         foreach ($moduleList as $array) {
             if (!static::checkParentClass($array['name'])) {

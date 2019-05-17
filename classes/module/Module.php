@@ -1244,6 +1244,80 @@ abstract class ModuleCore
     }
 
     /**
+     * Return a list of modules which are not related to themes. These modules
+     * should never get installed, enabled of disabled by a theme installation.
+     *
+     * @return array Module names.
+     *
+     * @version 1.1.0 Initial version.
+     */
+    public static function getNotThemeRelatedModules()
+    {
+        return [
+            'bankwire',
+            'blockbanner',
+            'blockbestsellers',
+            'blockcart',
+            'blockcategories',
+            'blockcms',
+            'blockcmsinfo',
+            'blockcontact',
+            'blockcontactinfos',
+            'blockcurrencies',
+            'blockcustomerprivacy',
+            'blockfacebook',
+            'blocklanguages',
+            'blocklayered',
+            'blocklink',
+            'blockmanufacturer',
+            'blockmyaccount',
+            'blockmyaccountfooter',
+            'blocknewproducts',
+            'blocknewsletter',
+            'blockpaymentlogo',
+            'blockpermanentlinks',
+            'blockreinsurance',
+            'blockrss',
+            'blocksearch',
+            'blocksharefb',
+            'blocksocial',
+            'blockspecials',
+            'blockstore',
+            'blocksupplier',
+            'blocktags',
+            'blocktopmenu',
+            'blockuserinfo',
+            'blockviewed',
+            'blockwishlist',
+            'crossselling',
+            'dashactivity',
+            'dashgoals',
+            'dashproducts',
+            'dashtrends',
+            'dateofdelivery',
+            'gapi',
+            'homefeatured',
+            'homeslider',
+            'loyalty',
+            'mailalerts',
+            'newsletter',
+            'productcomments',
+            'productpaymentlogos',
+            'productscategory',
+            'producttooltip',
+            'tbcleaner',
+            'referralprogram',
+            'sendtoafriend',
+            'socialsharing',
+            'statsdata',
+            'statsmodule',
+            'themeconfigurator',
+            'trackingfront',
+            'vatnumber',
+        ];
+    }
+
+    /**
      * Return installed modules
      *
      * @param int $position Take only positionnables modules
