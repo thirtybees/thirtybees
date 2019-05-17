@@ -2083,8 +2083,40 @@ class AdminThemesControllerCore extends AdminController
             return;
         }
 
-        $theme = new Theme((int) Tools::getValue('id_theme'));
+        $unrelatedModules = Module::getNotThemeRelatedModules();
 
+        /**
+         * Clean up old theme; disable all modules this old theme installed or
+         * enabled. This also disables all its hooks. Can't uninstall these
+         * modules, because the theme might still be in use in another shop.
+         */
+        $theme = new Theme($this->context->shop->id_theme);
+        $xml = $theme->loadConfigFile();
+        if ($xml) {
+            foreach ($xml->modules->module as $moduleRow) {
+                $moduleName = (string) $moduleRow['name'];
+                if (in_array($moduleName, $unrelatedModules)) {
+                    continue;
+                }
+
+                $module = Module::getInstanceByName($moduleName);
+                if ( ! $module) {
+                    continue;
+                }
+
+                if ((string) $moduleRow['action'] === 'install'
+                    || (string) $moduleRow['action'] === 'enable') {
+                    if (Module::isEnabled($moduleName)) {
+                        $module->disable();
+                    }
+                }
+            }
+        }
+
+        /**
+         * Install modules for the new theme.
+         */
+        $theme = new Theme((int) Tools::getValue('id_theme'));
         $xml = $theme->loadConfigFile();
         if ($xml) {
             $moduleHook = [];
@@ -2102,7 +2134,6 @@ class AdminThemesControllerCore extends AdminController
 
             $this->img_error = $this->updateImages($xml);
 
-            $unrelatedModules = Module::getNotThemeRelatedModules();
             $this->modules_errors = [];
             foreach ($shops as $idShop) {
                 foreach ($xml->modules->module as $moduleRow) {
