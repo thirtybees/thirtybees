@@ -2122,68 +2122,75 @@ class AdminThemesControllerCore extends AdminController
             $this->img_error = $this->updateImages($xml);
 
             $this->modules_errors = [];
-            foreach ($shops as $idShop) {
-                foreach ($xml->modules->module as $moduleRow) {
-                    $moduleName = (string) $moduleRow['name'];
-                    if (in_array($moduleName, $unrelatedModules)) {
-                        continue;
+            foreach ($xml->modules->module as $moduleRow) {
+                $moduleName = (string) $moduleRow['name'];
+                if (in_array($moduleName, $unrelatedModules)) {
+                    continue;
+                }
+
+                $module = Module::getInstanceByName($moduleName);
+                if ( ! $module) {
+                    continue;
+                }
+
+                $isInstalledSuccess = true;
+                if ((string) $moduleRow['action'] === 'install'
+                    || (string) $moduleRow['action'] === 'enable') {
+                    if ( ! Module::isInstalled($moduleName)) {
+                        $isInstalledSuccess = $module->install();
                     }
-
-                    $module = Module::getInstanceByName($moduleName);
-                    if ( ! $module) {
-                        continue;
-                    }
-
-                    $isInstalledSuccess = true;
-                    if ((string) $moduleRow['action'] === 'install'
-                        || (string) $moduleRow['action'] === 'enable') {
-                        if ( ! Module::isInstalled($moduleName)) {
-                            $isInstalledSuccess = $module->install();
-                        }
-                        if ( ! $isInstalledSuccess) {
-                            $this->modules_errors[] = [
-                                'module_name' => $moduleName,
-                                'errors'      => $module->getErrors(),
-                            ];
-                        }
-                    }
-
-                    if ((string) $moduleRow['action'] === 'enable') {
-                        if ($isInstalledSuccess) {
-                            $module->enable();
-
-                            /**
-                             * Replace the modules' default hooks and hook
-                             * exceptions with those of the theme configuration.
-                             */
-                            $allHooks = $module->getPossibleHooksList();
-                            foreach ($allHooks as $hook) {
-                                $module->unregisterExceptions($hook['id_hook']);
-                                $module->unregisterHook($hook['id_hook']);
-                            }
-
-                            foreach ($xml->modules->hooks->hook as $hook) {
-                                if ((string) $hook['module'] === $moduleName) {
-                                    $idHook = Hook::getIdByName((string) $hook['hook']);
-
-                                    $module->registerHook((string) $hook['hook']);
-                                    if (isset($hook['position'])) {
-                                        $module->updatePosition($idHook, false, (int) $hook['position']);
-                                    }
-
-                                    if (isset($hook['exceptions'])) {
-                                        $module->registerExceptions($idHook, explode(',', (string) $hook['exceptions']));
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    if ((string) $moduleRow['action'] === 'disable') {
-                        $module->disable();
+                    if ( ! $isInstalledSuccess) {
+                        $this->modules_errors[] = [
+                            'module_name' => $moduleName,
+                            'errors'      => $module->getErrors(),
+                        ];
                     }
                 }
 
+                if ($isInstalledSuccess
+                    && (string) $moduleRow['action'] === 'enable'
+                ) {
+                    $module->enable();
+
+                    /**
+                     * Replace the modules' default hooks and hook
+                     * exceptions with those of the theme configuration.
+                     */
+                    $allHooks = $module->getPossibleHooksList();
+                    foreach ($allHooks as $hook) {
+                        $module->unregisterExceptions($hook['id_hook']);
+                        $module->unregisterHook($hook['id_hook']);
+                    }
+
+                    foreach ($xml->modules->hooks->hook as $hook) {
+                        if ((string) $hook['module'] === $moduleName) {
+                            $idHook = Hook::getIdByName((string) $hook['hook']);
+
+                            $module->registerHook((string) $hook['hook']);
+                            if (isset($hook['position'])) {
+                                $module->updatePosition(
+                                    $idHook,
+                                    false,
+                                    (int) $hook['position']
+                                );
+                            }
+
+                            if (isset($hook['exceptions'])) {
+                                $module->registerExceptions(
+                                    $idHook,
+                                    explode(',', (string) $hook['exceptions'])
+                                );
+                            }
+                        }
+                    }
+                }
+
+                if ((string) $moduleRow['action'] === 'disable') {
+                    $module->disable();
+                }
+            }
+
+            foreach ($shops as $idShop) {
                 $shop = new Shop((int) $idShop);
                 $shop->id_theme = (int) Tools::getValue('id_theme');
                 $this->context->shop->id_theme = $shop->id_theme;
