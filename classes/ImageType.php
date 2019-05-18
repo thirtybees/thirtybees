@@ -37,10 +37,6 @@
 class ImageTypeCore extends ObjectModel
 {
     // @codingStandardsIgnoreStart
-    /* @var array Image types cache. */
-    protected static $imageTypesCache = null;
-    /** @var array $imageTypesNamesCache */
-    protected static $imageTypesNamesCache = null;
     /** @var string Name */
     public $name;
     /** @var int Width */
@@ -97,7 +93,9 @@ class ImageTypeCore extends ObjectModel
      */
     public static function getImagesTypes($type = null, $orderBySize = false)
     {
-        if ( ! isset(static::$imageTypesCache[$type])) {
+        static $cache = [];
+
+        if ( ! isset($cache[$type])) {
             $query = (new DbQuery())
                 ->select('*')
                 ->from('image_type');
@@ -111,10 +109,10 @@ class ImageTypeCore extends ObjectModel
                 $query->orderBy('`name` ASC');
             }
 
-            static::$imageTypesCache[$type] = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
+            $cache[$type] = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($query);
         }
 
-        return static::$imageTypesCache[$type];
+        return $cache[$type];
     }
 
     /**
@@ -189,11 +187,13 @@ class ImageTypeCore extends ObjectModel
      */
     public static function getByNameNType($name, $type = '', $order = null)
     {
+        static $cache = null;
+
         if (isset($order)) {
             Tools::displayParameterAsDeprecated('order');
         }
 
-        if ( ! static::$imageTypesNamesCache) {
+        if ( ! $cache) {
             $results = static::getImagesTypes();
             $resultTypes = [
                 'products',
@@ -207,14 +207,14 @@ class ImageTypeCore extends ObjectModel
             foreach ($results as $result) {
                 foreach ($resultTypes as $resultType) {
                     $key = $result['name'].'_'.$resultType;
-                    static::$imageTypesNamesCache[$key] = $result;
+                    $cache[$key] = $result;
                 }
             }
         }
 
         $return = false;
-        if (isset(static::$imageTypesNamesCache[$name.'_'.$type])) {
-            $return = static::$imageTypesNamesCache[$name.'_'.$type];
+        if (isset($cache[$name.'_'.$type])) {
+            $return = $cache[$name.'_'.$type];
         }
 
         return $return;
