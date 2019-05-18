@@ -1093,6 +1093,10 @@ class ValidateCore
      */
     public static function isUrl($url)
     {
+        if (! is_string($url)) {
+           return false;
+        }
+
         if (!static::isAbsoluteUrl($url)) {
             return (bool) preg_match(Tools::cleanNonUnicodeSupport('/^[~:#,$%&_=\(\)\.\? \+\-@\/a-zA-Z0-9\pL\pS-]+$/u'), $url);
         }
