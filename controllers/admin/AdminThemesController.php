@@ -2208,6 +2208,9 @@ class AdminThemesControllerCore extends AdminController
             foreach ($xml->docs->doc as $row) {
                 $this->doc[strval($row['name'])] = __PS_BASE_URI__.'themes/'.$theme->directory.'/docs/'.basename(strval($row['path']));
             }
+        } else {
+            // Invalid themes shouldn't get offered for installation.
+            throw new PrestaShopException('Attempt to install theme '.$theme->name.' despite its invalid config.xml.');
         }
 
         Tools::clearCache($this->context->smarty);
