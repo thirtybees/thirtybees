@@ -2037,8 +2037,18 @@ class FrontControllerCore extends Controller
             }
             $excludedKey = ['isolang', 'id_lang', 'controller', 'fc', 'id_product', 'id_category', 'id_manufacturer', 'id_supplier', 'id_cms'];
             foreach ($_GET as $key => $value) {
-                if (!in_array($key, $excludedKey) && Validate::isUrl($key) && Validate::isUrl($value)) {
-                    $params[Tools::safeOutput($key)] = Tools::safeOutput($value);
+                if (!in_array($key, $excludedKey) && Validate::isUrl($key)) {
+                    if (is_array($value)) {
+                        $arrayParams = [];
+                        foreach ($value as $paramKey => $arrayParam) {
+                            if (Validate::isUrl($arrayParam)) {
+                                $arrayParams[$paramKey] = Tools::safeOutput($arrayParam);
+                            }
+                        }
+                        $params[Tools::safeOutput($key)] = $arrayParams;
+                    } else if (Validate::isUrl($value)) {
+                        $params[Tools::safeOutput($key)] = Tools::safeOutput($value);
+                    }
                 }
             }
 
