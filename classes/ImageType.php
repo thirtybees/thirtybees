@@ -144,31 +144,38 @@ class ImageTypeCore extends ObjectModel
     }
 
     /**
+     * Find an existing variant of a specific image type. This is for
+     * retrocompatibility, installation of properly named image types was
+     * broken for a long time, from before 1.0.0, up to 1.1.0.
+     *
      * @param string $name
      *
      * @return string
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
      * @version 1.0.0 Initial version
      */
     public static function getFormatedName($name)
     {
         $themeName = Context::getContext()->shop->theme_name;
-        $nameWithoutThemeName = str_replace(['_'.$themeName, $themeName.'_'], '', $name);
+        $nameWithoutTheme = str_replace(
+            ['_'.$themeName, $themeName.'_'],
+            '',
+            $name
+        );
 
         //check if the theme name is already in $name if yes only return $name
         if ($themeName
             && strpos($name, $themeName) !== false
-            && static::getByNameNType($name)) {
+            && static::typeAlreadyExists($name)) {
             return $name;
-        } elseif (static::getByNameNType($nameWithoutThemeName.'_'.$themeName)) {
-            return $nameWithoutThemeName.'_'.$themeName;
-        } elseif (static::getByNameNType($themeName.'_'.$nameWithoutThemeName)) {
-            return $themeName.'_'.$nameWithoutThemeName;
+        } elseif (static::typeAlreadyExists($nameWithoutTheme.'_'.$themeName)) {
+            return $nameWithoutTheme.'_'.$themeName;
+        } elseif (static::typeAlreadyExists($themeName.'_'.$nameWithoutTheme)) {
+            return $themeName.'_'.$nameWithoutTheme;
         } else {
-            return $nameWithoutThemeName.'_default';
+            return $nameWithoutTheme.'_default';
         }
     }
 
