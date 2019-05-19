@@ -2258,6 +2258,9 @@ class FrontControllerCore extends Controller
      *
      * @param array $products
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      * @since   1.0.0
      *
      * @version 1.0.0 Initial version
@@ -2270,37 +2273,41 @@ class FrontControllerCore extends Controller
 
         $productsNeedCache = [];
         foreach ($products as &$product) {
-            if (!$this->isCached(_PS_THEME_DIR_.'product-list-colors.tpl', $this->getColorsListCacheId($product['id_product']))) {
-                $productsNeedCache[] = (int) $product['id_product'];
+            $productId = (int)$product['id_product'];
+            if (!$this->isCached(_PS_THEME_DIR_.'product-list-colors.tpl', $this->getColorsListCacheId($productId))) {
+                $productsNeedCache[] = $productId;
+            } else {
+                $product['color_list'] = $this->context->smarty->fetch(_PS_THEME_DIR_.'product-list-colors.tpl', $this->getColorsListCacheId($productId));
             }
         }
 
         unset($product);
 
-        $colors = false;
-        if (count($productsNeedCache)) {
-            $colors = Product::getAttributesColorList($productsNeedCache);
+        if (! $productsNeedCache) {
+            return;
         }
+
+        $colors = Product::getAttributesColorList($productsNeedCache);
 
         Tools::enableCache();
         foreach ($products as &$product) {
-            $tpl = $this->context->smarty->createTemplate(_PS_THEME_DIR_.'product-list-colors.tpl', $this->getColorsListCacheId($product['id_product']));
-            if (isset($colors[$product['id_product']])) {
-                $tpl->assign(
-                    [
-                        'id_product'  => $product['id_product'],
-                        'colors_list' => $colors[$product['id_product']],
-                        'link'        => $this->context->link,
-                        'img_col_dir' => _THEME_COL_DIR_,
-                        'col_img_dir' => _PS_COL_IMG_DIR_,
-                    ]
-                );
-            }
-
-            if (!in_array($product['id_product'], $productsNeedCache) || isset($colors[$product['id_product']])) {
-                $product['color_list'] = $tpl->fetch(_PS_THEME_DIR_.'product-list-colors.tpl', $this->getColorsListCacheId($product['id_product']));
-            } else {
-                $product['color_list'] = '';
+            $productId = (int)$product['id_product'];
+            if (in_array($productId, $productsNeedCache)) {
+                if (isset($colors[$productId])) {
+                    $tpl = $this->context->smarty->createTemplate(_PS_THEME_DIR_ . 'product-list-colors.tpl', $this->getColorsListCacheId($productId));
+                    $tpl->assign(
+                        [
+                            'id_product' => $productId,
+                            'colors_list' => $colors[$productId],
+                            'link' => $this->context->link,
+                            'img_col_dir' => _THEME_COL_DIR_,
+                            'col_img_dir' => _PS_COL_IMG_DIR_,
+                        ]
+                    );
+                    $product['color_list'] = $tpl->fetch(_PS_THEME_DIR_ . 'product-list-colors.tpl', $this->getColorsListCacheId($productId));
+                } else {
+                    $product['color_list'] = '';
+                }
             }
         }
         Tools::restoreCacheSettings();
