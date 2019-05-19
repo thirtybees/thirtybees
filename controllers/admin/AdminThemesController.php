@@ -2090,10 +2090,11 @@ class AdminThemesControllerCore extends AdminController
          * enabled. This also disables all its hooks. Can't uninstall these
          * modules, because the theme might still be in use in another shop.
          */
-        $theme = new Theme($this->context->shop->id_theme);
-        $xml = $theme->loadConfigFile();
-        if ($xml) {
-            foreach ($xml->modules->module as $moduleRow) {
+        $oldTheme = new Theme($this->context->shop->id_theme);
+        $oldXml = $oldTheme->loadConfigFile();
+        $oldImageTypes = [];
+        if ($oldXml) {
+            foreach ($oldXml->modules->module as $moduleRow) {
                 $moduleName = (string) $moduleRow['name'];
                 if (in_array($moduleName, $unrelatedModules)) {
                     continue;
@@ -2110,6 +2111,13 @@ class AdminThemesControllerCore extends AdminController
                         $module->disable();
                     }
                 }
+            }
+
+            // Collect image types to allow removing them later.
+            foreach ($oldXml->images->image as $imageType) {
+                $oldImageTypes[] = ImageType::getFormatedName(
+                    (string) $imageType['name']
+                );
             }
         }
 
@@ -2236,6 +2244,16 @@ class AdminThemesControllerCore extends AdminController
         } else {
             // Invalid themes shouldn't get offered for installation.
             throw new PrestaShopException('Attempt to install theme '.$theme->name.' despite its invalid config.xml.');
+        }
+
+        // Remove image types no longer needed.
+        // Note: identical theme names also mean identically named image types.
+        if ($oldTheme->name != $theme->name && ! $oldTheme->isUsed()) {
+            foreach (ImageType::getImagesTypes() as $imageType) {
+                if (in_array($imageType['name'], $oldImageTypes)) {
+                    (new ImageType($imageType['id_image_type']))->delete();
+                }
+            }
         }
 
         Tools::clearCache($this->context->smarty);
