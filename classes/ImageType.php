@@ -79,6 +79,45 @@ class ImageTypeCore extends ObjectModel
     protected $webserviceParameters = [];
 
     /**
+     * Return an instance for the named image type. If no such image type
+     * exists yet, return an empty instance with just the name set.
+     *
+     * @param string $typeName  Name of the image type.
+     * @param string $themeName Name of the theme this image type belongs to.
+     *                          Defaults to the name of the current theme.
+     *
+     * @return ImageType
+     *
+     * @throws Adapter_Exception
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @version 1.1.0 Initial version.
+     */
+    public static function getInstanceByName($typeName, $themeName = null)
+    {
+        if ($themeName === null) {
+            $themeName = Context::getContext()->shop->theme_name;
+        }
+
+        $name = $themeName.'_'.$typeName;
+        if ( ! static::typeAlreadyExists($name)) {
+            $type = new ImageType();
+            $type->name = $name;
+
+            return $type;
+        }
+
+        $result = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+                ->select('`id_image_type`')
+                ->from('image_type')
+                ->where('`name` = \''.pSQL($name).'\'')
+        );
+
+        return new ImageType($result);
+    }
+
+    /**
      * Returns image type definitions
      *
      * @param string|null $type Image type
