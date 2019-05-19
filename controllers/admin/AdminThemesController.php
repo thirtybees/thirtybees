@@ -2119,7 +2119,32 @@ class AdminThemesControllerCore extends AdminController
         $theme = new Theme((int) Tools::getValue('id_theme'));
         $xml = $theme->loadConfigFile();
         if ($xml) {
-            $this->img_error = $this->updateImages($xml);
+            if (isset($xml->images->image)) {
+                // Create/update image types.
+                foreach ($xml->images->image as $imageType) {
+                    // It's installation time, name variants can get ignored.
+                    $type = ImageType::getInstanceByName(
+                        (string) $imageType['name'],
+                        $theme->name
+                    );
+
+                    $type->width = (int) $imageType['width'];
+                    $type->height = (int) $imageType['height'];
+                    foreach ($type->def['fields'] as $name => $field) {
+                        if ($field['type'] == ObjectModel::TYPE_BOOL) {
+                            $type->{$name} = $imageType[$name] == 'true';
+                        }
+                    }
+
+                    $type->save();
+
+                    $this->img_error['ok'][] = [
+                        'name'   => $type->name,
+                        'width'  => $type->width,
+                        'height' => $type->height,
+                    ];
+                }
+            }
 
             $this->modules_errors = [];
             foreach ($xml->modules->module as $moduleRow) {
@@ -2216,48 +2241,6 @@ class AdminThemesControllerCore extends AdminController
         Tools::clearCache($this->context->smarty);
         $this->theme_name = $theme->name;
         $this->display = 'view';
-    }
-
-    /**
-     * Update images
-     *
-     * @param SimpleXMLElement $xml
-     *
-     * @return array
-     *
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     * @since 1.0.0
-     */
-    protected function updateImages($xml)
-    {
-        $return = [];
-
-        if (isset($xml->images->image)) {
-            foreach ($xml->images->image as $row) {
-                Db::getInstance()->delete('image_type', '`name` = \''.pSQL($row['name']).'\'');
-                Db::getInstance()->execute(
-                    '
-					INSERT INTO `'._DB_PREFIX_.'image_type` (`name`, `width`, `height`, `products`, `categories`, `manufacturers`, `suppliers`, `scenes`)
-					VALUES (\''.pSQL($row['name']).'\',
-						'.(int) $row['width'].',
-						'.(int) $row['height'].',
-						'.($row['products'] == 'true' ? 1 : 0).',
-						'.($row['categories'] == 'true' ? 1 : 0).',
-						'.($row['manufacturers'] == 'true' ? 1 : 0).',
-						'.($row['suppliers'] == 'true' ? 1 : 0).',
-						'.($row['scenes'] == 'true' ? 1 : 0).')'
-                );
-
-                $return['ok'][] = [
-                    'name'   => strval($row['name']),
-                    'width'  => (int) $row['width'],
-                    'height' => (int) $row['height'],
-                ];
-            }
-        }
-
-        return $return;
     }
 
     /**
