@@ -49,26 +49,26 @@
         </ul>
     </div>
 {/if}
-<div class="alert alert-warning">
-    <button type="button" class="close" data-dismiss="alert">&times;</button>
-    {l s='Warning: You may have to regenerate images to fit with this new theme.'}
-    <a href="{$image_link}">
-        <button class="btn btn-default">{l s='Go to the thumbnails regeneration page'}</button>
-    </a>
-</div>
 
 {if isset($img_error['ok'])}
     <div class="alert alert-success">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
-        {l s='Images have been correctly updated in the database:'}
+        {l s='These image types have been added or updated:'}
         <ul>
             {foreach $img_error['ok'] as $error}
                 <li>
-                    {l s='Name image type:'} <strong>{$error['name']}</strong> {l s='(width: %1$spx, height: %2$spx).'|sprintf:$error['width']:$error['height']}
+                    <strong>{$error['name']}</strong> {l s='(width: %1$spx, height: %2$spx).'|sprintf:$error['width']:$error['height']}
                 </li>
             {/foreach}
         </ul>
 
+    </div>
+    <div class="alert alert-warning">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {l s='Warning: You may have to regenerate images to fit with this new theme.'}
+        <a href="{$image_link}">
+            <button class="btn btn-default">{l s='Go to the thumbnails regeneration page'}</button>
+        </a>
     </div>
 {/if}
 
