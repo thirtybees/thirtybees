@@ -454,7 +454,7 @@ class SearchCore
             $db->execute(
                 'DELETE si FROM `'._DB_PREFIX_.'search_index` si
 				INNER JOIN `'._DB_PREFIX_.'product` p ON (p.id_product = si.id_product)
-				'.Shop::addSqlAssociation('product', 'p').'
+				'.Shop::addSqlAssociation('product', 'p', true, null, true).'
 				WHERE product_shop.`visibility` IN ("both", "search")
 				AND product_shop.`active` = 1
 				AND '.($idProduct ? 'p.`id_product` = '.(int) $idProduct : 'product_shop.`indexed` = 0')
@@ -462,7 +462,7 @@ class SearchCore
 
             $db->execute(
                 'UPDATE `'._DB_PREFIX_.'product` p
-				'.Shop::addSqlAssociation('product', 'p').'
+				'.Shop::addSqlAssociation('product', 'p', true, null, true).'
 				SET p.`indexed` = 0, product_shop.`indexed` = 0
 				WHERE product_shop.`visibility` IN ("both", "search")
 				AND product_shop.`active` = 1
