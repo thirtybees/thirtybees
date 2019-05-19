@@ -130,7 +130,7 @@ class ImageTypeCore extends ObjectModel
     public static function typeAlreadyExists($typeName)
     {
         if (!Validate::isImageTypeName($typeName)) {
-            die(Tools::displayError());
+            throw new PrestaShopException('\''.$typeName.'\' is an invalid image type name.');
         }
 
         Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
@@ -140,7 +140,7 @@ class ImageTypeCore extends ObjectModel
                 ->where('`name` = \''.pSQL($typeName).'\'')
         );
 
-        return Db::getInstance()->NumRows();
+        return Db::getInstance(_PS_USE_SQL_SLAVE_)->NumRows();
     }
 
     /**
