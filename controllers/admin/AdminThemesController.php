@@ -851,10 +851,10 @@ class AdminThemesControllerCore extends AdminController
      */
     protected function checkVersionsAndCompatibility()
     {
-        $exp = '#^[0-9]+[.]+[0-9.]*[0-9]$#';
+        $exp = '/^[0-9.]+$/';
 
-        if (!preg_match('#^[0-9][.][0-9]$#', Tools::getValue('theme_version')) ||
-            !preg_match($exp, Tools::getValue('compa_from'))
+        if ( ! preg_match($exp, Tools::getValue('theme_version'))
+            || ! preg_match($exp, Tools::getValue('compa_from'))
         ) {
             $this->errors[] = $this->l('Syntax error on version field. Only digits and periods (.) are allowed.');
         }
@@ -1083,7 +1083,7 @@ class AdminThemesControllerCore extends AdminController
         $zip = new ZipArchive();
         $zipFileName = md5(time()).'.zip';
         if ($zip->open(_PS_CACHE_DIR_.$zipFileName, ZipArchive::OVERWRITE | ZipArchive::CREATE) === true) {
-            if (!$zip->addFromString('Config.xml', $this->xml_file)) {
+            if (!$zip->addFromString('config.xml', $this->xml_file)) {
                 $this->errors[] = $this->l('Cannot create config file.');
             }
 
@@ -1417,7 +1417,7 @@ class AdminThemesControllerCore extends AdminController
         $fieldsValue['theme_name'] = $theme->name;
         $fieldsValue['theme_directory'] = $theme->directory;
         $fieldsValue['theme_version'] = '1.0';
-        $fieldsValue['compa_from'] = _PS_VERSION_;
+        $fieldsValue['compa_from'] = _TB_VERSION_;
         $fieldsValue['id_theme_export'] = Tools::getValue('id_theme_export');
         $fieldsValue['documentationName'] = $this->l('documentation');
 
