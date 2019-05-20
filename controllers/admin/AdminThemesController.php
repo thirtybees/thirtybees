@@ -1273,11 +1273,19 @@ class AdminThemesControllerCore extends AdminController
             $row['exceptions'] = trim(preg_replace('/(,,+)/', ',', $row['exceptions']), ',');
         }
 
-        $nativeModules = Module::getNotThemeRelatedModules();
+        // Get a list of modules available on the module update server. As
+        // these are always available, there's no need to package them.
+        $moduleUpdater = Module::getInstanceByName('tbupdater');
+        if ( ! Validate::isLoadedObject($moduleUpdater)) {
+            $this->errors[] = $this->l('Module \'tbupdater\' must be installed to allow exporting a theme.');
+
+            return;
+        }
+        $thirtybeesModules = array_keys($moduleUpdater->getCachedModulesInfo());
 
         foreach ($moduleList as $array) {
             if (static::checkParentClass($array['name'])
-                && ! in_array($array['name'], $nativeModules)
+                && ! in_array($array['name'], $thirtybeesModules)
                 && $array['active'] == 1) {
                 $toInstall[] = $array['name'];
             }
