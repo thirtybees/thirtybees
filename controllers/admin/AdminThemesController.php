@@ -854,10 +854,9 @@ class AdminThemesControllerCore extends AdminController
         $exp = '#^[0-9]+[.]+[0-9.]*[0-9]$#';
 
         if (!preg_match('#^[0-9][.][0-9]$#', Tools::getValue('theme_version')) ||
-            !preg_match($exp, Tools::getValue('compa_from')) || !preg_match($exp, Tools::getValue('compa_to')) ||
-            version_compare(Tools::getValue('compa_from'), Tools::getValue('compa_to')) == 1
+            !preg_match($exp, Tools::getValue('compa_from'))
         ) {
-            $this->errors[] = $this->l('Syntax error on version field. Only digits and periods (.) are allowed, and the compatibility version should be increasing or at least be equal to the previous version.');
+            $this->errors[] = $this->l('Syntax error on version field. Only digits and periods (.) are allowed.');
         }
 
         if (count($this->errors) > 0) {
@@ -1002,7 +1001,6 @@ class AdminThemesControllerCore extends AdminController
         $variation->addAttribute('default_right_column', $themeToExport->default_right_column);
         $variation->addAttribute('product_per_page', $themeToExport->product_per_page);
         $variation->addAttribute('from', Tools::getValue('compa_from'));
-        $variation->addAttribute('to', Tools::getValue('compa_to'));
 
         $docs = $theme->addChild('docs');
         if (isset($this->user_doc)) {
@@ -1370,11 +1368,6 @@ class AdminThemesControllerCore extends AdminController
                         'label' => $this->l('Compatible from'),
                     ],
                     [
-                        'type'  => 'text',
-                        'name'  => 'compa_to',
-                        'label' => $this->l('Compatible to'),
-                    ],
-                    [
                         'type'  => 'file',
                         'name'  => 'documentation',
                         'label' => $this->l('Documentation'),
@@ -1425,7 +1418,6 @@ class AdminThemesControllerCore extends AdminController
         $fieldsValue['theme_directory'] = $theme->directory;
         $fieldsValue['theme_version'] = '1.0';
         $fieldsValue['compa_from'] = _PS_VERSION_;
-        $fieldsValue['compa_to'] = _PS_VERSION_;
         $fieldsValue['id_theme_export'] = Tools::getValue('id_theme_export');
         $fieldsValue['documentationName'] = $this->l('documentation');
 

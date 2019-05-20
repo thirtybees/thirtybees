@@ -649,7 +649,7 @@ class ThemeCore extends ObjectModel
             return false;
         }
         foreach ($xml->variations->variation as $val) {
-            if (!$val['name'] || !$val['directory'] || !$val['from'] || !$val['to']) {
+            if (!$val['name'] || !$val['directory'] || !$val['from']) {
                 return false;
             }
         }
