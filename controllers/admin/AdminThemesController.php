@@ -1276,32 +1276,10 @@ class AdminThemesControllerCore extends AdminController
         $nativeModules = Module::getNotThemeRelatedModules();
 
         foreach ($moduleList as $array) {
-            if (!static::checkParentClass($array['name'])) {
-                continue;
-            }
-            if (in_array($array['name'], $nativeModules)) {
-                if ($array['active'] == 1) {
-                    $toEnable[] = $array['name'];
-                } else {
-                    $toDisable[] = $array['name'];
-                }
-            } elseif ($array['active'] == 1) {
+            if (static::checkParentClass($array['name'])
+                && ! in_array($array['name'], $nativeModules)
+                && $array['active'] == 1) {
                 $toInstall[] = $array['name'];
-            }
-        }
-        foreach ($nativeModules as $str) {
-            $flag = 0;
-            if (!$this->checkParentClass($str)) {
-                continue;
-            }
-            foreach ($moduleList as $tmp) {
-                if (in_array($str, $tmp)) {
-                    $flag = 1;
-                    break;
-                }
-            }
-            if ($flag == 0) {
-                $toDisable[] = $str;
             }
         }
 
