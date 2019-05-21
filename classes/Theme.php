@@ -558,6 +558,170 @@ class ThemeCore extends ObjectModel
     }
 
     /**
+     * Install this theme in the current shop context.
+     *
+     * @return array Array with the following entries:
+     *               'imageTypes':   List of image types updated or created for
+     *                               this theme. Each item an array with 'name',
+     *                               'width' and 'height'.
+     *               'moduleErrors': List of module installation errors. Each
+     *                               item with 'module_name' and an 'errors',
+     *                               an array with error messages.
+     *               'documents':    Array with documentation links.
+     *
+     * @version 1.1.0 Excerpt from AdminThemesController->processInstallTheme().
+     */
+    public function installIntoShopContext()
+    {
+        $return = [
+            'imageTypes'    => [],
+            'moduleErrors'  => [],
+            'documents'     => [],
+        ];
+
+        $xml = $this->loadConfigFile();
+        if ($xml) {
+            /**
+             * Create/update image types.
+             */
+            if (isset($xml->images->image)) {
+                foreach ($xml->images->image as $imageType) {
+                    // It's installation time, name variants can get ignored.
+                    $type = ImageType::getInstanceByName(
+                        (string) $imageType['name'],
+                        $this->name
+                    );
+
+                    $type->width = (int) $imageType['width'];
+                    $type->height = (int) $imageType['height'];
+                    foreach ($type->def['fields'] as $name => $field) {
+                        if ($field['type'] == ObjectModel::TYPE_BOOL) {
+                            $type->{$name} = $imageType[$name] == 'true';
+                        }
+                    }
+
+                    $type->save();
+
+                    $return['imageTypes'][] = [
+                        'name'   => $type->name,
+                        'width'  => $type->width,
+                        'height' => $type->height,
+                    ];
+                }
+            }
+
+            /**
+             * Install/enable/disable theme related modules. All Module methods
+             * used work on the current shop context.
+             */
+            $unrelatedModules = Module::getNotThemeRelatedModules();
+            foreach ($xml->modules->module as $moduleRow) {
+                $moduleName = (string) $moduleRow['name'];
+                if (in_array($moduleName, $unrelatedModules)) {
+                    continue;
+                }
+
+                $module = Module::getInstanceByName($moduleName);
+                if ( ! $module) {
+                    continue;
+                }
+
+                $isInstalledSuccess = true;
+                if ((string) $moduleRow['action'] === 'install'
+                    || (string) $moduleRow['action'] === 'enable') {
+                    if ( ! Module::isInstalled($moduleName)) {
+                        $isInstalledSuccess = $module->install();
+                    }
+                    if ( ! $isInstalledSuccess) {
+                        $return['moduleErrors'][] = [
+                            'module_name' => $moduleName,
+                            'errors'      => $module->getErrors(),
+                        ];
+                    }
+                }
+
+                if ($isInstalledSuccess
+                    && (string) $moduleRow['action'] === 'enable'
+                ) {
+                    $module->enable();
+
+                    /**
+                     * Replace the modules' default hooks and hook
+                     * exceptions with those of the theme configuration.
+                     */
+                    $allHooks = $module->getPossibleHooksList();
+                    foreach ($allHooks as $hook) {
+                        $module->unregisterExceptions($hook['id_hook']);
+                        $module->unregisterHook($hook['id_hook']);
+                    }
+
+                    foreach ($xml->modules->hooks->hook as $hook) {
+                        if ((string) $hook['module'] === $moduleName) {
+                            $idHook = Hook::getIdByName((string) $hook['hook']);
+
+                            $module->registerHook((string) $hook['hook']);
+                            if (isset($hook['position'])) {
+                                $module->updatePosition(
+                                    $idHook,
+                                    false,
+                                    (int) $hook['position']
+                                );
+                            }
+
+                            if (isset($hook['exceptions'])) {
+                                $module->registerExceptions(
+                                    $idHook,
+                                    explode(',', (string) $hook['exceptions'])
+                                );
+                            }
+                        }
+                    }
+                }
+
+                if ((string) $moduleRow['action'] === 'disable') {
+                    $module->disable();
+                }
+            }
+
+            /**
+             * Install the theme into all shops of the current context.
+             */
+            $shops = Shop::getContextListShopID();
+            foreach ($shops as $idShop) {
+                $shop = new Shop((int) $idShop);
+                $shop->id_theme = $this->id;
+                $shop->save();
+
+                if (Shop::isFeatureActive()) {
+                    Configuration::updateValue('PS_PRODUCTS_PER_PAGE', (int) $this->product_per_page, false, null, (int) $idShop);
+                } else {
+                    Configuration::updateValue('PS_PRODUCTS_PER_PAGE', (int) $this->product_per_page);
+                }
+            }
+            $context = Context::getContext();
+            $context->shop->id_theme = $this->id;
+            $context->shop->update();
+
+            /**
+             * Create documentation link.
+             */
+            foreach ($xml->docs->doc as $row) {
+                $return['documents'][(string) $row['name']] =
+                    preg_replace(
+                        '#^'._PS_ROOT_DIR_.'#',
+                        __PS_BASE_URI__,
+                        _PS_ALL_THEMES_DIR_
+                    ).$this->directory.'/'.$row['path'];
+            }
+        } else {
+            // Invalid themes shouldn't get offered for installation.
+            throw new PrestaShopException('Attempt to install theme '.$this->name.' despite its invalid config.xml.');
+        }
+
+        return $return;
+    }
+
+    /**
      * Get the configuration file as SimpleXMLElement
      *
      * @param boolean $validate - if true, configuration file will be validated

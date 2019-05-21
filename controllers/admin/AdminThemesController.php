@@ -2100,134 +2100,13 @@ class AdminThemesControllerCore extends AdminController
         }
 
         /**
-         * Install modules for the new theme.
+         * Install the new theme.
          */
         $theme = new Theme((int) Tools::getValue('id_theme'));
-        $xml = $theme->loadConfigFile();
-        if ($xml) {
-            if (isset($xml->images->image)) {
-                // Create/update image types.
-                foreach ($xml->images->image as $imageType) {
-                    // It's installation time, name variants can get ignored.
-                    $type = ImageType::getInstanceByName(
-                        (string) $imageType['name'],
-                        $theme->name
-                    );
-
-                    $type->width = (int) $imageType['width'];
-                    $type->height = (int) $imageType['height'];
-                    foreach ($type->def['fields'] as $name => $field) {
-                        if ($field['type'] == ObjectModel::TYPE_BOOL) {
-                            $type->{$name} = $imageType[$name] == 'true';
-                        }
-                    }
-
-                    $type->save();
-
-                    $this->img_error['ok'][] = [
-                        'name'   => $type->name,
-                        'width'  => $type->width,
-                        'height' => $type->height,
-                    ];
-                }
-            }
-
-            $this->modules_errors = [];
-            foreach ($xml->modules->module as $moduleRow) {
-                $moduleName = (string) $moduleRow['name'];
-                if (in_array($moduleName, $unrelatedModules)) {
-                    continue;
-                }
-
-                $module = Module::getInstanceByName($moduleName);
-                if ( ! $module) {
-                    continue;
-                }
-
-                $isInstalledSuccess = true;
-                if ((string) $moduleRow['action'] === 'install'
-                    || (string) $moduleRow['action'] === 'enable') {
-                    if ( ! Module::isInstalled($moduleName)) {
-                        $isInstalledSuccess = $module->install();
-                    }
-                    if ( ! $isInstalledSuccess) {
-                        $this->modules_errors[] = [
-                            'module_name' => $moduleName,
-                            'errors'      => $module->getErrors(),
-                        ];
-                    }
-                }
-
-                if ($isInstalledSuccess
-                    && (string) $moduleRow['action'] === 'enable'
-                ) {
-                    $module->enable();
-
-                    /**
-                     * Replace the modules' default hooks and hook
-                     * exceptions with those of the theme configuration.
-                     */
-                    $allHooks = $module->getPossibleHooksList();
-                    foreach ($allHooks as $hook) {
-                        $module->unregisterExceptions($hook['id_hook']);
-                        $module->unregisterHook($hook['id_hook']);
-                    }
-
-                    foreach ($xml->modules->hooks->hook as $hook) {
-                        if ((string) $hook['module'] === $moduleName) {
-                            $idHook = Hook::getIdByName((string) $hook['hook']);
-
-                            $module->registerHook((string) $hook['hook']);
-                            if (isset($hook['position'])) {
-                                $module->updatePosition(
-                                    $idHook,
-                                    false,
-                                    (int) $hook['position']
-                                );
-                            }
-
-                            if (isset($hook['exceptions'])) {
-                                $module->registerExceptions(
-                                    $idHook,
-                                    explode(',', (string) $hook['exceptions'])
-                                );
-                            }
-                        }
-                    }
-                }
-
-                if ((string) $moduleRow['action'] === 'disable') {
-                    $module->disable();
-                }
-            }
-
-            foreach ($shops as $idShop) {
-                $shop = new Shop((int) $idShop);
-                $shop->id_theme = (int) Tools::getValue('id_theme');
-                $this->context->shop->id_theme = $shop->id_theme;
-                $this->context->shop->update();
-                $shop->save();
-
-                if (Shop::isFeatureActive()) {
-                    Configuration::updateValue('PS_PRODUCTS_PER_PAGE', (int) $theme->product_per_page, false, null, (int) $idShop);
-                } else {
-                    Configuration::updateValue('PS_PRODUCTS_PER_PAGE', (int) $theme->product_per_page);
-                }
-            }
-
-            $this->doc = [];
-            foreach ($xml->docs->doc as $row) {
-                $this->doc[(string) $row['name']] =
-                    preg_replace(
-                        '#^'._PS_ROOT_DIR_.'#',
-                        __PS_BASE_URI__,
-                        _PS_ALL_THEMES_DIR_
-                    ).$theme->directory.'/'.$row['path'];
-            }
-        } else {
-            // Invalid themes shouldn't get offered for installation.
-            throw new PrestaShopException('Attempt to install theme '.$theme->name.' despite its invalid config.xml.');
-        }
+        $installationResult = $theme->installIntoShopContext();
+        $this->img_error['ok'] = $installationResult['imageTypes'];
+        $this->modules_errors = $installationResult['moduleErrors'];
+        $this->doc = $installationResult['documents'];
 
         // Remove image types no longer needed.
         // Note: identical theme names also mean identically named image types.
