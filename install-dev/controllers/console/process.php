@@ -70,7 +70,7 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
     {
         $steps = explode(',', $this->datas->step);
         if (in_array('all', $steps)) {
-            $steps = ['database', 'fixtures', 'theme', 'modules'];
+            $steps = ['database', 'fixtures', 'modules', 'theme'];
         }
 
         if (in_array('database', $steps)) {
