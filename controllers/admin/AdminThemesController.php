@@ -2239,7 +2239,12 @@ class AdminThemesControllerCore extends AdminController
 
             $this->doc = [];
             foreach ($xml->docs->doc as $row) {
-                $this->doc[strval($row['name'])] = __PS_BASE_URI__.'themes/'.$theme->directory.'/docs/'.basename(strval($row['path']));
+                $this->doc[(string) $row['name']] =
+                    preg_replace(
+                        '#^'._PS_ROOT_DIR_.'#',
+                        __PS_BASE_URI__,
+                        _PS_ALL_THEMES_DIR_
+                    ).$theme->directory.'/'.$row['path'];
             }
         } else {
             // Invalid themes shouldn't get offered for installation.
