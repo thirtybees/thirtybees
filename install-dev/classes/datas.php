@@ -36,7 +36,7 @@ class Datas
             'name'     => 'step',
             'default'  => 'all',
             'validate' => 'isGenericName',
-            'help'     => 'all / database,fixtures,theme,modules,addons_modules',
+            'help'     => 'all / database,fixtures,theme,modules',
         ],
         'language'          => [
             'default'  => 'en',

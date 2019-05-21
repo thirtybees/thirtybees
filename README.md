@@ -96,7 +96,7 @@ $  php install-dev/index_cli.php --newsletter=1 --language=en --country=us --dom
 ```
 - Arguments available:
 ```
---step          all / database,fixtures,theme,modules,addons_modules    (Default: all)
+--step          all / database,fixtures,theme,modules                   (Default: all)
 --language      Language iso code                                       (Default: en)
 --all_languages Install all available languages                         (Default: 0)
 --timezone                                                              (Default: Europe/Paris)
