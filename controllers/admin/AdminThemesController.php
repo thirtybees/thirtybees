@@ -2448,9 +2448,7 @@ class AdminThemesControllerCore extends AdminController
                         }
 
                         if ($isInstalledSuccess) {
-                            if ( ! Module::isEnabled($moduleName)) {
-                                $module->enable();
-                            }
+                            $module->enable();
 
                             if ((int) $module->id > 0 && isset($moduleHook[$moduleName])) {
                                 $this->hookModule($module->id, $moduleHook[$moduleName], $idShop);
@@ -2470,9 +2468,7 @@ class AdminThemesControllerCore extends AdminController
                     $module = Module::getInstanceByName($moduleName);
 
                     if (Validate::isLoadedObject($module)) {
-                        if (Module::isEnabled($moduleName)) {
-                            $module->disable();
-                        }
+                        $module->disable();
 
                         unset($moduleHook[$moduleName]);
                     }
