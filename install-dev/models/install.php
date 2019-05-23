@@ -230,13 +230,12 @@ class InstallModelInstall extends InstallAbstractModel
     }
 
     /**
-     * Clear database (only tables with same prefix)
+     * Clear database (only tables with same prefix).
      *
-     * @param bool $truncate If true truncate the table, if false drop the table
-     *
-     * @since 1.0.0 Truncate no longer allowed!
+     * @version 1.0.0 Initial version, $truncate deprecated.
+     * @version 1.1.0 Removed $truncate.
      */
-    public function clearDatabase($truncate = false)
+    public function clearDatabase()
     {
         foreach (Db::getInstance()->executeS('SHOW TABLES') as $row) {
             $table = current($row);
