@@ -221,7 +221,7 @@ class OrderStateCore extends ObjectModel
         );
 
         if ( ! $result) {
-            $db->executeS('ALTER TABLE '
+            $db->execute('ALTER TABLE '
                 ._DB_PREFIX_.static::$definition['table']
                 .' ADD COLUMN `active` TINYINT(1) UNSIGNED NOT NULL DEFAULT 1;'
             );
