@@ -129,8 +129,11 @@ class ShopMaintenanceCore
     public static function cleanImagesDir($new='')
     {
 	    if (isset($new) && $new=='new') {
-		    $images_list = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('SELECT id_image FROM '._DB_PREFIX_.'image ORDER BY id_image DESC');
-		    $imagesMax = $images_list[0]['id_image'];
+		    $imagesMax = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+			(new DbQuery())
+			    ->select('MAX(`id_image`)')
+			    ->from('image')
+		    );
 		    Configuration::updateGlobalValue('SHOP_MAINTENANCE_IMAGES_RUN', $imagesMax.'|'.$imagesMax);
 	    }
 	    else {
@@ -168,16 +171,7 @@ class ShopMaintenanceCore
 				    }
 			    }
 		    }
-		    else {
-			    $sql = "DELETE FROM "._DB_PREFIX_."image WHERE id_image=".$i;
-			    Db::getInstance()->execute($sql);
-			    $sql = "DELETE FROM "._DB_PREFIX_."image_lang WHERE id_image=".$i;
-			    Db::getInstance()->execute($sql);
-			    $sql = "DELETE FROM "._DB_PREFIX_."image_shop WHERE id_image=".$i;
-			    Db::getInstance()->execute($sql);
-			    $sql = "DELETE FROM "._DB_PREFIX_."product_attribute_image WHERE id_image=".$i;
-			    Db::getInstance()->execute($sql);
-		    }
+		    else (new Image($i))->delete();
 		    $now = time()-$starttime;
 		    if ($now > 2.99) break;
 	    }
