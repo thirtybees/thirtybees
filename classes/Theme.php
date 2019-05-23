@@ -735,7 +735,7 @@ class ThemeCore extends ObjectModel
         $path = $this->getConfigFilePath();
 
         $xml = static::loadConfigFromFile($path, $validate);
-        if ((string) $xml->attributes()->name !== $this->name) {
+        if ( ! $xml || (string) $xml->attributes()->name !== $this->name) {
             return false;
         }
 
