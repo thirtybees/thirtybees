@@ -535,15 +535,6 @@ class AdminThemesControllerCore extends AdminController
             $theme->product_per_page = 1;
             $theme->save();
         }
-        if (is_object($theme) && (int) $theme->id > 0) {
-            $metas = Meta::getMetas();
-
-            foreach ($metas as &$meta) {
-                $meta['left'] = $theme->default_left_column;
-                $meta['right'] = $theme->default_right_column;
-            }
-            $theme->updateMetas($metas, true);
-        }
 
         return $theme;
     }
@@ -664,8 +655,6 @@ class AdminThemesControllerCore extends AdminController
                         $this->warnings[] = sprintf(Tools::displayError('Could not remove theme directory "%s".'), $themePath);
                     }
                 }
-
-                $obj->removeMetas();
             } elseif ($obj === false && $themeDir = Tools::getValue('theme_dir')) {
                 $themeDir = basename($themeDir);
                 if (Tools::deleteDirectory(_PS_ALL_THEMES_DIR_.$themeDir.'/')) {
@@ -1704,50 +1693,6 @@ class AdminThemesControllerCore extends AdminController
                 $newTheme->default_right_column = (bool) strval($variation['default_right_column']);
             }
 
-            $fillDefaultMeta = true;
-            $metasXml = [];
-            if ($xml->metas->meta) {
-                foreach ($xml->metas->meta as $meta) {
-                    $metaId = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-                        (new DbQuery())
-                            ->select('`id_meta`')
-                            ->from('meta')
-                            ->where('`page` = \''.pSQL($meta['meta_page']).'\'')
-                    );
-                    if ((int) $metaId > 0) {
-                        $tmpMeta = [];
-                        $tmpMeta['id_meta'] = (int) $metaId;
-                        $tmpMeta['left'] = intval($meta['left']);
-                        $tmpMeta['right'] = intval($meta['right']);
-                        $metasXml[(int) $metaId] = $tmpMeta;
-                    }
-                }
-                $fillDefaultMeta = false;
-                if (count($xml->metas->meta) < (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
-                        (new DbQuery())
-                            ->select('COUNT(*)')
-                            ->from('meta')
-                )) {
-                    $fillDefaultMeta = true;
-                }
-            }
-
-            if ($fillDefaultMeta == true) {
-                $metas = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-                    (new DbQuery())
-                        ->select('`id_meta`')
-                        ->from('meta')
-                );
-                foreach ($metas as $meta) {
-                    if (!isset($metasXml[(int) $meta['id_meta']])) {
-                        $tmpMeta['id_meta'] = (int) $meta['id_meta'];
-                        $tmpMeta['left'] = $newTheme->default_left_column;
-                        $tmpMeta['right'] = $newTheme->default_right_column;
-                        $metasXml[(int) $meta['id_meta']] = $tmpMeta;
-                    }
-                }
-            }
-
             if (!is_dir(_PS_ALL_THEMES_DIR_.$newTheme->directory)) {
                 if (!mkdir(_PS_ALL_THEMES_DIR_.$newTheme->directory)) {
                     return sprintf($this->l('Error while creating %s directory'), _PS_ALL_THEMES_DIR_.$newTheme->directory);
@@ -1757,7 +1702,6 @@ class AdminThemesControllerCore extends AdminController
             $newTheme->add();
 
             if ($newTheme->id > 0) {
-                $newTheme->updateMetas($metasXml);
                 $newThemeArray[] = $newTheme;
             } else {
                 $newThemeArray[] = sprintf($this->l('Error while installing theme %s'), $newTheme->name);
@@ -2108,14 +2052,21 @@ class AdminThemesControllerCore extends AdminController
         $this->modules_errors = $installationResult['moduleErrors'];
         $this->doc = $installationResult['documents'];
 
-        // Remove image types no longer needed.
-        // Note: identical theme names also mean identically named image types.
-        if ($oldTheme->name != $theme->name && ! $oldTheme->isUsed()) {
-            foreach (ImageType::getImagesTypes() as $imageType) {
-                if (in_array($imageType['name'], $oldImageTypes)) {
-                    (new ImageType($imageType['id_image_type']))->delete();
+        /**
+         * If the old theme is no longer in use by another shop, remove its
+         * residuals.
+         */
+        if ( ! $oldTheme->isUsed()) {
+            // Identical theme names also mean identically named image types.
+            if ($oldTheme->name != $theme->name) {
+                foreach (ImageType::getImagesTypes() as $imageType) {
+                    if (in_array($imageType['name'], $oldImageTypes)) {
+                        (new ImageType($imageType['id_image_type']))->delete();
+                    }
                 }
             }
+
+            $oldTheme->removeMetas();
         }
 
         Tools::clearCache($this->context->smarty);

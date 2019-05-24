@@ -684,6 +684,45 @@ class ThemeCore extends ObjectModel
             }
 
             /**
+             * Create/update theme metas.
+             */
+            $metasXml = [];
+
+            // Collect defined metas.
+            if ($xml->metas->meta) {
+                foreach ($xml->metas->meta as $meta) {
+                    $metaId = Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+                        (new DbQuery())
+                            ->select('`id_meta`')
+                            ->from('meta')
+                            ->where('`page` = \''.pSQL($meta['meta_page']).'\'')
+                    );
+                    $metaId = (int) $metaId;
+                    if ($metaId) {
+                        $metasXml[$metaId] = [
+                            'id_meta' => $metaId,
+                            'left'    => (bool) (int) $meta['left'],
+                            'right'   => (bool) (int) $meta['right'],
+                        ];
+                    }
+                }
+            }
+
+            // Fill all other metas with default values.
+            foreach (Meta::getMetas() as $meta) {
+                $metaId = (int) $meta['id_meta'];
+                if ( ! array_key_exists($metaId, $metasXml)) {
+                    $metasXml[$metaId] = [
+                        'id_meta' => $metaId,
+                        'left'    => $this->default_left_column,
+                        'right'   => $this->default_right_column,
+                    ];
+                }
+            }
+
+            $this->updateMetas($metasXml, true);
+
+            /**
              * Install the theme into all shops of the current context.
              */
             $shops = Shop::getContextListShopID();
