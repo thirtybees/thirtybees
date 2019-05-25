@@ -514,7 +514,10 @@ class AdminThemesControllerCore extends AdminController
 
             if (0 !== $idBased = (int) Tools::getValue('based_on')) {
                 $baseTheme = new Theme($idBased);
-                $this->copyTheme($baseTheme->directory, $newDir);
+                Tools::recurseCopy(
+                    _PS_ALL_THEMES_DIR_.$baseTheme->directory,
+                    _PS_ALL_THEMES_DIR_.$newDir
+                );
             }
 
             if (isset($_FILES['image_preview']) && $_FILES['image_preview']['error'] == 0) {
@@ -537,42 +540,6 @@ class AdminThemesControllerCore extends AdminController
         }
 
         return $theme;
-    }
-
-    /**
-     * copy $base_theme_dir into $target_theme_dir.
-     *
-     * @param string $baseThemeDir   relative path to base dir
-     * @param string $targetThemeDir relative path to target dir
-     *
-     * @return bool true if success
-     *
-     * @since 1.0.0
-     */
-    protected static function copyTheme($baseThemeDir, $targetThemeDir)
-    {
-        $res = true;
-        $baseThemeDir = Tools::normalizeDirectory($baseThemeDir);
-        $baseDir = _PS_ALL_THEMES_DIR_.$baseThemeDir;
-        $targetThemeDir = Tools::normalizeDirectory($targetThemeDir);
-        $targetDir = _PS_ALL_THEMES_DIR_.$targetThemeDir;
-        $files = scandir($baseDir);
-
-        foreach ($files as $file) {
-            if (!in_array($file[0], ['.', '..', '.svn'])) {
-                if (is_dir($baseDir.$file)) {
-                    if (!is_dir($targetDir.$file)) {
-                        mkdir($targetDir.$file, Theme::$access_rights);
-                    }
-
-                    $res &= static::copyTheme($baseThemeDir.$file, $targetThemeDir.$file);
-                } elseif (!file_exists($targetDir.$file)) {
-                    $res &= copy($baseDir.$file, $targetDir.$file);
-                }
-            }
-        }
-
-        return $res;
     }
 
     /**
