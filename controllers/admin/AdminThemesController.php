@@ -439,20 +439,6 @@ class AdminThemesControllerCore extends AdminController
     }
 
     /**
-     * Render list
-     *
-     * @return false|string
-     *
-     * @throws PrestaShopException
-     * @throws PrestaShopExceptionCore
-     * @since 1.0.0
-     */
-    public function renderList()
-    {
-        return parent::renderList();
-    }
-
-    /**
      * @return bool
      *
      * @since 1.0.0
