@@ -2934,36 +2934,6 @@ class AdminThemesControllerCore extends AdminController
     }
 
     /**
-     * Recursive copy
-     *
-     * @param string $src
-     * @param string $dst
-     *
-     * @return void
-     *
-     * @since 1.0.0
-     */
-    protected function recurseCopy($src, $dst)
-    {
-        if (!$dir = opendir($src)) {
-            return;
-        }
-        if (!file_exists($dst)) {
-            mkdir($dst);
-        }
-        while (($file = readdir($dir)) !== false) {
-            if (strncmp($file, '.', 1) != 0) {
-                if (is_dir($src.'/'.$file)) {
-                    static::recurseCopy($src.'/'.$file, $dst.'/'.$file);
-                } elseif (is_readable($src.'/'.$file) && $file != 'Thumbs.db' && $file != '.DS_Store' && substr($file, -1) != '~') {
-                    copy($src.'/'.$file, $dst.'/'.$file);
-                }
-            }
-        }
-        closedir($dir);
-    }
-
-    /**
      * Generate a cached thumbnail for object lists (eg. carrier, order statuses...etc)
      *
      * @param string $image        Real image filename
