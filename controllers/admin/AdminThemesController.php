@@ -1610,7 +1610,7 @@ class AdminThemesControllerCore extends AdminController
 
         $attr = $xml->attributes();
         $name = (string) $attr->name;
-        if ($this->isThemeInstalled($name)) {
+        if (Theme::getByName($name) !== false) {
             return [sprintf($this->l('Theme %s already installed.'), $name)];
         }
 
@@ -1622,7 +1622,7 @@ class AdminThemesControllerCore extends AdminController
             $newTheme->name = $name;
             $newTheme->directory = strval($variation['directory']);
 
-            if ($this->isThemeInstalled($newTheme->name)) {
+            if (Theme::getByName($name) !== false) {
                 continue;
             }
 
@@ -1662,30 +1662,6 @@ class AdminThemesControllerCore extends AdminController
         }
 
         return $newThemeArray;
-    }
-
-    /**
-     * Check if theme is installed
-     *
-     * @param string $themeName
-     *
-     * @return bool
-     *
-     * @since 1.0.0
-     * @throws PrestaShopException
-     */
-    protected function isThemeInstalled($themeName)
-    {
-        $themes = Theme::getThemes();
-
-        foreach ($themes as $themeObject) {
-            /** @var Theme $themeObject */
-            if ($themeObject->name == $themeName) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
