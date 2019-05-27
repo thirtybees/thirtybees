@@ -1533,9 +1533,6 @@ class AdminThemesControllerCore extends AdminController
                 $importedTheme = $this->importThemeXmlConfig($xml);
                 foreach ($importedTheme as $theme) {
                     if (Validate::isLoadedObject($theme)) {
-                        if (!copy($sandbox.$themeDir.$configFile, $theme->getConfigFilePath())) {
-                            $this->errors[] = $this->l('Can\'t copy configuration file');
-                        }
                         $targetDir = _PS_ALL_THEMES_DIR_.$theme->directory;
                         if (file_exists($targetDir)) {
                             Tools::deleteDirectory($targetDir);

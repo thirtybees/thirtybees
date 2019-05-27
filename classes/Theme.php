@@ -793,12 +793,14 @@ class ThemeCore extends ObjectModel
      * @return SimpleXMLElement | false
      *
      * @version 1.0.7 Initial version.
+     * @version 1.1.0 Abandon XMLs in config/xml/themes/ in favor of config.xml
+     *                inside the theme directory.
      */
     public function loadConfigFile($validate = false)
     {
-        $path = $this->getConfigFilePath();
+        $this->collectConfigFilesForRetrocompatibility();
 
-        $xml = static::loadConfigFromFile($path, $validate);
+        $xml = static::loadDefaultConfig(_PS_ALL_THEMES_DIR_.$this->directory);
         if ( ! $xml || (string) $xml->attributes()->name !== $this->name) {
             return false;
         }
@@ -807,32 +809,59 @@ class ThemeCore extends ObjectModel
     }
 
     /**
+     * Retrocompatibility with < 1.1.0: collect old configuration files.
+     *
+     * Where did these files come from?
+     *
+     *  - PrestaShop didn't have them in the themes folder, but installed
+     *    them in config/xml/themes/. It was a copy of Config.xml in the top
+     *    level of a theme package, outside of the actual theme.
+     *
+     *  - thirty bees < 1.1.0 put a copy of the config.xml in the theme
+     *    folder there.
+     *
+     * TODO: move this into Core Updater.
+     *
+     * @version 1.1.0 Initial version.
+     */
+    private function collectConfigFilesForRetrocompatibility()
+    {
+        $oldConfigFound = false;
+        $oldConfigs = [
+            _PS_CONFIG_DIR_.'xml/themes/'.$this->directory.'.xml',
+            _PS_CONFIG_DIR_.'xml/themes/'.$this->name.'.xml',
+        ];
+        if ($this->name === 'community-theme-default') {
+            $oldConfigs[] = _PS_CONFIG_DIR_.'xml/themes/default.xml';
+        }
+        foreach ($oldConfigs as $oldConfig) {
+            if ($oldConfigFound) {
+                @unlink($oldConfig);
+            } elseif (file_exists($oldConfig)) {
+                rename(
+                    $oldConfig,
+                    _PS_ALL_THEMES_DIR_.$this->directory.'/config.xml'
+                );
+                $oldConfigFound = true;
+            }
+        }
+    }
+
+    /**
      * Return full path of theme's configuration file.
      *
      * @return string|bool Path of the config file or false if none found.
      *
      * @version 1.0.0 Initial version.
-     * @version 1.1.0 Return only existing paths.
+     * @version 1.1.0 Abandon XMLs in config/xml/themes/ in favor of config.xml
+     *                inside the theme directory.
+     * @deprecated 1.1.0 Use loadConfigFile() or loadDefaultConfig() directly.
      */
     public function getConfigFilePath()
     {
-        $path = _PS_CONFIG_DIR_.'xml/themes/'.$this->directory.'.xml';
-        if ( ! file_exists($path)) {
-            // Retrocompatibility: fall back to xml files named by theme name.
-            $path = _PS_CONFIG_DIR_.'xml/themes/'.$this->name.'.xml';
+        $this->collectConfigFilesForRetrocompatibility();
 
-            // Retrocompatibility: community theme might be in default.xml.
-            if ( ! file_exists($path)
-                && $this->name === 'community-theme-default') {
-                $path = _PS_CONFIG_DIR_.'xml/themes/default.xml';
-            }
-        }
-
-        if ( ! file_exists($path)) {
-            return false;
-        }
-
-        return $path;
+        return _PS_ALL_THEMES_DIR_.$this->directory.'/config.xml';
     }
 
     /**
