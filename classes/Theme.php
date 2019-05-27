@@ -583,6 +583,90 @@ class ThemeCore extends ObjectModel
     }
 
     /**
+     * Install a theme with just the directory given.
+     *
+     * Note that files of the theme might be located not yet in
+     * _PS_ALL_THEMES_DIR_ (themes/). If not, the theme gets moved into the
+     * right place.
+     *
+     * @param string $themeDir Theme directory inside _PS_ALL_THEMES_DIR_.
+     *
+     * @return Theme|string Error message or Theme instance on success.
+     *
+     * @version 1.1.0 Initial version.
+     */
+    public static function installFromDir($themeDir)
+    {
+        $xml = static::loadDefaultConfig($themeDir);
+        if ( ! $xml) {
+            return sprintf(Tools::displayError(
+                'Bad or missing config.xml in theme in %s.'),
+                $themeDir
+            );
+        }
+        $xmlAttributes = $xml->attributes();
+
+        if (static::getByName((string) $xmlAttributes['name']) !== false) {
+            return sprintf(Tools::displayError(
+                'A theme with the same name as the theme in %s is already installed.'),
+                $themeDir
+            );
+        }
+
+        $theme = new Theme();
+        $theme->name = (string) $xmlAttributes['name'];
+        $theme->directory = (string) $xmlAttributes['directory'];
+
+        // These are defaults, likely overwritten by the variation.
+        $theme->product_per_page = Configuration::get('PS_PRODUCTS_PER_PAGE');
+        $theme->responsive = false;
+        $theme->default_left_column = true;
+        $theme->default_right_column = true;
+
+        /**
+         * This is an intentional deviation from PrestaShop: only the first
+         * variation gets installed, 'name' and 'directory' of the variation
+         * gets ignored. Having theme distributions with multiple variations is
+         * considered to be overengineering.
+         */
+        if (isset($xml->variations) && is_array($xml->variations)) {
+            if (count($xml->variations) > 1) {
+                return sprintf(Tools::displayError(
+                    'thirty bees supports only themes with at most one variation, the theme in %s has multiple ones.'),
+                    $themeDir
+                );
+            }
+
+            $variation = $xml->variations->variation[0];
+
+            if (array_key_exists('product_per_page', $variation)) {
+                $theme->product_per_page = (int) $variation['product_per_page'];
+            }
+            if (array_key_exists('responsive', $variation)) {
+                $theme->responsive = (bool) (string) $variation['responsive'];
+            }
+            if (array_key_exists('default_left_column', $variation)) {
+                $theme->default_left_column =
+                    (bool) (string) $variation['default_left_column'];
+            }
+            if (array_key_exists('default_right_column', $variation)) {
+                $theme->default_right_column =
+                    (bool) (string) $variation['default_right_column'];
+            }
+        }
+
+        $theme->add();
+        if ( ! Validate::isLoadedObject($theme)) {
+            return sprintf(Tools::displayError(
+                'Error while installing theme in %s'),
+                $themeDir
+            );
+        }
+
+        return $theme;
+    }
+
+    /**
      * Install this theme in the current shop context.
      *
      * @return array Array with the following entries:

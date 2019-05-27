@@ -1528,9 +1528,12 @@ class AdminThemesControllerCore extends AdminController
                 Tools::recurseCopy(_PS_ALL_THEMES_DIR_.$themeDir, $sandbox.$themeDir);
             }
 
-            $xml = Theme::loadDefaultConfig($sandbox.$themeDir);
-            if ($xml) {
-                $importedTheme = $this->importThemeXmlConfig($xml);
+            $result = Theme::installFromDir($sandbox.$themeDir);
+            if (is_string($result)) {
+                $this->errors[] = $result;
+            } else {
+                $importedTheme = [$result];
+                $xml = Theme::loadDefaultConfig($sandbox.$themeDir);
                 foreach ($importedTheme as $theme) {
                     if (Validate::isLoadedObject($theme)) {
                         $targetDir = _PS_ALL_THEMES_DIR_.$theme->directory;
@@ -1550,8 +1553,6 @@ class AdminThemesControllerCore extends AdminController
                         $this->errors[] = $theme;
                     }
                 }
-            } else {
-                $this->errors[] = $this->l('Bad or missing configuration file.');
             }
 
             Tools::deleteDirectory($sandbox);
@@ -1586,79 +1587,6 @@ class AdminThemesControllerCore extends AdminController
         }
 
         return Theme::validateConfigFile(@simplexml_load_file($xmlFile));
-    }
-
-    /**
-     * @param SimpleXMLElement $xml
-     * @param bool             $themeDir Deprecated.
-     *
-     * @return array|string return array of themes on success, otherwise the error as a string is returned
-     *
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     * @version 1.0.0 Initial version.
-     * @version 1.1.0 Deprecated $themeDir.
-     */
-    protected function importThemeXmlConfig(SimpleXMLElement $xml, $themeDir = false)
-    {
-        if ($themeDir !== false) {
-            Tools::displayParameterAsDeprecated('themeDir');
-        }
-
-        $attr = $xml->attributes();
-        $name = (string) $attr->name;
-        if (Theme::getByName($name) !== false) {
-            return [sprintf($this->l('Theme %s already installed.'), $name)];
-        }
-
-        $newThemeArray = [];
-        foreach ($xml->variations->variation as $variation) {
-            $name = strval($variation['name']);
-
-            $newTheme = new Theme();
-            $newTheme->name = $name;
-            $newTheme->directory = strval($variation['directory']);
-
-            if (Theme::getByName($name) !== false) {
-                continue;
-            }
-
-            $newTheme->product_per_page = Configuration::get('PS_PRODUCTS_PER_PAGE');
-            if (isset($variation['product_per_page'])) {
-                $newTheme->product_per_page = intval($variation['product_per_page']);
-            }
-
-            $newTheme->responsive = false;
-            if (isset($variation['responsive'])) {
-                $newTheme->responsive = (bool) strval($variation['responsive']);
-            }
-
-            $newTheme->default_left_column = true;
-            if (isset($variation['default_left_column'])) {
-                $newTheme->default_left_column = (bool) strval($variation['default_left_column']);
-            }
-
-            $newTheme->default_right_column = true;
-            if (isset($variation['default_right_column'])) {
-                $newTheme->default_right_column = (bool) strval($variation['default_right_column']);
-            }
-
-            if (!is_dir(_PS_ALL_THEMES_DIR_.$newTheme->directory)) {
-                if (!mkdir(_PS_ALL_THEMES_DIR_.$newTheme->directory)) {
-                    return sprintf($this->l('Error while creating %s directory'), _PS_ALL_THEMES_DIR_.$newTheme->directory);
-                }
-            }
-
-            $newTheme->add();
-
-            if ($newTheme->id > 0) {
-                $newThemeArray[] = $newTheme;
-            } else {
-                $newThemeArray[] = sprintf($this->l('Error while installing theme %s'), $newTheme->name);
-            }
-        }
-
-        return $newThemeArray;
     }
 
     /**
