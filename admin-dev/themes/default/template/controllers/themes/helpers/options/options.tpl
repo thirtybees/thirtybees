@@ -86,7 +86,7 @@
                       </div>
                     </div>
                   </div>
-                  <img class="center-block img-thumbnail" src="../themes/{$theme.directory}/themes/{$theme.directory}/preview.jpg" alt="{$theme.name}" />
+                  <img class="center-block img-thumbnail" src="../themes/{$theme.directory}/preview.jpg" alt="{$theme.name}" />
                 </div>
               </div>
             </div>
