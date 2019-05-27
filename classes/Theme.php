@@ -152,6 +152,31 @@ class ThemeCore extends ObjectModel
     }
 
     /**
+     * Find a theme by name.
+     *
+     * @param string $directory
+     *
+     * @return bool|Theme Theme instance on success, false if theme not found.
+     *
+     * @version 1.1.0 Initial version.
+     */
+    public static function getByName($name)
+    {
+        $idTheme = (int) Db::getInstance(_PS_USE_SQL_SLAVE_)->getValue(
+            (new DbQuery())
+            ->select('`id_theme`')
+            ->from('theme')
+            ->where('`name` = \''.pSQL($name).'\'')
+        );
+
+        if ($idTheme) {
+            return new Theme($idTheme);
+        }
+
+        return false;
+    }
+
+    /**
      * Checks if theme exists (by folder) and returns Theme object.
      *
      * @param string $directory
