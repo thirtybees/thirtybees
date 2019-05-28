@@ -1009,7 +1009,9 @@ class ThemeCore extends ObjectModel
     }
 
     /**
-     * Get the default configuration file of a theme as SimpleXMLElement.
+     * Get the default configuration file of a theme as SimpleXMLElement. This
+     * works for installed themes and for theme packages before import.
+     *
      *
      * @param string $themePath Directory of the theme. For installed themes
      *                          that's _PS_ALL_THEMES_DIR_.$theme->directory.

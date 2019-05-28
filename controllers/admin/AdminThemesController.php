@@ -1466,11 +1466,6 @@ class AdminThemesControllerCore extends AdminController
                     }
                 }
                 Tools::deleteDirectory($sandbox);
-                if (count($this->errors) > 0) {
-                    $this->display = 'importtheme';
-                } else {
-                    Tools::redirectAdmin($this->context->link->getAdminLink('AdminThemes').'&conf=18');
-                }
             } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 //method is POST but no uplad info -> there is post error
                 $maxPost = (int)ini_get('post_max_size');
@@ -1521,50 +1516,90 @@ class AdminThemesControllerCore extends AdminController
     protected function installTheme($themeDir, $sandbox = false, $redirect = true)
     {
         if ($this->tabAccess['add'] && $this->tabAccess['delete'] && !_PS_MODE_DEMO_) {
-            if (!$sandbox) {
-                $uniqid = uniqid();
-                $sandbox = _PS_CACHE_DIR_.'sandbox'.DIRECTORY_SEPARATOR.$uniqid.DIRECTORY_SEPARATOR;
-                mkdir($sandbox);
-                Tools::recurseCopy(_PS_ALL_THEMES_DIR_.$themeDir, $sandbox.$themeDir);
-            }
+            $targetDir = _PS_ALL_THEMES_DIR_.$themeDir;
 
-            $result = Theme::installFromDir($sandbox.$themeDir);
-            if (is_string($result)) {
-                $this->errors[] = $result;
-            } else {
-                $importedTheme = [$result];
-                $xml = Theme::loadDefaultConfig($sandbox.$themeDir);
-                foreach ($importedTheme as $theme) {
-                    if (Validate::isLoadedObject($theme)) {
-                        $targetDir = _PS_ALL_THEMES_DIR_.$theme->directory;
-                        if (file_exists($targetDir)) {
-                            Tools::deleteDirectory($targetDir);
+            if ($sandbox) {
+                // Load configuration of the theme package.
+                $sandboxDir = $sandbox.'/'.$themeDir;
+                $xml = Theme::loadDefaultConfig($sandboxDir);
+                $xmlAttributes = $xml->attributes();
+                $targetDir = _PS_ALL_THEMES_DIR_.$xmlAttributes['directory'];
+
+                // Copy files of the theme its self.
+                if (file_exists($targetDir)) {
+                    $this->errors[] = sprintf(
+                        $this->l('Theme wants to install into %s, but this directory exists already.'),
+                        $targetDir
+                    );
+                } else {
+                    rename(
+                        $sandboxDir.'/themes/'.$xmlAttributes['directory'],
+                        $targetDir
+                    );
+                    $this->informations[] = sprintf(
+                        $this->l('Installed theme into %s.'),
+                        $targetDir
+                    );
+                }
+
+                if ( ! $this->errors) {
+                    // Copy modules coming with the theme.
+                    $sourceModulesDir = $sandboxDir.'/modules/';
+                    foreach (scandir($sourceModulesDir) as $dir) {
+                        if (in_array($dir, ['.', '..'])
+                            || ! is_dir($sourceModulesDir.$dir)) {
+                            continue;
                         }
-                        $themeDocDir = $targetDir.'/docs/';
-                        if (file_exists($themeDocDir)) {
-                            Tools::deleteDirectory($themeDocDir);
+
+                        if (file_exists(_PS_MODULE_DIR_.$dir)) {
+                            $this->informations[] = sprintf(
+                                $this->l('Theme wanted to install module %s, this existed already.'),
+                                $dir
+                            );
+                        } else {
+                            rename(
+                                $sourceModulesDir.$dir,
+                                _PS_MODULE_DIR_.$dir
+                            );
+                            $this->informations[] = sprintf(
+                                $this->l('Installed module  %s.'),
+                                $dir
+                            );
                         }
-                        mkdir($targetDir);
-                        mkdir($themeDocDir);
-                        Tools::recurseCopy($sandbox.$themeDir.'/themes/'.$theme->directory.'/', $targetDir.'/');
-                        Tools::recurseCopy($sandbox.$themeDir.'/doc/', $themeDocDir);
-                        Tools::recurseCopy($sandbox.$themeDir.'/modules/', _PS_MODULE_DIR_);
-                    } else {
-                        $this->errors[] = $theme;
                     }
+
+                    // Copy documentation.
+                    if (file_exists($sandboxDir.'/doc')
+                        && is_dir($sandboxDir.'/doc')
+                        && ! is_dir($targetDir.'/docs/')
+                    ) {
+                        rename($sandboxDir.'/doc', $targetDir.'/docs/');
+                        $this->informations[] = sprintf(
+                            $this->l('Installed documentation to %s.'),
+                            $targetDir
+                        );
+                    }
+
+                    // Write XML coming with the package into the theme.
+                    // Use DOMDocument to get formatted output.
+                    $dom = new DOMDocument();
+                    $dom->preserveWhiteSpace = false;
+                    $dom->formatOutput = true;
+                    $dom->loadXML($xml->asXML());
+                    $dom->save($targetDir.'/config.xml');
                 }
             }
 
-            Tools::deleteDirectory($sandbox);
-        }
-        if (!count($this->errors)) {
-            if ($redirect) {
-                Tools::redirectAdmin($this->context->link->getAdminLink('AdminThemes').'&conf=18');
-            } else {
-                return true;
+            if ( ! $this->errors) {
+                $result = Theme::installFromDir($targetDir);
+                if (is_string($result)) {
+                    $this->errors[] = $result;
+                }
             }
-        } else {
-            return false;
+        }
+
+        if ( ! count($this->errors) && $redirect) {
+            Tools::redirectAdmin($this->context->link->getAdminLink('AdminThemes').'&conf=18');
         }
     }
 
