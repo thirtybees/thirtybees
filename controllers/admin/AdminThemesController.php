@@ -568,7 +568,7 @@ class AdminThemesControllerCore extends AdminController
                 }
                 $theme->update();
             }
-            Tools::redirectAdmin($this->context->link->getAdminLink('AdminThemes').'&conf=29');
+            $this->redirect_after = static::$currentIndex.'&conf=29&token='.$this->token;
         }
     }
 
@@ -611,7 +611,7 @@ class AdminThemesControllerCore extends AdminController
             } elseif ($obj === false && $themeDir = Tools::getValue('theme_dir')) {
                 $themeDir = basename($themeDir);
                 if (Tools::deleteDirectory(_PS_ALL_THEMES_DIR_.$themeDir.'/')) {
-                    Tools::redirectAdmin($this->context->link->getAdminLink('AdminThemes').'&conf=2');
+                    $this->redirect_after = static::$currentIndex.'&conf=2&token='.$this->token;
                 } else {
                     $this->errors[] = Tools::displayError('The folder cannot be deleted');
                 }
@@ -1599,7 +1599,7 @@ class AdminThemesControllerCore extends AdminController
         }
 
         if ( ! count($this->errors) && $redirect) {
-            Tools::redirectAdmin($this->context->link->getAdminLink('AdminThemes').'&conf=18');
+            $this->redirect_after = static::$currentIndex.'&conf=18&token='.$this->token;
         }
     }
 
@@ -2818,7 +2818,7 @@ class AdminThemesControllerCore extends AdminController
         }
 
         if (!count($this->errors)) {
-            Tools::redirectAdmin($this->context->link->getAdminLink('AdminThemes').'&conf=6');
+            $this->redirect_after = static::$currentIndex.'&conf=6&token='.$this->token;
         }
     }
 
