@@ -1025,7 +1025,12 @@ class AdminThemesControllerCore extends AdminController
         $zip = new ZipArchive();
         $zipFileName = md5(time()).'.zip';
         if ($zip->open(_PS_CACHE_DIR_.$zipFileName, ZipArchive::OVERWRITE | ZipArchive::CREATE) === true) {
-            if (!$zip->addFromString('config.xml', $this->xml_file)) {
+            // Use DOMDocument to get formatted output.
+            $dom = new DOMDocument();
+            $dom->preserveWhiteSpace = false;
+            $dom->formatOutput = true;
+            $dom->loadXML($this->xml_file);
+            if (!$zip->addFromString('config.xml', $dom->saveXML())) {
                 $this->errors[] = $this->l('Cannot create config file.');
             }
 
