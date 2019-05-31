@@ -642,7 +642,14 @@ class AdminThemesControllerCore extends AdminController
 
             $table = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
                 (new DbQuery())
-                    ->select('`name`, `width`, `products`, `categories`, `manufacturers`, `suppliers`, `scenes`')
+                    ->select('`name`')
+                    ->select('`width`')
+                    ->select('`height`')
+                    ->select('`products`')
+                    ->select('`categories`')
+                    ->select('`manufacturers`')
+                    ->select('`suppliers`')
+                    ->select('`scenes`')
                     ->from('image_type')
                     ->where('`name` LIKE \''.pSQL($themeName).'_%\'')
             );
