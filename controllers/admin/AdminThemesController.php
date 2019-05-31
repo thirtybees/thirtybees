@@ -635,6 +635,7 @@ class AdminThemesControllerCore extends AdminController
     {
         if (Tools::isSubmit('name')
             && $this->checkPostedDatas()) {
+            $themeName = Tools::getValue('theme_name');
             $filename = Tools::htmlentitiesUTF8($_FILES['documentation']['name']);
             $name = Tools::htmlentitiesUTF8(Tools::getValue('documentationName'));
             $this->user_doc = [$name.'¤doc/'.$filename];
@@ -643,6 +644,7 @@ class AdminThemesControllerCore extends AdminController
                 (new DbQuery())
                     ->select('`name`, `width`, `products`, `categories`, `manufacturers`, `suppliers`, `scenes`')
                     ->from('image_type')
+                    ->where('`name` LIKE \''.pSQL($themeName).'_%\'')
             );
 
             $this->image_list = [];
