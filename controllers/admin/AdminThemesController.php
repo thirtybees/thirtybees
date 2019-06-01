@@ -696,37 +696,46 @@ class AdminThemesControllerCore extends AdminController
                     ->orderBy('name_module')
             );
 
-            $notThemeModules = Module::getNotThemeRelatedModules();
-
             foreach ($this->hook_list as &$row) {
                 $row['exceptions'] = trim(preg_replace('/(,,+)/', ',', $row['exceptions']), ',');
             }
+
+            // Get a list of modules available on the module update server. As
+            // these are always available, there's no need to package them.
+            $moduleUpdater = Module::getInstanceByName('tbupdater');
+            if ( ! Validate::isLoadedObject($moduleUpdater)) {
+                $this->errors[] = $this->l('Module \'tbupdater\' must be installed to allow exporting a theme.');
+
+                return;
+            }
+            $thirtybeesModules = array_keys($moduleUpdater->getCachedModulesInfo());
+
+            $notThemeModules = Module::getNotThemeRelatedModules();
 
             $this->to_install = [];
             $this->to_enable = [];
             $this->to_hook = [];
 
-            foreach ($this->module_list as $array) {
-                if (in_array($array['name'], $notThemeModules)) {
-                    if ($array['active'] == 1) {
-                        $this->to_enable[] = $array['name'];
+            foreach ($this->module_list as $module) {
+                if ( ! in_array($module['name'], $notThemeModules)) {
+                    if ($module['active'] == 1) {
+                        $this->to_enable[] = $module['name'];
                     } else {
-                        $this->to_disable[] = $array['name'];
+                        $this->to_disable[] = $module['name'];
                     }
-                } elseif ($array['active'] == 1) {
-                    $this->to_install[] = $array['name'];
+                    if ( ! in_array($module['name'], $thirtybeesModules)
+                        && $module['active'] == 1
+                    ) {
+                        $this->to_install[] = $module['name'];
+                    }
                 }
             }
-            foreach ($notThemeModules as $str) {
-                $flag = 0;
-                foreach ($this->module_list as $tmp) {
-                    if (in_array($str, $tmp)) {
-                        $flag = 1;
-                        break;
-                    }
-                }
-                if ($flag == 0) {
-                    $this->to_disable[] = $str;
+            foreach ($thirtybeesModules as $module) {
+                if ( ! in_array($module, $notThemeModules)
+                    && ! in_array($module, $this->to_enable)
+                    && ! in_array($module, $this->to_disable)
+                ) {
+                    $this->to_disable[] = $module;
                 }
             }
 
