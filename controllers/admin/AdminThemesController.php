@@ -1026,7 +1026,9 @@ class AdminThemesControllerCore extends AdminController
                 if ($toComparePath != realpath(_PS_ALL_THEMES_DIR_)) {
                     $this->errors[] = $this->l('Wrong theme directory path');
                 } else {
-                    $this->archiveThisFile($zip, Tools::getValue('theme_directory'), _PS_ALL_THEMES_DIR_, 'themes/');
+                    $themeDir = Tools::getValue('theme_directory');
+                    $this->archiveThisFile($zip, $themeDir, _PS_ALL_THEMES_DIR_, 'themes/');
+                    $zip->deleteName('themes/'.$themeDir.'/config.xml');
                     foreach ($this->to_export as $row) {
                         $this->archiveThisFile($zip, $row, _PS_ROOT_DIR_.'/modules/', 'modules/');
                     }
