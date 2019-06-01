@@ -49,7 +49,7 @@ class AdminThemesControllerCore extends AdminController
     public $to_hook = [];
     public $hook_list = [];
     public $module_list = [];
-    public $native_modules = [];
+    public $native_modules = []; // Deprecate, always empty.
     public $user_doc = [];
     public $image_list = [];
     public $to_export = [];
@@ -696,7 +696,7 @@ class AdminThemesControllerCore extends AdminController
                     ->orderBy('name_module')
             );
 
-            $this->native_modules = Module::getNotThemeRelatedModules();
+            $notThemeModules = Module::getNotThemeRelatedModules();
 
             foreach ($this->hook_list as &$row) {
                 $row['exceptions'] = trim(preg_replace('/(,,+)/', ',', $row['exceptions']), ',');
@@ -707,7 +707,7 @@ class AdminThemesControllerCore extends AdminController
             $this->to_hook = [];
 
             foreach ($this->module_list as $array) {
-                if (in_array($array['name'], $this->native_modules)) {
+                if (in_array($array['name'], $notThemeModules)) {
                     if ($array['active'] == 1) {
                         $this->to_enable[] = $array['name'];
                     } else {
@@ -717,7 +717,7 @@ class AdminThemesControllerCore extends AdminController
                     $this->to_install[] = $array['name'];
                 }
             }
-            foreach ($this->native_modules as $str) {
+            foreach ($notThemeModules as $str) {
                 $flag = 0;
                 foreach ($this->module_list as $tmp) {
                     if (in_array($str, $tmp)) {
@@ -935,14 +935,10 @@ class AdminThemesControllerCore extends AdminController
             $metaXml->addAttribute('right', $row['right_column']);
         }
         $modules = $theme->addChild('modules');
-        if (isset($this->to_export)) {
-            foreach ($this->to_export as $row) {
-                if (!in_array($row, $this->native_modules)) {
-                    $module = $modules->addChild('module');
-                    $module->addAttribute('action', 'install');
-                    $module->addAttribute('name', $row);
-                }
-            }
+        foreach ($this->to_export as $row) {
+            $module = $modules->addChild('module');
+            $module->addAttribute('action', 'install');
+            $module->addAttribute('name', $row);
         }
         foreach ($this->to_enable as $row) {
             $module = $modules->addChild('module');
@@ -1023,9 +1019,7 @@ class AdminThemesControllerCore extends AdminController
                 } else {
                     $this->archiveThisFile($zip, Tools::getValue('theme_directory'), _PS_ALL_THEMES_DIR_, 'themes/');
                     foreach ($this->to_export as $row) {
-                        if (!in_array($row, $this->native_modules)) {
-                            $this->archiveThisFile($zip, $row, _PS_ROOT_DIR_.'/modules/', 'modules/');
-                        }
+                        $this->archiveThisFile($zip, $row, _PS_ROOT_DIR_.'/modules/', 'modules/');
                     }
                 }
             } else {
