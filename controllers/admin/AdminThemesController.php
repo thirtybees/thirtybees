@@ -707,9 +707,6 @@ class AdminThemesControllerCore extends AdminController
             $this->to_hook = [];
 
             foreach ($this->module_list as $array) {
-                if (!static::checkParentClass($array['name'])) {
-                    continue;
-                }
                 if (in_array($array['name'], $this->native_modules)) {
                     if ($array['active'] == 1) {
                         $this->to_enable[] = $array['name'];
@@ -722,9 +719,6 @@ class AdminThemesControllerCore extends AdminController
             }
             foreach ($this->native_modules as $str) {
                 $flag = 0;
-                if (!static::checkParentClass($str)) {
-                    continue;
-                }
                 foreach ($this->module_list as $tmp) {
                     if (in_array($str, $tmp)) {
                         $flag = 1;
@@ -879,42 +873,6 @@ class AdminThemesControllerCore extends AdminController
         }
 
         return true;
-    }
-
-    /**
-     * Check parent class
-     *
-     * @param $name
-     *
-     * @return bool
-     *
-     * @throws Adapter_Exception
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     * @since 1.0.0
-     */
-    protected function checkParentClass($name)
-    {
-        if (!$obj = Module::getInstanceByName($name)) {
-            return false;
-        }
-        if (is_callable([$obj, 'validateOrder'])) {
-            return false;
-        }
-        if (is_callable([$obj, 'getDateBetween'])) {
-            return false;
-        }
-        if (is_callable([$obj, 'getGridEngines'])) {
-            return false;
-        }
-        if (is_callable([$obj, 'getGraphEngines'])) {
-            return false;
-        }
-        if (is_callable([$obj, 'hookAdminStatsModules'])) {
-            return false;
-        } else {
-            return true;
-        }
     }
 
     /**
@@ -1182,8 +1140,7 @@ class AdminThemesControllerCore extends AdminController
         $thirtybeesModules = array_keys($moduleUpdater->getCachedModulesInfo());
 
         foreach ($moduleList as $array) {
-            if (static::checkParentClass($array['name'])
-                && ! in_array($array['name'], $thirtybeesModules)
+            if ( ! in_array($array['name'], $thirtybeesModules)
                 && $array['active'] == 1) {
                 $toInstall[] = $array['name'];
             }
