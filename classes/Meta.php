@@ -117,15 +117,25 @@ class MetaCore extends ObjectModel
             }
         }
 
-        // Add modules controllers to list (this function is cool !)
-        foreach (glob(_PS_MODULE_DIR_.'*/controllers/front/*.php') as $file) {
-            $filename = mb_strtolower(basename($file, '.php'));
-            if ($filename == 'index') {
-                continue;
-            }
+        // Add module controllers to list.
+        $moduleDirs = Module::getModulesDirOnDisk();
+        foreach ($moduleDirs as $module) {
+            if (Module::isInstalled($module)) {
+                $path = _PS_MODULE_DIR_.$module.'/controllers/front/';
+                if ( ! is_dir($path)) {
+                    continue;
+                }
 
-            $module = mb_strtolower(basename(dirname(dirname(dirname($file)))));
-            $selectedPages[$module.' - '.$filename] = 'module-'.$module.'-'.$filename;
+                foreach (scandir($path) as $file) {
+                    if (in_array($file, ['.', '..', 'index.php'])) {
+                        continue;
+                    }
+
+                    $filename = mb_strtolower(basename($file, '.php'));
+                    $selectedPages[$module.' - '.$filename]
+                        = 'module-'.$module.'-'.$filename;
+                }
+            }
         }
 
         // Exclude page already filled
