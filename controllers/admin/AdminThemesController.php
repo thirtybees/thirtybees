@@ -659,7 +659,7 @@ class AdminThemesControllerCore extends AdminController
                 (new DbQuery())
                     ->select('`id_shop`')
                     ->from('shop')
-                    ->where('`id_theme` = '.(int) Tools::getValue('id_theme_export'))
+                    ->where('`id_theme` = '.$this->context->shop->id_theme)
             );
 
             // Select the list of module for this shop
@@ -749,7 +749,7 @@ class AdminThemesControllerCore extends AdminController
                 }
             }
 
-            $themeToExport = new Theme((int) Tools::getValue('id_theme_export'));
+            $themeToExport = new Theme($this->context->shop->id_theme);
             $metas = $themeToExport->getMetas();
 
             $this->generateXML($themeToExport, $metas);
@@ -1110,7 +1110,7 @@ class AdminThemesControllerCore extends AdminController
     }
 
     /**
-     * Render theme export
+     * Render export theme.
      *
      * @return string
      *
@@ -1119,72 +1119,11 @@ class AdminThemesControllerCore extends AdminController
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
-     * @since 1.0.0
+     * @version 1.0.0 Initial version.
+     * @version 1.1.0 Renamed from renderExportTheme1(). Always render export
+     *                of the current theme.
      */
-    public function renderExportTheme()
-    {
-        if (Tools::getIsset('id_theme_export') && (int) Tools::getValue('id_theme_export') > 0) {
-            return $this->renderExportTheme1();
-        }
-
-        $themeList = Theme::getThemes();
-        $fieldsForm = [
-            'form' => [
-                'tinymce' => false,
-                'legend'  => [
-                    'title' => $this->l('Theme'),
-                    'icon'  => 'icon-picture',
-                ],
-                'input'   => [
-                    [
-                        'type'    => 'select',
-                        'name'    => 'id_theme_export',
-                        'label'   => $this->l('Choose the theme that you want to export'),
-                        'options' => [
-                            'id'    => 'id',
-                            'name'  => 'name',
-                            'query' => $themeList,
-                        ],
-
-                    ],
-                ],
-                'submit'  => [
-                    'title' => $this->l('Save'),
-                ],
-            ],
-        ];
-
-        $toolbarBtn['save'] = [
-            'href' => '#',
-            'desc' => $this->l('Export'),
-        ];
-
-        $fieldsValue['id_theme_export'] = [];
-        $helper = new HelperForm();
-
-        $helper->currentIndex = $this->context->link->getAdminLink('AdminThemes', false).'&action=exporttheme';
-        $helper->token = Tools::getAdminTokenLite('AdminThemes');
-        $helper->show_toolbar = true;
-        $helper->fields_value = $fieldsValue;
-        $helper->toolbar_btn = $toolbarBtn;
-        $helper->override_folder = $this->tpl_folder;
-
-        return $helper->generateForm([$fieldsForm]);
-    }
-
-    /**
-     * Render export theme 1
-     *
-     * @return string
-     *
-     * @throws Adapter_Exception
-     * @throws Exception
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     * @throws SmartyException
-     * @since 1.0.0
-     */
-    protected function renderExportTheme1()
+    protected function renderExportTheme()
     {
         $toInstall = [];
 
@@ -1240,7 +1179,7 @@ class AdminThemesControllerCore extends AdminController
 
         $this->formatHelperArray($toInstall);
 
-        $theme = new Theme(Tools::getValue('id_theme_export'));
+        $theme = new Theme($this->context->shop->id_theme);
 
         $fieldsForm = [
             'form' => [
@@ -1250,10 +1189,6 @@ class AdminThemesControllerCore extends AdminController
                     'icon'  => 'icon-picture',
                 ],
                 'input'   => [
-                    [
-                        'type' => 'hidden',
-                        'name' => 'id_theme_export',
-                    ],
                     [
                         'type'  => 'text',
                         'name'  => 'name',
@@ -1346,7 +1281,6 @@ class AdminThemesControllerCore extends AdminController
         $fieldsValue['theme_directory'] = $theme->directory;
         $fieldsValue['theme_version'] = '1.0';
         $fieldsValue['compa_from'] = _TB_VERSION_;
-        $fieldsValue['id_theme_export'] = Tools::getValue('id_theme_export');
         $fieldsValue['documentationName'] = $this->l('documentation');
 
         $toolbarBtn['save'] = [
@@ -1824,7 +1758,7 @@ class AdminThemesControllerCore extends AdminController
 
             $this->page_header_toolbar_btn['export_theme'] = [
                 'href' => static::$currentIndex.'&action=exporttheme&token='.$this->token,
-                'desc' => $this->l('Export theme', null, null, false),
+                'desc' => $this->l('Export current theme', null, null, false),
                 'icon' => 'process-icon-export',
             ];
         }
