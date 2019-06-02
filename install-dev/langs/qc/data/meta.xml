@@ -6,60 +6,6 @@
     <keywords/>
     <url_rewrite>page-introuvable</url_rewrite>
   </meta>
-  <meta id="best-sales" id_shop="1">
-    <title>Meilleures ventes</title>
-    <description>Nos meilleures ventes</description>
-    <keywords/>
-    <url_rewrite>meilleures-ventes</url_rewrite>
-  </meta>
-  <meta id="contact" id_shop="1">
-    <title>Nous contacter</title>
-    <description>Utiliser le formulaire pour nous contacter</description>
-    <keywords/>
-    <url_rewrite>nous-contacter</url_rewrite>
-  </meta>
-  <meta id="index" id_shop="1">
-    <title/>
-    <description>Boutique propulsée par thirty bees.</description>
-    <keywords>shop, thirty bees</keywords>
-    <url_rewrite/>
-  </meta>
-  <meta id="manufacturer" id_shop="1">
-    <title>Fabricants</title>
-    <description>Liste des fabricants</description>
-    <keywords/>
-    <url_rewrite>fabricants</url_rewrite>
-  </meta>
-  <meta id="new-products" id_shop="1">
-    <title>Nouveaux produits</title>
-    <description>Nos nouveaux produits</description>
-    <keywords/>
-    <url_rewrite>nouveaux-produits</url_rewrite>
-  </meta>
-  <meta id="password" id_shop="1">
-    <title>Mot de passe oublié</title>
-    <description>Entrez l'adresse e-mail que vous utilisez pour vous connecter afin de recevoir un e-mail avec un nouveau mot de passe</description>
-    <keywords/>
-    <url_rewrite>recuperation-mot-de-passe</url_rewrite>
-  </meta>
-  <meta id="prices-drop" id_shop="1">
-    <title>Promotions</title>
-    <description>Nos promotions</description>
-    <keywords/>
-    <url_rewrite>promotions</url_rewrite>
-  </meta>
-  <meta id="sitemap" id_shop="1">
-    <title>Plan du site</title>
-    <description>Vous êtes perdu ? Trouvez ce que vous cherchez</description>
-    <keywords/>
-    <url_rewrite>plan-site</url_rewrite>
-  </meta>
-  <meta id="supplier" id_shop="1">
-    <title>Fournisseurs</title>
-    <description>Liste des fournisseurs</description>
-    <keywords/>
-    <url_rewrite>fournisseur</url_rewrite>
-  </meta>
   <meta id="address" id_shop="1">
     <title>Adresse</title>
     <description/>
@@ -78,17 +24,35 @@
     <keywords/>
     <url_rewrite>connexion</url_rewrite>
   </meta>
+  <meta id="best-sales" id_shop="1">
+    <title>Meilleures ventes</title>
+    <description>Nos meilleures ventes</description>
+    <keywords/>
+    <url_rewrite>meilleures-ventes</url_rewrite>
+  </meta>
   <meta id="cart" id_shop="1">
     <title>Panier</title>
     <description/>
     <keywords/>
     <url_rewrite>panier</url_rewrite>
   </meta>
+  <meta id="contact" id_shop="1">
+    <title>Nous contacter</title>
+    <description>Utiliser le formulaire pour nous contacter</description>
+    <keywords/>
+    <url_rewrite>nous-contacter</url_rewrite>
+  </meta>
   <meta id="discount" id_shop="1">
     <title>Réduction</title>
     <description/>
     <keywords/>
     <url_rewrite>reduction</url_rewrite>
+  </meta>
+  <meta id="guest-tracking" id_shop="1">
+    <title>Suivi de commande invité</title>
+    <description/>
+    <keywords/>
+    <url_rewrite>suivi-commande-invite</url_rewrite>
   </meta>
   <meta id="history" id_shop="1">
     <title>Historique des commandes</title>
@@ -102,23 +66,29 @@
     <keywords/>
     <url_rewrite>identite</url_rewrite>
   </meta>
+  <meta id="index" id_shop="1">
+    <title/>
+    <description>Boutique propulsée par thirty bees.</description>
+    <keywords>shop, thirty bees</keywords>
+    <url_rewrite/>
+  </meta>
+  <meta id="manufacturer" id_shop="1">
+    <title>Fabricants</title>
+    <description>Liste des fabricants</description>
+    <keywords/>
+    <url_rewrite>fabricants</url_rewrite>
+  </meta>
   <meta id="my-account" id_shop="1">
     <title>Mon compte</title>
     <description/>
     <keywords/>
     <url_rewrite>mon-compte</url_rewrite>
   </meta>
-  <meta id="order-follow" id_shop="1">
-    <title>Suivi de commande</title>
-    <description/>
+  <meta id="new-products" id_shop="1">
+    <title>Nouveaux produits</title>
+    <description>Nos nouveaux produits</description>
     <keywords/>
-    <url_rewrite>suivi-commande</url_rewrite>
-  </meta>
-  <meta id="order-slip" id_shop="1">
-    <title>Avoirs</title>
-    <description/>
-    <keywords/>
-    <url_rewrite>avoirs</url_rewrite>
+    <url_rewrite>nouveaux-produits</url_rewrite>
   </meta>
   <meta id="order" id_shop="1">
     <title>Commande</title>
@@ -126,17 +96,17 @@
     <keywords/>
     <url_rewrite>commande</url_rewrite>
   </meta>
-  <meta id="search" id_shop="1">
-    <title>Recherche</title>
+  <meta id="order-confirmation" id_shop="1">
+    <title>Confirmation de commande</title>
     <description/>
     <keywords/>
-    <url_rewrite>recherche</url_rewrite>
+    <url_rewrite>confirmation-commande</url_rewrite>
   </meta>
-  <meta id="stores" id_shop="1">
-    <title>Magasins</title>
+  <meta id="order-follow" id_shop="1">
+    <title>Suivi de commande</title>
     <description/>
     <keywords/>
-    <url_rewrite>magasins</url_rewrite>
+    <url_rewrite>suivi-commande</url_rewrite>
   </meta>
   <meta id="order-opc" id_shop="1">
     <title>Commande</title>
@@ -144,22 +114,52 @@
     <keywords/>
     <url_rewrite>commande-rapide</url_rewrite>
   </meta>
-  <meta id="guest-tracking" id_shop="1">
-    <title>Suivi de commande invité</title>
+  <meta id="order-slip" id_shop="1">
+    <title>Avoirs</title>
     <description/>
     <keywords/>
-    <url_rewrite>suivi-commande-invite</url_rewrite>
+    <url_rewrite>avoirs</url_rewrite>
   </meta>
-  <meta id="order-confirmation" id_shop="1">
-    <title>Confirmation de commande</title>
-    <description/>
+  <meta id="password" id_shop="1">
+    <title>Mot de passe oublié</title>
+    <description>Entrez l'adresse e-mail que vous utilisez pour vous connecter afin de recevoir un e-mail avec un nouveau mot de passe</description>
     <keywords/>
-    <url_rewrite>confirmation-commande</url_rewrite>
+    <url_rewrite>recuperation-mot-de-passe</url_rewrite>
+  </meta>
+  <meta id="prices-drop" id_shop="1">
+    <title>Promotions</title>
+    <description>Nos promotions</description>
+    <keywords/>
+    <url_rewrite>promotions</url_rewrite>
   </meta>
   <meta id="products-comparison" id_shop="1">
     <title>Comparaison de produits</title>
     <description/>
     <keywords/>
     <url_rewrite>comparaison-produits</url_rewrite>
+  </meta>
+  <meta id="search" id_shop="1">
+    <title>Recherche</title>
+    <description/>
+    <keywords/>
+    <url_rewrite>recherche</url_rewrite>
+  </meta>
+  <meta id="sitemap" id_shop="1">
+    <title>Plan du site</title>
+    <description>Vous êtes perdu ? Trouvez ce que vous cherchez</description>
+    <keywords/>
+    <url_rewrite>plan-site</url_rewrite>
+  </meta>
+  <meta id="stores" id_shop="1">
+    <title>Magasins</title>
+    <description/>
+    <keywords/>
+    <url_rewrite>magasins</url_rewrite>
+  </meta>
+  <meta id="supplier" id_shop="1">
+    <title>Fournisseurs</title>
+    <description>Liste des fournisseurs</description>
+    <keywords/>
+    <url_rewrite>fournisseur</url_rewrite>
   </meta>
 </entity_meta>
