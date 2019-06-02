@@ -120,18 +120,6 @@
 			<page>cms</page>
 			<configurable>0</configurable>
 		</meta>
-		<meta id="module-bankwire-validation">
-			<page>module-bankwire-validation</page>
-			<configurable>0</configurable>
-		</meta>
-		<meta id="module-bankwire-payment">
-			<page>module-bankwire-payment</page>
-			<configurable>0</configurable>
-		</meta>
-		<meta id="module-cashondelivery-validation">
-			<page>module-cashondelivery-validation</page>
-			<configurable>0</configurable>
-		</meta>
 		<meta id="products-comparison">
 			<page>products-comparison</page>
 			<configurable>1</configurable>
