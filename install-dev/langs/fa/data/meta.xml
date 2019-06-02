@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <entity_meta>
-  <meta id="404" id_shop="1">
-    <title>404 error</title>
-    <description>صفحه مورد نظر پیدا نشد</description>
-    <keywords/>
-    <url_rewrite>page-not-found</url_rewrite>
-  </meta>
   <meta id="address" id_shop="1">
     <title>آدرس</title>
     <description/>
@@ -17,6 +11,12 @@
     <description/>
     <keywords/>
     <url_rewrite>addresses</url_rewrite>
+  </meta>
+  <meta id="attachment" id_shop="1">
+    <title>Attachment</title>
+    <description/>
+    <keywords/>
+    <url_rewrite>attachment</url_rewrite>
   </meta>
   <meta id="authentication" id_shop="1">
     <title>ورود</title>
@@ -47,6 +47,18 @@
     <description/>
     <keywords/>
     <url_rewrite>discount</url_rewrite>
+  </meta>
+  <meta id="favicon" id_shop="1">
+    <title>Favicon</title>
+    <description/>
+    <keywords/>
+    <url_rewrite>favicon</url_rewrite>
+  </meta>
+  <meta id="getfile" id_shop="1">
+    <title>Getfile</title>
+    <description/>
+    <keywords/>
+    <url_rewrite>getfile</url_rewrite>
   </meta>
   <meta id="guest-tracking" id_shop="1">
     <title>پیگیری مهمان</title>
@@ -102,6 +114,12 @@
     <keywords/>
     <url_rewrite>order-confirmation</url_rewrite>
   </meta>
+  <meta id="order-detail" id_shop="1">
+    <title>Order-detail</title>
+    <description/>
+    <keywords/>
+    <url_rewrite>order-detail</url_rewrite>
+  </meta>
   <meta id="order-follow" id_shop="1">
     <title>پیگیری سفارش</title>
     <description/>
@@ -114,17 +132,47 @@
     <keywords/>
     <url_rewrite>quick-order</url_rewrite>
   </meta>
+  <meta id="order-return" id_shop="1">
+    <title>Order-return</title>
+    <description/>
+    <keywords/>
+    <url_rewrite>order-return</url_rewrite>
+  </meta>
   <meta id="order-slip" id_shop="1">
     <title>رسید سفارش</title>
     <description/>
     <keywords/>
     <url_rewrite>order-slip</url_rewrite>
   </meta>
+  <meta id="pagenotfound" id_shop="1">
+    <title>Pagenotfound</title>
+    <description/>
+    <keywords/>
+    <url_rewrite>pagenotfound</url_rewrite>
+  </meta>
   <meta id="password" id_shop="1">
     <title>فراموشی گذرواژه</title>
     <description>برای دریافت رمز عبور خود توسط ایمیل میتوانید پست الکترونیکی که با آن ثبت نام کرده بودید را وارد کنید</description>
     <keywords/>
     <url_rewrite>password-recovery</url_rewrite>
+  </meta>
+  <meta id="pdf-invoice" id_shop="1">
+    <title>Pdf-invoice</title>
+    <description/>
+    <keywords/>
+    <url_rewrite>pdf-invoice</url_rewrite>
+  </meta>
+  <meta id="pdf-order-return" id_shop="1">
+    <title>Pdf-order-return</title>
+    <description/>
+    <keywords/>
+    <url_rewrite>pdf-order-return</url_rewrite>
+  </meta>
+  <meta id="pdf-order-slip" id_shop="1">
+    <title>Pdf-order-slip</title>
+    <description/>
+    <keywords/>
+    <url_rewrite>pdf-order-slip</url_rewrite>
   </meta>
   <meta id="prices-drop" id_shop="1">
     <title>کاهش قیمت ها</title>

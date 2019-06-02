@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <entity_meta>
-  <meta id="404" id_shop="1">
-    <title>Eror 404</title>
-    <description>Halaman tidak ditemukan</description>
-    <keywords>error, 404, not found</keywords>
-    <url_rewrite>halaman-tidak-ditemukan</url_rewrite>
-  </meta>
   <meta id="address" id_shop="1">
     <title>Alamat</title>
     <description/>
@@ -17,6 +11,12 @@
     <description/>
     <keywords/>
     <url_rewrite>daftar-alamat</url_rewrite>
+  </meta>
+  <meta id="attachment" id_shop="1">
+    <title>Attachment</title>
+    <description/>
+    <keywords/>
+    <url_rewrite>attachment</url_rewrite>
   </meta>
   <meta id="authentication" id_shop="1">
     <title>Login</title>
@@ -47,6 +47,18 @@
     <description/>
     <keywords/>
     <url_rewrite>diskon</url_rewrite>
+  </meta>
+  <meta id="favicon" id_shop="1">
+    <title>Favicon</title>
+    <description/>
+    <keywords/>
+    <url_rewrite>favicon</url_rewrite>
+  </meta>
+  <meta id="getfile" id_shop="1">
+    <title>Getfile</title>
+    <description/>
+    <keywords/>
+    <url_rewrite>getfile</url_rewrite>
   </meta>
   <meta id="guest-tracking" id_shop="1">
     <title>Guest tracking</title>
@@ -102,6 +114,12 @@
     <keywords/>
     <url_rewrite>konfirmasi-pembelian</url_rewrite>
   </meta>
+  <meta id="order-detail" id_shop="1">
+    <title>Order-detail</title>
+    <description/>
+    <keywords/>
+    <url_rewrite>order-detail</url_rewrite>
+  </meta>
   <meta id="order-follow" id_shop="1">
     <title>Pantau order</title>
     <description/>
@@ -114,17 +132,47 @@
     <keywords/>
     <url_rewrite>quick-order</url_rewrite>
   </meta>
+  <meta id="order-return" id_shop="1">
+    <title>Order-return</title>
+    <description/>
+    <keywords/>
+    <url_rewrite>order-return</url_rewrite>
+  </meta>
   <meta id="order-slip" id_shop="1">
     <title>Slip order</title>
     <description/>
     <keywords/>
     <url_rewrite>slip-order</url_rewrite>
   </meta>
+  <meta id="pagenotfound" id_shop="1">
+    <title>Pagenotfound</title>
+    <description/>
+    <keywords/>
+    <url_rewrite>pagenotfound</url_rewrite>
+  </meta>
   <meta id="password" id_shop="1">
     <title>Lupa password</title>
     <description>Isi alamat e-mail dengan alamat e-mail yang Anda gunakan sewaktu mendaftar yang akan digunakan untuk mengirim password baru</description>
     <keywords>forgot, password, e-mail, new, reset</keywords>
     <url_rewrite>lupa-password</url_rewrite>
+  </meta>
+  <meta id="pdf-invoice" id_shop="1">
+    <title>Pdf-invoice</title>
+    <description/>
+    <keywords/>
+    <url_rewrite>pdf-invoice</url_rewrite>
+  </meta>
+  <meta id="pdf-order-return" id_shop="1">
+    <title>Pdf-order-return</title>
+    <description/>
+    <keywords/>
+    <url_rewrite>pdf-order-return</url_rewrite>
+  </meta>
+  <meta id="pdf-order-slip" id_shop="1">
+    <title>Pdf-order-slip</title>
+    <description/>
+    <keywords/>
+    <url_rewrite>pdf-order-slip</url_rewrite>
   </meta>
   <meta id="prices-drop" id_shop="1">
     <title>Turun harga</title>
