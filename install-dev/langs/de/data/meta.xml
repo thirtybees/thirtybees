@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <entity_meta>
   <meta id="404" id_shop="1">
     <title>Fehler 404</title>
@@ -151,7 +151,7 @@
     <url_rewrite>auftragsverfolgung-gast</url_rewrite>
   </meta>
   <meta id="order-confirmation" id_shop="1">
-    <title>Bestellbest&#xE4;tigung</title>
+    <title>Bestellbestätigung</title>
     <description/>
     <keywords/>
     <url_rewrite>bestellbestatigung</url_rewrite>

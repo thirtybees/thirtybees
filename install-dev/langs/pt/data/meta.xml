@@ -1,8 +1,8 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <entity_meta>
   <meta id="404" id_shop="1">
     <title>erro 404</title>
-    <description>Esta p&#xE1;gina n&#xE3;o pode ser encontrada</description>
+    <description>Esta página não pode ser encontrada</description>
     <keywords>error, 404, not found</keywords>
     <url_rewrite>page-not-found</url_rewrite>
   </meta>
@@ -14,8 +14,8 @@
   </meta>
   <meta id="contact" id_shop="1">
     <title>Contacte-nos</title>
-    <description>Use o nosso formul&#xE1;rio para nos contactar</description>
-    <keywords>contactos, f&#243;rmul&#225;rio, e-mail, telefone</keywords>
+    <description>Use o nosso formulário para nos contactar</description>
+    <keywords>contactos, fórmulário, e-mail, telefone</keywords>
     <url_rewrite>contacte-nos</url_rewrite>
   </meta>
   <meta id="index" id_shop="1">
@@ -43,9 +43,9 @@
     <url_rewrite>recuperar-palavra-passe</url_rewrite>
   </meta>
   <meta id="prices-drop" id_shop="1">
-    <title>Promo&#xE7;&#xE3;o</title>
+    <title>Promoção</title>
     <description>Os nossos produtos com descontos</description>
-    <keywords>promo&#231;&#245;es, promo&#231;&#227;o, desconto, descontos</keywords>
+    <keywords>promoções, promoção, desconto, descontos</keywords>
     <url_rewrite>promocoes</url_rewrite>
   </meta>
   <meta id="sitemap" id_shop="1">
@@ -61,21 +61,21 @@
     <url_rewrite>fornecedores</url_rewrite>
   </meta>
   <meta id="address" id_shop="1">
-    <title>Endere&#231;o</title>
-    <description>Endere&#231;o</description>
-    <keywords>endere&#231;o</keywords>
+    <title>Endereço</title>
+    <description>Endereço</description>
+    <keywords>endereço</keywords>
     <url_rewrite>endereco</url_rewrite>
   </meta>
   <meta id="addresses" id_shop="1">
-    <title>Endere&#231;os</title>
-    <description>Endere&#231;os</description>
-    <keywords>endere&#231;os</keywords>
+    <title>Endereços</title>
+    <description>Endereços</description>
+    <keywords>endereços</keywords>
     <url_rewrite>enderecos</url_rewrite>
   </meta>
   <meta id="authentication" id_shop="1">
-    <title>Inicio de Sess&#227;o</title>
-    <description>Inicio de Sess&#227;o</description>
-    <keywords>inicio de sess&#227;o</keywords>
+    <title>Inicio de Sessão</title>
+    <description>Inicio de Sessão</description>
+    <keywords>inicio de sessão</keywords>
     <url_rewrite>inicio-de-sessao</url_rewrite>
   </meta>
   <meta id="cart" id_shop="1">
@@ -91,7 +91,7 @@
     <url_rewrite>descontos</url_rewrite>
   </meta>
   <meta id="history" id_shop="1">
-    <title>Hist&#xF3;rico de Encomendas</title>
+    <title>Histórico de Encomendas</title>
     <description/>
     <keywords/>
     <url_rewrite>historico-de-encomendas</url_rewrite>
@@ -139,7 +139,7 @@
     <url_rewrite>lojas</url_rewrite>
   </meta>
   <meta id="order-opc" id_shop="1">
-    <title>Encomenda R&#225;pida</title>
+    <title>Encomenda Rápida</title>
     <description/>
     <keywords/>
     <url_rewrite>encomenda-rapida</url_rewrite>
@@ -151,13 +151,13 @@
     <url_rewrite>seguimento-de-visitante</url_rewrite>
   </meta>
   <meta id="order-confirmation" id_shop="1">
-    <title>Confirma&#xE7;&#xE3;o da encomenda</title>
+    <title>Confirmação da encomenda</title>
     <description/>
     <keywords/>
     <url_rewrite>confirmacao-encomenda</url_rewrite>
   </meta>
   <meta id="products-comparison" id_shop="1">
-    <title>Compara&#231;&#227;o de Produtos</title>
+    <title>Comparação de Produtos</title>
     <description/>
     <keywords/>
     <url_rewrite>comparacao-de-produtos</url_rewrite>
