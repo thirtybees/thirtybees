@@ -4,16 +4,16 @@
 		<field name="page"/>
 	</fields>
 	<entities>
-		<meta id="404">
-			<page>pagenotfound</page>
-			<configurable>1</configurable>
-		</meta>
 		<meta id="address">
 			<page>address</page>
 			<configurable>1</configurable>
 		</meta>
 		<meta id="addresses">
 			<page>addresses</page>
+			<configurable>1</configurable>
+		</meta>
+		<meta id="attachment">
+			<page>attachment</page>
 			<configurable>1</configurable>
 		</meta>
 		<meta id="authentication">
@@ -28,20 +28,20 @@
 			<page>cart</page>
 			<configurable>1</configurable>
 		</meta>
-		<meta id="category">
-			<page>category</page>
-			<configurable>0</configurable>
-		</meta>
-		<meta id="cms">
-			<page>cms</page>
-			<configurable>0</configurable>
-		</meta>
 		<meta id="contact">
 			<page>contact</page>
 			<configurable>1</configurable>
 		</meta>
 		<meta id="discount">
 			<page>discount</page>
+			<configurable>1</configurable>
+		</meta>
+		<meta id="favicon">
+			<page>favicon</page>
+			<configurable>1</configurable>
+		</meta>
+		<meta id="getfile">
+			<page>getfile</page>
 			<configurable>1</configurable>
 		</meta>
 		<meta id="guest-tracking">
@@ -80,6 +80,10 @@
 			<page>order-confirmation</page>
 			<configurable>1</configurable>
 		</meta>
+		<meta id="order-detail">
+			<page>order-detail</page>
+			<configurable>1</configurable>
+		</meta>
 		<meta id="order-follow">
 			<page>order-follow</page>
 			<configurable>1</configurable>
@@ -88,21 +92,37 @@
 			<page>order-opc</page>
 			<configurable>1</configurable>
 		</meta>
+		<meta id="order-return">
+			<page>order-return</page>
+			<configurable>1</configurable>
+		</meta>
 		<meta id="order-slip">
 			<page>order-slip</page>
+			<configurable>1</configurable>
+		</meta>
+		<meta id="pagenotfound">
+			<page>pagenotfound</page>
 			<configurable>1</configurable>
 		</meta>
 		<meta id="password">
 			<page>password</page>
 			<configurable>1</configurable>
 		</meta>
+		<meta id="pdf-invoice">
+			<page>pdf-invoice</page>
+			<configurable>1</configurable>
+		</meta>
+		<meta id="pdf-order-return">
+			<page>pdf-order-return</page>
+			<configurable>1</configurable>
+		</meta>
+		<meta id="pdf-order-slip">
+			<page>pdf-order-slip</page>
+			<configurable>1</configurable>
+		</meta>
 		<meta id="prices-drop">
 			<page>prices-drop</page>
 			<configurable>1</configurable>
-		</meta>
-		<meta id="product">
-			<page>product</page>
-			<configurable>0</configurable>
 		</meta>
 		<meta id="products-comparison">
 			<page>products-comparison</page>
