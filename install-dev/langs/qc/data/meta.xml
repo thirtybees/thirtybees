@@ -145,10 +145,10 @@
     <url_rewrite>avoirs</url_rewrite>
   </meta>
   <meta id="pagenotfound" id_shop="1">
-    <title>Pagenotfound</title>
-    <description/>
+    <title>Page not found</title>
+    <description>Impossible de trouver la page</description>
     <keywords/>
-    <url_rewrite>pagenotfound</url_rewrite>
+    <url_rewrite>page-introuvable</url_rewrite>
   </meta>
   <meta id="password" id_shop="1">
     <title>Mot de passe oublié</title>

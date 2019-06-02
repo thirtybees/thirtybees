@@ -145,10 +145,10 @@
     <url_rewrite>buono-ordine</url_rewrite>
   </meta>
   <meta id="pagenotfound" id_shop="1">
-    <title>Pagenotfound</title>
-    <description/>
+    <title>Page not found</title>
+    <description>Impossibile trovare la pagina</description>
     <keywords/>
-    <url_rewrite>pagenotfound</url_rewrite>
+    <url_rewrite>pagina-non-trovata</url_rewrite>
   </meta>
   <meta id="password" id_shop="1">
     <title>Password dimenticata</title>

@@ -145,10 +145,10 @@
     <url_rewrite>order-slip</url_rewrite>
   </meta>
   <meta id="pagenotfound" id_shop="1">
-    <title>Pagenotfound</title>
-    <description/>
+    <title>Page not found</title>
+    <description>এই পেইজ টি খুজে পাওয়া যায় নি</description>
     <keywords/>
-    <url_rewrite>pagenotfound</url_rewrite>
+    <url_rewrite>page-not-found</url_rewrite>
   </meta>
   <meta id="password" id_shop="1">
     <title>আপানর পাসওয়ার্ড ভুলে গেছেন?</title>

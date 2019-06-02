@@ -145,10 +145,10 @@
     <url_rewrite>bestel-bon</url_rewrite>
   </meta>
   <meta id="pagenotfound" id_shop="1">
-    <title>Pagenotfound</title>
-    <description/>
+    <title>Page not found</title>
+    <description>We hebben de pagina niet gevonden</description>
     <keywords/>
-    <url_rewrite>pagenotfound</url_rewrite>
+    <url_rewrite>pagina-niet-gevonden</url_rewrite>
   </meta>
   <meta id="password" id_shop="1">
     <title>Uw wachtwoord vergeten</title>

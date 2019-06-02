@@ -145,10 +145,10 @@
     <url_rewrite>pokwitowania</url_rewrite>
   </meta>
   <meta id="pagenotfound" id_shop="1">
-    <title>Pagenotfound</title>
-    <description/>
+    <title>Page not found</title>
+    <description>Nie można odnaleźć strony</description>
     <keywords/>
-    <url_rewrite>pagenotfound</url_rewrite>
+    <url_rewrite>nie-znaleziono-strony</url_rewrite>
   </meta>
   <meta id="password" id_shop="1">
     <title>Przypomnienie hasła</title>
