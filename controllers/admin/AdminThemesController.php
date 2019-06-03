@@ -656,7 +656,10 @@ class AdminThemesControllerCore extends AdminController
 
             $this->image_list = [];
             foreach ($table as $row) {
-                $this->image_list[] = $row['name'].';'.$row['width'].';'.$row['height'].';'.
+                $this->image_list[] =
+                    str_replace($themeName.'_', '', $row['name']).';'.
+                    $row['width'].';'.
+                    $row['height'].';'.
                     ($row['products'] == 1 ? 'true' : 'false').';'.
                     ($row['categories'] == 1 ? 'true' : 'false').';'.
                     ($row['manufacturers'] == 1 ? 'true' : 'false').';'.
