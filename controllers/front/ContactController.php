@@ -253,19 +253,18 @@ class ContactControllerCore extends FrontController
      * @return int Order ID
      *
      * @since 1.0.0
+     * @throws PrestaShopException
      */
     protected function getOrder()
     {
-        $idOrder = false;
-        $orders = Order::getByReference(Tools::getValue('id_order'));
-        if ($orders) {
-            foreach ($orders as $order) {
-                $idOrder = (int) $order->id;
-                break;
+        $idOrder = (int)Tools::getValue('id_order');
+        if ($idOrder) {
+            $order = new Order($idOrder);
+            if (Validate::isLoadedObject($order)) {
+                return $idOrder;
             }
         }
-
-        return (int) $idOrder;
+        return 0;
     }
 
     /**
@@ -343,6 +342,8 @@ class ContactControllerCore extends FrontController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     protected function assignOrderList()
@@ -371,7 +372,7 @@ class ContactControllerCore extends FrontController
                 }
 
                 $orders[] = [
-                    'value' => $order->getUniqReference(),
+                    'value' => (int)$order->id,
                     'label' => $order->getUniqReference().' - '.Tools::displayDate($date[0], null),
                     'selected' => $orderId == $order->id
                 ];
