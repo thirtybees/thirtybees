@@ -361,6 +361,7 @@ class ContactControllerCore extends FrontController
 
             $orders = [];
 
+            $orderId = (int)$this->getOrder();
             foreach ($result as $row) {
                 $order = new Order($row['id_order']);
                 $date = explode(' ', $order->date_add);
@@ -369,7 +370,11 @@ class ContactControllerCore extends FrontController
                     $products[$row['id_order']][$val['product_id']] = ['value' => $val['product_id'], 'label' => $val['product_name']];
                 }
 
-                $orders[] = ['value' => $order->getUniqReference(), 'label' => $order->getUniqReference().' - '.Tools::displayDate($date[0], null), 'selected' => (int) $this->getOrder() == $order->id];
+                $orders[] = [
+                    'value' => $order->getUniqReference(),
+                    'label' => $order->getUniqReference().' - '.Tools::displayDate($date[0], null),
+                    'selected' => $orderId == $order->id
+                ];
             }
 
             $this->context->smarty->assign('orderList', $orders);
