@@ -920,67 +920,92 @@ class AdminProductsControllerCore extends AdminController
     }
 
     /**
-     * This function is never called at the moment (specific prices cannot be edited)
-     * @todo: What should we be doing with it, then?
-     *
-     * @since 1.0.0
+     * PricesModification now working.
      */
-    public function processPricesModification()
+    public function processPricesModification() 
     {
-        $idSpecificPrices = Tools::getValue('spm_id_specific_price');
-        $idCombinations = Tools::getValue('spm_id_product_attribute');
-        $idShops = Tools::getValue('spm_id_shop');
-        $idCurrencies = Tools::getValue('spm_id_currency');
-        $idCountries = Tools::getValue('spm_id_country');
-        $idGroups = Tools::getValue('spm_id_group');
-        $idCustomers = Tools::getValue('spm_id_customer');
-        $prices = Tools::getValue('spm_price');
-        $fromQuantities = Tools::getValue('spm_from_quantity');
-        $reductions = Tools::getValue('spm_reduction');
-        $reductionTypes = Tools::getValue('spm_reduction_type');
-        $froms = Tools::getValue('spm_from');
-        $tos = Tools::getValue('spm_to');
+        // Check if a specific price has been submitted
+        if (!Tools::getIsset('submitPriceEdition')) {
+            return;
+        }
 
-        foreach ($idSpecificPrices as $key => $idSpecificPrice) {
-            if ($reductionTypes[$key] == 'percentage' && ((float) $reductions[$key] <= 0 || (float) $reductions[$key] > 100)) {
-                $this->errors[] = Tools::displayError('Submitted reduction value (0-100) is out-of-range');
-            } elseif ($this->_validateSpecificPrice(
-                $idShops[$key],
-                $idCurrencies[$key],
-                $idCountries[$key],
-                $idGroups[$key],
-                $idCustomers[$key],
-                priceval($prices[$key]),
-                $fromQuantities[$key],
-                priceval($reductions[$key]),
-                $reductionTypes[$key],
-                $froms[$key],
-                $tos[$key],
-                $idCombinations[$key]
-            )) {
-                $specificPrice = new SpecificPrice((int) ($idSpecificPrice));
-                $specificPrice->id_shop = (int) $idShops[$key];
-                $specificPrice->id_product_attribute = (int) $idCombinations[$key];
-                $specificPrice->id_currency = (int) ($idCurrencies[$key]);
-                $specificPrice->id_country = (int) ($idCountries[$key]);
-                $specificPrice->id_group = (int) ($idGroups[$key]);
-                $specificPrice->id_customer = (int) $idCustomers[$key];
-                $specificPrice->price = priceval($prices[$key]);
-                $specificPrice->from_quantity = (int) ($fromQuantities[$key]);
-                $specificPrice->reduction = ($reductionTypes[$key] == 'percentage' ? ($reductions[$key] / 100) : priceval($reductions[$key]));
-                $specificPrice->reduction_type = !$reductions[$key] ? 'amount' : $reductionTypes[$key];
-                $specificPrice->from = !$froms[$key] ? '0000-00-00 00:00:00' : $froms[$key];
-                $specificPrice->to = !$tos[$key] ? '0000-00-00 00:00:00' : $tos[$key];
-                if (!$specificPrice->update()) {
+        $id_product = Tools::getValue('id_product');
+        $id_specific_prices = Tools::getValue('spm_id_specific_price');
+        $id_combinations = Tools::getValue('spm_id_product_attribute');
+        $id_shops = Tools::getValue('spm_id_shop');
+        $id_currencies = Tools::getValue('spm_id_currency');
+        $id_countries = Tools::getValue('spm_id_country');
+        $id_groups = Tools::getValue('spm_id_group');
+        $id_customers = Tools::getValue('spm_id_customer');
+        $prices = Tools::getValue('spm_price');
+        $from_quantities = Tools::getValue('spm_from_quantity');
+        $reductions = (float) (Tools::getValue('spm_reduction'));
+        $reductionTaxs = Tools::getValue('spm_reduction_tax');
+        $reductionTypes = !$reductions ? 'amount' : Tools::getValue('spm_reduction_type');
+        $reductionTypes = $reductionTypes == '-' ? 'amount' : $reductionTypes;
+        $froms = Tools::getValue('spm_from');
+        if (!$froms) {
+            $froms = '0000-00-00 00:00:00';
+        }
+        $tos = Tools::getValue('spm_to');
+        if (!$tos) {
+            $tos = '0000-00-00 00:00:00';
+        }
+
+        if ($tos != '0000-00-00 00:00:00' && strtotime($tos) < strtotime($froms)) {
+            $this->errors[] = Tools::displayError('Invalid date range');
+        } elseif ($reductionTypes == 'percentage' && ((float) $reductions <= 0 || (float) $reductions > 100)) {
+            $this->errors[] = Tools::displayError('Submitted reduction value (0-100) is out-of-range');
+        } elseif ($this->_validateSpecificPrice($id_shops, $id_currencies, $id_countries, $id_groups, $id_customers, $prices, $from_quantities, $reductions, $reductionTypes, $froms, $tos, $id_combinations)) {
+
+            $specificPrice = new SpecificPrice((int) ($id_specific_prices));
+            $specificPrice->id_product = (int) $id_product;
+            $specificPrice->id_shop = (int) $id_shops;
+            $specificPrice->id_product_attribute = (int) $id_combinations;
+            $specificPrice->id_currency = (int) ($id_currencies);
+            $specificPrice->id_country = (int) ($id_countries);
+            $specificPrice->id_group = (int) ($id_groups);
+            $specificPrice->id_customer = (int) ($id_customers);
+            $specificPrice->price = (float) ($prices);
+            $specificPrice->from_quantity = (int) ($from_quantities);
+            $specificPrice->reduction = (float) ($reductionTypes == 'percentage' ? $reductions / 100 : $reductions);
+            $specificPrice->reduction_type = $reductionTypes;
+            $specificPrice->reduction_tax = $reductionTaxs;
+            $specificPrice->from = $froms;
+            $specificPrice->to = $tos;
+            if (!$specificPrice->update()) {
                     $this->errors[] = Tools::displayError('An error occurred while updating the specific price.');
                 }
             }
-        }
         if (!count($this->errors)) {
             $this->redirect_after = static::$currentIndex.'&id_product='.(int) (Tools::getValue('id_product')).(Tools::getIsset('id_category') ? '&id_category='.(int) Tools::getValue('id_category') : '').'&update'.$this->table.'&action=Prices&token='.$this->token;
         }
     }
 
+    // Method to process the specificprice update
+    public function ajaxProcessEditSpecificPrice() {
+        $specificPrice = null;
+        $id_specific_price = (int) Tools::getValue('id_specific_price');
+        if (!$id_specific_price || !Validate::isUnsignedId($id_specific_price)) {
+            $error = Tools::displayError('Invalid specific price ID');
+        } else {
+            $specificPrice = new SpecificPrice((int) $id_specific_price);
+        }
+
+        if (isset($error)) {
+            $json = array(
+                'status' => 'error',
+                'message' => $error
+            );
+        } else {
+            $json = array(
+                'status' => 'ok',
+                'message' => array(get_object_vars($specificPrice))
+            );
+        die(Tools::jsonEncode($json));
+    }
+    }
+    
     /**
      * Validate a SpecificPrice
      *
@@ -1001,7 +1026,7 @@ class AdminProductsControllerCore extends AdminController
      *
      * @since 1.0.0
      */
-    protected function _validateSpecificPrice($idShop, $idCurrency, $idCountry, $idGroup, $idCustomer, $price, $fromQuantity, $reduction, $reductionType, $from, $to, $idCombination = 0)
+        protected function _validateSpecificPrice($idShop, $idCurrency, $idCountry, $idGroup, $idCustomer, $price, $fromQuantity, $reduction, $reductionType, $from, $to, $idCombination = 0)
     {
         if (!Validate::isUnsignedId($idShop) || !Validate::isUnsignedId($idCurrency) || !Validate::isUnsignedId($idCountry) || !Validate::isUnsignedId($idGroup) || !Validate::isUnsignedId($idCustomer)) {
             $this->errors[] = Tools::displayError('Wrong IDs');
@@ -1013,7 +1038,7 @@ class AdminProductsControllerCore extends AdminController
             $this->errors[] = Tools::displayError('Please select a discount type (amount or percentage).');
         } elseif ($from && $to && (!Validate::isDateFormat($from) || !Validate::isDateFormat($to))) {
             $this->errors[] = Tools::displayError('The from/to date is invalid.');
-        } elseif (SpecificPrice::exists((int) $this->object->id, $idCombination, $idShop, $idGroup, $idCountry, $idCurrency, $idCustomer, $fromQuantity, $from, $to, false)) {
+        } elseif (SpecificPrice::exists((int) $this->object->id, $idCombination, $idShop, $idGroup, $idCountry, $idCurrency, $idCustomer, $fromQuantity, $reduction, $reductionType, $from, $to, false)) {
             $this->errors[] = Tools::displayError('A specific price already exists for these parameters.');
         } else {
             return true;
@@ -1183,8 +1208,8 @@ class AdminProductsControllerCore extends AdminController
                 $this->errors[] = Tools::displayError('You do not have permission to edit this.');
             }
         } elseif (Tools::isSubmit('submitPricesModification')) {
-            // Product specific prices management NEVER USED
-            if ($this->tabAccess['add'] === '1') {
+            // Product specific prices management
+            if ($this->tabAccess['edit'] === '1') {
                 $this->action = 'pricesModification';
             } else {
                 $this->errors[] = Tools::displayError('You do not have permission to add this.');
@@ -2503,6 +2528,7 @@ class AdminProductsControllerCore extends AdminController
                         }
                         if ($this->isTabSubmitted('Prices')) {
                             $this->processPriceAddition();
+                            $this->processPricesModification();
                             $this->processSpecificPricePriorities();
                         }
                         if ($this->isTabSubmitted('Customization')) {
@@ -4085,14 +4111,15 @@ class AdminProductsControllerCore extends AdminController
 						<td>'.$impact.'</td>
 						<td>'.$period.'</td>
 						<td>'.$specificPrice['from_quantity'].'</th>
-						<td>'.((!$rule->id && $canDeleteSpecificPrices) ? '<a class="btn btn-default" name="delete_link" href="'.static::$currentIndex.'&id_product='.(int) Tools::getValue('id_product').'&action=deleteSpecificPrice&id_specific_price='.(int) ($specificPrice['id_specific_price']).'&token='.Tools::getValue('token').'"><i class="icon-trash"></i></a>' : '').'</td>
+                                                <td>'.((!$rule->id && $canDeleteSpecificPrices) ? '<a class="btn btn-default" name="delete_link" href="'.static::$currentIndex.'&id_product='.(int) Tools::getValue('id_product').'&action=deleteSpecificPrice&id_specific_price='.(int) ($specificPrice['id_specific_price']).'&token='.Tools::getValue('token').'"><i class="icon-trash"></i></a>' : '').'</td>
+                                                <td>'.((!$rule->id) ? '<a name="edit_link" class="edit btn btn-default" href="'.self::$currentIndex.'&id_product='.(int)Tools::getValue('id_product').'&action=pricesModification&id_specific_price='.(int)($specificPrice['id_specific_price']).'&token='.Tools::getValue('token').'"><i class="icon-pencil"></i></a>': '').
+                                        '</td>
 					</tr>';
                     $i++;
                     unset($customerFullName);
                 }
             }
         }
-
         if ($lengthBefore === strlen($content)) {
             $content .= '
 				<tr>
@@ -4127,7 +4154,7 @@ class AdminProductsControllerCore extends AdminController
         }
         $content .= '
 		</script>
-		';
+		</div>';
 
         // Not use id_customer
         if ($specificPricePriorities[0] == 'id_customer') {
