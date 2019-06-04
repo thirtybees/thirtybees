@@ -974,11 +974,8 @@ class AdminProductsControllerCore extends AdminController
             $specificPrice->from = $froms;
             $specificPrice->to = $tos;
             if (!$specificPrice->update()) {
-                    $this->errors[] = Tools::displayError('An error occurred while updating the specific price.');
-                }
+                $this->errors = Tools::displayError('An error occurred while updating the specific price.');
             }
-        if (!count($this->errors)) {
-            $this->redirect_after = static::$currentIndex.'&id_product='.(int) (Tools::getValue('id_product')).(Tools::getIsset('id_category') ? '&id_category='.(int) Tools::getValue('id_category') : '').'&update'.$this->table.'&action=Prices&token='.$this->token;
         }
     }
 
