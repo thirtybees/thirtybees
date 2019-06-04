@@ -792,25 +792,45 @@ window.product_tabs.Seo = new function () {
 window.product_tabs.Prices = new function () {
   var self = this;
   // Bind to show/hide new specific price form
-  this.toggleSpecificPrice = function () {
-    $('#show_specific_price').click(function () {
-      $('#add_specific_price').slideToggle();
+    this.toggleSpecificPrice = function () {
+        $('#show_specific_price').click(function ()
+        {
+            $('#add_specific_price').slideToggle();
+            $('#edit_specific_price').hide();
+            $('#add_specific_price').append('<input type="hidden" name="submitPriceAddition"/>');
+            $('#hide_specific_price').show();
+            $('#show_specific_price').hide();
+            return false;
+        });
+        $('#hide_specific_price').click(function ()
+        {
+            $('#add_specific_price').slideToggle();
+            $('#edit_specific_price').hide();
 
-      $('#add_specific_price').append('<input type="hidden" name="submitPriceAddition"/>');
+            $('#add_specific_price').find('input[name=submitPriceAddition]').remove();
+            $('#edit_specific_price').find('input[name=submitPriceEdition]').remove();
+            $('#edit_specific_price').find('input[name=spm_id_specific_price]').remove();
 
-      $('#hide_specific_price').show();
-      $('#show_specific_price').hide();
-      return false;
-    });
+            $('#hide_specific_price').hide();
+            $('#show_specific_price').show();
+            return false;
+        });
 
-    $('#hide_specific_price').click(function () {
-      $('#add_specific_price').slideToggle();
-      $('#add_specific_price').find('input[name=submitPriceAddition]').remove();
-      $('#hide_specific_price').hide();
-      $('#show_specific_price').show();
-      return false;
-    });
-  };
+        $('#hide_edit_specific_price').click(function ()
+        {
+            $('#add_specific_price').hide();
+            $('#edit_specific_price').hide();
+
+            $('#add_specific_price').find('input[name=submitPriceAddition]').remove();
+            $('#edit_specific_price').find('input[name=submitPriceEdition]').remove();
+            $('#edit_specific_price').find('input[name=spm_id_specific_price]').remove();
+
+            $('#hide_edit_specific_price').hide();
+            $('#hide_specific_price').hide();
+            $('#show_specific_price').show();
+            return false;
+        });
+    };
 
   /**
    * Ajax call to delete a specific price
@@ -855,6 +875,7 @@ window.product_tabs.Prices = new function () {
 
   this.loadInformations = function (selectId, action) {
     window.id_shop = $('#sp_id_shop').val();
+    window.id_shop = $('#spm_id_shop').val();
     $.ajax({
       url: window.product_url + '&action=' + action + '&ajax=true&id_shop=' + window.id_shop,
       success: function (data) {
@@ -863,16 +884,86 @@ window.product_tabs.Prices = new function () {
       }
     });
   };
+// Bind to edit specific price link
+    this.bindEdit = function () {
+        $('#specific_prices_list').delegate('a[name="edit_link"]', 'click', function (e) {
+            e.preventDefault();
+            self.editSpecificPrice(this.href, $(this).parents('tr'));
+        });
+    };
+
+    this.editSpecificPrice = function (url, parent) {
+        $.ajax({
+            url: url,
+            data: {
+                id_product: window.id_product,
+                ajax: true,
+                action: 'editSpecificPrice'
+            },
+            context: document.body,
+            dataType: 'json',
+            context: this,
+            async: false,
+            success: function (data) {
+                parent.siblings().removeClass('selected-line');
+                parent.addClass('selected-line');
+                if (data !== null)
+                {
+                    if (data.status == 'ok')
+                    {
+                        $('#add_specific_price').hide();
+                        $('#hide_specific_price').hide();
+                        $('#show_specific_price').hide();
+
+                        $('#edit_specific_price').show();
+                        $('#hide_edit_specific_price').show();
+
+                        $('#add_specific_price').find('input[name=submitPriceAddition]').remove();
+                        $('#edit_specific_price').find('input[name=submitPriceEdition]').remove();
+                        $('#edit_specific_price').find('input[name=id_specific_price]').remove();
+
+                        $('#edit_specific_price').append('<input type="hidden" name="submitPriceEdition"/>');
+                        $('#edit_specific_price').append('<input type="hidden" name="id_specific_price" id="id_specific_price"/>');
+
+                        $('#spm_id_specific_price').val(data.message[0].id_specific_price);
+                        $('#spm_id_shop').val(data.message[0].id_shop);
+                        $('#spm_currency_1').val(data.message[0].id_currency);
+                        $('#spm_id_country').val(data.message[0].id_country);
+                        $('#spm_id_group').val(data.message[0].id_group);
+                        $('#spm_id_customer').val(data.message[0].id_customer);
+                        $('#spm_id_product_attribute').val(data.message[0].id_product_attribute);
+                        $('#spm_from').val(data.message[0].from);
+                        $('#spm_to').val(data.message[0].to);
+                        $('#spm_from_quantity').val(data.message[0].from_quantity);
+                        $('#spm_price').val(data.message[0].price);
+                        $('#spm_reduction').val(data.message[0].reduction);
+                        $('#spm_reduction_tax').val(data.message[0].reduction_tax);
+                        if (data.message[0].reduction_type == '')
+                            $('#spm_reduction_type').val('amount');
+                        else
+                            $('#spm_reduction_type').val(data.message[0].reduction_type);
+                    } else
+                        showErrorMessage(data.message);
+                }
+            }
+        });
+    };
 
   this.onReady = function () {
     self.toggleSpecificPrice();
     self.deleteSpecificPrice();
+    self.bindEdit();
     self.bindDelete();
 
     $('#sp_id_shop').change(function () {
       self.loadInformations('#sp_id_group', 'getGroupsOptions');
       self.loadInformations('#spm_currency_0', 'getCurrenciesOptions');
       self.loadInformations('#sp_id_country', 'getCountriesOptions');
+    });
+     $('#spm_id_shop').change(function() {
+    self.loadInformations('#spm_id_group','getGroupsOptions');
+    self.loadInformations('#spm_currency_1', 'getCurrenciesOptions');
+    self.loadInformations('#spm_id_country', 'getCountriesOptions');
     });
     if (window.display_multishop_checkboxes) {
       window.ProductMultishop.checkAllPrices();
