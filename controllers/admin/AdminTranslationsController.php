@@ -3226,7 +3226,6 @@ class AdminTranslationsControllerCore extends AdminController
             $this->tpl_view_vars = array_merge(
                 $this->tpl_view_vars,
                 [
-                    'default_theme_name'   => static::DEFAULT_THEME_NAME,
                     'count'                => $this->total_expression,
                     'mod_security_warning' => Tools::apacheModExists('mod_security'),
                     'textarea_sized'       => AdminTranslationsControllerCore::TEXTAREA_SIZED,

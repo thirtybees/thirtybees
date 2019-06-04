@@ -96,7 +96,7 @@
       <div class="panel">
         <input type="hidden" name="lang" value="{$lang}" />
         <input type="hidden" name="type" value="{$type}" />
-        <input type="hidden" name="theme" value="{$default_theme_name}" />
+        <input type="hidden" name="theme" value="{$theme}" />
         <input type="hidden" name="module_name" value="{$module_name}" />
 
         <h3>
@@ -119,7 +119,7 @@
                   <td width="2%">=</td>
                   <td width="40%">
                     {* Prepare name string for md5() *}
-                    {capture assign="name"}{strtolower($module_name)}{if $default_theme_name}_{strtolower($default_theme_name)}{/if}_{strtolower($template_name)}_{md5($key)}{/capture}
+                    {capture assign="name"}{strtolower($module_name)}{if $theme}_{strtolower($theme)}{/if}_{strtolower($template_name)}_{md5($key)}{/capture}
                     {if $key|strlen < $textarea_sized}
                       <input type="text"
                         style="width: 450px{if empty($value.trad)};background:#FBB{/if}"
