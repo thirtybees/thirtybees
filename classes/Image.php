@@ -583,6 +583,8 @@ class ImageCore extends ObjectModel
      */
     public static function getSize($type)
     {
+        $type = ImageType::getFormatedName($type);
+
         if (!isset(static::$_cacheGetSize[$type]) || static::$_cacheGetSize[$type] === null) {
             static::$_cacheGetSize[$type] = Db::getInstance(_PS_USE_SQL_SLAVE_)->getRow(
                 (new DbQuery())

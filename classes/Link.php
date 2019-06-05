@@ -335,6 +335,8 @@ class LinkCore
         }
         $notDefault = false;
 
+        $type = ImageType::getFormatedName($type);
+
         // Check if module is installed, enabled, customer is logged in and watermark logged option is on
         if (($type != '')
             && Configuration::get('WATERMARK_LOGGED')
