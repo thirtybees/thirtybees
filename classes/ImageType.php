@@ -155,31 +155,32 @@ class ImageTypeCore extends ObjectModel
     }
 
     /**
-     * Check if type already is already registered in database
+     * Check if type already is already registered in database.
      *
      * @param string $typeName Name
      *
-     * @return int Number of results found
+     * @return bool
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     *
+     * @version 1.0.0 Initial version.
+     * @version 1.1.0 Introduced caching, return type bool rather than int.
      */
     public static function typeAlreadyExists($typeName)
     {
-        if (!Validate::isImageTypeName($typeName)) {
-            throw new PrestaShopException('\''.$typeName.'\' is an invalid image type name.');
+        static $typeNameCache = false;
+
+        if ( ! $typeNameCache) {
+            $typeNameCache = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+                (new DbQuery())
+                    ->select('`name`')
+                    ->from('image_type')
+            );
+            $typeNameCache = array_flip(array_column($typeNameCache, 'name'));
         }
 
-        Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-            (new DbQuery())
-                ->select('`id_image_type`')
-                ->from('image_type')
-                ->where('`name` = \''.pSQL($typeName).'\'')
-        );
-
-        return Db::getInstance(_PS_USE_SQL_SLAVE_)->NumRows();
+        return isset($typeNameCache[$typeName]);
     }
 
     /**
