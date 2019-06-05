@@ -866,12 +866,10 @@ class AdminImagesControllerCore extends AdminController
                 }
             }
         } else {
-            $productsImages = array_column((array) Db::getInstance()->executeS(
-                (new DbQuery())
-                    ->select('`id_image`')
-                    ->from('image')
-                    ->where('`id_product` = '.(int) $idEntity)
-            ), 'id_image');
+            $productsImages = array_column(
+                Image::getImages(null, $idEntity),
+                'id_image'
+            );
             foreach ($productsImages as $idImage) {
                 $imageObj = new Image($idImage);
                 $existingImage = $process[$entityType].$imageObj->getExistingImgPath().'.jpg';
