@@ -184,9 +184,7 @@ class ImageTypeCore extends ObjectModel
     }
 
     /**
-     * Find an existing variant of a specific image type. This is for
-     * retrocompatibility, installation of properly named image types was
-     * broken for a long time, from before 1.0.0, up to 1.1.0.
+     * Find an existing variant of a specific image type.
      *
      * @param string $name
      *
@@ -205,15 +203,15 @@ class ImageTypeCore extends ObjectModel
             $name
         );
 
-        //check if the theme name is already in $name if yes only return $name
-        if ($themeName
+        if (static::typeAlreadyExists($themeName.'_'.$nameWithoutTheme)) {
+            return $themeName.'_'.$nameWithoutTheme;
+        } elseif ($themeName
             && strpos($name, $themeName) !== false
             && static::typeAlreadyExists($name)) {
             return $name;
+        // These last two are for retrocompatibility.
         } elseif (static::typeAlreadyExists($nameWithoutTheme.'_'.$themeName)) {
             return $nameWithoutTheme.'_'.$themeName;
-        } elseif (static::typeAlreadyExists($themeName.'_'.$nameWithoutTheme)) {
-            return $themeName.'_'.$nameWithoutTheme;
         } elseif (static::typeAlreadyExists($nameWithoutTheme.'_default')) {
             return $nameWithoutTheme.'_default';
         }
