@@ -292,9 +292,20 @@ class InstallControllerHttpProcess extends InstallControllerHttp
     public function display()
     {
         // We fill the process step used for Ajax queries
-        $this->processSteps[] = ['key' => 'generateSettingsFile', 'lang' => $this->l('Create settings.inc file')];
-        $this->processSteps[] = ['key' => 'installDatabase', 'lang' => $this->l('Create database tables')];
-        $this->processSteps[] = ['key' => 'installDefaultData', 'lang' => $this->l('Create default shop and languages')];
+        $this->processSteps[] = [
+            'key'   => 'generateSettingsFile',
+            'lang'  => $this->l('Create settings.inc file'),
+        ];
+
+        $this->processSteps[] = [
+            'key'   => 'installDatabase',
+            'lang'  => $this->l('Create database tables'),
+        ];
+
+        $this->processSteps[] = [
+            'key'   => 'installDefaultData',
+            'lang'  => $this->l('Create default shop and languages'),
+        ];
 
         $populateStep = [
             'key'       => 'populateDatabase',
@@ -307,7 +318,10 @@ class InstallControllerHttpProcess extends InstallControllerHttp
         }
         $this->processSteps[] = $populateStep;
 
-        $this->processSteps[] = ['key' => 'configureShop', 'lang' => $this->l('Configure shop information')];
+        $this->processSteps[] = [
+            'key'   => 'configureShop',
+            'lang'  => $this->l('Configure shop information'),
+        ];
 
         if ($this->session->installType == 'full') {
             $fixturesStep = [
@@ -333,7 +347,10 @@ class InstallControllerHttpProcess extends InstallControllerHttp
         }
         $this->processSteps[] = $installModules;
 
-        $this->processSteps[] = ['key' => 'installTheme', 'lang' => $this->l('Install theme')];
+        $this->processSteps[] = [
+            'key'   => 'installTheme',
+            'lang'  => $this->l('Install theme'),
+        ];
 
         $this->displayTemplate('process');
     }
