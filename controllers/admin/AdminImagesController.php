@@ -800,14 +800,21 @@ class AdminImagesControllerCore extends AdminController
                 // Customizable writing dir
                 $dir = $newDir = $process[$entityType];
                 $image = $idEntity.'.jpg';
-                if ($imageType['name'] == 'thumb_scene')
+                if ($imageType['name'] == 'thumb_scene') {
                     $newDir .= 'thumbs/';
+                }
                 if (!file_exists($newDir)) {
-                    $this->errors[] = $this->l('Unable to generate new image');
+                    $this->errors[] = sprintf(
+                        $this->l('Directory %s for image regeneration missing.'),
+                        $newDir
+                    );
                 }
                 $newFile = $newDir.substr($image, 0, -4).'-'.stripslashes($imageType['name']).'.jpg';
                 if (file_exists($newFile) && !unlink($newFile)) {
-                    $this->errors[] = $this->l('Unable to generate new image');
+                    $this->errors[] = sprintf(
+                        $this->l('Can\'t remove old image %s.'),
+                        $newFile
+                    );
                 }
                 if (file_exists($dir.$image) && ! file_exists($newFile)) {
                     if ( ! filesize($dir.$image)) {
