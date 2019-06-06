@@ -92,7 +92,7 @@ rm -f "${PACKAGE_NAME}".zip
 
 if [ ${OPTION_VALIDATE} = 'auto' ]; then
   GIT_BRANCH=$(git branch --contains "${GIT_REVISION}" | \
-               grep -v 'detached' | head -1 | cut -b 3-)
+               grep -v 'detached' | grep -v 'no branch' | head -1 | cut -b 3-)
   COMMITS_ON_TOP=$(git log --oneline "${GIT_REVISION}".."${GIT_BRANCH}" | wc -l)
   if [ ${COMMITS_ON_TOP} -lt 30 ]; then
     OPTION_VALIDATE='true'
