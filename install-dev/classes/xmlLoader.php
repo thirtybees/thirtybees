@@ -148,15 +148,18 @@ class InstallXmlLoader
     /**
      * Read all XML files from data folder and populate tables
      *
-     * @since 1.0.0
+     * @param bool  $populate If false, just collect entity identifiers.
+     *
+     * @version 1.0.0 Initial version.
+     * @version 1.1.0 New parameter $populate.
      */
-    public function populateFromXmlFiles()
+    public function populateFromXmlFiles($populate = true)
     {
         $entities = $this->getSortedEntities();
 
         // Populate entities
         foreach ($entities as $entity) {
-            $this->populateEntity($entity);
+            $this->populateEntity($entity, $populate);
         }
     }
 
@@ -261,11 +264,13 @@ class InstallXmlLoader
     /**
      * Populate an entity
      *
-     * @param string $entity
+     * @param string  $entity
+     * @param bool    $populate If false, just collect entity identifiers.
      *
-     * @since 1.0.0
+     * @version 1.0.0 Initial version.
+     * @version 1.1.0 New parameter $populate.
      */
-    public function populateEntity($entity)
+    public function populateEntity($entity, $populate = true)
     {
         if (method_exists($this, 'populateEntity'.Tools::toCamelCase($entity))) {
             $this->{'populateEntity'.Tools::toCamelCase($entity)}();
@@ -353,7 +358,7 @@ class InstallXmlLoader
                 $this->createEntity($entity, $identifier, (string) $xml->fields['class'], $data, $dataLang);
             }
 
-            if ($xml->fields['image']) {
+            if ($populate && $xml->fields['image']) {
                 if (method_exists($this, 'copyImages'.Tools::toCamelCase($entity))) {
                     $this->{'copyImages'.Tools::toCamelCase($entity)}($identifier, $data);
                 } else {
@@ -362,7 +367,9 @@ class InstallXmlLoader
             }
         }
 
-        $this->flushDelayedInserts();
+        if ($populate) {
+            $this->flushDelayedInserts();
+        }
         unset($this->cache_xml_entity[$this->path_type][$entity]);
     }
 

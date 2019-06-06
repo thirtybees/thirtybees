@@ -41,8 +41,6 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
     /** @var InstallModelDatabase $modelDatabase */
     public $modelDatabase;
 
-    public $xmlLoaderIds;
-
     public function init()
     {
         require_once _PS_INSTALL_MODELS_PATH_.'install.php';
@@ -211,10 +209,7 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
     {
         $this->initializeContext();
 
-        $this->modelInstall->xmlLoaderIds = $this->datas->xmlLoaderIds;
         $result = $this->modelInstall->populateDatabase();
-        $this->datas->xmlLoaderIds = $this->modelInstall->xmlLoaderIds;
-        Configuration::updateValue('PS_INSTALL_XML_LOADERS_ID', json_encode($this->datas->xmlLoaderIds));
 
         return $result;
     }
@@ -252,13 +247,7 @@ class InstallControllerConsoleProcess extends InstallControllerConsole
     {
         $this->initializeContext();
 
-        if ((!$this->datas->xmlLoaderIds || !is_array($this->datas->xmlLoaderIds)) && ($xmlIds = json_decode(Configuration::get('PS_INSTALL_XML_LOADERS_ID'), true))) {
-            $this->datas->xmlLoaderIds = $xmlIds;
-        }
-
-        $this->modelInstall->xmlLoaderIds = $this->datas->xmlLoaderIds;
         $result = $this->modelInstall->installFixtures(null, ['shopActivity' => $this->datas->shopActivity, 'shopCountry' => $this->datas->shopCountry]);
-        $this->datas->xmlLoaderIds = $this->modelInstall->xmlLoaderIds;
 
         return $result;
     }

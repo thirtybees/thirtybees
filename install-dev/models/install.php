@@ -849,17 +849,22 @@ class InstallModelInstall extends InstallAbstractModel
             $xmlLoader = new InstallXmlLoader();
         }
 
-        // Install XML data (data/xml/ folder)
-        $xmlLoader->setFixturesPath($fixturesPath);
-        if (isset($this->xmlLoaderIds) && $this->xmlLoaderIds) {
-            $xmlLoader->setIds($this->xmlLoaderIds);
-        }
-
         $languages = [];
         foreach (Language::getLanguages(false) as $lang) {
             $languages[$lang['id_lang']] = $lang['iso_code'];
         }
         $xmlLoader->setLanguages($languages);
+
+        // Install XML data (data/xml/ folder)
+        if (isset($this->xmlLoaderIds) && $this->xmlLoaderIds) {
+            $xmlLoader->setIds($this->xmlLoaderIds);
+        } else {
+            // Load from default path, stuff for populateDatabase().
+            $xmlLoader->populateFromXmlFiles(false);
+        }
+
+        // Switch to fixtures path.
+        $xmlLoader->setFixturesPath($fixturesPath);
 
         if ($entity) {
             if (is_array($entity)) {
@@ -879,7 +884,7 @@ class InstallModelInstall extends InstallAbstractModel
             return false;
         }
 
-        // IDS from xmlLoader are stored in order to use them for fixtures
+        // Store IDs for the next run of this method.
         $this->xmlLoaderIds = $xmlLoader->getIds();
         unset($xmlLoader);
 
