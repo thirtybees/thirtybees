@@ -90,10 +90,10 @@ rm -f "${PACKAGE_NAME}".zip
 # Heuristics:
 # - Less than 30 commits on the branch of the to be packaged commit.
 
-GIT_BRANCH=$(git branch --contains "${GIT_REVISION}" | \
-             grep -v "detached" | head -1 | cut -b 3-)
-COMMITS_ON_TOP=$(git log --oneline "${GIT_REVISION}".."${GIT_BRANCH}" | wc -l)
 if [ ${OPTION_VALIDATE} = 'auto' ]; then
+  GIT_BRANCH=$(git branch --contains "${GIT_REVISION}" | \
+               grep -v 'detached' | head -1 | cut -b 3-)
+  COMMITS_ON_TOP=$(git log --oneline "${GIT_REVISION}".."${GIT_BRANCH}" | wc -l)
   if [ ${COMMITS_ON_TOP} -lt 30 ]; then
     OPTION_VALIDATE='true'
   else
