@@ -1154,7 +1154,12 @@ class AdminControllerCore extends Controller
                 $this->_listsql = 'SELECT
 								'.($this->_tmpTableFilter ? ' * FROM (SELECT ' : '').$this->_listsql.$sqlFrom.$sqlJoin.' WHERE 1 '.$sqlWhere.
                     $sqlOrderBy.$sqlLimit;
-                $listCount = 'SELECT COUNT(*) FROM (SELECT a.'.$this->identifier.' '.$sqlFrom.$sqlJoin.' WHERE 1 '.$sqlWhere.') AS `count`';
+                if ($this->_group) {
+                    $listCount = 'SELECT COUNT(*) AS `'._DB_PREFIX_.$this->table.'` FROM (SELECT 1 '.$sqlFrom.$sqlJoin.' WHERE 1 '.$sqlWhere.') AS `inner`';
+                }
+                else {
+                    $listCount = 'SELECT COUNT(*) AS `'._DB_PREFIX_.$this->table.'` '.$sqlFrom.$sqlJoin.' WHERE 1 '.$sqlWhere;
+                }
             }
 
             $this->_list = Db::getInstance()->executeS($this->_listsql, true, false);
