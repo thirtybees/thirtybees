@@ -903,7 +903,19 @@ class InstallModelInstall extends InstallAbstractModel
      */
     public function installTheme()
     {
-        // @todo do a real install of the theme
+        $theme = Theme::installFromDir(_PS_ALL_THEMES_DIR_._THEME_NAME_);
+        if (Validate::isLoadedObject($theme)) {
+            // Never returns an error.
+            $theme->installIntoShopContext();
+        } else {
+            $this->setError($this->language->l('Failed to import theme.'));
+            $this->setError($theme);
+
+            return false;
+        }
+
+        // @todo: get rid of this. All of this should be done either
+        //        by installing the theme or by installing modules.
         $sqlLoader = new InstallSqlLoader();
         $sqlLoader->setMetaData(
             [
