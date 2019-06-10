@@ -200,14 +200,8 @@
     <configuration id="PS_BACKUP_ALL" name="PS_BACKUP_ALL">
       <value>0</value>
     </configuration>
-    <configuration id="PS_1_3_UPDATE_DATE" name="PS_1_3_UPDATE_DATE">
-      <value>2011-12-27 10:20:42</value>
-    </configuration>
     <configuration id="PS_PRICE_ROUND_MODE" name="PS_PRICE_ROUND_MODE">
       <value>2</value>
-    </configuration>
-    <configuration id="PS_1_3_2_UPDATE_DATE" name="PS_1_3_2_UPDATE_DATE">
-      <value>2011-12-27 10:20:42</value>
     </configuration>
     <configuration id="PS_CONDITIONS_CMS_ID" name="PS_CONDITIONS_CMS_ID">
       <value>3</value>
@@ -517,42 +511,6 @@
     <configuration id="PS_LIMIT_UPLOAD_FILE_VALUE" name="PS_LIMIT_UPLOAD_FILE_VALUE">
       <value>2</value>
     </configuration>
-    <configuration id="MB_PAY_TO_EMAIL" name="MB_PAY_TO_EMAIL">
-      <value/>
-    </configuration>
-    <configuration id="MB_SECRET_WORD" name="MB_SECRET_WORD">
-      <value/>
-    </configuration>
-    <configuration id="MB_HIDE_LOGIN" name="MB_HIDE_LOGIN">
-      <value>1</value>
-    </configuration>
-    <configuration id="MB_ID_LOGO" name="MB_ID_LOGO">
-      <value>1</value>
-    </configuration>
-    <configuration id="MB_ID_LOGO_WALLET" name="MB_ID_LOGO_WALLET">
-      <value>1</value>
-    </configuration>
-    <configuration id="MB_PARAMETERS" name="MB_PARAMETERS">
-      <value>0</value>
-    </configuration>
-    <configuration id="MB_PARAMETERS_2" name="MB_PARAMETERS_2">
-      <value>0</value>
-    </configuration>
-    <configuration id="MB_DISPLAY_MODE" name="MB_DISPLAY_MODE">
-      <value>0</value>
-    </configuration>
-    <configuration id="MB_CANCEL_URL" name="MB_CANCEL_URL">
-      <value>http://www.yoursite.com</value>
-    </configuration>
-    <configuration id="MB_LOCAL_METHODS" name="MB_LOCAL_METHODS">
-      <value>2</value>
-    </configuration>
-    <configuration id="MB_INTER_METHODS" name="MB_INTER_METHODS">
-      <value>5</value>
-    </configuration>
-    <configuration id="BANK_WIRE_CURRENCIES" name="BANK_WIRE_CURRENCIES">
-      <value>2,1</value>
-    </configuration>
     <configuration id="PRODUCTS_VIEWED_NBR" name="PRODUCTS_VIEWED_NBR">
       <value>2</value>
     </configuration>
@@ -622,14 +580,8 @@
     <configuration id="FOOTER_POWEREDBY" name="FOOTER_POWEREDBY">
       <value>1</value>
     </configuration>
-    <configuration id="BLOCKADVERT_LINK" name="BLOCKADVERT_LINK">
-      <value>https://thirtybees.com</value>
-    </configuration>
     <configuration id="BLOCKSTORE_IMG" name="BLOCKSTORE_IMG">
       <value>store.jpg</value>
-    </configuration>
-    <configuration id="BLOCKADVERT_IMG_EXT" name="BLOCKADVERT_IMG_EXT">
-      <value>jpg</value>
     </configuration>
     <configuration id="MOD_BLOCKTOPMENU_ITEMS" name="MOD_BLOCKTOPMENU_ITEMS">
       <value>CAT2,CAT3,CAT4</value>
@@ -681,12 +633,6 @@
     </configuration>
     <configuration id="BLOCK_CATEG_NBR_COLUMN_FOOTER" name="BLOCK_CATEG_NBR_COLUMN_FOOTER">
       <value>1</value>
-    </configuration>
-    <configuration id="UPGRADER_BACKUPDB_FILENAME" name="UPGRADER_BACKUPDB_FILENAME">
-      <value/>
-    </configuration>
-    <configuration id="UPGRADER_BACKUPFILES_FILENAME" name="UPGRADER_BACKUPFILES_FILENAME">
-      <value/>
     </configuration>
     <configuration id="BLOCKREINSURANCE_NBBLOCKS" name="BLOCKREINSURANCE_NBBLOCKS">
       <value>5</value>
