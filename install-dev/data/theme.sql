@@ -69,14 +69,3 @@ UPDATE `PREFIX_configuration` SET value = '' WHERE name = 'UPGRADER_BACKUPDB_FIL
 UPDATE `PREFIX_configuration` SET value = '' WHERE name = 'UPGRADER_BACKUPFILES_FILENAME';
 UPDATE `PREFIX_configuration` SET value = '40' WHERE name = 'CONF_AVERAGE_PRODUCT_MARGIN';
 UPDATE `PREFIX_configuration` SET value = '1' WHERE name = 'PS_DASHBOARD_SIMULATION';
-
-INSERT INTO `PREFIX_hook_module_exceptions` (`id_shop`, `id_module`, `id_hook`, `file_name`)
-(
-	SELECT 1, m.id_module, h.id_hook, 'category'
-	FROM `PREFIX_hook` h
-	JOIN `PREFIX_hook_module` hm ON (hm.id_hook = h.id_hook)
-	JOIN `PREFIX_module` m ON (m.id_module = hm.id_module)
-	WHERE
-	h.name='displayLeftColumn' AND m.name IN ('blockbestsellers', 'blockmanufacturer', 'blocksupplier', 'blockmyaccount', 'blockpaymentlogo')
-	GROUP BY m.id_module
-);
