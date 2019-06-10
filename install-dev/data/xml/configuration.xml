@@ -572,7 +572,7 @@
       <value>5</value>
     </configuration>
     <configuration id="NEW_PRODUCTS_NBR" name="NEW_PRODUCTS_NBR">
-      <value>5</value>
+      <value>8</value>
     </configuration>
     <configuration id="PS_TOKEN_ENABLE" name="PS_TOKEN_ENABLE">
       <value>1</value>
@@ -635,37 +635,40 @@
       <value>CAT2,CAT3,CAT4</value>
     </configuration>
     <configuration id="MOD_BLOCKTOPMENU_SEARCH" name="MOD_BLOCKTOPMENU_SEARCH">
-      <value/>
+      <value>0</value>
     </configuration>
     <configuration id="blocksocial_facebook" name="BLOCKSOCIAL_FACEBOOK">
-      <value>http://www.facebook.com/thirtybees</value>
+      <value>https://www.facebook.com/thirtybees</value>
     </configuration>
     <configuration id="blocksocial_twitter" name="BLOCKSOCIAL_TWITTER">
-      <value>http://www.twitter.com/thethirtybees</value>
+      <value>https://www.twitter.com/thethirtybees</value>
     </configuration>
     <configuration id="blocksocial_rss" name="BLOCKSOCIAL_RSS">
-      <value>https://thirtybees.com/blogfeed/</value>
+      <value>https://thirtybees.com/feed</value>
+    </configuration>
+    <configuration id="blocksocial_google_plus" name="BLOCKSOCIAL_GOOGLE_PLUS">
+      <value>https://plus.google.com/+thirtybees</value>
     </configuration>
     <configuration id="blockcontactinfos_company" name="BLOCKCONTACTINFOS_COMPANY">
       <value>Your company</value>
     </configuration>
     <configuration id="blockcontactinfos_address" name="BLOCKCONTACTINFOS_ADDRESS">
-      <value>Address line 1
-        City
-        Country
+      <value>42 Bee Lane
+        12345 The Hive
+        The Netherlands
       </value>
     </configuration>
     <configuration id="blockcontactinfos_phone" name="BLOCKCONTACTINFOS_PHONE">
       <value>0123-456-789</value>
     </configuration>
     <configuration id="blockcontactinfos_email" name="BLOCKCONTACTINFOS_EMAIL">
-      <value>pub@thirtybees.com</value>
+      <value>sales@yourcompany.com</value>
     </configuration>
     <configuration id="blockcontact_telnumber" name="BLOCKCONTACT_TELNUMBER">
       <value>0123-456-789</value>
     </configuration>
     <configuration id="blockcontact_email" name="BLOCKCONTACT_EMAIL">
-      <value>pub@thirtybees.com</value>
+      <value>sales@yourcompany.com</value>
     </configuration>
     <configuration id="SUPPLIER_DISPLAY_TEXT" name="SUPPLIER_DISPLAY_TEXT">
       <value>1</value>

@@ -914,8 +914,7 @@ class InstallModelInstall extends InstallAbstractModel
             return false;
         }
 
-        // @todo: get rid of this. All of this should be done either
-        //        by installing the theme or by installing modules.
+        // Override some module defaults to fit the default theme.
         $sqlLoader = new InstallSqlLoader();
         $sqlLoader->setMetaData(
             [
