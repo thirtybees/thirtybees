@@ -95,9 +95,6 @@
     <configuration id="PS_WEIGHT_UNIT" name="PS_WEIGHT_UNIT">
       <value>kg</value>
     </configuration>
-    <configuration id="PS_BLOCK_CART_AJAX" name="PS_BLOCK_CART_AJAX">
-      <value>1</value>
-    </configuration>
     <configuration id="PS_ORDER_RETURN" name="PS_ORDER_RETURN">
       <value>0</value>
     </configuration>
@@ -511,27 +508,6 @@
     <configuration id="PS_LIMIT_UPLOAD_FILE_VALUE" name="PS_LIMIT_UPLOAD_FILE_VALUE">
       <value>2</value>
     </configuration>
-    <configuration id="PRODUCTS_VIEWED_NBR" name="PRODUCTS_VIEWED_NBR">
-      <value>2</value>
-    </configuration>
-    <configuration id="BLOCK_CATEG_DHTML" name="BLOCK_CATEG_DHTML">
-      <value>1</value>
-    </configuration>
-    <configuration id="BLOCK_CATEG_MAX_DEPTH" name="BLOCK_CATEG_MAX_DEPTH">
-      <value>4</value>
-    </configuration>
-    <configuration id="MANUFACTURER_DISPLAY_FORM" name="MANUFACTURER_DISPLAY_FORM">
-      <value>1</value>
-    </configuration>
-    <configuration id="MANUFACTURER_DISPLAY_TEXT" name="MANUFACTURER_DISPLAY_TEXT">
-      <value>1</value>
-    </configuration>
-    <configuration id="MANUFACTURER_DISPLAY_TEXT_NB" name="MANUFACTURER_DISPLAY_TEXT_NB">
-      <value>5</value>
-    </configuration>
-    <configuration id="NEW_PRODUCTS_NBR" name="NEW_PRODUCTS_NBR">
-      <value>8</value>
-    </configuration>
     <configuration id="PS_TOKEN_ENABLE" name="PS_TOKEN_ENABLE">
       <value>1</value>
     </configuration>
@@ -544,109 +520,7 @@
     <configuration id="PS_STATS_GRID_RENDER" name="PS_STATS_GRID_RENDER">
       <value>ModuleGridEngine</value>
     </configuration>
-    <configuration id="BLOCKTAGS_NBR" name="BLOCKTAGS_NBR">
-      <value>10</value>
-    </configuration>
-    <configuration id="CHECKUP_DESCRIPTIONS_LT" name="CHECKUP_DESCRIPTIONS_LT">
-      <value>100</value>
-    </configuration>
-    <configuration id="CHECKUP_DESCRIPTIONS_GT" name="CHECKUP_DESCRIPTIONS_GT">
-      <value>400</value>
-    </configuration>
-    <configuration id="CHECKUP_IMAGES_LT" name="CHECKUP_IMAGES_LT">
-      <value>1</value>
-    </configuration>
-    <configuration id="CHECKUP_IMAGES_GT" name="CHECKUP_IMAGES_GT">
-      <value>2</value>
-    </configuration>
-    <configuration id="CHECKUP_SALES_LT" name="CHECKUP_SALES_LT">
-      <value>1</value>
-    </configuration>
-    <configuration id="CHECKUP_SALES_GT" name="CHECKUP_SALES_GT">
-      <value>2</value>
-    </configuration>
-    <configuration id="CHECKUP_STOCK_LT" name="CHECKUP_STOCK_LT">
-      <value>1</value>
-    </configuration>
-    <configuration id="CHECKUP_STOCK_GT" name="CHECKUP_STOCK_GT">
-      <value>3</value>
-    </configuration>
-    <configuration id="FOOTER_CMS" name="FOOTER_CMS">
-      <value>0_3|0_4</value>
-    </configuration>
-    <configuration id="FOOTER_BLOCK_ACTIVATION" name="FOOTER_BLOCK_ACTIVATION">
-      <value>0_3|0_4</value>
-    </configuration>
-    <configuration id="FOOTER_POWEREDBY" name="FOOTER_POWEREDBY">
-      <value>1</value>
-    </configuration>
-    <configuration id="BLOCKSTORE_IMG" name="BLOCKSTORE_IMG">
-      <value>store.jpg</value>
-    </configuration>
-    <configuration id="MOD_BLOCKTOPMENU_ITEMS" name="MOD_BLOCKTOPMENU_ITEMS">
-      <value>CAT2,CAT3,CAT4</value>
-    </configuration>
-    <configuration id="MOD_BLOCKTOPMENU_SEARCH" name="MOD_BLOCKTOPMENU_SEARCH">
-      <value>0</value>
-    </configuration>
-    <configuration id="blocksocial_facebook" name="BLOCKSOCIAL_FACEBOOK">
-      <value>https://www.facebook.com/thirtybees</value>
-    </configuration>
-    <configuration id="blocksocial_twitter" name="BLOCKSOCIAL_TWITTER">
-      <value>https://www.twitter.com/thethirtybees</value>
-    </configuration>
-    <configuration id="blocksocial_rss" name="BLOCKSOCIAL_RSS">
-      <value>https://thirtybees.com/feed</value>
-    </configuration>
-    <configuration id="blocksocial_google_plus" name="BLOCKSOCIAL_GOOGLE_PLUS">
-      <value>https://plus.google.com/+thirtybees</value>
-    </configuration>
-    <configuration id="blockcontactinfos_company" name="BLOCKCONTACTINFOS_COMPANY">
-      <value>Your company</value>
-    </configuration>
-    <configuration id="blockcontactinfos_address" name="BLOCKCONTACTINFOS_ADDRESS">
-      <value>42 Bee Lane
-        12345 The Hive
-        The Netherlands
-      </value>
-    </configuration>
-    <configuration id="blockcontactinfos_phone" name="BLOCKCONTACTINFOS_PHONE">
-      <value>0123-456-789</value>
-    </configuration>
-    <configuration id="blockcontactinfos_email" name="BLOCKCONTACTINFOS_EMAIL">
-      <value>sales@yourcompany.com</value>
-    </configuration>
-    <configuration id="blockcontact_telnumber" name="BLOCKCONTACT_TELNUMBER">
-      <value>0123-456-789</value>
-    </configuration>
-    <configuration id="blockcontact_email" name="BLOCKCONTACT_EMAIL">
-      <value>sales@yourcompany.com</value>
-    </configuration>
-    <configuration id="SUPPLIER_DISPLAY_TEXT" name="SUPPLIER_DISPLAY_TEXT">
-      <value>1</value>
-    </configuration>
-    <configuration id="SUPPLIER_DISPLAY_TEXT_NB" name="SUPPLIER_DISPLAY_TEXT_NB">
-      <value>5</value>
-    </configuration>
-    <configuration id="SUPPLIER_DISPLAY_FORM" name="SUPPLIER_DISPLAY_FORM">
-      <value>1</value>
-    </configuration>
     <configuration id="BLOCK_CATEG_NBR_COLUMN_FOOTER" name="BLOCK_CATEG_NBR_COLUMN_FOOTER">
-      <value>1</value>
-    </configuration>
-    <configuration id="BLOCKREINSURANCE_NBBLOCKS" name="BLOCKREINSURANCE_NBBLOCKS">
-      <value>5</value>
-    </configuration>
-    <configuration id="HOMESLIDER_WIDTH" name="HOMESLIDER_WIDTH">
-      <value>535</value>
-    </configuration>
-    <configuration id="HOMESLIDER_SPEED" name="HOMESLIDER_SPEED">
-      <value>1300</value>
-    </configuration>
-    <configuration id="HOMESLIDER_PAUSE" name="HOMESLIDER_PAUSE">
-      <value>7700</value>
-    </configuration>
-    <configuration id="HOMESLIDER_LOOP" name="HOMESLIDER_LOOP">
       <value>1</value>
     </configuration>
     <configuration id="PS_BASE_DISTANCE_UNIT" name="PS_BASE_DISTANCE_UNIT">
@@ -706,21 +580,6 @@
     <configuration id="PS_MAIL_COLOR" name="PS_MAIL_COLOR">
       <value>#db3484</value>
     </configuration>
-    <configuration id="NW_SALT" name="NW_SALT">
-      <value>nK4KJP7jOsnzWMpo</value>
-    </configuration>
-    <configuration id="PS_PAYMENT_LOGO_CMS_ID" name="PS_PAYMENT_LOGO_CMS_ID">
-      <value>0</value>
-    </configuration>
-    <configuration id="HOME_FEATURED_NBR" name="HOME_FEATURED_NBR">
-      <value>8</value>
-    </configuration>
-    <configuration id="SEK_MIN_OCCURENCES" name="SEK_MIN_OCCURENCES">
-      <value>1</value>
-    </configuration>
-    <configuration id="SEK_FILTER_KW" name="SEK_FILTER_KW">
-      <value/>
-    </configuration>
     <configuration id="PS_ALLOW_MOBILE_DEVICE" name="PS_ALLOW_MOBILE_DEVICE">
       <value>1</value>
     </configuration>
@@ -732,9 +591,6 @@
     </configuration>
     <configuration id="PS_DASHBOARD_USE_PUSH" name="PS_DASHBOARD_USE_PUSH">
       <value>0</value>
-    </configuration>
-    <configuration id="PS_ATTRIBUTE_ANCHOR_SEPARATOR" name="PS_ATTRIBUTE_ANCHOR_SEPARATOR">
-      <value>-</value>
     </configuration>
     <configuration id="CONF_AVERAGE_PRODUCT_MARGIN" name="CONF_AVERAGE_PRODUCT_MARGIN">
       <value>40</value>
