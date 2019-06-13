@@ -100,6 +100,7 @@ class InstallControllerHttpProcess extends InstallControllerHttp
         } elseif (Tools::getValue('installFixtures') && !empty($this->session->processValidated['configureShop'])) {
             $this->processInstallFixtures();
         } elseif (Tools::getValue('installModules') && (!empty($this->session->processValidated['installFixtures']) || $this->session->installType != 'full')) {
+            unset($_SESSION['xmlLoaderIds']);
             $this->processInstallModules();
         } elseif (Tools::getValue('installTheme')) {
             $this->processInstallTheme();
