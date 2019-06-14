@@ -174,9 +174,12 @@ class ImageTypeCore extends ObjectModel
             return $nameWithoutTheme.'_'.$themeName;
         } elseif (static::typeAlreadyExists($themeName.'_'.$nameWithoutTheme)) {
             return $themeName.'_'.$nameWithoutTheme;
-        } else {
+        } elseif (static::typeAlreadyExists($nameWithoutTheme.'_default')) {
             return $nameWithoutTheme.'_default';
         }
+
+        // Give up searching.
+        return $name;
     }
 
     /**
