@@ -73,14 +73,25 @@ class PageNotFoundControllerCore extends FrontController
                     $file = $matches[1];
                     $ext = '.'.$matches[4];
 
-                    if (file_exists($root.$folder.$file.$ext)) {
-                        if (ImageManager::resize($root.$folder.$file.$ext, $root.$folder.$file.'-'.$matches[2].$ext, (int) $imageType['width'], (int) $imageType['height'])) {
-                            header('HTTP/1.1 200 Found');
-                            header('Status: 200 Found');
-                            header('Content-Type: image/jpg');
-                            readfile($root.$folder.$file.'-'.$matches[2].$ext);
-                            exit;
-                        }
+                    $sourcePath = $root.$folder.$file.$ext;
+                    $sendPath = $root.$folder.$file.'-'.$imageType['name'].$ext;
+
+                    if (is_readable($sourcePath) && ! file_exists($sendPath)) {
+                        ImageManager::resize(
+                            $sourcePath,
+                            $sendPath,
+                            (int) $imageType['width'],
+                            (int) $imageType['height']
+                        );
+                    }
+
+                    if (file_exists($sendPath)) {
+                        header('HTTP/1.1 200 Found');
+                        header('Status: 200 Found');
+                        header('Content-Type: image/jpg');
+                        readfile($sendPath);
+
+                        exit;
                     }
                 }
             } elseif (preg_match('@^'.__PS_BASE_URI__
@@ -95,14 +106,25 @@ class PageNotFoundControllerCore extends FrontController
                     $file = $matches[1];
                     $ext = '.'.$matches[4];
 
-                    if (file_exists($root.$file.$ext)) {
-                        if (ImageManager::resize($root.$file.$ext, $root.$file.'-'.$matches[2].$ext, (int) $imageType['width'], (int) $imageType['height'])) {
-                            header('HTTP/1.1 200 Found');
-                            header('Status: 200 Found');
-                            header('Content-Type: image/jpg');
-                            readfile($root.$file.'-'.$matches[2].$ext);
-                            exit;
-                        }
+                    $sourcePath = $root.$file.$ext;
+                    $sendPath = $root.$file.'-'.$imageType['name'].$ext;
+
+                    if (is_readable($sourcePath) && ! file_exists($sendPath)) {
+                        ImageManager::resize(
+                            $sourcePath,
+                            $sendPath,
+                            (int) $imageType['width'],
+                            (int) $imageType['height']
+                        );
+                    }
+
+                    if (file_exists($sendPath)) {
+                        header('HTTP/1.1 200 Found');
+                        header('Status: 200 Found');
+                        header('Content-Type: image/jpg');
+                        readfile($sendPath);
+
+                        exit;
                     }
                 }
             }
