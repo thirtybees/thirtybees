@@ -56,9 +56,6 @@ class PageNotFoundControllerCore extends FrontController
      */
     public function initContent()
     {
-        header('HTTP/1.1 404 Not Found');
-        header('Status: 404 Not Found');
-
         if (preg_match('/\.(gif|jpe?g|png|ico)$/i', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH))) {
             $this->context->cookie->disallowWriting();
 
@@ -110,6 +107,8 @@ class PageNotFoundControllerCore extends FrontController
                 }
             }
 
+            header('HTTP/1.1 404 Not Found');
+            header('Status: 404 Not Found');
             header('Content-Type: image/gif');
             readfile(_PS_IMG_DIR_.'404.gif');
             exit;
@@ -118,6 +117,8 @@ class PageNotFoundControllerCore extends FrontController
             exit;
         }
 
+        header('HTTP/1.1 404 Not Found');
+        header('Status: 404 Not Found');
         parent::initContent();
 
         $this->setTemplate(_PS_THEME_DIR_.'404.tpl');
