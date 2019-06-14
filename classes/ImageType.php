@@ -231,7 +231,7 @@ class ImageTypeCore extends ObjectModel
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @version 1.0.0 Initial version.
-     * @version 1.1.0 Reworked entirely, $order deprecated.
+     * @version 1.1.0 Reworked entirely, $order deprecated, added fallbacks,
      */
     public static function getByNameNType($name, $type = '', $order = null)
     {
@@ -260,9 +260,30 @@ class ImageTypeCore extends ObjectModel
             }
         }
 
+        $nameType = $name.'_'.$type;
+        if ( ! isset($cache[$nameType])) {
+            // Try fallbacks.
+            $context = Context::getContext();
+            if ($context) {
+                $nameType = static::getFormatedName($name).'_'.$type;
+            }
+
+            if ( ! isset($cache[$nameType])) {
+                // Find the first reasonable match.
+                foreach (array_keys($cache) as $key) {
+                    if (preg_match('/'.$type.'$/', $key)
+                        && preg_match('/^.*_'.$name.'_/', $key)
+                    ) {
+                        $nameType = $key;
+                        break;
+                    }
+                }
+            }
+        }
+
         $return = false;
-        if (isset($cache[$name.'_'.$type])) {
-            $return = $cache[$name.'_'.$type];
+        if (isset($cache[$nameType])) {
+            $return = $cache[$nameType];
         }
 
         return $return;
