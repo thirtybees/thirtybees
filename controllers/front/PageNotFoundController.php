@@ -60,6 +60,7 @@ class PageNotFoundControllerCore extends FrontController
             $this->context->cookie->disallowWriting();
 
             // First preg_match() matches friendly URLs, second one plain URLs.
+            $imageType = $sourcePath = $sendPath = null;
             if (preg_match('@^'.__PS_BASE_URI__
                 .'([0-9]+)\-([_a-zA-Z-]+)(/[_a-zA-Z-]+)?\.(png|jpe?g|gif)$@',
                 $_SERVER['REQUEST_URI'], $matches)
@@ -75,24 +76,6 @@ class PageNotFoundControllerCore extends FrontController
 
                     $sourcePath = $root.$folder.$file.$ext;
                     $sendPath = $root.$folder.$file.'-'.$imageType['name'].$ext;
-
-                    if (is_readable($sourcePath) && ! file_exists($sendPath)) {
-                        ImageManager::resize(
-                            $sourcePath,
-                            $sendPath,
-                            (int) $imageType['width'],
-                            (int) $imageType['height']
-                        );
-                    }
-
-                    if (file_exists($sendPath)) {
-                        header('HTTP/1.1 200 Found');
-                        header('Status: 200 Found');
-                        header('Content-Type: image/jpg');
-                        readfile($sendPath);
-
-                        exit;
-                    }
                 }
             } elseif (preg_match('@^'.__PS_BASE_URI__
                       .'c/([0-9]+)\-([_a-zA-Z-]+)(/[_a-zA-Z0-9-]+)?\.(png|jpe?g|gif)$@',
@@ -108,24 +91,26 @@ class PageNotFoundControllerCore extends FrontController
 
                     $sourcePath = $root.$file.$ext;
                     $sendPath = $root.$file.'-'.$imageType['name'].$ext;
+                }
+            }
 
-                    if (is_readable($sourcePath) && ! file_exists($sendPath)) {
-                        ImageManager::resize(
-                            $sourcePath,
-                            $sendPath,
-                            (int) $imageType['width'],
-                            (int) $imageType['height']
-                        );
-                    }
+            if ($imageType && $sourcePath && $sendPath) {
+                if (is_readable($sourcePath) && ! file_exists($sendPath)) {
+                    ImageManager::resize(
+                        $sourcePath,
+                        $sendPath,
+                        (int) $imageType['width'],
+                        (int) $imageType['height']
+                    );
+                }
 
-                    if (file_exists($sendPath)) {
-                        header('HTTP/1.1 200 Found');
-                        header('Status: 200 Found');
-                        header('Content-Type: image/jpg');
-                        readfile($sendPath);
+                if (file_exists($sendPath)) {
+                    header('HTTP/1.1 200 Found');
+                    header('Status: 200 Found');
+                    header('Content-Type: image/jpg');
+                    readfile($sendPath);
 
-                        exit;
-                    }
+                    exit;
                 }
             }
 
