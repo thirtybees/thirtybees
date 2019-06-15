@@ -243,52 +243,13 @@ class SearchControllerCore extends FrontController
         $words = self::getAllWords();
 
         foreach ( $words as &$item )
-            $item['leven'] = self::levenshtein_utf8($item['word'], $searchString);
+            $item['leven'] = levenshtein($item['word'], $searchString);
 
-        return array_reduce($words, function($a, $b){
+        $closestWord =  array_reduce($words, function($a, $b){
             return $a['leven'] < $b['leven'] ? $a : $b;
         }, array_shift($words))['word'];
-    }
 
-    /**
-     * utf8_to_extended_ascii
-     *
-     * @param $str
-     *
-     * @param $map
-     *
-     * @return string
-     */
-    static function utf8_to_extended_ascii($str, &$map)
-    {
-        $matches = array();
-        
-        if (!preg_match_all('/[\xC0-\xF7][\x80-\xBF]+/', $str, $matches))
-            return $str;
-
-        foreach ($matches[0] as $mbc)
-            if (!isset($map[$mbc]))
-                $map[$mbc] = chr(128 + count($map));
-
-        return strtr($str, $map);
-    }
-
-    /**
-     * levenshtein_utf8
-     *
-     * @param $s1
-     *
-     * @param $s2
-     * 
-     * @return int
-     */
-    static function levenshtein_utf8($s1, $s2)
-    {
-        $charMap = array();
-        $s1 = self::utf8_to_extended_ascii($s1, $charMap);
-        $s2 = self::utf8_to_extended_ascii($s2, $charMap);
-
-        return levenshtein($s1, $s2);
+        return $closestWord;
     }
 
     /**
@@ -298,8 +259,10 @@ class SearchControllerCore extends FrontController
      */
     static function getAllWords()
     {
-        $sql = 'SELECT `word` FROM `'._DB_PREFIX_.'search_word` WHERE `id_lang` = '.(int)Context::getContext()->language->id.';';
-
+        $sql = 'SELECT `word` FROM `'._DB_PREFIX_.'search_word` 
+                WHERE `id_lang` = '.(int)Context::getContext()->language->id.'
+                AND `id_shop` = '.(int)Context::getContext()->shop->id.';';
+        
         return Db::getInstance()->executeS($sql);
     }
 }
