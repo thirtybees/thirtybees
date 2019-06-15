@@ -79,7 +79,13 @@ class PageNotFoundControllerCore extends FrontController
                 }
             } else {
                 foreach ([
+                    // Entries should match the list in
+                    // ImageType::getByNameNType(), except for 'products'.
                     'categories'    => _THEME_CAT_DIR_,
+                    'manufacturers' => _THEME_MANU_DIR_,
+                    'suppliers'     => _THEME_SUP_DIR_,
+                    'scenes'        => _THEME_SCENE_DIR_,
+                    'stores'        => _THEME_STORE_DIR_,
                 ] as $type => $path) {
                     $dir = str_replace(_PS_IMG_, '', $path);
                     if (preg_match('@^'.__PS_BASE_URI__.$dir
