@@ -267,7 +267,6 @@ class SearchControllerCore extends FrontController
         if (!preg_match_all('/[\xC0-\xF7][\x80-\xBF]+/', $str, $matches))
             return $str;
 
-
         foreach ($matches[0] as $mbc)
             if (!isset($map[$mbc]))
                 $map[$mbc] = chr(128 + count($map));
