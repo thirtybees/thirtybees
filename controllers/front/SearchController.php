@@ -36,21 +36,20 @@
  */
 class SearchControllerCore extends FrontController
 {
-    // @codingStandardsIgnoreStart
     /** @var string $php_self */
     public $php_self = 'search';
     /** @var string $instant_search */
     public $instant_search;
     /** @var string $ajax_search */
     public $ajax_search;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Initialize search controller
      *
-     * @see   FrontController::init()
-     *
      * @return void
+     *
+     * @throws PrestaShopException
+     * @see   FrontController::init()
      *
      * @since 1.0.0
      */
@@ -71,9 +70,11 @@ class SearchControllerCore extends FrontController
     /**
      * Assign template vars related to page content
      *
-     * @see   FrontController::initContent()
-     *
      * @return void
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @see   FrontController::initContent()
      *
      * @since 1.0.0
      */
@@ -83,6 +84,11 @@ class SearchControllerCore extends FrontController
         $query = Tools::replaceAccentedChars(urldecode($originalQuery));
         if ($this->ajax_search) {
             $searchResults = Search::find((int) (Tools::getValue('id_lang')), $query, 1, 10, 'position', 'desc', true);
+
+            if (! $searchResults && Configuration::get('TB_SEARCH_SIMILAR')) {
+                $searchResults = Search::find((int) (Tools::getValue('id_lang')), self::findFirstClosestWords($query), 1, 10, 'position', 'desc', true);
+            }
+
             if (is_array($searchResults)) {
                 foreach ($searchResults as &$product) {
                     $product['product_link'] = $this->context->link->getProductLink($product['id_product'], $product['prewrite'], $product['crewrite']);
@@ -146,7 +152,7 @@ class SearchControllerCore extends FrontController
                     'homeSize'        => Image::getSize(ImageType::getFormatedName('home')),
                 ]
             );
-        } elseif (($tag = urldecode(Tools::getValue('tag'))) && !is_array($tag)) {
+        } elseif (($tag = urldecode(Tools::getValue('tag')))) {
             $nbProducts = (int) (Search::searchTag($this->context->language->id, $tag, true));
             $this->pagination($nbProducts);
             $result = Search::searchTag($this->context->language->id, $tag, false, $this->p, $this->n, $this->orderBy, $this->orderWay);
@@ -217,6 +223,8 @@ class SearchControllerCore extends FrontController
      *
      * @return void
      *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      * @since 1.0.0
      */
     public function setMedia()
@@ -226,5 +234,63 @@ class SearchControllerCore extends FrontController
         if (!$this->instant_search && !$this->ajax_search) {
             $this->addCSS(_THEME_CSS_DIR_.'product_list.css');
         }
+    }
+
+    /**
+     * findFirstClosestWord
+     *
+     * @param $searchString
+     *
+     * @return string
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    static function findFirstClosestWords($searchString)
+    {
+        $closestWords = [];
+        $lenghtWordCoefMin = 0.7;
+        $lenghtWordCoefMax = 1.5;
+        $minWordLength = (int)Configuration::get('PS_SEARCH_MINWORDLEN');
+
+        $queries = explode(' ', Search::sanitize($searchString, (int)Context::getContext()->language->id, false, Context::getContext()->language->iso_code));
+
+        foreach ($queries as $query) {
+            if (strlen($query) < $minWordLength) {
+                continue;
+            }
+
+            $targetLenghtMin = (int)(strlen($query) * $lenghtWordCoefMin);
+            $targetLenghtMax = (int)(strlen($query) * $lenghtWordCoefMax);
+
+            if ($targetLenghtMin < $minWordLength) {
+                $targetLenghtMin = $minWordLength;
+            }
+
+            $sql = (new DbQuery())
+                ->select('DISTINCT `word`')
+                ->from('search_word')
+                ->where('id_lang = ' . (int)Context::getContext()->language->id)
+                ->where('id_shop = ' . (int)Context::getContext()->shop->id)
+                ->where('LENGTH(`word`) > ' . $targetLenghtMin)
+                ->where('LENGTH(`word`) < ' . $targetLenghtMax);
+
+            $selectedWords = Db::getInstance()->getArray($sql);
+            if ($selectedWords) {
+                $minDistance = PHP_INT_MAX;
+                $selectedWord = '';
+                foreach ($selectedWords as $row) {
+                    $word = $row['word'];
+                    $distance = levenshtein($word, $query);
+                    if ($distance < $minDistance) {
+                        $selectedWord = $word;
+                        $minDistance = $distance;
+                    }
+                }
+                $closestWords[] = $selectedWord;
+            } else {
+                $closestWords[] = $query;
+            }
+        }
+        return implode(' ', $closestWords);
     }
 }
