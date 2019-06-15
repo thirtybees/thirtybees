@@ -67,7 +67,7 @@ class PageNotFoundControllerCore extends FrontController
                    .'[0-9/]+/([0-9]+)\-([_a-zA-Z]+)(\.)(png|jpe?g|gif)$@',
                    $_SERVER['REQUEST_URI'], $matches)) {
                 $imageType = ImageType::getByNameNType($matches[2], 'products');
-                if ($imageType && count($imageType)) {
+                if ($imageType) {
                     $root = _PS_PROD_IMG_DIR_;
                     $folder = Image::getImgFolderStatic($matches[1]);
                     $file = $matches[1];
@@ -101,7 +101,7 @@ class PageNotFoundControllerCore extends FrontController
                          .'([0-9]+)\-([_a-zA-Z-]+)(\.)(png|jpe?g|gif)$@',
                          $_SERVER['REQUEST_URI'], $matches)) {
                 $imageType = ImageType::getByNameNType($matches[2], 'categories');
-                if ($imageType && count($imageType)) {
+                if ($imageType) {
                     $root = _PS_CAT_IMG_DIR_;
                     $file = $matches[1];
                     $ext = '.'.$matches[4];
