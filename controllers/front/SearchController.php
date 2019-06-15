@@ -92,7 +92,7 @@ class SearchControllerCore extends FrontController
                     $product['product_link'] = $this->context->link->getProductLink($product['id_product'], $product['prewrite'], $product['crewrite']);
                 }
                 Hook::exec('actionSearch', ['expr' => $query, 'total' => count($searchResults)]);
-            
+            }
             $this->ajaxDie(json_encode($searchResults));
         }
 
