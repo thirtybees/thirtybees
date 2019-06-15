@@ -245,11 +245,9 @@ class SearchControllerCore extends FrontController
         foreach ( $words as &$item )
             $item['leven'] = self::levenshtein_utf8($item['word'], $searchString);
 
-        uasort($words, function ($a, $b) {
-            return $a['leven'] > $b['leven'] ? 1 : -1;
-        });
-
-        return array_shift($words)['word'];
+        return array_reduce($words, function($a, $b){
+            return $a['leven'] < $b['leven'] ? $a : $b;
+        }, array_shift($words))['word'];
     }
 
     /**
@@ -264,6 +262,7 @@ class SearchControllerCore extends FrontController
     static function utf8_to_extended_ascii($str, &$map)
     {
         $matches = array();
+        
         if (!preg_match_all('/[\xC0-\xF7][\x80-\xBF]+/', $str, $matches))
             return $str;
 
