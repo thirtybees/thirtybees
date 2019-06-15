@@ -85,7 +85,7 @@ class SearchControllerCore extends FrontController
             $searchResults = Search::find((int) (Tools::getValue('id_lang')), $query, 1, 10, 'position', 'desc', true);
             
             if(empty($searchResults))
-                $searchResults = Search::find((int) (Tools::getValue('id_lang')), self::findFirstCloseWord($query), 1, 10, 'position', 'desc', true);
+                $searchResults = Search::find((int) (Tools::getValue('id_lang')), self::findFirstClosestWord($query), 1, 10, 'position', 'desc', true);
             
             foreach ($searchResults as &$product) {
                 $product['product_link'] = $this->context->link->getProductLink($product['id_product'], $product['prewrite'], $product['crewrite']);
@@ -232,15 +232,19 @@ class SearchControllerCore extends FrontController
     }
     
     /**
-     * findFirstCloseWord
-     *
+     * findFirstClosestWord
+     * 
      * @param $searchString
-     *
-     * @return mixed
+     * 
+     * @return string
      */
-    static function findFirstCloseWord($searchString)
+    static function findFirstClosestWord($searchString)
     {
-        $words = self::getAllWords();
+        $sql = 'SELECT `word` FROM `'._DB_PREFIX_.'search_word` 
+                WHERE `id_lang` = '.(int)Context::getContext()->language->id.'
+                AND `id_shop` = '.(int)Context::getContext()->shop->id.';';
+
+        $words = Db::getInstance()->executeS($sql);
 
         foreach ( $words as &$item )
             $item['leven'] = levenshtein($item['word'], $searchString);
@@ -250,19 +254,5 @@ class SearchControllerCore extends FrontController
         }, array_shift($words))['word'];
 
         return $closestWord;
-    }
-
-    /**
-     * getAllWords
-     *
-     * @return array|false|PDOStatement|null
-     */
-    static function getAllWords()
-    {
-        $sql = 'SELECT `word` FROM `'._DB_PREFIX_.'search_word` 
-                WHERE `id_lang` = '.(int)Context::getContext()->language->id.'
-                AND `id_shop` = '.(int)Context::getContext()->shop->id.';';
-        
-        return Db::getInstance()->executeS($sql);
     }
 }
