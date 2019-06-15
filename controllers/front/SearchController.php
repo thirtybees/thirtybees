@@ -83,12 +83,15 @@ class SearchControllerCore extends FrontController
         $query = Tools::replaceAccentedChars(urldecode($originalQuery));
         if ($this->ajax_search) {
             $searchResults = Search::find((int) (Tools::getValue('id_lang')), $query, 1, 10, 'position', 'desc', true);
-            if (is_array($searchResults)) {
-                foreach ($searchResults as &$product) {
-                    $product['product_link'] = $this->context->link->getProductLink($product['id_product'], $product['prewrite'], $product['crewrite']);
-                }
-                Hook::exec('actionSearch', ['expr' => $query, 'total' => count($searchResults)]);
+            
+            if(empty($searchResults))
+                $searchResults = Search::find((int) (Tools::getValue('id_lang')), self::findFirstCloseWord($query), 1, 10, 'position', 'desc', true);
+            
+            foreach ($searchResults as &$product) {
+                $product['product_link'] = $this->context->link->getProductLink($product['id_product'], $product['prewrite'], $product['crewrite']);
             }
+            Hook::exec('actionSearch', ['expr' => $query, 'total' => count($searchResults)]);
+            
             $this->ajaxDie(json_encode($searchResults));
         }
 
@@ -226,5 +229,71 @@ class SearchControllerCore extends FrontController
         if (!$this->instant_search && !$this->ajax_search) {
             $this->addCSS(_THEME_CSS_DIR_.'product_list.css');
         }
+    }
+    
+    
+    /**
+     * @param $searchString
+     * @return mixed
+     */
+    static function findFirstCloseWord($searchString)
+    {
+        $words = self::getAllWords();
+
+        foreach ( $words as &$item )
+            $item['leven'] = self::levenshtein_utf8($item['word'], $searchString);
+
+        uasort($words, function ($a, $b) {
+            return $a['leven'] > $b['leven'] ? 1 : -1;
+        });
+
+
+        return array_shift($words)['word'];
+    }
+
+    /**
+     * @param $str
+     * @param $map
+     * @return string
+     */
+    static function utf8_to_extended_ascii($str, &$map)
+    {
+        $matches = array();
+        if (!preg_match_all('/[\xC0-\xF7][\x80-\xBF]+/', $str, $matches))
+            return $str;
+
+
+        foreach ($matches[0] as $mbc)
+            if (!isset($map[$mbc]))
+                $map[$mbc] = chr(128 + count($map));
+
+        return strtr($str, $map);
+    }
+
+
+    /**
+     * @param $s1
+     * @param $s2
+     * @return int
+     */
+    static function levenshtein_utf8($s1, $s2)
+    {
+        $charMap = array();
+        $s1 = self::utf8_to_extended_ascii($s1, $charMap);
+        $s2 = self::utf8_to_extended_ascii($s2, $charMap);
+
+        return levenshtein($s1, $s2);
+    }
+
+    /**
+     * @return array|false|PDOStatement|null
+     */
+    static function getAllWords()
+    {
+        $sql = 'SELECT `word` FROM `'._DB_PREFIX_.'search_word` WHERE `id_lang` = '.(int)Context::getContext()->language->id.';';
+
+        $result = Db::getInstance()->executeS($sql);
+
+        return $result;
     }
 }
