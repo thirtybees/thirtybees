@@ -231,9 +231,11 @@ class SearchControllerCore extends FrontController
         }
     }
     
-    
     /**
+     * findFirstCloseWord
+     *
      * @param $searchString
+     *
      * @return mixed
      */
     static function findFirstCloseWord($searchString)
@@ -247,13 +249,16 @@ class SearchControllerCore extends FrontController
             return $a['leven'] > $b['leven'] ? 1 : -1;
         });
 
-
         return array_shift($words)['word'];
     }
 
     /**
+     * utf8_to_extended_ascii
+     *
      * @param $str
+     *
      * @param $map
+     *
      * @return string
      */
     static function utf8_to_extended_ascii($str, &$map)
@@ -270,10 +275,13 @@ class SearchControllerCore extends FrontController
         return strtr($str, $map);
     }
 
-
     /**
+     * levenshtein_utf8
+     *
      * @param $s1
+     *
      * @param $s2
+     * 
      * @return int
      */
     static function levenshtein_utf8($s1, $s2)
@@ -286,14 +294,14 @@ class SearchControllerCore extends FrontController
     }
 
     /**
+     * getAllWords
+     *
      * @return array|false|PDOStatement|null
      */
     static function getAllWords()
     {
         $sql = 'SELECT `word` FROM `'._DB_PREFIX_.'search_word` WHERE `id_lang` = '.(int)Context::getContext()->language->id.';';
 
-        $result = Db::getInstance()->executeS($sql);
-
-        return $result;
+        return Db::getInstance()->executeS($sql);
     }
 }
