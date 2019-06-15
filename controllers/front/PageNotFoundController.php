@@ -77,20 +77,33 @@ class PageNotFoundControllerCore extends FrontController
                     $sourcePath = $root.$folder.$file.$ext;
                     $sendPath = $root.$folder.$file.'-'.$imageType['name'].$ext;
                 }
-            } elseif (preg_match('@^'.__PS_BASE_URI__
-                      .'c/([0-9]+)\-([_a-zA-Z-]+)(/[_a-zA-Z0-9-]+)?\.(png|jpe?g|gif)$@',
-                      $_SERVER['REQUEST_URI'], $matches)
-                      || preg_match('@^'._THEME_CAT_DIR_
-                         .'([0-9]+)\-([_a-zA-Z-]+)(\.)(png|jpe?g|gif)$@',
-                         $_SERVER['REQUEST_URI'], $matches)) {
-                $imageType = ImageType::getByNameNType($matches[2], 'categories');
-                if ($imageType) {
-                    $root = _PS_CAT_IMG_DIR_;
-                    $file = $matches[1];
-                    $ext = '.'.$matches[4];
+            } else {
+                foreach ([
+                    'categories'    => _THEME_CAT_DIR_,
+                ] as $type => $path) {
+                    $dir = str_replace(_PS_IMG_, '', $path);
+                    if (preg_match('@^'.__PS_BASE_URI__.$dir
+                        .'([0-9]+)\-([_a-zA-Z-]+)(/[_a-zA-Z0-9-]+)?\.(png|jpe?g|gif)$@',
+                        $_SERVER['REQUEST_URI'], $matches)
+                        || preg_match('@^'.$path
+                            .'([0-9]+)\-([_a-zA-Z-]+)(\.)(png|jpe?g|gif)$@',
+                            $_SERVER['REQUEST_URI'], $matches)
+                    ) {
+                        $imageType = ImageType::getByNameNType(
+                            $matches[2],
+                            $type
+                        );
+                        if ($imageType) {
+                            $root = _PS_IMG_DIR_.$dir;
+                            $file = $matches[1];
+                            $ext = '.'.$matches[4];
 
-                    $sourcePath = $root.$file.$ext;
-                    $sendPath = $root.$file.'-'.$imageType['name'].$ext;
+                            $sourcePath = $root.$file.$ext;
+                            $sendPath = $root.$file.'-'.$imageType['name'].$ext;
+
+                            break;
+                        }
+                    }
                 }
             }
 
