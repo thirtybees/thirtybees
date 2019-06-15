@@ -87,10 +87,11 @@ class SearchControllerCore extends FrontController
             if(empty($searchResults))
                 $searchResults = Search::find((int) (Tools::getValue('id_lang')), self::findFirstClosestWord($query), 1, 10, 'position', 'desc', true);
             
-            foreach ($searchResults as &$product) {
-                $product['product_link'] = $this->context->link->getProductLink($product['id_product'], $product['prewrite'], $product['crewrite']);
-            }
-            Hook::exec('actionSearch', ['expr' => $query, 'total' => count($searchResults)]);
+            if (is_array($searchResults)) {
+                foreach ($searchResults as &$product) {
+                    $product['product_link'] = $this->context->link->getProductLink($product['id_product'], $product['prewrite'], $product['crewrite']);
+                }
+                Hook::exec('actionSearch', ['expr' => $query, 'total' => count($searchResults)]);
             
             $this->ajaxDie(json_encode($searchResults));
         }
