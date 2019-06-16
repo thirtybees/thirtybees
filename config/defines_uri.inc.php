@@ -63,19 +63,25 @@ define('_THEME_TOUCHPAD_JS_DIR_',        _THEME_TOUCHPAD_DIR_.'js/');
 define('_PS_IMG_',                        __PS_BASE_URI__.'img/');
 define('_PS_ADMIN_IMG_',                _PS_IMG_.'admin/');
 define('_PS_TMP_IMG_',                    _PS_IMG_.'tmp/');
-define('_THEME_CAT_DIR_',                _PS_IMG_.'c/');
-define('_THEME_PROD_DIR_',                _PS_IMG_.'p/');
-define('_THEME_MANU_DIR_',                _PS_IMG_.'m/');
-define('_THEME_SCENE_DIR_',                _PS_IMG_.'scenes/');
-define('_THEME_SCENE_THUMB_DIR_',        _PS_IMG_.'scenes/thumbs');
-define('_THEME_SUP_DIR_',                _PS_IMG_.'su/');
-define('_THEME_SHIP_DIR_',                _PS_IMG_.'s/');
-define('_THEME_STORE_DIR_',                _PS_IMG_.'st/');
-define('_THEME_LANG_DIR_',                _PS_IMG_.'l/');
-define('_THEME_COL_DIR_',                _PS_IMG_.'co/');
-define('_THEME_GENDERS_DIR_',            _PS_IMG_.'genders/');
-define('_SUPP_DIR_',                    _PS_IMG_.'su/');
-define('_PS_PROD_IMG_',                    _PS_IMG_.'p/');
+define('_THEME_CAT_DIR_',           _PS_IMG_._TB_IMAGE_MAP_['categories']);
+define('_THEME_COL_DIR_',           _PS_IMG_._TB_IMAGE_MAP_['colors']);
+define('_THEME_EMPLOYEE_DIR_',      _PS_IMG_._TB_IMAGE_MAP_['employees']);
+define('_THEME_GENDERS_DIR_',       _PS_IMG_._TB_IMAGE_MAP_['genders']);
+define('_THEME_LANG_DIR_',          _PS_IMG_._TB_IMAGE_MAP_['languages']);
+define('_THEME_MANU_DIR_',          _PS_IMG_._TB_IMAGE_MAP_['manufacturers']);
+define('_THEME_ORDER_STATES_DIR_',  _PS_IMG_._TB_IMAGE_MAP_['order_states']);
+define('_THEME_PROD_DIR_',          _PS_IMG_._TB_IMAGE_MAP_['products']);
+define('_THEME_SCENE_DIR_',         _PS_IMG_._TB_IMAGE_MAP_['scenes']);
+define('_THEME_SCENE_THUMB_DIR_',   _PS_IMG_._TB_IMAGE_MAP_['scenes_thumbs']);
+define('_THEME_SHIP_DIR_',          _PS_IMG_._TB_IMAGE_MAP_['carriers']);
+define('_THEME_STORE_DIR_',         _PS_IMG_._TB_IMAGE_MAP_['stores']);
+define('_THEME_SUPP_DIR_',          _PS_IMG_._TB_IMAGE_MAP_['suppliers']);
+
+// Deprecated, don't use these.
+// @todo: remove their usage.
+define('_THEME_SUP_DIR_', _THEME_SUPP_DIR_);
+define('_SUPP_DIR_',      _THEME_SUPP_DIR_);
+define('_PS_PROD_IMG_',   _THEME_PROD_DIR_);
 
 /* Other URLs */
 define('_PS_JS_DIR_',                    __PS_BASE_URI__.'js/');

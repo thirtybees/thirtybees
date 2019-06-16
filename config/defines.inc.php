@@ -128,20 +128,44 @@ if (!defined('_PS_HOST_MODE_')) {
     define('_PS_CORE_IMG_DIR_',      _PS_ROOT_DIR_.'/img/');
 }
 
-define('_PS_CAT_IMG_DIR_',           _PS_IMG_DIR_.'c/');
-define('_PS_COL_IMG_DIR_',             _PS_IMG_DIR_.'co/');
-define('_PS_EMPLOYEE_IMG_DIR_',      _PS_IMG_DIR_.'e/');
-define('_PS_GENDERS_DIR_',           _PS_IMG_DIR_.'genders/');
-define('_PS_LANG_IMG_DIR_',          _PS_IMG_DIR_.'l/');
-define('_PS_MANU_IMG_DIR_',          _PS_IMG_DIR_.'m/');
-define('_PS_ORDER_STATE_IMG_DIR_',   _PS_IMG_DIR_.'os/');
-define('_PS_PROD_IMG_DIR_',          _PS_IMG_DIR_.'p/');
-define('_PS_SCENE_IMG_DIR_',         _PS_IMG_DIR_.'scenes/');
-define('_PS_SCENE_THUMB_IMG_DIR_',   _PS_IMG_DIR_.'scenes/thumbs/');
-define('_PS_SHIP_IMG_DIR_',          _PS_IMG_DIR_.'s/');
-define('_PS_STORE_IMG_DIR_',         _PS_IMG_DIR_.'st/');
-define('_PS_SUPP_IMG_DIR_',          _PS_IMG_DIR_.'su/');
-define('_PS_TMP_IMG_DIR_',           _PS_IMG_DIR_.'tmp/');
+/**
+ * A list of all front office related image classes with mapping to their
+ * storage directories. It's safe to assume one can find these image prefixed
+ * with _PS_IMG_DIR_ for local storage and prefixed with _PS_IMG_ for URLs.
+ */
+// Should be
+//define('_TB_IMAGE_MAP_', [
+// Retrocompatibility for PHP 5.6:
+const _TB_IMAGE_MAP_ = [
+    'carriers'          => 's/',
+    'categories'        => 'c/',
+    'colors'            => 'co/',
+    'employees'         => 'e/',
+    'genders'           => 'genders/',
+    'languages'         => 'l/',
+    'manufacturers'     => 'm/',
+    'order_states'      => 'os/',
+    'products'          => 'p/',
+    'scenes'            => 'scenes/',
+    'scenes_thumbs'     => 'scenes/thumbs/',
+    'stores'            => 'st/',
+    'suppliers'         => 'su/',
+];
+define('_PS_CAT_IMG_DIR_',          _PS_IMG_DIR_._TB_IMAGE_MAP_['categories']);
+define('_PS_COL_IMG_DIR_',          _PS_IMG_DIR_._TB_IMAGE_MAP_['colors']);
+define('_PS_EMPLOYEE_IMG_DIR_',     _PS_IMG_DIR_._TB_IMAGE_MAP_['employees']);
+define('_PS_GENDERS_DIR_',          _PS_IMG_DIR_._TB_IMAGE_MAP_['genders']);
+define('_PS_LANG_IMG_DIR_',         _PS_IMG_DIR_._TB_IMAGE_MAP_['languages']);
+define('_PS_MANU_IMG_DIR_',         _PS_IMG_DIR_._TB_IMAGE_MAP_['manufacturers']);
+define('_PS_ORDER_STATE_IMG_DIR_',  _PS_IMG_DIR_._TB_IMAGE_MAP_['order_states']);
+define('_PS_PROD_IMG_DIR_',         _PS_IMG_DIR_._TB_IMAGE_MAP_['products']);
+define('_PS_SCENE_IMG_DIR_',        _PS_IMG_DIR_._TB_IMAGE_MAP_['scenes']);
+define('_PS_SCENE_THUMB_IMG_DIR_',  _PS_IMG_DIR_._TB_IMAGE_MAP_['scenes_thumbs']);
+define('_PS_SHIP_IMG_DIR_',         _PS_IMG_DIR_._TB_IMAGE_MAP_['carriers']);
+define('_PS_STORE_IMG_DIR_',        _PS_IMG_DIR_._TB_IMAGE_MAP_['stores']);
+define('_PS_SUPP_IMG_DIR_',         _PS_IMG_DIR_._TB_IMAGE_MAP_['suppliers']);
+define('_PS_TMP_IMG_DIR_',          _PS_IMG_DIR_.'tmp/');
+
 
 /* settings php */
 define('_PS_TRANS_PATTERN_',            '(.*[^\\\\])');
