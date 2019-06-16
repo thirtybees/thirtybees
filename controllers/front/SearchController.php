@@ -85,7 +85,7 @@ class SearchControllerCore extends FrontController
             $searchResults = Search::find((int) (Tools::getValue('id_lang')), $query, 1, 10, 'position', 'desc', true);
             
             if(empty($searchResults))
-                $searchResults = Search::find((int) (Tools::getValue('id_lang')), self::findFirstClosestWord($query), 1, 10, 'position', 'desc', true);
+                $searchResults = Search::find((int) (Tools::getValue('id_lang')), self::findFirstClosestWords($query), 1, 10, 'position', 'desc', true);
             
             if (is_array($searchResults)) {
                 foreach ($searchResults as &$product) {
@@ -239,21 +239,51 @@ class SearchControllerCore extends FrontController
      * 
      * @return string
      */
-    static function findFirstClosestWord($searchString)
+    static function findFirstClosestWords($searchString)
     {
-        $sql = 'SELECT `word` FROM `'._DB_PREFIX_.'search_word` 
-                WHERE `id_lang` = '.(int)Context::getContext()->language->id.'
-                AND `id_shop` = '.(int)Context::getContext()->shop->id.';';
+        $cache             = array();
+        $closestWords      = "";
+        $lenghtWordCoefMin = 0.7;
+        $lenghtWordCoefMax = 1.5;
+        $MINWORDLEN        = (int)Configuration::get('PS_SEARCH_MINWORDLEN');
 
-        $words = Db::getInstance()->executeS($sql);
+        $queries = explode(' ', Search::sanitize($searchString, (int)Context::getContext()->language->id, false, Context::getContext()->language->iso_code));
 
-        foreach ( $words as &$item )
-            $item['leven'] = levenshtein($item['word'], $searchString);
+        foreach ($queries as $query)
+        {
+            if(strlen($query) < $MINWORDLEN)
+                continue;
 
-        $closestWord =  array_reduce($words, function($a, $b){
-            return $a['leven'] < $b['leven'] ? $a : $b;
-        }, array_shift($words))['word'];
+            $targetLenghtMin = (int)(strlen($query) * $lenghtWordCoefMin);
+            $targetLenghtMax = (int)(strlen($query) * $lenghtWordCoefMax);
 
-        return $closestWord;
+            if($targetLenghtMin < $MINWORDLEN)
+                $targetLenghtMin = $MINWORDLEN;
+
+            $sql = 'SELECT `word` FROM `'._DB_PREFIX_.'search_word` 
+                    WHERE `id_lang` = '.(int)Context::getContext()->language->id.'
+                    AND `id_shop` = '.(int)Context::getContext()->shop->id.'
+                    AND LENGTH(`word`) > '.$targetLenghtMin.'
+                    AND LENGTH(`word`) < '.$targetLenghtMax.';';
+
+            $selectedWords = Db::getInstance()->executeS($sql);
+
+            $closestWords .= array_reduce($selectedWords, function($a, $b) use ($query, &$cache){
+
+                if (!isset($cache[$a['word']]))
+                    $cache[$a['word']] = levenshtein($a['word'], $query);
+                if (!isset($cache[$b['word']]))
+                    $cache[$b['word']] = levenshtein($b['word'], $query);
+
+                return $cache[$a['word']] < $cache[$b['word']] ? $a : $b;
+
+            }, array ( "word" => 'initial', 'distance' => 10, 'weight' => 0 ))['word'];
+
+            unset($cache);
+            if(next($queries))
+                $closestWords .= ' ';
+        }
+
+        return $closestWords;
     }
 }
