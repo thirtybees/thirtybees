@@ -292,7 +292,10 @@ class AdminOrdersControllerCore extends AdminController
         ];
         $paymentModules = [];
         foreach (PaymentModule::getInstalledPaymentModules() as $pModule) {
-            $paymentModules[] = Module::getInstanceById((int) $pModule['id_module']);
+            $paymentModule = Module::getInstanceById((int) $pModule['id_module']);
+            if ($paymentModule && Module::isEnabled($paymentModule->name)) {
+                $paymentModules[] = $paymentModule;
+            }
         }
 
         $this->context->smarty->assign(
