@@ -395,21 +395,19 @@ class LinkCore
      * @return string
      *
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @version 1.0.0 Initial version.
+     * @version 1.1.0 Use getGenericImageLink().
      */
     public function getCatImageLink($name, $idCategory, $type = null, $format = 'jpg', $highDpi = false)
     {
-        if (!$format) {
-            $format = 'jpg';
-        }
-        if ($this->allow == 1 && $type) {
-            $uriPath = __PS_BASE_URI__.'c/'.$idCategory.'-'.$type.'/'.$name.($highDpi ? '2x.' : '.').$format;
-        } else {
-            $uriPath = _THEME_CAT_DIR_.$idCategory.($type ? '-'.$type : '').($highDpi ? '2x.' : '.').$format;
-        }
-
-        return $this->protocol_content.Tools::getMediaServer($uriPath).$uriPath;
+        return static::getGenericImageLink(
+            'categories',
+            $idCategory,
+            $type,
+            $highDpi ? '2x' : '',
+            $format === 'webp',
+            $name
+        );
     }
 
     /**
