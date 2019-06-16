@@ -277,11 +277,12 @@ class SearchControllerCore extends FrontController
 
                 return $cache[$a['word']] < $cache[$b['word']] ? $a : $b;
 
-            }, array ( "word" => 'initial' ))['word'];
+            }, array ("word" => 'initial'))['word'];
 
-            unset($cache);
-            if(next($queries))
+            if(next($queries)) {
+                unset($cache);
                 $closestWords .= ' ';
+            }
         }
 
         return $closestWords;
