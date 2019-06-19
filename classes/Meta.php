@@ -79,12 +79,17 @@ class MetaCore extends ObjectModel
     public static function getPages($excludeFilled = false, $addPage = false)
     {
         $selectedPages = [];
-        if (!$files = Tools::scandir(_PS_CORE_DIR_.DIRECTORY_SEPARATOR.'controllers'.DIRECTORY_SEPARATOR.'front'.DIRECTORY_SEPARATOR, 'php', '', true)) {
+
+        $files = Tools::scandir(_PS_FRONT_CONTROLLER_DIR_, 'php', '', true);
+        if ( ! $files) {
             die(Tools::displayError('Cannot scan root directory'));
         }
-
-        if (!$overrideFiles = Tools::scandir(_PS_CORE_DIR_.DIRECTORY_SEPARATOR.'override'.DIRECTORY_SEPARATOR.'controllers'.DIRECTORY_SEPARATOR.'front'.DIRECTORY_SEPARATOR, 'php', '', true)) {
-            die(Tools::displayError('Cannot scan "override" directory'));
+        $overrideFiles = Tools::scandir(
+            _PS_OVERRIDE_DIR_.'controllers/front/',
+            'php', '', true
+        );
+        if ( ! $overrideFiles) {
+            die(Tools::displayError('Cannot scan override directory'));
         }
 
         $files = array_values(array_unique(array_merge($files, $overrideFiles)));
