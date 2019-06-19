@@ -224,43 +224,86 @@ class AdminThemesControllerCore extends AdminController
 
         $imageUrl = false;
         if ($this->object) {
-            if ((int) $this->object->id > 0) {
-                $theme = new Theme((int) $this->object->id);
-                $themeMetasQuery = (new DbQuery())
-                    ->select('ml.`title`, m.`page`, tm.`left_column` as `left`, tm.`right_column` as `right`, m.`id_meta`, tm.`id_theme_meta`')
-                    ->from('theme_meta', 'tm')
-                    ->innerJoin('meta', 'm', 'm.`id_meta` = tm.`id_meta`')
-                    ->leftJoin('meta_lang', 'ml', 'ml.`id_meta` = m.`id_meta` AND ml.`id_lang` = '.(int)$this->context->language->id.' AND ml.`id_shop` = '.(int)$this->context->shop->id)
-                    ->where('tm.`id_theme` = '.(int) $this->object->id);
+            $idTheme = (int) $this->object->id;
+            if ($idTheme) {
+                $theme = new Theme($idTheme);
 
-                $themeMetas = Db::getInstance()->executeS($themeMetasQuery);
+                $metaPages = Meta::getPages(false, false, true);
+                foreach ($metaPages as $metaPage) {
+                    $pageQuery = (new DbQuery())
+                        ->select('m.`page`')
+                        ->select('tm.`left_column` as `left`')
+                        ->select('tm.`right_column` as `right`')
+                        ->select('m.`id_meta`')
+                        ->select('tm.`id_theme_meta`')
+                        ->from('theme_meta', 'tm')
+                        ->innerJoin('meta', 'm', 'm.`id_meta` = tm.`id_meta`')
+                        ->where('tm.`id_theme` = '.$idTheme)
+                        ->where('m.`page` = \''.$metaPage.'\'');
 
-                // if no theme_meta are found, we must create them
-                if (empty($themeMetas)) {
-                    $metas = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
-                        (new DbQuery())
-                        ->select('`id_meta`')
-                        ->from('meta')
-                    );
-                    $metasDefault = [];
-                    foreach ($metas as $meta) {
-                        $tmpMeta['id_meta'] = (int) $meta['id_meta'];
-                        $tmpMeta['left'] = 1;
-                        $tmpMeta['right'] = 1;
-                        $metasDefault[] = $tmpMeta;
+                    $description = Db::getInstance()->getRow($pageQuery);
+
+                    /**
+                     * Add theme metas present, but not found in the database.
+                     * If necessary, also create the connected plain meta.
+                     *
+                     * Yes, we update the theme's set of theme metas and also
+                     * the general set of metas here without the user clicking
+                     * 'Save' on the controller page. If this turns out to
+                     * be a problem, this updating should get moved to
+                     * processUpdate() and/or ajaxProcess{Left|Right}Meta().
+                     */
+                    if ( ! $description) {
+                        $idMeta = Db::getInstance()->getValue((new DbQuery())
+                            ->select('`id_meta`')
+                            ->from('meta', 'm')
+                            ->where('m.`page` = \''.$metaPage.'\'')
+                        );
+
+                        if ( ! $idMeta) {
+                            $newMeta = new Meta();
+                            $newMeta->page = $metaPage;
+                            $newMeta->configurable = 0;
+                            $newMeta->add();
+
+                            $idMeta = $newMeta->id;
+                        }
+
+                        $theme->updateMetas([[
+                            'id_meta' => $idMeta,
+                            'left'    => $theme->default_left_column,
+                            'right'   => $theme->default_right_column,
+                        ]]);
+
+                        $description = Db::getInstance()->getRow($pageQuery);
                     }
-                    $theme->updateMetas($metasDefault);
-                    $themeMetas = Db::getInstance()->executeS($themeMetasQuery);
+
+                    $formatedMetas[] = $description;
                 }
 
-                foreach ($themeMetas as $key => &$meta) {
-                    if ( ! isset($meta['title']) || ! $meta['title']) {
-                        $meta['title'] = $meta['page'];
+                /**
+                 * Delete surplus theme metas. Even more database editing
+                 * without the user clicking 'Save'.
+                 */
+                foreach ($theme->getMetas() as $themeMeta) {
+                    $found = false;
+                    foreach ($formatedMetas as $formatedMeta) {
+                        if ($themeMeta['id_theme_meta']
+                            == $formatedMeta['id_theme_meta']
+                        ) {
+                            $found = true;
+                        }
+                    }
+
+                    if ( ! $found) {
+                        Db::getInstance()->delete(
+                            'theme_meta',
+                            'id_theme_meta = '.$themeMeta['id_theme_meta']
+                        );
                     }
                 }
-
-                $formatedMetas = $themeMetas;
             }
+
             $selectedThemeDir = $this->object->directory;
             $imageUrl = '<img alt="preview" src="'
                 .__PS_BASE_URI__.'themes/'.$this->object->directory
@@ -403,7 +446,7 @@ class AdminThemesControllerCore extends AdminController
         $list = '';
         if (Tools::getIsset('update'.$this->table)) {
             $fieldsList = [
-                'title' => [
+                'page' => [
                     'title' => $this->l('Meta'),
                     'align' => 'center',
                     'width' => 'auto',

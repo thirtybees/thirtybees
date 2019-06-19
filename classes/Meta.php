@@ -38,6 +38,12 @@ class MetaCore extends ObjectModel
 {
     // @codingStandardsIgnoreStart
     public $page;
+    /**
+     * @var bool $configurable
+     *
+     * True:  The meta is configurable by AdminMetaController.
+     * False: The meta is only a helper for a theme meta.
+     */
     public $configurable = 1;
     public $title;
     public $description;
