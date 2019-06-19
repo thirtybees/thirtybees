@@ -220,7 +220,6 @@ class AdminThemesControllerCore extends AdminController
         $getAvailableThemes = Theme::getAvailable(false);
         $availableThemeDir = [];
         $selectedThemeDir = null;
-        $metas = Meta::getMetas();
         $formatedMetas = [];
 
         $imageUrl = false;
@@ -254,10 +253,8 @@ class AdminThemesControllerCore extends AdminController
                     $themeMetas = Db::getInstance()->executeS($themeMetasQuery);
                 }
 
-                $imageUrl = '<img alt="preview" src="'.__PS_BASE_URI__.'themes/'.$theme->directory.'/preview.jpg">';
-
                 foreach ($themeMetas as $key => &$meta) {
-                    if (!isset($meta['title']) || !$meta['title'] || $meta['title'] == '') {
+                    if ( ! isset($meta['title']) || ! $meta['title']) {
                         $meta['title'] = $meta['page'];
                     }
                 }
@@ -265,6 +262,9 @@ class AdminThemesControllerCore extends AdminController
                 $formatedMetas = $themeMetas;
             }
             $selectedThemeDir = $this->object->directory;
+            $imageUrl = '<img alt="preview" src="'
+                .__PS_BASE_URI__.'themes/'.$this->object->directory
+                .'/preview.jpg">';
         }
 
         foreach ($getAvailableThemes as $k => $dirname) {
