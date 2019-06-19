@@ -207,9 +207,11 @@ class AdminProductsControllerCore extends AdminController
 				LEFT JOIN `'._DB_PREFIX_.'shop` shop ON (shop.id_shop = '.$idShop.')
 				LEFT JOIN `'._DB_PREFIX_.'image_shop` image_shop ON (image_shop.`id_product` = a.`id_product` AND image_shop.`cover` = 1 AND image_shop.id_shop = '.$idShop.')
 				LEFT JOIN `'._DB_PREFIX_.'image` i ON (i.`id_image` = image_shop.`id_image`)
+				LEFT JOIN `'._DB_PREFIX_.'manufacturer` m ON (m.`id_manufacturer` = a.`id_manufacturer`)
 				LEFT JOIN `'._DB_PREFIX_.'product_download` pd ON (pd.`id_product` = a.`id_product` AND pd.`active` = 1)';
 
         $this->_select .= 'shop.`name` AS `shopname`, a.`id_shop_default`, ';
+        $this->_select .= 'm.`name` AS `name_manufacturer`, ';
         $this->_select .= $aliasImage.'.`id_image` AS `id_image`, cl.`name` AS `name_category`, '.$alias.'.`price`, 0 AS `price_final`, a.`is_virtual`, pd.`nb_downloadable`, sav.`quantity` AS `sav_quantity`, '.$alias.'.`active`, IF(sav.`quantity`<=0, 1, 0) AS `badge_danger`';
 
         if ($joinCategory) {
@@ -254,6 +256,11 @@ class AdminProductsControllerCore extends AdminController
                 'filter_key' => 'cl!name',
             ];
         }
+        $this->fields_list['name_manufacturer'] = [
+            'title'      => $this->l('Manufacturer'),
+            'filter_key' => 'm!name',
+            'orderby'    => true,
+        ];
         $this->fields_list['price'] = [
             'title'      => $this->l('Base price'),
             'type'       => 'price',
