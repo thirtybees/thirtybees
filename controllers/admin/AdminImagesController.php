@@ -809,10 +809,10 @@ class AdminImagesControllerCore extends AdminController
                 if (file_exists($newFile) && !unlink($newFile)) {
                     $this->errors[] = $this->l('Unable to generate new image');
                 }
-                if (!file_exists($newFile)) {
-                    if (!file_exists($dir.$image) || !filesize($dir.$image)) {
+                if (file_exists($dir.$image) && ! file_exists($newFile)) {
+                    if ( ! filesize($dir.$image)) {
                         $this->errors[] = sprintf(
-                            $this->l('Source file for %s id %s does not exist: %s'),
+                            $this->l('Source file for %s id %s is corrupt: %s'),
                             $entityType,
                             $idEntity,
                             str_replace(_PS_ROOT_DIR_, '', $dir.$image)
