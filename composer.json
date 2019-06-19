@@ -22,7 +22,7 @@
         "paragonie/random_compat": "<9.99"
     },
     "require-dev": {
-        "satooshi/php-coveralls": "^1.0",
+        "php-coveralls/php-coveralls": "^1.0",
         "phpunit/phpunit": "~4.8 || ~5.7 || ~6.0",
         "codeception/codeception": "2.2.9",
         "codeception/aspect-mock": "^1.0 || ^2.0"
