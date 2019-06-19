@@ -68,16 +68,20 @@ class MetaCore extends ObjectModel
     /**
      * @param bool $excludeFilled
      * @param bool $addPage
+     * @param bool $forTheme      If true, return 'forbidden' pages as well.
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
-     * @since   1.0.0
-     * @version 1.0.0 Initial version
+     * @version 1.0.0 Initial version.
+     * @version 1.1.0 New parameter $forTheme.
      */
-    public static function getPages($excludeFilled = false, $addPage = false)
-    {
+    public static function getPages(
+        $excludeFilled = false,
+        $addPage = false,
+        $forTheme = false
+    ) {
         $selectedPages = [];
 
         $files = Tools::scandir(_PS_FRONT_CONTROLLER_DIR_, 'php', '', true);
@@ -94,18 +98,21 @@ class MetaCore extends ObjectModel
 
         $files = array_values(array_unique(array_merge($files, $overrideFiles)));
 
-        // Exclude pages forbidden
-        $exludePages = [
-            'category',
-            'changecurrency',
-            'cms',
-            'footer',
-            'header',
-            'pagination',
-            'product',
-            'product-sort',
-            'statistics',
-        ];
+        // Exclude pages forbidden.
+        $exludePages = [];
+        if ( ! $forTheme) {
+            $exludePages = [
+                'category',
+                'changecurrency',
+                'cms',
+                'footer',
+                'header',
+                'pagination',
+                'product',
+                'product-sort',
+                'statistics',
+            ];
+        }
 
         foreach ($files as $file) {
             if ($file != 'index.php' && !in_array(strtolower(str_replace('Controller.php', '', $file)), $exludePages)) {
