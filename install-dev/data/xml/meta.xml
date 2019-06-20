@@ -28,6 +28,18 @@
 			<page>cart</page>
 			<configurable>1</configurable>
 		</meta>
+		<meta id="category">
+			<page>category</page>
+			<configurable>0</configurable>
+		</meta>
+		<meta id="changecurrency">
+			<page>changecurrency</page>
+			<configurable>0</configurable>
+		</meta>
+		<meta id="cms">
+			<page>cms</page>
+			<configurable>0</configurable>
+		</meta>
 		<meta id="contact">
 			<page>contact</page>
 			<configurable>1</configurable>
@@ -124,6 +136,10 @@
 			<page>prices-drop</page>
 			<configurable>1</configurable>
 		</meta>
+		<meta id="product">
+			<page>product</page>
+			<configurable>0</configurable>
+		</meta>
 		<meta id="products-comparison">
 			<page>products-comparison</page>
 			<configurable>1</configurable>
@@ -134,6 +150,10 @@
 		</meta>
 		<meta id="sitemap">
 			<page>sitemap</page>
+			<configurable>1</configurable>
+		</meta>
+		<meta id="statistics">
+			<page>statistics</page>
 			<configurable>1</configurable>
 		</meta>
 		<meta id="stores">
