@@ -2616,9 +2616,12 @@ class AdminThemesControllerCore extends AdminController
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since 1.0.0
+     * @deprecated 1.1.0 No longer in use, there's ajaxProcessLeftMeta().
      */
     public function processLeftMeta()
     {
+        Tools::displayAsDeprecated();
+
         $result = Db::getInstance()->update(
             'theme_meta',
             [
@@ -2677,9 +2680,12 @@ class AdminThemesControllerCore extends AdminController
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since 1.0.0
+     * @deprecated 1.1.0 No longer in use, there's ajaxProcessRightMeta().
      */
     public function processRightMeta()
     {
+        Tools::displayAsDeprecated();
+
         $result = Db::getInstance()->update(
             'theme_meta',
             [
