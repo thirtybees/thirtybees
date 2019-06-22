@@ -47,7 +47,8 @@ if (!defined('_PS_CORE_DIR_')) {
 }
 
 if (!defined('_THEME_NAME_')) {
-    define('_THEME_NAME_', 'community-theme-default');
+    // '_THEME_DIR_' would be a better name for this definition.
+    define('_THEME_NAME_', 'niara');
 }
 
 require_once(_PS_CORE_DIR_.'/config/defines.inc.php');
