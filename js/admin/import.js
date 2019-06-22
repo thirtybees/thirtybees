@@ -330,6 +330,18 @@ function updateProgressionError(message, forWarnings) {
   }
 }
 
+function toggleDateFormatSelect() {
+  let elem, showInput = false;
+  for (let i = 0; elem = window.getE('type_value[' + i + ']'); i += 1) {
+    if (['reduction_to_custom', 'reduction_from_custom'].indexOf(elem.value) !== -1) {
+      showInput = true;
+    }
+  }
+  if (showInput)
+    $('#dateFormatContainer').show();
+  else
+    $('#dateFormatContainer').hide();
+}
 
 $(document).ready(function () {
   $('#saveImportMatchs').unbind('click').click(function () {
@@ -375,6 +387,7 @@ $(document).ready(function () {
         for (var i = 0; i < matchs.length; i += 1) {
           $('#type_value\\[' + i + '\\]').val(matchs[i]).attr('selected', true);
         }
+        toggleDateFormatSelect();
       },
       error: function (XMLHttpRequest) {
         window.jAlert('TECHNICAL ERROR Details: ' + window.html_escape(XMLHttpRequest.responseText));
@@ -426,4 +439,10 @@ $(document).ready(function () {
     $('#import_details_warning, #import_details_info').hide();
     window.importNow(0, 5, -1, false, {}, 0);
   });
+
+  for (var i = 0; elem = window.getE('type_value[' + i + ']'); i += 1) {
+    $(elem).unbind('change').change(function (event) {
+      toggleDateFormatSelect();
+    });
+  }
 });
