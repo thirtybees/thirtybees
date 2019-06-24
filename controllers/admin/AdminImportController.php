@@ -246,8 +246,6 @@ class AdminImportControllerCore extends AdminController
                     'reduction_percent'         => ['label' => $this->l('Discount percent')],
                     'reduction_from'            => ['label' => $this->l('Discount from (yyyy-mm-dd)')],
                     'reduction_to'              => ['label' => $this->l('Discount to (yyyy-mm-dd)')],
-                    'reduction_from_custom'     => ['label' => $this->l('Discount from (custom)')],
-                    'reduction_to_custom'       => ['label' => $this->l('Discount to (custom)')],
                     'reference'                 => ['label' => $this->l('Reference #')],
                     'supplier_reference'        => ['label' => $this->l('Supplier reference #')],
                     'supplier'                  => ['label' => $this->l('Supplier')],
@@ -832,16 +830,6 @@ class AdminImportControllerCore extends AdminController
         $this->context->cookie->multipleValueSeparatorSelected = urlencode($this->multiple_value_separator);
         $this->context->cookie->csv_selected = urlencode(Tools::getValue('csv'));
 
-        $date_formats = [
-            'Y-m-d' => ['label' => 'Y-m-d'],
-            'Y-d-m' => ['label' => 'Y-d-m'],
-            'd-m-Y' => ['label' => 'd-m-Y'],
-            'd.m.Y' => ['label' => 'd.m.Y'],
-        ];
-        if (!empty($this->context->language) && !empty($this->context->language->date_format_lite)) {
-            $date_formats = array_merge([$this->context->language->date_format_lite => ['label' => $this->context->language->date_format_lite . ' - ' . $this->l('from language')]], $date_formats);
-        }
-
         $this->tpl_view_vars = [
             'import_matchs'    => Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS((new DbQuery())->select('*')->from('import_match'), true, false),
             'fields_value'     => [
@@ -863,7 +851,6 @@ class AdminImportControllerCore extends AdminController
             'no_pre_select'    => ['price_tin', 'feature'],
             'available_fields' => $this->available_fields,
             'data'             => $data,
-            'date_formats'     => $date_formats,
         ];
 
         return parent::renderView();
@@ -2934,23 +2921,8 @@ class AdminImportControllerCore extends AdminController
                         $info['reduction_percent'] / 100
                     );
                     $specificPrice->reduction_type = (isset($info['reduction_price']) && $info['reduction_price']) ? 'amount' : 'percentage';
-
-                    if (isset($info['reduction_from_custom']) && Tools::getValue('date_format') && Validate::isPhpDateFormat(Tools::getValue('date_format'))) {
-                        $specificPrice->from = \DateTime::createFromFormat(Tools::getValue('date_format'), $info['reduction_from_custom']);
-                        if(is_a($specificPrice->from, 'DateTime')){
-                            $specificPrice->from = $specificPrice->from->format('Y-m-d');
-                        }
-                    } else {
-                        $specificPrice->from = (isset($info['reduction_from']) && Validate::isDate($info['reduction_from'])) ? $info['reduction_from'] : '0000-00-00 00:00:00';
-                    }
-                    if (isset($info['reduction_to_custom']) && Tools::getValue('date_format') && Validate::isPhpDateFormat(Tools::getValue('date_format'))) {
-                        $specificPrice->to = \DateTime::createFromFormat(Tools::getValue('date_format'), $info['reduction_to_custom']);
-                        if(is_a($specificPrice->to, 'DateTime')){
-                            $specificPrice->to = $specificPrice->to->format('Y-m-d');
-                        }
-                    } else {
-                        $specificPrice->to = (isset($info['reduction_to']) && Validate::isDate($info['reduction_to'])) ? $info['reduction_to'] : '0000-00-00 00:00:00';
-                    }
+                    $specificPrice->from = (isset($info['reduction_from']) && Validate::isDate($info['reduction_from'])) ? $info['reduction_from'] : '0000-00-00 00:00:00';
+                    $specificPrice->to = (isset($info['reduction_to']) && Validate::isDate($info['reduction_to'])) ? $info['reduction_to'] : '0000-00-00 00:00:00';
                     if (!$validateOnly && !$specificPrice->save()) {
                         $this->addProductWarning(Tools::safeOutput($info['name']), $product->id, $this->l('Discount is invalid'));
                     }
