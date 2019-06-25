@@ -206,6 +206,10 @@
 	path = modules/themeconfigurator
 	url = https://github.com/thirtybees/themeconfigurator.git
 	ignore = dirty
+[submodule "modules/thememanager"]
+	path = modules/thememanager
+	url = https://github.com/thirtybees/thememanager.git
+	ignore = dirty
 [submodule "modules/trackingfront"]
 	path = modules/trackingfront
 	url = https://github.com/thirtybees/trackingfront.git
