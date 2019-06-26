@@ -17,5 +17,6 @@ class MyAccountAcceptanceCest
         $I->amOnPage('/index.php');
         $I->click(['css' => '.login']);
         $I->seeElement(['css' => '#create-account_form']);
+        $I->withoutErrors();
     }
 }
