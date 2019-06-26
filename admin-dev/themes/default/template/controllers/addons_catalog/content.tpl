@@ -345,7 +345,6 @@
                        {$item.name}
                       </h3>
                       <div class="addons-module-product-author">
-                        <span>by</span>
                         {$item.author}
                       </div>
                     </div>
@@ -366,12 +365,9 @@
                       </div>
                       <div class="addons-module-action pull-right">
                         <a class="btn btn-primary" href="{$item.url}" target="_blank" rel="noopener" title="{$item.name}">
-                          Discover
+                          Learn More
                         </a>
                       </div>
-                    </div>
-                    <div class="addons-marketplace pull-right">
-                      On the <span>thirty bees store</span>
                     </div>
                   </div>
                 </div>
