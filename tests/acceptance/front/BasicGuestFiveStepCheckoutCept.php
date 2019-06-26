@@ -31,7 +31,7 @@ $I->click('Save');
 
 $I->click('Proceed to checkout');
 
-$I->checkOption(['css' => '#cgv']);
+$I->click('label[for="cgv"]');
 $I->click('Proceed to checkout');
 
 $I->click('Pay by bank wire');
