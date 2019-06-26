@@ -39,6 +39,7 @@ class AdminConfigurationPagesCest
         ],
         'AdminParentModules' => [
             'AdminModules',
+            'AdminAddonsCatalog',
             'AdminModulesPositions',
             'AdminPayment',
         ],
