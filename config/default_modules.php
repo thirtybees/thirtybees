@@ -25,6 +25,7 @@
 // define('_TB_DEFAULT_MODULES_', [ ...
 $_TB_DEFAULT_MODULES_ = [
     'bankwire',
+    'beesblog',
     'blockbanner',
     'blockbestsellers',
     'blockcart',
