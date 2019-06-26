@@ -7,5 +7,6 @@
 class_name: AcceptanceTester
 modules:
     enabled:
+        - Asserts
         - WebDriver
         - \Helper\Acceptance
