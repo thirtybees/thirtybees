@@ -313,14 +313,14 @@
 <div class="panel addons-bxslider-block addons-bxslider clearfix">
     <ul class="addons-rslides rslides rslides1">
               <li id="rslides1_s0" class="rslides1_on" style="display: block; float: left; position: relative; opacity: 1; z-index: 2; transition: opacity 500ms ease-in-out 0s;">
-          <a href="{$parsed_content.ad_top.url}" target="_blank" data-gaq="">
-            <img src="{$parsed_content.ad_top.img}" title="" alt="">
+          <a href="{$addons_content.ad_top.url}" target="_blank" data-gaq="">
+            <img src="{$addons_content.ad_top.img}" title="" alt="">
           </a>
         </li>
       
     </ul>
  </div>
-  {foreach from=$parsed_content.content item='group'}
+  {foreach from=$addons_content.content item='group'}
 
 
    		<div class="addons-module-block addons-module-traffic-block">
