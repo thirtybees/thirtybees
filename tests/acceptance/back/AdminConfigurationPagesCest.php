@@ -119,13 +119,14 @@ class AdminConfigurationPagesCest
 
     private function checkAdminPage(AcceptanceTester $I, $child)
     {
-        $childElement = ['css' => "#subtab-{$child}"];
+        $childElement = ['css' => "#subtab-{$child} a"];
 
         $I->seeElementInDOM($childElement);
         $I->waitForElementVisible($childElement, 30);
         $I->click($childElement);
 
         $I->see('Quick Access');
+        $I->withoutErrors();
     }
 
     public function testAdminPages(AcceptanceTester $I)
