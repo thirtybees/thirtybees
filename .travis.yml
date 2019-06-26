@@ -28,7 +28,8 @@ install:
 
 script:
   - tests/validate.sh
-  - vendor/bin/codecept run unit,integration -c . --coverage --coverage-xml
+  - vendor/bin/codecept run unit -c .
+  - vendor/bin/codecept run integration -c .
   - phpenv config-rm xdebug.ini
   - php -S thirty.bees:8888 -t . >/dev/null 2>&1 &
   - phantomjs --webdriver=4444 >/dev/null 2>&1 &
