@@ -3,7 +3,7 @@ $I = new AcceptanceTester($scenario);
 $I->am('Guest');
 $I->wantTo('Buy a product');
 $I->resizeWindow(1920, 1080);
-$I->amOnPage('/index.php?controller=product&id_product=1');
+$I->amOnPage('/index.php?id_product=1&controller=product');
 $I->see('Add to cart');
 $I->click('Add to cart');
 $I->waitForElementVisible(['css' => '.layer_cart_product']);
