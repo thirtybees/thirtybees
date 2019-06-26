@@ -29,33 +29,6 @@ UPDATE `PREFIX_homeslider_slides_lang` SET `description` = '<h3 style="float:lef
 <p style="text-align:center;margin-top:20px;"><button class="btn btn-default" type="button">Shop now !</button></p>' WHERE `id_homeslider_slides` = 3;
 
 /* Blog Data Population */
-INSERT INTO `PREFIX_configuration` (id_configuration, id_shop_group, id_shop, name, value, date_add, date_upd)
-values (373, '', '','BEESBLOG_POSTS_PER_PAGE', 5, '2019-06-25 00:41:13', '2019-06-25 00:41:13');
-INSERT INTO `PREFIX_configuration` (id_configuration, id_shop_group, id_shop, name, value, date_add, date_upd)
-values (374, '', '','BEESBLOG_SHOW_AUTHOR', 1, '2019-06-25 00:41:13', '2019-06-25 00:41:13');
-INSERT INTO `PREFIX_configuration` (id_configuration, id_shop_group, id_shop, name, value, date_add, date_upd)
-values (375, '', '','BEESBLOG_SHOW_DATE', 1, '2019-06-25 00:41:13', '2019-06-25 00:41:13');
-INSERT INTO `PREFIX_configuration` (id_configuration, id_shop_group, id_shop, name, value, date_add, date_upd)
-values (376, '', '','BEESBLOG_SOCIAL_SHARING', 1, '2019-06-25 00:41:13', '2019-06-25 00:41:13');
-INSERT INTO `PREFIX_configuration` (id_configuration, id_shop_group, id_shop, name, value, date_add, date_upd)
-values (377, '', '','BEESBLOG_SHOW_AUTHOR_STYLE', 1, '2019-06-25 00:41:13', '2019-06-25 00:41:13');
-INSERT INTO `PREFIX_configuration` (id_configuration, id_shop_group, id_shop, name, value, date_add, date_upd)
-values (378, '', '','BEESBLOG_MAIN_URL_KEY', 'blog', '2019-06-25 00:41:13', '2019-06-25 00:41:13');
-INSERT INTO `PREFIX_configuration` (id_configuration, id_shop_group, id_shop, name, value, date_add, date_upd)
-values (379, '', '','BEESBLOG_USE_HTML', 1, '2019-06-25 00:41:13', '2019-06-25 00:41:13');
-INSERT INTO `PREFIX_configuration` (id_configuration, id_shop_group, id_shop, name, value, date_add, date_upd)
-values (380, '', '','BEESBLOG_SHOW_VIEWED', 1, '2019-06-25 00:41:13', '2019-06-25 00:41:13');
-INSERT INTO `PREFIX_configuration` (id_configuration, id_shop_group, id_shop, name, value, date_add, date_upd)
-values (381, '', '','BEESBLOG_SHOW_NO_IMAGE', '', '2019-06-25 00:41:13', '2019-06-25 00:41:13');
-INSERT INTO `PREFIX_configuration` (id_configuration, id_shop_group, id_shop, name, value, date_add, date_upd)
-values (382, '', '','BEESBLOG_DISABLE_CATEGORY_IMAGE', '', '2019-06-25 00:41:13', '2019-06-25 00:41:13');
-INSERT INTO `PREFIX_configuration` (id_configuration, id_shop_group, id_shop, name, value, date_add, date_upd)
-values (383, '', '','BEESBLOG_META_TITLE', 'Bees blog title', '2019-06-25 00:41:13', '2019-06-25 00:41:13');
-INSERT INTO `PREFIX_configuration` (id_configuration, id_shop_group, id_shop, name, value, date_add, date_upd)
-values (384, '', '','BEESBLOG_META_KEYWORDS', 'thirty bees blog, bees blog', '2019-06-25 00:41:13', '2019-06-25 00:41:13');
-INSERT INTO `PREFIX_configuration` (id_configuration, id_shop_group, id_shop, name, value, date_add, date_upd)
-values (385, '', '','BEESBLOG_META_DESCRIPTION', 'Thee beesiest blog ever', '2019-06-25 00:41:13', '2019-06-25 00:41:13');
-
 INSERT INTO `PREFIX_bees_blog_category` (`id_bees_blog_category`, `id_parent`, `position`, `active`, `date_add`, `date_upd`) VALUES
 (1, 0, 1, 1, '2019-06-25 02:32:42', '2019-06-25 02:32:42');
 
