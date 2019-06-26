@@ -21,7 +21,7 @@ class ModuleTest extends \Codeception\Test\Unit
         foreach (scandir(_PS_MODULE_DIR_) as $entry) {
             if ($entry[0] !== '.') {
                 if (file_exists(_PS_MODULE_DIR_.$entry.DIRECTORY_SEPARATOR.$entry.'.php')) {
-                    $modules[] = array($entry);
+                    $modules[$entry] = [ $entry ];
                 }
             }
         }
@@ -37,7 +37,7 @@ class ModuleTest extends \Codeception\Test\Unit
     {
         $module = ModuleCore::getInstanceByName($moduleName);
 
-        if ($module->id) {
+        if (Module::isInstalled($moduleName)) {
             $this->assertTrue((bool)$module->uninstall(), 'Module uninstall failed : '.$moduleName);
             $this->assertTrue((bool)$module->install(), 'Module install failed : '.$moduleName);
         } else {
