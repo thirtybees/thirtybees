@@ -56,7 +56,15 @@ Support for these general requirements (except recommendations) gets tested duri
 
 Browserlist string: <code>[defaults, ie >= 9, ie_mob >= 10, edge >= 12, chrome >= 30, chromeandroid >= 30, android >= 4.4, ff >= 30, safari >= 9, ios >= 9, opera >= 36](http://browserl.ist/?q=defaults%2C+ie+%3E%3D+9%2C+ie_mob+%3E%3D+10%2C+edge+%3E%3D+12%2C+chrome+%3E%3D+30%2C+chromeandroid+%3E%3D+30%2C+android+%3E%3D+4.4%2C+ff+%3E%3D+30%2C+safari+%3E%3D+9%2C+ios+%3E%3D+9%2C+opera+%3E%3D+36)</code>
 
-## Installation
+## Installation for Shop Owners
+
+- Download the [latest release package](https://github.com/thirtybees/thirtybees/releases) (_thirtybees-vXXX.zip_, ~43 MiB).
+- Unpack this ZIP file into your web hosting directory. If you have no shell access, unpack it locally and upload all files, e.g. with [FileZilla](https://filezilla-project.org/). Using a subdirectory works fine.
+- Direct your browser to your webhosting, it should show the installer.
+- Follow instructions.
+
+## Installation for Developers
+
 You can install the master or follow a [release package](https://github.com/thirtybees/thirtybees/releases)
 - Recursively clone the repository and choose tag release version number from the -b parameter:
 ```shell
