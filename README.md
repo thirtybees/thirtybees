@@ -11,42 +11,19 @@ thirty bees is commited to being free and open source. We are also committed to 
 
 ![thirty bees screenshot](https://cloud.githubusercontent.com/assets/6775736/22063185/c5ef8e3c-dd7d-11e6-923c-4b62ac404c86.png)
 
+## Roadmap
 
-## Roadmap for thirty bees version 1.0.x
-
-**Overview of the general goal:**
-
-With version 1.0.x we are striving to fix as many bugs as possible, while maintaining compatibility with existing themes and modules. We want to provide the stablest platform for current users to migrate into.
-
-**New Features being added into v1.0.x of thirty bees:**
-
-* Ability to add CSS from the back office
-* Ability to add JavaScript snippets from the back office
-* Enhanced Favicon / device icon support
-* Full page caching in the core, with the following caching mechanisms:
-  * redis
-  * memcache(d)
-  * APCu
-  * file system
-
-**Native Modules:**
-
-Native modules will be refactored to remove legacy code. Code that supports previous PrestaShop versions is currently being removed and refactored to support PHP 5.5 - PHP 7.2.
-
-**Rewritten modules:**
-
-* PayPal has been rewritten
-* Authorize.net has been refactored
-
-**New native modules:**
-
-* MailChimp (including e-commerce features)
-* Stripe (Credit cards, Apple Pay, AliPay, Bitcoins)
-* thirty bees blog module
-* tawkto
-
-### Updated roadmap
-You can find the latest version of the roadmap here: https://thirtybees.com/roadmap
+- Remove really old code. Like retrocompatibility code for PS 1.4 and older.
+- Allow Core Updater to update to latest changes in the Github repository. Then one will be able to update a shop minutes after a bug got fixed.
+- Extend Core Updater to also upgrade the database. This will bring additional reliability to the shop database as well.
+- Remove pointless configuration switches in back office. Quite a number of them are outdated or useless, just distracting merchants and slowing down operations.
+  - Support for multiple encryption algorithms. One reliable encryption is entirely sufficient.
+  - Support for mixed HTTP/HTTPS sites. This was a good idea in 2005, but triggers browser warnings today.
+  - ...
+- Package management for JavaScript and CSS vendor packages as well.
+- Bring all modules provided by thirty bees to the standards level of default modules.
+- Bootstrap 4 for back office.
+- Goal for thirty bees 1.2.0: **Zero Known Bugs**.
 
 ## Requirements
 Support for these general requirements (except recommendations) gets tested during installation, so one can simply try to proceed. A proceeding installation means all requirements are met.
