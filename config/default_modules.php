@@ -66,4 +66,5 @@ $_TB_DEFAULT_MODULES_ = [
     'statsmodule',
     'tbupdater',
     'themeconfigurator',
+    'thememanager',
 ];
