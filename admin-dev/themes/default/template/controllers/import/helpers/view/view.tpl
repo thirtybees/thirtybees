@@ -117,6 +117,17 @@
 					<p class="help-block">{l s='Indicate how many of the first rows of your file should be skipped when importing the data. For instance set it to 1 if the first row of your file contains headers.'}</p>
 				</div>
 			</div>
+			<div id="dateFormatContainer" class="form-group" {if !$date_formats}style="display:none"{/if}>
+				<label class="control-label col-lg-3" for="date_format">{l s='Date format'}</label>
+				<div id="selectDivDateFormat" class="col-lg-9">
+					<select class="fixed-width-lg" name="date_format" id="date_format">
+						{foreach $date_formats as $value => $format}
+							<option value="{$value}">{$format.label}</option>
+						{/foreach}
+					</select>
+					<p class="help-block">{l s='Applied on all imported dates.'}</p>
+				</div>
+			</div>
 			<div class="form-group">
 				<div class="col-lg-12">
 					{section name=nb_i start=0 loop=$nb_table step=1}
