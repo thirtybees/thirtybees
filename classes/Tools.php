@@ -5331,6 +5331,31 @@ FileETag none
 
         return $timezone;
     }
+
+    /**
+     * Converts date from given format to result format
+     *
+     * @param $format
+     * @param $date
+     * @param string $resultFormat
+     * @return string
+     *
+     * @since   1.0.8
+     */
+    public static function getDateFromDateFormat($format, $date, $resultFormat = 'Y-m-d H:i:s')
+    {
+        $d = DateTime::createFromFormat($format, $date);
+        if ($d && $d->format($format) == $date) {
+            if ($resultFormat === 'Y-m-d H:i:s') {
+                $d->setTime(0, 0, 0);
+                return $d->format($resultFormat);
+            } else {
+                return $d->format($resultFormat);
+            }
+        } else {
+            return null;
+        }
+    }
 }
 
 /**
