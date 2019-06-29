@@ -843,8 +843,8 @@ class ToolsCore
             $currencyIso = $tbCurrency['iso_code'];
             $currencyDecimals
                 = (int) $tbCurrency['decimals'] ?
-                  Configuration::get('PS_PRICE_DISPLAY_PRECISION') :
-                  0;
+                Configuration::get('PS_PRICE_DISPLAY_PRECISION') :
+                0;
             $currencyArray = $tbCurrency;
             $tbCurrency = new Currency();
             $tbCurrency->hydrate($currencyArray);
@@ -852,8 +852,8 @@ class ToolsCore
             $currencyIso = $tbCurrency->iso_code;
             $currencyDecimals
                 = (int) $tbCurrency->decimals ?
-                  Configuration::get('PS_PRICE_DISPLAY_PRECISION') :
-                  0;
+                Configuration::get('PS_PRICE_DISPLAY_PRECISION') :
+                0;
         } else {
             return '';
         }
@@ -870,8 +870,8 @@ class ToolsCore
             $cChar = $tbCurrency->sign;
             $cFormat = $tbCurrency->format;
             $cDecimals = (int) $tbCurrency->decimals ?
-                         Configuration::get('PS_PRICE_DISPLAY_PRECISION') :
-                         0;
+                Configuration::get('PS_PRICE_DISPLAY_PRECISION') :
+                0;
             $cBlank = $tbCurrency->blank;
             $blank = ($cBlank ? ' ' : '');
             $ret = 0;
@@ -2632,8 +2632,8 @@ class ToolsCore
                 $row['id_product'],
                 true,
                 (isset($row['id_product_attribute'])
-                && ! empty($row['id_product_attribute'])) ?
-                  (int) $row['id_product_attribute'] : null
+                    && ! empty($row['id_product_attribute'])) ?
+                    (int) $row['id_product_attribute'] : null
             );
         }
 
@@ -5330,6 +5330,31 @@ FileETag none
         }
 
         return $timezone;
+    }
+
+    /**
+     * Converts date from given format to result format
+     *
+     * @param $format
+     * @param $date
+     * @param string $resultFormat
+     * @return string
+     *
+     * @since   1.0.8
+     */
+    public static function getDateFromDateFormat($format, $date, $resultFormat = 'Y-m-d H:i:s')
+    {
+        $d = DateTime::createFromFormat($format, $date);
+        if ($d && $d->format($format) == $date) {
+            if ($resultFormat === 'Y-m-d H:i:s') {
+                $d->setTime(0, 0, 0);
+                return $d->format($resultFormat);
+            } else {
+                return $d->format($resultFormat);
+            }
+        } else {
+            return null;
+        }
     }
 }
 

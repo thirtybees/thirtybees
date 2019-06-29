@@ -244,8 +244,8 @@ class AdminImportControllerCore extends AdminController
                     'on_sale'                   => ['label' => $this->l('On sale (0/1)')],
                     'reduction_price'           => ['label' => $this->l('Discount amount')],
                     'reduction_percent'         => ['label' => $this->l('Discount percent')],
-                    'reduction_from'            => ['label' => $this->l('Discount from (yyyy-mm-dd)')],
-                    'reduction_to'              => ['label' => $this->l('Discount to (yyyy-mm-dd)')],
+                    'reduction_from'            => ['label' => $this->l('Discount from')],
+                    'reduction_to'              => ['label' => $this->l('Discount to')],
                     'reference'                 => ['label' => $this->l('Reference #')],
                     'supplier_reference'        => ['label' => $this->l('Supplier reference #')],
                     'supplier'                  => ['label' => $this->l('Supplier')],
@@ -294,7 +294,7 @@ class AdminImportControllerCore extends AdminController
                         'label' => $this->l('Number of allowed downloads'),
                         'help'  => $this->l('Number of days this file can be accessed by customers. Set to zero for unlimited access.'),
                     ],
-                    'date_expiration'           => ['label' => $this->l('Expiration date (yyyy-mm-dd)')],
+                    'date_expiration'           => ['label' => $this->l('Expiration date')],
                     'nb_days_accessible'        => [
                         'label' => $this->l('Number of days'),
                         'help'  => $this->l('Number of days this file can be accessed by customers. Set to zero for unlimited access.'),
@@ -360,12 +360,12 @@ class AdminImportControllerCore extends AdminController
                     'id_gender'        => ['label' => $this->l('Titles ID (Mr = 1, Ms = 2, else 0)')],
                     'email'            => ['label' => $this->l('Email').'*'],
                     'passwd'           => ['label' => $this->l('Password').'*'],
-                    'birthday'         => ['label' => $this->l('Birth date (yyyy-mm-dd)')],
+                    'birthday'         => ['label' => $this->l('Birth date')],
                     'lastname'         => ['label' => $this->l('Last name').'*'],
                     'firstname'        => ['label' => $this->l('First name').'*'],
                     'newsletter'       => ['label' => $this->l('Newsletter (0/1)')],
                     'optin'            => ['label' => $this->l('Partner offers (0/1)')],
-                    'date_add'         => ['label' => $this->l('Registration date (yyyy-mm-dd)')],
+                    'date_add'         => ['label' => $this->l('Registration date')],
                     'group'            => ['label' => $this->l('Groups (x,y,z...)')],
                     'id_default_group' => ['label' => $this->l('Default group ID')],
                     'id_shop'          => [
@@ -830,6 +830,21 @@ class AdminImportControllerCore extends AdminController
         $this->context->cookie->multipleValueSeparatorSelected = urlencode($this->multiple_value_separator);
         $this->context->cookie->csv_selected = urlencode(Tools::getValue('csv'));
 
+        // Show date format select only in Products,Combinations and Customer import
+        if (in_array((int)Tools::getValue('entity'), [1, 2, 3])) {
+            $date_formats = [
+                'Y-m-d' => ['label' => 'Y-m-d'],
+                'Y-d-m' => ['label' => 'Y-d-m'],
+                'd-m-Y' => ['label' => 'd-m-Y'],
+                'd.m.Y' => ['label' => 'd.m.Y'],
+            ];
+            if (!empty($this->context->language) && !empty($this->context->language->date_format_lite)) {
+                $date_formats[$this->context->language->date_format_lite] = ['label' => $this->context->language->date_format_lite . ' - ' . $this->l('from language')];
+            }
+        } else {
+            $date_formats = null;
+        }
+
         $this->tpl_view_vars = [
             'import_matchs'    => Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS((new DbQuery())->select('*')->from('import_match'), true, false),
             'fields_value'     => [
@@ -851,6 +866,7 @@ class AdminImportControllerCore extends AdminController
             'no_pre_select'    => ['price_tin', 'feature'],
             'available_fields' => $this->available_fields,
             'data'             => $data,
+            'date_formats'     => $date_formats,
         ];
 
         return parent::renderView();
@@ -2821,7 +2837,7 @@ class AdminImportControllerCore extends AdminController
                     Tools::copy($info['file_url'], _PS_DOWNLOAD_DIR_.$productDownload->filename);
                     $productDownload->id_product = (int) $product->id;
                     $productDownload->nb_downloadable = (int) $info['nb_downloadable'];
-                    $productDownload->date_expiration = $info['date_expiration'];
+                    $productDownload->date_expiration = Tools::getDateFromDateFormat(Tools::getValue('date_format', 'Y-m-d'), $info['date_expiration']);
                     $productDownload->nb_days_accessible = (int) $info['nb_days_accessible'];
                     $productDownload->display_filename = basename($info['file_url']);
                     $productDownload->add();
@@ -2921,8 +2937,8 @@ class AdminImportControllerCore extends AdminController
                         $info['reduction_percent'] / 100
                     );
                     $specificPrice->reduction_type = (isset($info['reduction_price']) && $info['reduction_price']) ? 'amount' : 'percentage';
-                    $specificPrice->from = (isset($info['reduction_from']) && Validate::isDate($info['reduction_from'])) ? $info['reduction_from'] : '0000-00-00 00:00:00';
-                    $specificPrice->to = (isset($info['reduction_to']) && Validate::isDate($info['reduction_to'])) ? $info['reduction_to'] : '0000-00-00 00:00:00';
+                    $specificPrice->from = Tools::getDateFromDateFormat(Tools::getValue('date_format', 'Y-m-d'), $info['reduction_from']);
+                    $specificPrice->to = Tools::getDateFromDateFormat(Tools::getValue('date_format', 'Y-m-d'), $info['reduction_to']);
                     if (!$validateOnly && !$specificPrice->save()) {
                         $this->addProductWarning(Tools::safeOutput($info['name']), $product->id, $this->l('Discount is invalid'));
                     }
@@ -3405,6 +3421,13 @@ class AdminImportControllerCore extends AdminController
             $customer->date_upd = date('Y-m-d H:i:s');
         }
 
+        if($birthday = Tools::getDateFromDateFormat(Tools::getValue('date_format', 'Y-m-d'), $info['birthday'], 'Y-m-d')){
+            $customer->birthday = $birthday;
+        }
+        if($dateAdd = Tools::getDateFromDateFormat(Tools::getValue('date_format', 'Y-m-d'), $info['date_add'], 'Y-m-d')){
+            $customer->date_add = $dateAdd;
+        }
+
         $res = false;
         if (($fieldError = $customer->validateFields(static::UNFRIENDLY_ERROR, true)) === true &&
             ($langFieldError = $customer->validateFieldsLang(static::UNFRIENDLY_ERROR, true)) === true
@@ -3718,10 +3741,10 @@ class AdminImportControllerCore extends AdminController
                 } else {
                     if (!$validateOnly) {
                         $this->errors[] = Db::getInstance()->getMsgError().' '.sprintf(
-                            $this->l('%1$s (ID: %2$s) cannot be saved'),
-                            $supplier->name,
-                            (isset($supplier->id) && !empty($supplier->id)) ? $supplier->id : 'null'
-                        );
+                                $this->l('%1$s (ID: %2$s) cannot be saved'),
+                                $supplier->name,
+                                (isset($supplier->id) && !empty($supplier->id)) ? $supplier->id : 'null'
+                            );
                     }
                     if ($fieldError !== true || isset($langFieldError) && $langFieldError !== true) {
                         $this->errors[] = ($fieldError !== true ? $fieldError : '').(isset($langFieldError) && $langFieldError !== true ? $langFieldError : '').Db::getInstance()->getMsgError();
@@ -4106,7 +4129,7 @@ class AdminImportControllerCore extends AdminController
                         _TB_PRICE_DATABASE_PRECISION_
                     );
                     $info['weight'] = str_replace(',', '.', $info['weight']);
-                    $info['available_date'] = Validate::isDate($info['available_date']) ? $info['available_date'] : null;
+                    $info['available_date'] = Tools::getDateFromDateFormat(Tools::getValue('date_format', 'Y-m-d'), $info['available_date']);
 
                     if (!Validate::isEan13($info['ean13'])) {
                         $this->warnings[] = sprintf($this->l('EAN13 "%1s" has incorrect value for product with id %2d.'), $info['ean13'], $product->id);
