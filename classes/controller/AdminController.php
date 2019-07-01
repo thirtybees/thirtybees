@@ -3417,7 +3417,11 @@ class AdminControllerCore extends Controller
             $module->enable_device = Context::DEVICE_COMPUTER | Context::DEVICE_TABLET | Context::DEVICE_MOBILE;
         }
 
-        $this->translationsTab['confirm_uninstall_popup'] = (isset($module->confirmUninstall) && $module->confirmUninstall ? $module->confirmUninstall : $this->l('Do you really want to uninstall this module?'));
+        $this->translationsTab['confirm_uninstall_popup'] = (
+            isset($module->confirmUninstall) && $module->confirmUninstall ?
+            $module->confirmUninstall :
+            $this->l('Do you really want to uninstall this module? Other than just disabling, this also removes module settings.')
+        );
         if (!isset($this->translationsTab['Disable this module'])) {
             $this->translationsTab['Disable this module'] = $this->l('Disable this module');
             $this->translationsTab['Enable this module for all shops'] = $this->l('Enable this module for all shops');
