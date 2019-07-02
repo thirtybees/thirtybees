@@ -17,7 +17,6 @@ UPDATE `PREFIX_configuration` SET value = '42 Bee Lane\n12345 The Hive\nthe Neth
 
 /* Home Slider Changes for Niara theme */
 UPDATE `PREFIX_configuration` SET value = '1140' WHERE name = 'HOMESLIDER_WIDTH';
-UPDATE `PREFIX_configuration` SET value = '500' WHERE name = 'HOMESLIDER_HEIGHT';
 UPDATE `PREFIX_homeslider_slides_lang` SET `image` = 'sample-4.jpg' WHERE `id_homeslider_slides` = 1;
 UPDATE `PREFIX_homeslider_slides_lang` SET `image` = 'sample-5.jpg' WHERE `id_homeslider_slides` = 2;
 UPDATE `PREFIX_homeslider_slides_lang` SET `image` = 'sample-6.jpg' WHERE `id_homeslider_slides` = 3;
