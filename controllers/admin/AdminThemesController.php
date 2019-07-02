@@ -188,8 +188,10 @@ class AdminThemesControllerCore extends AdminController
         $nonInstalledTheme = ($this->context->mode == Context::MODE_HOST) ? [] : Theme::getNonInstalledTheme();
         if (count($installedTheme) || !empty($nonInstalledTheme)) {
             $this->fields_options['theme'] = [
-                'title'       => sprintf($this->l('Select a theme for the "%s" shop'), $this->context->shop->name),
-                'description' => (!$this->can_display_themes) ? $this->l('You must select a shop from the above list if you wish to choose a theme.') : '',
+                'title'       => $this->l('Select a theme'),
+                'description' => ( ! $this->can_display_themes) ?
+                    $this->l('To select a theme, switch to the context of a single shop in the top menu bar.') :
+                    '',
                 'fields'      => [
                     'theme_for_shop' => [
                         'type'                  => 'theme',
