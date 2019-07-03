@@ -497,9 +497,7 @@
         }
     }
 
-
     {/literal}
-
 </style>
 
 <div class="panel addons-bxslider-block addons-bxslider clearfix">
@@ -509,9 +507,9 @@
                 <img src="{$addons_content.ad_top.img}" title="" alt="">
             </a>
         </li>
-
     </ul>
 </div>
+
 {foreach from=$addons_content.content item='group'}
     <div class="addons-module-block addons-module-traffic-block">
         <div class="row">
@@ -561,7 +559,6 @@
                     </div>
                 </div>
             {/foreach}
-
         </div>
     </div>
     <hr>
