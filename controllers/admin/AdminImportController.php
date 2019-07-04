@@ -831,18 +831,21 @@ class AdminImportControllerCore extends AdminController
         $this->context->cookie->csv_selected = urlencode(Tools::getValue('csv'));
 
         // Show date format select only in Products,Combinations and Customer import
+        $dateFormats = null;
         if (in_array((int)Tools::getValue('entity'), [1, 2, 3])) {
-            $date_formats = [
-                'Y-m-d' => ['label' => 'Y-m-d'],
-                'Y-d-m' => ['label' => 'Y-d-m'],
-                'd-m-Y' => ['label' => 'd-m-Y'],
-                'd.m.Y' => ['label' => 'd.m.Y'],
-            ];
-            if (!empty($this->context->language) && !empty($this->context->language->date_format_lite)) {
-                $date_formats[$this->context->language->date_format_lite] = ['label' => $this->context->language->date_format_lite . ' - ' . $this->l('from language')];
+            if ( ! empty($this->context->language)
+                && ! empty($this->context->language->date_format_lite)
+            ) {
+                $dateFormats[$this->context->language->date_format_lite] = [
+                    'label' => $this->context->language->date_format_lite
+                               .' - '
+                               .$this->l('from back office language'),
+                ];
             }
-        } else {
-            $date_formats = null;
+            $dateFormats['Y-m-d'] = ['label' => 'Y-m-d'];
+            $dateFormats['Y-d-m'] = ['label' => 'Y-d-m'];
+            $dateFormats['d-m-Y'] = ['label' => 'd-m-Y'];
+            $dateFormats['d.m.Y'] = ['label' => 'd.m.Y'];
         }
 
         $this->tpl_view_vars = [
@@ -866,7 +869,7 @@ class AdminImportControllerCore extends AdminController
             'no_pre_select'    => ['price_tin', 'feature'],
             'available_fields' => $this->available_fields,
             'data'             => $data,
-            'date_formats'     => $date_formats,
+            'date_formats'     => $dateFormats,
         ];
 
         return parent::renderView();
