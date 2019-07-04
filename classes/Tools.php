@@ -5333,14 +5333,15 @@ FileETag none
     }
 
     /**
-     * Converts date from given format to result format
+     * Converts date from given format to result format.
      *
-     * @param $format
-     * @param $date
-     * @param string $resultFormat
-     * @return string
+     * @param string $format        Expected format of the date given.
+     * @param string $date          Date to reformat.
+     * @param string $resultFormat  Format of the returned date.
      *
-     * @since   1.0.8
+     * @return string Reformatted date.
+     *
+     * @version 1.0.8 Initial version.
      */
     public static function getDateFromDateFormat($format, $date, $resultFormat = 'Y-m-d H:i:s')
     {
@@ -5348,13 +5349,12 @@ FileETag none
         if ($d && $d->format($format) == $date) {
             if ($resultFormat === 'Y-m-d H:i:s') {
                 $d->setTime(0, 0, 0);
-                return $d->format($resultFormat);
-            } else {
-                return $d->format($resultFormat);
             }
-        } else {
-            return null;
+
+            return $d->format($resultFormat);
         }
+
+        return null;
     }
 }
 
