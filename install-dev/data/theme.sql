@@ -56,3 +56,13 @@ INSERT INTO `PREFIX_bees_blog_post_shop` (`id_bees_blog_post`, `id_shop`) VALUES
 
 /*Delete Theme Configurator Entry */
 DELETE FROM `PREFIX_themeconfigurator` WHERE `id_item` = 1;
+
+/*Store information HTML*/
+INSERT INTO `PREFIX_tbhtmlblock` (`id_block`, `name`, `active`) VALUES
+(1, 'Store Information', 1);
+
+INSERT INTO `PREFIX_tbhtmlblock_hook` (`id_block`, `hook_name`, `position`) VALUES
+(1, 'displayFooter', 0);
+
+INSERT INTO `PREFIX_tbhtmlblock_lang` (`id_block`, `id_lang`, `content`) VALUES
+(1,1, '<section id="blockcontactinfos" class="col-xs-12 col-sm-3"><h2 class="footer-title section-title-footer">Store Information</h2><address><ul class="list-unstyled"><li><b>Your Company</b></li><li>42 Bee Lane<br /> 12345 The Hive<br /> the Netherlands</li><li><i class="icon icon-phone"></i> <a href="tel:0123-456-789">0123-456-789</a></li><li><i class="icon icon-envelope-alt"></i> <a href="mailto:%73%61%6c%65%73@%79%6f%75%72%63%6f%6d%70%61%6e%79.%63%6f%6d">sales@yourcompany.com</a></li></ul></address></section>');
