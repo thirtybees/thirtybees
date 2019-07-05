@@ -201,6 +201,10 @@
 	path = modules/statsmodule
 	url = https://github.com/thirtybees/statsmodule.git
 	ignore = dirty
+[submodule "modules/tbhtmlblock"]
+	path = modules/tbhtmlblock
+	url = https://github.com/thirtybees/tbhtmlblock.git
+	ignore = dirty
 [submodule "modules/tbupdater"]
 	path = modules/tbupdater
 	url = https://github.com/thirtybees/tbupdater.git
