@@ -699,7 +699,6 @@ class AdminThemesControllerCore extends AdminController
                     ->where('`name` LIKE \''.pSQL($themeName).'_%\'')
             );
 
-            $this->image_list = [];
             foreach ($table as $row) {
                 $this->image_list[] =
                     str_replace($themeName.'_', '', $row['name']).';'.
@@ -757,10 +756,6 @@ class AdminThemesControllerCore extends AdminController
 
             $notThemeModules = Module::getNotThemeRelatedModules();
 
-            $this->to_install = [];
-            $this->to_enable = [];
-            $this->to_hook = [];
-
             foreach ($this->module_list as $module) {
                 if ( ! in_array($module['name'], $notThemeModules)) {
                     if ($module['active'] == 1) {
@@ -790,21 +785,17 @@ class AdminThemesControllerCore extends AdminController
                 }
             }
 
-            if ($this->to_install) {
-                foreach ($this->to_install as $string) {
-                    foreach ($this->hook_list as $tmp) {
-                        if ($tmp['name_module'] == $string) {
-                            $this->to_hook[] = $string.';'.$tmp['name_hook'].';'.$tmp['position'].';'.$tmp['exceptions'];
-                        }
+            foreach ($this->to_install as $string) {
+                foreach ($this->hook_list as $tmp) {
+                    if ($tmp['name_module'] == $string) {
+                        $this->to_hook[] = $string.';'.$tmp['name_hook'].';'.$tmp['position'].';'.$tmp['exceptions'];
                     }
                 }
             }
-            if ($this->to_enable) {
-                foreach ($this->to_enable as $string) {
-                    foreach ($this->hook_list as $tmp) {
-                        if ($tmp['name_module'] == $string) {
-                            $this->to_hook[] = $string.';'.$tmp['name_hook'].';'.$tmp['position'].';'.$tmp['exceptions'];
-                        }
+            foreach ($this->to_enable as $string) {
+                foreach ($this->hook_list as $tmp) {
+                    if ($tmp['name_module'] == $string) {
+                        $this->to_hook[] = $string.';'.$tmp['name_hook'].';'.$tmp['position'].';'.$tmp['exceptions'];
                     }
                 }
             }
