@@ -46,9 +46,11 @@ class ShopMaintenanceCore
             static::adjustThemeHeaders();
             static::optinShop();
             static::cleanAdminControllerMessages();
+            static::cleanImagesDir('new');
 
             Configuration::updateGlobalValue('SHOP_MAINTENANCE_LAST_RUN', $now);
         }
+        else static::cleanImagesDir();
     }
 
     /**
@@ -117,5 +119,62 @@ class ShopMaintenanceCore
                 }
             }
         }
+    }
+    
+    /**
+     * Clean image products directories 'img/p'.
+     *
+     * @since 1.0.9
+     */
+    public static function cleanImagesDir($new='')
+    {
+	    if (isset($new) && $new=='new') {
+		    $imagesMax = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
+			(new DbQuery())
+			    ->select('MAX(`id_image`)')
+			    ->from('image')
+		    );
+		    Configuration::updateGlobalValue('SHOP_MAINTENANCE_IMAGES_RUN', $imagesMax.'|'.$imagesMax);
+	    }
+	    else {
+		    $imagesRun = Configuration::get('SHOP_MAINTENANCE_IMAGES_RUN');
+		    $imgRun = explode("|", $imagesRun);
+		    if (isset($imgRun[1])) $imagesMax = intval($imgRun[1]);
+		    else $imagesMax = 0;
+		    if (isset($imgRun[0])) $imagesNow = intval($imgRun[0]);
+		    else $imagesNow = 0;
+		    if ($imagesMax > 0 && $imagesNow > 0) static::CheckAndFixImages($imagesNow, $imagesMax);
+	    }
+    }
+	
+    public static function CheckAndFixImages($imagesNow, $imagesMax)
+    {
+	    $starttime = time();
+	    if ($imgtypes = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('SELECT name FROM '._DB_PREFIX_.'image_type WHERE products=1')) {
+		    foreach ($imgtypes as $type) 
+			    $Image_types_product[]=$type['name'];
+	    }
+	    if ($images_list = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS('SELECT id_image FROM '._DB_PREFIX_.'image_shop ORDER BY id_image DESC')) {
+		    foreach ($images_list as $img)
+			    $Image_listing[]=$img['id_image'];
+	    }
+	    for ($i = $imagesNow; $i >= 0; $i--) {
+		    $directory = _PS_PROD_IMG_DIR_.implode('/', str_split($i));
+		    if (file_exists($directory)) {
+			    if (!in_array($i, $Image_listing)) Image::deleteAllImages($directory);
+			    else foreach (glob($directory . '/*' ) as $filename) {
+				    $file_parts = pathinfo($filename);
+				    if (is_file($filename) && $file_parts['extension'] == "jpg") {
+					    $img_number = explode("-", $file_parts['filename'], 2);
+					    if (!in_array($img_number[0], $Image_listing)) unlink($filename);
+					    elseif (!empty($img_number[1]) && !in_array($img_number[1], $Image_types_product)) unlink($filename);																
+				    }
+			    }
+		    }
+		    else (new Image($i))->delete();
+		    $now = time()-$starttime;
+		    if ($now > 2.99) break;
+	    }
+	    Configuration::updateGlobalValue('SHOP_MAINTENANCE_IMAGES_RUN', ($i+1).'|'.$imagesMax);
     }
 }
