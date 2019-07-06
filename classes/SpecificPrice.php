@@ -45,6 +45,8 @@ class SpecificPriceCore extends ObjectModel
     protected static $_cache_priorities = [];
     /** @var array $_no_specific_values */
     protected static $_no_specific_values = [];
+    /** @var int $id_specific_price */
+    public $id_specific_price;
     /** @var int $id_product */
     public $id_product;
     /** @var int $id_specific_price_rule */
@@ -144,6 +146,7 @@ class SpecificPriceCore extends ObjectModel
                 ->where('`id_product` = '.(int) $idProduct)
                 ->where($idProductAttribute ? '`id_product_attribute` = '.(int) $idProductAttribute : '')
                 ->where('`id_cart` = '.(int) $idCart)
+                ->groupBy('id_group')
         );
     }
 
