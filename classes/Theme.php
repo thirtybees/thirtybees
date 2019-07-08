@@ -629,7 +629,7 @@ class ThemeCore extends ObjectModel
          * gets ignored. Having theme distributions with multiple variations is
          * considered to be overengineering.
          */
-        if (isset($xml->variations) && is_array($xml->variations)) {
+        if (isset($xml->variations)) {
             if (count($xml->variations) > 1) {
                 return sprintf(Tools::displayError(
                     'thirty bees supports only themes with at most one variation, the theme in %s has multiple ones.'),
@@ -639,17 +639,17 @@ class ThemeCore extends ObjectModel
 
             $variation = $xml->variations->variation[0];
 
-            if (array_key_exists('product_per_page', $variation)) {
+            if (isset($variation['product_per_page'])) {
                 $theme->product_per_page = (int) $variation['product_per_page'];
             }
-            if (array_key_exists('responsive', $variation)) {
+            if (isset($variation['responsive'])) {
                 $theme->responsive = (bool) (string) $variation['responsive'];
             }
-            if (array_key_exists('default_left_column', $variation)) {
+            if (isset($variation['default_left_column'])) {
                 $theme->default_left_column =
                     (bool) (string) $variation['default_left_column'];
             }
-            if (array_key_exists('default_right_column', $variation)) {
+            if (isset($variation['default_right_column'])) {
                 $theme->default_right_column =
                     (bool) (string) $variation['default_right_column'];
             }
