@@ -800,6 +800,12 @@ class AdminThemesControllerCore extends AdminController
                 }
             }
 
+            // Make output reproducible and diffs smaller.
+            sort($this->to_install);
+            sort($this->to_enable);
+            sort($this->to_disable);
+            sort($this->to_hook);
+
             $themeToExport = new Theme($this->context->shop->id_theme);
             $metas = $themeToExport->getMetas();
 
