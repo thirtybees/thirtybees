@@ -156,11 +156,7 @@ class TranslateCore
 
         if (!isset($langCache[$cacheKey])) {
             if ($_MODULES == null) {
-                if ($sprintf !== null) {
-                    $string = Translate::checkAndReplaceArgs($string, $sprintf);
-                }
-
-                return str_replace('"', '&quot;', $string);
+                return static::escapeModuleTranslation($string, $sprintf, $js);
             }
 
             $currentKey = strtolower('<{'.$name.'}'._THEME_NAME_.'>'.$source).'_'.$key;
