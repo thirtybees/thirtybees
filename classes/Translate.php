@@ -174,22 +174,24 @@ class TranslateCore
             }
 
             if (isset($currentKeyFile) && !empty($_MODULES[$currentKeyFile])) {
-                $ret = stripslashes($_MODULES[$currentKeyFile]);
+                $ret = $_MODULES[$currentKeyFile];
             } elseif (isset($defaultKeyFile) && !empty($_MODULES[$defaultKeyFile])) {
-                $ret = stripslashes($_MODULES[$defaultKeyFile]);
+                $ret = $_MODULES[$defaultKeyFile];
             } elseif (isset($prestaShopKeyFile) && !empty($_MODULES[$prestaShopKeyFile])) {
-                $ret = stripslashes($_MODULES[$prestaShopKeyFile]);
+                $ret = $_MODULES[$prestaShopKeyFile];
             } elseif (!empty($_MODULES[$currentKey])) {
-                $ret = stripslashes($_MODULES[$currentKey]);
+                $ret = $_MODULES[$currentKey];
             } elseif (!empty($_MODULES[$defaultKey])) {
-                $ret = stripslashes($_MODULES[$defaultKey]);
+                $ret = $_MODULES[$defaultKey];
             } elseif (!empty($_MODULES[$prestaShopKey])) {
-                $ret = stripslashes($_MODULES[$prestaShopKey]);
+                $ret = $_MODULES[$prestaShopKey];
             } elseif (!empty($_LANGADM)) {
-                $ret = stripslashes(Translate::getGenericAdminTranslation($string, $key, $_LANGADM));
+                $ret = Translate::getGenericAdminTranslation($string, $key, $_LANGADM);
             } else {
-                $ret = stripslashes($string);
+                $ret = $string;
             }
+
+            $ret = stripslashes($ret);
 
             if ($sprintf !== null) {
                 $ret = Translate::checkAndReplaceArgs($ret, $sprintf);
