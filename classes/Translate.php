@@ -109,9 +109,10 @@ class TranslateCore
      * Get a translation for a module
      *
      * @param string|Module $module
-     * @param string        $string
-     * @param string        $source
-     *
+     * @param string $string
+     * @param string $source
+     * @param array $sprintf
+     * @param bool $js
      * @return string
      *
      * @since   1.0.0
@@ -191,17 +192,7 @@ class TranslateCore
                 $ret = $string;
             }
 
-            $ret = stripslashes($ret);
-
-            if ($sprintf !== null) {
-                $ret = Translate::checkAndReplaceArgs($ret, $sprintf);
-            }
-
-            if ($js) {
-                $ret = addslashes($ret);
-            } else {
-                $ret = htmlspecialchars($ret, ENT_COMPAT, 'UTF-8');
-            }
+            $ret = static::escapeModuleTranslation($ret, $sprintf, $js);
 
             if ($sprintf === null) {
                 $langCache[$cacheKey] = $ret;
@@ -211,6 +202,30 @@ class TranslateCore
         }
 
         return $langCache[$cacheKey];
+    }
+
+    /**
+     * Helper method to escape return value for getModuleTranslation
+     *
+     * @param string $input
+     * @param array $sprintf
+     * @param bool $js
+     *
+     * @return string
+     */
+    protected static function escapeModuleTranslation($input, $sprintf, $js)
+    {
+        if (! $input) {
+            return '';
+        }
+
+        $ret = stripslashes($input);
+
+        if ($sprintf !== null) {
+            $ret = Translate::checkAndReplaceArgs($ret, $sprintf);
+        }
+
+        return $js ? addslashes($ret) : htmlspecialchars($ret, ENT_COMPAT, 'UTF-8');
     }
 
     /**
