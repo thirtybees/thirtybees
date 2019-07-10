@@ -3115,6 +3115,7 @@ class ProductCore extends ObjectModel
      *
      * @return bool
      *
+     * @throws Adapter_Exception
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @since   1.0.0
@@ -3122,6 +3123,12 @@ class ProductCore extends ObjectModel
      */
     public static function duplicateSpecificPrices($oldProductId, $productId)
     {
+        // remove all existing specific prices that might exists for target product
+        if (! SpecificPrice::deleteByProductId($productId)) {
+            return false;
+        }
+
+        // duplicate specific prices from source product
         foreach (SpecificPrice::getByProductId((int) $oldProductId) as $data) {
             $specificPrice = new SpecificPrice((int) $data['id_specific_price']);
             if (!$specificPrice->duplicate((int) $productId)) {
