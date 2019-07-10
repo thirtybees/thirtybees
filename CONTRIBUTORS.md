@@ -244,6 +244,7 @@ GitHub contributors:
 - matiasiglesias
 - Mats Rynge
 - Matteo
+- Matthias RAIGNE
 - MatthieuB
 - matthieume
 - MaX3315
