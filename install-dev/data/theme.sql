@@ -15,6 +15,9 @@ UPDATE `PREFIX_configuration` SET value = 'sales@yourcompany.com' WHERE name = '
 UPDATE `PREFIX_configuration` SET value = 'Your Company' WHERE name = 'BLOCKCONTACTINFOS_COMPANY';
 UPDATE `PREFIX_configuration` SET value = '42 Bee Lane\n12345 The Hive\nthe Netherlands' WHERE name = 'BLOCKCONTACTINFOS_ADDRESS';
 
+UPDATE `PREFIX_configuration` SET value = '4' WHERE name = 'PS_BLOCK_BESTSELLERS_TO_DISPLAY';
+UPDATE `PREFIX_configuration` SET value = '4' WHERE name = 'HOME_FEATURED_NBR';
+
 /* Home Slider Changes for Niara theme */
 UPDATE `PREFIX_configuration` SET value = '1140' WHERE name = 'HOMESLIDER_WIDTH';
 UPDATE `PREFIX_homeslider_slides_lang` SET `image` = 'sample-4.jpg' WHERE `id_homeslider_slides` = 1;
