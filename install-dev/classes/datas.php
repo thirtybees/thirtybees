@@ -102,7 +102,7 @@ class Datas
         ],
         'databasePrefix'   => [
             'name'     => 'prefix',
-            'default'  => 'ps_',
+            'default'  => 'tb_',
             'validate' => 'isGenericName',
         ],
         'databaseEngine'   => [

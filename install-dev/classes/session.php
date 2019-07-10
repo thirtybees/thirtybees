@@ -111,7 +111,7 @@ class InstallSession
             || (!isset($_SESSION['session_mode']) && (isset($_GET['_']) || isset($_POST['submitNext']) || isset($_POST['submitPrevious']) || isset($_POST['language'])))
         ) {
             InstallSession::$cookieMode = true;
-            InstallSession::$cookie = new Cookie('ps_install', null, time() + 7200, null, true);
+            InstallSession::$cookie = new Cookie('tb_install', null, time() + 7200, null, true);
         }
         if ($sessionStarted && !isset($_SESSION['session_mode'])) {
             $_SESSION['session_mode'] = 'session';
