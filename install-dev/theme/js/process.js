@@ -140,16 +140,32 @@ function process_install_subtask(step, current_subtask) {
           process_install_subtask(step, current_subtask);
         }
       } else {
-        install_error(step, 'Subtask ' + params + ': ' + (json) ? json.message : '(no message)');
+        install_error(step, getErrorMessages(step, current_subtask, json));
       }
     },
     error: function (jqXHR, textStatus, errorThrown) {
-      install_error(step, [
-        'Ajax request failed for subtask ' + params + ' with ' + textStatus + '.',
-        errorThrown
-      ]);
+      var errors = null;
+      try {
+        var json = JSON.parse(jqXHR.responseText);
+        if (json) {
+          errors = getErrorMessages(step, current_subtask, json);
+        }
+      } catch (ignored) {}
+
+      if (! errors) {
+        var status = textStatus || jqXHR.status;
+        errors = ['Ajax request failed for step ' + step.lang + ' with ' + status + ' (' +errorThrown + ')'];
+      }
+      install_error(step, errors);
     },
   });
+}
+
+function getErrorMessages(step, subtask, json) {
+  if (json && json.message) {
+    return json.message;
+  }
+  return step.lang + ' subtask #'+(subtask+1)+' failed';
 }
 
 function install_error(step, errors, fatal = true) {
