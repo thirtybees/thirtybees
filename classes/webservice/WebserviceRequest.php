@@ -927,7 +927,7 @@ class WebserviceRequestCore
      */
     protected function shopExists($params)
     {
-        if (count(static::$shopIDs)) {
+        if (static::$shopIDs) {
             return true;
         }
 
@@ -966,7 +966,7 @@ class WebserviceRequestCore
         if (isset($params['id_group_shop']) && is_numeric($params['id_group_shop'])) {
             Shop::setContext(Shop::CONTEXT_GROUP, (int) $params['id_group_shop']);
             static::$shopIDs = Shop::getShops(true, (int) $params['id_group_shop'], true);
-            if (count(static::$shopIDs) == 0) {
+            if (! static::$shopIDs) {
                 // @FIXME Set ErrorCode !
                 $this->setError(500, 'This group shop doesn\'t have shops', 999);
 
