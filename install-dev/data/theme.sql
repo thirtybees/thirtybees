@@ -56,10 +56,6 @@ INSERT INTO `PREFIX_bees_blog_post_shop` (`id_bees_blog_post`, `id_shop`) VALUES
 (2, 1),
 (3, 1);
 
-
-/*Delete Theme Configurator Entry */
-DELETE FROM `PREFIX_themeconfigurator` WHERE `id_item` = 1;
-
 /*Store information HTML*/
 INSERT INTO `PREFIX_tbhtmlblock` (`id_block`, `name`, `active`) VALUES
 (1, 'Store Information', 1);
