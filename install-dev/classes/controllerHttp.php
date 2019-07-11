@@ -172,28 +172,32 @@ abstract class InstallControllerHttp
             }
         }
 
-        // Submit form to go to next step
-        if (Tools::getValue('submitNext')) {
-            self::$instances[$currentStep]->processNextStep();
+        try {
+            // Submit form to go to next step
+            if (Tools::getValue('submitNext')) {
+                self::$instances[$currentStep]->processNextStep();
 
-            // If current step is validated, let's go to next step
-            if (self::$instances[$currentStep]->validate()) {
-                $currentStep = self::$instances[$currentStep]->findNextStep();
-            }
-            $session->step = $currentStep;
+                // If current step is validated, let's go to next step
+                if (self::$instances[$currentStep]->validate()) {
+                    $currentStep = self::$instances[$currentStep]->findNextStep();
+                }
+                $session->step = $currentStep;
 
-            // Change last step
-            if (self::getStepOffset($currentStep) > self::getStepOffset($session->lastStep)) {
-                $session->lastStep = $currentStep;
+                // Change last step
+                if (self::getStepOffset($currentStep) > self::getStepOffset($session->lastStep)) {
+                    $session->lastStep = $currentStep;
+                }
+            } elseif (Tools::getValue('submitPrevious') && $currentStep != self::$steps[0]) {
+                // Go to previous step
+                $currentStep = self::$instances[$currentStep]->findPreviousStep($currentStep);
+                $session->step = $currentStep;
             }
-        } elseif (Tools::getValue('submitPrevious') && $currentStep != self::$steps[0]) {
-            // Go to previous step
-            $currentStep = self::$instances[$currentStep]->findPreviousStep($currentStep);
-            $session->step = $currentStep;
+
+            self::$instances[$currentStep]->process();
+            self::$instances[$currentStep]->display();
+        } catch (Exception $e) {
+            static::sendErrorResponse($e->getMessage(), $e);
         }
-
-        self::$instances[$currentStep]->process();
-        self::$instances[$currentStep]->display();
     }
 
     /**
