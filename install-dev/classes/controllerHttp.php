@@ -117,6 +117,9 @@ abstract class InstallControllerHttp
      */
     final public static function execute()
     {
+        // catch and report all fatal errors
+        register_shutdown_function([__CLASS__, 'shutdownHandler']);
+
         $session = InstallSession::getInstance();
         if (!$session->lastStep || $session->lastStep == 'welcome') {
             Tools::generateIndex();
@@ -401,7 +404,7 @@ abstract class InstallControllerHttp
     }
 
     /**
-     * Send AJAX response in JSON format {success: bool, message: string}
+     * Send AJAX response in JSON format {success: bool, message: string[]}
      *
      * @param bool  $success
      * @param array $message Messages array
@@ -410,18 +413,52 @@ abstract class InstallControllerHttp
      */
     public function ajaxJsonAnswer($success, $message = [])
     {
+        static::sendJsonResponse($success, $message);
+    }
+
+    /**
+     * Sends AJAX response in JSON format {success: bool, message: string[]}
+     *
+     * @param boolean $success
+     * @param array $message
+     */
+    public static function sendJsonResponse($success, $message = [])
+    {
         if (!$success && empty($message)) {
             $message = print_r(@error_get_last(), true);
         }
-        die(
-        json_encode(
+        die(json_encode(
             [
                 'success' => (bool) $success,
                 'message' => $message,
-                // 'memory' => round(memory_get_peak_usage()/1024/1024, 2).' Mo',
             ]
-        )
-        );
+        ));
+    }
+
+    /**
+     * This method displays error response page
+     *
+     * Different output is emitted depending on request context - json for ajax
+     * requests, http error page for regular requests
+     *
+     * @param string $error
+     * @param Exception $e original exception
+     * @throws PrestashopInstallerException
+     */
+    public static function sendErrorResponse($error, $e = null)
+    {
+        $isAjax = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
+        if ($isAjax) {
+            // send ajax response for ajax requests
+            static::sendJsonResponse(false, [ $error ]);
+        } else {
+            // throw PrestaShopInstallerException for regular requests. This exception will be
+            // converted to error page by root exception handler in trystart.php
+            if (!$e || !($e instanceof PrestashopInstallerException)) {
+                $e = new PrestashopInstallerException($error, 0, $e);
+            }
+            throw $e;
+        }
     }
 
     /**
@@ -462,5 +499,17 @@ abstract class InstallControllerHttp
         }
 
         return '';
+    }
+
+    /**
+     * This method is called after script execution finishes or exit is called. If the script was
+     * terminated because of fatal error, we will collect and send this information to the client
+     */
+    public static function shutdownHandler()
+    {
+        $error = error_get_last();
+        if ($error && ($error['type'] === E_USER_ERROR || $error['type'] === E_ERROR)) {
+            static::sendErrorResponse($error['message']);
+        }
     }
 }
