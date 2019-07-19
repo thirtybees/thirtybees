@@ -758,38 +758,37 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
         // Database insertion for multishop fields related to the object
         if (Shop::isTableAssociated($this->def['table'])) {
-            $fields = $this->getFieldsShop();
-            $fields[$this->def['primary']] = (int) $this->id;
+
+            // for insert operation we need all multishop fields
+            $insertFields = $this->getFieldsShop();
+            $insertFields[$this->def['primary']] = (int) $this->id;
+
+            // by default update all fields except primary key
+            $updateFields = $insertFields;
+            unset($updateFields[$this->def['primary']]);
+            unset($updateFields['id_shop']);
+
+            // if property $update_fields exists, we have to use it to restrict update fields
             if (is_array($this->update_fields)) {
-                $updateFields = $this->update_fields;
-                $this->update_fields = null;
-                $allFields = $this->getFieldsShop();
-                $allFields[$this->def['primary']] = (int) $this->id;
-                $this->update_fields = $updateFields;
-            } else {
-                $allFields = $fields;
+                foreach ($updateFields as $key => $val) {
+                    if (!array_key_exists($key, $this->update_fields)) {
+                        unset($updateFields[$key]);
+                    }
+                }
             }
 
+            // update or create multishop entries
             foreach ($idShopList as $idShop) {
-                $fields['id_shop'] = (int) $idShop;
-                $allFields['id_shop'] = (int) $idShop;
                 $where = $this->def['primary'].' = '.(int) $this->id.' AND id_shop = '.(int) $idShop;
 
-                // A little explanation of what we do here : we want to create multishop entry when update is called, but
-                // only if we are in a shop context (if we are in all context, we just want to update entries that alread exists)
-                $shopExists = Db::getInstance()->getValue('SELECT '.$this->def['primary'].' FROM '._DB_PREFIX_.$this->def['table'].'_shop WHERE '.$where);
-                if ($shopExists) {
-                    // Unset fields from other shops when in single shop context
-                    if (Shop::isFeatureActive() && Shop::getContext() != Shop::CONTEXT_SHOP) {
-                        foreach ($fields as $key => $val) {
-                            if (!array_key_exists($key, (array) $this->update_fields)) {
-                                unset($fields[$key]);
-                            }
-                        }
-                    }
-                    $result &= Db::getInstance()->update($this->def['table'].'_shop', $fields, $where, 0, $nullValues);
+                $shopEntryExists = Db::getInstance()->getValue('SELECT '.$this->def['primary'].' FROM '._DB_PREFIX_.$this->def['table'].'_shop WHERE '.$where);
+                if ($shopEntryExists) {
+                    // if multishop db entry exists, we use $updateFields array to update it
+                    $result &= Db::getInstance()->update($this->def['table'].'_shop', $updateFields, $where, 0, $nullValues);
                 } elseif (Shop::getContext() == Shop::CONTEXT_SHOP) {
-                    $result &= Db::getInstance()->insert($this->def['table'].'_shop', $allFields, $nullValues);
+                    // if multishop db entry doesnt exist yet, we use $insertFields array to create it
+                    $insertFields['id_shop'] = (int) $idShop;
+                    $result &= Db::getInstance()->insert($this->def['table'].'_shop', $insertFields, $nullValues);
                 }
             }
         }
