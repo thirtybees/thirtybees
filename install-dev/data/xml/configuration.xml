@@ -589,9 +589,6 @@
     <configuration id="PS_SMARTY_CONSOLE_KEY" name="PS_SMARTY_CONSOLE_KEY">
       <value>SMARTY_DEBUG</value>
     </configuration>
-    <configuration id="PS_DASHBOARD_USE_PUSH" name="PS_DASHBOARD_USE_PUSH">
-      <value>0</value>
-    </configuration>
     <configuration id="CONF_AVERAGE_PRODUCT_MARGIN" name="CONF_AVERAGE_PRODUCT_MARGIN">
       <value>40</value>
     </configuration>
