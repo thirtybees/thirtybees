@@ -229,7 +229,7 @@
 [submodule "themes/community-theme-default"]
 	path = themes/community-theme-default
 	url = https://github.com/thirtybees/community-theme-default.git
-	branch = 1.0.x
+	branch = 1.1.x
 	ignore = dirty
 [submodule "themes/niara"]
 	path = themes/niara
