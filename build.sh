@@ -276,10 +276,11 @@ git cat-file -p ${GIT_REVISION}:themes | grep '^160000' | cut -d ' ' -f 3 | \
     THEME="themes/${T#*$'\t'}"
     HASH=${T%$'\t'*}
     DEFAULT_BRANCH=$(git cat-file -p ${GIT_REVISION}:.gitmodules | sed -n '
-                      /^\[submodule.*'"${S/\//\\\/}"'/, /^\[submodule/ {
+                      /^\[submodule.*'"${THEME/\//\\\/}"'/, /^\[submodule/ {
                         s/\s*branch = // p
                       }
                     ')
+    DEFAULT_BRANCH=${DEFAULT_BRANCH:-master}
 
     echo "Copying ${THEME} ... "
     cd "${THEME}"                                                 || exit ${?}
