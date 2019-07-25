@@ -5,6 +5,7 @@
 [submodule "modules/beesblog"]
 	path = modules/beesblog
 	url = https://github.com/thirtybees/beesblog.git
+	ignore = dirty
 [submodule "modules/blockbanner"]
 	path = modules/blockbanner
 	url = https://github.com/thirtybees/blockbanner.git
