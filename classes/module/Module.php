@@ -83,6 +83,8 @@ abstract class ModuleCore
      *             This string contains a SemVer 1.0.0 range
      */
     public $tb_versions_compliancy = '*';
+    /** @var string minimal version of thirty bees compliant with this module */
+    public $tb_min_version = '1.0.0';
     /** @var array filled with modules needed for install */
     public $dependencies = [];
     /** @var string Unique name */
