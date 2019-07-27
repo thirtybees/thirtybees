@@ -4108,6 +4108,7 @@ class CartCore extends ObjectModel
             }
         }
 
+        $errors = [];
         $summary = [
             'delivery'                  => $delivery,
             'delivery_state'            => State::getNameById($delivery->id_state),
@@ -4132,7 +4133,31 @@ class CartCore extends ObjectModel
             'is_multi_address_delivery' => $this->isMultiAddressDelivery() || ((int) Tools::getValue('multi-shipping') == 1),
             'free_ship'                 => !$totalShipping && !count($this->getDeliveryAddressesWithoutCarriers(true, $errors)),
             'carrier'                   => new Carrier($this->id_carrier, $idLang),
+            'errors'                    => [],
         ];
+
+        if (count($errors)) {
+            $flagErrorMessage = false;
+            foreach ($errors as $error) {
+                if ($error == Carrier::SHIPPING_WEIGHT_EXCEPTION && !$flagErrorMessage) {
+                    $summary['errors'][] = sprintf(Tools::displayError('The product selection cannot be delivered by the available carrier(s): it is too heavy. Please amend your cart to lower its weight.', !Tools::getValue('ajax')));
+                    $flagErrorMessage = true;
+                } elseif ($error == Carrier::SHIPPING_PRICE_EXCEPTION && !$flagErrorMessage) {
+                    $summary['errors'][] = sprintf(Tools::displayError('The product selection cannot be delivered by the available carrier(s). Please amend your cart.', !Tools::getValue('ajax')));
+                    $flagErrorMessage = true;
+                } elseif ($error == Carrier::SHIPPING_SIZE_EXCEPTION && !$flagErrorMessage) {
+                    $summary['errors'][] = sprintf(Tools::displayError('The product selection cannot be delivered by the available carrier(s): its size does not fit. Please amend your cart to reduce its size.', !Tools::getValue('ajax')));
+                    $flagErrorMessage = true;
+                }
+            }
+            if (count($errors) > 1 && !$flagErrorMessage) {
+                $summary['errors'][] = sprintf(Tools::displayError('There are no carriers that deliver to some addresses you selected.', !Tools::getValue('ajax')));
+            } elseif ($this->isMultiAddressDelivery() && !$flagErrorMessage) {
+                $summary['errors'][] = sprintf(Tools::displayError('There are no carriers that deliver to one of the address you selected.', !Tools::getValue('ajax')));
+            } elseif (!$flagErrorMessage) {
+                $summary['errors'][] = sprintf(Tools::displayError('There are no carriers that deliver to the address you selected.', !Tools::getValue('ajax')));
+            }
+        }
 
         $hook = Hook::exec('actionCartSummary', $summary, null, true);
         if (is_array($hook)) {
