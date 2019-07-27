@@ -341,6 +341,9 @@ class ParentOrderControllerCore extends FrontController
         $summary = $this->context->cart->getSummaryDetails();
         $customizedDatas = Product::getAllCustomizedDatas($this->context->cart->id);
 
+        // Merge errors from summary to be shown on frontend
+        $this->errors = is_array($summary) && !empty($summary) ? array_merge($this->errors, $summary["errors"]) : $this->errors;
+
         // override customization tax rate with real tax (tax rules)
         if ($customizedDatas) {
             foreach ($summary['products'] as &$productUpdate) {
