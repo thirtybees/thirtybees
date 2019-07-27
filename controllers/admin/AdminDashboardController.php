@@ -304,7 +304,6 @@ class AdminDashboardControllerCore extends AdminController
             //'translations' => $translations,
             'action'                  => '#',
             'warning'                 => $this->getWarningDomainName(),
-            'new_version_url'         => Tools::getCurrentUrlProtocolPrefix()._PS_API_DOMAIN_.'/version/check_version.php?v='._PS_VERSION_.'&lang='.$this->context->language->iso_code.'&autoupgrade='.(int) (Module::isInstalled('autoupgrade') && Module::isEnabled('autoupgrade')).'&hosted_mode='.(int) defined('_PS_HOST_MODE_'),
             'dashboard_use_push'      => Configuration::get('PS_DASHBOARD_USE_PUSH'),
             'calendar'                => $calendarHelper->generate(),
             'PS_DASHBOARD_SIMULATION' => Configuration::get('PS_DASHBOARD_SIMULATION'),
