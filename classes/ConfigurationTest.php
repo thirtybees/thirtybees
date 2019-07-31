@@ -317,25 +317,21 @@ class ConfigurationTestCore
     }
 
     /**
-     * @return bool
+     * @return 'ok' or nothing;
      *
      * @since 1.0.0
      */
     public static function testTlsv12()
     {
-        $guzzle = new GuzzleHttp\Client([
-            'verify'  => _PS_TOOL_DIR_.'cacert.pem',
-            'timeout' => 20,
-        ]);
+        $url = 'https://fancyssl.hboeck.de/';
+        $protocol = 'CURL_SSLVERSION_TLSv1_2';
 
-        $success = false;
-        try {
-            $response = $guzzle->get('https://tlstest.paypal.com/');
-            $success = (string) $response->getBody() === 'PayPal_Connection_OK';
-        } catch (Exception $e) {
-        }
-
-        return $success;
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_SSLVERSION, $protocol);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);	
+        $response = curl_exec($ch) !== false;
+        if ($response) return('ok');
     }
 
     /**
