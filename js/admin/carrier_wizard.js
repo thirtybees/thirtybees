@@ -427,9 +427,7 @@ function bind_inputs() {
 }
 
 function hideFees() {
-  $('#zone_ranges .range_inf td input,#zone_ranges .range_sup td input,#zone_ranges .fees_all td input,#zone_ranges .fees td input')
-   .not('#zone_ranges .fees_all td input[type="checkbox"]').not('#zone_ranges .fees td input.input_zone')
-   .attr('disabled', 'disabled');
+  $('#zone_ranges .range_inf td input,#zone_ranges .range_sup td input,#zone_ranges .fees_all td input[type="text"],#zone_ranges .fees td input[type="text"]').attr('disabled', 'disabled');
 }
 
 function showFees() {
