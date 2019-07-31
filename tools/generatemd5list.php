@@ -25,23 +25,23 @@
  *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
+// These should work with or without installation.
+require_once(dirname(__FILE__).'/../config/defines.inc.php');
+require_once(_PS_ROOT_DIR_.'/config/autoload.php');
+
 if (!defined('_PS_ADMIN_DIR_')) {
   // Find admin dir even on non-developer installations.
   $adminDir = null;
-  $rootDir = dir(dirname(__FILE__).'/..');
+  $rootDir = dir(_PS_ROOT_DIR_);
   while (($entry = $rootDir->read())) {
     $found = strpos($entry, 'admin');
     if ($found !== false && $found === 0) {
-      $adminDir = $rootDir->path.'/'.$entry;
+      $adminDir = $rootDir->path.DIRECTORY_SEPARATOR.$entry;
       break;
     }
   }
   $rootDir->close();
   define('_PS_ADMIN_DIR_', $adminDir);
 }
-
-// These should work with or without installation.
-require_once(dirname(__FILE__).'/../config/defines.inc.php');
-require_once(_PS_ROOT_DIR_.'/config/autoload.php');
 
 AdminInformationControllerCore::generateMd5List();
