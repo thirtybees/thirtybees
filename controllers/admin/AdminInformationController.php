@@ -259,12 +259,14 @@ class AdminInformationControllerCore extends AdminController
     {
         $md5List = [];
         $adminDir = str_replace(_PS_ROOT_DIR_, '', _PS_ADMIN_DIR_);
+        $adminDir = str_replace(DIRECTORY_SEPARATOR, '/', $adminDir);
 
         $iterator = static::getCheckFileIterator();
         foreach ($iterator as $file) {
             /** @var DirectoryIterator $file */
-            $filePath = $file->getPathname();
+            $filePath = $file->getRealPath();
             $filePath = str_replace(_PS_ROOT_DIR_, '', $filePath);
+            $filePath = str_replace(DIRECTORY_SEPARATOR, '/', $filePath);
             if (in_array($file->getFilename(), ['.', '..', 'index.php'])) {
                 continue;
             }
@@ -272,7 +274,7 @@ class AdminInformationControllerCore extends AdminController
             if (strpos($filePath, $adminDir) !== false) {
                 $filePath = str_replace($adminDir, '/admin', $filePath);
             }
-            $md5List[$filePath] = md5_file($file->getPathname());
+            $md5List[$filePath] = md5_file($file->getRealPath());
         }
 
         file_put_contents(
@@ -314,6 +316,7 @@ class AdminInformationControllerCore extends AdminController
     public function getListOfUpdatedFiles(array $md5List, $basePath = null)
     {
         $adminDir = str_replace(_PS_ROOT_DIR_, '', _PS_ADMIN_DIR_);
+        $adminDir = str_replace(DIRECTORY_SEPARATOR, '/', $adminDir);
         if (is_null($basePath)) {
             $basePath = rtrim(_PS_ROOT_DIR_, DIRECTORY_SEPARATOR);
         }
@@ -343,6 +346,7 @@ class AdminInformationControllerCore extends AdminController
             }
 
             $path = str_replace($basePath, '', $file->getPathname());
+            $path = str_replace(DIRECTORY_SEPARATOR, '/', $path);
             $path = str_replace($adminDir, '/admin', $path);
             if ( ! in_array($path, $fileList)) {
                 $this->fileList['obsolete'][] = ltrim($path, '/');
