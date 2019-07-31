@@ -1579,6 +1579,10 @@ class ValidateCore
      */
     public static function isSiret($siret)
     {
+        if (empty($siret) || (isset($siret) && $siret[0] == '-')) 
+        { 
+            return true; 
+        }
         if (mb_strlen($siret) != 14) {
             return false;
         }
@@ -1606,6 +1610,9 @@ class ValidateCore
      */
     public static function isApe($ape)
     {
+        if (empty($ape) || (isset($ape) && $ape[0] == '-')) { 
+            return true; 
+        }
         return (bool) preg_match('/^[0-9]{3,4}[a-zA-Z]{1}$/s', $ape);
     }
 
