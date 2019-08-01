@@ -328,14 +328,21 @@ class ConfigurationTestCore
             'timeout' => 20,
         ]);
 
-        $success = false;
         try {
-            $response = $guzzle->get('https://tlstest.paypal.com/');
-            $success = (string) $response->getBody() === 'PayPal_Connection_OK';
-        } catch (Exception $e) {
+            $guzzle->post('https://api.paypal.com/v1/oauth2/token');
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            // As the request doesn't provide authentication credentials,
+            // it obviously never authenticates. But getting an authentication
+            // failure response already proves a working TLS v1.2 connection.
+            if ($e->getCode() == 401
+                && strpos($e->getMessage(), 'AUTHENTICATION_FAILURE')
+            ) {
+                return true;
+            }
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
         }
 
-        return $success;
+        return false;
     }
 
     /**
