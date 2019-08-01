@@ -38,8 +38,6 @@ if (Configuration::get('PS_JS_HTML_THEME_COMPRESSION')) {
 
 function smartyTranslate($params, $smarty)
 {
-    global $_LANG;
-
     if (!isset($params['js'])) {
         $params['js'] = false;
     }
@@ -53,15 +51,8 @@ function smartyTranslate($params, $smarty)
         $params['sprintf'] = null;
     }
 
-    $string = str_replace('\'', '\\\'', $params['s']);
     $filename = ((!isset($smarty->compiler_object) || !is_object($smarty->compiler_object->template)) ? $smarty->template_resource : $smarty->compiler_object->template->getTemplateFilepath());
-
     $basename = basename($filename, '.tpl');
-    $key = $basename.'_'.md5($string);
-
-    if (isset($smarty->source) && (strpos($smarty->source->filepath, DIRECTORY_SEPARATOR.'override'.DIRECTORY_SEPARATOR) !== false)) {
-        $key = 'override_'.$key;
-    }
 
     if ($params['mod']) {
         return Translate::postProcessTranslation(Translate::getModuleTranslation($params['mod'], $params['s'], $basename, $params['sprintf'], $params['js']), $params);
@@ -69,23 +60,8 @@ function smartyTranslate($params, $smarty)
         return Translate::postProcessTranslation(Translate::getPdfTranslation($params['s'], $params['sprintf']), $params);
     }
 
-    if ($_LANG != null && isset($_LANG[$key]) && $_LANG[$key] !== '') {
-        $msg = $_LANG[$key];
-    } elseif ($_LANG != null && isset($_LANG[mb_strtolower($key)]) && $_LANG[mb_strtolower($key)] !== '') {
-        $msg = $_LANG[mb_strtolower($key)];
-    } else {
-        $msg = $params['s'];
+    if (isset($smarty->source) && (strpos($smarty->source->filepath, DIRECTORY_SEPARATOR.'override'.DIRECTORY_SEPARATOR) !== false)) {
+        $basename = 'override_' . $basename;
     }
-
-    if ($msg !== $params['s'] && !$params['js']) {
-        $msg = stripslashes($msg);
-    } elseif ($params['js']) {
-        $msg = addslashes($msg);
-    }
-
-    if ($params['sprintf'] !== null) {
-        $msg = Translate::checkAndReplaceArgs($msg, $params['sprintf']);
-    }
-
-    return Translate::smartyPostProcessTranslation($params['js'] ? $msg : Tools::safeOutput($msg), $params);
+    return Translate::postProcessTranslation(Translate::getFrontTranslation($params['s'], $basename, $params['sprintf'], $params['js']), $params);
 }

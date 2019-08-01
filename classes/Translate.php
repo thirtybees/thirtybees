@@ -387,4 +387,40 @@ class TranslateCore
     {
         return Translate::postProcessTranslation($string, ['tags' => $tags]);
     }
+
+    /**
+     * Get a translation for a front office
+     *
+     * @param string $input
+     * @param string $source template file name
+     * @param array $sprintf
+     * @param bool $js
+     *
+     * @return string
+     *
+     * @since 1.1.1
+     */
+    public static function getFrontTranslation($input, $source, $sprintf = null, $js = false)
+    {
+        global $_LANG;
+
+        $string = str_replace('\'', '\\\'', $input);
+        $key = $source.'_'.md5($string);
+
+        if ($_LANG != null && isset($_LANG[$key]) && $_LANG[$key] !== '') {
+            $msg = $_LANG[$key];
+        } elseif ($_LANG != null && isset($_LANG[mb_strtolower($key)]) && $_LANG[mb_strtolower($key)] !== '') {
+            $msg = $_LANG[mb_strtolower($key)];
+        } else {
+            $msg = $input;
+        }
+
+        $msg = $js ? addslashes($msg) : stripslashes($msg);
+
+        if ($sprintf !== null) {
+            $msg = Translate::checkAndReplaceArgs($msg, $sprintf);
+        }
+
+        return $js ? $msg : Tools::safeOutput($msg);
+    }
 }
