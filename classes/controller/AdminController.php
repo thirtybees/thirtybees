@@ -591,6 +591,10 @@ class AdminControllerCore extends Controller
 
                 if (isset($_POST) && count($_POST) && (int) Tools::getValue('submitFilter'.$this->list_id) || Tools::isSubmit('submitReset'.$this->list_id)) {
                     $this->setRedirectAfter(static::$currentIndex.'&token='.$this->token.(Tools::isSubmit('submitFilter'.$this->list_id) ? '&submitFilter'.$this->list_id.'='.(int) Tools::getValue('submitFilter'.$this->list_id) : '').(isset($_GET['id_'.$this->list_id]) ? '&id_'.$this->list_id.'='.(int) $_GET['id_'.$this->list_id] : ''));
+
+                    if (!empty(Tools::getValue('id_'.$this->list_id.'_category'))) {
+                        $this->setRedirectAfter($this->redirect_after.'&id_'.$this->list_id.'_category='.Tools::getValue('id_'.$this->list_id.'_category'));
+                    }
                 }
 
                 // If the method named after the action exists, call "before" hooks, then call action method, then call "after" hooks

@@ -120,6 +120,11 @@
 	<input type="hidden" id="submitFilter{$list_id}" name="submitFilter{$list_id}" value="0"/>
 	<input type="hidden" name="page" value="{$page|intval}"/>
 	<input type="hidden" name="selected_pagination" value="{$selected_pagination|intval}"/>
+	{if strpos($smarty.server.REQUEST_URI, "_category=") !== false}
+		{if isset($smarty.get.{"id_"|cat:$list_id|cat:"_category"})}
+			<input type="hidden" name="{"id_"|cat:$list_id|cat:"_category"}" value="{$smarty.get.{"id_"|cat:$list_id|cat:"_category"}|intval}"/>
+		{/if}
+	{/if}
 	{block name="override_form_extra"}{/block}
 	<div class="panel col-lg-12">
 		<div class="panel-heading">
