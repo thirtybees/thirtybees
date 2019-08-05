@@ -51,7 +51,7 @@ var {$k} = '{$def|@addcslashes:'\''}';
 {/if}
 {if isset($js_files) && $js_files|@count}
 {foreach from=$js_files key=k item=js_uri}
-<script type="text/javascript" src="{$js_uri}"></script>
+<script type="text/javascript" src="{$js_uri}?version={$smarty.const._TB_VERSION_}"></script>
 {/foreach}
 {/if}
 {if isset($js_inline) && $js_inline|@count}
