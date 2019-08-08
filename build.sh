@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
 
 function usage {
-  echo "Usage: ./build.sh [-h|--help] [<git revision>]"
+  echo "Usage: build.sh [-h|--help] [--[no-]validate] [<git revision>]"
   echo
   echo "This script builds an installation package from the current repository."
-  echo "Default revision is the latest tag ( = latest release)."
   echo
   echo "    -h, --help            Show this help and exit."
   echo
   echo "    --[no-]validate       Enforce [no] validation. Default is to"
   echo "                          validate when packaging 'master' or the"
   echo "                          latest tag, but not when packaging others."
+  echo
+  echo "    <git revision>        Any Git tag, branch or commit. Defaults to"
+  echo "                          the latest tag ( = latest release)."
   echo
 }
 
