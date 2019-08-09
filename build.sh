@@ -81,6 +81,30 @@ PACKAGE_NAME="thirtybees-v${GIT_REVISION}"
 rm -f "${PACKAGE_NAME}".zip
 
 
+### Test for prerequisites.
+
+# Test availability of Git.
+if ! which git > /dev/null; then
+  echo "Git not available. Aborting."
+  exit 1
+fi
+
+# Test for a Git repository.
+if [ ! -e .git ]; then
+  echo "Not at the root of a Git repository. Aborting."
+  exit 1
+fi
+
+# There should be no staged changes.
+if ([ ${OPTION_VALIDATE} = 'true' ] \
+    || [ ${OPTION_VALIDATE} = 'auto' ]) \
+   && ([ $(git diff | wc -l) -ne 0 ] \
+       || [ $(git diff --staged | wc -l) -ne 0 ]); then
+  echo "There are uncommitted changes. Aborting."
+  exit 1
+fi
+
+
 ### Plausibility heuristics.
 #
 # Suboptimal releases have been packaged due to (whatever), so let's try to
