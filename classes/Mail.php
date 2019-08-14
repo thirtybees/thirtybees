@@ -132,10 +132,11 @@ class MailCore extends ObjectModel
             return true;
         }
 
-        $idShop = (int)$idShop;
-        $shop = Context::getContext()->shop;
-        if ($idShop) {
-            $shop = new Shop($idShop);
+        if (! $idShop) {
+            $shop = Context::getContext()->shop;
+            $idShop = $shop->id;
+        } else {
+            $shop = new Shop((int)$idShop);
         }
 
         $configuration = Configuration::getMultiple(
