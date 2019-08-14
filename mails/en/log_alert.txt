@@ -5,7 +5,7 @@ Hi {firstname} {lastname},
 
 WARNING: you have received a new log alert in your Back Office.
 
-You can check for it in the "TOOLS" > "LOGS" section of your Back
+You can check for it in the Advanced Parameters -> Logs section of your Back
 Office.
 
 {shop_name} [{shop_url}]
