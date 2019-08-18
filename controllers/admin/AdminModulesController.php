@@ -489,7 +489,7 @@ class AdminModulesControllerCore extends AdminController
 
         // Sort modules by display name from their config.xml instad of their `name` property.
         uasort($modules, function($a, $b) {
-            return strcmp($a->displayName, $b->displayName);
+            return strcoll($a->displayName, $b->displayName);
         });
 
         // Init tpl vars for smarty
