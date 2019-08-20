@@ -555,7 +555,11 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
      */
     public function add($autoDate = true, $nullValues = false)
     {
-        if (isset($this->id) && !$this->force_id) {
+
+        if ($this->force_id && $this->{$this->def['primary']}) {
+            $this->id = $this->{$this->def['primary']}; // Allowing usage of objectModel without auto_increment column
+        }
+        elseif ($this->id) {
             unset($this->id);
         }
 
@@ -589,7 +593,9 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         }
 
         // Get object id in database
-        $this->id = Db::getInstance()->Insert_ID();
+        if (!$this->id || !$this->force_id) {
+            $this->id = Db::getInstance()->Insert_ID();
+        }
 
         // Database insertion for multishop fields related to the object
         if (Shop::isTableAssociated($this->def['table'])) {
