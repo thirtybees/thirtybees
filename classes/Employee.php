@@ -334,7 +334,7 @@ class EmployeeCore extends ObjectModel
         $success = true;
 
         if (!defined('TB_INSTALLATION_IN_PROGRESS')) {
-            if ($this->optin) {
+            if ($this->optin && $this->email) {
                 $context = Context::getContext();
 
                 $guzzle = new \GuzzleHttp\Client([
