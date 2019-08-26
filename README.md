@@ -23,7 +23,7 @@ thirty bees is commited to being free and open source. We are also committed to 
 - Package management for JavaScript and CSS vendor packages as well.
 - Bring all modules provided by thirty bees to the standards level of default modules.
 - Bootstrap 4 for back office.
-- Goal for thirty bees 1.2.0: **Zero Known Bugs**.
+- Goal for thirty bees 1.2.0: [**Zero Known Bugs**](https://github.com/thirtybees/thirtybees/issues?q=is%3Aissue+is%3Aopen+label%3ABug).
 
 ## Requirements
 Support for these general requirements (except recommendations) gets tested during installation, so one can simply try to proceed. A proceeding installation means all requirements are met.
