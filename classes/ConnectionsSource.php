@@ -58,6 +58,12 @@ class ConnectionsSourceCore extends ObjectModel
             'keywords'       => ['type' => self::TYPE_STRING, 'validate' => 'isMessage'],
             'date_add'       => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'required' => true],
         ],
+        'keys' => [
+            'connections_source' => [
+                'connections' => ['type' => ObjectModel::KEY, 'columns' => ['id_connections']],
+                'orderby'     => ['type' => ObjectModel::KEY, 'columns' => ['date_add']],
+            ],
+        ],
     ];
 
     /**

@@ -376,25 +376,6 @@ class AdminLocalizationControllerCore extends AdminController
                         'name'  => 'name',
                     ],
                 ],
-                [
-                    'type'    => 'radio',
-                    'label'   => $this->l('Download pack data'),
-                    'desc'    => $this->l('If set to yes then the localization pack will be downloaded from thirtybees.com. Otherwise the local xml file found in the localization folder of your thirty bees installation will be used.'),
-                    'name'    => 'download_updated_pack',
-                    'is_bool' => true,
-                    'values'  => [
-                        [
-                            'id'    => 'download_updated_pack_yes',
-                            'value' => 1,
-                            'label' => $this->l('Yes'),
-                        ],
-                        [
-                            'id'    => 'download_updated_pack_no',
-                            'value' => 0,
-                            'label' => $this->l('No'),
-                        ],
-                    ],
-                ],
             ],
             'submit'  => [
                 'title' => $this->l('Import'),
@@ -409,7 +390,6 @@ class AdminLocalizationControllerCore extends AdminController
             'selection[]_currencies' => true,
             'selection[]_languages'  => true,
             'selection[]_units'      => true,
-            'download_updated_pack'  => 1,
         ];
 
         $this->show_toolbar = true;

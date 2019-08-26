@@ -45,17 +45,39 @@ class WebserviceKeyCore extends ObjectModel
     /** @var string Webservice Account description */
     public $description;
 
+    /** @var string php class to handle web request. Default WebserviceRequest */
+    public $class_name;
+
+    /** @var boolean is this created by external module */
+    public $is_module;
+
+    /** @var string module name - webservice provider*/
+    public $module_name;
+
     /**
      * @see ObjectModel::$definition
      */
     public static $definition = [
         'table'   => 'webservice_account',
         'primary' => 'id_webservice_account',
+        'primaryKeyDbType' => 'int(11)',
         'fields'  => [
-            'active'      => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                 ],
-            'key'         => ['type' => self::TYPE_STRING,                        'required' => true, 'size' => 32],
-            'description' => ['type' => self::TYPE_STRING                                                         ],
+            'key'         => ['type' => self::TYPE_STRING, 'required' => true, 'size' => 32],
+            'description' => ['type' => self::TYPE_STRING, 'size' => ObjectModel::SIZE_TEXT],
+            'class_name'  => ['type' => self::TYPE_STRING, 'size' => 50, 'default' => 'WebserviceRequest'],
+            'is_module'   => ['type' => self::TYPE_BOOL, 'dbType' => 'tinyint(2)', 'dbDefault' => '0'],
+            'module_name' => ['type' => self::TYPE_STRING, 'size' => 50],
+            'active'      => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(2)', 'dbNullable' => false],
         ],
+        'keys' => [
+            'webservice_account' => [
+                'key' => ['type' => ObjectModel::KEY, 'columns' => ['key']],
+            ],
+            'webservice_account_shop' => [
+                'id_shop' => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
+            ],
+        ],
+
     ];
 
     /**

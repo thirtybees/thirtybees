@@ -40,7 +40,7 @@ class ShopMaintenanceCore
     public static function run()
     {
         $now = time();
-        $lastRun = Configuration::get('SHOP_MAINTENANCE_LAST_RUN');
+        $lastRun = Configuration::getGlobalValue('SHOP_MAINTENANCE_LAST_RUN');
         if ($now - $lastRun > 86400) {
             // Run daily tasks.
             static::adjustThemeHeaders();

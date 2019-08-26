@@ -63,6 +63,28 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
     const HAS_MANY = 2;
     const BELONGS_TO_MANY = 3;
 
+    /**
+     * List of common database default values
+     */
+    const DEFAULT_NULL = '@@NULL';
+    const DEFAULT_CURRENT_TIMESTAMP = 'CURRENT_TIMESTAMP';
+
+    /**
+     * List of database column sizes
+     */
+    const SIZE_MAX_VARCHAR = 255;
+    const SIZE_MEDIUM_TEXT = 16777215;
+    const SIZE_TEXT = 65535;
+    const SIZE_LONG_TEXT = 4294967295;
+
+    /**
+     * List of different database key types
+     */
+    const PRIMARY_KEY = 1;
+    const UNIQUE_KEY = 2;
+    const FOREIGN_KEY = 3;
+    const KEY = 4;
+
     // @codingStandardsIgnoreStart
     /** @var int Object ID */
     public $id;
@@ -1155,7 +1177,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
         }
 
         // Check field size
-        if (!in_array('size', $skip) && !empty($data['size'])) {
+        if (!in_array('size', $skip) && !empty($data['size']) && in_array($data['type'], [static::TYPE_STRING, static::TYPE_HTML])) {
             $size = $data['size'];
             if (!is_array($data['size'])) {
                 $size = ['min' => 0, 'max' => $data['size']];
@@ -1280,15 +1302,17 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
                 $data['required'] = true;
             }
 
+            $isEmpty = empty($value) && $value !== '0' && $value !== 0 && $value !== 0.0 && $value !== false;
+
             // Checking for required fields
-            if (isset($data['required']) && $data['required'] && empty($value) && $value !== '0') {
+            if (isset($data['required']) && $data['required'] && $isEmpty) {
                 if (!$this->id || $field != 'passwd') {
                     $errors[$field] = '<b>'.static::displayFieldName($field, get_class($this), $htmlentities).'</b> '.Tools::displayError('is required.');
                 }
             }
 
             // Checking for maximum fields sizes
-            if (isset($data['size']) && !empty($value) && mb_strlen($value) > $data['size']) {
+            if (isset($data['size']) && !$isEmpty && in_array($data['type'], [static::TYPE_STRING, static::TYPE_HTML]) && mb_strlen($value) > $data['size']) {
                 $errors[$field] = sprintf(
                     Tools::displayError('%1$s is too long. Maximum length: %2$d'),
                     static::displayFieldName($field, get_class($this), $htmlentities),
@@ -1298,11 +1322,11 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
             // Checking for fields validity
             // Hack for postcode required for country which does not have postcodes
-            if (!empty($value) || $value === '0' || ($field == 'postcode' && $value == '0')) {
+            if (!$isEmpty || ($field == 'postcode' && $value == '0')) {
                 $validationError = false;
                 if (isset($data['validate'])) {
                     $dataValidate = $data['validate'];
-                    if (!Validate::$dataValidate($value) && (!empty($value) || $data['required'])) {
+                    if (!Validate::$dataValidate($value) && (!$isEmpty || $data['required'])) {
                         $errors[$field] = '<b>'.static::displayFieldName($field, get_class($this), $htmlentities).
                             '</b> '.Tools::displayError('is invalid.');
                         $validationError = true;

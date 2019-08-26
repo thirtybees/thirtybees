@@ -328,7 +328,13 @@ class AdminPPreferencesControllerCore extends AdminController
         }
 
         // if advanced stock management is disabled, updates concerned tables
-        if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') == 1 && (int) Tools::getValue('PS_ADVANCED_STOCK_MANAGEMENT') == 0) {
+        $fieldName = 'PS_ADVANCED_STOCK_MANAGEMENT';
+        $field = $this->fields_options['stock']['fields'][$fieldName];
+        if (Configuration::get($fieldName) == 1
+            && (int) Tools::getValue($fieldName) == 0
+            && ! (Shop::isFeatureActive()
+                  && $field['visibility'] > Shop::getContext())
+        ) {
             $idShopList = Shop::getContextListShopID();
             $sqlShop = 'UPDATE `'._DB_PREFIX_.'product_shop` SET `advanced_stock_management` = 0 WHERE
 			`advanced_stock_management` = 1 AND (`id_shop` = '.implode(' OR `id_shop` = ', $idShopList).')';

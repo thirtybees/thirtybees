@@ -76,15 +76,20 @@ class SupplierCore extends ObjectModel
         'multilang' => true,
         'fields'    => [
             'name'             => ['type' => self::TYPE_STRING, 'validate' => 'isCatalogName', 'required' => true, 'size' => 64],
-            'active'           => ['type' => self::TYPE_BOOL],
-            'date_add'         => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
-            'date_upd'         => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+            'date_add'         => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
+            'date_upd'         => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
+            'active'           => ['type' => self::TYPE_BOOL, 'dbType' => 'tinyint(1)', 'dbNullable' => false, 'dbDefault' => '0'],
 
             /* Lang fields */
-            'description'      => ['type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml'],
+            'description'      => ['type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => ObjectModel::SIZE_TEXT],
             'meta_title'       => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 128],
-            'meta_description' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255],
             'meta_keywords'    => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255],
+            'meta_description' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255],
+        ],
+        'keys' => [
+            'supplier_shop' => [
+                'id_shop' => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
+            ],
         ],
     ];
 

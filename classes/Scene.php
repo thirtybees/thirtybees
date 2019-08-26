@@ -58,10 +58,15 @@ class SceneCore extends ObjectModel
         'primary'   => 'id_scene',
         'multilang' => true,
         'fields'    => [
-            'active' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true],
+            'active' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbType' => 'tinyint(1)', 'dbDefault' => '1'],
 
             /* Lang fields */
             'name'   => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 100],
+        ],
+        'keys' => [
+            'scene_shop' => [
+                'id_shop' => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
+            ],
         ],
     ];
 

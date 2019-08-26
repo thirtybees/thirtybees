@@ -70,12 +70,18 @@ class ProductSupplierCore extends ObjectModel
         'table'   => 'product_supplier',
         'primary' => 'id_product_supplier',
         'fields'  => [
-            'product_supplier_reference' => ['type' => self::TYPE_STRING, 'validate' => 'isReference',                       'size' => 32],
-            'id_product'                 => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'required' => true               ],
-            'id_product_attribute'       => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'required' => true               ],
-            'id_supplier'                => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'required' => true               ],
-            'product_supplier_price_te'  => ['type' => self::TYPE_PRICE,  'validate' => 'isPrice'                                        ],
-            'id_currency'                => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId'                                   ],
+            'id_product'                 => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true               ],
+            'id_product_attribute'       => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true, 'dbDefault' => '0'],
+            'id_supplier'                => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true               ],
+            'product_supplier_reference' => ['type' => self::TYPE_STRING, 'validate' => 'isReference', 'size' => 32],
+            'product_supplier_price_te'  => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'dbDefault' => '0.000000'],
+            'id_currency'                => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'dbNullable' => false],
+        ],
+        'keys' => [
+            'product_supplier' => [
+                'id_product'  => ['type' => ObjectModel::UNIQUE_KEY, 'columns' => ['id_product', 'id_product_attribute', 'id_supplier']],
+                'id_supplier' => ['type' => ObjectModel::KEY, 'columns' => ['id_supplier', 'id_product']],
+            ],
         ],
     ];
 

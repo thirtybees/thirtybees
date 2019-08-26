@@ -62,13 +62,21 @@ class DeliveryCore extends ObjectModel
         'table'   => 'delivery',
         'primary' => 'id_delivery',
         'fields'  => [
+            'id_shop'         => ['type' => self::TYPE_INT, 'size' => 10],
+            'id_shop_group'   => ['type' => self::TYPE_INT, 'size' => 10],
             'id_carrier'      => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'id_range_price'  => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'id_range_weight' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'id_range_price'  => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true, 'dbNullable' => true],
+            'id_range_weight' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true, 'dbNullable' => true],
             'id_zone'         => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'id_shop'         => ['type' => self::TYPE_INT],
-            'id_shop_group'   => ['type' => self::TYPE_INT],
             'price'           => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'required' => true],
+        ],
+        'keys' => [
+            'delivery' => [
+                'id_carrier'      => ['type' => ObjectModel::KEY, 'columns' => ['id_carrier', 'id_zone']],
+                'id_range_price'  => ['type' => ObjectModel::KEY, 'columns' => ['id_range_price']],
+                'id_range_weight' => ['type' => ObjectModel::KEY, 'columns' => ['id_range_weight']],
+                'id_zone'         => ['type' => ObjectModel::KEY, 'columns' => ['id_zone']],
+            ],
         ],
     ];
     protected $webserviceParameters = [

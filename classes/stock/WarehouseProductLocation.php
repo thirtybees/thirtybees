@@ -65,11 +65,17 @@ class WarehouseProductLocationCore extends ObjectModel
         'table'   => 'warehouse_product_location',
         'primary' => 'id_warehouse_product_location',
         'fields'  => [
-            'location'             => ['type' => self::TYPE_STRING, 'validate' => 'isReference',  'size' => 64                     ],
             'id_product'           => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',                'required' => true],
             'id_product_attribute' => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',                'required' => true],
             'id_warehouse'         => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',                'required' => true],
+            'location'             => ['type' => self::TYPE_STRING, 'validate' => 'isReference',  'size' => 64                     ],
         ],
+        'keys' => [
+            'warehouse_product_location' => [
+                'id_product' => ['type' => ObjectModel::UNIQUE_KEY, 'columns' => ['id_product', 'id_product_attribute', 'id_warehouse']],
+            ],
+        ],
+
     ];
 
     /**

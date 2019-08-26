@@ -51,6 +51,12 @@ class PageCore extends ObjectModel
             'id_page_type' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
             'id_object'    => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
         ],
+        'keys' => [
+            'page' => [
+                'id_object'    => ['type' => ObjectModel::KEY, 'columns' => ['id_object']],
+                'id_page_type' => ['type' => ObjectModel::KEY, 'columns' => ['id_page_type']],
+            ],
+        ],
     ];
 
     /**
