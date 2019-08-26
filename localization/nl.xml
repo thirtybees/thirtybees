@@ -20,7 +20,7 @@
   </languages>
   <taxes>
     <tax id="1" name="BTW NL 21%" rate="21" eu-tax-group="virtual" />
-    <tax id="2" name="BTW NL 6%" rate="6" />
+    <tax id="2" name="BTW NL 9%" rate="9" />
     <tax id="3" name="USt. AT 20%" rate="20" auto-generated="1" from-eu-tax-group="virtual" />
     <tax id="4" name="TVA BE 21%" rate="21" auto-generated="1" from-eu-tax-group="virtual" />
     <tax id="5" name="ДДС BG 20%" rate="20" auto-generated="1" from-eu-tax-group="virtual" />

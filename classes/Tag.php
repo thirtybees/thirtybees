@@ -47,6 +47,12 @@ class TagCore extends ObjectModel
             'id_lang' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
             'name'    => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 32],
         ],
+        'keys' => [
+            'tag' => [
+                'id_lang'  => ['type' => ObjectModel::KEY, 'columns' => ['id_lang']],
+                'tag_name' => ['type' => ObjectModel::KEY, 'columns' => ['name']],
+            ],
+        ],
     ];
     /** @var int Language id */
     public $id_lang;

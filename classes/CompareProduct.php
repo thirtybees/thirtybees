@@ -47,6 +47,11 @@ class CompareProductCore extends ObjectModel
             'id_compare'  => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true],
             'id_customer' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true],
         ],
+        'keys' => [
+            'compare_product' => [
+                'primary' => ['type' => ObjectModel::PRIMARY_KEY, 'columns' => ['id_compare', 'id_product']],
+            ],
+        ],
     ];
     /** @var int $id_compare */
     public $id_compare;

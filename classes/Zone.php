@@ -44,8 +44,14 @@ class ZoneCore extends ObjectModel
         'primary' => 'id_zone',
         'fields'  => [
             'name'   => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 64],
-            'active' => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'],
+            'active' => ['type' => self::TYPE_BOOL,   'validate' => 'isBool', 'dbDefault' => '0'],
         ],
+        'keys' => [
+            'zone_shop' => [
+                'id_shop' => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
+            ],
+        ],
+
     ];
     /** @var string Name */
     public $name;

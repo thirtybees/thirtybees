@@ -86,15 +86,20 @@ class CurrencyCore extends ObjectModel
         'multilang_shop' => true,
         'fields'         => [
             'name'            => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 32],
-            'iso_code'        => ['type' => self::TYPE_STRING, 'validate' => 'isLanguageIsoCode', 'required' => true, 'size' => 3],
-            'iso_code_num'    => ['type' => self::TYPE_STRING, 'validate' => 'isNumericIsoCode', 'size' => 3],
-            'blank'           => ['type' => self::TYPE_INT, 'validate' => 'isInt'],
+            'iso_code'        => ['type' => self::TYPE_STRING, 'validate' => 'isLanguageIsoCode', 'required' => true, 'size' => 3, 'dbDefault' => '0'],
+            'iso_code_num'    => ['type' => self::TYPE_STRING, 'validate' => 'isNumericIsoCode', 'size' => 3, 'dbDefault' => '0'],
             'sign'            => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 8],
-            'format'          => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'decimals'        => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true],
-            'conversion_rate' => ['type' => self::TYPE_FLOAT, 'validate' => 'isUnsignedFloat', 'required' => true, 'shop' => true],
-            'deleted'         => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'active'          => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'blank'           => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'size' => 1, 'dbDefault' => '0'],
+            'format'          => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true, 'size' => 1, 'dbDefault' => '0'],
+            'decimals'        => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbDefault' => '1'],
+            'conversion_rate' => ['type' => self::TYPE_FLOAT, 'validate' => 'isUnsignedFloat', 'required' => true, 'shop' => true, 'size' => 13],
+            'deleted'         => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '0'],
+            'active'          => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '1'],
+        ],
+        'keys' => [
+            'currency_shop' => [
+                'id_shop' => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
+            ],
         ],
     ];
 

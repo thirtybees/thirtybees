@@ -54,10 +54,15 @@ class FeatureValueCore extends ObjectModel
         'multilang' => true,
         'fields'    => [
             'id_feature' => ['type' => self::TYPE_INT,  'validate' => 'isUnsignedId', 'required' => true],
-            'custom'     => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'custom'     => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(3) unsigned'],
 
             /* Lang fields */
-            'value'      => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 255],
+            'value'      => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 255, 'dbNullable' => true],
+        ],
+        'keys' => [
+            'feature_value' => [
+                'feature' => ['type' => ObjectModel::KEY, 'columns' => ['id_feature']],
+            ],
         ],
     ];
 

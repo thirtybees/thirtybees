@@ -68,15 +68,20 @@ class ProductDownloadCore extends ObjectModel
         'table'   => 'product_download',
         'primary' => 'id_product_download',
         'fields'  => [
-            'id_product'         => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'id_product'         => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true, 'unique' => true],
             'display_filename'   => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'size' => 255],
             'filename'           => ['type' => self::TYPE_STRING, 'validate' => 'isSha1', 'size' => 255],
-            'date_add'           => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+            'date_add'           => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
             'date_expiration'    => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
-            'nb_days_accessible' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'size' => 10],
-            'nb_downloadable'    => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'size' => 10],
-            'active'             => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'is_shareable'       => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'nb_days_accessible' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
+            'nb_downloadable'    => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbDefault' => '1', 'dbNullable' => true],
+            'active'             => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '1'],
+            'is_shareable'       => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '0'],
+        ],
+        'keys' => [
+            'product_download' => [
+                'product_active' => ['type' => ObjectModel::KEY, 'columns' => ['id_product', 'active']],
+            ],
         ],
     ];
 

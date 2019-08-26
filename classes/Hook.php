@@ -79,11 +79,11 @@ class HookCore extends ObjectModel
         'table'   => 'hook',
         'primary' => 'id_hook',
         'fields'  => [
-            'name'        => ['type' => self::TYPE_STRING, 'validate' => 'isHookName', 'required' => true, 'size' => 64],
-            'title'       => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName'],
-            'description' => ['type' => self::TYPE_HTML, 'validate' => 'isCleanHtml'],
-            'position'    => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'live_edit'   => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'name'        => ['type' => self::TYPE_STRING, 'validate' => 'isHookName', 'required' => true, 'size' => 64, 'unique' => 'hook_name'],
+            'title'       => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'size' => 64, 'dbNullable' => false],
+            'description' => ['type' => self::TYPE_HTML, 'validate' => 'isCleanHtml', 'size' => ObjectModel::SIZE_TEXT],
+            'position'    => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '1'],
+            'live_edit'   => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
         ],
     ];
 

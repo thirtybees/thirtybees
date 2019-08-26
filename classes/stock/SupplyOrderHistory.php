@@ -75,12 +75,19 @@ class SupplyOrderHistoryCore extends ObjectModel
         'table'   => 'supply_order_history',
         'primary' => 'id_supply_order_history',
         'fields'  => [
-            'id_supply_order'    => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'required' => true],
-            'id_employee'        => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'required' => true],
-            'employee_firstname' => ['type' => self::TYPE_STRING, 'validate' => 'isName'                          ],
-            'employee_lastname'  => ['type' => self::TYPE_STRING, 'validate' => 'isName'                          ],
-            'id_state'           => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'required' => true],
-            'date_add'           => ['type' => self::TYPE_DATE,  'validate' => 'isDate',        'required' => true],
+            'id_supply_order'    => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'id_employee'        => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'employee_lastname'  => ['type' => self::TYPE_STRING, 'validate' => 'isName', 'size' => 32, 'dbDefault' => '', 'dbNullable' => true],
+            'employee_firstname' => ['type' => self::TYPE_STRING, 'validate' => 'isName', 'size' => 32, 'dbDefault' => '', 'dbNullable' => true],
+            'id_state'           => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'date_add'           => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'required' => true],
+        ],
+        'keys' => [
+            'supply_order_history' => [
+                'id_employee'     => ['type' => ObjectModel::KEY, 'columns' => ['id_employee']],
+                'id_state'        => ['type' => ObjectModel::KEY, 'columns' => ['id_state']],
+                'id_supply_order' => ['type' => ObjectModel::KEY, 'columns' => ['id_supply_order']],
+            ],
         ],
     ];
 

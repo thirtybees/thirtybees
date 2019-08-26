@@ -1,16 +1,22 @@
 #!/usr/bin/env bash
 
 function usage {
-  echo "Usage: ./build.sh [-h|--help] [<git revision>]"
+  echo "Usage: build.sh [-h|--help] [--[no-]validate] [--target-dir=<dir>]"
+  echo "          [<git revision>]"
   echo
   echo "This script builds an installation package from the current repository."
-  echo "Default revision is the latest tag ( = latest release)."
   echo
   echo "    -h, --help            Show this help and exit."
   echo
   echo "    --[no-]validate       Enforce [no] validation. Default is to"
   echo "                          validate when packaging 'master' or the"
   echo "                          latest tag, but not when packaging others."
+  echo
+  echo "    --target-dir=<dir>    Instead of building a package, drop the to be"
+  echo "                          packaged files in <dir>."
+  echo
+  echo "    <git revision>        Any Git tag, branch or commit. Defaults to"
+  echo "                          the latest tag ( = latest release)."
   echo
 }
 
@@ -19,7 +25,7 @@ function usage {
 #
 # Triggered by a trap, because we have multiple exit points.
 function cleanup {
-  if [ -n "${PACKAGING_DIR}" ]; then
+  if [ -n "${PACKAGING_DIR}" ] && [ -z "${TARGET_DIR}" ]; then
     echo "Deleting temporary packaging directory."
     rm -rf ${PACKAGING_DIR}
   fi
@@ -42,6 +48,7 @@ trap cleanup 0
 
 OPTION_VALIDATE='auto'
 GIT_REVISION=''
+TARGET_DIR=''
 
 while [ ${#} -ne 0 ]; do
   case "${1}" in
@@ -54,6 +61,21 @@ while [ ${#} -ne 0 ]; do
       ;;
     '--no-validate')
       OPTION_VALIDATE='false'
+      ;;
+    '--target-dir')
+      if [ -z "${2}" ]; then
+        echo "Option --target-dir missing parameter. Aborting."
+        exit 1
+      fi
+      TARGET_DIR="${2}"
+      shift
+      ;;
+    '--target-dir='*)
+      TARGET_DIR="${1#*=}"
+      if [ -z "${TARGET_DIR}" ]; then
+        echo "Option --target-dir= missing parameter. Aborting."
+        exit 1
+      fi
       ;;
     *)
       if ! git show -q "${1}" 2>/dev/null | grep -q '.'; then
@@ -77,6 +99,36 @@ unset LATEST_TAG
 
 PACKAGE_NAME="thirtybees-v${GIT_REVISION}"
 rm -f "${PACKAGE_NAME}".zip
+
+
+### Test for prerequisites.
+
+# Test availability of Git.
+if ! which git > /dev/null; then
+  echo "Git not available. Aborting."
+  exit 1
+fi
+
+# Test for a Git repository.
+if [ ! -e .git ]; then
+  echo "Not at the root of a Git repository. Aborting."
+  exit 1
+fi
+
+# Test for the existence of the target directory.
+if [ -n "${TARGET_DIR}" ] && ! [ -d "${TARGET_DIR}" ]; then
+  echo "Requested target directory doesn't exist. Aborting."
+  exit 1
+fi
+
+# There should be no staged changes.
+if ([ ${OPTION_VALIDATE} = 'true' ] \
+    || [ ${OPTION_VALIDATE} = 'auto' ]) \
+   && ([ $(git diff | wc -l) -ne 0 ] \
+       || [ $(git diff --staged | wc -l) -ne 0 ]); then
+  echo "There are uncommitted changes. Aborting."
+  exit 1
+fi
 
 
 ### Plausibility heuristics.
@@ -183,11 +235,15 @@ done
 
 ### Actual packaging.
 
-# Create packaging directory.
-PACKAGING_DIR=$(mktemp -d)
+if [ -z "${TARGET_DIR}" ]; then
+  # Create packaging directory.
+  PACKAGING_DIR=$(mktemp -d)
 
-PACKAGING_DIR+="/${PACKAGE_NAME}"
-mkdir "${PACKAGING_DIR}"
+  PACKAGING_DIR+="/${PACKAGE_NAME}"
+  mkdir "${PACKAGING_DIR}"
+else
+  PACKAGING_DIR="${TARGET_DIR}"
+fi
 export PACKAGING_DIR
 
 
@@ -384,12 +440,26 @@ done || exit ${?}
   cd "${PACKAGING_DIR}"                                           || exit ${?}
   php ./tools/generatemd5list.php                                 || exit ${?}
   rm -f cache/class_index.php # Gets created by running generatemd5list.php.
-  zip -r -q "${PACKAGE_NAME}".zip .                               || exit ${?}
+  if [ -z "${TARGET_DIR}" ]; then
+    zip -r -q "${PACKAGE_NAME}".zip .                             || exit ${?}
+  else
+    # Make links normal files to match what unpacking a ZIP would give.
+    TEMPNAME=$(mktemp -u)
+    find . -type l -print | while read F; do
+      cp -p "${F}" ${TEMPNAME}                                    || exit ${?}
+      mv ${TEMPNAME} "${F}"                                       || exit ${?}
+    done || exit ${?}
+    unset TEMPNAME
+  fi
   echo "done."
 ) || exit ${?}
 
-mv "${PACKAGING_DIR}"/"${PACKAGE_NAME}".zip .                     || exit ${?}
-echo "Created ${PACKAGE_NAME}.zip successfully."
+if [ -z "${TARGET_DIR}" ]; then
+  mv "${PACKAGING_DIR}"/"${PACKAGE_NAME}".zip .                   || exit ${?}
+  echo "Created ${PACKAGE_NAME}.zip successfully."
+else
+  echo "Created files in ${TARGET_DIR} successfully."
+fi
 
 
 # Cleanup happens via a trap.

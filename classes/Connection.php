@@ -60,13 +60,20 @@ class ConnectionCore extends ObjectModel
         'table'   => 'connections',
         'primary' => 'id_connections',
         'fields'  => [
+            'id_shop_group' => ['type' => self::TYPE_INT, 'required' => true, 'dbDefault' => '1'],
+            'id_shop'       => ['type' => self::TYPE_INT, 'required' => true, 'dbDefault' => '1'],
             'id_guest'      => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
             'id_page'       => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'ip_address'    => ['type' => self::TYPE_INT, 'validate' => 'isInt'],
+            'ip_address'    => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'dbType' => 'bigint(20)'],
+            'date_add'      => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
             'http_referer'  => ['type' => self::TYPE_STRING, 'validate' => 'isAbsoluteUrl'],
-            'id_shop'       => ['type' => self::TYPE_INT, 'required' => true],
-            'id_shop_group' => ['type' => self::TYPE_INT, 'required' => true],
-            'date_add'      => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+        ],
+        'keys' => [
+            'connections' => [
+                'date_add' => ['type' => ObjectModel::KEY, 'columns' => ['date_add']],
+                'id_guest' => ['type' => ObjectModel::KEY, 'columns' => ['id_guest']],
+                'id_page'  => ['type' => ObjectModel::KEY, 'columns' => ['id_page']],
+            ],
         ],
     ];
 
