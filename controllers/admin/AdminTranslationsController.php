@@ -1822,7 +1822,7 @@ class AdminTranslationsControllerCore extends AdminController
             case 'back':
                 // Parsing file in Back office
                 if ($typeFile == 'php') {
-                    $regex = '/this->l\((\')'._PS_TRANS_PATTERN_.'\'[\)|\,]/U';
+                    $regex = '/this->l\(\s*(\')'._PS_TRANS_PATTERN_.'\'\s*[\)|\,]/U';
                 } elseif ($typeFile == 'specific') {
                     $regex = '/Translate::getAdminTranslation\((\')'._PS_TRANS_PATTERN_.'\'(?:,.*)*\)/U';
                 } else {
