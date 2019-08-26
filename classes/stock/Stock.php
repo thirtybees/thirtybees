@@ -64,15 +64,22 @@ class StockCore extends ObjectModel
         'table'   => 'stock',
         'primary' => 'id_stock',
         'fields'  => [
-            'id_warehouse'         => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'required' => true ],
-            'id_product'           => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'required' => true ],
-            'id_product_attribute' => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'required' => true ],
-            'reference'            => ['type' => self::TYPE_STRING, 'validate' => 'isReference'                      ],
-            'ean13'                => ['type' => self::TYPE_STRING, 'validate' => 'isEan13'                          ],
-            'upc'                  => ['type' => self::TYPE_STRING, 'validate' => 'isUpc'                            ],
-            'physical_quantity'    => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt', 'required' => true],
-            'usable_quantity'      => ['type' => self::TYPE_INT,    'validate' => 'isInt',         'required' => true],
-            'price_te'             => ['type' => self::TYPE_PRICE,  'validate' => 'isPrice',       'required' => true],
+            'id_warehouse'         => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true ],
+            'id_product'           => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true ],
+            'id_product_attribute' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true ],
+            'reference'            => ['type' => self::TYPE_STRING, 'validate' => 'isReference', 'size' => 32, 'dbNullable' => false],
+            'ean13'                => ['type' => self::TYPE_STRING, 'validate' => 'isEan13', 'size' => 13],
+            'upc'                  => ['type' => self::TYPE_STRING, 'validate' => 'isUpc', 'size' => 12],
+            'physical_quantity'    => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true],
+            'usable_quantity'      => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'required' => true],
+            'price_te'             => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'required' => true, 'dbDefault' => '0.000000', 'dbNullable' => true],
+        ],
+        'keys' => [
+            'stock' => [
+                'id_product'           => ['type' => ObjectModel::KEY, 'columns' => ['id_product']],
+                'id_product_attribute' => ['type' => ObjectModel::KEY, 'columns' => ['id_product_attribute']],
+                'id_warehouse'         => ['type' => ObjectModel::KEY, 'columns' => ['id_warehouse']],
+            ],
         ],
     ];
 

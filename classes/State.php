@@ -47,6 +47,8 @@ class StateCore extends ObjectModel
     public $name;
     /** @var bool Status for delivery */
     public $active = true;
+
+    public $tax_behavior;
     // @codingStandardsIgnoreEnd
 
     /**
@@ -56,11 +58,19 @@ class StateCore extends ObjectModel
         'table'   => 'state',
         'primary' => 'id_state',
         'fields'  => [
-            'id_country' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'id_zone'    => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'iso_code'   => ['type' => self::TYPE_STRING, 'validate' => 'isStateIsoCode', 'required' => true, 'size' => 7],
-            'name'       => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 32],
-            'active'     => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
+            'id_country'   => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'id_zone'      => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'name'         => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 64],
+            'iso_code'     => ['type' => self::TYPE_STRING, 'validate' => 'isStateIsoCode', 'required' => true, 'size' => 7],
+            'tax_behavior' => ['type' => self::TYPE_INT, 'dbType' => 'smallint(1)', 'dbDefault' => '0'],
+            'active'       => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
+        ],
+        'keys' => [
+            'state' => [
+                'id_country' => ['type' => ObjectModel::KEY, 'columns' => ['id_country']],
+                'id_zone'    => ['type' => ObjectModel::KEY, 'columns' => ['id_zone']],
+                'name'       => ['type' => ObjectModel::KEY, 'columns' => ['name']],
+            ],
         ],
     ];
 

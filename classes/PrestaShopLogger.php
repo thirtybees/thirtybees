@@ -67,14 +67,14 @@ class PrestaShopLoggerCore extends ObjectModel
         'table'   => 'log',
         'primary' => 'id_log',
         'fields'  => [
-            'severity'    => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'required' => true],
-            'error_code'  => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
-            'message'     => ['type' => self::TYPE_STRING, 'validate' => 'isString', 'required' => true],
+            'severity'    => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'required' => true, 'size' => 1, 'signed' => true],
+            'error_code'  => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbType' => 'int(11)'],
+            'message'     => ['type' => self::TYPE_STRING, 'validate' => 'isString', 'required' => true, 'size' => ObjectModel::SIZE_TEXT],
+            'object_type' => ['type' => self::TYPE_STRING, 'validate' => 'isString', 'size' => 32],
             'object_id'   => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
             'id_employee' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
-            'object_type' => ['type' => self::TYPE_STRING, 'validate' => 'isString'],
-            'date_add'    => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
-            'date_upd'    => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+            'date_add'    => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
+            'date_upd'    => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
         ],
     ];
 

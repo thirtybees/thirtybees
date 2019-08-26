@@ -1477,71 +1477,76 @@ class AdminThemesControllerCore extends AdminController
                 // Load configuration of the theme package.
                 $sandboxDir = $sandbox.'/'.$themeDir;
                 $xml = Theme::loadDefaultConfig($sandboxDir);
-                $xmlAttributes = $xml->attributes();
-                $targetDir = _PS_ALL_THEMES_DIR_.$xmlAttributes['directory'];
+                if ($xml) {
 
-                // Copy files of the theme its self.
-                if (file_exists($targetDir)) {
-                    $this->errors[] = sprintf(
-                        $this->l('Theme wants to install into %s, but this directory exists already.'),
-                        $targetDir
-                    );
-                } else {
-                    rename(
-                        $sandboxDir.'/themes/'.$xmlAttributes['directory'],
-                        $targetDir
-                    );
-                    $this->informations[] = sprintf(
-                        $this->l('Installed theme into %s.'),
-                        $targetDir
-                    );
-                }
+                    $xmlAttributes = $xml->attributes();
+                    $targetDir = _PS_ALL_THEMES_DIR_ . $xmlAttributes['directory'];
 
-                if ( ! $this->errors) {
-                    // Copy modules coming with the theme.
-                    $sourceModulesDir = $sandboxDir.'/modules/';
-                    foreach (scandir($sourceModulesDir) as $dir) {
-                        if (in_array($dir, ['.', '..'])
-                            || ! is_dir($sourceModulesDir.$dir)) {
-                            continue;
-                        }
-
-                        if (file_exists(_PS_MODULE_DIR_.$dir)) {
-                            $this->informations[] = sprintf(
-                                $this->l('Theme wanted to install module %s, this existed already.'),
-                                $dir
-                            );
-                        } else {
-                            rename(
-                                $sourceModulesDir.$dir,
-                                _PS_MODULE_DIR_.$dir
-                            );
-                            $this->informations[] = sprintf(
-                                $this->l('Installed module  %s.'),
-                                $dir
-                            );
-                        }
-                    }
-
-                    // Copy documentation.
-                    if (file_exists($sandboxDir.'/doc')
-                        && is_dir($sandboxDir.'/doc')
-                        && ! is_dir($targetDir.'/docs/')
-                    ) {
-                        rename($sandboxDir.'/doc', $targetDir.'/docs/');
+                    // Copy files of the theme its self.
+                    if (file_exists($targetDir)) {
+                        $this->errors[] = sprintf(
+                            $this->l('Theme wants to install into %s, but this directory exists already.'),
+                            $targetDir
+                        );
+                    } else {
+                        rename(
+                            $sandboxDir . '/themes/' . $xmlAttributes['directory'],
+                            $targetDir
+                        );
                         $this->informations[] = sprintf(
-                            $this->l('Installed documentation to %s.'),
+                            $this->l('Installed theme into %s.'),
                             $targetDir
                         );
                     }
 
-                    // Write XML coming with the package into the theme.
-                    // Use DOMDocument to get formatted output.
-                    $dom = new DOMDocument();
-                    $dom->preserveWhiteSpace = false;
-                    $dom->formatOutput = true;
-                    $dom->loadXML($xml->asXML());
-                    $dom->save($targetDir.'/config.xml');
+                    if (!$this->errors) {
+                        // Copy modules coming with the theme.
+                        $sourceModulesDir = $sandboxDir . '/modules/';
+                        foreach (scandir($sourceModulesDir) as $dir) {
+                            if (in_array($dir, ['.', '..'])
+                                || !is_dir($sourceModulesDir . $dir)) {
+                                continue;
+                            }
+
+                            if (file_exists(_PS_MODULE_DIR_ . $dir)) {
+                                $this->informations[] = sprintf(
+                                    $this->l('Theme wanted to install module %s, this existed already.'),
+                                    $dir
+                                );
+                            } else {
+                                rename(
+                                    $sourceModulesDir . $dir,
+                                    _PS_MODULE_DIR_ . $dir
+                                );
+                                $this->informations[] = sprintf(
+                                    $this->l('Installed module  %s.'),
+                                    $dir
+                                );
+                            }
+                        }
+
+                        // Copy documentation.
+                        if (file_exists($sandboxDir . '/doc')
+                            && is_dir($sandboxDir . '/doc')
+                            && !is_dir($targetDir . '/docs/')
+                        ) {
+                            rename($sandboxDir . '/doc', $targetDir . '/docs/');
+                            $this->informations[] = sprintf(
+                                $this->l('Installed documentation to %s.'),
+                                $targetDir
+                            );
+                        }
+
+                        // Write XML coming with the package into the theme.
+                        // Use DOMDocument to get formatted output.
+                        $dom = new DOMDocument();
+                        $dom->preserveWhiteSpace = false;
+                        $dom->formatOutput = true;
+                        $dom->loadXML($xml->asXML());
+                        $dom->save($targetDir . '/config.xml');
+                    }
+                } else {
+                    $this->errors[] = Tools::displayError('Uploaded zip file doesn\'t contain config.xml file. It is not a valid theme package');
                 }
             }
 

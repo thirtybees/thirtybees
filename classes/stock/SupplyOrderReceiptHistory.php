@@ -80,13 +80,19 @@ class SupplyOrderReceiptHistoryCore extends ObjectModel
         'table'   => 'supply_order_receipt_history',
         'primary' => 'id_supply_order_receipt_history',
         'fields'  => [
-            'id_supply_order_detail' => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',  'required' => true],
-            'id_supply_order_state'  => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',  'required' => true],
-            'id_employee'            => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',  'required' => true],
-            'employee_firstname'     => ['type' => self::TYPE_STRING, 'validate' => 'isName'                           ],
-            'employee_lastname'      => ['type' => self::TYPE_STRING, 'validate' => 'isName'                           ],
-            'quantity'               => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt', 'required' => true],
-            'date_add'               => ['type' => self::TYPE_DATE,   'validate' => 'isDate'                           ],
+            'id_supply_order_detail' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'id_employee'            => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'employee_lastname'      => ['type' => self::TYPE_STRING, 'validate' => 'isName', 'size' => 32, 'dbDefault' => '', 'dbNullable' => true],
+            'employee_firstname'     => ['type' => self::TYPE_STRING, 'validate' => 'isName', 'size' => 32, 'dbDefault' => '', 'dbNullable' => true],
+            'id_supply_order_state'  => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'quantity'               => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true],
+            'date_add'               => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
+        ],
+        'keys' => [
+            'supply_order_receipt_history' => [
+                'id_supply_order_detail' => ['type' => ObjectModel::KEY, 'columns' => ['id_supply_order_detail']],
+                'id_supply_order_state'  => ['type' => ObjectModel::KEY, 'columns' => ['id_supply_order_state']],
+            ],
         ],
     ];
 

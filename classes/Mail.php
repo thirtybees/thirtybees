@@ -64,7 +64,12 @@ class MailCore extends ObjectModel
             'template'  => ['type' => self::TYPE_STRING, 'validate' => 'isTplName', 'copy_post' => false, 'required' => true, 'size' => 62],
             'subject'   => ['type' => self::TYPE_STRING, 'validate' => 'isMailSubject', 'copy_post' => false, 'required' => true, 'size' => 254],
             'id_lang'   => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'copy_post' => false, 'required' => true],
-            'date_add'  => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'copy_post' => false, 'required' => true],
+            'date_add'  => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'copy_post' => false, 'required' => true, 'dbType' => 'timestamp', 'dbDefault' => ObjectModel::DEFAULT_CURRENT_TIMESTAMP],
+        ],
+        'keys' => [
+            'mail' => [
+                'recipient' => ['type' => ObjectModel::KEY, 'columns' => ['recipient'], 'subParts' => [10]],
+            ],
         ],
     ];
 
@@ -132,10 +137,11 @@ class MailCore extends ObjectModel
             return true;
         }
 
-        $idShop = (int)$idShop;
-        $shop = Context::getContext()->shop;
-        if ($idShop) {
-            $shop = new Shop($idShop);
+        if (! $idShop) {
+            $shop = Context::getContext()->shop;
+            $idShop = $shop->id;
+        } else {
+            $shop = new Shop((int)$idShop);
         }
 
         $configuration = Configuration::getMultiple(

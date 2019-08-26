@@ -61,14 +61,14 @@ class AttachmentCore extends ObjectModel
         'primary'   => 'id_attachment',
         'multilang' => true,
         'fields'    => [
-            'file'        => ['type' => self::TYPE_STRING,                 'validate' => 'isGenericName',                 'required' => true, 'size' => 40],
-            'mime'        => ['type' => self::TYPE_STRING,                 'validate' => 'isCleanHtml',                   'required' => true, 'size' => 128],
-            'file_name'   => ['type' => self::TYPE_STRING,                 'validate' => 'isGenericName',                                     'size' => 128],
-            'file_size'   => ['type' => self::TYPE_INT,                    'validate' => 'isUnsignedId'],
+            'file'        => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 40],
+            'file_name'   => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'size' => 128, 'dbNullable' => false],
+            'file_size'   => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'dbType' => 'bigint(11) unsigned', 'dbDefault' => '0'],
+            'mime'        => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'required' => true, 'size' => 128],
 
             /* Lang fields */
-            'name'        => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 32],
-            'description' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCleanHtml'],
+            'name'        => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 32, 'dbNullable' => true],
+            'description' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => ObjectModel::SIZE_TEXT],
         ],
     ];
 

@@ -125,6 +125,12 @@ if [ "${DIR}" != 'modules' ]; then
 fi
 unset DIR
 
+# Test for the existence of the target directory.
+if [ -n "${TARGET_DIR}" ] && ! [ -d "${TARGET_DIR}" ]; then
+  echo "Requested target directory doesn't exist. Aborting."
+  exit 1
+fi
+
 # There should be no staged changes.
 if ([ ${OPTION_VALIDATE} = 'true' ] \
     || [ ${OPTION_VALIDATE} = 'auto' ]) \
@@ -287,9 +293,6 @@ fi
 
 # If wanted, forward package files to a target directory.
 if [ -n "${TARGET_DIR}" ]; then
-  rm -rf "${TARGET_DIR}"
-  mkdir -p "${TARGET_DIR}"
-
   git archive --format=tar \
               "${GIT_REVISION}" \
               $(git ls-tree -r --name-only "${GIT_REVISION}" . | \

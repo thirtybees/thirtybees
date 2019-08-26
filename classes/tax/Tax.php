@@ -61,9 +61,9 @@ class TaxCore extends ObjectModel
         'primary'   => 'id_tax',
         'multilang' => true,
         'fields'    => [
-            'rate'    => ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat', 'required' => true],
-            'active'  => ['type' => self::TYPE_BOOL],
-            'deleted' => ['type' => self::TYPE_BOOL],
+            'rate'    => ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat', 'required' => true, 'size' => 10, 'decimals' => 3],
+            'active'  => ['type' => self::TYPE_BOOL, 'dbDefault' => '1'],
+            'deleted' => ['type' => self::TYPE_BOOL, 'dbDefault' => '0'],
             /* Lang fields */
             'name'    => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 32],
         ],

@@ -68,7 +68,7 @@ Browserlist string: <code>[defaults, ie >= 9, ie_mob >= 10, edge >= 12, chrome >
 You can install the master or follow a [release package](https://github.com/thirtybees/thirtybees/releases)
 - Recursively clone the repository and choose tag release version number from the -b parameter:
 ```shell
-$ git clone https://github.com/thirtybees/thirtybees.git --recursive -b #.##
+$ git clone https://github.com/thirtybees/thirtybees.git --recurse-submodules
 ```
 - Then cd into the `thirtybees` folder
 - Run composer to install the dependencies:

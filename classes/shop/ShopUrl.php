@@ -64,13 +64,20 @@ class ShopUrlCore extends ObjectModel
         'table'   => 'shop_url',
         'primary' => 'id_shop_url',
         'fields'  => [
-            'active'       => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                          ],
-            'main'         => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                          ],
-            'domain'       => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml',   'required' => true, 'size' => 255],
-            'domain_ssl'   => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml',                       'size' => 255],
-            'id_shop'      => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt', 'required' => true               ],
-            'physical_uri' => ['type' => self::TYPE_STRING, 'validate' => 'isString',                          'size' => 64 ],
-            'virtual_uri'  => ['type' => self::TYPE_STRING, 'validate' => 'isString',                          'size' => 64 ],
+            'id_shop'      => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true               ],
+            'domain'       => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'required' => true, 'size' => 150],
+            'domain_ssl'   => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 150, 'dbNullable' => false],
+            'physical_uri' => ['type' => self::TYPE_STRING, 'validate' => 'isString', 'size' => 64, 'dbNullable' => false],
+            'virtual_uri'  => ['type' => self::TYPE_STRING, 'validate' => 'isString', 'size' => 64, 'dbNullable' => false],
+            'main'         => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbNullable' => false],
+            'active'       => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbNullable' => false],
+        ],
+        'keys' => [
+            'shop_url' => [
+                'full_shop_url'     => ['type' => ObjectModel::UNIQUE_KEY, 'columns' => ['domain', 'physical_uri', 'virtual_uri']],
+                'full_shop_url_ssl' => ['type' => ObjectModel::UNIQUE_KEY, 'columns' => ['domain_ssl', 'physical_uri', 'virtual_uri']],
+                'id_shop'           => ['type' => ObjectModel::KEY, 'columns' => ['id_shop', 'main']],
+            ],
         ],
     ];
 
