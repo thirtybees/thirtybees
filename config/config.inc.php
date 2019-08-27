@@ -39,16 +39,6 @@ require_once($currentDir.'/defines.inc.php');
 
 $start_time = microtime(true);
 
-/**
- * This constants exists to tell CoreUpdate to consider object models definitions
- * as an ultimate source of truth. Database tables will be migrated to match
- * these definitions if there are any differences.
- *
- * Because this constant didn't exist in older version of thirtybess, downgrading will
- * not trigger any database changes
- */
-define('TB_OBJECT_MODELS_AUTHORITATIVE', true);
-
 /* SSL configuration */
 define('_PS_SSL_PORT_', 443);
 
