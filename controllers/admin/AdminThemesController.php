@@ -543,7 +543,8 @@ class AdminThemesControllerCore extends AdminController
                 }
             }
 
-            if (0 !== $idBased = (int) Tools::getValue('based_on')) {
+            $idBased = (int) Tools::getValue('based_on');
+            if ($idBased) {
                 $baseTheme = new Theme($idBased);
                 Tools::recurseCopy(
                     _PS_ALL_THEMES_DIR_.$baseTheme->directory,
@@ -554,8 +555,9 @@ class AdminThemesControllerCore extends AdminController
                 $xml->attributes()['name'] = Tools::getValue('name');
                 $xml->attributes()['directory'] = $newDir;
 
-                $xml->variations->variation->attributes()['name'] = Tools::getValue('name');
-                $xml->variations->variation->attributes()['directory'] = $newDir;
+                $variation = $xml->variations->variation[0];
+                $variation->attributes()['name'] = Tools::getValue('name');
+                $variation->attributes()['directory'] = $newDir;
 
                 // Write XML coming with the package into the theme.
                 // Use DOMDocument to get formatted output.
