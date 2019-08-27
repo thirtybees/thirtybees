@@ -552,6 +552,10 @@ class AdminThemesControllerCore extends AdminController
 
                 $xml = Theme::loadDefaultConfig(_PS_ALL_THEMES_DIR_.$newDir);
                 $xml->attributes()['name'] = Tools::getValue('name');
+                $xml->attributes()['directory'] = $newDir;
+
+                $xml->variations->variation->attributes()['name'] = Tools::getValue('name');
+                $xml->variations->variation->attributes()['directory'] = $newDir;
 
                 // Write XML coming with the package into the theme.
                 // Use DOMDocument to get formatted output.
