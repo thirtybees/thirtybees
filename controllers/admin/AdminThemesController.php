@@ -549,6 +549,17 @@ class AdminThemesControllerCore extends AdminController
                     _PS_ALL_THEMES_DIR_.$baseTheme->directory,
                     _PS_ALL_THEMES_DIR_.$newDir
                 );
+
+                $xml = Theme::loadDefaultConfig(_PS_ALL_THEMES_DIR_.$newDir);
+                $xml->attributes()['name'] = Tools::getValue('name');
+
+                // Write XML coming with the package into the theme.
+                // Use DOMDocument to get formatted output.
+                $dom = new DOMDocument();
+                $dom->preserveWhiteSpace = false;
+                $dom->formatOutput = true;
+                $dom->loadXML($xml->asXML());
+                $dom->save(_PS_ALL_THEMES_DIR_.$newDir.'/config.xml');
             }
 
             if (isset($_FILES['image_preview']) && $_FILES['image_preview']['error'] == 0) {
