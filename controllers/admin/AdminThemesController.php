@@ -559,6 +559,21 @@ class AdminThemesControllerCore extends AdminController
                 $variation->attributes()['name'] = Tools::getValue('name');
                 $variation->attributes()['directory'] = $newDir;
 
+                $value = Tools::getValue('product_per_page');
+                if ($value) {
+                    $variation->attributes()['product_per_page'] = (int) $value;
+                }
+                foreach ([
+                    'responsive',
+                    'default_left_column',
+                    'default_right_column',
+                ] as $key) {
+                    $value = Tools::getValue($key);
+                    if ($value !== false) {
+                        $variation->attributes()[$key] = (int) $value;
+                    }
+                }
+
                 // Write XML coming with the package into the theme.
                 // Use DOMDocument to get formatted output.
                 $dom = new DOMDocument();
