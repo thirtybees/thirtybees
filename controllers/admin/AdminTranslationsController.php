@@ -1816,32 +1816,32 @@ class AdminTranslationsControllerCore extends AdminController
         switch ($typeTranslation) {
             case 'front':
                 // Parsing file in Front office
-                $regex = '/\{l\s*s=([\'\"])'._PS_TRANS_PATTERN_.'\1(\s*sprintf=.*)?(\s*js=1)?\s*\}/U';
+                $regex = '/\{\s*l\s*s\s*=\s*([\'\"])'._PS_TRANS_PATTERN_.'\1(\s*sprintf=.*)?(\s*js=1)?\s*\}/U';
                 break;
 
             case 'back':
                 // Parsing file in Back office
                 if ($typeFile == 'php') {
-                    $regex = '/this->l\(\s*(\')'._PS_TRANS_PATTERN_.'\'\s*[\)|\,]/U';
+                    $regex = "/this\s*->\s*l\s*\(\s*(\')"._PS_TRANS_PATTERN_."\'\s*[\)|\,]/U";
                 } elseif ($typeFile == 'specific') {
-                    $regex = '/Translate::getAdminTranslation\((\')'._PS_TRANS_PATTERN_.'\'(?:,.*)*\)/U';
+                    $regex = '/Translate\s*::\s*getAdminTranslation\s*\(\s*(\')'._PS_TRANS_PATTERN_.'\'(?:,.*)*\s*\)/U';
                 } else {
-                    $regex = '/\{l\s*s\s*=([\'\"])'._PS_TRANS_PATTERN_.'\1(\s*sprintf=.*)?(\s*js=1)?(\s*slashes=1)?.*\}/U';
+                    $regex = '/\{\s*l\s*s\s*=([\'\"])'._PS_TRANS_PATTERN_.'\1(\s*sprintf=.*)?(\s*js=1)?(\s*slashes=1)?.*\}/U';
                 }
                 break;
 
             case 'errors':
                 // Parsing file for all errors syntax
-                $regex = '/Tools::displayError\((\')'._PS_TRANS_PATTERN_.'\'(,\s*(.+))?\)/U';
+                $regex = '/Tools\s*::\s*displayError\s*\(\s*(\')'._PS_TRANS_PATTERN_.'\'(,\s*(.+))?\)/U';
                 break;
 
             case 'modules':
                 // Parsing modules file
                 if ($typeFile == 'php') {
-                    $regex = '/->l\((\')'._PS_TRANS_PATTERN_.'\'(, ?\'(.+)\')?(, ?(.+))?\)/U';
+                    $regex = '/->\s*l\s*\(\s*(\')'._PS_TRANS_PATTERN_.'\'\s*(\s*,\s*?\'(.+)\'\s*)?(,\s*\'(.+)\'\s*)?\)/U';
                 } else {
                     // In tpl file look for something that should contain mod='module_name' according to the documentation
-                    $regex = '/\{l\s*s=([\'\"])'._PS_TRANS_PATTERN_.'\1.*\s+mod=\''.$moduleName.'\'.*\}/U';
+                    $regex = '/\{\s*l\s*s\s*=\s*([\'\"])'._PS_TRANS_PATTERN_.'\1.*\s+mod\s*=\s*\''.$moduleName.'\'.*\\s*}/U';
                 }
                 break;
 
@@ -1849,13 +1849,13 @@ class AdminTranslationsControllerCore extends AdminController
                 // Parsing PDF file
                 if ($typeFile == 'php') {
                     $regex = [
-                        '/HTMLTemplate.*::l\((\')'._PS_TRANS_PATTERN_.'\'[\)|\,]/U',
-                        '/static::l\((\')'._PS_TRANS_PATTERN_.'\'[\)|\,]/U',
-                        '/Translate::getPdfTranslation\((\')'._PS_TRANS_PATTERN_.'\'(?:,.*)*\)/U',
-                        '/->l\((\')'._PS_TRANS_PATTERN_.'\'(, ?\'(.+)\')?(, ?(.+))?\)/U',
+                        '/HTMLTemplate.*\s*::\s*l\s*\(\s*(\')'._PS_TRANS_PATTERN_.'\'\s*[\)|\,]/U',
+                        '/static\s*::\s*l\s*\(\s*(\')'._PS_TRANS_PATTERN_.'\'\s*[\)|\,]/U',
+                        '/Translate\s*::\s*getPdfTranslation\(\s*(\')'._PS_TRANS_PATTERN_.'\'(?:,.*)*\s*\)/U',
+                        '/->\s*l\s*\(\s*(\')'._PS_TRANS_PATTERN_.'\'\s*(\s*,\s*?\'(.+)\'\s*)?(,\s*\'(.+)\'\s*)?\)/U',
                     ];
                 } else {
-                    $regex = '/\{l\s*s=([\'\"])'._PS_TRANS_PATTERN_.'\1(\s*sprintf=.*)?(\s*js=1)?(\s*pdf=\'true\')?\s*\}/U';
+                    $regex = '/\{\s*l\s*s\s*=\s*([\'\"])'._PS_TRANS_PATTERN_.'\1(\s*sprintf\s*=\s*.*)?(\s*js\s*=\s*1)?(\s*pdf\s*=\s*\'true\')?\s*\}/U';
                 }
                 break;
         }
