@@ -73,15 +73,15 @@ class CountryCore extends ObjectModel
         'multilang'    => true,
         'fields'       => [
             'id_zone'                    => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'id_currency'                => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
-            'call_prefix'                => ['type' => self::TYPE_INT, 'validate' => 'isInt'],
+            'id_currency'                => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'dbDefault' => '0'],
             'iso_code'                   => ['type' => self::TYPE_STRING, 'validate' => 'isLanguageIsoCode', 'required' => true, 'size' => 3],
-            'active'                     => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'contains_states'            => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true],
-            'need_identification_number' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true],
-            'need_zip_code'              => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'zip_code_format'            => ['type' => self::TYPE_STRING, 'validate' => 'isZipCodeFormat'],
-            'display_tax_label'          => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true],
+            'call_prefix'                => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'dbType' => 'int(10)', 'dbDefault' => '0'],
+            'active'                     => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '0'],
+            'contains_states'            => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
+            'need_identification_number' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
+            'need_zip_code'              => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '1'],
+            'zip_code_format'            => ['type' => self::TYPE_STRING, 'validate' => 'isZipCodeFormat', 'size' => 12, 'dbDefault' => ''],
+            'display_tax_label'          => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbType' => 'tinyint(1)'],
 
             /* Lang fields */
             'name'                       => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 64],
@@ -89,6 +89,15 @@ class CountryCore extends ObjectModel
         'associations' => [
             'zone'     => ['type' => self::HAS_ONE],
             'currency' => ['type' => self::HAS_ONE],
+        ],
+        'keys' => [
+            'country' => [
+                'country_'         => ['type' => ObjectModel::KEY, 'columns' => ['id_zone']],
+                'country_iso_code' => ['type' => ObjectModel::KEY, 'columns' => ['iso_code']],
+            ],
+            'country_shop' => [
+                'id_shop' => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
+            ],
         ],
     ];
 

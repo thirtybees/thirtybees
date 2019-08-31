@@ -69,13 +69,19 @@ class OrderCartRuleCore extends ObjectModel
         'table'   => 'order_cart_rule',
         'primary' => 'id_order_cart_rule',
         'fields'  => [
-            'id_order'         => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'required' => true],
-            'id_cart_rule'     => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'required' => true],
-            'id_order_invoice' => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId'                    ],
-            'name'             => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml',  'required' => true],
-            'value'            => ['type' => self::TYPE_PRICE,  'validate' => 'isPrice',      'required' => true],
-            'value_tax_excl'   => ['type' => self::TYPE_PRICE,  'validate' => 'isPrice',      'required' => true],
-            'free_shipping'    => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                          ],
+            'id_order'         => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'id_cart_rule'     => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'id_order_invoice' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'dbDefault' => '0', 'dbNullable' => true],
+            'name'             => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'required' => true, 'size' => 254],
+            'value'            => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'required' => true, 'dbDefault' => '0.000000'],
+            'value_tax_excl'   => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'required' => true, 'dbDefault' => '0.000000'],
+            'free_shipping'    => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
+        ],
+        'keys' => [
+            'order_cart_rule' => [
+                'id_cart_rule' => ['type' => ObjectModel::KEY, 'columns' => ['id_cart_rule']],
+                'id_order'     => ['type' => ObjectModel::KEY, 'columns' => ['id_order']],
+            ],
         ],
     ];
 

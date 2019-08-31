@@ -63,11 +63,20 @@ class StockAvailableCore extends ObjectModel
         'fields'  => [
             'id_product'           => ['type' => self::TYPE_INT,  'validate' => 'isUnsignedId', 'required' => true],
             'id_product_attribute' => ['type' => self::TYPE_INT,  'validate' => 'isUnsignedId', 'required' => true],
-            'id_shop'              => ['type' => self::TYPE_INT,  'validate' => 'isUnsignedId'                    ],
-            'id_shop_group'        => ['type' => self::TYPE_INT,  'validate' => 'isUnsignedId'                    ],
-            'quantity'             => ['type' => self::TYPE_INT,  'validate' => 'isInt',        'required' => true],
-            'depends_on_stock'     => ['type' => self::TYPE_BOOL, 'validate' => 'isBool',       'required' => true],
-            'out_of_stock'         => ['type' => self::TYPE_INT,  'validate' => 'isInt',        'required' => true],
+            'id_shop'              => ['type' => self::TYPE_INT,  'validate' => 'isUnsignedId', 'dbNullable' => false],
+            'id_shop_group'        => ['type' => self::TYPE_INT,  'validate' => 'isUnsignedId', 'dbNullable' => false],
+            'quantity'             => ['type' => self::TYPE_INT,  'validate' => 'isInt', 'required' => true, 'signed' => 1, 'size' => 10, 'dbDefault' => '0'],
+            'depends_on_stock'     => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbDefault' => '0'],
+            'out_of_stock'         => ['type' => self::TYPE_INT,  'validate' => 'isInt', 'required' => true, 'size' => 1, 'dbDefault' => '0'],
+        ],
+        'keys' => [
+            'stock_available' => [
+                'product_sqlstock'     => ['type' => ObjectModel::UNIQUE_KEY, 'columns' => ['id_product', 'id_product_attribute', 'id_shop', 'id_shop_group']],
+                'id_product'           => ['type' => ObjectModel::KEY, 'columns' => ['id_product']],
+                'id_product_attribute' => ['type' => ObjectModel::KEY, 'columns' => ['id_product_attribute']],
+                'id_shop'              => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
+                'id_shop_group'        => ['type' => ObjectModel::KEY, 'columns' => ['id_shop_group']],
+            ],
         ],
     ];
 

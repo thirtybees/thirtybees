@@ -58,11 +58,16 @@ class CustomizationFieldCore extends ObjectModel
         'fields'         => [
             /* Classic fields */
             'id_product' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'type'       => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'required'   => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true],
+            'type'       => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true, 'dbType' => 'tinyint(1)'],
+            'required'   => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbType' => 'tinyint(1)'],
 
             /* Lang fields */
             'name'       => ['type' => self::TYPE_STRING, 'lang' => true, 'required' => true, 'size' => 255],
+        ],
+        'keys' => [
+            'customization_field' => [
+                'id_product' => ['type' => ObjectModel::KEY, 'columns' => ['id_product']],
+            ],
         ],
     ];
     protected $webserviceParameters = [

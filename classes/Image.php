@@ -70,9 +70,23 @@ class ImageCore extends ObjectModel
         'multilang' => true,
         'fields'    => [
             'id_product' => ['type' => self::TYPE_INT, 'shop' => 'both', 'validate' => 'isUnsignedId', 'required' => true],
-            'position'   => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
+            'position'   => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbType' => 'smallint(2) unsigned', 'dbDefault' => '0'],
             'cover'      => ['type' => self::TYPE_BOOL, 'allow_null' => true, 'validate' => 'isBool', 'shop' => true],
             'legend'     => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 128],
+        ],
+        'keys' => [
+            'image' => [
+                'idx_product_image' => ['type' => ObjectModel::UNIQUE_KEY, 'columns' => ['id_image', 'id_product', 'cover']],
+                'id_product_cover'  => ['type' => ObjectModel::UNIQUE_KEY, 'columns' => ['id_product', 'cover']],
+                'image_product'     => ['type' => ObjectModel::KEY, 'columns' => ['id_product']],
+            ],
+            'image_lang' => [
+                'id_image' => ['type' => ObjectModel::KEY, 'columns' => ['id_image']],
+            ],
+            'image_shop' => [
+                'id_product' => ['type' => ObjectModel::UNIQUE_KEY, 'columns' => ['id_product', 'id_shop', 'cover']],
+                'id_shop'    => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
+            ],
         ],
     ];
 
@@ -1073,5 +1087,15 @@ class ImageCore extends ObjectModel
         );
 
         return $result;
+    }
+
+    /**
+     * @param $table TableSchema
+     */
+    public static function processTableSchema($table)
+    {
+        if ($table->getNameWithoutPrefix() === 'image_shop') {
+            $table->reorderColumns(['id_product', 'id_image', 'id_shop']);
+        }
     }
 }

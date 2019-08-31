@@ -56,12 +56,23 @@ class AttributeCore extends ObjectModel
         'primary'   => 'id_attribute',
         'multilang' => true,
         'fields'    => [
-            'id_attribute_group' => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'required' => true],
-            'color'              => ['type' => self::TYPE_STRING, 'validate' => 'isColor'],
-            'position'           => ['type' => self::TYPE_INT,    'validate' => 'isInt'],
+            'id_attribute_group' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'color'              => ['type' => self::TYPE_STRING, 'validate' => 'isColor', 'size' => 32],
+            'position'           => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'dbDefault' => '0'],
 
             /* Lang fields */
             'name'               => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128],
+        ],
+        'keys' => [
+            'attribute' => [
+                'attribute_group' => ['type' => ObjectModel::KEY, 'columns' => ['id_attribute_group']],
+            ],
+            'attribute_lang' => [
+                'id_lang' => ['type' => ObjectModel::KEY, 'columns' => ['id_lang', 'name']],
+            ],
+            'attribute_shop' => [
+                'id_shop' => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
+            ],
         ],
     ];
 

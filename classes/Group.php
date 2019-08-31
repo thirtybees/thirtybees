@@ -61,14 +61,19 @@ class GroupCore extends ObjectModel
         'primary'   => 'id_group',
         'multilang' => true,
         'fields'    => [
-            'reduction'            => ['type' => self::TYPE_FLOAT, 'validate' => 'isPercentage'],
-            'price_display_method' => ['type' => self::TYPE_INT, 'validate' => 'isPriceDisplayMethod', 'required' => true],
-            'show_prices'          => ['type' => self::TYPE_BOOL, 'validate' => 'isBool'],
-            'date_add'             => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
-            'date_upd'             => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+            'reduction'            => ['type' => self::TYPE_FLOAT, 'validate' => 'isPercentage', 'size' => 17, 'decimals' => 2, 'dbDefault' => '0.00'],
+            'price_display_method' => ['type' => self::TYPE_INT, 'validate' => 'isPriceDisplayMethod', 'required' => true, 'dbType' => 'tinyint(4)', 'dbDefault' => '0'],
+            'show_prices'          => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '1'],
+            'date_add'             => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
+            'date_upd'             => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
 
             /* Lang fields */
             'name'                 => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 32],
+        ],
+        'keys' => [
+            'group_shop' => [
+                'id_shop' => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
+            ],
         ],
     ];
 

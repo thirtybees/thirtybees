@@ -46,17 +46,25 @@ class CMSCore extends ObjectModel
         'multilang'      => true,
         'multilang_shop' => true,
         'fields'         => [
-            'id_cms_category'  => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
-            'position'         => ['type' => self::TYPE_INT],
-            'indexation'       => ['type' => self::TYPE_BOOL],
-            'active'           => ['type' => self::TYPE_BOOL],
+            'id_cms_category'  => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbNullable' => false],
+            'position'         => ['type' => self::TYPE_INT, 'dbDefault' => '0'],
+            'active'           => ['type' => self::TYPE_BOOL, 'dbDefault' => '0'],
+            'indexation'       => ['type' => self::TYPE_BOOL, 'dbDefault' => '1'],
 
             /* Lang fields */
+            'meta_title'       => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128],
             'meta_description' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName',                     'size' => 255],
             'meta_keywords'    => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName',                     'size' => 255],
-            'meta_title'       => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128],
+            'content'          => ['type' => self::TYPE_HTML,   'lang' => true, 'validate' => 'isCleanHtml',                       'size' => ObjectModel::SIZE_LONG_TEXT],
             'link_rewrite'     => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isLinkRewrite', 'required' => true, 'size' => 128],
-            'content'          => ['type' => self::TYPE_HTML,   'lang' => true, 'validate' => 'isCleanHtml',                       'size' => 3999999999999],
+        ],
+        'keys' => [
+            'cms_shop' => [
+                'id_shop' => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
+            ],
+            'cms_lang' => [
+                'primary'       => ['type' => ObjectModel::PRIMARY_KEY, 'columns' => ['id_cms', 'id_shop', 'id_lang']],
+            ]
         ],
     ];
     /** @var string Name */
