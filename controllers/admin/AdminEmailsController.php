@@ -387,7 +387,7 @@ class AdminEmailsControllerCore extends AdminController
         }
 
         if (isset($_POST['TB_BCC_ALL_MAILS_TO']) && !empty($_POST['TB_BCC_ALL_MAILS_TO'])) {
-            // If there are no delimiter character (;), initialize bcc mails with the input value,
+            // If there is no delimiter character (;), initialize bcc mails with the input value,
             // otherwise initialize by exploding the value into an array of (non-validated) emails.
             $bccMails = [];
             if (strpos($_POST['TB_BCC_ALL_MAILS_TO'], ';') !== false) {

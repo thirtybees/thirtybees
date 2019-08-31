@@ -199,11 +199,40 @@ class MailCore extends ObjectModel
             $to = Tools::convertEmailToIdn($to);
         }
 
-        // if bcc is not null, make sure it's a vaild e-mail
+        // If $bcc is not null, make sure it's a valid e-mail
         if (!is_null($bcc) && !is_array($bcc) && !Validate::isEmail($bcc)) {
             static::logError(Tools::displayError('Error: parameter "bcc" is corrupted'), $die);
             $bcc = null;
         }
+
+        // Check if there is any configuration for emails to add as BCC to all outgoing emails
+        $bccMails = [];
+        $bccAllMailsTo = Configuration::get('TB_BCC_ALL_MAILS_TO', null, null, $idShop);
+        if (!empty($bccAllMailsTo)) {
+            // If there is no delimiter character (;), initialize bcc emails with the input value,
+            // otherwise initialize it by exploding the value into an array of emails.
+            // Note that we assume all emails were already validated when they were being saved.
+            if (strpos($bccAllMailsTo, ';') !== false) {
+                $bccMails = explode(';', $bccAllMailsTo);
+            } else {
+                array_push($bccMails, $bccAllMailsTo);
+            }
+        }
+        // If there is at least one email or more to add to the bcc field, add to $bcc.
+        if (count($bccMails) > 0) {
+            // If $bcc is null, initialize it with bccMails array.
+            if (is_null($bcc)) {
+                $bcc = $bccMails;
+            } else {
+                // If $bcc is not null, convert it to an array if it isn't already.
+                if (!is_array($bcc)) {
+                    $bcc = [ $bcc ];
+                }
+                // Add additional bcc addresses to $bcc.
+                array_push($bcc, array_values($bccMails));
+            }
+        }
+
         if (is_array($bcc)) {
             foreach ($bcc as &$address) {
                 $address = Tools::convertEmailToIdn($address);
