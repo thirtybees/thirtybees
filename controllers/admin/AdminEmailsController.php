@@ -140,6 +140,12 @@ class AdminEmailsControllerCore extends AdminController
                         'cast'       => 'intval',
                         'type'       => 'bool',
                     ],
+                    'TB_BCC_ALL_MAILS_TO'   => [
+                        'title'      => $this->l('BCC all mails to'),
+                        'desc'       => $this->l('Make sure you enter valid e-mail addresses separated by semicolons (;). Example: "account1@yourshop.com;account2@yourshop.com"'),
+                        'validation' => 'isString',
+                        'type'       => 'text',
+                    ],
                     'TB_MAIL_SUBJECT_TEMPLATE'         => [
                         'title'      => $this->l('Email subject template'),
                         'desc'       => $this->l('You can use following placeholders: {subject} {shop_name}'),
@@ -378,6 +384,40 @@ class AdminEmailsControllerCore extends AdminController
             && (empty($_POST['PS_MAIL_SERVER']) || empty($_POST['PS_MAIL_SMTP_PORT']))
         ) {
             $this->errors[] = Tools::displayError('You must define an SMTP server and an SMTP port. If you do not know it, use the PHP mail() function instead.');
+        }
+
+        if (isset($_POST['TB_BCC_ALL_MAILS_TO']) && !empty($_POST['TB_BCC_ALL_MAILS_TO'])) {
+            // If there are no delimiter character (;), initialize bcc mails with the input value,
+            // otherwise initialize by exploding the value into an array of (non-validated) emails.
+            $bccMails = [];
+            if (strpos($_POST['TB_BCC_ALL_MAILS_TO'], ';') !== false) {
+                $bccMails = explode(';', $_POST['TB_BCC_ALL_MAILS_TO']);
+            } else {
+                array_push($bccMails, $_POST['TB_BCC_ALL_MAILS_TO']);
+            }
+
+            // Validate all emails
+            $bccMailsAreValid = true;
+            foreach ($bccMails as $index => $bccMail) {
+                // Make a cleanup for spaces and tabs
+                $bccMail = trim($bccMail);
+                if (Validate::isEmail($bccMail)) {
+                    $bccMails[$index] = $bccMail;
+                } else {
+                    // There's no need to validate the remaining emails since we have at least one invalid email.
+                    $bccMailsAreValid = false;
+                    break;
+                }
+            }
+
+            if ($bccMailsAreValid) {
+                // Reassign the value with the one that contains trimmed values.
+                $_POST['TB_BCC_ALL_MAILS_TO'] = implode(';', $bccMails);
+            } else {
+                // Make sure not to update the existing value if there's an invalid email.
+                unset($_POST['TB_BCC_ALL_MAILS_TO']);
+                $this->errors[] = Tools::displayError('Make sure email addresses for adding as BCC to all outgoing mails are valid.');
+            }
         }
 
         if (isset($_POST['TB_MAIL_SUBJECT_TEMPLATE']) && strpos($_POST['TB_MAIL_SUBJECT_TEMPLATE'], '{subject}') === false) {
