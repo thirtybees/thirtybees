@@ -45,22 +45,32 @@ class CombinationCore extends ObjectModel
         'primary' => 'id_product_attribute',
         'fields'  => [
             'id_product'         => ['type' => self::TYPE_INT, 'shop' => 'both', 'validate' => 'isUnsignedId', 'required' => true],
+            'reference'          => ['type' => self::TYPE_STRING, 'size' => 32],
+            'supplier_reference' => ['type' => self::TYPE_STRING, 'size' => 32],
             'location'           => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'size' => 64],
             'ean13'              => ['type' => self::TYPE_STRING, 'validate' => 'isEan13', 'size' => 13],
             'upc'                => ['type' => self::TYPE_STRING, 'validate' => 'isUpc', 'size' => 12],
-            'quantity'           => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'size' => 10],
-            'reference'          => ['type' => self::TYPE_STRING, 'size' => 32],
-            'supplier_reference' => ['type' => self::TYPE_STRING, 'size' => 32],
-
-            /* Shop fields */
-            'wholesale_price'    => ['type' => self::TYPE_PRICE, 'shop' => true, 'validate' => 'isPrice', 'size' => 27],
-            'price'              => ['type' => self::TYPE_PRICE, 'shop' => true, 'validate' => 'isNegativePrice', 'size' => 20],
-            'ecotax'             => ['type' => self::TYPE_PRICE, 'shop' => true, 'validate' => 'isPrice', 'size' => 20],
-            'weight'             => ['type' => self::TYPE_FLOAT, 'shop' => true, 'validate' => 'isFloat'],
-            'unit_price_impact'  => ['type' => self::TYPE_PRICE, 'shop' => true, 'validate' => 'isNegativePrice', 'size' => 20],
-            'minimal_quantity'   => ['type' => self::TYPE_INT, 'shop' => true, 'validate' => 'isUnsignedId', 'required' => true],
+            'wholesale_price'    => ['type' => self::TYPE_PRICE, 'shop' => true, 'validate' => 'isPrice', 'size' => 20, 'dbDefault' => '0.000000'],
+            'price'              => ['type' => self::TYPE_PRICE, 'shop' => true, 'validate' => 'isNegativePrice', 'size' => 20, 'dbDefault' => '0.000000'],
+            'ecotax'             => ['type' => self::TYPE_PRICE, 'shop' => true, 'validate' => 'isPrice', 'dbDefault' => '0.000000'],
+            'quantity'           => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'size' => 10, 'signed' => true, 'dbDefault' => '0'],
+            'weight'             => ['type' => self::TYPE_FLOAT, 'shop' => true, 'validate' => 'isFloat', 'dbDefault' => '0.000000'],
+            'unit_price_impact'  => ['type' => self::TYPE_PRICE, 'shop' => true, 'validate' => 'isNegativePrice', 'size' => 20, 'dbDefault' => '0.000000'],
             'default_on'         => ['type' => self::TYPE_BOOL, 'allow_null' => true, 'shop' => true, 'validate' => 'isBool'],
-            'available_date'     => ['type' => self::TYPE_DATE, 'shop' => true, 'validate' => 'isDateFormat'],
+            'minimal_quantity'   => ['type' => self::TYPE_INT, 'shop' => true, 'validate' => 'isUnsignedId', 'required' => true, 'dbDefault' => '1'],
+            'available_date'     => ['type' => self::TYPE_DATE, 'shop' => true, 'validate' => 'isDateFormat', 'dbType' => 'date', 'dbDefault' => '1970-01-01'],
+        ],
+        'keys' => [
+            'product_attribute' => [
+                'product_default'                 => ['type' => ObjectModel::UNIQUE_KEY, 'columns' => ['id_product', 'default_on']],
+                'id_product_id_product_attribute' => ['type' => ObjectModel::KEY, 'columns' => ['id_product_attribute', 'id_product']],
+                'product_attribute_product'       => ['type' => ObjectModel::KEY, 'columns' => ['id_product']],
+                'reference'                       => ['type' => ObjectModel::KEY, 'columns' => ['reference']],
+                'supplier_reference'              => ['type' => ObjectModel::KEY, 'columns' => ['supplier_reference']],
+            ],
+            'product_attribute_shop' => [
+                'id_product' => ['type' => ObjectModel::UNIQUE_KEY, 'columns' => ['id_product', 'id_shop', 'default_on']],
+            ],
         ],
     ];
     /** @var int $id_product */
@@ -499,5 +509,15 @@ class CombinationCore extends ObjectModel
                 ->where('pac.`id_product_attribute` = '.(int) $this->id)
                 ->where('ag.`is_color_group` = 1')
         );
+    }
+
+    /**
+     * @param $table TableSchema
+     */
+    public static function processTableSchema($table)
+    {
+        if ($table->getNameWithoutPrefix() === 'product_attribute_shop') {
+            $table->reorderColumns(['id_product', 'id_product_attribute', 'id_shop']);
+        }
     }
 }

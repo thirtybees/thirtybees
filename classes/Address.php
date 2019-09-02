@@ -86,6 +86,9 @@ class AddressCore extends ObjectModel
     public $date_upd;
     /** @var bool True if address has been deleted (staying in database as deleted) */
     public $deleted = 0;
+    /** @var bool True if address is active */
+    public $active = 1;
+
     protected static $_idZones = [];
     protected static $_idCountries = [];
     protected $_includeContainer = false;
@@ -98,28 +101,39 @@ class AddressCore extends ObjectModel
         'table'   => 'address',
         'primary' => 'id_address',
         'fields'  => [
-            'id_customer'     => ['type' => self::TYPE_INT,    'validate' => 'isNullOrUnsignedId', 'copy_post' => false                                    ],
-            'id_manufacturer' => ['type' => self::TYPE_INT,    'validate' => 'isNullOrUnsignedId', 'copy_post' => false                                    ],
-            'id_supplier'     => ['type' => self::TYPE_INT,    'validate' => 'isNullOrUnsignedId', 'copy_post' => false                                    ],
-            'id_warehouse'    => ['type' => self::TYPE_INT,    'validate' => 'isNullOrUnsignedId', 'copy_post' => false                                    ],
-            'id_country'      => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',                              'required' => true               ],
-            'id_state'        => ['type' => self::TYPE_INT,    'validate' => 'isNullOrUnsignedId'                                                          ],
-            'alias'           => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName',                             'required' => true, 'size' => 32 ],
-            'company'         => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName',                                                 'size' => 64 ],
-            'lastname'        => ['type' => self::TYPE_STRING, 'validate' => 'isName',                                    'required' => true, 'size' => 32 ],
-            'firstname'       => ['type' => self::TYPE_STRING, 'validate' => 'isName',                                    'required' => true, 'size' => 32 ],
-            'vat_number'      => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName'                                                               ],
-            'address1'        => ['type' => self::TYPE_STRING, 'validate' => 'isAddress',                                 'required' => true, 'size' => 128],
-            'address2'        => ['type' => self::TYPE_STRING, 'validate' => 'isAddress',                                                     'size' => 128],
-            'postcode'        => ['type' => self::TYPE_STRING, 'validate' => 'isPostCode',                                                    'size' => 12 ],
-            'city'            => ['type' => self::TYPE_STRING, 'validate' => 'isCityName',                                'required' => true, 'size' => 64 ],
-            'other'           => ['type' => self::TYPE_STRING, 'validate' => 'isMessage',                                                     'size' => 300],
-            'phone'           => ['type' => self::TYPE_STRING, 'validate' => 'isPhoneNumber',                                                 'size' => 32 ],
-            'phone_mobile'    => ['type' => self::TYPE_STRING, 'validate' => 'isPhoneNumber',                                                 'size' => 32 ],
-            'dni'             => ['type' => self::TYPE_STRING, 'validate' => 'isDniLite',                                                     'size' => 16 ],
-            'deleted'         => ['type' => self::TYPE_BOOL,   'validate' => 'isBool',             'copy_post' => false                                    ],
-            'date_add'        => ['type' => self::TYPE_DATE,   'validate' => 'isDate',             'copy_post' => false                                    ],
-            'date_upd'        => ['type' => self::TYPE_DATE,   'validate' => 'isDate',             'copy_post' => false                                    ],
+            'id_country'      => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
+            'id_state'        => ['type' => self::TYPE_INT, 'validate' => 'isNullOrUnsignedId'],
+            'id_customer'     => ['type' => self::TYPE_INT, 'validate' => 'isNullOrUnsignedId', 'copy_post' => false, 'dbDefault' => '0'],
+            'id_manufacturer' => ['type' => self::TYPE_INT, 'validate' => 'isNullOrUnsignedId', 'copy_post' => false, 'dbDefault' => '0'],
+            'id_supplier'     => ['type' => self::TYPE_INT, 'validate' => 'isNullOrUnsignedId', 'copy_post' => false, 'dbDefault' => '0'],
+            'id_warehouse'    => ['type' => self::TYPE_INT, 'validate' => 'isNullOrUnsignedId', 'copy_post' => false, 'dbDefault' => '0'],
+            'alias'           => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 32 ],
+            'company'         => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'size' => 64 ],
+            'lastname'        => ['type' => self::TYPE_STRING, 'validate' => 'isName', 'required' => true, 'size' => 32 ],
+            'firstname'       => ['type' => self::TYPE_STRING, 'validate' => 'isName', 'required' => true, 'size' => 32 ],
+            'address1'        => ['type' => self::TYPE_STRING, 'validate' => 'isAddress', 'required' => true, 'size' => 128],
+            'address2'        => ['type' => self::TYPE_STRING, 'validate' => 'isAddress', 'size' => 128],
+            'postcode'        => ['type' => self::TYPE_STRING, 'validate' => 'isPostCode', 'size' => 12 ],
+            'city'            => ['type' => self::TYPE_STRING, 'validate' => 'isCityName', 'required' => true, 'size' => 64 ],
+            'other'           => ['type' => self::TYPE_STRING, 'validate' => 'isMessage', 'size' => 300],
+            'phone'           => ['type' => self::TYPE_STRING, 'validate' => 'isPhoneNumber', 'size' => 32 ],
+            'phone_mobile'    => ['type' => self::TYPE_STRING, 'validate' => 'isPhoneNumber', 'size' => 32 ],
+            'vat_number'      => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'size' => 32],
+            'dni'             => ['type' => self::TYPE_STRING, 'validate' => 'isDniLite', 'size' => 16 ],
+            'date_add'        => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'copy_post' => false, 'dbNullable' => false],
+            'date_upd'        => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'copy_post' => false, 'dbNullable' => false],
+            'active'          => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'copy_post' => false, 'dbDefault' => '1'],
+            'deleted'         => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'copy_post' => false, 'dbDefault' => '0'],
+        ],
+        'keys' => [
+            'address' => [
+                'address_customer' => ['type' => ObjectModel::KEY, 'columns' => ['id_customer']],
+                'id_country'       => ['type' => ObjectModel::KEY, 'columns' => ['id_country']],
+                'id_manufacturer'  => ['type' => ObjectModel::KEY, 'columns' => ['id_manufacturer']],
+                'id_state'         => ['type' => ObjectModel::KEY, 'columns' => ['id_state']],
+                'id_supplier'      => ['type' => ObjectModel::KEY, 'columns' => ['id_supplier']],
+                'id_warehouse'     => ['type' => ObjectModel::KEY, 'columns' => ['id_warehouse']],
+            ],
         ],
     ];
 

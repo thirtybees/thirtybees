@@ -43,12 +43,18 @@ class TranslatedConfigurationCore extends Configuration
         'primary'   => 'id_configuration',
         'multilang' => true,
         'fields'    => [
-            'name'          => ['type' => self::TYPE_STRING, 'validate' => 'isConfigName', 'required' => true, 'size' => 32],
-            'id_shop_group' => ['type' => self::TYPE_NOTHING, 'validate' => 'isUnsignedId'],
-            'id_shop'       => ['type' => self::TYPE_NOTHING, 'validate' => 'isUnsignedId'],
-            'value'         => ['type' => self::TYPE_STRING, 'lang' => true],
-            'date_add'      => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
-            'date_upd'      => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+            'name'          => ['type' => self::TYPE_STRING, 'validate' => 'isConfigName', 'required' => true, 'size' => 254],
+            'id_shop_group' => ['type' => self::TYPE_NOTHING, 'validate' => 'isUnsignedId', 'dbType' => 'int(11) unsigned'],
+            'id_shop'       => ['type' => self::TYPE_NOTHING, 'validate' => 'isUnsignedId', 'dbType' => 'int(11) unsigned'],
+            'value'         => ['type' => self::TYPE_STRING, 'lang' => true, 'size' => ObjectModel::SIZE_TEXT],
+            'date_add'      => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
+            'date_upd'      => ['type' => self::TYPE_DATE, 'lang' => true, 'validate' => 'isDate'],
+        ],
+        'keys' => [
+            'configuration' => [
+                'id_shop'       => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
+                'id_shop_group' => ['type' => ObjectModel::KEY, 'columns' => ['id_shop_group']],
+            ],
         ],
     ];
     protected $webserviceParameters = [

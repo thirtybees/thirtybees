@@ -90,6 +90,8 @@ class EmployeeCore extends ObjectModel
     public $id_last_customer_message;
     public $id_last_customer;
     protected $associated_shops = [];
+
+    public $last_connection_date;
     // @codingStandardsIgnoreEnd
 
     /**
@@ -99,30 +101,41 @@ class EmployeeCore extends ObjectModel
         'table'   => 'employee',
         'primary' => 'id_employee',
         'fields'  => [
-            'lastname'                 => ['type' => self::TYPE_STRING, 'validate' => 'isName',        'required' => true, 'size' => 32 ],
-            'firstname'                => ['type' => self::TYPE_STRING, 'validate' => 'isName',        'required' => true, 'size' => 32 ],
-            'email'                    => ['type' => self::TYPE_STRING, 'validate' => 'isEmail',       'required' => true, 'size' => 128],
-            'id_lang'                  => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt', 'required' => true               ],
+            'id_profile'               => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'required' => true               ],
+            'id_lang'                  => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'required' => true, 'dbDefault' => '0'],
+            'lastname'                 => ['type' => self::TYPE_STRING, 'validate' => 'isName', 'required' => true, 'size' => 32 ],
+            'firstname'                => ['type' => self::TYPE_STRING, 'validate' => 'isName', 'required' => true, 'size' => 32 ],
+            'email'                    => ['type' => self::TYPE_STRING, 'validate' => 'isEmail', 'required' => true, 'size' => 128],
             'passwd'                   => ['type' => self::TYPE_STRING, 'validate' => 'isPasswdAdmin', 'required' => true, 'size' => 60 ],
-            'last_passwd_gen'          => ['type' => self::TYPE_STRING                                                                  ],
-            'active'                   => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                          ],
-            'optin'                    => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                          ],
-            'id_profile'               => ['type' => self::TYPE_INT,    'validate' => 'isInt',         'required' => true               ],
-            'bo_color'                 => ['type' => self::TYPE_STRING, 'validate' => 'isColor',                           'size' => 32 ],
-            'default_tab'              => ['type' => self::TYPE_INT,    'validate' => 'isInt'                                           ],
-            'bo_theme'                 => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName',                     'size' => 32 ],
-            'bo_css'                   => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName',                     'size' => 64 ],
-            'bo_width'                 => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt'                                   ],
-            'bo_menu'                  => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                          ],
-            'stats_date_from'          => ['type' => self::TYPE_DATE,   'validate' => 'isDate'                                          ],
-            'stats_date_to'            => ['type' => self::TYPE_DATE,   'validate' => 'isDate'                                          ],
-            'stats_compare_from'       => ['type' => self::TYPE_DATE,   'validate' => 'isDate'                                          ],
-            'stats_compare_to'         => ['type' => self::TYPE_DATE,   'validate' => 'isDate'                                          ],
-            'stats_compare_option'     => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt'                                   ],
-            'preselect_date_range'     => ['type' => self::TYPE_STRING,                                                    'size' => 32 ],
-            'id_last_order'            => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt'                                   ],
-            'id_last_customer_message' => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt'                                   ],
-            'id_last_customer'         => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt'                                   ],
+            'last_passwd_gen'          => ['type' => self::TYPE_DATE, 'dbType' => 'timestamp', 'dbDefault' => ObjectModel::DEFAULT_CURRENT_TIMESTAMP],
+            'stats_date_from'          => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbType' => 'date'],
+            'stats_date_to'            => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbType' => 'date'],
+            'stats_compare_from'       => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbType' => 'date'],
+            'stats_compare_to'         => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbType' => 'date'],
+            'stats_compare_option'     => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt' , 'size' => 1, 'dbType' => 'int(1) unsigned', 'dbDefault' => '1'],
+            'preselect_date_range'     => ['type' => self::TYPE_STRING, 'size' => 32 ],
+            'bo_color'                 => ['type' => self::TYPE_STRING, 'validate' => 'isColor', 'size' => 32 ],
+            'bo_theme'                 => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'size' => 32 ],
+            'bo_css'                   => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'size' => 64 ],
+            'default_tab'              => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'dbDefault' => '0'],
+            'bo_width'                 => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbDefault' => '0'],
+            'bo_menu'                  => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '1'],
+            'active'                   => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '0'],
+            'optin'                    => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '1'],
+            'id_last_order'            => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbDefault' => '0'],
+            'id_last_customer_message' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbDefault' => '0'],
+            'id_last_customer'         => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbDefault' => '0'],
+            'last_connection_date'     => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbDefault' => '1970-01-01', 'dbNullable' => true, 'dbType' => 'date'],
+        ],
+        'keys' => [
+            'employee' => [
+                'employee_login'     => ['type' => ObjectModel::KEY, 'columns' => ['email', 'passwd']],
+                'id_employee_passwd' => ['type' => ObjectModel::KEY, 'columns' => ['id_employee', 'passwd']],
+                'id_profile'         => ['type' => ObjectModel::KEY, 'columns' => ['id_profile']],
+            ],
+            'employee_shop' => [
+                'id_shop' => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
+            ],
         ],
     ];
 
@@ -321,7 +334,7 @@ class EmployeeCore extends ObjectModel
         $success = true;
 
         if (!defined('TB_INSTALLATION_IN_PROGRESS')) {
-            if ($this->optin) {
+            if ($this->optin && $this->email) {
                 $context = Context::getContext();
 
                 $guzzle = new \GuzzleHttp\Client([

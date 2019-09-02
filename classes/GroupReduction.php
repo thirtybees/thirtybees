@@ -49,10 +49,16 @@ class GroupReductionCore extends ObjectModel
     public static $definition = [
         'table'   => 'group_reduction',
         'primary' => 'id_group_reduction',
+        'primaryKeyDbType' => 'mediumint(8) unsigned',
         'fields'  => [
             'id_group'    => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
             'id_category' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true],
-            'reduction'   => ['type' => self::TYPE_FLOAT, 'validate' => 'isPercentage', 'required' => true],
+            'reduction'   => ['type' => self::TYPE_FLOAT, 'validate' => 'isPercentage', 'required' => true, 'size' => 4, 'decimals' => 3],
+        ],
+        'keys' => [
+            'group_reduction' => [
+                'id_group' => ['type' => ObjectModel::UNIQUE_KEY, 'columns' => ['id_group', 'id_category']],
+            ],
         ],
     ];
 

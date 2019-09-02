@@ -60,14 +60,21 @@ class MetaCore extends ObjectModel
         'multilang'      => true,
         'multilang_shop' => true,
         'fields'         => [
-            'page'         => ['type' => self::TYPE_STRING, 'validate' => 'isFileName', 'required' => true, 'size' => 64],
-            'configurable' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
+            'page'         => ['type' => self::TYPE_STRING, 'validate' => 'isFileName', 'required' => true, 'size' => 64, 'unique' => true],
+            'configurable' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'size' => 1, 'dbDefault' => '1'],
 
             /* Lang fields */
             'title'        => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 128],
             'description'  => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255],
             'keywords'     => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255],
-            'url_rewrite'  => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isLinkRewrite', 'size' => 255],
+            'url_rewrite'  => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isLinkRewrite', 'size' => 254, 'dbNullable' => false],
+        ],
+        'keys' => [
+            'meta_lang' => [
+                'primary' => ['type' => ObjectModel::PRIMARY_KEY, 'columns' => ['id_meta', 'id_shop', 'id_lang']],
+                'id_lang' => ['type' => ObjectModel::KEY, 'columns' => ['id_lang']],
+                'id_shop' => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
+            ],
         ],
     ];
 
@@ -643,5 +650,15 @@ class MetaCore extends ObjectModel
         }
 
         return Tools::generateHtaccess();
+    }
+
+    /**
+     * @param $table TableSchema
+     */
+    public static function processTableSchema($table)
+    {
+        if ($table->getNameWithoutPrefix() === 'meta_lang') {
+            $table->reorderColumns(['id_meta', 'id_shop', 'id_lang']);
+        }
     }
 }

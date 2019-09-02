@@ -81,13 +81,13 @@ class SupplyOrderStateCore extends ObjectModel
         'primary'   => 'id_supply_order_state',
         'multilang' => true,
         'fields'    => [
-            'delivery_note'   => ['type' => self::TYPE_BOOL,                   'validate' => 'isBool'                                          ],
-            'editable'        => ['type' => self::TYPE_BOOL,                   'validate' => 'isBool'                                          ],
-            'receipt_state'   => ['type' => self::TYPE_BOOL,                   'validate' => 'isBool'                                          ],
-            'pending_receipt' => ['type' => self::TYPE_BOOL,                   'validate' => 'isBool'                                          ],
-            'enclosed'        => ['type' => self::TYPE_BOOL,                   'validate' => 'isBool'                                          ],
-            'color'           => ['type' => self::TYPE_STRING,                 'validate' => 'isColor'                                         ],
-            'name'            => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128],
+            'delivery_note'   => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
+            'editable'        => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
+            'receipt_state'   => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
+            'pending_receipt' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
+            'enclosed'        => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
+            'color'           => ['type' => self::TYPE_STRING, 'validate' => 'isColor', 'size' => 32],
+            'name'            => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128, 'dbDefault' => ObjectModel::DEFAULT_NULL, 'dbNullable' => true],
         ],
     ];
 

@@ -71,6 +71,7 @@ class OrderCarrierCore extends ObjectModel
     public static $definition = [
         'table'   => 'order_carrier',
         'primary' => 'id_order_carrier',
+        'primaryKeyDbType' => 'int(11)',
         'fields'  => [
             'id_order'               => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',     'required' => true],
             'id_carrier'             => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId',     'required' => true],
@@ -78,8 +79,15 @@ class OrderCarrierCore extends ObjectModel
             'weight'                 => ['type' => self::TYPE_FLOAT,  'validate' => 'isFloat'                             ],
             'shipping_cost_tax_excl' => ['type' => self::TYPE_PRICE,  'validate' => 'isPrice'                             ],
             'shipping_cost_tax_incl' => ['type' => self::TYPE_PRICE,  'validate' => 'isPrice'                             ],
-            'tracking_number'        => ['type' => self::TYPE_STRING, 'validate' => 'isTrackingNumber'                    ],
-            'date_add'               => ['type' => self::TYPE_DATE,   'validate' => 'isDate'                              ],
+            'tracking_number'        => ['type' => self::TYPE_STRING, 'validate' => 'isTrackingNumber', 'size' => 64],
+            'date_add'               => ['type' => self::TYPE_DATE,   'validate' => 'isDate', 'dbNullable' => false],
+        ],
+        'keys' => [
+            'order_carrier' => [
+                'id_carrier'       => ['type' => ObjectModel::KEY, 'columns' => ['id_carrier']],
+                'id_order'         => ['type' => ObjectModel::KEY, 'columns' => ['id_order']],
+                'id_order_invoice' => ['type' => ObjectModel::KEY, 'columns' => ['id_order_invoice']],
+            ],
         ],
     ];
 

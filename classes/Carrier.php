@@ -125,29 +125,46 @@ class CarrierCore extends ObjectModel
         'multilang_shop' => true,
         'fields'         => [
             /* Classic fields */
-            'id_reference'         => ['type' => self::TYPE_INT],
+            'id_reference'         => ['type' => self::TYPE_INT, 'dbNullable' => false],
+            'id_tax_rules_group'   => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'dbDefault' => '0', 'dbNullable' => true],
             'name'                 => ['type' => self::TYPE_STRING, 'validate' => 'isCarrierName', 'required' => true, 'size' => 64],
-            'active'               => ['type' => self::TYPE_BOOL,   'validate' => 'isBool',        'required' => true              ],
-            'is_free'              => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                         ],
-            'url'                  => ['type' => self::TYPE_STRING, 'validate' => 'isAbsoluteUrl'                                  ],
-            'shipping_handling'    => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                         ],
-            'shipping_external'    => ['type' => self::TYPE_BOOL                                                                   ],
-            'range_behavior'       => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                         ],
-            'shipping_method'      => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt'                                  ],
-            'max_width'            => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt'                                  ],
-            'max_height'           => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt'                                  ],
-            'max_depth'            => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt'                                  ],
-            'max_weight'           => ['type' => self::TYPE_FLOAT,  'validate' => 'isFloat'                                        ],
-            'grade'                => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt',                     'size' => 1 ],
-            'external_module_name' => ['type' => self::TYPE_STRING,                                                    'size' => 64],
-            'is_module'            => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                         ],
-            'need_range'           => ['type' => self::TYPE_BOOL                                                                   ],
-            'position'             => ['type' => self::TYPE_INT                                                                    ],
-            'deleted'              => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                         ],
-            'id_tax_rules_group'   => ['type' => self::TYPE_INT,    'validate' => 'isInt'                                          ],
+            'url'                  => ['type' => self::TYPE_STRING, 'validate' => 'isAbsoluteUrl'],
+            'active'               => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'required' => true, 'dbDefault' => '0'],
+            'deleted'              => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '0'],
+            'shipping_handling'    => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '1'],
+            'range_behavior'       => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '0'],
+            'is_module'            => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '0'],
+            'is_free'              => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '0'],
+            'shipping_external'    => ['type' => self::TYPE_BOOL, 'dbDefault' => '0'],
+            'need_range'           => ['type' => self::TYPE_BOOL, 'dbDefault' => '0'],
+            'external_module_name' => ['type' => self::TYPE_STRING, 'size' => 64],
+            'shipping_method'      => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbType' => 'int(2)', 'dbDefault' => '0'],
+            'position'             => ['type' => self::TYPE_INT, 'dbDefault' => '0'],
+            'max_width'            => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbType' => 'int(10)', 'dbDefault' => '0', 'dbNullable' => true],
+            'max_height'           => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbType' => 'int(10)', 'dbDefault' => '0', 'dbNullable' => true],
+            'max_depth'            => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbType' => 'int(10)', 'dbDefault' => '0', 'dbNullable' => true],
+            'max_weight'           => ['type' => self::TYPE_FLOAT, 'validate' => 'isFloat', 'dbDefault' => '0.000000', 'dbNullable' => true],
+            'grade'                => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbType' => 'int(10)', 'size' => 1, 'dbDefault' => '0', 'dbNullable' => true],
 
             /* Lang fields */
-            'delay'                => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128],
+            'delay'                => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128, 'dbNullable' => true],
+        ],
+        'associations' => [
+            'zone' => ['type' => self::BELONGS_TO_MANY, 'joinTable' => 'carrier_zone'],
+            'group' => ['type' => self::BELONGS_TO_MANY, 'joinTable' => 'carrier_group'],
+        ],
+        'keys' => [
+            'carrier' => [
+                'deleted'            => ['type' => ObjectModel::KEY, 'columns' => ['deleted', 'active']],
+                'id_tax_rules_group' => ['type' => ObjectModel::KEY, 'columns' => ['id_tax_rules_group']],
+                'reference'          => ['type' => ObjectModel::KEY, 'columns' => ['id_reference', 'deleted', 'active']],
+            ],
+            'carrier_shop' => [
+                'id_shop' => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
+            ],
+            'carrier_lang' => [
+                'primary' => ['type' => ObjectModel::PRIMARY_KEY, 'columns' => ['id_lang', 'id_shop', 'id_carrier']],
+            ],
         ],
     ];
 
@@ -2041,5 +2058,15 @@ class CarrierCore extends ObjectModel
         }
 
         return Db::getInstance()->insert('carrier_group', $insert);
+    }
+
+    /**
+     * @param $table TableSchema
+     */
+    public static function processTableSchema($table)
+    {
+        if ($table->getNameWithoutPrefix() === 'carrier_lang') {
+            $table->reorderColumns(['id_carrier', 'id_shop', 'id_lang']);
+        }
     }
 }

@@ -48,15 +48,23 @@ class TaxRuleCore extends ObjectModel
     public static $definition = [
         'table'   => 'tax_rule',
         'primary' => 'id_tax_rule',
+        'primaryKeyDbType' => 'int(11)',
         'fields'  => [
-            'id_tax_rules_group' => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'required' => true],
-            'id_country'         => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'required' => true],
-            'id_state'           => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId'                    ],
-            'zipcode_from'       => ['type' => self::TYPE_STRING, 'validate' => 'isPostCode'                      ],
-            'zipcode_to'         => ['type' => self::TYPE_STRING, 'validate' => 'isPostCode'                      ],
-            'id_tax'             => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'required' => true],
-            'behavior'           => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt'                   ],
-            'description'        => ['type' => self::TYPE_STRING, 'validate' => 'isString'                        ],
+            'id_tax_rules_group' => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'required' => true, 'dbType' => 'int(11)'],
+            'id_country'         => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'required' => true, 'dbType' => 'int(11)'],
+            'id_state'           => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'dbType' => 'int(11)', 'dbNullable' => false],
+            'zipcode_from'       => ['type' => self::TYPE_STRING, 'validate' => 'isPostCode', 'size' => 12, 'dbNullable' => false],
+            'zipcode_to'         => ['type' => self::TYPE_STRING, 'validate' => 'isPostCode', 'size' => 12, 'dbNullable' => false],
+            'id_tax'             => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'required' => true, 'dbType' => 'int(11)'],
+            'behavior'           => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt', 'dbType' => 'int(11)', 'dbNullable' => false],
+            'description'        => ['type' => self::TYPE_STRING, 'validate' => 'isString', 'size' => 100, 'dbNullable' => false],
+        ],
+        'keys' => [
+            'tax_rule' => [
+                'category_getproducts' => ['type' => ObjectModel::KEY, 'columns' => ['id_tax_rules_group', 'id_country', 'id_state', 'zipcode_from']],
+                'id_tax'               => ['type' => ObjectModel::KEY, 'columns' => ['id_tax']],
+                'id_tax_rules_group'   => ['type' => ObjectModel::KEY, 'columns' => ['id_tax_rules_group']],
+            ],
         ],
     ];
 

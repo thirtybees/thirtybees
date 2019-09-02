@@ -55,9 +55,9 @@ class OrderReturnStateCore extends ObjectModel
         'primary'   => 'id_order_return_state',
         'multilang' => true,
         'fields'    => [
-            'color'   => ['type' => self::TYPE_STRING,                 'validate' => 'isColor'                                        ],
+            'color'   => ['type' => self::TYPE_STRING, 'validate' => 'isColor', 'size' => 32],
             'name'    => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 64],
-            'active'  => ['type' => self::TYPE_BOOL,                   'validate' => 'isBool'],
+            'active'  => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '1'],
         ],
     ];
 

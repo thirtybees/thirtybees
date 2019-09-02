@@ -48,6 +48,11 @@ class RangePriceCore extends ObjectModel
             'delimiter1' => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'required' => true],
             'delimiter2' => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'required' => true],
         ],
+        'keys' => [
+            'range_price' => [
+                'id_carrier' => ['type' => ObjectModel::UNIQUE_KEY, 'columns' => ['id_carrier', 'delimiter1', 'delimiter2']],
+            ],
+        ],
     ];
     /** @var int $id_carrier */
     public $id_carrier;

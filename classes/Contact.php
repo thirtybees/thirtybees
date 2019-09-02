@@ -45,6 +45,7 @@ class ContactCore extends ObjectModel
     /** @var string Detailed description */
     public $description;
     public $customer_service;
+    public $position;
     // @codingStandardsIgnoreEnd
 
     /**
@@ -55,12 +56,18 @@ class ContactCore extends ObjectModel
         'primary'   => 'id_contact',
         'multilang' => true,
         'fields'    => [
-            'email'            => ['type' => self::TYPE_STRING, 'validate' => 'isEmail', 'size' => 128],
-            'customer_service' => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'],
+            'email'            => ['type' => self::TYPE_STRING, 'validate' => 'isEmail', 'size' => 128, 'dbNullable' => false],
+            'customer_service' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
+            'position'         => ['type' => self::TYPE_INT, 'dbType' => 'tinyint(2) unsigned', 'dbDefault' => '0'],
 
             /* Lang fields */
             'name'             => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 32],
-            'description'      => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCleanHtml'],
+            'description'      => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => ObjectModel::SIZE_TEXT],
+        ],
+        'keys' => [
+            'contact_shop' => [
+                'id_shop' => ['type' => ObjectModel::KEY, 'columns' => ['id_shop']],
+            ],
         ],
     ];
 

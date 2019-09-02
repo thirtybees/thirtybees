@@ -44,12 +44,19 @@ class ShopCore extends ObjectModel
         'table'   => 'shop',
         'primary' => 'id_shop',
         'fields'  => [
-            'active'        => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                         ],
-            'deleted'       => ['type' => self::TYPE_BOOL,   'validate' => 'isBool'                                         ],
+            'id_shop_group' => ['type' => self::TYPE_INT, 'required' => true],
             'name'          => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'required' => true, 'size' => 64],
-            'id_theme'      => ['type' => self::TYPE_INT,                                   'required' => true              ],
-            'id_category'   => ['type' => self::TYPE_INT,                                   'required' => true              ],
-            'id_shop_group' => ['type' => self::TYPE_INT,                                   'required' => true              ],
+            'id_category'   => ['type' => self::TYPE_INT, 'required' => true, 'dbDefault' => '1'],
+            'id_theme'      => ['type' => self::TYPE_INT, 'required' => true, 'dbType' => 'int(1) unsigned'],
+            'active'        => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '1'],
+            'deleted'       => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
+        ],
+        'keys' => [
+            'shop' => [
+                'id_category'   => ['type' => ObjectModel::KEY, 'columns' => ['id_category']],
+                'id_shop_group' => ['type' => ObjectModel::KEY, 'columns' => ['id_shop_group', 'deleted']],
+                'id_theme'      => ['type' => ObjectModel::KEY, 'columns' => ['id_theme']],
+            ],
         ],
     ];
     protected $webserviceParameters = [
