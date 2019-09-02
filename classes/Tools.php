@@ -3325,12 +3325,12 @@ class ToolsCore
                     if (Configuration::get('PS_LEGACY_IMAGES')) {
                         fwrite($write_fd, $media_domains);
                         fwrite($write_fd, $domain_rewrite_cond);
-                        fwrite($write_fd, 'RewriteRule ^([a-z0-9]+)\-([a-z0-9]+)(\-[_a-zA-Z0-9-]*)(-[0-9]+)?/(.+?)(2x)?\.jpg$ %{ENV:REWRITEBASE}img/p/$1-$2$3$4$6.jpg [L]'."\n");
-                        fwrite($write_fd, 'RewriteRule ^([a-z0-9]+)\-([a-z0-9]+)(\-[_a-zA-Z0-9-]*)(-[0-9]+)?/(.+?)(2x)?\.webp %{ENV:REWRITEBASE}img/p/$1-$2$3$4$6.webp [L]'."\n");
+                        fwrite($write_fd, 'RewriteRule ^([a-z0-9]+)\-([a-z0-9]+)(\-[_a-zA-Z0-9-]*)(-[0-9]+)?/.+?([2-4]x)?\.jpg$ %{ENV:REWRITEBASE}img/p/$1-$2$3$4$5.jpg [L]'."\n");
+                        fwrite($write_fd, 'RewriteRule ^([a-z0-9]+)\-([a-z0-9]+)(\-[_a-zA-Z0-9-]*)(-[0-9]+)?/.+?([2-4]x)?\.webp %{ENV:REWRITEBASE}img/p/$1-$2$3$4$5.webp [L]'."\n");
                         fwrite($write_fd, $media_domains);
                         fwrite($write_fd, $domain_rewrite_cond);
-                        fwrite($write_fd, 'RewriteRule ^([0-9]+)\-([0-9]+)(-[0-9]+)?/(.+?)(2x)?\.jpg$ %{ENV:REWRITEBASE}img/p/$1-$2$3$5.jpg [L]'."\n");
-                        fwrite($write_fd, 'RewriteRule ^([0-9]+)\-([0-9]+)(-[0-9]+)?/(.+?)(2x)?\.webp %{ENV:REWRITEBASE}img/p/$1-$2$3$5.webp [L]'."\n");
+                        fwrite($write_fd, 'RewriteRule ^([0-9]+)\-([0-9]+)(-[0-9]+)?/.+?([2-4]x)?\.jpg$ %{ENV:REWRITEBASE}img/p/$1-$2$3$4.jpg [L]'."\n");
+                        fwrite($write_fd, 'RewriteRule ^([0-9]+)\-([0-9]+)(-[0-9]+)?/.+?([2-4]x)?\.webp %{ENV:REWRITEBASE}img/p/$1-$2$3$4.webp [L]'."\n");
                     }
 
                     // Rewrite product images < 100 millions
@@ -3343,17 +3343,17 @@ class ToolsCore
                         $img_name .= '$'.$j;
                         fwrite($write_fd, $media_domains);
                         fwrite($write_fd, $domain_rewrite_cond);
-                        fwrite($write_fd, 'RewriteRule ^'.str_repeat('([0-9])', $i).'(\-[_a-zA-Z0-9-]*)?(-[0-9]+)?/(.+?)(2x)?\.jpg$ %{ENV:REWRITEBASE}img/p/'.$img_path.$img_name.'$'.($j + 1).'$'.($j + 3).".jpg [L]\n");
-                        fwrite($write_fd, 'RewriteRule ^'.str_repeat('([0-9])', $i).'(\-[_a-zA-Z0-9-]*)?(-[0-9]+)?/(.+?)(2x)?\.webp %{ENV:REWRITEBASE}img/p/'.$img_path.$img_name.'$'.($j + 1).'$'.($j + 3).".webp [L]\n");
+                        fwrite($write_fd, 'RewriteRule ^'.str_repeat('([0-9])', $i).'(\-[_a-zA-Z0-9-]*)?(-[0-9]+)?/.+?([2-4]x)?\.jpg$ %{ENV:REWRITEBASE}img/p/'.$img_path.$img_name.'$'.($j + 1).'$'.($j + 2).".jpg [L]\n");
+                        fwrite($write_fd, 'RewriteRule ^'.str_repeat('([0-9])', $i).'(\-[_a-zA-Z0-9-]*)?(-[0-9]+)?/.+?([2-4]x)?\.webp %{ENV:REWRITEBASE}img/p/'.$img_path.$img_name.'$'.($j + 1).'$'.($j + 2).".webp [L]\n");
                     }
                     fwrite($write_fd, $media_domains);
                     fwrite($write_fd, $domain_rewrite_cond);
-                    fwrite($write_fd, 'RewriteRule ^c/([0-9]+)(\-[\.*_a-zA-Z0-9-]*)(-[0-9]+)?/(.+?)(2x)?\.jpg$ %{ENV:REWRITEBASE}img/c/$1$2$3$5.jpg [L]'."\n");
-                    fwrite($write_fd, 'RewriteRule ^c/([0-9]+)(\-[\.*_a-zA-Z0-9-]*)(-[0-9]+)?/(.+?)(2x)?\.webp %{ENV:REWRITEBASE}img/c/$1$2$3$5.webp [L]'."\n");
+                    fwrite($write_fd, 'RewriteRule ^c/([0-9]+)(\-[\.*_a-zA-Z0-9-]*)(-[0-9]+)?/.+?([2-4]x)?\.jpg$ %{ENV:REWRITEBASE}img/c/$1$2$3$4.jpg [L]'."\n");
+                    fwrite($write_fd, 'RewriteRule ^c/([0-9]+)(\-[\.*_a-zA-Z0-9-]*)(-[0-9]+)?/.+?([2-4]x)?\.webp %{ENV:REWRITEBASE}img/c/$1$2$3$4.webp [L]'."\n");
                     fwrite($write_fd, $media_domains);
                     fwrite($write_fd, $domain_rewrite_cond);
-                    fwrite($write_fd, 'RewriteRule ^c/([a-zA-Z_-]+)(-[0-9]+)?/(.+?)(2x)?\.jpg$ %{ENV:REWRITEBASE}img/c/$1$2$4.jpg [L]'."\n");
-                    fwrite($write_fd, 'RewriteRule ^c/([a-zA-Z_-]+)(-[0-9]+)?/(.+?)(2x)?\.webp %{ENV:REWRITEBASE}img/c/$1$2$4.webp [L]'."\n");
+                    fwrite($write_fd, 'RewriteRule ^c/([a-zA-Z_-]+)(-[0-9]+)?/.+?([2-4]x)?\.jpg$ %{ENV:REWRITEBASE}img/c/$1$2$3.jpg [L]'."\n");
+                    fwrite($write_fd, 'RewriteRule ^c/([a-zA-Z_-]+)(-[0-9]+)?/.+?([2-4]x)?\.webp %{ENV:REWRITEBASE}img/c/$1$2$3.webp [L]'."\n");
                 }
 
                 fwrite($write_fd, "# AlphaImageLoader for IE and fancybox\n");
