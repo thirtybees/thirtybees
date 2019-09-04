@@ -939,6 +939,13 @@ abstract class ModuleCore
                     // Get content from php file
                     $filePath = _PS_MODULE_DIR_.$module.'/'.$module.'.php';
                     $file = trim(file_get_contents(_PS_MODULE_DIR_.$module.'/'.$module.'.php'));
+			
+                    if (function_exists('mb_check_encoding') && mb_check_encoding($file, 'UTF-8')) {
+                        // Remove the UTF-8 BOM
+                        $file = str_replace("\xEF\xBB\xBF", '', $file);
+                        // Convert to single byte encoding to reliably strip PHP opening and closing tags
+                        $file = iconv("UTF-8", "ISO-8859-1", $file);
+                    }
 
                     if (substr($file, 0, 5) == '<?php') {
                         $file = substr($file, 5);
