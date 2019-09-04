@@ -78,14 +78,16 @@ class AdminAddressesControllerCore extends AdminController
         }
 
         $this->fields_list = [
-            'id_address' => ['title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'],
-            'firstname'  => ['title' => $this->l('First Name'), 'filter_key' => 'a!firstname'],
-            'lastname'   => ['title' => $this->l('Last Name'), 'filter_key' => 'a!lastname'],
-            'email'      => ['title' => $this->l('Email address'), 'filter_key' => 'c!email'],
-            'address1'   => ['title' => $this->l('Address')],
-            'postcode'   => ['title' => $this->l('Zip/Postal Code'), 'align' => 'right'],
-            'city'       => ['title' => $this->l('City')],
-            'country'    => ['title' => $this->l('Country'), 'type' => 'select', 'list' => $this->countries_array, 'filter_key' => 'cl!id_country'],
+            'id_address'    => ['title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'],
+            'firstname'     => ['title' => $this->l('First Name'), 'filter_key' => 'a!firstname'],
+            'lastname'      => ['title' => $this->l('Last Name'), 'filter_key' => 'a!lastname'],
+            'email'         => ['title' => $this->l('Email address'), 'filter_key' => 'c!email'],
+            'address1'      => ['title' => $this->l('Address')],
+            'postcode'      => ['title' => $this->l('Zip/Postal Code'), 'align' => 'right'],
+            'phone'         => ['title' => $this->l('Phone'), 'filter_key' => 'a!phone'],
+            'phone_mobile'  => ['title' => $this->l('Mobile Phone'), 'filter_key' => 'a!phone_mobile'],
+            'city'          => ['title' => $this->l('City')],
+            'country'       => ['title' => $this->l('Country'), 'type' => 'select', 'list' => $this->countries_array, 'filter_key' => 'cl!id_country'],
         ];
 
         parent::__construct();
