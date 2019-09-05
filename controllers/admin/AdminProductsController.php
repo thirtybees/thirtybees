@@ -4086,9 +4086,8 @@ class AdminProductsControllerCore extends AdminController
                     }
                     $price = $specificPrice['price'];
                     $fixedPrice = '--';
-                    if ((string) $price === (string) $obj->price
-                        || $price == -1) {
-                        Tools::displayPrice($price, $currentSpecificCurrency);
+                    if ((string) $price !== (string) $obj->price && $price != -1) {
+                        $fixedPrice = Tools::displayPrice($price, $currentSpecificCurrency);
                     }
                     $content .= '
 						<td>'.($specificPrice['id_currency'] ? $currencies[$specificPrice['id_currency']]['name'] : $this->l('All currencies')).'</td>
