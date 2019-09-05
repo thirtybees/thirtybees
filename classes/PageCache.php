@@ -55,7 +55,7 @@ class PageCacheCore
     public static function isEnabled()
     {
         $pageCacheEnabled = Cache::isEnabled() && (bool)Configuration::get('TB_PAGE_CACHE_ENABLED');
-        $userLoggedIn = Context::getContext()->customer->isLogged();
+        $userLoggedIn = !is_null(Context::getContext()->customer) && Context::getContext()->customer->isLogged();
         return $pageCacheEnabled && !$userLoggedIn;
     }
 
