@@ -5418,6 +5418,61 @@ FileETag none
         trigger_error("Tools::roundPrice was called with invalid input of type " . gettype($input));
         return static::parseNumber($input);
     }
+
+    /**
+     * Returns next available reference for a product attribute
+     *
+     * Uses the following format for the reference: {$base_reference}_{$next_available_number}
+     * and checks whether generated reference number is used for any product or product attribute.
+     *
+     * @param $baseReference
+     * @return string
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public static function nextAvailableReference($baseReference)
+    {
+        if ($baseReference) {
+            return $baseReference . '_' . static::nextAvailableReferenceCounter($baseReference);
+        }
+        return '';
+    }
+
+    /**
+     * Returns next available reference counter for a product attribute
+     *
+     * @param $baseReference
+     * @return int
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public static function nextAvailableReferenceCounter($baseReference)
+    {
+        if (!$baseReference) {
+            return 1;
+        }
+        $productRefs = (new DbQuery())
+            ->select('DISTINCT p.reference')
+            ->from('product', 'p')
+            ->where('p.reference LIKE "' . pSQL($baseReference) . '\_%"');
+        $attributeRefs = (new DbQuery())
+            ->select('DISTINCT pa.reference')
+            ->from('product_attribute', 'pa')
+            ->where('pa.reference LIKE "' . pSQL($baseReference) . '\_%"');
+        $sql = $productRefs . " UNION " . $attributeRefs;
+
+        $max = 0;
+        $rows = Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS($sql);
+        if ($rows) {
+            foreach ($rows as $row) {
+                if (preg_match('/^' . preg_quote($baseReference) . '_([0-9]+)$/', $row['reference'], $matches)) {
+                    $id = (int)$matches[1];
+                    $max = max($id, $max);
+                }
+            }
+        }
+        return $max + 1;
+    }
 }
 
 /**

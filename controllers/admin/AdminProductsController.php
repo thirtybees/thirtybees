@@ -5180,6 +5180,7 @@ class AdminProductsControllerCore extends AdminController
      *
      * @param $obj
      *
+     * @throws SmartyException
      * @since 1.0.0
      */
     public function initFormCombinations($obj)
@@ -5249,6 +5250,7 @@ class AdminProductsControllerCore extends AdminController
                         [
                             'list'               => $this->renderListAttributes($product, $currency),
                             'product'            => $product,
+                            'defaultReference'   => Tools::nextAvailableReference($product->reference),
                             'id_category'        => $product->getDefaultCategory(),
                             'token_generator'    => Tools::getAdminTokenLite('AdminAttributeGenerator'),
                             'combination_exists' => (Shop::isFeatureActive() && (Shop::getContextShopGroup()->share_stock) && count(AttributeGroup::getAttributesGroups($this->context->language->id)) > 0 && $product->hasAttributes()),

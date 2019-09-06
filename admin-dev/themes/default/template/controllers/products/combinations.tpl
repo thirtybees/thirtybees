@@ -112,7 +112,7 @@
 				</span>
 			</label>
 			<div class="col-lg-5">
-				<input type="text" id="attribute_reference" name="attribute_reference" value="" />
+				<input type="text" id="attribute_reference" name="attribute_reference" value="{$defaultReference}" />
 			</div>
 		</div>
 		<div class="form-group">
