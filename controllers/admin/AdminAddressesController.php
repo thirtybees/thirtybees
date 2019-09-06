@@ -81,6 +81,7 @@ class AdminAddressesControllerCore extends AdminController
             'id_address' => ['title' => $this->l('ID'), 'align' => 'center', 'class' => 'fixed-width-xs'],
             'firstname'  => ['title' => $this->l('First Name'), 'filter_key' => 'a!firstname'],
             'lastname'   => ['title' => $this->l('Last Name'), 'filter_key' => 'a!lastname'],
+            'email'      => ['title' => $this->l('Email address'), 'filter_key' => 'c!email'],
             'address1'   => ['title' => $this->l('Address')],
             'postcode'   => ['title' => $this->l('Zip/Postal Code'), 'align' => 'right'],
             'city'       => ['title' => $this->l('City')],
