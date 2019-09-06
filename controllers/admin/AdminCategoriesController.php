@@ -707,6 +707,15 @@ class AdminCategoriesControllerCore extends AdminController
                 'title' => $this->l('Save'),
                 'name'  => 'submitAdd'.$this->table.($this->_category->is_root_category && !Tools::isSubmit('add'.$this->table) && !Tools::isSubmit('add'.$this->table.'root') ? '' : 'AndBackToParent'),
             ],
+            'buttons' => [
+                'save-and-stay' => [
+                    'title' => $this->l('Save and Stay'),
+                    'name' => 'submitAdd'.$this->table.($this->_category->is_root_category && !Tools::isSubmit('add'.$this->table) && !Tools::isSubmit('add'.$this->table.'root') ? '' : 'AndStay'),
+                    'type' => 'submit',
+                    'class' => 'btn btn-default pull-right',
+                    'icon' => 'process-icon-save',
+                ],
+            ],
         ];
 
         $this->tpl_form_vars['shared_category'] = Validate::isLoadedObject($obj) && $obj->hasMultishopEntries();
