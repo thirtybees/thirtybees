@@ -2104,7 +2104,7 @@ class AdminOrdersControllerCore extends AdminController
         if ($products = Product::searchByName((int) $this->context->language->id, pSQL(Tools::getValue('product_search')))) {
             $decimals = 0;
             if ($currency->decimals) {
-                $decimals = Configuration::get('PS_PRICE_DISPLAY_PRECISION');
+                $decimals = _TB_PRICE_DATABASE_PRECISION_;
             }
             foreach ($products as &$product) {
                 // Formatted price
