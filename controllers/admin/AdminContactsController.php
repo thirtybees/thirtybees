@@ -60,6 +60,14 @@ class AdminContactsControllerCore extends AdminController
             'name'        => ['title' => $this->l('Title')],
             'email'       => ['title' => $this->l('Email address')],
             'description' => ['title' => $this->l('Description')],
+            'active'      => [
+                'title'    => $this->l('Active'),
+                'align'    => 'text-center',
+                'type'     => 'bool',
+                'callback' => 'printContactActiveIcon',
+                'orderby'  => false,
+                'class'    => 'fixed-width-sm',
+            ],
         ];
 
         parent::__construct();
@@ -129,6 +137,27 @@ class AdminContactsControllerCore extends AdminController
                     'col'      => 6,
                     'hint'     => $this->l('Further information regarding this contact.'),
                 ],
+                [
+                    'type'     => 'switch',
+                    'label'    => $this->l('Is contact active?'),
+                    'name'     => 'active',
+                    'required' => false,
+                    'class'    => 't',
+                    'is_bool'  => true,
+                    'default_value' => true,
+                    'values'   => [
+                        [
+                            'id'    => 'active_on',
+                            'value' => 1,
+                            'label' => $this->l('Enabled'),
+                        ],
+                        [
+                            'id'    => 'active_off',
+                            'value' => 0,
+                            'label' => $this->l('Disabled'),
+                        ],
+                    ],
+                ],
             ],
             'submit' => [
                 'title' => $this->l('Save'),
@@ -144,6 +173,48 @@ class AdminContactsControllerCore extends AdminController
         }
 
         return parent::renderForm();
+    }
+
+    /**
+     * Toggle contact active flag
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function processChangeContactActiveVal()
+    {
+        $contact = new Contact($this->id_object);
+        if (!Validate::isLoadedObject($contact)) {
+            $this->errors[] = Tools::displayError('An error occurred while updating this contact.');
+        }
+        $update = Db::getInstance()->execute('UPDATE `'._DB_PREFIX_.'contact` SET active = '.($contact->active ? 0 : 1).' WHERE `id_contact` = '.(int)$contact->id);
+        if (!$update) {
+            $this->errors[] = Tools::displayError('An error occurred while updating this contact.');
+        }
+        Tools::clearSmartyCache();
+        Tools::redirectAdmin(static::$currentIndex.'&token='.$this->token);
+    }
+
+    /**
+     * Print enable / disable icon for is contact active option
+     *
+     * @param bool $active Contact active flag
+     * @param array $tr Row data
+     *
+     * @return string HTML link and icon
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function printContactActiveIcon($active, $tr)
+    {
+        $active = (bool)$active;
+        $contactId = (int)$tr['id_contact'];
+        return (
+            '<a class="list-action-enable'.($active ? ' action-enabled' : ' action-disabled').'" href="index.php?controller=AdminContacts&amp;id_contact='.$contactId.'&amp;changeContactActiveVal&amp;token='.Tools::getAdminTokenLite('AdminContacts').'">
+				'.($active ? '<i class="icon-check"></i>' : '<i class="icon-remove"></i>').
+            '</a>'
+        );
     }
 
     /**
@@ -165,6 +236,20 @@ class AdminContactsControllerCore extends AdminController
         }
 
         parent::initPageHeaderToolbar();
+    }
+
+    /**
+     * @return void
+     */
+    public function initProcess()
+    {
+        parent::initProcess();
+
+        $this->id_object = Tools::getValue('id_'.$this->table);
+
+        if (Tools::isSubmit('changeContactActiveVal') && $this->id_object) {
+            $this->action = 'change_contact_active_val';
+        }
     }
 
     /**

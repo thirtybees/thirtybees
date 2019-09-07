@@ -93,7 +93,7 @@ class AdminEmailsControllerCore extends AdminController
         parent::__construct();
 
         $arr = [];
-        foreach (Contact::getContacts($this->context->language->id) as $contact) {
+        foreach (Contact::getContacts($this->context->language->id, true) as $contact) {
             $arr[] = ['email_message' => $contact['id_contact'], 'name' => $contact['name']];
         }
 

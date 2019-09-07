@@ -65,6 +65,11 @@ class ContactCore extends ObjectModel
     public $position;
 
     /**
+     * @var bool Active
+     */
+    public $active;
+
+    /**
      * @var array Object model definition
      */
     public static $definition = [
@@ -79,6 +84,7 @@ class ContactCore extends ObjectModel
             /* Lang fields */
             'name'             => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 32],
             'description'      => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => ObjectModel::SIZE_TEXT],
+            'active'           => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '1'],
         ],
         'keys' => [
             'contact_shop' => [
@@ -91,12 +97,13 @@ class ContactCore extends ObjectModel
      * Return available contacts
      *
      * @param int $idLang Language ID
+     * @param bool $onlyActive Whether to get only active contacts
      *
      * @return array Contacts
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getContacts($idLang)
+    public static function getContacts($idLang, $onlyActive = false)
     {
         return Db::getInstance(_PS_USE_SQL_SLAVE_)->executeS(
             (new DbQuery())
@@ -105,6 +112,7 @@ class ContactCore extends ObjectModel
                 ->join(Shop::addSqlAssociation('contact', 'c', false))
                 ->leftJoin('contact_lang', 'cl', 'c.`id_contact` = cl.`id_contact` AND cl.`id_lang` = '.(int) $idLang)
                 ->where('contact_shop.`id_shop` IN ('.implode(', ', array_map('intval', Shop::getContextListShopID())).')')
+                ->where(($onlyActive ? 'active = true' : '1'))
                 ->groupBy('c.`id_contact`')
                 ->orderBy('`name` ASC')
         );

@@ -53,7 +53,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
         $this->lang = false;
 
         $contactArray = [];
-        $contacts = Contact::getContacts($this->context->language->id);
+        $contacts = Contact::getContacts($this->context->language->id, true);
 
         foreach ($contacts as $contact) {
             $contactArray[$contact['id_contact']] = $contact['name'];
@@ -359,7 +359,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
                         }
 
                         // we want to assign unrecognized mails to the right contact category
-                        $contacts = Contact::getContacts($this->context->language->id);
+                        $contacts = Contact::getContacts($this->context->language->id, true);
                         if (!$contacts) {
                             continue;
                         }
@@ -665,7 +665,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
     {
         $tpl = $this->createTemplate('message.tpl');
 
-        $contacts = Contact::getContacts($this->context->language->id);
+        $contacts = Contact::getContacts($this->context->language->id, true);
         $contactArray = [];
         foreach ($contacts as $contact) {
             $contactArray[$contact['id_contact']] = ['id_contact' => $contact['id_contact'], 'name' => $contact['name']];
@@ -841,7 +841,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
 
         $nextThread = CustomerThread::getNextThread((int) $thread->id);
 
-        $contacts = Contact::getContacts($this->context->language->id);
+        $contacts = Contact::getContacts($this->context->language->id, true);
 
         $actions = [];
 

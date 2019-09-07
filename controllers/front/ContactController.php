@@ -326,7 +326,7 @@ class ContactControllerCore extends FrontController
 
         $this->context->smarty->assign(
             [
-                'contacts' => Contact::getContacts($this->context->language->id),
+                'contacts' => Contact::getContacts($this->context->language->id, true),
                 'message'  => html_entity_decode(Tools::getValue('message')),
             ]
         );
