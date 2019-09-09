@@ -386,7 +386,7 @@ class AdminEmailsControllerCore extends AdminController
             $this->errors[] = Tools::displayError('You must define an SMTP server and an SMTP port. If you do not know it, use the PHP mail() function instead.');
         }
 
-        if (isset($_POST['TB_BCC_ALL_MAILS_TO']) && !empty($_POST['TB_BCC_ALL_MAILS_TO'])) {
+        if (isset($_POST['TB_BCC_ALL_MAILS_TO'])) {
             $bccMails = explode(';', $_POST['TB_BCC_ALL_MAILS_TO']);
 
             // Validate all emails
@@ -394,7 +394,10 @@ class AdminEmailsControllerCore extends AdminController
             foreach ($bccMails as $index => $bccMail) {
                 // Make a cleanup for spaces and tabs
                 $bccMail = trim($bccMail);
-                if (Validate::isEmail($bccMail)) {
+                if ( ! $bccMail) {
+                    // Empty string, double semicolons, whatever.
+                    unset($bccMails[$index]);
+                } elseif (Validate::isEmail($bccMail)) {
                     $bccMails[$index] = $bccMail;
                 } else {
                     // There's no need to validate the remaining emails since we have at least one invalid email.
