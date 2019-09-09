@@ -48,15 +48,20 @@ class PageCacheCore
     protected static $entry = null;
 
     /**
-     * Returns true if full page cache is enabled and user user is not logged in.
+     * @return bool true if full page cache is enabled and user user is not
+     *              logged in, else false.
      *
-     * @since: 1.0.7
+     * @version 1.0.7 Initial version.
+     * @version 1.1.0 Always return false for logged in users.
      */
     public static function isEnabled()
     {
-        $pageCacheEnabled = Cache::isEnabled() && (bool)Configuration::get('TB_PAGE_CACHE_ENABLED');
-        $userLoggedIn = !is_null(Context::getContext()->customer) && Context::getContext()->customer->isLogged();
-        return $pageCacheEnabled && !$userLoggedIn;
+        $pageCacheEnabled = Cache::isEnabled()
+            && (bool) Configuration::get('TB_PAGE_CACHE_ENABLED');
+        $userLoggedIn = ! is_null(Context::getContext()->customer)
+            && Context::getContext()->customer->isLogged();
+
+        return $pageCacheEnabled && ! $userLoggedIn;
     }
 
 
