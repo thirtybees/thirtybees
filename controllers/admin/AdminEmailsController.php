@@ -400,8 +400,10 @@ class AdminEmailsControllerCore extends AdminController
                 } elseif (Validate::isEmail($bccMail)) {
                     $bccMails[$index] = $bccMail;
                 } else {
-                    // There's no need to validate the remaining emails since we have at least one invalid email.
                     $bccMailsAreValid = false;
+
+                    // There's no need to validate the remaining emails since
+                    // we have at least one invalid email.
                     break;
                 }
             }
@@ -410,7 +412,7 @@ class AdminEmailsControllerCore extends AdminController
                 // Reassign the value with the one that contains trimmed values.
                 $_POST['TB_BCC_ALL_MAILS_TO'] = implode(';', $bccMails);
             } else {
-                // Make sure not to update the existing value if there's an invalid email.
+                // Don't update the existing value if there's an invalid email.
                 unset($_POST['TB_BCC_ALL_MAILS_TO']);
                 $this->errors[] = Tools::displayError('Make sure email addresses for adding as BCC to all outgoing mails are valid.');
             }
