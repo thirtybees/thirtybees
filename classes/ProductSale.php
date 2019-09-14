@@ -146,7 +146,7 @@ class ProductSaleCore
             ->where('p.`visibility` != \'none\'')
             ->where('EXISTS(SELECT 1 FROM `'._DB_PREFIX_.'category_product` cp JOIN `'._DB_PREFIX_.'category_group` cg ON (cp.id_category = cg.id_category AND cg.`id_group` '.(count(FrontController::getCurrentCustomerGroups()) ? 'IN ('.implode(',', FrontController::getCurrentCustomerGroups()).')' : '= 1').') WHERE cp.`id_product` = p.`id_product`)');
 
-        if ($orderBy !== 'price') {
+        if ($orderBy !== 'price' && $orderBy !== 'position') {
             $sql->orderBy((!empty($orderTable) ? '`'.pSQL($orderTable).'`.' : '').'`'.pSQL($orderBy).'` '.pSQL($orderWay));
             $sql->limit((int) $nbProducts, (int) ($pageNumber * $nbProducts));
         }
