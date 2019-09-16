@@ -221,6 +221,12 @@ class ImageTypeCore extends ObjectModel
             return $nameWithoutTheme.'_default';
         }
 
+        // if $name contains _default suffix, ie. home_default then try to resolve the name without this suffix
+        $pos = strpos($name, '_default');
+        if ($pos === strlen($name) - 8) {
+            return static::getFormatedName(substr($name, 0, $pos));
+        }
+
         // Give up searching.
         return $name;
     }
