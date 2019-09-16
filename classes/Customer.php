@@ -60,7 +60,7 @@ class CustomerCore extends ObjectModel
             'last_passwd_gen'            => ['type' => self::TYPE_DATE, 'copy_post' => false, 'dbType' => 'timestamp', 'dbDefault' => ObjectModel::DEFAULT_CURRENT_TIMESTAMP],
             'birthday'                   => ['type' => self::TYPE_DATE, 'validate' => 'isBirthDate', 'dbType' => 'date'],
             'newsletter'                 => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '0'],
-            'ip_registration_newsletter' => ['type' => self::TYPE_STRING, 'copy_post' => false, 'size' => 15],
+            'ip_registration_newsletter' => ['type' => self::TYPE_STRING, 'copy_post' => false, 'size' => 45],
             'newsletter_date_add'        => ['type' => self::TYPE_DATE, 'copy_post' => false],
             'optin'                      => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '0'],
             'website'                    => ['type' => self::TYPE_STRING, 'validate' => 'isUrl', 'size' => 128],

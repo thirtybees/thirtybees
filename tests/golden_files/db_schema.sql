@@ -681,7 +681,7 @@ CREATE TABLE `PREFIX_customer` (
   `last_passwd_gen` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `birthday` date DEFAULT NULL,
   `newsletter` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `ip_registration_newsletter` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ip_registration_newsletter` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `newsletter_date_add` datetime DEFAULT NULL,
   `optin` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `website` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
