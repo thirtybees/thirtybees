@@ -857,6 +857,7 @@ class AdminImportControllerCore extends AdminController
                 'truncate'                 => Tools::getValue('truncate'),
                 'forceIDs'                 => Tools::getValue('forceIDs'),
                 'regenerate'               => Tools::getValue('regenerate'),
+		'forceCat' 	           => Tools::getValue('forceCat'),
                 'sendemail'                => Tools::getValue('sendemail'),
                 'match_ref'                => Tools::getValue('match_ref'),
                 'separator'                => $this->separator,
@@ -2709,8 +2710,8 @@ class AdminImportControllerCore extends AdminController
             $product->id_category = array_values(array_unique($product->id_category));
         }
 
-        // Will update default category if there is none set here. Home if no category at all.
-        if (!isset($product->id_category_default) || !$product->id_category_default) {
+        // Will update default category if forced or if there is none set here. Home if no category at all.
+        if ($forceCat || !isset($product->id_category_default) || !$product->id_category_default) {
             // this if will avoid ereasing default category if category column is not present in the CSV file (or ignored)
             if (isset($product->id_category[0])) {
                 $product->id_category_default = (int) $product->id_category[0];
