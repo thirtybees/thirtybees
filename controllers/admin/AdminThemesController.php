@@ -543,12 +543,44 @@ class AdminThemesControllerCore extends AdminController
                 }
             }
 
-            if (0 !== $idBased = (int) Tools::getValue('based_on')) {
+            $idBased = (int) Tools::getValue('based_on');
+            if ($idBased) {
                 $baseTheme = new Theme($idBased);
                 Tools::recurseCopy(
                     _PS_ALL_THEMES_DIR_.$baseTheme->directory,
                     _PS_ALL_THEMES_DIR_.$newDir
                 );
+
+                $xml = Theme::loadDefaultConfig(_PS_ALL_THEMES_DIR_.$newDir);
+                $xml->attributes()['name'] = Tools::getValue('name');
+                $xml->attributes()['directory'] = $newDir;
+
+                $variation = $xml->variations->variation[0];
+                $variation->attributes()['name'] = Tools::getValue('name');
+                $variation->attributes()['directory'] = $newDir;
+
+                $value = Tools::getValue('product_per_page');
+                if ($value) {
+                    $variation->attributes()['product_per_page'] = (int) $value;
+                }
+                foreach ([
+                    'responsive',
+                    'default_left_column',
+                    'default_right_column',
+                ] as $key) {
+                    $value = Tools::getValue($key);
+                    if ($value !== false) {
+                        $variation->attributes()[$key] = (int) $value;
+                    }
+                }
+
+                // Write XML coming with the package into the theme.
+                // Use DOMDocument to get formatted output.
+                $dom = new DOMDocument();
+                $dom->preserveWhiteSpace = false;
+                $dom->formatOutput = true;
+                $dom->loadXML($xml->asXML());
+                $dom->save(_PS_ALL_THEMES_DIR_.$newDir.'/config.xml');
             }
 
             if (isset($_FILES['image_preview']) && $_FILES['image_preview']['error'] == 0) {

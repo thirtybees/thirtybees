@@ -133,7 +133,7 @@
 	<div class="form-group">
 		<div class="col-lg-1"><span class="pull-right">{include file="controllers/products/multishop/checkbox.tpl" field="name" type="default" multilang="true"}</span></div>
 		<label class="control-label col-lg-2 required" for="name_{$id_lang}">
-			<span class="label-tooltip" data-toggle="tooltip" title="{l s='The public name for this product.'} {l s='Invalid characters:'} &lt;&gt;;=#{}">
+			<span class="label-tooltip" data-toggle="tooltip" title="{l s='The public name for this product.'} {l s='Invalid characters:'} &lt;&gt;;{}">
 				{l s='Name'}
 			</span>
 		</label>
