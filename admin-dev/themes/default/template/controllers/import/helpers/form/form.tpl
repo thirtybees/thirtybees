@@ -284,6 +284,23 @@
 						</label>
 					</div>
 				</div>
+				<div class="form-group">
+					<label for="forceCat" class="control-label col-lg-4">
+						<span data-toggle="tooltip" class="label-tooltip" data-original-title="{l s='If you enable this option,  first category provided in file for each product will be used for default category.'}">
+							{l s='Force default category'}
+						</span>
+					</label>
+					<div class="col-lg-8">
+						<label class="switch-light prestashop-switch fixed-width-lg">
+							<input id="forceCat" name="forceCat" type="checkbox" />
+							<span>
+								<span>{l s='Yes'}</span>
+								<span>{l s='No'}</span>
+							</span>
+							<a class="slide-button btn"></a>
+						</label>
+					</div>
+				</div>
 				<div class="panel-footer">
 					<button type="submit" name="submitImportFile" id="submitImportFile" class="btn btn-default pull-right" >
 						<i class="process-icon-next"></i> <span>{l s='Next step'}</span>
@@ -553,6 +570,13 @@
 			else {
 				$("#forceIDs").closest('.form-group').hide();
 			}
+
+			if ($("#entity > option:selected").val() == 1) {
+				$("#forceCat").closest('.form-group').show();
+			} else {
+				$("#forceCat").closest('.form-group').hide();
+			}
+
 
 			$("#entitie").html($("#entity > option:selected").text().toLowerCase());
 

@@ -873,6 +873,7 @@ class AdminImportControllerCore extends AdminController
                 'truncate'                 => Tools::getValue('truncate'),
                 'forceIDs'                 => Tools::getValue('forceIDs'),
                 'regenerate'               => Tools::getValue('regenerate'),
+                'forceCat'                 => Tools::getValue('forceCat'),
                 'match_ref'                => Tools::getValue('match_ref'),
                 'separator'                => $this->separator,
                 'multiple_value_separator' => $this->multiple_value_separator,
@@ -2161,6 +2162,7 @@ class AdminImportControllerCore extends AdminController
         static::setLocale();
         $shopIds = Shop::getCompleteListOfShopsID();
 
+        $forceCat = Tools::getValue('forceCat');
         $forceIds = Tools::getValue('forceIDs');
         $matchRef = Tools::getValue('match_ref');
         $regenerate = Tools::getValue('regenerate');
@@ -2199,7 +2201,8 @@ class AdminImportControllerCore extends AdminController
                     $shopIds,
                     $matchRef,
                     $accessories, // by ref
-                    $validateOnly
+                    $validateOnly,
+                    $forceCat
                 );
             } catch (PrestaShopException $e) {
                 $this->errors[] = $e->getMessage();
@@ -2374,7 +2377,7 @@ class AdminImportControllerCore extends AdminController
      * @throws PrestaShopException
      * @since 1.0.0
      */
-    protected function productImportOne($info, $idDefaultLanguage, $idLang, $forceIds, $regenerate, $shopIsFeatureActive, $shopIds, $matchRef, &$accessories, $validateOnly = false)
+    protected function productImportOne($info, $idDefaultLanguage, $idLang, $forceIds, $regenerate, $shopIsFeatureActive, $shopIds, $matchRef, &$accessories, $validateOnly = false, $forceCat = false)
     {
         $idProduct = null;
         // Use product reference as key.
@@ -2407,15 +2410,7 @@ class AdminImportControllerCore extends AdminController
         if (isset($product->id) && $product->id && Product::existsInDatabase((int) $product->id, 'product')) {
             $product->loadStockData();
             $updateAdvancedStockManagementValue = true;
-            $categoryData = Product::getProductCategories((int) $product->id);
-
-            if (is_array($categoryData)) {
-                foreach ($categoryData as $tmp) {
-                    if (!isset($product->category) || !$product->category || is_array($product->category)) {
-                        $product->category[] = $tmp;
-                    }
-                }
-            }
+            $product->category = $product->getCategories();
         }
 
         static::setEntityDefaultValues($product);
@@ -2589,15 +2584,22 @@ class AdminImportControllerCore extends AdminController
             $product->id_category = array_values(array_unique($product->id_category));
         }
 
-        // Will update default category if there is none set here. Home if no category at all.
-        if (!isset($product->id_category_default) || !$product->id_category_default) {
-            // this if will avoid ereasing default category if category column is not present in the CSV file (or ignored)
-            if (isset($product->id_category[0])) {
-                $product->id_category_default = (int) $product->id_category[0];
-            } else {
-                $defaultProductShop = new Shop($product->id_shop_default);
-                $product->id_category_default = Category::getRootCategory(null, Validate::isLoadedObject($defaultProductShop) ? $defaultProductShop : null)->id;
-            }
+        // ensure that product will be associated with at least one category
+        $productCategories = isset($product->id_category) && is_array($product->id_category)
+            ? $product->id_category
+            : $product->getCategories();
+        if (! $productCategories) {
+            $defaultProductShop = new Shop($product->id_shop_default);
+            $rootCategory = Category::getRootCategory(null, Validate::isLoadedObject($defaultProductShop) ? $defaultProductShop : null);
+            $rootCategoryId = (int)$rootCategory->id;
+            $productCategories = [$rootCategoryId];
+            $product->id_category = $productCategories;
+        }
+
+        // Will update default category if forced or if there is none set here
+        $defaultCategoryId = (int)$product->id_category_default;
+        if ($forceCat || !in_array($defaultCategoryId, $productCategories)) {
+            $product->id_category_default = $productCategories[0];
         }
 
         $linkRewrite = (is_array($product->link_rewrite) && isset($product->link_rewrite[$idLang])) ? trim($product->link_rewrite[$idLang]) : '';

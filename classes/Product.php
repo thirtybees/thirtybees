@@ -4777,7 +4777,7 @@ class ProductCore extends ObjectModel
 
             if ($row) {
                 foreach ($row as $val) {
-                    $ret[] = $val['id_category'];
+                    $ret[] = (int)$val['id_category'];
                 }
             }
             Cache::store($cacheId, $ret);
