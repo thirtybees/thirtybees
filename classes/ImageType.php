@@ -267,14 +267,21 @@ class ImageTypeCore extends ObjectModel
 
         $nameType = $name.'_'.$type;
         if ( ! isset($cache[$nameType])) {
-            // Try fallbacks.
+            // Try fallbacks for compatibility with broken modules/templates.
             $context = Context::getContext();
             if ($context) {
+                // Try formating (again, $name should be formatted already).
                 $nameType = static::getFormatedName($name).'_'.$type;
+
+                if ( ! isset($cache[$nameType])) {
+                    // Try removing _default suffix.
+                    $name = preg_replace('/_default$/', '', $name);
+                    $nameType = static::getFormatedName($name).'_'.$type;
+                }
             }
 
             if ( ! isset($cache[$nameType])) {
-                // Find the first reasonable match.
+                // Last resort: find the first reasonable match.
                 foreach (array_keys($cache) as $key) {
                     if (preg_match('/'.$type.'$/', $key)
                         && preg_match('/^.*_'.$name.'_/', $key)
