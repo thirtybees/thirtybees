@@ -136,9 +136,11 @@ class PageNotFoundControllerCore extends FrontController
                 }
 
                 if (file_exists($sendPath)) {
+                    $imageType = pathinfo($sendPath, PATHINFO_EXTENSION);
+                    $imageType = str_replace('jpg', 'jpeg', $imageType);
                     header('HTTP/1.1 200 Found');
                     header('Status: 200 Found');
-                    header('Content-Type: image/jpg');
+                    header('Content-Type: image/'.$imageType);
                     readfile($sendPath);
 
                     exit;
