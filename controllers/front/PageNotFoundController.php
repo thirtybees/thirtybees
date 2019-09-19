@@ -116,20 +116,21 @@ class PageNotFoundControllerCore extends FrontController
             }
 
             if ($imageType && $sourcePath && $sendPath) {
-
                 if (! file_exists($sendPath)) {
-
-                    // source file can be jpg file even if we using webp image as output type
+                    // Source file can be jpg file even if we using webp image
+                    // as output type.
                     if (! is_readable($sourcePath)) {
-                        $sourcePath = str_replace('.webp', '.jpg', $sourcePath);
+                        $sourcePath = preg_replace(
+                            '#.webp$#', '.jpg', $sourcePath
+                        );
                     }
 
                     if (is_readable($sourcePath)) {
                         ImageManager::resize(
                             $sourcePath,
                             $sendPath,
-                            (int)$imageType['width'],
-                            (int)$imageType['height']
+                            (int) $imageType['width'],
+                            (int) $imageType['height']
                         );
                     }
                 }
