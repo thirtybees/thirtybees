@@ -220,7 +220,7 @@ class AdminCountriesControllerCore extends AdminController
         ];
 
         foreach ($defaultLayoutTab as $line) {
-            $defaultLayout .= implode(' ', $line)."\r\n";
+            $defaultLayout .= implode(' ', $line)."\n";
         }
 
         $this->fields_form = [
@@ -536,7 +536,9 @@ class AdminCountriesControllerCore extends AdminController
             $tmpAddrFormat = new AddressFormat($this->id_object);
         }
 
-        $tmpAddrFormat->format = Tools::getValue('address_layout');
+        $layout = explode("\n", Tools::getValue('address_layout'));
+        $layout = array_map('trim', $layout);
+        $tmpAddrFormat->format = implode("\n", $layout);
 
         if (!$tmpAddrFormat->checkFormatFields()) {
             $errorList = $tmpAddrFormat->getErrorList();
