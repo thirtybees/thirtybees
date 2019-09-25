@@ -936,19 +936,19 @@ abstract class ModuleCore
             if (!$useConfig || !$xmlExist || (isset($xmlModule->need_instance) && (int) $xmlModule->need_instance == 1) || $needNewConfigFile) {
                 // If class does not exists, we include the file
                 if (!class_exists($module, false)) {
-                    // Get content from php file
                     $filePath = _PS_MODULE_DIR_.$module.'/'.$module.'.php';
-                    $file = trim(file_get_contents(_PS_MODULE_DIR_.$module.'/'.$module.'.php'));
 
-                    if (substr($file, 0, 5) == '<?php') {
-                        $file = substr($file, 5);
-                    }
-
-                    if (substr($file, -2) == '?>') {
-                        $file = substr($file, 0, -2);
-                    }
-
-                    $file = preg_replace('/\n[\s\t]*?use\s.*?;/', '', $file);
+                    // Get PHP content, strip unwanted parts.
+                    $file = preg_replace(
+                        [
+                            "/^\xEF\xBB\xBF/",        // UTF-8 BOM
+                            '/^\s*<\?php/',           // PHP start tag
+                            '/\?>\s*$/',              // PHP end tag
+                            '/\n[\s\t]*?use\s.*?;/',  // PHP 'use'
+                        ],
+                        '',
+                        file_get_contents($filePath)
+                    );
 
                     // If (false) is a trick to not load the class with "eval".
                     // This way require_once will works correctly
