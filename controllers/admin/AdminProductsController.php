@@ -4841,6 +4841,7 @@ class AdminProductsControllerCore extends AdminController
         $files = $imageUploader->process();
 
         foreach ($files as &$file) {
+
             $image = new Image();
             $image->id_product = (int) ($product->id);
             $image->position = Image::getHighestPosition($product->id) + 1;
@@ -4895,19 +4896,64 @@ class AdminProductsControllerCore extends AdminController
                     }
                     continue;
                 } else {
+
                     $imagesTypes = ImageType::getImagesTypes('products');
-                    $generateHighDpiImages = (bool) Configuration::get('PS_HIGHT_DPI');
+                    $highDpi = (bool)Configuration::get('PS_HIGHT_DPI');
+                    $tmpName = $file['save_path'];
 
-                    foreach ($imagesTypes as $imageType) {
-                        if (!ImageManager::resize($file['save_path'], $newPath.'-'.stripslashes($imageType['name']).'.'.$image->image_format, $imageType['width'], $imageType['height'], $image->image_format)) {
-                            $file['error'] = Tools::displayError('An error occurred while copying image:').' '.stripslashes($imageType['name']);
-                            continue;
-                        }
+                    foreach ($imagesTypes as $k => $imageType) {
+                        if (!ImageManager::resize(
+                            $tmpName,
+                            $newPath . '-' . stripslashes($imageType['name']) . '.' . $image->image_format,
+                            (int)$imageType['width'],
+                            (int)$imageType['height'],
+                            $image->image_format
+                        )) {
+                            $this->errors[] = Tools::displayError('An error occurred while copying this image:') . ' ' . stripslashes($imageType['name']);
+                        } else {
 
-                        if ($generateHighDpiImages) {
-                            if (!ImageManager::resize($file['save_path'], $newPath.'-'.stripslashes($imageType['name']).'2x.'.$image->image_format, (int) $imageType['width'] * 2, (int) $imageType['height'] * 2, $image->image_format)) {
-                                $file['error'] = Tools::displayError('An error occurred while copying image:').' '.stripslashes($imageType['name']);
-                                continue;
+                            if ($highDpi) {
+                                if (!ImageManager::resize(
+                                    $tmpName,
+                                    $newPath . '-' . stripslashes($imageType['name']) . '2x.' . $image->image_format,
+                                    (int)$imageType['width'] * 2,
+                                    (int)$imageType['height'] * 2,
+                                    $image->image_format
+                                )) {
+                                    $this->errors[] = Tools::displayError('An error occurred while copying this image:') . ' ' . stripslashes($imageType['name']) . ' highDpi ' . $image->image_format;
+                                    continue;
+                                }
+                            }
+
+                            if (ImageManager::webpSupport()) {
+
+                                if (ImageManager::resize(
+                                    $tmpName,
+                                    $newPath . '-' . stripslashes($imageType['name']) . '.webp',
+                                    (int)$imageType['width'],
+                                    (int)$imageType['height'],
+                                    'webp'
+                                )) {
+                                    $this->errors[] = Tools::displayError('An error occurred while copying this image:') . ' ' . stripslashes($imageType['name']) . ' webp';
+                                    continue;
+                                }
+
+                                if ($highDpi) {
+                                    if (!ImageManager::resize(
+                                        $tmpName,
+                                        $newPath . '-' . stripslashes($imageType['name']) . '2x.webp',
+                                        (int)$imageType['width'] * 2,
+                                        (int)$imageType['height'] * 2,
+                                        'webp'
+                                    )) {
+                                        $file['error'] = Tools::displayError('An error occurred while copying image:') . ' ' . stripslashes($imageType['name']) . ' highDpi webp';
+                                        continue;
+                                    }
+                                }
+                            }
+
+                            if ((int)Configuration::get('TB_IMAGES_LAST_UPD_PRODUCTS') < $product->id) {
+                                Configuration::updateValue('TB_IMAGES_LAST_UPD_PRODUCTS', $product->id);
                             }
                         }
                     }
