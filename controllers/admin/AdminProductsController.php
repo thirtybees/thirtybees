@@ -4951,7 +4951,11 @@ class AdminProductsControllerCore extends AdminController
                         if ($results) {
                             foreach ($results as $format => $r){
                                 if ( ! $r) {
-                                    $file['error'] .= '<br/>'.$this->l('An error occurred while generate: ').stripslashes($imageType['name']). '.'.$format;
+                                    $file['error'] .= '<br/>'.sprintf(
+                                        $this->l('An error occurred while generate: %s.%s'),
+                                        stripslashes($imageType['name']),
+                                        $format
+                                    );
                                 }
                             }
                         }
